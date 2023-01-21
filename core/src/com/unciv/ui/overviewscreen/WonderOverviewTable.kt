@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.QuestName
@@ -115,7 +115,7 @@ class WonderInfo {
         val status: WonderStatus,
         val civ: CivilizationInfo?,
         val city: CityInfo?,
-        val location: TileInfo?
+        val location: Tile?
     ) {
         val viewEntireMapForDebug = UncivGame.Current.viewEntireMapForDebug
 
@@ -191,7 +191,7 @@ class WonderInfo {
         val wonderIndexMap: Map<String, Int> = allWonderMap.map { it.value to it.key }.toMap()
 
         // Maps all Natural Wonders on the map by name to their tile
-        val allNaturalsMap: Map<String, TileInfo> =
+        val allNaturalsMap: Map<String, Tile> =
                 gameInfo.tileMap.values.asSequence()
                     .filter { it.isNaturalWonder() }
                     .associateBy { it.naturalWonder!! }

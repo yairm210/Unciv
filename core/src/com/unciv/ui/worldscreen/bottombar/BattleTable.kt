@@ -12,7 +12,7 @@ import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.automation.unit.AttackableTile
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unique.UniqueType
@@ -95,7 +95,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         return tryGetDefenderAtTile(selectedTile, false)
     }
 
-    private fun tryGetDefenderAtTile(selectedTile: TileInfo, includeFriendly: Boolean): ICombatant? {
+    private fun tryGetDefenderAtTile(selectedTile: Tile, includeFriendly: Boolean): ICombatant? {
         val attackerCiv = worldScreen.viewingCiv
         val defender: ICombatant? = Battle.getMapCombatantOfTile(selectedTile)
 
@@ -310,7 +310,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
     }
 
 
-    private fun simulateNuke(attacker: MapUnitCombatant, targetTile: TileInfo){
+    private fun simulateNuke(attacker: MapUnitCombatant, targetTile: Tile){
         clear()
 
         val attackerNameWrapper = Table()
@@ -361,7 +361,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         setPosition(worldScreen.stage.width / 2 - width / 2, 5f)
     }
 
-    private fun simulateAirsweep(attacker: MapUnitCombatant, targetTile: TileInfo)
+    private fun simulateAirsweep(attacker: MapUnitCombatant, targetTile: Tile)
     {
         clear()
 

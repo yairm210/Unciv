@@ -29,7 +29,7 @@ import com.unciv.logic.civilization.managers.VictoryManager
 import com.unciv.logic.civilization.transients.CivInfoStatsForNextTurn
 import com.unciv.logic.civilization.transients.CivInfoTransientCache
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Policy
@@ -93,10 +93,10 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     var diplomacyFunctions = DiplomacyFunctions(this)
 
     @Transient
-    var viewableTiles = setOf<TileInfo>()
+    var viewableTiles = setOf<Tile>()
 
     @Transient
-    var viewableInvisibleUnitsTiles = setOf<TileInfo>()
+    var viewableInvisibleUnitsTiles = setOf<Tile>()
 
     /** Contains mapping of cities to travel mediums from ALL civilizations connected by trade routes to the capital */
     @Transient
@@ -192,7 +192,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     var exploredTiles = HashSet<Vector2>()
 
     fun hasExplored(position: Vector2) = exploredTiles.contains(position)
-    fun hasExplored(tileInfo: TileInfo) = hasExplored(tileInfo.position)
+    fun hasExplored(tile: Tile) = hasExplored(tile.position)
 
     fun addExploredTiles(tiles:Sequence<Vector2>){
         exploredTiles.addAll(tiles)

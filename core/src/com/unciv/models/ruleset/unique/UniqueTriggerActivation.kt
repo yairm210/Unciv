@@ -11,7 +11,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.stats.Stat
@@ -28,7 +28,7 @@ object UniqueTriggerActivation {
         unique: Unique,
         civInfo: CivilizationInfo,
         cityInfo: CityInfo? = null,
-        tile: TileInfo? = null,
+        tile: Tile? = null,
         notification: String? = null
     ): Boolean {
         val timingConditional = unique.conditionals.firstOrNull { it.type == UniqueType.ConditionalTimedUnique }

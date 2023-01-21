@@ -14,7 +14,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueType
@@ -75,7 +75,7 @@ class WorkerAutomation(
     }
 
     /** Civ-wide list of _connected_ Cities, unsorted */
-    private val tilesOfConnectedCities: List<TileInfo> by lazy {
+    private val tilesOfConnectedCities: List<Tile> by lazy {
         val result = civInfo.cities.asSequence()
             .filter { it.isCapital() || it.cityStats.isConnectedToCapital(bestRoadAvailable) }
             .map { it.getCenterTile() }
@@ -112,12 +112,12 @@ class WorkerAutomation(
         }
 
         /** Convenience shortcut supports old calling syntax for [WorkerAutomation.getPriority] */
-        fun getPriority(tileInfo: TileInfo, civInfo: CivilizationInfo): Int {
-            return civInfo.getWorkerAutomation().getPriority(tileInfo)
+        fun getPriority(tile: Tile, civInfo: CivilizationInfo): Int {
+            return civInfo.getWorkerAutomation().getPriority(tile)
         }
 
         /** Convenience shortcut supports old calling syntax for [WorkerAutomation.evaluateFortPlacement] */
-        fun evaluateFortPlacement(tile: TileInfo, civInfo: CivilizationInfo, isCitadel: Boolean): Boolean {
+        fun evaluateFortPlacement(tile: Tile, civInfo: CivilizationInfo, isCitadel: Boolean): Boolean {
             return civInfo.getWorkerAutomation().evaluateFortPlacement(tile, isCitadel)
         }
 
@@ -219,7 +219,7 @@ class WorkerAutomation(
         }
         if (candidateCities.none()) return false // do nothing.
 
-        val isCandidateTilePredicate = { it: TileInfo -> it.isLand && unit.movement.canPassThrough(it) }
+        val isCandidateTilePredicate = { it: Tile -> it.isLand && unit.movement.canPassThrough(it) }
         val currentTile = unit.getTile()
         val cityTilesToSeek = ArrayList(tilesOfConnectedCities.sortedBy { it.aerialDistanceTo(currentTile) })
 
@@ -240,7 +240,7 @@ class WorkerAutomation(
                     // we have a winner!
                     val pathToCity = bfs.getPathTo(cityTile)
                     val roadableTiles = pathToCity.filter { it.getUnpillagedRoad() < bestRoadAvailable }
-                    val tileToConstructRoadOn: TileInfo
+                    val tileToConstructRoadOn: Tile
                     if (currentTile in roadableTiles) tileToConstructRoadOn =
                         currentTile
                     else {
@@ -278,7 +278,7 @@ class WorkerAutomation(
      * Looks for a worthwhile tile to improve
      * @return The current tile if no tile to work was found
      */
-    private fun findTileToWork(unit: MapUnit): TileInfo {
+    private fun findTileToWork(unit: MapUnit): Tile {
         val currentTile = unit.getTile()
         val workableTiles = currentTile.getTilesInDistance(4)
                 .filter {
@@ -309,7 +309,7 @@ class WorkerAutomation(
      * Tests if tile can be improved by a specific unit, or if no unit is passed, any unit at all
      * (but does not check whether the ruleset contains any unit capable of it)
      */
-    private fun tileCanBeImproved(unit: MapUnit, tile: TileInfo): Boolean {
+    private fun tileCanBeImproved(unit: MapUnit, tile: Tile): Boolean {
         if (!tile.isLand || tile.isImpassible() || tile.isCityCenter())
             return false
         val city = tile.getCity()
@@ -343,25 +343,25 @@ class WorkerAutomation(
     /**
      * Calculate a priority for improving a tile
      */
-    private fun getPriority(tileInfo: TileInfo): Int {
+    private fun getPriority(tile: Tile): Int {
         var priority = 0
-        if (tileInfo.getOwner() == civInfo) {
+        if (tile.getOwner() == civInfo) {
             priority += 2
-            if (tileInfo.providesYield()) priority += 3
-            if (tileInfo.isPillaged()) priority += 1
+            if (tile.providesYield()) priority += 3
+            if (tile.isPillaged()) priority += 1
         }
         // give a minor priority to tiles that we could expand onto
-        else if (tileInfo.getOwner() == null && tileInfo.neighbors.any { it.getOwner() == civInfo })
+        else if (tile.getOwner() == null && tile.neighbors.any { it.getOwner() == civInfo })
             priority += 1
 
-        if (priority != 0 && tileInfo.hasViewableResource(civInfo)) priority += 1
+        if (priority != 0 && tile.hasViewableResource(civInfo)) priority += 1
         return priority
     }
 
     /**
      * Determine the improvement appropriate to a given tile and worker
      */
-    private fun chooseImprovement(unit: MapUnit, tile: TileInfo): TileImprovement? {
+    private fun chooseImprovement(unit: MapUnit, tile: Tile): TileImprovement? {
 
         val potentialTileImprovements = ruleSet.tileImprovements.filter {
             unit.canBuildImprovement(it.value, tile)
@@ -425,7 +425,7 @@ class WorkerAutomation(
      * Assumes the caller ensured that terrainFeature and resource are both present!
      */
     private fun isResourceImprovementAllowedOnFeature(
-        tile: TileInfo,
+        tile: Tile,
         potentialTileImprovements: Map<String, TileImprovement>
     ): Boolean {
         return tile.tileResource.getImprovements().any { resourceImprovementName ->
@@ -441,7 +441,7 @@ class WorkerAutomation(
      * -> Checks: city, already built, resource, great improvements.
      * Used only in [evaluateFortPlacement].
      */
-    private fun isAcceptableTileForFort(tile: TileInfo): Boolean {
+    private fun isAcceptableTileForFort(tile: Tile): Boolean {
         //todo Should this not also check impassable and the fort improvement's terrainsCanBeBuiltOn/uniques?
         if (tile.isCityCenter() // don't build fort in the city
             || !tile.isLand // don't build fort in the water
@@ -458,7 +458,7 @@ class WorkerAutomation(
      * @param  isCitadel Controls within borders check - true also allows 1 tile outside borders
      * @return Yes please build a Fort here
      */
-    private fun evaluateFortPlacement(tile: TileInfo, isCitadel: Boolean): Boolean {
+    private fun evaluateFortPlacement(tile: Tile, isCitadel: Boolean): Boolean {
         //todo Is the Citadel code dead anyway? If not - why does the nearestTiles check not respect the param?
 
         // build on our land only
@@ -505,7 +505,7 @@ class WorkerAutomation(
         if (enemyCivsIsCloseEnough.isEmpty()) return false
 
         // make list of enemy cities as sources of threat
-        val enemyCities = mutableListOf<TileInfo>()
+        val enemyCities = mutableListOf<Tile>()
         enemyCivsIsCloseEnough.forEach { enemyCities.addAll(it.cities.map { city -> city.getCenterTile() }) }
 
         // find closest enemy city

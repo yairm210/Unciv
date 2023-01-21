@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.extensions.toGroup
 import com.unciv.utils.Log
@@ -21,7 +21,7 @@ class TacticalAI : IsPartOfGameInfoSerialization {
         tacticalAnalysisMap.reset(player)
     }
 
-    fun showZonesDebug(tile: TileInfo) {
+    fun showZonesDebug(tile: Tile) {
 
         if (!debug)
             return

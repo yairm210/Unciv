@@ -10,18 +10,18 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.extensions.toPercent
 
-class TileStatFunctions(val tileInfo: TileInfo) {
+class TileStatFunctions(val tile: Tile) {
 
-    fun getTileStats(observingCiv: CivilizationInfo?): Stats = getTileStats(tileInfo.getCity(), observingCiv)
+    fun getTileStats(observingCiv: CivilizationInfo?): Stats = getTileStats(tile.getCity(), observingCiv)
 
     fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo?,
                      localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)
     ): Stats {
-        var stats = tileInfo.getBaseTerrain().cloneStats()
+        var stats = tile.getBaseTerrain().cloneStats()
 
-        val stateForConditionals = StateForConditionals(civInfo = observingCiv, cityInfo = city, tile = tileInfo)
+        val stateForConditionals = StateForConditionals(civInfo = observingCiv, cityInfo = city, tile = tile)
 
-        for (terrainFeatureBase in tileInfo.terrainFeatureObjects) {
+        for (terrainFeatureBase in tile.terrainFeatureObjects) {
             when {
                 terrainFeatureBase.hasUnique(UniqueType.NullifyYields) ->
                     return terrainFeatureBase.cloneStats()
@@ -30,10 +30,10 @@ class TileStatFunctions(val tileInfo: TileInfo) {
             }
         }
 
-        if (tileInfo.naturalWonder != null) {
-            val wonderStats = tileInfo.getNaturalWonder().cloneStats()
+        if (tile.naturalWonder != null) {
+            val wonderStats = tile.getNaturalWonder().cloneStats()
 
-            if (tileInfo.getNaturalWonder().overrideStats)
+            if (tile.getNaturalWonder().overrideStats)
                 stats = wonderStats
             else
                 stats.add(wonderStats)
@@ -46,7 +46,7 @@ class TileStatFunctions(val tileInfo: TileInfo) {
             for (unique in localUniqueCache.get("StatsFromTilesAndObjects", tileUniques)) {
                 if (!unique.conditionalsApply(stateForConditionals)) continue
                 val tileType = unique.params[1]
-                if (!tileInfo.matchesTerrainFilter(tileType, observingCiv)) continue
+                if (!tile.matchesTerrainFilter(tileType, observingCiv)) continue
                 stats.add(unique.stats)
             }
 
@@ -55,28 +55,28 @@ class TileStatFunctions(val tileInfo: TileInfo) {
             ) {
                 if (
                         unique.conditionalsApply(stateForConditionals) &&
-                        tileInfo.matchesTerrainFilter(unique.params[1]) &&
-                        !tileInfo.matchesTerrainFilter(unique.params[2]) &&
+                        tile.matchesTerrainFilter(unique.params[1]) &&
+                        !tile.matchesTerrainFilter(unique.params[2]) &&
                         city.matchesFilter(unique.params[3])
                 )
                     stats.add(unique.stats)
             }
         }
 
-        if (tileInfo.isAdjacentToRiver()) stats.gold++
+        if (tile.isAdjacentToRiver()) stats.gold++
 
         if (observingCiv != null) {
             // resource base
-            if (tileInfo.hasViewableResource(observingCiv)) stats.add(tileInfo.tileResource)
+            if (tile.hasViewableResource(observingCiv)) stats.add(tile.tileResource)
 
-            val improvement = tileInfo.getUnpillagedTileImprovement()
+            val improvement = tile.getUnpillagedTileImprovement()
             if (improvement != null)
-                stats.add(tileInfo.improvementFunctions.getImprovementStats(improvement, observingCiv, city, localUniqueCache))
+                stats.add(tile.improvementFunctions.getImprovementStats(improvement, observingCiv, city, localUniqueCache))
 
             if (stats.gold != 0f && observingCiv.goldenAges.isGoldenAge())
                 stats.gold++
         }
-        if (tileInfo.isCityCenter()) {
+        if (tile.isCityCenter()) {
             if (stats.food < 2) stats.food = 2f
             if (stats.production < 1) stats.production = 1f
         }
@@ -95,18 +95,18 @@ class TileStatFunctions(val tileInfo: TileInfo) {
     @Suppress("MemberVisibilityCanBePrivate")
     fun getTilePercentageStats(observingCiv: CivilizationInfo?, city: CityInfo?): Stats {
         val stats = Stats()
-        val stateForConditionals = StateForConditionals(civInfo = observingCiv, cityInfo = city, tile = tileInfo)
+        val stateForConditionals = StateForConditionals(civInfo = observingCiv, cityInfo = city, tile = tile)
 
         if (city != null) {
             for (unique in city.getMatchingUniques(UniqueType.StatPercentFromObject, stateForConditionals)) {
                 val tileFilter = unique.params[2]
-                if (tileInfo.matchesTerrainFilter(tileFilter, observingCiv))
+                if (tile.matchesTerrainFilter(tileFilter, observingCiv))
                     stats[Stat.valueOf(unique.params[1])] += unique.params[0].toFloat()
             }
 
             for (unique in city.getMatchingUniques(UniqueType.AllStatsPercentFromObject, stateForConditionals)) {
                 val tileFilter = unique.params[1]
-                if (!tileInfo.matchesTerrainFilter(tileFilter, observingCiv)) continue
+                if (!tile.matchesTerrainFilter(tileFilter, observingCiv)) continue
                 val statPercentage = unique.params[0].toFloat()
                 for (stat in Stat.values())
                     stats[stat] += statPercentage
@@ -115,13 +115,13 @@ class TileStatFunctions(val tileInfo: TileInfo) {
         } else if (observingCiv != null) {
             for (unique in observingCiv.getMatchingUniques(UniqueType.StatPercentFromObject, stateForConditionals)) {
                 val tileFilter = unique.params[2]
-                if (tileInfo.matchesTerrainFilter(tileFilter, observingCiv))
+                if (tile.matchesTerrainFilter(tileFilter, observingCiv))
                     stats[Stat.valueOf(unique.params[1])] += unique.params[0].toFloat()
             }
 
             for (unique in observingCiv.getMatchingUniques(UniqueType.AllStatsPercentFromObject, stateForConditionals)) {
                 val tileFilter = unique.params[1]
-                if (!tileInfo.matchesTerrainFilter(tileFilter, observingCiv)) continue
+                if (!tile.matchesTerrainFilter(tileFilter, observingCiv)) continue
                 val statPercentage = unique.params[0].toFloat()
                 for (stat in Stat.values())
                     stats[stat] += statPercentage
@@ -133,37 +133,37 @@ class TileStatFunctions(val tileInfo: TileInfo) {
 
     fun getTileStartScore(): Float {
         var sum = 0f
-        for (closeTile in tileInfo.getTilesInDistance(2)) {
-            val tileYield = closeTile.stats.getTileStartYield(closeTile == tileInfo)
+        for (closeTile in tile.getTilesInDistance(2)) {
+            val tileYield = closeTile.stats.getTileStartYield(closeTile == tile)
             sum += tileYield
-            if (closeTile in tileInfo.neighbors)
+            if (closeTile in tile.neighbors)
                 sum += tileYield
         }
 
-        if (tileInfo.isHill())
+        if (tile.isHill())
             sum -= 2f
-        if (tileInfo.isAdjacentToRiver())
+        if (tile.isAdjacentToRiver())
             sum += 2f
-        if (tileInfo.neighbors.any { it.baseTerrain == Constants.mountain })
+        if (tile.neighbors.any { it.baseTerrain == Constants.mountain })
             sum += 2f
-        if (tileInfo.isCoastalTile())
+        if (tile.isCoastalTile())
             sum += 3f
-        if (!tileInfo.isCoastalTile() && tileInfo.neighbors.any { it.isCoastalTile() })
+        if (!tile.isCoastalTile() && tile.neighbors.any { it.isCoastalTile() })
             sum -= 7f
 
         return sum
     }
 
     private fun getTileStartYield(isCenter: Boolean): Float {
-        var stats = tileInfo.getBaseTerrain().cloneStats()
+        var stats = tile.getBaseTerrain().cloneStats()
 
-        for (terrainFeatureBase in tileInfo.terrainFeatureObjects) {
+        for (terrainFeatureBase in tile.terrainFeatureObjects) {
             if (terrainFeatureBase.overrideStats)
                 stats = terrainFeatureBase.cloneStats()
             else
                 stats.add(terrainFeatureBase)
         }
-        if (tileInfo.resource != null) stats.add(tileInfo.tileResource)
+        if (tile.resource != null) stats.add(tile.tileResource)
 
         if (stats.production < 0) stats.production = 0f
         if (isCenter) {

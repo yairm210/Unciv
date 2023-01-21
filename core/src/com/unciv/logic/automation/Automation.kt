@@ -7,7 +7,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.tile.ResourceType
@@ -21,7 +21,7 @@ import com.unciv.ui.victoryscreen.RankingType
 
 object Automation {
 
-    fun rankTileForCityWork(tile: TileInfo, city: CityInfo, cityStats: Stats): Float {
+    fun rankTileForCityWork(tile: Tile, city: CityInfo, cityStats: Stats): Float {
         val stats = tile.stats.getTileStats(city, city.civInfo)
         return rankStatsForCityWork(stats, city, cityStats)
     }
@@ -336,7 +336,7 @@ object Automation {
     }
 
     /** Support [UniqueType.CreatesOneImprovement] unique - find best tile for placement automation */
-    fun getTileForConstructionImprovement(cityInfo: CityInfo,  improvement: TileImprovement): TileInfo? {
+    fun getTileForConstructionImprovement(cityInfo: CityInfo,  improvement: TileImprovement): Tile? {
         return cityInfo.getTiles().filter {
             it.improvementFunctions.canBuildImprovement(improvement, cityInfo.civInfo)
         }.maxByOrNull {
@@ -345,7 +345,7 @@ object Automation {
     }
 
     // Ranks a tile for any purpose except the expansion algorithm of cities
-    internal fun rankTile(tile: TileInfo?, civInfo: CivilizationInfo): Float {
+    internal fun rankTile(tile: Tile?, civInfo: CivilizationInfo): Float {
         if (tile == null) return 0f
         val tileOwner = tile.getOwner()
         if (tileOwner != null && tileOwner != civInfo) return 0f // Already belongs to another civilization, useless to us
@@ -363,7 +363,7 @@ object Automation {
     }
 
     // Ranks a tile for the expansion algorithm of cities
-    internal fun rankTileForExpansion(tile: TileInfo, cityInfo: CityInfo,
+    internal fun rankTileForExpansion(tile: Tile, cityInfo: CityInfo,
                                       localUniqueCache: LocalUniqueCache): Int {
         // https://github.com/Gedemon/Civ5-DLL/blob/aa29e80751f541ae04858b6d2a2c7dcca454201e/CvGameCoreDLL_Expansion1/CvCity.cpp#L10301
         // Apparently this is not the full calculation. The exact tiles are also

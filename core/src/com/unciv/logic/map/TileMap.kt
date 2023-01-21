@@ -7,7 +7,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.mapgenerator.MapLandmassGenerator
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
@@ -38,7 +38,7 @@ class TileMap : IsPartOfGameInfoSerialization {
 
     var mapParameters = MapParameters()
 
-    var tileList = ArrayList<TileInfo>()
+    var tileList = ArrayList<Tile>()
 
     /** Structure geared for simple serialization by Gdx.Json (which is a little blind to kotlin collections, especially HashSet)
      * @param position [Vector2] of the location
@@ -59,7 +59,7 @@ class TileMap : IsPartOfGameInfoSerialization {
     var ruleset: Ruleset? = null
 
     @Transient
-    var tileMatrix = ArrayList<ArrayList<TileInfo?>>() // this works several times faster than a hashmap, the performance difference is really astounding
+    var tileMatrix = ArrayList<ArrayList<Tile?>>() // this works several times faster than a hashmap, the performance difference is really astounding
 
     @Transient
     var leftX = 0
@@ -80,11 +80,11 @@ class TileMap : IsPartOfGameInfoSerialization {
     val resources: List<String> by lazy { tileList.asSequence().filter { it.resource != null }.map { it.resource!! }.distinct().toList() }
 
     // Excluded from Serialization by having no own backing field
-    val values: Collection<TileInfo>
+    val values: Collection<Tile>
         get() = tileList
 
     @Transient
-    val startingLocationsByNation = HashMap<String,HashSet<TileInfo>>()
+    val startingLocationsByNation = HashMap<String,HashSet<Tile>>()
 
     @Transient
     val continentSizes = HashMap<Int, Int>()    // Continent ID, Continent size
@@ -100,7 +100,7 @@ class TileMap : IsPartOfGameInfoSerialization {
         startingLocations.clear()
         val firstAvailableLandTerrain = MapLandmassGenerator.getInitializationTerrain(ruleset, TerrainType.Land)
         for (vector in HexMath.getVectorsInDistance(Vector2.Zero, radius, worldWrap))
-            tileList.add(TileInfo().apply { position = vector; baseTerrain = firstAvailableLandTerrain })
+            tileList.add(Tile().apply { position = vector; baseTerrain = firstAvailableLandTerrain })
         setTransients(ruleset)
     }
 
@@ -116,7 +116,7 @@ class TileMap : IsPartOfGameInfoSerialization {
         // e.g. w=4 -> -2..1, w=5 -> -2..2, w=6 -> -3..2, w=7 -> -3..3
         for (x in -wrapAdjustedWidth / 2 .. (wrapAdjustedWidth-1) / 2)
             for (y in -height / 2 .. (height-1) / 2)
-                tileList.add(TileInfo().apply {
+                tileList.add(Tile().apply {
                     position = HexMath.evenQ2HexCoords(Vector2(x.toFloat(), y.toFloat()))
                     baseTerrain = firstAvailableLandTerrain
                 })
@@ -152,7 +152,7 @@ class TileMap : IsPartOfGameInfoSerialization {
         tileMatrix[x - leftX][y - bottomY]!!
 
     /** @return tile at hex coordinates ([x],[y]) or null if they are outside the map. Does *not* respect world wrap, use [getIfTileExistsOrNull] for that. */
-    private fun getOrNull (x: Int, y: Int): TileInfo? {
+    private fun getOrNull (x: Int, y: Int): Tile? {
         val arrayXIndex = x - leftX
         if (arrayXIndex < 0 || arrayXIndex >= tileMatrix.size) return null
         val arrayYIndex = y - bottomY
@@ -165,17 +165,17 @@ class TileMap : IsPartOfGameInfoSerialization {
 
     /** @return All tiles in a hexagon of radius [distance], including the tile at [origin] and all up to [distance] steps away.
      *  Respects map edges and world wrap. */
-    fun getTilesInDistance(origin: Vector2, distance: Int): Sequence<TileInfo> =
+    fun getTilesInDistance(origin: Vector2, distance: Int): Sequence<Tile> =
             getTilesInDistanceRange(origin, 0..distance)
 
     /** @return All tiles in a hexagonal ring around [origin] with the distances in [range]. Excludes the [origin] tile unless [range] starts at 0.
      *  Respects map edges and world wrap. */
-    fun getTilesInDistanceRange(origin: Vector2, range: IntRange): Sequence<TileInfo> =
+    fun getTilesInDistanceRange(origin: Vector2, range: IntRange): Sequence<Tile> =
             range.asSequence().flatMap { getTilesAtDistance(origin, it) }
 
     /** @return All tiles in a hexagonal ring 1 tile wide around [origin] with the [distance]. Contains the [origin] if and only if [distance] is <= 0.
      *  Respects map edges and world wrap. */
-    fun getTilesAtDistance(origin: Vector2, distance: Int): Sequence<TileInfo> =
+    fun getTilesAtDistance(origin: Vector2, distance: Int): Sequence<Tile> =
             if (distance <= 0) // silently take negatives.
                 sequenceOf(get(origin))
             else
@@ -210,7 +210,7 @@ class TileMap : IsPartOfGameInfoSerialization {
 
     /** @return all tiles within [rectangle], respecting world edges and wrap.
      *  If using even Q coordinates the rectangle will be "straight" ie parallel with rectangular map edges. */
-    fun getTilesInRectangle(rectangle: Rectangle, evenQ: Boolean = false): Sequence<TileInfo> =
+    fun getTilesInRectangle(rectangle: Rectangle, evenQ: Boolean = false): Sequence<Tile> =
             if (rectangle.width <= 0 || rectangle.height <= 0) {
                 val tile = getIfTileExistsOrNull(rectangle.x.toInt(), rectangle.y.toInt())
                 if (tile == null) sequenceOf()
@@ -233,7 +233,7 @@ class TileMap : IsPartOfGameInfoSerialization {
                 }.filterNotNull()
 
     /** @return tile at hex coordinates ([x],[y]) or null if they are outside the map. Respects map edges and world wrap. */
-    fun getIfTileExistsOrNull(x: Int, y: Int): TileInfo? {
+    fun getIfTileExistsOrNull(x: Int, y: Int): Tile? {
         if (contains(x, y))
             return get(x, y)
 
@@ -260,7 +260,7 @@ class TileMap : IsPartOfGameInfoSerialization {
      * Returns the clock position of [otherTile] seen from [tile]'s position
      * Returns -1 if not neighbors
      */
-    fun getNeighborTileClockPosition(tile: TileInfo, otherTile: TileInfo): Int {
+    fun getNeighborTileClockPosition(tile: Tile, otherTile: Tile): Int {
         val radius = if (mapParameters.shape == MapShape.rectangular)
             mapParameters.mapSize.width / 2
         else mapParameters.mapSize.radius
@@ -292,7 +292,7 @@ class TileMap : IsPartOfGameInfoSerialization {
      * Takes world wrap into account
      * Returns null if there is no such neighbor tile or if [clockPosition] is not a valid clock position
      */
-    fun getClockPositionNeighborTile(tile: TileInfo, clockPosition: Int): TileInfo? {
+    fun getClockPositionNeighborTile(tile: Tile, clockPosition: Int): Tile? {
         val difference = HexMath.getClockPositionToHexVector(clockPosition)
         if (difference == Vector2.Zero) return null
         val possibleNeighborPosition = tile.position.cpy().add(difference)
@@ -303,7 +303,7 @@ class TileMap : IsPartOfGameInfoSerialization {
      * in world coordinates of length sqrt(3), so that it can be used to go from tile center to
      * the edge of the hex in that direction (meaning the center of the border between the hexes)
      */
-    fun getNeighborTilePositionAsWorldCoords(tile: TileInfo, otherTile: TileInfo): Vector2 =
+    fun getNeighborTilePositionAsWorldCoords(tile: Tile, otherTile: Tile): Vector2 =
         HexMath.getClockPositionToWorldVector(getNeighborTileClockPosition(tile, otherTile))
 
     /**
@@ -327,10 +327,10 @@ class TileMap : IsPartOfGameInfoSerialization {
             vectorUnwrappedLeft
     }
 
-    data class ViewableTile(val tile: TileInfo, val maxHeightSeenToTile:Int, val isVisible:Boolean, val isAttackable: Boolean)
+    data class ViewableTile(val tile: Tile, val maxHeightSeenToTile:Int, val isVisible:Boolean, val isAttackable: Boolean)
 
     /** @return List of tiles visible from location [position] for a unit with sight range [sightDistance] */
-    fun getViewableTiles(position: Vector2, sightDistance: Int, forAttack:Boolean = false): List<TileInfo> {
+    fun getViewableTiles(position: Vector2, sightDistance: Int, forAttack:Boolean = false): List<Tile> {
         val aUnitHeight = get(position).unitHeight
         val viewableTiles = mutableListOf(ViewableTile(
             get(position),
@@ -438,7 +438,7 @@ class TileMap : IsPartOfGameInfoSerialization {
             // We have just calculated the dimensions above, so we know the final size.
             tileMatrix.ensureCapacity(rightX - leftX + 1)
             for (x in leftX..rightX) {
-                val row = ArrayList<TileInfo?>(topY - bottomY + 1)
+                val row = ArrayList<Tile?>(topY - bottomY + 1)
                 for (y in bottomY..topY) row.add(null)
                 tileMatrix.add(row)
             }
@@ -487,7 +487,7 @@ class TileMap : IsPartOfGameInfoSerialization {
                 startingLocations.remove(startingLocation)
     }
 
-    /** Tries to place the [unitName] into the [TileInfo] closest to the given [position]
+    /** Tries to place the [unitName] into the [Tile] closest to the given [position]
      * @param position where to try to place the unit (or close - max 10 tiles distance)
      * @param unitName name of the [BaseUnit][com.unciv.models.ruleset.unit.BaseUnit] to create and place
      * @param civInfo civilization to assign unit to
@@ -500,15 +500,15 @@ class TileMap : IsPartOfGameInfoSerialization {
     ): MapUnit? {
         val unit = gameInfo.ruleSet.units[unitName]!!.getMapUnit(civInfo)
 
-        fun getPassableNeighbours(tileInfo: TileInfo): Set<TileInfo> =
-                tileInfo.neighbors.filter { unit.movement.canPassThrough(it) }.toSet()
+        fun getPassableNeighbours(tile: Tile): Set<Tile> =
+                tile.neighbors.filter { unit.movement.canPassThrough(it) }.toSet()
 
         // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
         unit.assignOwner(civInfo, false)
         // remember our first owner
         unit.originalOwner = civInfo.civName
 
-        var unitToPlaceTile: TileInfo? = null
+        var unitToPlaceTile: Tile? = null
         // try to place at the original point (this is the most probable scenario)
         val currentTile = get(position)
         unit.currentTile = currentTile  // temporary
@@ -524,7 +524,7 @@ class TileMap : IsPartOfGameInfoSerialization {
                         .firstOrNull { unit.movement.canMoveTo(it) }
                 if (unitToPlaceTile != null) continue
                 // if it's not found yet, let's check their neighbours
-                val newPotentialCandidates = mutableSetOf<TileInfo>()
+                val newPotentialCandidates = mutableSetOf<Tile>()
                 potentialCandidates.forEach { newPotentialCandidates.addAll(getPassableNeighbours(it)) }
                 potentialCandidates = newPotentialCandidates
             }
@@ -607,7 +607,7 @@ class TileMap : IsPartOfGameInfoSerialization {
             return translateStartingLocationsFromMap()
         startingLocationsByNation.clear()
         for ((position, nationName) in startingLocations) {
-            val nationSet = startingLocationsByNation[nationName] ?: hashSetOf<TileInfo>().also { startingLocationsByNation[nationName] = it }
+            val nationSet = startingLocationsByNation[nationName] ?: hashSetOf<Tile>().also { startingLocationsByNation[nationName] = it }
             nationSet.add(get(position))
         }
     }
@@ -630,16 +630,16 @@ class TileMap : IsPartOfGameInfoSerialization {
 
     /** Adds a starting position, maintaining the transients
      * @return true if the starting position was not already stored as per [Collection]'s add */
-    fun addStartingLocation(nationName: String, tile: TileInfo): Boolean {
+    fun addStartingLocation(nationName: String, tile: Tile): Boolean {
         if (startingLocationsByNation[nationName]?.contains(tile) == true) return false
         startingLocations.add(StartingLocation(tile.position, nationName))
-        val nationSet = startingLocationsByNation[nationName] ?: hashSetOf<TileInfo>().also { startingLocationsByNation[nationName] = it }
+        val nationSet = startingLocationsByNation[nationName] ?: hashSetOf<Tile>().also { startingLocationsByNation[nationName] = it }
         return nationSet.add(tile)
     }
 
     /** Removes a starting position, maintaining the transients
      * @return true if the starting position was removed as per [Collection]'s remove */
-    fun removeStartingLocation(nationName: String, tile: TileInfo): Boolean {
+    fun removeStartingLocation(nationName: String, tile: Tile): Boolean {
         if (startingLocationsByNation[nationName]?.contains(tile) != true) return false
         startingLocations.remove(StartingLocation(tile.position, nationName))
         return startingLocationsByNation[nationName]!!.remove(tile)

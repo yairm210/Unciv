@@ -12,7 +12,7 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
 import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
@@ -165,7 +165,7 @@ object UnitActions {
     }
 
 
-    private fun addFoundCityAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
+    private fun addFoundCityAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: Tile) {
         val getFoundCityAction = getFoundCityAction(unit, tile)
         if (getFoundCityAction != null) actionList += getFoundCityAction
     }
@@ -178,7 +178,7 @@ object UnitActions {
      * The [action][UnitAction.action] field will be null if the action cannot be done here and now
      * (no movement left, too close to another city).
       */
-    fun getFoundCityAction(unit: MapUnit, tile: TileInfo): UnitAction? {
+    fun getFoundCityAction(unit: MapUnit, tile: Tile): UnitAction? {
         if (!unit.hasUnique(UniqueType.FoundCity)
                 || tile.isWater || tile.isImpassible()) return null
         // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
@@ -224,7 +224,7 @@ object UnitActions {
      * @param tile The tile where the new city would go
      * @return null if no promises broken, else a String listing the leader(s) we would p* off.
      */
-    private fun testPromiseNotToSettle(civInfo: CivilizationInfo, tile: TileInfo): String? {
+    private fun testPromiseNotToSettle(civInfo: CivilizationInfo, tile: Tile): String? {
         val brokenPromises = HashSet<String>()
         for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() && !civInfo.isAtWarWith(it) }) {
             val diplomacyManager = otherCiv.getDiplomacyManager(civInfo)
@@ -343,7 +343,7 @@ object UnitActions {
                 }.takeIf { unit.currentMovement > 0 && canPillage(unit, tile) })
     }
 
-    private fun pillageLooting(tile: TileInfo, unit: MapUnit) {
+    private fun pillageLooting(tile: Tile, unit: MapUnit) {
         // Stats objects for reporting pillage results in a notification
         val pillageYield = Stats()
         val globalPillageYield = Stats()
@@ -537,7 +537,7 @@ object UnitActions {
         return transformList
     }
 
-    private fun addBuildingImprovementsAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo, worldScreen: WorldScreen, unitTable: UnitTable) {
+    private fun addBuildingImprovementsAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: Tile, worldScreen: WorldScreen, unitTable: UnitTable) {
         if (!unit.hasUniqueToBuildImprovements) return
         if (unit.isEmbarked()) return
 
@@ -609,7 +609,7 @@ object UnitActions {
         )
     }
 
-    fun getAddInCapitalAction(unit: MapUnit, tile: TileInfo): UnitAction {
+    fun getAddInCapitalAction(unit: MapUnit, tile: Tile): UnitAction {
         return UnitAction(UnitActionType.AddInCapital,
             title = "Add to [${unit.getMatchingUniques(UniqueType.AddInCapital).first().params[0]}]",
             action = {
@@ -619,13 +619,13 @@ object UnitActions {
         )
     }
 
-    private fun addAddInCapitalAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
+    private fun addAddInCapitalAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: Tile) {
         if (!unit.hasUnique(UniqueType.AddInCapital)) return
 
         actionList += getAddInCapitalAction(unit, tile)
     }
 
-    private fun addGreatPersonActions(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
+    private fun addGreatPersonActions(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: Tile) {
 
         if (unit.currentMovement > 0) for (unique in unit.getUniques()) when (unique.type) {
             UniqueType.CanHurryResearch -> {
@@ -747,7 +747,7 @@ object UnitActions {
         }
     }
 
-     fun addActionsWithLimitedUses(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
+     fun addActionsWithLimitedUses(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: Tile) {
 
         val actionsToAdd = unit.religiousActionsUnitCanDo()
         if (actionsToAdd.none()) return
@@ -814,7 +814,7 @@ object UnitActions {
         )
     }
 
-    fun getImprovementConstructionActions(unit: MapUnit, tile: TileInfo): ArrayList<UnitAction> {
+    fun getImprovementConstructionActions(unit: MapUnit, tile: Tile): ArrayList<UnitAction> {
         val finalActions = ArrayList<UnitAction>()
         val uniquesToCheck = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
         val civResources = unit.civInfo.getCivResourcesByName()
@@ -856,7 +856,7 @@ object UnitActions {
         // must belong to unit's civ, so minByOrNull in the nearestCity formula should be never `null`.
         // That is, unless a mod does not specify the proper unique - then fallbackNearestCity will take over.
 
-        fun priority(tile: TileInfo): Int { // helper calculates priority (lower is better): distance plus razing malus
+        fun priority(tile: Tile): Int { // helper calculates priority (lower is better): distance plus razing malus
             val city = tile.getCity()!!       // !! assertion is guaranteed by the outer filter selector.
             return city.getCenterTile().aerialDistanceTo(tile) +
                     (if (city.isBeingRazed) 5 else 0)
@@ -942,7 +942,7 @@ object UnitActions {
         }
     }
 
-    fun canPillage(unit: MapUnit, tile: TileInfo): Boolean {
+    fun canPillage(unit: MapUnit, tile: Tile): Boolean {
         if (unit.isTransported) return false
         if (!tile.canPillageTile()) return false
         val tileOwner = tile.getOwner()
@@ -950,12 +950,12 @@ object UnitActions {
         return tileOwner == null || unit.civInfo.isAtWarWith(tileOwner)
     }
 
-    private fun addGiftAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
+    private fun addGiftAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: Tile) {
         val getGiftAction = getGiftAction(unit, tile)
         if (getGiftAction != null) actionList += getGiftAction
     }
 
-    fun getGiftAction(unit: MapUnit, tile: TileInfo): UnitAction? {
+    fun getGiftAction(unit: MapUnit, tile: Tile): UnitAction? {
         val recipient = tile.getOwner()
         // We need to be in another civs territory.
         if (recipient == null || recipient.isCurrentPlayer()) return null

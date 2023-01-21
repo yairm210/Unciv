@@ -9,7 +9,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TileImprovement
@@ -37,7 +37,7 @@ import com.unciv.ui.worldscreen.WorldScreen
 class CityScreen(
     internal val city: CityInfo,
     initSelectedConstruction: IConstruction? = null,
-    initSelectedTile: TileInfo? = null
+    initSelectedTile: Tile? = null
 ): BaseScreen(), RecreateOnResize {
     companion object {
         /** Distance from stage edges to floating widgets */
@@ -100,12 +100,12 @@ class CityScreen(
     // The following fields control what the user selects
     var selectedConstruction: IConstruction? = initSelectedConstruction
         private set
-    var selectedTile: TileInfo? = initSelectedTile
+    var selectedTile: Tile? = initSelectedTile
         private set
     /** If set, we are waiting for the user to pick a tile for [UniqueType.CreatesOneImprovement] */
     var pickTileData: PickTileForImprovementData? = null
     /** A [Building] with [UniqueType.CreatesOneImprovement] has been selected _in the queue_: show the tile it will place the improvement on */
-    private var selectedQueueEntryTargetTile: TileInfo? = null
+    private var selectedQueueEntryTargetTile: Tile? = null
     /** Cached city.expansion.chooseNewTileToOwn() */
     // val should be OK as buying tiles is what changes this, and that would re-create the whole CityScreen
     private val nextTileToOwn = city.expansion.chooseNewTileToOwn()
@@ -193,16 +193,16 @@ class CityScreen(
 
     private fun updateTileGroups() {
         val cityUniqueCache = LocalUniqueCache()
-        fun isExistingImprovementValuable(tileInfo: TileInfo, improvementToPlace: TileImprovement): Boolean {
-            if (tileInfo.improvement == null) return false
+        fun isExistingImprovementValuable(tile: Tile, improvementToPlace: TileImprovement): Boolean {
+            if (tile.improvement == null) return false
             val civInfo = city.civInfo
-            val existingStats = tileInfo.improvementFunctions.getImprovementStats(
-                tileInfo.getTileImprovement()!!,
+            val existingStats = tile.improvementFunctions.getImprovementStats(
+                tile.getTileImprovement()!!,
                 civInfo,
                 city,
                 cityUniqueCache
             )
-            val replacingStats = tileInfo.improvementFunctions.getImprovementStats(
+            val replacingStats = tile.improvementFunctions.getImprovementStats(
                 improvementToPlace,
                 civInfo,
                 city,
@@ -211,14 +211,14 @@ class CityScreen(
             return Automation.rankStatsValue(existingStats, civInfo) > Automation.rankStatsValue(replacingStats, civInfo)
         }
 
-        fun getPickImprovementColor(tileInfo: TileInfo): Pair<Color, Float> {
+        fun getPickImprovementColor(tile: Tile): Pair<Color, Float> {
             val improvementToPlace = pickTileData!!.improvement
             return when {
-                tileInfo.isMarkedForCreatesOneImprovement() -> Color.BROWN to 0.7f
-                !tileInfo.improvementFunctions.canBuildImprovement(improvementToPlace, city.civInfo) -> Color.RED to 0.4f
-                isExistingImprovementValuable(tileInfo, improvementToPlace) -> Color.ORANGE to 0.5f
-                tileInfo.improvement != null -> Color.YELLOW to 0.6f
-                tileInfo.turnsToImprovement > 0 -> Color.YELLOW to 0.6f
+                tile.isMarkedForCreatesOneImprovement() -> Color.BROWN to 0.7f
+                !tile.improvementFunctions.canBuildImprovement(improvementToPlace, city.civInfo) -> Color.RED to 0.4f
+                isExistingImprovementValuable(tile, improvementToPlace) -> Color.ORANGE to 0.5f
+                tile.improvement != null -> Color.YELLOW to 0.6f
+                tile.turnsToImprovement > 0 -> Color.YELLOW to 0.6f
                 else -> Color.GREEN to 0.5f
             }
         }
@@ -226,15 +226,15 @@ class CityScreen(
             tileGroup.update()
             tileGroup.hideHighlight()
             when {
-                tileGroup.tileInfo == nextTileToOwn -> {
+                tileGroup.tile == nextTileToOwn -> {
                     tileGroup.showHighlight(Color.PURPLE)
                     tileGroup.setColor(0f, 0f, 0f, 0.7f)
                 }
                 /** Support for [UniqueType.CreatesOneImprovement] */
-                tileGroup.tileInfo == selectedQueueEntryTargetTile ->
+                tileGroup.tile == selectedQueueEntryTargetTile ->
                     tileGroup.showHighlight(Color.BROWN, 0.7f)
-                pickTileData != null && city.tiles.contains(tileGroup.tileInfo.position) ->
-                    getPickImprovementColor(tileGroup.tileInfo).run { tileGroup.showHighlight(first, second) }
+                pickTileData != null && city.tiles.contains(tileGroup.tile.position) ->
+                    getPickImprovementColor(tileGroup.tile).run { tileGroup.showHighlight(first, second) }
             }
         }
     }
@@ -308,8 +308,8 @@ class CityScreen(
 
         val tilesToUnwrap = mutableSetOf<CityTileGroup>()
         for (tileGroup in tileGroups) {
-            val xDifference = cityInfo.getCenterTile().position.x - tileGroup.tileInfo.position.x
-            val yDifference = cityInfo.getCenterTile().position.y - tileGroup.tileInfo.position.y
+            val xDifference = cityInfo.getCenterTile().position.x - tileGroup.tile.position.x
+            val yDifference = cityInfo.getCenterTile().position.y - tileGroup.tile.position.y
             //if difference is bigger than 5 the tileGroup we are looking for is on the other side of the map
             if (xDifference > 5 || xDifference < -5 || yDifference > 5 || yDifference < -5) {
                 //so we want to unwrap its position
@@ -330,7 +330,7 @@ class CityScreen(
 
     private fun tileGroupOnClick(tileGroup: CityTileGroup, cityInfo: CityInfo) {
         if (cityInfo.isPuppet) return
-        val tileInfo = tileGroup.tileInfo
+        val tileInfo = tileGroup.tile
 
         /** [UniqueType.CreatesOneImprovement] support - select tile for improvement */
         if (pickTileData != null) {
@@ -383,7 +383,7 @@ class CityScreen(
         }
         selectedTile = null
     }
-    private fun selectTile(newTile: TileInfo?) {
+    private fun selectTile(newTile: Tile?) {
         selectedConstruction = null
         selectedQueueEntryTargetTile = null
         pickTileData = null

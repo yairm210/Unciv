@@ -28,7 +28,7 @@ import kotlin.math.abs
 import kotlin.math.min
 import kotlin.random.Random
 
-open class TileInfo : IsPartOfGameInfoSerialization {
+open class Tile : IsPartOfGameInfoSerialization {
     @Transient
     lateinit var tileMap: TileMap
 
@@ -137,8 +137,8 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     val longitude: Float
         get() = HexMath.getLongitude(position)
 
-    fun clone(): TileInfo {
-        val toReturn = TileInfo()
+    fun clone(): Tile {
+        val toReturn = Tile()
         toReturn.tileMap = tileMap
         toReturn.ruleset = ruleset
         toReturn.isCityCenterInternal = isCityCenterInternal
@@ -335,17 +335,17 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     // This is for performance - since we access the neighbors of a tile ALL THE TIME,
     // and the neighbors of a tile never change, it's much more efficient to save the list once and for all!
     @delegate:Transient
-    val neighbors: Sequence<TileInfo> by lazy { getTilesAtDistance(1).toList().asSequence() }
+    val neighbors: Sequence<Tile> by lazy { getTilesAtDistance(1).toList().asSequence() }
     // We have to .toList() so that the values are stored together once for caching,
     // and the toSequence so that aggregations (like neighbors.flatMap{it.units} don't take up their own space
 
     /** Returns the left shared neighbor of `this` and [neighbor] (relative to the view direction `this`->[neighbor]), or null if there is no such tile. */
-    fun getLeftSharedNeighbor(neighbor: TileInfo): TileInfo? {
+    fun getLeftSharedNeighbor(neighbor: Tile): Tile? {
         return tileMap.getClockPositionNeighborTile(this,(tileMap.getNeighborTileClockPosition(this, neighbor) - 2) % 12)
     }
 
     /** Returns the right shared neighbor of `this` and [neighbor] (relative to the view direction `this`->[neighbor]), or null if there is no such tile. */
-    fun getRightSharedNeighbor(neighbor: TileInfo): TileInfo? {
+    fun getRightSharedNeighbor(neighbor: Tile): Tile? {
         return tileMap.getClockPositionNeighborTile(this,(tileMap.getNeighborTileClockPosition(this, neighbor) + 2) % 12)
     }
 
@@ -515,16 +515,16 @@ open class TileInfo : IsPartOfGameInfoSerialization {
             resource != null && (tileResource.revealedBy == null || civInfo.tech.isResearched(
                 tileResource.revealedBy!!))
 
-    fun getViewableTilesList(distance: Int): List<TileInfo> =
+    fun getViewableTilesList(distance: Int): List<Tile> =
             tileMap.getViewableTiles(position, distance)
 
-    fun getTilesInDistance(distance: Int): Sequence<TileInfo> =
+    fun getTilesInDistance(distance: Int): Sequence<Tile> =
             tileMap.getTilesInDistance(position, distance)
 
-    fun getTilesInDistanceRange(range: IntRange): Sequence<TileInfo> =
+    fun getTilesInDistanceRange(range: IntRange): Sequence<Tile> =
             tileMap.getTilesInDistanceRange(position, range)
 
-    fun getTilesAtDistance(distance: Int): Sequence<TileInfo> =
+    fun getTilesAtDistance(distance: Int): Sequence<Tile> =
             tileMap.getTilesAtDistance(position, distance)
 
     fun getDefensiveBonus(): Float {
@@ -542,7 +542,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
         return bonus
     }
 
-    fun aerialDistanceTo(otherTile: TileInfo): Int {
+    fun aerialDistanceTo(otherTile: Tile): Int {
         val xDelta = position.x - otherTile.position.x
         val yDelta = position.y - otherTile.position.y
         val distance = maxOf(abs(xDelta), abs(yDelta), abs(xDelta - yDelta))
@@ -595,7 +595,7 @@ open class TileInfo : IsPartOfGameInfoSerialization {
     }
 
     /** The two tiles have a river between them */
-    fun isConnectedByRiver(otherTile: TileInfo): Boolean {
+    fun isConnectedByRiver(otherTile: Tile): Boolean {
         if (otherTile == this) throw Exception("Should not be called to compare to self!")
 
         return when (tileMap.getNeighborTileClockPosition(this, otherTile)) {

@@ -13,7 +13,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unique.UniqueType
@@ -528,7 +528,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     fun askToBuyConstruction(
         construction: INonPerpetualConstruction,
         stat: Stat = preferredBuyStat,
-        tile: TileInfo? = null
+        tile: Tile? = null
     ) {
         if (!isConstructionPurchaseShown(construction, stat)) return
         val city = cityScreen.city
@@ -575,7 +575,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     private fun purchaseConstruction(
         construction: INonPerpetualConstruction,
         stat: Stat = Stat.Gold,
-        tile: TileInfo? = null
+        tile: Tile? = null
     ) {
         SoundPlayer.play(stat.purchaseSound)
         val city = cityScreen.city

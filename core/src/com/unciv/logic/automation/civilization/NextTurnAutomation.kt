@@ -22,7 +22,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.BFS
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeLogic
@@ -762,9 +762,9 @@ object NextTurnAutomation {
             })
                 return 0 // You don't have any units that can attack this city without dying, don't declare war.
 
-        fun isTileCanMoveThrough(tileInfo: TileInfo): Boolean {
-            val owner = tileInfo.getOwner()
-            return !tileInfo.isImpassible()
+        fun isTileCanMoveThrough(tile: Tile): Boolean {
+            val owner = tile.getOwner()
+            return !tile.isImpassible()
                     && (owner == otherCiv || owner == null || civInfo.diplomacyFunctions.canPassThroughTiles(owner))
         }
 

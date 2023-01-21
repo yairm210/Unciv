@@ -7,7 +7,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.transients.CapitalConnectionsFinder
 import com.unciv.logic.map.tile.RoadStatus
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -73,7 +73,7 @@ class CapitalConnectionsFinderTests {
 
     @After
     fun tearDown() {
-        (tilesMap.values as ArrayList<TileInfo>).clear()
+        (tilesMap.values as ArrayList<Tile>).clear()
         for (civ in civilizations.values) {
             civ.cities = emptyList()
             civ.diplomacy.clear()
@@ -86,7 +86,7 @@ class CapitalConnectionsFinderTests {
         tilesMap.bottomY = from
         tiles.add(ArrayList())
         for (y in from..to)
-            tiles.last().add(TileInfo().apply { tileMap = tilesMap
+            tiles.last().add(Tile().apply { tileMap = tilesMap
                 position = Vector2(tiles.size-1f, y.toFloat())
                 baseTerrain = rules.terrains.values.first { it.type == TerrainType.Land }.name })
     }
@@ -98,7 +98,7 @@ class CapitalConnectionsFinderTests {
         // here we assume the row with a land is already created
         tiles.add(ArrayList())
         for (y in from..to)
-            tiles.last().add(TileInfo().apply { tileMap = tilesMap
+            tiles.last().add(Tile().apply { tileMap = tilesMap
                 position = Vector2(tiles.size-1f, y.toFloat())
                 isWater = true
                 baseTerrain = rules.terrains.values.first { it.type == TerrainType.Water }.name })

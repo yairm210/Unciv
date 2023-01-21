@@ -13,7 +13,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.worldscreen.unit.UnitActions
 
@@ -22,7 +22,7 @@ object UnitAutomation {
     private const val CLOSE_ENEMY_TILES_AWAY_LIMIT = 5
     private const val CLOSE_ENEMY_TURNS_AWAY_LIMIT = 3f
 
-    private fun isGoodTileToExplore(unit: MapUnit, tile: TileInfo): Boolean {
+    private fun isGoodTileToExplore(unit: MapUnit, tile: Tile): Boolean {
         return unit.movement.canMoveTo(tile)
                 && (tile.getOwner() == null || !tile.getOwner()!!.isCityState())
                 && tile.neighbors.any { !unit.civInfo.hasExplored(it) }
@@ -90,7 +90,7 @@ object UnitAutomation {
         return false
     }
 
-    private fun isGoodTileForFogBusting(unit: MapUnit, tile: TileInfo): Boolean {
+    private fun isGoodTileForFogBusting(unit: MapUnit, tile: Tile): Boolean {
         return unit.movement.canMoveTo(tile)
                 && tile.getOwner() == null
                 && tile.neighbors.all { it.getOwner() == null }
@@ -377,7 +377,7 @@ object UnitAutomation {
     }
 
     /** Get a list of visible tiles which have something attackable */
-    fun getBombardableTiles(city: CityInfo): Sequence<TileInfo> =
+    fun getBombardableTiles(city: CityInfo): Sequence<Tile> =
             city.getCenterTile().getTilesInDistance(city.range)
                     .filter { it.isVisible(city.civInfo) && BattleHelper.containsAttackableEnemy(it, CityCombatant(city)) }
 
@@ -484,7 +484,7 @@ object UnitAutomation {
     }
 
 
-    private fun headTowardsEnemyCity(unit: MapUnit, closestReachableEnemyCity: TileInfo): Boolean {
+    private fun headTowardsEnemyCity(unit: MapUnit, closestReachableEnemyCity: Tile): Boolean {
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         val unitRange = unit.getRange()
 
@@ -685,15 +685,15 @@ object UnitAutomation {
     }
 
 
-    private fun countDistanceToClosestEnemy(unit: MapUnit, tile: TileInfo): Int {
+    private fun countDistanceToClosestEnemy(unit: MapUnit, tile: Tile): Int {
         for (i in 1..3)
             if (tile.getTilesAtDistance(i).any { containsEnemyMilitaryUnit(unit, it) })
                 return i
         return 4
     }
 
-    private fun containsEnemyMilitaryUnit(unit: MapUnit, tileInfo: TileInfo) =
-        tileInfo.militaryUnit != null
-        && tileInfo.militaryUnit!!.civInfo.isAtWarWith(unit.civInfo)
+    private fun containsEnemyMilitaryUnit(unit: MapUnit, tile: Tile) =
+        tile.militaryUnit != null
+        && tile.militaryUnit!!.civInfo.isAtWarWith(unit.civInfo)
 
 }

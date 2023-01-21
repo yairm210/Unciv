@@ -8,7 +8,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.map.MapShape
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueTarget
@@ -62,7 +62,7 @@ class CivInfoTransientCache(val civInfo: CivilizationInfo) {
         civInfo.addExploredTiles(newlyExploredTiles)
 
 
-        val viewedCivs = HashMap<CivilizationInfo, TileInfo>()
+        val viewedCivs = HashMap<CivilizationInfo, Tile>()
         for (tile in civInfo.viewableTiles) {
             val tileOwner = tile.getOwner()
             if (tileOwner != null) viewedCivs[tileOwner] = tile
@@ -91,7 +91,7 @@ class CivInfoTransientCache(val civInfo: CivilizationInfo) {
     }
 
     private fun updateViewableInvisibleTiles() {
-        val newViewableInvisibleTiles = HashSet<TileInfo>()
+        val newViewableInvisibleTiles = HashSet<Tile>()
         for (unit in civInfo.units.getCivUnits()) {
             val invisibleUnitUniques = unit.getMatchingUniques(UniqueType.CanSeeInvisibleUnits)
             if (invisibleUnitUniques.none()) continue
@@ -108,7 +108,7 @@ class CivInfoTransientCache(val civInfo: CivilizationInfo) {
     }
 
     private fun setNewViewableTiles() {
-        val newViewableTiles = HashSet<TileInfo>()
+        val newViewableTiles = HashSet<Tile>()
 
         // while spectating all map is visible
         if (civInfo.isSpectator() || UncivGame.Current.viewEntireMapForDebug) {
@@ -155,7 +155,7 @@ class CivInfoTransientCache(val civInfo: CivilizationInfo) {
     }
 
     private fun discoverNaturalWonders() {
-        val newlyViewedNaturalWonders = HashSet<TileInfo>()
+        val newlyViewedNaturalWonders = HashSet<Tile>()
         for (tile in civInfo.viewableTiles) {
             if (tile.naturalWonder != null && !civInfo.naturalWonders.contains(tile.naturalWonder!!))
                 newlyViewedNaturalWonders += tile

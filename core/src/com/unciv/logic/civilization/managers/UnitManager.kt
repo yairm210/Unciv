@@ -6,7 +6,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 
@@ -61,7 +61,7 @@ class UnitManager(val civInfo:CivilizationInfo) {
         return placedUnit
     }
 
-    /** Tries to place the a [unitName] unit into the [TileInfo] closest to the given the [location]
+    /** Tries to place the a [unitName] unit into the [Tile] closest to the given the [location]
      * @param location where to try to place the unit
      * @param unitName name of the [BaseUnit] to create and place
      * @return created [MapUnit] or null if no suitable location was found

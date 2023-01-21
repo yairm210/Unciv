@@ -15,7 +15,7 @@ import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.civilization.diplomacy.CityStatePersonality
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Quest
 import com.unciv.models.ruleset.QuestName
@@ -672,10 +672,10 @@ class QuestManager : IsPartOfGameInfoSerialization {
 
     //region get-quest-target
     /**
-     * Returns a random [TileInfo] containing a Barbarian encampment within 8 tiles of [civInfo]
+     * Returns a random [Tile] containing a Barbarian encampment within 8 tiles of [civInfo]
      * to be destroyed
      */
-    private fun getBarbarianEncampmentForQuest(): TileInfo? {
+    private fun getBarbarianEncampmentForQuest(): Tile? {
         val encampments = civInfo.getCapital()!!.getCenterTile().getTilesInDistance(8)
                 .filter { it.improvement == Constants.barbarianEncampment }.toList()
 

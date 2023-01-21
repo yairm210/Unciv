@@ -2,7 +2,7 @@ package com.unciv.logic.battle
 
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
@@ -13,7 +13,7 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     override fun getHealth(): Int = unit.health
     override fun getMaxHealth() = 100
     override fun getCivInfo(): CivilizationInfo = unit.civInfo
-    override fun getTile(): TileInfo = unit.getTile()
+    override fun getTile(): Tile = unit.getTile()
     override fun getName(): String = unit.name
     override fun isDefeated(): Boolean = unit.health <= 0
     override fun isInvisible(to: CivilizationInfo): Boolean = unit.isInvisible(to)

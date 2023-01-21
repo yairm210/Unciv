@@ -8,7 +8,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.IconTextButton
@@ -85,7 +85,7 @@ class UnitOverviewTab(
         game.worldScreen!!.mapHolder.setCenterPosition(position, forceSelectUnit = unit)
     }
     private fun showWorldScreenAt(unit: MapUnit) = showWorldScreenAt(unit.currentTile.position, unit)
-    private fun showWorldScreenAt(tile: TileInfo) = showWorldScreenAt(tile.position, null)
+    private fun showWorldScreenAt(tile: Tile) = showWorldScreenAt(tile.position, null)
 
     private fun getUnitSupplyTable(): ExpanderTab {
         val stats = viewingPlayer.stats

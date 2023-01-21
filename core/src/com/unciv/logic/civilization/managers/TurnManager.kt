@@ -12,7 +12,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.map.mapunit.UnitTurnManager
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.unique.UniqueType
@@ -184,7 +184,7 @@ class TurnManager(val civInfo: CivilizationInfo) {
     }
 
     // Higher is better
-    private fun rateTileForRevoltSpawn(tile: TileInfo): Int {
+    private fun rateTileForRevoltSpawn(tile: Tile): Int {
         if (tile.isWater || tile.militaryUnit != null || tile.civilianUnit != null || tile.isCityCenter() || tile.isImpassible())
             return -1
         var score = 10

@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 
 class CityDistance(
     val city: CityInfo,
@@ -68,7 +68,7 @@ class CityDistanceData {
         data[identifier]!![position] = CityDistance.compare(currentDistance, newDistance)
     }
 
-    private fun updateDistances(thisTile: TileInfo, city: CityInfo, owner: CivilizationInfo, isMajor: Boolean) {
+    private fun updateDistances(thisTile: Tile, city: CityInfo, owner: CivilizationInfo, isMajor: Boolean) {
 
         val cityTile = city.getCenterTile()
         val distance = thisTile.aerialDistanceTo(cityTile)
@@ -105,7 +105,7 @@ class CityDistanceData {
 
     }
 
-    fun getClosestCityDistance(tile: TileInfo, player: CivilizationInfo? = null, majorsOnly: Boolean = false) : CityDistance? {
+    fun getClosestCityDistance(tile: Tile, player: CivilizationInfo? = null, majorsOnly: Boolean = false) : CityDistance? {
 
         if (shouldUpdate)
             update()

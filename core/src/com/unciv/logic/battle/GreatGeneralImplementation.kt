@@ -2,7 +2,7 @@ package com.unciv.logic.battle
 
 import com.unciv.logic.automation.unit.SpecificUnitAutomation
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
@@ -63,7 +63,7 @@ object GreatGeneralImplementation {
      *
      * Used by [SpecificUnitAutomation.automateGreatGeneral].
      */
-    fun getBestAffectedTroopsTile(general: MapUnit): TileInfo? {
+    fun getBestAffectedTroopsTile(general: MapUnit): Tile? {
         // Normally we have only one Unique here. But a mix is not forbidden, so let's try to support mad modders.
         // (imagine several GreatGeneralAura uniques - +50% at radius 1, +25% at radius 2, +5% at radius 3 - possibly learnable from promotions via buildings or natural wonders?)
 

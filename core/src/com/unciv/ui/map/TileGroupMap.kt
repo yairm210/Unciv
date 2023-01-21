@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.logic.map.HexMath
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.TileMap
 import com.unciv.ui.cityscreen.CityTileGroup
 import com.unciv.ui.tilegroups.ActionlessGroup
@@ -49,23 +49,23 @@ class TileGroupMap<T: TileGroup>(
     private var topY = -Float.MAX_VALUE
     private var bottomX = Float.MAX_VALUE
     private var bottomY = Float.MAX_VALUE
-    private val mirrorTileGroups = HashMap<TileInfo, Pair<T, T>>()
+    private val mirrorTileGroups = HashMap<Tile, Pair<T, T>>()
 
     init {
         if (worldWrap) {
             for (tileGroup in tileGroups) {
                 @Suppress("UNCHECKED_CAST")  // T is constrained such that casting these TileGroup clones to T should be OK
-                mirrorTileGroups[tileGroup.tileInfo] = Pair(tileGroup.clone() as T, tileGroup.clone() as T)
+                mirrorTileGroups[tileGroup.tile] = Pair(tileGroup.clone() as T, tileGroup.clone() as T)
             }
         }
 
         for (tileGroup in tileGroups) {
             val positionalVector = if (tileGroupsToUnwrap?.contains(tileGroup) == true) {
                 HexMath.hex2WorldCoords(
-                    tileGroup.tileInfo.tileMap.getUnWrappedPosition(tileGroup.tileInfo.position)
+                    tileGroup.tile.tileMap.getUnWrappedPosition(tileGroup.tile.position)
                 )
             } else {
-                HexMath.hex2WorldCoords(tileGroup.tileInfo.position)
+                HexMath.hex2WorldCoords(tileGroup.tile.position)
             }
 
             tileGroup.setPosition(positionalVector.x * 0.8f * groupSize,
@@ -94,7 +94,7 @@ class TileGroupMap<T: TileGroup>(
 
         if (worldWrap) {
             for (mirrorTiles in mirrorTileGroups.values){
-                val positionalVector = HexMath.hex2WorldCoords(mirrorTiles.first.tileInfo.position)
+                val positionalVector = HexMath.hex2WorldCoords(mirrorTiles.first.tile.position)
 
                 mirrorTiles.first.setPosition(positionalVector.x * 0.8f * groupSize,
                     positionalVector.y * 0.8f * groupSize)
@@ -116,7 +116,7 @@ class TileGroupMap<T: TileGroup>(
         val cityButtonLayers = ArrayList<Group>()
 
         // Apparently the sortedByDescending is kinda memory-intensive because it needs to sort ALL the tiles
-        for (group in tileGroups.sortedByDescending { it.tileInfo.position.x + it.tileInfo.position.y }) {
+        for (group in tileGroups.sortedByDescending { it.tile.position.x + it.tile.position.y }) {
             // now, we steal the subgroups from all the tilegroups, that's how we form layers!
             baseLayers.add(group.baseLayerGroup.apply { setPosition(group.x,group.y) })
             featureLayers.add(group.terrainFeatureLayerGroup.apply { setPosition(group.x,group.y) })
@@ -129,7 +129,7 @@ class TileGroupMap<T: TileGroup>(
             cityButtonLayers.add(group.cityButtonLayerGroup.apply { setPosition(group.x,group.y) })
 
             if (worldWrap) {
-                for (mirrorTile in mirrorTileGroups[group.tileInfo]!!.toList()) {
+                for (mirrorTile in mirrorTileGroups[group.tile]!!.toList()) {
                     baseLayers.add(mirrorTile.baseLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
                     featureLayers.add(mirrorTile.terrainFeatureLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
                     borderLayers.add(mirrorTile.borderLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
@@ -178,7 +178,7 @@ class TileGroupMap<T: TileGroup>(
                 .scl(1f / trueGroupSize)
     }
 
-    fun getMirrorTiles(): HashMap<TileInfo, Pair<T, T>> = mirrorTileGroups
+    fun getMirrorTiles(): HashMap<Tile, Pair<T, T>> = mirrorTileGroups
 
     override fun act(delta: Float) {
         if(shouldAct) {

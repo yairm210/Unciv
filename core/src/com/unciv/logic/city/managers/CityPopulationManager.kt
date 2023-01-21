@@ -5,7 +5,7 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -156,8 +156,8 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
                     .filterNot { it.providesYield() }
                     .associateWith { Automation.rankTileForCityWork(it, cityInfo, cityStats) }
                     .maxByOrNull { it.value }
-                    ?: object : Map.Entry<TileInfo?, Float> {
-                        override val key: TileInfo? = null
+                    ?: object : Map.Entry<Tile?, Float> {
+                        override val key: Tile? = null
                         override val value = 0f
                     }
 
@@ -203,7 +203,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
 
         while (getFreePopulation() < 0) {
             //evaluate tiles
-            val worstWorkedTile: TileInfo? = if (cityInfo.workedTiles.isEmpty()) null
+            val worstWorkedTile: Tile? = if (cityInfo.workedTiles.isEmpty()) null
             else {
                 cityInfo.workedTiles.asSequence()
                         .map { cityInfo.tileMap[it] }

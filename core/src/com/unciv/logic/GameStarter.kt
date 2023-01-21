@@ -8,7 +8,7 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.files.MapSaver
 import com.unciv.logic.map.HexMath
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.metadata.GameParameters
@@ -322,7 +322,7 @@ object GameStarter {
         var startingUnits: MutableList<String>
         var eraUnitReplacement: String
 
-        val startScores = HashMap<TileInfo, Float>(tileMap.values.size)
+        val startScores = HashMap<Tile, Float>(tileMap.values.size)
         for (tile in tileMap.values) {
             startScores[tile] = tile.stats.getTileStartScore()
         }
@@ -423,8 +423,8 @@ object GameStarter {
     private fun getCandidateLand(
         civCount: Int,
         tileMap: TileMap,
-        startScores: HashMap<TileInfo, Float>
-    ): Map<TileInfo, Float> {
+        startScores: HashMap<Tile, Float>
+    ): Map<Tile, Float> {
         tileMap.assignContinents(TileMap.AssignContinentsMode.Ensure)
 
         // We want to  distribute starting locations fairly, and thus not place anybody on a small island
@@ -447,9 +447,9 @@ object GameStarter {
     private fun getStartingLocations(
         civs: List<CivilizationInfo>,
         tileMap: TileMap,
-        landTilesInBigEnoughGroup: Map<TileInfo, Float>,
-        startScores: HashMap<TileInfo, Float>
-    ): HashMap<CivilizationInfo, TileInfo> {
+        landTilesInBigEnoughGroup: Map<Tile, Float>,
+        startScores: HashMap<Tile, Float>
+    ): HashMap<CivilizationInfo, Tile> {
 
         val civsOrderedByAvailableLocations = civs.shuffled()   // Order should be random since it determines who gets best start
             .sortedBy { civ ->
@@ -471,7 +471,7 @@ object GameStarter {
                 .map { it.key }
                 .toMutableList()
 
-            val startingLocations = HashMap<CivilizationInfo, TileInfo>()
+            val startingLocations = HashMap<CivilizationInfo, Tile>()
             for (civ in civsOrderedByAvailableLocations) {
                 val distanceToNext = minimumDistanceBetweenStartingLocations /
                         (if (civ.isCityState()) 2 else 1) // We allow city states to squeeze in tighter
@@ -495,9 +495,9 @@ object GameStarter {
     private fun getOneStartingLocation(
         civ: CivilizationInfo,
         tileMap: TileMap,
-        freeTiles: MutableList<TileInfo>,
-        startScores: HashMap<TileInfo, Float>
-    ): TileInfo {
+        freeTiles: MutableList<Tile>,
+        startScores: HashMap<Tile, Float>
+    ): Tile {
         if (gameSetupInfo.gameParameters.noStartBias) {
             return freeTiles.random()
         }

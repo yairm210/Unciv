@@ -5,7 +5,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.managers.ReligionState
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Victory
@@ -225,7 +225,7 @@ object ReligionAutomation {
         return score
     }
 
-    private fun beliefBonusForTile(belief: Belief, tile: TileInfo, city: CityInfo): Float {
+    private fun beliefBonusForTile(belief: Belief, tile: Tile, city: CityInfo): Float {
         var bonusYield = 0f
         for (unique in belief.uniqueObjects) {
             when (unique.type) {

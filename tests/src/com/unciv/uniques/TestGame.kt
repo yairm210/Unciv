@@ -10,7 +10,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Religion
 import com.unciv.models.metadata.BaseRuleset
@@ -93,7 +93,7 @@ class TestGame {
     fun getTile(position: Vector2) = tileMap[position]
 
     /** Sets the [terrain] and [features] of the tile at [position], and then returns it */
-    fun setTileFeatures(position: Vector2, terrain: String = Constants.desert, features: List<String> = listOf()): TileInfo {
+    fun setTileFeatures(position: Vector2, terrain: String = Constants.desert, features: List<String> = listOf()): Tile {
         val tile = tileMap[position]
         tile.baseTerrain = terrain
         tile.setTerrainFeatures(listOf())
@@ -130,7 +130,7 @@ class TestGame {
 
     fun addCity(
         civInfo: CivilizationInfo,
-        tile: TileInfo,
+        tile: Tile,
         replacePalace: Boolean = false,
         initialPopulation: Int = 0
     ): CityInfo {
@@ -147,11 +147,11 @@ class TestGame {
         return cityInfo
     }
 
-    fun addTileToCity(city: CityInfo, tile: TileInfo) {
+    fun addTileToCity(city: CityInfo, tile: Tile) {
         city.tiles.add(tile.position)
     }
 
-    fun addUnit(name: String, civInfo: CivilizationInfo, tile: TileInfo): MapUnit {
+    fun addUnit(name: String, civInfo: CivilizationInfo, tile: Tile): MapUnit {
         val baseUnit = ruleset.units[name]!!
         baseUnit.ruleset = ruleset
         val mapUnit = baseUnit.getMapUnit(civInfo)

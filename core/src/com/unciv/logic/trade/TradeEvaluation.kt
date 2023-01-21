@@ -6,7 +6,7 @@ import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.UniqueType
@@ -162,8 +162,8 @@ class TradeEvaluation {
     }
 
     private fun getNeighbouringCivs(city:CityInfo): Set<String> {
-        val tilesList: HashSet<TileInfo> = city.getTiles().toHashSet()
-        val cityPositionList: ArrayList<TileInfo> = arrayListOf()
+        val tilesList: HashSet<Tile> = city.getTiles().toHashSet()
+        val cityPositionList: ArrayList<Tile> = arrayListOf()
 
         for (tiles in tilesList)
             for (tile in tiles.neighbors)

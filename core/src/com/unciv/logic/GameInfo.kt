@@ -21,7 +21,7 @@ import com.unciv.logic.civilization.managers.TechManager
 import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.logic.map.CityDistanceData
 import com.unciv.logic.map.TileMap
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Religion
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.ModOptionsConstants
@@ -380,7 +380,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         diplomaticVictoryVotesProcessed = true
     }
 
-    private fun addEnemyUnitNotification(thisPlayer: CivilizationInfo, tiles: List<TileInfo>, inOrNear: String) {
+    private fun addEnemyUnitNotification(thisPlayer: CivilizationInfo, tiles: List<Tile>, inOrNear: String) {
         // don't flood the player with similar messages. instead cycle through units by clicking the message multiple times.
         if (tiles.size < 3) {
             for (tile in tiles) {
@@ -415,9 +415,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         maxDistance: Int,
         showForeign: Boolean
     ): Boolean {
-        data class CityTileAndDistance(val city: CityInfo, val tile: TileInfo, val distance: Int)
+        data class CityTileAndDistance(val city: CityInfo, val tile: Tile, val distance: Int)
 
-        val exploredRevealTiles: Sequence<TileInfo> =
+        val exploredRevealTiles: Sequence<Tile> =
                 if (ruleSet.tileResources[resourceName]!!.hasUnique(UniqueType.CityStateOnlyResource)) {
                     // Look for matching mercantile CS centers
                     getAliveCityStates()

@@ -2,7 +2,7 @@ package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.testing.GdxTestRunner
@@ -15,9 +15,9 @@ import org.junit.runner.RunWith
 class TileMapTests {
 
     private var map = TileMap()
-    private var tile1 = TileInfo()
-    private var tile2 = TileInfo()
-    private var tile3 = TileInfo()
+    private var tile1 = Tile()
+    private var tile2 = Tile()
+    private var tile3 = Tile()
     private var ruleSet = Ruleset()
 
     @Before

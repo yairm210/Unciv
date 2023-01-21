@@ -14,7 +14,7 @@ import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.tile.RoadStatus
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.models.ruleset.Ruleset
@@ -45,7 +45,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     lateinit var baseUnit: BaseUnit
 
     @Transient
-    lateinit var currentTile: TileInfo
+    lateinit var currentTile: Tile
 
     @Transient
     val movement = UnitMovementAlgorithms(this)
@@ -60,7 +60,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     //  and we need to go over ALL the units, that's a lot of time spent on updating information we should already know!
     // About 10% of total NextTurn performance time, at the time of this change!
     @Transient
-    var viewableTiles = HashSet<TileInfo>()
+    var viewableTiles = HashSet<Tile>()
 
     // These are for performance improvements to getMovementCostBetweenAdjacentTiles,
     // a major component of getDistanceToTilesWithinTurn,
@@ -262,7 +262,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun getMovementString(): String =
         DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + getMaxMovement()
 
-    fun getTile(): TileInfo = currentTile
+    fun getTile(): Tile = currentTile
 
     @Transient
     private var tempUniquesMap = UniqueMap()
@@ -546,7 +546,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         if (currentMovement < 0) currentMovement = 0f
     }
 
-    fun getMovementDestination(): TileInfo {
+    fun getMovementDestination(): Tile {
         val destination = action!!.replace("moveTo ", "").split(",").dropLastWhile { it.isEmpty() }
         val destinationVector = Vector2(destination[0].toFloat(), destination[1].toFloat())
         return currentTile.tileMap[destinationVector]
@@ -661,25 +661,25 @@ class MapUnit : IsPartOfGameInfoSerialization {
         if (health > 100) health = 100
     }
 
-    /** Returns the health points [MapUnit] will receive if healing on [tileInfo] */
-    fun rankTileForHealing(tileInfo: TileInfo): Int {
-        val isFriendlyTerritory = tileInfo.isFriendlyTerritory(civInfo)
+    /** Returns the health points [MapUnit] will receive if healing on [tile] */
+    fun rankTileForHealing(tile: Tile): Int {
+        val isFriendlyTerritory = tile.isFriendlyTerritory(civInfo)
 
         var healing = when {
-            tileInfo.isCityCenter() -> 25
-            tileInfo.isWater && isFriendlyTerritory && (baseUnit.isWaterUnit() || isTransported) -> 20 // Water unit on friendly water
-            tileInfo.isWater -> 0 // All other water cases
+            tile.isCityCenter() -> 25
+            tile.isWater && isFriendlyTerritory && (baseUnit.isWaterUnit() || isTransported) -> 20 // Water unit on friendly water
+            tile.isWater -> 0 // All other water cases
             isFriendlyTerritory -> 20 // Allied territory
-            tileInfo.getOwner() == null -> 10 // Neutral territory
+            tile.getOwner() == null -> 10 // Neutral territory
             else -> 10 // Enemy territory
         }
 
-        val mayHeal = healing > 0 || (tileInfo.isWater && hasUnique(UniqueType.HealsOutsideFriendlyTerritory, checkCivInfoUniques = true))
+        val mayHeal = healing > 0 || (tile.isWater && hasUnique(UniqueType.HealsOutsideFriendlyTerritory, checkCivInfoUniques = true))
         if (!mayHeal) return healing
 
         healing += getMatchingUniques(UniqueType.Heal, checkCivInfoUniques = true).sumOf { it.params[0].toInt() }
 
-        val healingCity = tileInfo.getTilesInDistance(1).firstOrNull {
+        val healingCity = tile.getTilesInDistance(1).firstOrNull {
             it.isCityCenter() && it.getCity()!!.getMatchingUniques(UniqueType.CityHealingUnits).any()
         }?.getCity()
         if (healingCity != null) {
@@ -757,7 +757,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun removeFromTile() = currentTile.removeUnit(this)
 
-    fun moveThroughTile(tile: TileInfo) {
+    fun moveThroughTile(tile: Tile) {
         // addPromotion requires currentTile to be valid because it accesses ruleset through it.
         // getAncientRuinBonus, if it places a new unit, does too
         currentTile = tile
@@ -792,7 +792,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         updateVisibleTiles()
     }
 
-    fun putInTile(tile: TileInfo) {
+    fun putInTile(tile: Tile) {
         when {
             !movement.canMoveTo(tile) ->
                 throw Exception("Unit $name at $currentTile can't be put in tile ${tile.position}!")
@@ -805,7 +805,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         moveThroughTile(tile)
     }
 
-    private fun clearEncampment(tile: TileInfo) {
+    private fun clearEncampment(tile: Tile) {
         tile.changeImprovement(null)
 
         // Notify City-States that this unit cleared a Barbarian Encampment, required for quests
@@ -856,7 +856,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         if (civInfo.isDefeated()) civInfo.destroy()
     }
 
-    private fun getAncientRuinBonus(tile: TileInfo) {
+    private fun getAncientRuinBonus(tile: Tile) {
         tile.changeImprovement(null)
         civInfo.ruinsManager.selectNextRuinsReward(this)
     }
@@ -878,7 +878,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun canIntercept(attackedTile: TileInfo): Boolean {
+    fun canIntercept(attackedTile: Tile): Boolean {
         if (!canIntercept()) return false
         if (currentTile.aerialDistanceTo(attackedTile) > baseUnit.interceptRange) return false
         return true
@@ -933,7 +933,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
 
-    fun getDamageFromTerrain(tile: TileInfo = currentTile): Int {
+    fun getDamageFromTerrain(tile: Tile = currentTile): Int {
         if (civInfo.nonStandardTerrainDamage) {
             for (unique in getMatchingUniques(UniqueType.DamagesContainingUnits)) {
                 if (unique.params[0] in tile.allTerrains.map { it.name }) {
@@ -966,7 +966,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun canBuildImprovement(improvement: TileImprovement, tile: TileInfo = currentTile): Boolean {
+    fun canBuildImprovement(improvement: TileImprovement, tile: Tile = currentTile): Boolean {
         // Workers (and similar) should never be able to (instantly) construct things, only build them
         // HOWEVER, they should be able to repair such things if they are pillaged
         if (improvement.turnsToBuild == 0

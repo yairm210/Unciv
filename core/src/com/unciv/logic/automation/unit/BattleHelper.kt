@@ -7,7 +7,7 @@ import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.PathsToTilesWithinTurn
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
 
 object BattleHelper {
@@ -34,7 +34,7 @@ object BattleHelper {
     fun getAttackableEnemies(
         unit: MapUnit,
         unitDistanceToTiles: PathsToTilesWithinTurn,
-        tilesToCheck: List<TileInfo>? = null,
+        tilesToCheck: List<Tile>? = null,
         stayOnTile: Boolean = false
     ): ArrayList<AttackableTile> {
         val rangeOfAttack = unit.getRange()
@@ -61,8 +61,8 @@ object BattleHelper {
                     it.first == unit.getTile() || unit.movement.canMoveTo(it.first)
                 }
 
-        val tilesWithEnemies: HashSet<TileInfo> = HashSet()
-        val tilesWithoutEnemies: HashSet<TileInfo> = HashSet()
+        val tilesWithEnemies: HashSet<Tile> = HashSet()
+        val tilesWithoutEnemies: HashSet<Tile> = HashSet()
         for ((reachableTile, movementLeft) in tilesToAttackFrom) {  // tiles we'll still have energy after we reach there
             val tilesInAttackRange =
                 if (unit.hasUnique(UniqueType.IndirectFire) || unit.baseUnit.movesLikeAirUnits())
@@ -90,14 +90,14 @@ object BattleHelper {
         return attackableTiles
     }
 
-    private fun checkTile(unit: MapUnit, tile: TileInfo, tilesToCheck: List<TileInfo>?): Boolean {
+    private fun checkTile(unit: MapUnit, tile: Tile, tilesToCheck: List<Tile>?): Boolean {
         if (!containsAttackableEnemy(tile, MapUnitCombatant(unit))) return false
         if (tile !in (tilesToCheck ?: unit.civInfo.viewableTiles)) return false
         val mapCombatant = Battle.getMapCombatantOfTile(tile)
         return (!unit.baseUnit.isMelee() || mapCombatant !is MapUnitCombatant || !mapCombatant.unit.isCivilian() || unit.movement.canPassThrough(tile))
     }
 
-    fun containsAttackableEnemy(tile: TileInfo, combatant: ICombatant): Boolean {
+    fun containsAttackableEnemy(tile: Tile, combatant: ICombatant): Boolean {
         if (combatant is MapUnitCombatant && combatant.unit.isEmbarked() && !combatant.hasUnique(UniqueType.AttackOnSea)) {
             // Can't attack water units while embarked, only land
             if (tile.isWater || combatant.isRanged())

@@ -7,7 +7,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.extensions.toPercent
@@ -55,19 +55,19 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         return cultureToNextTile.roundToInt()
     }
 
-    fun buyTile(tileInfo: TileInfo) {
-        val goldCost = getGoldCostOfTile(tileInfo)
+    fun buyTile(tile: Tile) {
+        val goldCost = getGoldCostOfTile(tile)
 
         class NotEnoughGoldToBuyTileException : Exception()
         if (cityInfo.civInfo.gold < goldCost && !cityInfo.civInfo.gameInfo.gameParameters.godMode)
             throw NotEnoughGoldToBuyTileException()
         cityInfo.civInfo.addGold(-goldCost)
-        takeOwnership(tileInfo)
+        takeOwnership(tile)
     }
 
-    fun getGoldCostOfTile(tileInfo: TileInfo): Int {
+    fun getGoldCostOfTile(tile: Tile): Int {
         val baseCost = 50
-        val distanceFromCenter = tileInfo.aerialDistanceTo(cityInfo.getCenterTile())
+        val distanceFromCenter = tile.aerialDistanceTo(cityInfo.getCenterTile())
         var cost = baseCost * (distanceFromCenter - 1) + tilesClaimed() * 5.0
 
         cost *= cityInfo.civInfo.gameInfo.speed.goldCostModifier
@@ -83,7 +83,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
     fun getChoosableTiles() = cityInfo.getCenterTile().getTilesInDistance(5)
         .filter { it.getOwner() == null }
 
-    fun chooseNewTileToOwn(): TileInfo? {
+    fun chooseNewTileToOwn(): Tile? {
         // Technically, in the original a random tile with the lowest score was selected
         // However, doing this requires either caching it, which is way more work,
         // or selecting all possible tiles and only choosing one when the border expands.
@@ -123,22 +123,22 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
     /**
      * Removes one tile from this city's owned tiles, unconditionally, and updates dependent
      * things like worked tiles, locked tiles, and stats.
-     * @param tileInfo The tile to relinquish
+     * @param tile The tile to relinquish
      */
-    fun relinquishOwnership(tileInfo: TileInfo) {
-        cityInfo.tiles = cityInfo.tiles.withoutItem(tileInfo.position)
+    fun relinquishOwnership(tile: Tile) {
+        cityInfo.tiles = cityInfo.tiles.withoutItem(tile.position)
         for (city in cityInfo.civInfo.cities) {
-            if (city.isWorked(tileInfo)) {
-                city.workedTiles = city.workedTiles.withoutItem(tileInfo.position)
+            if (city.isWorked(tile)) {
+                city.workedTiles = city.workedTiles.withoutItem(tile.position)
                 city.population.autoAssignPopulation()
             }
-            if (city.lockedTiles.contains(tileInfo.position))
-                city.lockedTiles.remove(tileInfo.position)
+            if (city.lockedTiles.contains(tile.position))
+                city.lockedTiles.remove(tile.position)
         }
 
-        tileInfo.removeCreatesOneImprovementMarker()
+        tile.removeCreatesOneImprovementMarker()
 
-        tileInfo.setOwningCity(null)
+        tile.setOwningCity(null)
 
         cityInfo.civInfo.cache.updateCivResources()
         cityInfo.cityStats.update()
@@ -150,20 +150,20 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
      * Also manages consequences like auto population reassign, stats, and displacing units
      * that are no longer allowed on that tile.
      *
-     * @param tileInfo The tile to take over
+     * @param tile The tile to take over
      */
-    fun takeOwnership(tileInfo: TileInfo) {
-        if (tileInfo.isCityCenter()) throw Exception("What?!")
-        if (tileInfo.getCity() != null)
-            tileInfo.getCity()!!.expansion.relinquishOwnership(tileInfo)
+    fun takeOwnership(tile: Tile) {
+        if (tile.isCityCenter()) throw Exception("What?!")
+        if (tile.getCity() != null)
+            tile.getCity()!!.expansion.relinquishOwnership(tile)
 
-        cityInfo.tiles = cityInfo.tiles.withItem(tileInfo.position)
-        tileInfo.setOwningCity(cityInfo)
+        cityInfo.tiles = cityInfo.tiles.withItem(tile.position)
+        tile.setOwningCity(cityInfo)
         cityInfo.population.autoAssignPopulation()
         cityInfo.civInfo.cache.updateCivResources()
         cityInfo.cityStats.update()
 
-        for (unit in tileInfo.getUnits().toList()) // toListed because we're modifying
+        for (unit in tile.getUnits().toList()) // toListed because we're modifying
             if (!unit.civInfo.diplomacyFunctions.canPassThroughTiles(cityInfo.civInfo))
                 unit.movement.teleportToClosestMoveableTile()
 

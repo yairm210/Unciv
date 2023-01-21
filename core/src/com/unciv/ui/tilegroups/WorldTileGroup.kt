@@ -4,12 +4,12 @@ import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.worldscreen.WorldScreen
 
 
-class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo, tileSetStrings: TileSetStrings)
-    : TileGroup(tileInfo,tileSetStrings) {
+class WorldTileGroup(internal val worldScreen: WorldScreen, tile: Tile, tileSetStrings: TileSetStrings)
+    : TileGroup(tile,tileSetStrings) {
 
     private var cityButton: CityButton? = null
 
@@ -21,18 +21,18 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo, 
     }
 
     fun update(viewingCiv: CivilizationInfo) {
-        val city = tileInfo.getCity()
+        val city = tile.getCity()
 
         icons.removePopulationIcon()
         val tileIsViewable = isViewable(viewingCiv)
         val showEntireMap = UncivGame.Current.viewEntireMapForDebug
 
-        if (tileIsViewable && tileInfo.isWorked() && UncivGame.Current.settings.showWorkedTiles
+        if (tileIsViewable && tile.isWorked() && UncivGame.Current.settings.showWorkedTiles
                 && city!!.civInfo == viewingCiv)
             icons.addPopulationIcon()
         // update city buttons in explored tiles or entire map
         if (showEntireMap
-                || viewingCiv.hasExplored(tileInfo)
+                || viewingCiv.hasExplored(tile)
                 || viewingCiv.isSpectator()
                 || (worldScreen.viewingCiv.isSpectator() && !worldScreen.fogOfWar)) {
             updateCityButton(city, tileIsViewable || showEntireMap) // needs to be before the update so the units will be above the city button
@@ -51,7 +51,7 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo, 
             cityButton!!.remove()
             cityButton = null
         }
-        if (city != null && tileInfo.isCityCenter()) {
+        if (city != null && tile.isCityCenter()) {
             if (cityButton == null) {
                 cityButton = CityButton(city, this)
                 cityButtonLayerGroup.addActor(cityButton)
@@ -66,5 +66,5 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo, 
         return worldScreen.bottomUnitTable.citySelected(city)
     }
 
-    override fun clone(): WorldTileGroup = WorldTileGroup(worldScreen, tileInfo , tileSetStrings)
+    override fun clone(): WorldTileGroup = WorldTileGroup(worldScreen, tile , tileSetStrings)
 }

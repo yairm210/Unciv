@@ -7,7 +7,7 @@ import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.TileMap
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Ruleset
@@ -66,7 +66,7 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen(), RecreateOnResize {
     // UI
     var mapHolder: EditorMapHolder
     val tabs: MapEditorMainTabs
-    var tileClickHandler: ((tile: TileInfo)->Unit)? = null
+    var tileClickHandler: ((tile: Tile)->Unit)? = null
     private var zoomController: ZoomButtonPair? = null
 
     private val highlightedTileGroups = mutableListOf<TileGroup>()
@@ -195,18 +195,18 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen(), RecreateOnResize {
             group.hideHighlight()
         highlightedTileGroups.clear()
     }
-    fun highlightTile(tile: TileInfo, color: Color = Color.WHITE) {
+    fun highlightTile(tile: Tile, color: Color = Color.WHITE) {
         for (group in mapHolder.tileGroups[tile] ?: return) {
             group.showHighlight(color)
             highlightedTileGroups.add(group)
         }
     }
-    fun updateTile(tile: TileInfo) {
+    fun updateTile(tile: Tile) {
         mapHolder.tileGroups[tile]!!.forEach {
             it.update()
         }
     }
-    fun updateAndHighlight(tile: TileInfo, color: Color = Color.WHITE) {
+    fun updateAndHighlight(tile: Tile, color: Color = Color.WHITE) {
         updateTile(tile)
         highlightTile(tile, color)
     }

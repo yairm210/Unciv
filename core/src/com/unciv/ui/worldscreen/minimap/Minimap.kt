@@ -127,7 +127,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Group() {
 
     fun update(viewingCiv: CivilizationInfo) {
         for (minimapTile in minimapTiles) {
-            val tileInfo = minimapTile.tileInfo
+            val tileInfo = minimapTile.tile
             val ownerChanged = minimapTile.owningCiv != tileInfo.getOwner()
             if (ownerChanged) {
                 minimapTile.owningCiv = tileInfo.getOwner()
