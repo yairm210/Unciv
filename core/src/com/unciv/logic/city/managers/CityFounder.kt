@@ -222,7 +222,7 @@ class CityFounder {
                 citiesWithin6Tiles
                     .map { it.civInfo }
                     .distinct()
-                    .filter { it.knows(city.civInfo) && it.hasExplored(city.location) }
+                    .filter { it.knows(city.civInfo) && it.hasExplored(city.getCenterTile()) }
         for (otherCiv in civsWithCloseCities)
             otherCiv.getDiplomacyManager(city.civInfo).setFlag(DiplomacyFlags.SettledCitiesNearUs, 30)
     }

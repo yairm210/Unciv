@@ -391,7 +391,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         for (otherCiv in city.civInfo.gameInfo.civilizations) {
             if (otherCiv == city.civInfo) continue
             when {
-                otherCiv.hasExplored(city.location) ->
+                otherCiv.hasExplored(city.getCenterTile()) ->
                     otherCiv.addNotification("The city of [${city.name}] has started constructing [${construction.name}]!",
                         city.location, NotificationCategory.General, NotificationIcon.Construction, buildingIcon)
                 otherCiv.knows(city.civInfo) ->
@@ -416,7 +416,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         if (construction is Building && construction.isWonder) {
             city.civInfo.popupAlerts.add(PopupAlert(AlertType.WonderBuilt, construction.name))
             for (civ in city.civInfo.gameInfo.civilizations) {
-                if (civ.hasExplored(city.location))
+                if (civ.hasExplored(city.getCenterTile()))
                     civ.addNotification("[${construction.name}] has been built in [${city.name}]", city.location,
                         if (civ == city.civInfo) NotificationCategory.Production else NotificationCategory.General, buildingIcon)
                 else

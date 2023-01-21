@@ -191,12 +191,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     var citiesCreated = 0
     var exploredTiles = HashSet<Vector2>()
 
-    fun hasExplored(position: Vector2) = exploredTiles.contains(position)
-    fun hasExplored(tile: Tile) = hasExplored(tile.position)
-
-    fun addExploredTiles(tiles:Sequence<Vector2>){
-        exploredTiles.addAll(tiles)
-    }
+    fun hasExplored(tile: Tile) = tile.isExplored(this)
 
     var lastSeenImprovement = HashMapVector2<String>()
 
@@ -344,7 +339,8 @@ class Civilization : IsPartOfGameInfoSerialization {
     var cityStateUniqueUnit: String? = null // Unique unit for militaristic city state. Might still be null if there are no appropriate units
 
 
-    fun hasMetCivTerritory(otherCiv: Civilization): Boolean = otherCiv.getCivTerritory().any { hasExplored(it) }
+    fun hasMetCivTerritory(otherCiv: Civilization): Boolean =
+            otherCiv.getCivTerritory().any { gameInfo.tileMap[it].isExplored(this) }
     fun getCompletedPolicyBranchesCount(): Int = policies.adoptedPolicies.count { Policy.isBranchCompleteByName(it) }
     fun originalMajorCapitalsOwned(): Int = cities.count { it.isOriginalCapital && it.foundingCiv != "" && gameInfo.getCivilization(it.foundingCiv).isMajorCiv() }
     private fun getCivTerritory() = cities.asSequence().flatMap { it.tiles.asSequence() }

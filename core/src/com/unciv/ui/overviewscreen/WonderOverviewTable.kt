@@ -232,7 +232,7 @@ class WonderInfo {
                 val index = wonderIndexMap[wonderName]!!
                 val status = when {
                     viewingPlayer == city.civInfo -> WonderStatus.Owned
-                    viewingPlayer.hasExplored(city.location) -> WonderStatus.Known
+                    viewingPlayer.hasExplored(city.getCenterTile()) -> WonderStatus.Known
                     else -> WonderStatus.NotFound
                 }
                 wonders[index] = WonderInfo(

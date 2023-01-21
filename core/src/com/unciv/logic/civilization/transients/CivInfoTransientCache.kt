@@ -58,8 +58,9 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         // Well, because it gets REALLY LARGE so it's a lot of memory space,
         // and we never actually iterate on the explored tiles (only check contains()),
         // so there's no fear of concurrency problems.
-        val newlyExploredTiles = civInfo.viewableTiles.asSequence().map { it.position }
-        civInfo.addExploredTiles(newlyExploredTiles)
+        civInfo.viewableTiles.asSequence().forEach { tile ->
+            tile.setExplored(civInfo, true)
+        }
 
 
         val viewedCivs = HashMap<Civilization, Tile>()
@@ -114,7 +115,6 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         if (civInfo.isSpectator() || UncivGame.Current.viewEntireMapForDebug) {
             val allTiles = civInfo.gameInfo.tileMap.values.toSet()
             civInfo.viewableTiles = allTiles
-            civInfo.addExploredTiles(allTiles.asSequence().map { it.position })
             civInfo.viewableInvisibleUnitsTiles = allTiles
             return
         }
