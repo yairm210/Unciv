@@ -337,6 +337,8 @@ class WorldScreen(
     }
 
     private suspend fun loadLatestMultiplayerState(): Unit = coroutineScope {
+        if (game.screen != this@WorldScreen) return@coroutineScope // User already went somewhere else
+
         val loadingGamePopup = Popup(this@WorldScreen)
         launchOnGLThread {
             loadingGamePopup.addGoodSizedLabel("Loading latest game state...")
