@@ -229,10 +229,10 @@ class UnitOverviewTab(
             add(promotionsTable)
 
             // Upgrade column
-            if (unit.canUpgrade()) {
+            if (unit.upgrade.canUpgrade()) {
                 val unitAction = UnitActions.getUpgradeAction(unit)
                 val enable = unitAction?.action != null
-                val upgradeIcon = ImageGetter.getUnitIcon(unit.getUnitToUpgradeTo().name,
+                val upgradeIcon = ImageGetter.getUnitIcon(unit.upgrade.getUnitToUpgradeTo().name,
                     if (enable) Color.GREEN else Color.GREEN.darken(0.5f))
                 if (enable) upgradeIcon.onClick {
                     SoundPlayer.play(unitAction!!.uncivSound)

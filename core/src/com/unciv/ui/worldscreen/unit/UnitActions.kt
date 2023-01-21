@@ -414,10 +414,10 @@ object UnitActions {
         val upgradedUnit = when {
             isSpecial && specialUpgradesTo != null -> civInfo.getEquivalentUnit(specialUpgradesTo)
             (isFree || isSpecial) && upgradesTo != null -> civInfo.getEquivalentUnit(upgradesTo) // Only get DIRECT upgrade
-            else -> unit.getUnitToUpgradeTo() // Get EVENTUAL upgrade, all the way up the chain
+            else -> unit.upgrade.getUnitToUpgradeTo() // Get EVENTUAL upgrade, all the way up the chain
         }
 
-        if (!unit.canUpgrade(unitToUpgradeTo = upgradedUnit, ignoreRequirements = isFree, ignoreResources = true))
+        if (!unit.upgrade.canUpgrade(unitToUpgradeTo = upgradedUnit, ignoreRequirements = isFree, ignoreResources = true))
             return null
 
         // Check _new_ resource requirements (display only - yes even for free or special upgrades)
@@ -431,7 +431,7 @@ object UnitActions {
             .filter { it.value > 0 }
             .joinToString { "${it.value} {${it.key}}".tr() }
 
-        val goldCostOfUpgrade = if (isFree) 0 else unit.getCostOfUpgrade(upgradedUnit)
+        val goldCostOfUpgrade = if (isFree) 0 else unit.upgrade.getCostOfUpgrade(upgradedUnit)
 
         // No string for "FREE" variants, these are never shown to the user.
         // The free actions are only triggered via OneTimeUnitUpgrade or OneTimeUnitSpecialUpgrade in UniqueTriggerActivation.
@@ -461,7 +461,7 @@ object UnitActions {
                     unit.civInfo.gold >= goldCostOfUpgrade
                     && unit.currentMovement > 0
                     && !unit.isEmbarked()
-                    && unit.canUpgrade(unitToUpgradeTo = upgradedUnit)
+                    && unit.upgrade.canUpgrade(unitToUpgradeTo = upgradedUnit)
                 )
             }
         )
@@ -494,7 +494,7 @@ object UnitActions {
             StateForConditionals(unit = unit, civInfo = civInfo, tile = unitTile))) {
             val upgradedUnit = civInfo.getEquivalentUnit(unique.params[0])
             // don't show if haven't researched/is obsolete
-            if (!unit.canUpgrade(unitToUpgradeTo = upgradedUnit)) continue
+            if (!unit.upgrade.canUpgrade(unitToUpgradeTo = upgradedUnit)) continue
 
             // Check _new_ resource requirements
             // Using Counter to aggregate is a bit exaggerated, but - respect the mad modder.
@@ -530,7 +530,7 @@ object UnitActions {
                 }.takeIf {
                     unit.currentMovement > 0
                             && !unit.isEmbarked()
-                            && unit.canUpgrade(unitToUpgradeTo = upgradedUnit)
+                            && unit.upgrade.canUpgrade(unitToUpgradeTo = upgradedUnit)
                 }
             ) )
         }

@@ -116,7 +116,7 @@ object UnitAutomation {
 
     internal fun tryUpgradeUnit(unit: MapUnit): Boolean {
         if (unit.baseUnit.upgradesTo == null) return false
-        val upgradedUnit = unit.getUnitToUpgradeTo()
+        val upgradedUnit = unit.upgrade.getUnitToUpgradeTo()
         if (!upgradedUnit.isBuildable(unit.civInfo)) return false // for resource reasons, usually
 
         if (upgradedUnit.getResourceRequirements().keys.any { !unit.baseUnit.requiresResource(it) }) {
