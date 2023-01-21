@@ -376,6 +376,16 @@ class MapParametersTable(
             return slider
         }
 
+        fun addCheckbox(
+            text: String,
+            startsOutChecked: Boolean = false,
+            changeAction: ((Boolean) -> Unit)): CheckBox {
+            val checkbox = text.toCheckBox(startsOutChecked) {
+                changeAction.invoke(true)
+            }
+            return checkbox
+        }
+
         addSlider("Map Elevation", {mapParameters.elevationExponent}, 0.6f, 0.8f)
         { mapParameters.elevationExponent = it }
 
@@ -403,17 +413,16 @@ class MapParametersTable(
         addSlider("Water level", {mapParameters.waterThreshold}, -0.1f, 0.1f)
         { mapParameters.waterThreshold = it }
 
-        val randomNationsPoolCheckbox = "Random nations pool".toCheckBox(mapParameters.enableRandomNationsPool) {
+        table.add(addCheckbox("Random nations pool", mapParameters.enableRandomNationsPool) {
             mapParameters.enableRandomNationsPool = it
             update()
-        }
-        table.add(randomNationsPoolCheckbox).row()
+        }).row()
 
-        val blacklistRandomNationsPoolCheckbox = "Blacklist random nations pool".toCheckBox(mapParameters.blacklistRandomNationsPool) {
-            mapParameters.blacklistRandomNationsPool = it
+        if (mapParameters.enableRandomNationsPool) {
+            table.add(addCheckbox("Blacklist random nations pool", mapParameters.blacklistRandomNationsPool) {
+                mapParameters.blacklistRandomNationsPool = it
+            }).row()
         }
-        if (mapParameters.enableRandomNationsPool)
-            table.add(blacklistRandomNationsPoolCheckbox).row()
 
         val randomPoolButton = "Select nations".toTextButton()
         randomPoolButton.onClick {
