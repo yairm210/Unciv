@@ -4,7 +4,7 @@ package com.unciv.logic.map
 import com.unciv.Constants
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.mapunit.MapUnit
@@ -23,7 +23,7 @@ import org.junit.runner.RunWith
 class UnitMovementAlgorithmsTests {
 
     private var tile = Tile()
-    private var civInfo = CivilizationInfo()
+    private var civInfo = Civilization()
     private var ruleSet = Ruleset()
     private var unit = MapUnit()
 
@@ -213,7 +213,7 @@ class UnitMovementAlgorithmsTests {
 
         unit.currentTile = tile
 
-        val otherCiv = CivilizationInfo()
+        val otherCiv = Civilization()
         otherCiv.civName = Constants.barbarians // they are always enemies
         otherCiv.nation = Nation().apply { name = Constants.barbarians }
         val otherUnit = MapUnit()
@@ -244,7 +244,7 @@ class UnitMovementAlgorithmsTests {
         tile.baseTerrain = Constants.desert
         tile.setTransients()
 
-        val otherCiv = CivilizationInfo()
+        val otherCiv = Civilization()
         otherCiv.civName = "Other civ"
         otherCiv.nation = Nation().apply { name = "Other nation" }
 
@@ -287,8 +287,8 @@ class UnitMovementAlgorithmsTests {
         return newTiles
     }
 
-    private fun createOpponentCiv(namePrefix: String, relations: DiplomaticStatus): CivilizationInfo {
-        val otherCiv = CivilizationInfo()
+    private fun createOpponentCiv(namePrefix: String, relations: DiplomaticStatus): Civilization {
+        val otherCiv = Civilization()
         otherCiv.civName = "$namePrefix civ"
         otherCiv.nation = Nation().apply { name = "$namePrefix nation" }
         otherCiv.gameInfo = civInfo.gameInfo

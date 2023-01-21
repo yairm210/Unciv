@@ -3,14 +3,14 @@ package com.unciv.ui.overviewscreen
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.TabbedPager
 import com.unciv.ui.utils.extensions.packIfNeeded
 import com.unciv.ui.utils.extensions.toLabel
 
 abstract class EmpireOverviewTab (
-    val viewingPlayer: CivilizationInfo,
+    val viewingPlayer: Civilization,
     val overviewScreen: EmpireOverviewScreen,
     persistedData: EmpireOverviewTabPersistableData? = null
 ) : Table(BaseScreen.skin), TabbedPager.IPageExtensions {

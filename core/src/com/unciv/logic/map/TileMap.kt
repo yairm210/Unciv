@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapgenerator.MapLandmassGenerator
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
@@ -496,7 +496,7 @@ class TileMap : IsPartOfGameInfoSerialization {
     fun placeUnitNearTile(
             position: Vector2,
             unitName: String,
-            civInfo: CivilizationInfo
+            civInfo: Civilization
     ): MapUnit? {
         val unit = gameInfo.ruleSet.units[unitName]!!.getMapUnit(civInfo)
 
@@ -584,7 +584,7 @@ class TileMap : IsPartOfGameInfoSerialization {
      * @param newNation new nation to be set up
      */
     fun switchPlayersNation(player: Player, newNation: Nation) {
-        val newCiv = CivilizationInfo(newNation.name).apply { nation = newNation }
+        val newCiv = Civilization(newNation.name).apply { nation = newNation }
         tileList.forEach {
             for (unit in it.getUnits()) if (unit.owner == player.chosenCiv) {
                 unit.owner = newNation.name

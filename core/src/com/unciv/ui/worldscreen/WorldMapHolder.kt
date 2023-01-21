@@ -22,7 +22,7 @@ import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.TileMap
@@ -517,7 +517,7 @@ class WorldMapHolder(
     }
 
     /** Returns true when the civ is a human player defeated in singleplayer game */
-    private fun isMapRevealEnabled(viewingCiv: CivilizationInfo) = !viewingCiv.gameInfo.gameParameters.isOnlineMultiplayer
+    private fun isMapRevealEnabled(viewingCiv: Civilization) = !viewingCiv.gameInfo.gameParameters.isOnlineMultiplayer
             && viewingCiv.isCurrentPlayer()
             && viewingCiv.isDefeated()
 
@@ -568,7 +568,7 @@ class WorldMapHolder(
         }
     }
 
-    internal fun updateTiles(viewingCiv: CivilizationInfo) {
+    internal fun updateTiles(viewingCiv: Civilization) {
 
         if (isMapRevealEnabled(viewingCiv)) {
             // Only needs to be done once - this is so the minimap will also be revealed

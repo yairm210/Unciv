@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.TechManager
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tech.Technology
@@ -29,7 +29,7 @@ import kotlin.math.abs
 
 
 class TechPickerScreen(
-    internal val civInfo: CivilizationInfo,
+    internal val civInfo: Civilization,
     centerOnTech: Technology? = null,
     private val freeTechPick: Boolean = false
 ) : PickerScreen() {

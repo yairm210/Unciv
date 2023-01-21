@@ -65,7 +65,7 @@ enum class Proximity : IsPartOfGameInfoSerialization {
     Distant
 }
 
-class CivilizationInfo : IsPartOfGameInfoSerialization {
+class Civilization : IsPartOfGameInfoSerialization {
 
     @Transient
     private var workerAutomationCache: WorkerAutomation? = null
@@ -252,8 +252,8 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         this.civName = civName
     }
 
-    fun clone(): CivilizationInfo {
-        val toReturn = CivilizationInfo()
+    fun clone(): Civilization {
+        val toReturn = Civilization()
         toReturn.gold = gold
         toReturn.playerType = playerType
         toReturn.playerId = playerId
@@ -312,17 +312,17 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         return gameInfo.ruleSet.difficulties.values.first()
     }
 
-    fun getDiplomacyManager(civInfo: CivilizationInfo) = getDiplomacyManager(civInfo.civName)
+    fun getDiplomacyManager(civInfo: Civilization) = getDiplomacyManager(civInfo.civName)
     fun getDiplomacyManager(civName: String) = diplomacy[civName]!!
 
-    fun getProximity(civInfo: CivilizationInfo) = getProximity(civInfo.civName)
+    fun getProximity(civInfo: Civilization) = getProximity(civInfo.civName)
     @Suppress("MemberVisibilityCanBePrivate")  // same visibility for overloads
     fun getProximity(civName: String) = proximity[civName] ?: Proximity.None
 
     /** Returns only undefeated civs, aka the ones we care about */
     fun getKnownCivs() = diplomacy.values.map { it.otherCiv() }.filter { !it.isDefeated() }
     fun knows(otherCivName: String) = diplomacy.containsKey(otherCivName)
-    fun knows(otherCiv: CivilizationInfo) = knows(otherCiv.civName)
+    fun knows(otherCiv: Civilization) = knows(otherCiv.civName)
 
     fun getCapital() = cities.firstOrNull { it.isCapital() }
     fun isHuman() = playerType == PlayerType.Human
@@ -344,7 +344,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     var cityStateUniqueUnit: String? = null // Unique unit for militaristic city state. Might still be null if there are no appropriate units
 
 
-    fun hasMetCivTerritory(otherCiv: CivilizationInfo): Boolean = otherCiv.getCivTerritory().any { hasExplored(it) }
+    fun hasMetCivTerritory(otherCiv: Civilization): Boolean = otherCiv.getCivTerritory().any { hasExplored(it) }
     fun getCompletedPolicyBranchesCount(): Int = policies.adoptedPolicies.count { Policy.isBranchCompleteByName(it) }
     fun originalMajorCapitalsOwned(): Int = cities.count { it.isOriginalCapital && it.foundingCiv != "" && gameInfo.getCivilization(it.foundingCiv).isMajorCiv() }
     private fun getCivTerritory() = cities.asSequence().flatMap { it.tiles.asSequence() }
@@ -519,7 +519,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     fun getEraNumber(): Int = getEra().eraNumber
 
-    fun isAtWarWith(otherCiv: CivilizationInfo) = diplomacyFunctions.isAtWarWith(otherCiv)
+    fun isAtWarWith(otherCiv: Civilization) = diplomacyFunctions.isAtWarWith(otherCiv)
 
     fun isAtWar() = diplomacy.values.any { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }
 
@@ -758,7 +758,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun updateProximity(otherCiv: CivilizationInfo, preCalculated: Proximity? = null): Proximity = cache.updateProximity(otherCiv, preCalculated)
+    fun updateProximity(otherCiv: Civilization, preCalculated: Proximity? = null): Proximity = cache.updateProximity(otherCiv, preCalculated)
 
     /**
      * Removes current capital then moves capital to argument city if not null
@@ -805,10 +805,10 @@ class CivilizationInfoPreview() {
     /**
      * Converts a CivilizationInfo object (can be uninitialized) into a CivilizationInfoPreview object.
      */
-    constructor(civilizationInfo: CivilizationInfo) : this() {
-        civName = civilizationInfo.civName
-        playerType = civilizationInfo.playerType
-        playerId = civilizationInfo.playerId
+    constructor(civilization: Civilization) : this() {
+        civName = civilization.civName
+        playerType = civilization.playerType
+        playerId = civilization.playerId
     }
 }
 

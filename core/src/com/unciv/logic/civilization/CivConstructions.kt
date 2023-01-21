@@ -11,7 +11,7 @@ import com.unciv.models.stats.Stat
 class CivConstructions : IsPartOfGameInfoSerialization {
 
     @Transient
-    lateinit var civInfo: CivilizationInfo
+    lateinit var civInfo: Civilization
 
     // Maps objects to the amount of times bought
     val boughtItemsWithIncreasingPrice: Counter<String> = Counter()
@@ -44,7 +44,7 @@ class CivConstructions : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    fun setTransients(civInfo: CivilizationInfo) {
+    fun setTransients(civInfo: Civilization) {
         this.civInfo = civInfo
     }
 

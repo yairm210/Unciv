@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
@@ -15,7 +15,7 @@ import com.unciv.ui.utils.extensions.toLabel
 import kotlin.math.roundToInt
 
 class StatsOverviewTab(
-    viewingPlayer: CivilizationInfo,
+    viewingPlayer: Civilization,
     overviewScreen: EmpireOverviewScreen
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
     private val happinessTable = Table()

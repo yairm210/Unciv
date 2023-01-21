@@ -43,7 +43,7 @@ class CapitalConnectionsFinderTests {
     private val slot = slot<String>()
 
     private val testCivilizationNames = arrayListOf("America", "Germany", "Greece")
-    private val civilizations = testCivilizationNames.associateWith { CivilizationInfo(it) }
+    private val civilizations = testCivilizationNames.associateWith { Civilization(it) }
     private val ourCiv = civilizations.values.first()
     private val tilesMap = TileMap().apply { tileMatrix = ArrayList() }
     private var rules = Ruleset()
@@ -111,7 +111,7 @@ class CapitalConnectionsFinderTests {
                 tile.roadStatus = type
     }
 
-    private fun createCity(civInfo: CivilizationInfo, position: Vector2, name: String, capital: Boolean = false, hasHarbor: Boolean = false): City {
+    private fun createCity(civInfo: Civilization, position: Vector2, name: String, capital: Boolean = false, hasHarbor: Boolean = false): City {
         return City().apply {
             location = position
             if (capital)

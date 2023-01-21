@@ -9,7 +9,7 @@ import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
@@ -39,7 +39,7 @@ import kotlin.math.pow
 class MapUnit : IsPartOfGameInfoSerialization {
 
     @Transient
-    lateinit var civInfo: CivilizationInfo
+    lateinit var civInfo: Civilization
 
     @Transient
     lateinit var baseUnit: BaseUnit
@@ -486,7 +486,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return currentTile.isWater
     }
 
-    fun isInvisible(to: CivilizationInfo): Boolean {
+    fun isInvisible(to: Civilization): Boolean {
         if (hasUnique(UniqueType.Invisible))
             return true
         if (hasUnique(UniqueType.InvisibleToNonAdjacent))
@@ -700,7 +700,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun destroy(destroyTransportedUnit: Boolean = true) {
         val currentPosition = Vector2(getTile().position)
-        civInfo.attacksSinceTurnStart.addAll(attacksSinceTurnStart.asSequence().map { CivilizationInfo.HistoricalAttackMemory(this.name, currentPosition, it) })
+        civInfo.attacksSinceTurnStart.addAll(attacksSinceTurnStart.asSequence().map { Civilization.HistoricalAttackMemory(this.name, currentPosition, it) })
         currentMovement = 0f
         removeFromTile()
         civInfo.units.removeUnit(this)
@@ -714,7 +714,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         isDestroyed = true
     }
 
-    fun gift(recipient: CivilizationInfo) {
+    fun gift(recipient: Civilization) {
         civInfo.units.removeUnit(this)
         civInfo.cache.updateViewableTiles()
         // all transported units should be destroyed as well
@@ -861,13 +861,13 @@ class MapUnit : IsPartOfGameInfoSerialization {
         civInfo.ruinsManager.selectNextRuinsReward(this)
     }
 
-    fun assignOwner(civInfo: CivilizationInfo, updateCivInfo: Boolean = true) {
+    fun assignOwner(civInfo: Civilization, updateCivInfo: Boolean = true) {
         owner = civInfo.civName
         this.civInfo = civInfo
         civInfo.units.addUnit(this, updateCivInfo)
     }
 
-    fun capturedBy(captor: CivilizationInfo) {
+    fun capturedBy(captor: Civilization) {
         civInfo.units.removeUnit(this)
         assignOwner(captor)
         currentMovement = 0f
@@ -1044,7 +1044,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return power
     }
 
-    fun threatensCiv(civInfo: CivilizationInfo): Boolean {
+    fun threatensCiv(civInfo: Civilization): Boolean {
         if (getTile().getOwner() == civInfo)
             return true
         return getTile().neighbors.any { it.getOwner() == civInfo }

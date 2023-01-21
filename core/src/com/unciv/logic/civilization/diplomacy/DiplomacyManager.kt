@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.AlertType
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
@@ -98,7 +98,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     @Suppress("JoinDeclarationAndAssignment")  // incorrect warning - constructor would need to be higher in scope
     @Transient
-    lateinit var civInfo: CivilizationInfo
+    lateinit var civInfo: Civilization
 
     // since this needs to be checked a lot during travel, putting it in a transient is a good performance booster
     @Transient
@@ -140,8 +140,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    constructor(civilizationInfo: CivilizationInfo, OtherCivName: String) : this() {
-        civInfo = civilizationInfo
+    constructor(civilization: Civilization, OtherCivName: String) : this() {
+        civInfo = civilization
         otherCivName = OtherCivName
         updateHasOpenBorders()
     }
@@ -351,8 +351,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         return newResourceSupplyList
     }
 
-    /** Returns the [civilizations][CivilizationInfo] that know about both sides ([civInfo] and [otherCiv]) */
-    fun getCommonKnownCivs(): Set<CivilizationInfo> = civInfo.getKnownCivs().intersect(otherCiv().getKnownCivs().toSet())
+    /** Returns the [civilizations][Civilization] that know about both sides ([civInfo] and [otherCiv]) */
+    fun getCommonKnownCivs(): Set<Civilization> = civInfo.getKnownCivs().intersect(otherCiv().getKnownCivs().toSet())
 
     /** Returns true when the [civInfo]'s territory is considered allied for [otherCiv].
      *  This includes friendly and allied city-states and the open border treaties.

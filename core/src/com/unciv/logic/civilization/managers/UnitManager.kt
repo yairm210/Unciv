@@ -3,14 +3,14 @@ package com.unciv.logic.civilization.managers
 import com.badlogic.gdx.math.Vector2
 import com.unciv.UncivGame
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 
-class UnitManager(val civInfo:CivilizationInfo) {
+class UnitManager(val civInfo:Civilization) {
 
     /**
      * We never add or remove from here directly, could cause comodification problems.

@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
@@ -34,7 +34,7 @@ import kotlin.math.abs
  * Supplies the Unit sub-table for the Empire Overview
  */
 class UnitOverviewTab(
-    viewingPlayer: CivilizationInfo,
+    viewingPlayer: Civilization,
     overviewScreen: EmpireOverviewScreen,
     persistedData: EmpireOverviewTabPersistableData? = null
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {

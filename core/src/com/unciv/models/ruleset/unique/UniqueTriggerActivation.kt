@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivFlags
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.MayaLongCountAction
 import com.unciv.logic.civilization.NotificationCategory
@@ -26,7 +26,7 @@ object UniqueTriggerActivation {
     /** @return boolean whether an action was successfully performed */
     fun triggerCivwideUnique(
         unique: Unique,
-        civInfo: CivilizationInfo,
+        civInfo: Civilization,
         city: City? = null,
         tile: Tile? = null,
         notification: String? = null

@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.ui.images.ClippingImage
@@ -21,7 +21,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Group() {
     private val tileLayer = Group()
     private val minimapTiles: List<MinimapTile>
     private val scrollPositionIndicators: List<ClippingImage>
-    private var lastViewingCiv: CivilizationInfo? = null
+    private var lastViewingCiv: Civilization? = null
 
     init {
         // don't try to resize rotate etc - this table has a LOT of children so that's valuable render time!
@@ -125,7 +125,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Group() {
         }
     }
 
-    fun update(viewingCiv: CivilizationInfo) {
+    fun update(viewingCiv: Civilization) {
         for (minimapTile in minimapTiles) {
             val tileInfo = minimapTile.tile
             val ownerChanged = minimapTile.owningCiv != tileInfo.getOwner()

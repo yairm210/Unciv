@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.worldscreen.WorldMapHolder
@@ -96,7 +96,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         return toggleIconTable
     }
 
-    fun update(civInfo: CivilizationInfo) {
+    fun update(civInfo: Civilization) {
         rebuildIfSizeChanged()
         isVisible = UncivGame.Current.settings.showMinimap
         if (isVisible) {

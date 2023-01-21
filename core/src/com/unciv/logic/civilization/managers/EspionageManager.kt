@@ -3,7 +3,7 @@ package com.unciv.logic.civilization.managers
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 
 enum class SpyAction(val stringName: String) {
     None("None"),
@@ -23,7 +23,7 @@ class Spy() : IsPartOfGameInfoSerialization {
     var action = SpyAction.None
 
     @Transient
-    lateinit var civInfo: CivilizationInfo
+    lateinit var civInfo: Civilization
 
     constructor(name: String) : this() {
         this.name = name
@@ -37,7 +37,7 @@ class Spy() : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    fun setTransients(civInfo: CivilizationInfo) {
+    fun setTransients(civInfo: Civilization) {
         this.civInfo = civInfo
     }
 
@@ -96,7 +96,7 @@ class EspionageManager : IsPartOfGameInfoSerialization {
     var erasSpyEarnedFor = mutableListOf<String>()
 
     @Transient
-    lateinit var civInfo: CivilizationInfo
+    lateinit var civInfo: Civilization
 
     fun clone(): EspionageManager {
         val toReturn = EspionageManager()
@@ -106,7 +106,7 @@ class EspionageManager : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    fun setTransients(civInfo: CivilizationInfo) {
+    fun setTransients(civInfo: Civilization) {
         this.civInfo = civInfo
         for (spy in spyList) {
             spy.setTransients(civInfo)

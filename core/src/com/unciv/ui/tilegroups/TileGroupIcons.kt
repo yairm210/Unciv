@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
@@ -28,7 +28,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
     var civilianUnitIcon: UnitGroup? = null
     var militaryUnitIcon: UnitGroup? = null
 
-    fun update(showResourcesAndImprovements: Boolean, showTileYields: Boolean, tileIsViewable: Boolean, showMilitaryUnit: Boolean, viewingCiv: CivilizationInfo?) {
+    fun update(showResourcesAndImprovements: Boolean, showTileYields: Boolean, tileIsViewable: Boolean, showMilitaryUnit: Boolean, viewingCiv: Civilization?) {
         updateResourceIcon(showResourcesAndImprovements)
         updateImprovementIcon(showResourcesAndImprovements, viewingCiv)
         updateStartingLocationIcon(showResourcesAndImprovements)
@@ -59,7 +59,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
     }
 
 
-    private fun newUnitIcon(unit: MapUnit?, oldUnitGroup: UnitGroup?, isViewable: Boolean, yFromCenter: Float, viewingCiv: CivilizationInfo?): UnitGroup? {
+    private fun newUnitIcon(unit: MapUnit?, oldUnitGroup: UnitGroup?, isViewable: Boolean, yFromCenter: Float, viewingCiv: Civilization?): UnitGroup? {
         var newImage: UnitGroup? = null
         // The unit can change within one update - for instance, when attacking, the attacker replaces the defender!
         oldUnitGroup?.unitBaseImage?.remove()
@@ -116,7 +116,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
     }
 
 
-    private fun updateImprovementIcon(showResourcesAndImprovements: Boolean, viewingCiv: CivilizationInfo?) {
+    private fun updateImprovementIcon(showResourcesAndImprovements: Boolean, viewingCiv: Civilization?) {
         improvementIcon?.remove()
         improvementIcon = null
         val shownImprovement = tileGroup.tile.getShownImprovement(viewingCiv)
@@ -133,7 +133,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
     }
 
     // JN updating display of tile yields
-    private fun updateYieldIcon(showTileYields: Boolean, viewingCiv: CivilizationInfo) {
+    private fun updateYieldIcon(showTileYields: Boolean, viewingCiv: Civilization) {
 
         // Hiding yield icons (in order to update)
         if (tileGroup.tileYieldGroupInitialized)

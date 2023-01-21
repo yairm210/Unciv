@@ -2,7 +2,7 @@ package com.unciv.logic.civilization.managers
 // Why is this the only file in its own package?
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.RuinReward
 import com.unciv.models.ruleset.unique.StateForConditionals
@@ -18,7 +18,7 @@ class RuinsManager : IsPartOfGameInfoSerialization {
     }
 
     @Transient
-    lateinit var civInfo: CivilizationInfo
+    lateinit var civInfo: Civilization
     @Transient
     lateinit var validRewards: List<RuinReward>
 
@@ -28,7 +28,7 @@ class RuinsManager : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    fun setTransients(civInfo: CivilizationInfo) {
+    fun setTransients(civInfo: Civilization) {
         this.civInfo = civInfo
         validRewards = civInfo.gameInfo.ruleSet.ruinRewards.values.toList()
     }

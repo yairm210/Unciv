@@ -6,7 +6,7 @@ import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.city.managers.CityTurnManager
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivFlags
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
@@ -22,7 +22,7 @@ import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
-class TurnManager(val civInfo: CivilizationInfo) {
+class TurnManager(val civInfo: Civilization) {
 
 
     fun startTurn() {
@@ -81,7 +81,7 @@ class TurnManager(val civInfo: CivilizationInfo) {
             if (!civInfo.flagsCountdown.containsKey(flag)) continue
 
             if (flag == CivFlags.CityStateGreatPersonGift.name) {
-                val cityStateAllies: List<CivilizationInfo> =
+                val cityStateAllies: List<Civilization> =
                         civInfo.getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civInfo.civName }
                 val givingCityState = cityStateAllies.filter { it.cities.isNotEmpty() }.randomOrNull()
 
@@ -205,7 +205,7 @@ class TurnManager(val civInfo: CivilizationInfo) {
 
     fun endTurn() {
         val notificationsLog = civInfo.notificationsLog
-        val notificationsThisTurn = CivilizationInfo.NotificationsLog(civInfo.gameInfo.turns)
+        val notificationsThisTurn = Civilization.NotificationsLog(civInfo.gameInfo.turns)
         notificationsThisTurn.notifications.addAll(civInfo.notifications)
 
         while (notificationsLog.size >= UncivGame.Current.settings.notificationsLogMaxTurns) {

@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.TileMap
 import com.unciv.utils.Log
@@ -22,7 +22,7 @@ enum class TacticalTerritoryType {
 class TacticalDominanceZone {
     var id = "UNKNOWN"
     var territoryType = TacticalTerritoryType.NONE
-    var owner: CivilizationInfo? = null
+    var owner: Civilization? = null
     var city: City? = null
     var area: Int = -1
     var tileCount: Int = 0
@@ -68,7 +68,7 @@ class TacticalDominanceZone {
 class TacticalAnalysisMap {
 
     lateinit var game: GameInfo           // Current game
-    lateinit var player: CivilizationInfo // Current player
+    lateinit var player: Civilization // Current player
 
     var lastUpdate: Int = -1
 
@@ -81,7 +81,7 @@ class TacticalAnalysisMap {
         const val maxZoneSize = 30
     }
 
-    fun reset(player: CivilizationInfo) {
+    fun reset(player: Civilization) {
         this.player = player
         this.game = player.gameInfo
         this.lastUpdate = -1

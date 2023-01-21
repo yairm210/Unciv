@@ -2,7 +2,7 @@ package com.unciv.logic.map.tile
 
 import com.unciv.Constants
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
@@ -12,9 +12,9 @@ import com.unciv.ui.utils.extensions.toPercent
 
 class TileStatFunctions(val tile: Tile) {
 
-    fun getTileStats(observingCiv: CivilizationInfo?): Stats = getTileStats(tile.getCity(), observingCiv)
+    fun getTileStats(observingCiv: Civilization?): Stats = getTileStats(tile.getCity(), observingCiv)
 
-    fun getTileStats(city: City?, observingCiv: CivilizationInfo?,
+    fun getTileStats(city: City?, observingCiv: Civilization?,
                      localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)
     ): Stats {
         var stats = tile.getBaseTerrain().cloneStats()
@@ -93,7 +93,7 @@ class TileStatFunctions(val tile: Tile) {
 
     // Only gets the tile percentage bonus, not the improvement percentage bonus
     @Suppress("MemberVisibilityCanBePrivate")
-    fun getTilePercentageStats(observingCiv: CivilizationInfo?, city: City?): Stats {
+    fun getTilePercentageStats(observingCiv: Civilization?, city: City?): Stats {
         val stats = Stats()
         val stateForConditionals = StateForConditionals(civInfo = observingCiv, city = city, tile = tile)
 

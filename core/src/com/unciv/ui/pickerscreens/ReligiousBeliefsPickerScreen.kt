@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Counter
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
@@ -23,7 +23,7 @@ import com.unciv.ui.utils.extensions.packIfNeeded
 import com.unciv.ui.utils.extensions.surroundWithCircle
 
 class ReligiousBeliefsPickerScreen (
-    choosingCiv: CivilizationInfo,
+    choosingCiv: Civilization,
     newBeliefsToChoose: Counter<BeliefType>,
     pickIconAndName: Boolean
 ): ReligionPickerScreenCommon(choosingCiv, disableScroll = true) {

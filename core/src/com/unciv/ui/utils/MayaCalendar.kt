@@ -2,7 +2,7 @@ package com.unciv.ui.utils
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
@@ -59,7 +59,7 @@ object MayaCalendar {
     // Maya ability implementation
     private fun isNewCycle(year: Int, otherYear: Int) = MayaYear(year).baktuns != MayaYear(otherYear).baktuns
 
-    fun startTurnForMaya(civInfo: CivilizationInfo) {
+    fun startTurnForMaya(civInfo: Civilization) {
         val game = civInfo.gameInfo
         val year = game.getYear()
         if (!isNewCycle(year, game.getYear(-1))) return
@@ -72,7 +72,7 @@ object MayaCalendar {
     }
 
     // User interface to explain changed year display
-    fun openPopup(previousScreen: BaseScreen, civInfo: CivilizationInfo, year: Int) {
+    fun openPopup(previousScreen: BaseScreen, civInfo: Civilization, year: Int) {
         Popup(previousScreen).apply {
             name = "MayaCalendar"
             addGoodSizedLabel("The Mayan Long Count", Constants.headingFontSize).apply {

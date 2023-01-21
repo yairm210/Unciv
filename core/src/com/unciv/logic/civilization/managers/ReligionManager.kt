@@ -3,7 +3,7 @@ package com.unciv.logic.civilization.managers
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.Counter
 import com.unciv.models.Religion
@@ -19,7 +19,7 @@ import kotlin.random.Random
 class ReligionManager : IsPartOfGameInfoSerialization {
 
     @Transient
-    lateinit var civInfo: CivilizationInfo
+    lateinit var civInfo: Civilization
 
     var storedFaith = 0
 
@@ -60,7 +60,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         return clone
     }
 
-    fun setTransients(civInfo: CivilizationInfo) {
+    fun setTransients(civInfo: Civilization) {
         this.civInfo = civInfo
         // Find our religion from the map of founded religions.
         // First check if there is any major religion

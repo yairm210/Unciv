@@ -2,7 +2,7 @@ package com.unciv.logic.civilization.transients
 
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
@@ -15,7 +15,7 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 
 /** CivInfo class was getting too crowded */
-class CivInfoTransientCache(val civInfo: CivilizationInfo) {
+class CivInfoTransientCache(val civInfo: Civilization) {
 
     @Transient
     var lastEraResourceUsedForBuilding = java.util.HashMap<String, Int>()
@@ -62,7 +62,7 @@ class CivInfoTransientCache(val civInfo: CivilizationInfo) {
         civInfo.addExploredTiles(newlyExploredTiles)
 
 
-        val viewedCivs = HashMap<CivilizationInfo, Tile>()
+        val viewedCivs = HashMap<Civilization, Tile>()
         for (tile in civInfo.viewableTiles) {
             val tileOwner = tile.getOwner()
             if (tileOwner != null) viewedCivs[tileOwner] = tile
@@ -266,7 +266,7 @@ class CivInfoTransientCache(val civInfo: CivilizationInfo) {
     }
 
 
-    fun updateProximity(otherCiv: CivilizationInfo, preCalculated: Proximity? = null): Proximity {
+    fun updateProximity(otherCiv: Civilization, preCalculated: Proximity? = null): Proximity {
         if (otherCiv == civInfo)   return Proximity.None
         if (preCalculated != null) {
             // We usually want to update this for a pair of civs at the same time

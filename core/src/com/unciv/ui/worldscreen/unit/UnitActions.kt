@@ -5,7 +5,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
@@ -224,7 +224,7 @@ object UnitActions {
      * @param tile The tile where the new city would go
      * @return null if no promises broken, else a String listing the leader(s) we would p* off.
      */
-    private fun testPromiseNotToSettle(civInfo: CivilizationInfo, tile: Tile): String? {
+    private fun testPromiseNotToSettle(civInfo: Civilization, tile: Tile): String? {
         val brokenPromises = HashSet<String>()
         for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() && !civInfo.isAtWarWith(it) }) {
             val diplomacyManager = otherCiv.getDiplomacyManager(civInfo)
@@ -879,7 +879,7 @@ object UnitActions {
         val tilesToTakeOver = unit.currentTile.getTilesInDistance(1)
                 .filter { !it.isCityCenter() && it.getOwner() != unit.civInfo }
 
-        val civsToNotify = mutableSetOf<CivilizationInfo>()
+        val civsToNotify = mutableSetOf<Civilization>()
         for (tile in tilesToTakeOver) {
             val otherCiv = tile.getOwner()
             if (otherCiv != null) {

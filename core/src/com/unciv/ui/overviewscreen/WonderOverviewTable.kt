@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tech.Era
@@ -19,7 +19,7 @@ import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
 
 class WonderOverviewTab(
-    viewingPlayer: CivilizationInfo,
+    viewingPlayer: Civilization,
     overviewScreen: EmpireOverviewScreen
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
     val ruleSet = gameInfo.ruleSet
@@ -113,7 +113,7 @@ class WonderInfo {
         val groupName: String,
         val groupColor: Color,
         val status: WonderStatus,
-        val civ: CivilizationInfo?,
+        val civ: Civilization?,
         val city: City?,
         val location: Tile?
     ) {

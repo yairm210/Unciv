@@ -1,6 +1,6 @@
 package com.unciv.logic.city
 
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
@@ -23,7 +23,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     val hurryCostModifier: Int
     var requiredTech: String?
 
-    fun getProductionCost(civInfo: CivilizationInfo): Int
+    fun getProductionCost(civInfo: Civilization): Int
     fun getStatBuyCost(city: City, stat: Stat): Int?
     fun getRejectionReasons(cityConstructions: CityConstructions): RejectionReasons
     fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat? = null): Boolean  // Yes I'm hilarious.
@@ -54,7 +54,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         return Stat.values().any { canBePurchasedWithStat(city, it) }
     }
 
-    fun getBaseGoldCost(civInfo: CivilizationInfo): Double {
+    fun getBaseGoldCost(civInfo: Civilization): Double {
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
         return (30.0 * getProductionCost(civInfo)).pow(0.75) * hurryCostModifier.toPercent()
     }

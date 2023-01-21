@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.Spy
 import com.unciv.logic.civilization.managers.SpyAction
 import com.unciv.models.translations.tr
@@ -25,7 +25,7 @@ import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
 
 /** Screen used for moving spies between cities */
-class EspionageOverviewScreen(val civInfo: CivilizationInfo) : PickerScreen(true) {
+class EspionageOverviewScreen(val civInfo: Civilization) : PickerScreen(true) {
     private val collator = UncivGame.Current.settings.getCollatorFromLocale()
 
     private val spySelectionTable = Table(skin)

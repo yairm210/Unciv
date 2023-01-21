@@ -5,7 +5,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.MapResources
@@ -233,7 +233,7 @@ open class Tile : IsPartOfGameInfoSerialization {
             if (naturalWonder == null) throw Exception("No natural wonder exists for this tile!")
             else ruleset.terrains[naturalWonder!!]!!
 
-    fun isVisible(player: CivilizationInfo): Boolean {
+    fun isVisible(player: Civilization): Boolean {
         if (UncivGame.Current.viewEntireMapForDebug)
             return true
         return player.viewableTiles.contains(this)
@@ -304,7 +304,7 @@ open class Tile : IsPartOfGameInfoSerialization {
     }
 
     // function handling when adding a road to the tile
-    fun addRoad(roadType: RoadStatus, unitCivInfo: CivilizationInfo) {
+    fun addRoad(roadType: RoadStatus, unitCivInfo: Civilization) {
         roadStatus = roadType
         roadIsPillaged = false
         if (getOwner() == null) {
@@ -324,7 +324,7 @@ open class Tile : IsPartOfGameInfoSerialization {
             getRoadOwner()?.neutralRoads?.remove(this.position)
     }
 
-    fun getShownImprovement(viewingCiv: CivilizationInfo?): String? {
+    fun getShownImprovement(viewingCiv: Civilization?): String? {
         return if (viewingCiv == null || viewingCiv.playerType == PlayerType.AI || viewingCiv.isSpectator())
             improvement
         else
@@ -364,19 +364,19 @@ open class Tile : IsPartOfGameInfoSerialization {
 
     fun getBaseTerrain(): Terrain = baseTerrainObject
 
-    fun getOwner(): CivilizationInfo? {
+    fun getOwner(): Civilization? {
         val containingCity = getCity() ?: return null
         return containingCity.civInfo
     }
 
-    fun getRoadOwner(): CivilizationInfo? {
+    fun getRoadOwner(): Civilization? {
         return if (roadOwner != "")
             tileMap.gameInfo.getCivilization(roadOwner)
         else
             getOwner()
     }
 
-    fun isFriendlyTerritory(civInfo: CivilizationInfo): Boolean {
+    fun isFriendlyTerritory(civInfo: Civilization): Boolean {
         val tileOwner = getOwner()
         return when {
             tileOwner == null -> false
@@ -386,7 +386,7 @@ open class Tile : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun isEnemyTerritory(civInfo: CivilizationInfo): Boolean {
+    fun isEnemyTerritory(civInfo: Civilization): Boolean {
         val tileOwner = getOwner() ?: return false
         return civInfo.isAtWarWith(tileOwner)
     }
@@ -454,14 +454,14 @@ open class Tile : IsPartOfGameInfoSerialization {
     }
 
     /** Implements [UniqueParameterType.TileFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TileFilter] */
-    fun matchesFilter(filter: String, civInfo: CivilizationInfo? = null): Boolean {
+    fun matchesFilter(filter: String, civInfo: Civilization? = null): Boolean {
         if (matchesTerrainFilter(filter, civInfo)) return true
         if (improvement != null && !improvementIsPillaged && ruleset.tileImprovements[improvement]!!.matchesFilter(filter)) return true
         return improvement == null && filter == "unimproved"
     }
 
     /** Implements [UniqueParameterType.TerrainFilter][com.unciv.models.ruleset.unique.UniqueParameterType.TerrainFilter] */
-    fun matchesTerrainFilter(filter: String, observingCiv: CivilizationInfo? = null): Boolean {
+    fun matchesTerrainFilter(filter: String, observingCiv: Civilization? = null): Boolean {
         return when (filter) {
             "All" -> true
             baseTerrain -> true
@@ -511,7 +511,7 @@ open class Tile : IsPartOfGameInfoSerialization {
     private val _isCoastalTile: Boolean by lazy { neighbors.any { it.baseTerrain == Constants.coast } }
     fun isCoastalTile() = _isCoastalTile
 
-    fun hasViewableResource(civInfo: CivilizationInfo): Boolean =
+    fun hasViewableResource(civInfo: Civilization): Boolean =
             resource != null && (tileResource.revealedBy == null || civInfo.tech.isResearched(
                 tileResource.revealedBy!!))
 
@@ -617,7 +617,7 @@ open class Tile : IsPartOfGameInfoSerialization {
      * @returns whether units of [civInfo] can pass through this tile, considering only civ-wide filters.
      * Use [UnitMovementAlgorithms.canPassThrough] to check whether a specific unit can pass through a tile.
      */
-    fun canCivPassThrough(civInfo: CivilizationInfo): Boolean {
+    fun canCivPassThrough(civInfo: Civilization): Boolean {
         val tileOwner = getOwner()
         // comparing the CivInfo objects is cheaper than comparing strings
         if (tileOwner == null || tileOwner == civInfo) return true
@@ -628,7 +628,7 @@ open class Tile : IsPartOfGameInfoSerialization {
     }
 
     /** Get info on a selected tile, used on WorldScreen (right side above minimap), CityScreen or MapEditorViewTab. */
-    fun toMarkup(viewingCiv: CivilizationInfo?): ArrayList<FormattedLine> {
+    fun toMarkup(viewingCiv: Civilization?): ArrayList<FormattedLine> {
         val lineList = ArrayList<FormattedLine>()
         val isViewableToPlayer = viewingCiv == null || UncivGame.Current.viewEntireMapForDebug
                 || viewingCiv.viewableTiles.contains(this)
@@ -703,7 +703,7 @@ open class Tile : IsPartOfGameInfoSerialization {
         return lineList
     }
 
-    fun hasEnemyInvisibleUnit(viewingCiv: CivilizationInfo): Boolean {
+    fun hasEnemyInvisibleUnit(viewingCiv: Civilization): Boolean {
         val unitsInTile = getUnits()
         if (unitsInTile.none()) return false
         if (unitsInTile.first().civInfo != viewingCiv &&
@@ -713,11 +713,11 @@ open class Tile : IsPartOfGameInfoSerialization {
         return false
     }
 
-    fun hasConnection(civInfo: CivilizationInfo) =
+    fun hasConnection(civInfo: Civilization) =
             getUnpillagedRoad() != RoadStatus.None || forestOrJungleAreRoads(civInfo)
 
 
-    private fun forestOrJungleAreRoads(civInfo: CivilizationInfo) =
+    private fun forestOrJungleAreRoads(civInfo: Civilization) =
             civInfo.nation.forestsAndJunglesAreRoads
                     && (terrainFeatures.contains(Constants.jungle) || terrainFeatures.contains(Constants.forest))
                     && isFriendlyTerritory(civInfo)
@@ -868,7 +868,7 @@ open class Tile : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun startWorkingOnImprovement(improvement: TileImprovement, civInfo: CivilizationInfo, unit: MapUnit) {
+    fun startWorkingOnImprovement(improvement: TileImprovement, civInfo: Civilization, unit: MapUnit) {
         improvementInProgress = improvement.name
         turnsToImprovement = if (civInfo.gameInfo.gameParameters.godMode) 1
             else improvement.getTurnsToBuild(civInfo, unit)

@@ -11,7 +11,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityFlags
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.CityScreen
@@ -27,7 +27,7 @@ import com.unciv.ui.utils.extensions.toTextButton
 import kotlin.math.roundToInt
 
 class CityOverviewTab(
-    viewingPlayer: CivilizationInfo,
+    viewingPlayer: Civilization,
     overviewScreen: EmpireOverviewScreen,
     persistedData: EmpireOverviewTabPersistableData? = null
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {

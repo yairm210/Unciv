@@ -1,7 +1,7 @@
 package com.unciv.logic.battle
 
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unique.StateForConditionals
@@ -17,11 +17,11 @@ class CityCombatant(val city: City) : ICombatant {
     }
 
     override fun getHealth(): Int = city.health
-    override fun getCivInfo(): CivilizationInfo = city.civInfo
+    override fun getCivInfo(): Civilization = city.civInfo
     override fun getTile(): Tile = city.getCenterTile()
     override fun getName(): String = city.name
     override fun isDefeated(): Boolean = city.health == 1
-    override fun isInvisible(to: CivilizationInfo): Boolean = false
+    override fun isInvisible(to: Civilization): Boolean = false
     override fun canAttack(): Boolean = city.canBombard()
     override fun matchesCategory(category: String) = category == "City" || category == "All"
     override fun getAttackSound() = UncivSound.Bombard

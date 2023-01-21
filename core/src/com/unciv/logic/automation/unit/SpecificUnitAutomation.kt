@@ -6,7 +6,7 @@ import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.GreatGeneralImplementation
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.mapunit.MapUnit
@@ -22,7 +22,7 @@ import kotlin.math.min
 
 object SpecificUnitAutomation {
 
-    private fun hasWorkableSeaResource(tile: Tile, civInfo: CivilizationInfo): Boolean =
+    private fun hasWorkableSeaResource(tile: Tile, civInfo: Civilization): Boolean =
             tile.isWater && tile.improvement == null && tile.hasViewableResource(civInfo)
 
     fun automateWorkBoats(unit: MapUnit) {

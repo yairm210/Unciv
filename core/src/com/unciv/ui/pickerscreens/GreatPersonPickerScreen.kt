@@ -1,7 +1,7 @@
 package com.unciv.ui.pickerscreens
 
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
@@ -9,7 +9,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.extensions.isEnabled
 import com.unciv.ui.utils.extensions.onClick
 
-class GreatPersonPickerScreen(val civInfo:CivilizationInfo) : PickerScreen() {
+class GreatPersonPickerScreen(val civInfo:Civilization) : PickerScreen() {
     private var theChosenOne: BaseUnit? = null
 
     init {

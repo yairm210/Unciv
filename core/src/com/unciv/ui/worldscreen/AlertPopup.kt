@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.AlertType
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.PopupAlert
@@ -61,7 +61,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
         return button
     }
 
-    private fun addLeaderName(civInfo: CivilizationInfo) {
+    private fun addLeaderName(civInfo: Civilization) {
         add(LeaderIntroTable(civInfo))
         addSeparator()
     }

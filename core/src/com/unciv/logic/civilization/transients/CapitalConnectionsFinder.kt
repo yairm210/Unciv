@@ -1,7 +1,7 @@
 package com.unciv.logic.civilization.transients
 
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.tile.RoadStatus
@@ -9,7 +9,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.collections.set
 
-class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
+class CapitalConnectionsFinder(private val civInfo: Civilization) {
     private val citiesReachedToMediums = HashMap<City, MutableSet<String>>()
     private var citiesToCheck = mutableListOf(civInfo.getCapital()!!)
     private lateinit var newCitiesToCheck: MutableList<City>
@@ -128,7 +128,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
     }
 
 
-    private fun canEnterBordersOf(otherCiv: CivilizationInfo): Boolean {
+    private fun canEnterBordersOf(otherCiv: Civilization): Boolean {
         if (otherCiv == civInfo) return true // own borders are always open
         if (otherCiv.isBarbarian() || civInfo.isBarbarian()) return false // barbarians blocks the routes
         val diplomacyManager = civInfo.diplomacy[otherCiv.civName]

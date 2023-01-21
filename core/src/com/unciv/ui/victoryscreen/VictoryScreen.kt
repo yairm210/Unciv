@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.translations.tr
@@ -160,7 +160,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         contentsTable.add(globalVictoryTable)
     }
 
-    private fun getGlobalVictoryColumn(majorCivs: List<CivilizationInfo>, victory: String): Table {
+    private fun getGlobalVictoryColumn(majorCivs: List<Civilization>, victory: String): Table {
         val victoryColumn = Table().apply { defaults().pad(10f) }
 
         victoryColumn.add("[$victory] Victory".toLabel()).row()
@@ -188,7 +188,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
     }
 
     enum class RankLabels { Rank, Value, Best, Average, Worst}
-    private fun buildDemographicsTable(majorCivs: List<CivilizationInfo>): Table {
+    private fun buildDemographicsTable(majorCivs: List<Civilization>): Table {
         val demographicsTable = Table().apply { defaults().pad(5f) }
         buildDemographicsHeaders(demographicsTable)
 
@@ -199,7 +199,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
             for (category in RankingType.values()) {
                 val aliveMajorCivsSorted = majorCivs.filter{ it.isAlive() }.sortedByDescending { it.getStatForRanking(category) }
 
-                fun addRankCivGroup(civ: CivilizationInfo) { // local function for reuse of getting and formatting civ stats
+                fun addRankCivGroup(civ: Civilization) { // local function for reuse of getting and formatting civ stats
                     demographicsTable.add(getCivGroup(civ, ": " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX()
                 }
 
@@ -236,7 +236,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         }
     }
 
-    private fun buildRankingsTable(majorCivs: List<CivilizationInfo>): Table {
+    private fun buildRankingsTable(majorCivs: List<Civilization>): Table {
         val rankingsTable = Table().apply { defaults().pad(5f) }
 
         for (category in RankingType.values()) {
@@ -258,7 +258,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         return rankingsTable
     }
 
-    private fun getCivGroup(civ: CivilizationInfo, afterCivNameText: String, currentPlayer: CivilizationInfo): Table {
+    private fun getCivGroup(civ: Civilization, afterCivNameText: String, currentPlayer: Civilization): Table {
         val civGroup = Table()
 
         var labelText = "{${civ.civName.tr()}}{${afterCivNameText.tr()}}"

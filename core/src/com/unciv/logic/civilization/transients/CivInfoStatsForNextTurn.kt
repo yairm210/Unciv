@@ -1,7 +1,7 @@
 package com.unciv.logic.civilization.transients
 
 import com.unciv.Constants
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.tile.RoadStatus
@@ -19,7 +19,7 @@ import kotlin.math.min
 import kotlin.math.pow
 
 /** CivInfo class was getting too crowded */
-class CivInfoStatsForNextTurn(val civInfo: CivilizationInfo) {
+class CivInfoStatsForNextTurn(val civInfo: Civilization) {
 
     @Transient
     /** Happiness for next turn */

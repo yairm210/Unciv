@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
@@ -46,7 +46,7 @@ class MapEditorViewTab(
         update()
     }
 
-    private fun createMockCiv(ruleset: Ruleset) = CivilizationInfo().apply {
+    private fun createMockCiv(ruleset: Ruleset) = Civilization().apply {
         // This crappy construct exists only to allow us to call TileInfo.getTileStats
         nation = Nation()
         nation.name = "Test"
@@ -56,7 +56,7 @@ class MapEditorViewTab(
         tech.techsResearched.addAll(ruleset.technologies.keys)
     }
 
-    private fun CivilizationInfo.updateMockCiv(ruleset: Ruleset) {
+    private fun Civilization.updateMockCiv(ruleset: Ruleset) {
         if (gameInfo.ruleSet === ruleset) return
         gameInfo.ruleSet = ruleset
         tech.techsResearched.addAll(ruleset.technologies.keys)

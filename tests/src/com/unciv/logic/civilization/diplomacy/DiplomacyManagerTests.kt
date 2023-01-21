@@ -2,7 +2,7 @@ package com.unciv.logic.civilization.diplomacy
 
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.testing.GdxTestRunner
 import io.mockk.every
@@ -21,7 +21,7 @@ class DiplomacyManagerTests {
     private val slot = slot<String>()
 
     private val testCivilizationNames = arrayListOf("Russia", "America", "Germany", "Greece", "Babylon")
-    private val civilizations = testCivilizationNames.associateWith { CivilizationInfo(it) }
+    private val civilizations = testCivilizationNames.associateWith { Civilization(it) }
 
     private fun meetByName(civilization: String, civilizationToMeet: String) {
         civilizations.getValue(civilization)
@@ -33,8 +33,8 @@ class DiplomacyManagerTests {
         // Setup the GameInfo mock
         every { mockGameInfo.getCivilization(capture(slot)) } answers { civilizations.getValue(slot.captured) }
         // Just return the default CivilizationInfo, since the .meetCivilization() includes the tutorial logic and crashes otherwise
-        every { mockGameInfo.getCurrentPlayerCivilization() } returns CivilizationInfo()
-        every { mockGameInfo.currentPlayerCiv } returns CivilizationInfo()
+        every { mockGameInfo.getCurrentPlayerCivilization() } returns Civilization()
+        every { mockGameInfo.currentPlayerCiv } returns Civilization()
 
         // Initialize test civilizations so they pass certain criteria
         civilizations.values.forEach {

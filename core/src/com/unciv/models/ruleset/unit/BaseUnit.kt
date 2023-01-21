@@ -5,7 +5,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.RejectionReason
 import com.unciv.logic.city.RejectionReasons
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
@@ -234,7 +234,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return textList
     }
 
-    fun getMapUnit(civInfo: CivilizationInfo): MapUnit {
+    fun getMapUnit(civInfo: Civilization): MapUnit {
         val unit = MapUnit()
         unit.name = name
         unit.civInfo = civInfo
@@ -247,7 +247,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return unit
     }
 
-    override fun getProductionCost(civInfo: CivilizationInfo): Int {
+    override fun getProductionCost(civInfo: Civilization): Int {
         var productionCost = cost.toFloat()
         if (civInfo.isCityState())
             productionCost *= 1.5f
@@ -351,7 +351,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return (cost / 10f).toInt() * 10
     }
 
-    fun getDisbandGold(civInfo: CivilizationInfo) = getBaseGoldCost(civInfo).toInt() / 20
+    fun getDisbandGold(civInfo: Civilization) = getBaseGoldCost(civInfo).toInt() / 20
 
     override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
         val rejectionReasons = getRejectionReasons(cityConstructions)
@@ -392,7 +392,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return rejectionReasons
     }
 
-    fun getRejectionReasons(civInfo: CivilizationInfo): RejectionReasons {
+    fun getRejectionReasons(civInfo: Civilization): RejectionReasons {
         val rejectionReasons = RejectionReasons()
         val ruleSet = civInfo.gameInfo.ruleSet
 
@@ -444,7 +444,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return rejectionReasons
     }
 
-    fun isBuildable(civInfo: CivilizationInfo) = getRejectionReasons(civInfo).isEmpty()
+    fun isBuildable(civInfo: Civilization) = getRejectionReasons(civInfo).isEmpty()
 
     override fun isBuildable(cityConstructions: CityConstructions): Boolean {
         return getRejectionReasons(cityConstructions).isEmpty()

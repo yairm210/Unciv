@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.map.HexMath
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.helpers.MapArrowType
@@ -221,7 +221,7 @@ open class TileGroup(
     }
 
 
-    private fun getTileBaseImageLocations(viewingCiv: CivilizationInfo?): List<String> {
+    private fun getTileBaseImageLocations(viewingCiv: Civilization?): List<String> {
         if (viewingCiv == null && !showEntireMap) return tileSetStrings.hexagonList
 
         val baseHexagon = if (tileSetStrings.tileSetConfig.useColorAsBaseTerrain)
@@ -283,7 +283,7 @@ open class TileGroup(
         hexagonImage.setScale(scale ?: tileSetStrings.tileSetConfig.tileScale)
     }
 
-    private fun updateTileImage(viewingCiv: CivilizationInfo?) {
+    private fun updateTileImage(viewingCiv: Civilization?) {
         val tileBaseImageLocations = getTileBaseImageLocations(viewingCiv)
 
         if (tileBaseImageLocations.size == tileImageIdentifiers.size) {
@@ -328,19 +328,19 @@ open class TileGroup(
         }
     }
 
-    fun showMilitaryUnit(viewingCiv: CivilizationInfo) = showEntireMap
+    fun showMilitaryUnit(viewingCiv: Civilization) = showEntireMap
             || viewingCiv.viewableInvisibleUnitsTiles.contains(tile)
             || !tile.hasEnemyInvisibleUnit(viewingCiv)
 
-    fun isViewable(viewingCiv: CivilizationInfo) = showEntireMap
+    fun isViewable(viewingCiv: Civilization) = showEntireMap
             || viewingCiv.viewableTiles.contains(tile)
             || viewingCiv.isSpectator()
 
-    fun isExplored(viewingCiv: CivilizationInfo) = showEntireMap
+    fun isExplored(viewingCiv: Civilization) = showEntireMap
             || viewingCiv.hasExplored(tile)
             || viewingCiv.isSpectator()
 
-    open fun update(viewingCiv: CivilizationInfo? = null, showResourcesAndImprovements: Boolean = true, showTileYields: Boolean = true) {
+    open fun update(viewingCiv: Civilization? = null, showResourcesAndImprovements: Boolean = true, showTileYields: Boolean = true) {
 
         @Suppress("BooleanLiteralArgument")  // readable enough as is
         fun clearUnexploredTiles() {
@@ -409,7 +409,7 @@ open class TileGroup(
         borderSegments.clear()
     }
 
-    private var previousTileOwner: CivilizationInfo? = null
+    private var previousTileOwner: Civilization? = null
     private fun updateBorderImages() {
         // This is longer than it could be, because of performance -
         // before fixing, about half (!) the time of update() was wasted on

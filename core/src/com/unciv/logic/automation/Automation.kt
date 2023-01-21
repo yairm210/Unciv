@@ -3,7 +3,7 @@ package com.unciv.logic.automation
 import com.unciv.logic.city.CityFocus
 import com.unciv.logic.city.City
 import com.unciv.logic.city.INonPerpetualConstruction
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
@@ -113,7 +113,7 @@ object Automation {
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
-    fun providesUnneededCarryingSlots(baseUnit: BaseUnit, civInfo: CivilizationInfo): Boolean {
+    fun providesUnneededCarryingSlots(baseUnit: BaseUnit, civInfo: Civilization): Boolean {
         // Simplified, will not work for crazy mods with more than one carrying filter for a unit
         val carryUnique = baseUnit.getMatchingUniques(UniqueType.CarryAirUnits).first()
         val carryFilter = carryUnique.params[1]
@@ -189,7 +189,7 @@ object Automation {
     }
 
     /** Determines whether [civInfo] should be allocating military to fending off barbarians */
-    fun afraidOfBarbarians(civInfo: CivilizationInfo): Boolean {
+    fun afraidOfBarbarians(civInfo: Civilization): Boolean {
         if (civInfo.isCityState() || civInfo.isBarbarian())
             return false
 
@@ -226,7 +226,7 @@ object Automation {
      *  and resource scarcity making a construction undesirable.
      */
     fun allowAutomatedConstruction(
-        civInfo: CivilizationInfo,
+        civInfo: Civilization,
         city: City,
         construction: INonPerpetualConstruction
     ): Boolean {
@@ -238,7 +238,7 @@ object Automation {
     /** Checks both feasibility of Buildings with a [UniqueType.CreatesOneImprovement] unique (appropriate tile available).
      *  Constructions without pass uncontested. */
     fun allowCreateImprovementBuildings(
-        civInfo: CivilizationInfo,
+        civInfo: Civilization,
         city: City,
         construction: INonPerpetualConstruction
     ): Boolean {
@@ -252,7 +252,7 @@ object Automation {
 
     /** Determines whether the AI should be willing to spend strategic resources to build
      *  [construction] for [civInfo], assumes that we are actually able to do so. */
-    fun allowSpendingResource(civInfo: CivilizationInfo, construction: INonPerpetualConstruction): Boolean {
+    fun allowSpendingResource(civInfo: Civilization, construction: INonPerpetualConstruction): Boolean {
         // City states do whatever they want
         if (civInfo.isCityState())
             return true
@@ -319,11 +319,11 @@ object Automation {
         return true
     }
 
-    fun getReservedSpaceResourceAmount(civInfo: CivilizationInfo): Int {
+    fun getReservedSpaceResourceAmount(civInfo: Civilization): Int {
         return if (civInfo.wantsToFocusOn(Victory.Focus.Science)) 3 else 2
     }
 
-    fun threatAssessment(assessor: CivilizationInfo, assessed: CivilizationInfo): ThreatLevel {
+    fun threatAssessment(assessor: Civilization, assessed: Civilization): ThreatLevel {
         val powerLevelComparison =
             assessed.getStatForRanking(RankingType.Force) / assessor.getStatForRanking(RankingType.Force).toFloat()
         return when {
@@ -345,7 +345,7 @@ object Automation {
     }
 
     // Ranks a tile for any purpose except the expansion algorithm of cities
-    internal fun rankTile(tile: Tile?, civInfo: CivilizationInfo): Float {
+    internal fun rankTile(tile: Tile?, civInfo: Civilization): Float {
         if (tile == null) return 0f
         val tileOwner = tile.getOwner()
         if (tileOwner != null && tileOwner != civInfo) return 0f // Already belongs to another civilization, useless to us
@@ -426,7 +426,7 @@ object Automation {
         return score
     }
 
-    fun rankStatsValue(stats: Stats, civInfo: CivilizationInfo): Float {
+    fun rankStatsValue(stats: Stats, civInfo: Civilization): Float {
         var rank = 0.0f
         rank += if (stats.food <= 2)
                     (stats.food * 1.2f) //food get more value to keep city growing

@@ -5,7 +5,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.city.CityFlags
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
@@ -25,7 +25,7 @@ import kotlin.random.Random
 class CityInfoConquestFunctions(val city: City){
     private val tileBasedRandom = Random(city.getCenterTile().position.toString().hashCode())
 
-    private fun getGoldForCapturingCity(conqueringCiv: CivilizationInfo): Int {
+    private fun getGoldForCapturingCity(conqueringCiv: Civilization): Int {
         val baseGold = 20 + 10 * city.population.population + tileBasedRandom.nextInt(40)
         val turnModifier = max(0, min(50, city.civInfo.gameInfo.turns - city.turnAcquired)) / 50f
         val cityModifier = if (city.containsBuildingUnique(UniqueType.DoublesGoldFromCapturingCity)) 2f else 1f
@@ -54,7 +54,7 @@ class CityInfoConquestFunctions(val city: City){
         }
     }
 
-    private fun removeBuildingsOnMoveToCiv(oldCiv: CivilizationInfo) {
+    private fun removeBuildingsOnMoveToCiv(oldCiv: Civilization) {
         city.apply {
             // Remove all buildings provided for free to this city
             for (building in civInfo.civConstructions.getFreeBuildings(id)) {
@@ -96,7 +96,7 @@ class CityInfoConquestFunctions(val city: City){
      * Stuff that should happen any time a city is moved between civs, so also when trading,
      * should go in `this.moveToCiv()`, which this function also calls.
      */
-    private fun conquerCity(conqueringCiv: CivilizationInfo, conqueredCiv: CivilizationInfo, receivingCiv: CivilizationInfo) {
+    private fun conquerCity(conqueringCiv: Civilization, conqueredCiv: Civilization, receivingCiv: Civilization) {
         val goldPlundered = getGoldForCapturingCity(conqueringCiv)
         city.apply {
             conqueringCiv.addGold(goldPlundered)
@@ -132,7 +132,7 @@ class CityInfoConquestFunctions(val city: City){
 
 
     /** This happens when we either puppet OR annex, basically whenever we conquer a city and don't liberate it */
-    fun puppetCity(conqueringCiv: CivilizationInfo) {
+    fun puppetCity(conqueringCiv: Civilization) {
         // Gain gold for plundering city
         @Suppress("UNUSED_VARIABLE")  // todo: use this val
         val goldPlundered = getGoldForCapturingCity(conqueringCiv)
@@ -165,7 +165,7 @@ class CityInfoConquestFunctions(val city: City){
         }
     }
 
-    private fun diplomaticRepercussionsForConqueringCity(oldCiv: CivilizationInfo, conqueringCiv: CivilizationInfo) {
+    private fun diplomaticRepercussionsForConqueringCity(oldCiv: Civilization, conqueringCiv: Civilization) {
         val currentPopulation = city.population.population
         val percentageOfCivPopulationInThatCity = currentPopulation * 100f /
                 oldCiv.cities.sumOf { it.population.population }
@@ -189,7 +189,7 @@ class CityInfoConquestFunctions(val city: City){
         }
     }
 
-    fun liberateCity(conqueringCiv: CivilizationInfo) {
+    fun liberateCity(conqueringCiv: Civilization) {
         city.apply {
             if (foundingCiv == "") { // this should never happen but just in case...
                 this@CityInfoConquestFunctions.puppetCity(conqueringCiv)
@@ -238,7 +238,7 @@ class CityInfoConquestFunctions(val city: City){
     }
 
 
-    private fun diplomaticRepercussionsForLiberatingCity(conqueringCiv: CivilizationInfo, conqueredCiv: CivilizationInfo) {
+    private fun diplomaticRepercussionsForLiberatingCity(conqueringCiv: Civilization, conqueredCiv: Civilization) {
         val foundingCiv = conqueredCiv.gameInfo.civilizations.first { it.civName == city.foundingCiv }
         val percentageOfCivPopulationInThatCity = city.population.population *
                 100f / (foundingCiv.cities.sumOf { it.population.population } + city.population.population)
@@ -270,7 +270,7 @@ class CityInfoConquestFunctions(val city: City){
     }
 
 
-    fun moveToCiv(newCivInfo: CivilizationInfo) {
+    fun moveToCiv(newCivInfo: Civilization) {
         city.apply {
             val oldCiv = civInfo
 

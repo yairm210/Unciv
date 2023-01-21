@@ -2,7 +2,7 @@ package com.unciv.logic.city.managers
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.managers.ReligionState
@@ -10,7 +10,7 @@ import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.unique.UniqueType
 
 class CityFounder {
-    fun foundCity(civInfo: CivilizationInfo, cityLocation: Vector2) :City{
+    fun foundCity(civInfo: Civilization, cityLocation: Vector2) :City{
         val city = City()
 
         city.foundingCiv = civInfo.civName
@@ -101,8 +101,8 @@ class CityFounder {
      * @return A new city name in [String]. Null if failed to generate a name.
      */
     private fun generateNewCityName(
-        foundingCiv: CivilizationInfo,
-        aliveCivs: Set<CivilizationInfo>,
+        foundingCiv: Civilization,
+        aliveCivs: Set<Civilization>,
         prefixes: List<String>
     ): String? {
         val usedCityNames: Set<String> =
@@ -148,8 +148,8 @@ class CityFounder {
      * @return A new city named in [String]. Null if failed to generate a name.
      */
     private fun borrowCityName(
-        foundingCiv: CivilizationInfo,
-        aliveCivs: Set<CivilizationInfo>,
+        foundingCiv: Civilization,
+        aliveCivs: Set<Civilization>,
         usedCityNames: Set<String>
     ): String? {
         val aliveMajorNations: Sequence<Nation> =
@@ -186,7 +186,7 @@ class CityFounder {
     }
 
 
-    private fun addStartingBuildings(city: City, civInfo: CivilizationInfo, startingEra: String) {
+    private fun addStartingBuildings(city: City, civInfo: Civilization, startingEra: String) {
         val ruleset = civInfo.gameInfo.ruleSet
         if (civInfo.cities.size == 1) city.cityConstructions.addBuilding(city.capitalCityIndicator())
 

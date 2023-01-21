@@ -2,7 +2,7 @@ package com.unciv.ui.overviewscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.overviewscreen.EmpireOverviewTab.EmpireOverviewTabPersistableData
 import com.unciv.ui.utils.BaseScreen
@@ -11,7 +11,7 @@ import com.unciv.ui.utils.RecreateOnResize
 import com.unciv.ui.utils.TabbedPager
 
 class EmpireOverviewScreen(
-    private var viewingPlayer: CivilizationInfo,
+    private var viewingPlayer: Civilization,
     defaultPage: String = "",
     selection: String = ""
 ) : BaseScreen(), RecreateOnResize {

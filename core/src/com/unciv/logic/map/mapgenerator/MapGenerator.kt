@@ -2,7 +2,7 @@ package com.unciv.logic.map.mapgenerator
 
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
@@ -80,7 +80,7 @@ class MapGenerator(val ruleset: Ruleset) {
         getMatchingUniques(UniqueType.TileGenerationConditions)
             .map { unique -> TerrainOccursRange(this, unique) }
 
-    fun generateMap(mapParameters: MapParameters, gameParameters: GameParameters = GameParameters(), civilizations: List<CivilizationInfo> = emptyList()): TileMap {
+    fun generateMap(mapParameters: MapParameters, gameParameters: GameParameters = GameParameters(), civilizations: List<Civilization> = emptyList()): TileMap {
         val mapSize = mapParameters.mapSize
         val mapType = mapParameters.type
 

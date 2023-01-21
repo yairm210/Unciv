@@ -1,6 +1,6 @@
 package com.unciv.models.ruleset.tile
 
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
@@ -129,7 +129,7 @@ class TileResource : RulesetStatsObject() {
         return getImprovements().contains(improvementName)
     }
 
-    fun getImprovingImprovement(tile: Tile, civInfo: CivilizationInfo): String? {
+    fun getImprovingImprovement(tile: Tile, civInfo: Civilization): String? {
         return getImprovements().firstOrNull {
             tile.improvementFunctions.canBuildImprovement(civInfo.gameInfo.ruleSet.tileImprovements[it]!!, civInfo)
         }

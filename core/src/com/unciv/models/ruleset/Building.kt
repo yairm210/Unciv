@@ -5,7 +5,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.RejectionReason
 import com.unciv.logic.city.RejectionReasons
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
@@ -333,7 +333,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         return textList
     }
 
-    override fun getProductionCost(civInfo: CivilizationInfo): Int {
+    override fun getProductionCost(civInfo: Civilization): Int {
         var productionCost = cost.toFloat()
 
         for (unique in uniqueObjects.filter { it.isOfType(UniqueType.CostIncreasesPerCity) })

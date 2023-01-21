@@ -7,7 +7,7 @@ import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.automation.unit.AttackableTile
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.AlertType
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
@@ -94,7 +94,7 @@ object Battle {
         if (attacker is MapUnitCombatant) {
             attacker.unit.attacksSinceTurnStart.add(Vector2(attackedTile.position))
         } else {
-            attacker.getCivInfo().attacksSinceTurnStart.add(CivilizationInfo.HistoricalAttackMemory(
+            attacker.getCivInfo().attacksSinceTurnStart.add(Civilization.HistoricalAttackMemory(
                 null,
                 Vector2(attacker.getTile().position),
                 Vector2(attackedTile.position)
@@ -644,7 +644,7 @@ object Battle {
         capturedUnit.updateVisibleTiles()
     }
 
-    fun destroyIfDefeated(attackedCiv: CivilizationInfo, attacker: CivilizationInfo) {
+    fun destroyIfDefeated(attackedCiv: Civilization, attacker: Civilization) {
         if (attackedCiv.isDefeated()) {
             if (attackedCiv.isCityState())
                 attackedCiv.cityStateFunctions.cityStateDestroyed(attacker)
@@ -679,7 +679,7 @@ object Battle {
     @Suppress("FunctionName")   // Yes we want this name to stand out
     fun NUKE(attacker: MapUnitCombatant, targetTile: Tile) {
         val attackingCiv = attacker.getCivInfo()
-        fun tryDeclareWar(civSuffered: CivilizationInfo) {
+        fun tryDeclareWar(civSuffered: Civilization) {
             if (civSuffered != attackingCiv
                 && civSuffered.knows(attackingCiv)
                 && civSuffered.getDiplomacyManager(attackingCiv).diplomaticStatus != DiplomaticStatus.War
@@ -942,7 +942,7 @@ object Battle {
         attacker.unit.action = null
     }
 
-    private fun tryInterceptAirAttack(attacker: MapUnitCombatant, attackedTile: Tile, interceptingCiv: CivilizationInfo, defender: ICombatant?) {
+    private fun tryInterceptAirAttack(attacker: MapUnitCombatant, attackedTile: Tile, interceptingCiv: Civilization, defender: ICombatant?) {
         if (attacker.unit.hasUnique(UniqueType.CannotBeIntercepted, StateForConditionals(attacker.getCivInfo(), ourCombatant = attacker, theirCombatant = defender, attackedTile = attackedTile)))
             return
         // Pick highest chance interceptor

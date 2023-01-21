@@ -8,7 +8,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.AlertType
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
@@ -58,8 +58,8 @@ import com.unciv.ui.utils.AutoScrollPane as ScrollPane
  */
 @Suppress("KDocUnresolvedReference")  // Mentioning non-field parameters is flagged, but they work anyway
 class DiplomacyScreen(
-    val viewingCiv: CivilizationInfo,
-    private val selectCiv: CivilizationInfo? = null,
+    val viewingCiv: Civilization,
+    private val selectCiv: Civilization? = null,
     private val selectTrade: Trade? = null
 ): BaseScreen(), RecreateOnResize {
     companion object {
@@ -105,7 +105,7 @@ class DiplomacyScreen(
         closeButton.setPosition(stage.width * 0.1f, stage.height - 10f, Align.top)
     }
 
-    private fun updateLeftSideTable(selectCiv: CivilizationInfo?) {
+    private fun updateLeftSideTable(selectCiv: Civilization?) {
         leftSideTable.clear()
         leftSideTable.add().padBottom(60f).row()  // room so the close button does not cover the first
 
@@ -164,7 +164,7 @@ class DiplomacyScreen(
         }
     }
 
-    private fun updateRightSide(otherCiv: CivilizationInfo) {
+    private fun updateRightSide(otherCiv: Civilization) {
         rightSideTable.clear()
         if (otherCiv.isCityState()) rightSideTable.add(
             ScrollPane(getCityStateDiplomacyTable(otherCiv))
@@ -173,14 +173,14 @@ class DiplomacyScreen(
             .height(stage.height)
     }
 
-    private fun setTrade(civ: CivilizationInfo): TradeTable {
+    private fun setTrade(civ: Civilization): TradeTable {
         rightSideTable.clear()
         val tradeTable = TradeTable(civ, this)
         rightSideTable.add(tradeTable)
         return tradeTable
     }
 
-    private fun getCityStateDiplomacyTableHeader(otherCiv: CivilizationInfo): Table {
+    private fun getCityStateDiplomacyTableHeader(otherCiv: Civilization): Table {
         val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
 
         val diplomacyTable = Table()
@@ -288,7 +288,7 @@ class DiplomacyScreen(
     }
 
 
-    private fun getCityStateDiplomacyTable(otherCiv: CivilizationInfo): Table {
+    private fun getCityStateDiplomacyTable(otherCiv: Civilization): Table {
         val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
 
         val diplomacyTable = getCityStateDiplomacyTableHeader(otherCiv)
@@ -345,7 +345,7 @@ class DiplomacyScreen(
         return diplomacyTable
     }
 
-    private fun getRevokeProtectionButton(otherCiv: CivilizationInfo): TextButton {
+    private fun getRevokeProtectionButton(otherCiv: Civilization): TextButton {
         val revokeProtectionButton = "Revoke Protection".toTextButton()
         revokeProtectionButton.onClick {
             ConfirmPopup(this, "Revoke protection for [${otherCiv.civName}]?", "Revoke Protection") {
@@ -358,7 +358,7 @@ class DiplomacyScreen(
         return revokeProtectionButton
     }
 
-    private fun getPledgeToProtectButton(otherCiv: CivilizationInfo): TextButton {
+    private fun getPledgeToProtectButton(otherCiv: Civilization): TextButton {
         val protectionButton = "Pledge to protect".toTextButton()
         protectionButton.onClick {
             ConfirmPopup(
@@ -377,7 +377,7 @@ class DiplomacyScreen(
     }
 
     private fun getNegotiatePeaceCityStateButton(
-        otherCiv: CivilizationInfo,
+        otherCiv: Civilization,
         otherCivDiplomacyManager: DiplomacyManager
     ): TextButton {
         val peaceButton = "Negotiate Peace".toTextButton()
@@ -421,7 +421,7 @@ class DiplomacyScreen(
     }
 
     private fun getImproveTilesButton(
-        otherCiv: CivilizationInfo,
+        otherCiv: Civilization,
         otherCivDiplomacyManager: DiplomacyManager
     ): TextButton? {
         if (otherCiv.cities.isEmpty()) return null
@@ -452,7 +452,7 @@ class DiplomacyScreen(
         return improveTileButton
     }
 
-    private fun getDiplomaticMarriageButton(otherCiv: CivilizationInfo): TextButton? {
+    private fun getDiplomaticMarriageButton(otherCiv: Civilization): TextButton? {
         if (!viewingCiv.hasUnique(UniqueType.CityStateCanBeBoughtForGold))
             return null
 
@@ -469,7 +469,7 @@ class DiplomacyScreen(
         return diplomaticMarriageButton
     }
 
-    private fun getGoldGiftTable(otherCiv: CivilizationInfo): Table {
+    private fun getGoldGiftTable(otherCiv: Civilization): Table {
         val diplomacyTable = getCityStateDiplomacyTableHeader(otherCiv)
         diplomacyTable.addSeparator()
 
@@ -495,13 +495,13 @@ class DiplomacyScreen(
         return diplomacyTable
     }
 
-    private fun getImprovableResourceTiles(otherCiv:CivilizationInfo) = otherCiv.getCapital()!!.getTiles().filter {
+    private fun getImprovableResourceTiles(otherCiv:Civilization) = otherCiv.getCapital()!!.getTiles().filter {
         it.hasViewableResource(otherCiv)
         && it.tileResource.resourceType != ResourceType.Bonus
         && (it.improvement == null || !it.tileResource.isImprovedBy(it.improvement!!))
     }
 
-    private fun getImprovementGiftTable(otherCiv: CivilizationInfo): Table {
+    private fun getImprovementGiftTable(otherCiv: Civilization): Table {
         val improvementGiftTable = getCityStateDiplomacyTableHeader(otherCiv)
         improvementGiftTable.addSeparator()
 
@@ -541,7 +541,7 @@ class DiplomacyScreen(
 
     }
 
-    private fun getDemandTributeTable(otherCiv: CivilizationInfo): Table {
+    private fun getDemandTributeTable(otherCiv: Civilization): Table {
         val diplomacyTable = getCityStateDiplomacyTableHeader(otherCiv)
         diplomacyTable.addSeparator()
         diplomacyTable.add("Tribute Willingness".toLabel()).row()
@@ -614,7 +614,7 @@ class DiplomacyScreen(
         return questTable
     }
 
-    private fun getWarWithMajorTable(target: CivilizationInfo, otherCiv: CivilizationInfo): Table {
+    private fun getWarWithMajorTable(target: Civilization, otherCiv: Civilization): Table {
         val warTable = Table()
         warTable.defaults().pad(10f)
 
@@ -633,7 +633,7 @@ class DiplomacyScreen(
     }
 
 
-    private fun getMajorCivDiplomacyTable(otherCiv: CivilizationInfo): Table {
+    private fun getMajorCivDiplomacyTable(otherCiv: Civilization): Table {
         val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
 
         val diplomacyTable = Table()
@@ -702,7 +702,7 @@ class DiplomacyScreen(
     }
 
     private fun getNegotiatePeaceMajorCivButton(
-        otherCiv: CivilizationInfo,
+        otherCiv: Civilization,
         otherCivDiplomacyManager: DiplomacyManager
     ): TextButton {
         val negotiatePeaceButton = "Negotiate Peace".toTextButton()
@@ -725,7 +725,7 @@ class DiplomacyScreen(
     }
 
     private fun getDenounceButton(
-        otherCiv: CivilizationInfo,
+        otherCiv: Civilization,
         diplomacyManager: DiplomacyManager
     ): TextButton {
         val denounceButton = "Denounce ([30] turns)".toTextButton()
@@ -740,7 +740,7 @@ class DiplomacyScreen(
         return denounceButton
     }
 
-    private fun getResearchAgreementButton(otherCiv: CivilizationInfo): TextButton {
+    private fun getResearchAgreementButton(otherCiv: Civilization): TextButton {
         val researchAgreementButton = "Research Agreement".toTextButton()
 
         val requiredGold = viewingCiv.diplomacyFunctions.getResearchAgreementCost()
@@ -762,7 +762,7 @@ class DiplomacyScreen(
         return researchAgreementButton
     }
 
-    private fun getDeclareFriendshipButton(otherCiv: CivilizationInfo): TextButton {
+    private fun getDeclareFriendshipButton(otherCiv: Civilization): TextButton {
         val declareFriendshipButton =
                 "Offer Declaration of Friendship ([30] turns)".toTextButton()
         declareFriendshipButton.onClick {
@@ -781,7 +781,7 @@ class DiplomacyScreen(
         return declareFriendshipButton
     }
 
-    private fun getTradeButton(otherCiv: CivilizationInfo): TextButton {
+    private fun getTradeButton(otherCiv: Civilization): TextButton {
         val tradeButton = "Trade".toTextButton()
         tradeButton.onClick {
             setTrade(otherCiv).apply {
@@ -861,7 +861,7 @@ class DiplomacyScreen(
         return diplomacyModifiersTable
     }
 
-    private fun getDemandsTable(viewingCiv: CivilizationInfo, otherCiv: CivilizationInfo): Table {
+    private fun getDemandsTable(viewingCiv: Civilization, otherCiv: Civilization): Table {
         val demandsTable = Table()
         demandsTable.defaults().pad(10f)
 
@@ -915,7 +915,7 @@ class DiplomacyScreen(
 
     private fun getDeclareWarButton(
         diplomacyManager: DiplomacyManager,
-        otherCiv: CivilizationInfo
+        otherCiv: Civilization
     ): TextButton {
         val declareWarButton = "Declare war".toTextButton(skin.get("negative", TextButton.TextButtonStyle::class.java))
         val turnsToPeaceTreaty = diplomacyManager.turnsToPeaceTreaty()
@@ -938,7 +938,7 @@ class DiplomacyScreen(
     // response currently always gets "Very Well.", but that may expand in the future.
     @Suppress("SameParameterValue")
     private fun setRightSideFlavorText(
-        otherCiv: CivilizationInfo,
+        otherCiv: Civilization,
         flavorText: String,
         response: String
     ) {
@@ -957,7 +957,7 @@ class DiplomacyScreen(
         rightSideTable.add(diplomacyTable)
     }
 
-    private fun getGoToOnMapButton(civilization: CivilizationInfo): TextButton {
+    private fun getGoToOnMapButton(civilization: Civilization): TextButton {
         val goToOnMapButton = "Go to on map".toTextButton()
         goToOnMapButton.onClick {
             val worldScreen = UncivGame.Current.resetToWorldScreen()

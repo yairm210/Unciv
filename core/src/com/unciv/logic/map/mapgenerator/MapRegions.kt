@@ -3,7 +3,7 @@ package com.unciv.logic.map.mapgenerator
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.MapResources
 import com.unciv.logic.map.MapShape
@@ -212,7 +212,7 @@ class MapRegions (val ruleset: Ruleset){
         return Pair(splitOffRegion, regionToSplit)
     }
 
-    fun assignRegions(tileMap: TileMap, civilizations: List<CivilizationInfo>, gameParameters: GameParameters) {
+    fun assignRegions(tileMap: TileMap, civilizations: List<Civilization>, gameParameters: GameParameters) {
         if (civilizations.isEmpty()) return
 
         // first assign region types
@@ -265,7 +265,7 @@ class MapRegions (val ruleset: Ruleset){
         // The rest are positive bias
         val positiveBiasCivs = civilizations.filterNot { it in coastBiasCivs || it in negativeBiasCivs || it in randomCivs }
                 .sortedBy { ruleset.nations[it.civName]!!.startBias.size } // civs with only one desired region go first
-        val positiveBiasFallbackCivs = ArrayList<CivilizationInfo>() // Civs who couldn't get their desired region at first pass
+        val positiveBiasFallbackCivs = ArrayList<Civilization>() // Civs who couldn't get their desired region at first pass
         val unpickedRegions = regions.toMutableList()
 
         // First assign coast bias civs
@@ -383,7 +383,7 @@ class MapRegions (val ruleset: Ruleset){
                 terrain.getMatchingUniques(UniqueType.RegionRequirePercentTwoTypes).first().params[3].toInt()
     }
 
-    private fun assignCivToRegion(civInfo: CivilizationInfo, region: Region) {
+    private fun assignCivToRegion(civInfo: Civilization, region: Region) {
         val tile = region.tileMap[region.startPosition!!]
         region.tileMap.addStartingLocation(civInfo.civName, tile)
 
@@ -828,7 +828,7 @@ class MapRegions (val ruleset: Ruleset){
         localData.startScore = totalScore
     }
 
-    fun placeResourcesAndMinorCivs(tileMap: TileMap, minorCivs: List<CivilizationInfo>) {
+    fun placeResourcesAndMinorCivs(tileMap: TileMap, minorCivs: List<Civilization>) {
         placeNaturalWonderImpacts(tileMap)
         assignLuxuries()
         placeMinorCivs(tileMap, minorCivs)
@@ -947,7 +947,7 @@ class MapRegions (val ruleset: Ruleset){
      *  Note: can silently fail to place all city states if there is too little room.
      *  Currently our GameStarter fills out with random city states, Civ V behavior is to
      *  forget about the discarded city states entirely. */
-    private fun placeMinorCivs(tileMap: TileMap, civs: List<CivilizationInfo>) {
+    private fun placeMinorCivs(tileMap: TileMap, civs: List<Civilization>) {
         if (civs.isEmpty()) return
 
         // Some but not all city states are assigned to regions directly. Determine the CS density.
@@ -978,7 +978,7 @@ class MapRegions (val ruleset: Ruleset){
             it.value >= 4 && // Don't bother with tiny islands
             regions.none { region -> region.continentID == it.key }
         }.keys
-        val civAssignedToUninhabited = ArrayList<CivilizationInfo>()
+        val civAssignedToUninhabited = ArrayList<Civilization>()
         var numUninhabitedTiles = 0
         var numInhabitedTiles = 0
         if (!usingArchipelagoRegions) {
@@ -1063,7 +1063,7 @@ class MapRegions (val ruleset: Ruleset){
     /** Attempts to randomly place civs from [civsToPlace] in tiles from [tileList]. Assumes that
      *  [tileList] is pre-vetted and only contains habitable land tiles.
      *  Will modify both [civsToPlace] and [tileList] as it goes! */
-    private fun tryPlaceMinorCivsInTiles(civsToPlace: MutableList<CivilizationInfo>, tileMap: TileMap, tileList: MutableList<Tile>) {
+    private fun tryPlaceMinorCivsInTiles(civsToPlace: MutableList<Civilization>, tileMap: TileMap, tileList: MutableList<Tile>) {
         while (tileList.isNotEmpty() && civsToPlace.isNotEmpty()) {
             val chosenTile = tileList.random()
             tileList.remove(chosenTile)
@@ -1083,7 +1083,7 @@ class MapRegions (val ruleset: Ruleset){
             tile.getBaseTerrain().getMatchingUniques(UniqueType.HasQuality).none { it.params[0] == "Undesirable" } && // So we don't get snow hills
             tile.neighbors.count() == 6 // Avoid map edges
 
-    private fun placeMinorCiv(civ: CivilizationInfo, tileMap: TileMap, tile: Tile) {
+    private fun placeMinorCiv(civ: Civilization, tileMap: TileMap, tile: Tile) {
         tileMap.addStartingLocation(civ.civName, tile)
         placeImpact(ImpactType.MinorCiv,tile, 4)
         placeImpact(ImpactType.Luxury,  tile, 3)
@@ -1675,7 +1675,7 @@ class Region (val tileMap: TileMap, val rect: Rectangle, val continentID: Int = 
     var type = "Hybrid" // being an undefined or indeterminate type
     var luxury: String? = null
     var startPosition: Vector2? = null
-    val assignedMinorCivs = ArrayList<CivilizationInfo>()
+    val assignedMinorCivs = ArrayList<Civilization>()
 
     var affectedByWorldWrap = false
 

@@ -2,7 +2,7 @@ package com.unciv.logic.civilization.managers
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.AlertType
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
@@ -11,7 +11,7 @@ import com.unciv.ui.utils.extensions.toPercent
 
 class GoldenAgeManager : IsPartOfGameInfoSerialization {
     @Transient
-    lateinit var civInfo: CivilizationInfo
+    lateinit var civInfo: Civilization
 
     var storedHappiness = 0
     private var numberOfGoldenAges = 0

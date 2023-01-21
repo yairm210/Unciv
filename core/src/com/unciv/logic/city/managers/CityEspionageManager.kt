@@ -2,7 +2,7 @@ package com.unciv.logic.city.managers
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 
 class CityEspionageManager : IsPartOfGameInfoSerialization{
     @Transient
@@ -16,7 +16,7 @@ class CityEspionageManager : IsPartOfGameInfoSerialization{
         this.city = city
     }
 
-    fun hasSpyOf(civInfo: CivilizationInfo): Boolean {
+    fun hasSpyOf(civInfo: Civilization): Boolean {
         return civInfo.espionageManager.spyList.any { it.location == city.id }
     }
 

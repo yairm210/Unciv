@@ -3,7 +3,7 @@ package com.unciv.logic
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.AlertType
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.files.MapSaver
@@ -228,7 +228,7 @@ object GameStarter {
         val startingTechs = ruleset.technologies.values.filter { it.hasUnique(UniqueType.StartingTech) }
 
         if (!newGameParameters.noBarbarians && ruleset.nations.containsKey(Constants.barbarians)) {
-            val barbarianCivilization = CivilizationInfo(Constants.barbarians)
+            val barbarianCivilization = Civilization(Constants.barbarians)
             gameInfo.civilizations.add(barbarianCivilization)
         }
 
@@ -272,7 +272,7 @@ object GameStarter {
             }
             availableCivNames.remove(nationName) // In case we got it from a map preset
 
-            val playerCiv = CivilizationInfo(nationName)
+            val playerCiv = Civilization(nationName)
             for (tech in startingTechs)
                 playerCiv.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
             playerCiv.playerType = player.playerType
@@ -306,7 +306,7 @@ object GameStarter {
                 break
 
             val cityStateName = availableCityStatesNames.pop()
-            val civ = CivilizationInfo(cityStateName)
+            val civ = Civilization(cityStateName)
             if (civ.cityStateFunctions.initCityState(ruleset, newGameParameters.startingEra, availableCivNames)) {
                 gameInfo.civilizations.add(civ)
                 addedCityStates++
@@ -374,7 +374,7 @@ object GameStarter {
             })
 
 
-            fun getEquivalentUnit(civ: CivilizationInfo, unitParam: String): String? {
+            fun getEquivalentUnit(civ: Civilization, unitParam: String): String? {
                 var unit = unitParam // We want to change it and this is the easiest way to do so
                 if (unit == Constants.eraSpecificUnit) unit = eraUnitReplacement
                 if (unit == Constants.settler && Constants.settler !in ruleSet.units) {
@@ -445,11 +445,11 @@ object GameStarter {
     }
 
     private fun getStartingLocations(
-        civs: List<CivilizationInfo>,
+        civs: List<Civilization>,
         tileMap: TileMap,
         landTilesInBigEnoughGroup: Map<Tile, Float>,
         startScores: HashMap<Tile, Float>
-    ): HashMap<CivilizationInfo, Tile> {
+    ): HashMap<Civilization, Tile> {
 
         val civsOrderedByAvailableLocations = civs.shuffled()   // Order should be random since it determines who gets best start
             .sortedBy { civ ->
@@ -471,7 +471,7 @@ object GameStarter {
                 .map { it.key }
                 .toMutableList()
 
-            val startingLocations = HashMap<CivilizationInfo, Tile>()
+            val startingLocations = HashMap<Civilization, Tile>()
             for (civ in civsOrderedByAvailableLocations) {
                 val distanceToNext = minimumDistanceBetweenStartingLocations /
                         (if (civ.isCityState()) 2 else 1) // We allow city states to squeeze in tighter
@@ -493,7 +493,7 @@ object GameStarter {
     }
 
     private fun getOneStartingLocation(
-        civ: CivilizationInfo,
+        civ: Civilization,
         tileMap: TileMap,
         freeTiles: MutableList<Tile>,
         startScores: HashMap<Tile, Float>

@@ -2,7 +2,7 @@ package com.unciv.ui.tilegroups
 
 import com.unciv.UncivGame
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.worldscreen.WorldScreen
@@ -20,7 +20,7 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tile: Tile, tileSetS
         unitImage?.selectUnit()
     }
 
-    fun update(viewingCiv: CivilizationInfo) {
+    fun update(viewingCiv: Civilization) {
         val city = tile.getCity()
 
         icons.removePopulationIcon()

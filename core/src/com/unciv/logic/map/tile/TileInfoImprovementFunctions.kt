@@ -2,7 +2,7 @@ package com.unciv.logic.map.tile
 
 import com.unciv.Constants
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
@@ -19,12 +19,12 @@ enum class ImprovementBuildingProblem {
 class TileInfoImprovementFunctions(val tile: Tile) {
 
     /** Returns true if the [improvement] can be built on this [Tile] */
-    fun canBuildImprovement(improvement: TileImprovement, civInfo: CivilizationInfo): Boolean = getImprovementBuildingProblems(improvement, civInfo).none()
+    fun canBuildImprovement(improvement: TileImprovement, civInfo: Civilization): Boolean = getImprovementBuildingProblems(improvement, civInfo).none()
 
     /** Generates a sequence of reasons that prevent building given [improvement].
      *  If the sequence is empty, improvement can be built immediately.
      */
-    fun getImprovementBuildingProblems(improvement: TileImprovement, civInfo: CivilizationInfo): Sequence<ImprovementBuildingProblem> = sequence {
+    fun getImprovementBuildingProblems(improvement: TileImprovement, civInfo: Civilization): Sequence<ImprovementBuildingProblem> = sequence {
         val stateForConditionals = StateForConditionals(civInfo, tile = tile)
 
         if (improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName)
@@ -172,7 +172,7 @@ class TileInfoImprovementFunctions(val tile: Tile) {
     // Also multiplies the stats by the percentage bonus for improvements (but not for tiles)
     fun getImprovementStats(
         improvement: TileImprovement,
-        observingCiv: CivilizationInfo,
+        observingCiv: Civilization,
         city: City?,
         cityUniqueCache: LocalUniqueCache = LocalUniqueCache(false)
     ): Stats {
@@ -253,7 +253,7 @@ class TileInfoImprovementFunctions(val tile: Tile) {
     @Suppress("MemberVisibilityCanBePrivate")
     fun getImprovementPercentageStats(
         improvement: TileImprovement,
-        observingCiv: CivilizationInfo,
+        observingCiv: Civilization,
         city: City?,
         cityUniqueCache: LocalUniqueCache
     ): Stats {

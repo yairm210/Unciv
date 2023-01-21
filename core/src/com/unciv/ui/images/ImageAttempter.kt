@@ -1,6 +1,6 @@
 package com.unciv.ui.images
 
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.tilegroups.TileSetStrings
 
 /**
@@ -56,7 +56,7 @@ class ImageAttempter<out T: Any>(val scope: T) {
      * [locationToCheck]: the beginning of the filename to check
      * [style]: an optional string to load a civ- or style-specific sprite
      * */
-     fun tryEraImage(civInfo: CivilizationInfo, locationToCheck: String, style: String?, tileSetStrings:TileSetStrings): ImageAttempter<T> {
+     fun tryEraImage(civInfo: Civilization, locationToCheck: String, style: String?, tileSetStrings:TileSetStrings): ImageAttempter<T> {
         return tryImages(
             (civInfo.getEraNumber() downTo 0).asSequence().map {
                 {

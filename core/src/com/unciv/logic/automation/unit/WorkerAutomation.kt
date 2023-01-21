@@ -9,7 +9,7 @@ import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.automation.unit.UnitAutomation.wander
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.mapunit.MapUnit
@@ -31,13 +31,13 @@ private object WorkerAutomationConst {
 /**
  * Contains the logic for worker automation.
  *
- * This is instantiated from [CivilizationInfo.getWorkerAutomation] and cached there.
+ * This is instantiated from [Civilization.getWorkerAutomation] and cached there.
  *
  * @param civInfo       The Civilization - data common to all automated workers is cached once per Civ
  * @param cachedForTurn The turn number this was created for - a recreation of the instance is forced on different turn numbers
  */
 class WorkerAutomation(
-    val civInfo: CivilizationInfo,
+    val civInfo: Civilization,
     val cachedForTurn: Int,
     cloningSource: WorkerAutomation? = null
 ) {
@@ -112,12 +112,12 @@ class WorkerAutomation(
         }
 
         /** Convenience shortcut supports old calling syntax for [WorkerAutomation.getPriority] */
-        fun getPriority(tile: Tile, civInfo: CivilizationInfo): Int {
+        fun getPriority(tile: Tile, civInfo: Civilization): Int {
             return civInfo.getWorkerAutomation().getPriority(tile)
         }
 
         /** Convenience shortcut supports old calling syntax for [WorkerAutomation.evaluateFortPlacement] */
-        fun evaluateFortPlacement(tile: Tile, civInfo: CivilizationInfo, isCitadel: Boolean): Boolean {
+        fun evaluateFortPlacement(tile: Tile, civInfo: Civilization, isCitadel: Boolean): Boolean {
             return civInfo.getWorkerAutomation().evaluateFortPlacement(tile, isCitadel)
         }
 
@@ -486,7 +486,7 @@ class WorkerAutomation(
         // no potential enemies
         if (enemyCivs.isEmpty()) return false
 
-        val threatMapping: (CivilizationInfo) -> Int = {
+        val threatMapping: (Civilization) -> Int = {
             // the war is already a good nudge to build forts
             (if (civInfo.isAtWarWith(it)) 20 else 0) +
                     // let's check also the force of the enemy

@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.stats.Stats
@@ -303,7 +303,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         addActor(overviewButton)
     }
 
-    internal fun update(civInfo: CivilizationInfo) {
+    internal fun update(civInfo: Civilization) {
         updateStatsTable(civInfo)
         updateResourcesTable(civInfo)
         selectedCivTable.update(worldScreen)
@@ -315,7 +315,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         return (if (value > 0) "+" else "") + value.roundToInt()
     }
 
-    private fun updateStatsTable(civInfo: CivilizationInfo) {
+    private fun updateStatsTable(civInfo: Civilization) {
         val nextTurnStats = civInfo.stats.statsForNextTurn
         val goldPerTurn = " (" + rateLabel(nextTurnStats.gold) + ")"
         goldLabel.setText(civInfo.gold.toString() + goldPerTurn)
@@ -339,7 +339,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
                 " (" + rateLabel(nextTurnStats.faith) + ")")
     }
 
-    private fun updateResourcesTable(civInfo: CivilizationInfo) {
+    private fun updateResourcesTable(civInfo: Civilization) {
         val year = civInfo.gameInfo.getYear()
         val yearText = if (civInfo.isLongCountDisplay()) MayaCalendar.yearToMayaDate(year)
         else "[" + abs(year) + "] " + (if (year < 0) "BC" else "AD")
@@ -361,7 +361,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         resourceTable.pack()
     }
 
-    private fun getCultureText(civInfo: CivilizationInfo, nextTurnStats: Stats): String {
+    private fun getCultureText(civInfo: Civilization, nextTurnStats: Stats): String {
         var cultureString = rateLabel(nextTurnStats.culture)
         //if (nextTurnStats.culture == 0f) return cultureString // when you start the game, you're not producing any culture
 
@@ -372,7 +372,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         return cultureString
     }
 
-    private fun getHappinessText(civInfo: CivilizationInfo): String {
+    private fun getHappinessText(civInfo: Civilization): String {
         var happinessText = civInfo.getHappiness().toString()
         val goldenAges = civInfo.goldenAges
         happinessText +=

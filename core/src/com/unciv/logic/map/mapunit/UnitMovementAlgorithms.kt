@@ -2,7 +2,7 @@ package com.unciv.logic.map.mapunit
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.HexMath.getDistance
 import com.unciv.logic.map.tile.RoadStatus
@@ -14,7 +14,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
 
     private val pathfindingCache = PathfindingCache(unit)
 
-    fun getEnemyMovementPenalty(civInfo:CivilizationInfo, enemyUnit: MapUnit): Float {
+    fun getEnemyMovementPenalty(civInfo:Civilization, enemyUnit: MapUnit): Float {
         if (civInfo.enemyMovementPenaltyUniques != null && civInfo.enemyMovementPenaltyUniques!!.any()) {
             return civInfo.enemyMovementPenaltyUniques!!.sumOf {
                 if (it.type!! == UniqueType.EnemyLandUnitsSpendExtraMovement
@@ -30,7 +30,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
     private fun getMovementCostBetweenAdjacentTiles(
         from: Tile,
         to: Tile,
-        civInfo: CivilizationInfo,
+        civInfo: Civilization,
         considerZoneOfControl: Boolean = true
     ): Float {
 
@@ -102,7 +102,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         return terrainCost + extraCost // no road or other movement cost reduction
     }
 
-    private fun getTilesExertingZoneOfControl(tile: Tile, civInfo: CivilizationInfo) = sequence {
+    private fun getTilesExertingZoneOfControl(tile: Tile, civInfo: Civilization) = sequence {
         for (tile in tile.neighbors) {
             if (tile.isCityCenter() && civInfo.isAtWarWith(tile.getOwner()!!)) {
                 yield(tile)
@@ -115,7 +115,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
     }
 
     /** Returns whether the movement between the adjacent tiles [from] and [to] is affected by Zone of Control */
-    private fun isMovementAffectedByZoneOfControl(from: Tile, to: Tile, civInfo: CivilizationInfo): Boolean {
+    private fun isMovementAffectedByZoneOfControl(from: Tile, to: Tile, civInfo: Civilization): Boolean {
         // Sources:
         // - https://civilization.fandom.com/wiki/Zone_of_control_(Civ5)
         // - https://forums.civfanatics.com/resources/understanding-the-zone-of-control-vanilla.25582/

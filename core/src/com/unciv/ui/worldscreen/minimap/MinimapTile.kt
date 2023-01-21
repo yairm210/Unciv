@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.map.HexMath
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
@@ -19,7 +19,7 @@ import kotlin.math.atan
 internal class MinimapTile(val tile: Tile, tileSize: Float, val onClick: () -> Unit) {
     val image: Image = ImageGetter.getImage("OtherIcons/Hexagon")
     private var cityCircleImage: IconCircleGroup? = null
-    var owningCiv: CivilizationInfo? = null
+    var owningCiv: Civilization? = null
     private var neighborToBorderImage = HashMap<Tile, Image>()
     val isUnrevealed get() = !image.isVisible
 

@@ -7,7 +7,7 @@ import com.unciv.logic.city.managers.CityExpansionManager
 import com.unciv.logic.city.managers.CityInfoConquestFunctions
 import com.unciv.logic.city.managers.CityPopulationManager
 import com.unciv.logic.city.managers.CityReligionManager
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.RoadStatus
@@ -34,7 +34,7 @@ enum class CityFlags {
 class City : IsPartOfGameInfoSerialization {
     @Suppress("JoinDeclarationAndAssignment")
     @Transient
-    lateinit var civInfo: CivilizationInfo
+    lateinit var civInfo: Civilization
 
     @Transient
     private lateinit var centerTile: Tile  // cached for better performance
@@ -354,7 +354,7 @@ class City : IsPartOfGameInfoSerialization {
     //endregion
 
     //region state-changing functions
-    fun setTransients(civInfo: CivilizationInfo) {
+    fun setTransients(civInfo: Civilization) {
         this.civInfo = civInfo
         tileMap = civInfo.gameInfo.tileMap
         centerTile = tileMap[location]
@@ -450,14 +450,14 @@ class City : IsPartOfGameInfoSerialization {
     fun annexCity() = CityInfoConquestFunctions(this).annexCity()
 
     /** This happens when we either puppet OR annex, basically whenever we conquer a city and don't liberate it */
-    fun puppetCity(conqueringCiv: CivilizationInfo) =
+    fun puppetCity(conqueringCiv: Civilization) =
         CityInfoConquestFunctions(this).puppetCity(conqueringCiv)
 
     /* Liberating is returning a city to its founder - makes you LOSE warmongering points **/
-    fun liberateCity(conqueringCiv: CivilizationInfo) =
+    fun liberateCity(conqueringCiv: Civilization) =
         CityInfoConquestFunctions(this).liberateCity(conqueringCiv)
 
-    fun moveToCiv(newCivInfo: CivilizationInfo) =
+    fun moveToCiv(newCivInfo: Civilization) =
         CityInfoConquestFunctions(this).moveToCiv(newCivInfo)
 
     internal fun tryUpdateRoadStatus() {
@@ -496,7 +496,7 @@ class City : IsPartOfGameInfoSerialization {
     }
 
     /** Implements [UniqueParameterType.CityFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CityFilter] */
-    fun matchesFilter(filter: String, viewingCiv: CivilizationInfo = civInfo): Boolean {
+    fun matchesFilter(filter: String, viewingCiv: Civilization = civInfo): Boolean {
         return when (filter) {
             "in this city" -> true
             "in all cities" -> true // Filtered by the way uniques are found

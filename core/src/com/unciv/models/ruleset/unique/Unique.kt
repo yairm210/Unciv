@@ -5,7 +5,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.battle.CombatAction
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetValidator
@@ -44,7 +44,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
     fun isOfType(uniqueType: UniqueType) = uniqueType == type
 
-    fun conditionalsApply(civInfo: CivilizationInfo? = null, city: City? = null): Boolean {
+    fun conditionalsApply(civInfo: Civilization? = null, city: City? = null): Boolean {
         return conditionalsApply(StateForConditionals(civInfo, city))
     }
 

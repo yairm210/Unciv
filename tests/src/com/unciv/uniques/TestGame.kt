@@ -6,7 +6,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.City
 import com.unciv.logic.city.managers.CityFounder
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.mapunit.MapUnit
@@ -51,7 +51,7 @@ class TestGame {
         gameInfo.ruleSet = ruleset
         gameInfo.difficultyObject = ruleset.difficulties["Prince"]!!
         gameInfo.speed = ruleset.speeds[Speed.DEFAULTFORSIMULATION]!!
-        gameInfo.currentPlayerCiv = CivilizationInfo()
+        gameInfo.currentPlayerCiv = Civilization()
 
         // Create a tilemap, needed for city centers
         gameInfo.tileMap = TileMap(1, ruleset, false)
@@ -104,7 +104,7 @@ class TestGame {
         return tile
     }
 
-    fun addCiv(vararg uniques: String, isPlayer: Boolean = false, cityStateType: String? = null): CivilizationInfo {
+    fun addCiv(vararg uniques: String, isPlayer: Boolean = false, cityStateType: String? = null): Civilization {
         fun nationFactory() = Nation().apply {
             cities = arrayListOf("The Capital")
             this.cityStateType = cityStateType
@@ -112,7 +112,7 @@ class TestGame {
         val nation = createRulesetObject(ruleset.nations, *uniques) {
             nationFactory()
         }
-        val civInfo = CivilizationInfo()
+        val civInfo = Civilization()
         civInfo.nation = nation
         civInfo.gameInfo = gameInfo
         civInfo.civName = nation.name
@@ -129,7 +129,7 @@ class TestGame {
     }
 
     fun addCity(
-        civInfo: CivilizationInfo,
+        civInfo: Civilization,
         tile: Tile,
         replacePalace: Boolean = false,
         initialPopulation: Int = 0
@@ -151,7 +151,7 @@ class TestGame {
         city.tiles.add(tile.position)
     }
 
-    fun addUnit(name: String, civInfo: CivilizationInfo, tile: Tile): MapUnit {
+    fun addUnit(name: String, civInfo: Civilization, tile: Tile): MapUnit {
         val baseUnit = ruleset.units[name]!!
         baseUnit.ruleset = ruleset
         val mapUnit = baseUnit.getMapUnit(civInfo)
@@ -165,7 +165,7 @@ class TestGame {
         return name
     }
 
-    fun addReligion(foundingCiv: CivilizationInfo): Religion {
+    fun addReligion(foundingCiv: Civilization): Religion {
         val religion = Religion("Religion-${objectsCreated++}", gameInfo, foundingCiv.civName)
         foundingCiv.religionManager.religion = religion
         gameInfo.religions[religion.name] = religion
