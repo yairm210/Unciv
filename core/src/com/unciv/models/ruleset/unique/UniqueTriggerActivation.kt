@@ -270,7 +270,8 @@ object UniqueTriggerActivation {
                 if (notification != null) {
                     civInfo.addNotification(notification, LocationAction(tile?.position), NotificationCategory.General, NotificationIcon.Scout)
                 }
-                civInfo.addExploredTiles(civInfo.gameInfo.tileMap.values.asSequence().map { it.position })
+                civInfo.gameInfo.tileMap.values.asSequence()
+                    .forEach { it.setExplored(civInfo, true) }
                 return true
             }
 
@@ -420,34 +421,42 @@ object UniqueTriggerActivation {
             }
 
             UniqueType.OneTimeRevealSpecificMapTiles -> {
-                if (tile == null) return false
-                val nearbyRevealableTiles = tile
-                    .getTilesInDistance(unique.params[2].toInt())
-                    .filter {
-                        !civInfo.hasExplored(it) &&
-                        it.matchesFilter(unique.params[1])
-                    }
-                    .map { it.position }
-                if (nearbyRevealableTiles.none()) return false
-                val revealedTiles = nearbyRevealableTiles
-                        .shuffled(tileBasedRandom)
-                        .apply {
-                            // Implements [UniqueParameterType.CombatantFilter] - At the moment the only use
-                            if (unique.params[0] != "All") this.take(unique.params[0].toInt())
-                        }
-                civInfo.addExploredTiles(revealedTiles)
-                for (position in revealedTiles) {
-                    val revealedTileInfo = civInfo.gameInfo.tileMap[position]
-                    if (revealedTileInfo.improvement == null)
-                        civInfo.lastSeenImprovement.remove(position)
+
+                if (tile == null)
+                    return false
+
+                // "Reveal up to [amount/'all'] [tileFilter] within a [amount] tile radius"
+                val amount = unique.params[0]
+                val filter = unique.params[1]
+                val radius = unique.params[2].toInt()
+
+                val isAll = amount == "All"
+                val positions = ArrayList<Vector2>()
+
+                var explorableTiles = tile.getTilesInDistance(radius)
+                    .filter { !it.isExplored(civInfo) && it.matchesFilter(filter) }
+
+                if (explorableTiles.none())
+                    return false
+
+                if (!isAll) {
+                    explorableTiles.shuffled(tileBasedRandom)
+                    explorableTiles = explorableTiles.take(amount.toInt())
+                }
+
+                for (explorableTile in explorableTiles) {
+                    explorableTile.setExplored(civInfo, true)
+                    positions += explorableTile.position
+                    if (explorableTile.improvement == null)
+                        civInfo.lastSeenImprovement.remove(explorableTile.position)
                     else
-                        civInfo.lastSeenImprovement[position] = revealedTileInfo.improvement!!
+                        civInfo.lastSeenImprovement[explorableTile.position] = explorableTile.improvement!!
                 }
 
                 if (notification != null) {
                     civInfo.addNotification(
                         notification,
-                        LocationAction(nearbyRevealableTiles),
+                        LocationAction(positions),
                         NotificationCategory.War,
                         if (unique.params[1] == Constants.barbarianEncampment)
                             NotificationIcon.Barbarians else NotificationIcon.Scout
@@ -457,17 +466,24 @@ object UniqueTriggerActivation {
                 return true
             }
             UniqueType.OneTimeRevealCrudeMap -> {
-                if (tile == null) return false
-                val revealCenter = tile.getTilesAtDistance(unique.params[0].toInt())
-                    .filter { !civInfo.hasExplored(it) }
+                if (tile == null)
+                    return false
+
+                // "From a randomly chosen tile [amount] tiles away from the ruins,
+                // reveal tiles up to [amount] tiles away with [amount]% chance"
+
+                val distance = unique.params[0].toInt()
+                val radius = unique.params[1].toInt()
+                val chance = unique.params[2].toFloat() / 100f
+
+                val revealCenter = tile.getTilesAtDistance(distance)
+                    .filter { !it.isExplored(civInfo) }
                     .toList()
                     .randomOrNull(tileBasedRandom)
                     ?: return false
-                val tilesToReveal = revealCenter
-                    .getTilesInDistance(unique.params[1].toInt())
-                    .map { it.position }
-                    .filter { tileBasedRandom.nextFloat() < unique.params[2].toFloat() / 100f }
-                civInfo.addExploredTiles(tilesToReveal)
+                revealCenter.getTilesInDistance(radius)
+                    .filter { tileBasedRandom.nextFloat() < chance }
+                    .forEach { it.setExplored(civInfo, true) }
                 civInfo.cache.updateViewableTiles()
                 if (notification != null)
                     civInfo.addNotification(

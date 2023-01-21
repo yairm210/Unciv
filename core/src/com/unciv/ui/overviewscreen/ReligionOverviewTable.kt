@@ -145,7 +145,7 @@ class ReligionOverviewTab(
             if (holyCity != null) {
                 statsTable.add("Holy City:".toLabel())
                 val cityName =
-                    if (viewingPlayer.hasExplored(holyCity.location))
+                    if (viewingPlayer.hasExplored(holyCity.getCenterTile()))
                         holyCity.name
                     else Constants.unknownNationName
                 statsTable.add(cityName.toLabel()).right().row()

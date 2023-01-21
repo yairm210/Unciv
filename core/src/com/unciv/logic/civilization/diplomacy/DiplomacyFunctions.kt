@@ -79,7 +79,7 @@ class DiplomacyFunctions(val civInfo:Civilization){
                 otherCiv.addStat(key, value.toInt())
 
             if (civInfo.cities.isNotEmpty())
-                otherCiv.exploredTiles = otherCiv.exploredTiles.withItem(civInfo.getCapital()!!.location)
+                civInfo.getCapital()?.getCenterTile()?.setExplored(otherCiv, true)
 
             civInfo.questManager.justMet(otherCiv) // Include them in war with major pseudo-quest
         }

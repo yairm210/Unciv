@@ -121,7 +121,7 @@ class EspionageOverviewScreen(val civInfo: Civilization) : PickerScreen(true) {
         // Then add all cities
 
         val sortedCities = civInfo.gameInfo.getCities()
-            .filter { civInfo.hasExplored(it.location) }
+            .filter { civInfo.hasExplored(it.getCenterTile()) }
             .sortedWith(
                 compareBy<City> {
                     it.civInfo != civInfo

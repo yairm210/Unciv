@@ -572,9 +572,9 @@ class WorldMapHolder(
 
         if (isMapRevealEnabled(viewingCiv)) {
             // Only needs to be done once - this is so the minimap will also be revealed
-            if (viewingCiv.exploredTiles.size != tileMap.values.size)
-                viewingCiv.exploredTiles = tileMap.values.map { it.position }.toHashSet()
-            allWorldTileGroups.forEach { it.showEntireMap = true } // So we can see all resources, regardless of tech
+            allWorldTileGroups.forEach {
+                it.tile.setExplored(viewingCiv, true)
+                it.showEntireMap = true } // So we can see all resources, regardless of tech
         }
 
         for (tileGroup in allWorldTileGroups) {

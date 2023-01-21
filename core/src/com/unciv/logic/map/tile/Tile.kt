@@ -87,6 +87,8 @@ open class Tile : IsPartOfGameInfoSerialization {
     var terrainFeatures: List<String> = listOf()
         private set
 
+    var exploredBy = HashSet<String>()
+
     @Transient
     var terrainFeatureObjects: List<Terrain> = listOf()
         private set
@@ -168,6 +170,7 @@ open class Tile : IsPartOfGameInfoSerialization {
         toReturn.hasBottomRightRiver = hasBottomRightRiver
         toReturn.hasBottomRiver = hasBottomRiver
         toReturn.continent = continent
+        toReturn.exploredBy.addAll(exploredBy)
         return toReturn
     }
 
@@ -237,6 +240,22 @@ open class Tile : IsPartOfGameInfoSerialization {
         if (UncivGame.Current.viewEntireMapForDebug)
             return true
         return player.viewableTiles.contains(this)
+    }
+
+    fun isExplored(player: Civilization): Boolean {
+        if (UncivGame.Current.viewEntireMapForDebug || player.isSpectator())
+            return true
+        return exploredBy.contains(player.civName) || player.exploredTiles.contains(position)
+    }
+
+    fun setExplored(player: Civilization, isExplored: Boolean) {
+        if (isExplored) {
+            exploredBy.add(player.civName)
+            player.exploredTiles.add(position)
+        } else {
+            exploredBy.remove(player.civName)
+            player.exploredTiles.remove(position)
+        }
     }
 
     fun isCityCenter(): Boolean = isCityCenterInternal

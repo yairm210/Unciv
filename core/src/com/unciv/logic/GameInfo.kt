@@ -431,7 +431,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
                 }
 
         val exploredRevealInfo = exploredRevealTiles
-            .filter { civInfo.hasExplored(it.position) }
+            .filter { civInfo.hasExplored(it) }
             .flatMap { tile ->
                 civInfo.cities.asSequence()
                     .map {
@@ -586,6 +586,10 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         cityDistances.game = this
 
         guaranteeUnitPromotions()
+
+        for (player in civilizations)
+            for (tile in player.exploredTiles)
+                tileMap[tile].setExplored(player, true)
     }
 
     //endregion

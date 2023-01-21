@@ -856,7 +856,7 @@ class WorldScreen(
         displayTutorial(TutorialTrigger.StrategicResource) { resources.any { it.resource.resourceType == ResourceType.Strategic } }
         displayTutorial(TutorialTrigger.EnemyCity) {
             viewingCiv.getKnownCivs().asSequence().filter { viewingCiv.isAtWarWith(it) }
-                    .flatMap { it.cities.asSequence() }.any { viewingCiv.hasExplored(it.location) }
+                    .flatMap { it.cities.asSequence() }.any { viewingCiv.hasExplored(it.getCenterTile()) }
         }
         displayTutorial(TutorialTrigger.ApolloProgram) { viewingCiv.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts) }
         displayTutorial(TutorialTrigger.SiegeUnits) { viewingCiv.units.getCivUnits().any { it.baseUnit.isProbablySiegeUnit() } }
