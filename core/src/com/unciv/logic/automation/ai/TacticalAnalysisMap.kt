@@ -60,7 +60,7 @@ class TacticalDominanceZone {
         return id.startsWith('-')
     }
 
-    fun extend(tile: TileInfo) {
+    fun extend() {
         tileCount += 1
     }
 }
@@ -214,7 +214,7 @@ class TacticalAnalysisMap {
                 }
             }
             plotPositionToZoneId[tile.position] = zoneId
-            zone.extend(tile)
+            zone.extend()
         }
 
         // Ensure that continents sizes are calculated
@@ -239,7 +239,7 @@ class TacticalAnalysisMap {
                 val tile = stack.removeLastOrNull() ?: break
                 val tileContinentSize = tile.tileMap.continentSizes[tile.getContinent()] ?: Int.MAX_VALUE
                 plotPositionToZoneId[tile.position] = newId
-                newZone.extend(tile)
+                newZone.extend()
 
                 for (neighbor in tile.neighbors) {
 

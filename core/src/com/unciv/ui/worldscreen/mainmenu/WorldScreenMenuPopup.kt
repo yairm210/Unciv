@@ -32,7 +32,7 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         }.row()
         addButton("Load game") {
             close()
-            worldScreen.game.pushScreen(LoadGameScreen(worldScreen))
+            worldScreen.game.pushScreen(LoadGameScreen())
         }.row()
 
         addButton("Start new game") {

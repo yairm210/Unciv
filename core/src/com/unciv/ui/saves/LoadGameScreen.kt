@@ -15,7 +15,6 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.Github
 import com.unciv.ui.popup.Popup
 import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.disable
@@ -31,7 +30,7 @@ import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import java.io.FileNotFoundException
 
-class LoadGameScreen(previousScreen:BaseScreen) : LoadOrSaveScreen() {
+class LoadGameScreen : LoadOrSaveScreen() {
     private val copySavedGameToClipboardButton = getCopyExistingSaveToClipboardButton()
     private val errorLabel = "".toLabel(Color.RED).apply { isVisible = false }
     private val loadMissingModsButton = getLoadMissingModsButton()
