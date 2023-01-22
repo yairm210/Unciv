@@ -303,12 +303,12 @@ class TacticalAnalysisMap {
 
         for (x in 0 until gridW) {
             for (y in 0 until gridH) {
-                val tileA = tileMatrix[x][y]
+                val tileA = tileMatrix[x][y] ?: continue
                 val tileB = tileMatrix.getOrNull(x + 1)?.get(y)
                 val tileC = tileMatrix[x].getOrNull(y + 1)
                 val tileD = tileMatrix.getOrNull(x + 1)?.getOrNull(y + 1)
 
-                val zoneA = if (tileA == null) getZoneById("UNKNOWN") else getZoneByTile(tileA)
+                val zoneA = getZoneByTile(tileA)
                 val zoneB = if (tileB == null) getZoneById("UNKNOWN") else getZoneByTile(tileB)
                 val zoneC = if (tileC == null) getZoneById("UNKNOWN") else getZoneByTile(tileC)
                 val zoneD = if (tileD == null) getZoneById("UNKNOWN") else getZoneByTile(tileD)
@@ -318,17 +318,17 @@ class TacticalAnalysisMap {
                 val zoneCId = zoneC!!.id
                 val zoneDId = zoneD!!.id
 
-                if (zoneAId != "UNKNOWN" && zoneBId != "UNKNOWN" && zoneAId != zoneBId) {
+                if (zoneBId != "UNKNOWN" && zoneAId != zoneBId) {
                     zoneA.neighboringZones.add(zoneB.id)
                     zoneB.neighboringZones.add(zoneA.id)
                 }
 
-                if (zoneAId != "UNKNOWN" && zoneCId != "UNKNOWN" && zoneAId != zoneCId) {
+                if (zoneCId != "UNKNOWN" && zoneAId != zoneCId) {
                     zoneA.neighboringZones.add(zoneC.id)
                     zoneC.neighboringZones.add(zoneA.id)
                 }
 
-                if (zoneAId != "UNKNOWN" && zoneDId != "UNKNOWN" && zoneAId != zoneDId) {
+                if (zoneDId != "UNKNOWN" && zoneAId != zoneDId) {
                     zoneA.neighboringZones.add(zoneD.id)
                     zoneD.neighboringZones.add(zoneA.id)
                 }
