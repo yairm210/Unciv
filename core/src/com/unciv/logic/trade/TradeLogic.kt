@@ -83,19 +83,20 @@ class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civili
         }
 
         // instant transfers
-        fun transferTrade(to: Civilization, from: Civilization, trade: Trade) {
-            for (offer in trade.theirOffers) {
-                if (offer.type == TradeType.Gold) {
+        fun transferTrade(from: Civilization, to: Civilization, offer: TradeOffer) {
+            when (offer.type) {
+                TradeType.Gold -> {
                     to.addGold(offer.amount)
                     from.addGold(-offer.amount)
                 }
-                if (offer.type == TradeType.Technology) {
+                TradeType.Technology -> {
                     to.tech.addTechnology(offer.name)
                 }
-                if (offer.type == TradeType.City) {
+                TradeType.City -> {
                     val city = from.cities.first { it.id == offer.name }
                     city.moveToCiv(to)
-                    city.getCenterTile().getUnits().toList().forEach { it.movement.teleportToClosestMoveableTile() }
+                    city.getCenterTile().getUnits().toList()
+                        .forEach { it.movement.teleportToClosestMoveableTile() }
                     for (tile in city.getTiles()) {
                         for (unit in tile.getUnits().toList()) {
                             if (!unit.civInfo.diplomacyFunctions.canPassThroughTiles(to) && !unit.canEnterForeignTerrain)
@@ -107,30 +108,44 @@ class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civili
 
                     // suggest an option to liberate the city
                     if (to.isHuman()
-                        && city.foundingCiv != ""
-                        && from.civName != city.foundingCiv // can't liberate if the city actually belongs to those guys
-                        && to.civName != city.foundingCiv)  // can't liberate if it's our city
-                      to.popupAlerts.add(PopupAlert(AlertType.CityTraded, city.id))
+                            && city.foundingCiv != ""
+                            && from.civName != city.foundingCiv // can't liberate if the city actually belongs to those guys
+                            && to.civName != city.foundingCiv
+                    )  // can't liberate if it's our city
+                        to.popupAlerts.add(PopupAlert(AlertType.CityTraded, city.id))
                 }
-                if (offer.type == TradeType.Treaty) {
+                TradeType.Treaty -> {
                     if (offer.name == Constants.peaceTreaty) to.getDiplomacyManager(from).makePeace()
                     if (offer.name == Constants.researchAgreement) {
                         to.addGold(-offer.amount)
-                        to.getDiplomacyManager(from).setFlag(DiplomacyFlags.ResearchAgreement, offer.duration)
+                        to.getDiplomacyManager(from)
+                            .setFlag(DiplomacyFlags.ResearchAgreement, offer.duration)
                     }
                 }
-                if (offer.type == TradeType.Introduction)
-                    to.diplomacyFunctions.makeCivilizationsMeet(to.gameInfo.getCivilization(offer.name))
-                if (offer.type == TradeType.WarDeclaration) {
+                TradeType.Introduction -> to.diplomacyFunctions.makeCivilizationsMeet(to.gameInfo.getCivilization(offer.name))
+                TradeType.WarDeclaration -> {
                     val nameOfCivToDeclareWarOn = offer.name
                     from.getDiplomacyManager(nameOfCivToDeclareWarOn).declareWar()
                 }
+                else -> {}
             }
-            to.updateStatsForNextTurn()
-            to.cache.updateCivResources()
         }
 
-        transferTrade(ourCivilization, otherCivilization, currentTrade)
-        transferTrade(otherCivilization, ourCivilization, currentTrade.reverse())
+        // Transfer of cities needs to happen before peace treaty, to avoid our units teleporting out of areas that soon will be ours
+        for (offer in currentTrade.theirOffers.filterNot { it.type == TradeType.Treaty })
+            transferTrade(otherCivilization, ourCivilization, offer)
+        for (offer in currentTrade.ourOffers.filterNot { it.type == TradeType.Treaty })
+            transferTrade(ourCivilization, otherCivilization, offer)
+
+        for (offer in currentTrade.theirOffers.filter { it.type == TradeType.Treaty })
+            transferTrade(otherCivilization, ourCivilization, offer)
+        for (offer in currentTrade.ourOffers.filter { it.type == TradeType.Treaty })
+            transferTrade(ourCivilization, otherCivilization, offer)
+
+        ourCivilization.cache.updateCivResources()
+        ourCivilization.updateStatsForNextTurn()
+
+        otherCivilization.cache.updateCivResources()
+        otherCivilization.updateStatsForNextTurn()
     }
 }

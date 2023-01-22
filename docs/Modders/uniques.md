@@ -1528,11 +1528,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Improvement
 
-??? example  "Costs [amount] gold per turn when in your territory"
-	Example: "Costs [3] gold per turn when in your territory"
-
-	Applicable to: Improvement
-
 ??? example  "Adjacent enemy units ending their turn take [amount] damage"
 	Example: "Adjacent enemy units ending their turn take [3] damage"
 
@@ -1905,6 +1900,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: TriggerCondition
 
 ??? example  "&lt;upon conquering a city&gt;"
+	Applicable to: TriggerCondition
+
+??? example  "&lt;upon founding a city&gt;"
+	Applicable to: TriggerCondition
+
+??? example  "&lt;upon discovering a Natural Wonder&gt;"
 	Applicable to: TriggerCondition
 
 ??? example  "&lt;upon constructing [buildingFilter]&gt;"

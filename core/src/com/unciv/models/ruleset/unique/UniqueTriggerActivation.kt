@@ -25,12 +25,12 @@ import kotlin.random.Random
 
 // Buildings, techs, policies, ancient ruins and promotions can have 'triggered' effects
 object UniqueTriggerActivation {
-    /** @return boolean whether an action was successfully performed */
+    /** @return whether an action was successfully performed */
     fun triggerCivwideUnique(
         unique: Unique,
         civInfo: Civilization,
         city: City? = null,
-        tile: Tile? = null,
+        tile: Tile? = city?.getCenterTile(),
         notification: String? = null,
         triggerNotificationText: String? = null
     ): Boolean {
@@ -205,8 +205,8 @@ object UniqueTriggerActivation {
                     "in other cities" -> civInfo.cities.asSequence().filter { it != city }
                     else -> civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
                 }
-                for (city in applicableCities) {
-                    city.population.addPopulation(unique.params[0].toInt())
+                for (applicableCity in applicableCities) {
+                    applicableCity.population.addPopulation(unique.params[0].toInt())
                 }
                 if (notification != null && applicableCities.any())
                     civInfo.addNotification(
