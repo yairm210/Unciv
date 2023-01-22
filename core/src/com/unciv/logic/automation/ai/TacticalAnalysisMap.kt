@@ -296,10 +296,13 @@ class TacticalAnalysisMap {
         for (zone in zones)
             zone.neighboringZones.clear()
 
-        for (tile in game.tileMap.values) {
+        val tileMap = game.tileMap
+        val directionsToCheck = setOf(12, 4, 8) // each tile only needs to check 3 directions for every possible neighboringZone to be identified
+
+        for (tile in tileMap.values) {
             val zoneA = getZoneByTile(tile)
             val zoneAId = zoneA!!.id
-            for (neighbor in tile.neighbors) {
+            for (neighbor in directionsToCheck.mapNotNull { tileMap.getClockPositionNeighborTile(tile, it) }) {
                 val zoneB = getZoneByTile(neighbor)!!
                 val zoneBId = zoneB.id
                 if (zoneAId != zoneBId) {
