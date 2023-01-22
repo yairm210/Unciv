@@ -1907,6 +1907,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;upon conquering a city&gt;"
 	Applicable to: TriggerCondition
 
+??? example  "&lt;upon founding a city&gt;"
+	Applicable to: TriggerCondition
+
+??? example  "&lt;upon discovering a Natural Wonder&gt;"
+	Applicable to: TriggerCondition
+
 ??? example  "&lt;upon constructing [buildingFilter]&gt;"
 	Example: "&lt;upon constructing [Culture]&gt;"
 

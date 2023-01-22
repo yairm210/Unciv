@@ -11,7 +11,9 @@ import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTarget
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 
 /** CivInfo class was getting too crowded */
@@ -177,7 +179,6 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 goldGained += 500
             }
 
-
             if (civInfo.hasUnique(UniqueType.GoldWhenDiscoveringNaturalWonder)) {
                 goldGained += if (discoveredNaturalWonders.contains(tile.naturalWonder!!)) 100 else 500
             }
@@ -188,6 +189,12 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                     NotificationCategory.General, NotificationIcon.Gold
                 )
             }
+
+            for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDiscoveringNaturalWonder,
+                StateForConditionals(civInfo, tile = tile)
+            ))
+                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, tile=tile, triggerNotificationText = "due to discovering a Natural Wonder")
+
 
         }
     }
