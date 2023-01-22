@@ -184,8 +184,7 @@ object UnitActions {
         // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
         if (unit.civInfo.isOneCityChallenger() && unit.civInfo.hasEverOwnedOriginalCapital == true) return null
 
-        if (unit.currentMovement <= 0 ||
-                !tile.canBeSettled())
+        if (unit.currentMovement <= 0 || !tile.canBeSettled())
             return UnitAction(UnitActionType.FoundCity, action = null)
 
         val foundAction = {
