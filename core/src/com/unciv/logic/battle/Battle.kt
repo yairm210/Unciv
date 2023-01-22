@@ -242,7 +242,8 @@ object Battle {
                 0.1f + attacker.getAttackingStrength().toFloat() / defender.getDefendingStrength()
                     .toFloat() * 0.4f
             )
-            return Random().nextFloat() <= captureChance
+            /** Between 0 and 1.  Defaults to turn and location-based random to avoid save scumming */
+            return Random(attacker.getCivInfo().gameInfo.turns * defender.getTile().position.hashCode().toLong()).nextFloat() <= captureChance
         }
 
         fun unitGainFromEncampment(): Boolean {
