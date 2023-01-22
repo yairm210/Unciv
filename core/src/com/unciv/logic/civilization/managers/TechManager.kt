@@ -258,13 +258,15 @@ class TechManager : IsPartOfGameInfoSerialization {
             repeatingTechsResearched++
         researchedTechnologies = researchedTechnologies.withItem(newTech)
         addTechToTransients(newTech)
+
+        val triggerNotificationText = "due to researching [$techName]"
         for (unique in newTech.uniqueObjects)
             if (unique.conditionals.none { it.type!!.targetTypes.contains(UniqueTarget.TriggerCondition) })
-                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponResearch))
             if (unique.conditionals.any {it.type == UniqueType.TriggerUponResearch && it.params[0] == techName})
-                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
 
         updateTransientBooleans()
@@ -284,11 +286,29 @@ class TechManager : IsPartOfGameInfoSerialization {
             }
         }
 
-        val obsoleteUnits = getRuleset().units.values.filter { it.obsoleteTech == techName }.map { it.name }
+        obsoleteOldUnits(techName)
+
+        for (unique in civInfo.getMatchingUniques(UniqueType.ReceiveFreeUnitWhenDiscoveringTech)) {
+            if (unique.params[1] != techName) continue
+            civInfo.units.addUnit(unique.params[0])
+        }
+        for (unique in civInfo.getMatchingUniques(UniqueType.MayanGainGreatPerson)) {
+            if (unique.params[1] != techName) continue
+            civInfo.addNotification("You have unlocked [The Long Count]!",
+                MayaLongCountAction(), NotificationCategory.General, MayaCalendar.notificationIcon)
+        }
+
+        moveToNewEra()
+    }
+
+    private fun obsoleteOldUnits(techName: String) {
+        val obsoleteUnits =
+                getRuleset().units.values.filter { it.obsoleteTech == techName }.map { it.name }
         val unitUpgrades = HashMap<String, HashSet<City>>()
         for (city in civInfo.cities) {
             // Do not use replaceAll - that's a Java 8 feature and will fail on older phones!
-            val oldQueue = city.cityConstructions.constructionQueue.toList()  // copy, since we're changing the queue
+            val oldQueue =
+                    city.cityConstructions.constructionQueue.toList()  // copy, since we're changing the queue
             city.cityConstructions.constructionQueue.clear()
             for (constructionName in oldQueue) {
                 if (constructionName in obsoleteUnits) {
@@ -310,13 +330,18 @@ class TechManager : IsPartOfGameInfoSerialization {
             if (cities.size == 1) {
                 val city = cities.first()
                 if (construction is BaseUnit && construction.upgradesTo != null) {
-                    val text = "[${city.name}] changed production from [$unit] to [${construction.upgradesTo!!}]"
-                    civInfo.addNotification(text, city.location,
+                    val text =
+                            "[${city.name}] changed production from [$unit] to [${construction.upgradesTo!!}]"
+                    civInfo.addNotification(
+                        text, city.location,
                         NotificationCategory.Production, unit,
-                        NotificationIcon.Construction, construction.upgradesTo!!)
+                        NotificationIcon.Construction, construction.upgradesTo!!
+                    )
                 } else {
-                    val text = "[$unit] has become obsolete and was removed from the queue in [${city.name}]!"
-                    civInfo.addNotification(text, city.location,
+                    val text =
+                            "[$unit] has become obsolete and was removed from the queue in [${city.name}]!"
+                    civInfo.addNotification(
+                        text, city.location,
                         NotificationCategory.Production,
                         NotificationIcon.Construction
                     )
@@ -324,47 +349,49 @@ class TechManager : IsPartOfGameInfoSerialization {
             } else {
                 val locationAction = LocationAction(cities.asSequence().map { it.location })
                 if (construction is BaseUnit && construction.upgradesTo != null) {
-                    val text = "[${cities.size}] cities changed production from [$unit] to [${construction.upgradesTo!!}]"
-                    civInfo.addNotification(text, locationAction,
+                    val text =
+                            "[${cities.size}] cities changed production from [$unit] to [${construction.upgradesTo!!}]"
+                    civInfo.addNotification(
+                        text, locationAction,
                         NotificationCategory.Production, unit,
-                        NotificationIcon.Construction, construction.upgradesTo!!)
+                        NotificationIcon.Construction, construction.upgradesTo!!
+                    )
                 } else {
-                    val text = "[$unit] has become obsolete and was removed from the queue in [${cities.size}] cities!"
-                    civInfo.addNotification(text, locationAction,
+                    val text =
+                            "[$unit] has become obsolete and was removed from the queue in [${cities.size}] cities!"
+                    civInfo.addNotification(
+                        text, locationAction,
                         NotificationCategory.Production,
                         NotificationIcon.Construction
                     )
                 }
             }
         }
+    }
 
-        for (unique in civInfo.getMatchingUniques(UniqueType.ReceiveFreeUnitWhenDiscoveringTech)) {
-            if (unique.params[1] != techName) continue
-            civInfo.units.addUnit(unique.params[0])
-        }
-        for (unique in civInfo.getMatchingUniques(UniqueType.MayanGainGreatPerson)) {
-            if (unique.params[1] != techName) continue
-            civInfo.addNotification("You have unlocked [The Long Count]!",
-                MayaLongCountAction(), NotificationCategory.General, MayaCalendar.notificationIcon)
-        }
-
+    private fun moveToNewEra() {
         val previousEra = civInfo.getEra()
         updateEra()
         val currentEra = civInfo.getEra()
         if (previousEra != currentEra) {
-            civInfo.addNotification("You have entered the [$currentEra]!",
+            civInfo.addNotification(
+                "You have entered the [$currentEra]!",
                 NotificationCategory.General,
                 NotificationIcon.Science
             )
             if (civInfo.isMajorCiv()) {
                 for (knownCiv in civInfo.getKnownCivs()) {
-                    knownCiv.addNotification("[${civInfo.civName}] has entered the [$currentEra]!",
+                    knownCiv.addNotification(
+                        "[${civInfo.civName}] has entered the [$currentEra]!",
                         NotificationCategory.General, civInfo.civName, NotificationIcon.Science
                     )
                 }
             }
-            for (policyBranch in getRuleset().policyBranches.values.filter { it.era == currentEra.name && civInfo.policies.isAdoptable(it) }) {
-                civInfo.addNotification("[${policyBranch.name}] policy branch unlocked!",
+            for (policyBranch in getRuleset().policyBranches.values.filter {
+                it.era == currentEra.name && civInfo.policies.isAdoptable(it)
+            }) {
+                civInfo.addNotification(
+                    "[${policyBranch.name}] policy branch unlocked!",
                     NotificationCategory.General,
                     NotificationIcon.Culture
                 )
@@ -373,15 +400,26 @@ class TechManager : IsPartOfGameInfoSerialization {
             val erasPassed = getRuleset().eras.values
                 .filter { it.eraNumber > previousEra.eraNumber && it.eraNumber <= currentEra.eraNumber }
                 .sortedBy { it.eraNumber }
+
+
             for (era in erasPassed)
                 for (unique in era.uniqueObjects)
                     if (unique.conditionals.none { it.type!!.targetTypes.contains(UniqueTarget.TriggerCondition) })
-                        UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+                        UniqueTriggerActivation.triggerCivwideUnique(
+                            unique,
+                            civInfo,
+                            triggerNotificationText = "due to entering the [${era.name}]"
+                        )
 
             val eraNames = erasPassed.map { it.name }.toHashSet()
             for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnteringEra))
-                if (unique.conditionals.any {it.type == UniqueType.TriggerUponEnteringEra && it.params[0] in eraNames})
-                    UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+                for (eraName in eraNames)
+                    if (unique.conditionals.any { it.type == UniqueType.TriggerUponEnteringEra && it.params[0] == eraName })
+                        UniqueTriggerActivation.triggerCivwideUnique(
+                            unique,
+                            civInfo,
+                            triggerNotificationText = "due to entering the [$eraName]"
+                        )
         }
     }
 

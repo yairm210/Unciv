@@ -74,10 +74,10 @@ class TileMap : IsPartOfGameInfoSerialization {
     val maxLongitude: Float by lazy { if (values.isEmpty()) 0f else values.maxOf { abs(it.longitude) } }
 
     @delegate:Transient
-    val naturalWonders: List<String> by lazy { tileList.asSequence().filter { it.isNaturalWonder() }.map { it.naturalWonder!! }.distinct().toList() }
+    val naturalWonders: Set<String> by lazy { tileList.asSequence().filter { it.isNaturalWonder() }.map { it.naturalWonder!! }.toSet() }
 
     @delegate:Transient
-    val resources: List<String> by lazy { tileList.asSequence().filter { it.resource != null }.map { it.resource!! }.distinct().toList() }
+    val resources: Set<String> by lazy { tileList.asSequence().filter { it.resource != null }.map { it.resource!! }.toSet() }
 
     // Excluded from Serialization by having no own backing field
     val values: Collection<Tile>

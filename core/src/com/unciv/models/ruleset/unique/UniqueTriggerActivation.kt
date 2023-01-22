@@ -15,6 +15,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.stats.Stat
+import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
 import com.unciv.ui.utils.MayaCalendar
@@ -29,7 +30,8 @@ object UniqueTriggerActivation {
         civInfo: Civilization,
         city: City? = null,
         tile: Tile? = null,
-        notification: String? = null
+        notification: String? = null,
+        triggerNotificationText: String? = null
     ): Boolean {
         val timingConditional = unique.conditionals.firstOrNull { it.type == UniqueType.ConditionalTimedUnique }
         if (timingConditional != null) {
@@ -52,15 +54,18 @@ object UniqueTriggerActivation {
                 if (chosenCity == null || unit == null || (unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger()))
                     return false
 
-                val placedUnit = civInfo.units.addUnit(unitName, chosenCity)
-                if (notification != null && placedUnit != null) {
-                    civInfo.addNotification(
-                        notification,
-                        placedUnit.getTile().position,
-                        NotificationCategory.Units,
-                        placedUnit.name
-                    )
-                }
+                val placedUnit = civInfo.units.addUnit(unitName, chosenCity) ?: return false
+
+                val notificationText = if (notification != null) notification
+                else if (triggerNotificationText != null) "{Gained [1] [$unitName] unit(s)}{ }{$triggerNotificationText}"
+                else return true
+
+                civInfo.addNotification(
+                    notificationText,
+                    placedUnit.getTile().position,
+                    NotificationCategory.Units,
+                    placedUnit.name
+                )
                 return true
             }
             UniqueType.OneTimeAmountFreeUnits -> {
@@ -75,14 +80,18 @@ object UniqueTriggerActivation {
                     if (placedUnit != null)
                         tilesUnitsWerePlacedOn.add(placedUnit.getTile().position)
                 }
-                if (notification != null && tilesUnitsWerePlacedOn.isNotEmpty()) {
-                    civInfo.addNotification(
-                        notification,
-                        LocationAction(tilesUnitsWerePlacedOn),
-                        NotificationCategory.Units,
-                        civInfo.getEquivalentUnit(unit).name
-                    )
-                }
+                if (tilesUnitsWerePlacedOn.isEmpty()) return true
+
+                val notificationText = if (notification != null) notification
+                else if (triggerNotificationText!=null) "{Gained [${tilesUnitsWerePlacedOn.size}] [$unitName] unit(s)}{ }{$triggerNotificationText}"
+                else return true
+
+                civInfo.addNotification(
+                    notificationText,
+                    LocationAction(tilesUnitsWerePlacedOn),
+                    NotificationCategory.Units,
+                    civInfo.getEquivalentUnit(unit).name
+                )
                 return true
             }
             UniqueType.OneTimeFreeUnitRuins -> {
@@ -117,24 +126,37 @@ object UniqueTriggerActivation {
                 // spectators get all techs at start of game, and if (in a mod) a tech gives a free policy, the game gets stuck on the policy picker screen
                 if (civInfo.isSpectator()) return false
                 civInfo.policies.freePolicies++
-                if (notification != null) {
-                    civInfo.addNotification(notification, NotificationCategory.General, NotificationIcon.Culture)
-                }
+
+                val notificationText = if (notification != null) notification
+                else if (triggerNotificationText != null) "{You may choose a free Policy}{ }{$triggerNotificationText}"
+                else return true
+
+                civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Culture)
+
                 return true
             }
             UniqueType.OneTimeAmountFreePolicies -> {
                 if (civInfo.isSpectator()) return false
-                civInfo.policies.freePolicies += unique.params[0].toInt()
-                if (notification != null) {
-                    civInfo.addNotification(notification, NotificationCategory.General, NotificationIcon.Culture)
-                }
+                val newFreePolicies = unique.params[0].toInt()
+                civInfo.policies.freePolicies += newFreePolicies
+
+                val notificationText = if (notification != null) notification
+                else if (triggerNotificationText != null) "{You may choose [$newFreePolicies] free Policies}{ }{$triggerNotificationText}"
+                else return true
+
+                civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Culture)
+
                 return true
             }
             UniqueType.OneTimeEnterGoldenAge -> {
                 civInfo.goldenAges.enterGoldenAge()
-                if (notification != null) {
-                    civInfo.addNotification(notification, NotificationCategory.General, NotificationIcon.Happiness)
-                }
+
+                val notificationText = if (notification != null) notification
+                else if (triggerNotificationText != null) "{You enter a Golden Age}{ }{$triggerNotificationText}"
+                else return true
+
+                civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Happiness)
+
                 return true
             }
 
@@ -335,9 +357,14 @@ object UniqueTriggerActivation {
                     || unique.params[0].toIntOrNull() == null
                 ) return false
 
-                civInfo.addStat(stat, unique.params[0].toInt())
-                if (notification != null)
-                    civInfo.addNotification(notification, LocationAction(tile?.position), NotificationCategory.General, stat.notificationIcon)
+                val stats = Stats().add(stat, unique.params[0].toFloat())
+                civInfo.addStats(stats)
+
+                val notificationText = if (notification != null) notification
+                else if (triggerNotificationText != null) "{Gained [$stats]}{ }{$triggerNotificationText}"
+                else return true
+
+                civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationCategory.General, stat.notificationIcon)
                 return true
             }
             UniqueType.OneTimeGainStatRange -> {
@@ -348,23 +375,23 @@ object UniqueTriggerActivation {
                     || unique.params[1].toIntOrNull() == null
                 ) return false
 
-                val foundStatAmount =
+                val finalStatAmount =
                     (tileBasedRandom.nextInt(unique.params[0].toInt(), unique.params[1].toInt()) *
                             civInfo.gameInfo.speed.statCostModifiers[stat]!!
-                            ).toInt()
+                            ).toFloat()
 
-                civInfo.addStat(
-                    Stat.valueOf(unique.params[2]),
-                    foundStatAmount
-                )
+                val stats = Stats().add(stat, finalStatAmount)
+                civInfo.addStats(stats)
 
-                if (notification != null) {
-                    val notificationText =
-                        if (notification.hasPlaceholderParameters()) {
-                            notification.fillPlaceholders(foundStatAmount.toString())
-                        } else notification
-                    civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationCategory.General, stat.notificationIcon)
+                val notificationText = if (notification != null) {
+                    if (notification.hasPlaceholderParameters()) {
+                        notification.fillPlaceholders(finalStatAmount.toString())
+                    } else notification
                 }
+                else if (triggerNotificationText != null) "{Gained [$stats]}{ }{$triggerNotificationText}"
+                else return true
+
+                civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationCategory.General, stat.notificationIcon)
 
                 return true
             }

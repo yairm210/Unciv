@@ -1,7 +1,7 @@
 package com.unciv.models.ruleset
 
-import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.City
+import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.RejectionReason
 import com.unciv.logic.city.RejectionReasons
@@ -666,19 +666,22 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         // "Provides a free [buildingName] [cityFilter]"
         cityConstructions.addFreeBuildings()
 
+        val triggerNotificationText ="due to constructing [$name]"
+
         for (unique in uniqueObjects)
             if (unique.conditionals.none { it.type!!.targetTypes.contains(UniqueTarget.TriggerCondition) })
-                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, cityConstructions.city)
+                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, cityConstructions.city, triggerNotificationText = triggerNotificationText)
+
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, StateForConditionals(civInfo, cityInfo)))
             if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuilding && matchesFilter(it.params[0])})
-                UniqueTriggerActivation.triggerCivwideUnique(unique, cityInfo.civInfo, cityInfo)
+                UniqueTriggerActivation.triggerCivwideUnique(unique, cityInfo.civInfo, cityInfo, triggerNotificationText = triggerNotificationText)
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponConstructingBuildingCityFilter, StateForConditionals(cityInfo.civInfo, cityInfo)))
             if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuildingCityFilter
                             && matchesFilter(it.params[0])
                             && cityInfo.matchesFilter(it.params[1])})
-                UniqueTriggerActivation.triggerCivwideUnique(unique, cityInfo.civInfo, cityInfo)
+                UniqueTriggerActivation.triggerCivwideUnique(unique, cityInfo.civInfo, cityInfo, triggerNotificationText = triggerNotificationText)
 
         if (hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement))
             civInfo.cache.updateHasActiveEnemyMovementPenalty()
