@@ -298,15 +298,15 @@ class TacticalAnalysisMap {
 
         val tileMatrix = game.tileMap.tileMatrix
 
-        val gridH = tileMatrix.size-1
         val gridW = tileMatrix.size-1
+        val gridH = tileMatrix[0].size-1
 
-        for (y in 0 until gridH) {
-            for (x in 0 until gridW) {
-                val tileA = tileMatrix[y][x]
-                val tileB = tileMatrix.getOrNull(y + 1)?.get(x)
-                val tileC = tileMatrix[y].getOrNull(x + 1)
-                val tileD = tileMatrix.getOrNull(y + 1)?.getOrNull(x + 1)
+        for (x in 0 until gridW) {
+            for (y in 0 until gridH) {
+                val tileA = tileMatrix[x][y]
+                val tileB = tileMatrix.getOrNull(x + 1)?.get(y)
+                val tileC = tileMatrix[x].getOrNull(y + 1)
+                val tileD = tileMatrix.getOrNull(x + 1)?.getOrNull(y + 1)
 
                 val zoneA = if (tileA == null) getZoneById("UNKNOWN") else getZoneByTile(tileA)
                 val zoneB = if (tileB == null) getZoneById("UNKNOWN") else getZoneByTile(tileB)
