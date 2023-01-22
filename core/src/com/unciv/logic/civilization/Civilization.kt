@@ -48,6 +48,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unique.getMatchingUniques
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
+import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.extensions.toPercent
 import com.unciv.ui.victoryscreen.RankingType
@@ -692,6 +693,10 @@ class Civilization : IsPartOfGameInfoSerialization {
             delta < 0 && gold < Int.MIN_VALUE - delta -> Int.MIN_VALUE
             else -> gold + delta
         }
+    }
+
+    fun addStats(stats: Stats){
+        for ((stat, amount) in stats) addStat(stat, amount.toInt())
     }
 
     fun addStat(stat: Stat, amount: Int) {

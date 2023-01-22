@@ -15,6 +15,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.stats.Stat
+import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
 import com.unciv.ui.utils.MayaCalendar
@@ -356,9 +357,14 @@ object UniqueTriggerActivation {
                     || unique.params[0].toIntOrNull() == null
                 ) return false
 
-                civInfo.addStat(stat, unique.params[0].toInt())
-                if (notification != null)
-                    civInfo.addNotification(notification, LocationAction(tile?.position), NotificationCategory.General, stat.notificationIcon)
+                val stats = Stats().add(stat, unique.params[0].toFloat())
+                civInfo.addStats(stats)
+
+                val notificationText = if (notification != null) notification
+                else if (triggerNotificationText != null) "{Gained [$stats]}{ }{$triggerNotificationText}"
+                else return true
+
+                civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationCategory.General, stat.notificationIcon)
                 return true
             }
             UniqueType.OneTimeGainStatRange -> {
@@ -369,23 +375,23 @@ object UniqueTriggerActivation {
                     || unique.params[1].toIntOrNull() == null
                 ) return false
 
-                val foundStatAmount =
+                val finalStatAmount =
                     (tileBasedRandom.nextInt(unique.params[0].toInt(), unique.params[1].toInt()) *
                             civInfo.gameInfo.speed.statCostModifiers[stat]!!
-                            ).toInt()
+                            ).toFloat()
 
-                civInfo.addStat(
-                    Stat.valueOf(unique.params[2]),
-                    foundStatAmount
-                )
+                val stats = Stats().add(stat, finalStatAmount)
+                civInfo.addStats(stats)
 
-                if (notification != null) {
-                    val notificationText =
-                        if (notification.hasPlaceholderParameters()) {
-                            notification.fillPlaceholders(foundStatAmount.toString())
-                        } else notification
-                    civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationCategory.General, stat.notificationIcon)
+                val notificationText = if (notification != null) {
+                    if (notification.hasPlaceholderParameters()) {
+                        notification.fillPlaceholders(finalStatAmount.toString())
+                    } else notification
                 }
+                else if (triggerNotificationText != null) "{Gained [$stats]}{ }{$triggerNotificationText}"
+                else return true
+
+                civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationCategory.General, stat.notificationIcon)
 
                 return true
             }
