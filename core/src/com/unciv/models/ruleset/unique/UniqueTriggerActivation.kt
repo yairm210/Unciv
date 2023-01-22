@@ -2,6 +2,7 @@ package com.unciv.models.ruleset.unique
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.Civilization
@@ -56,9 +57,9 @@ object UniqueTriggerActivation {
 
                 val placedUnit = civInfo.units.addUnit(unitName, chosenCity) ?: return false
 
-                val notificationText = if (notification != null) notification
-                else if (triggerNotificationText != null) "{Gained [1] [$unitName] unit(s)}{ }{$triggerNotificationText}"
-                else return true
+                val notificationText = getNotificationText(notification, triggerNotificationText,
+                    "Gained [1] [$unitName] unit(s)")
+                    ?: return true
 
                 civInfo.addNotification(
                     notificationText,
@@ -82,9 +83,9 @@ object UniqueTriggerActivation {
                 }
                 if (tilesUnitsWerePlacedOn.isEmpty()) return true
 
-                val notificationText = if (notification != null) notification
-                else if (triggerNotificationText!=null) "{Gained [${tilesUnitsWerePlacedOn.size}] [$unitName] unit(s)}{ }{$triggerNotificationText}"
-                else return true
+                val notificationText = getNotificationText(notification, triggerNotificationText,
+                    "Gained [${tilesUnitsWerePlacedOn.size}] [$unitName] unit(s)")
+                    ?: return true
 
                 civInfo.addNotification(
                     notificationText,
@@ -127,9 +128,10 @@ object UniqueTriggerActivation {
                 if (civInfo.isSpectator()) return false
                 civInfo.policies.freePolicies++
 
-                val notificationText = if (notification != null) notification
-                else if (triggerNotificationText != null) "{You may choose a free Policy}{ }{$triggerNotificationText}"
-                else return true
+
+                val notificationText = getNotificationText(notification, triggerNotificationText,
+                    "You may choose a free Policy")
+                    ?: return true
 
                 civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Culture)
 
@@ -140,9 +142,9 @@ object UniqueTriggerActivation {
                 val newFreePolicies = unique.params[0].toInt()
                 civInfo.policies.freePolicies += newFreePolicies
 
-                val notificationText = if (notification != null) notification
-                else if (triggerNotificationText != null) "{You may choose [$newFreePolicies] free Policies}{ }{$triggerNotificationText}"
-                else return true
+                val notificationText = getNotificationText(notification, triggerNotificationText,
+                    "You may choose [$newFreePolicies] free Policies")
+                    ?: return true
 
                 civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Culture)
 
@@ -151,9 +153,9 @@ object UniqueTriggerActivation {
             UniqueType.OneTimeEnterGoldenAge -> {
                 civInfo.goldenAges.enterGoldenAge()
 
-                val notificationText = if (notification != null) notification
-                else if (triggerNotificationText != null) "{You enter a Golden Age}{ }{$triggerNotificationText}"
-                else return true
+                val notificationText = getNotificationText(notification, triggerNotificationText,
+                    "You enter a Golden Age")
+                    ?: return true
 
                 civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Happiness)
 
@@ -360,9 +362,9 @@ object UniqueTriggerActivation {
                 val stats = Stats().add(stat, unique.params[0].toFloat())
                 civInfo.addStats(stats)
 
-                val notificationText = if (notification != null) notification
-                else if (triggerNotificationText != null) "{Gained [$stats]}{ }{$triggerNotificationText}"
-                else return true
+                val notificationText = getNotificationText(notification, triggerNotificationText,
+                    "Gained [$stats]")
+                    ?: return true
 
                 civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationCategory.General, stat.notificationIcon)
                 return true
@@ -383,13 +385,9 @@ object UniqueTriggerActivation {
                 val stats = Stats().add(stat, finalStatAmount)
                 civInfo.addStats(stats)
 
-                val notificationText = if (notification != null) {
-                    if (notification.hasPlaceholderParameters()) {
-                        notification.fillPlaceholders(finalStatAmount.toString())
-                    } else notification
-                }
-                else if (triggerNotificationText != null) "{Gained [$stats]}{ }{$triggerNotificationText}"
-                else return true
+                val notificationText = getNotificationText(notification, triggerNotificationText,
+                    "Gained [$stats]")
+                    ?: return true
 
                 civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationCategory.General, stat.notificationIcon)
 
@@ -560,6 +558,17 @@ object UniqueTriggerActivation {
             else -> {}
         }
         return false
+    }
+
+    fun getNotificationText(notification: String?, triggerNotificationText: String?, effectNotificationText:String):String?{
+        return if (!notification.isNullOrEmpty()) notification
+        else if (triggerNotificationText != null)
+        {
+            if (UncivGame.Current.translations.triggerNotificationEffectBeforeCause(UncivGame.Current.settings.language))
+                "{$effectNotificationText}{ }{$triggerNotificationText}"
+            else "{$triggerNotificationText}{ }{$effectNotificationText}"
+        }
+        else null
     }
 
     /** @return boolean whether an action was successfully performed */

@@ -207,6 +207,10 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         return get(shouldCapitalizeString, language, null)?.get(language)?.toBoolean() ?: true
     }
 
+    fun triggerNotificationEffectBeforeCause(language: String): Boolean{
+        return get(effectBeforeCause, language, null)?.get(language)?.toBoolean() ?: true
+    }
+
     companion object {
         // Whenever this string is changed, it should also be changed in the translation files!
         // It is mostly used as the template for translating the order of conditionals
@@ -214,6 +218,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
             "<with a garrison> <for [mapUnitFilter] units> <above [amount] HP> <below [amount] HP> <vs cities> <vs [mapUnitFilter] units> <when fighting in [tileFilter] tiles> <when attacking> <when defending> <if this city has at least [amount] specialists> <when at war> <when not at war> <while the empire is happy> <during a Golden Age> <during the [era]> <starting from the [era]> <before the [era]> <with [techOrPolicy]> <without [techOrPolicy]>"
         const val conditionalUniqueOrderString = "ConditionalsPlacement"
         const val shouldCapitalizeString = "StartWithCapitalLetter"
+        const val effectBeforeCause = "EffectBeforeCause"
     }
 }
 
