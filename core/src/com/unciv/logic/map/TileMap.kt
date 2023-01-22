@@ -87,7 +87,8 @@ class TileMap : IsPartOfGameInfoSerialization {
     val startingLocationsByNation = HashMap<String,HashSet<Tile>>()
 
     @Transient
-    val continentSizes = HashMap<Int, Int>()    // Continent ID, Continent size
+    /** Continent ID to Continent size */
+    val continentSizes = HashMap<Int, Int>()
 
     //endregion
     //region Constructors

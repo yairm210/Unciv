@@ -15,7 +15,9 @@ import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.worldscreen.unit.UnitActions
+import com.unciv.ui.worldscreen.unit.actions.UnitActions
+import com.unciv.ui.worldscreen.unit.actions.UnitActionsPillage
+import com.unciv.ui.worldscreen.unit.actions.UnitActionsUpgrade
 
 object UnitAutomation {
 
@@ -124,7 +126,7 @@ object UnitAutomation {
             if (!Automation.allowSpendingResource(unit.civInfo, upgradedUnit)) return false
         }
 
-        val upgradeAction = UnitActions.getUpgradeAction(unit)
+        val upgradeAction = UnitActionsUpgrade.getUpgradeAction(unit)
             ?: return false
 
         upgradeAction.action?.invoke()
@@ -372,7 +374,7 @@ object UnitAutomation {
         if (unit.getTile() != tileToPillage)
             unit.movement.moveToTile(tileToPillage)
 
-        UnitActions.getPillageAction(unit)?.action?.invoke()
+        UnitActionsPillage.getPillageAction(unit)?.action?.invoke()
         return unit.currentMovement == 0f
     }
 

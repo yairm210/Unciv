@@ -65,7 +65,7 @@ import com.unciv.ui.worldscreen.status.MultiplayerStatusButton
 import com.unciv.ui.worldscreen.status.NextTurnAction
 import com.unciv.ui.worldscreen.status.NextTurnButton
 import com.unciv.ui.worldscreen.status.StatusButtons
-import com.unciv.ui.worldscreen.unit.UnitActionsTable
+import com.unciv.ui.worldscreen.unit.actions.UnitActionsTable
 import com.unciv.ui.worldscreen.unit.UnitTable
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread

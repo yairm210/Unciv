@@ -1,4 +1,4 @@
-package com.unciv.ui.worldscreen.unit
+package com.unciv.ui.worldscreen.unit.actions
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Button
@@ -21,7 +21,8 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         clear()
         if (unit == null) return
         if (!worldScreen.canChangeState) return // No actions when it's not your turn or spectator!
-        for (button in UnitActions.getUnitActions(unit, worldScreen).map { getUnitActionButton(unit, it) })
+        for (button in UnitActions.getUnitActions(unit, worldScreen)
+            .map { getUnitActionButton(unit, it) })
             add(button).left().padBottom(2f).row()
         pack()
     }
