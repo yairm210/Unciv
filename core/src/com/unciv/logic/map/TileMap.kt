@@ -152,7 +152,7 @@ class TileMap : IsPartOfGameInfoSerialization {
         tileMatrix[x - leftX][y - bottomY]!!
 
     /** @return tile at hex coordinates ([x],[y]) or null if they are outside the map. Does *not* respect world wrap, use [getIfTileExistsOrNull] for that. */
-    private fun getOrNull (x: Int, y: Int): Tile? =
+    fun getOrNull (x: Int, y: Int): Tile? =
             tileMatrix.getOrNull(x - leftX)?.getOrNull(y - bottomY)
 
     //endregion
