@@ -304,9 +304,9 @@ class TacticalAnalysisMap {
         for (y in 0 until gridH) {
             for (x in 0 until gridW) {
                 val tileA = tileMatrix[y][x]
-                val tileB = tileMatrix[y+1][x]
-                val tileC = tileMatrix[y][x+1]
-                val tileD = tileMatrix[y+1][x+1]
+                val tileB = tileMatrix.getOrNull(y + 1)?.get(x)
+                val tileC = tileMatrix[y].getOrNull(x + 1)
+                val tileD = tileMatrix.getOrNull(y + 1)?.getOrNull(x + 1)
 
                 val zoneA = if (tileA == null) getZoneById("UNKNOWN") else getZoneByTile(tileA)
                 val zoneB = if (tileB == null) getZoneById("UNKNOWN") else getZoneByTile(tileB)
