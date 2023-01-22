@@ -222,13 +222,13 @@ object GameStarter {
     private fun addCivilizations(newGameParameters: GameParameters, gameInfo: GameInfo, ruleset: Ruleset, existingMap: Boolean) {
         val availableCivNames = Stack<String>()
         // CityState or Spectator civs are not available for Random pick
-        if (gameSetupInfo.mapParameters.enableRandomNationsPool) {
-            if (gameSetupInfo.mapParameters.blacklistRandomNationsPool) {
+        if (gameSetupInfo.gameParameters.enableRandomNationsPool) {
+            if (gameSetupInfo.gameParameters.blacklistRandomNationsPool) {
                 availableCivNames.addAll(ruleset.nations.filter { it.value.isMajorCiv() }.keys.shuffled())
-                for (nation in gameSetupInfo.mapParameters.randomNations)
+                for (nation in gameSetupInfo.gameParameters.randomNations)
                     availableCivNames.remove(nation.name)
             } else {
-                for (nation in gameSetupInfo.mapParameters.randomNations)
+                for (nation in gameSetupInfo.gameParameters.randomNations)
                     availableCivNames.add(nation.name)
             }
         } else

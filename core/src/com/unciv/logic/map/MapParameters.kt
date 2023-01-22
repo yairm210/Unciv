@@ -5,7 +5,6 @@ import com.unciv.logic.map.HexMath.getEquivalentHexagonalRadius
 import com.unciv.logic.map.HexMath.getEquivalentRectangularSize
 import com.unciv.logic.map.HexMath.getNumberOfTilesInHexagon
 import com.unciv.models.metadata.BaseRuleset
-import com.unciv.models.ruleset.nation.Nation
 
 
 /* Predefined Map Sizes - ours are a little lighter than the original values. For reference those are:
@@ -186,10 +185,6 @@ class MapParameters : IsPartOfGameInfoSerialization {
     var rareFeaturesRichness = 0.05f
     var resourceRichness = 0.1f
     var waterThreshold = 0.0f
-
-    var enableRandomNationsPool = false
-    var blacklistRandomNationsPool = false
-    var randomNations = arrayListOf<Nation>()
 
     /** Shifts temperature (after random, latitude and temperatureExtremeness).*/
     var temperatureShift = 0f
