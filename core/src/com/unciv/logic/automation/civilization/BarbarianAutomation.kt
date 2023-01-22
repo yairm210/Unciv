@@ -3,10 +3,10 @@ package com.unciv.logic.automation.civilization
 import com.unciv.Constants
 import com.unciv.logic.automation.unit.BattleHelper
 import com.unciv.logic.automation.unit.UnitAutomation
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 
-class BarbarianAutomation(val civInfo: CivilizationInfo) {
+class BarbarianAutomation(val civInfo: Civilization) {
 
     fun automate() {
         // ranged go first, after melee and then everyone else

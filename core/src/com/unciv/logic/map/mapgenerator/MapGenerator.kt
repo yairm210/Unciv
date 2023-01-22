@@ -2,12 +2,12 @@ package com.unciv.logic.map.mapgenerator
 
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapType
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Counter
 import com.unciv.models.metadata.GameParameters
@@ -80,7 +80,7 @@ class MapGenerator(val ruleset: Ruleset) {
         getMatchingUniques(UniqueType.TileGenerationConditions)
             .map { unique -> TerrainOccursRange(this, unique) }
 
-    fun generateMap(mapParameters: MapParameters, gameParameters: GameParameters = GameParameters(), civilizations: List<CivilizationInfo> = emptyList()): TileMap {
+    fun generateMap(mapParameters: MapParameters, gameParameters: GameParameters = GameParameters(), civilizations: List<Civilization> = emptyList()): TileMap {
         val mapSize = mapParameters.mapSize
         val mapType = mapParameters.type
 
@@ -225,8 +225,8 @@ class MapGenerator(val ruleset: Ruleset) {
             //define lakes
             val waterTiles = map.values.filter { it.isWater }.toMutableList()
 
-            val tilesInArea = ArrayList<TileInfo>()
-            val tilesToCheck = ArrayList<TileInfo>()
+            val tilesInArea = ArrayList<Tile>()
+            val tilesToCheck = ArrayList<Tile>()
 
             val maxLakeSize = ruleset.modOptions.constants.maxLakeSize
 
@@ -556,7 +556,7 @@ class MapGenerator(val ruleset: Ruleset) {
         }
     }
 
-    private fun getTileRadius(tile: TileInfo, tileMap: TileMap): Float {
+    private fun getTileRadius(tile: Tile, tileMap: TileMap): Float {
         val latitudeRatio = abs(tile.latitude) / tileMap.maxLatitude
         val longitudeRatio = abs(tile.longitude) / tileMap.maxLongitude
         return sqrt(latitudeRatio.pow(2) + longitudeRatio.pow(2))
@@ -783,7 +783,7 @@ class MapGenerator(val ruleset: Ruleset) {
         }
     }
 
-    private fun spawnFlatEarthCenterIceWall(tile: TileInfo, bestArcticTileName: String, iceTerrainName: String?, mountainTerrainName: String?) {
+    private fun spawnFlatEarthCenterIceWall(tile: Tile, bestArcticTileName: String, iceTerrainName: String?, mountainTerrainName: String?) {
         // Spawn ice on center tile
         if (bestArcticTileName == iceTerrainName) {
             tile.baseTerrain = waterTerrainName
@@ -833,7 +833,7 @@ class MapGenerator(val ruleset: Ruleset) {
         }
     }
 
-    private fun spawnFlatEarthEdgeIceWall(tile: TileInfo, arcticTileNameList: List<String>, iceTerrainName: String?, mountainTerrainName: String?) {
+    private fun spawnFlatEarthEdgeIceWall(tile: Tile, arcticTileNameList: List<String>, iceTerrainName: String?, mountainTerrainName: String?) {
         // Select one of the arctic tiles at random
         val arcticTileName = when (arcticTileNameList.size) {
             1 -> arcticTileNameList.first()
@@ -897,7 +897,7 @@ class MapGenerationRandomness {
      * @param scale is the distance the noise is observed from.
      */
     fun getPerlinNoise(
-        tile: TileInfo,
+        tile: Tile,
         seed: Double,
         nOctaves: Int = 6,
         persistence: Double = 0.5,
@@ -909,7 +909,7 @@ class MapGenerationRandomness {
     }
 
 
-    fun chooseSpreadOutLocations(number: Int, suitableTiles: List<TileInfo>, mapRadius: Int): ArrayList<TileInfo> {
+    fun chooseSpreadOutLocations(number: Int, suitableTiles: List<Tile>, mapRadius: Int): ArrayList<Tile> {
         if (number <= 0) return ArrayList(0)
 
         // Determine sensible initial distance from number of desired placements and mapRadius
@@ -930,7 +930,7 @@ class MapGenerationRandomness {
 
         for (distanceBetweenResources in initialDistance downTo 1) {
             var availableTiles = suitableTiles
-            val chosenTiles = ArrayList<TileInfo>(number)
+            val chosenTiles = ArrayList<Tile>(number)
 
             for (terrain in baseTerrainsToChosenTiles.keys)
                 baseTerrainsToChosenTiles[terrain] = 0

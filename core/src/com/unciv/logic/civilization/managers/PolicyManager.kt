@@ -1,7 +1,7 @@
 package com.unciv.logic.civilization.managers
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.MapSize
@@ -20,7 +20,7 @@ import kotlin.math.roundToInt
 class PolicyManager : IsPartOfGameInfoSerialization {
 
     @Transient
-    lateinit var civInfo: CivilizationInfo
+    lateinit var civInfo: Civilization
 
     // Needs to be separate from the actual adopted policies, so that
     //  in different game versions, policies can have different effects
@@ -97,7 +97,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     @Suppress("MemberVisibilityCanBePrivate")
     fun getPolicyByName(name: String): Policy = getRulesetPolicies()[name]!!
 
-    fun setTransients(civInfo: CivilizationInfo) {
+    fun setTransients(civInfo: Civilization) {
         this.civInfo = civInfo
         for (policyName in adoptedPolicies) addPolicyToTransients(
             getPolicyByName(policyName)

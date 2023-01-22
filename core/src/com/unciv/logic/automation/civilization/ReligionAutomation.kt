@@ -1,11 +1,11 @@
 package com.unciv.logic.automation.civilization
 
 import com.unciv.Constants
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.city.INonPerpetualConstruction
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionState
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Victory
@@ -19,7 +19,7 @@ object ReligionAutomation {
 
     // region faith spending
 
-    fun spendFaithOnReligion(civInfo: CivilizationInfo) {
+    fun spendFaithOnReligion(civInfo: Civilization) {
         if (civInfo.cities.isEmpty()) return
 
         // Save for great prophet
@@ -84,7 +84,7 @@ object ReligionAutomation {
         // Todo: buy inquisitors for defence of other cities
     }
 
-    private fun tryBuyAnyReligiousBuilding(civInfo: CivilizationInfo) {
+    private fun tryBuyAnyReligiousBuilding(civInfo: Civilization) {
         for (city in civInfo.cities) {
             if (city.religion.getMajorityReligion() == null) continue
             val buildings = city.religion.getMajorityReligion()!!.buildingsPurchasableByBeliefs
@@ -101,7 +101,7 @@ object ReligionAutomation {
         }
     }
 
-    private fun buyMissionaryInAnyCity(civInfo: CivilizationInfo) {
+    private fun buyMissionaryInAnyCity(civInfo: Civilization) {
         if (civInfo.religionManager.religionState < ReligionState.Religion) return
         var missionaries = civInfo.gameInfo.ruleSet.units.values.filter { unit ->
             unit.getMatchingUniques(UniqueType.CanActionSeveralTimes).filter { it.params[0] == Constants.spreadReligion }.any()
@@ -142,7 +142,7 @@ object ReligionAutomation {
         return
     }
 
-    private fun buyGreatProphetInAnyCity(civInfo: CivilizationInfo) {
+    private fun buyGreatProphetInAnyCity(civInfo: Civilization) {
         if (civInfo.religionManager.religionState < ReligionState.Religion) return
         var greatProphetUnit = civInfo.religionManager.getGreatProphetEquivalent() ?: return
         greatProphetUnit = civInfo.getEquivalentUnit(greatProphetUnit).name
@@ -157,7 +157,7 @@ object ReligionAutomation {
         cityToBuyGreatProphet.cityConstructions.purchaseConstruction(greatProphetUnit, -1, true, Stat.Faith)
     }
 
-    private fun buyInquisitorNear(civInfo: CivilizationInfo, city: CityInfo) {
+    private fun buyInquisitorNear(civInfo: Civilization, city: City) {
         if (civInfo.religionManager.religionState < ReligionState.Religion) return
         var inquisitors = civInfo.gameInfo.ruleSet.units.values.filter {
             it.getMapUnit(civInfo).canDoReligiousAction(Constants.removeHeresy)
@@ -199,7 +199,7 @@ object ReligionAutomation {
 
     // region rate beliefs
 
-    fun rateBelief(civInfo: CivilizationInfo, belief: Belief): Float {
+    fun rateBelief(civInfo: Civilization, belief: Belief): Float {
         var score = 0f
 
         for (city in civInfo.cities) {
@@ -225,7 +225,7 @@ object ReligionAutomation {
         return score
     }
 
-    private fun beliefBonusForTile(belief: Belief, tile: TileInfo, city: CityInfo): Float {
+    private fun beliefBonusForTile(belief: Belief, tile: Tile, city: City): Float {
         var bonusYield = 0f
         for (unique in belief.uniqueObjects) {
             when (unique.type) {
@@ -243,7 +243,7 @@ object ReligionAutomation {
         return bonusYield
     }
 
-    private fun beliefBonusForCity(civInfo: CivilizationInfo, belief: Belief, city: CityInfo): Float {
+    private fun beliefBonusForCity(civInfo: Civilization, belief: Belief, city: City): Float {
         var score = 0f
         val ruleSet = civInfo.gameInfo.ruleSet
         for (unique in belief.uniqueObjects) {
@@ -295,7 +295,7 @@ object ReligionAutomation {
         return score
     }
 
-    private fun beliefBonusForPlayer(civInfo: CivilizationInfo, belief: Belief): Float {
+    private fun beliefBonusForPlayer(civInfo: Civilization, belief: Belief): Float {
         var score = 0f
         val numberOfFoundedReligions = civInfo.gameInfo.civilizations.count {
             it.religionManager.religion != null && it.religionManager.religionState >= ReligionState.Religion

@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.translations.fillPlaceholders
@@ -24,7 +24,7 @@ import com.unciv.ui.utils.extensions.toLabel
 import kotlin.math.max
 
 class ReligionOverviewTab(
-    viewingPlayer: CivilizationInfo,
+    viewingPlayer: Civilization,
     overviewScreen: EmpireOverviewScreen,
     persistedData: EmpireOverviewTabPersistableData? = null
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
@@ -145,7 +145,7 @@ class ReligionOverviewTab(
             if (holyCity != null) {
                 statsTable.add("Holy City:".toLabel())
                 val cityName =
-                    if (viewingPlayer.hasExplored(holyCity.location))
+                    if (viewingPlayer.hasExplored(holyCity.getCenterTile()))
                         holyCity.name
                     else Constants.unknownNationName
                 statsTable.add(cityName.toLabel()).right().row()

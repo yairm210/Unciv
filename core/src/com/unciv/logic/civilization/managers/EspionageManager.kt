@@ -2,8 +2,8 @@ package com.unciv.logic.civilization.managers
 
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
-import com.unciv.logic.city.CityInfo
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.city.City
+import com.unciv.logic.civilization.Civilization
 
 enum class SpyAction(val stringName: String) {
     None("None"),
@@ -23,7 +23,7 @@ class Spy() : IsPartOfGameInfoSerialization {
     var action = SpyAction.None
 
     @Transient
-    lateinit var civInfo: CivilizationInfo
+    lateinit var civInfo: Civilization
 
     constructor(name: String) : this() {
         this.name = name
@@ -37,7 +37,7 @@ class Spy() : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    fun setTransients(civInfo: CivilizationInfo) {
+    fun setTransients(civInfo: Civilization) {
         this.civInfo = civInfo
     }
 
@@ -67,9 +67,9 @@ class Spy() : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun moveTo(cityInfo: CityInfo?) {
-        location = cityInfo?.id
-        if (cityInfo == null) { // Moving to spy hideout
+    fun moveTo(city: City?) {
+        location = city?.id
+        if (city == null) { // Moving to spy hideout
             action = SpyAction.None
             timeTillActionFinish = 0
             return
@@ -80,7 +80,7 @@ class Spy() : IsPartOfGameInfoSerialization {
 
     fun isSetUp() = action !in listOf(SpyAction.Moving, SpyAction.None, SpyAction.EstablishNetwork)
 
-    fun getLocation(): CityInfo? {
+    fun getLocation(): City? {
         return civInfo.gameInfo.getCities().firstOrNull { it.id == location }
     }
 
@@ -96,7 +96,7 @@ class EspionageManager : IsPartOfGameInfoSerialization {
     var erasSpyEarnedFor = mutableListOf<String>()
 
     @Transient
-    lateinit var civInfo: CivilizationInfo
+    lateinit var civInfo: Civilization
 
     fun clone(): EspionageManager {
         val toReturn = EspionageManager()
@@ -106,7 +106,7 @@ class EspionageManager : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    fun setTransients(civInfo: CivilizationInfo) {
+    fun setTransients(civInfo: Civilization) {
         this.civInfo = civInfo
         for (spy in spyList) {
             spy.setTransients(civInfo)

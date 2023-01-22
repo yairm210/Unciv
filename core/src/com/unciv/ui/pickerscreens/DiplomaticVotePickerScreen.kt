@@ -1,13 +1,13 @@
 package com.unciv.ui.pickerscreens
 
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.extensions.onClick
 
-class DiplomaticVotePickerScreen(private val votingCiv: CivilizationInfo) : PickerScreen() {
+class DiplomaticVotePickerScreen(private val votingCiv: Civilization) : PickerScreen() {
     private var chosenCiv: String? = null
 
     init {

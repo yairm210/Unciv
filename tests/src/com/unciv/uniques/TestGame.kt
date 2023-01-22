@@ -4,13 +4,13 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.city.managers.CityFounder
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Religion
 import com.unciv.models.metadata.BaseRuleset
@@ -51,7 +51,7 @@ class TestGame {
         gameInfo.ruleSet = ruleset
         gameInfo.difficultyObject = ruleset.difficulties["Prince"]!!
         gameInfo.speed = ruleset.speeds[Speed.DEFAULTFORSIMULATION]!!
-        gameInfo.currentPlayerCiv = CivilizationInfo()
+        gameInfo.currentPlayerCiv = Civilization()
 
         // Create a tilemap, needed for city centers
         gameInfo.tileMap = TileMap(1, ruleset, false)
@@ -93,7 +93,7 @@ class TestGame {
     fun getTile(position: Vector2) = tileMap[position]
 
     /** Sets the [terrain] and [features] of the tile at [position], and then returns it */
-    fun setTileFeatures(position: Vector2, terrain: String = Constants.desert, features: List<String> = listOf()): TileInfo {
+    fun setTileFeatures(position: Vector2, terrain: String = Constants.desert, features: List<String> = listOf()): Tile {
         val tile = tileMap[position]
         tile.baseTerrain = terrain
         tile.setTerrainFeatures(listOf())
@@ -104,7 +104,7 @@ class TestGame {
         return tile
     }
 
-    fun addCiv(vararg uniques: String, isPlayer: Boolean = false, cityStateType: String? = null): CivilizationInfo {
+    fun addCiv(vararg uniques: String, isPlayer: Boolean = false, cityStateType: String? = null): Civilization {
         fun nationFactory() = Nation().apply {
             cities = arrayListOf("The Capital")
             this.cityStateType = cityStateType
@@ -112,7 +112,7 @@ class TestGame {
         val nation = createRulesetObject(ruleset.nations, *uniques) {
             nationFactory()
         }
-        val civInfo = CivilizationInfo()
+        val civInfo = Civilization()
         civInfo.nation = nation
         civInfo.gameInfo = gameInfo
         civInfo.civName = nation.name
@@ -129,11 +129,11 @@ class TestGame {
     }
 
     fun addCity(
-        civInfo: CivilizationInfo,
-        tile: TileInfo,
+        civInfo: Civilization,
+        tile: Tile,
         replacePalace: Boolean = false,
         initialPopulation: Int = 0
-    ): CityInfo {
+    ): City {
         val cityInfo = CityFounder().foundCity(civInfo, tile.position)
         if (initialPopulation != 1)
             cityInfo.population.addPopulation(initialPopulation - 1) // With defaults this will remove population
@@ -147,11 +147,11 @@ class TestGame {
         return cityInfo
     }
 
-    fun addTileToCity(city: CityInfo, tile: TileInfo) {
+    fun addTileToCity(city: City, tile: Tile) {
         city.tiles.add(tile.position)
     }
 
-    fun addUnit(name: String, civInfo: CivilizationInfo, tile: TileInfo): MapUnit {
+    fun addUnit(name: String, civInfo: Civilization, tile: Tile): MapUnit {
         val baseUnit = ruleset.units[name]!!
         baseUnit.ruleset = ruleset
         val mapUnit = baseUnit.getMapUnit(civInfo)
@@ -165,7 +165,7 @@ class TestGame {
         return name
     }
 
-    fun addReligion(foundingCiv: CivilizationInfo): Religion {
+    fun addReligion(foundingCiv: Civilization): Religion {
         val religion = Religion("Religion-${objectsCreated++}", gameInfo, foundingCiv.civName)
         foundingCiv.religionManager.religion = religion
         gameInfo.religions[religion.name] = religion

@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityConstructions
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
@@ -52,7 +52,7 @@ class IconTable(borderColor: Color, innerColor: Color, borderSize: Float, border
     override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
 }
 
-class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Table(BaseScreen.skin){
+class CityButton(val city: City, private val tileGroup: WorldTileGroup): Table(BaseScreen.skin){
     val worldScreen = tileGroup.worldScreen
     val uncivGame = worldScreen.game
 
@@ -112,13 +112,13 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         if (!showAdditionalInfoTags) return
 
         // detect civilian in the city center
-        if (!isButtonMoved && (tileGroup.tileInfo.civilianUnit != null))
+        if (!isButtonMoved && (tileGroup.tile.civilianUnit != null))
             insertHiddenUnitMarker(HiddenUnitMarkerPosition.Center)
 
-        val tilesAroundCity = tileGroup.tileInfo.neighbors
+        val tilesAroundCity = tileGroup.tile.neighbors
         for (tile in tilesAroundCity)
         {
-            val direction = tileGroup.tileInfo.position.cpy().sub(tile.position)
+            val direction = tileGroup.tile.position.cpy().sub(tile.position)
 
             if (isButtonMoved) {
                 when {
@@ -164,7 +164,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
     }
 
     private fun addAirUnitTable() {
-        if (!showAdditionalInfoTags || tileGroup.tileInfo.airUnits.isEmpty()) return
+        if (!showAdditionalInfoTags || tileGroup.tile.airUnits.isEmpty()) return
         val secondaryColor = city.civInfo.nation.getInnerColor()
         val airUnitTable = BorderedTable(
             path="WorldScreen/CityButton/AirUnitTable",
@@ -176,7 +176,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
         aircraftImage.color = secondaryColor
         airUnitTable.add(aircraftImage).size(15f)
-        airUnitTable.add(tileGroup.tileInfo.airUnits.size.toString().toLabel(secondaryColor,14))
+        airUnitTable.add(tileGroup.tile.airUnits.size.toString().toLabel(secondaryColor,14))
         add(airUnitTable).padBottom(5f).minWidth(50f).row()
     }
 
@@ -197,7 +197,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
                 // second tap on the button will go to the city screen
                 // if this city belongs to you and you are not iterating though the air units
                 if (uncivGame.viewEntireMapForDebug || viewingCiv.isSpectator()
-                    || (belongsToViewingCiv() && !tileGroup.tileInfo.airUnits.contains(unitTable.selectedUnit))) {
+                    || (belongsToViewingCiv() && !tileGroup.tile.airUnits.contains(unitTable.selectedUnit))) {
                         uncivGame.pushScreen(CityScreen(city))
                 } else if (viewingCiv.knows(city.civInfo)) {
                     foreignCityInfoPopup()
@@ -437,7 +437,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
                 table.add(label).expandY().bottom().padRight(3f)
 
                 val constructionPercentage = cityConstructions.getWorkDone(cityCurrentConstruction.name) /
-                        (cityCurrentConstruction as INonPerpetualConstruction).getProductionCost(cityConstructions.cityInfo.civInfo).toFloat()
+                        (cityCurrentConstruction as INonPerpetualConstruction).getProductionCost(cityConstructions.city.civInfo).toFloat()
                 val productionBar = ImageGetter.getProgressBarVertical(4f, tableHeight, constructionPercentage,
                     Colors.construction, Color.BLACK, 1f)
                 productionBar.color.a = 0.8f

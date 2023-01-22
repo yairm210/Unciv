@@ -3,7 +3,7 @@ package com.unciv.ui.trade
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.extensions.toLabel
@@ -16,7 +16,7 @@ import com.unciv.ui.utils.extensions.toLabel
  * @param hello Optional additional message
  */
 class LeaderIntroTable (
-    civInfo: CivilizationInfo,
+    civInfo: Civilization,
     hello: String = ""
 ): Table(BaseScreen.skin) {
     /**

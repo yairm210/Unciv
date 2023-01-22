@@ -10,8 +10,8 @@ import com.unciv.logic.BackwardCompatibility.migrateBarbarianCamps
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.GameInfo.Companion.CURRENT_COMPATIBILITY_NUMBER
 import com.unciv.logic.GameInfo.Companion.FIRST_WITHOUT
-import com.unciv.logic.city.CityInfo
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.city.City
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.CivilizationInfoPreview
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
@@ -21,7 +21,7 @@ import com.unciv.logic.civilization.managers.TechManager
 import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.logic.map.CityDistanceData
 import com.unciv.logic.map.TileMap
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Religion
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.ModOptionsConstants
@@ -83,7 +83,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
     override var version = FIRST_WITHOUT
 
-    var civilizations = mutableListOf<CivilizationInfo>()
+    var civilizations = mutableListOf<Civilization>()
     var barbarians = BarbarianManager()
     var religions: HashMap<String, Religion> = hashMapOf()
     var difficulty = "Chieftain" // difficulty is game-wide, think what would happen if 2 human players could play on different difficulties?
@@ -118,7 +118,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     lateinit var speed: Speed
 
     @Transient
-    lateinit var currentPlayerCiv: CivilizationInfo // this is called thousands of times, no reason to search for it with a find{} every time
+    lateinit var currentPlayerCiv: Civilization // this is called thousands of times, no reason to search for it with a find{} every time
 
     /** This is used in multiplayer games, where I may have a saved game state on my phone
      * that is inconsistent with the saved game on the cloud */
@@ -167,7 +167,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         return toReturn
     }
 
-    fun getPlayerToViewAs(): CivilizationInfo {
+    fun getPlayerToViewAs(): Civilization {
         if (!gameParameters.isOnlineMultiplayer) return getCurrentPlayerCivilization() // non-online, play as human player
         val userId = UncivGame.Current.settings.multiplayer.userId
 
@@ -200,7 +200,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     fun getAliveMajorCivs() = civilizations.filter { it.isAlive() && it.isMajorCiv() }
 
     /** Returns the first spectator for a [playerId] or creates one if none found */
-    fun getSpectator(playerId: String): CivilizationInfo {
+    fun getSpectator(playerId: String): Civilization {
         val gameSpectatorCiv = civilizations.firstOrNull {
             it.isSpectator() && it.playerId == playerId
         }
@@ -208,7 +208,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
     }
 
-    private fun createTemporarySpectatorCiv(playerId: String) = CivilizationInfo(Constants.spectator).also {
+    private fun createTemporarySpectatorCiv(playerId: String) = Civilization(Constants.spectator).also {
         it.playerType = PlayerType.Human
         it.playerId = playerId
         civilizations.add(it)
@@ -336,7 +336,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         notifyOfCloseEnemyUnits(player)
     }
 
-    private fun notifyOfCloseEnemyUnits(thisPlayer: CivilizationInfo) {
+    private fun notifyOfCloseEnemyUnits(thisPlayer: Civilization) {
         val viewableInvisibleTiles = thisPlayer.viewableInvisibleUnitsTiles.map { it.position }
         val enemyUnitsCloseToTerritory = thisPlayer.viewableTiles
             .filter {
@@ -380,7 +380,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         diplomaticVictoryVotesProcessed = true
     }
 
-    private fun addEnemyUnitNotification(thisPlayer: CivilizationInfo, tiles: List<TileInfo>, inOrNear: String) {
+    private fun addEnemyUnitNotification(thisPlayer: Civilization, tiles: List<Tile>, inOrNear: String) {
         // don't flood the player with similar messages. instead cycle through units by clicking the message multiple times.
         if (tiles.size < 3) {
             for (tile in tiles) {
@@ -393,7 +393,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         }
     }
 
-    private fun addBombardNotification(thisPlayer: CivilizationInfo, cities: List<CityInfo>) {
+    private fun addBombardNotification(thisPlayer: Civilization, cities: List<City>) {
         if (cities.size < 3) {
             for (city in cities)
                 thisPlayer.addNotification("Your city [${city.name}] can bombard the enemy!", city.location, NotificationCategory.War, NotificationIcon.City, NotificationIcon.Crosshair)
@@ -410,14 +410,14 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
      * @return `false` if no resources were found and no notification was added.
      */
     fun notifyExploredResources(
-        civInfo: CivilizationInfo,
+        civInfo: Civilization,
         resourceName: String,
         maxDistance: Int,
         showForeign: Boolean
     ): Boolean {
-        data class CityTileAndDistance(val city: CityInfo, val tile: TileInfo, val distance: Int)
+        data class CityTileAndDistance(val city: City, val tile: Tile, val distance: Int)
 
-        val exploredRevealTiles: Sequence<TileInfo> =
+        val exploredRevealTiles: Sequence<Tile> =
                 if (ruleSet.tileResources[resourceName]!!.hasUnique(UniqueType.CityStateOnlyResource)) {
                     // Look for matching mercantile CS centers
                     getAliveCityStates()
@@ -431,7 +431,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
                 }
 
         val exploredRevealInfo = exploredRevealTiles
-            .filter { civInfo.hasExplored(it.position) }
+            .filter { civInfo.hasExplored(it) }
             .flatMap { tile ->
                 civInfo.cities.asSequence()
                     .map {
@@ -586,6 +586,10 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         cityDistances.game = this
 
         guaranteeUnitPromotions()
+
+        for (player in civilizations)
+            for (tile in player.exploredTiles)
+                tileMap[tile].setExplored(player, true)
     }
 
     //endregion

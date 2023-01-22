@@ -9,7 +9,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.automation.ai.TacticalAI
 import com.unciv.logic.automation.unit.WorkerAutomation
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.city.managers.CityFounder
 import com.unciv.logic.civilization.diplomacy.CityStateFunctions
 import com.unciv.logic.civilization.diplomacy.CityStatePersonality
@@ -29,7 +29,7 @@ import com.unciv.logic.civilization.managers.VictoryManager
 import com.unciv.logic.civilization.transients.CivInfoStatsForNextTurn
 import com.unciv.logic.civilization.transients.CivInfoTransientCache
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Policy
@@ -65,7 +65,7 @@ enum class Proximity : IsPartOfGameInfoSerialization {
     Distant
 }
 
-class CivilizationInfo : IsPartOfGameInfoSerialization {
+class Civilization : IsPartOfGameInfoSerialization {
 
     @Transient
     private var workerAutomationCache: WorkerAutomation? = null
@@ -93,14 +93,14 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     var diplomacyFunctions = DiplomacyFunctions(this)
 
     @Transient
-    var viewableTiles = setOf<TileInfo>()
+    var viewableTiles = setOf<Tile>()
 
     @Transient
-    var viewableInvisibleUnitsTiles = setOf<TileInfo>()
+    var viewableInvisibleUnitsTiles = setOf<Tile>()
 
     /** Contains mapping of cities to travel mediums from ALL civilizations connected by trade routes to the capital */
     @Transient
-    var citiesConnectedToCapitalToMediums = mapOf<CityInfo, Set<String>>()
+    var citiesConnectedToCapitalToMediums = mapOf<City, Set<String>>()
 
     /** This is for performance since every movement calculation depends on this, see MapUnit comment */
     @Transient
@@ -187,16 +187,11 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     // if we only use lists, and change the list each time the cities are changed,
     // we won't get concurrent modification exceptions.
     // This is basically a way to ensure our lists are immutable.
-    var cities = listOf<CityInfo>()
+    var cities = listOf<City>()
     var citiesCreated = 0
     var exploredTiles = HashSet<Vector2>()
 
-    fun hasExplored(position: Vector2) = exploredTiles.contains(position)
-    fun hasExplored(tileInfo: TileInfo) = hasExplored(tileInfo.position)
-
-    fun addExploredTiles(tiles:Sequence<Vector2>){
-        exploredTiles.addAll(tiles)
-    }
+    fun hasExplored(tile: Tile) = tile.isExplored(this)
 
     var lastSeenImprovement = HashMapVector2<String>()
 
@@ -252,8 +247,8 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         this.civName = civName
     }
 
-    fun clone(): CivilizationInfo {
-        val toReturn = CivilizationInfo()
+    fun clone(): Civilization {
+        val toReturn = Civilization()
         toReturn.gold = gold
         toReturn.playerType = playerType
         toReturn.playerId = playerId
@@ -312,17 +307,17 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         return gameInfo.ruleSet.difficulties.values.first()
     }
 
-    fun getDiplomacyManager(civInfo: CivilizationInfo) = getDiplomacyManager(civInfo.civName)
+    fun getDiplomacyManager(civInfo: Civilization) = getDiplomacyManager(civInfo.civName)
     fun getDiplomacyManager(civName: String) = diplomacy[civName]!!
 
-    fun getProximity(civInfo: CivilizationInfo) = getProximity(civInfo.civName)
+    fun getProximity(civInfo: Civilization) = getProximity(civInfo.civName)
     @Suppress("MemberVisibilityCanBePrivate")  // same visibility for overloads
     fun getProximity(civName: String) = proximity[civName] ?: Proximity.None
 
     /** Returns only undefeated civs, aka the ones we care about */
     fun getKnownCivs() = diplomacy.values.map { it.otherCiv() }.filter { !it.isDefeated() }
     fun knows(otherCivName: String) = diplomacy.containsKey(otherCivName)
-    fun knows(otherCiv: CivilizationInfo) = knows(otherCiv.civName)
+    fun knows(otherCiv: Civilization) = knows(otherCiv.civName)
 
     fun getCapital() = cities.firstOrNull { it.isCapital() }
     fun isHuman() = playerType == PlayerType.Human
@@ -344,7 +339,8 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
     var cityStateUniqueUnit: String? = null // Unique unit for militaristic city state. Might still be null if there are no appropriate units
 
 
-    fun hasMetCivTerritory(otherCiv: CivilizationInfo): Boolean = otherCiv.getCivTerritory().any { hasExplored(it) }
+    fun hasMetCivTerritory(otherCiv: Civilization): Boolean =
+            otherCiv.getCivTerritory().any { gameInfo.tileMap[it].isExplored(this) }
     fun getCompletedPolicyBranchesCount(): Int = policies.adoptedPolicies.count { Policy.isBranchCompleteByName(it) }
     fun originalMajorCapitalsOwned(): Int = cities.count { it.isOriginalCapital && it.foundingCiv != "" && gameInfo.getCivilization(it.foundingCiv).isMajorCiv() }
     private fun getCivTerritory() = cities.asSequence().flatMap { it.tiles.asSequence() }
@@ -399,7 +395,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         return newResourceSupplyList
     }
 
-    fun isCapitalConnectedToCity(city: CityInfo): Boolean = citiesConnectedToCapitalToMediums.keys.contains(city)
+    fun isCapitalConnectedToCity(city: City): Boolean = citiesConnectedToCapitalToMediums.keys.contains(city)
 
 
     /**
@@ -433,7 +429,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     // Does not return local uniques, only global ones.
     /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
-    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(this), cityToIgnore: CityInfo? = null) = sequence {
+    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(this), cityToIgnore: City? = null) = sequence {
         yieldAll(nation.getMatchingUniques(uniqueType, stateForConditionals))
         yieldAll(cities.asSequence()
             .filter { it != cityToIgnore }
@@ -519,7 +515,7 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
 
     fun getEraNumber(): Int = getEra().eraNumber
 
-    fun isAtWarWith(otherCiv: CivilizationInfo) = diplomacyFunctions.isAtWarWith(otherCiv)
+    fun isAtWarWith(otherCiv: Civilization) = diplomacyFunctions.isAtWarWith(otherCiv)
 
     fun isAtWar() = diplomacy.values.any { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }
 
@@ -758,12 +754,12 @@ class CivilizationInfo : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun updateProximity(otherCiv: CivilizationInfo, preCalculated: Proximity? = null): Proximity = cache.updateProximity(otherCiv, preCalculated)
+    fun updateProximity(otherCiv: Civilization, preCalculated: Proximity? = null): Proximity = cache.updateProximity(otherCiv, preCalculated)
 
     /**
      * Removes current capital then moves capital to argument city if not null
      */
-    fun moveCapitalTo(city: CityInfo?) {
+    fun moveCapitalTo(city: City?) {
         if (cities.isNotEmpty() && getCapital() != null) {
             val oldCapital = getCapital()!!
             oldCapital.cityConstructions.removeBuilding(oldCapital.capitalCityIndicator())
@@ -805,10 +801,10 @@ class CivilizationInfoPreview() {
     /**
      * Converts a CivilizationInfo object (can be uninitialized) into a CivilizationInfoPreview object.
      */
-    constructor(civilizationInfo: CivilizationInfo) : this() {
-        civName = civilizationInfo.civName
-        playerType = civilizationInfo.playerType
-        playerId = civilizationInfo.playerId
+    constructor(civilization: Civilization) : this() {
+        civName = civilization.civName
+        playerType = civilization.playerType
+        playerId = civilization.playerId
     }
 }
 

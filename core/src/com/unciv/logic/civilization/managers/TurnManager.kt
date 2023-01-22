@@ -6,12 +6,13 @@ import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.city.managers.CityTurnManager
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivFlags
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.mapunit.UnitTurnManager
+import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.unique.UniqueType
@@ -21,7 +22,7 @@ import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
-class TurnManager(val civInfo: CivilizationInfo) {
+class TurnManager(val civInfo: Civilization) {
 
 
     fun startTurn() {
@@ -51,7 +52,7 @@ class TurnManager(val civInfo: CivilizationInfo) {
         updateRevolts()
         for (city in civInfo.cities) CityTurnManager(city).startTurn()  // Most expensive part of startTurn
 
-        for (unit in civInfo.units.getCivUnits()) unit.startTurn()
+        for (unit in civInfo.units.getCivUnits()) UnitTurnManager(unit).startTurn()
 
         if (civInfo.playerType == PlayerType.Human && UncivGame.Current.settings.automatedUnitsMoveOnTurnStart) {
             civInfo.hasMovedAutomatedUnits = true
@@ -80,7 +81,7 @@ class TurnManager(val civInfo: CivilizationInfo) {
             if (!civInfo.flagsCountdown.containsKey(flag)) continue
 
             if (flag == CivFlags.CityStateGreatPersonGift.name) {
-                val cityStateAllies: List<CivilizationInfo> =
+                val cityStateAllies: List<Civilization> =
                         civInfo.getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civInfo.civName }
                 val givingCityState = cityStateAllies.filter { it.cities.isNotEmpty() }.randomOrNull()
 
@@ -183,7 +184,7 @@ class TurnManager(val civInfo: CivilizationInfo) {
     }
 
     // Higher is better
-    private fun rateTileForRevoltSpawn(tile: TileInfo): Int {
+    private fun rateTileForRevoltSpawn(tile: Tile): Int {
         if (tile.isWater || tile.militaryUnit != null || tile.civilianUnit != null || tile.isCityCenter() || tile.isImpassible())
             return -1
         var score = 10
@@ -204,7 +205,7 @@ class TurnManager(val civInfo: CivilizationInfo) {
 
     fun endTurn() {
         val notificationsLog = civInfo.notificationsLog
-        val notificationsThisTurn = CivilizationInfo.NotificationsLog(civInfo.gameInfo.turns)
+        val notificationsThisTurn = Civilization.NotificationsLog(civInfo.gameInfo.turns)
         notificationsThisTurn.notifications.addAll(civInfo.notifications)
 
         while (notificationsLog.size >= UncivGame.Current.settings.notificationsLogMaxTurns) {
@@ -264,7 +265,7 @@ class TurnManager(val civInfo: CivilizationInfo) {
         civInfo.temporaryUniques.endTurn()
 
         civInfo.goldenAges.endTurn(civInfo.getHappiness())
-        civInfo.units.getCivUnits().forEach { it.endTurn() }  // This is the most expensive part of endTurn
+        civInfo.units.getCivUnits().forEach { UnitTurnManager(it).endTurn() }  // This is the most expensive part of endTurn
         civInfo.diplomacy.values.toList().forEach { it.nextTurn() } // we copy the diplomacy values so if it changes in-loop we won't crash
         civInfo.cache.updateHasActiveEnemyMovementPenalty()
 

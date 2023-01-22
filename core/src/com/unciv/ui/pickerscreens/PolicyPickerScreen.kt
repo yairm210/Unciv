@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Policy
@@ -151,7 +151,7 @@ class PolicyButton(val policy: Policy, size: Float = 30f) : BorderedTable(
 }
 
 
-class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo = worldScreen.viewingCiv)
+class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: Civilization = worldScreen.viewingCiv)
     : PickerScreen(), RecreateOnResize {
 
     object Sizes {
@@ -162,7 +162,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         val iconSize = 50f
     }
 
-    internal val viewingCiv: CivilizationInfo = civInfo
+    internal val viewingCiv: Civilization = civInfo
 
     private var policyNameToButton = HashMap<String, BorderedTable>()
     private var selectedPolicyButton: PolicyButton? = null

@@ -1750,6 +1750,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;when above [amount] [resource]&gt;"
+	Example: "&lt;when above [3] [Iron]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when below [amount] [resource]&gt;"
+	Example: "&lt;when below [3] [Iron]&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;in cities with a [buildingFilter]&gt;"
 	Example: "&lt;in cities with a [Culture]&gt;"
 

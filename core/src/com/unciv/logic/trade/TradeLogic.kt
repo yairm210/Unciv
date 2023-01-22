@@ -2,21 +2,21 @@ package com.unciv.logic.trade
 
 import com.unciv.Constants
 import com.unciv.logic.civilization.AlertType
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 
-class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: CivilizationInfo) {
+class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civilization) {
 
     /** Contains everything we could offer the other player, whether we've actually offered it or not */
     val ourAvailableOffers = getAvailableOffers(ourCivilization, otherCivilization)
     val theirAvailableOffers = getAvailableOffers(otherCivilization, ourCivilization)
     val currentTrade = Trade()
 
-    private fun getAvailableOffers(civInfo: CivilizationInfo, otherCivilization: CivilizationInfo): TradeOffersList {
+    private fun getAvailableOffers(civInfo: Civilization, otherCivilization: Civilization): TradeOffersList {
         val offers = TradeOffersList()
         if (civInfo.isCityState() && otherCivilization.isCityState()) return offers
         if (civInfo.isAtWarWith(otherCivilization))
@@ -83,7 +83,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         }
 
         // instant transfers
-        fun transferTrade(to: CivilizationInfo, from: CivilizationInfo, trade: Trade) {
+        fun transferTrade(to: Civilization, from: Civilization, trade: Trade) {
             for (offer in trade.theirOffers) {
                 if (offer.type == TradeType.Gold) {
                     to.addGold(offer.amount)

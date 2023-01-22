@@ -2,11 +2,11 @@ package com.unciv.logic.civilization.diplomacy
 
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.AlertType
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.mapunit.UnitMovementAlgorithms
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -14,7 +14,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.extensions.withItem
 
-class DiplomacyFunctions(val civInfo:CivilizationInfo){
+class DiplomacyFunctions(val civInfo:Civilization){
 
     /** A sorted Sequence of all other civs we know (excluding barbarians and spectators) */
     fun getKnownCivsSorted(includeCityStates: Boolean = true, includeDefeated: Boolean = false) =
@@ -28,17 +28,17 @@ class DiplomacyFunctions(val civInfo:CivilizationInfo){
                             !includeCityStates && it.isCityState()
                 }
                 .sortedWith(
-                    compareByDescending<CivilizationInfo> { it.isMajorCiv() }
+                    compareByDescending<Civilization> { it.isMajorCiv() }
                         .thenBy (UncivGame.Current.settings.getCollatorFromLocale()) { it.civName.tr() }
                 )
 
 
-    fun makeCivilizationsMeet(otherCiv: CivilizationInfo, warOnContact: Boolean = false) {
+    fun makeCivilizationsMeet(otherCiv: Civilization, warOnContact: Boolean = false) {
         meetCiv(otherCiv, warOnContact)
         otherCiv.diplomacyFunctions.meetCiv(civInfo, warOnContact)
     }
 
-    fun meetCiv(otherCiv: CivilizationInfo, warOnContact: Boolean = false) {
+    fun meetCiv(otherCiv: Civilization, warOnContact: Boolean = false) {
         civInfo.diplomacy[otherCiv.civName] = DiplomacyManager(civInfo, otherCiv.civName)
             .apply { diplomaticStatus = DiplomaticStatus.Peace }
 
@@ -79,14 +79,14 @@ class DiplomacyFunctions(val civInfo:CivilizationInfo){
                 otherCiv.addStat(key, value.toInt())
 
             if (civInfo.cities.isNotEmpty())
-                otherCiv.exploredTiles = otherCiv.exploredTiles.withItem(civInfo.getCapital()!!.location)
+                civInfo.getCapital()?.getCenterTile()?.setExplored(otherCiv, true)
 
             civInfo.questManager.justMet(otherCiv) // Include them in war with major pseudo-quest
         }
     }
 
 
-    fun isAtWarWith(otherCiv: CivilizationInfo): Boolean {
+    fun isAtWarWith(otherCiv: Civilization): Boolean {
         return when {
             otherCiv == civInfo -> false
             otherCiv.isBarbarian() || civInfo.isBarbarian() -> true
@@ -107,7 +107,7 @@ class DiplomacyFunctions(val civInfo:CivilizationInfo){
         return true
     }
 
-    fun canSignResearchAgreementsWith(otherCiv: CivilizationInfo): Boolean {
+    fun canSignResearchAgreementsWith(otherCiv: Civilization): Boolean {
         val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
         val cost = getResearchAgreementCost()
         return canSignResearchAgreement() && otherCiv.diplomacyFunctions.canSignResearchAgreement()
@@ -128,12 +128,12 @@ class DiplomacyFunctions(val civInfo:CivilizationInfo){
     /**
      * @returns whether units of this civilization can pass through the tiles owned by [otherCiv],
      * considering only civ-wide filters.
-     * Use [TileInfo.canCivPassThrough] to check whether units of a civilization can pass through
+     * Use [Tile.canCivPassThrough] to check whether units of a civilization can pass through
      * a specific tile, considering only civ-wide filters.
      * Use [UnitMovementAlgorithms.canPassThrough] to check whether a specific unit can pass through
      * a specific tile.
      */
-    fun canPassThroughTiles(otherCiv: CivilizationInfo): Boolean {
+    fun canPassThroughTiles(otherCiv: Civilization): Boolean {
         if (otherCiv == civInfo) return true
         if (otherCiv.isBarbarian()) return true
         if (civInfo.isBarbarian() && civInfo.gameInfo.turns >= civInfo.gameInfo.difficultyObject.turnBarbariansCanEnterPlayerTiles)

@@ -175,7 +175,7 @@ enum class UniqueParameterType(
         }
     },
 
-    /** Implemented by [CityInfo.matchesFilter][com.unciv.logic.city.CityInfo.matchesFilter] */
+    /** Implemented by [CityInfo.matchesFilter][com.unciv.logic.city.City.matchesFilter] */
     CityFilter("cityFilter", "in all cities", null, "City filters") {
         private val cityFilterStrings = setOf(
             "in this city",

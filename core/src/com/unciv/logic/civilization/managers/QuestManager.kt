@@ -6,7 +6,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.CivFlags
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.DiplomacyAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
@@ -15,7 +15,7 @@ import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.civilization.diplomacy.CityStatePersonality
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Quest
 import com.unciv.models.ruleset.QuestName
@@ -55,7 +55,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
 
     /** Civilization object holding and dispatching quests */
     @Transient
-    lateinit var civInfo: CivilizationInfo
+    lateinit var civInfo: Civilization
 
     /** List of active quests, both global and individual ones*/
     var assignedQuests: ArrayList<AssignedQuest> = ArrayList()
@@ -73,7 +73,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
     private var unitsKilledFromCiv: HashMap<String, HashMap<String, Int>> = HashMap()
 
     /** Returns true if [civInfo] have active quests for [challenger] */
-    fun haveQuestsFor(challenger: CivilizationInfo): Boolean = assignedQuests.any { it.assignee == challenger.civName }
+    fun haveQuestsFor(challenger: Civilization): Boolean = assignedQuests.any { it.assignee == challenger.civName }
 
     /** Returns true if [civInfo] has asked anyone to conquer [target] */
     fun wantsDead(target: String): Boolean = assignedQuests.any { it.questName == QuestName.ConquerCityState.value && it.data1 == target }
@@ -100,7 +100,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    fun setTransients(civInfo: CivilizationInfo) {
+    fun setTransients(civInfo: Civilization) {
         this.civInfo = civInfo
         for (quest in assignedQuests)
             quest.gameInfo = civInfo.gameInfo
@@ -167,7 +167,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
                 seedIndividualQuestsCountdown(majorCiv)
     }
 
-    private fun seedIndividualQuestsCountdown(challenger: CivilizationInfo) {
+    private fun seedIndividualQuestsCountdown(challenger: Civilization) {
         val countdown: Int =
                 if (civInfo.gameInfo.turns == INDIVIDUAL_QUEST_FIRST_POSSIBLE_TURN)
                     Random.nextInt(INDIVIDUAL_QUEST_FIRST_POSSIBLE_TURN_RAND)
@@ -302,7 +302,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         return false
     }
 
-    private fun assignNewQuest(quest: Quest, assignees: Iterable<CivilizationInfo>) {
+    private fun assignNewQuest(quest: Quest, assignees: Iterable<Civilization>) {
 
         val turn = civInfo.gameInfo.turns
 
@@ -358,13 +358,13 @@ class QuestManager : IsPartOfGameInfoSerialization {
     }
 
     /** Returns true if [civInfo] can assign a quest to [challenger] */
-    private fun canAssignAQuestTo(challenger: CivilizationInfo): Boolean {
+    private fun canAssignAQuestTo(challenger: Civilization): Boolean {
         return !challenger.isDefeated() && challenger.isMajorCiv() &&
                 civInfo.knows(challenger) && !civInfo.isAtWarWith(challenger)
     }
 
     /** Returns true if the [quest] can be assigned to [challenger] */
-    private fun isQuestValid(quest: Quest, challenger: CivilizationInfo): Boolean {
+    private fun isQuestValid(quest: Quest, challenger: Civilization): Boolean {
         if (!canAssignAQuestTo(challenger))
             return false
         if (assignedQuests.any { it.assignee == challenger.civName && it.questName == quest.name })
@@ -495,7 +495,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
      * Since [QuestName.ClearBarbarianCamp] is a global quest, it could have been assigned to
      * multiple civilizations, so after this notification all matching quests are removed.
      */
-    fun barbarianCampCleared(civInfo: CivilizationInfo, location: Vector2) {
+    fun barbarianCampCleared(civInfo: Civilization, location: Vector2) {
         val matchingQuests = assignedQuests.asSequence()
                 .filter { it.questName == QuestName.ClearBarbarianCamp.value }
                 .filter { it.data1.toInt() == location.x.toInt() && it.data2.toInt() == location.y.toInt() }
@@ -510,7 +510,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
     /**
      * Gets notified the city state [cityState] was just conquered by [attacker].
      */
-    fun cityStateConquered(cityState: CivilizationInfo, attacker: CivilizationInfo) {
+    fun cityStateConquered(cityState: Civilization, attacker: Civilization) {
         val matchingQuests = assignedQuests.asSequence()
             .filter { it.questName == QuestName.ConquerCityState.value }
             .filter { it.data1 == cityState.civName && it.assignee == attacker.civName }
@@ -524,7 +524,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
     /**
      * Gets notified the city state [cityState] was just bullied by [bully].
      */
-    fun cityStateBullied(cityState: CivilizationInfo, bully: CivilizationInfo) {
+    fun cityStateBullied(cityState: Civilization, bully: Civilization) {
         val matchingQuests = assignedQuests.asSequence()
             .filter { it.questName == QuestName.BullyCityState.value }
             .filter { it.data1 == cityState.civName && it.assignee == bully.civName}
@@ -548,7 +548,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
     }
 
     /** Gets notified when we are attacked, for war with major pseudo-quest */
-    fun wasAttackedBy(attacker: CivilizationInfo) {
+    fun wasAttackedBy(attacker: Civilization) {
         // Set target number units to kill
         val totalMilitaryUnits = attacker.units.getCivUnits().count { !it.isCivilian() }
         val unitsToKill = max(3, totalMilitaryUnits / 4)
@@ -569,7 +569,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
     }
 
     /** Gets notified when [killed]'s military unit was killed by [killer], for war with major pseudo-quest */
-    fun militaryUnitKilledBy(killer: CivilizationInfo, killed: CivilizationInfo) {
+    fun militaryUnitKilledBy(killer: Civilization, killed: Civilization) {
         if (!warWithMajorActive(killed)) return
 
         // No credit if we're at war or haven't met
@@ -593,7 +593,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
     }
 
     /** Called when a major civ meets the city-state for the first time. Mainly for war with major pseudo-quest. */
-    fun justMet(otherCiv: CivilizationInfo) {
+    fun justMet(otherCiv: Civilization) {
         val location = if (civInfo.cities.isEmpty() || civInfo.getCapital() == null) null
             else civInfo.getCapital()!!.location
 
@@ -617,7 +617,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         }
     }
 
-    private fun endWarWithMajorQuest(attacker: CivilizationInfo) {
+    private fun endWarWithMajorQuest(attacker: Civilization) {
         for (thirdCiv in civInfo.getKnownCivs().filterNot { it.isDefeated() || it == attacker || it.isAtWarWith(civInfo) }) {
             if (unitsKilledSoFar(attacker, thirdCiv) >= unitsToKill(attacker)) // Don't show the notification to the one who won the quest
                 continue
@@ -628,15 +628,15 @@ class QuestManager : IsPartOfGameInfoSerialization {
         unitsKilledFromCiv.remove(attacker.civName)
     }
 
-    fun warWithMajorActive(target: CivilizationInfo): Boolean {
+    fun warWithMajorActive(target: Civilization): Boolean {
         return unitsToKillForCiv.containsKey(target.civName)
     }
 
-    fun unitsToKill(target: CivilizationInfo): Int {
+    fun unitsToKill(target: Civilization): Int {
         return unitsToKillForCiv[target.civName] ?: 0
     }
 
-    fun unitsKilledSoFar(target: CivilizationInfo, viewingCiv: CivilizationInfo): Int {
+    fun unitsKilledSoFar(target: Civilization, viewingCiv: Civilization): Int {
         val killMap = unitsKilledFromCiv[target.civName] ?: return 0
         return killMap[viewingCiv.civName] ?: 0
     }
@@ -644,7 +644,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
     /**
      * Gets notified when given gold by [donorCiv].
      */
-    fun receivedGoldGift(donorCiv: CivilizationInfo) {
+    fun receivedGoldGift(donorCiv: Civilization) {
         val matchingQuests = assignedQuests.asSequence()
             .filter { it.questName == QuestName.GiveGold.value }
             .filter { it.assignee == donorCiv.civName}
@@ -672,10 +672,10 @@ class QuestManager : IsPartOfGameInfoSerialization {
 
     //region get-quest-target
     /**
-     * Returns a random [TileInfo] containing a Barbarian encampment within 8 tiles of [civInfo]
+     * Returns a random [Tile] containing a Barbarian encampment within 8 tiles of [civInfo]
      * to be destroyed
      */
-    private fun getBarbarianEncampmentForQuest(): TileInfo? {
+    private fun getBarbarianEncampmentForQuest(): Tile? {
         val encampments = civInfo.getCapital()!!.getCenterTile().getTilesInDistance(8)
                 .filter { it.improvement == Constants.barbarianEncampment }.toList()
 
@@ -691,7 +691,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
      * by the [civInfo] and the [challenger], and must be viewable by the [challenger];
      * if none exists, it returns null.
      */
-    private fun getResourceForQuest(challenger: CivilizationInfo): TileResource? {
+    private fun getResourceForQuest(challenger: Civilization): TileResource? {
         val ownedByCityStateResources = civInfo.detailedCivResources.map { it.resource }
         val ownedByMajorResources = challenger.detailedCivResources.map { it.resource }
 
@@ -711,7 +711,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         return null
     }
 
-    private fun getWonderToBuildForQuest(challenger: CivilizationInfo): Building? {
+    private fun getWonderToBuildForQuest(challenger: Civilization): Building? {
         val startingEra = civInfo.gameInfo.ruleSet.eras[civInfo.gameInfo.gameParameters.startingEra]!!
         val wonders = civInfo.gameInfo.ruleSet.buildings.values
                 .filter { building ->
@@ -738,7 +738,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
     /**
      * Returns a random Natural Wonder not yet discovered by [challenger].
      */
-    private fun getNaturalWonderToFindForQuest(challenger: CivilizationInfo): String? {
+    private fun getNaturalWonderToFindForQuest(challenger: Civilization): String? {
         val naturalWondersToFind = civInfo.gameInfo.tileMap.naturalWonders.subtract(challenger.naturalWonders)
 
         if (naturalWondersToFind.isNotEmpty())
@@ -750,7 +750,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
     /**
      * Returns a Great Person [BaseUnit] that is not owned by both the [challenger] and the [civInfo]
      */
-    private fun getGreatPersonForQuest(challenger: CivilizationInfo): BaseUnit? {
+    private fun getGreatPersonForQuest(challenger: Civilization): BaseUnit? {
         val ruleSet = civInfo.gameInfo.ruleSet
 
         val challengerGreatPeople = challenger.units.getCivGreatPeople().map { it.baseUnit.getReplacedUnit(ruleSet) }
@@ -771,10 +771,10 @@ class QuestManager : IsPartOfGameInfoSerialization {
     }
 
     /**
-     * Returns a random [CivilizationInfo] (major) that [challenger] has met, but whose territory he
+     * Returns a random [Civilization] (major) that [challenger] has met, but whose territory he
      * cannot see; if none exists, it returns null.
      */
-    private fun getCivilizationToFindForQuest(challenger: CivilizationInfo): CivilizationInfo? {
+    private fun getCivilizationToFindForQuest(challenger: Civilization): Civilization? {
         val civilizationsToFind = challenger.getKnownCivs()
                 .filter { it.isAlive() && it.isMajorCiv() && !challenger.hasMetCivTerritory(it) }
 
@@ -785,9 +785,9 @@ class QuestManager : IsPartOfGameInfoSerialization {
     }
 
     /**
-     * Returns a city-state [CivilizationInfo] that [civInfo] wants to target for hostile quests
+     * Returns a city-state [Civilization] that [civInfo] wants to target for hostile quests
      */
-    private fun getCityStateTarget(challenger: CivilizationInfo): CivilizationInfo? {
+    private fun getCityStateTarget(challenger: Civilization): Civilization? {
         val closestProximity = civInfo.gameInfo.getAliveCityStates()
             .mapNotNull { civInfo.proximity[it.civName] }.filter { it != Proximity.None }.minByOrNull { it.ordinal }
 
@@ -800,7 +800,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         return validTargets.randomOrNull()
     }
 
-    /** Returns a [CivilizationInfo] of the civ that most recently bullied [civInfo].
+    /** Returns a [Civilization] of the civ that most recently bullied [civInfo].
      *  Note: forgets after 20 turns has passed! */
     private fun getMostRecentBully(): String? {
         val bullies = civInfo.diplomacy.values.filter { it.hasFlag(DiplomacyFlags.Bullied)}

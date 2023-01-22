@@ -2,20 +2,20 @@ package com.unciv.logic.civilization.transients
 
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.map.MapShape
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 
 /** CivInfo class was getting too crowded */
-class CivInfoTransientCache(val civInfo: CivilizationInfo) {
+class CivInfoTransientCache(val civInfo: Civilization) {
 
     @Transient
     var lastEraResourceUsedForBuilding = java.util.HashMap<String, Int>()
@@ -58,11 +58,12 @@ class CivInfoTransientCache(val civInfo: CivilizationInfo) {
         // Well, because it gets REALLY LARGE so it's a lot of memory space,
         // and we never actually iterate on the explored tiles (only check contains()),
         // so there's no fear of concurrency problems.
-        val newlyExploredTiles = civInfo.viewableTiles.asSequence().map { it.position }
-        civInfo.addExploredTiles(newlyExploredTiles)
+        civInfo.viewableTiles.asSequence().forEach { tile ->
+            tile.setExplored(civInfo, true)
+        }
 
 
-        val viewedCivs = HashMap<CivilizationInfo, TileInfo>()
+        val viewedCivs = HashMap<Civilization, Tile>()
         for (tile in civInfo.viewableTiles) {
             val tileOwner = tile.getOwner()
             if (tileOwner != null) viewedCivs[tileOwner] = tile
@@ -91,7 +92,7 @@ class CivInfoTransientCache(val civInfo: CivilizationInfo) {
     }
 
     private fun updateViewableInvisibleTiles() {
-        val newViewableInvisibleTiles = HashSet<TileInfo>()
+        val newViewableInvisibleTiles = HashSet<Tile>()
         for (unit in civInfo.units.getCivUnits()) {
             val invisibleUnitUniques = unit.getMatchingUniques(UniqueType.CanSeeInvisibleUnits)
             if (invisibleUnitUniques.none()) continue
@@ -108,13 +109,12 @@ class CivInfoTransientCache(val civInfo: CivilizationInfo) {
     }
 
     private fun setNewViewableTiles() {
-        val newViewableTiles = HashSet<TileInfo>()
+        val newViewableTiles = HashSet<Tile>()
 
         // while spectating all map is visible
         if (civInfo.isSpectator() || UncivGame.Current.viewEntireMapForDebug) {
             val allTiles = civInfo.gameInfo.tileMap.values.toSet()
             civInfo.viewableTiles = allTiles
-            civInfo.addExploredTiles(allTiles.asSequence().map { it.position })
             civInfo.viewableInvisibleUnitsTiles = allTiles
             return
         }
@@ -155,7 +155,7 @@ class CivInfoTransientCache(val civInfo: CivilizationInfo) {
     }
 
     private fun discoverNaturalWonders() {
-        val newlyViewedNaturalWonders = HashSet<TileInfo>()
+        val newlyViewedNaturalWonders = HashSet<Tile>()
         for (tile in civInfo.viewableTiles) {
             if (tile.naturalWonder != null && !civInfo.naturalWonders.contains(tile.naturalWonder!!))
                 newlyViewedNaturalWonders += tile
@@ -266,7 +266,7 @@ class CivInfoTransientCache(val civInfo: CivilizationInfo) {
     }
 
 
-    fun updateProximity(otherCiv: CivilizationInfo, preCalculated: Proximity? = null): Proximity {
+    fun updateProximity(otherCiv: Civilization, preCalculated: Proximity? = null): Proximity {
         if (otherCiv == civInfo)   return Proximity.None
         if (preCalculated != null) {
             // We usually want to update this for a pair of civs at the same time

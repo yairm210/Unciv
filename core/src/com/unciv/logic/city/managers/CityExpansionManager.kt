@@ -3,11 +3,11 @@ package com.unciv.logic.city.managers
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.Automation
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.extensions.toPercent
@@ -19,7 +19,7 @@ import kotlin.math.roundToInt
 
 class CityExpansionManager : IsPartOfGameInfoSerialization {
     @Transient
-    lateinit var cityInfo: CityInfo
+    lateinit var city: City
     var cultureStored: Int = 0
 
     fun clone(): CityExpansionManager {
@@ -29,9 +29,9 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
     }
 
     fun tilesClaimed(): Int {
-        val tilesAroundCity = cityInfo.getCenterTile().neighbors
+        val tilesAroundCity = city.getCenterTile().neighbors
                 .map { it.position }
-        return cityInfo.tiles.count { it != cityInfo.location && it !in tilesAroundCity}
+        return city.tiles.count { it != city.location && it !in tilesAroundCity}
     }
 
     // This one has conflicting sources -
@@ -43,47 +43,47 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
     fun getCultureToNextTile(): Int {
         var cultureToNextTile = 6 * (max(0, tilesClaimed()) + 1.4813).pow(1.3)
 
-        cultureToNextTile *= cityInfo.civInfo.gameInfo.speed.cultureCostModifier
+        cultureToNextTile *= city.civInfo.gameInfo.speed.cultureCostModifier
 
-        if (cityInfo.civInfo.isCityState())
+        if (city.civInfo.isCityState())
             cultureToNextTile *= 1.5f   // City states grow slower, perhaps 150% cost?
 
-        for (unique in cityInfo.getMatchingUniques(UniqueType.BorderGrowthPercentage))
-            if (cityInfo.matchesFilter(unique.params[1]))
+        for (unique in city.getMatchingUniques(UniqueType.BorderGrowthPercentage))
+            if (city.matchesFilter(unique.params[1]))
                 cultureToNextTile *= unique.params[0].toPercent()
 
         return cultureToNextTile.roundToInt()
     }
 
-    fun buyTile(tileInfo: TileInfo) {
-        val goldCost = getGoldCostOfTile(tileInfo)
+    fun buyTile(tile: Tile) {
+        val goldCost = getGoldCostOfTile(tile)
 
         class NotEnoughGoldToBuyTileException : Exception()
-        if (cityInfo.civInfo.gold < goldCost && !cityInfo.civInfo.gameInfo.gameParameters.godMode)
+        if (city.civInfo.gold < goldCost && !city.civInfo.gameInfo.gameParameters.godMode)
             throw NotEnoughGoldToBuyTileException()
-        cityInfo.civInfo.addGold(-goldCost)
-        takeOwnership(tileInfo)
+        city.civInfo.addGold(-goldCost)
+        takeOwnership(tile)
     }
 
-    fun getGoldCostOfTile(tileInfo: TileInfo): Int {
+    fun getGoldCostOfTile(tile: Tile): Int {
         val baseCost = 50
-        val distanceFromCenter = tileInfo.aerialDistanceTo(cityInfo.getCenterTile())
+        val distanceFromCenter = tile.aerialDistanceTo(city.getCenterTile())
         var cost = baseCost * (distanceFromCenter - 1) + tilesClaimed() * 5.0
 
-        cost *= cityInfo.civInfo.gameInfo.speed.goldCostModifier
+        cost *= city.civInfo.gameInfo.speed.goldCostModifier
 
-        for (unique in cityInfo.getMatchingUniques(UniqueType.TileCostPercentage)) {
-            if (cityInfo.matchesFilter(unique.params[1]))
+        for (unique in city.getMatchingUniques(UniqueType.TileCostPercentage)) {
+            if (city.matchesFilter(unique.params[1]))
                 cost *= unique.params[0].toPercent()
         }
 
         return cost.roundToInt()
     }
 
-    fun getChoosableTiles() = cityInfo.getCenterTile().getTilesInDistance(5)
+    fun getChoosableTiles() = city.getCenterTile().getTilesInDistance(5)
         .filter { it.getOwner() == null }
 
-    fun chooseNewTileToOwn(): TileInfo? {
+    fun chooseNewTileToOwn(): Tile? {
         // Technically, in the original a random tile with the lowest score was selected
         // However, doing this requires either caching it, which is way more work,
         // or selecting all possible tiles and only choosing one when the border expands.
@@ -91,21 +91,21 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         // this is fine.
         val localUniqueCache = LocalUniqueCache()
         return getChoosableTiles().minByOrNull {
-            Automation.rankTileForExpansion(it, cityInfo, localUniqueCache)
+            Automation.rankTileForExpansion(it, city, localUniqueCache)
         }
     }
 
     //region state-changing functions
     fun reset() {
-        for (tile in cityInfo.getTiles())
+        for (tile in city.getTiles())
             relinquishOwnership(tile)
 
         // The only way to create a city inside an owned tile is if it's in your territory
         // In this case, if you don't assign control of the central tile to the city,
         // It becomes an invisible city and weird shit starts happening
-        takeOwnership(cityInfo.getCenterTile())
+        takeOwnership(city.getCenterTile())
 
-        for (tile in cityInfo.getCenterTile().getTilesInDistance(1)
+        for (tile in city.getCenterTile().getTilesInDistance(1)
                 .filter { it.getCity() == null }) // can't take ownership of owned tiles (by other cities)
             takeOwnership(tile)
     }
@@ -123,25 +123,25 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
     /**
      * Removes one tile from this city's owned tiles, unconditionally, and updates dependent
      * things like worked tiles, locked tiles, and stats.
-     * @param tileInfo The tile to relinquish
+     * @param tile The tile to relinquish
      */
-    fun relinquishOwnership(tileInfo: TileInfo) {
-        cityInfo.tiles = cityInfo.tiles.withoutItem(tileInfo.position)
-        for (city in cityInfo.civInfo.cities) {
-            if (city.isWorked(tileInfo)) {
-                city.workedTiles = city.workedTiles.withoutItem(tileInfo.position)
+    fun relinquishOwnership(tile: Tile) {
+        city.tiles = city.tiles.withoutItem(tile.position)
+        for (city in city.civInfo.cities) {
+            if (city.isWorked(tile)) {
+                city.workedTiles = city.workedTiles.withoutItem(tile.position)
                 city.population.autoAssignPopulation()
             }
-            if (city.lockedTiles.contains(tileInfo.position))
-                city.lockedTiles.remove(tileInfo.position)
+            if (city.lockedTiles.contains(tile.position))
+                city.lockedTiles.remove(tile.position)
         }
 
-        tileInfo.removeCreatesOneImprovementMarker()
+        tile.removeCreatesOneImprovementMarker()
 
-        tileInfo.setOwningCity(null)
+        tile.setOwningCity(null)
 
-        cityInfo.civInfo.cache.updateCivResources()
-        cityInfo.cityStats.update()
+        city.civInfo.cache.updateCivResources()
+        city.cityStats.update()
     }
 
     /**
@@ -150,24 +150,24 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
      * Also manages consequences like auto population reassign, stats, and displacing units
      * that are no longer allowed on that tile.
      *
-     * @param tileInfo The tile to take over
+     * @param tile The tile to take over
      */
-    fun takeOwnership(tileInfo: TileInfo) {
-        if (tileInfo.isCityCenter()) throw Exception("What?!")
-        if (tileInfo.getCity() != null)
-            tileInfo.getCity()!!.expansion.relinquishOwnership(tileInfo)
+    fun takeOwnership(tile: Tile) {
+        if (tile.isCityCenter()) throw Exception("What?!")
+        if (tile.getCity() != null)
+            tile.getCity()!!.expansion.relinquishOwnership(tile)
 
-        cityInfo.tiles = cityInfo.tiles.withItem(tileInfo.position)
-        tileInfo.setOwningCity(cityInfo)
-        cityInfo.population.autoAssignPopulation()
-        cityInfo.civInfo.cache.updateCivResources()
-        cityInfo.cityStats.update()
+        city.tiles = city.tiles.withItem(tile.position)
+        tile.setOwningCity(city)
+        city.population.autoAssignPopulation()
+        city.civInfo.cache.updateCivResources()
+        city.cityStats.update()
 
-        for (unit in tileInfo.getUnits().toList()) // toListed because we're modifying
-            if (!unit.civInfo.diplomacyFunctions.canPassThroughTiles(cityInfo.civInfo))
+        for (unit in tile.getUnits().toList()) // toListed because we're modifying
+            if (!unit.civInfo.diplomacyFunctions.canPassThroughTiles(city.civInfo))
                 unit.movement.teleportToClosestMoveableTile()
 
-        cityInfo.civInfo.cache.updateViewableTiles()
+        city.civInfo.cache.updateViewableTiles()
     }
 
     fun nextTurn(culture: Float) {
@@ -175,16 +175,16 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         if (cultureStored >= getCultureToNextTile()) {
             val location = addNewTileWithCulture()
             if (location != null) {
-                val locations = LocationAction(location, cityInfo.location)
-                cityInfo.civInfo.addNotification("[" + cityInfo.name + "] has expanded its borders!", locations, NotificationCategory.Cities, NotificationIcon.Culture)
+                val locations = LocationAction(location, city.location)
+                city.civInfo.addNotification("[" + city.name + "] has expanded its borders!", locations, NotificationCategory.Cities, NotificationIcon.Culture)
             }
         }
     }
 
     fun setTransients() {
-        val tiles = cityInfo.getTiles()
+        val tiles = city.getTiles()
         for (tile in tiles)
-            tile.setOwningCity(cityInfo)
+            tile.setOwningCity(city)
     }
     //endregion
 }

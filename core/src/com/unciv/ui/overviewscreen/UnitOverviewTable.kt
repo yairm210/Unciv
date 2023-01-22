@@ -6,9 +6,9 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.IconTextButton
@@ -34,7 +34,7 @@ import kotlin.math.abs
  * Supplies the Unit sub-table for the Empire Overview
  */
 class UnitOverviewTab(
-    viewingPlayer: CivilizationInfo,
+    viewingPlayer: Civilization,
     overviewScreen: EmpireOverviewScreen,
     persistedData: EmpireOverviewTabPersistableData? = null
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
@@ -85,7 +85,7 @@ class UnitOverviewTab(
         game.worldScreen!!.mapHolder.setCenterPosition(position, forceSelectUnit = unit)
     }
     private fun showWorldScreenAt(unit: MapUnit) = showWorldScreenAt(unit.currentTile.position, unit)
-    private fun showWorldScreenAt(tile: TileInfo) = showWorldScreenAt(tile.position, null)
+    private fun showWorldScreenAt(tile: Tile) = showWorldScreenAt(tile.position, null)
 
     private fun getUnitSupplyTable(): ExpanderTab {
         val stats = viewingPlayer.stats
@@ -229,10 +229,10 @@ class UnitOverviewTab(
             add(promotionsTable)
 
             // Upgrade column
-            if (unit.canUpgrade()) {
+            if (unit.upgrade.canUpgrade()) {
                 val unitAction = UnitActions.getUpgradeAction(unit)
                 val enable = unitAction?.action != null
-                val upgradeIcon = ImageGetter.getUnitIcon(unit.getUnitToUpgradeTo().name,
+                val upgradeIcon = ImageGetter.getUnitIcon(unit.upgrade.getUnitToUpgradeTo().name,
                     if (enable) Color.GREEN else Color.GREEN.darken(0.5f))
                 if (enable) upgradeIcon.onClick {
                     SoundPlayer.play(unitAction!!.uncivSound)

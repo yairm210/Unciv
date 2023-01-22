@@ -1,7 +1,7 @@
 package com.unciv.logic.civilization.managers
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -13,7 +13,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 class GreatPersonManager : IsPartOfGameInfoSerialization {
 
     @Transient
-    lateinit var civInfo: CivilizationInfo
+    lateinit var civInfo: Civilization
 
     /** Base points, without speed modifier */
     private var pointsForNextGreatPerson = 100

@@ -1,7 +1,7 @@
 package com.unciv.models.ruleset.tech
 
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
@@ -94,7 +94,7 @@ class Technology: RulesetObject() {
      * nuclear weapons and religion settings, and without those expressly hidden from Civilopedia.
      */
     // Used for Civilopedia, Alert and Picker, so if any of these decide to ignore the "Will not be displayed in Civilopedia" unique this needs refactoring
-    fun getEnabledBuildings(ruleset: Ruleset, civInfo: CivilizationInfo?) = getFilteredBuildings(ruleset, civInfo)
+    fun getEnabledBuildings(ruleset: Ruleset, civInfo: Civilization?) = getFilteredBuildings(ruleset, civInfo)
         { it.requiredTech == name }
 
     /**
@@ -103,7 +103,7 @@ class Technology: RulesetObject() {
      */
     // Used for Civilopedia, Alert and Picker, so if any of these decide to ignore the "Will not be displayed in Civilopedia" unique this needs refactoring
 
-    fun getObsoletedObjects(ruleset: Ruleset, civInfo: CivilizationInfo?): Sequence<RulesetStatsObject> =
+    fun getObsoletedObjects(ruleset: Ruleset, civInfo: Civilization?): Sequence<RulesetStatsObject> =
         (getFilteredBuildings(ruleset, civInfo){true}
                 + ruleset.tileResources.values.asSequence()
                 + ruleset.tileImprovements.values.filter {
@@ -115,7 +115,7 @@ class Technology: RulesetObject() {
     // Helper: common filtering for both getEnabledBuildings and getObsoletedBuildings, difference via predicate parameter
     private fun getFilteredBuildings(
         ruleset: Ruleset,
-        civInfo: CivilizationInfo?,
+        civInfo: Civilization?,
         predicate: (Building)->Boolean
     ): Sequence<Building> {
         val (nuclearWeaponsEnabled, religionEnabled) = getNukeAndReligionSwitches(civInfo)
@@ -129,7 +129,7 @@ class Technology: RulesetObject() {
             }
     }
 
-    private fun getNukeAndReligionSwitches(civInfo: CivilizationInfo?): Pair<Boolean, Boolean> {
+    private fun getNukeAndReligionSwitches(civInfo: Civilization?): Pair<Boolean, Boolean> {
         if (civInfo == null) return true to true
         return civInfo.gameInfo.run { gameParameters.nuclearWeaponsEnabled to isReligionEnabled() }
     }
@@ -139,7 +139,7 @@ class Technology: RulesetObject() {
      * nuclear weapons and religion settings, and without those expressly hidden from Civilopedia.
      */
     // Used for Civilopedia, Alert and Picker, so if any of these decide to ignore the "Will not be displayed in Civilopedia"/HiddenFromCivilopedia unique this needs refactoring
-    fun getEnabledUnits(ruleset: Ruleset, civInfo: CivilizationInfo?): Sequence<BaseUnit> {
+    fun getEnabledUnits(ruleset: Ruleset, civInfo: Civilization?): Sequence<BaseUnit> {
         val (nuclearWeaponsEnabled, religionEnabled) = getNukeAndReligionSwitches(civInfo)
         return ruleset.units.values.asSequence()
             .filter {

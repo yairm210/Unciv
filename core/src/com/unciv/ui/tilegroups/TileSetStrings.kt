@@ -1,7 +1,7 @@
 package com.unciv.ui.tilegroups
 
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.tilesets.TileSetCache
@@ -169,7 +169,7 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, unitS
         return imageLocation
     }
 
-    private fun tryGetOwnedTileImageLocation(baseLocation:String, owner:CivilizationInfo): String? {
+    private fun tryGetOwnedTileImageLocation(baseLocation:String, owner:Civilization): String? {
         val ownersStyle = owner.nation.getStyleOrCivName()
         return ImageAttempter(baseLocation)
             .tryEraImage(owner, baseLocation, ownersStyle, this)
@@ -178,7 +178,7 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, unitS
             .getPathOrNull()
     }
 
-    fun getOwnedTileImageLocation(baseLocation:String, owner:CivilizationInfo): String {
+    fun getOwnedTileImageLocation(baseLocation:String, owner:Civilization): String {
         val imageKey = getString(baseLocation, tag,
             owner.getEra().name, tag,
             owner.nation.getStyleOrCivName())

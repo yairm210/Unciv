@@ -6,8 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
-import com.unciv.logic.city.CityInfo
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.city.City
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.Spy
 import com.unciv.logic.civilization.managers.SpyAction
 import com.unciv.models.translations.tr
@@ -25,7 +25,7 @@ import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
 
 /** Screen used for moving spies between cities */
-class EspionageOverviewScreen(val civInfo: CivilizationInfo) : PickerScreen(true) {
+class EspionageOverviewScreen(val civInfo: Civilization) : PickerScreen(true) {
     private val collator = UncivGame.Current.settings.getCollatorFromLocale()
 
     private val spySelectionTable = Table(skin)
@@ -38,7 +38,7 @@ class EspionageOverviewScreen(val civInfo: CivilizationInfo) : PickerScreen(true
     private var selectedSpy: Spy? = null
 
     // if the value == null, this means the Spy Hideout.
-    private var moveSpyHereButtons = hashMapOf<Button, CityInfo?>()
+    private var moveSpyHereButtons = hashMapOf<Button, City?>()
 
     init {
         middlePanes.add(spyScrollPane)
@@ -121,9 +121,9 @@ class EspionageOverviewScreen(val civInfo: CivilizationInfo) : PickerScreen(true
         // Then add all cities
 
         val sortedCities = civInfo.gameInfo.getCities()
-            .filter { civInfo.hasExplored(it.location) }
+            .filter { civInfo.hasExplored(it.getCenterTile()) }
             .sortedWith(
-                compareBy<CityInfo> {
+                compareBy<City> {
                     it.civInfo != civInfo
                 }.thenBy {
                     it.civInfo.isCityState()
@@ -138,7 +138,7 @@ class EspionageOverviewScreen(val civInfo: CivilizationInfo) : PickerScreen(true
         }
     }
 
-    private fun addCityToSelectionTable(city: CityInfo) {
+    private fun addCityToSelectionTable(city: City) {
         citySelectionTable.add(ImageGetter.getNationPortrait(city.civInfo.nation, 30f)).pad(5f)
         citySelectionTable.add(city.name.toLabel()).pad(5f)
         if (city.espionage.hasSpyOf(civInfo)) {
@@ -158,7 +158,7 @@ class EspionageOverviewScreen(val civInfo: CivilizationInfo) : PickerScreen(true
     }
 
     // city == null is interpreted as 'spy hideout'
-    private fun getMoveToCityButton(city: CityInfo?): Button {
+    private fun getMoveToCityButton(city: City?): Button {
         val moveSpyHereButton = Button(skin)
         moveSpyHereButton.add(ImageGetter.getArrowImage(Align.left).apply { color = Color.WHITE })
         moveSpyHereButton.onClick {

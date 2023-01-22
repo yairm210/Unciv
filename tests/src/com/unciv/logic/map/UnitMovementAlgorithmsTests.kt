@@ -3,12 +3,12 @@ package com.unciv.logic.map
 
 import com.unciv.Constants
 import com.unciv.logic.GameInfo
-import com.unciv.logic.city.CityInfo
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.city.City
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.nation.Nation
@@ -22,8 +22,8 @@ import org.junit.runner.RunWith
 @RunWith(GdxTestRunner::class)
 class UnitMovementAlgorithmsTests {
 
-    private var tile = TileInfo()
-    private var civInfo = CivilizationInfo()
+    private var tile = Tile()
+    private var civInfo = Civilization()
     private var ruleSet = Ruleset()
     private var unit = MapUnit()
 
@@ -47,7 +47,7 @@ class UnitMovementAlgorithmsTests {
 
         // Needed for convertHillToTerrainFeature to not crash
         val tileMap = TileMap()
-        tileMap.tileMatrix.add(ArrayList<TileInfo?>().apply { add(tile) })
+        tileMap.tileMatrix.add(ArrayList<Tile?>().apply { add(tile) })
         tile.tileMap = tileMap
         tile.setTransients()
     }
@@ -81,7 +81,7 @@ class UnitMovementAlgorithmsTests {
         otherTile.position.y = 1f
         map.tileMatrix[0].add(otherTile)
 
-        val city = CityInfo()
+        val city = City()
         city.location = cityTile.position
         city.civInfo = civInfo
         cityTile.setOwningCity(city)
@@ -213,7 +213,7 @@ class UnitMovementAlgorithmsTests {
 
         unit.currentTile = tile
 
-        val otherCiv = CivilizationInfo()
+        val otherCiv = Civilization()
         otherCiv.civName = Constants.barbarians // they are always enemies
         otherCiv.nation = Nation().apply { name = Constants.barbarians }
         val otherUnit = MapUnit()
@@ -244,11 +244,11 @@ class UnitMovementAlgorithmsTests {
         tile.baseTerrain = Constants.desert
         tile.setTransients()
 
-        val otherCiv = CivilizationInfo()
+        val otherCiv = Civilization()
         otherCiv.civName = "Other civ"
         otherCiv.nation = Nation().apply { name = "Other nation" }
 
-        val city = CityInfo()
+        val city = City()
         city.location = tile.position.cpy().add(1f,1f)
         city.civInfo = otherCiv
         tile.setOwningCity(city)
@@ -273,8 +273,8 @@ class UnitMovementAlgorithmsTests {
      * Creates an [amount] of tiles connected to each other of the same type and ownership as initial one.
      * Remember to set the ownership of the initial tile _before_ calling this method.
      */
-    private fun generateTileCopies(amount: Int): ArrayList<TileInfo> {
-        val newTiles = arrayListOf<TileInfo>()
+    private fun generateTileCopies(amount: Int): ArrayList<Tile> {
+        val newTiles = arrayListOf<Tile>()
         for (i in 1..amount) {
             tile.clone().apply {
                 position.set(0f, i.toFloat())
@@ -287,8 +287,8 @@ class UnitMovementAlgorithmsTests {
         return newTiles
     }
 
-    private fun createOpponentCiv(namePrefix: String, relations: DiplomaticStatus): CivilizationInfo {
-        val otherCiv = CivilizationInfo()
+    private fun createOpponentCiv(namePrefix: String, relations: DiplomaticStatus): Civilization {
+        val otherCiv = Civilization()
         otherCiv.civName = "$namePrefix civ"
         otherCiv.nation = Nation().apply { name = "$namePrefix nation" }
         otherCiv.gameInfo = civInfo.gameInfo
@@ -305,7 +305,7 @@ class UnitMovementAlgorithmsTests {
 
         val otherCiv = createOpponentCiv("Other", DiplomaticStatus.Peace)
 
-        val city = CityInfo()
+        val city = City()
         city.location = tile.position.cpy().add(5f, 5f) // random shift to avoid of being in city
         city.civInfo = otherCiv
         tile.setOwningCity(city)
@@ -414,7 +414,7 @@ class UnitMovementAlgorithmsTests {
         newTiles[3].baseTerrain = "Grand Mesa"
         newTiles[3].setTransients()
         // create our city
-        CityInfo().apply {
+        City().apply {
             this.civInfo = this@UnitMovementAlgorithmsTests.civInfo
             location = newTiles.last().position.cpy()
             tiles.add(location)

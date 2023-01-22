@@ -5,7 +5,7 @@ import com.unciv.Constants
 import com.unciv.json.HashMapVector2
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.extensions.randomWeighted
@@ -116,7 +116,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
                     && it !in tooCloseToCamps
         }.toMutableList()
 
-        var tile: TileInfo?
+        var tile: Tile?
         var addedCamps = 0
         var biasCoast = Random().nextInt(6) == 0
 
@@ -154,7 +154,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
      * [CivilizationInfo.addNotification][Add a notification] to every civilization that have
      * adopted Honor policy and have explored the [tile] where the Barbarian Encampment has spawned.
      */
-    private fun notifyCivsOfBarbarianEncampment(tile: TileInfo) {
+    private fun notifyCivsOfBarbarianEncampment(tile: Tile) {
         gameInfo.civilizations.filter {
             it.hasUnique(UniqueType.NotifiedOfBarbarianEncampments)
                     && it.hasExplored(tile)
@@ -242,7 +242,7 @@ class Encampment() : IsPartOfGameInfoSerialization {
     }
 
     /** Attempts to spawn a barbarian on [tile], returns true if successful and false if unsuccessful. */
-    private fun spawnOnTile(tile: TileInfo): Boolean {
+    private fun spawnOnTile(tile: Tile): Boolean {
         val unitToSpawn = chooseBarbarianUnit(tile.isWater) ?: return false // return false if we didn't find a unit
         val spawnedUnit = gameInfo.tileMap.placeUnitNearTile(tile.position, unitToSpawn, gameInfo.getBarbarianCivilization())
         return (spawnedUnit != null)

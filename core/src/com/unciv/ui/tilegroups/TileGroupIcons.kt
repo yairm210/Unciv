@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
@@ -28,16 +28,16 @@ class TileGroupIcons(val tileGroup: TileGroup) {
     var civilianUnitIcon: UnitGroup? = null
     var militaryUnitIcon: UnitGroup? = null
 
-    fun update(showResourcesAndImprovements: Boolean, showTileYields: Boolean, tileIsViewable: Boolean, showMilitaryUnit: Boolean, viewingCiv: CivilizationInfo?) {
+    fun update(showResourcesAndImprovements: Boolean, showTileYields: Boolean, tileIsViewable: Boolean, showMilitaryUnit: Boolean, viewingCiv: Civilization?) {
         updateResourceIcon(showResourcesAndImprovements)
         updateImprovementIcon(showResourcesAndImprovements, viewingCiv)
         updateStartingLocationIcon(showResourcesAndImprovements)
 
         if (viewingCiv != null) updateYieldIcon(showTileYields, viewingCiv)
 
-        civilianUnitIcon = newUnitIcon(tileGroup.tileInfo.civilianUnit, civilianUnitIcon,
+        civilianUnitIcon = newUnitIcon(tileGroup.tile.civilianUnit, civilianUnitIcon,
                 tileIsViewable, -20f, viewingCiv)
-        militaryUnitIcon = newUnitIcon(tileGroup.tileInfo.militaryUnit, militaryUnitIcon,
+        militaryUnitIcon = newUnitIcon(tileGroup.tile.militaryUnit, militaryUnitIcon,
                 tileIsViewable && showMilitaryUnit, 20f, viewingCiv)
     }
 
@@ -59,7 +59,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
     }
 
 
-    private fun newUnitIcon(unit: MapUnit?, oldUnitGroup: UnitGroup?, isViewable: Boolean, yFromCenter: Float, viewingCiv: CivilizationInfo?): UnitGroup? {
+    private fun newUnitIcon(unit: MapUnit?, oldUnitGroup: UnitGroup?, isViewable: Boolean, yFromCenter: Float, viewingCiv: Civilization?): UnitGroup? {
         var newImage: UnitGroup? = null
         // The unit can change within one update - for instance, when attacking, the attacker replaces the defender!
         oldUnitGroup?.unitBaseImage?.remove()
@@ -116,10 +116,10 @@ class TileGroupIcons(val tileGroup: TileGroup) {
     }
 
 
-    private fun updateImprovementIcon(showResourcesAndImprovements: Boolean, viewingCiv: CivilizationInfo?) {
+    private fun updateImprovementIcon(showResourcesAndImprovements: Boolean, viewingCiv: Civilization?) {
         improvementIcon?.remove()
         improvementIcon = null
-        val shownImprovement = tileGroup.tileInfo.getShownImprovement(viewingCiv)
+        val shownImprovement = tileGroup.tile.getShownImprovement(viewingCiv)
         if (shownImprovement == null || !showResourcesAndImprovements) return
 
         val newImprovementImage = ImageGetter.getImprovementPortrait(shownImprovement, dim = false)
@@ -133,7 +133,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
     }
 
     // JN updating display of tile yields
-    private fun updateYieldIcon(showTileYields: Boolean, viewingCiv: CivilizationInfo) {
+    private fun updateYieldIcon(showTileYields: Boolean, viewingCiv: Civilization) {
 
         // Hiding yield icons (in order to update)
         if (tileGroup.tileYieldGroupInitialized)
@@ -142,7 +142,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
 
         if (showTileYields) {
             // Setting up YieldGroup Icon
-            tileGroup.tileYieldGroup.setStats(tileGroup.tileInfo.stats.getTileStats(viewingCiv))
+            tileGroup.tileYieldGroup.setStats(tileGroup.tile.stats.getTileStats(viewingCiv))
             tileGroup.tileYieldGroup.setOrigin(Align.center)
             tileGroup.tileYieldGroup.setScale(0.7f)
             tileGroup.tileYieldGroup.toFront()
@@ -158,12 +158,12 @@ class TileGroupIcons(val tileGroup: TileGroup) {
 
 
     private fun updateResourceIcon(showResourcesAndImprovements: Boolean) {
-        if (tileGroup.resource != tileGroup.tileInfo.resource) {
-            tileGroup.resource = tileGroup.tileInfo.resource
+        if (tileGroup.resource != tileGroup.tile.resource) {
+            tileGroup.resource = tileGroup.tile.resource
             tileGroup.resourceImage?.remove()
             if (tileGroup.resource == null) tileGroup.resourceImage = null
             else {
-                val newResourceIcon = ImageGetter.getResourcePortrait(tileGroup.tileInfo.resource!!, 20f,  tileGroup.tileInfo.resourceAmount)
+                val newResourceIcon = ImageGetter.getResourcePortrait(tileGroup.tile.resource!!, 20f,  tileGroup.tile.resourceAmount)
                 newResourceIcon.center(tileGroup)
                 newResourceIcon.x = newResourceIcon.x - 22 // left
                 newResourceIcon.y = newResourceIcon.y + 10 // top
@@ -176,7 +176,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
             val shouldDisplayResource =
                     if (tileGroup.showEntireMap) showResourcesAndImprovements
                     else showResourcesAndImprovements
-                            && tileGroup.tileInfo.hasViewableResource(UncivGame.Current.worldScreen!!.viewingCiv)
+                            && tileGroup.tile.hasViewableResource(UncivGame.Current.worldScreen!!.viewingCiv)
             tileGroup.resourceImage!!.isVisible = shouldDisplayResource
         }
     }
@@ -189,7 +189,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
         startingLocationIcons.clear()
         if (!showResourcesAndImprovements) return
         if (tileGroup.forMapEditorIcon) return  // the editor options for terrain do not bother to fully initialize, so tileInfo.tileMap would be an uninitialized lateinit
-        val tileInfo = tileGroup.tileInfo
+        val tileInfo = tileGroup.tile
         if (tileInfo.tileMap.startingLocationsByNation.isEmpty()) return
 
         // Allow display of up to three nations starting locations on the same tile, rest only as count.

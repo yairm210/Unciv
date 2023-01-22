@@ -1,7 +1,7 @@
 package com.unciv.ui.overviewscreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffersList
 import com.unciv.ui.utils.BaseScreen
@@ -9,7 +9,7 @@ import com.unciv.ui.utils.extensions.addSeparator
 import com.unciv.ui.utils.extensions.toLabel
 
 class TradesOverviewTab(
-    viewingPlayer: CivilizationInfo,
+    viewingPlayer: Civilization,
     overviewScreen: EmpireOverviewScreen
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
 
@@ -33,14 +33,14 @@ class TradesOverviewTab(
         }
     }
 
-    private fun createTradeTable(trade: Trade, otherCiv: CivilizationInfo): Table {
+    private fun createTradeTable(trade: Trade, otherCiv: Civilization): Table {
         val generalTable = Table()
         generalTable.add(createOffersTable(viewingPlayer, trade.ourOffers, trade.theirOffers.size)).minWidth(overviewScreen.stage.width/4).fillY()
         generalTable.add(createOffersTable(otherCiv, trade.theirOffers, trade.ourOffers.size)).minWidth(overviewScreen.stage.width/4).fillY()
         return generalTable
     }
 
-    private fun createOffersTable(civ: CivilizationInfo, offersList: TradeOffersList, numberOfOtherSidesOffers: Int): Table {
+    private fun createOffersTable(civ: Civilization, offersList: TradeOffersList, numberOfOtherSidesOffers: Int): Table {
         val table = Table()
         table.defaults().pad(10f)
         table.background = BaseScreen.skinStrings.getUiBackground(

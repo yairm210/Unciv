@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.unciv.UncivGame
 import com.unciv.logic.map.HexMath
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.TileMap
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileGroup
@@ -27,11 +27,11 @@ import com.unciv.ui.utils.extensions.onClick
 class EditorMapHolder(
     parentScreen: BaseScreen,
     internal val tileMap: TileMap,
-    private val onTileClick: (TileInfo) -> Unit
+    private val onTileClick: (Tile) -> Unit
 ): ZoomableScrollPane(20f, 20f) {
     val editorScreen = parentScreen as? MapEditorScreen
 
-    val tileGroups = HashMap<TileInfo, List<TileGroup>>()
+    val tileGroups = HashMap<Tile, List<TileGroup>>()
     private lateinit var tileGroupMap: TileGroupMap<TileGroup>
     private val allTileGroups = ArrayList<TileGroup>()
 
@@ -67,16 +67,16 @@ class EditorMapHolder(
 
         for (tileGroup in daTileGroups) {
             if (continuousScrollingX){
-                val mirrorTileGroupLeft = mirrorTileGroups[tileGroup.tileInfo]!!.first
-                val mirrorTileGroupRight = mirrorTileGroups[tileGroup.tileInfo]!!.second
+                val mirrorTileGroupLeft = mirrorTileGroups[tileGroup.tile]!!.first
+                val mirrorTileGroupRight = mirrorTileGroups[tileGroup.tile]!!.second
 
                 allTileGroups.add(tileGroup)
                 allTileGroups.add(mirrorTileGroupLeft)
                 allTileGroups.add(mirrorTileGroupRight)
 
-                tileGroups[tileGroup.tileInfo] = listOf(tileGroup, mirrorTileGroupLeft, mirrorTileGroupRight)
+                tileGroups[tileGroup.tile] = listOf(tileGroup, mirrorTileGroupLeft, mirrorTileGroupRight)
             } else {
-                tileGroups[tileGroup.tileInfo] = listOf(tileGroup)
+                tileGroups[tileGroup.tile] = listOf(tileGroup)
                 allTileGroups.add(tileGroup)
             }
         }
@@ -97,7 +97,7 @@ class EditorMapHolder(
             tileGroup.showEntireMap = true
             tileGroup.update()
             if (touchable != Touchable.disabled)
-                tileGroup.onClick { onTileClick(tileGroup.tileInfo) }
+                tileGroup.onClick { onTileClick(tileGroup.tile) }
         }
 
         setSize(stage.width, stage.height)
@@ -121,7 +121,7 @@ class EditorMapHolder(
 
     // This emulates `private TileMap.getOrNull(Int,Int)` and should really move there
     // still more efficient than `if (rounded in tileMap) tileMap[rounded] else null`
-    private fun TileMap.getOrNull(pos: Vector2): TileInfo? {
+    private fun TileMap.getOrNull(pos: Vector2): Tile? {
         val x = pos.x.toInt()
         val y = pos.y.toInt()
         if (contains(x, y)) return get(x, y)
@@ -133,7 +133,7 @@ class EditorMapHolder(
      * TODO remove code duplication
      */
     fun setCenterPosition(vector: Vector2, blink: Boolean = false) {
-        val tileGroup = allTileGroups.firstOrNull { it.tileInfo.position == vector } ?: return
+        val tileGroup = allTileGroups.firstOrNull { it.tile.position == vector } ?: return
 
         // The Y axis of [scrollY] is inverted - when at 0 we're at the top, not bottom - so we invert it back.
         if (!scrollTo(tileGroup.x + tileGroup.width / 2, maxY - (tileGroup.y + tileGroup.width / 2)))
@@ -220,7 +220,7 @@ class EditorMapHolder(
         }
     }
 
-    fun getClosestTileTo(stageCoords: Vector2): TileInfo? {
+    fun getClosestTileTo(stageCoords: Vector2): Tile? {
         val positionalCoords = tileGroupMap.getPositionalVector(stageCoords)
         val hexPosition = HexMath.world2HexCoords(positionalCoords)
         val rounded = HexMath.roundHexCoords(hexPosition)

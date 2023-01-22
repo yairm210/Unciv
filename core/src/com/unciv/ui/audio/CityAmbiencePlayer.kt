@@ -5,12 +5,12 @@ import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Disposable
 import com.unciv.UncivGame
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.utils.Log
 
 /** Must be [disposed][dispose]. Starts playing an ambience sound for the city when created. Stops playing the ambience sound when [disposed][dispose]. */
 class CityAmbiencePlayer(
-    city: CityInfo
+    city: City
 ) : Disposable {
     private var playingCitySound: Music? = null
 
@@ -46,7 +46,7 @@ class CityAmbiencePlayer(
         return fileFromMods ?: Gdx.files.internal("sounds/$fileName.ogg")
     }
 
-    private fun play(city: CityInfo) {
+    private fun play(city: City) {
         if (UncivGame.Current.settings.citySoundsVolume == 0f) return
 
         if (playingCitySound != null)

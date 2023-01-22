@@ -2,15 +2,15 @@ package com.unciv.logic.civilization.managers
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.UncivGame
-import com.unciv.logic.city.CityInfo
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.city.City
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 
-class UnitManager(val civInfo:CivilizationInfo) {
+class UnitManager(val civInfo:Civilization) {
 
     /**
      * We never add or remove from here directly, could cause comodification problems.
@@ -26,7 +26,7 @@ class UnitManager(val civInfo:CivilizationInfo) {
     @Transient
     private var nextPotentiallyDueAt = 0
 
-    fun addUnit(unitName: String, city: CityInfo? = null): MapUnit? {
+    fun addUnit(unitName: String, city: City? = null): MapUnit? {
         if (civInfo.cities.isEmpty()) return null
         if (!civInfo.gameInfo.ruleSet.units.containsKey(unitName)) return null
 
@@ -45,7 +45,7 @@ class UnitManager(val civInfo:CivilizationInfo) {
                         placedUnit.hasUnique(UniqueType.TakeReligionOverBirthCity)
                                 && civInfo.religionManager.religion?.isMajorReligion() == true ->
                             civInfo.religionManager.religion!!.name
-                        city != null -> city.cityConstructions.cityInfo.religion.getMajorityReligionName()
+                        city != null -> city.cityConstructions.city.religion.getMajorityReligionName()
                         else -> civInfo.religionManager.religion?.name
                     }
             placedUnit.setupAbilityUses(cityToAddTo)
@@ -61,7 +61,7 @@ class UnitManager(val civInfo:CivilizationInfo) {
         return placedUnit
     }
 
-    /** Tries to place the a [unitName] unit into the [TileInfo] closest to the given the [location]
+    /** Tries to place the a [unitName] unit into the [Tile] closest to the given the [location]
      * @param location where to try to place the unit
      * @param unitName name of the [BaseUnit] to create and place
      * @return created [MapUnit] or null if no suitable location was found

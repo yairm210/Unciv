@@ -5,12 +5,12 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.GreatGeneralImplementation
 import com.unciv.logic.battle.MapUnitCombatant
-import com.unciv.logic.city.CityInfo
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.city.City
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitAction
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
@@ -22,8 +22,8 @@ import kotlin.math.min
 
 object SpecificUnitAutomation {
 
-    private fun hasWorkableSeaResource(tileInfo: TileInfo, civInfo: CivilizationInfo): Boolean =
-            tileInfo.isWater && tileInfo.improvement == null && tileInfo.hasViewableResource(civInfo)
+    private fun hasWorkableSeaResource(tile: Tile, civInfo: Civilization): Boolean =
+            tile.isWater && tile.improvement == null && tile.hasViewableResource(civInfo)
 
     fun automateWorkBoats(unit: MapUnit) {
         val closestReachableResource = unit.civInfo.cities.asSequence()
@@ -98,7 +98,7 @@ object SpecificUnitAutomation {
 
     fun automateGreatGeneralFallback(unit: MapUnit) {
         // if no unit to follow, take refuge in city or build citadel there.
-        val reachableTest: (TileInfo) -> Boolean = {
+        val reachableTest: (Tile) -> Boolean = {
             it.civilianUnit == null &&
                     unit.movement.canMoveTo(it)
                     && unit.movement.canReach(it)
@@ -128,17 +128,17 @@ object SpecificUnitAutomation {
                 .firstOrNull()?.action?.invoke()
     }
 
-    private fun rankTileAsCityCenter(tileInfo: TileInfo, nearbyTileRankings: Map<TileInfo, Float>,
+    private fun rankTileAsCityCenter(tile: Tile, nearbyTileRankings: Map<Tile, Float>,
                                      luxuryResourcesInCivArea: Sequence<TileResource>): Float {
-        val bestTilesFromOuterLayer = tileInfo.getTilesAtDistance(2)
+        val bestTilesFromOuterLayer = tile.getTilesAtDistance(2)
                 .sortedByDescending { nearbyTileRankings[it] }.take(2)
-        val top5Tiles = (tileInfo.neighbors + bestTilesFromOuterLayer)
+        val top5Tiles = (tile.neighbors + bestTilesFromOuterLayer)
                 .sortedByDescending { nearbyTileRankings[it] }
                 .take(5)
         var rank = top5Tiles.map { nearbyTileRankings.getValue(it) }.sum()
-        if (tileInfo.isCoastalTile()) rank += 5
+        if (tile.isCoastalTile()) rank += 5
 
-        val luxuryResourcesInCityArea = tileInfo.getTilesAtDistance(2).filter { it.resource != null }
+        val luxuryResourcesInCityArea = tile.getTilesAtDistance(2).filter { it.resource != null }
                 .map { it.tileResource }.filter { it.resourceType == ResourceType.Luxury }.distinct()
         val luxuryResourcesAlreadyInCivArea = luxuryResourcesInCivArea.map { it.name }.toHashSet()
         val luxuryResourcesNotYetInCiv = luxuryResourcesInCityArea
@@ -213,7 +213,7 @@ object SpecificUnitAutomation {
 
         // It's possible that we'll see a tile "over the sea" that's better than the tiles close by, but that's not a reason to abandon the close tiles!
         // Also this lead to some routing problems, see https://github.com/yairm210/Unciv/issues/3653
-        val bestCityLocation: TileInfo? = citiesByRanking.firstOrNull {
+        val bestCityLocation: Tile? = citiesByRanking.firstOrNull {
             val pathSize = unit.movement.getShortestPath(it.first).size
             return@firstOrNull pathSize in 1..3
         }?.first
@@ -222,9 +222,9 @@ object SpecificUnitAutomation {
             // Try to move towards the frontier
 
             /** @return the number of tiles 4 (un-modded) out from this city that could hold a city, ie how lonely this city is */
-            fun getFrontierScore(cityInfo: CityInfo) = cityInfo.getCenterTile()
-                .getTilesAtDistance(cityInfo.civInfo.gameInfo.ruleSet.modOptions.constants.minimalCityDistance + 1)
-                .count { it.canBeSettled() && (it.getOwner() == null || it.getOwner() == cityInfo.civInfo ) }
+            fun getFrontierScore(city: City) = city.getCenterTile()
+                .getTilesAtDistance(city.civInfo.gameInfo.ruleSet.modOptions.constants.minimalCityDistance + 1)
+                .count { it.canBeSettled() && (it.getOwner() == null || it.getOwner() == city.civInfo ) }
 
             val frontierCity = unit.civInfo.cities.maxByOrNull { getFrontierScore(it) }
             if (frontierCity != null && getFrontierScore(frontierCity) > 0  && unit.movement.canReach(frontierCity.getCenterTile()))
@@ -357,7 +357,7 @@ object SpecificUnitAutomation {
         // cities with most populations will be prioritized by the AI
         val cityToProtect = citiesToProtect.maxByOrNull { it.population.population }
 
-        var destination: TileInfo?
+        var destination: Tile?
 
         destination = when {
             cityToConvert != null
@@ -395,7 +395,7 @@ object SpecificUnitAutomation {
 
     private fun determineBestInquisitorCityToConvert(
         unit: MapUnit,
-    ): CityInfo? {
+    ): City? {
         if (unit.religion != unit.civInfo.religionManager.religion?.name || !unit.canDoReligiousAction(Constants.removeHeresy))
             return null
 
@@ -462,7 +462,7 @@ object SpecificUnitAutomation {
         tryMoveToCitiesToAerialAttackFrom(pathsToCities, unit)
     }
 
-    private fun tryMoveToCitiesToAerialAttackFrom(pathsToCities: HashMap<TileInfo, ArrayList<TileInfo>>, airUnit: MapUnit) {
+    private fun tryMoveToCitiesToAerialAttackFrom(pathsToCities: HashMap<Tile, ArrayList<Tile>>, airUnit: MapUnit) {
         val citiesThatCanAttackFrom = pathsToCities.keys
             .filter { destinationCity ->
                 destinationCity != airUnit.currentTile
@@ -572,7 +572,7 @@ object SpecificUnitAutomation {
         UnitActions.getEnhanceReligionAction(unit)()
     }
 
-    private fun doReligiousAction(unit: MapUnit, destination: TileInfo) {
+    private fun doReligiousAction(unit: MapUnit, destination: Tile) {
         val religiousActions = ArrayList<UnitAction>()
         UnitActions.addActionsWithLimitedUses(unit, religiousActions, destination)
         if (religiousActions.firstOrNull()?.action == null) return

@@ -3,9 +3,9 @@ package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.testing.GdxTestRunner
@@ -16,8 +16,8 @@ import org.junit.runner.RunWith
 @RunWith(GdxTestRunner::class)
 class VisibilityTests {
 
-    private var civInfo = CivilizationInfo()
-    private var enemyCivInfo = CivilizationInfo()
+    private var civInfo = Civilization()
+    private var enemyCivInfo = Civilization()
     private var ruleSet = Ruleset()
     private var unit = MapUnit()
     private var enemyUnit = MapUnit()
@@ -44,8 +44,8 @@ class VisibilityTests {
 
     fun addTile(terrainName: String, position:Vector2) = addTile(listOf(terrainName), position)
 
-    fun addTile(terrainNames: List<String>, position:Vector2): TileInfo {
-        val tile = TileInfo()
+    fun addTile(terrainNames: List<String>, position:Vector2): Tile {
+        val tile = Tile()
         tile.position = position
         tile.baseTerrain = terrainNames.first()
         tile.ruleset = ruleSet

@@ -9,11 +9,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.city.CityConstructions
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unique.UniqueType
@@ -335,7 +335,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         if (cityConstructions.getWorkDone(constructionName) == 0) return Table()
 
         val constructionPercentage = cityConstructions.getWorkDone(constructionName) /
-                (construction as INonPerpetualConstruction).getProductionCost(cityConstructions.cityInfo.civInfo).toFloat()
+                (construction as INonPerpetualConstruction).getProductionCost(cityConstructions.city.civInfo).toFloat()
         return ImageGetter.getProgressBarVertical(2f, 30f, constructionPercentage,
                 Color.BROWN.brighten(0.5f), Color.WHITE)
     }
@@ -396,7 +396,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
     private fun isSelectedQueueEntry(): Boolean = selectedQueueEntry >= 0
 
-    private fun cannotAddConstructionToQueue(construction: IConstruction, city: CityInfo, cityConstructions: CityConstructions): Boolean {
+    private fun cannotAddConstructionToQueue(construction: IConstruction, city: City, cityConstructions: CityConstructions): Boolean {
         return cityConstructions.isQueueFull()
                 || !cityConstructions.getConstruction(construction.name).isBuildable(cityConstructions)
                 || !cityScreen.canChangeState
@@ -528,7 +528,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     fun askToBuyConstruction(
         construction: INonPerpetualConstruction,
         stat: Stat = preferredBuyStat,
-        tile: TileInfo? = null
+        tile: Tile? = null
     ) {
         if (!isConstructionPurchaseShown(construction, stat)) return
         val city = cityScreen.city
@@ -575,7 +575,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     private fun purchaseConstruction(
         construction: INonPerpetualConstruction,
         stat: Stat = Stat.Gold,
-        tile: TileInfo? = null
+        tile: Tile? = null
     ) {
         SoundPlayer.play(stat.purchaseSound)
         val city = cityScreen.city
@@ -602,7 +602,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         cityScreen.update()
     }
 
-    private fun getRaisePriorityButton(constructionQueueIndex: Int, name: String, city: CityInfo): Table {
+    private fun getRaisePriorityButton(constructionQueueIndex: Int, name: String, city: City): Table {
         val tab = Table()
         tab.add(ImageGetter.getArrowImage(Align.top).apply { color = Color.BLACK }.surroundWithCircle(40f))
         if (cityScreen.canCityBeChanged()) {
@@ -618,7 +618,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         return tab
     }
 
-    private fun getLowerPriorityButton(constructionQueueIndex: Int, name: String, city: CityInfo): Table {
+    private fun getLowerPriorityButton(constructionQueueIndex: Int, name: String, city: City): Table {
         val tab = Table()
         tab.add(ImageGetter.getArrowImage(Align.bottom).apply { color = Color.BLACK }.surroundWithCircle(40f))
         if (cityScreen.canCityBeChanged()) {
@@ -634,7 +634,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         return tab
     }
 
-    private fun getRemoveFromQueueButton(constructionQueueIndex: Int, city: CityInfo): Table {
+    private fun getRemoveFromQueueButton(constructionQueueIndex: Int, city: City): Table {
         val tab = Table()
         tab.add(ImageGetter.getImage("OtherIcons/Stop").surroundWithCircle(40f))
         if (cityScreen.canCityBeChanged()) {

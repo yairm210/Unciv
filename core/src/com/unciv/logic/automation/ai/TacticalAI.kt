@@ -3,8 +3,8 @@ package com.unciv.logic.automation.ai
 import com.badlogic.gdx.graphics.Color
 import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
-import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.extensions.toGroup
 import com.unciv.utils.Log
@@ -14,14 +14,14 @@ class TacticalAI : IsPartOfGameInfoSerialization {
     private val debug: Boolean = false
 
     @Transient private val tacticalAnalysisMap = TacticalAnalysisMap()
-    @Transient private var player: CivilizationInfo? = null
+    @Transient private var player: Civilization? = null
 
-    fun init(player: CivilizationInfo) {
+    fun init(player: Civilization) {
         this.player = player
         tacticalAnalysisMap.reset(player)
     }
 
-    fun showZonesDebug(tile: TileInfo) {
+    fun showZonesDebug(tile: Tile) {
 
         if (!debug)
             return

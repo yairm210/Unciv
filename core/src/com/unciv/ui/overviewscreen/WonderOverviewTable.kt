@@ -4,9 +4,9 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
-import com.unciv.logic.city.CityInfo
-import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.city.City
+import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.QuestName
@@ -19,7 +19,7 @@ import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
 
 class WonderOverviewTab(
-    viewingPlayer: CivilizationInfo,
+    viewingPlayer: Civilization,
     overviewScreen: EmpireOverviewScreen
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
     val ruleSet = gameInfo.ruleSet
@@ -113,9 +113,9 @@ class WonderInfo {
         val groupName: String,
         val groupColor: Color,
         val status: WonderStatus,
-        val civ: CivilizationInfo?,
-        val city: CityInfo?,
-        val location: TileInfo?
+        val civ: Civilization?,
+        val city: City?,
+        val location: Tile?
     ) {
         val viewEntireMapForDebug = UncivGame.Current.viewEntireMapForDebug
 
@@ -191,7 +191,7 @@ class WonderInfo {
         val wonderIndexMap: Map<String, Int> = allWonderMap.map { it.value to it.key }.toMap()
 
         // Maps all Natural Wonders on the map by name to their tile
-        val allNaturalsMap: Map<String, TileInfo> =
+        val allNaturalsMap: Map<String, Tile> =
                 gameInfo.tileMap.values.asSequence()
                     .filter { it.isNaturalWonder() }
                     .associateBy { it.naturalWonder!! }
@@ -232,7 +232,7 @@ class WonderInfo {
                 val index = wonderIndexMap[wonderName]!!
                 val status = when {
                     viewingPlayer == city.civInfo -> WonderStatus.Owned
-                    viewingPlayer.hasExplored(city.location) -> WonderStatus.Known
+                    viewingPlayer.hasExplored(city.getCenterTile()) -> WonderStatus.Known
                     else -> WonderStatus.NotFound
                 }
                 wonders[index] = WonderInfo(

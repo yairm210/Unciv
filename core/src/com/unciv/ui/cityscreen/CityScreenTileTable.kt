@@ -3,7 +3,7 @@ package com.unciv.ui.cityscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UncivSound
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -40,7 +40,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
         background = BaseScreen.skinStrings.getUiBackground("CityScreen/CityScreenTileTable/Background", tintColor = Color.WHITE)
     }
 
-    fun update(selectedTile: TileInfo?) {
+    fun update(selectedTile: Tile?) {
         innerTable.clear()
         if (selectedTile == null) {
             isVisible = false
@@ -110,7 +110,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
      * Used from onClick and keyboard dispatch, thus only minimal parameters are passed,
      * and it needs to do all checks and the sound as appropriate.
      */
-    private fun askToBuyTile(selectedTile: TileInfo) {
+    private fun askToBuyTile(selectedTile: Tile) {
         // These checks are redundant for the onClick action, but not for the keyboard binding
         if (!isTilePurchaseShown(selectedTile)) return
         val goldCostOfTile = city.expansion.getGoldCostOfTile(selectedTile)
@@ -135,7 +135,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
     }
 
     /** This tests whether the buy button should be _shown_ */
-    private fun isTilePurchaseShown(selectedTile: TileInfo) = when {
+    private fun isTilePurchaseShown(selectedTile: Tile) = when {
         selectedTile.getOwner() != null -> false
         selectedTile !in city.tilesInRange -> false
         else -> selectedTile.neighbors.any { it.getCity() == city }

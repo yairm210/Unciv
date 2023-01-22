@@ -2,9 +2,9 @@
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.logic.city.CityInfo
-import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.city.City
+import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.TerrainType
@@ -19,12 +19,12 @@ import org.junit.runner.RunWith
 @RunWith(GdxTestRunner::class)
 class TileImprovementConstructionTests {
 
-    private var civInfo = CivilizationInfo()
-    private var city = CityInfo()
+    private var civInfo = Civilization()
+    private var city = City()
     private var ruleSet = Ruleset()
     private val tileMap = TileMap()
 
-    private fun getTile() = TileInfo().apply {
+    private fun getTile() = Tile().apply {
         baseTerrain = "Plains"
         ruleset = ruleSet
         position = Vector2(1f, 1f) // so that it's not on the same position as the city

@@ -17,7 +17,7 @@ import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.event.EventBus
@@ -80,12 +80,12 @@ import kotlinx.coroutines.coroutineScope
  * There really should ever be only one in memory at the same time, likely managed by [UncivGame].
  *
  * @param gameInfo The game state the screen should represent
- * @param viewingCiv The currently active [civilization][CivilizationInfo]
+ * @param viewingCiv The currently active [civilization][Civilization]
  * @param restoreState
  */
 class WorldScreen(
     val gameInfo: GameInfo,
-    val viewingCiv: CivilizationInfo,
+    val viewingCiv: Civilization,
     restoreState: RestoreState? = null
 ) : BaseScreen() {
     /** When set, causes the screen to update in the next [render][BaseScreen.render] event */
@@ -337,6 +337,8 @@ class WorldScreen(
     }
 
     private suspend fun loadLatestMultiplayerState(): Unit = coroutineScope {
+        if (game.screen != this@WorldScreen) return@coroutineScope // User already went somewhere else
+
         val loadingGamePopup = Popup(this@WorldScreen)
         launchOnGLThread {
             loadingGamePopup.addGoodSizedLabel("Loading latest game state...")
@@ -854,7 +856,7 @@ class WorldScreen(
         displayTutorial(TutorialTrigger.StrategicResource) { resources.any { it.resource.resourceType == ResourceType.Strategic } }
         displayTutorial(TutorialTrigger.EnemyCity) {
             viewingCiv.getKnownCivs().asSequence().filter { viewingCiv.isAtWarWith(it) }
-                    .flatMap { it.cities.asSequence() }.any { viewingCiv.hasExplored(it.location) }
+                    .flatMap { it.cities.asSequence() }.any { viewingCiv.hasExplored(it.getCenterTile()) }
         }
         displayTutorial(TutorialTrigger.ApolloProgram) { viewingCiv.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts) }
         displayTutorial(TutorialTrigger.SiegeUnits) { viewingCiv.units.getCivUnits().any { it.baseUnit.isProbablySiegeUnit() } }

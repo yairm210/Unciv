@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.unciv.Constants
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
@@ -24,27 +24,27 @@ object CivilopediaImageGetters {
 
     // Todo: potential synergy with map editor
     fun terrainImage(terrain: Terrain, ruleset: Ruleset, imageSize: Float): Actor {
-        val tileInfo = TileInfo()
-        tileInfo.ruleset = ruleset
+        val tile = Tile()
+        tile.ruleset = ruleset
         when (terrain.type) {
             TerrainType.NaturalWonder -> {
-                tileInfo.naturalWonder = terrain.name
-                tileInfo.baseTerrain = terrain.turnsInto ?: Constants.grassland
+                tile.naturalWonder = terrain.name
+                tile.baseTerrain = terrain.turnsInto ?: Constants.grassland
             }
             TerrainType.TerrainFeature -> {
-                tileInfo.baseTerrain =
+                tile.baseTerrain =
                     if (terrain.occursOn.isEmpty() || terrain.occursOn.contains(Constants.grassland))
                         Constants.grassland
                     else
                         terrain.occursOn.lastOrNull()!!
-                tileInfo.setTerrainTransients()
-                tileInfo.addTerrainFeature(terrain.name)
+                tile.setTerrainTransients()
+                tile.addTerrainFeature(terrain.name)
             }
             else ->
-                tileInfo.baseTerrain = terrain.name
+                tile.baseTerrain = terrain.name
         }
-        tileInfo.setTerrainTransients()
-        val group = TileGroup(tileInfo, TileSetStrings(), imageSize * 36f/54f)  // TileGroup normally spills out of its bounding box
+        tile.setTerrainTransients()
+        val group = TileGroup(tile, TileSetStrings(), imageSize * 36f/54f)  // TileGroup normally spills out of its bounding box
         group.showEntireMap = true
         group.forMapEditorIcon = true
         group.update()

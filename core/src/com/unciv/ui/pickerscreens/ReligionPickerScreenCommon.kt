@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionManager
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Belief
@@ -25,7 +25,7 @@ import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
 
 abstract class ReligionPickerScreenCommon(
-    private val choosingCiv: CivilizationInfo,
+    private val choosingCiv: Civilization,
     disableScroll: Boolean = false
 ) : PickerScreen(disableScroll) {
 

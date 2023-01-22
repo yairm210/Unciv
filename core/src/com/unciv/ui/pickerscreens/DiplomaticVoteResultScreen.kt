@@ -2,7 +2,7 @@ package com.unciv.ui.pickerscreens
 
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivFlags
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
@@ -10,7 +10,7 @@ import com.unciv.ui.utils.extensions.enable
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
 
-class DiplomaticVoteResultScreen(val votesCast: HashMap<String, String>, val viewingCiv: CivilizationInfo) : PickerScreen() {
+class DiplomaticVoteResultScreen(val votesCast: HashMap<String, String>, val viewingCiv: Civilization) : PickerScreen() {
     val gameInfo = viewingCiv.gameInfo
 
     init {

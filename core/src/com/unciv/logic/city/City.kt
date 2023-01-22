@@ -7,11 +7,11 @@ import com.unciv.logic.city.managers.CityExpansionManager
 import com.unciv.logic.city.managers.CityInfoConquestFunctions
 import com.unciv.logic.city.managers.CityPopulationManager
 import com.unciv.logic.city.managers.CityReligionManager
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
-import com.unciv.logic.map.tile.RoadStatus
-import com.unciv.logic.map.tile.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.tile.ResourceSupplyList
@@ -31,13 +31,13 @@ enum class CityFlags {
 }
 
 
-class CityInfo : IsPartOfGameInfoSerialization {
+class City : IsPartOfGameInfoSerialization {
     @Suppress("JoinDeclarationAndAssignment")
     @Transient
-    lateinit var civInfo: CivilizationInfo
+    lateinit var civInfo: Civilization
 
     @Transient
-    private lateinit var centerTileInfo: TileInfo  // cached for better performance
+    private lateinit var centerTile: Tile  // cached for better performance
 
     @Transient
     val range = 2
@@ -46,7 +46,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
     lateinit var tileMap: TileMap
 
     @Transient
-    lateinit var tilesInRange: HashSet<TileInfo>
+    lateinit var tilesInRange: HashSet<Tile>
 
     @Transient
     // This is so that military units can enter the city, even before we decide what to do with it
@@ -102,8 +102,8 @@ class CityInfo : IsPartOfGameInfoSerialization {
     fun hasDiplomaticMarriage(): Boolean = foundingCiv == ""
 
     //region pure functions
-    fun clone(): CityInfo {
-        val toReturn = CityInfo()
+    fun clone(): City {
+        val toReturn = City()
         toReturn.location = location
         toReturn.id = id
         toReturn.name = name
@@ -131,13 +131,13 @@ class CityInfo : IsPartOfGameInfoSerialization {
     }
 
     fun canBombard() = !attackedThisTurn && !isInResistance()
-    fun getCenterTile(): TileInfo = centerTileInfo
-    fun getTiles(): Sequence<TileInfo> = tiles.asSequence().map { tileMap[it] }
+    fun getCenterTile(): Tile = centerTile
+    fun getTiles(): Sequence<Tile> = tiles.asSequence().map { tileMap[it] }
     fun getWorkableTiles() = tilesInRange.asSequence().filter { it.getOwner() == civInfo }
-    fun isWorked(tileInfo: TileInfo) = workedTiles.contains(tileInfo.position)
+    fun isWorked(tile: Tile) = workedTiles.contains(tile.position)
 
     fun isCapital(): Boolean = cityConstructions.getBuiltBuildings().any { it.hasUnique(UniqueType.IndicatesCapital) }
-    fun isCoastal(): Boolean = centerTileInfo.isCoastalTile()
+    fun isCoastal(): Boolean = centerTile.isCoastalTile()
 
     fun capitalCityIndicator(): String {
         val indicatorBuildings = getRuleset().buildings.values
@@ -217,9 +217,9 @@ class CityInfo : IsPartOfGameInfoSerialization {
         return cityResources
     }
 
-    fun getTileResourceAmount(tileInfo: TileInfo): Int {
-        if (tileInfo.resource == null) return 0
-        val resource = tileInfo.tileResource
+    fun getTileResourceAmount(tile: Tile): Int {
+        if (tile.resource == null) return 0
+        val resource = tile.tileResource
         if (resource.revealedBy != null && !civInfo.tech.isResearched(resource.revealedBy!!)) return 0
 
         // Even if the improvement exists (we conquered an enemy city or somesuch) or we have a city on it, we won't get the resource until the correct tech is researched
@@ -230,11 +230,11 @@ class CityInfo : IsPartOfGameInfoSerialization {
             }) return 0
         }
 
-        if ((tileInfo.getUnpillagedImprovement() != null && resource.isImprovedBy(tileInfo.improvement!!)) || tileInfo.isCityCenter()
+        if ((tile.getUnpillagedImprovement() != null && resource.isImprovedBy(tile.improvement!!)) || tile.isCityCenter()
             // Per https://gaming.stackexchange.com/questions/53155/do-manufactories-and-customs-houses-sacrifice-the-strategic-or-luxury-resources
-            || resource.resourceType == ResourceType.Strategic && tileInfo.containsUnpillagedGreatImprovement()
+            || resource.resourceType == ResourceType.Strategic && tile.containsUnpillagedGreatImprovement()
         ) {
-            var amountToAdd = if (resource.resourceType == ResourceType.Strategic) tileInfo.resourceAmount
+            var amountToAdd = if (resource.resourceType == ResourceType.Strategic) tile.resourceAmount
                 else 1
             if (resource.resourceType == ResourceType.Luxury
                 && containsBuildingUnique(UniqueType.ProvidesExtraLuxuryFromCityResources)
@@ -291,7 +291,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
             buildingsCounter.add(building.greatPersonPoints)
         sourceToGPP["Buildings"] = buildingsCounter
 
-        val stateForConditionals = StateForConditionals(civInfo = civInfo, cityInfo = this)
+        val stateForConditionals = StateForConditionals(civInfo = civInfo, city = this)
         for ((_, gppCounter) in sourceToGPP) {
             for (unique in civInfo.getMatchingUniques(UniqueType.GreatPersonEarnedFaster, stateForConditionals)) {
                 val unitName = unique.params[0]
@@ -354,15 +354,15 @@ class CityInfo : IsPartOfGameInfoSerialization {
     //endregion
 
     //region state-changing functions
-    fun setTransients(civInfo: CivilizationInfo) {
+    fun setTransients(civInfo: Civilization) {
         this.civInfo = civInfo
         tileMap = civInfo.gameInfo.tileMap
-        centerTileInfo = tileMap[location]
+        centerTile = tileMap[location]
         tilesInRange = getCenterTile().getTilesInDistance(3).toHashSet()
-        population.cityInfo = this
-        expansion.cityInfo = this
+        population.city = this
+        expansion.city = this
         expansion.setTransients()
-        cityConstructions.cityInfo = this
+        cityConstructions.city = this
         cityConstructions.setTransients()
         religion.setTransients(this)
         espionage.setTransients(this)
@@ -423,7 +423,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
             civInfo.moveCapitalToNextLargest()
         }
 
-        civInfo.cities = civInfo.cities.toMutableList().apply { remove(this@CityInfo) }
+        civInfo.cities = civInfo.cities.toMutableList().apply { remove(this@City) }
         getCenterTile().changeImprovement("City ruins")
 
         // Edge case! What if a water unit is in a city, and you raze the city?
@@ -450,14 +450,14 @@ class CityInfo : IsPartOfGameInfoSerialization {
     fun annexCity() = CityInfoConquestFunctions(this).annexCity()
 
     /** This happens when we either puppet OR annex, basically whenever we conquer a city and don't liberate it */
-    fun puppetCity(conqueringCiv: CivilizationInfo) =
+    fun puppetCity(conqueringCiv: Civilization) =
         CityInfoConquestFunctions(this).puppetCity(conqueringCiv)
 
     /* Liberating is returning a city to its founder - makes you LOSE warmongering points **/
-    fun liberateCity(conqueringCiv: CivilizationInfo) =
+    fun liberateCity(conqueringCiv: Civilization) =
         CityInfoConquestFunctions(this).liberateCity(conqueringCiv)
 
-    fun moveToCiv(newCivInfo: CivilizationInfo) =
+    fun moveToCiv(newCivInfo: Civilization) =
         CityInfoConquestFunctions(this).moveToCiv(newCivInfo)
 
     internal fun tryUpdateRoadStatus() {
@@ -496,7 +496,7 @@ class CityInfo : IsPartOfGameInfoSerialization {
     }
 
     /** Implements [UniqueParameterType.CityFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CityFilter] */
-    fun matchesFilter(filter: String, viewingCiv: CivilizationInfo = civInfo): Boolean {
+    fun matchesFilter(filter: String, viewingCiv: Civilization = civInfo): Boolean {
         return when (filter) {
             "in this city" -> true
             "in all cities" -> true // Filtered by the way uniques are found

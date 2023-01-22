@@ -5,9 +5,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.TileMap
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
@@ -46,7 +46,7 @@ class MapEditorViewTab(
         update()
     }
 
-    private fun createMockCiv(ruleset: Ruleset) = CivilizationInfo().apply {
+    private fun createMockCiv(ruleset: Ruleset) = Civilization().apply {
         // This crappy construct exists only to allow us to call TileInfo.getTileStats
         nation = Nation()
         nation.name = "Test"
@@ -56,7 +56,7 @@ class MapEditorViewTab(
         tech.techsResearched.addAll(ruleset.technologies.keys)
     }
 
-    private fun CivilizationInfo.updateMockCiv(ruleset: Ruleset) {
+    private fun Civilization.updateMockCiv(ruleset: Ruleset) {
         if (gameInfo.ruleSet === ruleset) return
         gameInfo.ruleSet = ruleset
         tech.techsResearched.addAll(ruleset.technologies.keys)
@@ -159,7 +159,7 @@ class MapEditorViewTab(
         editorScreen.tileClickHandler = null
     }
 
-    private fun tileClickHandler(tile: TileInfo) {
+    private fun tileClickHandler(tile: Tile) {
         if (tileDataCell == null) return
 
         val lines = ArrayList<FormattedLine>()
@@ -222,7 +222,7 @@ class MapEditorViewTab(
             ?: return
         scrollToNextTileOf(tiles.toList())
     }
-    private fun scrollToNextTileOf(tiles: List<TileInfo>) {
+    private fun scrollToNextTileOf(tiles: List<Tile>) {
         if (tiles.isEmpty()) return
         if (roundRobinIndex >= tiles.size) roundRobinIndex = 0
         val tile = tiles[roundRobinIndex++]
@@ -230,7 +230,7 @@ class MapEditorViewTab(
         tileClickHandler(tile)
     }
 
-    private fun TileMap.getTileStartingLocations(tile: TileInfo?) =
+    private fun TileMap.getTileStartingLocations(tile: Tile?) =
         startingLocationsByNation.asSequence()
         .filter { tile == null || tile in it.value }
         .mapNotNull { ruleset!!.nations[it.key] }

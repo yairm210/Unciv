@@ -9,9 +9,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.Constants
 import com.unciv.logic.battle.CityCombatant
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaCategories
@@ -56,7 +56,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         selectedUnitIsSwapping = false
     }
 
-    var selectedCity : CityInfo? = null
+    var selectedCity : City? = null
     private val deselectUnitButton = Table()
 
     // This is so that not on every update(), we will update the unit table.
@@ -281,16 +281,16 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         return nameLabelText
     }
 
-    fun citySelected(cityInfo: CityInfo) : Boolean {
+    fun citySelected(city: City) : Boolean {
         selectUnit()
-        if (cityInfo == selectedCity) return false
-        selectedCity = cityInfo
+        if (city == selectedCity) return false
+        selectedCity = city
         selectedUnitHasChanged = true
         worldScreen.shouldUpdate = true
         return true
     }
 
-    fun tileSelected(selectedTile: TileInfo, forceSelectUnit: MapUnit? = null) {
+    fun tileSelected(selectedTile: Tile, forceSelectUnit: MapUnit? = null) {
 
         val previouslySelectedUnit = selectedUnit
         val previousNumberOfSelectedUnits = selectedUnits.size

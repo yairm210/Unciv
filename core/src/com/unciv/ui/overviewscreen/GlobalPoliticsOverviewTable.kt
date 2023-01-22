@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
@@ -31,7 +31,7 @@ import com.unciv.ui.utils.extensions.toTextButton
 import kotlin.math.roundToInt
 
 class GlobalPoliticsOverviewTable (
-    viewingPlayer: CivilizationInfo,
+    viewingPlayer: Civilization,
     overviewScreen: EmpireOverviewScreen,
     persistedData: EmpireOverviewTabPersistableData? = null
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
@@ -54,8 +54,8 @@ class GlobalPoliticsOverviewTable (
     }
 
     // Reusable sequences for the Civilizations to display
-    private var undefeatedCivs = sequenceOf<CivilizationInfo>()
-    private var defeatedCivs = sequenceOf<CivilizationInfo>()
+    private var undefeatedCivs = sequenceOf<Civilization>()
+    private var defeatedCivs = sequenceOf<Civilization>()
 
     private var relevantCivsCount = 0  // includes unknown civs
     private var showDiplomacyGroup = false
@@ -91,7 +91,7 @@ class GlobalPoliticsOverviewTable (
     }
 
     private fun createGlobalPoliticsTable() {
-        val civilizations = mutableListOf<CivilizationInfo>()
+        val civilizations = mutableListOf<Civilization>()
         civilizations.add(viewingPlayer)
         civilizations.addAll(viewingPlayer.getKnownCivs())
         civilizations.removeAll(civilizations.filter { it.isBarbarian() || it.isCityState() || it.isSpectator() })
@@ -124,7 +124,7 @@ class GlobalPoliticsOverviewTable (
         }
     }
 
-    private fun getCivInfoTable(civ: CivilizationInfo): Table {
+    private fun getCivInfoTable(civ: Civilization): Table {
         val civInfoTable = Table(skin)
         val leaderName = civ.nation.leaderName
         civInfoTable.add(leaderName.toLabel(fontSize = 30)).row()
@@ -133,7 +133,7 @@ class GlobalPoliticsOverviewTable (
         return civInfoTable
     }
 
-    private fun getPoliciesTable(civ: CivilizationInfo): Table {
+    private fun getPoliciesTable(civ: Civilization): Table {
         val policiesTable = Table(skin)
         for (branch in civ.policies.branches)
             if (civ.policies.isAdopted(branch.name)) {
@@ -146,7 +146,7 @@ class GlobalPoliticsOverviewTable (
         return policiesTable
     }
 
-    private fun getWondersOfCivTable(civ: CivilizationInfo): Table {
+    private fun getWondersOfCivTable(civ: Civilization): Table {
         val wonderTable = Table(skin)
         val wonderInfo = WonderInfo()
         val allWorldWonders = wonderInfo.collectInfo()
@@ -167,14 +167,14 @@ class GlobalPoliticsOverviewTable (
         return wonderTable
     }
 
-    private fun getCivName(otherciv: CivilizationInfo): String {
+    private fun getCivName(otherciv: Civilization): String {
         if (viewingPlayer.knows(otherciv) || otherciv.civName != viewingPlayer.civName) {
             return otherciv.civName
         }
         return "an unknown civilization"
     }
 
-    private fun getPoliticsOfCivTable(civ: CivilizationInfo): Table {
+    private fun getPoliticsOfCivTable(civ: Civilization): Table {
         val politicsTable = Table(skin)
 
         // wars
@@ -310,7 +310,7 @@ class GlobalPoliticsOverviewTable (
         layout()
     }
 
-    private fun getCivMiniTable(civInfo: CivilizationInfo): Table {
+    private fun getCivMiniTable(civInfo: Civilization): Table {
         val table = Table()
         table.add(ImageGetter.getNationPortrait(civInfo.nation, 25f)).pad(5f)
         table.add(civInfo.civName.toLabel()).left().padRight(10f)
@@ -331,7 +331,7 @@ class GlobalPoliticsOverviewTable (
         add("Turns until the next\ndiplomacy victory vote: [$turnsTillNextDiplomaticVote]".toLabel()).colspan(columns).row()
     }
 
-    private fun Table.addCivsCategory(columns: Int, aliveOrDefeated: String, civs: Sequence<CivilizationInfo>) {
+    private fun Table.addCivsCategory(columns: Int, aliveOrDefeated: String, civs: Sequence<Civilization>) {
         addSeparator()
         val count = civs.count()
         add("Known and $aliveOrDefeated ([$count])".toLabel())
@@ -363,7 +363,7 @@ class GlobalPoliticsOverviewTable (
 
     /** This is the 'spider net'-like polygon showing one line per civ-civ relation */
     private class DiplomacyGroup(
-        undefeatedCivs: Sequence<CivilizationInfo>,
+        undefeatedCivs: Sequence<Civilization>,
         freeSize: Float
     ): Group() {
         private fun onCivClicked(civLines: HashMap<String, MutableSet<Actor>>, name: String) {

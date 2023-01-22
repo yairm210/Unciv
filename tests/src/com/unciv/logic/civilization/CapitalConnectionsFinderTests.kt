@@ -2,12 +2,12 @@ package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.transients.CapitalConnectionsFinder
 import com.unciv.logic.map.tile.RoadStatus
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -43,7 +43,7 @@ class CapitalConnectionsFinderTests {
     private val slot = slot<String>()
 
     private val testCivilizationNames = arrayListOf("America", "Germany", "Greece")
-    private val civilizations = testCivilizationNames.associateWith { CivilizationInfo(it) }
+    private val civilizations = testCivilizationNames.associateWith { Civilization(it) }
     private val ourCiv = civilizations.values.first()
     private val tilesMap = TileMap().apply { tileMatrix = ArrayList() }
     private var rules = Ruleset()
@@ -73,7 +73,7 @@ class CapitalConnectionsFinderTests {
 
     @After
     fun tearDown() {
-        (tilesMap.values as ArrayList<TileInfo>).clear()
+        (tilesMap.values as ArrayList<Tile>).clear()
         for (civ in civilizations.values) {
             civ.cities = emptyList()
             civ.diplomacy.clear()
@@ -86,7 +86,7 @@ class CapitalConnectionsFinderTests {
         tilesMap.bottomY = from
         tiles.add(ArrayList())
         for (y in from..to)
-            tiles.last().add(TileInfo().apply { tileMap = tilesMap
+            tiles.last().add(Tile().apply { tileMap = tilesMap
                 position = Vector2(tiles.size-1f, y.toFloat())
                 baseTerrain = rules.terrains.values.first { it.type == TerrainType.Land }.name })
     }
@@ -98,7 +98,7 @@ class CapitalConnectionsFinderTests {
         // here we assume the row with a land is already created
         tiles.add(ArrayList())
         for (y in from..to)
-            tiles.last().add(TileInfo().apply { tileMap = tilesMap
+            tiles.last().add(Tile().apply { tileMap = tilesMap
                 position = Vector2(tiles.size-1f, y.toFloat())
                 isWater = true
                 baseTerrain = rules.terrains.values.first { it.type == TerrainType.Water }.name })
@@ -111,8 +111,8 @@ class CapitalConnectionsFinderTests {
                 tile.roadStatus = type
     }
 
-    private fun createCity(civInfo: CivilizationInfo, position: Vector2, name: String, capital: Boolean = false, hasHarbor: Boolean = false): CityInfo {
-        return CityInfo().apply {
+    private fun createCity(civInfo: Civilization, position: Vector2, name: String, capital: Boolean = false, hasHarbor: Boolean = false): City {
+        return City().apply {
             location = position
             if (capital)
                 cityConstructions.builtBuildings.add(rules.buildings.values.first { it.hasUnique(UniqueType.IndicatesCapital) }.name)

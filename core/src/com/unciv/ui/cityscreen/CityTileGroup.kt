@@ -3,15 +3,15 @@ package com.unciv.ui.cityscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
-import com.unciv.logic.city.CityInfo
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.city.City
+import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.extensions.centerX
 
-class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrings: TileSetStrings) : TileGroup(tileInfo,tileSetStrings) {
+class CityTileGroup(private val city: City, tile: Tile, tileSetStrings: TileSetStrings) : TileGroup(tile,tileSetStrings) {
 
     var isWorkable = false
     private var yieldGroup = YieldGroup()
@@ -19,7 +19,7 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
     init {
         isTransform = false // performance helper - nothing here is rotated or scaled
         addActor(yieldGroup)
-        if (city.location == tileInfo.position) {
+        if (city.location == tile.position) {
             icons.addPopulationIcon(ImageGetter.getImage("OtherIcons/Star"))
         }
         unitLayerGroup.isVisible = false
@@ -43,28 +43,28 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
 
         // this needs to happen on update, because we can buy tiles, which changes the definition of the bought tiles...
         when {
-            tileInfo.getOwner() != city.civInfo -> { // outside of civ boundary
+            tile.getOwner() != city.civInfo -> { // outside of civ boundary
                 dim(0.3f)
                 yieldGroup.isVisible = UncivGame.Current.settings.showTileYields
             }
 
-            tileInfo !in city.tilesInRange -> { // within city but not close enough to be workable
+            tile !in city.tilesInRange -> { // within city but not close enough to be workable
                 yieldGroup.isVisible = UncivGame.Current.settings.showTileYields
                 dim(0.5f)
             }
 
-            tileInfo.isWorked() && tileInfo.getWorkingCity() != city -> {
+            tile.isWorked() && tile.getWorkingCity() != city -> {
                 // Don't fade out, but don't add a population icon either.
                 dim(0.5f)
             }
 
 
-            tileInfo.isLocked() -> {
+            tile.isLocked() -> {
                 icons.addPopulationIcon(ImageGetter.getImage("OtherIcons/Lock"))
                 isWorkable = true
             }
 
-            tileInfo.isWorked() || !tileInfo.providesYield() -> { // workable
+            tile.isWorked() || !tile.providesYield() -> { // workable
                 icons.addPopulationIcon()
                 isWorkable = true
             }
@@ -78,14 +78,14 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
     }
 
     private fun updateYieldGroup() {
-        yieldGroup.setStats(tileInfo.stats.getTileStats(city, city.civInfo))
+        yieldGroup.setStats(tile.stats.getTileStats(city, city.civInfo))
         yieldGroup.setOrigin(Align.center)
         yieldGroup.setScale(0.7f)
         yieldGroup.toFront()
         yieldGroup.centerX(this)
         yieldGroup.y = height * 0.25f - yieldGroup.height / 2
 
-        if (tileInfo.providesYield()) yieldGroup.color = Color.WHITE
+        if (tile.providesYield()) yieldGroup.color = Color.WHITE
         else yieldGroup.color = Color.GRAY.cpy().apply { a = 0.5f }
     }
 
@@ -96,8 +96,8 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
             populationIcon.setPosition(width / 2 - populationIcon.width / 2,
                     height * 0.85f - populationIcon.height / 2)
 
-            if (tileInfo.isCityCenter()) populationIcon.color = Color.GOLD
-            else if (tileInfo.providesYield()) populationIcon.color = Color.WHITE
+            if (tile.isCityCenter()) populationIcon.color = Color.GOLD
+            else if (tile.providesYield()) populationIcon.color = Color.WHITE
             else populationIcon.color = Color.GRAY.cpy() // City center gets a GOLD star
 
             populationIcon.toFront()

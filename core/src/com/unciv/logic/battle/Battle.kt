@@ -5,9 +5,9 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.automation.unit.AttackableTile
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.AlertType
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
@@ -17,7 +17,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.models.ruleset.unique.StateForConditionals
@@ -94,7 +94,7 @@ object Battle {
         if (attacker is MapUnitCombatant) {
             attacker.unit.attacksSinceTurnStart.add(Vector2(attackedTile.position))
         } else {
-            attacker.getCivInfo().attacksSinceTurnStart.add(CivilizationInfo.HistoricalAttackMemory(
+            attacker.getCivInfo().attacksSinceTurnStart.add(Civilization.HistoricalAttackMemory(
                 null,
                 Vector2(attacker.getTile().position),
                 Vector2(attackedTile.position)
@@ -223,7 +223,7 @@ object Battle {
         }
     }
 
-    private fun tryCaptureUnit(attacker: ICombatant, defender: ICombatant, attackedTile: TileInfo): Boolean {
+    private fun tryCaptureUnit(attacker: ICombatant, defender: ICombatant, attackedTile: Tile): Boolean {
         // https://forums.civfanatics.com/threads/prize-ships-for-land-units.650196/
         // https://civilization.fandom.com/wiki/Module:Data/Civ5/GK/Defines\
         // There are 3 ways of capturing a unit, we separate them for cleaner code but we also need to ensure a unit isn't captured twice
@@ -292,7 +292,7 @@ object Battle {
 
     /** Places a [unitName] unit near [tile] after being attacked by [attacker].
      * Adds a notification to [attacker]'s civInfo and returns whether the captured unit could be placed */
-    private fun spawnCapturedUnit(unitName: String, attacker: ICombatant, tile: TileInfo): Boolean {
+    private fun spawnCapturedUnit(unitName: String, attacker: ICombatant, tile: Tile): Boolean {
         val addedUnit = attacker.getCivInfo().units.placeUnitNearTile(tile.position, unitName) ?: return false
         addedUnit.currentMovement = 0f
         addedUnit.health = 50
@@ -376,8 +376,8 @@ object Battle {
     private fun postBattleNotifications(
         attacker: ICombatant,
         defender: ICombatant,
-        attackedTile: TileInfo,
-        attackerTile: TileInfo? = null,
+        attackedTile: Tile,
+        attackerTile: Tile? = null,
         damageDealt: DamageDealt? = null
     ) {
         if (attacker.getCivInfo() != defender.getCivInfo()) {
@@ -421,7 +421,7 @@ object Battle {
     }
 
 
-    private fun postBattleMoveToAttackedTile(attacker: ICombatant, defender: ICombatant, attackedTile: TileInfo) {
+    private fun postBattleMoveToAttackedTile(attacker: ICombatant, defender: ICombatant, attackedTile: Tile) {
         if (!attacker.isMelee()) return
         if (!defender.isDefeated() && defender.getCivInfo() != attacker.getCivInfo()) return
         if (attacker is MapUnitCombatant && attacker.hasUnique(UniqueType.CannotMove)) return
@@ -518,7 +518,7 @@ object Battle {
             thisCombatant.getCivInfo().addNotification("[${thisCombatant.unit.name}] can be promoted!",thisCombatant.getTile().position, NotificationCategory.Units, thisCombatant.unit.name)
     }
 
-    private fun conquerCity(city: CityInfo, attacker: MapUnitCombatant) {
+    private fun conquerCity(city: City, attacker: MapUnitCombatant) {
         val attackerCiv = attacker.getCivInfo()
 
         attackerCiv.addNotification("We have conquered the city of [${city.name}]!", city.location, NotificationCategory.War, NotificationIcon.War)
@@ -563,7 +563,7 @@ object Battle {
             UniqueTriggerActivation.triggerCivwideUnique(unique, attackerCiv, city)
     }
 
-    fun getMapCombatantOfTile(tile: TileInfo): ICombatant? {
+    fun getMapCombatantOfTile(tile: Tile): ICombatant? {
         if (tile.isCityCenter()) return CityCombatant(tile.getCity()!!)
         if (tile.militaryUnit != null) return MapUnitCombatant(tile.militaryUnit!!)
         if (tile.civilianUnit != null) return MapUnitCombatant(tile.civilianUnit!!)
@@ -644,7 +644,7 @@ object Battle {
         capturedUnit.updateVisibleTiles()
     }
 
-    fun destroyIfDefeated(attackedCiv: CivilizationInfo, attacker: CivilizationInfo) {
+    fun destroyIfDefeated(attackedCiv: Civilization, attacker: Civilization) {
         if (attackedCiv.isDefeated()) {
             if (attackedCiv.isCityState())
                 attackedCiv.cityStateFunctions.cityStateDestroyed(attacker)
@@ -653,7 +653,7 @@ object Battle {
         }
     }
 
-    fun mayUseNuke(nuke: MapUnitCombatant, targetTile: TileInfo): Boolean {
+    fun mayUseNuke(nuke: MapUnitCombatant, targetTile: Tile): Boolean {
         val blastRadius =
             if (!nuke.hasUnique(UniqueType.BlastRadius)) 2
             // Don't check conditionals as these are not supported
@@ -677,9 +677,9 @@ object Battle {
     }
 
     @Suppress("FunctionName")   // Yes we want this name to stand out
-    fun NUKE(attacker: MapUnitCombatant, targetTile: TileInfo) {
+    fun NUKE(attacker: MapUnitCombatant, targetTile: Tile) {
         val attackingCiv = attacker.getCivInfo()
-        fun tryDeclareWar(civSuffered: CivilizationInfo) {
+        fun tryDeclareWar(civSuffered: Civilization) {
             if (civSuffered != attackingCiv
                 && civSuffered.knows(attackingCiv)
                 && civSuffered.getDiplomacyManager(attackingCiv).diplomaticStatus != DiplomaticStatus.War
@@ -745,7 +745,7 @@ object Battle {
         }
     }
 
-    private fun doNukeExplosionForTile(attacker: MapUnitCombatant, tile: TileInfo, nukeStrength: Int) {
+    private fun doNukeExplosionForTile(attacker: MapUnitCombatant, tile: Tile, nukeStrength: Int) {
         // https://forums.civfanatics.com/resources/unit-guide-modern-future-units-g-k.25628/
         // https://www.carlsguides.com/strategy/civilization5/units/aircraft-nukes.ph
         // Testing done by Ravignir
@@ -806,7 +806,7 @@ object Battle {
         }
     }
 
-    private fun doNukeExplosionDamageToCity(targetedCity: CityInfo, nukeStrength: Int, damageModifierFromMissingResource: Float) {
+    private fun doNukeExplosionDamageToCity(targetedCity: City, nukeStrength: Int, damageModifierFromMissingResource: Float) {
         if (nukeStrength > 1 && targetedCity.population.population < 5 && targetedCity.canBeDestroyed(true)) {
             targetedCity.destroyCity()
             return
@@ -838,7 +838,7 @@ object Battle {
     // This means the combat against Air Units will execute and always deal damage
     // Random Civ at War will Intercept, prioritizing Air Units,
     // sorted by highest Intercept chance (same as regular Intercept)
-    fun airSweep(attacker: MapUnitCombatant, attackedTile: TileInfo) {
+    fun airSweep(attacker: MapUnitCombatant, attackedTile: Tile) {
         // Air Sweep counts as an attack, even if nothing else happens
         attacker.unit.attacksThisTurn++
         // copied and modified from reduceAttackerMovementPointsAndAttacks()
@@ -942,7 +942,7 @@ object Battle {
         attacker.unit.action = null
     }
 
-    private fun tryInterceptAirAttack(attacker: MapUnitCombatant, attackedTile: TileInfo, interceptingCiv: CivilizationInfo, defender: ICombatant?) {
+    private fun tryInterceptAirAttack(attacker: MapUnitCombatant, attackedTile: Tile, interceptingCiv: Civilization, defender: ICombatant?) {
         if (attacker.unit.hasUnique(UniqueType.CannotBeIntercepted, StateForConditionals(attacker.getCivInfo(), ourCombatant = attacker, theirCombatant = defender, attackedTile = attackedTile)))
             return
         // Pick highest chance interceptor
@@ -1016,7 +1016,7 @@ object Battle {
         val defendBaseUnit = defender.unit.baseUnit
         val fromTile = defender.getTile()
         val attTile = attacker.getTile()
-        fun canNotWithdrawTo(tile: TileInfo): Boolean { // if the tile is what the defender can't withdraw to, this fun will return true
+        fun canNotWithdrawTo(tile: Tile): Boolean { // if the tile is what the defender can't withdraw to, this fun will return true
            return !defender.unit.movement.canMoveTo(tile)
                    || defendBaseUnit.isLandUnit() && !tile.isLand // forbid retreat from land to sea - embarked already excluded
                    || tile.isCityCenter() && tile.getOwner() != defender.getCivInfo() // forbid retreat into the city which doesn't belong to the defender
@@ -1037,7 +1037,7 @@ object Battle {
                 .filterNot { canNotWithdrawTo(it) }
         val secondCandidateTiles = fromTile.neighbors.filter { it in attTile.neighbors }
                 .filterNot { canNotWithdrawTo(it) }
-        val toTile: TileInfo = when {
+        val toTile: Tile = when {
             firstCandidateTiles.any() -> firstCandidateTiles.toList().random()
             secondCandidateTiles.any() -> secondCandidateTiles.toList().random()
             else -> return false
@@ -1058,7 +1058,7 @@ object Battle {
         return true
     }
 
-    private fun doDestroyImprovementsAbility(attacker: MapUnitCombatant, attackedTile: TileInfo, defender: ICombatant) {
+    private fun doDestroyImprovementsAbility(attacker: MapUnitCombatant, attackedTile: Tile, defender: ICombatant) {
         val conditionalState = StateForConditionals(attacker.getCivInfo(), ourCombatant = attacker, theirCombatant = defender, combatAction = CombatAction.Attack, attackedTile = attackedTile)
         if (attackedTile.improvement != Constants.barbarianEncampment
             && attackedTile.getTileImprovement()?.isAncientRuinsEquivalent() != true

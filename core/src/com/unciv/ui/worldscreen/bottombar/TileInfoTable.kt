@@ -4,8 +4,8 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.civilopedia.FormattedLine.IconDisplay
 import com.unciv.ui.civilopedia.MarkupRenderer
@@ -15,7 +15,7 @@ import com.unciv.ui.utils.extensions.addBorderAllowOpacity
 import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.toLabel
 
-class TileInfoTable(private val viewingCiv :CivilizationInfo) : Table(BaseScreen.skin) {
+class TileInfoTable(private val viewingCiv :Civilization) : Table(BaseScreen.skin) {
     init {
         background = BaseScreen.skinStrings.getUiBackground(
             "WorldScreen/TileInfoTable",
@@ -23,7 +23,7 @@ class TileInfoTable(private val viewingCiv :CivilizationInfo) : Table(BaseScreen
         )
     }
 
-    internal fun updateTileTable(tile: TileInfo?) {
+    internal fun updateTileTable(tile: Tile?) {
         clearChildren()
 
         if (tile != null && (UncivGame.Current.viewEntireMapForDebug || viewingCiv.hasExplored(tile)) ) {
@@ -39,7 +39,7 @@ class TileInfoTable(private val viewingCiv :CivilizationInfo) : Table(BaseScreen
         addBorderAllowOpacity(1f, Color.WHITE)
     }
 
-    fun getStatsTable(tile: TileInfo): Table {
+    fun getStatsTable(tile: Tile): Table {
         val table = Table()
         table.defaults().pad(2f)
 

@@ -1,12 +1,12 @@
 package com.unciv.ui.pickerscreens
 
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.translations.tr
 
 class PantheonPickerScreen(
-    choosingCiv: CivilizationInfo
+    choosingCiv: Civilization
 ) : ReligionPickerScreenCommon(choosingCiv) {
     private var selectedPantheon: Belief? = null
     private val selection = Selection()

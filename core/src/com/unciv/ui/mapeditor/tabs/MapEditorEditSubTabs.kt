@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.map.tile.RoadStatus
-import com.unciv.logic.map.tile.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.ResourceType
@@ -242,7 +242,7 @@ class MapEditorEditImprovementsTab(
     companion object {
         //todo This should really be easier, the attributes should allow such a test in one go
         private val disallowImprovements = listOf(
-            "Remove ", "Cancel improvement", "City center", Constants.barbarianEncampment
+            "Remove ", "Cancel improvement", "City center"
         )
         private fun TileImprovement.group() = when {
             RoadStatus.values().any { it.name == name } -> 2
@@ -276,6 +276,7 @@ class MapEditorEditStartsTab(
                 tile.tileMap.removeStartingLocations(tile.position)
             }
         } }).padBottom(0f).row()
+
         add(MarkupRenderer.render(
             getNations(),
             iconDisplay = FormattedLine.IconDisplay.NoLink
@@ -395,7 +396,7 @@ class MapEditorEditRiversTab(
         editTab.brushSize = 1
     }
 
-    private fun TileInfo.makeTileGroup(): TileGroup {
+    private fun Tile.makeTileGroup(): TileGroup {
         ruleset = this@MapEditorEditRiversTab.ruleset
         setTerrainTransients()
         return TileGroup(this, TileSetStrings(), iconSize * 36f/54f).apply {
@@ -407,7 +408,7 @@ class MapEditorEditRiversTab(
 
     private enum class RiverEdge { Left, Bottom, Right, All }
     private fun getTileGroupWithRivers(edge: RiverEdge) =
-        TileInfo().apply {
+        Tile().apply {
             baseTerrain = showOnTerrain.name
             when (edge) {
                 RiverEdge.Left -> hasBottomLeftRiver = true
