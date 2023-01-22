@@ -201,13 +201,14 @@ class PolicyManager : IsPartOfGameInfoSerialization {
             triggerGlobalAlerts(policy, unique.params[0])
         }
 
+        val triggerNotificationText = "due to adopting [${policy.name}]"
         for (unique in policy.uniqueObjects)
             if (unique.conditionals.none { it.type!!.targetTypes.contains(UniqueTarget.TriggerCondition) })
-                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponAdoptingPolicy))
             if (unique.conditionals.any {it.type == UniqueType.TriggerUponAdoptingPolicy && it.params[0] == policy.name})
-                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
         // This ALSO has the side-effect of updating the CivInfo statForNextTurn so we don't need to call it explicitly
         for (cityInfo in civInfo.cities) cityInfo.cityStats.update()

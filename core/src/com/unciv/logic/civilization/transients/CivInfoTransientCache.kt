@@ -177,6 +177,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 goldGained += 500
             }
 
+
             if (civInfo.hasUnique(UniqueType.GoldWhenDiscoveringNaturalWonder)) {
                 goldGained += if (discoveredNaturalWonders.contains(tile.naturalWonder!!)) 100 else 500
             }
