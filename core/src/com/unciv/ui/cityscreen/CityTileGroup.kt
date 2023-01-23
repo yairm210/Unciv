@@ -71,10 +71,19 @@ class CityTileGroup(private val city: City, tile: Tile, tileSetStrings: TileSetS
         }
 
         unitLayerGroup.isVisible = false
+
+        // All of these things on the tile aren't interesting from a city perspective
         terrainFeatureLayerGroup.color.a = 0.5f
         icons.improvementIcon?.setColor(1f, 1f, 1f, 0.5f)
+        resourceImage?.setColor(1f, 1f, 1f, 0.5f)
+        pixelCivilianUnitGroup.setColor(1f, 1f, 1f, 0.5f)
+        pixelMilitaryUnitGroup.setColor(1f, 1f, 1f, 0.5f)
+
         updatePopulationIcon()
         updateYieldGroup()
+        // Yield (in the CityTileGroup) and population icon (in miscLayerGroup) come before everything else
+        miscLayerGroup.toFront()
+        toFront()
     }
 
     private fun updateYieldGroup() {

@@ -275,7 +275,7 @@ class GameOptionsTable(
         val cityStatesAvailable = numberOfCityStates()
         if (cityStatesAvailable == 0) return
 
-        add("{Number of City-States}:".toLabel()).left().expandX()
+        add("{City-States}:".toLabel()).left().expandX()
         val slider = UncivSlider(0f, cityStatesAvailable.toFloat(), 1f, initial = gameParameters.numberOfCityStates.toFloat()) {
             gameParameters.numberOfCityStates = it.toInt()
         }
