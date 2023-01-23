@@ -50,7 +50,7 @@ class ModCheckboxTable(
         val padTop = if (isPortrait) 0f else 16f
 
         if (extensionRulesetModButtons.any()) {
-            add(ExpanderTab("Extension mods:", persistenceID = "NewGameExpansionMods") {
+            add(ExpanderTab("Extension mods", persistenceID = "NewGameExpansionMods") {
                 it.defaults().pad(5f,0f)
                 for (checkbox in extensionRulesetModButtons) {
                     checkbox.left()
