@@ -291,16 +291,25 @@ object GameStarter {
             gameInfo.civilizations.add(playerCiv)
         }
 
-        val availableCityStatesNames = Stack<String>()
+        var availableCityStatesNames = Stack<String>()
         // since we shuffle and then order by, we end up with all the City-States with starting tiles first in a random order,
         //   and then all the other City-States in a random order! Because the sortedBy function is stable!
-        availableCityStatesNames.addAll( ruleset.nations
-            .filter {
-                it.value.isCityState() &&
-                !it.value.hasUnique(UniqueType.CityStateDeprecated)
-            }.keys
-            .shuffled()
-            .sortedBy { it in civNamesWithStartingLocations } ) // pop() gets the last item, so sort ascending
+
+        val selectedCityStatesPoolNames = Stack<String>()
+        for (selectedCityState in gameSetupInfo.gameParameters.randomCityStates)
+            selectedCityStatesPoolNames.add(selectedCityState.name)
+        if (gameSetupInfo.gameParameters.blacklistRandomCityStatesPool) {
+            availableCityStatesNames.addAll( ruleset.nations
+                .filter {
+                    it.value.isCityState() &&
+                            !it.value.hasUnique(UniqueType.CityStateDeprecated)
+                }.keys
+                .shuffled()
+                .sortedBy { it in civNamesWithStartingLocations } ) // pop() gets the last item, so sort ascending
+            availableCityStatesNames.removeAll(selectedCityStatesPoolNames)
+        } else {
+            availableCityStatesNames = selectedCityStatesPoolNames
+        }
 
         val numberOfCityStates = if (newGameParameters.randomNumberOfCityStates) {
             // This swaps min and max if the user accidentally swapped min and max
