@@ -11,6 +11,7 @@ import com.unciv.logic.GameStarter
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
+import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.mapgenerator.MapGenerator
@@ -122,8 +123,9 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             val newMap = MapGenerator(mapRuleset)
                     .generateMap(MapParameters().apply {
                         shape = MapShape.rectangular
-                        mapSize = MapSizeNew(mapWidth.toInt() + 1, mapHeight.toInt() + 1)
+                        mapSize = MapSizeNew(MapSize.Small)
                         type = MapType.pangaea
+                        temperatureExtremeness = 1f
                         waterThreshold = -0.1f // mainly land, gets about 30% water
                         modifyForEasterEgg()
                     })

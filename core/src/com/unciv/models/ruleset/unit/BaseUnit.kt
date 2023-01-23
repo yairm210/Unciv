@@ -43,9 +43,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var promotions = HashSet<String>()
     var obsoleteTech: String? = null
     var upgradesTo: String? = null
-    val specialUpgradesTo: String? by lazy {
-        getMatchingUniques(UniqueType.RuinsUpgrade).map { it.params[0] }.firstOrNull()
-    }
     var replaces: String? = null
     var uniqueTo: String? = null
     var attackSound: String? = null
