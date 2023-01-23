@@ -16,7 +16,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaScreen.Companion.showReligionInCivilopedia
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.extensions.toPercent
-import com.unciv.ui.worldscreen.unit.UnitActions
+import com.unciv.ui.worldscreen.unit.actions.UnitActions
 import kotlin.math.roundToInt
 
 class TileImprovement : RulesetStatsObject() {

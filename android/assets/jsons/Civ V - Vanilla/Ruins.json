@@ -30,7 +30,7 @@
     },
     {
         "name": "a stash of gold",
-        "notification": "We have found a stash of [goldAmount] Gold in the ruins!",
+        "notification": "",  // trigger notification only
         "uniques": ["Gain [50]-[100] [Gold]"],
         "color": "#ffeb7f"
     },

@@ -159,3 +159,4 @@ android/assets/music/
 node_modules/
 package-lock.json
 package.json
+/android/assets/lasterror.txt

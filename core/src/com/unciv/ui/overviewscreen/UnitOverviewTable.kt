@@ -27,7 +27,7 @@ import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.surroundWithCircle
 import com.unciv.ui.utils.extensions.toLabel
-import com.unciv.ui.worldscreen.unit.UnitActions
+import com.unciv.ui.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.abs
 
 /**
@@ -230,7 +230,7 @@ class UnitOverviewTab(
 
             // Upgrade column
             if (unit.upgrade.canUpgrade()) {
-                val unitAction = UnitActions.getUpgradeAction(unit)
+                val unitAction = UnitActionsUpgrade.getUpgradeAction(unit)
                 val enable = unitAction?.action != null
                 val upgradeIcon = ImageGetter.getUnitIcon(unit.upgrade.getUnitToUpgradeTo().name,
                     if (enable) Color.GREEN else Color.GREEN.darken(0.5f))

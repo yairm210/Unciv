@@ -7,7 +7,7 @@ import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.stats.Stats
 import com.unciv.testing.GdxTestRunner
-import com.unciv.ui.worldscreen.unit.UnitActions
+import com.unciv.ui.worldscreen.unit.actions.UnitActionsPillage
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -555,7 +555,7 @@ class GlobalUniquesTests {
         val unit = game.addUnit("Warrior", civInfo, tile)
         unit.currentMovement = 2f
 
-        val pillageAction = UnitActions.getPillageAction(unit)
+        val pillageAction = UnitActionsPillage.getPillageAction(unit)
         pillageAction?.action?.invoke()
         Assert.assertTrue("Pillaging should transfer gold to the civ", civInfo.gold == 20)
         Assert.assertTrue("Pillaging should transfer food to the nearest city", cityInfo.population.foodStored == 11)

@@ -168,7 +168,7 @@ class MapEditorGenerateTab(
         private val parent: MapEditorGenerateTab
     ): Table(BaseScreen.skin) {
         val generateButton = "".toTextButton()
-        val mapParametersTable = MapParametersTable(parent.editorScreen.newMapParameters, MapGeneratedMainType.generated, forMapEditor = true) {
+        val mapParametersTable = MapParametersTable(null, parent.editorScreen.newMapParameters, MapGeneratedMainType.generated, forMapEditor = true) {
             parent.replacePage(0, this)  // A kludge to get the ScrollPanes to recognize changes in vertical layout??
         }
 

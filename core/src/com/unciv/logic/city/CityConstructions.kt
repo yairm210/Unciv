@@ -26,7 +26,7 @@ import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.extensions.withItem
 import com.unciv.ui.utils.extensions.withoutItem
-import com.unciv.ui.worldscreen.unit.UnitActions
+import com.unciv.ui.worldscreen.unit.actions.UnitActions
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
