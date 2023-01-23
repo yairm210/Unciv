@@ -29,7 +29,9 @@ class GameOptionsTable(
     val ruleset = previousScreen.ruleset
     var locked = false
     var modCheckboxes: ModCheckboxTable? = null
-    private set
+        private set
+    var keepAdvancedTabOpenForNationsPool = false
+    var keepAdvancedTabOpenForCSPool = false
 
     init {
         getGameOptionsTable()
@@ -84,7 +86,7 @@ class GameOptionsTable(
             checkboxTable.addAnyoneCanSpectateCheckbox()
         add(checkboxTable).center().row()
 
-        val expander = ExpanderTab("Advanced Settings", startsOutOpened = false) {
+        val expander = ExpanderTab("Advanced Settings", startsOutOpened = keepAdvancedTabOpenForNationsPool || keepAdvancedTabOpenForCSPool) {
             it.addNoCityRazingCheckbox()
             it.addNoBarbariansCheckbox()
             it.addRagingBarbariansCheckbox()
@@ -166,12 +168,14 @@ class GameOptionsTable(
     private fun Table.addRandomNationsPoolCheckbox() =
             addCheckbox("Random nations pool", gameParameters.enableRandomNationsPool) {
                 gameParameters.enableRandomNationsPool = it
+                keepAdvancedTabOpenForNationsPool = it
                 update()
             }
 
     private fun Table.addRandomCityStatesPoolCheckbox() =
             addCheckbox("Random city states pool", gameParameters.enableRandomCityStatesPool) {
                 gameParameters.enableRandomCityStatesPool = it
+                keepAdvancedTabOpenForCSPool = it
                 update()
             }
 
