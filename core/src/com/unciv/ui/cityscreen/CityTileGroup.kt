@@ -81,6 +81,9 @@ class CityTileGroup(private val city: City, tile: Tile, tileSetStrings: TileSetS
 
         updatePopulationIcon()
         updateYieldGroup()
+        // Yield (in the CityTileGroup) and population icon (in miscLayerGroup) come before everything else
+        miscLayerGroup.toFront()
+        toFront()
     }
 
     private fun updateYieldGroup() {
