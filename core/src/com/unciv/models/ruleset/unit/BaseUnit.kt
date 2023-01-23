@@ -1,7 +1,7 @@
 package com.unciv.models.ruleset.unit
 
-import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.City
+import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.RejectionReason
 import com.unciv.logic.city.RejectionReasons
@@ -37,7 +37,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var religiousStrength: Int = 0
     var range: Int = 2
     var interceptRange = 0
-    lateinit var unitType: String
+    var unitType: String = ""
     fun getType() = ruleset.unitTypes[unitType]!!
     override var requiredTech: String? = null
     private var requiredResource: String? = null
