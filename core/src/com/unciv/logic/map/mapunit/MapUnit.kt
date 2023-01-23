@@ -1016,15 +1016,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
 
-    fun getPressureAddedFromSpread(): Int {
-        var pressureAdded = baseUnit.religiousStrength.toFloat()
-
-        for (unique in getMatchingUniques(UniqueType.SpreadReligionStrength, checkCivInfoUniques = true))
-            pressureAdded *= unique.params[0].toPercent()
-
-        return pressureAdded.toInt()
-    }
-
     fun getActionString(action: String): String {
         val maxActionUses = maxAbilityUses[action]
         if (abilityUsesLeft[action] == null) return "0/0" // Something went wrong

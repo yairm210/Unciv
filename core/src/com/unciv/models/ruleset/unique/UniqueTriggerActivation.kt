@@ -20,7 +20,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
 import com.unciv.ui.utils.MayaCalendar
-import com.unciv.ui.worldscreen.unit.UnitActions
+import com.unciv.ui.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.random.Random
 
 // Buildings, techs, policies, ancient ruins and promotions can have 'triggered' effects
@@ -377,10 +377,8 @@ object UniqueTriggerActivation {
                     || unique.params[1].toIntOrNull() == null
                 ) return false
 
-                val finalStatAmount =
-                    (tileBasedRandom.nextInt(unique.params[0].toInt(), unique.params[1].toInt()) *
-                            civInfo.gameInfo.speed.statCostModifiers[stat]!!
-                            ).toFloat()
+                val finalStatAmount = tileBasedRandom.nextInt(unique.params[0].toInt(), unique.params[1].toInt()) *
+                                civInfo.gameInfo.speed.statCostModifiers[stat]!!
 
                 val stats = Stats().add(stat, finalStatAmount)
                 civInfo.addStats(stats)
@@ -592,7 +590,7 @@ object UniqueTriggerActivation {
                 return true
             }
             UniqueType.OneTimeUnitUpgrade -> {
-                val upgradeAction = UnitActions.getFreeUpgradeAction(unit)
+                val upgradeAction = UnitActionsUpgrade.getFreeUpgradeAction(unit)
                     ?: return false
                 upgradeAction.action!!()
                 if (notification != null)
@@ -600,7 +598,7 @@ object UniqueTriggerActivation {
                 return true
             }
             UniqueType.OneTimeUnitSpecialUpgrade -> {
-                val upgradeAction = UnitActions.getAncientRuinsUpgradeAction(unit)
+                val upgradeAction = UnitActionsUpgrade.getAncientRuinsUpgradeAction(unit)
                     ?: return false
                 upgradeAction.action!!()
                 if (notification != null)

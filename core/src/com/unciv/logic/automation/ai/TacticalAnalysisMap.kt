@@ -296,45 +296,21 @@ class TacticalAnalysisMap {
         for (zone in zones)
             zone.neighboringZones.clear()
 
-        val tileMatrix = game.tileMap.tileMatrix
+        val tileMap = game.tileMap
+        val directionsToCheck = setOf(12, 4, 8) // each tile only needs to check 3 directions for every possible neighboringZone to be identified
 
-        val gridH = tileMatrix.size-1
-        val gridW = tileMatrix.size-1
-
-        for (y in 0 until gridH) {
-            for (x in 0 until gridW) {
-                val tileA = tileMatrix[y][x]
-                val tileB = tileMatrix[y+1][x]
-                val tileC = tileMatrix[y][x+1]
-                val tileD = tileMatrix[y+1][x+1]
-
-                val zoneA = if (tileA == null) getZoneById("UNKNOWN") else getZoneByTile(tileA)
-                val zoneB = if (tileB == null) getZoneById("UNKNOWN") else getZoneByTile(tileB)
-                val zoneC = if (tileC == null) getZoneById("UNKNOWN") else getZoneByTile(tileC)
-                val zoneD = if (tileD == null) getZoneById("UNKNOWN") else getZoneByTile(tileD)
-
-                val zoneAId = zoneA!!.id
-                val zoneBId = zoneB!!.id
-                val zoneCId = zoneC!!.id
-                val zoneDId = zoneD!!.id
-
-                if (zoneAId != "UNKNOWN" && zoneBId != "UNKNOWN" && zoneAId != zoneBId) {
+        for (tile in tileMap.values) {
+            val zoneA = getZoneByTile(tile)
+            val zoneAId = zoneA!!.id
+            for (neighbor in directionsToCheck.mapNotNull { tileMap.getClockPositionNeighborTile(tile, it) }) {
+                val zoneB = getZoneByTile(neighbor)!!
+                val zoneBId = zoneB.id
+                if (zoneAId != zoneBId) {
                     zoneA.neighboringZones.add(zoneB.id)
                     zoneB.neighboringZones.add(zoneA.id)
                 }
-
-                if (zoneAId != "UNKNOWN" && zoneCId != "UNKNOWN" && zoneAId != zoneCId) {
-                    zoneA.neighboringZones.add(zoneC.id)
-                    zoneC.neighboringZones.add(zoneA.id)
-                }
-
-                if (zoneAId != "UNKNOWN" && zoneDId != "UNKNOWN" && zoneAId != zoneDId) {
-                    zoneA.neighboringZones.add(zoneD.id)
-                    zoneD.neighboringZones.add(zoneA.id)
-                }
             }
         }
-
     }
 
     fun debugOutput() {

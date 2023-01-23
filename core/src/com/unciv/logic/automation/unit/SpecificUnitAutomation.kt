@@ -16,7 +16,8 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
-import com.unciv.ui.worldscreen.unit.UnitActions
+import com.unciv.ui.worldscreen.unit.actions.UnitActions
+import com.unciv.ui.worldscreen.unit.actions.UnitActionsReligion
 import kotlin.math.max
 import kotlin.math.min
 
@@ -557,7 +558,7 @@ object SpecificUnitAutomation {
             return
         }
 
-        UnitActions.getFoundReligionAction(unit)()
+        UnitActionsReligion.getFoundReligionAction(unit)()
     }
 
     fun enhanceReligion(unit: MapUnit) {
@@ -569,12 +570,12 @@ object SpecificUnitAutomation {
         if (!unit.getTile().isCityCenter())
             return
 
-        UnitActions.getEnhanceReligionAction(unit)()
+        UnitActionsReligion.getEnhanceReligionAction(unit)()
     }
 
     private fun doReligiousAction(unit: MapUnit, destination: Tile) {
         val religiousActions = ArrayList<UnitAction>()
-        UnitActions.addActionsWithLimitedUses(unit, religiousActions, destination)
+        UnitActionsReligion.addActionsWithLimitedUses(unit, religiousActions, destination)
         if (religiousActions.firstOrNull()?.action == null) return
         religiousActions.first().action!!.invoke()
     }

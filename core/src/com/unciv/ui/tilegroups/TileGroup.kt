@@ -666,21 +666,20 @@ open class TileGroup(
         if (!shouldDisplay) {
             currentImage?.remove()
             return null
-        } else {
-            if (currentImage != null) {
-                currentImage.toFront() // So when e.g. founding cities the other tile images don't hide the river
-                return currentImage
-            }
-            if (!ImageGetter.imageExists(imageName)) return null // Old "Default" tileset gets no rivers.
-            val newImage = ImageGetter.getImage(imageName)
-            baseLayerGroup.addActor(newImage)
-            setHexagonImageSize(newImage)
-            return newImage
         }
+        if (currentImage != null) {
+            currentImage.toFront() // So when e.g. founding cities the other tile images don't hide the river
+            return currentImage
+        }
+        if (!ImageGetter.imageExists(imageName)) return null // Old "Default" tileset gets no rivers.
+        val newImage = ImageGetter.getImage(imageName)
+        baseLayerGroup.addActor(newImage)
+        setHexagonImageSize(newImage)
+        return newImage
     }
 
     /**
-     * Add an arrow to be drawn from this tile.
+    * Add an arrow to be drawn from this tile.
      * Similar to [showHighlight].
      *
      * Zero-length arrows are ignored.
