@@ -243,7 +243,7 @@ object Battle {
                     .toFloat() * 0.4f
             )
             /** Between 0 and 1.  Defaults to turn and location-based random to avoid save scumming */
-            val random = Random(attacker.getCivInfo().gameInfo.turns * defender.getTile().position.hashCode())
+            val random = Random((attacker.getCivInfo().gameInfo.turns * defender.getTile().position.hashCode()).toLong())
             return random.nextFloat() <= captureChance
         }
 
