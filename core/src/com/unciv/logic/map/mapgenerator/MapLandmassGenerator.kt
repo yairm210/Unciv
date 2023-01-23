@@ -106,8 +106,8 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
     }
 
     private fun createPangaea(tileMap: TileMap) {
-        val elevationSeed = randomness.RNG.nextInt().toDouble()
         do {
+            val elevationSeed = randomness.RNG.nextInt().toDouble()
             for (tile in tileMap.values) {
                 var elevation = randomness.getPerlinNoise(tile, elevationSeed)
                 elevation = elevation * (3 / 4f) + getEllipticContinent(tile, tileMap) / 4
@@ -115,7 +115,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
             }
 
             tileMap.assignContinents(TileMap.AssignContinentsMode.Reassign)
-        } while (tileMap.continentSizes.values.count { it > 20 } != 1)
+        } while (tileMap.continentSizes.values.count { it > 25 } != 1)
 
         tileMap.assignContinents(TileMap.AssignContinentsMode.Clear)
     }

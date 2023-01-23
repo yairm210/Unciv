@@ -42,7 +42,7 @@ object UnitActionsPillage {
         }
     }
 
-    internal fun getPillageAction(unit: MapUnit): UnitAction? {
+    fun getPillageAction(unit: MapUnit): UnitAction? {
         val tile = unit.currentTile
         if (unit.isCivilian() || !tile.canPillageTile() || tile.getOwner() == unit.civInfo) return null
         return UnitAction(
