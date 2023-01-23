@@ -1,8 +1,11 @@
 package com.unciv.logic.map.mapunit
 
+import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.unique.UniqueType
 
 class UnitTurnManager(val unit: MapUnit) {
@@ -12,7 +15,7 @@ class UnitTurnManager(val unit: MapUnit) {
         if (unit.currentMovement > 0
                 && unit.getTile().improvementInProgress != null
                 && unit.canBuildImprovement(unit.getTile().getTileImprovementInProgress()!!)
-        ) unit.workOnImprovement()
+        ) workOnImprovement()
         if (unit.currentMovement == unit.getMaxMovement().toFloat() && unit.isFortified() && unit.turnsFortified < 2) {
             unit.turnsFortified++
         }
@@ -164,6 +167,73 @@ class UnitTurnManager(val unit: MapUnit) {
 
         unit.addMovementMemory()
         unit.attacksSinceTurnStart.clear()
+    }
+
+    private fun workOnImprovement() {
+        val tile = unit.getTile()
+        if (tile.isMarkedForCreatesOneImprovement()) return
+        tile.turnsToImprovement -= 1
+        if (tile.turnsToImprovement != 0) return
+
+        if (unit.civInfo.isCurrentPlayer())
+            UncivGame.Current.settings.addCompletedTutorialTask("Construct an improvement")
+
+        when {
+            tile.improvementInProgress!!.startsWith(Constants.remove) -> {
+                val removedFeatureName = tile.improvementInProgress!!.removePrefix(Constants.remove)
+                val tileImprovement = tile.getTileImprovement()
+                if (tileImprovement != null
+                        && tile.terrainFeatures.any {
+                            tileImprovement.terrainsCanBeBuiltOn.contains(it) && it == removedFeatureName
+                        }
+                        && !tileImprovement.terrainsCanBeBuiltOn.contains(tile.baseTerrain)
+                ) {
+                    // We removed a terrain (e.g. Forest) and the improvement (e.g. Lumber mill) requires it!
+                    tile.changeImprovement(null)
+                    if (tile.resource != null) unit.civInfo.cache.updateCivResources() // unlikely, but maybe a mod makes a resource improvement dependent on a terrain feature
+                }
+                if (RoadStatus.values().any { tile.improvementInProgress == it.removeAction }) {
+                    tile.removeRoad()
+                } else {
+                    val removedFeatureObject = tile.ruleset.terrains[removedFeatureName]
+                    if (removedFeatureObject != null && removedFeatureObject.hasUnique(UniqueType.ProductionBonusWhenRemoved)) {
+                        tryProvideProductionToClosestCity(removedFeatureName)
+                    }
+                    tile.removeTerrainFeature(removedFeatureName)
+                }
+            }
+            tile.improvementInProgress == RoadStatus.Road.name -> tile.addRoad(RoadStatus.Road, unit.civInfo)
+            tile.improvementInProgress == RoadStatus.Railroad.name -> tile.addRoad(RoadStatus.Railroad, unit.civInfo)
+            tile.improvementInProgress == Constants.repair -> tile.setRepaired()
+            else -> {
+                val improvement = unit.civInfo.gameInfo.ruleSet.tileImprovements[tile.improvementInProgress]!!
+                improvement.handleImprovementCompletion(unit)
+                tile.changeImprovement(tile.improvementInProgress)
+            }
+        }
+
+        tile.improvementInProgress = null
+        tile.getCity()?.updateCitizens = true
+    }
+
+
+    private fun tryProvideProductionToClosestCity(removedTerrainFeature: String) {
+        val tile = unit.getTile()
+        val closestCity = unit.civInfo.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
+        @Suppress("FoldInitializerAndIfToElvis")
+        if (closestCity == null) return
+        val distance = closestCity.getCenterTile().aerialDistanceTo(tile)
+        var productionPointsToAdd = if (distance == 1) 20 else 20 - (distance - 2) * 5
+        if (tile.owningCity == null || tile.owningCity!!.civInfo != unit.civInfo) productionPointsToAdd =
+                productionPointsToAdd * 2 / 3
+        if (productionPointsToAdd > 0) {
+            closestCity.cityConstructions.addProductionPoints(productionPointsToAdd)
+            val locations = LocationAction(tile.position, closestCity.location)
+            unit.civInfo.addNotification(
+                "Clearing a [$removedTerrainFeature] has created [$productionPointsToAdd] Production for [${closestCity.name}]",
+                locations, NotificationCategory.Production, NotificationIcon.Construction
+            )
+        }
     }
 
 }

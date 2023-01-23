@@ -4,6 +4,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.Counter
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 
 object UnitActionsUpgrade{
@@ -22,13 +23,13 @@ object UnitActionsUpgrade{
         isFree: Boolean,
         isSpecial: Boolean
     ): UnitAction? {
-        if (unit.baseUnit().upgradesTo == null && unit.baseUnit().specialUpgradesTo == null) return null // can't upgrade to anything
+        val specialUpgradesTo = unit.baseUnit().getMatchingUniques(UniqueType.RuinsUpgrade).map { it.params[0] }.firstOrNull()
+        if (unit.baseUnit().upgradesTo == null && specialUpgradesTo == null) return null // can't upgrade to anything
         val unitTile = unit.getTile()
         val civInfo = unit.civInfo
         if (!isFree && unitTile.getOwner() != civInfo) return null
 
         val upgradesTo = unit.baseUnit().upgradesTo
-        val specialUpgradesTo = unit.baseUnit().specialUpgradesTo
         val upgradedUnit = when {
             isSpecial && specialUpgradesTo != null -> civInfo.getEquivalentUnit(specialUpgradesTo)
             (isFree || isSpecial) && upgradesTo != null -> civInfo.getEquivalentUnit(upgradesTo) // Only get DIRECT upgrade
