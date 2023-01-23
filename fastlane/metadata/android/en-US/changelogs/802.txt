@@ -1,0 +1,47 @@
+
+
+Fixed tests
+
+Pangaea maps are always largely land connected
+
+chore: separated unit actions into several files
+
+Resolved  - rulesets without modern strategic resources no longer fail on city-state generation
+
+Resolved  - rivers remain visible after founding city
+
+When exchanging peace for cities, units no longer teleport out of cities you traded for
+
+Added "upon discovering a Natural Wonder" trigger - @letstalkaboutdune
+
+Added "upon founding a city" trigger
+
+Trigger notifications can go in either direction, for better translations
+
+Notifications for stat gain unique
+
+Notifications for triggered uniques
+
+chore: Rename CivilizationInfo -> Civilization
+
+chore: Rename CityInfo -> City
+
+chore: Rename TileInfo -> Tile
+
+chore: move unit upgrade functions to separate class
+
+chore: Moved mapunit turn functions to separate class
+
+Added conditionals for above and below resource amounts
+
+Great general unique accepts conditionals - @SpacedOutChicken 
+
+Resolved  - Allow placing Barbarian encampments in map editor
+
+Resolved  - Do not load updated multiplayer if the user has already gone somewhere else
+
+Added option to allow players to choose randomly selected civs  - By alexban011
+
+Fix crash in Tactical Analysis Map  - By OptimizedForDensity
+
+AbsoluteUnits - Mohawk Warrior, Swordsman_v2  - By letstalkaboutdune
