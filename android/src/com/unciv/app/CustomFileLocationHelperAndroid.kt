@@ -32,8 +32,9 @@ class CustomFileLocationHelperAndroid(private val activity: Activity) : CustomFi
                     } else ""
                 }
             }
-            catch(ex:Exception) {}
-            suggestedLocation.split("2F").last() // I have no idea why but the content path ends with this before the filename
+            catch(ex:Exception) {
+                suggestedLocation.split("2F").last() // I have no idea why but the content path ends with this before the filename
+            }
         } else {
             // if we didn't load, this is some file name entered by the user
             suggestedLocation

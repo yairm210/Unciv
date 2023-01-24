@@ -130,6 +130,13 @@ PolicyIcons/Constitution
   orig: 50, 50
   offset: 0, 0
   index: -1
+PolicyIcons/Fallback
+  rotate: false
+  xy: 236, 62
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
 PolicyIcons/Cultural Diplomacy
   rotate: false
   xy: 236, 4
