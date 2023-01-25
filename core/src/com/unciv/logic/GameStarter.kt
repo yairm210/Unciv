@@ -8,9 +8,9 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.files.MapSaver
 import com.unciv.logic.map.HexMath
-import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapgenerator.MapGenerator
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.metadata.Player
@@ -440,7 +440,7 @@ object GameStarter {
 
         // We want to  distribute starting locations fairly, and thus not place anybody on a small island
         // - unless necessary. Old code would only consider landmasses >= 20 tiles.
-        // Instead, take continents until >=75% total area or everybody can get their own island
+        // Instead, take continents until >=90% total area or everybody can get their own island
         val orderedContinents = tileMap.continentSizes.asSequence().sortedByDescending { it.value }.toList()
         val totalArea = tileMap.continentSizes.values.sum()
         var candidateArea = 0
@@ -448,7 +448,7 @@ object GameStarter {
         for ((index, continentSize) in orderedContinents.withIndex()) {
             candidateArea += continentSize.value
             candidateContinents.add(continentSize.key)
-            if (candidateArea * 4 >= totalArea * 3) break
+            if (candidateArea >= totalArea * 0.9f) break
             if (index >= civCount) break
         }
 
