@@ -23,8 +23,11 @@ class CapitalConnectionsFinder(private val civInfo: Civilization) {
     private val harborFromRailroad = "$harbor-$railroad"
 
     private val ruleset = civInfo.gameInfo.ruleSet
-    private val roadIsResearched = ruleset.tileImprovements.containsKey(road) && civInfo.tech.isResearched(ruleset.tileImprovements[road]!!.techRequired!!)
-    private val railroadIsResearched = ruleset.tileImprovements.containsKey(railroad) && civInfo.tech.isResearched(ruleset.tileImprovements[railroad]!!.techRequired!!)
+    private val roadIsResearched = ruleset.tileImprovements[road].let {
+        it != null && (it.techRequired==null || civInfo.tech.isResearched(it.techRequired!!)) }
+
+    private val railroadIsResearched = ruleset.tileImprovements[railroad].let {
+        it != null && (it.techRequired==null || civInfo.tech.isResearched(it.techRequired!!)) }
 
     init {
         citiesReachedToMediums[civInfo.getCapital()!!] = hashSetOf("Start")
