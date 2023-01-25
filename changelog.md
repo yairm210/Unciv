@@ -1,34 +1,23 @@
 ## 4.4.6
 
-Resolved  - Modding: allow roads/railroads with no required tech
+Fixed Android custom location save
 
-Resolved  - Fixed spawn ignoring i/4 of the map
+Fixed 'infinite stat' from city-states
 
-Resolved , Resolved #8462 - Fixed 'infinite stat' from city-states
-
-Resolved  - tutorial task mistake
-
-Resolved  - Fallback images for all major objects
-
-Resolved  - Android custom location save
-
-Population icon before unit image in city tiles
-
-Fade units and improvements in city
+Clearer city tiles
 
 Do not allow placing of 'repair' in map editor
 
-"Extension mods:" -> "Extension mods"
+Fixed spawn ignoring i/4 of the map
 
 Better main menu map
 
-chore: moved cost and description functions out of BaseUnit
-
-Mods without unittype for a unit will trigger correct warnings
+Modding:
+- allow roads/railroads with no required tech
+- Mods without unittype for a unit will trigger correct warnings
+- Fallback images for all major objects
 
 Modification of the random part of Prize Ship to avoid save scumming  - By AlatarTheYoung
-
-Fix missing ' = '  - By Ouaz
 
 ## 4.4.5
 
