@@ -138,8 +138,8 @@ class PortraitResource(name: String, size: Float, amount: Int = 0) : Portrait(Ty
             val amountGroup = label.surroundWithCircle(size/2, true, Color.BLACK)
 
             label.y -= 0.5f
-            amountGroup.x = width - amountGroup.width * 2 / 3
-            amountGroup.y = -amountGroup.height / 3
+            amountGroup.x = width - amountGroup.width * 3 / 4
+            amountGroup.y = -amountGroup.height / 4
 
             addActor(amountGroup)
         }

@@ -21,6 +21,7 @@ import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.popup.ToastPopup
+import com.unciv.ui.tilegroups.CityTileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
@@ -224,17 +225,18 @@ class CityScreen(
         }
         for (tileGroup in tileGroups) {
             tileGroup.update()
-            tileGroup.hideHighlight()
+            tileGroup.layerOverlay.hideHighlight()
             when {
                 tileGroup.tile == nextTileToOwn -> {
-                    tileGroup.showHighlight(Color.PURPLE)
+                    tileGroup.layerOverlay.showHighlight(Color.PURPLE)
                     tileGroup.setColor(0f, 0f, 0f, 0.7f)
                 }
                 /** Support for [UniqueType.CreatesOneImprovement] */
                 tileGroup.tile == selectedQueueEntryTargetTile ->
-                    tileGroup.showHighlight(Color.BROWN, 0.7f)
+                    tileGroup.layerOverlay.showHighlight(Color.BROWN, 0.7f)
                 pickTileData != null && city.tiles.contains(tileGroup.tile.position) ->
-                    getPickImprovementColor(tileGroup.tile).run { tileGroup.showHighlight(first, second) }
+                    getPickImprovementColor(tileGroup.tile).run {
+                        tileGroup.layerOverlay.showHighlight(first, second) }
             }
         }
     }

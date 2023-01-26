@@ -139,7 +139,7 @@ class WorldMapHolder(
         }
 
         for (tileGroup in allWorldTileGroups) {
-            tileGroup.cityButtonLayerGroup.onClick(UncivSound.Silent) {
+            tileGroup.layerCityButton.onClick(UncivSound.Silent) {
                 onTileClicked(tileGroup.tile)
             }
             tileGroup.onClick { onTileClicked(tileGroup.tile) }
@@ -525,7 +525,7 @@ class WorldMapHolder(
     fun resetArrows() {
         for (tile in tileGroups.values) {
             for (group in tile) {
-                group.resetArrows()
+                group.layerMisc.resetArrows()
             }
         } // Inefficient?
     }
@@ -534,7 +534,7 @@ class WorldMapHolder(
     fun addArrow(fromTile: Tile, toTile: Tile, arrowType: MapArrowType) {
         val tile = tileGroups[fromTile]
         if (tile != null) for (group in tile) {
-            group.addArrow(toTile, arrowType)
+            group.layerMisc.addArrow(toTile, arrowType)
         }
     }
 
@@ -574,24 +574,14 @@ class WorldMapHolder(
             // Only needs to be done once - this is so the minimap will also be revealed
             allWorldTileGroups.forEach {
                 it.tile.setExplored(viewingCiv, true)
-                it.showEntireMap = true } // So we can see all resources, regardless of tech
+                it.isForceVisible = true } // So we can see all resources, regardless of tech
         }
 
-        for (tileGroup in allWorldTileGroups) {
+        // General update of all tiles
+        for (tileGroup in allWorldTileGroups)
             tileGroup.update(viewingCiv)
 
-
-            if (tileGroup.tile.getShownImprovement(viewingCiv) == Constants.barbarianEncampment
-                    && viewingCiv.hasExplored(tileGroup.tile))
-                tileGroup.showHighlight(Color.RED)
-
-            val unitsInTile = tileGroup.tile.getUnits()
-            val canSeeEnemy = unitsInTile.any() && unitsInTile.first().civInfo.isAtWarWith(viewingCiv)
-                    && tileGroup.showMilitaryUnit(viewingCiv)
-            if (tileGroup.isViewable(viewingCiv) && canSeeEnemy)
-                tileGroup.showHighlight(Color.RED) // Display ALL viewable enemies with a red circle so that users don't need to go "hunting" for enemy units
-        }
-
+        // Update tiles according to selected unit/city
         val unitTable = worldScreen.bottomUnitTable
         when {
             unitTable.selectedCity != null -> {
@@ -600,7 +590,7 @@ class WorldMapHolder(
             }
             unitTable.selectedUnit != null -> {
                 for (unit in unitTable.selectedUnits) {
-                    updateTilegroupsForSelectedUnit(unit)
+                    updateTilesForSelectedUnit(unit)
                 }
             }
             unitActionOverlays.isNotEmpty() -> {
@@ -612,64 +602,76 @@ class WorldMapHolder(
         val worldTileGroupsForSelectedTile = tileGroups[selectedTile]
         if (worldTileGroupsForSelectedTile != null)
             for (group in worldTileGroupsForSelectedTile)
-                group.showHighlight(Color.WHITE)
+                group.layerOverlay.showHighlight(Color.WHITE)
 
         zoom(scaleX) // zoom to current scale, to set the size of the city buttons after "next turn"
     }
 
-    private fun updateTilegroupsForSelectedUnit(unit: MapUnit) {
+    private fun updateTilesForSelectedUnit(unit: MapUnit) {
+
         val tileGroup = tileGroups[unit.getTile()] ?: return
-        // Entirely unclear when this happens, but this seems to happen since version 520 (3.12.9)
-        // so maybe has to do with the construction list being async?
-        for (group in tileGroup) {
-            group.selectUnit(unit)
+
+        // Update flags for units which have them
+        if (!unit.baseUnit.movesLikeAirUnits()) {
+            for (group in tileGroup)
+                group.layerUnitFlag.selectFlag(unit)
         }
 
         // Fade out less relevant images if a military unit is selected
-        val fadeout = if (unit.isCivilian()) 1f
-        else 0.5f
-        for (tile in allWorldTileGroups) {
-            if (tile.icons.populationIcon != null) tile.icons.populationIcon!!.color.a = fadeout
+        if (unit.isMilitary()) {
+            for (group in allWorldTileGroups) {
 
-            val shownImprovement = unit.civInfo.lastSeenImprovement[tile.tile.position]
-            if (tile.icons.improvementIcon != null
-                && shownImprovement != null && shownImprovement != Constants.barbarianEncampment
-                && unit.civInfo.gameInfo.ruleSet.tileImprovements[shownImprovement]!!.isAncientRuinsEquivalent())
-                tile.icons.improvementIcon!!.color.a = fadeout
-            if (tile.resourceImage != null) tile.resourceImage!!.color.a = fadeout
+                // Fade out population icons
+                group.layerMisc.dimPopulation(true)
+
+                val shownImprovement = unit.civInfo.lastSeenImprovement[group.tile.position]
+
+                // Fade out improvement icons (but not barb camps or ruins)
+                if (shownImprovement != null && shownImprovement != Constants.barbarianEncampment
+                        && !unit.civInfo.gameInfo.ruleSet.tileImprovements[shownImprovement]!!.isAncientRuinsEquivalent())
+                    group.layerMisc.dimImprovement(true)
+            }
         }
 
+        // Highlight suitable tiles in swapping-mode
         if (worldScreen.bottomUnitTable.selectedUnitIsSwapping) {
             val unitSwappableTiles = unit.movement.getUnitSwappableTiles()
             val swapUnitsTileOverlayColor = Color.PURPLE
             for (tile in unitSwappableTiles)  {
                 for (tileToColor in tileGroups[tile]!!) {
-                    tileToColor.showHighlight(swapUnitsTileOverlayColor,
+                    tileToColor.layerOverlay.showHighlight(swapUnitsTileOverlayColor,
                         if (UncivGame.Current.settings.singleTapMove) 0.7f else 0.3f)
                 }
             }
-            return // We don't want to show normal movement or attack overlays in unit-swapping mode
+            // In swapping-mode don't want to show other overlays
+            return
         }
 
         val isAirUnit = unit.baseUnit.movesLikeAirUnits()
         val moveTileOverlayColor = if (unit.isPreparingParadrop()) Color.BLUE else Color.WHITE
         val tilesInMoveRange = unit.movement.getReachableTilesInCurrentTurn()
 
+        // Highlight tiles within movement range
         for (tile in tilesInMoveRange) {
             for (tileToColor in tileGroups[tile]!!) {
+
+                // Air-units have additional highlights
                 if (isAirUnit && !unit.isPreparingAirSweep()) {
                     if (tile.aerialDistanceTo(unit.getTile()) <= unit.getRange()) {
                         // The tile is within attack range
-                        tileToColor.showHighlight(Color.RED, 0.3f)
+                        tileToColor.layerOverlay.showHighlight(Color.RED, 0.3f)
                     } else {
                         // The tile is within move range
-                        tileToColor.showHighlight(Color.BLUE, 0.3f)
+                        tileToColor.layerOverlay.showHighlight(Color.BLUE, 0.3f)
                     }
                 }
+
+                // Highlight tile unit can move to
                 if (unit.movement.canMoveTo(tile) ||
-                        unit.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !unit.baseUnit.movesLikeAirUnits())
-                    tileToColor.showHighlight(moveTileOverlayColor,
-                            if (UncivGame.Current.settings.singleTapMove || isAirUnit) 0.7f else 0.3f)
+                        unit.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !unit.baseUnit.movesLikeAirUnits()) {
+                    val alpha = if (UncivGame.Current.settings.singleTapMove || isAirUnit) 0.7f else 0.3f
+                    tileToColor.layerOverlay.showHighlight(moveTileOverlayColor, alpha)
+                }
             }
         }
 
@@ -679,7 +681,7 @@ class WorldMapHolder(
             for (tile in tilesInAttackRange) {
                 for (tileToColor in tileGroups[tile]!!) {
                     // The tile is within attack range
-                    tileToColor.showHighlight(Color.RED, 0.3f)
+                    tileToColor.layerOverlay.showHighlight(Color.RED, 0.3f)
                 }
             }
         }
@@ -688,32 +690,35 @@ class WorldMapHolder(
         if (unitMovementPaths.containsKey(unit)) {
             for (tile in unitMovementPaths[unit]!!) {
                 for (tileToColor in tileGroups[tile]!!)
-                    tileToColor.showHighlight(Color.SKY, 0.8f)
+                    tileToColor.layerOverlay.showHighlight(Color.SKY, 0.8f)
             }
         }
 
+        // Highlight movement destination tile
         if (unit.isMoving()) {
             val destinationTileGroups = tileGroups[unit.getMovementDestination()]!!
             for (destinationTileGroup in destinationTileGroups)
-                destinationTileGroup.showHighlight(Color.WHITE, 0.7f)
+                destinationTileGroup.layerOverlay.showHighlight(Color.WHITE, 0.7f)
         }
 
-        val attackableTiles: List<AttackableTile> = if (unit.isCivilian()) listOf()
-        else {
-            BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
+        // Highlight attackable tiles
+        if (unit.isMilitary()) {
+
+            val attackableTiles: List<AttackableTile> =
+                BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
                     .filter { it.tileToAttack.isVisible(unit.civInfo) }
                     .distinctBy { it.tileToAttack }
-        }
 
-        for (attackableTile in attackableTiles) {
-            for (tileGroupToAttack in tileGroups[attackableTile.tileToAttack]!!) {
-                tileGroupToAttack.showHighlight(colorFromRGB(237, 41, 57))
-                tileGroupToAttack.showCrosshair(
+            for (attackableTile in attackableTiles) {
+                for (tileGroupToAttack in tileGroups[attackableTile.tileToAttack]!!) {
+                    tileGroupToAttack.layerOverlay.showHighlight(colorFromRGB(237, 41, 57))
+                    tileGroupToAttack.layerOverlay.showCrosshair(
                         // the targets which cannot be attacked without movements shown as orange-ish
                         if (attackableTile.tileToAttackFrom != unit.currentTile)
                             0.5f
                         else 1f
-                )
+                    )
+                }
             }
         }
     }
@@ -722,8 +727,8 @@ class WorldMapHolder(
         if (!city.canBombard()) return
         for (attackableTile in UnitAutomation.getBombardableTiles(city)) {
             for (group in tileGroups[attackableTile]!!) {
-                group.showHighlight(colorFromRGB(237, 41, 57))
-                group.showCrosshair()
+                group.layerOverlay.showHighlight(colorFromRGB(237, 41, 57))
+                group.layerOverlay.showCrosshair()
             }
         }
     }
@@ -748,9 +753,9 @@ class WorldMapHolder(
 
         removeAction(blinkAction) // so we don't have multiple blinks at once
         blinkAction = Actions.repeat(3, Actions.sequence(
-                Actions.run { tileGroup.highlightImage.isVisible = false },
+                Actions.run { tileGroup.layerOverlay.hideHighlight()},
                 Actions.delay(.3f),
-                Actions.run { tileGroup.highlightImage.isVisible = true },
+                Actions.run { tileGroup.layerOverlay.showHighlight()},
                 Actions.delay(.3f)
         ))
         addAction(blinkAction) // Don't set it on the group because it's an actionless group
@@ -771,16 +776,16 @@ class WorldMapHolder(
         val clampedCityButtonZoom = 1 / scaleX
         if (clampedCityButtonZoom >= 1) {
             for (tileGroup in allWorldTileGroups) {
-                tileGroup.cityButtonLayerGroup.isTransform = false // to save on rendering time to improve framerate
+                tileGroup.layerCityButton.isTransform = false // to save on rendering time to improve framerate
             }
         }
         if (clampedCityButtonZoom < 1 && clampedCityButtonZoom >= minZoom) {
             for (tileGroup in allWorldTileGroups) {
                 // ONLY set those groups that have active city buttons as transformable!
                 // This is massively framerate-improving!
-                if (tileGroup.cityButtonLayerGroup.hasChildren())
-                    tileGroup.cityButtonLayerGroup.isTransform = true
-                tileGroup.cityButtonLayerGroup.setScale(clampedCityButtonZoom)
+                if (tileGroup.layerCityButton.hasChildren())
+                    tileGroup.layerCityButton.isTransform = true
+                tileGroup.layerCityButton.setScale(clampedCityButtonZoom)
             }
         }
     }
@@ -793,10 +798,6 @@ class WorldMapHolder(
 
     // For debugging purposes
     override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
-
     override fun act(delta: Float) = super.act(delta)
-
-    override fun clear() {
-        super.clear()
-    }
+    override fun clear() = super.clear()
 }
