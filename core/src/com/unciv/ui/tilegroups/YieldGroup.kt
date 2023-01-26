@@ -1,11 +1,15 @@
-package com.unciv.ui.cityscreen
+package com.unciv.ui.tilegroups
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.models.stats.Stats
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.utils.extensions.addToCenter
 import com.unciv.ui.utils.extensions.surroundWithCircle
+import com.unciv.ui.utils.extensions.toLabel
 
 class YieldGroup : HorizontalGroup() {
     init {
@@ -26,7 +30,7 @@ class YieldGroup : HorizontalGroup() {
     }
 
     fun getIcon(statName: String) =
-            ImageGetter.getStatIcon(statName).surroundWithCircle(15f)
+            ImageGetter.getStatIcon(statName).surroundWithCircle(12f)
                     .apply { circle.color = Color.BLACK;circle.color.a = 0.5f }
 
     private fun getStatIconsTable(statName: String, number: Int): Table {
@@ -49,9 +53,27 @@ class YieldGroup : HorizontalGroup() {
                 table.add(getIcon(statName))
             }
             else -> {
-                val largeImage = ImageGetter.getStatIcon(statName)
-                table.add(largeImage.surroundWithCircle(25f)
-                    .apply { circle.color = Color.BLACK;circle.color.a = 0.5f })
+
+                val group = Group().apply { setSize(22f, 22f) }
+                val largeImage = ImageGetter.getStatIcon(statName).surroundWithCircle(22f)
+                    .apply { circle.color = Color.BLACK;circle.color.a = 0.5f }
+                group.addToCenter(largeImage)
+
+                if (number > 5) {
+                    val text = if (number < 10) number.toString() else "*"
+                    val label = text.toLabel(
+                        fontSize = 8,
+                        fontColor = Color.WHITE,
+                        alignment = Align.center
+                    )
+                    val amountGroup = label.surroundWithCircle(10f, true, Color.BLACK)
+                    label.y -= 0.5f
+                    amountGroup.x = group.width - amountGroup.width * 3 / 4
+                    amountGroup.y = -amountGroup.height / 4
+                    group.addActor(amountGroup)
+                }
+
+                table.add(group)
             }
         }
         table.pack()

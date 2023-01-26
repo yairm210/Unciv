@@ -19,7 +19,7 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, unitS
     // it gets pretty memory-intensive (10s of MBs which is a lot for lower-end phones)
     val tileSetLocation = "TileSets/$tileSet/"
     val unitSetLocation = "TileSets/$unitSet/"
-    val tileSetConfig = TileSetCache[tileSet] ?: TileSetConfig()
+    val tileSetConfig = TileSetCache[tileSet]?.config ?: TileSetConfig()
 
     // These need to be by lazy since the orFallback expects a tileset, which it may not get.
     val hexagon: String by lazy { orFallback {tileSetLocation + "Hexagon"} }

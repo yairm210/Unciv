@@ -3,6 +3,7 @@ package com.unciv.ui.worldscreen.bottombar
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
@@ -23,19 +24,11 @@ object BattleTableHelpers {
                 sequence {
                     val tilegroups = mapHolder.tileGroups[combatant.getTile()]!!
                     when {
-                        combatant.isCity() -> yieldAll(tilegroups.mapNotNull { it.icons.improvementIcon })
-                        combatant.isCivilian() -> {
-                            for (tileGroup in tilegroups) {
-                                tileGroup.icons.civilianUnitIcon?.let { yield(it) }
-                                tileGroup.update(viewingCiv)
-                                yieldAll(tileGroup.pixelCivilianUnitGroup.children)
-                            }
-                        }
+                        combatant.isCity() -> yieldAll(tilegroups.mapNotNull { it.layerMisc.improvementIcon })
                         else -> {
+                            val slot = if (combatant.isCivilian()) 0 else 1
                             for (tileGroup in tilegroups) {
-                                tileGroup.icons.militaryUnitIcon?.let { yield(it) }
-                                tileGroup.update(viewingCiv)
-                                yieldAll(tileGroup.pixelMilitaryUnitGroup.children)
+                                yieldAll((tileGroup.layerUnitArt.getChild(slot) as Group).children)
                             }
                         }
                     }

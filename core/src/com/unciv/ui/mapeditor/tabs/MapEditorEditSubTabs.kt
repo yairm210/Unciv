@@ -400,8 +400,8 @@ class MapEditorEditRiversTab(
         ruleset = this@MapEditorEditRiversTab.ruleset
         setTerrainTransients()
         return TileGroup(this, TileSetStrings(), iconSize * 36f/54f).apply {
-            showEntireMap = true
-            forMapEditorIcon = true
+            isForceVisible = true
+            isForMapEditorIcon = true
             update()
         }
     }
