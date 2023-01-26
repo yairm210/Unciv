@@ -2,7 +2,7 @@ package com.unciv.uniques
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.testing.GdxTestRunner
-import com.unciv.ui.worldscreen.unit.UnitActions
+import com.unciv.ui.worldscreen.unit.actions.UnitActions
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test

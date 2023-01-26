@@ -2,7 +2,6 @@ package com.unciv.logic.map.mapunit
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.automation.unit.WorkerAutomation
@@ -10,10 +9,8 @@ import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.models.helpers.UnitMovementMemoryType
@@ -28,7 +25,6 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.extensions.filterAndLogic
-import com.unciv.ui.utils.extensions.toPercent
 import java.text.DecimalFormat
 import kotlin.math.pow
 
@@ -586,74 +582,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
         if (isExploring()) UnitAutomation.automatedExplore(this)
     }
 
-
-    internal fun workOnImprovement() {
-        val tile = getTile()
-        if (tile.isMarkedForCreatesOneImprovement()) return
-        tile.turnsToImprovement -= 1
-        if (tile.turnsToImprovement != 0) return
-
-        if (civInfo.isCurrentPlayer())
-            UncivGame.Current.settings.addCompletedTutorialTask("Construct an improvement")
-
-        when {
-            tile.improvementInProgress!!.startsWith(Constants.remove) -> {
-                val removedFeatureName = tile.improvementInProgress!!.removePrefix(Constants.remove)
-                val tileImprovement = tile.getTileImprovement()
-                if (tileImprovement != null
-                    && tile.terrainFeatures.any {
-                        tileImprovement.terrainsCanBeBuiltOn.contains(it) && it == removedFeatureName
-                    }
-                    && !tileImprovement.terrainsCanBeBuiltOn.contains(tile.baseTerrain)
-                ) {
-                    // We removed a terrain (e.g. Forest) and the improvement (e.g. Lumber mill) requires it!
-                    tile.changeImprovement(null)
-                    if (tile.resource != null) civInfo.cache.updateCivResources() // unlikely, but maybe a mod makes a resource improvement dependent on a terrain feature
-                }
-                if (RoadStatus.values().any { tile.improvementInProgress == it.removeAction }) {
-                    tile.removeRoad()
-                } else {
-                    val removedFeatureObject = tile.ruleset.terrains[removedFeatureName]
-                    if (removedFeatureObject != null && removedFeatureObject.hasUnique(UniqueType.ProductionBonusWhenRemoved)) {
-                        tryProvideProductionToClosestCity(removedFeatureName)
-                    }
-                    tile.removeTerrainFeature(removedFeatureName)
-                }
-            }
-            tile.improvementInProgress == RoadStatus.Road.name -> tile.addRoad(RoadStatus.Road, this.civInfo)
-            tile.improvementInProgress == RoadStatus.Railroad.name -> tile.addRoad(RoadStatus.Railroad, this.civInfo)
-            tile.improvementInProgress == Constants.repair -> tile.setRepaired()
-            else -> {
-                val improvement = civInfo.gameInfo.ruleSet.tileImprovements[tile.improvementInProgress]!!
-                improvement.handleImprovementCompletion(this)
-                tile.changeImprovement(tile.improvementInProgress)
-            }
-        }
-
-        tile.improvementInProgress = null
-        tile.getCity()?.updateCitizens = true
-    }
-
-
-    private fun tryProvideProductionToClosestCity(removedTerrainFeature: String) {
-        val tile = getTile()
-        val closestCity = civInfo.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
-        @Suppress("FoldInitializerAndIfToElvis")
-        if (closestCity == null) return
-        val distance = closestCity.getCenterTile().aerialDistanceTo(tile)
-        var productionPointsToAdd = if (distance == 1) 20 else 20 - (distance - 2) * 5
-        if (tile.owningCity == null || tile.owningCity!!.civInfo != civInfo) productionPointsToAdd =
-            productionPointsToAdd * 2 / 3
-        if (productionPointsToAdd > 0) {
-            closestCity.cityConstructions.addProductionPoints(productionPointsToAdd)
-            val locations = LocationAction(tile.position, closestCity.location)
-            civInfo.addNotification(
-                "Clearing a [$removedTerrainFeature] has created [$productionPointsToAdd] Production for [${closestCity.name}]",
-                locations, NotificationCategory.Production, NotificationIcon.Construction
-            )
-        }
-    }
-
     fun healBy(amount: Int) {
         health += amount *
             if (hasUnique(UniqueType.HealingEffectsDoubled, checkCivInfoUniques = true)) 2
@@ -878,6 +806,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
     }
 
+
     fun canIntercept(attackedTile: Tile): Boolean {
         if (!canIntercept()) return false
         if (currentTile.aerialDistanceTo(attackedTile) > baseUnit.interceptRange) return false
@@ -897,27 +826,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun interceptChance(): Int {
         return getMatchingUniques(UniqueType.ChanceInterceptAirAttacks).sumOf { it.params[0].toInt() }
-    }
-
-    fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
-        // Currently, only missiles and airplanes can be carried
-        if (!mapUnit.baseUnit.movesLikeAirUnits()) return false
-        return getMatchingUniques(UniqueType.CarryAirUnits).any { mapUnit.matchesFilter(it.params[1]) }
-    }
-
-    private fun carryCapacity(unit: MapUnit): Int {
-        return (getMatchingUniques(UniqueType.CarryAirUnits)
-                + getMatchingUniques(UniqueType.CarryExtraAirUnits))
-            .filter { unit.matchesFilter(it.params[1]) }
-            .sumOf { it.params[0].toInt() }
-    }
-
-    fun canTransport(unit: MapUnit): Boolean {
-        if (owner != unit.owner) return false
-        if (!isTransportTypeOf(unit)) return false
-        if (unit.getMatchingUniques(UniqueType.CannotBeCarriedBy).any { matchesFilter(it.params[0]) }) return false
-        if (currentTile.airUnits.count { it.isTransported } >= carryCapacity(unit)) return false
-        return true
     }
 
     fun interceptDamagePercentBonus(): Int {
@@ -943,6 +851,28 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
         // Otherwise fall back to the defined standard damage
         return  tile.allTerrains.sumOf { it.damagePerTurn }
+    }
+
+
+    fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
+        // Currently, only missiles and airplanes can be carried
+        if (!mapUnit.baseUnit.movesLikeAirUnits()) return false
+        return getMatchingUniques(UniqueType.CarryAirUnits).any { mapUnit.matchesFilter(it.params[1]) }
+    }
+
+    private fun carryCapacity(unit: MapUnit): Int {
+        return (getMatchingUniques(UniqueType.CarryAirUnits)
+                + getMatchingUniques(UniqueType.CarryExtraAirUnits))
+            .filter { unit.matchesFilter(it.params[1]) }
+            .sumOf { it.params[0].toInt() }
+    }
+
+    fun canTransport(unit: MapUnit): Boolean {
+        if (owner != unit.owner) return false
+        if (!isTransportTypeOf(unit)) return false
+        if (unit.getMatchingUniques(UniqueType.CannotBeCarriedBy).any { matchesFilter(it.params[0]) }) return false
+        if (currentTile.airUnits.count { it.isTransported } >= carryCapacity(unit)) return false
+        return true
     }
 
 
@@ -1015,15 +945,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
     }
 
-
-    fun getPressureAddedFromSpread(): Int {
-        var pressureAdded = baseUnit.religiousStrength.toFloat()
-
-        for (unique in getMatchingUniques(UniqueType.SpreadReligionStrength, checkCivInfoUniques = true))
-            pressureAdded *= unique.params[0].toPercent()
-
-        return pressureAdded.toInt()
-    }
 
     fun getActionString(action: String): String {
         val maxActionUses = maxAbilityUses[action]

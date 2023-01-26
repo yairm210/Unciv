@@ -31,6 +31,7 @@ import com.unciv.ui.utils.extensions.toTextButton
  *  @param forMapEditor whether the [MapType.empty] option should be present. Is used by the Map Editor, but should **never** be used with the New Game
  * */
 class MapParametersTable(
+    private val previousScreen: IPreviousScreen? = null,
     private val mapParameters: MapParameters,
     private val mapGeneratedMainType: String,
     private val forMapEditor: Boolean = false,
@@ -67,6 +68,12 @@ class MapParametersTable(
     private val advancedSliders = HashMap<UncivSlider, ()->Float>()
 
     init {
+        update()
+    }
+
+    fun update() {
+        clear()
+
         skin = BaseScreen.skin
         defaults().pad(5f, 10f)
         if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
@@ -354,6 +361,13 @@ class MapParametersTable(
             return slider
         }
 
+        fun addTextButton(text: String, shouldAddToTable: Boolean = false, action: ((Boolean) -> Unit),) {
+            val button = text.toTextButton()
+            button.onClick { action.invoke(true) }
+            if (shouldAddToTable)
+                table.add(button).colspan(2).padTop(10f).row()
+        }
+
         addSlider("Map Elevation", {mapParameters.elevationExponent}, 0.6f, 0.8f)
         { mapParameters.elevationExponent = it }
 
@@ -381,13 +395,11 @@ class MapParametersTable(
         addSlider("Water level", {mapParameters.waterThreshold}, -0.1f, 0.1f)
         { mapParameters.waterThreshold = it }
 
-        val resetToDefaultButton = "Reset to defaults".toTextButton()
-        resetToDefaultButton.onClick {
+        addTextButton("Reset to defaults", true) {
             mapParameters.resetAdvancedSettings()
             seedTextField.text = mapParameters.seed.toString()
             for (entry in advancedSliders)
                 entry.key.value = entry.value()
         }
-        table.add(resetToDefaultButton).colspan(2).padTop(10f).row()
     }
 }

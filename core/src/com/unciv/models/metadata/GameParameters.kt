@@ -3,6 +3,7 @@ package com.unciv.models.metadata
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.Speed
+import com.unciv.models.ruleset.nation.Nation
 
 enum class BaseRuleset(val fullName:String){
     Civ_V_Vanilla("Civ V - Vanilla"),
@@ -26,6 +27,10 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var minNumberOfCityStates = 6
     var maxNumberOfCityStates = 6
     var numberOfCityStates = 6
+
+    var enableRandomNationsPool = false
+    var blacklistRandomNationsPool = false
+    var randomNations = arrayListOf<Nation>()
 
     var noCityRazing = false
     var noBarbarians = false

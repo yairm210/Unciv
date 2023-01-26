@@ -18,8 +18,8 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
 
     private val mapParameters = newGameScreen.gameSetupInfo.mapParameters
     private var mapTypeSpecificTable = Table()
-    val generatedMapOptionsTable = MapParametersTable(mapParameters, MapGeneratedMainType.generated)
-    private val randomMapOptionsTable = MapParametersTable(mapParameters, MapGeneratedMainType.randomGenerated)
+    val generatedMapOptionsTable = MapParametersTable(newGameScreen, mapParameters, MapGeneratedMainType.generated)
+    private val randomMapOptionsTable = MapParametersTable(newGameScreen, mapParameters, MapGeneratedMainType.randomGenerated)
     private val savedMapOptionsTable = Table()
     lateinit var mapTypeSelectBox: TranslatedSelectBox
     private val mapFileSelectBox = createMapFileSelectBox()

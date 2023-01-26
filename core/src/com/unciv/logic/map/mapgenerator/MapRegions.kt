@@ -1316,11 +1316,14 @@ class MapRegions (val ruleset: Ruleset){
             it.revealedBy != null &&
                     ruleset.eras[ruleset.technologies[it.revealedBy]!!.era()]!!.eraNumber >= lastEra / 2
         }
-        for (cityStateLocation in tileMap.startingLocationsByNation.filterKeys { ruleset.nations[it]!!.isCityState() }.values.map { it.first() }) {
-            val resourceToPlace = modernOptions.random()
-            totalPlaced[resourceToPlace] =
-                    totalPlaced[resourceToPlace]!! + tryAddingResourceToTiles(resourceToPlace, 1, cityStateLocation.getTilesInDistanceRange(1..3))
-        }
+
+        if (modernOptions.any())
+            for (cityStateLocation in tileMap.startingLocationsByNation
+                    .filterKeys { ruleset.nations[it]!!.isCityState() }.values.map { it.first() }) {
+                val resourceToPlace = modernOptions.random()
+                totalPlaced[resourceToPlace] =
+                        totalPlaced[resourceToPlace]!! + tryAddingResourceToTiles(resourceToPlace, 1, cityStateLocation.getTilesInDistanceRange(1..3))
+            }
 
         // Third add some minor deposits to land tiles
         // Note: In G&K there is a bug where minor deposits are never placed on hills. We're not replicating that.

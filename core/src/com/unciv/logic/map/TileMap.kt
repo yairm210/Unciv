@@ -87,7 +87,8 @@ class TileMap : IsPartOfGameInfoSerialization {
     val startingLocationsByNation = HashMap<String,HashSet<Tile>>()
 
     @Transient
-    val continentSizes = HashMap<Int, Int>()    // Continent ID, Continent size
+    /** Continent ID to Continent size */
+    val continentSizes = HashMap<Int, Int>()
 
     //endregion
     //region Constructors
@@ -152,13 +153,8 @@ class TileMap : IsPartOfGameInfoSerialization {
         tileMatrix[x - leftX][y - bottomY]!!
 
     /** @return tile at hex coordinates ([x],[y]) or null if they are outside the map. Does *not* respect world wrap, use [getIfTileExistsOrNull] for that. */
-    private fun getOrNull (x: Int, y: Int): Tile? {
-        val arrayXIndex = x - leftX
-        if (arrayXIndex < 0 || arrayXIndex >= tileMatrix.size) return null
-        val arrayYIndex = y - bottomY
-        if (arrayYIndex < 0 || arrayYIndex >= tileMatrix[arrayXIndex].size) return null
-        return tileMatrix[arrayXIndex][arrayYIndex]
-    }
+    private fun getOrNull (x: Int, y: Int): Tile? =
+            tileMatrix.getOrNull(x - leftX)?.getOrNull(y - bottomY)
 
     //endregion
     //region Pure Functions

@@ -7,6 +7,8 @@ import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.models.ruleset.nation.Nation
+import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 
 class CityFounder {
@@ -81,6 +83,12 @@ class CityFounder {
 
         triggerCitiesSettledNearOtherCiv(city)
         civInfo.gameInfo.cityDistances.setDirty()
+
+
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponFoundingCity,
+            StateForConditionals(civInfo, city)
+        ))
+            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, city, triggerNotificationText = "due to founding a city")
 
         return city
     }

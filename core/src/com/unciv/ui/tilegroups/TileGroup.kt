@@ -14,7 +14,6 @@ import com.unciv.ui.tilegroups.layers.TileLayerOverlay
 import com.unciv.ui.tilegroups.layers.TileLayerTerrain
 import com.unciv.ui.tilegroups.layers.TileLayerUnitArt
 import com.unciv.ui.tilegroups.layers.TileLayerUnitFlag
-import com.unciv.ui.utils.BaseScreen
 import kotlin.math.pow
 import kotlin.math.sqrt
 

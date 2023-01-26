@@ -1,3 +1,39 @@
+## 4.4.6
+
+Fixed Android custom location save
+
+Fixed 'infinite stat' from city-states
+
+Clearer city tiles
+
+Do not allow placing of 'repair' in map editor
+
+Fixed spawn ignoring i/4 of the map
+
+Better main menu map
+
+Modding:
+- allow roads/railroads with no required tech
+- Mods without unittype for a unit will trigger correct warnings
+- Fallback images for all major objects
+
+Modification of the random part of Prize Ship to avoid save scumming  - By AlatarTheYoung
+
+## 4.4.5
+
+Modding:
+- Added "upon discovering a Natural Wonder", "upon founding a city" triggers
+- Added conditionals for above and below resource amounts
+- Great general unique accepts conditionals - @SpacedOutChicken
+
+Allow placing Barbarian encampments in map editor
+
+Added option to allow players to choose randomly selected civs  - By alexban011
+
+Fix crash in Tactical Analysis Map  - By OptimizedForDensity
+
+AbsoluteUnits - Mohawk Warrior, Swordsman v2 - By letstalkaboutdune
+
 ## 4.4.4
 
 Better generation for all map types

@@ -158,7 +158,10 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             currentImage?.remove()
             return null
         } else {
-            if (currentImage != null) return currentImage
+            if (currentImage != null) {
+                currentImage.toFront()
+                return currentImage
+            }
             if (!ImageGetter.imageExists(imageName)) return null // Old "Default" tileset gets no rivers.
             val newImage = ImageGetter.getImage(imageName)
             addActor(newImage.setHexagonSize())

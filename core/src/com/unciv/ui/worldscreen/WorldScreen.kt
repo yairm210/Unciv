@@ -65,7 +65,7 @@ import com.unciv.ui.worldscreen.status.MultiplayerStatusButton
 import com.unciv.ui.worldscreen.status.NextTurnAction
 import com.unciv.ui.worldscreen.status.NextTurnButton
 import com.unciv.ui.worldscreen.status.StatusButtons
-import com.unciv.ui.worldscreen.unit.UnitActionsTable
+import com.unciv.ui.worldscreen.unit.actions.UnitActionsTable
 import com.unciv.ui.worldscreen.unit.UnitTable
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
@@ -500,7 +500,7 @@ class WorldScreen(
             return "Open the options table!\nClick the menu button (top left) > click 'Options'"
         if (!completedTasks.contains("Construct an improvement"))
             return "Construct an improvement!\nConstruct a Worker unit > Move to a Plains or Grassland tile > " +
-                    "\n Click 'Create improvement' (above the unit table, bottom left)" +
+                    "\n Click 'Construct improvement' (above the unit table, bottom left)" +
                     "\n > Choose the farm > \n Leave the worker there until it's finished"
         if (!completedTasks.contains("Create a trade route")
                 && viewingCiv.citiesConnectedToCapitalToMediums.any { it.key.civInfo == viewingCiv })
