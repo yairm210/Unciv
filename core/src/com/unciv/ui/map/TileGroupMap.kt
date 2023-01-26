@@ -6,10 +6,17 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.TileMap
-import com.unciv.ui.cityscreen.CityTileGroup
-import com.unciv.ui.tilegroups.ActionlessGroup
+import com.unciv.ui.tilegroups.CityTileGroup
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.WorldTileGroup
+import com.unciv.ui.tilegroups.layers.TileLayerBorders
+import com.unciv.ui.tilegroups.layers.TileLayerCityButton
+import com.unciv.ui.tilegroups.layers.TileLayerFeatures
+import com.unciv.ui.tilegroups.layers.TileLayerMisc
+import com.unciv.ui.tilegroups.layers.TileLayerOverlay
+import com.unciv.ui.tilegroups.layers.TileLayerTerrain
+import com.unciv.ui.tilegroups.layers.TileLayerUnitArt
+import com.unciv.ui.tilegroups.layers.TileLayerUnitFlag
 import kotlin.math.max
 import kotlin.math.min
 
@@ -106,39 +113,37 @@ class TileGroupMap<T: TileGroup>(
             }
         }
 
-        val baseLayers = ArrayList<ActionlessGroup>()
-        val featureLayers = ArrayList<ActionlessGroup>()
-        val borderLayers = ArrayList<ActionlessGroup>()
-        val miscLayers = ArrayList<ActionlessGroup>()
-        val pixelUnitLayers = ArrayList<ActionlessGroup>()
-        val circleFogCrosshairLayers = ArrayList<ActionlessGroup>()
-        val unitLayers = ArrayList<Group>()
-        val cityButtonLayers = ArrayList<Group>()
+        val baseLayers = ArrayList<TileLayerTerrain>()
+        val featureLayers = ArrayList<TileLayerFeatures>()
+        val borderLayers = ArrayList<TileLayerBorders>()
+        val miscLayers = ArrayList<TileLayerMisc>()
+        val pixelUnitLayers = ArrayList<TileLayerUnitArt>()
+        val circleFogCrosshairLayers = ArrayList<TileLayerOverlay>()
+        val unitLayers = ArrayList<TileLayerUnitFlag>()
+        val cityButtonLayers = ArrayList<TileLayerCityButton>()
 
         // Apparently the sortedByDescending is kinda memory-intensive because it needs to sort ALL the tiles
         for (group in tileGroups.sortedByDescending { it.tile.position.x + it.tile.position.y }) {
             // now, we steal the subgroups from all the tilegroups, that's how we form layers!
-            baseLayers.add(group.baseLayerGroup.apply { setPosition(group.x,group.y) })
-            featureLayers.add(group.terrainFeatureLayerGroup.apply { setPosition(group.x,group.y) })
-            borderLayers.add(group.borderLayerGroup.apply { setPosition(group.x,group.y) })
-            miscLayers.add(group.miscLayerGroup.apply { setPosition(group.x,group.y) })
-            pixelUnitLayers.add(group.pixelMilitaryUnitGroup.apply { setPosition(group.x,group.y) })
-            pixelUnitLayers.add(group.pixelCivilianUnitGroup.apply { setPosition(group.x,group.y) })
-            circleFogCrosshairLayers.add(group.highlightFogCrosshairLayerGroup.apply { setPosition(group.x,group.y) })
-            unitLayers.add(group.unitLayerGroup.apply { setPosition(group.x,group.y) })
-            cityButtonLayers.add(group.cityButtonLayerGroup.apply { setPosition(group.x,group.y) })
+            baseLayers.add(group.layerTerrain.apply { setPosition(group.x,group.y) })
+            featureLayers.add(group.layerFeatures.apply { setPosition(group.x,group.y) })
+            borderLayers.add(group.layerBorders.apply { setPosition(group.x,group.y) })
+            miscLayers.add(group.layerMisc.apply { setPosition(group.x,group.y) })
+            pixelUnitLayers.add(group.layerUnitArt.apply { setPosition(group.x,group.y) })
+            circleFogCrosshairLayers.add(group.layerOverlay.apply { setPosition(group.x,group.y) })
+            unitLayers.add(group.layerUnitFlag.apply { setPosition(group.x,group.y) })
+            cityButtonLayers.add(group.layerCityButton.apply { setPosition(group.x,group.y) })
 
             if (worldWrap) {
                 for (mirrorTile in mirrorTileGroups[group.tile]!!.toList()) {
-                    baseLayers.add(mirrorTile.baseLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
-                    featureLayers.add(mirrorTile.terrainFeatureLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
-                    borderLayers.add(mirrorTile.borderLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
-                    miscLayers.add(mirrorTile.miscLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
-                    pixelUnitLayers.add(mirrorTile.pixelMilitaryUnitGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
-                    pixelUnitLayers.add(mirrorTile.pixelCivilianUnitGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
-                    circleFogCrosshairLayers.add(mirrorTile.highlightFogCrosshairLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
-                    unitLayers.add(mirrorTile.unitLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
-                    cityButtonLayers.add(mirrorTile.cityButtonLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
+                    baseLayers.add(mirrorTile.layerTerrain.apply { setPosition(mirrorTile.x,mirrorTile.y) })
+                    featureLayers.add(mirrorTile.layerFeatures.apply { setPosition(mirrorTile.x,mirrorTile.y) })
+                    borderLayers.add(mirrorTile.layerBorders.apply { setPosition(mirrorTile.x,mirrorTile.y) })
+                    miscLayers.add(mirrorTile.layerMisc.apply { setPosition(mirrorTile.x,mirrorTile.y) })
+                    pixelUnitLayers.add(mirrorTile.layerUnitArt.apply { setPosition(mirrorTile.x,mirrorTile.y) })
+                    circleFogCrosshairLayers.add(mirrorTile.layerOverlay.apply { setPosition(mirrorTile.x,mirrorTile.y) })
+                    unitLayers.add(mirrorTile.layerUnitFlag.apply { setPosition(mirrorTile.x,mirrorTile.y) })
+                    cityButtonLayers.add(mirrorTile.layerCityButton.apply { setPosition(mirrorTile.x,mirrorTile.y) })
                 }
             }
         }
