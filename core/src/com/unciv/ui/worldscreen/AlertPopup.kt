@@ -1,11 +1,13 @@
 package com.unciv.ui.worldscreen
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.UncivScript
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.LocationAction
@@ -320,6 +322,16 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 val victoryData = worldScreen.viewingCiv.gameInfo.victoryData!!
                 addGoodSizedLabel("[${victoryData.winningCiv}] has won a [${victoryData.victoryType}] Victory!").row()
                 addButton("Victory status"){ close(); worldScreen.game.pushScreen(VictoryScreen(worldScreen)) }.row()
+                add(getCloseButton(Constants.close))
+            }
+
+            AlertType.ScriptOutput -> {
+                addGoodSizedLabel("{Script output}:\n\n${popupAlert.value}").row()
+                addButton("Copy contents to clipboard") {
+                    Gdx.app.clipboard.contents = popupAlert.value
+                    close()
+                    UncivScript.errorReportCopiedToast(worldScreen)
+                }.row()
                 add(getCloseButton(Constants.close))
             }
         }

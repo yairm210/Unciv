@@ -720,10 +720,10 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     TriggerUponFoundingReligion("upon founding a Religion", UniqueTarget.TriggerCondition),
     TriggerUponEnhancingReligion("upon enhancing a Religion", UniqueTarget.TriggerCondition),
 
-
     //endregion
 
     ///////////////////////////////////////////// region META /////////////////////////////////////////////
+    ActivateScript("Activates script [scriptPath]", UniqueTarget.Triggerable, flags = UniqueFlag.setOfHiddenToUsers),
     HiddenWithoutReligion("Hidden when religion is disabled", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins, flags = UniqueFlag.setOfHiddenToUsers),
 
     HiddenAfterGreatProphet("Hidden after generating a Great Prophet", UniqueTarget.Ruins),

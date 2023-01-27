@@ -118,6 +118,11 @@ project(":core") {
         "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
         "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
         "implementation"("org.jetbrains.kotlin:kotlin-reflect:${com.unciv.build.BuildConfig.kotlinVersion}")
+        // scripting
+        "implementation"("org.jetbrains.kotlin:kotlin-scripting-common:${com.unciv.build.BuildConfig.kotlinVersion}")
+        "implementation"("org.jetbrains.kotlin:kotlin-scripting-jvm:${com.unciv.build.BuildConfig.kotlinVersion}")
+        "implementation"("org.jetbrains.kotlin:kotlin-scripting-jvm-host:${com.unciv.build.BuildConfig.kotlinVersion}")
+        "implementation"("org.jetbrains.kotlin:kotlin-scripting-dependencies:${com.unciv.build.BuildConfig.kotlinVersion}")
     }
 
 
