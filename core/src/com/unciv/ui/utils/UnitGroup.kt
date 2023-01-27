@@ -10,13 +10,14 @@ import com.unciv.UncivGame
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.extensions.center
+import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.surroundWithCircle
 
 val unitCircleLocation = "UnitIcons/Circle"
 
 class UnitGroup(val unit: MapUnit, val size: Float): Group() {
     var actionGroup :Group? = null
-    val unitBaseImage = ImageGetter.getUnitIcon(unit.name, unit.civInfo.nation.getInnerColor())
+    val flagIcon = ImageGetter.getUnitIcon(unit.name, unit.civInfo.nation.getInnerColor())
         .apply {
             if (unit.isCivilian())
                 setSize(size * 0.60f, size * 0.60f)
@@ -37,12 +38,15 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
 
         setSize(sizeOuterBgX, sizeOuterBgY)
 
-        flagSelection.color.a = 0f
+        flagSelection.color.set(1f, 1f, 1f, 0f)
         flagSelection.align = Align.center
         flagSelection.setSize(sizeSelectionX, sizeSelectionY)
         flagSelection.center(this)
 
         flagBg.setSize(sizeOuterBgX, sizeOuterBgY)
+
+        // 0f (invisible) to 1f (fully opaque)
+        flagIcon.color.a = UncivGame.Current.settings.unitIconOpacity
 
         outerBg.color = unit.civInfo.nation.getInnerColor()
         outerBg.color.a = UncivGame.Current.settings.unitIconOpacity
@@ -64,17 +68,18 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
             flagBg.addActor(maskBg)
         flagBg.center(this)
 
-        unitBaseImage.center(this)
+        flagIcon.center(this)
 
         addActor(flagSelection)
         addActor(flagBg)
-        addActor(unitBaseImage)
+        addActor(flagIcon)
 
         val actionImage = getActionImage()
         if (actionImage != null) {
             val actionCircle = actionImage.surroundWithCircle(size / 2 * 0.9f, circleImageLocation = unitCircleLocation)
                 .surroundWithCircle(size / 2, false, Color.BLACK, circleImageLocation = unitCircleLocation)
             actionCircle.setPosition(size / 2, 0f)
+            actionCircle.color.a = UncivGame.Current.settings.unitIconOpacity
             addActor(actionCircle)
             actionGroup = actionCircle
             actionCircle.toFront()
@@ -119,7 +124,7 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
         }
     }
 
-    fun getActionImage(): Image? {
+    private fun getActionImage(): Image? {
         return when {
             unit.isFortified() -> ImageGetter.getImage("UnitActionIcons/Fortify")
             unit.isSleeping() -> ImageGetter.getImage("UnitActionIcons/Sleep")
@@ -131,6 +136,12 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
         }
     }
 
+    fun highlightRed() {
+        flagSelection.color = colorFromRGB(230, 20, 0).apply { a = 1.0f }
+        flagSelection.width *= 0.9f
+        flagSelection.height *= 0.9f
+        flagSelection.center(flagSelection.parent)
+    }
 
     fun selectUnit() {
 
@@ -149,7 +160,7 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
         val shouldBeFaded = (unit.owner == UncivGame.Current.worldScreen?.viewingCiv?.civName
                 && unit.currentMovement == 0f)
         val alpha = if (shouldBeFaded) 0.5f else 1f
-        unitBaseImage.color.a = alpha
+        flagIcon.color.a = alpha
         flagBg.children.forEach { it.color.a = alpha }
 
         if (UncivGame.Current.settings.continuousRendering) {

@@ -512,3 +512,9 @@ fun Image.toGroup(size: Float): Group {
         this@toGroup.setOrigin(Align.center)
         addActor(this@toGroup) }
 }
+
+/** Adds actor to a [Group] and centers it */
+fun Group.addToCenter(actor: Actor) {
+    addActor(actor)
+    actor.center(this)
+}

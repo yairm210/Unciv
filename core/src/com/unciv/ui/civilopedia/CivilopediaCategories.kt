@@ -45,8 +45,8 @@ object CivilopediaImageGetters {
         }
         tile.setTerrainTransients()
         val group = TileGroup(tile, TileSetStrings(), imageSize * 36f/54f)  // TileGroup normally spills out of its bounding box
-        group.showEntireMap = true
-        group.forMapEditorIcon = true
+        group.isForceVisible = true
+        group.isForMapEditorIcon = true
         group.update()
         return Container(group)
     }
