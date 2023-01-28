@@ -7,7 +7,8 @@ import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEV
 import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.ui.utils.GeneralPlatformSpecificHelpers
-import kotlin.concurrent.thread
+import dalvik.system.PathClassLoader
+import java.net.URL
 
 /** See also interface [GeneralPlatformSpecificHelpers].
  *
@@ -64,5 +65,9 @@ Sources for Info about current orientation in case need:
 
     override fun addImprovements(textField: TextField): TextField {
         return TextfieldImprovements.add(textField)
+    }
+
+    override fun getClassLoader(paths: Array<URL>, parent: ClassLoader?): ClassLoader {
+        return PathClassLoader(paths.joinToString(":"), parent)
     }
 }

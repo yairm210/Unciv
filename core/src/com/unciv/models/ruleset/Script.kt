@@ -1,31 +1,22 @@
 package com.unciv.models.ruleset
 
 import java.io.File
+import java.net.JarURLConnection
+import java.net.URL
 import kotlin.script.experimental.annotations.KotlinScript
 import kotlin.script.experimental.api.RefineScriptCompilationConfigurationHandler
 import kotlin.script.experimental.api.ResultWithDiagnostics
-import kotlin.script.experimental.api.ScriptAcceptedLocation
 import kotlin.script.experimental.api.ScriptCollectedData
 import kotlin.script.experimental.api.ScriptCompilationConfiguration
 import kotlin.script.experimental.api.ScriptConfigurationRefinementContext
 import kotlin.script.experimental.api.ScriptDiagnostic
 import kotlin.script.experimental.api.ScriptEvaluationConfiguration
-import kotlin.script.experimental.api.acceptedLocations
 import kotlin.script.experimental.api.asSuccess
-import kotlin.script.experimental.api.defaultImports
 import kotlin.script.experimental.api.foundAnnotations
-import kotlin.script.experimental.api.hostConfiguration
-import kotlin.script.experimental.api.ide
 import kotlin.script.experimental.api.importScripts
-import kotlin.script.experimental.api.refineConfiguration
 import kotlin.script.experimental.api.scriptsInstancesSharing
 import kotlin.script.experimental.host.FileBasedScriptSource
 import kotlin.script.experimental.host.FileScriptSource
-import kotlin.script.experimental.host.ScriptingHostConfiguration
-import kotlin.script.experimental.jvm.dependenciesFromClassContext
-import kotlin.script.experimental.jvm.jvm
-import kotlin.script.experimental.jvmhost.jsr223.importAllBindings
-import kotlin.script.experimental.jvmhost.jsr223.jsr223
 
 @Target(AnnotationTarget.FILE)
 @Repeatable
@@ -39,31 +30,24 @@ annotation class Import(vararg val paths: String)
 )
 abstract class Script
 
-object UncivScriptConfiguration : ScriptCompilationConfiguration(
-    {
-        defaultImports(Import::class, ScriptDiagnostic::class)
-        jvm {
-            dependenciesFromClassContext(
-                contextClass = UncivScriptConfiguration::class,
-                wholeClasspath = true
-            )
-        }
-        refineConfiguration {
-            onAnnotations(Import::class, handler = AnnotationProcessor())
-        }
+class UncivScriptConfiguration : ScriptCompilationConfiguration()
 
-        ide {
-            acceptedLocations(ScriptAcceptedLocation.Everywhere)
-        }
+internal fun URL.toContainingJarOrNull(): File? =
+        if (protocol == "jar") {
+            (openConnection() as? JarURLConnection)?.jarFileURL?.toFileOrNull()
+        } else null
 
-        jsr223 {
-            importAllBindings(true)
+internal fun URL.toFileOrNull() =
+        try {
+            File(toURI())
+        } catch (e: IllegalArgumentException) {
+            null
+        } catch (e: java.net.URISyntaxException) {
+            null
+        } ?: run {
+            if (protocol != "file") null
+            else File(file)
         }
-
-        hostConfiguration(ScriptingHostConfiguration {
-        })
-    }
-)
 
 object UncivScriptEvaluationConfiguration : ScriptEvaluationConfiguration(
     {

@@ -2,6 +2,8 @@ package com.unciv.app.desktop
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.unciv.ui.utils.GeneralPlatformSpecificHelpers
+import java.net.URL
+import java.net.URLClassLoader
 
 class PlatformSpecificHelpersDesktop(config: Lwjgl3ApplicationConfiguration) : GeneralPlatformSpecificHelpers {
     val turnNotifier = MultiplayerTurnNotifierDesktop()
@@ -15,4 +17,8 @@ class PlatformSpecificHelpersDesktop(config: Lwjgl3ApplicationConfiguration) : G
 
     /** On desktop, external is likely some document folder, while local is the game directory. We'd like to keep everything in the game directory */
     override fun shouldPreferExternalStorage(): Boolean = false
+
+    override fun getClassLoader(paths: Array<URL>, parent: ClassLoader?): ClassLoader {
+        return URLClassLoader(paths, parent)
+    }
 }

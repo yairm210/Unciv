@@ -63,6 +63,9 @@ project(":desktop") {
 
         "implementation"("net.java.dev.jna:jna:5.11.0")
         "implementation"("net.java.dev.jna:jna-platform:5.11.0")
+
+        // script compiling
+        "runtimeOnly"("org.jetbrains.kotlin:kotlin-compiler-embeddable:${com.unciv.build.BuildConfig.kotlinVersion}")
     }
 }
 
@@ -118,11 +121,12 @@ project(":core") {
         "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
         "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
         "implementation"("org.jetbrains.kotlin:kotlin-reflect:${com.unciv.build.BuildConfig.kotlinVersion}")
-        // scripting
+        // minimal dependencies required to run scripts, but not necessarily compile them
         "implementation"("org.jetbrains.kotlin:kotlin-scripting-common:${com.unciv.build.BuildConfig.kotlinVersion}")
         "implementation"("org.jetbrains.kotlin:kotlin-scripting-jvm:${com.unciv.build.BuildConfig.kotlinVersion}")
-        "implementation"("org.jetbrains.kotlin:kotlin-scripting-jvm-host:${com.unciv.build.BuildConfig.kotlinVersion}")
-        "implementation"("org.jetbrains.kotlin:kotlin-scripting-dependencies:${com.unciv.build.BuildConfig.kotlinVersion}")
+        "implementation"("org.jetbrains.kotlin:kotlin-scripting-jvm-host:${com.unciv.build.BuildConfig.kotlinVersion}") {
+            exclude("org.jetbrains.kotlin", "kotlin-compiler-embeddable")
+        }
     }
 
 

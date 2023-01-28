@@ -502,6 +502,14 @@ enum class UniqueParameterType(
     },
 
     /** Behaves like [Unknown], but states explicitly the parameter is OK and its contents are ignored */
+    ScriptPath("scriptPath", "mods/MyMod/scripts/my_script.unciv.kts", null, "Script Path") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+                UniqueType.UniqueComplianceErrorSeverity? = null
+
+        override fun getTranslationWriterStringsForOutput() = scanExistingValues(this)
+    },
+
+    /** Behaves like [Unknown], but states explicitly the parameter is OK and its contents are ignored */
     Comment("comment", "comment", null, "Unique Specials") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? = null

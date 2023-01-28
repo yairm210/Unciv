@@ -723,7 +723,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     //endregion
 
     ///////////////////////////////////////////// region META /////////////////////////////////////////////
-    ActivateScript("Activates script [scriptPath]", UniqueTarget.Triggerable, flags = UniqueFlag.setOfHiddenToUsers),
+    ActivateScript("Activates script [scriptPath]", UniqueTarget.Triggerable),
     HiddenWithoutReligion("Hidden when religion is disabled", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins, flags = UniqueFlag.setOfHiddenToUsers),
 
     HiddenAfterGreatProphet("Hidden after generating a Great Prophet", UniqueTarget.Ruins),

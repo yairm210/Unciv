@@ -3,6 +3,7 @@ package com.unciv.models.ruleset.unique
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.UncivScript
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.Civilization
@@ -551,6 +552,25 @@ object UniqueTriggerActivation {
             UniqueType.FreeStatBuildings, UniqueType.FreeSpecificBuildings -> {
                 civInfo.civConstructions.tryAddFreeBuildings()
                 return true // not fully correct
+            }
+
+            UniqueType.ActivateScript -> {
+                val scriptPath = unique.params[0]
+                println("Civ: ${civInfo}")
+                println("Old money: ${civInfo.gold}")
+                UncivScript().runScript(
+                    scriptPath,
+                    UncivScript.uniqueProperty(unique, false),
+                    UncivScript.civilizationProperty(civInfo, false),
+                    UncivScript.cityProperty(city, true),
+                    UncivScript.tileProperty(tile, true),
+                    UncivScript.stringProperty(notification, true, "notification"),
+                    UncivScript.stringProperty(triggerNotificationText, true,"triggerNotificationText"),
+                    screen = UncivGame.Current.screen,
+                    viewingCiv = civInfo
+                )
+                println("New money: ${civInfo.gold}")
+                return true
             }
 
             else -> {}

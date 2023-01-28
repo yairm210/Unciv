@@ -2,6 +2,7 @@ package com.unciv.ui.utils
 
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.models.metadata.GameSettings
+import java.net.URL
 
 /** Interface to support various platform-specific tools */
 interface GeneralPlatformSpecificHelpers {
@@ -38,5 +39,10 @@ interface GeneralPlatformSpecificHelpers {
      * Adds platform-specific improvements to the given text field, making it nicer to interact with on this platform.
      */
     fun addImprovements(textField: TextField): TextField = textField
+
+    /**
+     * Adds platform-specific class loader.
+     */
+    fun getClassLoader(paths: Array<URL>, parent: ClassLoader?): ClassLoader
 
 }
