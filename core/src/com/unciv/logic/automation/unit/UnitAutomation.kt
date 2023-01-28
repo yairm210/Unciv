@@ -171,7 +171,7 @@ object UnitAutomation {
         // Accompany settlers
         if (tryAccompanySettlerOrGreatPerson(unit)) return
 
-        if (tryHeadTowardsSiegedCity(unit)) return
+        if (tryHeadTowardsOurSiegedCity(unit)) return
 
         if (unit.health < 50 && tryHealUnit(unit)) return // do nothing but heal
 
@@ -436,7 +436,7 @@ object UnitAutomation {
         return true
     }
 
-    private fun tryHeadTowardsSiegedCity(unit: MapUnit): Boolean {
+    private fun tryHeadTowardsOurSiegedCity(unit: MapUnit): Boolean {
         val siegedCities = unit.civInfo.cities
                 .asSequence()
                 .filter {
@@ -520,11 +520,14 @@ object UnitAutomation {
 
         val city = closestReachableEnemyCity.getCity()!!
         val cityCombatant = CityCombatant(city)
+
         val expectedDamagePerTurn = ourUnitsAroundEnemyCity
             .map { BattleDamage.calculateDamageToDefender(MapUnitCombatant(it), cityCombatant) }
-            .sum() - 20 // City heals 20 per turn
+            .sum() // City heals 20 per turn
 
-        if (expectedDamagePerTurn < 1 || city.health / expectedDamagePerTurn > 5){
+        if (expectedDamagePerTurn < city.health && // If we can take immediately, go for it
+                (expectedDamagePerTurn < 20 || city.health / (expectedDamagePerTurn-20) > 5)){ // otherwise check if we can take within a couple of turns
+
             // We won't be able to take this even with 5 turns of continuous damage!
             // don't head straight to the city, try to head to landing grounds -
             // this is against tha AI's brilliant plan of having everyone embarked and attacking via sea when unnecessary.

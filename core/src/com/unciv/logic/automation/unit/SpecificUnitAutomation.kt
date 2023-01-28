@@ -484,7 +484,10 @@ object SpecificUnitAutomation {
         val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange())
         for (tile in tilesInRange) {
             // For now AI will only use nukes against cities because in all honesty that's the best use for them.
-            if (tile.isCityCenter() && tile.getOwner()!!.isAtWarWith(unit.civInfo) && Battle.mayUseNuke(MapUnitCombatant(unit), tile)) {
+            if (tile.isCityCenter()
+                    && tile.getOwner()!!.isAtWarWith(unit.civInfo)
+                    && tile.getCity()!!.health > tile.getCity()!!.getMaxHealth() / 2
+                    && Battle.mayUseNuke(MapUnitCombatant(unit), tile)) {
                 val blastRadius = unit.getMatchingUniques(UniqueType.BlastRadius)
                     .firstOrNull()?.params?.get(0)?.toInt() ?: 2
                 val tilesInBlastRadius = tile.getTilesInDistance(blastRadius)
