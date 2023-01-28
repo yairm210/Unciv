@@ -183,6 +183,9 @@ object UnitAutomation {
 
         if (tryTakeBackCapturedCity(unit)) return
 
+        // Focus all units without a specific target on the enemy city closest to one of our cities
+        if (tryHeadTowardsEnemyCity(unit)) return
+
         if (tryGarrisoningUnit(unit)) return
 
         if (unit.health < 80 && tryHealUnit(unit)) return
@@ -190,12 +193,9 @@ object UnitAutomation {
         // move towards the closest reasonably attackable enemy unit within 3 turns of movement (and 5 tiles range)
         if (tryAdvanceTowardsCloseEnemy(unit)) return
 
-        if (unit.health < 100 && tryHealUnit(unit)) return
-
-        // Focus all units without a specific target on the enemy city closest to one of our cities
-        if (tryHeadTowardsEnemyCity(unit)) return
-
         if (tryHeadTowardsEncampment(unit)) return
+
+        if (unit.health < 100 && tryHealUnit(unit)) return
 
         // else, try to go to unreached tiles
         if (tryExplore(unit)) return
@@ -429,7 +429,8 @@ object UnitAutomation {
                 val tile = it.currentTile
                 it.isCivilian() &&
                         (it.hasUnique(UniqueType.FoundCity) || unit.isGreatPerson())
-                        && tile.militaryUnit == null && unit.movement.canMoveTo(tile) && unit.movement.canReach(tile)
+                        && tile.militaryUnit == null && unit.movement.canMoveTo(tile)
+                        && unit.movement.getDistanceToTiles().containsKey(tile)
             } ?: return false
         unit.movement.headTowards(settlerOrGreatPersonToAccompany.currentTile)
         return true
@@ -513,13 +514,21 @@ object UnitAutomation {
             return false
         }
 
-        val numberOfUnitsAroundCity = closestReachableEnemyCity.getTilesInDistance(4)
-                .count { it.militaryUnit != null && it.militaryUnit!!.civInfo == unit.civInfo }
+        val ourUnitsAroundEnemyCity = closestReachableEnemyCity.getTilesInDistance(6)
+            .flatMap { it.getUnits() }
+            .filter { it.isMilitary() && it.civInfo == unit.civInfo }
 
-        if (numberOfUnitsAroundCity < 3) {
+        val city = closestReachableEnemyCity.getCity()!!
+        val cityCombatant = CityCombatant(city)
+        val expectedDamagePerTurn = ourUnitsAroundEnemyCity
+            .map { BattleDamage.calculateDamageToDefender(MapUnitCombatant(it), cityCombatant) }
+            .sum() - 20 // City heals 20 per turn
+
+        if (expectedDamagePerTurn < 1 || city.health / expectedDamagePerTurn > 5){
+            // We won't be able to take this even with 5 turns of continuous damage!
             // don't head straight to the city, try to head to landing grounds -
             // this is against tha AI's brilliant plan of having everyone embarked and attacking via sea when unnecessary.
-            val tileToHeadTo = closestReachableEnemyCity.getTilesInDistanceRange(3..4)
+            val tileToHeadTo = closestReachableEnemyCity.getTilesInDistanceRange(3..5)
                     .filter { it.isLand && unit.getDamageFromTerrain(it) <= 0 } // Don't head for hurty terrain
                     .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                     .firstOrNull { (unit.movement.canMoveTo(it) || it == unit.currentTile) && unit.movement.canReach(it) }
