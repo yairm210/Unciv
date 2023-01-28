@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.UncivGame
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.City
@@ -30,14 +31,13 @@ import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toGroup
 import com.unciv.ui.utils.extensions.toLabel
+import javax.swing.Icon
 import kotlin.math.max
 import kotlin.math.min
 
-object Colors {
-
+private object Colors {
     val construction = colorFromRGB(196,140,62)
     val growh =  colorFromRGB(130,225,78)
-
 }
 
 class IconTable(borderColor: Color, innerColor: Color, borderSize: Float, borderOnTop:Boolean=true): BorderedTable(
@@ -52,16 +52,18 @@ class IconTable(borderColor: Color, innerColor: Color, borderSize: Float, border
     override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
 }
 
-class CityButton(val city: City, private val tileGroup: WorldTileGroup): Table(BaseScreen.skin){
-    val worldScreen = tileGroup.worldScreen
+class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseScreen.skin){
+
+    val worldScreen = UncivGame.Current.worldScreen!!
     val uncivGame = worldScreen.game
 
     init {
         touchable = Touchable.disabled
     }
 
+    private lateinit var iconTable: IconTable
+
     private val listOfHiddenUnitMarkers: MutableList<Actor> = mutableListOf()
-    private lateinit var iconTable: Table
     private var isButtonMoved = false
     private var showAdditionalInfoTags = false
 
@@ -204,9 +206,8 @@ class CityButton(val city: City, private val tileGroup: WorldTileGroup): Table(B
                 }
             } else {
                 moveButtonDown()
-                if ((unitTable.selectedUnit == null || unitTable.selectedUnit!!.currentMovement == 0f) &&
-                            belongsToViewingCiv())
-                    tileGroup.selectCity(city)
+                if ((unitTable.selectedUnit == null || unitTable.selectedUnit!!.currentMovement == 0f) && belongsToViewingCiv())
+                    unitTable.citySelected(city)
             }
         }
 
@@ -220,8 +221,11 @@ class CityButton(val city: City, private val tileGroup: WorldTileGroup): Table(B
     }
 
     private fun getDefenceTable(forPopup: Boolean = false): Group {
-        val borderColor = if (city.civInfo == worldScreen.viewingCiv)
-            colorFromRGB(255, 237, 200) else Color.BLACK
+        val borderColor = when {
+            city.civInfo == worldScreen.viewingCiv -> colorFromRGB(255, 237, 200)
+            city.civInfo.isAtWarWith(worldScreen.viewingCiv) -> Color.RED
+            else -> Color.BLACK
+        }
 
         val table = BorderedTable(
             path="WorldScreen/CityButton/DefenceTable",
@@ -274,11 +278,18 @@ class CityButton(val city: City, private val tileGroup: WorldTileGroup): Table(B
 
     }
 
-    private fun getIconTable(forPopup: Boolean = false): Table {
+    private fun getIconTable(forPopup: Boolean = false): IconTable {
         val secondaryColor = city.civInfo.nation.getInnerColor()
-        val borderColor = if (city.civInfo == worldScreen.viewingCiv)
-            colorFromRGB(233, 233, 172) else Color.BLACK
-        val borderSize = if (city.civInfo == worldScreen.viewingCiv) 4f else 2f     /* 7 */
+        val borderColor = when {
+            city.civInfo == worldScreen.viewingCiv -> colorFromRGB(233, 233, 172)
+            city.civInfo.isAtWarWith(worldScreen.viewingCiv) -> Color.RED.apply { r = 0.9f; g= 0.2f }
+            else -> Color.BLACK
+        }
+        val borderSize = when {
+            city.civInfo == worldScreen.viewingCiv -> 4f
+            city.civInfo.isAtWarWith(worldScreen.viewingCiv) -> 4f
+            else -> 2f
+        }
 
         val iconTable = IconTable(
             borderColor = borderColor,

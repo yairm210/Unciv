@@ -1,3 +1,24 @@
+## 4.4.6
+
+Fixed Android custom location save
+
+Fixed 'infinite stat' from city-states
+
+Clearer city tiles
+
+Do not allow placing of 'repair' in map editor
+
+Fixed spawn ignoring i/4 of the map
+
+Better main menu map
+
+Modding:
+- allow roads/railroads with no required tech
+- Mods without unittype for a unit will trigger correct warnings
+- Fallback images for all major objects
+
+Modification of the random part of Prize Ship to avoid save scumming  - By AlatarTheYoung
+
 ## 4.4.5
 
 Modding:

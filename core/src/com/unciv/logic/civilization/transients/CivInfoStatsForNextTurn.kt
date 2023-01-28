@@ -183,7 +183,7 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
                     Constants.cityStates,
                     Stats().add(
                         Stat.valueOf(unique.params[0]),
-                        statsForNextTurn[Stat.valueOf(unique.params[0])] * unique.params[1].toFloat() / 100f
+                        otherCiv.stats.statsForNextTurn[Stat.valueOf(unique.params[0])] * unique.params[1].toFloat() / 100f
                     )
                 )
             }

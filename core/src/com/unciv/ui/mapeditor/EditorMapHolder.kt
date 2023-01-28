@@ -94,7 +94,7 @@ class EditorMapHolder(
                 }
             }
 */
-            tileGroup.showEntireMap = true
+            tileGroup.isForceVisible = true
             tileGroup.update()
             if (touchable != Touchable.disabled)
                 tileGroup.onClick { onTileClick(tileGroup.tile) }
@@ -143,9 +143,9 @@ class EditorMapHolder(
 
         removeAction(blinkAction) // so we don't have multiple blinks at once
         blinkAction = Actions.repeat(3, Actions.sequence(
-            Actions.run { tileGroup.highlightImage.isVisible = false },
+            Actions.run { tileGroup.layerOverlay.hideHighlight() },
             Actions.delay(.3f),
-            Actions.run { tileGroup.highlightImage.isVisible = true },
+            Actions.run { tileGroup.layerOverlay.showHighlight() },
             Actions.delay(.3f)
         ))
         addAction(blinkAction) // Don't set it on the group because it's an actionless group

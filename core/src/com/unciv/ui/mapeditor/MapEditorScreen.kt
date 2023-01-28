@@ -192,12 +192,12 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen(), RecreateOnResize {
 
     fun hideSelection() {
         for (group in highlightedTileGroups)
-            group.hideHighlight()
+            group.layerOverlay.hideHighlight()
         highlightedTileGroups.clear()
     }
     fun highlightTile(tile: Tile, color: Color = Color.WHITE) {
         for (group in mapHolder.tileGroups[tile] ?: return) {
-            group.showHighlight(color)
+            group.layerOverlay.showHighlight(color)
             highlightedTileGroups.add(group)
         }
     }
