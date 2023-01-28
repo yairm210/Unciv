@@ -1,6 +1,5 @@
 package com.unciv.ui.tilegroups.layers
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -11,14 +10,8 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.UnitGroup
-import com.unciv.ui.utils.extensions.addToCenter
 import com.unciv.ui.utils.extensions.center
-import com.unciv.ui.utils.extensions.centerX
-import com.unciv.ui.utils.extensions.colorFromRGB
-import com.unciv.ui.utils.extensions.setSize
-import com.unciv.ui.utils.extensions.surroundWithCircle
 import com.unciv.ui.utils.extensions.toLabel
-import com.unciv.utils.Log
 
 class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
 
@@ -43,19 +36,35 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
             || viewingCiv.viewableInvisibleUnitsTiles.contains(tileGroup.tile)
             || !tileGroup.tile.hasEnemyInvisibleUnit(viewingCiv)
 
-    private fun newUnitIcon(unit: MapUnit?, isViewable: Boolean, yFromCenter: Float, viewingCiv: Civilization?): UnitGroup? {
+    private fun setIconPosition(slot: Int, icon: UnitGroup) {
+        if (slot == 0) {
+            icon.center(this)
+            icon.y += -20f
+        } else if (slot == 1) {
+            icon.center(this)
+            icon.y += 20f
+        }
+    }
+
+    private fun newUnitIcon(slot: Int, unit: MapUnit?, isViewable: Boolean, viewingCiv: Civilization?): UnitGroup? {
 
         var newIcon: UnitGroup? = null
 
         if (unit != null && isViewable) {
             newIcon = UnitGroup(unit, 25f)
             addActor(newIcon)
-            newIcon.center(tileGroup)
-            newIcon.y += yFromCenter
+            setIconPosition(slot, newIcon)
 
             // Display air unit table for carriers/transports
-            if (unit.getTile().airUnits.any { unit.isTransportTypeOf(it) } && !unit.getTile().isCityCenter())
-                newIcon.addActor(getAirUnitTable(unit))
+            if (unit.getTile().airUnits.any { unit.isTransportTypeOf(it) } && !unit.getTile().isCityCenter()) {
+                val table = getAirUnitTable(unit)
+                addActor(table)
+                table.toBack()
+                table.center(this)
+                //table.y += 40f
+                table.y = newIcon.y + newIcon.height/2 - table.height/2
+                table.x = newIcon.x + newIcon.width - table.width/2
+            }
 
             // Fade out action indicator for own non-idle units
             if (unit.civInfo == viewingCiv && !unit.isIdle())
@@ -71,32 +80,28 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
     }
 
     private fun getAirUnitTable(unit: MapUnit): Table {
-        val holder = Table()
 
-        val iconColor = unit.civInfo.nation.getInnerColor()
-        val bgColor = unit.civInfo.nation.getOuterColor()
+        val iconColor = unit.civInfo.nation.getOuterColor()  //Color.WHITE.cpy().apply { a = 0.9f }
+        val bgColor = unit.civInfo.nation.getInnerColor() //Color.BLACK.cpy().apply { a = 0.9f }
 
         val airUnitTable = Table()
-        airUnitTable.defaults().pad(3f)
         airUnitTable.background = BaseScreen.skinStrings.getUiBackground(
-            "WorldScreen/AirUnitTable",
-            tintColor = unit.civInfo.nation.getOuterColor()
+            path="WorldScreen/AirUnitTable",
+            "", bgColor
         )
+        airUnitTable.pad(0f).defaults().pad(0f)
+        airUnitTable.setSize(28f, 12f)
+
+        val table = Table()
 
         val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
         aircraftImage.color = iconColor
-        airUnitTable.add(aircraftImage).size(10f)
-        airUnitTable.add(unit.getTile().airUnits.size.toString().toLabel(iconColor, 10))
+        table.add(aircraftImage).size(8f)
+        table.add(unit.getTile().airUnits.size.toString().toLabel(iconColor, 10, alignment = Align.center))
 
-        val surroundedWithCircle = airUnitTable.surroundWithCircle(20f,false, bgColor)
-        surroundedWithCircle.circle.width *= 1.5f
-        surroundedWithCircle.circle.centerX(surroundedWithCircle)
+        airUnitTable.add(table).expand().center().right()
 
-        holder.add(surroundedWithCircle).row()
-        holder.setOrigin(Align.center)
-        holder.center(tileGroup)
-
-        return holder
+        return airUnitTable
     }
 
     fun selectFlag(unit: MapUnit) {
@@ -125,8 +130,8 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
         val isSlot1Shown = isViewable
         val isSlot2Shown = isViewable && isVisibleMilitary
 
-        slot1Icon = newUnitIcon(tileGroup.tile.civilianUnit, isSlot1Shown, -20f, viewingCiv)
-        slot2Icon = newUnitIcon(tileGroup.tile.militaryUnit, isSlot2Shown, 20f, viewingCiv)
+        slot1Icon = newUnitIcon(0, tileGroup.tile.civilianUnit, isSlot1Shown, viewingCiv)
+        slot2Icon = newUnitIcon(1, tileGroup.tile.militaryUnit, isSlot2Shown, viewingCiv)
 
     }
 

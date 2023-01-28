@@ -126,7 +126,6 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
 
     private fun getActionImage(): Image? {
         return when {
-            unit.isFortified() -> ImageGetter.getImage("UnitActionIcons/Fortify")
             unit.isSleeping() -> ImageGetter.getImage("UnitActionIcons/Sleep")
             unit.isMoving() -> ImageGetter.getImage("UnitActionIcons/MoveTo")
             unit.isExploring() -> ImageGetter.getImage("UnitActionIcons/Explore")

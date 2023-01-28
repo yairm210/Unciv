@@ -31,7 +31,7 @@ import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popup.ConfirmPopup
-import com.unciv.ui.tilegroups.CityButton
+import com.unciv.ui.tilegroups.InfluenceTable
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.KeyCharAndCode
@@ -904,7 +904,7 @@ class DiplomacyScreen(
         relationshipTable.add(relationshipText.toLabel(relationshipColor)).row()
         if (otherCivDiplomacyManager.civInfo.isCityState())
             relationshipTable.add(
-                CityButton.getInfluenceBar(
+                InfluenceTable(
                     otherCivDiplomacyManager.getInfluence(),
                     relationshipLevel,
                     200f, 10f

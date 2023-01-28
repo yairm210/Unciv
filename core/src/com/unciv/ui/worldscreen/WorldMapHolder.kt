@@ -425,7 +425,7 @@ class WorldMapHolder(
             }
 
             for (unit in unitList) {
-                val unitGroup = UnitGroup(unit, 60f).surroundWithCircle(80f)
+                val unitGroup = UnitGroup(unit, 60f).surroundWithCircle(85f, resizeActor = false)
                 unitGroup.circle.color = Color.GRAY.cpy().apply { a = 0.5f }
                 if (unit.currentMovement == 0f) unitGroup.color.a = 0.5f
                 unitGroup.touchable = Touchable.enabled
