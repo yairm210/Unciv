@@ -8,8 +8,8 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.QuestName
+import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaCategories
@@ -25,7 +25,7 @@ class WonderOverviewTab(
     val ruleSet = gameInfo.ruleSet
 
     val wonderInfo = WonderInfo()
-    private val wonders: Array<WonderInfo.WonderInfo> = wonderInfo.collectInfo()
+    private val wonders: Array<WonderInfo.WonderInfo> = wonderInfo.collectInfo(viewingPlayer)
 
     private val fixedContent = Table()
     override fun getFixedContent() = fixedContent
@@ -92,10 +92,8 @@ class WonderOverviewTab(
 
 class WonderInfo {
     val gameInfo = UncivGame.Current.gameInfo!!
-    val viewingPlayer = gameInfo.getCurrentPlayerCivilization()
     val ruleSet = gameInfo.ruleSet
     private val hideReligionItems = !gameInfo.isReligionEnabled()
-    private val viewerEra = viewingPlayer.getEraNumber()
     private val startingObsolete = ruleSet.eras[gameInfo.gameParameters.startingEra]!!.startingObsoleteWonders
 
     enum class WonderStatus(val label: String) {
@@ -145,7 +143,7 @@ class WonderInfo {
         }
     }
 
-    private fun shouldBeDisplayed(wonder: Building, wonderEra: Int) = when {
+    private fun shouldBeDisplayed(viewingPlayer: Civilization, wonder: Building, wonderEra: Int) = when {
         wonder.hasUnique(UniqueType.HiddenFromCivilopedia) -> false
         wonder.hasUnique(UniqueType.HiddenWithoutReligion) && hideReligionItems -> false
         wonder.name in startingObsolete -> false
@@ -153,11 +151,11 @@ class WonderInfo {
             .any { unique ->
                 !gameInfo.gameParameters.victoryTypes.contains(unique.params[0])
             } -> false
-        else -> wonderEra <= viewerEra
+        else -> wonderEra <= viewingPlayer.getEraNumber()
     }
 
     /** Do we know about a natural wonder despite not having found it yet? */
-    private fun knownFromQuest(name: String): Boolean {
+    private fun knownFromQuest(viewingPlayer: Civilization, name: String): Boolean {
         // No, *your* civInfo's QuestManager has no idea about your quests
         for (civ in gameInfo.civilizations) {
             for (quest in civ.questManager.assignedQuests) {
@@ -169,7 +167,7 @@ class WonderInfo {
         return false
     }
 
-    fun collectInfo(): Array<WonderInfo> {
+    fun collectInfo(viewingPlayer: Civilization): Array<WonderInfo> {
         val collator = UncivGame.Current.settings.getCollatorFromLocale()
 
         // Maps all World Wonders by name to their era for grouping
@@ -208,7 +206,7 @@ class WonderInfo {
             if (index < wonderCount) {
                 val wonder = ruleSet.buildings[allWonderMap[index]!!]!!
                 val era = wonderEraMap[wonder.name]!!
-                val status = if (shouldBeDisplayed(wonder, era.eraNumber)) WonderStatus.Unbuilt else WonderStatus.Hidden
+                val status = if (shouldBeDisplayed(viewingPlayer, wonder, era.eraNumber)) WonderStatus.Unbuilt else WonderStatus.Hidden
                 WonderInfo(
                     allWonderMap[index]!!, CivilopediaCategories.Wonder,
                     era.name, era.getColor(), status, null, null, null
@@ -251,7 +249,7 @@ class WonderInfo {
                 name in viewingPlayer.naturalWonders -> WonderStatus.Known
                 else -> WonderStatus.NotFound
             }
-            if (status == WonderStatus.NotFound && !knownFromQuest(name)) continue
+            if (status == WonderStatus.NotFound && !knownFromQuest(viewingPlayer, name)) continue
             val city = if (status == WonderStatus.NotFound) null
             else tile.getTilesInDistance(5)
                 .filter { it.isCityCenter() }
