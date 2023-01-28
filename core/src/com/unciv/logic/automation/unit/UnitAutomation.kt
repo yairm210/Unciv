@@ -140,76 +140,16 @@ object UnitAutomation {
         // Might die next turn - move!
         if (unit.health <= unit.getDamageFromTerrain() && tryHealUnit(unit)) return
 
+
+        if (unit.isCivilian()) {
+            automateCivilianUnit(unit)
+            return
+        }
+
         if (unit.promotions.canBePromoted()) {
             val availablePromotions = unit.promotions.getAvailablePromotions()
             if (availablePromotions.any())
                 unit.promotions.addPromotion(availablePromotions.toList().random().name)
-        }
-
-        if (unit.isCivilian()) {
-            if (tryRunAwayIfNeccessary(unit)) return
-
-            if (unit.currentTile.isCityCenter() && unit.currentTile.getCity()!!.isCapital()
-                    && !unit.hasUnique(UniqueType.AddInCapital) && unit.civInfo.units.getCivUnits().any { unit.hasUnique(UniqueType.AddInCapital) }){
-                // First off get out of the way, then decide if you actually want to do something else
-                val tilesCanMoveTo = unit.movement.getDistanceToTiles()
-                    .filter { unit.movement.canMoveTo(it.key) }
-                if (tilesCanMoveTo.isNotEmpty())
-                    unit.movement.moveToTile(tilesCanMoveTo.minByOrNull { it.value.totalDistance }!!.key)
-            }
-
-
-            if (unit.hasUnique(UniqueType.FoundCity))
-                return SpecificUnitAutomation.automateSettlerActions(unit)
-
-            if (unit.hasUniqueToBuildImprovements)
-                return WorkerAutomation.automateWorkerAction(unit)
-
-            if (unit.hasUnique(UniqueType.MayFoundReligion)
-                && unit.civInfo.religionManager.religionState < ReligionState.Religion
-                && unit.civInfo.religionManager.mayFoundReligionAtAll(unit)
-            )
-                return SpecificUnitAutomation.foundReligion(unit)
-
-            if (unit.hasUnique(UniqueType.MayEnhanceReligion)
-                && unit.civInfo.religionManager.religionState < ReligionState.EnhancedReligion
-                && unit.civInfo.religionManager.mayEnhanceReligionAtAll(unit)
-            )
-                return SpecificUnitAutomation.enhanceReligion(unit)
-
-            if (unit.hasUnique(UniqueType.CreateWaterImprovements))
-                return SpecificUnitAutomation.automateWorkBoats(unit)
-
-            // We try to add any unit in the capital we can, though that might not always be desirable
-            // For now its a simple option to allow AI to win a science victory again
-            if (unit.hasUnique(UniqueType.AddInCapital))
-                return SpecificUnitAutomation.automateAddInCapital(unit)
-
-            //todo this now supports "Great General"-like mod units not combining 'aura' and citadel
-            // abilities, but not additional capabilities if automation finds no use for those two
-            if (unit.hasStrengthBonusInRadiusUnique && SpecificUnitAutomation.automateGreatGeneral(
-                        unit
-                    )
-            )
-                return
-            if (unit.hasCitadelPlacementUnique && SpecificUnitAutomation.automateCitadelPlacer(unit))
-                return
-            if (unit.hasCitadelPlacementUnique || unit.hasStrengthBonusInRadiusUnique)
-                return SpecificUnitAutomation.automateGreatGeneralFallback(unit)
-
-            if (unit.civInfo.religionManager.maySpreadReligionAtAll(unit))
-                return SpecificUnitAutomation.automateMissionary(unit)
-
-            if (unit.hasUnique(UniqueType.PreventSpreadingReligion) || unit.canDoReligiousAction(Constants.removeHeresy))
-                return SpecificUnitAutomation.automateInquisitor(unit)
-
-            if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit))
-            // catch great prophet for civs who can't found/enhance/spread religion
-                return SpecificUnitAutomation.automateImprovementPlacer(unit) // includes great people plus moddable units
-
-            // ToDo: automation of great people skills (may speed up construction, provides a science boost, etc.)
-
-            return // The AI doesn't know how to handle unknown civilian units
         }
 
         if (unit.baseUnit.isAirUnit() && unit.canIntercept())
@@ -224,9 +164,7 @@ object UnitAutomation {
         if (unit.hasUnique(UniqueType.SelfDestructs))
             return SpecificUnitAutomation.automateMissile(unit)
 
-        if (tryGoToRuinAndEncampment(unit)) {
-            if (unit.currentMovement == 0f) return
-        }
+        if (tryGoToRuinAndEncampment(unit) && unit.currentMovement == 0f) return
 
         if (tryUpgradeUnit(unit)) return
 
@@ -269,6 +207,70 @@ object UnitAutomation {
             wander(unit, stayInTerritory = true)
     }
 
+    private fun automateCivilianUnit(unit: MapUnit) {
+        if (tryRunAwayIfNeccessary(unit)) return
+
+        if (unit.currentTile.isCityCenter() && unit.currentTile.getCity()!!.isCapital()
+                && !unit.hasUnique(UniqueType.AddInCapital)
+                && unit.civInfo.units.getCivUnits().any { unit.hasUnique(UniqueType.AddInCapital) }){
+            // First off get out of the way, then decide if you actually want to do something else
+            val tilesCanMoveTo = unit.movement.getDistanceToTiles()
+                .filter { unit.movement.canMoveTo(it.key) }
+            if (tilesCanMoveTo.isNotEmpty())
+                unit.movement.moveToTile(tilesCanMoveTo.minByOrNull { it.value.totalDistance }!!.key)
+        }
+
+        if (unit.hasUnique(UniqueType.FoundCity))
+            return SpecificUnitAutomation.automateSettlerActions(unit)
+
+        if (unit.hasUniqueToBuildImprovements)
+            return WorkerAutomation.automateWorkerAction(unit)
+
+        if (unit.hasUnique(UniqueType.MayFoundReligion)
+                && unit.civInfo.religionManager.religionState < ReligionState.Religion
+                && unit.civInfo.religionManager.mayFoundReligionAtAll(unit)
+        )
+            return SpecificUnitAutomation.foundReligion(unit)
+
+        if (unit.hasUnique(UniqueType.MayEnhanceReligion)
+                && unit.civInfo.religionManager.religionState < ReligionState.EnhancedReligion
+                && unit.civInfo.religionManager.mayEnhanceReligionAtAll(unit)
+        )
+            return SpecificUnitAutomation.enhanceReligion(unit)
+
+        if (unit.hasUnique(UniqueType.CreateWaterImprovements))
+            return SpecificUnitAutomation.automateWorkBoats(unit)
+
+        // We try to add any unit in the capital we can, though that might not always be desirable
+        // For now its a simple option to allow AI to win a science victory again
+        if (unit.hasUnique(UniqueType.AddInCapital))
+            return SpecificUnitAutomation.automateAddInCapital(unit)
+
+        //todo this now supports "Great General"-like mod units not combining 'aura' and citadel
+        // abilities, but not additional capabilities if automation finds no use for those two
+        if (unit.hasStrengthBonusInRadiusUnique
+                && SpecificUnitAutomation.automateGreatGeneral(unit))
+            return
+        if (unit.hasCitadelPlacementUnique && SpecificUnitAutomation.automateCitadelPlacer(unit))
+            return
+        if (unit.hasCitadelPlacementUnique || unit.hasStrengthBonusInRadiusUnique)
+            return SpecificUnitAutomation.automateGreatGeneralFallback(unit)
+
+        if (unit.civInfo.religionManager.maySpreadReligionAtAll(unit))
+            return SpecificUnitAutomation.automateMissionary(unit)
+
+        if (unit.hasUnique(UniqueType.PreventSpreadingReligion) || unit.canDoReligiousAction(Constants.removeHeresy))
+            return SpecificUnitAutomation.automateInquisitor(unit)
+
+        if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit))
+        // catch great prophet for civs who can't found/enhance/spread religion
+            return SpecificUnitAutomation.automateImprovementPlacer(unit) // includes great people plus moddable units
+
+        // ToDo: automation of great people skills (may speed up construction, provides a science boost, etc.)
+
+        return // The AI doesn't know how to handle unknown civilian units
+    }
+
     /** @return true only if the unit has 0 movement left */
     private fun tryAttacking(unit: MapUnit): Boolean {
         for (attackNumber in unit.attacksThisTurn until unit.maxAttacksPerTurn()) {
@@ -282,8 +284,9 @@ object UnitAutomation {
         val knownEncampments = unit.civInfo.gameInfo.tileMap.values.asSequence()
                 .filter { it.improvement == Constants.barbarianEncampment && unit.civInfo.hasExplored(it) }
         val cities = unit.civInfo.cities
-        val encampmentsCloseToCities = knownEncampments.filter { cities.any { city -> city.getCenterTile().aerialDistanceTo(it) < 6 } }
-                .sortedBy { it.aerialDistanceTo(unit.currentTile) }
+        val encampmentsCloseToCities = knownEncampments
+            .filter { cities.any { city -> city.getCenterTile().aerialDistanceTo(it) < 6 } }
+            .sortedBy { it.aerialDistanceTo(unit.currentTile) }
         val encampmentToHeadTowards = encampmentsCloseToCities.firstOrNull { unit.movement.canReach(it) }
             ?: return false
         unit.movement.headTowards(encampmentToHeadTowards)
@@ -409,8 +412,9 @@ object UnitAutomation {
         if (unit.baseUnit.isRanged())
             closeEnemies = closeEnemies.filterNot { it.tileToAttack.isCityCenter() && it.tileToAttack.getCity()!!.health == 1 }
 
-        val closestEnemy = closeEnemies.filter { unit.getDamageFromTerrain(it.tileToAttackFrom) <= 0 }  // Don't attack from a mountain
-                                        .minByOrNull { it.tileToAttack.aerialDistanceTo(unit.getTile()) }
+        val closestEnemy = closeEnemies
+            .filter { unit.getDamageFromTerrain(it.tileToAttackFrom) <= 0 }  // Don't attack from a mountain
+            .minByOrNull { it.tileToAttack.aerialDistanceTo(unit.getTile()) }
 
         if (closestEnemy != null) {
             unit.movement.headTowards(closestEnemy.tileToAttackFrom)
