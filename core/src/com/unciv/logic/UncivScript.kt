@@ -257,7 +257,7 @@ class UncivScript {
         // check if this is a valid filepath
         if (!scriptFile.file().exists()) {
             res = ResultWithDiagnostics.Failure(ScriptDiagnostic(ScriptDiagnostic.unspecifiedError,
-                "No script found at $checkedPath (${scriptFile.file().absolutePath})\n(${Gdx.files.local("scripts/").list().map { it.name() }})",
+                "No script found at $checkedPath (${scriptFile.file().absolutePath})",
                 ScriptDiagnostic.Severity.ERROR))
             reportErrorsToUser(checkedPath, res.reports, screen, viewingCiv)
             return
@@ -359,7 +359,45 @@ class UncivScript {
     ): List<ScriptDiagnostic>? {
         if (responses == null) return null
 
-        return responses
+        // stack traces contain lines that are irrelevant to modders so only take lines that contain
+        // a mention of .unciv.kts unless they're a non-error, non-exception line
+        val newResponses = arrayListOf<ScriptDiagnostic>()
+        for (response in responses) {
+            if (response.severity < ScriptDiagnostic.Severity.ERROR) {
+                newResponses.add(response) // add non-error and non-exception responses as-is
+                continue
+            }
+
+            var newMessage = ""
+            var lineCount = 0
+            val splitMessage = response.message.split("\n\t")
+            for (segment in splitMessage) {
+                lineCount += 1
+                if (newMessage == "") {
+                    newMessage += segment // the actual exception text
+                    continue
+                }
+                if (segment.contains(".unciv.kts")) {
+                    newMessage +="\n\t$segment"
+                }
+            }
+            if (lineCount > 1) {
+                /**
+                 * The last error line will reference a line that doesn't exist in the modder's original
+                 * source code for an intentional reason (that line contains the stack trace mechanism)
+                 * so truncate the messsage so modders don't get confused as to why there's an exception
+                 * on line 102 when they only wrote 100 lines of code so get rid of it to prevent
+                 * endless "Is this a bug?" questions.
+                 */
+                newMessage = newMessage.split("\n\t").dropLast(1).joinToString("\n\t")
+            }
+            newResponses.add(
+                ScriptDiagnostic(response.code, newMessage, response.severity,
+                response.sourcePath, response.location, response.exception)
+            )
+        }
+
+        return newResponses
             .filterNot { it.message.startsWith("Using new faster version of JAR FS") } // generic compiler warning
             .filter { it.severity >= minimumReportThreshold }
             .sortedByDescending { it.severity }
