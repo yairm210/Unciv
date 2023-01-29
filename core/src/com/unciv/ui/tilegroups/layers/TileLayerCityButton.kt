@@ -34,6 +34,14 @@ class TileLayerCityButton(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
             super.draw(batch, parentAlpha)
     }
 
+    fun moveUp() {
+        cityButton?.moveButtonUp()
+    }
+
+    fun moveDown() {
+        cityButton?.moveButtonDown()
+    }
+
     fun update(city: City?, viewable: Boolean) {
 
         // There used to be a city here but it was razed

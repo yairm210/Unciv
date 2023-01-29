@@ -187,6 +187,12 @@ class WorldMapHolder(
         unitTable.tileSelected(tile)
         val newSelectedUnit = unitTable.selectedUnit
 
+        if (previousSelectedCity != null && tile != previousSelectedCity.getCenterTile()) {
+            tileGroups[previousSelectedCity.getCenterTile()]?.forEach {
+                it.layerCityButton.moveUp()
+            }
+        }
+
         if (previousSelectedUnits.isNotEmpty() && previousSelectedUnits.any { it.getTile() != tile }
                 && worldScreen.isPlayersTurn
                 && (

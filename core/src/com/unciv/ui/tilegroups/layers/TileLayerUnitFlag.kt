@@ -11,6 +11,7 @@ import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.UnitGroup
 import com.unciv.ui.utils.extensions.center
+import com.unciv.ui.utils.extensions.centerX
 import com.unciv.ui.utils.extensions.toLabel
 
 class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
@@ -60,8 +61,6 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
                 val table = getAirUnitTable(unit)
                 addActor(table)
                 table.toBack()
-                table.center(this)
-                //table.y += 40f
                 table.y = newIcon.y + newIcon.height/2 - table.height/2
                 table.x = newIcon.x + newIcon.width - table.width/2
             }
@@ -81,8 +80,8 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
 
     private fun getAirUnitTable(unit: MapUnit): Table {
 
-        val iconColor = unit.civInfo.nation.getOuterColor()  //Color.WHITE.cpy().apply { a = 0.9f }
-        val bgColor = unit.civInfo.nation.getInnerColor() //Color.BLACK.cpy().apply { a = 0.9f }
+        val iconColor = unit.civInfo.nation.getOuterColor()
+        val bgColor = unit.civInfo.nation.getInnerColor()
 
         val airUnitTable = Table()
         airUnitTable.background = BaseScreen.skinStrings.getUiBackground(

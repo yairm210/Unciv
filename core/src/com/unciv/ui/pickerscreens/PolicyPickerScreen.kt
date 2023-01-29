@@ -293,7 +293,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: Civilization = w
 
         // Main table
         val colorBg = if (branch.isAdopted()) PolicyColors.branchAdopted else PolicyColors.branchNotAdopted
-        val branchGroup = BorderedTable(path="PolicyScree/PolicyBranchBackground")
+        val branchGroup = BorderedTable(path="PolicyScreen/PolicyBranchBackground")
             .apply { bgColor = colorBg }
 
         // Header

@@ -12,8 +12,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.surroundWithCircle
-
-val unitCircleLocation = "UnitIcons/Circle"
+import com.unciv.ui.utils.extensions.surroundWithThinCircle
 
 class UnitGroup(val unit: MapUnit, val size: Float): Group() {
     var actionGroup :Group? = null
@@ -76,8 +75,9 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
 
         val actionImage = getActionImage()
         if (actionImage != null) {
-            val actionCircle = actionImage.surroundWithCircle(size / 2 * 0.9f, circleImageLocation = unitCircleLocation)
-                .surroundWithCircle(size / 2, false, Color.BLACK, circleImageLocation = unitCircleLocation)
+            val actionCircle = actionImage
+                .surroundWithCircle(size / 2 * 0.9f)
+                .surroundWithThinCircle()
             actionCircle.setPosition(size / 2, 0f)
             actionCircle.color.a = UncivGame.Current.settings.unitIconOpacity
             addActor(actionCircle)
@@ -160,7 +160,7 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
                 && unit.currentMovement == 0f)
         val alpha = if (shouldBeFaded) 0.5f else 1f
         flagIcon.color.a = alpha
-        flagBg.children.forEach { it.color.a = alpha }
+        flagBg.color.a = alpha
 
         if (UncivGame.Current.settings.continuousRendering) {
             flagSelection.color.a = 1f

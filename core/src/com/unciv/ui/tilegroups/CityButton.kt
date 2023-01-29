@@ -154,35 +154,36 @@ class AirUnitTable(city: City, numberOfUnits: Int, size: Float=14f) : BorderedTa
 
 }
 
-private class StatusTable(city: City) : Table() {
+private class StatusTable(city: City, iconSize: Float = 18f) : Table() {
 
     init {
 
+        val padBetween = 2f
         val viewingCiv = UncivGame.Current.worldScreen!!.viewingCiv
 
         if (city.civInfo == viewingCiv && city.isConnectedToCapital() && !city.isCapital()) {
             val connectionImage = ImageGetter.getStatIcon("CityConnection")
-            add(connectionImage).size(18f)
+            add(connectionImage).size(iconSize)
         }
 
         if (city.isInResistance()) {
             val resistanceImage = ImageGetter.getImage("StatIcons/Resistance")
-            add(resistanceImage).size(18f).padLeft(2f)
+            add(resistanceImage).size(iconSize).padLeft(padBetween)
         }
 
         if (city.isPuppet) {
             val puppetImage = ImageGetter.getImage("OtherIcons/Puppet")
-            add(puppetImage).size(18f).padLeft(2f)
+            add(puppetImage).size(iconSize).padLeft(padBetween)
         }
 
         if (city.isBeingRazed) {
             val fireImage = ImageGetter.getImage("OtherIcons/Fire")
-            add(fireImage).size(18f).padLeft(2f)
+            add(fireImage).size(iconSize).padLeft(padBetween)
         }
 
         if (city.civInfo == viewingCiv && city.isWeLoveTheKingDayActive()) {
             val wltkdImage = ImageGetter.getImage("OtherIcons/WLTKD")
-            add(wltkdImage).size(18f).padLeft(2f)
+            add(wltkdImage).size(iconSize).padLeft(padBetween)
         }
     }
 
@@ -375,6 +376,10 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
     private var isButtonMoved = false
     private var isViewable = true
 
+    fun isMoved(): Boolean {
+        return isButtonMoved
+    }
+
     fun update(isCityViewable: Boolean) {
 
         isViewable = isCityViewable
@@ -514,15 +519,16 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
         }
 
         // when deselected, move city button to its original position
-        if (isButtonMoved
-                && unitTable.selectedCity != city
+        if (unitTable.selectedCity != city
                 && unitTable.selectedUnit?.currentTile != city.getCenterTile()) {
 
             moveButtonUp()
         }
     }
 
-    private fun moveButtonDown() {
+    fun moveButtonDown() {
+        if (isButtonMoved)
+            return
         val moveButtonAction = Actions.sequence(
                 Actions.moveTo(tileGroup.x, tileGroup.y-height, 0.4f, Interpolation.swingOut),
                 Actions.run {
@@ -533,7 +539,9 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
         parent.addAction(moveButtonAction) // Move the whole cityButtonLayerGroup down, so the CityButton remains clickable
     }
 
-    private fun moveButtonUp() {
+    fun moveButtonUp() {
+        if (!isButtonMoved)
+            return
         val floatAction = Actions.sequence(
                 Actions.moveTo(tileGroup.x, tileGroup.y, 0.4f, Interpolation.sine),
                 Actions.run {
