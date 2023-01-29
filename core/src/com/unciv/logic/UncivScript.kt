@@ -1,7 +1,6 @@
 package com.unciv.logic
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.AlertType
@@ -47,6 +46,7 @@ import kotlin.script.experimental.api.providedProperties
 import kotlin.script.experimental.api.refineConfiguration
 import kotlin.script.experimental.api.resultField
 import kotlin.script.experimental.api.with
+import kotlin.script.experimental.host.FileBasedScriptSource
 import kotlin.script.experimental.host.FileScriptSource
 import kotlin.script.experimental.host.ScriptingHostConfiguration
 import kotlin.script.experimental.jvm.JvmDependency
@@ -83,8 +83,6 @@ class UncivHost : BasicJvmScriptingHost()
  * this variable has ? after it). Set true if this is the case otherwise false.
  */
 data class ProvidedProperty(val name: String, val type: KClass<*>, val value: Any?, val nullable: Boolean)
-
-class UncivScriptSource(val gdxFile: FileHandle, override val text: String) : FileScriptSource(gdxFile.file(), text)
 
 class UncivScript {
     companion object {
@@ -148,7 +146,7 @@ class UncivScript {
                 ProvidedProperty(name, Unique::class, instance, nullable)
     }
 
-    private fun getScriptDefinition(sourceCode: UncivScriptSource, args: List<ProvidedProperty>): ScriptCompilationConfiguration? {
+    private fun getScriptDefinition(sourceCode: FileBasedScriptSource, args: List<ProvidedProperty>): ScriptCompilationConfiguration? {
         if (forbiddenStrings.any { sourceCode.text.contains(it) }) {
             return null
         }
@@ -184,7 +182,7 @@ class UncivScript {
                 jvm {
                     compilationCache(
                         UncivCompiledScriptJarsCache { _, _ ->
-                            Gdx.files.local(sourceCode.gdxFile.path() + ".jar").file()
+                            File(sourceCode.file.path + ".jar")
                         }
                     )
                 }
@@ -192,7 +190,7 @@ class UncivScript {
         }
     }
 
-    suspend fun compile(scriptFile: UncivScriptSource, args: ArrayList<ProvidedProperty>): ResultWithDiagnostics<CompiledScript> {
+    suspend fun compile(scriptFile: FileScriptSource, args: ArrayList<ProvidedProperty>): ResultWithDiagnostics<CompiledScript> {
         @Suppress("UNCHECKED_CAST")
         (defaultProvidedProperty[0].value as ArrayList<ScriptDiagnostic>).clear()
         args.addAll(defaultProvidedProperty)
@@ -217,7 +215,7 @@ class UncivScript {
         }
     }*/
 
-    fun execute(scriptSource: UncivScriptSource, args: ArrayList<ProvidedProperty>): ResultWithDiagnostics<EvaluationResult> {
+    fun execute(scriptSource: FileBasedScriptSource, args: ArrayList<ProvidedProperty>): ResultWithDiagnostics<EvaluationResult> {
         val scriptDefinition = getScriptDefinition(scriptSource, args)
             ?: return ResultWithDiagnostics.Failure()
         val evaluationEnv = UncivScriptEvaluationConfiguration.with {
@@ -251,7 +249,7 @@ class UncivScript {
         val argArray = arrayListOf(*args)
 
         val checkedPath = path.removePrefix("/") + if (!path.endsWith(".kts")) ".unciv.kts" else ""
-        val scriptFile = Gdx.files.local(checkedPath)//.list().first { it.file().name.startsWith(path.split("/").last()) && !it.file().name.endsWith(".jar") && !it.file().name.endsWith(".dex") }
+        val scriptFile = Gdx.files.local(checkedPath)
         val res: ResultWithDiagnostics<EvaluationResult>?
 
         // check if this is a valid filepath
@@ -278,7 +276,7 @@ class UncivScript {
         argArray.addAll(defaultProvidedProperty)
 
         val preparedScript = prepareScript(scriptText, functionName, argString)
-        val scriptSource = UncivScriptSource(scriptFile, preparedScript)
+        val scriptSource = FileScriptSource(scriptFile.file(), preparedScript)
         res = try {
             execute(scriptSource, argArray)
         } catch (e: Throwable) {
@@ -408,11 +406,10 @@ class UncivScript {
  * Inherits [CompiledScriptJarsCache] to modify caching so we can save in the jar manifest then check
  * Unciv version for any potential incompatibilities.
  */
-@Suppress("UNCHECKED_CAST")
-class UncivCompiledScriptJarsCache(scriptToFile: (UncivScriptSource, ScriptCompilationConfiguration) -> File?) :
-    CompiledScriptJarsCache(scriptToFile as (SourceCode, ScriptCompilationConfiguration) -> File?) {
+class UncivCompiledScriptJarsCache(scriptToFile: (SourceCode, ScriptCompilationConfiguration) -> File?) :
+    CompiledScriptJarsCache(scriptToFile) {
 
-    fun get(script: UncivScriptSource, scriptCompilationConfiguration: ScriptCompilationConfiguration): CompiledScript? {
+    fun get(script: FileBasedScriptSource, scriptCompilationConfiguration: ScriptCompilationConfiguration): CompiledScript? {
         // load JAR archive
         val scriptArchive = scriptToFile(script, scriptCompilationConfiguration)
             ?: throw IllegalArgumentException("Unable to find a mapping to a file for the script $script")
@@ -421,7 +418,7 @@ class UncivCompiledScriptJarsCache(scriptToFile: (UncivScriptSource, ScriptCompi
         val loadedScript = scriptArchive.loadScriptFromJar()
             ?: return null
 
-        val sourceLastModified = script.gdxFile.lastModified()//File(script.locationId!!).lastModified()
+        val sourceLastModified = script.file.lastModified()
         val jarLastModified = scriptArchive.lastModified()
         if (sourceLastModified > jarLastModified + 1000L) {
             return null // out of date so recompile
@@ -466,7 +463,9 @@ class UncivCompiledScriptJarsCache(scriptToFile: (UncivScriptSource, ScriptCompi
     }
 
     /**
-     * This requires the embeddable compiler to function (KotlinPaths).
+     * Saves the compiled script to a JAR archive with Unciv version contained in the manifest. This
+     * is a near-duplication of existing code and might be able to be removed if there's a way to edit
+     * JARs without deleting them.
      */
     override fun store(
         compiledScript: CompiledScript,
@@ -542,7 +541,8 @@ class UncivCompiledScriptJarsCache(scriptToFile: (UncivScriptSource, ScriptCompi
     }
 
     /**
-     * Copied from [KJvmCompiledScriptLazilyLoadedFromClasspath] so we can swap out the class loader (could baseClassLoader be set in the eval configuration instead? TODO)
+     * Copied from [KJvmCompiledScriptLazilyLoadedFromClasspath] ("kotlin-scripting-common" package)
+     * so we can swap out the class loader (could baseClassLoader be set in the eval configuration instead? TODO)
      */
     private class UncivCompiledScriptLazilyLoaded(private val scriptClassFQName: String,
                                                   private val classPath: List<File>
