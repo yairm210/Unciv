@@ -359,10 +359,15 @@ object UniqueTriggerActivation {
                     || unique.params[0].toIntOrNull() == null
                 ) return false
 
-                val stats = Stats().add(stat, unique.params[0].toFloat())
+                val statAmount = unique.params[0].toInt()
+                val stats = Stats().add(stat, statAmount.toFloat())
                 civInfo.addStats(stats)
 
-                val notificationText = getNotificationText(notification, triggerNotificationText,
+                val filledNotification = if(notification!=null && notification.hasPlaceholderParameters())
+                    notification.fillPlaceholders(statAmount.toString())
+                else notification
+
+                val notificationText = getNotificationText(filledNotification, triggerNotificationText,
                     "Gained [$stats]")
                     ?: return true
 
@@ -383,7 +388,11 @@ object UniqueTriggerActivation {
                 val stats = Stats().add(stat, finalStatAmount)
                 civInfo.addStats(stats)
 
-                val notificationText = getNotificationText(notification, triggerNotificationText,
+                val filledNotification = if (notification!=null && notification.hasPlaceholderParameters())
+                    notification.fillPlaceholders(finalStatAmount.toString())
+                else notification
+
+                val notificationText = getNotificationText(filledNotification, triggerNotificationText,
                     "Gained [$stats]")
                     ?: return true
 

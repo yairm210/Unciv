@@ -149,7 +149,7 @@ class GlobalPoliticsOverviewTable (
     private fun getWondersOfCivTable(civ: Civilization): Table {
         val wonderTable = Table(skin)
         val wonderInfo = WonderInfo()
-        val allWorldWonders = wonderInfo.collectInfo()
+        val allWorldWonders = wonderInfo.collectInfo(viewingPlayer)
 
         for (wonder in allWorldWonders) {
             if (wonder.civ?.civName == civ.civName) {
