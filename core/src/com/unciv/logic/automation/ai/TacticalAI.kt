@@ -38,7 +38,7 @@ class TacticalAI : IsPartOfGameInfoSerialization {
 
             val otherZoneId = tacticalAnalysisMap.plotPositionToZoneId[otherTile.position]
             if (otherZoneId == zoneId) {
-                mapHolder.tileGroups[otherTile]?.forEach {
+                mapHolder.tileGroups[otherTile]?.let {
                     mapHolder.addOverlayOnTileGroup(it, ImageGetter.getCircle().apply {
                         color = when (zone?.territoryType) {
                             TacticalTerritoryType.FRIENDLY -> Color.GREEN
@@ -49,7 +49,7 @@ class TacticalAI : IsPartOfGameInfoSerialization {
             }
 
             if (zone?.neighboringZones?.contains(otherZoneId) == true) {
-                mapHolder.tileGroups[otherTile]?.forEach {
+                mapHolder.tileGroups[otherTile]?.let {
                     mapHolder.addOverlayOnTileGroup(it, ImageGetter.getCircle().apply { color = Color.GRAY }.toGroup(20f)) }
             }
         }

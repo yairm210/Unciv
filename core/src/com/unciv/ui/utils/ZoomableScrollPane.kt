@@ -108,12 +108,17 @@ open class ZoomableScrollPane(
         val previousScaleX = scaleX
         val previousScaleY = scaleY
 
-        setScale(zoomScale)
+        val newWidth = width * previousScaleX / zoomScale
+        val newHeight = height * previousScaleY / zoomScale
+
+        // For world-wrap we do not allow viewport to become bigger than the map size
+        // (we don't want to see the same tiles multiple times)
+        if (continuousScrollingX && actor != null && newWidth >= actor!!.width)
+            return
 
         // When we scale, the width & height values stay the same. However, after scaling up/down, the width will be rendered wider/narrower than before.
         // But we want to keep the size of the pane the same, so we do need to adjust the width & height: smaller if the scale increased, larger if it decreased.
-        val newWidth = width * previousScaleX / zoomScale
-        val newHeight = height * previousScaleY / zoomScale
+        setScale(zoomScale)
         setSize(newWidth, newHeight)
 
         onViewportChanged()

@@ -31,7 +31,7 @@ class EditorMapHolder(
 ): ZoomableScrollPane(20f, 20f) {
     val editorScreen = parentScreen as? MapEditorScreen
 
-    val tileGroups = HashMap<Tile, List<TileGroup>>()
+    val tileGroups = HashMap<Tile, TileGroup>()
     private lateinit var tileGroupMap: TileGroupMap<TileGroup>
     private val allTileGroups = ArrayList<TileGroup>()
 
@@ -59,26 +59,12 @@ class EditorMapHolder(
         val tileSetStrings = TileSetStrings()
         val daTileGroups = tileMap.values.map { TileGroup(it, tileSetStrings) }
 
-        tileGroupMap = TileGroupMap(
-            daTileGroups,
-            continuousScrollingX)
+        tileGroupMap = TileGroupMap(this, daTileGroups, continuousScrollingX)
         actor = tileGroupMap
-        val mirrorTileGroups = tileGroupMap.getMirrorTiles()
 
         for (tileGroup in daTileGroups) {
-            if (continuousScrollingX){
-                val mirrorTileGroupLeft = mirrorTileGroups[tileGroup.tile]!!.first
-                val mirrorTileGroupRight = mirrorTileGroups[tileGroup.tile]!!.second
-
-                allTileGroups.add(tileGroup)
-                allTileGroups.add(mirrorTileGroupLeft)
-                allTileGroups.add(mirrorTileGroupRight)
-
-                tileGroups[tileGroup.tile] = listOf(tileGroup, mirrorTileGroupLeft, mirrorTileGroupRight)
-            } else {
-                tileGroups[tileGroup.tile] = listOf(tileGroup)
-                allTileGroups.add(tileGroup)
-            }
+            allTileGroups.add(tileGroup)
+            tileGroups[tileGroup.tile] = tileGroup
         }
 
         for (tileGroup in allTileGroups) {
