@@ -295,9 +295,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
                 if (unit?.religion != null
                     && (fromReligion == null || unit.religion != fromReligion)
                     && unit.hasUnique(UniqueType.PreventSpreadingReligion)
-                ) {
-                    return true
-                }
+                ) return true
             }
         }
         return false

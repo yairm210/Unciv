@@ -414,7 +414,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         if (missionary.getTile().getOwner() == null) return false
         if (missionary.currentTile.owningCity?.religion?.getMajorityReligion()?.name == missionary.religion)
             return false
-        if (missionary.getTile().getCity()!!.religion.isProtectedByInquisitor(religion!!.name)) return false
+        if (missionary.getTile().getCity()!!.religion.isProtectedByInquisitor(missionary.religion)) return false
         return true
     }
 
