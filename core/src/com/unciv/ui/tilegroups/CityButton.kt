@@ -45,6 +45,9 @@ class InfluenceTable(
 
         defaults().pad(1f)
         setSize(width, height)
+        background = BaseScreen.skinStrings.getUiBackground(
+            "WorldScreen/CityButton/InfluenceBar",
+            tintColor = Color.BLACK)
 
         val normalizedInfluence = max(-60f, min(influence, 60f)) / 30f
 
