@@ -187,6 +187,12 @@ class WorldMapHolder(
         unitTable.tileSelected(tile)
         val newSelectedUnit = unitTable.selectedUnit
 
+        if (previousSelectedCity != null && tile != previousSelectedCity.getCenterTile()) {
+            tileGroups[previousSelectedCity.getCenterTile()]?.forEach {
+                it.layerCityButton.moveUp()
+            }
+        }
+
         if (previousSelectedUnits.isNotEmpty() && previousSelectedUnits.any { it.getTile() != tile }
                 && worldScreen.isPlayersTurn
                 && (
@@ -425,7 +431,7 @@ class WorldMapHolder(
             }
 
             for (unit in unitList) {
-                val unitGroup = UnitGroup(unit, 60f).surroundWithCircle(80f)
+                val unitGroup = UnitGroup(unit, 60f).surroundWithCircle(85f, resizeActor = false)
                 unitGroup.circle.color = Color.GRAY.cpy().apply { a = 0.5f }
                 if (unit.currentMovement == 0f) unitGroup.color.a = 0.5f
                 unitGroup.touchable = Touchable.enabled

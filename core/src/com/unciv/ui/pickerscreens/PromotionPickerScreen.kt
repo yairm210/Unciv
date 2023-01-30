@@ -83,12 +83,8 @@ class PromotionButton(
 
 ) : BorderedTable(
     path="PromotionScreen/PromotionButton",
-    defaultInner = BaseScreen.skinStrings.roundedEdgeRectangleMidShape,
-    defaultBorder = BaseScreen.skinStrings.roundedEdgeRectangleMidBorderShape,
-    borderColor = Color.WHITE.cpy(),
-    innerColor = Color.BLACK,
-    borderSize = 5f
-) {
+    defaultBgShape = BaseScreen.skinStrings.roundedEdgeRectangleMidShape,
+    defaultBgBorder = BaseScreen.skinStrings.roundedEdgeRectangleMidBorderShape) {
 
     var isSelected = false
     val label = node.promotion.name.toLabel().apply {
@@ -98,6 +94,8 @@ class PromotionButton(
     }
 
     init {
+
+        borderSize = 5f
 
         pad(5f)
         align(Align.left)
@@ -115,7 +113,8 @@ class PromotionButton(
             isPromoted -> PromotionPickerScreen.Promoted
             else -> PromotionPickerScreen.Default
         }
-        setBackgroundColor(color)
+
+        bgColor = color
 
         val textColor = when {
             isSelected -> Color.WHITE
@@ -360,7 +359,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
                 btn.updateColor()
             button.node.promotion.prerequisites.forEach { promotionToButton[it]?.apply {
                 if (!this.isPromoted)
-                    setBackgroundColor(Prerequisite) }}
+                    bgColor = Prerequisite }}
 
             rightSideButton.isEnabled = isPickable
             rightSideButton.setText(node.promotion.name.tr())
