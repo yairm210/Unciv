@@ -21,6 +21,7 @@ import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
 import com.unciv.ui.utils.MayaCalendar
 import com.unciv.ui.worldscreen.unit.actions.UnitActionsUpgrade
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 // Buildings, techs, policies, ancient ruins and promotions can have 'triggered' effects
@@ -382,10 +383,10 @@ object UniqueTriggerActivation {
                     || unique.params[1].toIntOrNull() == null
                 ) return false
 
-                val finalStatAmount = tileBasedRandom.nextInt(unique.params[0].toInt(), unique.params[1].toInt()) *
-                                civInfo.gameInfo.speed.statCostModifiers[stat]!!
+                val finalStatAmount = (tileBasedRandom.nextInt(unique.params[0].toInt(), unique.params[1].toInt()) *
+                                civInfo.gameInfo.speed.statCostModifiers[stat]!!).roundToInt()
 
-                val stats = Stats().add(stat, finalStatAmount)
+                val stats = Stats().add(stat, finalStatAmount.toFloat())
                 civInfo.addStats(stats)
 
                 val filledNotification = if (notification!=null && notification.hasPlaceholderParameters())

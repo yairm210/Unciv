@@ -28,6 +28,7 @@ import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.enable
+import com.unciv.ui.utils.extensions.isEnabled
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.pad
 import com.unciv.ui.utils.extensions.toGroup
@@ -37,7 +38,7 @@ import java.lang.Integer.max
 import kotlin.math.abs
 import kotlin.math.min
 
-object PolicyColors {
+private object PolicyColors {
 
     val policyPickable = colorFromRGB(47,67,92).darken(0.3f)
     val policyNotPickable =  colorFromRGB(20, 20, 20)
@@ -58,7 +59,7 @@ fun Policy.isPickable() : Boolean {
     val worldScreen = UncivGame.Current.worldScreen ?: return false
     val viewingCiv = worldScreen.viewingCiv
     if (!worldScreen.isPlayersTurn
-            || worldScreen.viewingCiv.isSpectator() // viewingCiv var points to selectedCiv in case of spectator
+            || viewingCiv.isSpectator() // viewingCiv var points to selectedCiv in case of spectator
             || viewingCiv.isDefeated()
             || viewingCiv.policies.isAdopted(this.name)
             || this.policyBranchType == PolicyBranchType.BranchComplete
@@ -71,13 +72,11 @@ fun Policy.isPickable() : Boolean {
 
 class PolicyButton(val policy: Policy, size: Float = 30f) : BorderedTable(
     path = "PolicyScreen/PolicyButton",
-    defaultBorder = BaseScreen.skinStrings.roundedEdgeRectangleSmallShape,
-    defaultInner = BaseScreen.skinStrings.roundedEdgeRectangleSmallShape,
-    borderSize = 2f
+    defaultBgBorder = BaseScreen.skinStrings.roundedEdgeRectangleSmallShape,
+    defaultBgShape = BaseScreen.skinStrings.roundedEdgeRectangleSmallShape,
 ) {
 
     val icon = ImageGetter.getImage("PolicyIcons/" + policy.name)
-    val highlight = ImageGetter.getImage("UnitFlagIcons/UnitFlagSelection")
 
     var isSelected = false
         set(value) {
@@ -87,11 +86,10 @@ class PolicyButton(val policy: Policy, size: Float = 30f) : BorderedTable(
 
     init {
 
+        borderSize = 2f
         icon.setSize(size*0.7f, size*0.7f)
-        highlight.setSize(size*1.38f, size*1.38f)
 
         addActor(icon)
-        addActor(highlight)
 
         updateState()
         pack()
@@ -100,9 +98,6 @@ class PolicyButton(val policy: Policy, size: Float = 30f) : BorderedTable(
 
         icon.toFront()
         icon.center(this)
-        highlight.toBack()
-        highlight.isVisible = false
-        highlight.center(this)
     }
 
     fun onClick(function: () -> Unit): PolicyButton {
@@ -121,27 +116,24 @@ class PolicyButton(val policy: Policy, size: Float = 30f) : BorderedTable(
         val isPickable = policy.isPickable()
         val isAdopted = viewingCiv.policies.isAdopted(policy.name)
 
-
-        highlight.isVisible = isSelected
-
         when {
 
             isSelected && isPickable -> {
-                setBackgroundColor(PolicyColors.policySelected)
+                bgColor = PolicyColors.policySelected
             }
 
             isPickable -> {
-                setBackgroundColor(PolicyColors.policyPickable)
+                bgColor = PolicyColors.policyPickable
             }
 
             isAdopted -> {
                 icon.color = Color.GOLD.cpy()
-                setBackgroundColor(colorFromRGB(10,90,100).darken(0.8f))
+                bgColor = colorFromRGB(10,90,100).darken(0.8f)
             }
 
             else -> {
                 icon.color.a = 0.2f
-                setBackgroundColor(PolicyColors.policyNotPickable)
+                bgColor = PolicyColors.policyNotPickable
             }
 
         }
@@ -164,7 +156,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: Civilization = w
 
     internal val viewingCiv: Civilization = civInfo
 
-    private var policyNameToButton = HashMap<String, BorderedTable>()
+    private var policyNameToButton = HashMap<String, PolicyButton>()
     private var selectedPolicyButton: PolicyButton? = null
 
     init {
@@ -301,9 +293,8 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: Civilization = w
 
         // Main table
         val colorBg = if (branch.isAdopted()) PolicyColors.branchAdopted else PolicyColors.branchNotAdopted
-        val branchGroup = BorderedTable(
-            path="PolicyScree/PolicyBranchBackground",
-            innerColor = colorBg)
+        val branchGroup = BorderedTable(path="PolicyScreen/PolicyBranchBackground")
+            .apply { bgColor = colorBg }
 
         // Header
         val header = getBranchHeader(branch)
@@ -554,9 +545,9 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: Civilization = w
     }
 
     private fun getBranchHeader(branch: PolicyBranch): Table {
-        val header = BorderedTable(
-            path="PolicyScreen/PolicyBranchHeader",
-            innerColor = colorFromRGB(47,90,92), borderSize = 5f)
+        val header = BorderedTable(path="PolicyScreen/PolicyBranchHeader")
+        header.bgColor = colorFromRGB(47,90,92)
+        header.borderSize = 5f
         header.pad(5f)
 
         val table = Table()
@@ -614,9 +605,10 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: Civilization = w
 
         val table = BorderedTable(
             path="PolicyScreen/PolicyBranchAdoptButton",
-            defaultInner = skinStrings.roundedEdgeRectangleSmallShape,
-            defaultBorder = skinStrings.roundedEdgeRectangleSmallShape,
-            innerColor = color, borderSize = 2f)
+            defaultBgShape = skinStrings.roundedEdgeRectangleSmallShape,
+            defaultBgBorder = skinStrings.roundedEdgeRectangleSmallShape)
+        table.bgColor = color
+        table.borderSize = 2f
 
         table.add(label).minHeight(30f).minWidth(150f).growX()
         table.addActor(lockIcon)
@@ -645,7 +637,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: Civilization = w
         return table
     }
 
-    private fun getPolicyButton(policy: Policy, size: Float = 30f): BorderedTable {
+    private fun getPolicyButton(policy: Policy, size: Float = 30f): PolicyButton {
         val button = PolicyButton(policy, size = size)
         button.onClick { pickPolicy(button = button) }
         return button

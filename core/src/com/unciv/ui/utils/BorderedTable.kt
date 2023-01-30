@@ -1,64 +1,52 @@
 package com.unciv.ui.utils
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.Cell
-import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.ui.utils.extensions.center
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 
 open class BorderedTable(
     val path: String = "",
-    val defaultInner: String = BaseScreen.skinStrings.rectangleWithOutlineShape,
-    val defaultBorder: String = BaseScreen.skinStrings.rectangleWithOutlineShape,
-    val borderColor: Color = Color.WHITE,
-    val innerColor: Color = Color.BLACK,
-    var borderSize: Float = 5f,
-    val borderOnTop: Boolean = false
-) : Table() {
+    defaultBgShape: String = BaseScreen.skinStrings.rectangleWithOutlineShape,
+    defaultBgBorder: String = BaseScreen.skinStrings.rectangleWithOutlineShape) : Table() {
 
-    var bgInner: Image = Image(BaseScreen.skinStrings.getUiBackground(path, defaultInner,  innerColor.cpy()))
-    var bgBorder: Image = Image(BaseScreen.skinStrings.getUiBackground(path + "Border", defaultBorder,  borderColor.cpy()))
+    var bgColor: Color = Color.BLACK
+    var bgBorderColor: Color = Color.WHITE
 
-    init {
-        if (borderSize != 0f)
-            this.addActor(bgBorder)
-        this.addActor(bgInner)
+    var borderSize: Float = 5f
+    var borderOnTop: Boolean = false
 
+    private var bgInner: Drawable = BaseScreen.skinStrings.getUiBackground(path, defaultBgShape)
+    private var bgBorder: Drawable = BaseScreen.skinStrings.getUiBackground(path + "Border", defaultBgBorder)
 
+    override fun drawBackground(batch: Batch, parentAlpha: Float, x: Float, y: Float) {
         if (borderOnTop) {
-            if (borderSize != 0f)
-                bgBorder.toBack()
-            bgInner.toBack()
+            batch.setColor(
+                bgColor.r*color.r,
+                bgColor.g*color.g,
+                bgColor.b*color.b,
+                bgColor.a*color.a * parentAlpha)
+            bgInner.draw(batch, x, y, width, height)
+            batch.setColor(
+                bgBorderColor.r*color.r,
+                bgBorderColor.g*color.g,
+                bgBorderColor.b*color.b,
+                bgBorderColor.a*color.a * parentAlpha)
+            bgBorder.draw(batch, x-borderSize/2, y-borderSize/2, width+borderSize, height+borderSize)
         } else {
-            bgInner.toBack()
-            if (borderSize != 0f)
-                bgBorder.toBack()
+            batch.setColor(
+                bgBorderColor.r*color.r,
+                bgBorderColor.g*color.g,
+                bgBorderColor.b*color.b,
+                bgBorderColor.a*color.a * parentAlpha)
+            bgBorder.draw(batch, x-borderSize/2, y-borderSize/2, width+borderSize, height+borderSize)
+            batch.setColor(
+                bgColor.r*color.r,
+                bgColor.g*color.g,
+                bgColor.b*color.b,
+                bgColor.a*color.a * parentAlpha)
+            bgInner.draw(batch, x, y, width, height)
         }
-
     }
 
-    fun setBackgroundColor(color: Color) {
-        bgInner.remove()
-        bgInner = Image(BaseScreen.skinStrings.getUiBackground(path, defaultInner, color.cpy()))
-        addActor(bgInner)
-        if (borderSize != 0f) {
-            if (borderOnTop)
-                bgBorder.zIndex = bgInner.zIndex + 1
-            else
-                bgInner.zIndex = bgBorder.zIndex + 1
-        }
-        sizeChanged()
-    }
-
-    override fun sizeChanged() {
-        super.sizeChanged()
-        if (borderSize != 0f)
-            bgBorder.setSize(width + borderSize, height + borderSize)
-        bgInner.setSize(width, height)
-
-        if (borderSize != 0f)
-            bgBorder.center(this)
-        bgInner.center(this)
-    }
 }

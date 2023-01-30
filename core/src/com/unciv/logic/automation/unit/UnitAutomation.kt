@@ -526,7 +526,7 @@ object UnitAutomation {
             .sum() // City heals 20 per turn
 
         if (expectedDamagePerTurn < city.health && // If we can take immediately, go for it
-                (expectedDamagePerTurn < 20 || city.health / (expectedDamagePerTurn-20) > 5)){ // otherwise check if we can take within a couple of turns
+                (expectedDamagePerTurn <= 20 || city.health / (expectedDamagePerTurn-20) > 5)){ // otherwise check if we can take within a couple of turns
 
             // We won't be able to take this even with 5 turns of continuous damage!
             // don't head straight to the city, try to head to landing grounds -

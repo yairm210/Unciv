@@ -12,7 +12,8 @@ class TileSet(val name: String) {
     }
 
     fun mergeConfig(id: String) {
-        configs[id]?.let { config.updateConfig(it) }
+        val configToMerge = configs[id] ?: return
+        config.updateConfig(configToMerge)
     }
 
     fun resetConfig() {
