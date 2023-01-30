@@ -273,7 +273,7 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
                 val turnsToStarvation = city.population.getNumTurnsToStarvation()
                 if (turnsToStarvation != null && turnsToStarvation < 100) turnsToStarvation.toString() else "∞"
             }
-            else -> "∞"
+            else -> "-"
         }
 
         if (city.isGrowing()) {
@@ -337,7 +337,7 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
 
         var nextTurnPercentage = 0f
         var percentage = 0f
-        var turns = "∞"
+        var turns = "-"
         var icon: Group? = null
 
         if (cityConstructions.currentConstructionFromQueue.isNotEmpty()) {
@@ -353,7 +353,7 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
                 if (nextTurnPercentage > 1f) nextTurnPercentage = 1f
                 if (nextTurnPercentage < 0f) nextTurnPercentage = 0f
             } else {
-                turns = "-"
+                turns = "∞"
             }
             icon = ImageGetter.getConstructionPortrait(cityCurrentConstruction.name, 24f)
         }
