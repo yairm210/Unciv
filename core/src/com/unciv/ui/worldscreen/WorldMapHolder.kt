@@ -62,11 +62,6 @@ class WorldMapHolder(
     internal var selectedTile: Tile? = null
     val tileGroups = HashMap<Tile, WorldTileGroup>()
 
-    //allWorldTileGroups exists to easily access all WordTileGroups
-    //since tileGroup is a HashMap of Lists and getting all WordTileGroups
-    //would need a double for loop
-    private val allWorldTileGroups = ArrayList<WorldTileGroup>()
-
     private val unitActionOverlays: ArrayList<Actor> = ArrayList()
 
     private val unitMovementPaths: HashMap<MapUnit, ArrayList<Tile>> = HashMap()
@@ -116,22 +111,19 @@ class WorldMapHolder(
 
     internal fun addTiles() {
         val tileSetStrings = TileSetStrings()
-        val daTileGroups = tileMap.values.map { WorldTileGroup(worldScreen, it, tileSetStrings) }
-        tileGroupMap = TileGroupMap(this, daTileGroups, continuousScrollingX)
+        val tileGroupsNew = tileMap.values.map { WorldTileGroup(worldScreen, it, tileSetStrings) }
+        tileGroupMap = TileGroupMap(this, tileGroupsNew, continuousScrollingX)
 
-        for (tileGroup in daTileGroups) {
+        for (tileGroup in tileGroupsNew) {
             tileGroups[tileGroup.tile] = tileGroup
-            allWorldTileGroups.add(tileGroup)
-        }
-
-        for (tileGroup in allWorldTileGroups) {
             tileGroup.layerCityButton.onClick(UncivSound.Silent) {
                 onTileClicked(tileGroup.tile)
             }
             tileGroup.onClick { onTileClicked(tileGroup.tile) }
 
             // On 'droid two-finger tap is mapped to right click and dissent has been expressed
-            if (Gdx.app.type == Application.ApplicationType.Android) continue
+            if (Gdx.app.type == Application.ApplicationType.Android)
+                continue
 
             // Right mouse click listener
             tileGroup.addListener(object : ClickListener() {
@@ -148,11 +140,8 @@ class WorldMapHolder(
                 }
             })
         }
-
         actor = tileGroupMap
-
         setSize(worldScreen.stage.width, worldScreen.stage.height)
-
         layout() // Fit the scroll pane to the contents - otherwise, setScroll won't work!
     }
 
@@ -413,7 +402,7 @@ class WorldMapHolder(
         }
 
         for (unit in unitList) {
-            val unitGroup = UnitGroup(unit, 60f).surroundWithCircle(80f)
+            val unitGroup = UnitGroup(unit, 60f).surroundWithCircle(85f, resizeActor = false)
             unitGroup.circle.color = Color.GRAY.cpy().apply { a = 0.5f }
             if (unit.currentMovement == 0f) unitGroup.color.a = 0.5f
             unitGroup.touchable = Touchable.enabled
@@ -554,13 +543,13 @@ class WorldMapHolder(
 
         if (isMapRevealEnabled(viewingCiv)) {
             // Only needs to be done once - this is so the minimap will also be revealed
-            allWorldTileGroups.forEach {
+            tileGroups.values.forEach {
                 it.tile.setExplored(viewingCiv, true)
                 it.isForceVisible = true } // So we can see all resources, regardless of tech
         }
 
         // General update of all tiles
-        for (tileGroup in allWorldTileGroups)
+        for (tileGroup in tileGroups.values)
             tileGroup.update(viewingCiv)
 
         // Update tiles according to selected unit/city
@@ -597,7 +586,7 @@ class WorldMapHolder(
 
         // Fade out less relevant images if a military unit is selected
         if (unit.isMilitary()) {
-            for (group in allWorldTileGroups) {
+            for (group in tileGroups.values) {
 
                 // Fade out population icons
                 group.layerMisc.dimPopulation(true)
@@ -711,7 +700,7 @@ class WorldMapHolder(
      * @return `true` if scroll position was changed, `false` otherwise
      */
     fun setCenterPosition(vector: Vector2, immediately: Boolean = false, selectUnit: Boolean = true, forceSelectUnit: MapUnit? = null): Boolean {
-        val tileGroup = allWorldTileGroups.firstOrNull { it.tile.position == vector } ?: return false
+        val tileGroup = tileGroups.values.firstOrNull { it.tile.position == vector } ?: return false
         selectedTile = tileGroup.tile
         if (selectUnit || forceSelectUnit != null)
             worldScreen.bottomUnitTable.tileSelected(selectedTile!!, forceSelectUnit)
@@ -744,12 +733,12 @@ class WorldMapHolder(
         // use scaleX instead of zoomScale itself, because zoomScale might have been outside minZoom..maxZoom and thus not applied
         val clampedCityButtonZoom = 1 / scaleX
         if (clampedCityButtonZoom >= 1) {
-            for (tileGroup in allWorldTileGroups) {
+            for (tileGroup in tileGroups.values) {
                 tileGroup.layerCityButton.isTransform = false // to save on rendering time to improve framerate
             }
         }
         if (clampedCityButtonZoom < 1 && clampedCityButtonZoom >= minZoom) {
-            for (tileGroup in allWorldTileGroups) {
+            for (tileGroup in tileGroups.values) {
                 // ONLY set those groups that have active city buttons as transformable!
                 // This is massively framerate-improving!
                 if (tileGroup.layerCityButton.hasChildren())
