@@ -1,22 +1,18 @@
 ## 4.4.7
 
-Resolved  - missionaries check if inquisitors block their religion, and not the religion of the unit's owner
-
-Allow unique ruins stat gain notifications
+AI battle automation vastly improved for taking over cities
 
 AI automation: Don't nuke cities that we're already winning against
 
-AI battle automation vastly improved for taking over cities
-
-chore: unit automation org
-
-Resolved  - wonder overview uses viewing civ, not current player
-
 By vegeta1k95:
-- Optimized BorderedTable, refactored CityButton, new air table for units + misc 
-- Rework of TileGroup: split into dedicated layers, initial preparation for slot-mechanics 
+- Rework of TileGroup: split into dedicated layers, initial preparation for slot-mechanics
+- Optimized BorderedTable, refactored CityButton, new air table for units + misc
 
-Fix division by zero crash  - By OptimizedForDensity
+Better check for inquisitors blocking religion
+
+Modding: Allow unique ruins stat gain notifications
+
+Wonder overview uses viewing civ, not current player
 
 ## 4.4.6
 
