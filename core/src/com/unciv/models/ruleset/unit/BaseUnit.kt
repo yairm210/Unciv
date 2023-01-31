@@ -152,7 +152,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         if (uniqueTo != null && uniqueTo != civInfo.civName)
             rejectionReasons.add(RejectionReason.UniqueToOtherNation.toInstance("Unique to $uniqueTo"))
-        if (civInfo.uniqueUnits.any { it.replaces == name })
+        if (civInfo.cache.uniqueUnits.any { it.replaces == name })
             rejectionReasons.add(RejectionReason.ReplacedByOurUnique.toInstance("Our unique unit replaces this"))
 
         if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon())

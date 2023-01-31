@@ -185,12 +185,6 @@ class Civilization : IsPartOfGameInfoSerialization {
      */
     val temporaryUniques = ArrayList<TemporaryUnique>()
 
-    /** Easy way to look up a Civilization's unique units and buildings */
-    @Transient
-    val uniqueUnits = hashSetOf<BaseUnit>()
-    @Transient
-    val uniqueBuildings = hashSetOf<Building>()
-
     // if we only use lists, and change the list each time the cities are changed,
     // we won't get concurrent modification exceptions.
     // This is basically a way to ensure our lists are immutable.
@@ -482,7 +476,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         if (baseBuilding.replaces != null)
             return getEquivalentBuilding(baseBuilding.replaces!!)
 
-        for (building in uniqueBuildings)
+        for (building in cache.uniqueBuildings)
             if (building.replaces == baseBuilding.name)
                 return building
         return baseBuilding
@@ -498,7 +492,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         if (baseUnit.replaces != null)
             return getEquivalentUnit(baseUnit.replaces!!) // Equivalent of unique unit is the equivalent of the replaced unit
 
-        for (unit in uniqueUnits)
+        for (unit in cache.uniqueUnits)
             if (unit.replaces == baseUnit.name)
                 return unit
         return baseUnit
@@ -655,13 +649,13 @@ class Civilization : IsPartOfGameInfoSerialization {
 
         for (building in gameInfo.ruleSet.buildings.values) {
             if (building.uniqueTo == civName) {
-                uniqueBuildings.add(building)
+                cache.uniqueBuildings.add(building)
             }
         }
 
         for (unit in gameInfo.ruleSet.units.values) {
             if (unit.uniqueTo == civName) {
-                uniqueUnits.add(unit)
+                cache.uniqueUnits.add(unit)
             }
         }
 

@@ -9,12 +9,14 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unit.BaseUnit
 
 /** CivInfo class was getting too crowded */
 class CivInfoTransientCache(val civInfo: Civilization) {
@@ -24,6 +26,13 @@ class CivInfoTransientCache(val civInfo: Civilization) {
 
     @Transient
     val lastEraResourceUsedForUnit = java.util.HashMap<String, Int>()
+
+    /** Easy way to look up a Civilization's unique units and buildings */
+    @Transient
+    val uniqueUnits = hashSetOf<BaseUnit>()
+
+    @Transient
+    val uniqueBuildings = hashSetOf<Building>()
 
     fun setTransients(){
         val ruleset = civInfo.gameInfo.ruleSet

@@ -107,7 +107,7 @@ object Automation {
 
     fun tryTrainMilitaryUnit(city: City) {
         if (city.isPuppet) return
-        if (city.civInfo.gameInfo.ruleSet.units[city.cityConstructions.currentConstructionFromQueue]?.isMilitary() == true)
+        if ((city.cityConstructions.getCurrentConstruction() as? BaseUnit)?.isMilitary() == true)
             return // already training a military unit
         val chosenUnitName = chooseMilitaryUnit(city, city.civInfo.gameInfo.ruleSet.units.values.asSequence())
         if (chosenUnitName != null)

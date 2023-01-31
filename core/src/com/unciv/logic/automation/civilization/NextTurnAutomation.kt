@@ -89,7 +89,7 @@ object NextTurnAutomation {
             chooseReligiousBeliefs(civInfo)
         }
 
-        reassignWorkedTiles(civInfo)  // second most expensive
+        automateCities(civInfo)  // second most expensive
         trainSettler(civInfo)
         tryVoteForDiplomaticVictory(civInfo)
     }
@@ -892,7 +892,7 @@ object NextTurnAutomation {
         for (city in civInfo.cities) UnitAutomation.tryBombardEnemy(city)
     }
 
-    private fun reassignWorkedTiles(civInfo: Civilization) {
+    private fun automateCities(civInfo: Civilization) {
         for (city in civInfo.cities) {
             if (city.isPuppet && city.population.population > 9
                     && !city.isInResistance()) {
@@ -901,9 +901,13 @@ object NextTurnAutomation {
 
             city.reassignAllPopulation()
 
+            if (city.health < city.getMaxHealth()) {
+                Automation.tryTrainMilitaryUnit(city) // need defenses if city is under attack
+                if (city.cityConstructions.constructionQueue.isNotEmpty())
+                    continue // found a unit to build so move on
+            }
+
             city.cityConstructions.chooseNextConstruction()
-            if (city.health < city.getMaxHealth())
-                Automation.tryTrainMilitaryUnit(city) // override previous decision if city is under attack
         }
     }
 

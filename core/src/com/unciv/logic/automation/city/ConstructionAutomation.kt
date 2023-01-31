@@ -24,14 +24,14 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     private val cityInfo = cityConstructions.city
     private val civInfo = cityInfo.civInfo
 
+    private val buildableBuildings = hashMapOf<String, Boolean>()
+    private val buildableUnits = hashMapOf<String, Boolean>()
     private val buildings = cityInfo.getRuleset().buildings.values.asSequence()
 
     private val nonWonders = buildings.filterNot { it.isAnyWonder() }
         .filterNot { buildableBuildings[it.name] == false } // if we already know that this building can't be built here then don't even consider it
     private val statBuildings = nonWonders.filter { !it.isEmpty() && Automation.allowAutomatedConstruction(civInfo, cityInfo, it) }
     private val wonders = buildings.filter { it.isAnyWonder() }
-    private val buildableBuildings = hashMapOf<String, Boolean>()
-    private val buildableUnits = hashMapOf<String, Boolean>()
 
     private val units = cityInfo.getRuleset().units.values.asSequence()
         .filterNot { buildableUnits[it.name] == false } // if we already know that this unit can't be built here then don't even consider it
@@ -63,7 +63,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         choices.add(ConstructionChoice(choice, choiceModifier, cityConstructions.getRemainingWork(choice)))
     }
 
-    private fun Sequence<INonPerpetualConstruction>.isBuildable(): Sequence<INonPerpetualConstruction> {
+    private fun Sequence<INonPerpetualConstruction>.filterBuildable(): Sequence<INonPerpetualConstruction> {
         return this.filter {
             val cache = if (it is Building) buildableBuildings else buildableUnits
             if (cache[it.name] == null) {
@@ -150,7 +150,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             .filter {
                 it.hasUnique(UniqueType.CreateWaterImprovements)
                     && Automation.allowAutomatedConstruction(civInfo, cityInfo, it)
-            }.isBuildable()
+            }.filterBuildable()
         val alreadyHasWorkBoat = buildableWorkboatUnits.any()
             && !cityInfo.getTiles().any {
                 it.civilianUnit?.hasUnique(UniqueType.CreateWaterImprovements) == true
@@ -182,7 +182,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             .filter {
                 it.hasUnique(UniqueType.BuildImprovements)
                         && Automation.allowAutomatedConstruction(civInfo, cityInfo, it)
-            }.isBuildable()
+            }.filterBuildable()
         if (workerEquivalents.none()) return // for mods with no worker units
 
         // For the first 3 cities, dedicate a worker, from then on only build another worker if you have 12 cities.
@@ -198,7 +198,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     private fun addCultureBuildingChoice() {
         val cultureBuilding = statBuildings
             .filter { it.isStatRelated(Stat.Culture) }
-            .isBuildable()
+            .filterBuildable()
             .minByOrNull { it.cost }
         if (cultureBuilding != null) {
             var modifier = 0.5f
@@ -211,7 +211,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addSpaceshipPartChoice() {
         if (!civInfo.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts)) return
-        val spaceshipPart = (nonWonders + units).filter { it.name in spaceshipParts }.isBuildable().firstOrNull()
+        val spaceshipPart = (nonWonders + units).filter { it.name in spaceshipParts }.filterBuildable().firstOrNull()
         if (spaceshipPart != null) {
             val modifier = 2f
             addChoice(relativeCostEffectiveness, spaceshipPart.name, modifier)
@@ -221,7 +221,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     private fun addOtherBuildingChoice() {
         val otherBuilding = nonWonders
             .filter { Automation.allowAutomatedConstruction(civInfo, cityInfo, it) }
-            .isBuildable()
+            .filterBuildable()
             .minByOrNull { it.cost }
         if (otherBuilding != null) {
             val modifier = 0.6f
@@ -263,7 +263,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
         val highestPriorityWonder = wonders
             .filter { Automation.allowAutomatedConstruction(civInfo, cityInfo, it) }
-            .isBuildable()
+            .filterBuildable()
             .maxByOrNull { getWonderPriority(it as Building) }
             ?: return
 
@@ -280,7 +280,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             .filter { it.hasUnique(UniqueType.UnitStartingExperience)
                     && Automation.allowAutomatedConstruction(civInfo, cityInfo, it)
             }
-            .isBuildable()
+            .filterBuildable()
             .minByOrNull { it.cost }
         if (unitTrainingBuilding != null && (!civInfo.wantsToFocusOn(Victory.Focus.Culture) || isAtWar)) {
             var modifier = if (cityIsOverAverageProduction) 0.5f else 0.1f // You shouldn't be cranking out units anytime soon
@@ -296,7 +296,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             .filter { it.cityStrength > 0
                     && Automation.allowAutomatedConstruction(civInfo, cityInfo, it)
             }
-            .isBuildable()
+            .filterBuildable()
             .minByOrNull { it.cost }
         if (defensiveBuilding != null && (isAtWar || !civInfo.wantsToFocusOn(Victory.Focus.Culture))) {
             var modifier = 0.2f
@@ -317,7 +317,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             .filter { (it.isStatRelated(Stat.Happiness)
                     || it.hasUnique(UniqueType.RemoveAnnexUnhappiness))
                     && Automation.allowAutomatedConstruction(civInfo, cityInfo, it) }
-            .isBuildable()
+            .filterBuildable()
             .minByOrNull { it.cost }
         if (happinessBuilding != null) {
             var modifier = 1f
@@ -334,7 +334,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         val scienceBuilding = statBuildings
             .filter { it.isStatRelated(Stat.Science)
                     && Automation.allowAutomatedConstruction(civInfo, cityInfo, it) }
-            .isBuildable()
+            .filterBuildable()
             .minByOrNull { it.cost }
         if (scienceBuilding != null) {
             var modifier = 1.1f
@@ -346,7 +346,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addGoldBuildingChoice() {
         val goldBuilding = statBuildings.filter { it.isStatRelated(Stat.Gold) }
-            .isBuildable()
+            .filterBuildable()
             .minByOrNull { it.cost }
         if (goldBuilding != null) {
             val modifier = if (civInfo.stats.statsForNextTurn.gold < 0) 3f else 1.2f
@@ -357,7 +357,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     private fun addProductionBuildingChoice() {
         val productionBuilding = statBuildings
             .filter { it.isStatRelated(Stat.Production) }
-            .isBuildable()
+            .filterBuildable()
             .minByOrNull { it.cost }
         if (productionBuilding != null) {
             addChoice(relativeCostEffectiveness, productionBuilding.name, 1.5f)
@@ -371,7 +371,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
                 (it.isStatRelated(Stat.Food)
                     || it.hasUnique(UniqueType.CarryOverFood, conditionalState)
                 ) && Automation.allowAutomatedConstruction(civInfo, cityInfo, it)
-            }.isBuildable().minByOrNull { it.cost }
+            }.filterBuildable().minByOrNull { it.cost }
         if (foodBuilding != null) {
             var modifier = 1f
             if (cityInfo.population.population < 5) modifier = 1.3f
