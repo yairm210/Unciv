@@ -1,6 +1,6 @@
 package com.unciv.logic.map.mapunit
 
-import com.unciv.logic.city.RejectionReason
+import com.unciv.logic.city.RejectionReasonType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -68,11 +68,11 @@ class UnitUpgradeManager(val unit:MapUnit) {
         val rejectionReasons = unitToUpgradeTo.getRejectionReasons(unit.civInfo)
         unit.civInfo.units.addUnit(unit)
 
-        var relevantRejectionReasons = rejectionReasons.filterNot { it.rejectionReason == RejectionReason.Unbuildable }
+        var relevantRejectionReasons = rejectionReasons.filterNot { it.type == RejectionReasonType.Unbuildable }
         if (ignoreRequirements)
             relevantRejectionReasons = relevantRejectionReasons.filterNot { it.techPolicyEraWonderRequirements() }
         if (ignoreResources)
-            relevantRejectionReasons = relevantRejectionReasons.filterNot { it.rejectionReason == RejectionReason.ConsumesResources }
+            relevantRejectionReasons = relevantRejectionReasons.filterNot { it.type == RejectionReasonType.ConsumesResources }
         return relevantRejectionReasons.none()
     }
 

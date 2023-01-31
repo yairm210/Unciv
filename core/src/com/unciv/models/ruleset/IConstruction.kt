@@ -25,7 +25,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
 
     fun getProductionCost(civInfo: Civilization): Int
     fun getStatBuyCost(city: City, stat: Stat): Int?
-    fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReasonInstance>
+    fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason>
     fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat? = null): Boolean  // Yes I'm hilarious.
 
     /** Only checks if it has the unique to be bought with this stat, not whether it is purchasable at all */
@@ -47,7 +47,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     /** Checks if the construction should be purchasable, not whether it can be bought with a stat at all */
     fun isPurchasable(cityConstructions: CityConstructions): Boolean {
         val rejectionReasons = getRejectionReasons(cityConstructions)
-        return rejectionReasons.all { it.rejectionReason == RejectionReason.Unbuildable }
+        return rejectionReasons.all { it.type == RejectionReasonType.Unbuildable }
     }
 
     fun canBePurchasedWithAnyStat(city: City): Boolean {
@@ -84,56 +84,56 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
 
 
 
-data class RejectionReasonInstance(val rejectionReason:RejectionReason,
-                                   val errorMessage: String = rejectionReason.errorMessage,
-                                   val shouldShow: Boolean = rejectionReason.shouldShow) {
+data class RejectionReason(val type: RejectionReasonType,
+                           val errorMessage: String = type.errorMessage,
+                           val shouldShow: Boolean = type.shouldShow) {
 
     fun techPolicyEraWonderRequirements(): Boolean {
-        return rejectionReason in techPolicyEraWonderRequirements
+        return type in techPolicyEraWonderRequirements
     }
 
     fun hasAReasonToBeRemovedFromQueue(): Boolean {
-        return rejectionReason in reasonsToDefinitivelyRemoveFromQueue
+        return type in reasonsToDefinitivelyRemoveFromQueue
     }
 
     fun getMostImportantRejectionReason(): String? {
         for (rejectionReasonError in orderOfErrorMessages) {
-            if (this.rejectionReason == rejectionReasonError) return errorMessage
+            if (this.type == rejectionReasonError) return errorMessage
         }
         return null
     }
 
     // Used for constant variables in the functions above
     private val techPolicyEraWonderRequirements = hashSetOf(
-        RejectionReason.Obsoleted,
-        RejectionReason.RequiresTech,
-        RejectionReason.RequiresPolicy,
-        RejectionReason.MorePolicyBranches,
-        RejectionReason.RequiresBuildingInSomeCity,
+        RejectionReasonType.Obsoleted,
+        RejectionReasonType.RequiresTech,
+        RejectionReasonType.RequiresPolicy,
+        RejectionReasonType.MorePolicyBranches,
+        RejectionReasonType.RequiresBuildingInSomeCity,
     )
     private val reasonsToDefinitivelyRemoveFromQueue = hashSetOf(
-        RejectionReason.Obsoleted,
-        RejectionReason.WonderAlreadyBuilt,
-        RejectionReason.NationalWonderAlreadyBuilt,
-        RejectionReason.CannotBeBuiltWith,
-        RejectionReason.MaxNumberBuildable,
+        RejectionReasonType.Obsoleted,
+        RejectionReasonType.WonderAlreadyBuilt,
+        RejectionReasonType.NationalWonderAlreadyBuilt,
+        RejectionReasonType.CannotBeBuiltWith,
+        RejectionReasonType.MaxNumberBuildable,
     )
     private val orderOfErrorMessages = listOf(
-        RejectionReason.WonderBeingBuiltElsewhere,
-        RejectionReason.NationalWonderBeingBuiltElsewhere,
-        RejectionReason.RequiresBuildingInAllCities,
-        RejectionReason.RequiresBuildingInThisCity,
-        RejectionReason.RequiresBuildingInSomeCity,
-        RejectionReason.PopulationRequirement,
-        RejectionReason.ConsumesResources,
-        RejectionReason.CanOnlyBePurchased,
-        RejectionReason.MaxNumberBuildable,
-        RejectionReason.NoPlaceToPutUnit,
+        RejectionReasonType.WonderBeingBuiltElsewhere,
+        RejectionReasonType.NationalWonderBeingBuiltElsewhere,
+        RejectionReasonType.RequiresBuildingInAllCities,
+        RejectionReasonType.RequiresBuildingInThisCity,
+        RejectionReasonType.RequiresBuildingInSomeCity,
+        RejectionReasonType.PopulationRequirement,
+        RejectionReasonType.ConsumesResources,
+        RejectionReasonType.CanOnlyBePurchased,
+        RejectionReasonType.MaxNumberBuildable,
+        RejectionReasonType.NoPlaceToPutUnit,
     )
 }
 
 
-enum class RejectionReason(val shouldShow: Boolean, val errorMessage: String) {
+enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String) {
     AlreadyBuilt(false, "Building already built in this city"),
     Unbuildable(false, "Unbuildable"),
     CanOnlyBePurchased(true, "Can only be purchased"),
@@ -184,8 +184,8 @@ enum class RejectionReason(val shouldShow: Boolean, val errorMessage: String) {
     NoPlaceToPutUnit(true, "No space to place this unit");
 
     fun toInstance(errorMessage: String = this.errorMessage,
-        shouldShow: Boolean = this.shouldShow): RejectionReasonInstance {
-        return RejectionReasonInstance(this, errorMessage, shouldShow)
+        shouldShow: Boolean = this.shouldShow): RejectionReason {
+        return RejectionReason(this, errorMessage, shouldShow)
     }
 }
 
