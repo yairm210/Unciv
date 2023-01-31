@@ -876,10 +876,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
 
-    private fun isAlly(otherCiv: Civilization?): Boolean {
+    private fun isAlly(otherCiv: Civilization): Boolean {
         return otherCiv == civInfo
-                || (otherCiv?.isCityState() == true && otherCiv.getAllyCiv() == civInfo.civName)
-                || (civInfo.isCityState() && otherCiv != null && civInfo.getAllyCiv() == otherCiv.civName)
+                || (otherCiv.isCityState() && otherCiv.getAllyCiv() == civInfo.civName)
+                || (civInfo.isCityState() && civInfo.getAllyCiv() == otherCiv.civName)
     }
 
     /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter] */
