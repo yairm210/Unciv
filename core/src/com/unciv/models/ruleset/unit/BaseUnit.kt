@@ -144,7 +144,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     fun getRejectionReasons(civInfo: Civilization): RejectionReasons {
         val rejectionReasons = RejectionReasons()
-        val ruleSet = civInfo.gameInfo.ruleSet
 
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!))
             rejectionReasons.add(RejectionReason.RequiresTech.toInstance("$requiredTech not researched"))
@@ -153,7 +152,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         if (uniqueTo != null && uniqueTo != civInfo.civName)
             rejectionReasons.add(RejectionReason.UniqueToOtherNation.toInstance("Unique to $uniqueTo"))
-        if (ruleSet.units.values.any { it.uniqueTo == civInfo.civName && it.replaces == name })
+        if (civInfo.uniqueUnits.any { it.replaces == name })
             rejectionReasons.add(RejectionReason.ReplacedByOurUnique.toInstance("Our unique unit replaces this"))
 
         if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon())

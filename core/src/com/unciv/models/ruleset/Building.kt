@@ -578,7 +578,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (uniqueTo != null && uniqueTo != civInfo.civName)
             rejectionReasons.add(RejectionReason.UniqueToOtherNation.toInstance("Unique to $uniqueTo"))
 
-        if (civInfo.gameInfo.ruleSet.buildings.values.any { it.uniqueTo == civInfo.civName && it.replaces == name })
+        if (civInfo.uniqueBuildings.any { it.replaces == name })
             rejectionReasons.add(RejectionReason.ReplacedByOurUnique)
 
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!))

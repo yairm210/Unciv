@@ -191,7 +191,7 @@ enum class RejectionReason(val shouldShow: Boolean, val errorMessage: String) {
     }
 }
 
-data class RejectionReasonInstance(val rejectionReason:RejectionReason,
+data class RejectionReasonInstance(val rejectionReason: RejectionReason,
                                    val errorMessage: String = rejectionReason.errorMessage,
                                    val shouldShow: Boolean = rejectionReason.shouldShow)
 
