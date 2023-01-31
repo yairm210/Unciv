@@ -11,14 +11,16 @@ import java.time.Month
 
 object EasterEggRulesets {
     fun MapParameters.modifyForEasterEgg() {
-        temperatureShift = when(HolidayDates.getMonth()) {
-            Month.JANUARY -> -1.4f
-            Month.FEBRUARY -> -1.3f
-            Month.MARCH -> -0.4f
-            Month.AUGUST -> 0.4f
-            Month.NOVEMBER -> -0.7f
-            Month.DECEMBER -> -1.3f
-            else -> 0f
+        if(getTodayEasterEggRuleset() != null) {
+            temperatureShift = when (HolidayDates.getMonth()) {
+                Month.JANUARY -> -1.4f
+                Month.FEBRUARY -> -1.3f
+                Month.MARCH -> -0.4f
+                Month.AUGUST -> 0.4f
+                Month.NOVEMBER -> -0.7f
+                Month.DECEMBER -> -1.3f
+                else -> 0f
+            }
         }
         rareFeaturesRichness = 0.15f
     }
