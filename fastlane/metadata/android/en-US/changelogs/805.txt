@@ -1,19 +1,13 @@
-
-
-Resolved  - removed duplicate translation line
-
-Removed docs section for translated images - see 
-
 By OptimizedForDensity:
-- Notification log fix 
-- Fix Faith Healers healing enemies 
+- Fix Faith Healers healing enemies
+- Notification log fix
 
 By vegeta1k95:
-- Add next-turn-progress bar for growth/production on CityButtons 
-- Fix incorrect dimming 
+- Add next-turn-progress bar for growth/production on CityButtons
+- Fix incorrect dimming
 
-Only heal when pillaging Improvements  - By itanasi
+Don't heal units when pillaging roads  - By itanasi
 
 By Gualdimar:
-- Autosave fix 
-- Remember "Show autosaves" setting state 
+- Autosave fix
+- Remember "Show autosaves" setting state
