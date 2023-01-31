@@ -18,7 +18,7 @@
     {
         "name": "Faith Healers",
         "type": "Pantheon",
-        "uniques": ["[All] Units adjacent to this city heal [+30] HP per turn when healing"]
+        "uniques": ["[Friendly] Units adjacent to this city heal [+30] HP per turn when healing"]
         // This should be worded better
     },
     {
