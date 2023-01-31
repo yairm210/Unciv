@@ -96,12 +96,6 @@ class WorldMapHolder(
         }
     }
 
-    internal fun reloadMaxZoom() {
-        maxZoom = UncivGame.Current.settings.maxWorldZoomOut
-        minZoom = 1f / maxZoom
-        if (scaleX < minZoom) zoom(1f)   // since normally min isn't reached exactly, only powers of 0.8
-    }
-
     // Interface for classes that contain the data required to draw a button
     interface ButtonDto
     // Contains the data required to draw a "move here" button

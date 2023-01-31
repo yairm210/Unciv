@@ -12,49 +12,54 @@ import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.badlogic.gdx.scenes.scene2d.utils.Cullable
+import com.unciv.UncivGame
+import java.lang.Float.max
+import java.lang.Float.min
 import kotlin.math.sqrt
 
 
 open class ZoomableScrollPane(
-    val extraCullingX: Float = 0f,
-    val extraCullingY: Float = 0f,
+    private val extraCullingX: Float = 0f,
+    private val extraCullingY: Float = 0f,
     var minZoom: Float = 0.5f,
     var maxZoom: Float = 1 / minZoom // if we can halve the size, then by default also allow to double it
-) : ScrollPane(null) {
+) : ScrollPane(Group()) {
     var continuousScrollingX = false
 
     var onViewportChangedListener: ((width: Float, height: Float, viewport: Rectangle) -> Unit)? = null
     var onPanStopListener: (() -> Unit)? = null
     var onPanStartListener: (() -> Unit)? = null
 
-    /**
-     * Exists so that we are always able to set the center to the edge of the contained actor.
-     * Otherwise, the [ScrollPane] would always stop at the actor's edge, keeping the center always ([width or height]/2) away from the edge.
-     * This is lateinit because unfortunately [ScrollPane] uses [setActor] in its constructor, and we override [setActor], so paddingGroup has not been
-     * constructed at that moment, throwing a NPE.
-     */
-    @Suppress("UNNECESSARY_LATEINIT")
-    private lateinit var paddingGroup: Group
-
     private val horizontalPadding get() = width / 2
     private val verticalPadding get() = height / 2
 
     init {
-        paddingGroup = Group()
-        super.setActor(paddingGroup)
-
         addZoomListeners()
     }
 
-    override fun setActor(actor: Actor?) {
-        if (!this::paddingGroup.isInitialized) return
-        paddingGroup.clearChildren()
-        paddingGroup.addActor(actor)
+    fun reloadMaxZoom() {
+
+        maxZoom = UncivGame.Current.settings.maxWorldZoomOut
+        minZoom = 1f / maxZoom
+
+        // Since normally min isn't reached exactly, only powers of 0.8
+        if (scaleX < minZoom)
+            zoom(1f)
     }
 
-    override fun getActor(): Actor? {
-        if (!this::paddingGroup.isInitialized || !paddingGroup.hasChildren()) return null
-        return paddingGroup.children[0]
+    override fun getActor() : Actor? {
+        val group: Group = super.getActor() as Group
+        return if (group.hasChildren()) group.children[0] else null
+    }
+
+    override fun setActor(content: Actor?) {
+        val group: Group? = super.getActor() as Group?
+        if (group != null) {
+            group.clearChildren()
+            group.addActor(content)
+        } else {
+            super.setActor(content)
+        }
     }
 
     override fun scrollX(pixelsX: Float) {
@@ -73,16 +78,26 @@ open class ZoomableScrollPane(
         updatePadding()
         super.sizeChanged()
         updateCulling()
+
+        if (continuousScrollingX) {
+            // For world-wrap we do not allow viewport to become bigger than the map size,
+            // because we don't want to render the same tiles multiple times (they will be
+            // flickering because of movement).
+            // Hence we limit minimal possible zoom to content width + some extra offset.
+            val content = actor
+            if (content != null)
+                minZoom = max((width + 80f) * scaleX / content.width, 1f / UncivGame.Current.settings.maxWorldZoomOut)// add some extra padding offset
+        }
+
     }
 
     private fun updatePadding() {
-        val content = actor
-        if (content == null) return
+        val content = actor ?: return
         // Padding is always [dimension / 2] because we want to be able to have the center of the scrollPane at the very edge of the content
         content.x = horizontalPadding
-        paddingGroup.width = content.width + horizontalPadding * 2
         content.y = verticalPadding
-        paddingGroup.height = content.height + verticalPadding * 2
+        super.getActor().width = content.width + horizontalPadding * 2
+        super.getActor().height = content.height + verticalPadding * 2
     }
 
     fun updateCulling() {
@@ -103,22 +118,19 @@ open class ZoomableScrollPane(
     }
 
     open fun zoom(zoomScale: Float) {
-        if (zoomScale < minZoom || zoomScale > maxZoom) return
+        val newZoom = min(max(zoomScale, minZoom), maxZoom)
+        val oldZoomX = scaleX
+        val oldZoomY = scaleY
 
-        val previousScaleX = scaleX
-        val previousScaleY = scaleY
-
-        val newWidth = width * previousScaleX / zoomScale
-        val newHeight = height * previousScaleY / zoomScale
-
-        // For world-wrap we do not allow viewport to become bigger than the map size
-        // (we don't want to see the same tiles multiple times)
-        if (continuousScrollingX && actor != null && newWidth >= actor!!.width)
+        if (newZoom == oldZoomX)
             return
+
+        val newWidth = width * oldZoomX / newZoom
+        val newHeight = height * oldZoomY / newZoom
 
         // When we scale, the width & height values stay the same. However, after scaling up/down, the width will be rendered wider/narrower than before.
         // But we want to keep the size of the pane the same, so we do need to adjust the width & height: smaller if the scale increased, larger if it decreased.
-        setScale(zoomScale)
+        setScale(newZoom)
         setSize(newWidth, newHeight)
 
         onViewportChanged()
@@ -134,7 +146,7 @@ open class ZoomableScrollPane(
         zoom(scaleX * 0.8f)
     }
 
-    class ScrollZoomListener(val zoomableScrollPane: ZoomableScrollPane):InputListener(){
+    class ScrollZoomListener(private val zoomableScrollPane: ZoomableScrollPane):InputListener(){
         override fun scrolled(event: InputEvent?, x: Float, y: Float, amountX: Float, amountY: Float): Boolean {
             if (amountX > 0 || amountY > 0) zoomableScrollPane.zoomOut()
             else zoomableScrollPane.zoomIn()
@@ -142,7 +154,7 @@ open class ZoomableScrollPane(
         }
     }
 
-    class ZoomListener(val zoomableScrollPane: ZoomableScrollPane):ActorGestureListener(){
+    class ZoomListener(private val zoomableScrollPane: ZoomableScrollPane):ActorGestureListener(){
         var lastScale = 1f
         var lastInitialDistance = 0f
 
@@ -166,7 +178,7 @@ open class ZoomableScrollPane(
         addListener(ZoomListener(this))
     }
 
-    class FlickScrollListener(val zoomableScrollPane: ZoomableScrollPane): ActorGestureListener(){
+    class FlickScrollListener(private val zoomableScrollPane: ZoomableScrollPane): ActorGestureListener(){
         private var wasPanning = false
         override fun pan(event: InputEvent, x: Float, y: Float, deltaX: Float, deltaY: Float) {
             if (!wasPanning) {
@@ -209,16 +221,14 @@ open class ZoomableScrollPane(
 
     /** Get the scrolling destination if currently scrolling, else the current scroll position. */
     fun scrollingDestination(): Vector2 {
-        if (isScrolling())
-            return scrollingTo!!
-        else
-            return Vector2(scrollX, scrollY)
+        return if (isScrolling()) scrollingTo!! else Vector2(scrollX, scrollY)
     }
 
-    class ScrollToAction(val zoomableScrollPane: ZoomableScrollPane):FloatAction(0f, 1f, 0.4f) {
+    class ScrollToAction(private val zoomableScrollPane: ZoomableScrollPane):FloatAction(0f, 1f, 0.4f) {
 
-        val originalScrollX = zoomableScrollPane.scrollX
-        val originalScrollY = zoomableScrollPane.scrollY
+        private val originalScrollX = zoomableScrollPane.scrollX
+        private val originalScrollY = zoomableScrollPane.scrollY
+
         override fun update(percent: Float) {
             zoomableScrollPane.scrollX = zoomableScrollPane.scrollingTo!!.x * percent + originalScrollX * (1 - percent)
             zoomableScrollPane.scrollY = zoomableScrollPane.scrollingTo!!.y * percent + originalScrollY * (1 - percent)
@@ -251,7 +261,7 @@ open class ZoomableScrollPane(
     }
 
     /** @return the currently scrolled-to viewport of the whole scrollable area */
-    fun getViewport(): Rectangle {
+    private fun getViewport(): Rectangle {
         val viewportFromLeft = scrollX
         /** In the default coordinate system, the y origin is at the bottom, but scrollY is from the top, so we need to invert. */
         val viewportFromBottom = maxY - scrollY
