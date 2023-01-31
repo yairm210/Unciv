@@ -146,7 +146,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     private fun addWorkBoatChoice() {
-        if (!cityInfo.isCoastal()) return
         val buildableWorkboatUnits = units
             .filter {
                 it.hasUnique(UniqueType.CreateWaterImprovements)
