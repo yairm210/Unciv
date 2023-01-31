@@ -49,6 +49,7 @@ object UnitActionsPillage {
             UnitActionType.Pillage,
             action = {
                 val pillagedImprovement = unit.currentTile.getImprovementToPillageName()!!
+                val pillagingImprovement = unit.currentTile.canPillageTileImprovement()
                 val pillageText = "An enemy [${unit.baseUnit.name}] has pillaged our [$pillagedImprovement]"
                 val icon = "ImprovementIcons/$pillagedImprovement"
                 tile.getOwner()?.addNotification(
@@ -68,7 +69,8 @@ object UnitActionsPillage {
                 val freePillage = unit.hasUnique(UniqueType.NoMovementToPillage, checkCivInfoUniques = true)
                 if (!freePillage) unit.useMovementPoints(1f)
 
-                unit.healBy(25)
+                if (pillagingImprovement)  // only Improvements heal HP
+                    unit.healBy(25)
             }.takeIf { unit.currentMovement > 0 && UnitActions.canPillage(unit, tile) })
     }
 
