@@ -647,18 +647,6 @@ class Civilization : IsPartOfGameInfoSerialization {
                 if (gameInfo.tileMap[workedTile].getOwner() != this)
                     cityInfo.workedTiles.remove(workedTile)
 
-        for (building in gameInfo.ruleSet.buildings.values) {
-            if (building.uniqueTo == civName) {
-                cache.uniqueBuildings.add(building)
-            }
-        }
-
-        for (unit in gameInfo.ruleSet.units.values) {
-            if (unit.uniqueTo == civName) {
-                cache.uniqueUnits.add(unit)
-            }
-        }
-
         passThroughImpassableUnlocked = passableImpassables.isNotEmpty()
         // Cache whether this civ gets nonstandard terrain damage for performance reasons.
         nonStandardTerrainDamage = getMatchingUniques(UniqueType.DamagesContainingUnits)

@@ -48,6 +48,18 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             if (lastEraForUnit != null)
                 lastEraResourceUsedForUnit[resource] = lastEraForUnit
         }
+
+        for (building in ruleset.buildings.values) {
+            if (building.uniqueTo == civInfo.civName) {
+                uniqueBuildings.add(building)
+            }
+        }
+
+        for (unit in ruleset.units.values) {
+            if (unit.uniqueTo == civInfo.civName) {
+                uniqueUnits.add(unit)
+            }
+        }
     }
 
     fun updateSightAndResources() {
