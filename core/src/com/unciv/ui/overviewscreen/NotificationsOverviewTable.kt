@@ -88,7 +88,7 @@ class NotificationsOverviewTable(
             for (notification in categoryNotifications) {
                 val notificationTable = Table(BaseScreen.skin)
 
-                val labelWidth = maxEntryWidth * notification.icons.size - 10f
+                val labelWidth = maxEntryWidth - iconSize * notification.icons.size - 10f
                 val label = WrappableLabel(notification.text, labelWidth, Color.BLACK, 20)
 
                 notificationTable.add(label)
