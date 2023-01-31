@@ -883,11 +883,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter]
-     * @param otherCiv: The other civilization which may not be the same Civilization that owns this MapUnit.
-     * In the case otherCiv is not given, otherCiv == civInfo so "Ally" == true and "Enemy" == false
-     * for situations where the code wouldn't need to check allegiance in a mapUnitFilter but a modder
-     * added the Ally/Enemy filter anyways (e.g., uniques that trigger when defeating a unit won't
-     * check ally/enemy status for obvious reasons).
+     * @param otherCiv: Defaults to [MapUnit.civInfo]. Used for filtering based on diplomacy.
      * */
     fun matchesFilter(filter: String, otherCiv: Civilization? = civInfo): Boolean {
         return filter.filterAndLogic { matchesFilter(it) } // multiple types at once - AND logic. Looks like:"{Military} {Land}"
