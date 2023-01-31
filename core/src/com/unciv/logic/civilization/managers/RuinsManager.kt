@@ -49,7 +49,7 @@ class RuinsManager : IsPartOfGameInfoSerialization {
                 && (civInfo.civConstructions.boughtItemsWithIncreasingPrice[civInfo.religionManager.getGreatProphetEquivalent()] ?: 0) > 0
             ) continue
 
-            if (possibleReward.getMatchingUniques(UniqueType.OnlyAvailableWhen)
+            if (possibleReward.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals)
                         .any { !it.conditionalsApply(StateForConditionals(civInfo, unit=triggeringUnit, tile = triggeringUnit.getTile()) ) })
                 continue
 
