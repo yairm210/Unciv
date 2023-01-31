@@ -360,7 +360,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             val rejectionReasons =
                 (construction as INonPerpetualConstruction).getRejectionReasons(this)
 
-            if (rejectionReasons.hasAReasonToBeRemovedFromQueue()) {
+            if (rejectionReasons.any { it.hasAReasonToBeRemovedFromQueue() }) {
                 val workDone = getWorkDone(constructionName)
                 if (construction is Building) {
                     // Production put into wonders gets refunded

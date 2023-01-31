@@ -200,7 +200,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 ConstructionButtonDTO(
                     entry,
                     buttonText,
-                    entry.getRejectionReasons(cityConstructions).getMostImportantRejectionReason()
+                    entry.getRejectionReasons(cityConstructions).firstNotNullOfOrNull { it.getMostImportantRejectionReason() }
                 )
             )
         }

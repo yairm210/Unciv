@@ -4,7 +4,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.RejectionReason
-import com.unciv.logic.city.RejectionReasons
+import com.unciv.logic.city.RejectionReasonInstance
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.Ruleset
@@ -112,63 +112,57 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             )
     }
 
-    override fun getRejectionReasons(cityConstructions: CityConstructions): RejectionReasons {
-        val rejectionReasons = RejectionReasons()
+    override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReasonInstance> = sequence {
         if (isWaterUnit() && !cityConstructions.city.isCoastal())
-            rejectionReasons.add(RejectionReason.WaterUnitsInCoastalCities)
+            yield(RejectionReason.WaterUnitsInCoastalCities.toInstance())
         if (isAirUnit()) {
             val fakeUnit = getMapUnit(cityConstructions.city.civInfo)
             val canUnitEnterTile = fakeUnit.movement.canMoveTo(cityConstructions.city.getCenterTile())
             if (!canUnitEnterTile)
-                rejectionReasons.add(RejectionReason.NoPlaceToPutUnit)
+                yield(RejectionReason.NoPlaceToPutUnit.toInstance())
         }
         val civInfo = cityConstructions.city.civInfo
         for (unique in uniqueObjects) {
             when (unique.type) {
                 UniqueType.OnlyAvailableWhen -> if (!unique.conditionalsApply(civInfo, cityConstructions.city))
-                    rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
+                    yield(RejectionReason.ShouldNotBeDisplayed.toInstance())
 
                 UniqueType.RequiresPopulation -> if (unique.params[0].toInt() > cityConstructions.city.population.population)
-                    rejectionReasons.add(RejectionReason.PopulationRequirement.toInstance(unique.text))
+                    yield(RejectionReason.PopulationRequirement.toInstance(unique.text))
 
                 else -> {}
             }
         }
 
-        val civRejectionReasons = getRejectionReasons(civInfo)
-        if (civRejectionReasons.isNotEmpty()) {
-            rejectionReasons.addAll(civRejectionReasons)
-        }
-        return rejectionReasons
+        yieldAll(getRejectionReasons(civInfo))
     }
 
-    fun getRejectionReasons(civInfo: Civilization): RejectionReasons {
-        val rejectionReasons = RejectionReasons()
+    fun getRejectionReasons(civInfo: Civilization): Sequence<RejectionReasonInstance> = sequence {
         val ruleSet = civInfo.gameInfo.ruleSet
 
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!))
-            rejectionReasons.add(RejectionReason.RequiresTech.toInstance("$requiredTech not researched"))
+            yield(RejectionReason.RequiresTech.toInstance("$requiredTech not researched"))
         if (obsoleteTech != null && civInfo.tech.isResearched(obsoleteTech!!))
-            rejectionReasons.add(RejectionReason.Obsoleted.toInstance("Obsolete by $obsoleteTech"))
+            yield(RejectionReason.Obsoleted.toInstance("Obsolete by $obsoleteTech"))
 
         if (uniqueTo != null && uniqueTo != civInfo.civName)
-            rejectionReasons.add(RejectionReason.UniqueToOtherNation.toInstance("Unique to $uniqueTo"))
+            yield(RejectionReason.UniqueToOtherNation.toInstance("Unique to $uniqueTo"))
         if (ruleSet.units.values.any { it.uniqueTo == civInfo.civName && it.replaces == name })
-            rejectionReasons.add(RejectionReason.ReplacedByOurUnique.toInstance("Our unique unit replaces this"))
+            yield(RejectionReason.ReplacedByOurUnique.toInstance("Our unique unit replaces this"))
 
         if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon())
-            rejectionReasons.add(RejectionReason.DisabledBySetting)
+            yield(RejectionReason.DisabledBySetting.toInstance())
 
         for (unique in uniqueObjects) {
             when (unique.type) {
                 UniqueType.Unbuildable ->
-                    rejectionReasons.add(RejectionReason.Unbuildable)
+                    yield(RejectionReason.Unbuildable.toInstance())
 
                 UniqueType.FoundCity -> if (civInfo.isCityState() || civInfo.isOneCityChallenger())
-                    rejectionReasons.add(RejectionReason.NoSettlerForOneCityPlayers)
+                    yield(RejectionReason.NoSettlerForOneCityPlayers.toInstance())
 
-                UniqueType.MaxNumberBuildable -> if (civInfo.civConstructions.countConstructedObjects(this) >= unique.params[0].toInt())
-                    rejectionReasons.add(RejectionReason.MaxNumberBuildable)
+                UniqueType.MaxNumberBuildable -> if (civInfo.civConstructions.countConstructedObjects(this@BaseUnit) >= unique.params[0].toInt())
+                    yield(RejectionReason.MaxNumberBuildable.toInstance())
 
                 else -> {}
             }
@@ -178,26 +172,24 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             for ((resource, requiredAmount) in getResourceRequirements()) {
                 val availableAmount = civInfo.getCivResourcesByName()[resource]!!
                 if (availableAmount < requiredAmount) {
-                    rejectionReasons.add(RejectionReason.ConsumesResources.toInstance(resource.getNeedMoreAmountString(requiredAmount - availableAmount)))
+                    yield(RejectionReason.ConsumesResources.toInstance(resource.getNeedMoreAmountString(requiredAmount - availableAmount)))
                 }
             }
         }
 
         for (unique in civInfo.getMatchingUniques(UniqueType.CannotBuildUnits))
-            if (this.matchesFilter(unique.params[0])) {
+            if (this@BaseUnit.matchesFilter(unique.params[0])) {
                 if (unique.conditionals.any { it.type == UniqueType.ConditionalBelowHappiness }){
-                    rejectionReasons.add(RejectionReason.CannotBeBuilt.toInstance(unique.text, true))
+                    yield(RejectionReason.CannotBeBuilt.toInstance(unique.text, true))
                 }
-                else rejectionReasons.add(RejectionReason.CannotBeBuilt)
+                else yield(RejectionReason.CannotBeBuilt.toInstance())
             }
-
-        return rejectionReasons
     }
 
-    fun isBuildable(civInfo: Civilization) = getRejectionReasons(civInfo).isEmpty()
+    fun isBuildable(civInfo: Civilization) = getRejectionReasons(civInfo).none()
 
     override fun isBuildable(cityConstructions: CityConstructions): Boolean =
-            getRejectionReasons(cityConstructions).isEmpty()
+            getRejectionReasons(cityConstructions).none()
 
     override fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat?): Boolean {
         val civInfo = cityConstructions.city.civInfo
