@@ -612,7 +612,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }?.getCity()
         if (healingCity != null) {
             for (unique in healingCity.getMatchingUniques(UniqueType.CityHealingUnits)) {
-                if (!matchesFilter(unique.params[0], healingCity.civInfo)) continue
+                if (!matchesFilter(unique.params[0]) || !isAlly(healingCity.civInfo)) continue // only heal our units or allied units
                 healing += unique.params[1].toInt()
             }
         }
@@ -882,10 +882,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 || (civInfo.isCityState() && otherCiv != null && civInfo.getAllyCiv() == otherCiv.civName)
     }
 
-    /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter]
-     * @param otherCiv: Defaults to [MapUnit.civInfo]. Used for filtering based on diplomacy.
-     * */
-    fun matchesFilter(filter: String, otherCiv: Civilization? = civInfo): Boolean {
+    /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter] */
+    fun matchesFilter(filter: String): Boolean {
         return filter.filterAndLogic { matchesFilter(it) } // multiple types at once - AND logic. Looks like:"{Military} {Land}"
             ?: when (filter) {
 
@@ -895,8 +893,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
             Constants.barbarians, "Barbarian" -> civInfo.isBarbarian()
             "City-State" -> civInfo.isCityState()
             "Embarked" -> isEmbarked()
-            "Ally" -> isAlly(otherCiv)
-            "Enemy" -> otherCiv?.isAtWarWith(civInfo) == true // isAtWarWith returns false if the civs don't know each other
             "Non-City" -> true
             else -> {
                 if (baseUnit.matchesFilter(filter)) return true
