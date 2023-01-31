@@ -301,7 +301,8 @@ object UnitActions {
         if (upgradeAction != null) actionList += upgradeAction
     }
 
-    /**  */
+    /** Allow unit to Transform into another unit. Similar as Upgrade
+     * Uses ConditionalCost */
     private fun getTransformAction(
         unit: MapUnit
     ): ArrayList<UnitAction>? {
