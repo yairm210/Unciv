@@ -94,7 +94,7 @@ It can be any value noted in `baseUnitFilter` or one of the following:
 -   `Wounded`, `wounded units`
 -   `City-State`
 -   `Barbarians`, `Barbarian`
--   `Friendly` - either the Civilization's own unit, a unit of a City-State ally, or a unit of a City-State's ally
+-   `Ally` - either the Civilization's own unit, a unit of a City-State ally, or a unit of a City-State's ally
 -   `Enemy`
 -   Again, any non-contradictory combination of the above is also allowed, e.g. `[{Wounded} {Water}]` units.
 

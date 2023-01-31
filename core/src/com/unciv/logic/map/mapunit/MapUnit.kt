@@ -876,7 +876,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
 
-    private fun isFriendly(otherCiv: Civilization?): Boolean {
+    private fun isAlly(otherCiv: Civilization?): Boolean {
         return otherCiv == civInfo
                 || (otherCiv?.isCityState() == true && otherCiv.getAllyCiv() == civInfo.civName)
                 || (civInfo.isCityState() && otherCiv != null && civInfo.getAllyCiv() == otherCiv.civName)
@@ -884,10 +884,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter]
      * @param otherCiv: The other civilization which may not be the same Civilization that owns this MapUnit.
-     * In the case otherCiv is not given, otherCiv == civInfo so "Friendly" == true and "Enemy" == false
+     * In the case otherCiv is not given, otherCiv == civInfo so "Ally" == true and "Enemy" == false
      * for situations where the code wouldn't need to check allegiance in a mapUnitFilter but a modder
-     * added the Friendly/Enemy filter anyways (e.g., uniques that trigger when defeating a unit won't
-     * check friendly/enemy status for obvious reasons).
+     * added the Ally/Enemy filter anyways (e.g., uniques that trigger when defeating a unit won't
+     * check ally/enemy status for obvious reasons).
      * */
     fun matchesFilter(filter: String, otherCiv: Civilization? = civInfo): Boolean {
         return filter.filterAndLogic { matchesFilter(it) } // multiple types at once - AND logic. Looks like:"{Military} {Land}"
@@ -899,7 +899,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             Constants.barbarians, "Barbarian" -> civInfo.isBarbarian()
             "City-State" -> civInfo.isCityState()
             "Embarked" -> isEmbarked()
-            "Friendly" -> isFriendly(otherCiv)
+            "Ally" -> isAlly(otherCiv)
             "Enemy" -> otherCiv?.isAtWarWith(civInfo) == true // isAtWarWith returns false if the civs don't know each other
             "Non-City" -> true
             else -> {
