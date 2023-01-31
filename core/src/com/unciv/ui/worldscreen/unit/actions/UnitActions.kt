@@ -395,7 +395,6 @@ object UnitActions {
         val tile = unit.getTile()
         if (tile.isCityCenter()) return
         if (!tile.isPillaged()) return
-        if (tile.getOwner() != null && unit.civInfo.isAtWarWith(tile.getOwner()!!)) return
 
         val couldConstruct = unit.currentMovement > 0
                 && !tile.isCityCenter() && tile.improvementInProgress != Constants.repair
