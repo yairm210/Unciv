@@ -132,6 +132,7 @@ class MapParametersTable(
             MapType.fourCorners,
             MapType.archipelago,
             MapType.innerSea,
+            MapType.random,
             if (forMapEditor && mapGeneratedMainType != MapGeneratedMainType.randomGenerated) MapType.empty else null
         )
 

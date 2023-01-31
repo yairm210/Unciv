@@ -50,7 +50,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
             MapType.threeContinents -> createThreeContinents(tileMap)
             MapType.fourCorners -> createFourCorners(tileMap)
             MapType.archipelago -> createArchipelago(tileMap)
-            MapType.default -> createPerlin(tileMap)
+            MapType.random -> createPerlin(tileMap)
         }
 
         if (tileMap.mapParameters.shape === MapShape.flatEarth) {

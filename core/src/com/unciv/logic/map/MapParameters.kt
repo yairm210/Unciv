@@ -138,7 +138,7 @@ object MapGeneratedMainType : IsPartOfGameInfoSerialization {
 }
 
 object MapType : IsPartOfGameInfoSerialization {
-    const val default = "Default"
+    const val random = "Random"
     const val pangaea = "Pangaea"
     const val continentAndIslands = "Continent and Islands"
     const val twoContinents = "Two Continents"
