@@ -9,6 +9,7 @@ import com.unciv.ui.popup.AskTextPopup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.models.translations.tr
 
 /** Widget for the City Screen -
  *  the panel at bottom center showing the city name and offering arrows to cycle through the cities. */
@@ -57,7 +58,7 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
             AskTextPopup(
                 cityScreen,
                 label = "Please enter a new name for your city",
-                defaultText = city.name,
+                defaultText = city.name.tr(),
                 validate = { it != "" },
                 actionOnOk = { text ->
                     city.name = text
