@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popup.AskTextPopup
+import com.unciv.ui.pickerscreens.CityRenamePopup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
@@ -54,16 +54,13 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
 
         val currentCityLabel = city.name.toLabel(fontSize = 30, fontColor = civInfo.nation.getInnerColor())
         if (cityScreen.canChangeState) currentCityLabel.onClick {
-            AskTextPopup(
-                cityScreen,
-                label = "Please enter a new name for your city",
-                defaultText = city.name,
-                validate = { it != "" },
-                actionOnOk = { text ->
-                    city.name = text
+            CityRenamePopup(
+                screen = cityScreen,
+                city = city,
+                actionOnClose = {
                     cityScreen.game.replaceCurrentScreen(CityScreen(city))
                 }
-            ).open()
+            )
         }
 
         cityNameTable.add(currentCityLabel)
