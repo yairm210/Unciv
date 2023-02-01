@@ -13,12 +13,15 @@ import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.newgamescreen.TranslatedSelectBox
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.UncivSlider
 import com.unciv.ui.utils.WrappableLabel
 import com.unciv.ui.utils.extensions.brighten
 import com.unciv.ui.utils.extensions.onChange
+import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.utils.extensions.toTextButton
 
 private val resolutionArray = com.badlogic.gdx.utils.Array(arrayOf("750x500", "900x600", "1050x700", "1200x800", "1500x1000"))
 
@@ -35,7 +38,8 @@ fun displayTab(
     optionsPopup.addCheckbox(this, "Show tile yields", settings.showTileYields, true) { settings.showTileYields = it } // JN
     optionsPopup.addCheckbox(this, "Show worked tiles", settings.showWorkedTiles, true) { settings.showWorkedTiles = it }
     optionsPopup.addCheckbox(this, "Show resources and improvements", settings.showResourcesAndImprovements, true) { settings.showResourcesAndImprovements = it }
-    optionsPopup.addCheckbox(this, "Show tutorials", settings.showTutorials, true) { settings.showTutorials = it }
+    optionsPopup.addCheckbox(this, "Show tutorials", settings.showTutorials, true, false) { settings.showTutorials = it }
+    addResetTutorials(this, settings)
     optionsPopup.addCheckbox(this, "Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
     optionsPopup.addCheckbox(this, "Experimental Demographics scoreboard", settings.useDemographics, true) { settings.useDemographics = it }
     optionsPopup.addCheckbox(this, "Show zoom buttons in world screen", settings.showZoomButtons, true) { settings.showZoomButtons = it }
@@ -194,4 +198,22 @@ private fun addSkinSelectBox(table: Table, settings: GameSettings, selectBoxMinW
         SkinCache.assembleSkinConfigs(ImageGetter.ruleset.mods)
         onSkinChange()
     }
+}
+
+private fun addResetTutorials(table: Table, settings: GameSettings) {
+    val resetTutorialsButton = "Reset tutorials".toTextButton()
+	resetTutorialsButton.onClick {
+            ConfirmPopup(
+                table.stage,
+                "Do you want to reset completed turials?",
+                "Reset"
+            ) {
+                settings.tutorialsShown.clear()
+                settings.tutorialTasksCompleted.clear()
+                settings.save()
+                resetTutorialsButton.setText("Success!".tr())
+                resetTutorialsButton.clearListeners()
+            }.open(true)
+    }
+    table.add(resetTutorialsButton).center().row()
 }
