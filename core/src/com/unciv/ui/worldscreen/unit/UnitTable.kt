@@ -222,12 +222,13 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         }
 
         else if (selectedCity != null) {
+            isVisible = true
             separator.isVisible = true
             val city = selectedCity!!
             var nameLabelText = city.name.tr()
             if(city.health<city.getMaxHealth()) nameLabelText+=" ("+city.health+")"
             unitNameLabel.setText(nameLabelText)
-
+            unitNameLabel.clearListeners()
             unitDescriptionTable.clear()
             unitDescriptionTable.defaults().pad(2f).padRight(5f)
             unitDescriptionTable.add("Strength".tr())
