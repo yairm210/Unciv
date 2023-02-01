@@ -33,6 +33,7 @@ class TileSetConfig {
         unexploredTileColor = other.unexploredTileColor
         fogOfWarColor = other.fogOfWarColor
         fallbackTileSet = other.fallbackTileSet
+        tileScale = other.tileScale
         for ((tileString, scale) in other.tileScales){
             tileScales[tileString] = scale
         }

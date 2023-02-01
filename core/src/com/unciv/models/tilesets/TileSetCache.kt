@@ -7,7 +7,6 @@ import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.images.ImageGetter
-import com.unciv.utils.debug
 
 object TileSetCache : HashMap<String, TileSet>() {
 
@@ -33,7 +32,9 @@ object TileSetCache : HashMap<String, TileSet>() {
         values.forEach { it.resetConfig() }
 
         for (mod in mods.distinct()) {
-            values.forEach { it.mergeConfig(mod) }
+            for (tileset in values) {
+                tileset.mergeModConfig(mod)
+            }
         }
     }
 
@@ -75,7 +76,7 @@ object TileSetCache : HashMap<String, TileSet>() {
             val name = configFile.nameWithoutExtension().removeSuffix("Config")
             val config = json().fromJsonFile(TileSetConfig::class.java, configFile)
             val tileset = get(name) ?: TileSet(name)
-            tileset.addConfig(configId, config)
+            tileset.cacheConfigFromMod(configId, config)
             set(name, tileset)
         }
     }
