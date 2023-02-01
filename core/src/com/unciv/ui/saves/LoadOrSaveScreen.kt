@@ -4,6 +4,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.UncivGame
 import com.unciv.Constants
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -44,9 +45,10 @@ abstract class LoadOrSaveScreen(
 
         rightSideTable.defaults().pad(5f, 10f)
 
-        showAutosavesCheckbox.isChecked = false
+        showAutosavesCheckbox.isChecked = UncivGame.Current.settings.showAutosaves
         showAutosavesCheckbox.onChange {
             updateShownSaves(showAutosavesCheckbox.isChecked)
+            UncivGame.Current.settings.showAutosaves = showAutosavesCheckbox.isChecked
         }
         val ctrlA = KeyCharAndCode.ctrl('a')
         showAutosavesCheckbox.keyShortcuts.add(ctrlA) { showAutosavesCheckbox.toggle() }
@@ -60,7 +62,7 @@ abstract class LoadOrSaveScreen(
         if (fileListHeaderText != null)
             topTable.add(fileListHeaderText.toLabel()).pad(10f).row()
 
-        updateShownSaves(false)
+        updateShownSaves(showAutosavesCheckbox.isChecked)
 
         topTable.add(savesScrollPane)
         topTable.add(rightSideTable)

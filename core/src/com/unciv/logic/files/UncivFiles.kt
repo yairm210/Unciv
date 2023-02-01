@@ -388,25 +388,25 @@ class UncivFiles(
     /**
      * Auto-saves a snapshot of the [gameInfo] in a new thread.
      */
-    fun requestAutoSave(gameInfo: GameInfo): Job {
+    fun requestAutoSave(gameInfo: GameInfo, nextTurn: Boolean = false): Job {
         // The save takes a long time (up to a few seconds on large games!) and we can do it while the player continues his game.
         // On the other hand if we alter the game data while it's being serialized we could get a concurrent modification exception.
         // So what we do is we clone all the game data and serialize the clone.
-        return requestAutoSaveUnCloned(gameInfo.clone())
+        return requestAutoSaveUnCloned(gameInfo.clone(), nextTurn)
     }
 
     /**
      * In a new thread, auto-saves the [gameInfo] directly - only use this with [GameInfo] objects that are guaranteed not to be changed while the autosave is in progress!
      */
-    fun requestAutoSaveUnCloned(gameInfo: GameInfo): Job {
+    fun requestAutoSaveUnCloned(gameInfo: GameInfo, nextTurn: Boolean = false): Job {
         val job = Concurrency.run("autoSaveUnCloned") {
-            autoSave(gameInfo)
+            autoSave(gameInfo, nextTurn)
         }
         autoSaveJob = job
         return job
     }
 
-    fun autoSave(gameInfo: GameInfo) {
+    fun autoSave(gameInfo: GameInfo, nextTurn: Boolean = false) {
         try {
             saveGame(gameInfo, AUTOSAVE_FILE_NAME)
         } catch (oom: OutOfMemoryError) {
@@ -414,16 +414,18 @@ class UncivFiles(
         }
 
         // keep auto-saves for the last 10 turns for debugging purposes
-        val newAutosaveFilename =
-            SAVE_FILES_FOLDER + File.separator + AUTOSAVE_FILE_NAME + "-${gameInfo.currentPlayer}-${gameInfo.turns}"
-        getSave(AUTOSAVE_FILE_NAME).copyTo(files.local(newAutosaveFilename))
-
-        fun getAutosaves(): Sequence<FileHandle> {
-            return getSaves().filter { it.name().startsWith(AUTOSAVE_FILE_NAME) }
-        }
-        while (getAutosaves().count() > 10) {
-            val saveToDelete = getAutosaves().minByOrNull { it.lastModified() }!!
-            deleteSave(saveToDelete.name())
+        if(nextTurn) {
+            val newAutosaveFilename =
+                SAVE_FILES_FOLDER + File.separator + AUTOSAVE_FILE_NAME + "-${gameInfo.currentPlayer}-${gameInfo.turns}"
+            getSave(AUTOSAVE_FILE_NAME).copyTo(files.local(newAutosaveFilename))
+    
+            fun getAutosaves(): Sequence<FileHandle> {
+                return getSaves().filter { it.name().startsWith(AUTOSAVE_FILE_NAME) }
+            }
+            while (getAutosaves().count() > 10) {
+                val saveToDelete = getAutosaves().minByOrNull { it.lastModified() }!!
+                deleteSave(saveToDelete.name())
+            }
         }
     }
 

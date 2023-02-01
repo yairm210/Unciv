@@ -273,10 +273,10 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         arrowsToDraw.clear()
     }
 
-    fun dimImprovement(dim: Boolean) = improvementIcon?.setColor(1f, 1f, 1f, if (dim) 0.5f else 1f)
-    fun dimResource(dim: Boolean) = resourceIcon?.setColor(1f, 1f, 1f, if (dim) 0.5f else 1f)
-    fun dimYields(dim: Boolean) = yields.setColor(1f, 1f, 1f, if (dim) 0.5f else 1f)
-    fun dimPopulation(dim: Boolean) = populationIcon?.setColor(1f, 1f, 1f, if (dim) 0.5f else 1f)
+    fun dimImprovement(dim: Boolean) { improvementIcon?.color?.a = if (dim) 0.5f else 1f }
+    fun dimResource(dim: Boolean) { resourceIcon?.color?.a = if (dim) 0.5f else 1f }
+    fun dimYields(dim: Boolean) { yields.color.a = if (dim) 0.5f else 1f }
+    fun dimPopulation(dim: Boolean) { populationIcon?.color?.a = if (dim) 0.4f else 1f }
 
     fun setYieldVisible(isVisible: Boolean) {
         yields.isVisible = isVisible

@@ -71,6 +71,8 @@ class GameSettings {
     var showZoomButtons: Boolean = false
 
     var notificationsLogMaxTurns = 5
+    
+    var showAutosaves: Boolean = false
 
     var androidCutout: Boolean = false
 
