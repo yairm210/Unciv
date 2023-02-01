@@ -360,7 +360,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             val rejectionReasons =
                 (construction as INonPerpetualConstruction).getRejectionReasons(this)
 
-            if (rejectionReasons.hasAReasonToBeRemovedFromQueue()) {
+            if (rejectionReasons.any { it.hasAReasonToBeRemovedFromQueue() }) {
                 val workDone = getWorkDone(constructionName)
                 if (construction is Building) {
                     // Production put into wonders gets refunded
@@ -374,7 +374,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                     }
                 } else if (construction is BaseUnit) {
                     // Production put into upgradable units gets put into upgraded version
-                    if (rejectionReasons.all { it.rejectionReason == RejectionReason.Obsoleted } && construction.upgradesTo != null) {
+                    if (rejectionReasons.all { it.type == RejectionReasonType.Obsoleted } && construction.upgradesTo != null) {
                         val upgradedUnitName = city.civInfo.getEquivalentUnit(construction.upgradesTo!!).name
                         inProgressConstructions[upgradedUnitName] = (inProgressConstructions[upgradedUnitName] ?: 0) + workDone
                     }
