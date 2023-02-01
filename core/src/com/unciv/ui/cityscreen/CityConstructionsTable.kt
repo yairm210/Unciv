@@ -196,11 +196,15 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 buttonText += "\n" + resource.getConsumesAmountString(amount).tr()
             }
 
+            val mostImportantRejection =
+                    entry.getRejectionReasons(cityConstructions)
+                        .filter { it.isImportantRejection() }
+                        .minByOrNull { it.getRejectionPrecedence() }
             constructionButtonDTOList.add(
                 ConstructionButtonDTO(
                     entry,
                     buttonText,
-                    entry.getRejectionReasons(cityConstructions).firstNotNullOfOrNull { it.getMostImportantRejectionReason() }
+                    mostImportantRejection?.errorMessage
                 )
             )
         }

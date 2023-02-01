@@ -84,23 +84,20 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
 
 
 
-data class RejectionReason(val type: RejectionReasonType,
+class RejectionReason(val type: RejectionReasonType,
                            val errorMessage: String = type.errorMessage,
                            val shouldShow: Boolean = type.shouldShow) {
 
-    fun techPolicyEraWonderRequirements(): Boolean {
-        return type in techPolicyEraWonderRequirements
-    }
+    fun techPolicyEraWonderRequirements(): Boolean = type in techPolicyEraWonderRequirements
 
-    fun hasAReasonToBeRemovedFromQueue(): Boolean {
-        return type in reasonsToDefinitivelyRemoveFromQueue
-    }
+    fun hasAReasonToBeRemovedFromQueue(): Boolean = type in reasonsToDefinitivelyRemoveFromQueue
 
-    fun getMostImportantRejectionReason(): String? {
-        for (rejectionReasonError in orderOfErrorMessages) {
-            if (this.type == rejectionReasonError) return errorMessage
-        }
-        return null
+    fun isImportantRejection(): Boolean = type in orderedImportantRejectionTypes
+
+    /** Returns the index of [orderedImportantRejectionTypes] with the smallest index having the
+     * highest precedence */
+    fun getRejectionPrecedence(): Int {
+        return orderedImportantRejectionTypes.indexOf(type)
     }
 
     // Used for constant variables in the functions above
@@ -118,7 +115,7 @@ data class RejectionReason(val type: RejectionReasonType,
         RejectionReasonType.CannotBeBuiltWith,
         RejectionReasonType.MaxNumberBuildable,
     )
-    private val orderOfErrorMessages = listOf(
+    private val orderedImportantRejectionTypes = listOf(
         RejectionReasonType.WonderBeingBuiltElsewhere,
         RejectionReasonType.NationalWonderBeingBuiltElsewhere,
         RejectionReasonType.RequiresBuildingInAllCities,
