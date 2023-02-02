@@ -2,6 +2,7 @@ package com.unciv.ui.tilegroups.layers
 
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.images.ImageGetter
@@ -68,7 +69,7 @@ class TileLayerFeatures(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
 
     }
 
-    fun update() {
+    override fun doUpdate(viewingCiv: Civilization?) {
         updateRoadImages()
     }
 

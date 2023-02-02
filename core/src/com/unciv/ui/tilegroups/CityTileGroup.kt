@@ -2,6 +2,7 @@ package com.unciv.ui.tilegroups
 
 import com.unciv.UncivGame
 import com.unciv.logic.city.City
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.images.ImageGetter
 
@@ -14,8 +15,8 @@ class CityTileGroup(private val city: City, tile: Tile, tileSetStrings: TileSetS
             layerMisc.setNewPopulationIcon(ImageGetter.getImage("OtherIcons/Star"))
     }
 
-    fun update() {
-        super.update(city.civInfo, showResourcesAndImprovements = true, showTileYields = true)
+    override fun update(viewingCiv: Civilization?) {
+        super.update(city.civInfo)
 
         when {
 

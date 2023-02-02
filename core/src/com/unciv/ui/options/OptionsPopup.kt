@@ -157,20 +157,22 @@ class OptionsPopup(
         }
     }
 
-    fun addCheckbox(table: Table, text: String, initialState: Boolean, updateWorld: Boolean = false, action: ((Boolean) -> Unit)) {
+    fun addCheckbox(table: Table, text: String, initialState: Boolean, updateWorld: Boolean = false, newRow: Boolean = true, action: ((Boolean) -> Unit)) {
         val checkbox = text.toCheckBox(initialState) {
             action(it)
             settings.save()
             val worldScreen = UncivGame.Current.getWorldScreenIfActive()
             if (updateWorld && worldScreen != null) worldScreen.shouldUpdate = true
         }
-        table.add(checkbox).colspan(2).left().row()
+        if (newRow) table.add(checkbox).colspan(2).left().row()
+        else table.add(checkbox).left()
     }
 
     fun addCheckbox(table: Table,
                     text: String,
                     settingsProperty: KMutableProperty0<Boolean>,
                     updateWorld: Boolean = false,
+                    newRow: Boolean = true,
                     action: (Boolean) -> Unit = {}) {
         addCheckbox(table, text, settingsProperty.get(), updateWorld) {
             action(it)

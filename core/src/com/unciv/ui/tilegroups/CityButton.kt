@@ -27,11 +27,13 @@ import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.centerX
 import com.unciv.ui.utils.extensions.colorFromRGB
+import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toGroup
 import com.unciv.ui.utils.extensions.toLabel
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 class InfluenceTable(
     influence: Float,
@@ -271,7 +273,15 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
                 val turnsToStarvation = city.population.getNumTurnsToStarvation()
                 if (turnsToStarvation != null && turnsToStarvation < 100) turnsToStarvation.toString() else "∞"
             }
-            else -> "∞"
+            else -> "-"
+        }
+
+        if (city.isGrowing()) {
+            var nextTurnPercentage = (city.foodForNextTurn() + city.population.foodStored) / city.population.getFoodToNextPopulation().toFloat()
+            if (nextTurnPercentage < 0) nextTurnPercentage = 0.0f
+            if (nextTurnPercentage > 1) nextTurnPercentage = 1.0f
+
+            growthBar.setSemiProgress(CityButton.ColorGrowth.cpy().darken(0.4f), nextTurnPercentage, 1f)
         }
 
         val turnLabel = turnLabelText.toLabel(fontColor = textColor, fontSize = 13)
@@ -325,8 +335,9 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
 
         val progressTable = Table()
 
+        var nextTurnPercentage = 0f
         var percentage = 0f
-        var turns = "∞"
+        var turns = "-"
         var icon: Group? = null
 
         if (cityConstructions.currentConstructionFromQueue.isNotEmpty()) {
@@ -336,12 +347,20 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
                     turns = turnsToConstruction.toString()
                 percentage = cityConstructions.getWorkDone(cityCurrentConstruction.name) /
                         (cityCurrentConstruction as INonPerpetualConstruction).getProductionCost(cityConstructions.city.civInfo).toFloat()
+                nextTurnPercentage = (cityConstructions.getWorkDone(cityCurrentConstruction.name) + city.cityStats.currentCityStats.production) /
+                        cityCurrentConstruction.getProductionCost(cityConstructions.city.civInfo).toFloat()
+
+                if (nextTurnPercentage > 1f) nextTurnPercentage = 1f
+                if (nextTurnPercentage < 0f) nextTurnPercentage = 0f
+            } else {
+                turns = "∞"
             }
             icon = ImageGetter.getConstructionPortrait(cityCurrentConstruction.name, 24f)
         }
 
         val productionBar = ImageGetter.getProgressBarVertical(4f, 30f, percentage,
             CityButton.ColorConstruction, Color.BLACK, 1f)
+        productionBar.setSemiProgress(CityButton.ColorConstruction.cpy().darken(0.4f), nextTurnPercentage, 1f)
         productionBar.color.a = 0.8f
 
         progressTable.add(turns.toLabel(textColor, 13)).expandY().bottom()

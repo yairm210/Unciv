@@ -134,7 +134,7 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
 
     }
 
-    fun update(viewingCiv: Civilization?) {
+    override fun doUpdate(viewingCiv: Civilization?) {
         clearSlots()
         fillSlots(viewingCiv)
 

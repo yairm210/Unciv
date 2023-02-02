@@ -18,10 +18,6 @@ Please note that Right-to-Left languages such as Arabic and Hebrew are not suppo
 
 There are two special entries that won't show in the game but are automatically used to provide short and long descriptions for F-Droid (and possibly other stores soon). They're near the beginning of each language file and marked "Fastlane". See the comments just above each for help, and where to find the actual english original to translate. Do not overlook the note on line breaks in [Other notes](#Other_notes) for the full description!
 
-## App store images
-
-The stores can show screenshots. To show translated versions of these images a different approach is necessary: they must be merged into appropriate subfolders of [fastlane/metadata/android] in the Unciv repository. If in doubt on how to do this, look at the existing ones for the proper dimensions and offer your version using an issue. Hints: relative paths and names must match the 'en-US' subfolder with 'en-US' replaced with the _two-letter_ ISO code of your language. You can use Add file - Upload files if the folder you need already exits. Using the github site to create a PR with new folders is possible, but outside the scope of this document.
-
 ## Pitfalls
 
 -   If a translation template (the stuff to the left of "` = `") contains square brackets, you will have to include each of them _verbatim_ in your translation, but you can move them. Upper/lower case is relevant! e.g. `All [personFilter] are cool` can be translated as `Tous les [personFilter] sont cool`, but ***not*** as `Tous les [personnages] sont cool`, and neither as `Nous sommes vraiment cool`. Failing this is the main cause of your PR's showing up with red "x"es and "checks failed".

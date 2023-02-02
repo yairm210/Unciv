@@ -304,7 +304,7 @@ object ImageGetter {
         percentComplete: Float,
         progressColor: Color,
         backgroundColor: Color,
-        progressPadding: Float = 0f): Group {
+        progressPadding: Float = 0f): ProgressBar {
         return ProgressBar(width, height, true)
                 .setBackground(backgroundColor)
                 .setProgress(progressColor, percentComplete, padding = progressPadding)
@@ -363,6 +363,7 @@ object ImageGetter {
                 else
                     secondaryProgress?.centerY(this)
             }
+            primaryProgress?.toFront()
             return this
         }
 

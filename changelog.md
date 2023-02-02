@@ -1,3 +1,19 @@
+## 4.4.8
+
+By OptimizedForDensity:
+- Fix Faith Healers healing enemies
+- Notification log fix
+
+By vegeta1k95:
+- Add next-turn-progress bar for growth/production on CityButtons
+- Fix incorrect dimming
+
+Don't heal units when pillaging roads  - By itanasi
+
+By Gualdimar:
+- Autosave fix
+- Remember "Show autosaves" setting state
+
 ## 4.4.7
 
 AI battle automation vastly improved for taking over cities

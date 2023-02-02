@@ -5,14 +5,14 @@ class TileSet(val name: String) {
     var config = TileSetConfig()
     var fallback: TileSet? = null
 
-    private val configs = HashMap<String, TileSetConfig>()
+    private val modNameToConfig = HashMap<String, TileSetConfig>()
 
-    fun addConfig(id: String, config: TileSetConfig) {
-        configs[id] = config
+    fun cacheConfigFromMod(modName: String, config: TileSetConfig) {
+        modNameToConfig[modName] = config
     }
 
-    fun mergeConfig(id: String) {
-        val configToMerge = configs[id] ?: return
+    fun mergeModConfig(modName: String) {
+        val configToMerge = modNameToConfig[modName] ?: return
         config.updateConfig(configToMerge)
     }
 
@@ -23,5 +23,7 @@ class TileSet(val name: String) {
     companion object {
         const val DEFAULT = "INTERNAL"
     }
+
+    override fun toString(): String = name
 
 }

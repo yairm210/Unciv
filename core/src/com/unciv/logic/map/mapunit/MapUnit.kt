@@ -612,7 +612,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }?.getCity()
         if (healingCity != null) {
             for (unique in healingCity.getMatchingUniques(UniqueType.CityHealingUnits)) {
-                if (!matchesFilter(unique.params[0])) continue
+                if (!matchesFilter(unique.params[0]) || !isAlly(healingCity.civInfo)) continue // only heal our units or allied units
                 healing += unique.params[1].toInt()
             }
         }
@@ -875,6 +875,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return true
     }
 
+
+    private fun isAlly(otherCiv: Civilization): Boolean {
+        return otherCiv == civInfo
+                || (otherCiv.isCityState() && otherCiv.getAllyCiv() == civInfo.civName)
+                || (civInfo.isCityState() && civInfo.getAllyCiv() == otherCiv.civName)
+    }
 
     /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter] */
     fun matchesFilter(filter: String): Boolean {

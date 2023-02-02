@@ -17,6 +17,7 @@ import com.unciv.ui.tilegroups.YieldGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
+import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.centerX
 import com.unciv.ui.utils.extensions.darken
@@ -46,7 +47,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
     override fun hit(x: Float, y: Float, touchable: Boolean): Actor? = null
 
     private var yieldsInitialized = false
-    private var yields = YieldGroup()
+    private var yields = YieldGroup().apply { isVisible = false }
 
     /** Array list of all arrows to draw from this tile on the next update. */
     private val arrowsToDraw = ArrayList<MapArrow>()
@@ -118,7 +119,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         improvementIcon = icon
     }
 
-    private fun updateResourceIcon(isVisible: Boolean) {
+    private fun updateResourceIcon(viewingCiv: Civilization?, isVisible: Boolean) {
 
         // If resource has changed (e.g. tech researched) - add new icon
         if (resourceName != tile().resource) {
@@ -139,7 +140,8 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         // This could happen on any turn, since resources need certain techs to reveal them
         resourceIcon?.isVisible = when {
             tileGroup.isForceVisible -> isVisible
-            isVisible && tile().hasViewableResource(UncivGame.Current.worldScreen!!.viewingCiv) -> true
+            isVisible && viewingCiv == null -> true
+            isVisible && tile().hasViewableResource(viewingCiv!!) -> true
             else -> false
         }
     }
@@ -273,26 +275,44 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         arrowsToDraw.clear()
     }
 
-    fun dimImprovement(dim: Boolean) = improvementIcon?.setColor(1f, 1f, 1f, if (dim) 0.5f else 1f)
-    fun dimResource(dim: Boolean) = resourceIcon?.setColor(1f, 1f, 1f, if (dim) 0.5f else 1f)
-    fun dimYields(dim: Boolean) = yields.setColor(1f, 1f, 1f, if (dim) 0.5f else 1f)
-    fun dimPopulation(dim: Boolean) = populationIcon?.setColor(1f, 1f, 1f, if (dim) 0.5f else 1f)
+    fun dimImprovement(dim: Boolean) { improvementIcon?.color?.a = if (dim) 0.5f else 1f }
+    fun dimResource(dim: Boolean) { resourceIcon?.color?.a = if (dim) 0.5f else 1f }
+    fun dimYields(dim: Boolean) { yields.color.a = if (dim) 0.5f else 1f }
+    fun dimPopulation(dim: Boolean) { populationIcon?.color?.a = if (dim) 0.4f else 1f }
 
     fun setYieldVisible(isVisible: Boolean) {
         yields.isVisible = isVisible
     }
 
-    fun update(viewingCiv: Civilization?, showResourcesAndImprovements: Boolean, showTileYields: Boolean) {
+    override fun doUpdate(viewingCiv: Civilization?) {
+
+        var showResourcesAndImprovements = true
+        var showTileYields = true
+
+        if (tileGroup is WorldTileGroup) {
+            showResourcesAndImprovements = UncivGame.Current.settings.showResourcesAndImprovements
+            showTileYields = UncivGame.Current.settings.showTileYields
+        }
+
         updateImprovementIcon(viewingCiv, showResourcesAndImprovements)
         updateYieldIcon(viewingCiv, showTileYields)
-        updateResourceIcon(showResourcesAndImprovements)
+        updateResourceIcon(viewingCiv, showResourcesAndImprovements)
         updateStartingLocationIcon(showResourcesAndImprovements)
         updateArrows()
     }
 
+    override fun determineVisibility() {
+        isVisible = yields.isVisible
+                || resourceIcon?.isVisible == true
+                || improvementIcon != null
+                || populationIcon != null
+                || arrows.isNotEmpty()
+                || startingLocationIcons.isNotEmpty()
+    }
+
     fun reset() {
         updateImprovementIcon(null, false)
-        updateResourceIcon(false)
+        updateResourceIcon(null, false)
         updateStartingLocationIcon(false)
     }
 

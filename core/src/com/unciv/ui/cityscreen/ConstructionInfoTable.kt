@@ -82,7 +82,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
                 is BaseUnit -> construction.getDescription(city)
                 is Building -> construction.getDescription(city, true)
                 is PerpetualStatConversion -> construction.description.replace("[rate]", "[${construction.getConversionRate(city)}]").tr()
-                is PerpetualConstruction -> construction.description
+                is PerpetualConstruction -> construction.description.tr()
                 else -> ""  // Should never happen
             }
 
