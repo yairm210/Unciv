@@ -476,8 +476,8 @@ class Civilization : IsPartOfGameInfoSerialization {
         if (baseBuilding.replaces != null)
             return getEquivalentBuilding(baseBuilding.replaces!!)
 
-        for (building in gameInfo.ruleSet.buildings.values)
-            if (building.replaces == baseBuilding.name && building.uniqueTo == civName)
+        for (building in cache.uniqueBuildings)
+            if (building.replaces == baseBuilding.name)
                 return building
         return baseBuilding
     }
@@ -492,8 +492,8 @@ class Civilization : IsPartOfGameInfoSerialization {
         if (baseUnit.replaces != null)
             return getEquivalentUnit(baseUnit.replaces!!) // Equivalent of unique unit is the equivalent of the replaced unit
 
-        for (unit in gameInfo.ruleSet.units.values)
-            if (unit.replaces == baseUnit.name && unit.uniqueTo == civName)
+        for (unit in cache.uniqueUnits)
+            if (unit.replaces == baseUnit.name)
                 return unit
         return baseUnit
     }
