@@ -205,13 +205,13 @@ private fun addResetTutorials(table: Table, settings: GameSettings) {
 	resetTutorialsButton.onClick {
             ConfirmPopup(
                 table.stage,
-                "Do you want to reset completed turials?",
+                "Do you want to reset completed tutorials?",
                 "Reset"
             ) {
                 settings.tutorialsShown.clear()
                 settings.tutorialTasksCompleted.clear()
                 settings.save()
-                resetTutorialsButton.setText("Success!".tr())
+                resetTutorialsButton.setText("Done!".tr())
                 resetTutorialsButton.clearListeners()
             }.open(true)
     }
