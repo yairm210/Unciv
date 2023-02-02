@@ -306,4 +306,19 @@ class TileInfoImprovementFunctions(val tile: Tile) {
     }
 
 
+    /** Marks tile as target tile for a building with a [UniqueType.CreatesOneImprovement] unique */
+    fun markForCreatesOneImprovement(improvement: String) {
+        tile.improvementInProgress = improvement
+        tile.turnsToImprovement = -1
+    }
+
+    /** Un-Marks a tile as target tile for a building with a [UniqueType.CreatesOneImprovement] unique,
+     *  and ensures that matching queued buildings are removed. */
+    fun removeCreatesOneImprovementMarker() {
+        if (!tile.isMarkedForCreatesOneImprovement()) return
+        tile.owningCity?.cityConstructions?.removeCreateOneImprovementConstruction(tile.improvementInProgress!!)
+        tile.stopWorkingOnImprovement()
+    }
+
+
 }

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.tile.TileDescription
 import com.unciv.models.UncivSound
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -52,7 +53,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
         val stats = selectedTile.stats.getTileStats(city, city.civ)
         innerTable.pad(5f)
 
-        innerTable.add( MarkupRenderer.render(selectedTile.toMarkup(city.civ), iconDisplay = IconDisplay.None) {
+        innerTable.add(MarkupRenderer.render(TileDescription.toMarkup(selectedTile, city.civ), iconDisplay = IconDisplay.None) {
             UncivGame.Current.pushScreen(CivilopediaScreen(city.getRuleset(), link = it))
         } )
         innerTable.row()

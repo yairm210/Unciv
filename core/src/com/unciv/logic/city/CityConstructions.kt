@@ -528,7 +528,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             val finalTile = tile
                 ?: Automation.getTileForConstructionImprovement(city, improvementToPlace)
                 ?: return false // This was never reached in testing
-            finalTile.markForCreatesOneImprovement(improvementToPlace.name)
+            finalTile.improvementFunctions.markForCreatesOneImprovement(improvementToPlace.name)
             // postBuildEvent does the rest by calling cityConstructions.applyCreateOneImprovement
         }
 
@@ -599,7 +599,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         val improvement = building.getImprovementToCreate(city.getRuleset()) ?: return
         if (getTileForImprovement(improvement.name) != null) return
         val newTile = Automation.getTileForConstructionImprovement(city, improvement) ?: return
-        newTile.markForCreatesOneImprovement(improvement.name)
+        newTile.improvementFunctions.markForCreatesOneImprovement(improvement.name)
     }
 
     fun addToQueue(constructionName: String) {

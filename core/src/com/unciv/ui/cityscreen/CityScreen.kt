@@ -347,7 +347,7 @@ class CityScreen(
                     // might get a bit fragile if several buildings constructing the same improvement type
                     // were to be allowed in the queue - or a little nontransparent to the user why they
                     // won't reorder - maybe one day redesign to have the target tiles attached to queue entries.
-                    tileInfo.markForCreatesOneImprovement(improvement.name)
+                    tileInfo.improvementFunctions.markForCreatesOneImprovement(improvement.name)
                     city.cityConstructions.addToQueue(pickTileData.building.name)
                 }
             }

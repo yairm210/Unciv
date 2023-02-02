@@ -468,7 +468,7 @@ object UnitActions {
                 title = "Create [$improvementName]",
                 action = {
                     val unitTile = unit.getTile()
-                    unitTile.removeCreatesOneImprovementMarker()
+                    unitTile.improvementFunctions.removeCreatesOneImprovementMarker()
                     unitTile.changeImprovement(improvementName)
                     unitTile.stopWorkingOnImprovement()
                     improvement.handleImprovementCompletion(unit)

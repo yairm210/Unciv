@@ -21,9 +21,6 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.translations.tr
-import com.unciv.ui.civilopedia.FormattedLine
-import com.unciv.ui.utils.Fonts
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.random.Random
@@ -646,82 +643,6 @@ open class Tile : IsPartOfGameInfoSerialization {
         return true
     }
 
-    /** Get info on a selected tile, used on WorldScreen (right side above minimap), CityScreen or MapEditorViewTab. */
-    fun toMarkup(viewingCiv: Civilization?): ArrayList<FormattedLine> {
-        val lineList = ArrayList<FormattedLine>()
-        val isViewableToPlayer = viewingCiv == null || UncivGame.Current.viewEntireMapForDebug
-                || viewingCiv.viewableTiles.contains(this)
-
-        if (isCityCenter()) {
-            val city = getCity()!!
-            var cityString = city.name.tr()
-            if (isViewableToPlayer) cityString += " (${city.health})"
-            lineList += FormattedLine(cityString)
-            if (UncivGame.Current.viewEntireMapForDebug || city.civ == viewingCiv)
-                lineList += city.cityConstructions.getProductionMarkup(ruleset)
-        }
-
-        lineList += FormattedLine(baseTerrain, link="Terrain/$baseTerrain")
-        for (terrainFeature in terrainFeatures)
-            lineList += FormattedLine(terrainFeature, link="Terrain/$terrainFeature")
-        if (resource != null && (viewingCiv == null || hasViewableResource(viewingCiv)))
-            lineList += if (tileResource.resourceType == ResourceType.Strategic)
-                    FormattedLine("{$resource} ($resourceAmount)", link="Resource/$resource")
-                else
-                    FormattedLine(resource!!, link="Resource/$resource")
-        if (resource != null && viewingCiv != null && hasViewableResource(viewingCiv)) {
-            val resourceImprovement = tileResource.getImprovements().firstOrNull { improvementFunctions.canBuildImprovement(ruleset.tileImprovements[it]!!, viewingCiv) }
-            val tileImprovement = ruleset.tileImprovements[resourceImprovement]
-            if (tileImprovement?.techRequired != null
-                && !viewingCiv.tech.isResearched(tileImprovement.techRequired!!)) {
-                lineList += FormattedLine(
-                    "Requires [${tileImprovement.techRequired}]",
-                    link="Technology/${tileImprovement.techRequired}",
-                    color= "#FAA"
-                )
-            }
-        }
-        if (naturalWonder != null)
-            lineList += FormattedLine(naturalWonder!!, link="Terrain/$naturalWonder")
-        if (roadStatus !== RoadStatus.None && !isCityCenter()) {
-            val pillageText = if (roadIsPillaged) " (Pillaged!)" else ""
-            lineList += FormattedLine("[${roadStatus.name}]$pillageText", link = "Improvement/${roadStatus.name}")
-        }
-        val shownImprovement = getShownImprovement(viewingCiv)
-        if (shownImprovement != null) {
-            val pillageText = if (improvementIsPillaged) " (Pillaged!)" else ""
-            lineList += FormattedLine("[$shownImprovement]$pillageText", link = "Improvement/$shownImprovement")
-        }
-
-        if (improvementInProgress != null && isViewableToPlayer) {
-            // Negative turnsToImprovement is used for UniqueType.CreatesOneImprovement
-            val line = "{$improvementInProgress}" +
-                if (turnsToImprovement > 0) " - $turnsToImprovement${Fonts.turn}" else " ({Under construction})"
-            lineList += FormattedLine(line, link="Improvement/$improvementInProgress")
-        }
-
-        if (civilianUnit != null && isViewableToPlayer)
-            lineList += FormattedLine(civilianUnit!!.name.tr() + " - " + civilianUnit!!.civ.civName.tr(),
-                link="Unit/${civilianUnit!!.name}")
-        if (militaryUnit != null && isViewableToPlayer && (viewingCiv == null || !militaryUnit!!.isInvisible(viewingCiv))) {
-            val milUnitString = militaryUnit!!.name.tr() +
-                (if (militaryUnit!!.health < 100) "(" + militaryUnit!!.health + ")" else "") +
-                " - " + militaryUnit!!.civ.civName.tr()
-            lineList += FormattedLine(milUnitString, link="Unit/${militaryUnit!!.name}")
-        }
-
-        val defenceBonus = getDefensiveBonus()
-        if (defenceBonus != 0f) {
-            var defencePercentString = (defenceBonus * 100).toInt().toString() + "%"
-            if (!defencePercentString.startsWith("-")) defencePercentString = "+$defencePercentString"
-            lineList += FormattedLine("[$defencePercentString] to unit defence")
-        }
-        if (isImpassible()) lineList += FormattedLine(Constants.impassable)
-        if (isLand && isAdjacentTo(Constants.freshWater)) lineList += FormattedLine(Constants.freshWater)
-
-        return lineList
-    }
-
     fun hasEnemyInvisibleUnit(viewingCiv: Civilization): Boolean {
         val unitsInTile = getUnits()
         if (unitsInTile.none()) return false
@@ -909,7 +830,7 @@ open class Tile : IsPartOfGameInfoSerialization {
         if (!isLand) { changeImprovement(null); return }
 
         // Setting turnsToImprovement might interfere with UniqueType.CreatesOneImprovement
-        removeCreatesOneImprovementMarker()
+        improvementFunctions.removeCreatesOneImprovementMarker()
         improvementInProgress = null  // remove any in progress work as well
         turnsToImprovement = 0
         // if no Repair action, destroy improvements instead
@@ -939,20 +860,6 @@ open class Tile : IsPartOfGameInfoSerialization {
             improvementIsPillaged = false
         else
             roadIsPillaged = false
-    }
-
-    /** Marks tile as target tile for a building with a [UniqueType.CreatesOneImprovement] unique */
-    fun markForCreatesOneImprovement(improvement: String) {
-        improvementInProgress = improvement
-        turnsToImprovement = -1
-    }
-
-    /** Un-Marks a tile as target tile for a building with a [UniqueType.CreatesOneImprovement] unique,
-     *  and ensures that matching queued buildings are removed. */
-    fun removeCreatesOneImprovementMarker() {
-        if (!isMarkedForCreatesOneImprovement()) return
-        owningCity?.cityConstructions?.removeCreateOneImprovementConstruction(improvementInProgress!!)
-        stopWorkingOnImprovement()
     }
 
 

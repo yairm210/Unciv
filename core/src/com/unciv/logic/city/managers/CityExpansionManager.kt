@@ -136,7 +136,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
                 city.lockedTiles.remove(tile.position)
         }
 
-        tile.removeCreatesOneImprovementMarker()
+        tile.improvementFunctions.removeCreatesOneImprovementMarker()
 
         tile.setOwningCity(null)
 
