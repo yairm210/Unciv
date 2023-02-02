@@ -93,7 +93,7 @@ enum class UnitActionType(
     FoundCity("Found city",
         { ImageGetter.getUnitActionPortrait("FoundCity") }, 'c', UncivSound.Silent),
     ConstructImprovement("Construct improvement",
-        { ImageGetter.getUnitActionPortrait("ConstructImprovement") }, 'i'),
+        { ImageGetter.getUnitActionPortrait("ConstructImprovement") }, 'i', false),
     Repair(Constants.repair,
         { ImageGetter.getUnitActionPortrait("Repair") }, 'r', UncivSound.Construction),
     Create("Create",
