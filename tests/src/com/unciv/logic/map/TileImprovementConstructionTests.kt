@@ -38,7 +38,7 @@ class TileImprovementConstructionTests {
         ruleSet = RulesetCache.getVanillaRuleset()
         civInfo.tech.researchedTechnologies.addAll(ruleSet.technologies.values)
         civInfo.tech.techsResearched.addAll(ruleSet.technologies.keys)
-        city.civInfo = civInfo
+        city.civ = civInfo
     }
 
 

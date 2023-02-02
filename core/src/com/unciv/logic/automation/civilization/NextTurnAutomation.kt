@@ -317,7 +317,7 @@ object NextTurnAutomation {
             val construction = city.cityConstructions.getCurrentConstruction()
             if (construction is PerpetualConstruction) continue
             if ((construction as INonPerpetualConstruction).canBePurchasedWithStat(city, Stat.Gold)
-                    && city.civInfo.gold / 3 >= construction.getStatBuyCost(city, Stat.Gold)!!) {
+                    && city.civ.gold / 3 >= construction.getStatBuyCost(city, Stat.Gold)!!) {
                 city.cityConstructions.purchaseConstruction(construction.name, 0, true)
             }
         }
@@ -816,7 +816,7 @@ object NextTurnAutomation {
         if (diplomacyManager.resourcesFromTrade().any { it.amount > 0 })
             modifierMap["Receiving trade resources"] = -5
 
-        if (theirCity.getTiles().none { tile -> tile.neighbors.any { it.getOwner() == theirCity.civInfo && it.getCity() != theirCity } })
+        if (theirCity.getTiles().none { tile -> tile.neighbors.any { it.getOwner() == theirCity.civ && it.getCity() != theirCity } })
             modifierMap["Isolated city"] = 15
 
         if (otherCiv.isCityState()) {
@@ -990,7 +990,7 @@ object NextTurnAutomation {
             var valueAlliance = valueCityStateAlliance(civInfo, foundingCiv)
             if (civInfo.getHappiness() < 0)
                 valueAlliance -= civInfo.getHappiness() // put extra weight on liberating if unhappy
-            if (foundingCiv.isCityState() && city.civInfo != civInfo && foundingCiv != civInfo
+            if (foundingCiv.isCityState() && city.civ != civInfo && foundingCiv != civInfo
                     && !civInfo.isAtWarWith(foundingCiv)
                     && valueAlliance > 0) {
                 city.liberateCity(civInfo)

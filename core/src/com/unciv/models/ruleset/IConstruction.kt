@@ -60,9 +60,9 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     }
 
     fun getBaseBuyCost(city: City, stat: Stat): Int? {
-        if (stat == Stat.Gold) return getBaseGoldCost(city.civInfo).toInt()
+        if (stat == Stat.Gold) return getBaseGoldCost(city.civ).toInt()
 
-        val conditionalState = StateForConditionals(civInfo = city.civInfo, city = city)
+        val conditionalState = StateForConditionals(civInfo = city.civ, city = city)
 
         // Can be purchased for [amount] [Stat] [cityFilter]
         val lowestCostUnique = getMatchingUniques(UniqueType.CanBePurchasedForAmountStat, conditionalState)
@@ -73,7 +73,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         // Can be purchased with [Stat] [cityFilter]
         if (getMatchingUniques(UniqueType.CanBePurchasedWithStat, conditionalState)
             .any { it.params[0] == stat.name && city.matchesFilter(it.params[1]) }
-        ) return city.civInfo.getEra().baseUnitBuyCost
+        ) return city.civ.getEra().baseUnitBuyCost
         return null
     }
 
@@ -222,10 +222,10 @@ open class PerpetualStatConversion(val stat: Stat) :
     fun getConversionRate(city: City) : Int = (1/city.cityStats.getStatConversionRate(stat)).roundToInt()
 
     override fun isBuildable(cityConstructions: CityConstructions): Boolean {
-        if (stat == Stat.Faith && !cityConstructions.city.civInfo.gameInfo.isReligionEnabled())
+        if (stat == Stat.Faith && !cityConstructions.city.civ.gameInfo.isReligionEnabled())
             return false
 
-        return cityConstructions.city.civInfo.getMatchingUniques(UniqueType.EnablesCivWideStatProduction)
+        return cityConstructions.city.civ.getMatchingUniques(UniqueType.EnablesCivWideStatProduction)
             .any { it.params[0] == stat.name }
     }
 }

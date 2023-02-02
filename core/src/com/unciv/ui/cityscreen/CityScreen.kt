@@ -196,7 +196,7 @@ class CityScreen(
         val cityUniqueCache = LocalUniqueCache()
         fun isExistingImprovementValuable(tile: Tile, improvementToPlace: TileImprovement): Boolean {
             if (tile.improvement == null) return false
-            val civInfo = city.civInfo
+            val civInfo = city.civ
             val existingStats = tile.improvementFunctions.getImprovementStats(
                 tile.getTileImprovement()!!,
                 civInfo,
@@ -216,7 +216,7 @@ class CityScreen(
             val improvementToPlace = pickTileData!!.improvement
             return when {
                 tile.isMarkedForCreatesOneImprovement() -> Color.BROWN to 0.7f
-                !tile.improvementFunctions.canBuildImprovement(improvementToPlace, city.civInfo) -> Color.RED to 0.4f
+                !tile.improvementFunctions.canBuildImprovement(improvementToPlace, city.civ) -> Color.RED to 0.4f
                 isExistingImprovementValuable(tile, improvementToPlace) -> Color.ORANGE to 0.5f
                 tile.improvement != null -> Color.YELLOW to 0.6f
                 tile.turnsToImprovement > 0 -> Color.YELLOW to 0.6f
@@ -298,7 +298,7 @@ class CityScreen(
 
         val tileSetStrings = TileSetStrings()
         val cityTileGroups = cityInfo.getCenterTile().getTilesInDistance(5)
-                .filter { cityInfo.civInfo.hasExplored(it) }
+                .filter { cityInfo.civ.hasExplored(it) }
                 .map { CityTileGroup(cityInfo, it, tileSetStrings) }
 
         for (tileGroup in cityTileGroups) {
@@ -339,7 +339,7 @@ class CityScreen(
             val pickTileData = this.pickTileData!!
             this.pickTileData = null
             val improvement = pickTileData.improvement
-            if (tileInfo.improvementFunctions.canBuildImprovement(improvement, city.civInfo)) {
+            if (tileInfo.improvementFunctions.canBuildImprovement(improvement, city.civ)) {
                 if (pickTileData.isBuying) {
                     constructionsTable.askToBuyConstruction(pickTileData.building, pickTileData.buyStat, tileInfo)
                 } else {
@@ -414,7 +414,7 @@ class CityScreen(
     }
 
     fun page(delta: Int) {
-        val civInfo = city.civInfo
+        val civInfo = city.civ
         val numCities = civInfo.cities.size
         if (numCities == 0) return
         val indexOfCity = civInfo.cities.indexOf(city)

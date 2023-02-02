@@ -89,7 +89,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     }
 
     override fun getBaseBuyCost(city: City, stat: Stat): Int? {
-        if (stat == Stat.Gold) return getBaseGoldCost(city.civInfo).toInt()
+        if (stat == Stat.Gold) return getBaseGoldCost(city.civ).toInt()
 
         return sequence {
             val baseCost = super.getBaseBuyCost(city, stat)
@@ -116,12 +116,12 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (isWaterUnit() && !cityConstructions.city.isCoastal())
             yield(RejectionReasonType.WaterUnitsInCoastalCities.toInstance())
         if (isAirUnit()) {
-            val fakeUnit = getMapUnit(cityConstructions.city.civInfo)
+            val fakeUnit = getMapUnit(cityConstructions.city.civ)
             val canUnitEnterTile = fakeUnit.movement.canMoveTo(cityConstructions.city.getCenterTile())
             if (!canUnitEnterTile)
                 yield(RejectionReasonType.NoPlaceToPutUnit.toInstance())
         }
-        val civInfo = cityConstructions.city.civInfo
+        val civInfo = cityConstructions.city.civ
         for (unique in uniqueObjects) {
             when (unique.type) {
                 UniqueType.OnlyAvailableWhen -> if (!unique.conditionalsApply(civInfo, cityConstructions.city))
@@ -190,7 +190,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             getRejectionReasons(cityConstructions).none()
 
     override fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat?): Boolean {
-        val civInfo = cityConstructions.city.civInfo
+        val civInfo = cityConstructions.city.civ
         val unit = civInfo.units.placeUnitNearTile(cityConstructions.city.location, name)
             ?: return false  // couldn't place the unit, so there's actually no unit =(
 
@@ -216,7 +216,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     }
 
     fun addConstructionBonuses(unit: MapUnit, cityConstructions: CityConstructions) {
-        val civInfo = cityConstructions.city.civInfo
+        val civInfo = cityConstructions.city.civ
 
         @Suppress("LocalVariableName")
         var XP = 0

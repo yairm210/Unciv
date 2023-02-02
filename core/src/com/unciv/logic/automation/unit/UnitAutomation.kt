@@ -310,7 +310,7 @@ object UnitAutomation {
                 .flatMap { it.getTile().getTilesInDistance(it.getRange()) }
 
         val tilesWithinBombardmentRange = unit.currentTile.getTilesInDistance(3)
-                .filter { it.isCityCenter() && it.getCity()!!.civInfo.isAtWarWith(unit.civInfo) }
+                .filter { it.isCityCenter() && it.getCity()!!.civ.isAtWarWith(unit.civInfo) }
                 .flatMap { it.getTilesInDistance(it.getCity()!!.range) }
 
         val tilesWithTerrainDamage = unit.currentTile.getTilesInDistance(3)
@@ -384,7 +384,7 @@ object UnitAutomation {
     /** Get a list of visible tiles which have something attackable */
     fun getBombardableTiles(city: City): Sequence<Tile> =
             city.getCenterTile().getTilesInDistance(city.range)
-                    .filter { it.isVisible(city.civInfo) && BattleHelper.containsAttackableEnemy(it, CityCombatant(city)) }
+                    .filter { it.isVisible(city.civ) && BattleHelper.containsAttackableEnemy(it, CityCombatant(city)) }
 
     /** Move towards the closest attackable enemy of the [unit].
      *
@@ -440,7 +440,7 @@ object UnitAutomation {
         val siegedCities = unit.civInfo.cities
                 .asSequence()
                 .filter {
-                    unit.civInfo == it.civInfo &&
+                    unit.civInfo == it.civ &&
                             it.health < it.getMaxHealth() * 0.75
                 } //Weird health issues and making sure that not all forces move to good defenses
 
@@ -473,7 +473,7 @@ object UnitAutomation {
           ?: return false // no attackable cities found
 
         // Our main attack target is the closest city, but we're fine with deviating from that a bit
-        var enemyCitiesByPriority = closestEnemyCity.civInfo.cities
+        var enemyCitiesByPriority = closestEnemyCity.civ.cities
             .associateWith { it.getCenterTile().aerialDistanceTo(closestEnemyCity.getCenterTile()) }
             .filterNot { it.value > 10 } // anything 10 tiles away from the target is irrelevant
             .asSequence().sortedBy { it.value }.map { it.key } // sort the list by closeness to target - least is best!
@@ -594,7 +594,7 @@ object UnitAutomation {
         var capturedCities = unit.civInfo.getKnownCivs().asSequence()
                 .flatMap { it.cities.asSequence() }
                 .filter {
-                    unit.civInfo.isAtWarWith(it.civInfo) &&
+                    unit.civInfo.isAtWarWith(it.civ) &&
                             unit.civInfo.civName == it.foundingCiv &&
                             it.isInResistance() &&
                             it.health < it.getMaxHealth()

@@ -52,7 +52,7 @@ class CityAmbiencePlayer(
         if (playingCitySound != null)
             stop()
         try {
-            playingCitySound = Gdx.audio.newMusic(getSoundFile(city.civInfo.getEra().citySound))
+            playingCitySound = Gdx.audio.newMusic(getSoundFile(city.civ.getEra().citySound))
             playingCitySound?.volume = UncivGame.Current.settings.citySoundsVolume
             playingCitySound?.isLooping = true
             playingCitySound?.play()

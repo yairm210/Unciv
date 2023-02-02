@@ -286,7 +286,7 @@ class WorkerAutomation(
                             && (it.owningCity == null || it.getOwner()==civInfo)
                             && (tileCanBeImproved(unit, it) || it.isPillaged())
                             && it.getTilesInDistance(2)  // don't work in range of enemy cities
-                        .none { tile -> tile.isCityCenter() && tile.getCity()!!.civInfo.isAtWarWith(civInfo) }
+                        .none { tile -> tile.isCityCenter() && tile.getCity()!!.civ.isAtWarWith(civInfo) }
                             && it.getTilesInDistance(3)  // don't work in range of enemy units
                         .none { tile -> tile.militaryUnit != null && tile.militaryUnit!!.civInfo.isAtWarWith(civInfo)}
                 }
@@ -313,7 +313,7 @@ class WorkerAutomation(
         if (!tile.isLand || tile.isImpassible() || tile.isCityCenter())
             return false
         val city = tile.getCity()
-        if (city == null || city.civInfo != civInfo)
+        if (city == null || city.civ != civInfo)
             return false
         if (!city.tilesInRange.contains(tile)
                 && !tile.hasViewableResource(civInfo)
@@ -462,13 +462,13 @@ class WorkerAutomation(
         //todo Is the Citadel code dead anyway? If not - why does the nearestTiles check not respect the param?
 
         // build on our land only
-        if ((tile.owningCity?.civInfo != civInfo &&
+        if ((tile.owningCity?.civ != civInfo &&
                     // except citadel which can be built near-by
                     (!isCitadel || tile.neighbors.all { it.getOwner() != civInfo })) ||
             !isAcceptableTileForFort(tile)) return false
 
         // if this place is not perfect, let's see if there is a better one
-        val nearestTiles = tile.getTilesInDistance(2).filter { it.owningCity?.civInfo == civInfo }.toList()
+        val nearestTiles = tile.getTilesInDistance(2).filter { it.owningCity?.civ == civInfo }.toList()
         for (closeTile in nearestTiles) {
             // don't build forts too close to the cities
             if (closeTile.isCityCenter()) return false

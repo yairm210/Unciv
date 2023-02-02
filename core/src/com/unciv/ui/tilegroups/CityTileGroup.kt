@@ -16,12 +16,12 @@ class CityTileGroup(private val city: City, tile: Tile, tileSetStrings: TileSetS
     }
 
     override fun update(viewingCiv: Civilization?) {
-        super.update(city.civInfo)
+        super.update(city.civ)
 
         when {
 
             // Does not belong to us
-            tile.getOwner() != city.civInfo -> {
+            tile.getOwner() != city.civ -> {
                 layerTerrain.dim(0.3f)
                 layerMisc.setYieldVisible(UncivGame.Current.settings.showTileYields)
                 layerMisc.dimYields(true)

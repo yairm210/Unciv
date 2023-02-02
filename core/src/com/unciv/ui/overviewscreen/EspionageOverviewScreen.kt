@@ -91,8 +91,8 @@ class EspionageOverviewScreen(val civInfo: Civilization) : PickerScreen(true) {
                 // Not city-state civs as rigging elections isn't implemented
                 // Technically, stealing techs from other civs also isn't implemented, but its the first thing I'll add so this makes the most sense to allow.
                     if (city == null // hideout
-                        || (city.civInfo.isMajorCiv()
-                            && city.civInfo != civInfo
+                        || (city.civ.isMajorCiv()
+                            && city.civ != civInfo
                             && !city.espionage.hasSpyOf(civInfo)
                         )
                     ) {
@@ -124,11 +124,11 @@ class EspionageOverviewScreen(val civInfo: Civilization) : PickerScreen(true) {
             .filter { civInfo.hasExplored(it.getCenterTile()) }
             .sortedWith(
                 compareBy<City> {
-                    it.civInfo != civInfo
+                    it.civ != civInfo
                 }.thenBy {
-                    it.civInfo.isCityState()
+                    it.civ.isCityState()
                 }.thenBy(collator) {
-                    it.civInfo.civName.tr()
+                    it.civ.civName.tr()
                 }.thenBy(collator) {
                     it.name.tr()
                 }
@@ -139,7 +139,7 @@ class EspionageOverviewScreen(val civInfo: Civilization) : PickerScreen(true) {
     }
 
     private fun addCityToSelectionTable(city: City) {
-        citySelectionTable.add(ImageGetter.getNationPortrait(city.civInfo.nation, 30f)).pad(5f)
+        citySelectionTable.add(ImageGetter.getNationPortrait(city.civ.nation, 30f)).pad(5f)
         citySelectionTable.add(city.name.toLabel()).pad(5f)
         if (city.espionage.hasSpyOf(civInfo)) {
             citySelectionTable.add(

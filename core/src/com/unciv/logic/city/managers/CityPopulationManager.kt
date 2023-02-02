@@ -50,12 +50,12 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         // civ v math, civilization.wikia
         var foodRequired = 15 + 6 * (population - 1) + floor((population - 1).toDouble().pow(1.8))
 
-        foodRequired *= city.civInfo.gameInfo.speed.modifier
+        foodRequired *= city.civ.gameInfo.speed.modifier
 
-        if (city.civInfo.isCityState())
+        if (city.civ.isCityState())
             foodRequired *= 1.5f
-        if (!city.civInfo.isHuman())
-            foodRequired *= city.civInfo.gameInfo.getDifficulty().aiCityGrowthModifier
+        if (!city.civ.isHuman())
+            foodRequired *= city.civ.gameInfo.getDifficulty().aiCityGrowthModifier
         return foodRequired.toInt()
     }
 
@@ -94,7 +94,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
     fun nextTurn(food: Int) {
         foodStored += food
         if (food < 0)
-            city.civInfo.addNotification("[${city.name}] is starving!",
+            city.civ.addNotification("[${city.name}] is starving!",
                 city.location, NotificationCategory.Cities, NotificationIcon.Growth, NotificationIcon.Death)
         if (foodStored < 0) {        // starvation!
             if (population > 1) addPopulation(-1)
@@ -111,7 +111,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
             foodStored += (getFoodToNextPopulation() * percentOfFoodCarriedOver / 100f).toInt()
             addPopulation(1)
             city.updateCitizens = true
-            city.civInfo.addNotification("[${city.name}] has grown!", city.location,
+            city.civ.addNotification("[${city.name}] has grown!", city.location,
                 NotificationCategory.Cities, NotificationIcon.Growth)
         }
     }
@@ -128,7 +128,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
             autoAssignPopulation()
         }
 
-        if (city.civInfo.gameInfo.isReligionEnabled())
+        if (city.civ.gameInfo.isReligionEnabled())
             city.religion.updatePressureOnPopulationChange(changedAmount)
     }
 
@@ -146,7 +146,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
                 specialistFoodBonus *= unique.params[0].toPercent()
         specialistFoodBonus = 2f - specialistFoodBonus
 
-        val currentCiv = city.civInfo
+        val currentCiv = city.civ
 
         val tilesToEvaluate = city.getCenterTile().getTilesInDistance(3)
             .filter { it.getOwner() == currentCiv }.toList().asSequence()
@@ -175,7 +175,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
             if (valueBestTile > valueBestSpecialist) {
                 if (bestTile != null) {
                     city.workedTiles = city.workedTiles.withItem(bestTile.position)
-                    cityStats[Stat.Food] += bestTile.stats.getTileStats(city, city.civInfo)[Stat.Food]
+                    cityStats[Stat.Food] += bestTile.stats.getTileStats(city, city.civ)[Stat.Food]
                 }
             } else if (bestJob != null) {
                 specialistAllocations.add(bestJob, 1)
@@ -187,7 +187,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
 
     fun unassignExtraPopulation() {
         for (tile in city.workedTiles.map { city.tileMap[it] }) {
-            if (tile.getOwner() != city.civInfo || tile.getWorkingCity() != city
+            if (tile.getOwner() != city.civ || tile.getWorkingCity() != city
                     || tile.aerialDistanceTo(city.getCenterTile()) > 3)
                 city.workedTiles = city.workedTiles.withoutItem(tile.position)
         }

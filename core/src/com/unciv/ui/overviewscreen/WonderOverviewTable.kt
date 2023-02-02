@@ -229,14 +229,14 @@ class WonderInfo {
             for (wonderName in city.cityConstructions.builtBuildings.intersect(wonderIndexMap.keys)) {
                 val index = wonderIndexMap[wonderName]!!
                 val status = when {
-                    viewingPlayer == city.civInfo -> WonderStatus.Owned
+                    viewingPlayer == city.civ -> WonderStatus.Owned
                     viewingPlayer.hasExplored(city.getCenterTile()) -> WonderStatus.Known
                     else -> WonderStatus.NotFound
                 }
                 wonders[index] = WonderInfo(
                     wonderName, CivilopediaCategories.Wonder,
                     wonders[index].groupName, wonders[index].groupColor,
-                    status, city.civInfo, city, city.getCenterTile()
+                    status, city.civ, city, city.getCenterTile()
                 )
             }
         }

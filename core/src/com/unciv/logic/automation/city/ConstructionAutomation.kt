@@ -22,7 +22,7 @@ import kotlin.math.sqrt
 class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private val cityInfo = cityConstructions.city
-    private val civInfo = cityInfo.civInfo
+    private val civInfo = cityInfo.civ
 
     private val buildableBuildings = hashMapOf<String, Boolean>()
     private val buildableUnits = hashMapOf<String, Boolean>()

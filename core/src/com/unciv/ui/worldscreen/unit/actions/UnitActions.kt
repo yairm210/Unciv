@@ -152,7 +152,7 @@ object UnitActions {
                 val city = tile.getCity()
                 if (city != null) {
                     city.cityStats.update()
-                    city.civInfo.cache.updateCivResources()
+                    city.civ.cache.updateCivResources()
                 }
                 unit.destroy()
             }.takeIf { unit.currentMovement > 0 })
@@ -434,7 +434,7 @@ object UnitActions {
             action = {
                 unit.civInfo.victoryManager.currentsSpaceshipParts.add(unit.name, 1)
                 unit.destroy()
-            }.takeIf { tile.isCityCenter() && tile.getCity()!!.isCapital() && tile.getCity()!!.civInfo == unit.civInfo }
+            }.takeIf { tile.isCityCenter() && tile.getCity()!!.isCapital() && tile.getCity()!!.civ == unit.civInfo }
         )
     }
 

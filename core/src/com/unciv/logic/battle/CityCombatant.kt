@@ -17,7 +17,7 @@ class CityCombatant(val city: City) : ICombatant {
     }
 
     override fun getHealth(): Int = city.health
-    override fun getCivInfo(): Civilization = city.civInfo
+    override fun getCivInfo(): Civilization = city.civ
     override fun getTile(): Tile = city.getCenterTile()
     override fun getName(): String = city.name
     override fun isDefeated(): Boolean = city.health == 1
@@ -48,7 +48,7 @@ class CityCombatant(val city: City) : ICombatant {
             strength += unique.params[0].toInt()
         // as tech progresses so does city strength
         val techCount = getCivInfo().gameInfo.ruleSet.technologies.size
-        val techsPercentKnown: Float = if (techCount > 0) city.civInfo.tech.techsResearched.size.toFloat() / techCount else 0.5f // for mods with no tech
+        val techsPercentKnown: Float = if (techCount > 0) city.civ.tech.techsResearched.size.toFloat() / techCount else 0.5f // for mods with no tech
         strength += (techsPercentKnown * modConstants.cityStrengthFromTechsMultiplier).pow(modConstants.cityStrengthFromTechsExponent) * modConstants.cityStrengthFromTechsFullMultiplier
 
         // The way all of this adds up...

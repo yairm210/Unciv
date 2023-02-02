@@ -158,9 +158,9 @@ object SpecificUnitAutomation {
         val tilesNearCities = sequence {
             for (city in unit.civInfo.gameInfo.getCities()) {
                 val center = city.getCenterTile()
-                if (unit.civInfo.knows(city.civInfo) &&
+                if (unit.civInfo.knows(city.civ) &&
                     // If the CITY OWNER knows that the UNIT OWNER agreed not to settle near them
-                    city.civInfo.getDiplomacyManager(unit.civInfo).hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)
+                    city.civ.getDiplomacyManager(unit.civInfo).hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)
                 ) {
                     yieldAll(center.getTilesInDistance(6))
                     continue
@@ -224,8 +224,8 @@ object SpecificUnitAutomation {
 
             /** @return the number of tiles 4 (un-modded) out from this city that could hold a city, ie how lonely this city is */
             fun getFrontierScore(city: City) = city.getCenterTile()
-                .getTilesAtDistance(city.civInfo.gameInfo.ruleSet.modOptions.constants.minimalCityDistance + 1)
-                .count { it.canBeSettled() && (it.getOwner() == null || it.getOwner() == city.civInfo ) }
+                .getTilesAtDistance(city.civ.gameInfo.ruleSet.modOptions.constants.minimalCityDistance + 1)
+                .count { it.canBeSettled() && (it.getOwner() == null || it.getOwner() == city.civ ) }
 
             val frontierCity = unit.civInfo.cities.maxByOrNull { getFrontierScore(it) }
             if (frontierCity != null && getFrontierScore(frontierCity) > 0  && unit.movement.canReach(frontierCity.getCenterTile()))
@@ -321,7 +321,7 @@ object SpecificUnitAutomation {
                 ourCitiesWithoutReligion.minByOrNull { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
             else unit.civInfo.gameInfo.getCities().asSequence()
                 .filter { it.religion.getMajorityReligion() != unit.civInfo.religionManager.religion }
-                .filter { it.civInfo.knows(unit.civInfo) && !it.civInfo.isAtWarWith(unit.civInfo) }
+                .filter { it.civ.knows(unit.civInfo) && !it.civ.isAtWarWith(unit.civInfo) }
                 .filterNot { it.religion.isProtectedByInquisitor(unit.religion) }
                 .minByOrNull { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
 

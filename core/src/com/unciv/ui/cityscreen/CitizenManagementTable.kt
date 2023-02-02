@@ -59,7 +59,7 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
         var newRow = false
         for (focus in CityFocus.values()) {
             if (!focus.tableEnabled) continue
-            if (focus == CityFocus.FaithFocus && !city.civInfo.gameInfo.isReligionEnabled()) continue
+            if (focus == CityFocus.FaithFocus && !city.civ.gameInfo.isReligionEnabled()) continue
             val label = focus.label.toLabel()
             val cell = Table()
             cell.add(label).pad(5f)

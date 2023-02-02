@@ -123,7 +123,7 @@ class TechAction(val techName: String = "") : NotificationAction, IsPartOfGameIn
 data class CityAction(val city: Vector2 = Vector2.Zero): NotificationAction, IsPartOfGameInfoSerialization {
     override fun execute(worldScreen: WorldScreen) {
         worldScreen.mapHolder.tileMap[city].getCity()?.let {
-            if (it.civInfo == worldScreen.viewingCiv)
+            if (it.civ == worldScreen.viewingCiv)
                 worldScreen.game.pushScreen(CityScreen(it))
         }
     }

@@ -19,7 +19,7 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tile: Tile, tileSetS
 
         // Show population icon overlay (if option is enabled)
         if (tileIsViewable && tile.isWorked() && UncivGame.Current.settings.showWorkedTiles
-                && city!!.civInfo == viewingCiv) {
+                && city!!.civ == viewingCiv) {
             layerMisc.setNewPopulationIcon()
         }
 

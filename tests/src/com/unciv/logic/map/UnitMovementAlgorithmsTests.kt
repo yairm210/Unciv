@@ -83,7 +83,7 @@ class UnitMovementAlgorithmsTests {
 
         val city = City()
         city.location = cityTile.position
-        city.civInfo = civInfo
+        city.civ = civInfo
         cityTile.setOwningCity(city)
 
         for (type in ruleSet.unitTypes)
@@ -250,7 +250,7 @@ class UnitMovementAlgorithmsTests {
 
         val city = City()
         city.location = tile.position.cpy().add(1f,1f)
-        city.civInfo = otherCiv
+        city.civ = otherCiv
         tile.setOwningCity(city)
 
         unit.baseUnit = BaseUnit().apply { unitType = ruleSet.unitTypes.keys.first(); ruleset = ruleSet }
@@ -307,7 +307,7 @@ class UnitMovementAlgorithmsTests {
 
         val city = City()
         city.location = tile.position.cpy().add(5f, 5f) // random shift to avoid of being in city
-        city.civInfo = otherCiv
+        city.civ = otherCiv
         tile.setOwningCity(city)
     }
 
@@ -415,12 +415,12 @@ class UnitMovementAlgorithmsTests {
         newTiles[3].setTransients()
         // create our city
         City().apply {
-            this.civInfo = this@UnitMovementAlgorithmsTests.civInfo
+            this.civ = this@UnitMovementAlgorithmsTests.civInfo
             location = newTiles.last().position.cpy()
             tiles.add(location)
             tiles.add(newTiles[5].position)
             tileMap = tile.tileMap
-            civInfo.cities = listOf(this)
+            civ.cities = listOf(this)
             newTiles[5].setOwningCity(this)
             newTiles.last().setOwningCity(this)
         }

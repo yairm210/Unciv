@@ -224,7 +224,7 @@ class UnitTurnManager(val unit: MapUnit) {
         if (closestCity == null) return
         val distance = closestCity.getCenterTile().aerialDistanceTo(tile)
         var productionPointsToAdd = if (distance == 1) 20 else 20 - (distance - 2) * 5
-        if (tile.owningCity == null || tile.owningCity!!.civInfo != unit.civInfo) productionPointsToAdd =
+        if (tile.owningCity == null || tile.owningCity!!.civ != unit.civInfo) productionPointsToAdd =
                 productionPointsToAdd * 2 / 3
         if (productionPointsToAdd > 0) {
             closestCity.cityConstructions.addProductionPoints(productionPointsToAdd)

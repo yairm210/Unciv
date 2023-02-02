@@ -27,7 +27,7 @@ class CityInfoConquestFunctions(val city: City){
 
     private fun getGoldForCapturingCity(conqueringCiv: Civilization): Int {
         val baseGold = 20 + 10 * city.population.population + tileBasedRandom.nextInt(40)
-        val turnModifier = max(0, min(50, city.civInfo.gameInfo.turns - city.turnAcquired)) / 50f
+        val turnModifier = max(0, min(50, city.civ.gameInfo.turns - city.turnAcquired)) / 50f
         val cityModifier = if (city.containsBuildingUnique(UniqueType.DoublesGoldFromCapturingCity)) 2f else 1f
         val conqueringCivModifier = if (conqueringCiv.hasUnique(UniqueType.TripleGoldFromEncampmentsAndCities)) 3f else 1f
 
@@ -57,7 +57,7 @@ class CityInfoConquestFunctions(val city: City){
     private fun removeBuildingsOnMoveToCiv(oldCiv: Civilization) {
         city.apply {
             // Remove all buildings provided for free to this city
-            for (building in civInfo.civConstructions.getFreeBuildings(id)) {
+            for (building in civ.civConstructions.getFreeBuildings(id)) {
                 cityConstructions.removeBuilding(building)
             }
 
@@ -78,7 +78,7 @@ class CityInfoConquestFunctions(val city: City){
 
                 // Check if we exceed MaxNumberBuildable for any buildings
                 for (unique in building.getMatchingUniques(UniqueType.MaxNumberBuildable)) {
-                    if (civInfo.cities
+                    if (civ.cities
                         .count {
                             it.cityConstructions.containsBuildingOrEquivalent(building.name)
                             || it.cityConstructions.isBeingConstructedOrEnqueued(building.name)
@@ -138,7 +138,7 @@ class CityInfoConquestFunctions(val city: City){
         val goldPlundered = getGoldForCapturingCity(conqueringCiv)
         city.apply {
 
-            val oldCiv = civInfo
+            val oldCiv = civ
 
             // must be before moving the city to the conquering civ,
             // so the repercussions are properly checked
@@ -197,13 +197,13 @@ class CityInfoConquestFunctions(val city: City){
                 return
             }
 
-            val foundingCiv = civInfo.gameInfo.getCivilization(foundingCiv)
+            val foundingCiv = civ.gameInfo.getCivilization(foundingCiv)
             if (foundingCiv.isDefeated()) // resurrected civ
                 for (diploManager in foundingCiv.diplomacy.values)
                     if (diploManager.diplomaticStatus == DiplomaticStatus.War)
                         diploManager.makePeace()
 
-            val oldCiv = civInfo
+            val oldCiv = civ
 
             diplomaticRepercussionsForLiberatingCity(conqueringCiv, oldCiv)
 
@@ -212,7 +212,7 @@ class CityInfoConquestFunctions(val city: City){
             if (foundingCiv.cities.size == 1) {
                 // Resurrection!
                 cityConstructions.addBuilding(capitalCityIndicator())
-                for (civ in civInfo.gameInfo.civilizations) {
+                for (civ in civ.gameInfo.civilizations) {
                     if (civ == foundingCiv || civ == conqueringCiv) continue // don't need to notify these civs
                     when {
                         civ.knows(conqueringCiv) && civ.knows(foundingCiv) ->
@@ -272,18 +272,18 @@ class CityInfoConquestFunctions(val city: City){
 
     fun moveToCiv(newCivInfo: Civilization) {
         city.apply {
-            val oldCiv = civInfo
+            val oldCiv = civ
 
 
             // Remove/relocate palace for old Civ - need to do this BEFORE we move the cities between
             //  civs so the capitalCityIndicator recognizes the unique buildings of the conquered civ
             if (oldCiv.getCapital() == this)  oldCiv.moveCapitalToNextLargest()
 
-            civInfo.cities = civInfo.cities.toMutableList().apply { remove(city) }
+            civ.cities = civ.cities.toMutableList().apply { remove(city) }
             newCivInfo.cities = newCivInfo.cities.toMutableList().apply { add(city) }
-            civInfo = newCivInfo
+            civ = newCivInfo
             hasJustBeenConquered = false
-            turnAcquired = civInfo.gameInfo.turns
+            turnAcquired = civ.gameInfo.turns
             previousOwner = oldCiv.civName
 
             // now that the tiles have changed, we need to reassign population
@@ -306,7 +306,7 @@ class CityInfoConquestFunctions(val city: City){
             }
 
             // Add our free buildings to this city and add free buildings provided by the city to other cities
-            civInfo.civConstructions.tryAddFreeBuildings()
+            civ.civConstructions.tryAddFreeBuildings()
 
             isBeingRazed = false
 
@@ -319,14 +319,14 @@ class CityInfoConquestFunctions(val city: City){
                 }
             }
 
-            if (civInfo.gameInfo.isReligionEnabled()) religion.removeUnknownPantheons()
+            if (civ.gameInfo.isReligionEnabled()) religion.removeUnknownPantheons()
 
             tryUpdateRoadStatus()
             cityStats.update()
 
             // Update proximity rankings
-            civInfo.updateProximity(oldCiv,
-                oldCiv.updateProximity(civInfo))
+            civ.updateProximity(oldCiv,
+                oldCiv.updateProximity(civ))
         }
     }
 

@@ -612,7 +612,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }?.getCity()
         if (healingCity != null) {
             for (unique in healingCity.getMatchingUniques(UniqueType.CityHealingUnits)) {
-                if (!matchesFilter(unique.params[0]) || !isAlly(healingCity.civInfo)) continue // only heal our units or allied units
+                if (!matchesFilter(unique.params[0]) || !isAlly(healingCity.civ)) continue // only heal our units or allied units
                 healing += unique.params[1].toInt()
             }
         }

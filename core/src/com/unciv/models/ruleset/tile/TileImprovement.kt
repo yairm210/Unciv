@@ -81,7 +81,7 @@ class TileImprovement : RulesetStatsObject() {
             val city = builder.getTile().getCity()
             if (city != null) {
                 city.cityStats.update()
-                city.civInfo.cache.updateCivResources()
+                city.civ.cache.updateCivResources()
             }
         }
         if (hasUnique(UniqueType.RemovesFeaturesIfBuilt)) {

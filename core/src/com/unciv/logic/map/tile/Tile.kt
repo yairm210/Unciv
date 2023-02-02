@@ -54,11 +54,11 @@ open class Tile : IsPartOfGameInfoSerialization {
                 // remove previous neutral tile owner
                 getRoadOwner()!!.neutralRoads.remove(this.position)
             }
-            roadOwner = city.civInfo.civName // only when taking control, otherwise last owner
+            roadOwner = city.civ.civName // only when taking control, otherwise last owner
         } else {
             if (roadStatus != RoadStatus.None && owningCity != null) {
                 // previous tile owner still owns road, add to tracker
-                owningCity!!.civInfo.neutralRoads.add(this.position)
+                owningCity!!.civ.neutralRoads.add(this.position)
             }
         }
         owningCity = city
@@ -385,7 +385,7 @@ open class Tile : IsPartOfGameInfoSerialization {
 
     fun getOwner(): Civilization? {
         val containingCity = getCity() ?: return null
-        return containingCity.civInfo
+        return containingCity.civ
     }
 
     fun getRoadOwner(): Civilization? {
@@ -657,7 +657,7 @@ open class Tile : IsPartOfGameInfoSerialization {
             var cityString = city.name.tr()
             if (isViewableToPlayer) cityString += " (${city.health})"
             lineList += FormattedLine(cityString)
-            if (UncivGame.Current.viewEntireMapForDebug || city.civInfo == viewingCiv)
+            if (UncivGame.Current.viewEntireMapForDebug || city.civ == viewingCiv)
                 lineList += city.cityConstructions.getProductionMarkup(ruleset)
         }
 

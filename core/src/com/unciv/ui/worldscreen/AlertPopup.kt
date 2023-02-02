@@ -107,7 +107,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 val conqueringCiv = worldScreen.gameInfo.getCurrentPlayerCivilization()
 
                 if (city.foundingCiv != ""
-                        && city.civInfo.civName != city.foundingCiv // can't liberate if the city actually belongs to those guys
+                        && city.civ.civName != city.foundingCiv // can't liberate if the city actually belongs to those guys
                         && conqueringCiv.civName != city.foundingCiv) { // or belongs originally to us
                     addLiberateOption(city.foundingCiv) {
                         city.liberateCity(conqueringCiv)

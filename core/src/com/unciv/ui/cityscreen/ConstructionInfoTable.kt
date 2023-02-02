@@ -116,7 +116,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
                         cityScreen.update()
                     }.open()
                 }
-                if (cityScreen.city.hasSoldBuildingThisTurn && !cityScreen.city.civInfo.gameInfo.gameParameters.godMode
+                if (cityScreen.city.hasSoldBuildingThisTurn && !cityScreen.city.civ.gameInfo.gameParameters.godMode
                         || cityScreen.city.isPuppet
                         || !UncivGame.Current.worldScreen!!.isPlayersTurn || !cityScreen.canChangeState)
                     sellBuildingButton.disable()

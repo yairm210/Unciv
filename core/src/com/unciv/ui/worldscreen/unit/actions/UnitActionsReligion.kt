@@ -100,7 +100,7 @@ object UnitActionsReligion {
 
     private fun addRemoveHeresyActions(unit: MapUnit, actionList: ArrayList<UnitAction>, city: City) {
         if (!unit.civInfo.gameInfo.isReligionEnabled()) return
-        if (city.civInfo != unit.civInfo) return
+        if (city.civ != unit.civInfo) return
         // Only allow the action if the city actually has any foreign religion
         // This will almost be always due to pressure from cities close-by
         if (city.religion.getPressures().none { it.key != unit.religion!! }) return

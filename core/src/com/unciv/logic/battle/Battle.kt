@@ -135,9 +135,9 @@ object Battle {
             // Barbarians can't capture cities
             if (attacker.unit.civInfo.isBarbarian()) {
                 defender.takeDamage(-1) // Back to 2 HP
-                val ransom = min(200, defender.city.civInfo.gold)
-                defender.city.civInfo.addGold(-ransom)
-                defender.city.civInfo.addNotification("Barbarians raided [${defender.city.name}] and stole [$ransom] Gold from your treasury!", defender.city.location, NotificationCategory.War, NotificationIcon.War)
+                val ransom = min(200, defender.city.civ.gold)
+                defender.city.civ.addGold(-ransom)
+                defender.city.civ.addNotification("Barbarians raided [${defender.city.name}] and stole [$ransom] Gold from your treasury!", defender.city.location, NotificationCategory.War, NotificationIcon.War)
                 attacker.unit.destroy() // Remove the barbarian
             } else
                 conquerCity(defender.city, attacker)
@@ -664,7 +664,7 @@ object Battle {
         var canNuke = true
         val attackerCiv = nuke.getCivInfo()
         for (tile in targetTile.getTilesInDistance(blastRadius)) {
-            val defendingTileCiv = tile.getCity()?.civInfo
+            val defendingTileCiv = tile.getCity()?.civ
             if (defendingTileCiv != null && attackerCiv.knows(defendingTileCiv)) {
                 canNuke = canNuke && attackerCiv.getDiplomacyManager(defendingTileCiv).canAttack()
             }
@@ -765,7 +765,7 @@ object Battle {
         if (city != null && tile.position == city.location) {
             doNukeExplosionDamageToCity(city, nukeStrength, damageModifierFromMissingResource)
             postBattleNotifications(attacker, CityCombatant(city), city.getCenterTile())
-            destroyIfDefeated(city.civInfo, attacker.getCivInfo())
+            destroyIfDefeated(city.civ, attacker.getCivInfo())
         }
 
         // Damage and/or destroy units on the tile

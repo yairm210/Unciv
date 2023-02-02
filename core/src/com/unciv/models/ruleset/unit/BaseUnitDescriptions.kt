@@ -32,7 +32,7 @@ object BaseUnitDescriptions {
      * @param city Supplies civInfo to show available resources after resource requirements */
     fun getDescription(baseUnit: BaseUnit, city: City): String {
         val lines = mutableListOf<String>()
-        val availableResources = city.civInfo.getCivResources().associate { it.resource.name to it.amount }
+        val availableResources = city.civ.getCivResources().associate { it.resource.name to it.amount }
         for ((resource, amount) in baseUnit.getResourceRequirements()) {
             val available = availableResources[resource] ?: 0
             lines += "{${resource.getConsumesAmountString(amount)}} ({[$available] available})".tr()
