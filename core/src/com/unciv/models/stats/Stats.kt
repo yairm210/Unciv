@@ -1,5 +1,6 @@
 package com.unciv.models.stats
 
+import com.unciv.Constants
 import com.unciv.models.translations.tr
 import kotlin.reflect.KMutableProperty0
 
@@ -147,6 +148,11 @@ open class Stats(
         return this.joinToString {
             (if (it.value > 0) "+" else "") + it.value.toInt() + " " + it.key.toString().tr()
         }
+    }
+
+    /** Since notificaitons are translated on the fly, when saving stats there we need to do so in English */
+    fun toStringForNotifications() = this.joinToString {
+        (if (it.value > 0) "+" else "") + it.value.toInt() + " " + it.key.toString().tr(Constants.english)
     }
 
     // For display in diplomacy window

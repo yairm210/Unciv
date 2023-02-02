@@ -1,6 +1,7 @@
 package com.unciv.models.translations
 
 import com.badlogic.gdx.Gdx
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
@@ -32,7 +33,7 @@ import java.util.*
 class Translations : LinkedHashMap<String, TranslationEntry>(){
 
     var percentCompleteOfLanguages = HashMap<String,Int>()
-            .apply { put("English",100) } // So even if we don't manage to load the percentages, we can still pass the language screen
+            .apply { put(Constants.english, 100) } // So even if we don't manage to load the percentages, we can still pass the language screen
 
     internal var modsWithTranslations: HashMap<String, Translations> = hashMapOf() // key == mod name
 
@@ -290,9 +291,7 @@ object TranslationActiveModsCache {
  *                  defaults to the input string if no translation is available,
  *                  but with placeholder or sentence brackets removed.
  */
-fun String.tr(): String {
-    val language = UncivGame.Current.settings.language
-
+fun String.tr(language:String = UncivGame.Current.settings.language): String {
     if (contains('<') && contains('>')) { // Conditionals!
         /**
          * So conditionals can contain placeholders, such as <vs [unitFilter] units>, which themselves

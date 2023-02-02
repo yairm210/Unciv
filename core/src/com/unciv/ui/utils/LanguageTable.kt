@@ -2,6 +2,7 @@ package com.unciv.ui.utils
 
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.MarkupRenderer
@@ -58,7 +59,7 @@ internal class LanguageTable(val language:String, val percentComplete: Int): Tab
             val languageCompletionPercentage = UncivGame.Current.translations
                 .percentCompleteOfLanguages
             languageTables.addAll(languageCompletionPercentage
-                .map { LanguageTable(it.key, if (it.key == "English") 100 else it.value) }
+                .map { LanguageTable(it.key, if (it.key == Constants.english) 100 else it.value) }
                 .sortedByDescending { it.percentComplete} )
 
             languageTables.forEach {

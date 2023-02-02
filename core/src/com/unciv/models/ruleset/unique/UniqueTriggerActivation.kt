@@ -369,7 +369,7 @@ object UniqueTriggerActivation {
                 else notification
 
                 val notificationText = getNotificationText(filledNotification, triggerNotificationText,
-                    "Gained [$stats]")
+                    "Gained [${stats.toStringForNotifications()}]")
                     ?: return true
 
                 civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationCategory.General, stat.notificationIcon)
@@ -394,7 +394,7 @@ object UniqueTriggerActivation {
                 else notification
 
                 val notificationText = getNotificationText(filledNotification, triggerNotificationText,
-                    "Gained [$stats]")
+                    "Gained [${stats.toStringForNotifications()}]")
                     ?: return true
 
                 civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationCategory.General, stat.notificationIcon)

@@ -679,7 +679,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         for (stat in gainedStats)
             civInfo.addStat(stat.key, stat.value.toInt())
-        civInfo.addNotification("By expending your [$name] you gained [${gainedStats}]!",
+
+        civInfo.addNotification("By expending your [$name] you gained [${gainedStats.toStringForNotifications()}]!",
             getTile().position, NotificationCategory.Units, name)
     }
 

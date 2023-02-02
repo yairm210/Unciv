@@ -32,7 +32,7 @@ class GameSettings {
     var checkForDueUnits: Boolean = true
     var autoUnitCycle: Boolean = true
     var singleTapMove: Boolean = false
-    var language: String = "English"
+    var language: String = Constants.english
     @Transient
     var locale: Locale? = null
     @Deprecated("Since 4.3.6 - replaces with screenSize")
@@ -71,7 +71,7 @@ class GameSettings {
     var showZoomButtons: Boolean = false
 
     var notificationsLogMaxTurns = 5
-    
+
     var showAutosaves: Boolean = false
 
     var androidCutout: Boolean = false
