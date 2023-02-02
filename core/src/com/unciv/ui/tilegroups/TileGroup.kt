@@ -84,7 +84,7 @@ open class TileGroup(
         layerOverlay.setFog(true)
     }
 
-    open fun update(viewingCiv: Civilization? = null, showResourcesAndImprovements: Boolean = true, showTileYields: Boolean = true) {
+    open fun update(viewingCiv: Civilization? = null) {
 
         layerOverlay.hideHighlight()
         layerOverlay.hideCrosshair()
@@ -110,13 +110,13 @@ open class TileGroup(
         removeMissingModReferences()
 
         layerTerrain.update(viewingCiv)
-        layerFeatures.update()
-        layerBorders.update()
+        layerFeatures.update(viewingCiv)
+        layerBorders.update(viewingCiv)
         layerOverlay.update(viewingCiv)
-        layerMisc.update(viewingCiv, showResourcesAndImprovements, showTileYields)
+        layerMisc.update(viewingCiv)
         layerUnitArt.update(viewingCiv)
         layerUnitFlag.update(viewingCiv)
-
+        layerCityButton.update(viewingCiv)
     }
 
     private fun removeMissingModReferences() {

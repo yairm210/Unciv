@@ -4,10 +4,11 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.utils.Align
-import com.unciv.logic.city.City
-import com.unciv.logic.map.tile.Tile
+import com.unciv.UncivGame
+import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.tilegroups.CityButton
 import com.unciv.ui.tilegroups.TileGroup
+import com.unciv.ui.tilegroups.WorldTileGroup
 
 class TileLayerCityButton(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
 
@@ -42,13 +43,24 @@ class TileLayerCityButton(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
         cityButton?.moveButtonDown()
     }
 
-    fun update(city: City?, viewable: Boolean) {
+    override fun doUpdate(viewingCiv: Civilization?) {
+
+        if (tileGroup !is WorldTileGroup)
+            return
+
+        val city = tile().getCity()
 
         // There used to be a city here but it was razed
         if (city == null && cityButton != null) {
             cityButton!!.remove()
             cityButton = null
         }
+
+        if (viewingCiv == null)
+            return
+
+        val tileIsViewable = isViewable(viewingCiv)
+        val shouldShow = UncivGame.Current.viewEntireMapForDebug
 
         // Create (if not yet) and update city button
         if (city != null && tileGroup.tile.isCityCenter()) {
@@ -57,7 +69,7 @@ class TileLayerCityButton(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
                 addActor(cityButton)
             }
 
-            cityButton!!.update(viewable)
+            cityButton!!.update(shouldShow || tileIsViewable)
         }
     }
 

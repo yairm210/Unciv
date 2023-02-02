@@ -32,7 +32,7 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         }
     }
 
-    fun update() {
+    private fun updateBorders() {
 
         // This is longer than it could be, because of performance -
         // before fixing, about half (!) the time of update() was wasted on
@@ -133,6 +133,10 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             }
         }
 
+    }
+
+    override fun doUpdate(viewingCiv: Civilization?) {
+        updateBorders()
     }
 
 }
