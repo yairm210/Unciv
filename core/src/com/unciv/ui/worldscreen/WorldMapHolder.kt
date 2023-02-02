@@ -76,23 +76,32 @@ class WorldMapHolder(
     }
 
     /**
-     * When scrolling the world map, there are two unnecessary (at least currently) things happening that take a decent amount of time:
+     * When scrolling or zooming the world map, there are two unnecessary (at least currently) things happening that take a decent amount of time:
      *
      * 1. Checking which [Actor]'s bounds the pointer (mouse/finger) entered+exited and sending appropriate events to these actors
      * 2. Running all [Actor.act] methods of all child [Actor]s
+     * 3. Running all [Actor.hit] methode of all chikld [Actor]s
      *
      * Disabling them while panning increases the frame rate while panning by approximately 100%.
      */
     private fun disablePointerEventsAndActionsOnPan() {
         onPanStartListener = {
-            Log.debug("Disable pointer enter/exit events & TileGroupMap.act()")
             (stage as UncivStage).performPointerEnterExitEvents = false
             tileGroupMap.shouldAct = false
         }
         onPanStopListener = {
-            Log.debug("Enable pointer enter/exit events & TileGroupMap.act()")
             (stage as UncivStage).performPointerEnterExitEvents = true
             tileGroupMap.shouldAct = true
+        }
+        onZoomStartListener = {
+            (stage as UncivStage).performPointerEnterExitEvents = false
+            tileGroupMap.shouldAct = false
+            tileGroupMap.touchable = Touchable.disabled
+        }
+        onZoomStopListener = {
+            (stage as UncivStage).performPointerEnterExitEvents = true
+            tileGroupMap.shouldAct = true
+            tileGroupMap.touchable = Touchable.enabled
         }
     }
 
