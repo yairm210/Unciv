@@ -160,7 +160,7 @@ class UnitTurnManager(val unit: MapUnit) {
 
         val tileOwner = unit.getTile().getOwner()
         if (tileOwner != null
-                && !unit.canEnterForeignTerrain
+                && !unit.cache.canEnterForeignTerrain
                 && !unit.civ.diplomacyFunctions.canPassThroughTiles(tileOwner)
                 && !tileOwner.isCityState()) // if an enemy city expanded onto this tile while I was in it
             unit.movement.teleportToClosestMoveableTile()

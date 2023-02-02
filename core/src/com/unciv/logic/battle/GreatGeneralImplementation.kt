@@ -34,7 +34,7 @@ object GreatGeneralImplementation {
         val unit = ourUnitCombatant.unit
         val civInfo = ourUnitCombatant.unit.civ
         val allGenerals = civInfo.units.getCivUnits()
-            .filter { it.hasStrengthBonusInRadiusUnique }
+            .filter { it.cache.hasStrengthBonusInRadiusUnique }
         if (allGenerals.none()) return Pair("", 0)
 
         val greatGeneral = allGenerals

@@ -108,7 +108,7 @@ object SpecificUnitAutomation {
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                 .firstOrNull { reachableTest(it) }
             ?: return
-        if (!unit.hasCitadelPlacementUnique) {
+        if (!unit.cache.hasCitadelPlacementUnique) {
             unit.movement.headTowards(cityToGarrison)
             return
         }

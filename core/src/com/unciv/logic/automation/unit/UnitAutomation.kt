@@ -223,7 +223,7 @@ object UnitAutomation {
         if (unit.hasUnique(UniqueType.FoundCity))
             return SpecificUnitAutomation.automateSettlerActions(unit)
 
-        if (unit.hasUniqueToBuildImprovements)
+        if (unit.cache.hasUniqueToBuildImprovements)
             return WorkerAutomation.automateWorkerAction(unit)
 
         if (unit.hasUnique(UniqueType.MayFoundReligion)
@@ -248,12 +248,12 @@ object UnitAutomation {
 
         //todo this now supports "Great General"-like mod units not combining 'aura' and citadel
         // abilities, but not additional capabilities if automation finds no use for those two
-        if (unit.hasStrengthBonusInRadiusUnique
+        if (unit.cache.hasStrengthBonusInRadiusUnique
                 && SpecificUnitAutomation.automateGreatGeneral(unit))
             return
-        if (unit.hasCitadelPlacementUnique && SpecificUnitAutomation.automateCitadelPlacer(unit))
+        if (unit.cache.hasCitadelPlacementUnique && SpecificUnitAutomation.automateCitadelPlacer(unit))
             return
-        if (unit.hasCitadelPlacementUnique || unit.hasStrengthBonusInRadiusUnique)
+        if (unit.cache.hasCitadelPlacementUnique || unit.cache.hasStrengthBonusInRadiusUnique)
             return SpecificUnitAutomation.automateGreatGeneralFallback(unit)
 
         if (unit.civ.religionManager.maySpreadReligionAtAll(unit))

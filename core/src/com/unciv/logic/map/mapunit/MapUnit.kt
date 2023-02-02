@@ -15,7 +15,6 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
@@ -52,82 +51,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
     @Transient
     var isDestroyed = false
 
+    @Transient
+    var cache = MapUnitCache(this)
+
     // This is saved per each unit because if we need to recalculate viewable tiles every time a unit moves,
     //  and we need to go over ALL the units, that's a lot of time spent on updating information we should already know!
     // About 10% of total NextTurn performance time, at the time of this change!
     @Transient
     var viewableTiles = HashSet<Tile>()
-
-    // These are for performance improvements to getMovementCostBetweenAdjacentTiles,
-    // a major component of getDistanceToTilesWithinTurn,
-    // which in turn is a component of getShortestPath and canReach
-    @Transient
-    var ignoresTerrainCost = false
-        private set
-
-    @Transient
-    var ignoresZoneOfControl = false
-        private set
-
-    @Transient
-    var allTilesCosts1 = false
-        private set
-
-    @Transient
-    var canPassThroughImpassableTiles = false
-        private set
-
-    @Transient
-    var roughTerrainPenalty = false
-        private set
-
-    /** If set causes an early exit in getMovementCostBetweenAdjacentTiles
-     *  - means no double movement uniques, roughTerrainPenalty or ignoreHillMovementCost */
-    @Transient
-    var noTerrainMovementUniques = false
-        private set
-
-    /** If set causes a second early exit in getMovementCostBetweenAdjacentTiles */
-    @Transient
-    var noBaseTerrainOrHillDoubleMovementUniques = false
-        private set
-
-    /** If set skips tile.matchesFilter tests for double movement in getMovementCostBetweenAdjacentTiles */
-    @Transient
-    var noFilteredDoubleMovementUniques = false
-        private set
-
-    /** Used for getMovementCostBetweenAdjacentTiles only, based on order of testing */
-    enum class DoubleMovementTerrainTarget { Feature, Base, Hill, Filter }
-    /** Mod-friendly cache of double-movement terrains */
-    @Transient
-    val doubleMovementInTerrain = HashMap<String, DoubleMovementTerrainTarget>()
-
-    @Transient
-    var canEnterIceTiles = false
-
-    @Transient
-    var cannotEnterOceanTiles = false
-
-    @Transient
-    var canEnterForeignTerrain: Boolean = false
-
-    @Transient
-    var costToDisembark: Float? = null
-
-    @Transient
-    var costToEmbark: Float? = null
-
-    @Transient
-    var paradropRange = 0
-
-    @Transient
-    var hasUniqueToBuildImprovements = false    // not canBuildImprovements to avoid confusion
-
-    @Transient
-    var hasStrengthBonusInRadiusUnique = false
-    @Transient
-    var hasCitadelPlacementUnique = false
 
     /** civName owning the unit */
     lateinit var owner: String
@@ -285,7 +216,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return getMatchingUniques(uniqueType, stateForConditionals, checkCivInfoUniques).any()
     }
 
-    fun updateUniques(ruleset: Ruleset) {
+    fun updateUniques() {
         val uniques = ArrayList<Unique>()
         val baseUnit = baseUnit()
         uniques.addAll(baseUnit.uniqueObjects)
@@ -299,48 +230,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             addUniques(uniques)
         }
 
-        allTilesCosts1 = hasUnique(UniqueType.AllTilesCost1Move)
-        canPassThroughImpassableTiles = hasUnique(UniqueType.CanPassImpassable)
-        ignoresTerrainCost = hasUnique(UniqueType.IgnoresTerrainCost)
-        ignoresZoneOfControl = hasUnique(UniqueType.IgnoresZOC)
-        roughTerrainPenalty = hasUnique(UniqueType.RoughTerrainPenalty)
-
-        doubleMovementInTerrain.clear()
-        for (unique in getMatchingUniques(UniqueType.DoubleMovementOnTerrain)) {
-            val param = unique.params[0]
-            val terrain = ruleset.terrains[param]
-            doubleMovementInTerrain[param] = when {
-                terrain == null -> DoubleMovementTerrainTarget.Filter
-                terrain.name == Constants.hill -> DoubleMovementTerrainTarget.Hill
-                terrain.type == TerrainType.TerrainFeature -> DoubleMovementTerrainTarget.Feature
-                terrain.type.isBaseTerrain -> DoubleMovementTerrainTarget.Base
-                else -> DoubleMovementTerrainTarget.Filter
-            }
-        }
-        // Init shortcut flags
-        noTerrainMovementUniques = doubleMovementInTerrain.isEmpty() &&
-                !roughTerrainPenalty && !civ.nation.ignoreHillMovementCost
-        noBaseTerrainOrHillDoubleMovementUniques = doubleMovementInTerrain
-            .none { it.value != DoubleMovementTerrainTarget.Feature }
-        noFilteredDoubleMovementUniques = doubleMovementInTerrain
-            .none { it.value == DoubleMovementTerrainTarget.Filter }
-        costToDisembark = (getMatchingUniques(UniqueType.ReducedDisembarkCost, checkCivInfoUniques = true))
-            .minOfOrNull { it.params[0].toFloat() }
-        costToEmbark = getMatchingUniques(UniqueType.ReducedEmbarkCost, checkCivInfoUniques = true)
-            .minOfOrNull { it.params[0].toFloat() }
-
-        //todo: consider parameterizing [terrainFilter] in some of the following:
-        canEnterIceTiles = hasUnique(UniqueType.CanEnterIceTiles)
-        cannotEnterOceanTiles = hasUnique(UniqueType.CannotEnterOcean, StateForConditionals(civInfo=civ, unit=this))
-
-        hasUniqueToBuildImprovements = hasUnique(UniqueType.BuildImprovements)
-        canEnterForeignTerrain = hasUnique(UniqueType.CanEnterForeignTiles)
-            || hasUnique(UniqueType.CanEnterForeignTilesButLosesReligiousStrength)
-
-        hasStrengthBonusInRadiusUnique = hasUnique(UniqueType.StrengthBonusInRadius)
-        hasCitadelPlacementUnique = getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
-            .mapNotNull { civ.gameInfo.ruleSet.tileImprovements[it.params[0]] }
-            .any { it.hasUnique(UniqueType.TakesOverAdjacentTiles) }
+        cache.updateUniques()
     }
 
     fun copyStatisticsTo(newUnit: MapUnit) {
@@ -355,7 +245,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         newUnit.promotions = promotions.clone()
 
-        newUnit.updateUniques(civ.gameInfo.ruleSet)
+        newUnit.updateUniques()
         newUnit.updateVisibleTiles()
     }
 
@@ -367,7 +257,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         movement += getMatchingUniques(UniqueType.Movement, checkCivInfoUniques = true)
             .sumOf { it.params[0].toInt() }
-
 
         if (movement < 1) movement = 1
 
@@ -533,7 +422,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         baseUnit = ruleset.units[name]
             ?: throw java.lang.Exception("Unit $name is not found!")
 
-        updateUniques(ruleset)
+        updateUniques()
     }
 
     fun useMovementPoints(amount: Float) {

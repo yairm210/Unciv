@@ -35,15 +35,15 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
     ): Float {
 
         if (from.isLand != to.isLand && unit.baseUnit.isLandUnit())
-            return if (from.isWater && to.isLand) unit.costToDisembark ?: 100f
-            else unit.costToEmbark ?: 100f
+            return if (from.isWater && to.isLand) unit.cache.costToDisembark ?: 100f
+            else unit.cache.costToEmbark ?: 100f
 
         // If the movement is affected by a Zone of Control, all movement points are expended
         if (considerZoneOfControl && isMovementAffectedByZoneOfControl(from, to, civInfo))
             return 100f
 
         // land units will still spend all movement points to embark even with this unique
-        if (unit.allTilesCosts1)
+        if (unit.cache.allTilesCosts1)
             return 1f
 
         val toOwner = to.getOwner()
@@ -65,36 +65,36 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         if (areConnectedByRoad && (!areConnectedByRiver || civInfo.tech.roadsConnectAcrossRivers))
             return unit.civ.tech.movementSpeedOnRoads + extraCost
 
-        if (unit.ignoresTerrainCost) return 1f + extraCost
+        if (unit.cache.ignoresTerrainCost) return 1f + extraCost
         if (areConnectedByRiver) return 100f  // Rivers take the entire turn to cross
 
         val terrainCost = to.getLastTerrain().movementCost.toFloat()
 
-        if (unit.noTerrainMovementUniques)
+        if (unit.cache.noTerrainMovementUniques)
             return terrainCost + extraCost
 
-        if (to.terrainFeatures.any { unit.doubleMovementInTerrain[it] == MapUnit.DoubleMovementTerrainTarget.Feature })
+        if (to.terrainFeatures.any { unit.cache.doubleMovementInTerrain[it] == MapUnitCache.DoubleMovementTerrainTarget.Feature })
             return terrainCost * 0.5f + extraCost
 
-        if (unit.roughTerrainPenalty && to.isRoughTerrain())
+        if (unit.cache.roughTerrainPenalty && to.isRoughTerrain())
             return 100f // units that have to spend all movement in rough terrain, have to spend all movement in rough terrain
         // Placement of this 'if' based on testing, see #4232
 
         if (civInfo.nation.ignoreHillMovementCost && to.isHill())
             return 1f + extraCost // usually hills take 2 movements, so here it is 1
 
-        if (unit.noBaseTerrainOrHillDoubleMovementUniques)
+        if (unit.cache.noBaseTerrainOrHillDoubleMovementUniques)
             return terrainCost + extraCost
 
-        if (unit.doubleMovementInTerrain[to.baseTerrain] == MapUnit.DoubleMovementTerrainTarget.Base)
+        if (unit.cache.doubleMovementInTerrain[to.baseTerrain] == MapUnitCache.DoubleMovementTerrainTarget.Base)
             return terrainCost * 0.5f + extraCost
-        if (unit.doubleMovementInTerrain[Constants.hill] == MapUnit.DoubleMovementTerrainTarget.Hill && to.isHill())
+        if (unit.cache.doubleMovementInTerrain[Constants.hill] == MapUnitCache.DoubleMovementTerrainTarget.Hill && to.isHill())
             return terrainCost * 0.5f + extraCost
 
-        if (unit.noFilteredDoubleMovementUniques)
+        if (unit.cache.noFilteredDoubleMovementUniques)
             return terrainCost + extraCost
-        if (unit.doubleMovementInTerrain.any {
-            it.value == MapUnit.DoubleMovementTerrainTarget.Filter &&
+        if (unit.cache.doubleMovementInTerrain.any {
+            it.value == MapUnitCache.DoubleMovementTerrainTarget.Filter &&
                 to.matchesFilter(it.key)
         })
             return terrainCost * 0.5f + extraCost
@@ -140,7 +140,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         // ignore zone of control, so the previous check has a much higher chance of yielding an
         // early "false". If this function is going to return "true", the order doesn't matter
         // anyway.
-        if (unit.ignoresZoneOfControl)
+        if (unit.cache.ignoresZoneOfControl)
             return false
         return true
     }
@@ -355,7 +355,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         if (unit.baseUnit.movesLikeAirUnits())
             return unit.currentTile.aerialDistanceTo(destination) <= unit.getMaxMovementForAirUnits()
         if (unit.isPreparingParadrop())
-            return getDistance(unit.currentTile.position, destination.position) <= unit.paradropRange && canParadropOn(destination)
+            return getDistance(unit.currentTile.position, destination.position) <= unit.cache.paradropRange && canParadropOn(destination)
         return getDistanceToTiles().containsKey(destination)
     }
 
@@ -365,7 +365,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
             unit.baseUnit.movesLikeAirUnits() ->
                 unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getMaxMovementForAirUnits()))
             unit.isPreparingParadrop() ->
-                unit.getTile().getTilesInDistance(unit.paradropRange)
+                unit.getTile().getTilesInDistance(unit.cache.paradropRange)
                     .filter { unit.movement.canParadropOn(it) }
             else ->
                 unit.movement.getDistanceToTiles().keys.asSequence()
@@ -589,7 +589,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
             moveToTile(destination, considerZoneOfControl)
         }
 
-        unit.updateUniques(unit.currentTile.ruleset)
+        unit.updateUniques()
     }
 
     /**
@@ -698,7 +698,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         if (tile.isImpassible()) {
             // special exception - ice tiles are technically impassible, but some units can move through them anyway
             // helicopters can pass through impassable tiles like mountains
-            if (!unit.canPassThroughImpassableTiles && !(unit.canEnterIceTiles && tile.terrainFeatures.contains(Constants.ice))
+            if (!unit.cache.canPassThroughImpassableTiles && !(unit.cache.canEnterIceTiles && tile.terrainFeatures.contains(Constants.ice))
                 // carthage-like uniques sometimes allow passage through impassible tiles
                 && !(unit.civ.passThroughImpassableUnlocked && unit.civ.passableImpassables.contains(tile.getLastTerrain().name)))
                 return false
@@ -719,10 +719,10 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
                 return false
         }
         if (tile.isOcean && !unit.civ.tech.allUnitsCanEnterOcean) { // Apparently all Polynesian naval units can enter oceans
-            if (!unitSpecificAllowOcean && unit.cannotEnterOceanTiles) return false
+            if (!unitSpecificAllowOcean && unit.cache.cannotEnterOceanTiles) return false
         }
 
-        if (!unit.canEnterForeignTerrain && !tile.canCivPassThrough(unit.civ)) return false
+        if (!unit.cache.canEnterForeignTerrain && !tile.canCivPassThrough(unit.civ)) return false
 
         // The first unit is:
         //   1. Either military unit
@@ -802,11 +802,11 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
      * however ignores the diplomatic aspects of such movement like crossing closed borders.
      */
     private fun getPathBetweenTiles(from: Tile, to: Tile): MutableSet<Tile> {
-        val tmp = unit.canEnterForeignTerrain
-        unit.canEnterForeignTerrain = true // the trick to ignore tiles owners
+        val tmp = unit.cache.canEnterForeignTerrain
+        unit.cache.canEnterForeignTerrain = true // the trick to ignore tiles owners
         val bfs = BFS(from) { canPassThrough(it) }
         bfs.stepUntilDestination(to)
-        unit.canEnterForeignTerrain = tmp
+        unit.cache.canEnterForeignTerrain = tmp
         return bfs.getReachedTiles()
     }
 

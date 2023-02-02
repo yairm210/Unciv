@@ -119,7 +119,7 @@ class UnitMovementAlgorithmsTests {
 
         for (type in ruleSet.unitTypes) {
             unit.baseUnit = BaseUnit().apply { unitType = type.key; ruleset = ruleSet }
-            unit.updateUniques(ruleSet)
+            unit.updateUniques()
 
             Assert.assertTrue(
                 "$type cannot be in Ice",
@@ -191,7 +191,7 @@ class UnitMovementAlgorithmsTests {
                 if (this.isRanged())
                     uniques.add("Cannot enter ocean tiles <before researching [Astronomy]>")
             }
-            unit.updateUniques(ruleSet)
+            unit.updateUniques()
 
             Assert.assertTrue("$type cannot be in Ocean",
                     (unit.baseUnit.isMelee()) != unit.movement.canPassThrough(tile))
@@ -496,7 +496,7 @@ class UnitMovementAlgorithmsTests {
         unit.owner = civInfo.civName
         unit.civ = civInfo
         unit.baseUnit.uniques.add("Can carry [2] [Aircraft] units")
-        unit.updateUniques(ruleSet)
+        unit.updateUniques()
         civInfo.units.addUnit(unit, false)
 
         val fighters = ArrayList<MapUnit>()

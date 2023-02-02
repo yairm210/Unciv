@@ -58,7 +58,7 @@ object UnitActions {
         addAirSweepAction(unit, actionList)
         addSetupAction(unit, actionList)
         addFoundCityAction(unit, actionList, tile)
-        addBuildingImprovementsAction(unit, actionList, tile, worldScreen, unitTable)
+        addBuildingImprovementsAction(unit, actionList, tile, worldScreen)
         addRepairAction(unit, actionList)
         addCreateWaterImprovements(unit, actionList)
         UnitActionsGreatPerson.addGreatPersonActions(unit, actionList, tile)
@@ -255,7 +255,7 @@ object UnitActions {
         val paradropUniques =
             unit.getMatchingUniques(UniqueType.MayParadrop)
         if (!paradropUniques.any() || unit.isEmbarked()) return
-        unit.paradropRange = paradropUniques.maxOfOrNull { it.params[0] }!!.toInt()
+        unit.cache.paradropRange = paradropUniques.maxOfOrNull { it.params[0] }!!.toInt()
         actionList += UnitAction(UnitActionType.Paradrop,
             isCurrentAction = unit.isPreparingParadrop(),
             action = {
@@ -356,8 +356,13 @@ object UnitActions {
         return transformList
     }
 
-    private fun addBuildingImprovementsAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: Tile, worldScreen: WorldScreen, unitTable: UnitTable) {
-        if (!unit.hasUniqueToBuildImprovements) return
+    private fun addBuildingImprovementsAction(
+        unit: MapUnit,
+        actionList: ArrayList<UnitAction>,
+        tile: Tile,
+        worldScreen: WorldScreen
+    ) {
+        if (!unit.cache.hasUniqueToBuildImprovements) return
         if (unit.isEmbarked()) return
 
         val couldConstruct = unit.currentMovement > 0
@@ -390,7 +395,7 @@ object UnitActions {
 
     private fun addRepairAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
         if (unit.currentTile.ruleset.tileImprovements[Constants.repair] == null) return
-        if (!unit.hasUniqueToBuildImprovements) return
+        if (!unit.cache.hasUniqueToBuildImprovements) return
         if (unit.isEmbarked()) return
         val tile = unit.getTile()
         if (tile.isCityCenter()) return
@@ -416,7 +421,7 @@ object UnitActions {
     }
 
     private fun addAutomateBuildingImprovementsAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        if (!unit.hasUniqueToBuildImprovements) return
+        if (!unit.cache.hasUniqueToBuildImprovements) return
         if (unit.isAutomated()) return
 
         actionList += UnitAction(UnitActionType.Automate,
