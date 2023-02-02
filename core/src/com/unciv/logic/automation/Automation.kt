@@ -149,7 +149,7 @@ object Automation {
             findWaterConnectedCitiesAndEnemies.stepToEnd()
             removeShips = findWaterConnectedCitiesAndEnemies.getReachedTiles().none {
                         (it.isCityCenter() && it.getOwner() != city.civ)
-                                || (it.militaryUnit != null && it.militaryUnit!!.civInfo != city.civ)
+                                || (it.militaryUnit != null && it.militaryUnit!!.civ != city.civ)
                     } // there is absolutely no reason for you to make water units on this body of water.
         }
 

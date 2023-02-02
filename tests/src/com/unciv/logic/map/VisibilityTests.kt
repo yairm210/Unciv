@@ -33,10 +33,10 @@ class VisibilityTests {
         civInfo.gameInfo.civilizations.add(civInfo)
         civInfo.gameInfo.civilizations.add(enemyCivInfo)
 
-        unit.civInfo = civInfo
+        unit.civ = civInfo
         unit.owner = civInfo.civName
 
-        enemyUnit.civInfo = enemyCivInfo
+        enemyUnit.civ = enemyCivInfo
         enemyUnit.owner = enemyCivInfo.civName
 
         tileMap.ruleset = ruleSet

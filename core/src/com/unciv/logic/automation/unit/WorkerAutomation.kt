@@ -108,7 +108,7 @@ class WorkerAutomation(
     companion object {
         /** Maps to instance [WorkerAutomation.automateWorkerAction] knowing only the MapUnit */
         fun automateWorkerAction(unit: MapUnit) {
-            unit.civInfo.getWorkerAutomation().automateWorkerAction(unit)
+            unit.civ.getWorkerAutomation().automateWorkerAction(unit)
         }
 
         /** Convenience shortcut supports old calling syntax for [WorkerAutomation.getPriority] */
@@ -178,12 +178,12 @@ class WorkerAutomation(
         if (tryConnectingCities(unit)) return //nothing to do, try again to connect cities
 
         val citiesToNumberOfUnimprovedTiles = HashMap<String, Int>()
-        for (city in unit.civInfo.cities) {
+        for (city in unit.civ.cities) {
             citiesToNumberOfUnimprovedTiles[city.id] = city.getTiles()
                 .count { it.isLand && it.civilianUnit == null && (tileCanBeImproved(unit, it) || it.isPillaged()) }
         }
 
-        val mostUndevelopedCity = unit.civInfo.cities.asSequence()
+        val mostUndevelopedCity = unit.civ.cities.asSequence()
             .filter { citiesToNumberOfUnimprovedTiles[it.id]!! > 0 }
             .sortedByDescending { citiesToNumberOfUnimprovedTiles[it.id] }
             .firstOrNull { unit.movement.canReach(it.getCenterTile()) } //goto most undeveloped city
@@ -196,10 +196,10 @@ class WorkerAutomation(
         }
 
         debug("WorkerAutomation: %s -> nothing to do", unit.label())
-        unit.civInfo.addNotification("${unit.shortDisplayName()} has no work to do.", currentTile.position, NotificationCategory.Units, unit.name, "OtherIcons/Sleep")
+        unit.civ.addNotification("${unit.shortDisplayName()} has no work to do.", currentTile.position, NotificationCategory.Units, unit.name, "OtherIcons/Sleep")
 
         // Idle CS units should wander so they don't obstruct players so much
-        if (unit.civInfo.isCityState())
+        if (unit.civ.isCityState())
             wander(unit, stayInTerritory = true)
     }
 
@@ -288,7 +288,7 @@ class WorkerAutomation(
                             && it.getTilesInDistance(2)  // don't work in range of enemy cities
                         .none { tile -> tile.isCityCenter() && tile.getCity()!!.civ.isAtWarWith(civInfo) }
                             && it.getTilesInDistance(3)  // don't work in range of enemy units
-                        .none { tile -> tile.militaryUnit != null && tile.militaryUnit!!.civInfo.isAtWarWith(civInfo)}
+                        .none { tile -> tile.militaryUnit != null && tile.militaryUnit!!.civ.isAtWarWith(civInfo)}
                 }
                 .sortedByDescending { getPriority(it) }
 
@@ -323,7 +323,7 @@ class WorkerAutomation(
         val junkImprovement = tile.getTileImprovement()?.hasUnique(UniqueType.AutomatedWorkersWillReplace)
         if (tile.improvement != null && junkImprovement == false
                 && !UncivGame.Current.settings.automatedWorkersReplaceImprovements
-                && unit.civInfo.isHuman())
+                && unit.civ.isHuman())
             return false
 
 
@@ -366,13 +366,13 @@ class WorkerAutomation(
         val potentialTileImprovements = ruleSet.tileImprovements.filter {
             unit.canBuildImprovement(it.value, tile)
                     && tile.improvementFunctions.canBuildImprovement(it.value, civInfo)
-                    && (it.value.uniqueTo == null || it.value.uniqueTo == unit.civInfo.civName)
+                    && (it.value.uniqueTo == null || it.value.uniqueTo == unit.civ.civName)
         }
         if (potentialTileImprovements.isEmpty()) return null
 
         val uniqueImprovement = potentialTileImprovements.values.asSequence()
             .filter { it.uniqueTo == civInfo.civName }
-            .maxByOrNull { Automation.rankStatsValue(it, unit.civInfo) }
+            .maxByOrNull { Automation.rankStatsValue(it, unit.civ) }
 
         val bestBuildableImprovement = potentialTileImprovements.values.asSequence()
             .map { Pair(it, Automation.rankStatsValue(it, civInfo)) }
@@ -390,7 +390,7 @@ class WorkerAutomation(
                     && isUnbuildableAndRemovable(lastTerrain)
                     && !isResourceImprovementAllowedOnFeature(tile, potentialTileImprovements) -> Constants.remove + lastTerrain.name
             else -> tile.tileResource.getImprovements().filter { it in potentialTileImprovements || it==tile.improvement }
-                .maxByOrNull { Automation.rankStatsValue(ruleSet.tileImprovements[it]!!, unit.civInfo) }
+                .maxByOrNull { Automation.rankStatsValue(ruleSet.tileImprovements[it]!!, unit.civ) }
         }
 
         val improvementString = when {

@@ -25,7 +25,7 @@ class BarbarianAutomation(val civInfo: Civilization) {
         // 1 - Stay on current encampment
         if (unit.currentTile.improvement == Constants.barbarianEncampment) return
 
-        val campTiles = unit.civInfo.gameInfo.barbarians.camps.map { unit.civInfo.gameInfo.tileMap[it.key] }
+        val campTiles = unit.civ.gameInfo.barbarians.camps.map { unit.civ.gameInfo.tileMap[it.key] }
             .sortedBy { unit.currentTile.aerialDistanceTo(it) }
         val bestCamp = campTiles.firstOrNull { it.civilianUnit == null && unit.movement.canReach(it)}
         if (bestCamp != null)

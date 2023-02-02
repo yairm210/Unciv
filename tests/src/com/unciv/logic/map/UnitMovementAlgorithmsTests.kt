@@ -42,7 +42,7 @@ class UnitMovementAlgorithmsTests {
         civInfo.gameInfo.speed = ruleSet.speeds[Speed.DEFAULTFORSIMULATION]!!
         civInfo.nation = Nation().apply { name = "My nation" }
         civInfo.gameInfo.civilizations.add(civInfo)
-        unit.civInfo = civInfo
+        unit.civ = civInfo
         unit.owner = civInfo.civName
 
         // Needed for convertHillToTerrainFeature to not crash
@@ -217,7 +217,7 @@ class UnitMovementAlgorithmsTests {
         otherCiv.civName = Constants.barbarians // they are always enemies
         otherCiv.nation = Nation().apply { name = Constants.barbarians }
         val otherUnit = MapUnit()
-        otherUnit.civInfo = otherCiv
+        otherUnit.civ = otherCiv
         otherUnit.baseUnit = BaseUnit()
         // melee check
         otherUnit.baseUnit.strength = 1
@@ -368,7 +368,7 @@ class UnitMovementAlgorithmsTests {
 
         // Other unit on the way
         val otherUnit = MapUnit()
-        otherUnit.civInfo = civInfo
+        otherUnit.civ = civInfo
         otherUnit.owner = civInfo.civName
         otherUnit.baseUnit = BaseUnit().apply { unitType = "Melee Water"; strength = 1; ruleset = ruleSet }
         otherUnit.currentTile = newTiles[0]
@@ -473,13 +473,13 @@ class UnitMovementAlgorithmsTests {
         otherUnit.currentTile = newTiles.last()
         newTiles.last().civilianUnit = otherUnit
         otherUnit.name = "Worker"
-        otherUnit.civInfo = thirdCiv
+        otherUnit.civ = thirdCiv
         otherUnit.owner = thirdCiv.civName
 
         unit.movement.teleportToClosestMoveableTile()
 
         Assert.assertTrue("Civilian unit must be captured by teleported unit",
-            unit.currentTile == newTiles.last() && otherUnit.civInfo == unit.civInfo)
+            unit.currentTile == newTiles.last() && otherUnit.civ == unit.civ)
     }
 
     @Test
@@ -494,7 +494,7 @@ class UnitMovementAlgorithmsTests {
 
         setupMilitaryUnitInTheCurrentTile("Aircraft Carrier")
         unit.owner = civInfo.civName
-        unit.civInfo = civInfo
+        unit.civ = civInfo
         unit.baseUnit.uniques.add("Can carry [2] [Aircraft] units")
         unit.updateUniques(ruleSet)
         civInfo.units.addUnit(unit, false)
@@ -504,7 +504,7 @@ class UnitMovementAlgorithmsTests {
             val newFighter = MapUnit()
             newFighter.baseUnit = BaseUnit().apply { unitType = "Fighter"; ruleset = ruleSet }
             newFighter.owner = civInfo.civName
-            newFighter.civInfo = civInfo
+            newFighter.civ = civInfo
             newFighter.currentTile = unit.getTile()
             tile.airUnits += newFighter
             newFighter.name = "Fighter"

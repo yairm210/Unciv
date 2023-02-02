@@ -607,8 +607,8 @@ open class Tile : IsPartOfGameInfoSerialization {
         if (naturalWonder != null) lineList += naturalWonder!!
         if (roadStatus !== RoadStatus.None && !isCityCenter()) lineList += roadStatus.name
         if (improvement != null) lineList += improvement!!
-        if (civilianUnit != null) lineList += civilianUnit!!.name + " - " + civilianUnit!!.civInfo.civName
-        if (militaryUnit != null) lineList += militaryUnit!!.name + " - " + militaryUnit!!.civInfo.civName
+        if (civilianUnit != null) lineList += civilianUnit!!.name + " - " + civilianUnit!!.civ.civName
+        if (militaryUnit != null) lineList += militaryUnit!!.name + " - " + militaryUnit!!.civ.civName
         if (this::baseTerrainObject.isInitialized && isImpassible()) lineList += Constants.impassable
         return lineList.joinToString()
     }
@@ -701,12 +701,12 @@ open class Tile : IsPartOfGameInfoSerialization {
         }
 
         if (civilianUnit != null && isViewableToPlayer)
-            lineList += FormattedLine(civilianUnit!!.name.tr() + " - " + civilianUnit!!.civInfo.civName.tr(),
+            lineList += FormattedLine(civilianUnit!!.name.tr() + " - " + civilianUnit!!.civ.civName.tr(),
                 link="Unit/${civilianUnit!!.name}")
         if (militaryUnit != null && isViewableToPlayer && (viewingCiv == null || !militaryUnit!!.isInvisible(viewingCiv))) {
             val milUnitString = militaryUnit!!.name.tr() +
                 (if (militaryUnit!!.health < 100) "(" + militaryUnit!!.health + ")" else "") +
-                " - " + militaryUnit!!.civInfo.civName.tr()
+                " - " + militaryUnit!!.civ.civName.tr()
             lineList += FormattedLine(milUnitString, link="Unit/${militaryUnit!!.name}")
         }
 
@@ -725,7 +725,7 @@ open class Tile : IsPartOfGameInfoSerialization {
     fun hasEnemyInvisibleUnit(viewingCiv: Civilization): Boolean {
         val unitsInTile = getUnits()
         if (unitsInTile.none()) return false
-        if (unitsInTile.first().civInfo != viewingCiv &&
+        if (unitsInTile.first().civ != viewingCiv &&
                 unitsInTile.firstOrNull { it.isInvisible(viewingCiv) } != null) {
             return true
         }

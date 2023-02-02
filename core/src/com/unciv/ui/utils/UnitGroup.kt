@@ -1,6 +1,5 @@
 package com.unciv.ui.utils
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
@@ -16,7 +15,7 @@ import com.unciv.ui.utils.extensions.surroundWithThinCircle
 
 class UnitGroup(val unit: MapUnit, val size: Float): Group() {
     var actionGroup :Group? = null
-    val flagIcon = ImageGetter.getUnitIcon(unit.name, unit.civInfo.nation.getInnerColor())
+    val flagIcon = ImageGetter.getUnitIcon(unit.name, unit.civ.nation.getInnerColor())
         .apply {
             if (unit.isCivilian())
                 setSize(size * 0.60f, size * 0.60f)
@@ -47,12 +46,12 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
         // 0f (invisible) to 1f (fully opaque)
         flagIcon.color.a = UncivGame.Current.settings.unitIconOpacity
 
-        outerBg.color = unit.civInfo.nation.getInnerColor()
+        outerBg.color = unit.civ.nation.getInnerColor()
         outerBg.color.a = UncivGame.Current.settings.unitIconOpacity
         outerBg.setSize(sizeOuterBgX, sizeOuterBgY)
         outerBg.center(flagBg)
 
-        innerBg.color = unit.civInfo.nation.getOuterColor()
+        innerBg.color = unit.civ.nation.getOuterColor()
         innerBg.color.a = UncivGame.Current.settings.unitIconOpacity
         innerBg.setSize(sizeInnerBgX, sizeInnerBgY)
         innerBg.center(flagBg)

@@ -35,7 +35,7 @@ import kotlin.math.pow
 class MapUnit : IsPartOfGameInfoSerialization {
 
     @Transient
-    lateinit var civInfo: Civilization
+    lateinit var civ: Civilization
 
     @Transient
     lateinit var baseUnit: BaseUnit
@@ -230,7 +230,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         val toReturn = MapUnit()
         toReturn.baseUnit = baseUnit
         toReturn.name = name
-        toReturn.civInfo = civInfo
+        toReturn.civ = civ
         toReturn.owner = owner
         toReturn.originalOwner = originalOwner
         toReturn.instanceName = instanceName
@@ -267,19 +267,19 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun getMatchingUniques(
         uniqueType: UniqueType,
-        stateForConditionals: StateForConditionals = StateForConditionals(civInfo, unit=this),
+        stateForConditionals: StateForConditionals = StateForConditionals(civ, unit=this),
         checkCivInfoUniques: Boolean = false
     ) = sequence {
             yieldAll(
                 tempUniquesMap.getMatchingUniques(uniqueType, stateForConditionals)
             )
         if (checkCivInfoUniques)
-            yieldAll(civInfo.getMatchingUniques(uniqueType, stateForConditionals))
+            yieldAll(civ.getMatchingUniques(uniqueType, stateForConditionals))
     }
 
     fun hasUnique(
         uniqueType: UniqueType,
-        stateForConditionals: StateForConditionals = StateForConditionals(civInfo, unit=this),
+        stateForConditionals: StateForConditionals = StateForConditionals(civ, unit=this),
         checkCivInfoUniques: Boolean = false
     ): Boolean {
         return getMatchingUniques(uniqueType, stateForConditionals, checkCivInfoUniques).any()
@@ -319,7 +319,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
         // Init shortcut flags
         noTerrainMovementUniques = doubleMovementInTerrain.isEmpty() &&
-                !roughTerrainPenalty && !civInfo.nation.ignoreHillMovementCost
+                !roughTerrainPenalty && !civ.nation.ignoreHillMovementCost
         noBaseTerrainOrHillDoubleMovementUniques = doubleMovementInTerrain
             .none { it.value != DoubleMovementTerrainTarget.Feature }
         noFilteredDoubleMovementUniques = doubleMovementInTerrain
@@ -331,7 +331,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         //todo: consider parameterizing [terrainFilter] in some of the following:
         canEnterIceTiles = hasUnique(UniqueType.CanEnterIceTiles)
-        cannotEnterOceanTiles = hasUnique(UniqueType.CannotEnterOcean, StateForConditionals(civInfo=civInfo, unit=this))
+        cannotEnterOceanTiles = hasUnique(UniqueType.CannotEnterOcean, StateForConditionals(civInfo=civ, unit=this))
 
         hasUniqueToBuildImprovements = hasUnique(UniqueType.BuildImprovements)
         canEnterForeignTerrain = hasUnique(UniqueType.CanEnterForeignTiles)
@@ -339,7 +339,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         hasStrengthBonusInRadiusUnique = hasUnique(UniqueType.StrengthBonusInRadius)
         hasCitadelPlacementUnique = getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
-            .mapNotNull { civInfo.gameInfo.ruleSet.tileImprovements[it.params[0]] }
+            .mapNotNull { civ.gameInfo.ruleSet.tileImprovements[it.params[0]] }
             .any { it.hasUnique(UniqueType.TakesOverAdjacentTiles) }
     }
 
@@ -355,7 +355,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         newUnit.promotions = promotions.clone()
 
-        newUnit.updateUniques(civInfo.gameInfo.ruleSet)
+        newUnit.updateUniques(civ.gameInfo.ruleSet)
         newUnit.updateVisibleTiles()
     }
 
@@ -381,7 +381,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     private fun getVisibilityRange(): Int {
         var visibilityRange = 2
 
-        val conditionalState = StateForConditionals(civInfo = civInfo, unit = this)
+        val conditionalState = StateForConditionals(civInfo = civ, unit = this)
 
         if (isEmbarked() && !hasUnique(UniqueType.NormalVisionWhenEmbarked, conditionalState, checkCivInfoUniques = true)) {
             return 1
@@ -413,7 +413,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         // Set equality automatically determines if anything changed - https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-abstract-set/equals.html
         if (updateCivViewableTiles && oldViewableTiles != viewableTiles)
-            civInfo.cache.updateViewableTiles()
+            civ.cache.updateViewableTiles()
     }
 
     fun isActionUntilHealed() = action?.endsWith("until healed") == true
@@ -553,7 +553,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         if (currentMovement == 0f) return  // We've already done stuff this turn, and can't do any more stuff
 
         val enemyUnitsInWalkingDistance = movement.getDistanceToTiles().keys
-            .filter { it.militaryUnit != null && civInfo.isAtWarWith(it.militaryUnit!!.civInfo) }
+            .filter { it.militaryUnit != null && civ.isAtWarWith(it.militaryUnit!!.civ) }
         if (enemyUnitsInWalkingDistance.isNotEmpty()) {
             if (isMoving()) // stop on enemy in sight
                 action = null
@@ -591,7 +591,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     /** Returns the health points [MapUnit] will receive if healing on [tile] */
     fun rankTileForHealing(tile: Tile): Int {
-        val isFriendlyTerritory = tile.isFriendlyTerritory(civInfo)
+        val isFriendlyTerritory = tile.isFriendlyTerritory(civ)
 
         var healing = when {
             tile.isCityCenter() -> 25
@@ -618,7 +618,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
 
         val maxAdjacentHealingBonus = currentTile.neighbors
-            .flatMap { it.getUnits().asSequence() }.filter { it.civInfo == civInfo }
+            .flatMap { it.getUnits().asSequence() }.filter { it.civ == civ }
             .map { it.adjacentHealingBonus() }.maxOrNull()
         if (maxAdjacentHealingBonus != null)
             healing += maxAdjacentHealingBonus
@@ -628,11 +628,11 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun destroy(destroyTransportedUnit: Boolean = true) {
         val currentPosition = Vector2(getTile().position)
-        civInfo.attacksSinceTurnStart.addAll(attacksSinceTurnStart.asSequence().map { Civilization.HistoricalAttackMemory(this.name, currentPosition, it) })
+        civ.attacksSinceTurnStart.addAll(attacksSinceTurnStart.asSequence().map { Civilization.HistoricalAttackMemory(this.name, currentPosition, it) })
         currentMovement = 0f
         removeFromTile()
-        civInfo.units.removeUnit(this)
-        civInfo.cache.updateViewableTiles()
+        civ.units.removeUnit(this)
+        civ.cache.updateViewableTiles()
         if (destroyTransportedUnit) {
             // all transported units should be destroyed as well
             currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }
@@ -643,8 +643,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun gift(recipient: Civilization) {
-        civInfo.units.removeUnit(this)
-        civInfo.cache.updateViewableTiles()
+        civ.units.removeUnit(this)
+        civ.cache.updateViewableTiles()
         // all transported units should be destroyed as well
         currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }
             .toList() // because we're changing the list
@@ -663,12 +663,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
         if (!isGreatPerson()) return
 
         val gainedStats = Stats()
-        for (unique in civInfo.getMatchingUniques(UniqueType.ProvidesGoldWheneverGreatPersonExpended)) {
-            gainedStats.gold += (100 * civInfo.gameInfo.speed.goldCostModifier).toInt()
+        for (unique in civ.getMatchingUniques(UniqueType.ProvidesGoldWheneverGreatPersonExpended)) {
+            gainedStats.gold += (100 * civ.gameInfo.speed.goldCostModifier).toInt()
         }
-        for (unique in civInfo.getMatchingUniques(UniqueType.ProvidesStatsWheneverGreatPersonExpended)) {
+        for (unique in civ.getMatchingUniques(UniqueType.ProvidesStatsWheneverGreatPersonExpended)) {
             val uniqueStats = unique.stats
-            val speedModifiers = civInfo.gameInfo.speed.statCostModifiers
+            val speedModifiers = civ.gameInfo.speed.statCostModifiers
             for (stat in uniqueStats) {
                 uniqueStats[stat.key] = stat.value * speedModifiers[stat.key]!!
             }
@@ -678,9 +678,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
         if (gainedStats.isEmpty()) return
 
         for (stat in gainedStats)
-            civInfo.addStat(stat.key, stat.value.toInt())
+            civ.addStat(stat.key, stat.value.toInt())
 
-        civInfo.addNotification("By expending your [$name] you gained [${gainedStats.toStringForNotifications()}]!",
+        civ.addNotification("By expending your [$name] you gained [${gainedStats.toStringForNotifications()}]!",
             getTile().position, NotificationCategory.Units, name)
     }
 
@@ -691,20 +691,20 @@ class MapUnit : IsPartOfGameInfoSerialization {
         // getAncientRuinBonus, if it places a new unit, does too
         currentTile = tile
 
-        if (civInfo.isMajorCiv()
+        if (civ.isMajorCiv()
             && tile.improvement != null
             && tile.getTileImprovement()!!.isAncientRuinsEquivalent()
         ) {
             getAncientRuinBonus(tile)
         }
-        if (tile.improvement == Constants.barbarianEncampment && !civInfo.isBarbarian())
+        if (tile.improvement == Constants.barbarianEncampment && !civ.isBarbarian())
             clearEncampment(tile)
         // Check whether any civilians without military units are there.
         // Keep in mind that putInTile(), which calls this method,
         // might have already placed your military unit in this tile.
         val unguardedCivilian = tile.getUnguardedCivilian(this)
         // Capture Enemy Civilian Unit if you move on top of it
-        if (isMilitary() && unguardedCivilian != null && civInfo.isAtWarWith(unguardedCivilian.civInfo)) {
+        if (isMilitary() && unguardedCivilian != null && civ.isAtWarWith(unguardedCivilian.civ)) {
             Battle.captureCivilianUnit(MapUnitCombatant(this), MapUnitCombatant(tile.civilianUnit!!))
         }
 
@@ -738,16 +738,16 @@ class MapUnit : IsPartOfGameInfoSerialization {
         tile.changeImprovement(null)
 
         // Notify City-States that this unit cleared a Barbarian Encampment, required for quests
-        civInfo.gameInfo.getAliveCityStates()
-            .forEach { it.questManager.barbarianCampCleared(civInfo, tile.position) }
+        civ.gameInfo.getAliveCityStates()
+            .forEach { it.questManager.barbarianCampCleared(civ, tile.position) }
 
         var goldGained =
-            civInfo.getDifficulty().clearBarbarianCampReward * civInfo.gameInfo.speed.goldCostModifier
-        if (civInfo.hasUnique(UniqueType.TripleGoldFromEncampmentsAndCities))
+            civ.getDifficulty().clearBarbarianCampReward * civ.gameInfo.speed.goldCostModifier
+        if (civ.hasUnique(UniqueType.TripleGoldFromEncampmentsAndCities))
             goldGained *= 3f
 
-        civInfo.addGold(goldGained.toInt())
-        civInfo.addNotification(
+        civ.addGold(goldGained.toInt())
+        civ.addNotification(
             "We have captured a barbarian encampment and recovered [${goldGained.toInt()}] gold!",
             tile.position,
             NotificationCategory.War,
@@ -780,24 +780,24 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
 
         destroy()
-        if (currentTile.getOwner() == civInfo)
-            civInfo.addGold(baseUnit.getDisbandGold(civInfo))
-        if (civInfo.isDefeated()) civInfo.destroy()
+        if (currentTile.getOwner() == civ)
+            civ.addGold(baseUnit.getDisbandGold(civ))
+        if (civ.isDefeated()) civ.destroy()
     }
 
     private fun getAncientRuinBonus(tile: Tile) {
         tile.changeImprovement(null)
-        civInfo.ruinsManager.selectNextRuinsReward(this)
+        civ.ruinsManager.selectNextRuinsReward(this)
     }
 
     fun assignOwner(civInfo: Civilization, updateCivInfo: Boolean = true) {
         owner = civInfo.civName
-        this.civInfo = civInfo
+        this.civ = civInfo
         civInfo.units.addUnit(this, updateCivInfo)
     }
 
     fun capturedBy(captor: Civilization) {
-        civInfo.units.removeUnit(this)
+        civ.units.removeUnit(this)
         assignOwner(captor)
         currentMovement = 0f
         // It's possible that the unit can no longer stand on the tile it was captured on.
@@ -843,7 +843,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
 
     fun getDamageFromTerrain(tile: Tile = currentTile): Int {
-        if (civInfo.nonStandardTerrainDamage) {
+        if (civ.nonStandardTerrainDamage) {
             for (unique in getMatchingUniques(UniqueType.DamagesContainingUnits)) {
                 if (unique.params[0] in tile.allTerrains.map { it.name }) {
                     return unique.params[1].toInt() // Use the damage from the unique
@@ -878,9 +878,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
 
     private fun isAlly(otherCiv: Civilization): Boolean {
-        return otherCiv == civInfo
-                || (otherCiv.isCityState() && otherCiv.getAllyCiv() == civInfo.civName)
-                || (civInfo.isCityState() && civInfo.getAllyCiv() == otherCiv.civName)
+        return otherCiv == civ
+                || (otherCiv.isCityState() && otherCiv.getAllyCiv() == civ.civName)
+                || (civ.isCityState() && civ.getAllyCiv() == otherCiv.civName)
     }
 
     /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter] */
@@ -891,8 +891,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
             // todo: unit filters should be adjectives, fitting "[filterType] units"
             // This means converting "wounded units" to "Wounded", "Barbarians" to "Barbarian"
             "Wounded", "wounded units" -> health < 100
-            Constants.barbarians, "Barbarian" -> civInfo.isBarbarian()
-            "City-State" -> civInfo.isCityState()
+            Constants.barbarians, "Barbarian" -> civ.isBarbarian()
+            "City-State" -> civ.isCityState()
             "Embarked" -> isEmbarked()
             "Non-City" -> true
             else -> {
@@ -918,7 +918,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun getReligionDisplayName(): String? {
         if (religion == null) return null
-        return civInfo.gameInfo.religions[religion]!!.getReligionDisplayName()
+        return civ.gameInfo.religions[religion]!!.getReligionDisplayName()
     }
 
     fun religiousActionsUnitCanDo(): Sequence<String> {

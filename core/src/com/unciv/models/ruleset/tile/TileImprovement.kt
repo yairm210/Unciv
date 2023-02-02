@@ -93,7 +93,7 @@ class TileImprovement : RulesetStatsObject() {
                 removingAction in tile.ruleset.tileImprovements
                 && !isAllowedOnFeature(feature)
                 && tile.ruleset.tileImprovements[removingAction]!!.let {
-                    it.techRequired == null || builder.civInfo.tech.isResearched(it.techRequired!!)
+                    it.techRequired == null || builder.civ.tech.isResearched(it.techRequired!!)
                 }
             }
 

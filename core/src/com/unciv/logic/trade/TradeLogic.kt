@@ -99,7 +99,7 @@ class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civili
                         .forEach { it.movement.teleportToClosestMoveableTile() }
                     for (tile in city.getTiles()) {
                         for (unit in tile.getUnits().toList()) {
-                            if (!unit.civInfo.diplomacyFunctions.canPassThroughTiles(to) && !unit.canEnterForeignTerrain)
+                            if (!unit.civ.diplomacyFunctions.canPassThroughTiles(to) && !unit.canEnterForeignTerrain)
                                 unit.movement.teleportToClosestMoveableTile()
                         }
                     }

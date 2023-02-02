@@ -59,7 +59,7 @@ object BattleDamage {
 
             //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
             val adjacentUnits = combatant.getTile().neighbors.flatMap { it.getUnits() }
-            val strengthMalus = adjacentUnits.filter { it.civInfo.isAtWarWith(civInfo) }
+            val strengthMalus = adjacentUnits.filter { it.civ.isAtWarWith(civInfo) }
                     .flatMap { it.getMatchingUniques(UniqueType.StrengthForAdjacentEnemies) }
                     .filter { combatant.matchesCategory(it.params[1]) && combatant.getTile().matchesFilter(it.params[2]) }
                     .maxByOrNull { it.params[0] }

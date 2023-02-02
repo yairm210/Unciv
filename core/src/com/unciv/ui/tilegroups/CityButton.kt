@@ -33,7 +33,6 @@ import com.unciv.ui.utils.extensions.toGroup
 import com.unciv.ui.utils.extensions.toLabel
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.roundToInt
 
 class InfluenceTable(
     influence: Float,

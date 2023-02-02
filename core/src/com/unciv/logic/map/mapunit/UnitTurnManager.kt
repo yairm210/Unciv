@@ -37,7 +37,7 @@ class UnitTurnManager(val unit: MapUnit) {
         if (unit.hasUnique(UniqueType.ReligiousUnit)
                 && unit.getTile().getOwner() != null
                 && !unit.getTile().getOwner()!!.isCityState()
-                && !unit.civInfo.diplomacyFunctions.canPassThroughTiles(unit.getTile().getOwner()!!)
+                && !unit.civ.diplomacyFunctions.canPassThroughTiles(unit.getTile().getOwner()!!)
         ) {
             val lostReligiousStrength =
                     unit.getMatchingUniques(UniqueType.CanEnterForeignTilesButLosesReligiousStrength)
@@ -46,7 +46,7 @@ class UnitTurnManager(val unit: MapUnit) {
             if (lostReligiousStrength != null)
                 unit.religiousStrengthLost += lostReligiousStrength
             if (unit.religiousStrengthLost >= unit.baseUnit.religiousStrength) {
-                unit.civInfo.addNotification("Your [${unit.name}] lost its faith after spending too long inside enemy territory!",
+                unit.civ.addNotification("Your [${unit.name}] lost its faith after spending too long inside enemy territory!",
                     unit.getTile().position, NotificationCategory.Units, unit.name)
                 unit.destroy()
             }
@@ -77,7 +77,7 @@ class UnitTurnManager(val unit: MapUnit) {
             .filter {
                 it.getOwner() != null
                         && it.getUnpillagedImprovement() != null
-                        && unit.civInfo.isAtWarWith(it.getOwner()!!)
+                        && unit.civ.isAtWarWith(it.getOwner()!!)
             }.map { tile ->
                 tile to tile.getTileImprovement()!!.getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnits)
                     .sumOf { it.params[0].toInt() }
@@ -87,7 +87,7 @@ class UnitTurnManager(val unit: MapUnit) {
         unit.health -= damage
         val locations = LocationAction(citadelTile.position, unit.currentTile.position)
         if (unit.health <= 0) {
-            unit.civInfo.addNotification(
+            unit.civ.addNotification(
                 "An enemy [Citadel] has destroyed our [${unit.name}]",
                 locations,
                 NotificationCategory.War,
@@ -100,7 +100,7 @@ class UnitTurnManager(val unit: MapUnit) {
                 NotificationIcon.Citadel, NotificationIcon.Death, unit.name
             )
             unit.destroy()
-        } else unit.civInfo.addNotification(
+        } else unit.civ.addNotification(
             "An enemy [Citadel] has attacked our [${unit.name}]",
             locations,
             NotificationCategory.War,
@@ -114,7 +114,7 @@ class UnitTurnManager(val unit: MapUnit) {
         unit.health -= tileDamage
 
         if (unit.health <= 0) {
-            unit.civInfo.addNotification(
+            unit.civ.addNotification(
                 "Our [${unit.name}] took [$tileDamage] tile damage and was destroyed",
                 unit.currentTile.position,
                 NotificationCategory.Units,
@@ -122,7 +122,7 @@ class UnitTurnManager(val unit: MapUnit) {
                 NotificationIcon.Death
             )
             unit.destroy()
-        } else if (tileDamage > 0) unit.civInfo.addNotification(
+        } else if (tileDamage > 0) unit.civ.addNotification(
             "Our [${unit.name}] took [$tileDamage] tile damage",
             unit.currentTile.position,
             NotificationCategory.Units,
@@ -154,14 +154,14 @@ class UnitTurnManager(val unit: MapUnit) {
         // Military units always but civilians only if not protected.
         if (unit.isSleeping() && (unit.isMilitary() || (unit.currentTile.militaryUnit == null && !unit.currentTile.isCityCenter())) &&
                 unit.currentTile.getTilesInDistance(3).any {
-                    it.militaryUnit != null && it in unit.civInfo.viewableTiles && it.militaryUnit!!.civInfo.isAtWarWith(unit.civInfo)
+                    it.militaryUnit != null && it in unit.civ.viewableTiles && it.militaryUnit!!.civ.isAtWarWith(unit.civ)
                 }
         )  unit.action = null
 
         val tileOwner = unit.getTile().getOwner()
         if (tileOwner != null
                 && !unit.canEnterForeignTerrain
-                && !unit.civInfo.diplomacyFunctions.canPassThroughTiles(tileOwner)
+                && !unit.civ.diplomacyFunctions.canPassThroughTiles(tileOwner)
                 && !tileOwner.isCityState()) // if an enemy city expanded onto this tile while I was in it
             unit.movement.teleportToClosestMoveableTile()
 
@@ -175,7 +175,7 @@ class UnitTurnManager(val unit: MapUnit) {
         tile.turnsToImprovement -= 1
         if (tile.turnsToImprovement != 0) return
 
-        if (unit.civInfo.isCurrentPlayer())
+        if (unit.civ.isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Construct an improvement")
 
         when {
@@ -190,7 +190,7 @@ class UnitTurnManager(val unit: MapUnit) {
                 ) {
                     // We removed a terrain (e.g. Forest) and the improvement (e.g. Lumber mill) requires it!
                     tile.changeImprovement(null)
-                    if (tile.resource != null) unit.civInfo.cache.updateCivResources() // unlikely, but maybe a mod makes a resource improvement dependent on a terrain feature
+                    if (tile.resource != null) unit.civ.cache.updateCivResources() // unlikely, but maybe a mod makes a resource improvement dependent on a terrain feature
                 }
                 if (RoadStatus.values().any { tile.improvementInProgress == it.removeAction }) {
                     tile.removeRoad()
@@ -202,11 +202,11 @@ class UnitTurnManager(val unit: MapUnit) {
                     tile.removeTerrainFeature(removedFeatureName)
                 }
             }
-            tile.improvementInProgress == RoadStatus.Road.name -> tile.addRoad(RoadStatus.Road, unit.civInfo)
-            tile.improvementInProgress == RoadStatus.Railroad.name -> tile.addRoad(RoadStatus.Railroad, unit.civInfo)
+            tile.improvementInProgress == RoadStatus.Road.name -> tile.addRoad(RoadStatus.Road, unit.civ)
+            tile.improvementInProgress == RoadStatus.Railroad.name -> tile.addRoad(RoadStatus.Railroad, unit.civ)
             tile.improvementInProgress == Constants.repair -> tile.setRepaired()
             else -> {
-                val improvement = unit.civInfo.gameInfo.ruleSet.tileImprovements[tile.improvementInProgress]!!
+                val improvement = unit.civ.gameInfo.ruleSet.tileImprovements[tile.improvementInProgress]!!
                 improvement.handleImprovementCompletion(unit)
                 tile.changeImprovement(tile.improvementInProgress)
             }
@@ -219,17 +219,17 @@ class UnitTurnManager(val unit: MapUnit) {
 
     private fun tryProvideProductionToClosestCity(removedTerrainFeature: String) {
         val tile = unit.getTile()
-        val closestCity = unit.civInfo.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
+        val closestCity = unit.civ.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
         @Suppress("FoldInitializerAndIfToElvis")
         if (closestCity == null) return
         val distance = closestCity.getCenterTile().aerialDistanceTo(tile)
         var productionPointsToAdd = if (distance == 1) 20 else 20 - (distance - 2) * 5
-        if (tile.owningCity == null || tile.owningCity!!.civ != unit.civInfo) productionPointsToAdd =
+        if (tile.owningCity == null || tile.owningCity!!.civ != unit.civ) productionPointsToAdd =
                 productionPointsToAdd * 2 / 3
         if (productionPointsToAdd > 0) {
             closestCity.cityConstructions.addProductionPoints(productionPointsToAdd)
             val locations = LocationAction(tile.position, closestCity.location)
-            unit.civInfo.addNotification(
+            unit.civ.addNotification(
                 "Clearing a [$removedTerrainFeature] has created [$productionPointsToAdd] Production for [${closestCity.name}]",
                 locations, NotificationCategory.Production, NotificationIcon.Construction
             )

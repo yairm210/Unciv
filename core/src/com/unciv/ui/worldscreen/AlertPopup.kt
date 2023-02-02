@@ -368,7 +368,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 capturedUnit.destroy()
                 // This is so that future checks which check if a unit has been captured are caught give the right answer
                 //  For example, in postBattleMoveToAttackedTile
-                capturedUnit.civInfo = captor
+                capturedUnit.civ = captor
                 captor.units.placeUnitNearTile(tile.position, Constants.worker)
             } else
                 capturedUnit.capturedBy(captor)

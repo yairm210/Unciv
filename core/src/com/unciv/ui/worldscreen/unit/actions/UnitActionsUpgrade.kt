@@ -26,7 +26,7 @@ object UnitActionsUpgrade{
         val specialUpgradesTo = unit.baseUnit().getMatchingUniques(UniqueType.RuinsUpgrade).map { it.params[0] }.firstOrNull()
         if (unit.baseUnit().upgradesTo == null && specialUpgradesTo == null) return null // can't upgrade to anything
         val unitTile = unit.getTile()
-        val civInfo = unit.civInfo
+        val civInfo = unit.civ
         if (!isFree && unitTile.getOwner() != civInfo) return null
 
         val upgradesTo = unit.baseUnit().upgradesTo
@@ -82,7 +82,7 @@ object UnitActionsUpgrade{
                 }
             }.takeIf {
                 isFree || (
-                        unit.civInfo.gold >= goldCostOfUpgrade
+                        unit.civ.gold >= goldCostOfUpgrade
                                 && unit.currentMovement > 0
                                 && !unit.isEmbarked()
                                 && unit.upgrade.canUpgrade(unitToUpgradeTo = upgradedUnit)

@@ -92,7 +92,7 @@ object BattleHelper {
 
     private fun checkTile(unit: MapUnit, tile: Tile, tilesToCheck: List<Tile>?): Boolean {
         if (!containsAttackableEnemy(tile, MapUnitCombatant(unit))) return false
-        if (tile !in (tilesToCheck ?: unit.civInfo.viewableTiles)) return false
+        if (tile !in (tilesToCheck ?: unit.civ.viewableTiles)) return false
         val mapCombatant = Battle.getMapCombatantOfTile(tile)
         return (!unit.baseUnit.isMelee() || mapCombatant !is MapUnitCombatant || !mapCombatant.unit.isCivilian() || unit.movement.canPassThrough(tile))
     }

@@ -414,7 +414,7 @@ class WorldScreen(
         mapHolder.resetArrows()
         if (UncivGame.Current.settings.showUnitMovements) {
             val allUnits = gameInfo.civilizations.asSequence().flatMap { it.units.getCivUnits() }
-            val allAttacks = allUnits.map { unit -> unit.attacksSinceTurnStart.asSequence().map { attacked -> Triple(unit.civInfo, unit.getTile().position, attacked) } }.flatten() +
+            val allAttacks = allUnits.map { unit -> unit.attacksSinceTurnStart.asSequence().map { attacked -> Triple(unit.civ, unit.getTile().position, attacked) } }.flatten() +
                 gameInfo.civilizations.asSequence().flatMap { civInfo -> civInfo.attacksSinceTurnStart.asSequence().map { Triple(civInfo, it.source, it.target) } }
             mapHolder.updateMovementOverlay(
                 allUnits.filter(mapVisualization::isUnitPastVisible),
@@ -535,7 +535,7 @@ class WorldScreen(
                     // ... all tiles around those in range of an average melee unit
                     // -> and now we look for a unit that could do the conquering because it's ours
                     //    no matter whether civilian, air or ranged, tell user he needs melee
-                    .any { it.getUnits().any { unit -> unit.civInfo == viewingCiv } }
+                    .any { it.getUnits().any { unit -> unit.civ == viewingCiv } }
         }
         displayTutorial(TutorialTrigger.AfterConquering) { viewingCiv.cities.any { it.hasJustBeenConquered } }
 
@@ -550,7 +550,7 @@ class WorldScreen(
 
     private fun updateSelectedCiv() {
         when {
-            bottomUnitTable.selectedUnit != null -> selectedCiv = bottomUnitTable.selectedUnit!!.civInfo
+            bottomUnitTable.selectedUnit != null -> selectedCiv = bottomUnitTable.selectedUnit!!.civ
             bottomUnitTable.selectedCity != null -> selectedCiv = bottomUnitTable.selectedCity!!.civ
             else -> viewingCiv
         }
@@ -844,7 +844,7 @@ class WorldScreen(
         if (!game.settings.showTutorials) return
         displayTutorial(TutorialTrigger.SlowStart)
         displayTutorial(TutorialTrigger.CityExpansion) { viewingCiv.cities.any { it.expansion.tilesClaimed() > 0 } }
-        displayTutorial(TutorialTrigger.BarbarianEncountered) { viewingCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civInfo.isBarbarian() } } }
+        displayTutorial(TutorialTrigger.BarbarianEncountered) { viewingCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civ.isBarbarian() } } }
         displayTutorial(TutorialTrigger.RoadsAndRailroads) { viewingCiv.cities.size > 2 }
         displayTutorial(TutorialTrigger.Happiness) { viewingCiv.getHappiness() < 5 }
         displayTutorial(TutorialTrigger.Unhappiness) { viewingCiv.getHappiness() < 0 }

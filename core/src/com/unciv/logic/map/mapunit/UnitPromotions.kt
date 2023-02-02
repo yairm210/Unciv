@@ -33,7 +33,7 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
      */
     fun getPromotions(sorted: Boolean = false): Sequence<Promotion> = sequence {
         if (promotions.isEmpty()) return@sequence
-        val unitPromotions = unit.civInfo.gameInfo.ruleSet.unitPromotions
+        val unitPromotions = unit.civ.gameInfo.ruleSet.unitPromotions
         if (sorted && promotions.size > 1) {
             for (promotion in unitPromotions.values)
                 if (promotion.name in promotions) yield(promotion)
@@ -65,7 +65,7 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
             numberOfPromotions++
         }
 
-        val ruleset = unit.civInfo.gameInfo.ruleSet
+        val ruleset = unit.civ.gameInfo.ruleSet
         val promotion = ruleset.unitPromotions[promotionName]!!
 
         if (!promotion.hasUnique(UniqueType.SkipPromotion))
@@ -93,13 +93,13 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
      *  Checks unit type, already acquired promotions, prerequisites and incompatibility uniques.
      */
     fun getAvailablePromotions(): Sequence<Promotion> {
-        return unit.civInfo.gameInfo.ruleSet.unitPromotions.values
+        return unit.civ.gameInfo.ruleSet.unitPromotions.values
             .asSequence()
             .filter { unit.type.name in it.unitTypes && it.name !in promotions }
             .filter { it.prerequisites.isEmpty() || it.prerequisites.any { p->p in promotions } }
             .filter { promotion -> promotion.uniqueObjects
                 .none { it.type == UniqueType.OnlyAvailableWhen
-                        && !it.conditionalsApply(StateForConditionals(unit.civInfo, unit = unit))  }
+                        && !it.conditionalsApply(StateForConditionals(unit.civ, unit = unit))  }
             }
     }
 

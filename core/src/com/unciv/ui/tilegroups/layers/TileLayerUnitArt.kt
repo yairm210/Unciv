@@ -34,7 +34,7 @@ class TileLayerUnitArt(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
         if (unit != null && isShown && UncivGame.Current.settings.showPixelUnits) {
             location = strings().getUnitImageLocation(unit)
-            nationName = "${unit.civInfo.civName}-"
+            nationName = "${unit.civ.civName}-"
         }
 
         if (locations[index] != "$nationName$location") {
@@ -44,7 +44,7 @@ class TileLayerUnitArt(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             group.clear()
 
             if (location != "" && ImageGetter.imageExists(location)) {
-                val nation = unit!!.civInfo.nation
+                val nation = unit!!.civ.nation
                 val pixelUnitImages = ImageGetter.getLayeredImageColored(
                     location,
                     null,

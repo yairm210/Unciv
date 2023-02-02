@@ -24,7 +24,6 @@ import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.setFontColor
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
-import com.unciv.utils.Log
 import java.lang.Integer.max
 import kotlin.math.abs
 
@@ -171,7 +170,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
         availablePromotionsGroup.defaults().pad(5f)
 
         val unitType = unit.type
-        val promotionsForUnitType = unit.civInfo.gameInfo.ruleSet.unitPromotions.values.filter {
+        val promotionsForUnitType = unit.civ.gameInfo.ruleSet.unitPromotions.values.filter {
             it.unitTypes.contains(unitType.name) || unit.promotions.promotions.contains(it.name)
         }
         //Always allow the user to rename the unit as many times as they like.

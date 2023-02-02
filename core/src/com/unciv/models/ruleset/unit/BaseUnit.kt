@@ -70,7 +70,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     fun getMapUnit(civInfo: Civilization): MapUnit {
         val unit = MapUnit()
         unit.name = name
-        unit.civInfo = civInfo
+        unit.civ = civInfo
         unit.owner = civInfo.civName
 
         // must be after setting name & civInfo because it sets the baseUnit according to the name

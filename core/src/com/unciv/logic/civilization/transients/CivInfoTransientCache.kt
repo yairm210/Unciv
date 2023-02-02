@@ -90,7 +90,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         for (tile in civInfo.viewableTiles) {
             val tileOwner = tile.getOwner()
             if (tileOwner != null) viewedCivs[tileOwner] = tile
-            for (unit in tile.getUnits()) viewedCivs[unit.civInfo] = tile
+            for (unit in tile.getUnits()) viewedCivs[unit.civ] = tile
         }
 
         if (!civInfo.isBarbarian()) {

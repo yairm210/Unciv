@@ -584,7 +584,7 @@ class TileMap : IsPartOfGameInfoSerialization {
         tileList.forEach {
             for (unit in it.getUnits()) if (unit.owner == player.chosenCiv) {
                 unit.owner = newNation.name
-                unit.civInfo = newCiv
+                unit.civ = newCiv
             }
         }
         for (element in startingLocations.filter { it.nation != player.chosenCiv }) {
