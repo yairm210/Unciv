@@ -370,7 +370,7 @@ object UnitActions {
         actionList += UnitAction(UnitActionType.ConstructImprovement,
             isCurrentAction = unit.currentTile.hasImprovementInProgress(),
             action = {
-                worldScreen.game.pushScreen(ImprovementPickerScreen(tile, unit) { unitTable.selectUnit() })
+                worldScreen.game.pushScreen(ImprovementPickerScreen(tile, unit) { worldScreen.switchToNextUnit() })
             }.takeIf { couldConstruct }
         )
     }
