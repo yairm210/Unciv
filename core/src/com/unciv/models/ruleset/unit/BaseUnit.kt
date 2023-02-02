@@ -3,8 +3,8 @@ package com.unciv.models.ruleset.unit
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.INonPerpetualConstruction
-import com.unciv.logic.city.RejectionReasonType
 import com.unciv.logic.city.RejectionReason
+import com.unciv.logic.city.RejectionReasonType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.Ruleset
@@ -134,50 +134,48 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             }
         }
 
-        yieldAll(getRejectionReasons(civInfo))
+        yieldAll(getRejectionReasons(civInfo, cityConstructions.city))
     }
 
-    fun getRejectionReasons(civInfo: Civilization): Sequence<RejectionReason> = sequence {
-        val ruleSet = civInfo.gameInfo.ruleSet
-
-        if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!))
+    fun getRejectionReasons(civ: Civilization, city:City?=null): Sequence<RejectionReason> = sequence {
+        if (requiredTech != null && !civ.tech.isResearched(requiredTech!!))
             yield(RejectionReasonType.RequiresTech.toInstance("$requiredTech not researched"))
-        if (obsoleteTech != null && civInfo.tech.isResearched(obsoleteTech!!))
+        if (obsoleteTech != null && civ.tech.isResearched(obsoleteTech!!))
             yield(RejectionReasonType.Obsoleted.toInstance("Obsolete by $obsoleteTech"))
 
-        if (uniqueTo != null && uniqueTo != civInfo.civName)
+        if (uniqueTo != null && uniqueTo != civ.civName)
             yield(RejectionReasonType.UniqueToOtherNation.toInstance("Unique to $uniqueTo"))
-        if (civInfo.cache.uniqueUnits.any { it.replaces == name })
+        if (civ.cache.uniqueUnits.any { it.replaces == name })
             yield(RejectionReasonType.ReplacedByOurUnique.toInstance("Our unique unit replaces this"))
 
-        if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon())
+        if (!civ.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon())
             yield(RejectionReasonType.DisabledBySetting.toInstance())
 
-        for (unique in uniqueObjects) {
+        for (unique in uniqueObjects.filter { it.conditionalsApply(civ, city) }) {
             when (unique.type) {
                 UniqueType.Unbuildable ->
                     yield(RejectionReasonType.Unbuildable.toInstance())
 
-                UniqueType.FoundCity -> if (civInfo.isCityState() || civInfo.isOneCityChallenger())
+                UniqueType.FoundCity -> if (civ.isCityState() || civ.isOneCityChallenger())
                     yield(RejectionReasonType.NoSettlerForOneCityPlayers.toInstance())
 
-                UniqueType.MaxNumberBuildable -> if (civInfo.civConstructions.countConstructedObjects(this@BaseUnit) >= unique.params[0].toInt())
+                UniqueType.MaxNumberBuildable -> if (civ.civConstructions.countConstructedObjects(this@BaseUnit) >= unique.params[0].toInt())
                     yield(RejectionReasonType.MaxNumberBuildable.toInstance())
 
                 else -> {}
             }
         }
 
-        if (!civInfo.isBarbarian()) { // Barbarians don't need resources
+        if (!civ.isBarbarian()) { // Barbarians don't need resources
             for ((resource, requiredAmount) in getResourceRequirements()) {
-                val availableAmount = civInfo.getCivResourcesByName()[resource]!!
+                val availableAmount = civ.getCivResourcesByName()[resource]!!
                 if (availableAmount < requiredAmount) {
                     yield(RejectionReasonType.ConsumesResources.toInstance(resource.getNeedMoreAmountString(requiredAmount - availableAmount)))
                 }
             }
         }
 
-        for (unique in civInfo.getMatchingUniques(UniqueType.CannotBuildUnits))
+        for (unique in civ.getMatchingUniques(UniqueType.CannotBuildUnits))
             if (this@BaseUnit.matchesFilter(unique.params[0])) {
                 if (unique.conditionals.any { it.type == UniqueType.ConditionalBelowHappiness }){
                     yield(RejectionReasonType.CannotBeBuilt.toInstance(unique.text, true))
