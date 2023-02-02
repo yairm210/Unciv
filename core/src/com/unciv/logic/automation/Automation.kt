@@ -1,7 +1,7 @@
 package com.unciv.logic.automation
 
-import com.unciv.logic.city.CityFocus
 import com.unciv.logic.city.City
+import com.unciv.logic.city.CityFocus
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.BFS
@@ -389,7 +389,7 @@ object Automation {
 
         // Improvements are good: less points
         if (tile.improvement != null &&
-            tile.improvementFunctions.getImprovementStats(
+            tile.stats.getImprovementStats(
                 tile.getTileImprovement()!!,
                 city.civ,
                 city,
