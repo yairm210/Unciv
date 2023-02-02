@@ -18,6 +18,7 @@ import com.unciv.json.json
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.pickerscreens.ModManagementOptions.SortType
@@ -440,6 +441,7 @@ class ModManagementScreen(
                 launchOnGLThread {
                     ToastPopup("[${repo.name}] Downloaded!", this@ModManagementScreen)
                     RulesetCache.loadRulesets()
+                    TileSetCache.loadTileSetConfigs(false)
                     UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()
                     RulesetCache[repo.name]?.let {
                         installedModInfo[repo.name] = ModUIData(it)

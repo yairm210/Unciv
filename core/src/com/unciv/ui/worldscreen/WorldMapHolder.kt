@@ -60,12 +60,7 @@ class WorldMapHolder(
     internal val tileMap: TileMap
 ) : ZoomableScrollPane(20f, 20f) {
     internal var selectedTile: Tile? = null
-    val tileGroups = HashMap<Tile, List<WorldTileGroup>>()
-
-    //allWorldTileGroups exists to easily access all WordTileGroups
-    //since tileGroup is a HashMap of Lists and getting all WordTileGroups
-    //would need a double for loop
-    private val allWorldTileGroups = ArrayList<WorldTileGroup>()
+    val tileGroups = HashMap<Tile, WorldTileGroup>()
 
     private val unitActionOverlays: ArrayList<Actor> = ArrayList()
 
@@ -101,12 +96,6 @@ class WorldMapHolder(
         }
     }
 
-    internal fun reloadMaxZoom() {
-        maxZoom = UncivGame.Current.settings.maxWorldZoomOut
-        minZoom = 1f / maxZoom
-        if (scaleX < minZoom) zoom(1f)   // since normally min isn't reached exactly, only powers of 0.8
-    }
-
     // Interface for classes that contain the data required to draw a button
     interface ButtonDto
     // Contains the data required to draw a "move here" button
@@ -116,36 +105,19 @@ class WorldMapHolder(
 
     internal fun addTiles() {
         val tileSetStrings = TileSetStrings()
-        val daTileGroups = tileMap.values.map { WorldTileGroup(worldScreen, it, tileSetStrings) }
-        tileGroupMap = TileGroupMap(
-            daTileGroups,
-            continuousScrollingX)
-        val mirrorTileGroups = tileGroupMap.getMirrorTiles()
+        val tileGroupsNew = tileMap.values.map { WorldTileGroup(worldScreen, it, tileSetStrings) }
+        tileGroupMap = TileGroupMap(this, tileGroupsNew, continuousScrollingX)
 
-        for (tileGroup in daTileGroups) {
-            if (continuousScrollingX) {
-                val mirrorTileGroupLeft = mirrorTileGroups[tileGroup.tile]!!.first
-                val mirrorTileGroupRight = mirrorTileGroups[tileGroup.tile]!!.second
-
-                allWorldTileGroups.add(tileGroup)
-                allWorldTileGroups.add(mirrorTileGroupLeft)
-                allWorldTileGroups.add(mirrorTileGroupRight)
-
-                tileGroups[tileGroup.tile] = listOf(tileGroup, mirrorTileGroupLeft, mirrorTileGroupRight)
-            } else {
-                tileGroups[tileGroup.tile] = listOf(tileGroup)
-                allWorldTileGroups.add(tileGroup)
-            }
-        }
-
-        for (tileGroup in allWorldTileGroups) {
+        for (tileGroup in tileGroupsNew) {
+            tileGroups[tileGroup.tile] = tileGroup
             tileGroup.layerCityButton.onClick(UncivSound.Silent) {
                 onTileClicked(tileGroup.tile)
             }
             tileGroup.onClick { onTileClicked(tileGroup.tile) }
 
             // On 'droid two-finger tap is mapped to right click and dissent has been expressed
-            if (Gdx.app.type == Application.ApplicationType.Android) continue
+            if (Gdx.app.type == Application.ApplicationType.Android)
+                continue
 
             // Right mouse click listener
             tileGroup.addListener(object : ClickListener() {
@@ -162,11 +134,8 @@ class WorldMapHolder(
                 }
             })
         }
-
         actor = tileGroupMap
-
         setSize(worldScreen.stage.width, worldScreen.stage.height)
-
         layout() // Fit the scroll pane to the contents - otherwise, setScroll won't work!
     }
 
@@ -187,11 +156,8 @@ class WorldMapHolder(
         unitTable.tileSelected(tile)
         val newSelectedUnit = unitTable.selectedUnit
 
-        if (previousSelectedCity != null && tile != previousSelectedCity.getCenterTile()) {
-            tileGroups[previousSelectedCity.getCenterTile()]?.forEach {
-                it.layerCityButton.moveUp()
-            }
-        }
+        if (previousSelectedCity != null && tile != previousSelectedCity.getCenterTile())
+            tileGroups[previousSelectedCity.getCenterTile()]!!.layerCityButton.moveUp()
 
         if (previousSelectedUnits.isNotEmpty() && previousSelectedUnits.any { it.getTile() != tile }
                 && worldScreen.isPlayersTurn
@@ -410,42 +376,41 @@ class WorldMapHolder(
     }
 
     private fun addTileOverlays(tile: Tile, buttonDto: ButtonDto? = null) {
-        for (group in tileGroups[tile]!!) {
-            val table = Table().apply { defaults().pad(10f) }
-            if (buttonDto != null && worldScreen.canChangeState)
-                table.add(
-                    when (buttonDto) {
-                        is MoveHereButtonDto -> getMoveHereButton(buttonDto)
-                        is SwapWithButtonDto -> getSwapWithButton(buttonDto)
-                        else -> null
-                    }
-                )
-
-            val unitList = ArrayList<MapUnit>()
-            if (tile.isCityCenter()
-                    && (tile.getOwner() == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())) {
-                unitList.addAll(tile.getCity()!!.getCenterTile().getUnits())
-            } else if (tile.airUnits.isNotEmpty()
-                    && (tile.airUnits.first().civInfo == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())) {
-                unitList.addAll(tile.getUnits())
-            }
-
-            for (unit in unitList) {
-                val unitGroup = UnitGroup(unit, 60f).surroundWithCircle(85f, resizeActor = false)
-                unitGroup.circle.color = Color.GRAY.cpy().apply { a = 0.5f }
-                if (unit.currentMovement == 0f) unitGroup.color.a = 0.5f
-                unitGroup.touchable = Touchable.enabled
-                unitGroup.onClick {
-                    worldScreen.bottomUnitTable.selectUnit(unit, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
-                    worldScreen.shouldUpdate = true
-                    removeUnitActionOverlay()
+        val table = Table().apply { defaults().pad(10f) }
+        if (buttonDto != null && worldScreen.canChangeState)
+            table.add(
+                when (buttonDto) {
+                    is MoveHereButtonDto -> getMoveHereButton(buttonDto)
+                    is SwapWithButtonDto -> getSwapWithButton(buttonDto)
+                    else -> null
                 }
-                table.add(unitGroup)
-            }
+            )
 
-            addOverlayOnTileGroup(group, table)
-            table.moveBy(0f, 60f)
+        val unitList = ArrayList<MapUnit>()
+        if (tile.isCityCenter()
+                && (tile.getOwner() == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())) {
+            unitList.addAll(tile.getCity()!!.getCenterTile().getUnits())
+        } else if (tile.airUnits.isNotEmpty()
+                && (tile.airUnits.first().civInfo == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())) {
+            unitList.addAll(tile.getUnits())
         }
+
+        for (unit in unitList) {
+            val unitGroup = UnitGroup(unit, 60f).surroundWithCircle(85f, resizeActor = false)
+            unitGroup.circle.color = Color.GRAY.cpy().apply { a = 0.5f }
+            if (unit.currentMovement == 0f) unitGroup.color.a = 0.5f
+            unitGroup.touchable = Touchable.enabled
+            unitGroup.onClick {
+                worldScreen.bottomUnitTable.selectUnit(unit, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
+                worldScreen.shouldUpdate = true
+                removeUnitActionOverlay()
+            }
+            table.add(unitGroup)
+        }
+
+        addOverlayOnTileGroup(tileGroups[tile]!!, table)
+        table.moveBy(0f, 60f)
+
     }
 
     val buttonSize = 60f
@@ -529,19 +494,13 @@ class WorldMapHolder(
 
     /** Clear all arrows to be drawn on the next update. */
     fun resetArrows() {
-        for (tile in tileGroups.values) {
-            for (group in tile) {
-                group.layerMisc.resetArrows()
-            }
-        } // Inefficient?
+        for (tile in tileGroups.asSequence())
+            tile.value.layerMisc.resetArrows()
     }
 
     /** Add an arrow to draw on the next update. */
     fun addArrow(fromTile: Tile, toTile: Tile, arrowType: MapArrowType) {
-        val tile = tileGroups[fromTile]
-        if (tile != null) for (group in tile) {
-            group.layerMisc.addArrow(toTile, arrowType)
-        }
+        tileGroups[fromTile]?.layerMisc?.addArrow(toTile, arrowType)
     }
 
     /**
@@ -578,13 +537,13 @@ class WorldMapHolder(
 
         if (isMapRevealEnabled(viewingCiv)) {
             // Only needs to be done once - this is so the minimap will also be revealed
-            allWorldTileGroups.forEach {
+            tileGroups.values.forEach {
                 it.tile.setExplored(viewingCiv, true)
                 it.isForceVisible = true } // So we can see all resources, regardless of tech
         }
 
         // General update of all tiles
-        for (tileGroup in allWorldTileGroups)
+        for (tileGroup in tileGroups.values)
             tileGroup.update(viewingCiv)
 
         // Update tiles according to selected unit/city
@@ -605,10 +564,7 @@ class WorldMapHolder(
         }
 
         // Same as below - randomly, tileGroups doesn't seem to contain the selected tile, and this doesn't seem reproducible
-        val worldTileGroupsForSelectedTile = tileGroups[selectedTile]
-        if (worldTileGroupsForSelectedTile != null)
-            for (group in worldTileGroupsForSelectedTile)
-                group.layerOverlay.showHighlight(Color.WHITE)
+        tileGroups[selectedTile]?.layerOverlay?.showHighlight(Color.WHITE)
 
         zoom(scaleX) // zoom to current scale, to set the size of the city buttons after "next turn"
     }
@@ -619,13 +575,12 @@ class WorldMapHolder(
 
         // Update flags for units which have them
         if (!unit.baseUnit.movesLikeAirUnits()) {
-            for (group in tileGroup)
-                group.layerUnitFlag.selectFlag(unit)
+            tileGroup.layerUnitFlag.selectFlag(unit)
         }
 
         // Fade out less relevant images if a military unit is selected
         if (unit.isMilitary()) {
-            for (group in allWorldTileGroups) {
+            for (group in tileGroups.values) {
 
                 // Fade out population icons
                 group.layerMisc.dimPopulation(true)
@@ -644,10 +599,8 @@ class WorldMapHolder(
             val unitSwappableTiles = unit.movement.getUnitSwappableTiles()
             val swapUnitsTileOverlayColor = Color.PURPLE
             for (tile in unitSwappableTiles)  {
-                for (tileToColor in tileGroups[tile]!!) {
-                    tileToColor.layerOverlay.showHighlight(swapUnitsTileOverlayColor,
-                        if (UncivGame.Current.settings.singleTapMove) 0.7f else 0.3f)
-                }
+                tileGroups[tile]!!.layerOverlay.showHighlight(swapUnitsTileOverlayColor,
+                    if (UncivGame.Current.settings.singleTapMove) 0.7f else 0.3f)
             }
             // In swapping-mode don't want to show other overlays
             return
@@ -659,52 +612,47 @@ class WorldMapHolder(
 
         // Highlight tiles within movement range
         for (tile in tilesInMoveRange) {
-            for (tileToColor in tileGroups[tile]!!) {
+            val group = tileGroups[tile]!!
 
-                // Air-units have additional highlights
-                if (isAirUnit && !unit.isPreparingAirSweep()) {
-                    if (tile.aerialDistanceTo(unit.getTile()) <= unit.getRange()) {
-                        // The tile is within attack range
-                        tileToColor.layerOverlay.showHighlight(Color.RED, 0.3f)
-                    } else {
-                        // The tile is within move range
-                        tileToColor.layerOverlay.showHighlight(Color.BLUE, 0.3f)
-                    }
-                }
-
-                // Highlight tile unit can move to
-                if (unit.movement.canMoveTo(tile) ||
-                        unit.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !unit.baseUnit.movesLikeAirUnits()) {
-                    val alpha = if (UncivGame.Current.settings.singleTapMove || isAirUnit) 0.7f else 0.3f
-                    tileToColor.layerOverlay.showHighlight(moveTileOverlayColor, alpha)
+            // Air-units have additional highlights
+            if (isAirUnit && !unit.isPreparingAirSweep()) {
+                if (tile.aerialDistanceTo(unit.getTile()) <= unit.getRange()) {
+                    // The tile is within attack range
+                    group.layerOverlay.showHighlight(Color.RED, 0.3f)
+                } else {
+                    // The tile is within move range
+                    group.layerOverlay.showHighlight(Color.BLUE, 0.3f)
                 }
             }
+
+            // Highlight tile unit can move to
+            if (unit.movement.canMoveTo(tile) ||
+                    unit.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !unit.baseUnit.movesLikeAirUnits()) {
+                val alpha = if (UncivGame.Current.settings.singleTapMove || isAirUnit) 0.7f else 0.3f
+                group.layerOverlay.showHighlight(moveTileOverlayColor, alpha)
+            }
+
         }
 
         // Add back in the red markers for Air Unit Attack range since they can't move, but can still attack
         if (unit.hasUnique(UniqueType.CannotMove) && isAirUnit && !unit.isPreparingAirSweep()) {
             val tilesInAttackRange = unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getRange()))
             for (tile in tilesInAttackRange) {
-                for (tileToColor in tileGroups[tile]!!) {
-                    // The tile is within attack range
-                    tileToColor.layerOverlay.showHighlight(Color.RED, 0.3f)
-                }
+                // The tile is within attack range
+                tileGroups[tile]!!.layerOverlay.showHighlight(Color.RED, 0.3f)
             }
         }
 
         // Movement paths
         if (unitMovementPaths.containsKey(unit)) {
             for (tile in unitMovementPaths[unit]!!) {
-                for (tileToColor in tileGroups[tile]!!)
-                    tileToColor.layerOverlay.showHighlight(Color.SKY, 0.8f)
+                tileGroups[tile]!!.layerOverlay.showHighlight(Color.SKY, 0.8f)
             }
         }
 
         // Highlight movement destination tile
         if (unit.isMoving()) {
-            val destinationTileGroups = tileGroups[unit.getMovementDestination()]!!
-            for (destinationTileGroup in destinationTileGroups)
-                destinationTileGroup.layerOverlay.showHighlight(Color.WHITE, 0.7f)
+            tileGroups[unit.getMovementDestination()]!!.layerOverlay.showHighlight(Color.WHITE, 0.7f)
         }
 
         // Highlight attackable tiles
@@ -716,15 +664,14 @@ class WorldMapHolder(
                     .distinctBy { it.tileToAttack }
 
             for (attackableTile in attackableTiles) {
-                for (tileGroupToAttack in tileGroups[attackableTile.tileToAttack]!!) {
-                    tileGroupToAttack.layerOverlay.showHighlight(colorFromRGB(237, 41, 57))
-                    tileGroupToAttack.layerOverlay.showCrosshair(
-                        // the targets which cannot be attacked without movements shown as orange-ish
-                        if (attackableTile.tileToAttackFrom != unit.currentTile)
-                            0.5f
-                        else 1f
-                    )
-                }
+                val tileGroupToAttack = tileGroups[attackableTile.tileToAttack]!!
+                tileGroupToAttack.layerOverlay.showHighlight(colorFromRGB(237, 41, 57))
+                tileGroupToAttack.layerOverlay.showCrosshair(
+                    // the targets which cannot be attacked without movements shown as orange-ish
+                    if (attackableTile.tileToAttackFrom != unit.currentTile)
+                        0.5f
+                    else 1f
+                )
             }
         }
     }
@@ -732,10 +679,9 @@ class WorldMapHolder(
     private fun updateBombardableTilesForSelectedCity(city: City) {
         if (!city.canBombard()) return
         for (attackableTile in UnitAutomation.getBombardableTiles(city)) {
-            for (group in tileGroups[attackableTile]!!) {
-                group.layerOverlay.showHighlight(colorFromRGB(237, 41, 57))
-                group.layerOverlay.showCrosshair()
-            }
+            val group = tileGroups[attackableTile]!!
+            group.layerOverlay.showHighlight(colorFromRGB(237, 41, 57))
+            group.layerOverlay.showCrosshair()
         }
     }
 
@@ -748,7 +694,7 @@ class WorldMapHolder(
      * @return `true` if scroll position was changed, `false` otherwise
      */
     fun setCenterPosition(vector: Vector2, immediately: Boolean = false, selectUnit: Boolean = true, forceSelectUnit: MapUnit? = null): Boolean {
-        val tileGroup = allWorldTileGroups.firstOrNull { it.tile.position == vector } ?: return false
+        val tileGroup = tileGroups.values.firstOrNull { it.tile.position == vector } ?: return false
         selectedTile = tileGroup.tile
         if (selectUnit || forceSelectUnit != null)
             worldScreen.bottomUnitTable.tileSelected(selectedTile!!, forceSelectUnit)
@@ -781,12 +727,12 @@ class WorldMapHolder(
         // use scaleX instead of zoomScale itself, because zoomScale might have been outside minZoom..maxZoom and thus not applied
         val clampedCityButtonZoom = 1 / scaleX
         if (clampedCityButtonZoom >= 1) {
-            for (tileGroup in allWorldTileGroups) {
+            for (tileGroup in tileGroups.values) {
                 tileGroup.layerCityButton.isTransform = false // to save on rendering time to improve framerate
             }
         }
         if (clampedCityButtonZoom < 1 && clampedCityButtonZoom >= minZoom) {
-            for (tileGroup in allWorldTileGroups) {
+            for (tileGroup in tileGroups.values) {
                 // ONLY set those groups that have active city buttons as transformable!
                 // This is massively framerate-improving!
                 if (tileGroup.layerCityButton.hasChildren())

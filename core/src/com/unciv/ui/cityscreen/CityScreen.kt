@@ -319,7 +319,7 @@ class CityScreen(
             }
         }
 
-        val tileMapGroup = TileGroupMap(tileGroups, tileGroupsToUnwrap = tilesToUnwrap)
+        val tileMapGroup = TileGroupMap(mapScrollPane, tileGroups, tileGroupsToUnwrap = tilesToUnwrap)
         mapScrollPane.actor = tileMapGroup
         mapScrollPane.setSize(stage.width, stage.height)
         stage.addActor(mapScrollPane)
