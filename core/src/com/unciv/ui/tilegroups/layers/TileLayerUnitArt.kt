@@ -15,9 +15,12 @@ class TileLayerUnitArt(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
     private var locations = Array(2){""}
 
+    private var slot1: Group = Group()
+    private var slot2: Group = Group()
+
     init {
-        addActor(Group())
-        addActor(Group())
+        addActor(slot1)
+        addActor(slot2)
     }
 
     private fun showMilitaryUnit(viewingCiv: Civilization) = tileGroup.isForceVisible
@@ -36,7 +39,8 @@ class TileLayerUnitArt(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
         if (locations[index] != "$nationName$location") {
             locations[index] = "$nationName$location"
-            val group: Group = getChild(index) as Group
+
+            val group: Group = if (index == 0) slot1 else slot2
             group.clear()
 
             if (location != "" && ImageGetter.imageExists(location)) {
@@ -59,7 +63,7 @@ class TileLayerUnitArt(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         color.a = 0.5f
     }
 
-    fun update(viewingCiv: Civilization?) {
+    override fun doUpdate(viewingCiv: Civilization?) {
 
         val slot1Unit = tileGroup.tile.civilianUnit
         val slot2Unit = tileGroup.tile.militaryUnit
@@ -73,6 +77,10 @@ class TileLayerUnitArt(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
         updateSlot(0, slot1Unit, isShown = isSlot1Shown)
         updateSlot(1, slot2Unit, isShown = isSlot2Shown)
+    }
+
+    override fun determineVisibility() {
+        isVisible = slot1.hasChildren() || slot2.hasChildren()
     }
 
     fun reset() {

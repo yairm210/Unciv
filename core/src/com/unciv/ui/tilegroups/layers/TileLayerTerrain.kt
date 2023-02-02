@@ -182,7 +182,7 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         }
     }
 
-    fun update(viewingCiv: Civilization?) {
+    override fun doUpdate(viewingCiv: Civilization?) {
         updateTileImage(viewingCiv)
         updateRivers(tileGroup.tile.hasBottomRightRiver, tileGroup.tile.hasBottomRiver, tileGroup.tile.hasBottomLeftRiver)
         updateTileColor(viewingCiv == null || isViewable(viewingCiv))
