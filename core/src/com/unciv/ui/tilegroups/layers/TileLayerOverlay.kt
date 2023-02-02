@@ -32,30 +32,36 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
     fun showCrosshair(alpha: Float = 1f) {
         crosshair.isVisible = true
         crosshair.color.a = alpha
+        determineVisibility()
     }
 
     fun hideCrosshair() {
         crosshair.isVisible = false
+        determineVisibility()
     }
 
     fun setFog(isVisible: Boolean) {
         fog.isVisible = isVisible && !tileGroup.isForceVisible
+        determineVisibility()
     }
 
     fun showHighlight(color: Color, alpha: Float = 0.3f) {
         highlight.isVisible = true
         highlight.color = color.cpy().apply { a = alpha }
+        determineVisibility()
     }
 
     fun showHighlight() {
         highlight.isVisible = true
+        determineVisibility()
     }
 
     fun hideHighlight() {
         highlight.isVisible = false
+        determineVisibility()
     }
 
-    fun update(viewingCiv: Civilization?) {
+    override fun doUpdate(viewingCiv: Civilization?) {
 
         val isViewable = viewingCiv == null || isViewable(viewingCiv)
         setFog(!isViewable)
@@ -66,6 +72,10 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         if (tile().getShownImprovement(viewingCiv) == Constants.barbarianEncampment
                 && tile().isExplored(viewingCiv))
             showHighlight(Color.RED)
+    }
+
+    override fun determineVisibility() {
+        isVisible = fog.isVisible || highlight.isVisible || crosshair.isVisible
     }
 
 }

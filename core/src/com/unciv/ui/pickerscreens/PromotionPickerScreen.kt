@@ -3,6 +3,7 @@ package com.unciv.ui.pickerscreens
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -95,6 +96,7 @@ class PromotionButton(
 
     init {
 
+        touchable = Touchable.enabled
         borderSize = 5f
 
         pad(5f)
@@ -261,7 +263,6 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
 
         // Sort nodes successors so promotions with same base name go first
         for (node in map.values) {
-            Log.debug("MYTAG: Node ${node.promotion.name} depth: ${node.maxDepth}")
             node.successors.sortWith(PromotionNode.CustomComparator(node))
         }
 

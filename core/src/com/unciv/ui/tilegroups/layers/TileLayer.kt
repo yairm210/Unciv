@@ -2,14 +2,13 @@ package com.unciv.ui.tilegroups.layers
 
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 
-open class TileLayer(val tileGroup: TileGroup, size: Float) : Group() {
+abstract class TileLayer(val tileGroup: TileGroup, size: Float) : Group() {
 
     init {
         isTransform = false
@@ -30,5 +29,16 @@ open class TileLayer(val tileGroup: TileGroup, size: Float) : Group() {
     }
 
     fun isViewable(viewingCiv: Civilization) = tileGroup.isViewable(viewingCiv)
+
+    fun update(viewingCiv: Civilization?) {
+        doUpdate(viewingCiv)
+        determineVisibility()
+    }
+
+    protected open fun determineVisibility() {
+        isVisible = hasChildren()
+    }
+
+    protected abstract fun doUpdate(viewingCiv: Civilization?)
 
 }

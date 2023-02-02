@@ -17,6 +17,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaCategories
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.pickerscreens.CityRenamePopup
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.pickerscreens.UnitRenamePopup
 import com.unciv.ui.utils.BaseScreen
@@ -125,7 +126,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
             if (selectedUnit!!.civInfo != worldScreen.viewingCiv && !worldScreen.viewingCiv.isSpectator()) { // The unit that was selected, was captured. It exists but is no longer ours.
                 selectUnit()
                 selectedUnitHasChanged = true
-            } else if (selectedUnit!! !in selectedUnit!!.getTile().getUnits()) { // The unit that was there no longer exists}
+            } else if (selectedUnit!! !in selectedUnit!!.getTile().getUnits()) { // The unit that was there no longer exists
                 selectUnit()
                 selectedUnitHasChanged = true
             }
@@ -222,12 +223,26 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         }
 
         else if (selectedCity != null) {
+            isVisible = true
             separator.isVisible = true
             val city = selectedCity!!
             var nameLabelText = city.name.tr()
             if(city.health<city.getMaxHealth()) nameLabelText+=" ("+city.health+")"
             unitNameLabel.setText(nameLabelText)
 
+            unitNameLabel.clearListeners()
+            unitNameLabel.onClick {
+            if (!worldScreen.canChangeState) return@onClick
+                CityRenamePopup(
+                    screen = worldScreen,
+                    city = city,
+                    actionOnClose = {
+                        unitNameLabel.setText(city.name.tr())
+                        worldScreen.shouldUpdate = true
+                    }
+                )
+            }
+            
             unitDescriptionTable.clear()
             unitDescriptionTable.defaults().pad(2f).padRight(5f)
             unitDescriptionTable.add("Strength".tr())
