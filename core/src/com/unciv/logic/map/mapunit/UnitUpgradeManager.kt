@@ -15,7 +15,7 @@ class UnitUpgradeManager(val unit:MapUnit) {
         var currentUnit = unit.baseUnit
         val upgradeList = arrayListOf<BaseUnit>()
         while (currentUnit.upgradesTo != null){
-            val nextUpgrade = unit.civInfo.getEquivalentUnit(currentUnit.upgradesTo!!)
+            val nextUpgrade = unit.civ.getEquivalentUnit(currentUnit.upgradesTo!!)
             currentUnit = nextUpgrade
             upgradeList.add(currentUnit)
         }
@@ -30,10 +30,10 @@ class UnitUpgradeManager(val unit:MapUnit) {
         val upgradePath = getUpgradePath()
 
         fun isInvalidUpgradeDestination(baseUnit: BaseUnit): Boolean{
-            if (baseUnit.requiredTech != null && !unit.civInfo.tech.isResearched(baseUnit.requiredTech!!))
+            if (baseUnit.requiredTech != null && !unit.civ.tech.isResearched(baseUnit.requiredTech!!))
                 return true
             if (baseUnit.getMatchingUniques(UniqueType.OnlyAvailableWhen).any {
-                        !it.conditionalsApply(StateForConditionals(unit.civInfo, unit = unit ))
+                        !it.conditionalsApply(StateForConditionals(unit.civ, unit = unit ))
                     }) return true
             return false
         }
@@ -64,9 +64,9 @@ class UnitUpgradeManager(val unit:MapUnit) {
         // and the civ currently has 0 horses, we need to see if the upgrade will be buildable
         // WHEN THE CURRENT UNIT IS NOT HERE
         // TODO redesign without kludge: Inform getRejectionReasons about 'virtually available' resources somehow
-        unit.civInfo.units.removeUnit(unit)
-        val rejectionReasons = unitToUpgradeTo.getRejectionReasons(unit.civInfo)
-        unit.civInfo.units.addUnit(unit)
+        unit.civ.units.removeUnit(unit)
+        val rejectionReasons = unitToUpgradeTo.getRejectionReasons(unit.civ)
+        unit.civ.units.addUnit(unit)
 
         var relevantRejectionReasons = rejectionReasons.filterNot { it.type == RejectionReasonType.Unbuildable }
         if (ignoreRequirements)
@@ -90,14 +90,14 @@ class UnitUpgradeManager(val unit:MapUnit) {
 
         var goldCostOfUpgrade = 0
 
-        val ruleset = unit.civInfo.gameInfo.ruleSet
+        val ruleset = unit.civ.gameInfo.ruleSet
         val constants = ruleset.modOptions.constants.unitUpgradeCost
         // apply modifiers: Wonders (Pentagon), Policies (Professional Army). Cached outside loop despite
         // the UniqueType being allowed on a BaseUnit - we don't have a MapUnit in the loop.
         // Actually instantiating every intermediate to support such mods: todo
         var civModifier = 1f
-        val stateForConditionals = StateForConditionals(unit.civInfo, unit = unit)
-        for (unique in unit.civInfo.getMatchingUniques(UniqueType.UnitUpgradeCost, stateForConditionals))
+        val stateForConditionals = StateForConditionals(unit.civ, unit = unit)
+        for (unique in unit.civ.getMatchingUniques(UniqueType.UnitUpgradeCost, stateForConditionals))
             civModifier *= unique.params[0].toPercent()
 
         val upgradePath = getUpgradePath()
@@ -110,7 +110,7 @@ class UnitUpgradeManager(val unit:MapUnit) {
             if (era != null)
                 stepCost *= (1f + era.eraNumber * constants.eraMultiplier)
             stepCost = (stepCost * civModifier).pow(constants.exponent)
-            stepCost *= unit.civInfo.gameInfo.speed.modifier
+            stepCost *= unit.civ.gameInfo.speed.modifier
             goldCostOfUpgrade += (stepCost / constants.roundTo).toInt() * constants.roundTo
             if (baseUnit == unitToUpgradeTo)
                 break  // stop at requested BaseUnit to upgrade to

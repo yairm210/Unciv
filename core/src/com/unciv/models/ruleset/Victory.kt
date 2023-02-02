@@ -219,7 +219,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                     val milestoneText =
                         if (civInfo.hasExplored(city.getCenterTile())) "Capture [${city.name}]"
                         else "Capture [${Constants.unknownCityName}]"
-                    buttons.add(getMilestoneButton(milestoneText, city.civInfo == civInfo))
+                    buttons.add(getMilestoneButton(milestoneText, city.civ == civInfo))
                 }
             }
 

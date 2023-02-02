@@ -11,7 +11,6 @@ import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.UnitGroup
 import com.unciv.ui.utils.extensions.center
-import com.unciv.ui.utils.extensions.centerX
 import com.unciv.ui.utils.extensions.toLabel
 
 class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
@@ -66,11 +65,11 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
             }
 
             // Fade out action indicator for own non-idle units
-            if (unit.civInfo == viewingCiv && !unit.isIdle())
+            if (unit.civ == viewingCiv && !unit.isIdle())
                 newIcon.actionGroup?.color?.a = 0.5f * UncivGame.Current.settings.unitIconOpacity
 
             // Fade out flag for own out-of-moves units
-            if (unit.civInfo == viewingCiv && unit.currentMovement == 0f)
+            if (unit.civ == viewingCiv && unit.currentMovement == 0f)
                 newIcon.color.a = 0.5f
 
         }
@@ -80,8 +79,8 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
 
     private fun getAirUnitTable(unit: MapUnit): Table {
 
-        val iconColor = unit.civInfo.nation.getOuterColor()
-        val bgColor = unit.civInfo.nation.getInnerColor()
+        val iconColor = unit.civ.nation.getOuterColor()
+        val bgColor = unit.civ.nation.getInnerColor()
 
         val airUnitTable = Table()
         airUnitTable.background = BaseScreen.skinStrings.getUiBackground(
@@ -141,7 +140,7 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
         if (viewingCiv != null) {
             val unitsInTile = tile().getUnits()
             val shouldBeHighlighted = unitsInTile.any()
-                    && unitsInTile.first().civInfo.isAtWarWith(viewingCiv)
+                    && unitsInTile.first().civ.isAtWarWith(viewingCiv)
                     && isViewable(viewingCiv)
                     && showMilitaryUnit(viewingCiv)
             if (shouldBeHighlighted)

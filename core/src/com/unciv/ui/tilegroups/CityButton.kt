@@ -33,7 +33,6 @@ import com.unciv.ui.utils.extensions.toGroup
 import com.unciv.ui.utils.extensions.toLabel
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.roundToInt
 
 class InfluenceTable(
     influence: Float,
@@ -116,8 +115,8 @@ private class DefenceTable(city: City) : BorderedTable(
         borderSize = 4f
         bgColor = Color.BLACK
         bgBorderColor = when {
-            city.civInfo == viewingCiv -> colorFromRGB(255, 237, 200)
-            city.civInfo.isAtWarWith(viewingCiv) -> Color.RED
+            city.civ == viewingCiv -> colorFromRGB(255, 237, 200)
+            city.civ.isAtWarWith(viewingCiv) -> Color.RED
             else -> Color.BLACK
         }
 
@@ -144,10 +143,10 @@ class AirUnitTable(city: City, numberOfUnits: Int, size: Float=14f) : BorderedTa
         padLeft(10f)
         padRight(10f)
 
-        val textColor = city.civInfo.nation.getInnerColor()
+        val textColor = city.civ.nation.getInnerColor()
 
-        bgColor = city.civInfo.nation.getOuterColor()
-        bgBorderColor = city.civInfo.nation.getOuterColor()
+        bgColor = city.civ.nation.getOuterColor()
+        bgBorderColor = city.civ.nation.getOuterColor()
 
         val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
         aircraftImage.color = textColor
@@ -166,7 +165,7 @@ private class StatusTable(city: City, iconSize: Float = 18f) : Table() {
         val padBetween = 2f
         val viewingCiv = UncivGame.Current.worldScreen!!.viewingCiv
 
-        if (city.civInfo == viewingCiv && city.isConnectedToCapital() && !city.isCapital()) {
+        if (city.civ == viewingCiv && city.isConnectedToCapital() && !city.isCapital()) {
             val connectionImage = ImageGetter.getStatIcon("CityConnection")
             add(connectionImage).size(iconSize)
         }
@@ -186,7 +185,7 @@ private class StatusTable(city: City, iconSize: Float = 18f) : Table() {
             add(fireImage).size(iconSize).padLeft(padBetween)
         }
 
-        if (city.civInfo == viewingCiv && city.isWeLoveTheKingDayActive()) {
+        if (city.civ == viewingCiv && city.isWeLoveTheKingDayActive()) {
             val wltkdImage = ImageGetter.getImage("OtherIcons/WLTKD")
             add(wltkdImage).size(iconSize).padLeft(padBetween)
         }
@@ -206,23 +205,23 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
         val viewingCiv = UncivGame.Current.worldScreen!!.viewingCiv
 
         bgBorderColor = when {
-            city.civInfo == viewingCiv -> colorFromRGB(233, 233, 172)
-            city.civInfo.isAtWarWith(viewingCiv) -> colorFromRGB(230, 51, 0)
+            city.civ == viewingCiv -> colorFromRGB(233, 233, 172)
+            city.civ.isAtWarWith(viewingCiv) -> colorFromRGB(230, 51, 0)
             else -> Color.BLACK
         }
         borderSize = when {
-            city.civInfo == viewingCiv -> 4f
-            city.civInfo.isAtWarWith(viewingCiv) -> 4f
+            city.civ == viewingCiv -> 4f
+            city.civ.isAtWarWith(viewingCiv) -> 4f
             else -> 2f
         }
-        bgColor = city.civInfo.nation.getOuterColor().cpy().apply { a = 0.9f }
-        borderOnTop = city.civInfo == viewingCiv
+        bgColor = city.civ.nation.getOuterColor().cpy().apply { a = 0.9f }
+        borderOnTop = city.civ == viewingCiv
 
         pad(0f)
         defaults().pad(0f)
 
         val isShowDetailedInfo = UncivGame.Current.viewEntireMapForDebug
-                || city.civInfo == viewingCiv
+                || city.civ == viewingCiv
                 || viewingCiv.isSpectator()
 
         addCityPopNumber(city)
@@ -235,7 +234,7 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
         if (isShowDetailedInfo)
             addCityConstruction(city)
 
-        if (city.civInfo != viewingCiv)
+        if (city.civ != viewingCiv)
             addCivIcon(city)
 
         cells.first().padLeft(4f)
@@ -243,7 +242,7 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
     }
 
     private fun addCityPopNumber(city: City) {
-        val textColor = city.civInfo.nation.getInnerColor()
+        val textColor = city.civ.nation.getInnerColor()
         val popLabel = city.population.population.toString()
             .toLabel(fontColor = textColor, fontSize = 18, alignment = Align.center)
         add(popLabel).minWidth(26f)
@@ -251,7 +250,7 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
 
     private fun addCityGrowthBar(city: City) {
 
-        val textColor = city.civInfo.nation.getInnerColor()
+        val textColor = city.civ.nation.getInnerColor()
 
         val table = Table()
 
@@ -293,12 +292,12 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
 
     private fun addCityText(city: City, forPopup: Boolean) {
 
-        val textColor = city.civInfo.nation.getInnerColor()
+        val textColor = city.civ.nation.getInnerColor()
         val table = Table().apply { isTransform = false }
 
         if (city.isCapital()) {
             val capitalIcon = when {
-                city.civInfo.isCityState() -> ImageGetter.getNationIcon("CityState")
+                city.civ.isCityState() -> ImageGetter.getNationIcon("CityState")
                     .apply { color = textColor }
                 else -> ImageGetter.getImage("OtherIcons/Capital")
             }
@@ -328,7 +327,7 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
 
     private fun addCityConstruction(city: City) {
 
-        val textColor = city.civInfo.nation.getInnerColor()
+        val textColor = city.civ.nation.getInnerColor()
 
         val cityConstructions = city.cityConstructions
         val cityCurrentConstruction = cityConstructions.getCurrentConstruction()
@@ -346,9 +345,9 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
                 if (turnsToConstruction < 100)
                     turns = turnsToConstruction.toString()
                 percentage = cityConstructions.getWorkDone(cityCurrentConstruction.name) /
-                        (cityCurrentConstruction as INonPerpetualConstruction).getProductionCost(cityConstructions.city.civInfo).toFloat()
+                        (cityCurrentConstruction as INonPerpetualConstruction).getProductionCost(cityConstructions.city.civ).toFloat()
                 nextTurnPercentage = (cityConstructions.getWorkDone(cityCurrentConstruction.name) + city.cityStats.currentCityStats.production) /
-                        cityCurrentConstruction.getProductionCost(cityConstructions.city.civInfo).toFloat()
+                        cityCurrentConstruction.getProductionCost(cityConstructions.city.civ).toFloat()
 
                 if (nextTurnPercentage > 1f) nextTurnPercentage = 1f
                 if (nextTurnPercentage < 0f) nextTurnPercentage = 0f
@@ -374,10 +373,10 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
     private fun addCivIcon(city: City) {
 
         val icon = when {
-            city.civInfo.isMajorCiv() -> ImageGetter.getNationIcon(city.civInfo.nation.name)
-            else -> ImageGetter.getImage("CityStateIcons/" + city.civInfo.cityStateType.name)
+            city.civ.isMajorCiv() -> ImageGetter.getNationIcon(city.civ.nation.name)
+            else -> ImageGetter.getImage("CityStateIcons/" + city.civ.cityStateType.name)
         }
-        icon.color = city.civInfo.nation.getInnerColor()
+        icon.color = city.civ.nation.getInnerColor()
 
         add(icon.toGroup(20f)).minWidth(26f)
     }
@@ -424,8 +423,8 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
         add(cityTable).row()
 
         // If city state - add influence bar
-        if (city.civInfo.isCityState() && city.civInfo.knows(worldScreen.viewingCiv)) {
-            val diplomacyManager = city.civInfo.getDiplomacyManager(worldScreen.viewingCiv)
+        if (city.civ.isCityState() && city.civ.knows(worldScreen.viewingCiv)) {
+            val diplomacyManager = city.civ.getDiplomacyManager(worldScreen.viewingCiv)
             add(InfluenceTable(diplomacyManager.getInfluence(), diplomacyManager.relationshipLevel())).padTop(1f).row()
         }
 
@@ -498,7 +497,7 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
         val positionX = cityTable.width / 2 + (pos.ordinal-1)*60f
 
         val indicator = ImageGetter.getTriangle().apply {
-            color = city.civInfo.nation.getInnerColor()
+            color = city.civ.nation.getInnerColor()
             setSize(12f, 8f)
             setOrigin(Align.center)
             if (!isButtonMoved) {
@@ -511,7 +510,7 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
         listOfHiddenUnitMarkers.add(indicator)
     }
 
-    private fun belongsToViewingCiv() = city.civInfo == worldScreen.viewingCiv
+    private fun belongsToViewingCiv() = city.civ == worldScreen.viewingCiv
 
     private fun setButtonActions() {
 
@@ -530,7 +529,7 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
                 if (uncivGame.viewEntireMapForDebug || viewingCiv.isSpectator()
                     || (belongsToViewingCiv() && !tileGroup.tile.airUnits.contains(unitTable.selectedUnit))) {
                         uncivGame.pushScreen(CityScreen(city))
-                } else if (viewingCiv.knows(city.civInfo)) {
+                } else if (viewingCiv.knows(city.civ)) {
                     foreignCityInfoPopup()
                 }
             } else {
@@ -577,11 +576,11 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
     private fun foreignCityInfoPopup() {
         fun openDiplomacy() {
             // If city doesn't belong to you, go directly to its owner's diplomacy screen.
-            worldScreen.game.pushScreen(DiplomacyScreen(worldScreen.viewingCiv, city.civInfo))
+            worldScreen.game.pushScreen(DiplomacyScreen(worldScreen.viewingCiv, city.civ))
         }
 
         // If there's nothing to display cuz no Religion - skip popup
-        if (!city.civInfo.gameInfo.isReligionEnabled()) return openDiplomacy()
+        if (!city.civ.gameInfo.isReligionEnabled()) return openDiplomacy()
 
         val popup = Popup(worldScreen).apply {
             name = "ForeignCityInfoPopup"

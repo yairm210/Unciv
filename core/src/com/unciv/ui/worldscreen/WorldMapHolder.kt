@@ -76,23 +76,32 @@ class WorldMapHolder(
     }
 
     /**
-     * When scrolling the world map, there are two unnecessary (at least currently) things happening that take a decent amount of time:
+     * When scrolling or zooming the world map, there are two unnecessary (at least currently) things happening that take a decent amount of time:
      *
      * 1. Checking which [Actor]'s bounds the pointer (mouse/finger) entered+exited and sending appropriate events to these actors
      * 2. Running all [Actor.act] methods of all child [Actor]s
+     * 3. Running all [Actor.hit] methode of all chikld [Actor]s
      *
      * Disabling them while panning increases the frame rate while panning by approximately 100%.
      */
     private fun disablePointerEventsAndActionsOnPan() {
         onPanStartListener = {
-            Log.debug("Disable pointer enter/exit events & TileGroupMap.act()")
             (stage as UncivStage).performPointerEnterExitEvents = false
             tileGroupMap.shouldAct = false
         }
         onPanStopListener = {
-            Log.debug("Enable pointer enter/exit events & TileGroupMap.act()")
             (stage as UncivStage).performPointerEnterExitEvents = true
             tileGroupMap.shouldAct = true
+        }
+        onZoomStartListener = {
+            (stage as UncivStage).performPointerEnterExitEvents = false
+            tileGroupMap.shouldAct = false
+            tileGroupMap.touchable = Touchable.disabled
+        }
+        onZoomStopListener = {
+            (stage as UncivStage).performPointerEnterExitEvents = true
+            tileGroupMap.shouldAct = true
+            tileGroupMap.touchable = Touchable.enabled
         }
     }
 
@@ -186,7 +195,7 @@ class WorldMapHolder(
             if (previousSelectedCity != null && previousSelectedCity.canBombard()
                     && selectedTile!!.getTilesInDistance(2).contains(previousSelectedCity.getCenterTile())
                     && unitsInTile.any()
-                    && unitsInTile.first().civInfo.isAtWarWith(worldScreen.viewingCiv)) {
+                    && unitsInTile.first().civ.isAtWarWith(worldScreen.viewingCiv)) {
                 // try to select the closest city to bombard this guy
                 unitTable.citySelected(previousSelectedCity)
             }
@@ -391,7 +400,7 @@ class WorldMapHolder(
                 && (tile.getOwner() == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())) {
             unitList.addAll(tile.getCity()!!.getCenterTile().getUnits())
         } else if (tile.airUnits.isNotEmpty()
-                && (tile.airUnits.first().civInfo == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())) {
+                && (tile.airUnits.first().civ == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())) {
             unitList.addAll(tile.getUnits())
         }
 
@@ -432,8 +441,8 @@ class WorldMapHolder(
 
         val firstUnit = dto.unitToTurnsToDestination.keys.first()
         val unitIcon = if (dto.unitToTurnsToDestination.size == 1) UnitGroup(firstUnit, smallerCircleSizes)
-        else dto.unitToTurnsToDestination.size.toString().toLabel(fontColor = firstUnit.civInfo.nation.getInnerColor()).apply { setAlignment(Align.center) }
-                .surroundWithCircle(smallerCircleSizes).apply { circle.color = firstUnit.civInfo.nation.getOuterColor() }
+        else dto.unitToTurnsToDestination.size.toString().toLabel(fontColor = firstUnit.civ.nation.getInnerColor()).apply { setAlignment(Align.center) }
+                .surroundWithCircle(smallerCircleSizes).apply { circle.color = firstUnit.civ.nation.getOuterColor() }
         unitIcon.y = buttonSize - unitIcon.height
         moveHereButton.addActor(unitIcon)
 
@@ -585,11 +594,11 @@ class WorldMapHolder(
                 // Fade out population icons
                 group.layerMisc.dimPopulation(true)
 
-                val shownImprovement = unit.civInfo.lastSeenImprovement[group.tile.position]
+                val shownImprovement = unit.civ.lastSeenImprovement[group.tile.position]
 
                 // Fade out improvement icons (but not barb camps or ruins)
                 if (shownImprovement != null && shownImprovement != Constants.barbarianEncampment
-                        && !unit.civInfo.gameInfo.ruleSet.tileImprovements[shownImprovement]!!.isAncientRuinsEquivalent())
+                        && !unit.civ.gameInfo.ruleSet.tileImprovements[shownImprovement]!!.isAncientRuinsEquivalent())
                     group.layerMisc.dimImprovement(true)
             }
         }
@@ -660,7 +669,7 @@ class WorldMapHolder(
 
             val attackableTiles: List<AttackableTile> =
                 BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
-                    .filter { it.tileToAttack.isVisible(unit.civInfo) }
+                    .filter { it.tileToAttack.isVisible(unit.civ) }
                     .distinctBy { it.tileToAttack }
 
             for (attackableTile in attackableTiles) {

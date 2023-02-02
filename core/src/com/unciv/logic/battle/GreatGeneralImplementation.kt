@@ -32,15 +32,15 @@ object GreatGeneralImplementation {
         combatAction: CombatAction
     ): Pair<String, Int> {
         val unit = ourUnitCombatant.unit
-        val civInfo = ourUnitCombatant.unit.civInfo
+        val civInfo = ourUnitCombatant.unit.civ
         val allGenerals = civInfo.units.getCivUnits()
-            .filter { it.hasStrengthBonusInRadiusUnique }
+            .filter { it.cache.hasStrengthBonusInRadiusUnique }
         if (allGenerals.none()) return Pair("", 0)
 
         val greatGeneral = allGenerals
             .flatMap { general ->
                 general.getMatchingUniques(UniqueType.StrengthBonusInRadius,
-                    StateForConditionals(unit.civInfo, ourCombatant = ourUnitCombatant, theirCombatant = enemy, combatAction = combatAction))
+                    StateForConditionals(unit.civ, ourCombatant = ourUnitCombatant, theirCombatant = enemy, combatAction = combatAction))
                     .map { GeneralBonusData(general, it) }
             }.filter {
                 // Support the border case when a mod unit has several
@@ -80,7 +80,7 @@ object GreatGeneralImplementation {
             .map { it.key }
             .filter { tile ->
                 val militaryUnit = tile.militaryUnit
-                militaryUnit != null && militaryUnit.civInfo == general.civInfo
+                militaryUnit != null && militaryUnit.civ == general.civ
                         && (tile.civilianUnit == null || tile.civilianUnit == general)
                         && militaryUnit.getMaxMovement() <= unitMaxMovement
                         && !tile.isCityCenter()
@@ -93,7 +93,7 @@ object GreatGeneralImplementation {
             .maxByOrNull { unitTile ->
                 unitTile.getTilesInDistance(unitBonusRadius).sumOf { auraTile ->
                     val militaryUnit = auraTile.militaryUnit
-                    if (militaryUnit == null || militaryUnit.civInfo != general.civInfo) 0
+                    if (militaryUnit == null || militaryUnit.civ != general.civ) 0
                     else generalBonusData.firstOrNull {
                         // "Military" as commented above only a small optimization
                         auraTile.aerialDistanceTo(unitTile) <= it.radius

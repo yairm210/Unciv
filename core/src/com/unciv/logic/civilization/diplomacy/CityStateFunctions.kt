@@ -387,12 +387,12 @@ class CityStateFunctions(val civInfo: Civilization) {
         val bullyRange = (civInfo.gameInfo.tileMap.tileMatrix.size / 10).coerceIn(5, 10)   // Longer range for larger maps
         val inRangeTiles = civInfo.getCapital()!!.getCenterTile().getTilesInDistanceRange(1..bullyRange)
         val forceNearCity = inRangeTiles
-            .sumOf { if (it.militaryUnit?.civInfo == demandingCiv)
+            .sumOf { if (it.militaryUnit?.civ == demandingCiv)
                     it.militaryUnit!!.getForceEvaluation()
                 else 0
             }
         val csForce = CityCombatant(civInfo.getCapital()!!).getDefendingStrength().toFloat().pow(1.5f).toInt() + inRangeTiles
-            .sumOf { if (it.militaryUnit?.civInfo == civInfo)
+            .sumOf { if (it.militaryUnit?.civ == civInfo)
                     it.militaryUnit!!.getForceEvaluation()
                 else 0
             }

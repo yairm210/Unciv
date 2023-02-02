@@ -53,9 +53,9 @@ class Spy() : IsPartOfGameInfoSerialization {
             SpyAction.EstablishNetwork -> {
                 val location = getLocation()!! // This should be impossible to reach as going to the hideout sets your action to None.
                 action =
-                    if (location.civInfo.isCityState()) {
+                    if (location.civ.isCityState()) {
                         SpyAction.RiggingElections
-                    } else if (location.civInfo == civInfo) {
+                    } else if (location.civ == civInfo) {
                         SpyAction.CounterIntelligence
                     } else {
                         SpyAction.StealingTech

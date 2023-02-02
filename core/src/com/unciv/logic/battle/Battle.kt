@@ -133,11 +133,11 @@ object Battle {
         if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant
                 && attacker.isMelee() && !attacker.unit.hasUnique(UniqueType.CannotCaptureCities)) {
             // Barbarians can't capture cities
-            if (attacker.unit.civInfo.isBarbarian()) {
+            if (attacker.unit.civ.isBarbarian()) {
                 defender.takeDamage(-1) // Back to 2 HP
-                val ransom = min(200, defender.city.civInfo.gold)
-                defender.city.civInfo.addGold(-ransom)
-                defender.city.civInfo.addNotification("Barbarians raided [${defender.city.name}] and stole [$ransom] Gold from your treasury!", defender.city.location, NotificationCategory.War, NotificationIcon.War)
+                val ransom = min(200, defender.city.civ.gold)
+                defender.city.civ.addGold(-ransom)
+                defender.city.civ.addNotification("Barbarians raided [${defender.city.name}] and stole [$ransom] Gold from your treasury!", defender.city.location, NotificationCategory.War, NotificationIcon.War)
                 attacker.unit.destroy() // Remove the barbarian
             } else
                 conquerCity(defender.city, attacker)
@@ -483,7 +483,7 @@ object Battle {
     private fun addXp(thisCombatant: ICombatant, amount: Int, otherCombatant: ICombatant) {
         var baseXP = amount
         if (thisCombatant !is MapUnitCombatant) return
-        val modConstants = thisCombatant.unit.civInfo.gameInfo.ruleSet.modOptions.constants
+        val modConstants = thisCombatant.unit.civ.gameInfo.ruleSet.modOptions.constants
         if (thisCombatant.unit.promotions.totalXpProduced() >= modConstants.maxXPfromBarbarians
                 && otherCombatant.getCivInfo().isBarbarian())
             return
@@ -589,7 +589,7 @@ object Battle {
 
         val capturedUnitTile = capturedUnit.getTile()
         val originalOwner = if (capturedUnit.originalOwner != null)
-            capturedUnit.civInfo.gameInfo.getCivilization(capturedUnit.originalOwner!!)
+            capturedUnit.civ.gameInfo.getCivilization(capturedUnit.originalOwner!!)
             else null
 
         var wasDestroyedInstead = false
@@ -628,7 +628,7 @@ object Battle {
                 capturedUnit.destroy()
                 // This is so that future checks which check if a unit has been captured are caught give the right answer
                 //  For example, in postBattleMoveToAttackedTile
-                capturedUnit.civInfo = attacker.getCivInfo()
+                capturedUnit.civ = attacker.getCivInfo()
                 attacker.getCivInfo().units.placeUnitNearTile(capturedUnitTile.position, Constants.worker)
             }
             else -> capturedUnit.capturedBy(attacker.getCivInfo())
@@ -664,7 +664,7 @@ object Battle {
         var canNuke = true
         val attackerCiv = nuke.getCivInfo()
         for (tile in targetTile.getTilesInDistance(blastRadius)) {
-            val defendingTileCiv = tile.getCity()?.civInfo
+            val defendingTileCiv = tile.getCity()?.civ
             if (defendingTileCiv != null && attackerCiv.knows(defendingTileCiv)) {
                 canNuke = canNuke && attackerCiv.getDiplomacyManager(defendingTileCiv).canAttack()
             }
@@ -709,7 +709,7 @@ object Battle {
         // Declare war on all potentially hit units. They'll try to intercept the nuke before it drops
         for(civWhoseUnitWasAttacked in hitTiles
             .flatMap { it.getUnits() }
-            .map { it.civInfo }.distinct()
+            .map { it.civ }.distinct()
             .filter{it != attackingCiv}) {
                 tryDeclareWar(civWhoseUnitWasAttacked)
                 if (attacker.unit.baseUnit.isAirUnit() && !attacker.isDefeated()) {
@@ -725,7 +725,7 @@ object Battle {
         for (defender in targetTile.getUnits().filter { it != attacker.unit }.toList()) {
             defender.destroy()
             postBattleNotifications(attacker, MapUnitCombatant(defender), defender.getTile())
-            destroyIfDefeated(defender.civInfo, attacker.getCivInfo())
+            destroyIfDefeated(defender.civ, attacker.getCivInfo())
         }
 
         for (tile in hitTiles) {
@@ -765,7 +765,7 @@ object Battle {
         if (city != null && tile.position == city.location) {
             doNukeExplosionDamageToCity(city, nukeStrength, damageModifierFromMissingResource)
             postBattleNotifications(attacker, CityCombatant(city), city.getCenterTile())
-            destroyIfDefeated(city.civInfo, attacker.getCivInfo())
+            destroyIfDefeated(city.civ, attacker.getCivInfo())
         }
 
         // Damage and/or destroy units on the tile
@@ -871,7 +871,7 @@ object Battle {
             .shuffled()  // randomize Civ
             .sortedByDescending { it.interceptChance() }) {
             // No chance of Interceptor to miss (unlike regular Interception). Always want to deal damage
-            val interceptingCiv = interceptor.civInfo
+            val interceptingCiv = interceptor.civ
             val interceptorName = interceptor.name
             // pairs of LocationAction for Notification
             val locations = LocationAction(

@@ -54,7 +54,7 @@ class DetailedStatsPopup(val cityScreen: CityScreen, stageToShowOn: Stage) : Pop
         totalTable.clear()
 
         val cityStats = cityScreen.city.cityStats
-        val showFaith = cityScreen.city.civInfo.gameInfo.isReligionEnabled()
+        val showFaith = cityScreen.city.civ.gameInfo.isReligionEnabled()
 
         val stats = when {
             onlyWithStat != null -> listOfNotNull(onlyWithStat)

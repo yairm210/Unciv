@@ -423,7 +423,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
         return when (assignedQuest.questName) {
             QuestName.ClearBarbarianCamp.value -> civInfo.gameInfo.tileMap[assignedQuest.data1.toInt(), assignedQuest.data2.toInt()].improvement != Constants.barbarianEncampment
-            QuestName.ConstructWonder.value -> civInfo.gameInfo.getCities().any { it.civInfo != assignee && it.cityConstructions.isBuilt(assignedQuest.data1) }
+            QuestName.ConstructWonder.value -> civInfo.gameInfo.getCities().any { it.civ != assignee && it.cityConstructions.isBuilt(assignedQuest.data1) }
             QuestName.FindPlayer.value -> civInfo.gameInfo.getCivilization(assignedQuest.data1).isDefeated()
             QuestName.ConquerCityState.value ->  civInfo.gameInfo.getCivilization(assignedQuest.data1).isDefeated()
             QuestName.BullyCityState.value ->  civInfo.gameInfo.getCivilization(assignedQuest.data1).isDefeated()

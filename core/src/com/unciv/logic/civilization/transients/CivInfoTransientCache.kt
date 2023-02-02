@@ -90,7 +90,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         for (tile in civInfo.viewableTiles) {
             val tileOwner = tile.getOwner()
             if (tileOwner != null) viewedCivs[tileOwner] = tile
-            for (unit in tile.getUnits()) viewedCivs[unit.civInfo] = tile
+            for (unit in tile.getUnits()) viewedCivs[unit.civ] = tile
         }
 
         if (!civInfo.isBarbarian()) {
@@ -233,14 +233,14 @@ class CivInfoTransientCache(val civInfo: Civilization) {
 
         if (!initialSetup) { // In the initial setup we're loading an old game state, so it doesn't really count
             for (city in citiesReachedToMediums.keys)
-                if (city !in civInfo.citiesConnectedToCapitalToMediums && city.civInfo == civInfo && city != civInfo.getCapital()!!)
+                if (city !in civInfo.citiesConnectedToCapitalToMediums && city.civ == civInfo && city != civInfo.getCapital()!!)
                     civInfo.addNotification("[${city.name}] has been connected to your capital!",
                         city.location, NotificationCategory.Cities, NotificationIcon.Gold
                     )
 
             // This may still contain cities that have just been destroyed by razing - thus the population test
             for (city in civInfo.citiesConnectedToCapitalToMediums.keys)
-                if (!citiesReachedToMediums.containsKey(city) && city.civInfo == civInfo && city.population.population > 0)
+                if (!citiesReachedToMediums.containsKey(city) && city.civ == civInfo && city.population.population > 0)
                     civInfo.addNotification("[${city.name}] has been disconnected from your capital!",
                         city.location, NotificationCategory.Cities, NotificationIcon.Gold
                     )

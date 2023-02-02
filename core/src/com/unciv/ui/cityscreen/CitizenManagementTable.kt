@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.logic.city.CityFocus
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ExpanderTab
 import com.unciv.ui.utils.extensions.onClick
@@ -59,7 +58,7 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
         var newRow = false
         for (focus in CityFocus.values()) {
             if (!focus.tableEnabled) continue
-            if (focus == CityFocus.FaithFocus && !city.civInfo.gameInfo.isReligionEnabled()) continue
+            if (focus == CityFocus.FaithFocus && !city.civ.gameInfo.isReligionEnabled()) continue
             val label = focus.label.toLabel()
             val cell = Table()
             cell.add(label).pad(5f)

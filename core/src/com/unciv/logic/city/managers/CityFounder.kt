@@ -222,16 +222,16 @@ class CityFounder {
      */
     private fun triggerCitiesSettledNearOtherCiv(city: City) {
         val citiesWithin6Tiles =
-                city.civInfo.gameInfo.civilizations.asSequence()
-                    .filter { it.isMajorCiv() && it != city.civInfo }
+                city.civ.gameInfo.civilizations.asSequence()
+                    .filter { it.isMajorCiv() && it != city.civ }
                     .flatMap { it.cities }
                     .filter { it.getCenterTile().aerialDistanceTo(city.getCenterTile()) <= 6 }
         val civsWithCloseCities =
                 citiesWithin6Tiles
-                    .map { it.civInfo }
+                    .map { it.civ }
                     .distinct()
-                    .filter { it.knows(city.civInfo) && it.hasExplored(city.getCenterTile()) }
+                    .filter { it.knows(city.civ) && it.hasExplored(city.getCenterTile()) }
         for (otherCiv in civsWithCloseCities)
-            otherCiv.getDiplomacyManager(city.civInfo).setFlag(DiplomacyFlags.SettledCitiesNearUs, 30)
+            otherCiv.getDiplomacyManager(city.civ).setFlag(DiplomacyFlags.SettledCitiesNearUs, 30)
     }
 }

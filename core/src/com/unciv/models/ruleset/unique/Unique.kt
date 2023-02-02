@@ -252,7 +252,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 && relevantTile!!.neighbors.any {
                     it.militaryUnit != null
                     && it.militaryUnit != relevantUnit
-                    && it.militaryUnit!!.civInfo == state.civInfo
+                    && it.militaryUnit!!.civ == state.civInfo
                     && it.militaryUnit!!.matchesFilter(condition.params[0])
                 }
 

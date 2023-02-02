@@ -339,7 +339,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         if (cityConstructions.getWorkDone(constructionName) == 0) return Table()
 
         val constructionPercentage = cityConstructions.getWorkDone(constructionName) /
-                (construction as INonPerpetualConstruction).getProductionCost(cityConstructions.city.civInfo).toFloat()
+                (construction as INonPerpetualConstruction).getProductionCost(cityConstructions.city.civ).toFloat()
         return ImageGetter.getProgressBarVertical(2f, 30f, constructionPercentage,
                 Color.BROWN.brighten(0.5f), Color.WHITE)
     }
@@ -567,7 +567,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             city.isInResistance() -> false
             !construction.isPurchasable(city.cityConstructions) -> false    // checks via 'rejection reason'
             construction is BaseUnit && !city.canPlaceNewUnit(construction) -> false
-            city.civInfo.gameInfo.gameParameters.godMode -> true
+            city.civ.gameInfo.gameParameters.godMode -> true
             constructionBuyCost == 0 -> true
             else -> city.getStatReserve(stat) >= constructionBuyCost
         }

@@ -79,7 +79,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         val miniStatsTable = Table()
         val selected = BaseScreen.skin.get("selection", Color::class.java)
         for ((stat, amount) in cityInfo.cityStats.currentCityStats) {
-            if (stat == Stat.Faith && !cityInfo.civInfo.gameInfo.isReligionEnabled()) continue
+            if (stat == Stat.Faith && !cityInfo.civ.gameInfo.isReligionEnabled()) continue
             val icon = Table()
             if (cityInfo.cityAIFocus.stat == stat) {
                 icon.add(ImageGetter.getStatIcon(stat.name).surroundWithCircle(27f, false, color = selected))
@@ -114,7 +114,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         if (!cityInfo.population.getMaxSpecialists().isEmpty()) {
             addSpecialistInfo()
         }
-        if (cityInfo.religion.getNumberOfFollowers().isNotEmpty() && cityInfo.civInfo.gameInfo.isReligionEnabled())
+        if (cityInfo.religion.getNumberOfFollowers().isNotEmpty() && cityInfo.civ.gameInfo.isReligionEnabled())
             addReligionInfo()
 
         addBuildingsInfo()
@@ -271,7 +271,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         val statsAndSpecialists = Table()
 
         val icon = ImageGetter.getConstructionPortrait(building.name, 50f)
-        val isFree = building.name in cityScreen.city.civInfo.civConstructions.getFreeBuildings(cityScreen.city.id)
+        val isFree = building.name in cityScreen.city.civ.civConstructions.getFreeBuildings(cityScreen.city.id)
         val displayName = if (isFree) "{${building.name}} ({Free})" else building.name
 
         info.add(displayName.toLabel(fontSize = Constants.defaultFontSize)).padBottom(5f).right().row()
@@ -353,8 +353,8 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                 .left().padBottom(4f).padRight(5f)
             info.add("{$greatPersonName} (+$gppPerTurn)".toLabel()).left().padBottom(4f).expandX().row()
 
-            val gppCurrent = city.civInfo.greatPeople.greatPersonPointsCounter[greatPersonName]
-            val gppNeeded = city.civInfo.greatPeople.getPointsRequiredForGreatPerson()
+            val gppCurrent = city.civ.greatPeople.greatPersonPointsCounter[greatPersonName]
+            val gppNeeded = city.civ.greatPeople.getPointsRequiredForGreatPerson()
 
             val percent = gppCurrent!! / gppNeeded.toFloat()
 

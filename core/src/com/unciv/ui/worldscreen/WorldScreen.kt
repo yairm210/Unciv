@@ -65,8 +65,8 @@ import com.unciv.ui.worldscreen.status.MultiplayerStatusButton
 import com.unciv.ui.worldscreen.status.NextTurnAction
 import com.unciv.ui.worldscreen.status.NextTurnButton
 import com.unciv.ui.worldscreen.status.StatusButtons
-import com.unciv.ui.worldscreen.unit.actions.UnitActionsTable
 import com.unciv.ui.worldscreen.unit.UnitTable
+import com.unciv.ui.worldscreen.unit.actions.UnitActionsTable
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.utils.concurrency.launchOnThreadPool
@@ -414,7 +414,7 @@ class WorldScreen(
         mapHolder.resetArrows()
         if (UncivGame.Current.settings.showUnitMovements) {
             val allUnits = gameInfo.civilizations.asSequence().flatMap { it.units.getCivUnits() }
-            val allAttacks = allUnits.map { unit -> unit.attacksSinceTurnStart.asSequence().map { attacked -> Triple(unit.civInfo, unit.getTile().position, attacked) } }.flatten() +
+            val allAttacks = allUnits.map { unit -> unit.attacksSinceTurnStart.asSequence().map { attacked -> Triple(unit.civ, unit.getTile().position, attacked) } }.flatten() +
                 gameInfo.civilizations.asSequence().flatMap { civInfo -> civInfo.attacksSinceTurnStart.asSequence().map { Triple(civInfo, it.source, it.target) } }
             mapHolder.updateMovementOverlay(
                 allUnits.filter(mapVisualization::isUnitPastVisible),
@@ -503,7 +503,7 @@ class WorldScreen(
                     "\n Click 'Construct improvement' (above the unit table, bottom left)" +
                     "\n > Choose the farm > \n Leave the worker there until it's finished"
         if (!completedTasks.contains("Create a trade route")
-                && viewingCiv.citiesConnectedToCapitalToMediums.any { it.key.civInfo == viewingCiv })
+                && viewingCiv.citiesConnectedToCapitalToMediums.any { it.key.civ == viewingCiv })
             game.settings.addCompletedTutorialTask("Create a trade route")
         if (viewingCiv.cities.size > 1 && !completedTasks.contains("Create a trade route"))
             return "Create a trade route!\nConstruct roads between your capital and another city" +
@@ -535,7 +535,7 @@ class WorldScreen(
                     // ... all tiles around those in range of an average melee unit
                     // -> and now we look for a unit that could do the conquering because it's ours
                     //    no matter whether civilian, air or ranged, tell user he needs melee
-                    .any { it.getUnits().any { unit -> unit.civInfo == viewingCiv } }
+                    .any { it.getUnits().any { unit -> unit.civ == viewingCiv } }
         }
         displayTutorial(TutorialTrigger.AfterConquering) { viewingCiv.cities.any { it.hasJustBeenConquered } }
 
@@ -543,15 +543,15 @@ class WorldScreen(
 
         displayTutorial(TutorialTrigger.Workers) {
             gameInfo.getCurrentPlayerCivilization().units.getCivUnits().any {
-                it.hasUniqueToBuildImprovements && it.isCivilian() && !it.isGreatPerson()
+                it.cache.hasUniqueToBuildImprovements && it.isCivilian() && !it.isGreatPerson()
             }
         }
     }
 
     private fun updateSelectedCiv() {
         when {
-            bottomUnitTable.selectedUnit != null -> selectedCiv = bottomUnitTable.selectedUnit!!.civInfo
-            bottomUnitTable.selectedCity != null -> selectedCiv = bottomUnitTable.selectedCity!!.civInfo
+            bottomUnitTable.selectedUnit != null -> selectedCiv = bottomUnitTable.selectedUnit!!.civ
+            bottomUnitTable.selectedCity != null -> selectedCiv = bottomUnitTable.selectedCity!!.civ
             else -> viewingCiv
         }
     }
@@ -844,7 +844,7 @@ class WorldScreen(
         if (!game.settings.showTutorials) return
         displayTutorial(TutorialTrigger.SlowStart)
         displayTutorial(TutorialTrigger.CityExpansion) { viewingCiv.cities.any { it.expansion.tilesClaimed() > 0 } }
-        displayTutorial(TutorialTrigger.BarbarianEncountered) { viewingCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civInfo.isBarbarian() } } }
+        displayTutorial(TutorialTrigger.BarbarianEncountered) { viewingCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civ.isBarbarian() } } }
         displayTutorial(TutorialTrigger.RoadsAndRailroads) { viewingCiv.cities.size > 2 }
         displayTutorial(TutorialTrigger.Happiness) { viewingCiv.getHappiness() < 5 }
         displayTutorial(TutorialTrigger.Unhappiness) { viewingCiv.getHappiness() < 0 }

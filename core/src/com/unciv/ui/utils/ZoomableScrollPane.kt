@@ -29,6 +29,8 @@ open class ZoomableScrollPane(
     var onViewportChangedListener: ((width: Float, height: Float, viewport: Rectangle) -> Unit)? = null
     var onPanStopListener: (() -> Unit)? = null
     var onPanStartListener: (() -> Unit)? = null
+    var onZoomStopListener: (() -> Unit)? = null
+    var onZoomStartListener: (() -> Unit)? = null
 
     private val horizontalPadding get() = width / 2
     private val verticalPadding get() = height / 2
@@ -154,9 +156,23 @@ open class ZoomableScrollPane(
         }
     }
 
-    class ZoomListener(private val zoomableScrollPane: ZoomableScrollPane):ActorGestureListener(){
+    class ZoomListener(private val zoomableScrollPane: ZoomableScrollPane): ZoomGestureListener(){
+
+        private var isZooming = false
+        private var lastInitialDistance = 0f
         var lastScale = 1f
-        var lastInitialDistance = 0f
+
+        override fun pinch() {
+            if (!isZooming) {
+                isZooming = true
+                zoomableScrollPane.onZoomStartListener?.invoke()
+            }
+        }
+
+        override fun pinchStop() {
+            isZooming = false
+            zoomableScrollPane.onZoomStopListener?.invoke()
+        }
 
         override fun zoom(event: InputEvent?, initialDistance: Float, distance: Float) {
             if (lastInitialDistance != initialDistance) {

@@ -46,9 +46,9 @@ class CityTurnManager(val city: City) {
 
     private fun tryWeLoveTheKing() {
         if (city.demandedResource == "") return
-        if (city.civInfo.getCivResourcesByName()[city.demandedResource]!! > 0) {
+        if (city.civ.getCivResourcesByName()[city.demandedResource]!! > 0) {
             city.setFlag(CityFlags.WeLoveTheKing, 20 + 1) // +1 because it will be decremented by 1 in the same startTurn()
-            city.civInfo.addNotification(
+            city.civ.addNotification(
                 "Because they have [${city.demandedResource}], the citizens of [${city.name}] are celebrating We Love The King Day!",
                 city.location, NotificationCategory.General, NotificationIcon.City, NotificationIcon.Happiness)
         }
@@ -68,13 +68,13 @@ class CityTurnManager(val city: City) {
                         demandNewResource()
                     }
                     CityFlags.WeLoveTheKing.name -> {
-                        city.civInfo.addNotification(
+                        city.civ.addNotification(
                             "We Love The King Day in [${city.name}] has ended.",
                             city.location, NotificationCategory.General, NotificationIcon.City)
                         demandNewResource()
                     }
                     CityFlags.Resistance.name -> {
-                        city.civInfo.addNotification(
+                        city.civ.addNotification(
                             "The resistance in [${city.name}] has ended!",
                             city.location, NotificationCategory.General, "StatIcons/Resistance")
                     }
@@ -89,7 +89,7 @@ class CityTurnManager(val city: City) {
             it.resourceType == ResourceType.Luxury && // Must be luxury
                     !it.hasUnique(UniqueType.CityStateOnlyResource) && // Not a city-state only resource eg jewelry
                     it.name != city.demandedResource && // Not same as last time
-                    !city.civInfo.hasResource(it.name) && // Not one we already have
+                    !city.civ.hasResource(it.name) && // Not one we already have
                     it.name in city.tileMap.resources && // Must exist somewhere on the map
                     city.getCenterTile().getTilesInDistance(3).none { nearTile -> nearTile.resource == it.name } // Not in this city's radius
         }
@@ -103,7 +103,7 @@ class CityTurnManager(val city: City) {
         if (city.demandedResource == "") // Failed to get a valid resource, try again some time later
             city.setFlag(CityFlags.ResourceDemand, 15 + Random().nextInt(10))
         else
-            city.civInfo.addNotification("[${city.name}] demands [${city.demandedResource}]!",
+            city.civ.addNotification("[${city.name}] demands [${city.demandedResource}]!",
                 city.location, NotificationCategory.General, NotificationIcon.City, "ResourceIcons/${city.demandedResource}")
     }
 
@@ -115,12 +115,12 @@ class CityTurnManager(val city: City) {
         city.expansion.nextTurn(stats.culture)
         if (city.isBeingRazed) {
             val removedPopulation =
-                    1 + city.civInfo.getMatchingUniques(UniqueType.CitiesAreRazedXTimesFaster)
+                    1 + city.civ.getMatchingUniques(UniqueType.CitiesAreRazedXTimesFaster)
                         .sumOf { it.params[0].toInt() - 1 }
             city.population.addPopulation(-1 * removedPopulation)
 
             if (city.population.population <= 0) {
-                city.civInfo.addNotification(
+                city.civ.addNotification(
                     "[${city.name}] has been razed to the ground!",
                     city.location, NotificationCategory.General,
                     "OtherIcons/Fire"
@@ -135,9 +135,9 @@ class CityTurnManager(val city: City) {
         } else city.population.nextTurn(city.foodForNextTurn())
 
         // This should go after the population change, as that might impact the amount of followers in this city
-        if (city.civInfo.gameInfo.isReligionEnabled()) city.religion.endTurn()
+        if (city.civ.gameInfo.isReligionEnabled()) city.religion.endTurn()
 
-        if (city in city.civInfo.cities) { // city was not destroyed
+        if (city in city.civ.cities) { // city was not destroyed
             city.health = min(city.health + 20, city.getMaxHealth())
             city.population.unassignExtraPopulation()
         }

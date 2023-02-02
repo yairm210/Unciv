@@ -1,5 +1,6 @@
 package com.unciv.ui
 
+import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.models.translations.tr
 import com.unciv.ui.options.OptionsPopup
@@ -14,7 +15,7 @@ import com.unciv.ui.utils.extensions.onClick
  *  Reusable code is in [LanguageTable] and [addLanguageTables].
  */
 class LanguagePickerScreen : PickerScreen() {
-    var chosenLanguage = "English"
+    var chosenLanguage = Constants.english
 
     private val languageTables: ArrayList<LanguageTable>
 

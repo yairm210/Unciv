@@ -2,6 +2,7 @@
 package com.unciv.testing
 
 import com.badlogic.gdx.Gdx
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
@@ -258,7 +259,7 @@ class TranslationTests {
 
         fun addTranslation(original:String, result:String){
             UncivGame.Current.translations[original.getPlaceholderText()] =TranslationEntry(original)
-                .apply { this["English"] = result }
+                .apply { this[Constants.english] = result }
         }
         addTranslation("The brother of [person]", "The sibling of [person]")
         Assert.assertEquals("The sibling of bob", "The brother of [bob]".tr())

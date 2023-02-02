@@ -14,7 +14,7 @@ class CapitalConnectionsFinder(private val civInfo: Civilization) {
     private var citiesToCheck = mutableListOf(civInfo.getCapital()!!)
     private lateinit var newCitiesToCheck: MutableList<City>
 
-    private val openBordersCivCities = civInfo.gameInfo.getCities().filter { canEnterBordersOf(it.civInfo) }
+    private val openBordersCivCities = civInfo.gameInfo.getCities().filter { canEnterBordersOf(it.civ) }
 
     private val harbor = "Harbor"   // hardcoding at least centralized for this class for now
     private val road = RoadStatus.Road.name
@@ -81,7 +81,7 @@ class CapitalConnectionsFinder(private val civInfo: Civilization) {
                 transportType = if(cityToConnectFrom.wasPreviouslyReached(railroad,null)) harborFromRailroad else harborFromRoad,
                 overridingTransportType = harborFromRailroad,
                 tileFilter = { tile -> tile.isWater },
-                cityFilter = { city -> city.containsHarbor() && city.civInfo == civInfo } // use only own harbors
+                cityFilter = { city -> city.containsHarbor() && city.civ == civInfo } // use only own harbors
         )
     }
 

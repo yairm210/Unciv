@@ -10,7 +10,7 @@ class MapVisualization(val gameInfo: GameInfo, val viewingCiv: Civilization) {
 
     /** @return Whether a unit's past movements should be visible to the player. */
     fun isUnitPastVisible(unit: MapUnit): Boolean {
-        if (unit.civInfo == viewingCiv)
+        if (unit.civ == viewingCiv)
             return true
         val checkPositions = sequenceOf(unit.movementMemories.asSequence().map { it.position }, sequenceOf(unit.getTile().position)).flatten()
         return checkPositions.all { gameInfo.tileMap[it] in viewingCiv.viewableTiles }
@@ -19,7 +19,7 @@ class MapVisualization(val gameInfo: GameInfo, val viewingCiv: Civilization) {
     }
 
     /** @return Whether a unit's planned movements should be visible to the player. */
-    fun isUnitFutureVisible(unit: MapUnit) = (viewingCiv.isSpectator() || unit.civInfo == viewingCiv)
+    fun isUnitFutureVisible(unit: MapUnit) = (viewingCiv.isSpectator() || unit.civ == viewingCiv)
     // Plans should be visible always for own units and never for foreign units.
 
     /** @return Whether an attack by a unit to a target should be visible to the player. */

@@ -3,8 +3,8 @@ package com.unciv.models.ruleset
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.INonPerpetualConstruction
-import com.unciv.logic.city.RejectionReasonType
 import com.unciv.logic.city.RejectionReason
+import com.unciv.logic.city.RejectionReasonType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.tile.ResourceType
@@ -114,7 +114,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     fun getDescription(city: City, showAdditionalInfo: Boolean): String {
         val stats = getStats(city)
         val lines = ArrayList<String>()
-        val isFree = name in city.civInfo.civConstructions.getFreeBuildings(city.id)
+        val isFree = name in city.civ.civConstructions.getFreeBuildings(city.id)
         if (uniqueTo != null) lines += if (replaces == null) "Unique to [$uniqueTo]"
             else "Unique to [$uniqueTo], replaces [$replaces]"
         val missingUnique = getMatchingUniques(UniqueType.RequiresBuildingInAllCities).firstOrNull()
@@ -122,7 +122,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (isNationalWonder) lines += "National Wonder"
         if (!isFree) {
             val availableResources = if (!showAdditionalInfo) emptyMap()
-                else city.civInfo.getCivResources().associate { it.resource.name to it.amount }
+                else city.civ.getCivResources().associate { it.resource.name to it.amount }
             for ((resource, amount) in getResourceRequirements()) {
                 val available = availableResources[resource] ?: 0
                 lines += if (showAdditionalInfo)
@@ -134,7 +134,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         // Inefficient in theory. In practice, buildings seem to have only a small handful of uniques.
         val missingCities = if (missingUnique != null)
         // TODO: Unify with rejection reasons?
-            city.civInfo.cities.filterNot {
+            city.civ.cities.filterNot {
                 it.isPuppet
                         || it.cityConstructions.containsBuildingOrEquivalent(missingUnique.params[0])
             }
@@ -168,7 +168,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (showAdditionalInfo && missingCities.isNotEmpty()) {
             // Could be red. But IMO that should be done by enabling GDX's ColorMarkupLanguage globally instead of adding a separate label.
             lines += "\n" +
-                "[${city.civInfo.getEquivalentBuilding(missingUnique!!.params[0])}] required:".tr() +
+                "[${city.civ.getEquivalentBuilding(missingUnique!!.params[0])}] required:".tr() +
                 " " + missingCities.joinToString(", ") { "{${it.name}}" }
             // Can't nest square bracket placeholders inside curlies, and don't see any way to define wildcard placeholders. So run translation explicitly on base text.
         }
@@ -187,7 +187,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             stats.add(unique.stats)
         }
 
-        for (unique in getMatchingUniques(UniqueType.Stats, StateForConditionals(city.civInfo, city)))
+        for (unique in getMatchingUniques(UniqueType.Stats, StateForConditionals(city.civ, city)))
             stats.add(unique.stats)
 
         if (!isWonder)
@@ -200,7 +200,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     fun getStatPercentageBonuses(city: City?, localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats {
         val stats = percentStatBonus?.clone() ?: Stats()
-        val civInfo = city?.civInfo ?: return stats  // initial stats
+        val civInfo = city?.civ ?: return stats  // initial stats
 
         for (unique in localUniqueCache.get("StatPercentFromObject", civInfo.getMatchingUniques(UniqueType.StatPercentFromObject))) {
             if (matchesFilter(unique.params[2]))
@@ -360,7 +360,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (stat == Stat.Gold && isAnyWonder()) return false
         if (city == null) return super.canBePurchasedWithStat(city, stat)
 
-        val conditionalState = StateForConditionals(civInfo = city.civInfo, city = city)
+        val conditionalState = StateForConditionals(civInfo = city.civ, city = city)
         return (
             city.getMatchingUniques(UniqueType.BuyBuildingsIncreasingCost, conditionalState)
                 .any {
@@ -387,8 +387,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     }
 
     override fun getBaseBuyCost(city: City, stat: Stat): Int? {
-        if (stat == Stat.Gold) return getBaseGoldCost(city.civInfo).toInt()
-        val conditionalState = StateForConditionals(civInfo = city.civInfo, city = city)
+        if (stat == Stat.Gold) return getBaseGoldCost(city.civ).toInt()
+        val conditionalState = StateForConditionals(civInfo = city.civ, city = city)
 
         return sequence {
             val baseCost = super.getBaseBuyCost(city, stat)
@@ -403,13 +403,13 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     getCostForConstructionsIncreasingInPrice(
                         it.params[1].toInt(),
                         it.params[4].toInt(),
-                        city.civInfo.civConstructions.boughtItemsWithIncreasingPrice[name] ?: 0
+                        city.civ.civConstructions.boughtItemsWithIncreasingPrice[name] ?: 0
                     )
                 }
             )
             yieldAll(city.getMatchingUniques(UniqueType.BuyBuildingsByProductionCost, conditionalState)
                 .filter { it.params[1] == stat.name && matchesFilter(it.params[0]) }
-                .map { getProductionCost(city.civInfo) * it.params[2].toInt() }
+                .map { getProductionCost(city.civ) * it.params[2].toInt() }
             )
             if (city.getMatchingUniques(UniqueType.BuyBuildingsWithStat, conditionalState)
                 .any {
@@ -418,7 +418,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     && city.matchesFilter(it.params[2])
                 }
             ) {
-                yield(city.civInfo.getEra().baseUnitBuyCost)
+                yield(city.civ.getEra().baseUnitBuyCost)
             }
             yieldAll(city.getMatchingUniques(UniqueType.BuyBuildingsForAmountStat, conditionalState)
                 .filter {
@@ -449,7 +449,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (cityConstructions.isBeingConstructedOrEnqueued(name))
             return false
         for (unique in getMatchingUniques(UniqueType.MaxNumberBuildable)){
-            if (cityConstructions.city.civInfo.civConstructions.countConstructedObjects(this) >= unique.params[0].toInt())
+            if (cityConstructions.city.civ.civConstructions.countConstructedObjects(this) >= unique.params[0].toInt())
                 return false
         }
 
@@ -463,32 +463,32 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> = sequence {
         val cityCenter = cityConstructions.city.getCenterTile()
-        val civInfo = cityConstructions.city.civInfo
-        val ruleSet = civInfo.gameInfo.ruleSet
+        val civ = cityConstructions.city.civ
+        val ruleSet = civ.gameInfo.ruleSet
 
         if (cityConstructions.isBuilt(name))
             yield(RejectionReasonType.AlreadyBuilt.toInstance())
         // for buildings that are created as side effects of other things, and not directly built,
         // or for buildings that can only be bought
-        if (hasUnique(UniqueType.Unbuildable))
+        if (hasUnique(UniqueType.Unbuildable, StateForConditionals(civ, cityConstructions.city)))
             yield(RejectionReasonType.Unbuildable.toInstance())
 
         for (unique in uniqueObjects) {
             @Suppress("NON_EXHAUSTIVE_WHEN")
             when (unique.type) {
                 UniqueType.OnlyAvailableWhen->
-                    if (!unique.conditionalsApply(civInfo, cityConstructions.city))
+                    if (!unique.conditionalsApply(civ, cityConstructions.city))
                         yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
 
-                UniqueType.EnablesNuclearWeapons -> if (!cityConstructions.city.civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled)
+                UniqueType.EnablesNuclearWeapons -> if (!cityConstructions.city.civ.gameInfo.gameParameters.nuclearWeaponsEnabled)
                     yield(RejectionReasonType.DisabledBySetting.toInstance())
 
                 UniqueType.MustBeOn ->
-                    if (!cityCenter.matchesTerrainFilter(unique.params[0], civInfo))
+                    if (!cityCenter.matchesTerrainFilter(unique.params[0], civ))
                         yield(RejectionReasonType.MustBeOnTile.toInstance(unique.text))
 
                 UniqueType.MustNotBeOn ->
-                    if (cityCenter.matchesTerrainFilter(unique.params[0], civInfo))
+                    if (cityCenter.matchesTerrainFilter(unique.params[0], civ))
                         yield(RejectionReasonType.MustNotBeOnTile.toInstance(unique.text))
 
                 UniqueType.MustBeNextTo ->
@@ -496,12 +496,12 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                         yield(RejectionReasonType.MustBeNextToTile.toInstance(unique.text))
 
                 UniqueType.MustNotBeNextTo ->
-                    if (cityCenter.getTilesInDistance(1).any { it.matchesFilter(unique.params[0], civInfo) })
+                    if (cityCenter.getTilesInDistance(1).any { it.matchesFilter(unique.params[0], civ) })
                         yield(RejectionReasonType.MustNotBeNextToTile.toInstance(unique.text))
 
                 UniqueType.MustHaveOwnedWithinTiles ->
                     if (cityCenter.getTilesInDistance(unique.params[1].toInt())
-                        .none { it.matchesFilter(unique.params[0], civInfo) && it.getOwner() == cityConstructions.city.civInfo }
+                        .none { it.matchesFilter(unique.params[0], civ) && it.getOwner() == cityConstructions.city.civ }
                     )
                         yield(RejectionReasonType.MustOwnTile.toInstance(unique.text))
 
@@ -510,31 +510,31 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                         yield(RejectionReasonType.CanOnlyBeBuiltInSpecificCities.toInstance(unique.text))
 
                 UniqueType.ObsoleteWith ->
-                    if (civInfo.tech.isResearched(unique.params[0]))
+                    if (civ.tech.isResearched(unique.params[0]))
                         yield(RejectionReasonType.Obsoleted.toInstance(unique.text))
 
                 UniqueType.HiddenWithoutReligion ->
-                    if (!civInfo.gameInfo.isReligionEnabled())
+                    if (!civ.gameInfo.isReligionEnabled())
                         yield(RejectionReasonType.DisabledBySetting.toInstance())
 
                 UniqueType.MaxNumberBuildable ->
-                    if (civInfo.civConstructions.countConstructedObjects(this@Building) >= unique.params[0].toInt())
+                    if (civ.civConstructions.countConstructedObjects(this@Building) >= unique.params[0].toInt())
                         yield(RejectionReasonType.MaxNumberBuildable.toInstance())
 
                 // To be replaced with `Only available <after [Apollo Project] has been build>`
                 UniqueType.SpaceshipPart -> {
-                    if (!civInfo.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts))
+                    if (!civ.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts))
                         yield(RejectionReasonType.RequiresBuildingInSomeCity.toInstance("Apollo project not built!"))
                 }
 
                 UniqueType.RequiresBuildingInSomeCities -> {
                     val buildingName = unique.params[0]
                     val numberOfCitiesRequired = unique.params[1].toInt()
-                    val numberOfCitiesWithBuilding = civInfo.cities.count {
+                    val numberOfCitiesWithBuilding = civ.cities.count {
                         it.cityConstructions.containsBuildingOrEquivalent(buildingName)
                     }
                     if (numberOfCitiesWithBuilding < numberOfCitiesRequired) {
-                        val equivalentBuildingName = civInfo.getEquivalentBuilding(buildingName).name
+                        val equivalentBuildingName = civ.getEquivalentBuilding(buildingName).name
                         yield(
                                 // replace with civ-specific building for user
                                 RejectionReasonType.RequiresBuildingInAllCities.toInstance(
@@ -546,27 +546,27 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
                 UniqueType.RequiresBuildingInAllCities -> {
                     val filter = unique.params[0]
-                    if (civInfo.gameInfo.ruleSet.buildings.containsKey(filter)
-                            && civInfo.cities.any {
+                    if (civ.gameInfo.ruleSet.buildings.containsKey(filter)
+                            && civ.cities.any {
                                 !it.isPuppet && !it.cityConstructions.containsBuildingOrEquivalent(unique.params[0])
                             }
                     ) {
                         yield(
                                 // replace with civ-specific building for user
                                 RejectionReasonType.RequiresBuildingInAllCities.toInstance(
-                                    "Requires a [${civInfo.getEquivalentBuilding(unique.params[0])}] in all cities"
+                                    "Requires a [${civ.getEquivalentBuilding(unique.params[0])}] in all cities"
                                 )
                         )
                     }
                 }
 
                 UniqueType.HiddenBeforeAmountPolicies -> {
-                    if (cityConstructions.city.civInfo.getCompletedPolicyBranchesCount() < unique.params[0].toInt())
+                    if (cityConstructions.city.civ.getCompletedPolicyBranchesCount() < unique.params[0].toInt())
                         yield(RejectionReasonType.MorePolicyBranches.toInstance(unique.text))
                 }
 
                 UniqueType.HiddenWithoutVictoryType -> {
-                    if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(unique.params[0]))
+                    if (!civ.gameInfo.gameParameters.victoryTypes.contains(unique.params[0]))
                         yield(RejectionReasonType.HiddenWithoutVictory.toInstance(unique.text))
                 }
 
@@ -574,49 +574,49 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             }
         }
 
-        if (uniqueTo != null && uniqueTo != civInfo.civName)
+        if (uniqueTo != null && uniqueTo != civ.civName)
             yield(RejectionReasonType.UniqueToOtherNation.toInstance("Unique to $uniqueTo"))
 
-        if (civInfo.cache.uniqueBuildings.any { it.replaces == name })
+        if (civ.cache.uniqueBuildings.any { it.replaces == name })
             yield(RejectionReasonType.ReplacedByOurUnique.toInstance())
 
-        if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!))
+        if (requiredTech != null && !civ.tech.isResearched(requiredTech!!))
             yield(RejectionReasonType.RequiresTech.toInstance("$requiredTech not researched!"))
 
         // Regular wonders
         if (isWonder) {
-            if (civInfo.gameInfo.getCities().any { it.cityConstructions.isBuilt(name) })
+            if (civ.gameInfo.getCities().any { it.cityConstructions.isBuilt(name) })
                 yield(RejectionReasonType.WonderAlreadyBuilt.toInstance())
 
-            if (civInfo.cities.any { it != cityConstructions.city && it.cityConstructions.isBeingConstructedOrEnqueued(name) })
+            if (civ.cities.any { it != cityConstructions.city && it.cityConstructions.isBeingConstructedOrEnqueued(name) })
                 yield(RejectionReasonType.WonderBeingBuiltElsewhere.toInstance())
 
-            if (civInfo.isCityState())
+            if (civ.isCityState())
                 yield(RejectionReasonType.CityStateWonder.toInstance())
 
-            val startingEra = civInfo.gameInfo.gameParameters.startingEra
+            val startingEra = civ.gameInfo.gameParameters.startingEra
             if (name in ruleSet.eras[startingEra]!!.startingObsoleteWonders)
                 yield(RejectionReasonType.WonderDisabledEra.toInstance())
         }
 
         // National wonders
         if (isNationalWonder) {
-            if (civInfo.cities.any { it.cityConstructions.isBuilt(name) })
+            if (civ.cities.any { it.cityConstructions.isBuilt(name) })
                 yield(RejectionReasonType.NationalWonderAlreadyBuilt.toInstance())
 
-            if (civInfo.cities.any { it != cityConstructions.city && it.cityConstructions.isBeingConstructedOrEnqueued(name) })
+            if (civ.cities.any { it != cityConstructions.city && it.cityConstructions.isBeingConstructedOrEnqueued(name) })
                 yield(RejectionReasonType.NationalWonderBeingBuiltElsewhere.toInstance())
 
-            if (civInfo.isCityState())
+            if (civ.isCityState())
                 yield(RejectionReasonType.CityStateNationalWonder.toInstance())
         }
 
         if (requiredBuilding != null && !cityConstructions.containsBuildingOrEquivalent(requiredBuilding!!)) {
-            yield(RejectionReasonType.RequiresBuildingInThisCity.toInstance("Requires a [${civInfo.getEquivalentBuilding(requiredBuilding!!)}] in this city"))
+            yield(RejectionReasonType.RequiresBuildingInThisCity.toInstance("Requires a [${civ.getEquivalentBuilding(requiredBuilding!!)}] in this city"))
         }
 
         for ((resource, requiredAmount) in getResourceRequirements()) {
-            val availableAmount = civInfo.getCivResourcesByName()[resource]!!
+            val availableAmount = civ.getCivResourcesByName()[resource]!!
             if (availableAmount < requiredAmount) {
                 yield(RejectionReasonType.ConsumesResources.toInstance(resource.getNeedMoreAmountString(requiredAmount - availableAmount)))
             }
@@ -627,7 +627,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 .any {
                     it.resource != null
                     && requiredNearbyImprovedResources!!.contains(it.resource!!)
-                    && it.getOwner() == civInfo
+                    && it.getOwner() == civ
                     && ((it.getUnpillagedImprovement() != null && it.tileResource.isImprovedBy(it.improvement!!)) || it.isCityCenter()
                        || (it.getUnpillagedTileImprovement()?.isGreatImprovement() == true && it.tileResource.resourceType == ResourceType.Strategic)
                     )
@@ -642,7 +642,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     override fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat?): Boolean {
         val cityInfo = cityConstructions.city
-        val civInfo = cityInfo.civInfo
+        val civInfo = cityInfo.civ
 
         if (civInfo.gameInfo.spaceResources.contains(name)) {
             civInfo.victoryManager.currentsSpaceshipParts.add(name, 1)
@@ -672,13 +672,13 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, StateForConditionals(civInfo, cityInfo)))
             if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuilding && matchesFilter(it.params[0])})
-                UniqueTriggerActivation.triggerCivwideUnique(unique, cityInfo.civInfo, cityInfo, triggerNotificationText = triggerNotificationText)
+                UniqueTriggerActivation.triggerCivwideUnique(unique, cityInfo.civ, cityInfo, triggerNotificationText = triggerNotificationText)
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponConstructingBuildingCityFilter, StateForConditionals(cityInfo.civInfo, cityInfo)))
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponConstructingBuildingCityFilter, StateForConditionals(cityInfo.civ, cityInfo)))
             if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuildingCityFilter
                             && matchesFilter(it.params[0])
                             && cityInfo.matchesFilter(it.params[1])})
-                UniqueTriggerActivation.triggerCivwideUnique(unique, cityInfo.civInfo, cityInfo, triggerNotificationText = triggerNotificationText)
+                UniqueTriggerActivation.triggerCivwideUnique(unique, cityInfo.civ, cityInfo, triggerNotificationText = triggerNotificationText)
 
         if (hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement))
             civInfo.cache.updateHasActiveEnemyMovementPenalty()

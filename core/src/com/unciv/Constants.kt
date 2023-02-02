@@ -7,6 +7,8 @@ object Constants {
     const val spreadReligion = "Spread Religion"
     const val removeHeresy = "Remove Foreign religions from your own cities"
 
+    const val english = "English"
+
     const val impassable = "Impassable"
     const val ocean = "Ocean"
 

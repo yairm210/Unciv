@@ -73,7 +73,7 @@ class SerializationTests {
         val civ = game.getCurrentPlayerCivilization()
         val unit = civ.units.getCivUnits().first { it.hasUnique(UniqueType.FoundCity) }
         val tile = unit.getTile()
-        unit.civInfo.addCity(tile.position)
+        unit.civ.addCity(tile.position)
         if (tile.ruleset.tileImprovements.containsKey("City center"))
             tile.changeImprovement("City center")
         unit.destroy()

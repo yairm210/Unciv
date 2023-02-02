@@ -12,7 +12,7 @@ import com.unciv.models.ruleset.unit.UnitType
 class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     override fun getHealth(): Int = unit.health
     override fun getMaxHealth() = 100
-    override fun getCivInfo(): Civilization = unit.civInfo
+    override fun getCivInfo(): Civilization = unit.civ
     override fun getTile(): Tile = unit.getTile()
     override fun getName(): String = unit.name
     override fun isDefeated(): Boolean = unit.health <= 0
@@ -36,7 +36,7 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
 
     override fun getDefendingStrength(attackedByRanged: Boolean): Int {
         return if (unit.isEmbarked() && !isCivilian())
-            unit.civInfo.getEra().embarkDefense
+            unit.civ.getEra().embarkDefense
         else if (isRanged() && attackedByRanged)
             unit.baseUnit().rangedStrength
         else unit.baseUnit().strength
@@ -47,7 +47,7 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     }
 
     override fun toString(): String {
-        return unit.name+" of "+unit.civInfo.civName
+        return unit.name+" of "+unit.civ.civName
     }
 
     fun getMatchingUniques(uniqueType: UniqueType, conditionalState: StateForConditionals, checkCivUniques: Boolean): Sequence<Unique> =

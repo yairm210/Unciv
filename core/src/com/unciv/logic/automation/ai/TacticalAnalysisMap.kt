@@ -197,7 +197,7 @@ class TacticalAnalysisMap {
                     val newZone = TacticalDominanceZone()
                     newZone.id = zoneId
                     newZone.city = city
-                    newZone.owner = city.civInfo
+                    newZone.owner = city.civ
                     newZone.area = tile.getContinent()
 
                     if (newZone.owner == player)

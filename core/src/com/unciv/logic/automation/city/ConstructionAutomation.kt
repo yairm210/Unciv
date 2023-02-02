@@ -22,7 +22,7 @@ import kotlin.math.sqrt
 class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private val cityInfo = cityConstructions.city
-    private val civInfo = cityInfo.civInfo
+    private val civInfo = cityInfo.civ
 
     private val buildableBuildings = hashMapOf<String, Boolean>()
     private val buildableUnits = hashMapOf<String, Boolean>()
@@ -38,7 +38,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private val civUnits = civInfo.units.getCivUnits()
     private val militaryUnits = civUnits.count { it.baseUnit.isMilitary() }
-    private val workers = civUnits.count { it.hasUniqueToBuildImprovements && it.isCivilian() }.toFloat()
+    private val workers = civUnits.count { it.cache.hasUniqueToBuildImprovements && it.isCivilian() }.toFloat()
     private val cities = civInfo.cities.size
     private val allTechsAreResearched = civInfo.gameInfo.ruleSet.technologies.values
         .all { civInfo.tech.isResearched(it.name) || !civInfo.tech.canBeResearched(it.name)}
@@ -138,7 +138,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
         val civilianUnit = cityInfo.getCenterTile().civilianUnit
         if (civilianUnit != null && civilianUnit.hasUnique(UniqueType.FoundCity)
-                && cityInfo.getCenterTile().getTilesInDistance(5).none { it.militaryUnit?.civInfo == civInfo })
+                && cityInfo.getCenterTile().getTilesInDistance(5).none { it.militaryUnit?.civ == civInfo })
             modifier = 5f // there's a settler just sitting here, doing nothing - BAD
 
         if (civInfo.playerType == PlayerType.Human) modifier /= 2 // Players prefer to make their own unit choices usually

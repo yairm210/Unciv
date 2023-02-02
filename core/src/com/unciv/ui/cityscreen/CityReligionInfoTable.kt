@@ -23,7 +23,7 @@ class CityReligionInfoTable(
     private val religionManager: CityReligionManager,
     showMajority: Boolean = false
 ) : Table(BaseScreen.skin) {
-    private val civInfo = religionManager.city.civInfo
+    private val civInfo = religionManager.city.civ
     private val gameInfo = civInfo.gameInfo
 
     init {

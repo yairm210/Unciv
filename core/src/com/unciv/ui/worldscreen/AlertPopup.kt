@@ -107,7 +107,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 val conqueringCiv = worldScreen.gameInfo.getCurrentPlayerCivilization()
 
                 if (city.foundingCiv != ""
-                        && city.civInfo.civName != city.foundingCiv // can't liberate if the city actually belongs to those guys
+                        && city.civ.civName != city.foundingCiv // can't liberate if the city actually belongs to those guys
                         && conqueringCiv.civName != city.foundingCiv) { // or belongs originally to us
                     addLiberateOption(city.foundingCiv) {
                         city.liberateCity(conqueringCiv)
@@ -368,7 +368,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 capturedUnit.destroy()
                 // This is so that future checks which check if a unit has been captured are caught give the right answer
                 //  For example, in postBattleMoveToAttackedTile
-                capturedUnit.civInfo = captor
+                capturedUnit.civ = captor
                 captor.units.placeUnitNearTile(tile.position, Constants.worker)
             } else
                 capturedUnit.capturedBy(captor)

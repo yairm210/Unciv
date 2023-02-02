@@ -225,7 +225,7 @@ class Encampment() : IsPartOfGameInfoSerialization {
 
         // Too many barbarians around already?
         val barbarianCiv = gameInfo.getBarbarianCivilization()
-        if (tile.getTilesInDistance(4).count { it.militaryUnit?.civInfo == barbarianCiv } > 2)
+        if (tile.getTilesInDistance(4).count { it.militaryUnit?.civ == barbarianCiv } > 2)
             return false
 
         val canSpawnBoats = gameInfo.turns > 30

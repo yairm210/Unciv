@@ -123,7 +123,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
     fun update() {
         if (selectedUnit != null) {
             isVisible = true
-            if (selectedUnit!!.civInfo != worldScreen.viewingCiv && !worldScreen.viewingCiv.isSpectator()) { // The unit that was selected, was captured. It exists but is no longer ours.
+            if (selectedUnit!!.civ != worldScreen.viewingCiv && !worldScreen.viewingCiv.isSpectator()) { // The unit that was selected, was captured. It exists but is no longer ours.
                 selectUnit()
                 selectedUnitHasChanged = true
             } else if (selectedUnit!! !in selectedUnit!!.getTile().getUnits()) { // The unit that was there no longer exists
@@ -242,7 +242,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
                     }
                 )
             }
-            
+
             unitDescriptionTable.clear()
             unitDescriptionTable.defaults().pad(2f).padRight(5f)
             unitDescriptionTable.add("Strength".tr())
@@ -315,7 +315,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         // Do no select a different unit while in Air Sweep mode
         if (selectedUnit != null && selectedUnit!!.isPreparingAirSweep()) return
 
-        fun MapUnit.isEligible(): Boolean = (this.civInfo == worldScreen.viewingCiv
+        fun MapUnit.isEligible(): Boolean = (this.civ == worldScreen.viewingCiv
                 || worldScreen.viewingCiv.isSpectator()) && this !in selectedUnits
         fun MapUnit.isPrioritized(): Boolean = this.isGreatPerson() || this.hasUnique(UniqueType.FoundCity)
 

@@ -44,7 +44,7 @@ object UnitActionsPillage {
 
     fun getPillageAction(unit: MapUnit): UnitAction? {
         val tile = unit.currentTile
-        if (unit.isCivilian() || !tile.canPillageTile() || tile.getOwner() == unit.civInfo) return null
+        if (unit.isCivilian() || !tile.canPillageTile() || tile.getOwner() == unit.civ) return null
         return UnitAction(
             UnitActionType.Pillage,
             action = {
@@ -79,7 +79,7 @@ object UnitActionsPillage {
         val pillageYield = Stats()
         val globalPillageYield = Stats()
         val toCityPillageYield = Stats()
-        val closestCity = unit.civInfo.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
+        val closestCity = unit.civ.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
         val improvement = tile.getImprovementToPillage()!!
 
         for (unique in improvement.getMatchingUniques(UniqueType.PillageYieldRandom)) {
@@ -96,7 +96,7 @@ object UnitActionsPillage {
 
         for (stat in pillageYield) {
             if (stat.key in Stat.statsWithCivWideField) {
-                unit.civInfo.addStat(stat.key, stat.value.toInt())
+                unit.civ.addStat(stat.key, stat.value.toInt())
                 globalPillageYield[stat.key] += stat.value
             }
             else if (closestCity != null) {
@@ -109,6 +109,6 @@ object UnitActionsPillage {
             "We have looted [${toCityPillageYield.toStringWithoutIcons()}] from a [${improvement.name}] which has been sent to [${closestCity.name}]"
         else "We have looted [${globalPillageYield.toStringWithoutIcons()}] from a [${improvement.name}]"
 
-        unit.civInfo.addNotification(lootNotificationText, tile.position, NotificationCategory.War, "ImprovementIcons/${improvement.name}", NotificationIcon.War)
+        unit.civ.addNotification(lootNotificationText, tile.position, NotificationCategory.War, "ImprovementIcons/${improvement.name}", NotificationIcon.War)
     }
 }

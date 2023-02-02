@@ -43,9 +43,9 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
     fun getCultureToNextTile(): Int {
         var cultureToNextTile = 6 * (max(0, tilesClaimed()) + 1.4813).pow(1.3)
 
-        cultureToNextTile *= city.civInfo.gameInfo.speed.cultureCostModifier
+        cultureToNextTile *= city.civ.gameInfo.speed.cultureCostModifier
 
-        if (city.civInfo.isCityState())
+        if (city.civ.isCityState())
             cultureToNextTile *= 1.5f   // City states grow slower, perhaps 150% cost?
 
         for (unique in city.getMatchingUniques(UniqueType.BorderGrowthPercentage))
@@ -59,9 +59,9 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         val goldCost = getGoldCostOfTile(tile)
 
         class NotEnoughGoldToBuyTileException : Exception()
-        if (city.civInfo.gold < goldCost && !city.civInfo.gameInfo.gameParameters.godMode)
+        if (city.civ.gold < goldCost && !city.civ.gameInfo.gameParameters.godMode)
             throw NotEnoughGoldToBuyTileException()
-        city.civInfo.addGold(-goldCost)
+        city.civ.addGold(-goldCost)
         takeOwnership(tile)
     }
 
@@ -70,7 +70,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         val distanceFromCenter = tile.aerialDistanceTo(city.getCenterTile())
         var cost = baseCost * (distanceFromCenter - 1) + tilesClaimed() * 5.0
 
-        cost *= city.civInfo.gameInfo.speed.goldCostModifier
+        cost *= city.civ.gameInfo.speed.goldCostModifier
 
         for (unique in city.getMatchingUniques(UniqueType.TileCostPercentage)) {
             if (city.matchesFilter(unique.params[1]))
@@ -127,7 +127,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
      */
     fun relinquishOwnership(tile: Tile) {
         city.tiles = city.tiles.withoutItem(tile.position)
-        for (city in city.civInfo.cities) {
+        for (city in city.civ.cities) {
             if (city.isWorked(tile)) {
                 city.workedTiles = city.workedTiles.withoutItem(tile.position)
                 city.population.autoAssignPopulation()
@@ -136,11 +136,11 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
                 city.lockedTiles.remove(tile.position)
         }
 
-        tile.removeCreatesOneImprovementMarker()
+        tile.improvementFunctions.removeCreatesOneImprovementMarker()
 
         tile.setOwningCity(null)
 
-        city.civInfo.cache.updateCivResources()
+        city.civ.cache.updateCivResources()
         city.cityStats.update()
     }
 
@@ -160,14 +160,14 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         city.tiles = city.tiles.withItem(tile.position)
         tile.setOwningCity(city)
         city.population.autoAssignPopulation()
-        city.civInfo.cache.updateCivResources()
+        city.civ.cache.updateCivResources()
         city.cityStats.update()
 
         for (unit in tile.getUnits().toList()) // toListed because we're modifying
-            if (!unit.civInfo.diplomacyFunctions.canPassThroughTiles(city.civInfo))
+            if (!unit.civ.diplomacyFunctions.canPassThroughTiles(city.civ))
                 unit.movement.teleportToClosestMoveableTile()
 
-        city.civInfo.cache.updateViewableTiles()
+        city.civ.cache.updateViewableTiles()
     }
 
     fun nextTurn(culture: Float) {
@@ -176,7 +176,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
             val location = addNewTileWithCulture()
             if (location != null) {
                 val locations = LocationAction(location, city.location)
-                city.civInfo.addNotification("[" + city.name + "] has expanded its borders!", locations, NotificationCategory.Cities, NotificationIcon.Culture)
+                city.civ.addNotification("[" + city.name + "] has expanded its borders!", locations, NotificationCategory.Cities, NotificationIcon.Culture)
             }
         }
     }

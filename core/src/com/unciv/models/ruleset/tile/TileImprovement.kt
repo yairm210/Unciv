@@ -81,7 +81,7 @@ class TileImprovement : RulesetStatsObject() {
             val city = builder.getTile().getCity()
             if (city != null) {
                 city.cityStats.update()
-                city.civInfo.cache.updateCivResources()
+                city.civ.cache.updateCivResources()
             }
         }
         if (hasUnique(UniqueType.RemovesFeaturesIfBuilt)) {
@@ -93,7 +93,7 @@ class TileImprovement : RulesetStatsObject() {
                 removingAction in tile.ruleset.tileImprovements
                 && !isAllowedOnFeature(feature)
                 && tile.ruleset.tileImprovements[removingAction]!!.let {
-                    it.techRequired == null || builder.civInfo.tech.isResearched(it.techRequired!!)
+                    it.techRequired == null || builder.civ.tech.isResearched(it.techRequired!!)
                 }
             }
 

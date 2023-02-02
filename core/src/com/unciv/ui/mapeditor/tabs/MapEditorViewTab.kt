@@ -8,6 +8,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.tile.TileDescription
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
@@ -167,7 +168,7 @@ class MapEditorViewTab(
         lines += FormattedLine("Position: [${tile.position.toString().replace(".0","")}]")
         lines += FormattedLine()
 
-        lines.addAll(tile.toMarkup(null))
+        lines.addAll(TileDescription.toMarkup(tile, null))
 
         val stats = try {
             tile.stats.getTileStats(null, mockCiv)

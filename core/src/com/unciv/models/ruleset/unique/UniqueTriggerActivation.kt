@@ -369,7 +369,7 @@ object UniqueTriggerActivation {
                 else notification
 
                 val notificationText = getNotificationText(filledNotification, triggerNotificationText,
-                    "Gained [$stats]")
+                    "Gained [${stats.toStringForNotifications()}]")
                     ?: return true
 
                 civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationCategory.General, stat.notificationIcon)
@@ -394,7 +394,7 @@ object UniqueTriggerActivation {
                 else notification
 
                 val notificationText = getNotificationText(filledNotification, triggerNotificationText,
-                    "Gained [$stats]")
+                    "Gained [${stats.toStringForNotifications()}]")
                     ?: return true
 
                 civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationCategory.General, stat.notificationIcon)
@@ -589,14 +589,14 @@ object UniqueTriggerActivation {
             UniqueType.OneTimeUnitHeal -> {
                 unit.healBy(unique.params[0].toInt())
                 if (notification != null)
-                    unit.civInfo.addNotification(notification, unit.getTile().position, NotificationCategory.Units) // Do we have a heal icon?
+                    unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units) // Do we have a heal icon?
                 return true
             }
             UniqueType.OneTimeUnitGainXP -> {
                 if (!unit.baseUnit.isMilitary()) return false
                 unit.promotions.XP += unique.params[0].toInt()
                 if (notification != null)
-                    unit.civInfo.addNotification(notification, unit.getTile().position, NotificationCategory.Units)
+                    unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units)
                 return true
             }
             UniqueType.OneTimeUnitUpgrade -> {
@@ -604,7 +604,7 @@ object UniqueTriggerActivation {
                     ?: return false
                 upgradeAction.action!!()
                 if (notification != null)
-                    unit.civInfo.addNotification(notification, unit.getTile().position, NotificationCategory.Units)
+                    unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units)
                 return true
             }
             UniqueType.OneTimeUnitSpecialUpgrade -> {
@@ -612,16 +612,16 @@ object UniqueTriggerActivation {
                     ?: return false
                 upgradeAction.action!!()
                 if (notification != null)
-                    unit.civInfo.addNotification(notification, unit.getTile().position, NotificationCategory.Units)
+                    unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units)
                 return true
             }
             UniqueType.OneTimeUnitGainPromotion -> {
-                val promotion = unit.civInfo.gameInfo.ruleSet.unitPromotions.keys
+                val promotion = unit.civ.gameInfo.ruleSet.unitPromotions.keys
                     .firstOrNull { it == unique.params[0] }
                     ?: return false
                 unit.promotions.addPromotion(promotion, true)
                 if (notification != null)
-                    unit.civInfo.addNotification(notification, unit.getTile().position, NotificationCategory.Units, unit.name)
+                    unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units, unit.name)
                 return true
             }
             else -> return false

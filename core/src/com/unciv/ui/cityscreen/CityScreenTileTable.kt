@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.tile.TileDescription
 import com.unciv.models.UncivSound
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -49,10 +50,10 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
         isVisible = true
         innerTable.clearChildren()
 
-        val stats = selectedTile.stats.getTileStats(city, city.civInfo)
+        val stats = selectedTile.stats.getTileStats(city, city.civ)
         innerTable.pad(5f)
 
-        innerTable.add( MarkupRenderer.render(selectedTile.toMarkup(city.civInfo), iconDisplay = IconDisplay.None) {
+        innerTable.add(MarkupRenderer.render(TileDescription.toMarkup(selectedTile, city.civ), iconDisplay = IconDisplay.None) {
             UncivGame.Current.pushScreen(CivilopediaScreen(city.getRuleset(), link = it))
         } )
         innerTable.row()
@@ -98,7 +99,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
                 innerTable.add(lockButton).padTop(5f).row()
             }
         }
-        if (selectedTile.isCityCenter() && selectedTile.getCity() != city && selectedTile.getCity()!!.civInfo == city.civInfo)
+        if (selectedTile.isCityCenter() && selectedTile.getCity() != city && selectedTile.getCity()!!.civ == city.civ)
             innerTable.add("Move to city".toTextButton().onClick { cityScreen.game.replaceCurrentScreen(CityScreen(selectedTile.getCity()!!)) })
 
         innerTable.pack()
@@ -118,7 +119,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
 
         cityScreen.closeAllPopups()
 
-        val purchasePrompt = "Currently you have [${city.civInfo.gold}] [Gold].".tr() + "\n\n" +
+        val purchasePrompt = "Currently you have [${city.civ.gold}] [Gold].".tr() + "\n\n" +
                 "Would you like to purchase [Tile] for [$goldCostOfTile] [${Stat.Gold.character}]?".tr()
         ConfirmPopup(
             cityScreen,
@@ -144,9 +145,9 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
     private fun isTilePurchaseAllowed(goldCostOfTile: Int) = when {
         city.isPuppet -> false
         !cityScreen.canChangeState -> false
-        city.civInfo.gameInfo.gameParameters.godMode -> true
+        city.civ.gameInfo.gameParameters.godMode -> true
         goldCostOfTile == 0 -> true
-        else -> city.civInfo.gold >= goldCostOfTile
+        else -> city.civ.gold >= goldCostOfTile
     }
 
     private fun getTileStatsTable(stats: Stats): Table {

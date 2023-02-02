@@ -25,9 +25,9 @@ class CityDistance(
             else if (a.distance > b.distance)
                 return b
 
-            if (a.city.civInfo.isMajorCiv() && b.city.civInfo.isMinorCiv())
+            if (a.city.civ.isMajorCiv() && b.city.civ.isMinorCiv())
                 return a
-            else if (b.city.civInfo.isMajorCiv() && a.city.civInfo.isMinorCiv())
+            else if (b.city.civ.isMajorCiv() && a.city.civ.isMinorCiv())
                 return b
 
             return a

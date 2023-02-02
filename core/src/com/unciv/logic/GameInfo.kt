@@ -340,8 +340,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         val viewableInvisibleTiles = thisPlayer.viewableInvisibleUnitsTiles.map { it.position }
         val enemyUnitsCloseToTerritory = thisPlayer.viewableTiles
             .filter {
-                it.militaryUnit != null && it.militaryUnit!!.civInfo != thisPlayer
-                        && thisPlayer.isAtWarWith(it.militaryUnit!!.civInfo)
+                it.militaryUnit != null && it.militaryUnit!!.civ != thisPlayer
+                        && thisPlayer.isAtWarWith(it.militaryUnit!!.civ)
                         && (it.getOwner() == thisPlayer || it.neighbors.any { neighbor -> neighbor.getOwner() == thisPlayer }
                         && (!it.militaryUnit!!.isInvisible(thisPlayer) || viewableInvisibleTiles.contains(it.position)))
             }

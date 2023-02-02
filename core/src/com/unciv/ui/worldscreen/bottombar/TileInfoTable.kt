@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.tile.TileDescription
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.civilopedia.FormattedLine.IconDisplay
 import com.unciv.ui.civilopedia.MarkupRenderer
@@ -28,7 +29,7 @@ class TileInfoTable(private val viewingCiv :Civilization) : Table(BaseScreen.ski
 
         if (tile != null && (UncivGame.Current.viewEntireMapForDebug || viewingCiv.hasExplored(tile)) ) {
             add(getStatsTable(tile))
-            add( MarkupRenderer.render(tile.toMarkup(viewingCiv), padding = 0f, iconDisplay = IconDisplay.None) {
+            add(MarkupRenderer.render(TileDescription.toMarkup(tile, viewingCiv), padding = 0f, iconDisplay = IconDisplay.None) {
                 UncivGame.Current.pushScreen(CivilopediaScreen(viewingCiv.gameInfo.ruleSet, link = it))
             } ).pad(5f).row()
             if (UncivGame.Current.viewEntireMapForDebug)

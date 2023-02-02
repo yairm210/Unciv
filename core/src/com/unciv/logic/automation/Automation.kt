@@ -1,7 +1,7 @@
 package com.unciv.logic.automation
 
-import com.unciv.logic.city.CityFocus
 import com.unciv.logic.city.City
+import com.unciv.logic.city.CityFocus
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.BFS
@@ -22,7 +22,7 @@ import com.unciv.ui.victoryscreen.RankingType
 object Automation {
 
     fun rankTileForCityWork(tile: Tile, city: City, cityStats: Stats): Float {
-        val stats = tile.stats.getTileStats(city, city.civInfo)
+        val stats = tile.stats.getTileStats(city, city.civ)
         return rankStatsForCityWork(stats, city, cityStats)
     }
 
@@ -53,7 +53,7 @@ object Automation {
             for (unique in city.getMatchingUniques(UniqueType.UnhappinessFromPopulationTypePercentageChange))
                 if (city.matchesFilter(unique.params[2]) && unique.params[1] == "Specialists")
                     yieldStats.happiness -= (unique.params[0].toFloat() / 100f)  // relative val is negative, make positive
-            if (city.civInfo.getHappiness() < 0) yieldStats.happiness *= 2  // double weight for unhappy civilization
+            if (city.civ.getHappiness() < 0) yieldStats.happiness *= 2  // double weight for unhappy civilization
         }
 
         val surplusFood = cityStats[Stat.Food]
@@ -86,16 +86,16 @@ object Automation {
             // Food already handled above. Science/Culture have low weights in Stats already
             yieldStats.gold /= 2 // it's barely worth anything at this point
         } else {
-            if (city.civInfo.gold < 0 && city.civInfo.stats.statsForNextTurn.gold <= 0)
+            if (city.civ.gold < 0 && city.civ.stats.statsForNextTurn.gold <= 0)
                 yieldStats.gold *= 2 // We have a global problem
 
-            if (city.tiles.size < 12 || city.civInfo.wantsToFocusOn(Victory.Focus.Culture))
+            if (city.tiles.size < 12 || city.civ.wantsToFocusOn(Victory.Focus.Culture))
                 yieldStats.culture *= 2
 
-            if (city.civInfo.getHappiness() < 0 && !specialist) // since this doesn't get updated, may overshoot
+            if (city.civ.getHappiness() < 0 && !specialist) // since this doesn't get updated, may overshoot
                 yieldStats.happiness *= 2
 
-            if (city.civInfo.wantsToFocusOn(Victory.Focus.Science))
+            if (city.civ.wantsToFocusOn(Victory.Focus.Science))
                 yieldStats.science *= 2
         }
 
@@ -109,7 +109,7 @@ object Automation {
         if (city.isPuppet) return
         if ((city.cityConstructions.getCurrentConstruction() as? BaseUnit)?.isMilitary() == true)
             return // already training a military unit
-        val chosenUnitName = chooseMilitaryUnit(city, city.civInfo.gameInfo.ruleSet.units.values.asSequence())
+        val chosenUnitName = chooseMilitaryUnit(city, city.civ.gameInfo.ruleSet.units.values.asSequence())
         if (chosenUnitName != null)
             city.cityConstructions.currentConstructionFromQueue = chosenUnitName
     }
@@ -148,27 +148,27 @@ object Automation {
                     BFS(city.getCenterTile()) { it.isWater || it.isCityCenter() }
             findWaterConnectedCitiesAndEnemies.stepToEnd()
             removeShips = findWaterConnectedCitiesAndEnemies.getReachedTiles().none {
-                        (it.isCityCenter() && it.getOwner() != city.civInfo)
-                                || (it.militaryUnit != null && it.militaryUnit!!.civInfo != city.civInfo)
+                        (it.isCityCenter() && it.getOwner() != city.civ)
+                                || (it.militaryUnit != null && it.militaryUnit!!.civ != city.civ)
                     } // there is absolutely no reason for you to make water units on this body of water.
         }
 
         val militaryUnits = availableUnits
             .filter { it.isMilitary() }
             .filterNot { removeShips && it.isWaterUnit() }
-            .filter { allowSpendingResource(city.civInfo, it) }
+            .filter { allowSpendingResource(city.civ, it) }
             .filterNot {
                 // filter out carrier-type units that can't attack if we don't need them
                 (it.hasUnique(UniqueType.CarryAirUnits) && it.hasUnique(UniqueType.CannotAttack))
-                        && providesUnneededCarryingSlots(it, city.civInfo)
+                        && providesUnneededCarryingSlots(it, city.civ)
             }
             // Only now do we filter out the constructable units because that's a heavier check
             .filter { it.isBuildable(city.cityConstructions) }
             .toList()
 
         val chosenUnit: BaseUnit
-        if (!city.civInfo.isAtWar()
-                && city.civInfo.cities.any { it.getCenterTile().militaryUnit == null }
+        if (!city.civ.isAtWar()
+                && city.civ.cities.any { it.getCenterTile().militaryUnit == null }
                 && militaryUnits.any { it.isRanged() } // this is for city defence so get a ranged unit if we can
         ) {
             chosenUnit = militaryUnits
@@ -338,7 +338,7 @@ object Automation {
     /** Support [UniqueType.CreatesOneImprovement] unique - find best tile for placement automation */
     fun getTileForConstructionImprovement(city: City, improvement: TileImprovement): Tile? {
         return city.getTiles().filter {
-            it.improvementFunctions.canBuildImprovement(improvement, city.civInfo)
+            it.improvementFunctions.canBuildImprovement(improvement, city.civ)
         }.maxByOrNull {
             rankTileForCityWork(it, city, city.cityStats.currentCityStats)
         }
@@ -377,7 +377,7 @@ object Automation {
         var score = distance * 100
 
         // Resources are good: less points
-        if (tile.hasViewableResource(city.civInfo)) {
+        if (tile.hasViewableResource(city.civ)) {
             if (tile.tileResource.resourceType != ResourceType.Bonus) score -= 105
             else if (distance <= 3) score -= 104
         } else {
@@ -389,9 +389,9 @@ object Automation {
 
         // Improvements are good: less points
         if (tile.improvement != null &&
-            tile.improvementFunctions.getImprovementStats(
+            tile.stats.getImprovementStats(
                 tile.getTileImprovement()!!,
-                city.civInfo,
+                city.civ,
                 city,
                 localUniqueCache
             ).values.sum() > 0f
@@ -400,14 +400,14 @@ object Automation {
         if (tile.naturalWonder != null) score -= 105
 
         // Straight up take the sum of all yields
-        score -= tile.stats.getTileStats(city, city.civInfo, localUniqueCache).values.sum().toInt()
+        score -= tile.stats.getTileStats(city, city.civ, localUniqueCache).values.sum().toInt()
 
         // Check if we get access to better tiles from this tile
         var adjacentNaturalWonder = false
 
         for (adjacentTile in tile.neighbors.filter { it.getOwner() == null }) {
             val adjacentDistance = city.getCenterTile().aerialDistanceTo(adjacentTile)
-            if (adjacentTile.hasViewableResource(city.civInfo) &&
+            if (adjacentTile.hasViewableResource(city.civ) &&
                 (adjacentDistance < 3 ||
                     adjacentTile.tileResource.resourceType != ResourceType.Bonus
                 )

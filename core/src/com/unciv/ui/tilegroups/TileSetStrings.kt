@@ -132,7 +132,7 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, unitS
             else baseUnitIconLocation // no change
         }
 
-        val civInfo = unit.civInfo
+        val civInfo = unit.civ
         val style = civInfo.nation.getStyleOrCivName()
 
         var imageAttempter = ImageAttempter(baseUnitIconLocation)
@@ -154,8 +154,8 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, unitS
     fun getUnitImageLocation(unit: MapUnit):String {
         val imageKey = getString(
             unit.name, tag,
-            unit.civInfo.getEra().name, tag,
-            unit.civInfo.nation.getStyleOrCivName(), tag,
+            unit.civ.getEra().name, tag,
+            unit.civ.nation.getStyleOrCivName(), tag,
             unit.isEmbarked().toString()
         )
         // if in cache return that

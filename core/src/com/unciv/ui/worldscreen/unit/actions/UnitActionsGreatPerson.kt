@@ -20,10 +20,10 @@ object UnitActionsGreatPerson {
                 actionList += UnitAction(
                     UnitActionType.HurryResearch,
                     action = {
-                        unit.civInfo.tech.addScience(unit.civInfo.tech.getScienceFromGreatScientist())
+                        unit.civ.tech.addScience(unit.civ.tech.getScienceFromGreatScientist())
                         unit.consume()
-                    }.takeIf { unit.civInfo.tech.currentTechnologyName() != null
-                            && !unit.civInfo.tech.currentTechnology()!!.hasUnique(UniqueType.CannotBeHurried) }
+                    }.takeIf { unit.civ.tech.currentTechnologyName() != null
+                            && !unit.civ.tech.currentTechnology()!!.hasUnique(UniqueType.CannotBeHurried) }
                 )
             }
             UniqueType.StartGoldenAge -> {
@@ -31,9 +31,9 @@ object UnitActionsGreatPerson {
                 actionList += UnitAction(
                     UnitActionType.StartGoldenAge,
                     action = {
-                        unit.civInfo.goldenAges.enterGoldenAge(turnsToGoldenAge)
+                        unit.civ.goldenAges.enterGoldenAge(turnsToGoldenAge)
                         unit.consume()
-                    }.takeIf { unit.currentTile.getOwner() != null && unit.currentTile.getOwner() == unit.civInfo }
+                    }.takeIf { unit.currentTile.getOwner() != null && unit.currentTile.getOwner() == unit.civ }
                 )
             }
             UniqueType.CanSpeedupWonderConstruction -> {
@@ -47,7 +47,7 @@ object UnitActionsGreatPerson {
                     action = {
                         tile.getCity()!!.cityConstructions.apply {
                             //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
-                            addProductionPoints(((300 + 30 * tile.getCity()!!.population.population) * unit.civInfo.gameInfo.speed.productionCostModifier).toInt())
+                            addProductionPoints(((300 + 30 * tile.getCity()!!.population.population) * unit.civ.gameInfo.speed.productionCostModifier).toInt())
                             constructIfEnough()
                         }
 
@@ -68,7 +68,7 @@ object UnitActionsGreatPerson {
 
                 //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
                 val productionPointsToAdd = min(
-                    (300 + 30 * tile.getCity()!!.population.population) * unit.civInfo.gameInfo.speed.productionCostModifier,
+                    (300 + 30 * tile.getCity()!!.population.population) * unit.civ.gameInfo.speed.productionCostModifier,
                     cityConstructions.getRemainingWork(cityConstructions.currentConstructionFromQueue).toFloat() - 1
                 ).toInt()
                 if (productionPointsToAdd <= 0) continue
@@ -87,20 +87,20 @@ object UnitActionsGreatPerson {
                 )
             }
             UniqueType.CanTradeWithCityStateForGoldAndInfluence -> {
-                val canConductTradeMission = tile.owningCity?.civInfo?.isCityState() == true
-                        && tile.owningCity?.civInfo?.isAtWarWith(unit.civInfo) == false
+                val canConductTradeMission = tile.owningCity?.civ?.isCityState() == true
+                        && tile.owningCity?.civ?.isAtWarWith(unit.civ) == false
                 val influenceEarned = unique.params[0].toFloat()
                 actionList += UnitAction(
                     UnitActionType.ConductTradeMission,
                     action = {
                         // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
-                        var goldEarned = (350 + 50 * unit.civInfo.getEraNumber()) * unit.civInfo.gameInfo.speed.goldCostModifier
-                        for (goldUnique in unit.civInfo.getMatchingUniques(UniqueType.PercentGoldFromTradeMissions))
+                        var goldEarned = (350 + 50 * unit.civ.getEraNumber()) * unit.civ.gameInfo.speed.goldCostModifier
+                        for (goldUnique in unit.civ.getMatchingUniques(UniqueType.PercentGoldFromTradeMissions))
                             goldEarned *= goldUnique.params[0].toPercent()
-                        unit.civInfo.addGold(goldEarned.toInt())
-                        tile.owningCity!!.civInfo.getDiplomacyManager(unit.civInfo).addInfluence(influenceEarned)
-                        unit.civInfo.addNotification("Your trade mission to [${tile.owningCity!!.civInfo}] has earned you [${goldEarned}] gold and [$influenceEarned] influence!",
-                            NotificationCategory.General, tile.owningCity!!.civInfo.civName, NotificationIcon.Gold, NotificationIcon.Culture)
+                        unit.civ.addGold(goldEarned.toInt())
+                        tile.owningCity!!.civ.getDiplomacyManager(unit.civ).addInfluence(influenceEarned)
+                        unit.civ.addNotification("Your trade mission to [${tile.owningCity!!.civ}] has earned you [${goldEarned}] gold and [$influenceEarned] influence!",
+                            NotificationCategory.General, tile.owningCity!!.civ.civName, NotificationIcon.Gold, NotificationIcon.Culture)
                         unit.consume()
                     }.takeIf { canConductTradeMission }
                 )
