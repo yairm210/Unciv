@@ -1,23 +1,21 @@
 ## 4.4.9
 
-Resolved  - fixed crash switching to tileset immediately after downloading tileset mod
-
-Resolved  - fixed 5hex image issues
-
 By vegeta1k95:
-- Better World-Wrap 
-- Fix promotion screen buttons clickhandler 
-- Performance optimization: don't draw empty tile layers 
-- Fix city table selection 
+- Better World-Wrap
+- Performance optimization: don't draw empty tile layers
+- Fix promotion screen buttons clickhandler
+- Fix city table selection
 
 By OptimizedForDensity:
-- Performance Improvements to Construction Automation 
-- Refactor Construction Rejection Reasons 
+- Performance Improvements to Construction Automation
+- Refactor Construction Rejection Reasons
 
 By Gualdimar:
-- Select the next unit after closing the improvement screen 
-- Add Reset tutorials button 
-- CityRenamePopup 
+- Select next unit after closing the improvement screen
+- Add Reset tutorials button
+- City rename popup from world screen
+
+Fixed 5hex image issues
 
 ## 4.4.8
 
