@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.logic.map.HexMath
-import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.TileMap
 import com.unciv.ui.tilegroups.CityTileGroup
 import com.unciv.ui.tilegroups.TileGroup
@@ -17,6 +16,7 @@ import com.unciv.ui.tilegroups.layers.TileLayerOverlay
 import com.unciv.ui.tilegroups.layers.TileLayerTerrain
 import com.unciv.ui.tilegroups.layers.TileLayerUnitArt
 import com.unciv.ui.tilegroups.layers.TileLayerUnitFlag
+import com.unciv.ui.utils.ZoomableScrollPane
 import kotlin.math.max
 import kotlin.math.min
 
@@ -28,8 +28,9 @@ import kotlin.math.min
  * @param tileGroupsToUnwrap For these, coordinates will be unwrapped using [TileMap.getUnWrappedPosition]
  */
 class TileGroupMap<T: TileGroup>(
+    val mapHolder: ZoomableScrollPane,
     tileGroups: Iterable<T>,
-    worldWrap: Boolean = false,
+    val worldWrap: Boolean = false,
     tileGroupsToUnwrap: Set<T>? = null
 ): Group() {
     companion object {
@@ -56,15 +57,8 @@ class TileGroupMap<T: TileGroup>(
     private var topY = -Float.MAX_VALUE
     private var bottomX = Float.MAX_VALUE
     private var bottomY = Float.MAX_VALUE
-    private val mirrorTileGroups = HashMap<Tile, Pair<T, T>>()
 
     init {
-        if (worldWrap) {
-            for (tileGroup in tileGroups) {
-                @Suppress("UNCHECKED_CAST")  // T is constrained such that casting these TileGroup clones to T should be OK
-                mirrorTileGroups[tileGroup.tile] = Pair(tileGroup.clone() as T, tileGroup.clone() as T)
-            }
-        }
 
         for (tileGroup in tileGroups) {
             val positionalVector = if (tileGroupsToUnwrap?.contains(tileGroup) == true) {
@@ -99,20 +93,6 @@ class TileGroupMap<T: TileGroup>(
             group.moveBy(-bottomX, -bottomY)
         }
 
-        if (worldWrap) {
-            for (mirrorTiles in mirrorTileGroups.values){
-                val positionalVector = HexMath.hex2WorldCoords(mirrorTiles.first.tile.position)
-
-                mirrorTiles.first.setPosition(positionalVector.x * 0.8f * groupSize,
-                    positionalVector.y * 0.8f * groupSize)
-                mirrorTiles.first.moveBy(-bottomX - bottomX * 2, -bottomY )
-
-                mirrorTiles.second.setPosition(positionalVector.x * 0.8f * groupSize,
-                    positionalVector.y * 0.8f * groupSize)
-                mirrorTiles.second.moveBy(-bottomX + bottomX * 2, -bottomY)
-            }
-        }
-
         val baseLayers = ArrayList<TileLayerTerrain>()
         val featureLayers = ArrayList<TileLayerFeatures>()
         val borderLayers = ArrayList<TileLayerBorders>()
@@ -133,20 +113,8 @@ class TileGroupMap<T: TileGroup>(
             circleFogCrosshairLayers.add(group.layerOverlay.apply { setPosition(group.x,group.y) })
             unitLayers.add(group.layerUnitFlag.apply { setPosition(group.x,group.y) })
             cityButtonLayers.add(group.layerCityButton.apply { setPosition(group.x,group.y) })
-
-            if (worldWrap) {
-                for (mirrorTile in mirrorTileGroups[group.tile]!!.toList()) {
-                    baseLayers.add(mirrorTile.layerTerrain.apply { setPosition(mirrorTile.x,mirrorTile.y) })
-                    featureLayers.add(mirrorTile.layerFeatures.apply { setPosition(mirrorTile.x,mirrorTile.y) })
-                    borderLayers.add(mirrorTile.layerBorders.apply { setPosition(mirrorTile.x,mirrorTile.y) })
-                    miscLayers.add(mirrorTile.layerMisc.apply { setPosition(mirrorTile.x,mirrorTile.y) })
-                    pixelUnitLayers.add(mirrorTile.layerUnitArt.apply { setPosition(mirrorTile.x,mirrorTile.y) })
-                    circleFogCrosshairLayers.add(mirrorTile.layerOverlay.apply { setPosition(mirrorTile.x,mirrorTile.y) })
-                    unitLayers.add(mirrorTile.layerUnitFlag.apply { setPosition(mirrorTile.x,mirrorTile.y) })
-                    cityButtonLayers.add(mirrorTile.layerCityButton.apply { setPosition(mirrorTile.x,mirrorTile.y) })
-                }
-            }
         }
+
         for (group in baseLayers) addActor(group)
         for (group in featureLayers) addActor(group)
         for (group in borderLayers) addActor(group)
@@ -154,12 +122,6 @@ class TileGroupMap<T: TileGroup>(
         for (group in pixelUnitLayers) addActor(group)
         for (group in circleFogCrosshairLayers) addActor(group)
         for (group in tileGroups) addActor(group) // The above layers are for the visual layers, this is for the clickability of the tile
-        if (worldWrap) {
-            for (mirrorTiles in mirrorTileGroups.values) {
-                addActor(mirrorTiles.first)
-                addActor(mirrorTiles.second)
-            }
-        }
         for (group in unitLayers) addActor(group) // Aaand units above everything else.
         for (group in cityButtonLayers) addActor(group) // city buttons + clickability
 
@@ -183,15 +145,56 @@ class TileGroupMap<T: TileGroup>(
                 .scl(1f / trueGroupSize)
     }
 
-    fun getMirrorTiles(): HashMap<Tile, Pair<T, T>> = mirrorTileGroups
-
     override fun act(delta: Float) {
         if(shouldAct) {
             super.act(delta)
         }
     }
 
-    // For debugging purposes
-    override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
+    override fun draw(batch: Batch?, parentAlpha: Float) {
+
+        if (worldWrap) {
+
+            // Where is viewport's boundaries
+            val rightSide = mapHolder.scrollX + mapHolder.width/2f
+            val leftSide = mapHolder.scrollX - mapHolder.width/2f
+
+            // Have we looked beyond map?
+            val diffRight = rightSide - topX
+            val diffLeft = leftSide - bottomX
+
+            val beyondRight = diffRight >= 0f
+            val beyondLeft = diffLeft <= 0f
+
+            if (beyondRight || beyondLeft) {
+
+                // If we looked beyond - reposition needed tiles from the other side
+                // and update topX and bottomX accordingly.
+
+                var newBottomX = Float.MAX_VALUE
+                var newTopX = -Float.MAX_VALUE
+
+                children.forEach {
+                    if (beyondRight) {
+                        // Move from left to right
+                        if (it.x - bottomX <= diffRight)
+                            it.x += width
+                    } else if (beyondLeft) {
+                        // Move from right to left
+                        if (it.x + groupSize >= topX + diffLeft)
+                            it.x -= width
+                    }
+                    newBottomX = min(newBottomX, it.x)
+                    newTopX = max(newTopX, it.x + groupSize)
+                }
+
+                bottomX = newBottomX
+                topX = newTopX
+            }
+
+        }
+
+        super.draw(batch, parentAlpha)
+    }
 
 }

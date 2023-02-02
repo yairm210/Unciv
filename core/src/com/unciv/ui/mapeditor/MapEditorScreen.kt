@@ -196,15 +196,12 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen(), RecreateOnResize {
         highlightedTileGroups.clear()
     }
     fun highlightTile(tile: Tile, color: Color = Color.WHITE) {
-        for (group in mapHolder.tileGroups[tile] ?: return) {
-            group.layerOverlay.showHighlight(color)
-            highlightedTileGroups.add(group)
-        }
+        val group = mapHolder.tileGroups[tile] ?: return
+        group.layerOverlay.showHighlight(color)
+        highlightedTileGroups.add(group)
     }
     fun updateTile(tile: Tile) {
-        mapHolder.tileGroups[tile]!!.forEach {
-            it.update()
-        }
+        mapHolder.tileGroups[tile]!!.update()
     }
     fun updateAndHighlight(tile: Tile, color: Color = Color.WHITE) {
         updateTile(tile)

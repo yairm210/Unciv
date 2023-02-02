@@ -22,14 +22,12 @@ object BattleTableHelpers {
     ) {
         fun getMapActorsForCombatant(combatant: ICombatant):Sequence<Actor> =
                 sequence {
-                    val tilegroups = mapHolder.tileGroups[combatant.getTile()]!!
+                    val tileGroup = mapHolder.tileGroups[combatant.getTile()]!!
                     when {
-                        combatant.isCity() -> yieldAll(tilegroups.mapNotNull { it.layerMisc.improvementIcon })
+                        combatant.isCity() -> yield(tileGroup.layerMisc.improvementIcon!!)
                         else -> {
                             val slot = if (combatant.isCivilian()) 0 else 1
-                            for (tileGroup in tilegroups) {
-                                yieldAll((tileGroup.layerUnitArt.getChild(slot) as Group).children)
-                            }
+                            yieldAll((tileGroup.layerUnitArt.getChild(slot) as Group).children)
                         }
                     }
                 }
