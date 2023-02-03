@@ -35,7 +35,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     val uniqueBuildings = hashSetOf<Building>()
 
     fun setTransients(){
-        val ruleset = civInfo.gameInfo.ruleSet
+        val ruleset = civInfo.gameInfo.ruleset
         for (resource in ruleset.tileResources.values.asSequence().filter { it.resourceType == ResourceType.Strategic }.map { it.name }) {
             val applicableBuildings = ruleset.buildings.values.filter { it.requiresResource(resource) && civInfo.getEquivalentBuilding(it) == it }
             val applicableUnits = ruleset.units.values.filter { it.requiresResource(resource) && civInfo.getEquivalentUnit(it) == it }
@@ -274,7 +274,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         for (unique in civInfo.getMatchingUniques(UniqueType.ProvidesResources)) {
             if (unique.sourceObjectType == UniqueTarget.Building || unique.sourceObjectType == UniqueTarget.Wonder) continue // already calculated in city
             newDetailedCivResources.add(
-                civInfo.gameInfo.ruleSet.tileResources[unique.params[1]]!!,
+                civInfo.gameInfo.ruleset.tileResources[unique.params[1]]!!,
                 unique.sourceObjectType?.name ?: "",
                 unique.params[0].toInt()
             )
@@ -285,7 +285,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
 
         for (unit in civInfo.units.getCivUnits())
             newDetailedCivResources.subtractResourceRequirements(
-                unit.baseUnit.getResourceRequirements(), civInfo.gameInfo.ruleSet, "Units")
+                unit.baseUnit.getResourceRequirements(), civInfo.gameInfo.ruleset, "Units")
 
         // Check if anything has actually changed so we don't update stats for no reason - this uses List equality which means it checks the elements
         if (civInfo.detailedCivResources == newDetailedCivResources) return

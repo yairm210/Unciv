@@ -210,7 +210,7 @@ object GameStarter {
     }
 
     private fun addCivStats(gameInfo: GameInfo) {
-        val ruleSet = gameInfo.ruleSet
+        val ruleSet = gameInfo.ruleset
         val startingEra = gameInfo.gameParameters.startingEra
         val era = ruleSet.eras[startingEra]!!
         for (civInfo in gameInfo.civilizations.filter { !it.isBarbarian() }) {
@@ -321,7 +321,7 @@ object GameStarter {
 
     private fun addCivStartingUnits(gameInfo: GameInfo) {
 
-        val ruleSet = gameInfo.ruleSet
+        val ruleSet = gameInfo.ruleset
         val tileMap = gameInfo.tileMap
         val startingEra = gameInfo.gameParameters.startingEra
         var startingUnits: MutableList<String>

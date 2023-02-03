@@ -82,7 +82,7 @@ fun debugTab() = Table(BaseScreen.skin).apply {
     unlockTechsButton.onClick {
         if (curGameInfo == null)
             return@onClick
-        for (tech in curGameInfo.ruleSet.technologies.keys) {
+        for (tech in curGameInfo.ruleset.technologies.keys) {
             if (tech !in curGameInfo.getCurrentPlayerCivilization().tech.techsResearched) {
                 curGameInfo.getCurrentPlayerCivilization().tech.addTechnology(tech)
                 curGameInfo.getCurrentPlayerCivilization().popupAlerts.removeLastOrNull()
@@ -98,7 +98,7 @@ fun debugTab() = Table(BaseScreen.skin).apply {
         if (curGameInfo == null)
             return@onClick
         val ownedTiles = curGameInfo.tileMap.values.asSequence().filter { it.getOwner() == curGameInfo.getCurrentPlayerCivilization() }
-        val resourceTypes = curGameInfo.ruleSet.tileResources.values.asSequence().filter { it.resourceType == ResourceType.Strategic }
+        val resourceTypes = curGameInfo.ruleset.tileResources.values.asSequence().filter { it.resourceType == ResourceType.Strategic }
         for ((tile, resource) in ownedTiles zip resourceTypes) {
             tile.resource = resource.name
             tile.resourceAmount = 999

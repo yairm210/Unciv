@@ -464,7 +464,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> = sequence {
         val cityCenter = cityConstructions.city.getCenterTile()
         val civ = cityConstructions.city.civ
-        val ruleSet = civ.gameInfo.ruleSet
+        val ruleSet = civ.gameInfo.ruleset
 
         if (cityConstructions.isBuilt(name))
             yield(RejectionReasonType.AlreadyBuilt.toInstance())
@@ -546,7 +546,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
                 UniqueType.RequiresBuildingInAllCities -> {
                     val filter = unique.params[0]
-                    if (civ.gameInfo.ruleSet.buildings.containsKey(filter)
+                    if (civ.gameInfo.ruleset.buildings.containsKey(filter)
                             && civ.cities.any {
                                 !it.isPuppet && !it.cityConstructions.containsBuildingOrEquivalent(unique.params[0])
                             }

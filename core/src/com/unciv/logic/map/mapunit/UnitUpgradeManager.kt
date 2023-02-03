@@ -90,7 +90,7 @@ class UnitUpgradeManager(val unit:MapUnit) {
 
         var goldCostOfUpgrade = 0
 
-        val ruleset = unit.civ.gameInfo.ruleSet
+        val ruleset = unit.civ.gameInfo.ruleset
         val constants = ruleset.modOptions.constants.unitUpgradeCost
         // apply modifiers: Wonders (Pentagon), Policies (Professional Army). Cached outside loop despite
         // the UniqueType being allowed on a BaseUnit - we don't have a MapUnit in the loop.

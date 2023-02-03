@@ -43,7 +43,7 @@ class WorkerAutomation(
 ) {
     ///////////////////////////////////////// Cached data /////////////////////////////////////////
 
-    private val ruleSet = civInfo.gameInfo.ruleSet
+    private val ruleSet = civInfo.gameInfo.ruleset
 
     /** Caches road to build for connecting cities unless option is off or ruleset removed all roads */
     private val bestRoadAvailable: RoadStatus =

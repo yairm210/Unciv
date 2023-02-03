@@ -103,7 +103,7 @@ object ReligionAutomation {
 
     private fun buyMissionaryInAnyCity(civInfo: Civilization) {
         if (civInfo.religionManager.religionState < ReligionState.Religion) return
-        var missionaries = civInfo.gameInfo.ruleSet.units.values.filter { unit ->
+        var missionaries = civInfo.gameInfo.ruleset.units.values.filter { unit ->
             unit.getMatchingUniques(UniqueType.CanActionSeveralTimes).filter { it.params[0] == Constants.spreadReligion }.any()
         }
         missionaries = missionaries.map { civInfo.getEquivalentUnit(it) }
@@ -117,7 +117,7 @@ object ReligionAutomation {
             ?: return
 
 
-        val hasUniqueToTakeCivReligion = civInfo.gameInfo.ruleSet.units[missionaryConstruction.name]!!.hasUnique(UniqueType.TakeReligionOverBirthCity)
+        val hasUniqueToTakeCivReligion = civInfo.gameInfo.ruleset.units[missionaryConstruction.name]!!.hasUnique(UniqueType.TakeReligionOverBirthCity)
 
         val validCitiesToBuy = civInfo.cities.filter {
             (hasUniqueToTakeCivReligion || it.religion.getMajorityReligion() == civInfo.religionManager.religion)
@@ -159,7 +159,7 @@ object ReligionAutomation {
 
     private fun buyInquisitorNear(civInfo: Civilization, city: City) {
         if (civInfo.religionManager.religionState < ReligionState.Religion) return
-        var inquisitors = civInfo.gameInfo.ruleSet.units.values.filter {
+        var inquisitors = civInfo.gameInfo.ruleset.units.values.filter {
             it.getMapUnit(civInfo).canDoReligiousAction(Constants.removeHeresy)
             || it.hasUnique(UniqueType.PreventSpreadingReligion)
         }
@@ -175,7 +175,7 @@ object ReligionAutomation {
             ?: return
 
 
-        val hasUniqueToTakeCivReligion = civInfo.gameInfo.ruleSet.units[inquisitorConstruction.name]!!.hasUnique(UniqueType.TakeReligionOverBirthCity)
+        val hasUniqueToTakeCivReligion = civInfo.gameInfo.ruleset.units[inquisitorConstruction.name]!!.hasUnique(UniqueType.TakeReligionOverBirthCity)
 
         val validCitiesToBuy = civInfo.cities.filter {
             (hasUniqueToTakeCivReligion || it.religion.getMajorityReligion() == civInfo.religionManager.religion)
@@ -245,7 +245,7 @@ object ReligionAutomation {
 
     private fun beliefBonusForCity(civInfo: Civilization, belief: Belief, city: City): Float {
         var score = 0f
-        val ruleSet = civInfo.gameInfo.ruleSet
+        val ruleSet = civInfo.gameInfo.ruleset
         for (unique in belief.uniqueObjects) {
             val modifier = 0.5f.pow(unique.conditionals.size)
             // Multiply by 3/10 if has an obsoleted era

@@ -30,7 +30,7 @@ class RuinsManager : IsPartOfGameInfoSerialization {
 
     fun setTransients(civInfo: Civilization) {
         this.civInfo = civInfo
-        validRewards = civInfo.gameInfo.ruleSet.ruinRewards.values.toList()
+        validRewards = civInfo.gameInfo.ruleset.ruinRewards.values.toList()
     }
 
     fun selectNextRuinsReward(triggeringUnit: MapUnit) {

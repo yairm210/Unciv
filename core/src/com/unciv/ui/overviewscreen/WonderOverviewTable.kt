@@ -22,7 +22,7 @@ class WonderOverviewTab(
     viewingPlayer: Civilization,
     overviewScreen: EmpireOverviewScreen
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
-    val ruleSet = gameInfo.ruleSet
+    val ruleSet = gameInfo.ruleset
 
     val wonderInfo = WonderInfo()
     private val wonders: Array<WonderInfo.WonderInfo> = wonderInfo.collectInfo(viewingPlayer)
@@ -92,7 +92,7 @@ class WonderOverviewTab(
 
 class WonderInfo {
     val gameInfo = UncivGame.Current.gameInfo!!
-    val ruleSet = gameInfo.ruleSet
+    val ruleSet = gameInfo.ruleset
     private val hideReligionItems = !gameInfo.isReligionEnabled()
     private val startingObsolete = ruleSet.eras[gameInfo.gameParameters.startingEra]!!.startingObsoleteWonders
 

@@ -30,7 +30,7 @@ abstract class ReligionPickerScreenCommon(
 ) : PickerScreen(disableScroll) {
 
     protected val gameInfo = choosingCiv.gameInfo
-    protected val ruleset = gameInfo.ruleSet
+    protected val ruleset = gameInfo.ruleset
 
     private val descriptionTable = Table(skin)
     private val descriptionScroll = descriptionLabel.parent as ScrollPane

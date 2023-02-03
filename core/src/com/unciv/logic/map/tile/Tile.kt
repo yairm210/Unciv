@@ -566,7 +566,7 @@ open class Tile : IsPartOfGameInfoSerialization {
     }
 
     fun canBeSettled(): Boolean {
-        val modConstants = tileMap.gameInfo.ruleSet.modOptions.constants
+        val modConstants = tileMap.gameInfo.ruleset.modOptions.constants
         if (isWater || isImpassible())
             return false
         if (getTilesInDistance(modConstants.minimalCityDistanceOnDifferentContinents)

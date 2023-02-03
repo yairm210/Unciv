@@ -37,7 +37,7 @@ class UnitMovementAlgorithmsTests {
         civInfo.tech.embarkedUnitsCanEnterOcean = true
         civInfo.tech.unitsCanEmbark = true
         civInfo.gameInfo = GameInfo()
-        civInfo.gameInfo.ruleSet = ruleSet
+        civInfo.gameInfo.ruleset = ruleSet
         civInfo.gameInfo.difficultyObject = Difficulty()
         civInfo.gameInfo.speed = ruleSet.speeds[Speed.DEFAULTFORSIMULATION]!!
         civInfo.nation = Nation().apply { name = "My nation" }

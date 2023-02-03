@@ -22,7 +22,7 @@ class CapitalConnectionsFinder(private val civInfo: Civilization) {
     private val harborFromRoad = "$harbor-$road"
     private val harborFromRailroad = "$harbor-$railroad"
 
-    private val ruleset = civInfo.gameInfo.ruleSet
+    private val ruleset = civInfo.gameInfo.ruleset
     private val roadIsResearched = ruleset.tileImprovements[road].let {
         it != null && (it.techRequired==null || civInfo.tech.isResearched(it.techRequired!!)) }
 

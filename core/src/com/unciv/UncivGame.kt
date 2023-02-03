@@ -236,7 +236,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
                 || prevGameInfo.gameParameters.baseRuleset != newGameInfo.gameParameters.baseRuleset
                 || prevGameInfo.gameParameters.mods != newGameInfo.gameParameters.mods) {
             withGLContext {
-                ImageGetter.setNewRuleset(newGameInfo.ruleSet)
+                ImageGetter.setNewRuleset(newGameInfo.ruleset)
             }
             val fullModList = newGameInfo.gameParameters.getModsAndBaseRuleset()
             musicController.setModList(fullModList)
@@ -332,7 +332,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         val worldScreen= screenStack.last() as WorldScreen
 
         // Re-initialize translations, images etc. that may have been 'lost' when we were playing around in NewGameScreen
-        val ruleset = worldScreen.gameInfo.ruleSet
+        val ruleset = worldScreen.gameInfo.ruleset
         translations.translationActiveMods = ruleset.mods
         ImageGetter.setNewRuleset(ruleset)
 

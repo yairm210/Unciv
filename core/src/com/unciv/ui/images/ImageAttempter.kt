@@ -60,7 +60,7 @@ class ImageAttempter<out T: Any>(val scope: T) {
         return tryImages(
             (civInfo.getEraNumber() downTo 0).asSequence().map {
                 {
-                    val era = civInfo.gameInfo.ruleSet.eras.keys.elementAt(it)
+                    val era = civInfo.gameInfo.ruleset.eras.keys.elementAt(it)
                     if (style != null)
                         tileSetStrings.getString(locationToCheck, tileSetStrings.tag, style, tileSetStrings.tag, era)
                     else

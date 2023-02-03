@@ -41,7 +41,7 @@ class StatsOverviewTab(
         scoreTable.defaults().pad(5f)
 
         goldAndSliderTable.add(goldTable).row()
-        if (gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.convertGoldToScience))
+        if (gameInfo.ruleset.modOptions.uniques.contains(ModOptionsConstants.convertGoldToScience))
             goldAndSliderTable.addGoldSlider()
 
         update()

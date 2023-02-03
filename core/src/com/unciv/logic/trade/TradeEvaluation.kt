@@ -118,9 +118,9 @@ class TradeEvaluation {
             }
 
             TradeType.Technology -> // Currently unused
-                return (sqrt(civInfo.gameInfo.ruleSet.technologies[offer.name]!!.cost.toDouble())
+                return (sqrt(civInfo.gameInfo.ruleset.technologies[offer.name]!!.cost.toDouble())
                         * civInfo.gameInfo.speed.scienceCostModifier).toInt() * 20
-            TradeType.Introduction -> return introductionValue(civInfo.gameInfo.ruleSet)
+            TradeType.Introduction -> return introductionValue(civInfo.gameInfo.ruleset)
             TradeType.WarDeclaration -> {
                 val civToDeclareWarOn = civInfo.gameInfo.getCivilization(offer.name)
                 val threatToThem = Automation.threatAssessment(civInfo, civToDeclareWarOn)
@@ -207,7 +207,7 @@ class TradeEvaluation {
 
                 if (!civInfo.isAtWar()) return 50 * offer.amount
 
-                val canUseForUnits = civInfo.gameInfo.ruleSet.units.values
+                val canUseForUnits = civInfo.gameInfo.ruleset.units.values
                     .any { it.getResourceRequirements().containsKey(offer.name)
                             && it.isBuildable(civInfo) }
                 if (!canUseForUnits) return 50 * offer.amount
@@ -230,8 +230,8 @@ class TradeEvaluation {
                 }
                 return totalCost
             }
-            TradeType.Technology -> return sqrt(civInfo.gameInfo.ruleSet.technologies[offer.name]!!.cost.toDouble()).toInt() * 20
-            TradeType.Introduction -> return introductionValue(civInfo.gameInfo.ruleSet)
+            TradeType.Technology -> return sqrt(civInfo.gameInfo.ruleset.technologies[offer.name]!!.cost.toDouble()).toInt() * 20
+            TradeType.Introduction -> return introductionValue(civInfo.gameInfo.ruleset)
             TradeType.WarDeclaration -> {
                 val civToDeclareWarOn = civInfo.gameInfo.getCivilization(offer.name)
 

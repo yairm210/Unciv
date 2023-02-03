@@ -31,7 +31,7 @@ class TurnManager(val civInfo: Civilization) {
         civInfo.updateStatsForNextTurn() // for things that change when turn passes e.g. golden age, city state influence
 
         // Do this after updateStatsForNextTurn but before cities.startTurn
-        if (civInfo.playerType == PlayerType.AI && civInfo.gameInfo.ruleSet.modOptions.uniques.contains(
+        if (civInfo.playerType == PlayerType.AI && civInfo.gameInfo.ruleset.modOptions.uniques.contains(
                     ModOptionsConstants.convertGoldToScience))
             NextTurnAutomation.automateGoldToSciencePercentage(civInfo)
 
@@ -39,7 +39,7 @@ class TurnManager(val civInfo: Civilization) {
         // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
         if (civInfo.cities.isNotEmpty()) { //if no city available, addGreatPerson will throw exception
             val greatPerson = civInfo.greatPeople.getNewGreatPerson()
-            if (greatPerson != null && civInfo.gameInfo.ruleSet.units.containsKey(greatPerson))
+            if (greatPerson != null && civInfo.gameInfo.ruleset.units.containsKey(greatPerson))
                 civInfo.units.addUnit(greatPerson)
             civInfo.religionManager.startTurn()
             if (civInfo.isLongCountActive())
@@ -162,7 +162,7 @@ class TurnManager(val civInfo: Civilization) {
         val rebelCount = 1 + random.nextInt(100 + 20 * (civInfo.cities.size - 1)) / 100
         val spawnCity = civInfo.cities.maxByOrNull { random.nextInt(it.population.population + 10) } ?: return
         val spawnTile = spawnCity.getTiles().maxByOrNull { rateTileForRevoltSpawn(it) } ?: return
-        val unitToSpawn = civInfo.gameInfo.ruleSet.units.values.asSequence().filter {
+        val unitToSpawn = civInfo.gameInfo.ruleset.units.values.asSequence().filter {
             it.uniqueTo == null && it.isMelee() && it.isLandUnit()
                     && !it.hasUnique(UniqueType.CannotAttack) && it.isBuildable(civInfo)
         }.maxByOrNull {
@@ -243,7 +243,7 @@ class TurnManager(val civInfo: Civilization) {
 
         civInfo.addGold( nextTurnStats.gold.toInt() )
 
-        if (civInfo.cities.isNotEmpty() && civInfo.gameInfo.ruleSet.technologies.isNotEmpty())
+        if (civInfo.cities.isNotEmpty() && civInfo.gameInfo.ruleset.technologies.isNotEmpty())
             civInfo.tech.endTurn(nextTurnStats.science.toInt())
 
         civInfo.religionManager.endTurn(nextTurnStats.faith.toInt())

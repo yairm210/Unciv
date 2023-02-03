@@ -331,7 +331,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     fun resourcesFromTrade(): ResourceSupplyList {
         val newResourceSupplyList = ResourceSupplyList()
-        val resourcesMap = civInfo.gameInfo.ruleSet.tileResources
+        val resourcesMap = civInfo.gameInfo.ruleset.tileResources
         val isResourceFilter: (TradeOffer) -> Boolean = {
             (it.type == TradeType.Strategic_Resource || it.type == TradeType.Luxury_Resource)
                     && resourcesMap.containsKey(it.name)
@@ -377,7 +377,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
             for (offer in trade.ourOffers) {
                 if (offer.type in listOf(TradeType.Luxury_Resource, TradeType.Strategic_Resource)
-                    && (offer.name in negativeCivResources || !civInfo.gameInfo.ruleSet.tileResources.containsKey(offer.name))
+                    && (offer.name in negativeCivResources || !civInfo.gameInfo.ruleset.tileResources.containsKey(offer.name))
                 ) {
 
                     trades.remove(trade)

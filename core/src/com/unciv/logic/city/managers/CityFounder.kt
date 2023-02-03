@@ -55,7 +55,7 @@ class CityFounder {
         tile.changeImprovement(null)
         tile.improvementInProgress = null
 
-        val ruleset = civInfo.gameInfo.ruleSet
+        val ruleset = civInfo.gameInfo.ruleset
         city.workedTiles = hashSetOf() //reassign 1st working tile
 
         city.population.setPopulation(ruleset.eras[startingEra]!!.settlerPopulation)
@@ -179,7 +179,7 @@ class CityFounder {
         // As per fandom wiki, once the names from the other nations in the game are exhausted,
         // names are taken from the rest of the major nations in the rule set
         val absentMajorNations: Sequence<Nation> =
-                foundingCiv.gameInfo.ruleSet.nations.values.asSequence().filter { nation ->
+                foundingCiv.gameInfo.ruleset.nations.values.asSequence().filter { nation ->
                     nation.isMajorCiv() && nation !in aliveMajorNations
                 }
         newCityNames =
@@ -195,7 +195,7 @@ class CityFounder {
 
 
     private fun addStartingBuildings(city: City, civInfo: Civilization, startingEra: String) {
-        val ruleset = civInfo.gameInfo.ruleSet
+        val ruleset = civInfo.gameInfo.ruleset
         if (civInfo.cities.size == 1) city.cityConstructions.addBuilding(city.capitalCityIndicator())
 
         // Add buildings and pop we get from starting in this era

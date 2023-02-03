@@ -185,7 +185,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         if (assignedQuests.count { it.isGlobal() } >= GLOBAL_QUEST_MAX_ACTIVE)
             return
 
-        val globalQuests = civInfo.gameInfo.ruleSet.quests.values.filter { it.isGlobal() }
+        val globalQuests = civInfo.gameInfo.ruleset.quests.values.filter { it.isGlobal() }
         val majorCivs = civInfo.getKnownCivs().filter { it.isMajorCiv() && !it.isAtWarWith(civInfo) }
 
         val assignableQuests = ArrayList<Quest>()
@@ -215,7 +215,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
             if (assignedQuests.count { it.assignee == challenger.civName && it.isIndividual() } >= INDIVIDUAL_QUEST_MAX_ACTIVE)
                 return
 
-            val assignableQuests = civInfo.gameInfo.ruleSet.quests.values.filter { it.isIndividual() && isQuestValid(it, challenger) }
+            val assignableQuests = civInfo.gameInfo.ruleset.quests.values.filter { it.isIndividual() && isQuestValid(it, challenger) }
             val weights = assignableQuests.map { getQuestWeight(it.name) }
 
             if (assignableQuests.isNotEmpty()) {
@@ -406,9 +406,9 @@ class QuestManager : IsPartOfGameInfoSerialization {
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
         return when (assignedQuest.questName) {
             QuestName.Route.value -> assignee.isCapitalConnectedToCity(civInfo.getCapital()!!)
-            QuestName.ConnectResource.value -> assignee.detailedCivResources.map { it.resource }.contains(civInfo.gameInfo.ruleSet.tileResources[assignedQuest.data1])
+            QuestName.ConnectResource.value -> assignee.detailedCivResources.map { it.resource }.contains(civInfo.gameInfo.ruleset.tileResources[assignedQuest.data1])
             QuestName.ConstructWonder.value -> assignee.cities.any { it.cityConstructions.isBuilt(assignedQuest.data1) }
-            QuestName.GreatPerson.value -> assignee.units.getCivGreatPeople().any { it.baseUnit.getReplacedUnit(civInfo.gameInfo.ruleSet).name == assignedQuest.data1 }
+            QuestName.GreatPerson.value -> assignee.units.getCivGreatPeople().any { it.baseUnit.getReplacedUnit(civInfo.gameInfo.ruleset).name == assignedQuest.data1 }
             QuestName.FindPlayer.value -> assignee.hasMetCivTerritory(civInfo.gameInfo.getCivilization(assignedQuest.data1))
             QuestName.FindNaturalWonder.value -> assignee.naturalWonders.contains(assignedQuest.data1)
             QuestName.PledgeToProtect.value -> assignee in civInfo.cityStateFunctions.getProtectorCivs()
@@ -434,7 +434,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
 
     /** Increments [assignedQuest.assignee][AssignedQuest.assignee] influence on [civInfo] and adds a [Notification] */
     private fun giveReward(assignedQuest: AssignedQuest) {
-        val rewardInfluence = civInfo.gameInfo.ruleSet.quests[assignedQuest.questName]!!.influence
+        val rewardInfluence = civInfo.gameInfo.ruleset.quests[assignedQuest.questName]!!.influence
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
 
         civInfo.getDiplomacyManager(assignedQuest.assignee).addInfluence(rewardInfluence)
@@ -660,7 +660,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
      */
     private fun getQuestWeight(questName: String): Float {
         var weight = 1f
-        val quest = civInfo.gameInfo.ruleSet.quests[questName] ?: return 0f
+        val quest = civInfo.gameInfo.ruleset.quests[questName] ?: return 0f
 
         val personalityWeight = quest.weightForCityStateType[civInfo.cityStatePersonality.name]
         if (personalityWeight != null) weight *= personalityWeight
@@ -696,7 +696,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         val ownedByMajorResources = challenger.detailedCivResources.map { it.resource }
 
         val resourcesOnMap = civInfo.gameInfo.tileMap.values.asSequence().mapNotNull { it.resource }.distinct()
-        val viewableResourcesForChallenger = resourcesOnMap.map { civInfo.gameInfo.ruleSet.tileResources[it]!! }
+        val viewableResourcesForChallenger = resourcesOnMap.map { civInfo.gameInfo.ruleset.tileResources[it]!! }
                 .filter { it.revealedBy == null || challenger.tech.isResearched(it.revealedBy!!) }
 
         val notOwnedResources = viewableResourcesForChallenger.filter {
@@ -712,8 +712,8 @@ class QuestManager : IsPartOfGameInfoSerialization {
     }
 
     private fun getWonderToBuildForQuest(challenger: Civilization): Building? {
-        val startingEra = civInfo.gameInfo.ruleSet.eras[civInfo.gameInfo.gameParameters.startingEra]!!
-        val wonders = civInfo.gameInfo.ruleSet.buildings.values
+        val startingEra = civInfo.gameInfo.ruleset.eras[civInfo.gameInfo.gameParameters.startingEra]!!
+        val wonders = civInfo.gameInfo.ruleset.buildings.values
                 .filter { building ->
                             // Buildable wonder
                             building.isWonder
@@ -751,7 +751,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
      * Returns a Great Person [BaseUnit] that is not owned by both the [challenger] and the [civInfo]
      */
     private fun getGreatPersonForQuest(challenger: Civilization): BaseUnit? {
-        val ruleSet = civInfo.gameInfo.ruleSet
+        val ruleSet = civInfo.gameInfo.ruleset
 
         val challengerGreatPeople = challenger.units.getCivGreatPeople().map { it.baseUnit.getReplacedUnit(ruleSet) }
         val cityStateGreatPeople = civInfo.units.getCivGreatPeople().map { it.baseUnit.getReplacedUnit(ruleSet) }
@@ -821,16 +821,16 @@ class AssignedQuest(val questName: String = "",
     lateinit var gameInfo: GameInfo
 
     fun isIndividual(): Boolean = !isGlobal()
-    fun isGlobal(): Boolean = gameInfo.ruleSet.quests[questName]!!.isGlobal()
+    fun isGlobal(): Boolean = gameInfo.ruleset.quests[questName]!!.isGlobal()
     @Suppress("MemberVisibilityCanBePrivate")
-    fun doesExpire(): Boolean = gameInfo.ruleSet.quests[questName]!!.duration > 0
+    fun doesExpire(): Boolean = gameInfo.ruleset.quests[questName]!!.duration > 0
     fun isExpired(): Boolean = doesExpire() && getRemainingTurns() == 0
     @Suppress("MemberVisibilityCanBePrivate")
-    fun getDuration(): Int = (gameInfo.speed.modifier * gameInfo.ruleSet.quests[questName]!!.duration).toInt()
+    fun getDuration(): Int = (gameInfo.speed.modifier * gameInfo.ruleset.quests[questName]!!.duration).toInt()
     fun getRemainingTurns(): Int = max(0, (assignedOnTurn + getDuration()) - gameInfo.turns)
 
     fun getDescription(): String {
-        val quest = gameInfo.ruleSet.quests[questName]!!
+        val quest = gameInfo.ruleset.quests[questName]!!
         return quest.description.fillPlaceholders(data1)
     }
 

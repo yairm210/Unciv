@@ -483,7 +483,7 @@ object Battle {
     private fun addXp(thisCombatant: ICombatant, amount: Int, otherCombatant: ICombatant) {
         var baseXP = amount
         if (thisCombatant !is MapUnitCombatant) return
-        val modConstants = thisCombatant.unit.civ.gameInfo.ruleSet.modOptions.constants
+        val modConstants = thisCombatant.unit.civ.gameInfo.ruleset.modOptions.constants
         if (thisCombatant.unit.promotions.totalXpProduced() >= modConstants.maxXPfromBarbarians
                 && otherCombatant.getCivInfo().isBarbarian())
             return
@@ -507,7 +507,7 @@ object Battle {
             for (unique in thisCombatant.getMatchingUniques(UniqueType.GreatPersonEarnedFaster, stateForConditionals, true)) {
                 val unitName = unique.params[0]
                 // From the unique we know this unit exists
-                val unit = thisCombatant.getCivInfo().gameInfo.ruleSet.units[unitName]!!
+                val unit = thisCombatant.getCivInfo().gameInfo.ruleset.units[unitName]!!
                 if (unit.uniques.contains("Great Person - [War]"))
                     greatGeneralPointsModifier += unique.params[1].toFloat() / 100
             }

@@ -48,7 +48,7 @@ class TestGame {
         // Create a new ruleset we can easily edit, and set the important variables of gameInfo
         RulesetCache.loadRulesets(noMods = true)
         ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
-        gameInfo.ruleSet = ruleset
+        gameInfo.ruleset = ruleset
         gameInfo.difficultyObject = ruleset.difficulties["Prince"]!!
         gameInfo.speed = ruleset.speeds[Speed.DEFAULTFORSIMULATION]!!
         gameInfo.currentPlayerCiv = Civilization()
@@ -188,7 +188,7 @@ class TestGame {
     fun createBaseUnit(unitType: String = createUnitType().name, vararg uniques: String) =
         createRulesetObject(ruleset.units, *uniques) {
             val baseUnit = BaseUnit()
-            baseUnit.ruleset = gameInfo.ruleSet
+            baseUnit.ruleset = gameInfo.ruleset
             baseUnit.unitType = unitType
             baseUnit
         }

@@ -303,9 +303,9 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getDifficulty(): Difficulty {
         if (isHuman()) return gameInfo.getDifficulty()
         // TODO We should be able to mark a difficulty as 'default AI difficulty' somehow
-        val chieftainDifficulty = gameInfo.ruleSet.difficulties["Chieftain"]
+        val chieftainDifficulty = gameInfo.ruleset.difficulties["Chieftain"]
         if (chieftainDifficulty != null) return chieftainDifficulty
-        return gameInfo.ruleSet.difficulties.values.first()
+        return gameInfo.ruleset.difficulties.values.first()
     }
 
     fun getDiplomacyManager(civInfo: Civilization) = getDiplomacyManager(civInfo.civName)
@@ -334,7 +334,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun isAlive(): Boolean = !isDefeated()
 
     @delegate:Transient
-    val cityStateType: CityStateType by lazy { gameInfo.ruleSet.cityStateTypes[nation.cityStateType!!]!! }
+    val cityStateType: CityStateType by lazy { gameInfo.ruleset.cityStateTypes[nation.cityStateType!!]!! }
     var cityStatePersonality: CityStatePersonality = CityStatePersonality.Neutral
     var cityStateResource: String? = null
     var cityStateUniqueUnit: String? = null // Unique unit for militaristic city state. Might still be null if there are no appropriate units
@@ -351,7 +351,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         if (victoryTypes.size == 1)
             return victoryTypes.first() // That is the most relevant one
         val victoryType = nation.preferredVictoryType
-        return if (victoryType in gameInfo.ruleSet.victories) victoryType
+        return if (victoryType in gameInfo.ruleset.victories) victoryType
                else Constants.neutralVictoryType
     }
 
@@ -359,7 +359,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getPreferredVictoryTypeObject(): Victory? {
         val preferredVictoryType = getPreferredVictoryType()
         return if (preferredVictoryType == Constants.neutralVictoryType) null
-               else gameInfo.ruleSet.victories[getPreferredVictoryType()]!!
+               else gameInfo.ruleset.victories[getPreferredVictoryType()]!!
     }
 
     fun wantsToFocusOn(focus: Victory.Focus): Boolean {
@@ -403,8 +403,8 @@ class Civilization : IsPartOfGameInfoSerialization {
      * Returns a dictionary of ALL resource names, and the amount that the civ has of each
      */
     fun getCivResourcesByName(): HashMap<String, Int> {
-        val hashMap = HashMap<String, Int>(gameInfo.ruleSet.tileResources.size)
-        for (resource in gameInfo.ruleSet.tileResources.keys) hashMap[resource] = 0
+        val hashMap = HashMap<String, Int>(gameInfo.ruleset.tileResources.size)
+        for (resource in gameInfo.ruleset.tileResources.keys) hashMap[resource] = 0
         for (entry in getCivResources())
             hashMap[entry.resource.name] = entry.amount
         return hashMap
@@ -450,7 +450,7 @@ class Civilization : IsPartOfGameInfoSerialization {
             .flatMap { it.resource.getMatchingUniques(uniqueType, stateForConditionals) }
         )
 
-        yieldAll(gameInfo.ruleSet.globalUniques.getMatchingUniques(uniqueType, stateForConditionals))
+        yieldAll(gameInfo.ruleset.globalUniques.getMatchingUniques(uniqueType, stateForConditionals))
     }
 
     fun getTriggeredUniques(trigger: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(this)) : Sequence<Unique> = sequence{
@@ -461,7 +461,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         yieldAll(policies.policyUniques.getTriggeredUniques(trigger, stateForConditionals))
         yieldAll(tech.techUniques.getTriggeredUniques(trigger, stateForConditionals))
         yieldAll(getEra().uniqueMap.getTriggeredUniques (trigger, stateForConditionals))
-        yieldAll(gameInfo.ruleSet.globalUniques.uniqueMap.getTriggeredUniques(trigger, stateForConditionals))
+        yieldAll(gameInfo.ruleset.globalUniques.uniqueMap.getTriggeredUniques(trigger, stateForConditionals))
     }
 
 
@@ -471,7 +471,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         return tech.currentTechnology() == null && cities.isNotEmpty()
     }
 
-    fun getEquivalentBuilding(buildingName: String) = getEquivalentBuilding(gameInfo.ruleSet.buildings[buildingName]!!)
+    fun getEquivalentBuilding(buildingName: String) = getEquivalentBuilding(gameInfo.ruleset.buildings[buildingName]!!)
     fun getEquivalentBuilding(baseBuilding: Building): Building {
         if (baseBuilding.replaces != null)
             return getEquivalentBuilding(baseBuilding.replaces!!)
@@ -483,7 +483,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
 
     fun getEquivalentUnit(baseUnitName: String): BaseUnit {
-        val baseUnit = gameInfo.ruleSet.units[baseUnitName]
+        val baseUnit = gameInfo.ruleset.units[baseUnitName]
             ?: throw UncivShowableException("Unit $baseUnitName doesn't seem to exist!")
         return getEquivalentUnit(baseUnit)
     }
@@ -597,7 +597,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         scoreBreakdown["Tiles"] = cities.sumOf { city -> city.getTiles().filter { !it.isWater}.count() } * 1 * mapSizeModifier
         scoreBreakdown["Wonders"] = 40 * cities
             .sumOf { city -> city.cityConstructions.builtBuildings
-                .filter { gameInfo.ruleSet.buildings[it]!!.isWonder }.size
+                .filter { gameInfo.ruleset.buildings[it]!!.isWonder }.size
             }.toDouble()
         scoreBreakdown["Technologies"] = tech.getNumberOfTechsResearched() * 4.toDouble()
         scoreBreakdown["Future Tech"] = tech.repeatingTechsResearched * 10.toDouble()
@@ -616,7 +616,7 @@ class Civilization : IsPartOfGameInfoSerialization {
      *  And if the civs don't yet know who they are then they don't know if they're barbarians =\
      *  */
     fun setNationTransient() {
-        nation = gameInfo.ruleSet.nations[civName]
+        nation = gameInfo.ruleset.nations[civName]
                 ?: throw UncivShowableException("Nation $civName is not found!")
     }
 
@@ -650,7 +650,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         passThroughImpassableUnlocked = passableImpassables.isNotEmpty()
         // Cache whether this civ gets nonstandard terrain damage for performance reasons.
         nonStandardTerrainDamage = getMatchingUniques(UniqueType.DamagesContainingUnits)
-            .any { gameInfo.ruleSet.terrains[it.params[0]]!!.damagePerTurn != it.params[1].toInt() }
+            .any { gameInfo.ruleset.terrains[it.params[0]]!!.damagePerTurn != it.params[1].toInt() }
 
         hasLongCountDisplayUnique = hasUnique(UniqueType.MayanCalendarDisplay)
 

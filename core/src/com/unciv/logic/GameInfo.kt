@@ -126,7 +126,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var isUpToDate = false
 
     @Transient
-    lateinit var ruleSet: Ruleset
+    lateinit var ruleset: Ruleset
 
     /** Simulate until any player wins,
      *  or turns exceeds indicated number
@@ -218,8 +218,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     }
 
     fun isReligionEnabled(): Boolean {
-        val religionDisabledByRuleset = (ruleSet.eras[gameParameters.startingEra]!!.hasUnique(UniqueType.DisablesReligion)
-                || ruleSet.modOptions.uniques.contains(ModOptionsConstants.disableReligion))
+        val religionDisabledByRuleset = (ruleset.eras[gameParameters.startingEra]!!.hasUnique(UniqueType.DisablesReligion)
+                || ruleset.modOptions.uniques.contains(ModOptionsConstants.disableReligion))
         return !religionDisabledByRuleset
     }
 
@@ -229,7 +229,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
     private fun getEquivalentTurn(): Int {
         val totalTurns = speed.numTotalTurns()
-        val startPercent = ruleSet.eras[gameParameters.startingEra]!!.startPercent
+        val startPercent = ruleset.eras[gameParameters.startingEra]!!.startPercent
         return turns + (totalTurns * startPercent / 100)
     }
 
@@ -368,7 +368,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         )
     }
 
-    fun getEnabledVictories() = ruleSet.victories.filter { !it.value.hiddenInVictoryScreen && gameParameters.victoryTypes.contains(it.key) }
+    fun getEnabledVictories() = ruleset.victories.filter { !it.value.hiddenInVictoryScreen && gameParameters.victoryTypes.contains(it.key) }
 
     fun processDiplomaticVictory() {
         if (diplomaticVictoryVotesProcessed) return
@@ -418,7 +418,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         data class CityTileAndDistance(val city: City, val tile: Tile, val distance: Int)
 
         val exploredRevealTiles: Sequence<Tile> =
-                if (ruleSet.tileResources[resourceName]!!.hasUnique(UniqueType.CityStateOnlyResource)) {
+                if (ruleset.tileResources[resourceName]!!.hasUnique(UniqueType.CityStateOnlyResource)) {
                     // Look for matching mercantile CS centers
                     getAliveCityStates()
                         .asSequence()
@@ -480,13 +480,13 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         }
         barbarians.migrateBarbarianCamps()
 
-        ruleSet = RulesetCache.getComplexRuleset(gameParameters)
+        ruleset = RulesetCache.getComplexRuleset(gameParameters)
 
         // any mod the saved game lists that is currently not installed causes null pointer
         // exceptions in this routine unless it contained no new objects or was very simple.
         // Player's fault, so better complain early:
         val missingMods = (gameParameters.mods + gameParameters.baseRuleset)
-            .filterNot { it in ruleSet.mods }
+            .filterNot { it in ruleset.mods }
             .joinToString(limit = 120) { it }
         if (missingMods.isNotEmpty()) {
             throw MissingModsException(missingMods)
@@ -496,8 +496,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         convertOldGameSpeed()
 
-        for (baseUnit in ruleSet.units.values)
-            baseUnit.ruleset = ruleSet
+        for (baseUnit in ruleset.units.values)
+            baseUnit.ruleset = ruleset
 
         // This needs to go before tileMap.setTransients, as units need to access
         // the nation of their civilization when setting transients
@@ -511,14 +511,14 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             }
         }
 
-        tileMap.setTransients(ruleSet)
+        tileMap.setTransients(ruleset)
 
         if (currentPlayer == "") currentPlayer = civilizations.first { it.isHuman() }.civName
         currentPlayerCiv = getCivilization(currentPlayer)
 
-        difficultyObject = ruleSet.difficulties[difficulty]!!
+        difficultyObject = ruleset.difficulties[difficulty]!!
 
-        speed = ruleSet.speeds[gameParameters.speed]!!
+        speed = ruleset.speeds[gameParameters.speed]!!
 
         for (religion in religions.values) religion.setTransients(this)
 
@@ -565,7 +565,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
                     cityInfo.cityConstructions.chooseNextConstruction()
 
                 // We also remove resources that the city may be demanding but are no longer in the ruleset
-                if (!ruleSet.tileResources.containsKey(cityInfo.demandedResource))
+                if (!ruleset.tileResources.containsKey(cityInfo.demandedResource))
                     cityInfo.demandedResource = ""
 
                 cityInfo.cityStats.update()
@@ -577,9 +577,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         }
 
         spaceResources.clear()
-        spaceResources.addAll(ruleSet.buildings.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
+        spaceResources.addAll(ruleset.buildings.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
             .flatMap { it.getResourceRequirements().keys })
-        spaceResources.addAll(ruleSet.victories.values.flatMap { it.requiredSpaceshipParts })
+        spaceResources.addAll(ruleset.victories.values.flatMap { it.requiredSpaceshipParts })
 
         barbarians.setTransients(this)
 

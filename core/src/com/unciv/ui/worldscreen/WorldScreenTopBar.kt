@@ -148,7 +148,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
             worldScreen.game.pushScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Resources"))
         }
 
-        val strategicResources = worldScreen.gameInfo.ruleSet.tileResources.values
+        val strategicResources = worldScreen.gameInfo.ruleset.tileResources.values
             .filter { it.resourceType == ResourceType.Strategic }
         for (resource in strategicResources) {
             val resourceImage = ImageGetter.getResourcePortrait(resource.name, 20f)
@@ -217,7 +217,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
             selectedCivLabel.setFontSize(25)
             selectedCivLabel.onClick {
                 val civilopediaScreen = CivilopediaScreen(
-                    worldScreen.selectedCiv.gameInfo.ruleSet,
+                    worldScreen.selectedCiv.gameInfo.ruleset,
                     CivilopediaCategories.Nation,
                     worldScreen.selectedCiv.civName
                 )
@@ -240,7 +240,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
             this.selectedCiv = newCiv
 
             selectedCivLabel.setText(newCiv.tr())
-            val nation = worldScreen.gameInfo.ruleSet.nations[worldScreen.selectedCiv.civName]!!
+            val nation = worldScreen.gameInfo.ruleset.nations[worldScreen.selectedCiv.civName]!!
             val selectedCivIcon = ImageGetter.getNationPortrait(nation, 35f)
             selectedCivIconHolder.actor = selectedCivIcon
             invalidate()

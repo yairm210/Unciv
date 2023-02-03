@@ -56,7 +56,7 @@ class CapitalConnectionsFinderTests {
         every { mockGameInfo.getCivilization(capture(slot)) } answers { civilizations.getValue(slot.captured) }
         every { mockGameInfo.civilizations } answers { civilizations.values.toMutableList() }
         every { mockGameInfo.tileMap } returns tilesMap
-        every { mockGameInfo.ruleSet } returns rules
+        every { mockGameInfo.ruleset } returns rules
         every { mockGameInfo.getCities() } answers { civilizations.values.asSequence().flatMap { it.cities } }
         // Needs for founding cities
         every { mockGameInfo.turns } returns 1

@@ -78,10 +78,10 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
     private fun wonOrLost(description: String, victoryType: String?, hasWon: Boolean) {
         val endGameMessage =
             when {
-                hasWon && (victoryType == null || victoryType !in gameInfo.ruleSet.victories) -> "Your civilization stands above all others! The exploits of your people shall be remembered until the end of civilization itself!"
-                victoryType == null || victoryType !in gameInfo.ruleSet.victories -> "You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!"
-                hasWon -> playerCivInfo.gameInfo.ruleSet.victories[victoryType]!!.victoryString
-                else -> playerCivInfo.gameInfo.ruleSet.victories[victoryType]!!.defeatString
+                hasWon && (victoryType == null || victoryType !in gameInfo.ruleset.victories) -> "Your civilization stands above all others! The exploits of your people shall be remembered until the end of civilization itself!"
+                victoryType == null || victoryType !in gameInfo.ruleset.victories -> "You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!"
+                hasWon -> playerCivInfo.gameInfo.ruleset.victories[victoryType]!!.victoryString
+                else -> playerCivInfo.gameInfo.ruleset.victories[victoryType]!!.defeatString
             }
 
         descriptionLabel.setText(description.tr() + "\n" + endGameMessage.tr())
@@ -126,7 +126,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
     }
 
     private fun getOurVictoryColumn(victory: String): Table {
-        val victoryObject = gameInfo.ruleSet.victories[victory]!!
+        val victoryObject = gameInfo.ruleset.victories[victory]!!
         val table = Table()
         table.defaults().pad(5f)
         var firstIncomplete = true
@@ -150,7 +150,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
     private fun setGlobalVictoryTable() {
         val majorCivs = gameInfo.civilizations.filter { it.isMajorCiv() }
         val globalVictoryTable = Table().apply { defaults().pad(10f) }
-        val victoriesToShow = gameInfo.ruleSet.victories.filter { !it.value.hiddenInVictoryScreen && enabledVictoryTypes.contains(it.key) }
+        val victoriesToShow = gameInfo.ruleset.victories.filter { !it.value.hiddenInVictoryScreen && enabledVictoryTypes.contains(it.key) }
 
         for (victory in victoriesToShow) {
             globalVictoryTable.add(getGlobalVictoryColumn(majorCivs, victory.key))

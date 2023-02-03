@@ -53,7 +53,7 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
         else name
 
     private fun mapToExistingBeliefs(beliefs: HashSet<String>): List<Belief> {
-        val rulesetBeliefs = gameInfo.ruleSet.beliefs
+        val rulesetBeliefs = gameInfo.ruleset.beliefs
         return beliefs.mapNotNull {
             if (it !in rulesetBeliefs) null
             else rulesetBeliefs[it]!!

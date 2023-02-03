@@ -221,7 +221,7 @@ class WorldScreen(
 
     private fun addKeyboardPresses() {
         // Space and N are assigned in createNextTurnButton
-        globalShortcuts.add(Input.Keys.F1) { game.pushScreen(CivilopediaScreen(gameInfo.ruleSet)) }
+        globalShortcuts.add(Input.Keys.F1) { game.pushScreen(CivilopediaScreen(gameInfo.ruleset)) }
         globalShortcuts.add('E') { game.pushScreen(EmpireOverviewScreen(selectedCiv)) }     // Empire overview last used page
         /*
          * These try to be faithful to default Civ5 key bindings as found in several places online

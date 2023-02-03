@@ -85,7 +85,7 @@ class ResourcesOverviewTab(
         }
     private fun TileResource.getLabel() = name.toLabel().apply {
         onClick {
-            overviewScreen.game.pushScreen(CivilopediaScreen(gameInfo.ruleSet, CivilopediaCategories.Resource, this@getLabel.name))
+            overviewScreen.game.pushScreen(CivilopediaScreen(gameInfo.ruleset, CivilopediaCategories.Resource, this@getLabel.name))
         }
     }
 
@@ -224,7 +224,7 @@ class ResourcesOverviewTab(
         val newResourceSupplyList = ResourceSupplyList()
         for (city in viewingPlayer.cities) {
             if (city.demandedResource.isEmpty()) continue
-            val wltkResource = gameInfo.ruleSet.tileResources[city.demandedResource] ?: continue
+            val wltkResource = gameInfo.ruleset.tileResources[city.demandedResource] ?: continue
             if (city.isWeLoveTheKingDayActive()) {
                 newResourceSupplyList.add(wltkResource, ExtraInfoOrigin.CelebratingWLKT.name)
             } else {

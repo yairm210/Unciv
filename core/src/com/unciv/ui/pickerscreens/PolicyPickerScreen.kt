@@ -202,7 +202,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: Civilization = w
 
         topTable.row()
 
-        val branches = viewingCiv.gameInfo.ruleSet.policyBranches
+        val branches = viewingCiv.gameInfo.ruleset.policyBranches
         val rowChangeCount: Int
 
         // estimate how many branch boxes fit using average size (including pad)
@@ -304,7 +304,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: Civilization = w
         val onAdoption = branch.getDescription()
         val onCompletion = branch.policies.last().getDescription()
         var text = ""
-        if (viewingCiv.gameInfo.ruleSet.eras[branch.era]!!.eraNumber > viewingCiv.getEraNumber())
+        if (viewingCiv.gameInfo.ruleset.eras[branch.era]!!.eraNumber > viewingCiv.getEraNumber())
             text += "{Unlocked at} {${branch.era}}" + "\n\n"
         text += "{On adoption}:" + "\n\n" + onAdoption + "\n\n" +
                 "{On completion}:" + "\n\n" + onCompletion
@@ -562,7 +562,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: Civilization = w
         table.add(expandIcon).minWidth(15f).expandX().left()
         table.add(branch.name.tr().uppercase().toLabel(fontSize = 14).apply { setAlignment(Align.center) }).center()
         table.add(icon).expandX().left().padLeft(5f)
-        
+
         table.setTouchable(Touchable.enabled)
 
         header.add(table).minWidth(150f).growX()
@@ -582,7 +582,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: Civilization = w
         if (viewingCiv.policies.isAdopted(branch.name)) {
             policy = branch.policies.last()
             text = "Completed"
-        } else if (viewingCiv.gameInfo.ruleSet.eras[branch.era]!!.eraNumber > viewingCiv.getEraNumber()) {
+        } else if (viewingCiv.gameInfo.ruleset.eras[branch.era]!!.eraNumber > viewingCiv.getEraNumber()) {
             policy = branch
             text = branch.era
         } else {

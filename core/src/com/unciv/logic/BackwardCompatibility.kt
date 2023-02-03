@@ -27,31 +27,31 @@ object BackwardCompatibility {
      * This function removes them so the game doesn't crash when it tries to access them.
      */
     fun GameInfo.removeMissingModReferences() {
-        tileMap.removeMissingTerrainModReferences(ruleSet)
+        tileMap.removeMissingTerrainModReferences(ruleset)
 
         for (tile in tileMap.values) {
             for (unit in tile.getUnits()) {
-                if (!ruleSet.units.containsKey(unit.name)) tile.removeUnit(unit)
+                if (!ruleset.units.containsKey(unit.name)) tile.removeUnit(unit)
 
                 for (promotion in unit.promotions.promotions.toList())
-                    if (!ruleSet.unitPromotions.containsKey(promotion))
+                    if (!ruleset.unitPromotions.containsKey(promotion))
                         unit.promotions.promotions.remove(promotion)
             }
         }
 
         for (city in civilizations.asSequence().flatMap { it.cities.asSequence() }) {
 
-            changeBuildingNameIfNotInRuleset(ruleSet, city.cityConstructions, "Hanse", "Bank")
+            changeBuildingNameIfNotInRuleset(ruleset, city.cityConstructions, "Hanse", "Bank")
 
             for (building in city.cityConstructions.builtBuildings.toHashSet()) {
 
-                if (!ruleSet.buildings.containsKey(building))
+                if (!ruleset.buildings.containsKey(building))
                     city.cityConstructions.builtBuildings.remove(building)
             }
 
             fun isInvalidConstruction(construction: String) =
-                !ruleSet.buildings.containsKey(construction)
-                        && !ruleSet.units.containsKey(construction)
+                !ruleset.buildings.containsKey(construction)
+                        && !ruleset.units.containsKey(construction)
                         && !PerpetualConstruction.perpetualConstructionsMap.containsKey(construction)
 
             // Remove invalid buildings or units from the queue - don't just check buildings and units because it might be a special construction as well
@@ -67,10 +67,10 @@ object BackwardCompatibility {
 
         for (civInfo in civilizations) {
             for (tech in civInfo.tech.techsResearched.toList())
-                if (!ruleSet.technologies.containsKey(tech))
+                if (!ruleset.technologies.containsKey(tech))
                     civInfo.tech.techsResearched.remove(tech)
             for (policy in civInfo.policies.adoptedPolicies.toList())
-                if (!ruleSet.policies.containsKey(policy))
+                if (!ruleset.policies.containsKey(policy))
                     civInfo.policies.adoptedPolicies.remove(policy)
         }
     }
@@ -202,7 +202,7 @@ object BackwardCompatibility {
 
     @Suppress("DEPRECATION")
     fun GameInfo.convertOldGameSpeed() {
-        if (gameParameters.gameSpeed != "" && gameParameters.gameSpeed in ruleSet.speeds.keys) {
+        if (gameParameters.gameSpeed != "" && gameParameters.gameSpeed in ruleset.speeds.keys) {
             gameParameters.speed = gameParameters.gameSpeed
             gameParameters.gameSpeed = ""
         }

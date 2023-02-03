@@ -167,7 +167,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     }
 
     fun getGreatProphetEquivalent(): String? {
-        return civInfo.gameInfo.ruleSet.units.values.firstOrNull { it.hasUnique(UniqueType.MayFoundReligion) }?.name
+        return civInfo.gameInfo.ruleset.units.values.firstOrNull { it.hasUnique(UniqueType.MayFoundReligion) }?.name
     }
 
     private fun generateProphet() {
@@ -187,7 +187,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     }
 
     private fun maxNumberOfReligions() = min(
-        civInfo.gameInfo.ruleSet.religions.size,
+        civInfo.gameInfo.ruleset.religions.size,
         civInfo.gameInfo.civilizations.count { it.isMajorCiv() } / 2 + 1
     )
 
@@ -211,8 +211,8 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
     fun numberOfBeliefsAvailable(type: BeliefType): Int {
         val gameInfo = civInfo.gameInfo
-        val numberOfBeliefs = if (type == BeliefType.Any) gameInfo.ruleSet.beliefs.values.count()
-        else gameInfo.ruleSet.beliefs.values.count { it.type == type }
+        val numberOfBeliefs = if (type == BeliefType.Any) gameInfo.ruleset.beliefs.values.count()
+        else gameInfo.ruleset.beliefs.values.count { it.type == type }
         return numberOfBeliefs - gameInfo.religions.flatMap { it.value.getBeliefs(type) }.distinct().count()
         // We need to do the distinct above, as pantheons and religions founded out of those pantheons might share beliefs
     }

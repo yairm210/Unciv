@@ -88,7 +88,7 @@ class MapUnitCache(val mapUnit: MapUnit) {
         doubleMovementInTerrain.clear()
         for (unique in mapUnit.getMatchingUniques(UniqueType.DoubleMovementOnTerrain)) {
             val param = unique.params[0]
-            val terrain = mapUnit.civ.gameInfo.ruleSet.terrains[param]
+            val terrain = mapUnit.civ.gameInfo.ruleset.terrains[param]
             doubleMovementInTerrain[param] = when {
                 terrain == null -> DoubleMovementTerrainTarget.Filter
                 terrain.name == Constants.hill -> DoubleMovementTerrainTarget.Hill
@@ -122,7 +122,7 @@ class MapUnitCache(val mapUnit: MapUnit) {
 
         hasStrengthBonusInRadiusUnique = mapUnit.hasUnique(UniqueType.StrengthBonusInRadius)
         hasCitadelPlacementUnique = mapUnit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
-            .mapNotNull { mapUnit.civ.gameInfo.ruleSet.tileImprovements[it.params[0]] }
+            .mapNotNull { mapUnit.civ.gameInfo.ruleset.tileImprovements[it.params[0]] }
             .any { it.hasUnique(UniqueType.TakesOverAdjacentTiles) }
     }
 }
