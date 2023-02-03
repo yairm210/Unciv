@@ -128,7 +128,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         if (condition.type!!.targetTypes.contains(UniqueTarget.TriggerCondition))
             return true // not a filtering condition
 
-        fun ruleset() = state.civInfo!!.gameInfo.ruleSet
+        fun ruleset() = state.civInfo!!.gameInfo.ruleset
 
         val relevantUnit by lazy {
             if (state.ourCombatant != null && state.ourCombatant is MapUnitCombatant) state.ourCombatant.unit

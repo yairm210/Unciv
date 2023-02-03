@@ -99,7 +99,7 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
         val techIconSize = 30f
 
         val civName = techManager.civInfo.civName
-        val ruleset = techManager.civInfo.gameInfo.ruleSet
+        val ruleset = techManager.civInfo.gameInfo.ruleset
 
         val tech = ruleset.technologies[techName]!!
 

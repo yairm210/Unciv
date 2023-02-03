@@ -160,7 +160,7 @@ class City : IsPartOfGameInfoSerialization {
     fun isInResistance() = hasFlag(CityFlags.Resistance)
 
 
-    fun getRuleset() = civ.gameInfo.ruleSet
+    fun getRuleset() = civ.gameInfo.ruleset
 
     fun getCityResources(): ResourceSupplyList {
         val cityResources = ResourceSupplyList()
@@ -341,8 +341,8 @@ class City : IsPartOfGameInfoSerialization {
     fun canBeDestroyed(justCaptured: Boolean = false): Boolean {
         if (civ.gameInfo.gameParameters.noCityRazing) return false
 
-        val allowRazeCapital = civ.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.allowRazeCapital)
-        val allowRazeHolyCity = civ.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.allowRazeHolyCity)
+        val allowRazeCapital = civ.gameInfo.ruleset.modOptions.uniques.contains(ModOptionsConstants.allowRazeCapital)
+        val allowRazeHolyCity = civ.gameInfo.ruleset.modOptions.uniques.contains(ModOptionsConstants.allowRazeHolyCity)
 
         if (isOriginalCapital && !allowRazeCapital) return false
         if (isHolyCity() && !allowRazeHolyCity) return false

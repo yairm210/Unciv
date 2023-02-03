@@ -251,13 +251,13 @@ class Encampment() : IsPartOfGameInfoSerialization {
     private fun chooseBarbarianUnit(naval: Boolean): String? {
         // if we don't make this into a separate list then the retain() will happen on the Tech keys,
         // which effectively removes those techs from the game and causes all sorts of problems
-        val allResearchedTechs = gameInfo.ruleSet.technologies.keys.toMutableList()
+        val allResearchedTechs = gameInfo.ruleset.technologies.keys.toMutableList()
         for (civ in gameInfo.civilizations.filter { !it.isBarbarian() && !it.isDefeated() }) {
             allResearchedTechs.retainAll(civ.tech.techsResearched)
         }
         val barbarianCiv = gameInfo.getBarbarianCivilization()
         barbarianCiv.tech.techsResearched = allResearchedTechs.toHashSet()
-        val unitList = gameInfo.ruleSet.units.values
+        val unitList = gameInfo.ruleset.units.values
             .filter { it.isMilitary() &&
                     !(it.hasUnique(UniqueType.MustSetUp) ||
                             it.hasUnique(UniqueType.CannotAttack) ||
@@ -284,7 +284,7 @@ class Encampment() : IsPartOfGameInfoSerialization {
         if (gameInfo.gameParameters.ragingBarbarians)
             countdown /= 2
         // Higher on low difficulties
-        countdown += gameInfo.ruleSet.difficulties[gameInfo.gameParameters.difficulty]!!.barbarianSpawnDelay
+        countdown += gameInfo.ruleset.difficulties[gameInfo.gameParameters.difficulty]!!.barbarianSpawnDelay
         // Quicker if this camp has already spawned units
         countdown -= min(3, spawnedUnits)
 

@@ -103,7 +103,7 @@ class NotificationsScroll(
                     listItem.add(label).padRight(10f)
                 }
 
-                notification.addNotificationIcons(worldScreen.gameInfo.ruleSet, iconSize, listItem)
+                notification.addNotificationIcons(worldScreen.gameInfo.ruleset, iconSize, listItem)
 
                 // using a large click area with no gap in between each message item.
                 // this avoids accidentally clicking in between the messages, resulting in a map click

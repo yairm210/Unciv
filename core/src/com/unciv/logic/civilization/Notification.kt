@@ -114,7 +114,7 @@ data class LocationAction(var locations: ArrayList<Vector2> = ArrayList()) : Not
 /** show tech screen */
 class TechAction(val techName: String = "") : NotificationAction, IsPartOfGameInfoSerialization {
     override fun execute(worldScreen: WorldScreen) {
-        val tech = worldScreen.gameInfo.ruleSet.technologies[techName]
+        val tech = worldScreen.gameInfo.ruleset.technologies[techName]
         worldScreen.game.pushScreen(TechPickerScreen(worldScreen.viewingCiv, tech))
     }
 }

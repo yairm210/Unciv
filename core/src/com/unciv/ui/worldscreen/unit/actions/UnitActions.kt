@@ -367,7 +367,7 @@ object UnitActions {
 
         val couldConstruct = unit.currentMovement > 0
             && !tile.isCityCenter()
-            && unit.civ.gameInfo.ruleSet.tileImprovements.values.any {
+            && unit.civ.gameInfo.ruleset.tileImprovements.values.any {
                 ImprovementPickerScreen.canReport(tile.improvementFunctions.getImprovementBuildingProblems(it, unit.civ).toSet())
                 && unit.canBuildImprovement(it)
             }

@@ -80,7 +80,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
 
     /** A [Set] of all [PolicyBranch]es. */
     val branches: Set<PolicyBranch>
-        get() = civInfo.gameInfo.ruleSet.policyBranches.values.toSet()
+        get() = civInfo.gameInfo.ruleset.policyBranches.values.toSet()
 
     fun clone(): PolicyManager {
         val toReturn = PolicyManager()
@@ -92,7 +92,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    private fun getRulesetPolicies() = civInfo.gameInfo.ruleSet.policies
+    private fun getRulesetPolicies() = civInfo.gameInfo.ruleset.policies
 
     @Suppress("MemberVisibilityCanBePrivate")
     fun getPolicyByName(name: String): Policy = getRulesetPolicies()[name]!!
@@ -159,7 +159,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         if (isAdopted(policy.name)) return false
         if (policy.policyBranchType == PolicyBranchType.BranchComplete) return false
         if (!getAdoptedPolicies().containsAll(policy.requires!!)) return false
-        if (checkEra && civInfo.gameInfo.ruleSet.eras[policy.branch.era]!!.eraNumber > civInfo.getEraNumber()) return false
+        if (checkEra && civInfo.gameInfo.ruleset.eras[policy.branch.era]!!.eraNumber > civInfo.getEraNumber()) return false
         if (policy.uniqueObjects.filter { it.type == UniqueType.OnlyAvailableWhen }
                 .any { !it.conditionalsApply(civInfo) }) return false
         return true

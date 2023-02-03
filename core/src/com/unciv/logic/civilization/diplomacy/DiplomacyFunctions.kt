@@ -12,7 +12,6 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.extensions.withItem
 
 class DiplomacyFunctions(val civInfo:Civilization){
 
@@ -102,7 +101,7 @@ class DiplomacyFunctions(val civInfo:Civilization){
     fun canSignResearchAgreement(): Boolean {
         if (!civInfo.isMajorCiv()) return false
         if (!civInfo.hasUnique(UniqueType.EnablesResearchAgreements)) return false
-        if (civInfo.gameInfo.ruleSet.technologies.values
+        if (civInfo.gameInfo.ruleset.technologies.values
                     .none { civInfo.tech.canBeResearched(it.name) && !civInfo.tech.isResearched(it.name) }) return false
         return true
     }

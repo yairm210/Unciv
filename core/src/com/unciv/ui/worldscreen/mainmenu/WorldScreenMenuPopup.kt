@@ -24,7 +24,7 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         }.row()
         addButton("Civilopedia") {
             close()
-            worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet))
+            worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleset))
         }.row()
         addButton("Save game") {
             close()

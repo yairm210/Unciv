@@ -99,7 +99,7 @@ class NotificationsOverviewTable(
                     notification.action?.execute(worldScreen)
                 }
 
-                notification.addNotificationIcons(worldScreen.gameInfo.ruleSet, iconSize, notificationTable)
+                notification.addNotificationIcons(worldScreen.gameInfo.ruleset, iconSize, notificationTable)
 
                 turnTable.add(notificationTable).padTop(5f)
                 turnTable.padTop(20f).row()

@@ -28,7 +28,7 @@ class UnitManager(val civInfo:Civilization) {
 
     fun addUnit(unitName: String, city: City? = null): MapUnit? {
         if (civInfo.cities.isEmpty()) return null
-        if (!civInfo.gameInfo.ruleSet.units.containsKey(unitName)) return null
+        if (!civInfo.gameInfo.ruleset.units.containsKey(unitName)) return null
 
         val cityToAddTo = city ?: civInfo.cities.random()
         val unit = civInfo.getEquivalentUnit(unitName)

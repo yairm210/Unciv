@@ -224,7 +224,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
             }
 
             MilestoneType.CompletePolicyBranches -> {
-                for (branch in civInfo.gameInfo.ruleSet.policyBranches.values) {
+                for (branch in civInfo.gameInfo.ruleset.policyBranches.values) {
                     val finisher = branch.policies.last().name
                     buttons.add(getMilestoneButton(finisher, civInfo.policies.isAdopted(finisher)))
                 }
@@ -248,7 +248,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
     }
 
     fun getFocus(civInfo: Civilization): Victory.Focus {
-        val ruleset = civInfo.gameInfo.ruleSet
+        val ruleset = civInfo.gameInfo.ruleset
         return when (type!!) {
             MilestoneType.BuiltBuilding -> {
                 val building = ruleset.buildings[params[0]]!!

@@ -150,7 +150,7 @@ object SpecificUnitAutomation {
     }
 
     fun automateSettlerActions(unit: MapUnit) {
-        val modConstants = unit.civ.gameInfo.ruleSet.modOptions.constants
+        val modConstants = unit.civ.gameInfo.ruleset.modOptions.constants
         if (unit.getTile().militaryUnit == null     // Don't move until you're accompanied by a military unit
             && !unit.civ.isCityState()          // ..unless you're a city state that was unable to settle its city on turn 1
             && unit.getDamageFromTerrain() < unit.health) return    // Also make sure we won't die waiting
@@ -224,7 +224,7 @@ object SpecificUnitAutomation {
 
             /** @return the number of tiles 4 (un-modded) out from this city that could hold a city, ie how lonely this city is */
             fun getFrontierScore(city: City) = city.getCenterTile()
-                .getTilesAtDistance(city.civ.gameInfo.ruleSet.modOptions.constants.minimalCityDistance + 1)
+                .getTilesAtDistance(city.civ.gameInfo.ruleset.modOptions.constants.minimalCityDistance + 1)
                 .count { it.canBeSettled() && (it.getOwner() == null || it.getOwner() == city.civ ) }
 
             val frontierCity = unit.civ.cities.maxByOrNull { getFrontierScore(it) }
@@ -251,7 +251,7 @@ object SpecificUnitAutomation {
         val improvementBuildingUniques = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
 
         val improvementName = improvementBuildingUniques.first().params[0]
-        val improvement = unit.civ.gameInfo.ruleSet.tileImprovements[improvementName]
+        val improvement = unit.civ.gameInfo.ruleset.tileImprovements[improvementName]
             ?: return
         val relatedStat = improvement.maxByOrNull { it.value }?.key ?: Stat.Culture
 

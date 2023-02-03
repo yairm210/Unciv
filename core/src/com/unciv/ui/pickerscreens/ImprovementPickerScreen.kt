@@ -42,7 +42,7 @@ class ImprovementPickerScreen(
 
     private var selectedImprovement: TileImprovement? = null
     private val gameInfo = tile.tileMap.gameInfo
-    private val ruleSet = gameInfo.ruleSet
+    private val ruleSet = gameInfo.ruleset
     private val currentPlayerCiv = gameInfo.getCurrentPlayerCivilization()
     // Support for UniqueType.CreatesOneImprovement
     private val tileMarkedForCreatesOneImprovement = tile.isMarkedForCreatesOneImprovement()

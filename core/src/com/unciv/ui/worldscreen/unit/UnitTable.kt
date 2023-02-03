@@ -275,7 +275,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
                 }
 
                 unitIconHolder.onClick {
-                    worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet, CivilopediaCategories.Unit, selectedUnit!!.name))
+                    worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleset, CivilopediaCategories.Unit, selectedUnit!!.name))
                 }
             } else { // multiple selected units
                 for (unit in selectedUnits)

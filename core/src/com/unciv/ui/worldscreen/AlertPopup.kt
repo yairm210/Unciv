@@ -193,7 +193,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 add(getCloseButton("Very well."))
             }
             AlertType.WonderBuilt -> {
-                val wonder = worldScreen.gameInfo.ruleSet.buildings[popupAlert.value]!!
+                val wonder = worldScreen.gameInfo.ruleset.buildings[popupAlert.value]!!
                 addGoodSizedLabel(wonder.name)
                 addSeparator()
                 if(ImageGetter.wonderImageExists(wonder.name)) {    // Wonder Graphic exists
@@ -222,7 +222,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 UncivGame.Current.musicController.chooseTrack(wonder.name, MusicMood.Wonder, MusicTrackChooserFlags.setSpecific)
             }
             AlertType.TechResearched -> {
-                val gameBasics = worldScreen.gameInfo.ruleSet
+                val gameBasics = worldScreen.gameInfo.ruleset
                 val tech = gameBasics.technologies[popupAlert.value]!!
                 addGoodSizedLabel(tech.name)
                 addSeparator()

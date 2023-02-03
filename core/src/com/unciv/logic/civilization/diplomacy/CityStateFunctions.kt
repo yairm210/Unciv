@@ -73,7 +73,7 @@ class CityStateFunctions(val civInfo: Civilization) {
     fun giveGreatPersonToPatron(receivingCiv: Civilization) {
 
         // Great Prophets can't be gotten from CS
-        val giftableUnits = civInfo.gameInfo.ruleSet.units.values.filter { it.isGreatPerson()
+        val giftableUnits = civInfo.gameInfo.ruleset.units.values.filter { it.isGreatPerson()
                 && !it.hasUnique(UniqueType.MayFoundReligion) }
         if (giftableUnits.isEmpty()) // For badly defined mods that don't have great people but do have the policy that makes city states grant them
             return
@@ -92,7 +92,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         val city = cities.city1
 
         fun giftableUniqueUnit(): BaseUnit? {
-            val uniqueUnit = civInfo.gameInfo.ruleSet.units[civInfo.cityStateUniqueUnit]
+            val uniqueUnit = civInfo.gameInfo.ruleset.units[civInfo.cityStateUniqueUnit]
                 ?: return null
             if (uniqueUnit.requiredTech != null && !receivingCiv.tech.isResearched(uniqueUnit.requiredTech!!))
                 return null
@@ -431,7 +431,7 @@ class CityStateFunctions(val civInfo: Civilization) {
     fun tributeWorker(demandingCiv: Civilization) {
         if (!civInfo.isCityState()) throw Exception("You can only demand workers from City-States!")
 
-        val buildableWorkerLikeUnits = civInfo.gameInfo.ruleSet.units.filter {
+        val buildableWorkerLikeUnits = civInfo.gameInfo.ruleset.units.filter {
             it.value.hasUnique(UniqueType.BuildImprovements) &&
                 it.value.isCivilian() && it.value.isBuildable(civInfo)
         }
@@ -476,7 +476,7 @@ class CityStateFunctions(val civInfo: Civilization) {
 
     fun getFreeTechForCityState() {
         // City-States automatically get all techs that at least half of the major civs know
-        val researchableTechs = civInfo.gameInfo.ruleSet.technologies.keys
+        val researchableTechs = civInfo.gameInfo.ruleset.technologies.keys
             .filter { civInfo.tech.canBeResearched(it) }
         for (tech in researchableTechs) {
             val aliveMajorCivs = civInfo.gameInfo.getAliveMajorCivs()

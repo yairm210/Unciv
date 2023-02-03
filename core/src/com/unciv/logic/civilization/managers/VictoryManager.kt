@@ -58,7 +58,7 @@ class VictoryManager : IsPartOfGameInfoSerialization {
     fun getVictoryTypeAchieved(): String? {
         if (!civInfo.isMajorCiv()) return null
         for (victoryName in civInfo.gameInfo.gameParameters.victoryTypes
-            .filter { it != Constants.neutralVictoryType && it in civInfo.gameInfo.ruleSet.victories}) {
+            .filter { it != Constants.neutralVictoryType && it in civInfo.gameInfo.ruleset.victories}) {
             if (getNextMilestone(victoryName) == null)
                 return victoryName
         }
@@ -68,7 +68,7 @@ class VictoryManager : IsPartOfGameInfoSerialization {
     }
 
     fun getNextMilestone(victory: String): Milestone? {
-        for (milestone in civInfo.gameInfo.ruleSet.victories[victory]!!.milestoneObjects) {
+        for (milestone in civInfo.gameInfo.ruleset.victories[victory]!!.milestoneObjects) {
             if (!milestone.hasBeenCompletedBy(civInfo))
                 return milestone
         }
@@ -77,7 +77,7 @@ class VictoryManager : IsPartOfGameInfoSerialization {
 
     fun amountMilestonesCompleted(victory: String): Int {
         var completed = 0
-        for (milestone in civInfo.gameInfo.ruleSet.victories[victory]!!.milestoneObjects) {
+        for (milestone in civInfo.gameInfo.ruleset.victories[victory]!!.milestoneObjects) {
             if (milestone.hasBeenCompletedBy(civInfo))
                 ++completed
             else

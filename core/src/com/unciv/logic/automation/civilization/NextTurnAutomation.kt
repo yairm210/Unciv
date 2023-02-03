@@ -57,7 +57,7 @@ object NextTurnAutomation {
         respondToTradeRequests(civInfo)
 
         if (civInfo.isMajorCiv()) {
-            if (!civInfo.gameInfo.ruleSet.modOptions.hasUnique(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
+            if (!civInfo.gameInfo.ruleset.modOptions.hasUnique(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
                 declareWar(civInfo)
                 offerPeaceTreaty(civInfo)
 //            offerDeclarationOfFriendship(civInfo)
@@ -407,7 +407,7 @@ object NextTurnAutomation {
 
     private fun chooseTechToResearch(civInfo: Civilization) {
         if (civInfo.tech.techsToResearch.isEmpty()) {
-            val researchableTechs = civInfo.gameInfo.ruleSet.technologies.values
+            val researchableTechs = civInfo.gameInfo.ruleset.technologies.values
                     .filter { civInfo.tech.canBeResearched(it.name) }
             val techsGroups = researchableTechs.groupBy { it.cost }
             val costs = techsGroups.keys.sorted()
@@ -503,7 +503,7 @@ object NextTurnAutomation {
      *  a unit and selling a building to make room. Can happen due to trades etc */
     private fun freeUpSpaceResources(civInfo: Civilization) {
         // No need to build spaceship parts just yet
-        if (civInfo.gameInfo.ruleSet.victories.none { civInfo.victoryManager.getNextMilestone(it.key)?.type == MilestoneType.AddedSSPartsInCapital } )
+        if (civInfo.gameInfo.ruleset.victories.none { civInfo.victoryManager.getNextMilestone(it.key)?.type == MilestoneType.AddedSSPartsInCapital } )
             return
 
         for (resource in civInfo.gameInfo.spaceResources) {
@@ -520,7 +520,7 @@ object NextTurnAutomation {
             for (city in civInfo.cities) {
                 if (city.hasSoldBuildingThisTurn)
                     continue
-                val buildingToSell = civInfo.gameInfo.ruleSet.buildings.values.filter {
+                val buildingToSell = civInfo.gameInfo.ruleset.buildings.values.filter {
                         it.name in city.cityConstructions.builtBuildings
                         && it.requiresResource(resource)
                         && it.isSellable()
@@ -559,7 +559,7 @@ object NextTurnAutomation {
 
     private fun foundReligion(civInfo: Civilization) {
         if (civInfo.religionManager.religionState != ReligionState.FoundingReligion) return
-        val availableReligionIcons = civInfo.gameInfo.ruleSet.religions
+        val availableReligionIcons = civInfo.gameInfo.ruleset.religions
             .filterNot { civInfo.gameInfo.religions.values.map { religion -> religion.name }.contains(it) }
         val religionIcon =
             if (civInfo.nation.favoredReligion in availableReligionIcons) civInfo.nation.favoredReligion
@@ -601,7 +601,7 @@ object NextTurnAutomation {
     }
 
     private fun chooseBeliefOfType(civInfo: Civilization, beliefType: BeliefType, additionalBeliefsToExclude: HashSet<Belief> = hashSetOf()): Belief? {
-        return civInfo.gameInfo.ruleSet.beliefs
+        return civInfo.gameInfo.ruleset.beliefs
             .filter {
                 (it.value.type == beliefType || beliefType == BeliefType.Any)
                 && !additionalBeliefsToExclude.contains(it.value)
@@ -917,7 +917,7 @@ object NextTurnAutomation {
         if (civInfo.wantsToFocusOn(Victory.Focus.Culture) && civInfo.cities.size > 3) return
         if (civInfo.cities.none() || civInfo.getHappiness() <= civInfo.cities.size + 5) return
 
-        val settlerUnits = civInfo.gameInfo.ruleSet.units.values
+        val settlerUnits = civInfo.gameInfo.ruleset.units.values
                 .filter { it.hasUnique(UniqueType.FoundCity) && it.isBuildable(civInfo) }
         if (settlerUnits.isEmpty()) return
         if (civInfo.units.getCivUnits().none { it.hasUnique(UniqueType.FoundCity) }

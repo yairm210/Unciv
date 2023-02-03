@@ -65,7 +65,7 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
 
 
     fun getGreatPeople(): HashSet<BaseUnit> {
-        val greatPeople = civInfo.gameInfo.ruleSet.units.values.asSequence()
+        val greatPeople = civInfo.gameInfo.ruleset.units.values.asSequence()
             .filter { it.isGreatPerson() }
             .map { civInfo.getEquivalentUnit(it.name) }
         return if (!civInfo.gameInfo.isReligionEnabled())

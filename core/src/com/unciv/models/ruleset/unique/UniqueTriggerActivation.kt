@@ -47,7 +47,7 @@ object UniqueTriggerActivation {
         val tileBasedRandom =
             if (tile != null) Random(tile.position.toString().hashCode())
             else Random(-550) // Very random indeed
-        val ruleSet = civInfo.gameInfo.ruleSet
+        val ruleSet = civInfo.gameInfo.ruleset
 
         when (unique.type) {
             UniqueType.OneTimeFreeUnit -> {
@@ -616,7 +616,7 @@ object UniqueTriggerActivation {
                 return true
             }
             UniqueType.OneTimeUnitGainPromotion -> {
-                val promotion = unit.civ.gameInfo.ruleSet.unitPromotions.keys
+                val promotion = unit.civ.gameInfo.ruleset.unitPromotions.keys
                     .firstOrNull { it == unique.params[0] }
                     ?: return false
                 unit.promotions.addPromotion(promotion, true)

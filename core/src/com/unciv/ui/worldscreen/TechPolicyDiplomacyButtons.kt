@@ -82,7 +82,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
     private fun updateTechButton() {
         techButtonHolder.touchable = Touchable.disabled
         techButtonHolder.actor = null
-        if (worldScreen.gameInfo.ruleSet.technologies.isEmpty() || viewingCiv.cities.isEmpty()) return
+        if (worldScreen.gameInfo.ruleset.technologies.isEmpty() || viewingCiv.cities.isEmpty()) return
         techButtonHolder.touchable = Touchable.enabled
 
         if (viewingCiv.tech.currentTechnology() != null) {

@@ -50,7 +50,7 @@ class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civili
         val otherCivsWeKnow = civInfo.getKnownCivs()
             .filter { it.civName != otherCivilization.civName && it.isMajorCiv() && !it.isDefeated() }
 
-        if (civInfo.gameInfo.ruleSet.modOptions.hasUnique(ModOptionsConstants.tradeCivIntroductions)) {
+        if (civInfo.gameInfo.ruleset.modOptions.hasUnique(ModOptionsConstants.tradeCivIntroductions)) {
             val civsWeKnowAndTheyDont = otherCivsWeKnow
                 .filter { !otherCivilization.diplomacy.containsKey(it.civName) && !it.isDefeated() }
             for (thirdCiv in civsWeKnowAndTheyDont) {
@@ -59,7 +59,7 @@ class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civili
         }
 
         if (!civInfo.isCityState() && !otherCivilization.isCityState()
-                && !civInfo.gameInfo.ruleSet.modOptions.hasUnique(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
+                && !civInfo.gameInfo.ruleset.modOptions.hasUnique(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
             val civsWeBothKnow = otherCivsWeKnow
                     .filter { otherCivilization.diplomacy.containsKey(it.civName) }
             val civsWeArentAtWarWith = civsWeBothKnow

@@ -52,14 +52,14 @@ class MapEditorViewTab(
         nation = Nation()
         nation.name = "Test"
         gameInfo = GameInfo()
-        gameInfo.ruleSet = ruleset
+        gameInfo.ruleset = ruleset
         // show yields of strategic resources too
         tech.techsResearched.addAll(ruleset.technologies.keys)
     }
 
     private fun Civilization.updateMockCiv(ruleset: Ruleset) {
-        if (gameInfo.ruleSet === ruleset) return
-        gameInfo.ruleSet = ruleset
+        if (gameInfo.ruleset === ruleset) return
+        gameInfo.ruleset = ruleset
         tech.techsResearched.addAll(ruleset.technologies.keys)
     }
 

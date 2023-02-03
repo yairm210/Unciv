@@ -75,7 +75,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         // must be after setting name & civInfo because it sets the baseUnit according to the name
         // and the civInfo is required for using `hasUnique` when determining its movement options
-        unit.setTransients(civInfo.gameInfo.ruleSet)
+        unit.setTransients(civInfo.gameInfo.ruleset)
 
         return unit
     }
@@ -238,7 +238,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             if (unit.matchesFilter(filter)
                 || (
                     filter == "relevant"
-                    && civInfo.gameInfo.ruleSet.unitPromotions.values
+                    && civInfo.gameInfo.ruleset.unitPromotions.values
                         .any {
                             it.name == promotion
                             && unit.type.name in it.unitTypes

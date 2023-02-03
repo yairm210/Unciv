@@ -86,7 +86,7 @@ class CityReligionInfoTable(
             val newScreen = if (religion == iconName) {
                 EmpireOverviewScreen(civInfo, EmpireOverviewCategories.Religion.name, religion)
             } else {
-                CivilopediaScreen(gameInfo.ruleSet, CivilopediaCategories.Belief, religion)
+                CivilopediaScreen(gameInfo.ruleset, CivilopediaCategories.Belief, religion)
             }
             UncivGame.Current.pushScreen(newScreen)
         }

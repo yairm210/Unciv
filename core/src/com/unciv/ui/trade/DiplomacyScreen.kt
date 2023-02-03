@@ -132,7 +132,7 @@ class DiplomacyScreen(
             civIndicator.addActor(relationshipIcon)
 
             if (civ.isCityState()) {
-                val innerColor = civ.gameInfo.ruleSet.nations[civ.civName]!!.getInnerColor()
+                val innerColor = civ.gameInfo.ruleset.nations[civ.civName]!!.getInnerColor()
                 val typeIcon = ImageGetter.getImage("CityStateIcons/"+civ.cityStateType.name)
                     .surroundWithCircle(size = 35f, color = innerColor).apply {
                         actor.color = Color.BLACK
@@ -206,7 +206,7 @@ class DiplomacyScreen(
                 resourcesTable.add(wrapper).padRight(20f)
                 wrapper.addTooltip(name, 18f)
                 wrapper.onClick {
-                    UncivGame.Current.pushScreen(CivilopediaScreen(UncivGame.Current.gameInfo!!.ruleSet, link = "Resource/$name"))
+                    UncivGame.Current.pushScreen(CivilopediaScreen(UncivGame.Current.gameInfo!!.ruleset, link = "Resource/$name"))
                 }
             }
             diplomacyTable.add(resourcesTable).row()
@@ -280,7 +280,7 @@ class DiplomacyScreen(
 
         if (otherCiv.cityStateUniqueUnit != null) {
             val unitName = otherCiv.cityStateUniqueUnit
-            val techName = viewingCiv.gameInfo.ruleSet.units[otherCiv.cityStateUniqueUnit]!!.requiredTech
+            val techName = viewingCiv.gameInfo.ruleset.units[otherCiv.cityStateUniqueUnit]!!.requiredTech
             diplomacyTable.add("[${otherCiv.civName}] is able to provide [${unitName}] once [${techName}] is researched.".toLabel(fontSize = Constants.defaultFontSize)).row()
         }
 
@@ -320,7 +320,7 @@ class DiplomacyScreen(
         if (isNotPlayersTurn() || viewingCiv.isAtWarWith(otherCiv)) demandTributeButton.disable()
 
         val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)
-        if (!viewingCiv.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
+        if (!viewingCiv.gameInfo.ruleset.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
             if (viewingCiv.isAtWarWith(otherCiv))
                 diplomacyTable.add(getNegotiatePeaceCityStateButton(otherCiv, diplomacyManager)).row()
             else diplomacyTable.add(getDeclareWarButton(diplomacyManager, otherCiv)).row()
@@ -427,7 +427,7 @@ class DiplomacyScreen(
         if (otherCiv.cities.isEmpty()) return null
         val improvableResourceTiles = getImprovableResourceTiles(otherCiv)
         val improvements =
-            otherCiv.gameInfo.ruleSet.tileImprovements.filter { it.value.turnsToBuild != 0 }
+            otherCiv.gameInfo.ruleset.tileImprovements.filter { it.value.turnsToBuild != 0 }
         var needsImprovements = false
 
         for (improvableTile in improvableResourceTiles)
@@ -507,7 +507,7 @@ class DiplomacyScreen(
 
         val improvableResourceTiles = getImprovableResourceTiles(otherCiv)
         val tileImprovements =
-            otherCiv.gameInfo.ruleSet.tileImprovements
+            otherCiv.gameInfo.ruleset.tileImprovements
 
         for (improvableTile in improvableResourceTiles) {
             for (tileImprovement in tileImprovements.values) {
@@ -589,7 +589,7 @@ class DiplomacyScreen(
         val questTable = Table()
         questTable.defaults().pad(10f)
 
-        val quest: Quest = viewingCiv.gameInfo.ruleSet.quests[assignedQuest.questName]!!
+        val quest: Quest = viewingCiv.gameInfo.ruleset.quests[assignedQuest.questName]!!
         val remainingTurns: Int = assignedQuest.getRemainingTurns()
         val title = if (quest.influence > 0)
             "[${quest.name}] (+[${quest.influence.toInt()}] influence)"
@@ -647,7 +647,7 @@ class DiplomacyScreen(
         diplomacyTable.addSeparator()
 
         val diplomaticRelationshipsCanChange =
-            !viewingCiv.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)
+            !viewingCiv.gameInfo.ruleset.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)
 
         val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)
 

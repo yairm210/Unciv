@@ -494,7 +494,7 @@ class TileMap : IsPartOfGameInfoSerialization {
             unitName: String,
             civInfo: Civilization
     ): MapUnit? {
-        val unit = gameInfo.ruleSet.units[unitName]!!.getMapUnit(civInfo)
+        val unit = gameInfo.ruleset.units[unitName]!!.getMapUnit(civInfo)
 
         fun getPassableNeighbours(tile: Tile): Set<Tile> =
                 tile.neighbors.filter { unit.movement.canPassThrough(it) }.toSet()

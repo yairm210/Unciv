@@ -28,7 +28,7 @@ class VisibilityTests {
         RulesetCache.loadRulesets(noMods = true)
         ruleSet = RulesetCache.getVanillaRuleset()
         civInfo.gameInfo = GameInfo()
-        civInfo.gameInfo.ruleSet = ruleSet
+        civInfo.gameInfo.ruleset = ruleSet
         civInfo.nation = Nation().apply { name = "My nation" }
         civInfo.gameInfo.civilizations.add(civInfo)
         civInfo.gameInfo.civilizations.add(enemyCivInfo)

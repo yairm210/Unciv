@@ -176,7 +176,7 @@ class ReligionOverviewTab(
         MarkupRenderer.render(
             belief.getCivilopediaTextLines(withHeader = true)
         ) {
-            UncivGame.Current.pushScreen(CivilopediaScreen(gameInfo.ruleSet, link = it))
+            UncivGame.Current.pushScreen(CivilopediaScreen(gameInfo.ruleset, link = it))
         }.apply {
             background = BaseScreen.skinStrings.getUiBackground(
                 "OverviewScreen/ReligionOverviewTab/BeliefDescription",

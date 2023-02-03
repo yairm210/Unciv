@@ -163,7 +163,7 @@ class FormattedLine (
         private fun getCurrentRuleset() = when {
             !UncivGame.isCurrentInitialized() -> Ruleset()
             UncivGame.Current.gameInfo == null -> RulesetCache[BaseRuleset.Civ_V_Vanilla.fullName]!!
-            else -> UncivGame.Current.gameInfo!!.ruleSet
+            else -> UncivGame.Current.gameInfo!!.ruleset
         }
         private fun initNamesCategoryMap(ruleSet: Ruleset): HashMap<String, CivilopediaCategories> {
             //val startTime = System.nanoTime()

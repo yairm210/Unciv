@@ -91,7 +91,7 @@ class TechManager : IsPartOfGameInfoSerialization {
 
     fun getNumberOfTechsResearched(): Int = techsResearched.size
 
-    private fun getRuleset() = civInfo.gameInfo.ruleSet
+    private fun getRuleset() = civInfo.gameInfo.ruleset
 
     fun costOfTech(techName: String): Int {
         var techCost = getRuleset().technologies[techName]!!.cost.toFloat()
@@ -427,7 +427,7 @@ class TechManager : IsPartOfGameInfoSerialization {
     }
 
     private fun updateEra() {
-        val ruleset = civInfo.gameInfo.ruleSet
+        val ruleset = civInfo.gameInfo.ruleset
         if (ruleset.technologies.isEmpty() || researchedTechnologies.isEmpty())
             return
 
