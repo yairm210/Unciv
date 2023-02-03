@@ -274,9 +274,10 @@ class TechManager : IsPartOfGameInfoSerialization {
             city.updateCitizens = true
         }
 
-        civInfo.addNotification("Research of [$techName] has completed!", TechAction(techName),
-            NotificationCategory.General,
-            NotificationIcon.Science, techName)
+        if(!civInfo.isSpectator())
+            civInfo.addNotification("Research of [$techName] has completed!", TechAction(techName),
+                NotificationCategory.General,
+                NotificationIcon.Science, techName)
         if (isNewTech)
             civInfo.popupAlerts.add(PopupAlert(AlertType.TechResearched, techName))
 
@@ -374,11 +375,12 @@ class TechManager : IsPartOfGameInfoSerialization {
         updateEra()
         val currentEra = civInfo.getEra()
         if (previousEra != currentEra) {
-            civInfo.addNotification(
-                "You have entered the [$currentEra]!",
-                NotificationCategory.General,
-                NotificationIcon.Science
-            )
+            if(!civInfo.isSpectator())
+                civInfo.addNotification(
+                    "You have entered the [$currentEra]!",
+                    NotificationCategory.General,
+                    NotificationIcon.Science
+                )
             if (civInfo.isMajorCiv()) {
                 for (knownCiv in civInfo.getKnownCivs()) {
                     knownCiv.addNotification(
@@ -390,11 +392,12 @@ class TechManager : IsPartOfGameInfoSerialization {
             for (policyBranch in getRuleset().policyBranches.values.filter {
                 it.era == currentEra.name && civInfo.policies.isAdoptable(it)
             }) {
-                civInfo.addNotification(
-                    "[${policyBranch.name}] policy branch unlocked!",
-                    NotificationCategory.General,
-                    NotificationIcon.Culture
-                )
+                if(!civInfo.isSpectator())
+                    civInfo.addNotification(
+                        "[${policyBranch.name}] policy branch unlocked!",
+                        NotificationCategory.General,
+                        NotificationIcon.Culture
+                    )
             }
 
             val erasPassed = getRuleset().eras.values

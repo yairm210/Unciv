@@ -98,11 +98,12 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 val metCiv = entry.key
                 if (metCiv == civInfo || metCiv.isBarbarian() || civInfo.diplomacy.containsKey(metCiv.civName)) continue
                 civInfo.diplomacyFunctions.makeCivilizationsMeet(metCiv)
-                civInfo.addNotification("We have encountered [${metCiv.civName}]!",
-                    entry.value.position,
-                    NotificationCategory.Diplomacy, metCiv.civName,
-                    NotificationIcon.Diplomacy
-                )
+                if(!civInfo.isSpectator())
+                    civInfo.addNotification("We have encountered [${metCiv.civName}]!",
+                        entry.value.position,
+                        NotificationCategory.Diplomacy, metCiv.civName,
+                        NotificationIcon.Diplomacy
+                    )
                 metCiv.addNotification("We have encountered [${civInfo.civName}]!",
                     entry.value.position,
                     NotificationCategory.Diplomacy, civInfo.civName,
@@ -189,8 +190,9 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             if (civInfo.naturalWonders.contains(tile.naturalWonder))
                 continue
             civInfo.naturalWonders.add(tile.naturalWonder!!)
-            civInfo.addNotification("We have discovered [${tile.naturalWonder}]!",
-                tile.position, NotificationCategory.General, "StatIcons/Happiness")
+            if(!civInfo.isSpectator())
+                civInfo.addNotification("We have discovered [${tile.naturalWonder}]!",
+                    tile.position, NotificationCategory.General, "StatIcons/Happiness")
 
             var goldGained = 0
             val discoveredNaturalWonders = civInfo.gameInfo.civilizations.filter { it != civInfo && it.isMajorCiv() }
