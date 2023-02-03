@@ -15,6 +15,13 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     private var minimapSize = Int.MIN_VALUE
     lateinit var minimap: Minimap
 
+    /** Button, next to the minimap, to toggle tutorials. */
+    val tutorialHideButton = MapOverlayToggleButton(
+        ImageGetter.getImage("OtherIcons/Question").apply { setColor(0f, 0f, 0f, 1f) },
+        getter = { worldScreen.isTutorialShown },
+        setter = { worldScreen.isTutorialShown = it },
+        backgroundColor = Color.GREEN
+    )
     /** Button, next to the minimap, to toggle the unit movement map overlay. */
     val movementsImageButton = MapOverlayToggleButton(
         ImageGetter.getImage("StatIcons/Movement").apply { setColor(0f, 0f, 0f, 1f) },
@@ -88,6 +95,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     private fun getToggleIcons(): Table {
         val toggleIconTable = Table()
 
+        toggleIconTable.add(tutorialHideButton.actor).row()
         toggleIconTable.add(movementsImageButton.actor).row()
         toggleIconTable.add(yieldImageButton.actor).row()
         toggleIconTable.add(populationImageButton.actor).row()
@@ -101,6 +109,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         isVisible = UncivGame.Current.settings.showMinimap
         if (isVisible) {
             minimap.update(civInfo)
+            tutorialHideButton.update()
             movementsImageButton.update()
             yieldImageButton.update()
             populationImageButton.update()

@@ -101,6 +101,8 @@ class WorldScreen(
     var fogOfWar = true
         private set
 
+    var isTutorialShown = true
+    
     /** `true` when it's the player's turn unless he is a spectator*/
     val canChangeState
         get() = isPlayersTurn && !viewingCiv.isSpectator()
@@ -395,13 +397,17 @@ class WorldScreen(
             val tutorialTask = getCurrentTutorialTask()
             if (tutorialTask == "" || !game.settings.showTutorials || viewingCiv.isDefeated()) {
                 tutorialTaskTable.isVisible = false
+                minimapWrapper.tutorialHideButton.actor.isVisible = false
             } else {
-                tutorialTaskTable.isVisible = true
-                tutorialTaskTable.add(tutorialTask.toLabel()
-                    .apply { setAlignment(Align.center) }).pad(10f)
-                tutorialTaskTable.pack()
-                tutorialTaskTable.centerX(stage)
-                tutorialTaskTable.y = topBar.y - tutorialTaskTable.height
+                minimapWrapper.tutorialHideButton.actor.isVisible = true
+                if (isTutorialShown) {
+                    tutorialTaskTable.isVisible = true
+                    tutorialTaskTable.add(tutorialTask.toLabel()
+                        .apply { setAlignment(Align.center) }).pad(10f)
+                    tutorialTaskTable.pack()
+                    tutorialTaskTable.centerX(stage)
+                    tutorialTaskTable.y = topBar.y - tutorialTaskTable.height
+                } else tutorialTaskTable.isVisible = false
             }
 
             if (fogOfWar) minimapWrapper.update(selectedCiv)
