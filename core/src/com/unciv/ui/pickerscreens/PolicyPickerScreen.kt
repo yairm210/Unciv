@@ -564,7 +564,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: Civilization = w
         table.add(branch.name.tr().uppercase().toLabel(fontSize = 14).apply { setAlignment(Align.center) }).center()
         table.add(icon).expandX().left().padLeft(5f)
         
-        table.setTouchable(Touchable.enabled);
+        table.setTouchable(Touchable.enabled)
 
         header.add(table).minWidth(150f).growX()
         header.pack()
