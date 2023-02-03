@@ -176,7 +176,7 @@ class GameOptionsTable(
         { gameParameters.espionageEnabled = it }
 
     private fun Table.addRandomNationsPoolCheckbox() =
-            addCheckbox("Random nations pool", gameParameters.enableRandomNationsPool) {
+            addCheckbox("Set available nations for random pool", gameParameters.enableRandomNationsPool) {
                 gameParameters.enableRandomNationsPool = it
                 keepAdvancedTabOpenForNationsPool = it
                 update()
@@ -474,14 +474,14 @@ private class RandomNationPickerPopup(
         nationListScroll.setOverscroll(false, false)
         // +10, because the nation table has a 5f pad, for a total of +10f
         if (stageToShowOn.isNarrowerThan4to3()) {
-            add("Available nations")
+            add("Available nations".tr())
             row()
             add(nationListScroll).size( civBlocksWidth + 10f, partHeight )
             row()
-            add("Banned nations").row()
+            add("Banned nations".tr()).row()
         } else {
-            add("Available nations")
-            add("Banned nations").row()
+            add("Available nations".tr())
+            add("Banned nations".tr()).row()
             row()
             add(nationListScroll).size( civBlocksWidth + 10f, partHeight )
         }
