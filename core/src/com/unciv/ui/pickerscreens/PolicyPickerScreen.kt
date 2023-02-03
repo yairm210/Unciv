@@ -581,8 +581,8 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: Civilization = w
         lockIcon.isVisible = false
         if (viewingCiv.policies.isAdopted(branch.name)) {
             policy = branch.policies.last()
-            val amountToDo = branch.policies.count()
-            val amountDone = branch.policies.count { viewingCiv.policies.adoptedPolicies.contains(it.name) }
+            val amountToDo = branch.policies.count()-1
+            val amountDone = branch.policies.count { (viewingCiv.policies.adoptedPolicies.contains(it.name) && !Policy.isBranchCompleteByName(it.name)) }
             text = "{Completed} ($amountDone/$amountToDo)"
         } else if (viewingCiv.gameInfo.ruleset.eras[branch.era]!!.eraNumber > viewingCiv.getEraNumber()) {
             policy = branch
