@@ -23,6 +23,7 @@ import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.onDoubleClick
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.utils.concurrency.Concurrency
 import kotlin.math.abs
@@ -80,19 +81,7 @@ class TechPickerScreen(
         pickerPane.bottomTable.background = skinStrings.getUiBackground("TechPickerScreen/BottomTable", tintColor = skinStrings.skinConfig.clearColor)
 
         rightSideButton.setText("Pick a tech".tr())
-        rightSideButton.onClick(UncivSound.Paper) {
-            if (freeTechPick) {
-                val freeTech = selectedTech!!.name
-                // More evil people fast-clicking to cheat - #4977
-                if (!researchableTechs.contains(freeTech)) return@onClick
-                civTech.getFreeTechnology(selectedTech!!.name)
-            }
-            else civTech.techsToResearch = tempTechsToResearch
-
-            game.settings.addCompletedTutorialTask("Pick technology")
-
-            game.popScreen()
-        }
+        rightSideButton.onClick(UncivSound.Paper) { tryExit() }
 
         // per default show current/recent technology,
         // and possibly select it to show description,
@@ -110,6 +99,20 @@ class TechPickerScreen(
             if (firstAvailableTech != null)
                 centerOnTechnology(firstAvailableTech)
         }
+    }
+
+    private fun tryExit() {
+        if (freeTechPick) {
+            val freeTech = selectedTech!!.name
+            // More evil people fast-clicking to cheat - #4977
+            if (!researchableTechs.contains(freeTech)) return
+            civTech.getFreeTechnology(selectedTech!!.name)
+        }
+        else civTech.techsToResearch = tempTechsToResearch
+
+        game.settings.addCompletedTutorialTask("Pick technology")
+
+        game.popScreen()
     }
 
     private fun createTechTable() {
@@ -182,6 +185,7 @@ class TechPickerScreen(
                     table.add(techButton)
                     techNameToButton[tech.name] = techButton
                     techButton.onClick { selectTechnology(tech, false) }
+                    techButton.onDoubleClick(UncivSound.Paper) { tryExit() }
                     techTable.add(table).fillX()
                 }
             }
