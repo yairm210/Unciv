@@ -29,7 +29,6 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var numberOfCityStates = 6
 
     var enableRandomNationsPool = false
-    var blacklistRandomNationsPool = false
     var randomNations = arrayListOf<Nation>()
 
     var noCityRazing = false
