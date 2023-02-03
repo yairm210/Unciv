@@ -3,6 +3,7 @@ package com.unciv.ui.pickerscreens
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -562,6 +563,8 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: Civilization = w
         table.add(expandIcon).minWidth(15f).expandX().left()
         table.add(branch.name.tr().uppercase().toLabel(fontSize = 14).apply { setAlignment(Align.center) }).center()
         table.add(icon).expandX().left().padLeft(5f)
+        
+        table.setTouchable(Touchable.enabled)
 
         header.add(table).minWidth(150f).growX()
         header.pack()
