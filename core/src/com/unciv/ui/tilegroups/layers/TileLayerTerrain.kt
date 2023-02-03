@@ -49,10 +49,6 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
         val tile = tileGroup.tile
 
-        if (tile.naturalWonder != null)
-            return if (strings().tileSetConfig.useSummaryImages) baseHexagon + strings().naturalWonder
-            else baseHexagon + strings().orFallback{ getTile(tile.naturalWonder!!) }
-
         val shownImprovement = tile.getShownImprovement(viewingCiv)
         val shouldShowImprovement = shownImprovement != null && UncivGame.Current.settings.showPixelImprovements
 
@@ -64,13 +60,17 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             if (shouldShowImprovement) yield(shownImprovement!!)
         }
 
-        val terrainImages = sequenceOf(tile.baseTerrain) + tile.terrainFeatures.asSequence()
+        val naturalWonder = if (tile.naturalWonder != null)
+            sequenceOf(tile.naturalWonder!!)
+        else emptySequence()
+        val terrainImages = sequenceOf(tile.baseTerrain) + tile.terrainFeatures.asSequence() + naturalWonder
         val allTogether = (terrainImages + resourceAndImprovementSequence).joinToString("+")
         val allTogetherLocation = strings().getTile(allTogether)
 
         return when {
             strings().tileSetConfig.ruleVariants[allTogether] != null -> baseHexagon + strings().tileSetConfig.ruleVariants[allTogether]!!.map { strings().getTile(it) }
             ImageGetter.imageExists(allTogetherLocation) -> baseHexagon + allTogetherLocation
+            tile.naturalWonder != null -> getNaturalWonderBackupImage(baseHexagon)
             else -> baseHexagon + getTerrainImageLocations(terrainImages) + getImprovementAndResourceImages(resourceAndImprovementSequence)
         }
     }
@@ -192,5 +192,9 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         isVisible = false
         updateRivers(displayBottomRight = false, displayBottom = false, displayBottomLeft = false)
     }
+
+    private fun getNaturalWonderBackupImage(baseHexagon: List<String>): List<String> =
+            if (strings().tileSetConfig.useSummaryImages) baseHexagon + strings().naturalWonder
+            else baseHexagon + strings().orFallback{ getTile(tileGroup.tile.naturalWonder!!) }
 
 }

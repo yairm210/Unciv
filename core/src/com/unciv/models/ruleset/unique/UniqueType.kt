@@ -518,6 +518,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     RegionExtraResource("Starts in regions of this type receive an extra [resource]", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
     BlocksResources("Never receives any resources", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
     ChangesTerrain("Becomes [terrainName] when adjacent to [terrainFilter]", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
+    ConsideredAsTerrainType("Considered a [terrainFilter] tile", UniqueTarget.Terrain),
 
     HasQuality("Considered [terrainQuality] when determining start locations", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
 

@@ -11,7 +11,8 @@ object TileInfoNormalizer {
         if (tile.naturalWonder != null && !ruleset.terrains.containsKey(tile.naturalWonder))
             tile.naturalWonder = null
         if (tile.naturalWonder != null) {
-            tile.baseTerrain = tile.getNaturalWonder().turnsInto!!
+            if (tile.getNaturalWonder().turnsInto != null)
+                tile.baseTerrain = tile.getNaturalWonder().turnsInto!!
             tile.setTerrainFeatures(listOf())
             tile.resource = null
             tile.changeImprovement(null)

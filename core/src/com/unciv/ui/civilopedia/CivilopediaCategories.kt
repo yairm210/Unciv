@@ -29,7 +29,7 @@ object CivilopediaImageGetters {
         when (terrain.type) {
             TerrainType.NaturalWonder -> {
                 tile.naturalWonder = terrain.name
-                tile.baseTerrain = terrain.turnsInto ?: Constants.grassland
+                tile.baseTerrain = terrain.turnsInto ?: terrain.occursOn.firstOrNull() ?: Constants.grassland
             }
             TerrainType.TerrainFeature -> {
                 tile.baseTerrain =
