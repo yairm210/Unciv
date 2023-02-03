@@ -276,25 +276,62 @@ fun Actor.centerX(parent: Stage) { x = parent.width / 2 - width / 2 }
 fun Actor.centerY(parent: Stage) { y = parent.height / 2 - height / 2 }
 fun Actor.center(parent: Stage) { centerX(parent); centerY(parent) }
 
-class OnClickListener(val sound: UncivSound = UncivSound.Click, val function: (event: InputEvent?, x: Float, y: Float) -> Unit):ClickListener(){
+class ClickListenerInstance(val sound: UncivSound, val function: (event: InputEvent?, x: Float, y: Float) -> Unit, val tapCount: Int)
+
+class OnClickListener(val sound: UncivSound = UncivSound.Click,
+                      val function: (event: InputEvent?, x: Float, y: Float) -> Unit,
+                      tapCount: Int = 1,
+                      tapInterval: Float = 0.0f): ClickListener() {
+
+    private val clickFunctions = mutableMapOf<Int, ClickListenerInstance>()
+
+    init {
+        setTapCountInterval(tapInterval)
+        clickFunctions[tapCount] = ClickListenerInstance(sound, function, tapCount)
+    }
+
+    fun addClickFunction(sound: UncivSound = UncivSound.Click, tapCount: Int, function: (event: InputEvent?, x: Float, y: Float) -> Unit) {
+        clickFunctions[tapCount] = ClickListenerInstance(sound, function, tapCount)
+    }
+
     override fun clicked(event: InputEvent?, x: Float, y: Float) {
-        Concurrency.run("Sound") { SoundPlayer.play(sound) }
-        function(event, x, y)
+        var effectiveTapCount = tapCount
+        if (clickFunctions[effectiveTapCount] == null) {
+            effectiveTapCount = clickFunctions.keys.maxOrNull() ?: return
+        }
+        val clickInstance = clickFunctions[effectiveTapCount]!!
+        Concurrency.run("Sound") { SoundPlayer.play(clickInstance.sound) }
+        val func = clickInstance.function
+        func(event, x, y)
     }
 }
 
 /** same as [onClick], but sends the [InputEvent] and coordinates along */
-fun Actor.onClickEvent(sound: UncivSound = UncivSound.Click, function: (event: InputEvent?, x: Float, y: Float) -> Unit) {
-    this.addListener(OnClickListener(sound, function))
+fun Actor.onClickEvent(sound: UncivSound = UncivSound.Click,
+                       tapCount: Int = 1,
+                       tapInterval: Float = 0.0f,
+                       function: (event: InputEvent?, x: Float, y: Float) -> Unit) {
+    val previousListener = this.listeners.firstOrNull()
+    if (previousListener != null && previousListener is OnClickListener) {
+        previousListener.addClickFunction(sound, tapCount, function)
+        previousListener.setTapCountInterval(tapInterval)
+    } else {
+        this.addListener(OnClickListener(sound, function, tapCount, tapInterval))
+    }
 }
 
 // If there are other buttons that require special clicks then we'll have an onclick that will accept a string parameter, no worries
-fun Actor.onClick(sound: UncivSound = UncivSound.Click, function: () -> Unit) {
-    onClickEvent(sound) { _, _, _ -> function() }
+fun Actor.onClick(sound: UncivSound = UncivSound.Click, tapCount: Int = 1, tapInterval: Float = 0.0f, function: () -> Unit) {
+    onClickEvent(sound, tapCount, tapInterval) { _, _, _ -> function() }
 }
 
 fun Actor.onClick(function: () -> Unit): Actor {
-    onClick(UncivSound.Click, function)
+    onClick(UncivSound.Click, 1, 0f, function)
+    return this
+}
+
+fun Actor.onDoubleClick(sound: UncivSound = UncivSound.Click, tapInterval: Float = 0.25f, function: () -> Unit): Actor {
+    onClick(sound, 2, tapInterval, function)
     return this
 }
 
