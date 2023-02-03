@@ -297,7 +297,7 @@ class OnClickListener(val sound: UncivSound = UncivSound.Click,
     override fun clicked(event: InputEvent?, x: Float, y: Float) {
         var effectiveTapCount = tapCount
         if (clickFunctions[effectiveTapCount] == null) {
-            effectiveTapCount = clickFunctions.keys.maxOrNull() ?: return
+            effectiveTapCount = clickFunctions.keys.filter { it < tapCount }.maxOrNull() ?: return // happens if there's a double (or more) click function but no single click
         }
         val clickInstance = clickFunctions[effectiveTapCount]!!
         Concurrency.run("Sound") { SoundPlayer.play(clickInstance.sound) }
