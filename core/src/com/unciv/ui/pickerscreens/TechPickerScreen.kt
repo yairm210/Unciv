@@ -185,7 +185,7 @@ class TechPickerScreen(
                     table.add(techButton)
                     techNameToButton[tech.name] = techButton
                     techButton.onClick { selectTechnology(tech, false) }
-                    techButton.onDoubleClick { tryExit() }
+                    techButton.onDoubleClick(UncivSound.Paper) { tryExit() }
                     techTable.add(table).fillX()
                 }
             }
