@@ -655,6 +655,8 @@ class Civilization : IsPartOfGameInfoSerialization {
         hasLongCountDisplayUnique = hasUnique(UniqueType.MayanCalendarDisplay)
 
         tacticalAI.init(this)
+
+        cache.setTransients()
     }
 
 
