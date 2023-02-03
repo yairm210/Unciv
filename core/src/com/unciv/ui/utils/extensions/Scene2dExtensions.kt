@@ -311,7 +311,7 @@ fun Actor.onClickEvent(sound: UncivSound = UncivSound.Click,
                        tapCount: Int = 1,
                        tapInterval: Float = 0.0f,
                        function: (event: InputEvent?, x: Float, y: Float) -> Unit) {
-    val previousListener = this.listeners.firstOrNull()
+    val previousListener = this.listeners.firstOrNull { it is OnClickListener }
     if (previousListener != null && previousListener is OnClickListener) {
         previousListener.addClickFunction(sound, tapCount, function)
         previousListener.setTapCountInterval(tapInterval)
