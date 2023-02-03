@@ -252,6 +252,10 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     //endregion
     //region State changing functions
 
+    // Do we automatically simulate until N turn?
+    fun isSimulation(): Boolean = turns < UncivGame.Current.simulateUntilTurnForDebug
+            || turns < simulateMaxTurns && simulateUntilWin
+
     fun nextTurn() {
 
         var player = currentPlayerCiv
@@ -278,13 +282,11 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             setNextPlayer()
         }
 
-        // Do we automatically simulate until N turn?
-        val isSimulation = turns < UncivGame.Current.simulateUntilTurnForDebug
-                || turns < simulateMaxTurns && simulateUntilWin
+
         val isOnline = gameParameters.isOnlineMultiplayer
 
         // We process player automatically if:
-        while (isSimulation ||                      // simulation is active
+        while (isSimulation() ||                    // simulation is active
                 player.isAI() ||                    // or player is AI
                 isOnline && (player.isDefeated() || // or player is online defeated
                         player.isSpectator()))      // or player is online spectator
