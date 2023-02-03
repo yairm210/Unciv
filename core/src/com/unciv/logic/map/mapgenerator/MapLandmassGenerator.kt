@@ -115,7 +115,8 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
             }
 
             tileMap.assignContinents(TileMap.AssignContinentsMode.Reassign)
-        } while (tileMap.continentSizes.values.count { it > 25 } != 1)
+        } while (tileMap.continentSizes.values.count { it > 25 } != 1 // Multiple large continents
+                || tileMap.values.count { it.baseTerrain == waterTerrainName } > tileMap.values.size * 0.7f) // Over 70% water
 
         tileMap.assignContinents(TileMap.AssignContinentsMode.Clear)
     }
