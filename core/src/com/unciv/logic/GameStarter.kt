@@ -223,14 +223,8 @@ object GameStarter {
         val availableCivNames = Stack<String>()
         // CityState or Spectator civs are not available for Random pick
         if (gameSetupInfo.gameParameters.enableRandomNationsPool) {
-            if (gameSetupInfo.gameParameters.blacklistRandomNationsPool) {
-                availableCivNames.addAll(ruleset.nations.filter { it.value.isMajorCiv() }.keys.shuffled())
-                for (nation in gameSetupInfo.gameParameters.randomNations)
-                    availableCivNames.remove(nation.name)
-            } else {
-                for (nation in gameSetupInfo.gameParameters.randomNations)
-                    availableCivNames.add(nation.name)
-            }
+            for (nation in gameSetupInfo.gameParameters.randomNations)
+                availableCivNames.add(nation.name)
         } else
             availableCivNames.addAll(ruleset.nations.filter { it.value.isMajorCiv() }.keys.shuffled())
 
