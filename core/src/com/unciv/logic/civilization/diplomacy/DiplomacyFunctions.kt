@@ -12,7 +12,6 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.extensions.withItem
 
 class DiplomacyFunctions(val civInfo:Civilization){
 

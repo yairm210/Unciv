@@ -262,6 +262,7 @@ open class Tile : IsPartOfGameInfoSerialization {
     fun getTileImprovement(): TileImprovement? = if (improvement == null) null else ruleset.tileImprovements[improvement!!]
     fun getUnpillagedTileImprovement(): TileImprovement? = if (getUnpillagedImprovement() == null) null else ruleset.tileImprovements[improvement!!]
     fun getTileImprovementInProgress(): TileImprovement? = if (improvementInProgress == null) null else ruleset.tileImprovements[improvementInProgress!!]
+
     fun getImprovementToPillage(): TileImprovement? {
         if (canPillageTileImprovement())
             return ruleset.tileImprovements[improvement]!!
@@ -297,18 +298,8 @@ open class Tile : IsPartOfGameInfoSerialization {
                 && !ruleset.tileImprovements[roadStatus.name]!!.hasUnique(UniqueType.Unpillagable)
                 && !ruleset.tileImprovements[roadStatus.name]!!.hasUnique(UniqueType.Irremovable)
     }
-    fun getUnpillagedImprovement(): String? {
-        return if (improvementIsPillaged)
-            null
-        else
-            improvement
-    }
-    fun getUnpillagedRoad(): RoadStatus {
-        return if (roadIsPillaged)
-            RoadStatus.None
-        else
-            roadStatus
-    }
+    fun getUnpillagedImprovement(): String? = if (improvementIsPillaged) null else improvement
+    fun getUnpillagedRoad(): RoadStatus = if (roadIsPillaged) RoadStatus.None else roadStatus
     fun getUnpillagedRoadImprovement(): TileImprovement? {
         return if (getUnpillagedRoad() == RoadStatus.None) null
         else ruleset.tileImprovements[getUnpillagedRoad().name]

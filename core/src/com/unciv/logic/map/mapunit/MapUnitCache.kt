@@ -88,7 +88,7 @@ class MapUnitCache(val mapUnit: MapUnit) {
         doubleMovementInTerrain.clear()
         for (unique in mapUnit.getMatchingUniques(UniqueType.DoubleMovementOnTerrain)) {
             val param = unique.params[0]
-            val terrain = mapUnit.currentTile.ruleset.terrains[param]
+            val terrain = mapUnit.civ.gameInfo.ruleSet.terrains[param]
             doubleMovementInTerrain[param] = when {
                 terrain == null -> DoubleMovementTerrainTarget.Filter
                 terrain.name == Constants.hill -> DoubleMovementTerrainTarget.Hill

@@ -29,7 +29,6 @@ import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.enable
-import com.unciv.ui.utils.extensions.isEnabled
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.pad
 import com.unciv.ui.utils.extensions.toGroup
