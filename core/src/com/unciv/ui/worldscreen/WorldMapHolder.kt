@@ -34,7 +34,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.UncivStage
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.map.TileGroupMap
+import com.unciv.ui.tilegroups.TileGroupMap
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.tilegroups.WorldTileGroup
@@ -72,37 +72,31 @@ class WorldMapHolder(
         if (Gdx.app.type == Application.ApplicationType.Desktop) this.setFlingTime(0f)
         continuousScrollingX = tileMap.mapParameters.worldWrap
         reloadMaxZoom()
-        disablePointerEventsAndActionsOnPan()
+        setupZoomPanListeners()
     }
 
     /**
-     * When scrolling or zooming the world map, there are two unnecessary (at least currently) things happening that take a decent amount of time:
+     * When scrolling or zooming the world map, there are three unnecessary (at least currently) things happening that take a decent amount of time:
      *
      * 1. Checking which [Actor]'s bounds the pointer (mouse/finger) entered+exited and sending appropriate events to these actors
      * 2. Running all [Actor.act] methods of all child [Actor]s
-     * 3. Running all [Actor.hit] methode of all chikld [Actor]s
+     * 3. Running all [Actor.hit] methods of all child [Actor]s
      *
-     * Disabling them while panning increases the frame rate while panning by approximately 100%.
+     * Disabling them while panning/zooming increases the frame rate by approximately 100%.
      */
-    private fun disablePointerEventsAndActionsOnPan() {
-        onPanStartListener = {
-            (stage as UncivStage).performPointerEnterExitEvents = false
-            tileGroupMap.shouldAct = false
+    private fun setupZoomPanListeners() {
+
+        fun setActHit() {
+            val isEnabled = !isZooming() && !isPanning
+            (stage as UncivStage).performPointerEnterExitEvents = isEnabled
+            tileGroupMap.shouldAct = isEnabled
+            tileGroupMap.shouldHit = isEnabled
         }
-        onPanStopListener = {
-            (stage as UncivStage).performPointerEnterExitEvents = true
-            tileGroupMap.shouldAct = true
-        }
-        onZoomStartListener = {
-            (stage as UncivStage).performPointerEnterExitEvents = false
-            tileGroupMap.shouldAct = false
-            tileGroupMap.touchable = Touchable.disabled
-        }
-        onZoomStopListener = {
-            (stage as UncivStage).performPointerEnterExitEvents = true
-            tileGroupMap.shouldAct = true
-            tileGroupMap.touchable = Touchable.enabled
-        }
+
+        onPanStartListener = { setActHit() }
+        onPanStopListener = { setActHit() }
+        onZoomStartListener = { setActHit() }
+        onZoomStopListener = { setActHit() }
     }
 
     // Interface for classes that contain the data required to draw a button

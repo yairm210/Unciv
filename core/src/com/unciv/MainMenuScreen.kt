@@ -21,7 +21,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.map.TileGroupMap
+import com.unciv.ui.tilegroups.TileGroupMap
 import com.unciv.ui.mapeditor.EditorMapHolder
 import com.unciv.ui.mapeditor.MapEditorScreen
 import com.unciv.ui.multiplayer.MultiplayerScreen

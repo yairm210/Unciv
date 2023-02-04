@@ -1,14 +1,15 @@
 package com.unciv.ui.utils
 
 import com.badlogic.gdx.math.Interpolation
+import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputEvent
-import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
+import com.badlogic.gdx.scenes.scene2d.actions.TemporalAction
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.badlogic.gdx.scenes.scene2d.utils.Cullable
@@ -31,12 +32,13 @@ open class ZoomableScrollPane(
     var onPanStartListener: (() -> Unit)? = null
     var onZoomStopListener: (() -> Unit)? = null
     var onZoomStartListener: (() -> Unit)? = null
+    private val zoomListener = ZoomListener()
 
     private val horizontalPadding get() = width / 2
     private val verticalPadding get() = height / 2
 
     init {
-        addZoomListeners()
+        this.addListener(zoomListener)
     }
 
     fun reloadMaxZoom() {
@@ -48,6 +50,10 @@ open class ZoomableScrollPane(
         if (scaleX < minZoom)
             zoom(1f)
     }
+
+    // We don't want default scroll listener
+    // which defines that mouse scroll = vertical movement
+    override fun addScrollListener() {}
 
     override fun getActor() : Actor? {
         val group: Group = super.getActor() as Group
@@ -141,93 +147,160 @@ open class ZoomableScrollPane(
         // by half (i.e. middle) of what our size changed.
         // However, we also changed the padding, which is exactly equal to half of our size change, so we actually don't need to move our center at all.
     }
-    fun zoomIn() {
-        zoom(scaleX / 0.8f)
+    fun zoomIn(immediate: Boolean = false) {
+        if (immediate)
+            zoom(scaleX / 0.8f)
+        else
+            zoomListener.zoomIn(0.8f)
     }
-    fun zoomOut() {
-        zoom(scaleX * 0.8f)
+    fun zoomOut(immediate: Boolean = false) {
+        if (immediate)
+            zoom(scaleX * 0.8f)
+        else
+            zoomListener.zoomOut(0.8f)
     }
 
-    class ScrollZoomListener(private val zoomableScrollPane: ZoomableScrollPane):InputListener(){
-        override fun scrolled(event: InputEvent?, x: Float, y: Float, amountX: Float, amountY: Float): Boolean {
-            if (amountX > 0 || amountY > 0) zoomableScrollPane.zoomOut()
-            else zoomableScrollPane.zoomIn()
-            return false
+    fun isZooming(): Boolean {
+        return zoomListener.isZooming
+    }
+
+    inner class ZoomListener : ZoomGestureListener() {
+
+        inner class ZoomAction : TemporalAction() {
+
+            var startingZoom: Float = 1f
+            var finishingZoom: Float = 1f
+            var currentZoom: Float = 1f
+
+            init {
+                duration = 0.3f
+                interpolation = Interpolation.fastSlow
+            }
+
+            override fun begin() {
+                isZooming = true
+            }
+
+            override fun end() {
+                zoomAction = null
+                isZooming = false
+            }
+
+            override fun update(percent: Float) {
+                currentZoom = MathUtils.lerp(startingZoom, finishingZoom, percent)
+                zoom(currentZoom)
+            }
+
         }
-    }
 
-    class ZoomListener(private val zoomableScrollPane: ZoomableScrollPane): ZoomGestureListener(){
-
-        private var isZooming = false
+        private var zoomAction: ZoomAction? = null
         private var lastInitialDistance = 0f
         var lastScale = 1f
+        var isZooming = false
+
+        fun zoomOut(zoomMultiplier: Float = 0.82f) {
+            if (scaleX <= minZoom) {
+                if (zoomAction != null)
+                    zoomAction!!.finish()
+                return
+            }
+
+            if (zoomAction != null) {
+                zoomAction!!.startingZoom = zoomAction!!.currentZoom
+                zoomAction!!.finishingZoom *= zoomMultiplier
+                zoomAction!!.restart()
+            } else {
+                zoomAction = ZoomAction()
+                zoomAction!!.startingZoom = scaleX
+                zoomAction!!.finishingZoom = scaleX * zoomMultiplier
+                addAction(zoomAction)
+            }
+        }
+
+        fun zoomIn(zoomMultiplier: Float = 0.82f) {
+            if (scaleX >= maxZoom) {
+                if (zoomAction != null)
+                    zoomAction!!.finish()
+                return
+            }
+
+            if (zoomAction != null) {
+                zoomAction!!.startingZoom = zoomAction!!.currentZoom
+                zoomAction!!.finishingZoom /= zoomMultiplier
+                zoomAction!!.restart()
+            } else {
+                zoomAction = ZoomAction()
+                zoomAction!!.startingZoom = scaleX
+                zoomAction!!.finishingZoom = scaleX / zoomMultiplier
+                addAction(zoomAction)
+            }
+        }
 
         override fun pinch() {
             if (!isZooming) {
                 isZooming = true
-                zoomableScrollPane.onZoomStartListener?.invoke()
+                onZoomStartListener?.invoke()
             }
         }
 
         override fun pinchStop() {
             isZooming = false
-            zoomableScrollPane.onZoomStopListener?.invoke()
+            onZoomStopListener?.invoke()
         }
 
-        override fun zoom(event: InputEvent?, initialDistance: Float, distance: Float) {
+        override fun zoom(initialDistance: Float, distance: Float) {
             if (lastInitialDistance != initialDistance) {
                 lastInitialDistance = initialDistance
-                lastScale = zoomableScrollPane.scaleX
+                lastScale = scaleX
             }
             val scale: Float = sqrt((distance / initialDistance).toDouble()).toFloat() * lastScale
-            zoomableScrollPane.zoom(scale)
+            zoom(scale)
         }
 
+        override fun scrolled(amountX: Float, amountY: Float): Boolean {
+            if (amountX > 0 || amountY > 0)
+                zoomOut()
+            else
+                zoomIn()
+            return true
+        }
     }
 
-    private fun addZoomListeners() {
-        // At first, Remove the existing inputListener
-        // which defines that mouse scroll = vertical movement
-        val zoomListener = listeners.last { it is InputListener && it !in captureListeners }
-        removeListener(zoomListener)
-        addListener(ScrollZoomListener(this))
-        addListener(ZoomListener(this))
-    }
-
-    class FlickScrollListener(private val zoomableScrollPane: ZoomableScrollPane): ActorGestureListener(){
-        private var wasPanning = false
+    inner class FlickScrollListener : ActorGestureListener() {
+        private var isPanning = false
         override fun pan(event: InputEvent, x: Float, y: Float, deltaX: Float, deltaY: Float) {
-            if (!wasPanning) {
-                wasPanning = true
-                zoomableScrollPane.onPanStartListener?.invoke()
+            if (!isPanning) {
+                isPanning = true
+                onPanStartListener?.invoke()
             }
-            zoomableScrollPane.setScrollbarsVisible(true)
-            zoomableScrollPane.scrollX -= deltaX
-            zoomableScrollPane.scrollY += deltaY
+            setScrollbarsVisible(true)
+            scrollX -= deltaX
+            scrollY += deltaY
 
             //this is the new feature to fake an infinite scroll
             when {
-                zoomableScrollPane.continuousScrollingX && zoomableScrollPane.scrollPercentX >= 1 && deltaX < 0 -> {
-                    zoomableScrollPane.scrollPercentX = 0f
+                continuousScrollingX && scrollPercentX >= 1 && deltaX < 0 -> {
+                    scrollPercentX = 0f
                 }
-                zoomableScrollPane.continuousScrollingX && zoomableScrollPane.scrollPercentX <= 0 && deltaX > 0-> {
-                    zoomableScrollPane.scrollPercentX = 1f
+                continuousScrollingX && scrollPercentX <= 0 && deltaX > 0-> {
+                    scrollPercentX = 1f
                 }
             }
 
             //clamp() call is missing here but it doesn't seem to make any big difference in this case
 
-            if ((zoomableScrollPane.isScrollX && deltaX != 0f || zoomableScrollPane.isScrollY && deltaY != 0f)) zoomableScrollPane.cancelTouchFocus()
+            if ((isScrollX && deltaX != 0f || isScrollY && deltaY != 0f))
+                cancelTouchFocus()
         }
 
         override fun panStop(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-            wasPanning = false
-            zoomableScrollPane.onPanStopListener?.invoke()
+            isPanning = false
+            onPanStopListener?.invoke()
         }
     }
 
     override fun getFlickScrollListener(): ActorGestureListener {
-        return FlickScrollListener(this)
+        return FlickScrollListener()
     }
 
     private var scrollingTo: Vector2? = null

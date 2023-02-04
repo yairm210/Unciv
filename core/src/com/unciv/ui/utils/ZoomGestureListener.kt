@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent
 open class ZoomGestureListener(
     halfTapSquareSize: Float, tapCountInterval: Float, longPressDuration: Float, maxFlingDelay: Float
 ) : EventListener {
-
     val detector: GestureDetector
     var event: InputEvent? = null
 
@@ -24,7 +23,7 @@ open class ZoomGestureListener(
             object : GestureDetector.GestureAdapter() {
 
                 override fun zoom(initialDistance: Float, distance: Float): Boolean {
-                    this@ZoomGestureListener.zoom(event, initialDistance, distance)
+                    this@ZoomGestureListener.zoom(initialDistance, distance)
                     return true
                 }
 
@@ -71,10 +70,15 @@ open class ZoomGestureListener(
                 detector.touchDragged(event.stageX, event.stageY, event.pointer)
                 return true
             }
+            InputEvent.Type.scrolled -> {
+                return scrolled(event.scrollAmountX, event.scrollAmountY)
+            }
             else -> return false
         }
     }
-    open fun zoom(event: InputEvent?, initialDistance: Float, distance: Float) {}
+
+    open fun scrolled(amountX: Float, amountY: Float): Boolean { return false }
+    open fun zoom(initialDistance: Float, distance: Float) {}
     open fun pinch() {}
     open fun pinchStop() {}
 }
