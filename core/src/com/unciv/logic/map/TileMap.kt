@@ -115,10 +115,10 @@ class TileMap : IsPartOfGameInfoSerialization {
 
         // Even widths will have coordinates ranging -x..(x-1), not -x..x, which is always an odd-sized range
         // e.g. w=4 -> -2..1, w=5 -> -2..2, w=6 -> -3..2, w=7 -> -3..3
-        for (x in -wrapAdjustedWidth / 2 .. (wrapAdjustedWidth-1) / 2)
-            for (y in -height / 2 .. (height-1) / 2)
+        for (row in -wrapAdjustedWidth / 2 .. (wrapAdjustedWidth-1) / 2)
+            for (column in -height / 2 .. (height-1) / 2)
                 tileList.add(Tile().apply {
-                    position = HexMath.evenQ2HexCoords(Vector2(x.toFloat(), y.toFloat()))
+                    position = HexMath.evenQ2HexCoords(Vector2(row.toFloat(), column.toFloat()))
                     baseTerrain = firstAvailableLandTerrain
                 })
 

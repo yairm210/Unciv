@@ -120,6 +120,12 @@ object HexMath {
         return Vector2(x, y)
     }
 
+    // Both x - 10 o'clock - and y - 2 o'clock - increase the row by 1
+    fun getRow(hexCoord: Vector2): Int = (hexCoord.x + hexCoord.y).toInt()
+
+    // y is 2 o'clock - increases column by 1, x in 10 o'clock - decreases by 1
+    fun getColumn(hexCoord: Vector2): Int = (hexCoord.y - hexCoord.x).toInt()
+
     fun hex2CubicCoords(hexCoord: Vector2): Vector3 {
         return Vector3(hexCoord.y - hexCoord.x, hexCoord.x, -hexCoord.y)
     }
@@ -128,9 +134,6 @@ object HexMath {
         return Vector2(cubicCoord.y, -cubicCoord.z)
     }
 
-    fun cubic2EvenQCoords(cubicCoord: Vector3): Vector2 {
-        return Vector2(cubicCoord.x, cubicCoord.z + (cubicCoord.x + (cubicCoord.x.toInt() and 1)) / 2)
-    }
 
     fun evenQ2CubicCoords(evenQCoord: Vector2): Vector3 {
         val x = evenQCoord.x
@@ -144,13 +147,6 @@ object HexMath {
             Vector2.Zero
         else
             cubic2HexCoords(evenQ2CubicCoords(evenQCoord))
-    }
-
-    fun hex2EvenQCoords(hexCoord: Vector2): Vector2 {
-        return if (hexCoord == Vector2.Zero)
-            Vector2.Zero
-        else
-            cubic2EvenQCoords(hex2CubicCoords(hexCoord))
     }
 
     fun roundCubicCoords(cubicCoords: Vector3): Vector3 {
