@@ -1,3 +1,47 @@
+## 4.4.10
+
+Don't allow pangaea with over 70% water tiles
+
+Fixed unique buildings and units not replacing originals
+
+chore: renamed GameInfo.ruleSet -> ruleset
+
+Resolved  - crash when purchasing inquisitor
+
+chore: improvement stat functions are more related to 'stat' than to 'improvement'
+
+chore: separated tile description into a separate file
+
+chore: separated unit cached values into separate file
+
+Renamed MapUnit.civInfo -> civ
+
+Renamed City.civInfo -> civ
+
+Resolved  - modding: "Unbuildable" accepts conditionals
+
+Stats serialize to notifications - see 
+
+By vegeta1k95:
+- Smooth zoom when scrolling + cleanup code for listeners 
+- Fix simulation 
+- Performance optimization: fast and smooth zoom 
+
+By Gualdimar:
+- Policies screen top button reworked 
+- Android autosave location fix 
+- UnitTable close button clickHandler fix 
+- Fix unresponsive policy screen header 
+- isSpectator check for notifications 
+
+AbsoluteUnits - Cataphract, Companion Cavalry, Horseman_v2  - By letstalkaboutdune
+
+Fix UX of random nations pool && keep advanced tab open when updating the screen  - By alexban011
+
+UI Double/Multi Click Functionality and Double Click on Tech to Exit Tech Screen  - By OptimizedForDensity
+
+Add AUR version badge  - By Thyrum
+
 ## 4.4.9
 
 By vegeta1k95:
