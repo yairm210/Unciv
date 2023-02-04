@@ -417,8 +417,13 @@ class UncivFiles(
         if(nextTurn) {
             val newAutosaveFilename =
                 SAVE_FILES_FOLDER + File.separator + AUTOSAVE_FILE_NAME + "-${gameInfo.currentPlayer}-${gameInfo.turns}"
-            getSave(AUTOSAVE_FILE_NAME).copyTo(files.local(newAutosaveFilename))
-    
+            val file =
+                if (preferExternalStorage && files.isExternalStorageAvailable)
+                    files.external(newAutosaveFilename)
+                else
+                    files.local(newAutosaveFilename)
+            getSave(AUTOSAVE_FILE_NAME).copyTo(file)
+
             fun getAutosaves(): Sequence<FileHandle> {
                 return getSaves().filter { it.name().startsWith(AUTOSAVE_FILE_NAME) }
             }
