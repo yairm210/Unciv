@@ -488,7 +488,6 @@ open class Tile : IsPartOfGameInfoSerialization {
             "Featureless" -> terrainFeatures.isEmpty()
             Constants.freshWaterFilter -> isAdjacentTo(Constants.freshWater)
             else -> {
-                if (terrainUniqueMap.getUniques(UniqueType.ConsideredAsTerrainType).any { it.params[0] == filter }) return true
                 if (terrainFeatures.contains(filter)) return true
                 if (terrainUniqueMap.getUniques(filter).any()) return true
 
