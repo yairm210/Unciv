@@ -174,12 +174,12 @@ class MapRegions (val ruleset: Ruleset){
                 splitOffRegion.tileMap.getTilesInRectangle(Rectangle(
                         splitOffRegion.rect.x + splitPoint - 1, splitOffRegion.rect.y,
                         1f, splitOffRegion.rect.height),
-                        evenQ = true)
+                        rowsAndColumns = true)
             else
                 splitOffRegion.tileMap.getTilesInRectangle(Rectangle(
                         splitOffRegion.rect.x, splitOffRegion.rect.y + splitPoint - 1,
                         splitOffRegion.rect.width, 1f),
-                        evenQ = true)
+                        rowsAndColumns = true)
 
             cumulativeFertility += if (splitOffRegion.continentID == -1)
                 nextRect.sumOf { it.getTileFertility(false) }
@@ -408,7 +408,7 @@ class MapRegions (val ruleset: Ruleset){
         val fallbackTiles = HashSet<Vector2>()
 
         // First check center
-        val centerTiles = region.tileMap.getTilesInRectangle(centerRect, evenQ = true)
+        val centerTiles = region.tileMap.getTilesInRectangle(centerRect, rowsAndColumns = true)
         for (tile in centerTiles) {
             if (tileData[tile.position]!!.isTwoFromCoast)
                 continue // Don't even consider tiles two from coast
@@ -436,7 +436,7 @@ class MapRegions (val ruleset: Ruleset){
         }
 
         // Now check middle donut
-        val middleDonut = region.tileMap.getTilesInRectangle(middleRect, evenQ = true).filterNot { it in centerTiles }
+        val middleDonut = region.tileMap.getTilesInRectangle(middleRect, rowsAndColumns = true).filterNot { it in centerTiles }
         riverTiles.clear()
         wetTiles.clear()
         dryTiles.clear()
@@ -467,7 +467,7 @@ class MapRegions (val ruleset: Ruleset){
         }
 
         // Now check the outer tiles. For these we don't care about rivers, coasts etc
-        val outerDonut = region.tileMap.getTilesInRectangle(region.rect, evenQ = true).filterNot { it in centerTiles || it in middleDonut}
+        val outerDonut = region.tileMap.getTilesInRectangle(region.rect, rowsAndColumns = true).filterNot { it in centerTiles || it in middleDonut}
         dryTiles.clear()
         for (tile in outerDonut) {
             if (region.continentID != -1 && region.continentID != tile.getContinent())
@@ -1693,7 +1693,7 @@ class Region (val tileMap: TileMap, val rect: Rectangle, val continentID: Int = 
         val columnHasTile = HashSet<Int>()
 
         tiles.clear()
-        for (tile in tileMap.getTilesInRectangle(rect, evenQ = true).filter {
+        for (tile in tileMap.getTilesInRectangle(rect, rowsAndColumns = true).filter {
             continentID == -1 || it.getContinent() == continentID } ) {
             val fertility = tile.getTileFertility(continentID != -1)
             tiles.add(tile)
