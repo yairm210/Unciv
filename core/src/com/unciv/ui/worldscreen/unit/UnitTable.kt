@@ -82,15 +82,16 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
         add(VerticalGroup().apply {
             pad(5f)
-
-            deselectUnitButton.add(ImageGetter.getImage("OtherIcons/Close")).size(20f).pad(10f)
-            deselectUnitButton.pack()
-            deselectUnitButton.touchable = Touchable.enabled
-            deselectUnitButton.onClick {
+            touchable = Touchable.enabled
+            onClick {
                 selectUnit()
                 worldScreen.shouldUpdate = true
                 this@UnitTable.isVisible = false
             }
+
+            deselectUnitButton.add(ImageGetter.getImage("OtherIcons/Close")).size(20f).pad(10f)
+            deselectUnitButton.pack()
+            deselectUnitButton.touchable = Touchable.enabled
             addActor(deselectUnitButton)
         }).left()
 
