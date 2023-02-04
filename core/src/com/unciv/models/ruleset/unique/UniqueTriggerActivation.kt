@@ -19,6 +19,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
+import com.unciv.models.translations.tr
 import com.unciv.ui.utils.MayaCalendar
 import com.unciv.ui.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.roundToInt
@@ -59,7 +60,7 @@ object UniqueTriggerActivation {
                 val placedUnit = civInfo.units.addUnit(unitName, chosenCity) ?: return false
 
                 val notificationText = getNotificationText(notification, triggerNotificationText,
-                    "Gained [1] [$unitName] unit(s)")
+                    "Gained [1] [$unitName] unit(s)".tr())
                     ?: return true
 
                 civInfo.addNotification(

@@ -663,7 +663,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         // "Provides a free [buildingName] [cityFilter]"
         cityConstructions.addFreeBuildings()
 
-        val triggerNotificationText ="due to constructing [$name]"
+        val triggerNotificationText ="due to constructing [$name]".tr()
 
         for (unique in uniqueObjects)
             if (unique.conditionals.none { it.type!!.targetTypes.contains(UniqueTarget.TriggerCondition) })
