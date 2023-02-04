@@ -9,8 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent
 open class ZoomGestureListener(
     halfTapSquareSize: Float, tapCountInterval: Float, longPressDuration: Float, maxFlingDelay: Float
 ) : EventListener {
-
-    var isPinching = false
     val detector: GestureDetector
     var event: InputEvent? = null
 
