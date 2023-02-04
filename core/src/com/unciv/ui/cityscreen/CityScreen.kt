@@ -19,7 +19,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.ui.audio.CityAmbiencePlayer
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.map.TileGroupMap
+import com.unciv.ui.tilegroups.TileGroupMap
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.tilegroups.CityTileGroup
 import com.unciv.ui.tilegroups.TileSetStrings

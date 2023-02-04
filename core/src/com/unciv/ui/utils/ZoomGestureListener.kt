@@ -10,13 +10,14 @@ open class ZoomGestureListener(
     halfTapSquareSize: Float, tapCountInterval: Float, longPressDuration: Float, maxFlingDelay: Float
 ) : EventListener {
 
+    var isPinching = false
     val detector: GestureDetector
     var event: InputEvent? = null
 
     constructor() : this(20f, 0.4f, 1.1f, Int.MAX_VALUE.toFloat())
 
     init {
-        detector = GestureDetector(
+        detector = object : GestureDetector(
             halfTapSquareSize,
             tapCountInterval,
             longPressDuration,
@@ -24,7 +25,7 @@ open class ZoomGestureListener(
             object : GestureDetector.GestureAdapter() {
 
                 override fun zoom(initialDistance: Float, distance: Float): Boolean {
-                    this@ZoomGestureListener.zoom(event, initialDistance, distance)
+                    this@ZoomGestureListener.zoom(initialDistance, distance)
                     return true
                 }
 
@@ -34,14 +35,17 @@ open class ZoomGestureListener(
                     stagePointer1: Vector2,
                     stagePointer2: Vector2
                 ): Boolean {
+                    isPinching = true
                     this@ZoomGestureListener.pinch()
                     return true
                 }
 
                 override fun pinchStop() {
+                    isPinching = false
                     this@ZoomGestureListener.pinchStop()
                 }
-            })
+            }) {
+        }
     }
 
 
@@ -71,10 +75,15 @@ open class ZoomGestureListener(
                 detector.touchDragged(event.stageX, event.stageY, event.pointer)
                 return true
             }
+            InputEvent.Type.scrolled -> {
+                return scrolled(event.scrollAmountX, event.scrollAmountY)
+            }
             else -> return false
         }
     }
-    open fun zoom(event: InputEvent?, initialDistance: Float, distance: Float) {}
+
+    open fun scrolled(amountX: Float, amountY: Float): Boolean { return false }
+    open fun zoom(initialDistance: Float, distance: Float) {}
     open fun pinch() {}
     open fun pinchStop() {}
 }
