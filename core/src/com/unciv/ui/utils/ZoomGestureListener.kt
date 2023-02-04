@@ -17,7 +17,7 @@ open class ZoomGestureListener(
     constructor() : this(20f, 0.4f, 1.1f, Int.MAX_VALUE.toFloat())
 
     init {
-        detector = object : GestureDetector(
+        detector = GestureDetector(
             halfTapSquareSize,
             tapCountInterval,
             longPressDuration,
@@ -35,17 +35,14 @@ open class ZoomGestureListener(
                     stagePointer1: Vector2,
                     stagePointer2: Vector2
                 ): Boolean {
-                    isPinching = true
                     this@ZoomGestureListener.pinch()
                     return true
                 }
 
                 override fun pinchStop() {
-                    isPinching = false
                     this@ZoomGestureListener.pinchStop()
                 }
-            }) {
-        }
+            })
     }
 
 
