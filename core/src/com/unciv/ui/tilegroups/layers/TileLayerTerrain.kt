@@ -61,7 +61,7 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         }
 
         val terrainImages = if (tile.naturalWonder != null)
-            sequenceOf(tile.baseTerrain, tile.naturalWonder!!)
+            sequenceOf(tile.baseTerrain) + sequenceOf(tile.naturalWonder!!)
         else  sequenceOf(tile.baseTerrain) + tile.terrainFeatures.asSequence()
         val allTogether = (terrainImages + resourceAndImprovementSequence).joinToString("+")
         val allTogetherLocation = strings().getTile(allTogether)
