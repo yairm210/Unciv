@@ -9,6 +9,10 @@ import com.unciv.ui.civilopedia.MarkupRenderer
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.utils.Log
+import java.util.*
+import kotlin.Comparator
+import kotlin.collections.ArrayList
 
 /** Represents a row in the Language picker, used both in OptionsPopup and in LanguagePickerScreen */
 internal class LanguageTable(val language:String, val percentComplete: Int): Table(){
@@ -56,11 +60,23 @@ internal class LanguageTable(val language:String, val percentComplete: Int): Tab
             tableLanguages.defaults().pad(10.0f)
             tableLanguages.defaults().fillX()
 
+            val systemLanguage = Locale.getDefault().getDisplayLanguage(Locale.ENGLISH)
+
             val languageCompletionPercentage = UncivGame.Current.translations
                 .percentCompleteOfLanguages
             languageTables.addAll(languageCompletionPercentage
                 .map { LanguageTable(it.key, if (it.key == Constants.english) 100 else it.value) }
-                .sortedByDescending { it.percentComplete} )
+                .sortedWith { p0, p1 ->
+                    when {
+                        p0.language == Constants.english -> -1
+                        p1.language == Constants.english -> 1
+                        p0.language == systemLanguage -> -1
+                        p1.language == systemLanguage -> 1
+                        p0.percentComplete > p1.percentComplete -> -1
+                        p0.percentComplete == p1.percentComplete -> 0
+                        else -> 1
+                    }
+                })
 
             languageTables.forEach {
                 tableLanguages.add(it).row()
