@@ -182,7 +182,8 @@ object UnitActions {
             return UnitAction(UnitActionType.FoundCity, action = null)
 
         val foundAction = {
-            UncivGame.Current.settings.addCompletedTutorialTask("Found city")
+            if (unit.civ.playerType != PlayerType.AI)
+                UncivGame.Current.settings.addCompletedTutorialTask("Found city")
             unit.civ.addCity(tile.position)
             if (tile.ruleset.tileImprovements.containsKey("City center"))
                 tile.changeImprovement("City center")

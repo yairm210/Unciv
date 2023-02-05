@@ -1,13 +1,12 @@
-package com.unciv.ui.map
+package com.unciv.ui.tilegroups
 
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.TileMap
-import com.unciv.ui.tilegroups.CityTileGroup
-import com.unciv.ui.tilegroups.TileGroup
-import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.tilegroups.layers.TileLayerBorders
 import com.unciv.ui.tilegroups.layers.TileLayerCityButton
 import com.unciv.ui.tilegroups.layers.TileLayerFeatures
@@ -52,6 +51,7 @@ class TileGroupMap<T: TileGroup>(
      * and thus not perform any [com.badlogic.gdx.scenes.scene2d.Action]s.
      * Most children here already do not do anything in their [act] methods. However, even iterating through all of them */
     var shouldAct = true
+    var shouldHit = true
 
     private var topX = -Float.MAX_VALUE
     private var topY = -Float.MAX_VALUE
@@ -132,6 +132,8 @@ class TileGroupMap<T: TileGroup>(
         // If map is not wrapped, Map's width doesn't need to be reduce by groupSize
         if (worldWrap) setSize(topX - bottomX - groupSize, topY - bottomY)
         else setSize(topX - bottomX, topY - bottomY)
+
+        cullingArea = Rectangle(0f, 0f, width, height)
     }
 
     /**
@@ -146,9 +148,14 @@ class TileGroupMap<T: TileGroup>(
     }
 
     override fun act(delta: Float) {
-        if(shouldAct) {
+        if (shouldAct)
             super.act(delta)
-        }
+    }
+
+    override fun hit(x: Float, y: Float, touchable: Boolean): Actor? {
+        if (shouldHit)
+            return super.hit(x, y, touchable)
+        return null
     }
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
