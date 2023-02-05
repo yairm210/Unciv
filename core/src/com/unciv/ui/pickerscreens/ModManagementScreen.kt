@@ -169,13 +169,13 @@ class ModManagementScreen(
         installedHeaderLabel!!.onClick {
             optionsManager.installedHeaderClicked()
         }
-        topTable.add(installedHeaderLabel).pad(5f).minWidth(200f).padLeft(25f)
+        topTable.add(installedHeaderLabel).pad(15f).minWidth(200f).padLeft(25f)
             // 30 = 5 default pad + 20 to compensate for 'permanent visual mod' decoration icon
         onlineHeaderLabel = optionsManager.getOnlineHeader().toLabel()
         onlineHeaderLabel!!.onClick {
             optionsManager.onlineHeaderClicked()
         }
-        topTable.add(onlineHeaderLabel).pad(5f)
+        topTable.add(onlineHeaderLabel).pad(15f)
         topTable.add("".toLabel()).minWidth(200f)  // placeholder for "Mod actions"
         topTable.add().expandX()
         topTable.row()

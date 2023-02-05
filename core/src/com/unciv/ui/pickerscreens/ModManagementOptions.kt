@@ -156,7 +156,7 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
             fontSize = Constants.defaultFontSize,
             startsOutOpened = false,
             defaultPad = 2.5f,
-            headerPad = 5f,
+            headerPad = 15f,
             expanderWidth = 360f,
             onChange = { expanderChangeEvent?.invoke() }
         ) {
