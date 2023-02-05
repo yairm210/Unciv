@@ -66,6 +66,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     lateinit var onlineMultiplayer: OnlineMultiplayer
     lateinit var files: UncivFiles
 
+    var isTutorialTaskCollapsed = false
+
     /**
      * This exists so that when debugging we can see the entire map.
      * Remember to turn this to false before commit and upload!
