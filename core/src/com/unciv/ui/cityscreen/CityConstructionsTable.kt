@@ -8,8 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.City
+import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
@@ -132,6 +132,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
     private fun updateButtons(construction: IConstruction?) {
         buyButtonsTable.clear()
+        if (!cityScreen.canCityBeChanged()) return
         buyButtonsTable.add(getQueueButton(construction)).padRight(5f)
         if (construction != null && construction !is PerpetualConstruction)
             for (button in getBuyButtons(construction as INonPerpetualConstruction))
@@ -309,13 +310,15 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         table.add(ImageGetter.getConstructionPortrait(constructionName, 40f)).padRight(10f)
         table.add(text.toLabel()).expandX().fillX().left()
 
-        if (constructionQueueIndex > 0) table.add(getRaisePriorityButton(constructionQueueIndex, constructionName, city)).right()
+        if (constructionQueueIndex > 0 && cityScreen.canCityBeChanged())
+            table.add(getRaisePriorityButton(constructionQueueIndex, constructionName, city)).right()
         else table.add().right()
-        if (constructionQueueIndex != cityConstructions.constructionQueue.lastIndex)
+        if (constructionQueueIndex != cityConstructions.constructionQueue.lastIndex && cityScreen.canCityBeChanged())
             table.add(getLowerPriorityButton(constructionQueueIndex, constructionName, city)).right()
         else table.add().right()
 
-        table.add(getRemoveFromQueueButton(constructionQueueIndex, city)).right()
+        if (cityScreen.canCityBeChanged()) table.add(getRemoveFromQueueButton(constructionQueueIndex, city)).right()
+        else table.add().right()
 
         table.touchable = Touchable.enabled
         table.onClick {
@@ -415,16 +418,12 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         if (isSelectedQueueEntry()) {
             button = "Remove from queue".toTextButton()
-            if (!cityScreen.canCityBeChanged())
-                button.disable()
-            else {
                 button.onClick {
                     cityConstructions.removeFromQueue(selectedQueueEntry, false)
                     cityScreen.clearSelection()
                     selectedQueueEntry = -1
                     cityScreen.update()
                 }
-            }
         } else {
             button = "Add to queue".toTextButton()
             if (construction == null
@@ -609,15 +608,13 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     private fun getRaisePriorityButton(constructionQueueIndex: Int, name: String, city: City): Table {
         val tab = Table()
         tab.add(ImageGetter.getArrowImage(Align.top).apply { color = Color.BLACK }.surroundWithCircle(40f))
-        if (cityScreen.canCityBeChanged()) {
-            tab.touchable = Touchable.enabled
-            tab.onClick {
-                tab.touchable = Touchable.disabled
-                city.cityConstructions.raisePriority(constructionQueueIndex)
-                cityScreen.selectConstruction(name)
-                selectedQueueEntry = constructionQueueIndex - 1
-                cityScreen.update()
-            }
+        tab.touchable = Touchable.enabled
+        tab.onClick {
+            tab.touchable = Touchable.disabled
+            city.cityConstructions.raisePriority(constructionQueueIndex)
+            cityScreen.selectConstruction(name)
+            selectedQueueEntry = constructionQueueIndex - 1
+            cityScreen.update()
         }
         return tab
     }
@@ -625,30 +622,27 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     private fun getLowerPriorityButton(constructionQueueIndex: Int, name: String, city: City): Table {
         val tab = Table()
         tab.add(ImageGetter.getArrowImage(Align.bottom).apply { color = Color.BLACK }.surroundWithCircle(40f))
-        if (cityScreen.canCityBeChanged()) {
-            tab.touchable = Touchable.enabled
-            tab.onClick {
-                tab.touchable = Touchable.disabled
-                city.cityConstructions.lowerPriority(constructionQueueIndex)
-                cityScreen.selectConstruction(name)
-                selectedQueueEntry = constructionQueueIndex + 1
-                cityScreen.update()
-            }
+        tab.touchable = Touchable.enabled
+        tab.onClick {
+            tab.touchable = Touchable.disabled
+            city.cityConstructions.lowerPriority(constructionQueueIndex)
+            cityScreen.selectConstruction(name)
+            selectedQueueEntry = constructionQueueIndex + 1
+            cityScreen.update()
         }
+
         return tab
     }
 
     private fun getRemoveFromQueueButton(constructionQueueIndex: Int, city: City): Table {
         val tab = Table()
         tab.add(ImageGetter.getImage("OtherIcons/Stop").surroundWithCircle(40f))
-        if (cityScreen.canCityBeChanged()) {
-            tab.touchable = Touchable.enabled
-            tab.onClick {
-                tab.touchable = Touchable.disabled
-                city.cityConstructions.removeFromQueue(constructionQueueIndex, false)
-                cityScreen.clearSelection()
-                cityScreen.update()
-            }
+        tab.touchable = Touchable.enabled
+        tab.onClick {
+            tab.touchable = Touchable.disabled
+            city.cityConstructions.removeFromQueue(constructionQueueIndex, false)
+            cityScreen.clearSelection()
+            cityScreen.update()
         }
         return tab
     }
