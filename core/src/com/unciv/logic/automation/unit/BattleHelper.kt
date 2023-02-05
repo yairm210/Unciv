@@ -73,18 +73,23 @@ object BattleHelper {
                 if (tile in tilesWithEnemies) attackableTiles += AttackableTile(
                     reachableTile,
                     tile,
-                    movementLeft
+                    movementLeft,
+                    Battle.getMapCombatantOfTile(tile)!!
                 )
                 else if (tile in tilesWithoutEnemies) continue // avoid checking the same empty tile multiple times
                 else if (checkTile(unit, tile, tilesToCheck)) {
                     tilesWithEnemies += tile
-                    attackableTiles += AttackableTile(reachableTile, tile, movementLeft)
-                } else if (unit.isPreparingAirSweep()){
+                    attackableTiles += AttackableTile(
+                        reachableTile, tile, movementLeft,
+                        Battle.getMapCombatantOfTile(tile)!!
+                    )
+                } else if (unit.isPreparingAirSweep()) {
                     tilesWithEnemies += tile
-                    attackableTiles += AttackableTile(reachableTile, tile, movementLeft)
-                } else {
-                    tilesWithoutEnemies += tile
-                }
+                    attackableTiles += AttackableTile(
+                        reachableTile, tile, movementLeft,
+                        Battle.getMapCombatantOfTile(tile)!!
+                    )
+                } else tilesWithoutEnemies += tile
             }
         }
         return attackableTiles
