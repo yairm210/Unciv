@@ -545,7 +545,7 @@ open class Tile : IsPartOfGameInfoSerialization {
         }
         if (naturalWonder != null) bonus += getNaturalWonder().defenceBonus
         val tileImprovement = getTileImprovement()
-        if (tileImprovement != null) {
+        if (tileImprovement != null && !improvementIsPillaged) {
             for (unique in tileImprovement.getMatchingUniques(UniqueType.DefensiveBonus, StateForConditionals(tile = this)))
                 bonus += unique.params[0].toFloat() / 100
         }
