@@ -543,21 +543,22 @@ class WorldScreen(
         val tutorialTask = getCurrentTutorialTask()
         if (tutorialTask == "" || !game.settings.showTutorials || viewingCiv.isDefeated()) {
             tutorialTaskTable.isVisible = false
+            return
+        }
+
+        tutorialTaskTable.isVisible = true
+        if (!UncivGame.Current.isTutorialTaskCollapsed) {
+            tutorialTaskTable.add(tutorialTask.toLabel()
+                .apply { setAlignment(Align.center) }).pad(10f)
         } else {
-            tutorialTaskTable.isVisible = true
-            if (!UncivGame.Current.isTutorialTaskCollapsed) {
-                tutorialTaskTable.add(tutorialTask.toLabel()
-                    .apply { setAlignment(Align.center) }).pad(10f)
-            } else {
-                tutorialTaskTable.add(ImageGetter.getImage("CityStateIcons/Cultured").apply { setSize(30f,30f) }).pad(5f)
-            }
-            tutorialTaskTable.pack()
-            tutorialTaskTable.centerX(stage)
-            tutorialTaskTable.y = topBar.y - tutorialTaskTable.height
-            tutorialTaskTable.onClick() {
-                UncivGame.Current.isTutorialTaskCollapsed = !UncivGame.Current.isTutorialTaskCollapsed
-                displayTutorialTaskOnUpdate()
-            }
+            tutorialTaskTable.add(ImageGetter.getImage("CityStateIcons/Cultured").apply { setSize(30f,30f) }).pad(5f)
+        }
+        tutorialTaskTable.pack()
+        tutorialTaskTable.centerX(stage)
+        tutorialTaskTable.y = topBar.y - tutorialTaskTable.height
+        tutorialTaskTable.onClick() {
+            UncivGame.Current.isTutorialTaskCollapsed = !UncivGame.Current.isTutorialTaskCollapsed
+            displayTutorialTaskOnUpdate()
         }
     }
 
