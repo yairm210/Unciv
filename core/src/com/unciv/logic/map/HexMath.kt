@@ -120,23 +120,26 @@ object HexMath {
         return Vector2(x, y)
     }
 
-    // Both x - 10 o'clock - and y - 2 o'clock - increase the row by 1
-    fun getRow(hexCoord: Vector2): Int = (hexCoord.x + hexCoord.y).toInt()
+    // Both x - 10 o'clock - and y - 2 o'clock - increase the row by 0.5
+    fun getRow(hexCoord: Vector2): Int = (hexCoord.x/2 + hexCoord.y/2).toInt()
 
     // y is 2 o'clock - increases column by 1, x in 10 o'clock - decreases by 1
     fun getColumn(hexCoord: Vector2): Int = (hexCoord.y - hexCoord.x).toInt()
 
     fun getTileCoordsFromColumnRow(column: Int, row: Int): Vector2 {
         // we know that column = y-x in hex coords
-        // And we know that row = y+x in hex coords
-        // Therefore, row+column = 2y, row-column=2x
+        // And we know that row = (y+x)/2 in hex coords
+        // Therefore, 2row+column = 2y, 2row-column=2x
 
         // However, these row numbers only apear on alternating columns.
-        // So column 0 will have rows 0,2,4, etc, and column 1 will have rows 1,3,5 etc.
+        // So column 0 will have rows 0,1,2, etc, and column 1 will have rows 0.5,1.5,2.5 etc.
         // you'll need to see a hexmap to see it, and then it will be obvious
 
-        val adjustedRow = if (column%2 == 0) row*2f else row*2f + 1
-        return Vector2((adjustedRow-column)/2, (adjustedRow+column)/2)
+        // So for even columns, the row is incremented by half
+        var twoRows = row * 2
+        if (abs(column) %2==1) twoRows += 1
+
+        return Vector2(((twoRows-column)/2).toFloat(), ((twoRows+column)/2).toFloat())
     }
 
     /** Todo: find a mathematically equivalent way to round hex coords without cubic magic */
