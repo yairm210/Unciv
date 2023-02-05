@@ -114,6 +114,7 @@ class GameSettings {
 
     fun addCompletedTutorialTask(tutorialTask: String): Boolean {
         if (!tutorialTasksCompleted.add(tutorialTask)) return false
+        UncivGame.Current.isTutorialTaskCollapsed = false
         save()
         return true
     }

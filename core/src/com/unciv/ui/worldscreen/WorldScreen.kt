@@ -31,6 +31,7 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.civilopedia.CivilopediaScreen
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.pickerscreens.DiplomaticVotePickerScreen
 import com.unciv.ui.pickerscreens.DiplomaticVoteResultScreen
@@ -391,18 +392,7 @@ class WorldScreen(
 
             updateSelectedCiv()
 
-            tutorialTaskTable.clear()
-            val tutorialTask = getCurrentTutorialTask()
-            if (tutorialTask == "" || !game.settings.showTutorials || viewingCiv.isDefeated()) {
-                tutorialTaskTable.isVisible = false
-            } else {
-                tutorialTaskTable.isVisible = true
-                tutorialTaskTable.add(tutorialTask.toLabel()
-                    .apply { setAlignment(Align.center) }).pad(10f)
-                tutorialTaskTable.pack()
-                tutorialTaskTable.centerX(stage)
-                tutorialTaskTable.y = topBar.y - tutorialTaskTable.height
-            }
+            displayTutorialTaskOnUpdate()
 
             if (fogOfWar) minimapWrapper.update(selectedCiv)
             else minimapWrapper.update(viewingCiv)
@@ -544,6 +534,29 @@ class WorldScreen(
         displayTutorial(TutorialTrigger.Workers) {
             gameInfo.getCurrentPlayerCivilization().units.getCivUnits().any {
                 it.cache.hasUniqueToBuildImprovements && it.isCivilian() && !it.isGreatPerson()
+            }
+        }
+    }
+
+    private fun displayTutorialTaskOnUpdate() {
+        tutorialTaskTable.clear()
+        val tutorialTask = getCurrentTutorialTask()
+        if (tutorialTask == "" || !game.settings.showTutorials || viewingCiv.isDefeated()) {
+            tutorialTaskTable.isVisible = false
+        } else {
+            tutorialTaskTable.isVisible = true
+            if (!UncivGame.Current.isTutorialTaskCollapsed) {
+                tutorialTaskTable.add(tutorialTask.toLabel()
+                    .apply { setAlignment(Align.center) }).pad(10f)
+            } else {
+                tutorialTaskTable.add(ImageGetter.getImage("CityStateIcons/Cultured").apply { setSize(30f,30f) }).pad(5f)
+            }
+            tutorialTaskTable.pack()
+            tutorialTaskTable.centerX(stage)
+            tutorialTaskTable.y = topBar.y - tutorialTaskTable.height
+            tutorialTaskTable.onClick() {
+                UncivGame.Current.isTutorialTaskCollapsed = !UncivGame.Current.isTutorialTaskCollapsed
+                displayTutorialTaskOnUpdate()
             }
         }
     }
