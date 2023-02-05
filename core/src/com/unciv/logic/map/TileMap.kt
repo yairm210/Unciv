@@ -214,17 +214,17 @@ class TileMap : IsPartOfGameInfoSerialization {
             }
             else
                 sequence {
-                    for (column in 0 until rectangle.width.toInt()) {
-                        for (row in 0 until rectangle.height.toInt()) {
-                            val currentX = rectangle.x + column
-                            val currentY = rectangle.y + row
+                    for (rectColumnNumber in 0 until rectangle.width.toInt()) {
+                        for (rectRowNumber in 0 until rectangle.height.toInt()) {
+                            val worldColumnNumber = rectangle.x.toInt() + rectColumnNumber
+                            val worldRowNumber = rectangle.y.toInt() + rectRowNumber
 
                             if (rowsAndColumns) {
-                                val hexCoords = HexMath.getTileCoordsFromColumnRow(column, row)
+                                val hexCoords = HexMath.getTileCoordsFromColumnRow(worldColumnNumber, worldRowNumber)
                                 yield(getIfTileExistsOrNull(hexCoords.x.toInt(), hexCoords.y.toInt()))
                             }
                             else
-                                yield(getIfTileExistsOrNull(currentX.toInt(), currentY.toInt()))
+                                yield(getIfTileExistsOrNull(worldColumnNumber, worldRowNumber))
                         }
                     }
                 }.filterNotNull()
