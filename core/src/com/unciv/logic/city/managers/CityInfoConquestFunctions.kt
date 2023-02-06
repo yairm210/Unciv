@@ -3,8 +3,8 @@
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.battle.Battle
-import com.unciv.logic.city.CityFlags
 import com.unciv.logic.city.City
+import com.unciv.logic.city.CityFlags
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
@@ -14,7 +14,6 @@ import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.utils.extensions.withoutItem
 import com.unciv.utils.debug
 import kotlin.math.max
 import kotlin.math.min
@@ -287,8 +286,8 @@ class CityInfoConquestFunctions(val city: City){
             previousOwner = oldCiv.civName
 
             // now that the tiles have changed, we need to reassign population
-            for (it in workedTiles.filterNot { tiles.contains(it) }) {
-                workedTiles = workedTiles.withoutItem(it)
+            for (workedTile in workedTiles.filterNot { tiles.contains(it) }) {
+                population.stopWorkingTile(workedTile)
                 population.autoAssignPopulation()
             }
 

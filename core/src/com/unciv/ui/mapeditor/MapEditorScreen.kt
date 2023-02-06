@@ -134,6 +134,11 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen(), RecreateOnResize {
             tileClickHandler?.invoke(it)
         }
 
+        if (tileMap.mapParameters.worldWrap) {
+            result.sizeChanged()
+            result.zoom(result.minZoom)
+        }
+
         stage.root.addActorAt(0, result)
         stage.scrollFocus = result
 

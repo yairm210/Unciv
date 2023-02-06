@@ -1,5 +1,6 @@
 package com.unciv.logic.battle
 
+import com.unciv.logic.automation.unit.BattleHelper
 import com.unciv.logic.automation.unit.SpecificUnitAutomation
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
@@ -93,7 +94,8 @@ object GreatGeneralImplementation {
             .maxByOrNull { unitTile ->
                 unitTile.getTilesInDistance(unitBonusRadius).sumOf { auraTile ->
                     val militaryUnit = auraTile.militaryUnit
-                    if (militaryUnit == null || militaryUnit.civ != general.civ) 0
+                    if (militaryUnit == null || militaryUnit.civ != general.civ || militaryUnit.isEmbarked()) 0
+                    else if (BattleHelper.getAttackableEnemies(militaryUnit, militaryUnit.movement.getDistanceToTiles()).isEmpty()) 0
                     else generalBonusData.firstOrNull {
                         // "Military" as commented above only a small optimization
                         auraTile.aerialDistanceTo(unitTile) <= it.radius

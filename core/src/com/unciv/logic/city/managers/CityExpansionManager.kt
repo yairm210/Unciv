@@ -138,11 +138,9 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         city.tiles = city.tiles.withoutItem(tile.position)
         for (city in city.civ.cities) {
             if (city.isWorked(tile)) {
-                city.workedTiles = city.workedTiles.withoutItem(tile.position)
+                city.population.stopWorkingTile(tile.position)
                 city.population.autoAssignPopulation()
             }
-            if (city.lockedTiles.contains(tile.position))
-                city.lockedTiles.remove(tile.position)
         }
 
         tile.improvementFunctions.removeCreatesOneImprovementMarker()
