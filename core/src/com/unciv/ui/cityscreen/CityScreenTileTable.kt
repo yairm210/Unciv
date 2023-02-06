@@ -67,7 +67,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
                 askToBuyTile(selectedTile)
             }
             buyTileButton.keyShortcuts.add('T')
-            buyTileButton.isEnabled =  cityScreen.canChangeState && city.civ.hasGoldToBuy(goldCostOfTile)
+            buyTileButton.isEnabled =  cityScreen.canChangeState && city.civ.hasStatToBuy(Stat.Gold, goldCostOfTile)
             buyTileButton.addTooltip('T')  // The key binding is done in CityScreen constructor
             innerTable.add(buyTileButton).padTop(5f).row()
         }
@@ -113,9 +113,9 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
      */
     private fun askToBuyTile(selectedTile: Tile) {
         // These checks are redundant for the onClick action, but not for the keyboard binding
-        if (!city.expansion.canBuyTile(selectedTile)) return
+        if (!cityScreen.canChangeState || !city.expansion.canBuyTile(selectedTile)) return
         val goldCostOfTile = city.expansion.getGoldCostOfTile(selectedTile)
-        if (!city.civ.hasGoldToBuy(goldCostOfTile)) return
+        if (!city.civ.hasStatToBuy(Stat.Gold, goldCostOfTile)) return
 
         cityScreen.closeAllPopups()
 
