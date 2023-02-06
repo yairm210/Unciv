@@ -24,7 +24,11 @@ object BattleTableHelpers {
                 sequence {
                     val tileGroup = mapHolder.tileGroups[combatant.getTile()]!!
                     when {
-                        combatant.isCity() -> yield(tileGroup.layerMisc.improvementIcon!!)
+                        combatant.isCity() -> {
+                            val icon = tileGroup.layerMisc.improvementIcon
+                            if (icon != null)
+                                yield(icon)
+                        }
                         else -> {
                             val slot = if (combatant.isCivilian()) 0 else 1
                             yieldAll((tileGroup.layerUnitArt.getChild(slot) as Group).children)
