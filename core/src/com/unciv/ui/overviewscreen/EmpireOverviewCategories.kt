@@ -48,10 +48,7 @@ enum class EmpireOverviewCategories(
     Resources("StatIcons/Happiness", 'R', Align.topLeft,
         fun (viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?)
                 = ResourcesOverviewTab(viewingPlayer, overviewScreen, persistedData),
-        fun (viewingPlayer: Civilization) = when {
-            viewingPlayer.detailedCivResources.any { it.resource.resourceType != ResourceType.Bonus } -> EmpireOverviewTabState.Normal
-            else -> EmpireOverviewTabState.Disabled
-        }),
+        fun (viewingPlayer: Civilization) = (!viewingPlayer.detailedCivResources.any { it.resource.resourceType != ResourceType.Bonus }).toState()),
     Religion("StatIcons/Faith", 'F', Align.top,
         fun (viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?)
                 = ReligionOverviewTab(viewingPlayer, overviewScreen, persistedData),
