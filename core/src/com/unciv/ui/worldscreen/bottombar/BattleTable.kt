@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
+import com.unciv.logic.automation.unit.AttackableTile
 import com.unciv.logic.automation.unit.BattleHelper
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.battle.Battle
@@ -13,7 +14,6 @@ import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.automation.unit.AttackableTile
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
@@ -267,7 +267,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             } else if (attacker is CityCombatant) {
                 val canBombard = UnitAutomation.getBombardableTiles(attacker.city).contains(defender.getTile())
                 if (canBombard) {
-                    attackableTile = AttackableTile(attacker.getTile(), defender.getTile(), 0f)
+                    attackableTile = AttackableTile(attacker.getTile(), defender.getTile(), 0f, defender)
                 }
             }
         }

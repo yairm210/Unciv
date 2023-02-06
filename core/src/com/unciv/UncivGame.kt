@@ -66,6 +66,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     lateinit var onlineMultiplayer: OnlineMultiplayer
     lateinit var files: UncivFiles
 
+    var isTutorialTaskCollapsed = false
+
     /**
      * This exists so that when debugging we can see the entire map.
      * Remember to turn this to false before commit and upload!
@@ -470,7 +472,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.4.9", 806)
+        val VERSION = Version("4.4.10", 807)
         //endregion
 
         lateinit var Current: UncivGame

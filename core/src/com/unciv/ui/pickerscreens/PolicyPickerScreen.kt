@@ -24,6 +24,7 @@ import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.BorderedTable
 import com.unciv.ui.utils.RecreateOnResize
 import com.unciv.ui.utils.extensions.addSeparator
+import com.unciv.ui.utils.extensions.addToCenter
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.darken
@@ -51,17 +52,17 @@ private object PolicyColors {
 
 fun Policy.isAdopted() : Boolean {
     val worldScreen = UncivGame.Current.worldScreen ?: return false
-    val viewingCiv = worldScreen.viewingCiv
+    val viewingCiv = worldScreen.selectedCiv
     return viewingCiv.policies.isAdopted(this.name)
 }
 
 fun Policy.isPickable() : Boolean {
     val worldScreen = UncivGame.Current.worldScreen ?: return false
     val viewingCiv = worldScreen.viewingCiv
+    val selectedCiv = worldScreen.selectedCiv
     if (!worldScreen.isPlayersTurn
-            || viewingCiv.isSpectator() // viewingCiv var points to selectedCiv in case of spectator
             || viewingCiv.isDefeated()
-            || viewingCiv.policies.isAdopted(this.name)
+            || selectedCiv.policies.isAdopted(this.name)
             || this.policyBranchType == PolicyBranchType.BranchComplete
             || !viewingCiv.policies.isAdoptable(this)
             || !viewingCiv.policies.canAdoptPolicy()
@@ -111,7 +112,7 @@ class PolicyButton(val policy: Policy, size: Float = 30f) : BorderedTable(
     fun updateState() {
 
         val worldScreen = UncivGame.Current.worldScreen ?: return
-        val viewingCiv = worldScreen.viewingCiv
+        val viewingCiv = worldScreen.selectedCiv
 
         val isPickable = policy.isPickable()
         val isAdopted = viewingCiv.policies.isAdopted(policy.name)
@@ -143,7 +144,7 @@ class PolicyButton(val policy: Policy, size: Float = 30f) : BorderedTable(
 }
 
 
-class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: Civilization = worldScreen.viewingCiv)
+class PolicyPickerScreen(val worldScreen: WorldScreen, val viewingCiv: Civilization = worldScreen.selectedCiv)
     : PickerScreen(), RecreateOnResize {
 
     object Sizes {
@@ -153,8 +154,6 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: Civilization = w
         val paddingBetweenVer = 20f
         val iconSize = 50f
     }
-
-    internal val viewingCiv: Civilization = civInfo
 
     private var policyNameToButton = HashMap<String, PolicyButton>()
     private var selectedPolicyButton: PolicyButton? = null
@@ -548,7 +547,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: Civilization = w
         val header = BorderedTable(path="PolicyScreen/PolicyBranchHeader")
         header.bgColor = colorFromRGB(47,90,92)
         header.borderSize = 5f
-        header.pad(5f)
+        header.pad(10f)
 
         val table = Table()
 
@@ -563,7 +562,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: Civilization = w
         table.add(branch.name.tr().uppercase().toLabel(fontSize = 14).apply { setAlignment(Align.center) }).center()
         table.add(icon).expandX().left().padLeft(5f)
 
-        table.setTouchable(Touchable.enabled)
+        header.setTouchable(Touchable.enabled)
 
         header.add(table).minWidth(150f).growX()
         header.pack()
@@ -573,20 +572,29 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: Civilization = w
 
     private fun getTopButton(branch: PolicyBranch): Table {
 
-        val policy: Policy
         val text: String
+        val isPickable = branch.isPickable()
+        var isAdoptedBranch = false
+        var percentage = 0f
 
         val lockIcon = ImageGetter.getImage("OtherIcons/LockSmall")
             .apply { color = Color.WHITE.cpy() }.toGroup(15f)
-        lockIcon.isVisible = false
+
+
         if (viewingCiv.policies.isAdopted(branch.name)) {
-            policy = branch.policies.last()
-            text = "Completed"
+            val amountToDo = branch.policies.count()-1
+            val amountDone =
+                if (viewingCiv.policies.isAdopted(branch.policies.last().name))
+                    amountToDo
+                else
+                    branch.policies.count { viewingCiv.policies.isAdopted(it.name) }
+            percentage = amountDone / amountToDo.toFloat()
+            text = "{Completed} ($amountDone/$amountToDo)"
+            lockIcon.isVisible = false
+            isAdoptedBranch = true
         } else if (viewingCiv.gameInfo.ruleset.eras[branch.era]!!.eraNumber > viewingCiv.getEraNumber()) {
-            policy = branch
             text = branch.era
         } else {
-            policy = branch
             text = "Adopt"
         }
 
@@ -594,35 +602,59 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: Civilization = w
         label.setAlignment(Align.center)
 
         val color = when {
-            policy.isPickable() -> PolicyColors.policyPickable
-            viewingCiv.policies.isAdopted(policy.name) -> {
-                label.color = colorFromRGB(150, 70, 40)
-                PolicyColors.branchCompleted
-            }
-            else -> {
-                lockIcon.isVisible = true
-                label.color.a = 0.5f
-                PolicyColors.policyNotPickable}
+            isPickable -> PolicyColors.policyPickable
+            else -> PolicyColors.policyNotPickable
         }
 
-        val table = BorderedTable(
+        if (isAdoptedBranch)
+            label.color = colorFromRGB(150, 70, 40)
+        else if (!isPickable)
+            label.color.a = 0.5f
+        else
+            lockIcon.isVisible = false
+
+        val table = object : BorderedTable(
             path="PolicyScreen/PolicyBranchAdoptButton",
             defaultBgShape = skinStrings.roundedEdgeRectangleSmallShape,
-            defaultBgBorder = skinStrings.roundedEdgeRectangleSmallShape)
+            defaultBgBorder = skinStrings.roundedEdgeRectangleSmallShape) {
+
+            var progress: Image? = null
+
+            init {
+                if (isAdoptedBranch && percentage > 0) {
+                    progress = Image(
+                        skinStrings.getUiBackground("",
+                            skinStrings.roundedEdgeRectangleSmallShape,
+                            tintColor = PolicyColors.branchCompleted
+                        )
+                    )
+                    progress!!.setSize(this.width*percentage, this.height)
+                    this.addActor(progress)
+                    progress!!.toBack()
+                }
+            }
+
+            override fun sizeChanged() {
+                super.sizeChanged()
+                progress?.setSize(this.width*percentage, this.height)
+            }
+
+        }
         table.bgColor = color
-        table.borderSize = 2f
+        table.borderSize = 3f
 
         table.add(label).minHeight(30f).minWidth(150f).growX()
         table.addActor(lockIcon)
+        table.pack()
+        lockIcon.setPosition(table.width, table.height / 2 - lockIcon.height/2)
 
-        table.onClick(function = {})
         table.onClick {
-            if (policy.isPickable())
+            if (branch.isPickable())
                 ConfirmPopup(
                     this,
                     "Are you sure you want to adopt [${branch.name}]?",
                     "Adopt", true, action = {
-                        viewingCiv.policies.adopt(policy, false)
+                        viewingCiv.policies.adopt(branch, false)
 
                         val policyScreen = PolicyPickerScreen(worldScreen)
                         policyScreen.scrollPane.scrollPercentX = scrollPane.scrollPercentX
@@ -632,9 +664,6 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: Civilization = w
                     }
                 ).open(force = true)
         }
-        table.pack()
-
-        lockIcon.setPosition(table.width, table.height / 2 - lockIcon.height/2)
 
         return table
     }

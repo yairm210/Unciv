@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.MapResources
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.TileMap
@@ -99,7 +98,7 @@ class MapRegions (val ruleset: Ruleset){
         val civsAddedToContinent = HashMap<Int, Int>() // Continent ID, civs added
         val continentFertility = HashMap<Int, Int>() // Continent ID, total fertility
         // Keep track of the even-q columns each continent is at, to figure out if they wrap
-        val continentIsAtCol = HashMap<Int, HashSet<Int>>()
+        val continentToColumnsItsIn = HashMap<Int, HashSet<Int>>()
 
         // Calculate continent fertilities and columns
         for (tile in tileMap.values) {
@@ -108,9 +107,10 @@ class MapRegions (val ruleset: Ruleset){
                 continentFertility[continent] = tile.getTileFertility(true) +
                         (continentFertility[continent] ?: 0)
 
-                if (continentIsAtCol[continent] == null)
-                    continentIsAtCol[continent] = HashSet()
-                continentIsAtCol[continent]!!.add(HexMath.hex2EvenQCoords(tile.position).x.toInt())
+                if (continentToColumnsItsIn[continent] == null)
+                    continentToColumnsItsIn[continent] = HashSet()
+
+                continentToColumnsItsIn[continent]!!.add(tile.getColumn())
             }
         }
 
@@ -124,7 +124,7 @@ class MapRegions (val ruleset: Ruleset){
         // Split up the continents
         for (continent in civsAddedToContinent.keys) {
             val continentRegion = Region(tileMap, Rectangle(mapRect), continent)
-            val cols = continentIsAtCol[continent]!!
+            val cols = continentToColumnsItsIn[continent]!!
             // Set origin at the rightmost column which does not have a neighbor on the left
             continentRegion.rect.x = cols.filter { !cols.contains(it - 1) }.maxOf { it }.toFloat()
             continentRegion.rect.width = cols.size.toFloat()
@@ -174,12 +174,12 @@ class MapRegions (val ruleset: Ruleset){
                 splitOffRegion.tileMap.getTilesInRectangle(Rectangle(
                         splitOffRegion.rect.x + splitPoint - 1, splitOffRegion.rect.y,
                         1f, splitOffRegion.rect.height),
-                        evenQ = true)
+                        rowsAndColumns = true)
             else
                 splitOffRegion.tileMap.getTilesInRectangle(Rectangle(
                         splitOffRegion.rect.x, splitOffRegion.rect.y + splitPoint - 1,
                         splitOffRegion.rect.width, 1f),
-                        evenQ = true)
+                        rowsAndColumns = true)
 
             cumulativeFertility += if (splitOffRegion.continentID == -1)
                 nextRect.sumOf { it.getTileFertility(false) }
@@ -408,7 +408,7 @@ class MapRegions (val ruleset: Ruleset){
         val fallbackTiles = HashSet<Vector2>()
 
         // First check center
-        val centerTiles = region.tileMap.getTilesInRectangle(centerRect, evenQ = true)
+        val centerTiles = region.tileMap.getTilesInRectangle(centerRect, rowsAndColumns = true)
         for (tile in centerTiles) {
             if (tileData[tile.position]!!.isTwoFromCoast)
                 continue // Don't even consider tiles two from coast
@@ -436,7 +436,7 @@ class MapRegions (val ruleset: Ruleset){
         }
 
         // Now check middle donut
-        val middleDonut = region.tileMap.getTilesInRectangle(middleRect, evenQ = true).filterNot { it in centerTiles }
+        val middleDonut = region.tileMap.getTilesInRectangle(middleRect, rowsAndColumns = true).filterNot { it in centerTiles }
         riverTiles.clear()
         wetTiles.clear()
         dryTiles.clear()
@@ -467,7 +467,7 @@ class MapRegions (val ruleset: Ruleset){
         }
 
         // Now check the outer tiles. For these we don't care about rivers, coasts etc
-        val outerDonut = region.tileMap.getTilesInRectangle(region.rect, evenQ = true).filterNot { it in centerTiles || it in middleDonut}
+        val outerDonut = region.tileMap.getTilesInRectangle(region.rect, rowsAndColumns = true).filterNot { it in centerTiles || it in middleDonut}
         dryTiles.clear()
         for (tile in outerDonut) {
             if (region.continentID != -1 && region.continentID != tile.getContinent())
@@ -1685,15 +1685,15 @@ class Region (val tileMap: TileMap, val rect: Rectangle, val continentID: Int = 
     /** Recalculates tiles and fertility */
     fun updateTiles(trim: Boolean = true) {
         totalFertility = 0
-        var minX = 99999f
-        var maxX = -99999f
-        var minY = 99999f
-        var maxY = -99999f
+        var minColumn = 99999f
+        var maxColumn = -99999f
+        var minRow = 99999f
+        var maxRow = -99999f
 
         val columnHasTile = HashSet<Int>()
 
         tiles.clear()
-        for (tile in tileMap.getTilesInRectangle(rect, evenQ = true).filter {
+        for (tile in tileMap.getTilesInRectangle(rect, rowsAndColumns = true).filter {
             continentID == -1 || it.getContinent() == continentID } ) {
             val fertility = tile.getTileFertility(continentID != -1)
             tiles.add(tile)
@@ -1701,14 +1701,15 @@ class Region (val tileMap: TileMap, val rect: Rectangle, val continentID: Int = 
 
 
             if (affectedByWorldWrap)
-                columnHasTile.add(HexMath.hex2EvenQCoords(tile.position).x.toInt())
+                columnHasTile.add(tile.getColumn())
 
             if (trim) {
-                val evenQCoords = HexMath.hex2EvenQCoords(tile.position)
-                minX = min(minX, evenQCoords.x)
-                maxX = max(maxX, evenQCoords.x)
-                minY = min(minY, evenQCoords.y)
-                maxY = max(maxY, evenQCoords.y)
+                val row = tile.getRow().toFloat()
+                val column = tile.getColumn().toFloat()
+                minColumn = min(minColumn, column)
+                maxColumn = max(maxColumn, column)
+                minRow = min(minRow, row)
+                maxRow = max(maxRow, row)
             }
         }
 
@@ -1716,13 +1717,13 @@ class Region (val tileMap: TileMap, val rect: Rectangle, val continentID: Int = 
             if (affectedByWorldWrap) // Need to be more thorough with origin longitude
                 rect.x = columnHasTile.filter { !columnHasTile.contains(it - 1) }.maxOf { it }.toFloat()
             else
-                rect.x = minX // ez way for non-wrapping regions
-            rect.y = minY
-            rect.height = maxY - minY + 1
-            if (affectedByWorldWrap && minX < rect.x) { // Thorough way
+                rect.x = minColumn // ez way for non-wrapping regions
+            rect.y = minRow
+            rect.height = maxRow - minRow + 1
+            if (affectedByWorldWrap && minColumn < rect.x) { // Thorough way
                 rect.width = columnHasTile.size.toFloat()
             } else {
-                rect.width = maxX - minX + 1 // ez way
+                rect.width = maxColumn - minColumn + 1 // ez way
                 affectedByWorldWrap = false // also we're not wrapping anymore
             }
         }

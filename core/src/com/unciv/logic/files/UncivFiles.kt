@@ -341,9 +341,9 @@ class UncivFiles(
         /** @throws IncompatibleGameInfoVersionException if the [gameData] was created by a version of this game that is incompatible with the current one. */
         fun gameInfoFromString(gameData: String): GameInfo {
             val unzippedJson = try {
-                Gzip.unzip(gameData)
+                Gzip.unzip(gameData.trim())
             } catch (ex: Exception) {
-                gameData
+                gameData.trim()
             }
             val gameInfo = try {
                 json().fromJson(GameInfo::class.java, unzippedJson)
@@ -417,8 +417,13 @@ class UncivFiles(
         if(nextTurn) {
             val newAutosaveFilename =
                 SAVE_FILES_FOLDER + File.separator + AUTOSAVE_FILE_NAME + "-${gameInfo.currentPlayer}-${gameInfo.turns}"
-            getSave(AUTOSAVE_FILE_NAME).copyTo(files.local(newAutosaveFilename))
-    
+            val file =
+                if (preferExternalStorage && files.isExternalStorageAvailable)
+                    files.external(newAutosaveFilename)
+                else
+                    files.local(newAutosaveFilename)
+            getSave(AUTOSAVE_FILE_NAME).copyTo(file)
+
             fun getAutosaves(): Sequence<FileHandle> {
                 return getSaves().filter { it.name().startsWith(AUTOSAVE_FILE_NAME) }
             }

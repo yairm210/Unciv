@@ -13,14 +13,13 @@ import com.unciv.models.helpers.MapArrowType
 import com.unciv.models.helpers.MiscArrowTypes
 import com.unciv.models.helpers.TintedMapArrow
 import com.unciv.models.helpers.UnitMovementMemoryType
-import com.unciv.ui.tilegroups.YieldGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.tilegroups.WorldTileGroup
+import com.unciv.ui.tilegroups.YieldGroup
 import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.centerX
-import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.toLabel
 import kotlin.math.atan2
 import kotlin.math.min
@@ -44,7 +43,15 @@ private class MapArrow(val targetTile: Tile, val arrowType: MapArrowType, val st
 class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
 
     override fun act(delta: Float) {}
-    override fun hit(x: Float, y: Float, touchable: Boolean): Actor? = null
+    override fun hit(x: Float, y: Float, touchable: Boolean): Actor? {
+        return if (workedIcon == null) {
+            null
+        } else {
+            val coords = Vector2(x, y)
+            workedIcon!!.parentToLocalCoordinates(coords)
+            workedIcon!!.hit(coords.x, coords.y, touchable)
+        }
+    }
 
     private var yieldsInitialized = false
     private var yields = YieldGroup().apply { isVisible = false }
@@ -53,10 +60,10 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
     private val arrowsToDraw = ArrayList<MapArrow>()
     private val arrows = HashMap<Tile, ArrayList<Actor>>()
 
+    private var resourceName: String? = null
+    private var resourceIcon: Actor? = null
+    private var workedIcon: Actor? = null
     var improvementIcon: Actor? = null
-    var populationIcon: Image? = null
-    var resourceIcon: Actor? = null
-    var resourceName: String? = null
 
     private val startingLocationIcons = mutableListOf<Actor>()
 
@@ -233,36 +240,16 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         }
     }
 
-    fun updatePopulationIcon() {
-        val icon = populationIcon
-        if (icon != null) {
-            icon.setSize(25f, 25f)
-            icon.setPosition(width / 2 - icon.width / 2,
-                height * 0.85f - icon.height / 2)
-            icon.color = when {
-                tile().isCityCenter() -> Color.GOLD.cpy()
-                tile().providesYield() -> Color.WHITE.cpy()
-                else -> Color.GRAY.cpy()
-            }
-            icon.toFront()
-        }
+    fun removeWorkedIcon() {
+        workedIcon?.remove()
+        workedIcon = null
+        determineVisibility()
     }
 
-    fun setNewPopulationIcon(icon: Image = ImageGetter.getStatIcon("Population")
-        .apply { color = Color.GREEN.darken(0.5f) }) {
-        populationIcon?.remove()
-        populationIcon = icon
-        populationIcon!!.run {
-            setSize(20f, 20f)
-            center(tileGroup)
-            x += 20 // right
-        }
-        addActor(populationIcon)
-    }
-
-    fun removePopulationIcon() {
-        populationIcon?.remove()
-        populationIcon = null
+    fun addWorkedIcon(icon: Actor) {
+        workedIcon = icon
+        addActor(workedIcon)
+        determineVisibility()
     }
 
 
@@ -278,7 +265,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
     fun dimImprovement(dim: Boolean) { improvementIcon?.color?.a = if (dim) 0.5f else 1f }
     fun dimResource(dim: Boolean) { resourceIcon?.color?.a = if (dim) 0.5f else 1f }
     fun dimYields(dim: Boolean) { yields.color.a = if (dim) 0.5f else 1f }
-    fun dimPopulation(dim: Boolean) { populationIcon?.color?.a = if (dim) 0.4f else 1f }
+    fun dimPopulation(dim: Boolean) { workedIcon?.color?.a = if (dim) 0.4f else 1f }
 
     fun setYieldVisible(isVisible: Boolean) {
         yields.isVisible = isVisible
@@ -305,7 +292,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         isVisible = yields.isVisible
                 || resourceIcon?.isVisible == true
                 || improvementIcon != null
-                || populationIcon != null
+                || workedIcon != null
                 || arrows.isNotEmpty()
                 || startingLocationIcons.isNotEmpty()
     }

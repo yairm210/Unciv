@@ -120,59 +120,58 @@ object HexMath {
         return Vector2(x, y)
     }
 
-    fun hex2CubicCoords(hexCoord: Vector2): Vector3 {
-        return Vector3(hexCoord.y - hexCoord.x, hexCoord.x, -hexCoord.y)
+    // Both x - 10 o'clock - and y - 2 o'clock - increase the row by 0.5
+    fun getRow(hexCoord: Vector2): Int = (hexCoord.x/2 + hexCoord.y/2).toInt()
+
+    // y is 2 o'clock - increases column by 1, x in 10 o'clock - decreases by 1
+    fun getColumn(hexCoord: Vector2): Int = (hexCoord.y - hexCoord.x).toInt()
+
+    fun getTileCoordsFromColumnRow(column: Int, row: Int): Vector2 {
+        // we know that column = y-x in hex coords
+        // And we know that row = (y+x)/2 in hex coords
+        // Therefore, 2row+column = 2y, 2row-column=2x
+
+        // However, these row numbers only apear on alternating columns.
+        // So column 0 will have rows 0,1,2, etc, and column 1 will have rows 0.5,1.5,2.5 etc.
+        // you'll need to see a hexmap to see it, and then it will be obvious
+
+        // So for even columns, the row is incremented by half
+        var twoRows = row * 2
+        if (abs(column) %2==1) twoRows += 1
+
+        return Vector2(((twoRows-column)/2).toFloat(), ((twoRows+column)/2).toFloat())
     }
 
-    fun cubic2HexCoords(cubicCoord: Vector3): Vector2 {
-        return Vector2(cubicCoord.y, -cubicCoord.z)
-    }
-
-    fun cubic2EvenQCoords(cubicCoord: Vector3): Vector2 {
-        return Vector2(cubicCoord.x, cubicCoord.z + (cubicCoord.x + (cubicCoord.x.toInt() and 1)) / 2)
-    }
-
-    fun evenQ2CubicCoords(evenQCoord: Vector2): Vector3 {
-        val x = evenQCoord.x
-        val z = evenQCoord.y - (evenQCoord.x + (evenQCoord.x.toInt() and 1)) / 2
-        val y = -x - z
-        return Vector3(x, y, z)
-    }
-
-    fun evenQ2HexCoords(evenQCoord: Vector2): Vector2 {
-        return if (evenQCoord == Vector2.Zero)
-            Vector2.Zero
-        else
-            cubic2HexCoords(evenQ2CubicCoords(evenQCoord))
-    }
-
-    fun hex2EvenQCoords(hexCoord: Vector2): Vector2 {
-        return if (hexCoord == Vector2.Zero)
-            Vector2.Zero
-        else
-            cubic2EvenQCoords(hex2CubicCoords(hexCoord))
-    }
-
-    fun roundCubicCoords(cubicCoords: Vector3): Vector3 {
-        var rx = round(cubicCoords.x)
-        var ry = round(cubicCoords.y)
-        var rz = round(cubicCoords.z)
-
-        val deltaX = abs(rx - cubicCoords.x)
-        val deltaY = abs(ry - cubicCoords.y)
-        val deltaZ = abs(rz - cubicCoords.z)
-
-        if (deltaX > deltaY && deltaX > deltaZ)
-            rx = -ry - rz
-        else if (deltaY > deltaZ)
-            ry = -rx - rz
-        else
-            rz = -rx - ry
-
-        return Vector3(rx, ry, rz)
-    }
-
+    /** Todo: find a mathematically equivalent way to round hex coords without cubic magic */
     fun roundHexCoords(hexCoord: Vector2): Vector2 {
+
+        fun roundCubicCoords(cubicCoords: Vector3): Vector3 {
+            var rx = round(cubicCoords.x)
+            var ry = round(cubicCoords.y)
+            var rz = round(cubicCoords.z)
+
+            val deltaX = abs(rx - cubicCoords.x)
+            val deltaY = abs(ry - cubicCoords.y)
+            val deltaZ = abs(rz - cubicCoords.z)
+
+            if (deltaX > deltaY && deltaX > deltaZ)
+                rx = -ry - rz
+            else if (deltaY > deltaZ)
+                ry = -rx - rz
+            else
+                rz = -rx - ry
+
+            return Vector3(rx, ry, rz)
+        }
+
+        fun hex2CubicCoords(hexCoord: Vector2): Vector3 {
+            return Vector3(hexCoord.y - hexCoord.x, hexCoord.x, -hexCoord.y)
+        }
+
+        fun cubic2HexCoords(cubicCoord: Vector3): Vector2 {
+            return Vector2(cubicCoord.y, -cubicCoord.z)
+        }
+
         return cubic2HexCoords(roundCubicCoords(hex2CubicCoords(hexCoord)))
     }
 

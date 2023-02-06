@@ -241,7 +241,7 @@ private fun CoroutineScope.generateScreenshots(configs:ArrayList<ScreenshotConfi
         newScreen.mapHolder.onTileClicked(newScreen.mapHolder.tileMap[-2, 3]) // Then click on Keshik
         if (currentConfig.attackCity)
             newScreen.mapHolder.onTileClicked(newScreen.mapHolder.tileMap[-2, 2]) // Then click city again for attack table
-        newScreen.mapHolder.zoomIn()
+        newScreen.mapHolder.zoomIn(true)
         withContext(Dispatchers.IO) {
             Thread.sleep(300)
             launchOnGLThread {

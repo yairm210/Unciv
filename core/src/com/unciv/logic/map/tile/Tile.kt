@@ -356,6 +356,9 @@ open class Tile : IsPartOfGameInfoSerialization {
         return tileMap.getClockPositionNeighborTile(this,(tileMap.getNeighborTileClockPosition(this, neighbor) + 2) % 12)
     }
 
+    fun getRow() = HexMath.getRow(position)
+    fun getColumn() = HexMath.getColumn(position)
+
     @delegate:Transient
     val tileHeight : Int by lazy { // for e.g. hill+forest this is 2, since forest is visible above units
         if (terrainHasUnique(UniqueType.BlocksLineOfSightAtSameElevation)) unitHeight + 1

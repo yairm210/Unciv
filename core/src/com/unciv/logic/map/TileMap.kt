@@ -115,10 +115,10 @@ class TileMap : IsPartOfGameInfoSerialization {
 
         // Even widths will have coordinates ranging -x..(x-1), not -x..x, which is always an odd-sized range
         // e.g. w=4 -> -2..1, w=5 -> -2..2, w=6 -> -3..2, w=7 -> -3..3
-        for (x in -wrapAdjustedWidth / 2 .. (wrapAdjustedWidth-1) / 2)
-            for (y in -height / 2 .. (height-1) / 2)
+        for (column in -wrapAdjustedWidth / 2 .. (wrapAdjustedWidth-1) / 2)
+            for (row in -height / 2 .. (height-1) / 2)
                 tileList.add(Tile().apply {
-                    position = HexMath.evenQ2HexCoords(Vector2(x.toFloat(), y.toFloat()))
+                    position = HexMath.getTileCoordsFromColumnRow(column, row)
                     baseTerrain = firstAvailableLandTerrain
                 })
 
@@ -205,8 +205,8 @@ class TileMap : IsPartOfGameInfoSerialization {
                 }.filterNotNull()
 
     /** @return all tiles within [rectangle], respecting world edges and wrap.
-     *  If using even Q coordinates the rectangle will be "straight" ie parallel with rectangular map edges. */
-    fun getTilesInRectangle(rectangle: Rectangle, evenQ: Boolean = false): Sequence<Tile> =
+     *  If using row/column coordinates the rectangle will be "straight" ie parallel with rectangular map edges. */
+    fun getTilesInRectangle(rectangle: Rectangle, rowsAndColumns: Boolean = false): Sequence<Tile> =
             if (rectangle.width <= 0 || rectangle.height <= 0) {
                 val tile = getIfTileExistsOrNull(rectangle.x.toInt(), rectangle.y.toInt())
                 if (tile == null) sequenceOf()
@@ -214,16 +214,17 @@ class TileMap : IsPartOfGameInfoSerialization {
             }
             else
                 sequence {
-                    for (x in 0 until rectangle.width.toInt()) {
-                        for (y in 0 until rectangle.height.toInt()) {
-                            val currentX = rectangle.x + x
-                            val currentY = rectangle.y + y
-                            if (evenQ) {
-                                val hexCoords = HexMath.evenQ2HexCoords(Vector2(currentX, currentY))
+                    for (rectColumnNumber in 0 until rectangle.width.toInt()) {
+                        for (rectRowNumber in 0 until rectangle.height.toInt()) {
+                            val worldColumnNumber = rectangle.x.toInt() + rectColumnNumber
+                            val worldRowNumber = rectangle.y.toInt() + rectRowNumber
+
+                            if (rowsAndColumns) {
+                                val hexCoords = HexMath.getTileCoordsFromColumnRow(worldColumnNumber, worldRowNumber)
                                 yield(getIfTileExistsOrNull(hexCoords.x.toInt(), hexCoords.y.toInt()))
                             }
                             else
-                                yield(getIfTileExistsOrNull(currentX.toInt(), currentY.toInt()))
+                                yield(getIfTileExistsOrNull(worldColumnNumber, worldRowNumber))
                         }
                     }
                 }.filterNotNull()
