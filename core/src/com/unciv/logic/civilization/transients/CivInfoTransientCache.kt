@@ -255,6 +255,10 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         val newDetailedCivResources = ResourceSupplyList()
         for (city in civInfo.cities) newDetailedCivResources.add(city.getCityResources())
 
+        for (resourceSupply in newDetailedCivResources)
+            if(resourceSupply.amount > 0)
+                resourceSupply.amount = (resourceSupply.amount * civInfo.getResourceModifier(resourceSupply.resource)).toInt()
+
         if (!civInfo.isCityState()) {
             // First we get all these resources of each city state separately
             val cityStateProvidedResources = ResourceSupplyList()

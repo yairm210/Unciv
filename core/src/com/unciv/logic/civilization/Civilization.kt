@@ -410,7 +410,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         return hashMap
     }
 
-    fun getResourceModifier(resource: TileResource): Int {
+    fun getResourceModifier(resource: TileResource): Float {
         var resourceModifier = 1f
         for (unique in getMatchingUniques(UniqueType.DoubleResourceProduced))
             if (unique.params[0] == resource.name)
@@ -420,7 +420,7 @@ class Civilization : IsPartOfGameInfoSerialization {
                 .map { it.params[0].toFloat() / 100f }.sum()
 
         }
-        return resourceModifier.toInt()
+        return resourceModifier
     }
 
     fun hasResource(resourceName: String): Boolean = getCivResourcesByName()[resourceName]!! > 0
