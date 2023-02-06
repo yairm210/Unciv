@@ -69,7 +69,7 @@ class Terrain : RulesetStatsObject() {
 
         val textList = ArrayList<FormattedLine>()
 
-        if (turnsInto != null) {
+        if (type == TerrainType.NaturalWonder) {
             textList += FormattedLine("Natural Wonder", header=3, color="#3A0")
         }
 

@@ -119,7 +119,8 @@ class MapEditorEditWondersTab(
         ) {
             editTab.setBrush(it, "Terrain/$it") { tile ->
                 // Normally the caller would ensure compliance, but here we make an exception - place it no matter what
-                tile.baseTerrain = ruleset.terrains[it]!!.turnsInto!!
+                if (ruleset.terrains[it]!!.turnsInto != null)
+                    tile.baseTerrain = ruleset.terrains[it]!!.turnsInto!!
                 tile.removeTerrainFeatures()
                 tile.naturalWonder = it
             }
