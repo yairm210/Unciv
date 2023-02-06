@@ -10,13 +10,13 @@ import com.unciv.ui.utils.extensions.isEnabled
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toTextButton
 
-class TradeTable(val otherCivilization: Civilization, stage: DiplomacyScreen): Table(BaseScreen.skin) {
+class TradeTable(private val otherCivilization: Civilization, stage: DiplomacyScreen): Table(BaseScreen.skin) {
     val currentPlayerCiv = otherCivilization.gameInfo.getCurrentPlayerCivilization()
     var tradeLogic = TradeLogic(currentPlayerCiv,otherCivilization)
     var offerColumnsTable = OfferColumnsTable(tradeLogic, stage) { onChange() }
     // This is so that after a trade has been traded, we can switch out the offersToDisplay to start anew - this is the easiest way
     private var offerColumnsTableWrapper = Table()
-    val offerButton = "Offer trade".toTextButton()
+    private val offerButton = "Offer trade".toTextButton().apply{ isEnabled = false }
 
     private fun isTradeOffered() = otherCivilization.tradeRequests.any { it.requestingCiv == currentPlayerCiv.civName }
 
