@@ -1,3 +1,35 @@
+## 4.4.11
+
+AI tweaks for better targeting
+
+Resolved  - can no longer (temporarily) alter queue in multiplayer in between turns
+
+Resolved  - ultra-rare 'destroy civilian unit before attack' crash
+
+Fixed bad spread of starting positions
+
+row/col are now 1:1 for all tiles, so each int row/col pair has a corresponding x/y pair
+
+chore: Simplified hex coord math - part 2
+
+chore: Simplified hex coord math - part 1
+
+Terrain-Specific Natural Wonder Sprite Support  - By OptimizedForDensity
+
+By vegeta1k95:
+- Generify hasGoldToBuy -> hasStatToBuy + fix condition 
+- City Screen improvements 
+- Fix crash when attacking city with disabled overlays 
+- LanguagePickerScreen sorting: English > system lang > percent complete 
+- PolicyScreen: branch progress + fix spectator 
+
+Gradle update, offerButton.isEnabled = false in initial  - By lishaoxia1985
+
+By Gualdimar:
+- Suggestion: Collapsible tutorial tasks 
+- Bigger header on policy and mod screens 
+- Fixed completing the "Found city" tutorial by AI 
+
 ## 4.4.10
 
 By vegeta1k95:
