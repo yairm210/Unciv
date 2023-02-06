@@ -62,12 +62,14 @@ object Battle {
          */
         if (attacker.getTile() != attackableTile.tileToAttackFrom) return false
         /** Rarely, a melee unit will target a civilian then move through the civilian to get
-         * to attackableTile.tileToAttackFrom, meaning that they take the civilian. This check stops
-         * the melee unit from trying to capture their own unit if this happens */
-        if (getMapCombatantOfTile(attackableTile.tileToAttack)!!.getCivInfo() == attacker.getCivInfo()) return false
+         * to attackableTile.tileToAttackFrom, meaning that they take the civilian.
+         * This can lead to:
+         * A. the melee unit from trying to capture their own unit (see #7282)
+         * B. The civilian unit disappearing entirely (e.g. Great Person) and trying to capture a non-existent unit (see #8563) */
+        val combatant = getMapCombatantOfTile(attackableTile.tileToAttack)
+        if (combatant == null || combatant.getCivInfo() == attacker.getCivInfo()) return false
         /** Alternatively, maybe we DID reach that tile, but it turned out to be a hill or something,
-         * so we expended all of our movement points!
-         */
+         * so we expended all of our movement points! */
         if (attacker.hasUnique(UniqueType.MustSetUp)
                 && !attacker.unit.isSetUpForSiege()
                 && attacker.unit.currentMovement > 0f

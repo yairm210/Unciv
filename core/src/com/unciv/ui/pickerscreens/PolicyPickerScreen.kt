@@ -547,7 +547,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, val viewingCiv: Civilizat
         val header = BorderedTable(path="PolicyScreen/PolicyBranchHeader")
         header.bgColor = colorFromRGB(47,90,92)
         header.borderSize = 5f
-        header.pad(5f)
+        header.pad(10f)
 
         val table = Table()
 
@@ -562,7 +562,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, val viewingCiv: Civilizat
         table.add(branch.name.tr().uppercase().toLabel(fontSize = 14).apply { setAlignment(Align.center) }).center()
         table.add(icon).expandX().left().padLeft(5f)
 
-        table.setTouchable(Touchable.enabled)
+        header.setTouchable(Touchable.enabled)
 
         header.add(table).minWidth(150f).growX()
         header.pack()

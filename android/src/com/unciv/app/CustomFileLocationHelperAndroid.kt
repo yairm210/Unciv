@@ -28,7 +28,7 @@ class CustomFileLocationHelperAndroid(private val activity: Activity) : CustomFi
                 cursor.use {
                     // we should have a direct URI to a file, so first is enough
                     if (it?.moveToFirst() == true) {
-                        it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                        it.getString(it.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME))
                     } else ""
                 }
             }

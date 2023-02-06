@@ -59,7 +59,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
         innerTable.row()
         innerTable.add(getTileStatsTable(stats)).row()
 
-        if (isTilePurchaseShown(selectedTile)) {
+        if (city.expansion.canBuyTile(selectedTile)) {
             val goldCostOfTile = city.expansion.getGoldCostOfTile(selectedTile)
             val buyTileButton = "Buy for [$goldCostOfTile] gold".toTextButton()
             buyTileButton.onActivation {
@@ -67,7 +67,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
                 askToBuyTile(selectedTile)
             }
             buyTileButton.keyShortcuts.add('T')
-            buyTileButton.isEnabled = isTilePurchaseAllowed(goldCostOfTile)
+            buyTileButton.isEnabled =  cityScreen.canChangeState && city.civ.hasStatToBuy(Stat.Gold, goldCostOfTile)
             buyTileButton.addTooltip('T')  // The key binding is done in CityScreen constructor
             innerTable.add(buyTileButton).padTop(5f).row()
         }
@@ -113,9 +113,9 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
      */
     private fun askToBuyTile(selectedTile: Tile) {
         // These checks are redundant for the onClick action, but not for the keyboard binding
-        if (!isTilePurchaseShown(selectedTile)) return
+        if (!cityScreen.canChangeState || !city.expansion.canBuyTile(selectedTile)) return
         val goldCostOfTile = city.expansion.getGoldCostOfTile(selectedTile)
-        if (!isTilePurchaseAllowed(goldCostOfTile)) return
+        if (!city.civ.hasStatToBuy(Stat.Gold, goldCostOfTile)) return
 
         cityScreen.closeAllPopups()
 
@@ -133,21 +133,6 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
             // preselect the next tile on city screen rebuild so bulk buying can go faster
             UncivGame.Current.replaceCurrentScreen(CityScreen(city, initSelectedTile = city.expansion.chooseNewTileToOwn()))
         }.open()
-    }
-
-    /** This tests whether the buy button should be _shown_ */
-    private fun isTilePurchaseShown(selectedTile: Tile) = when {
-        selectedTile.getOwner() != null -> false
-        selectedTile !in city.tilesInRange -> false
-        else -> selectedTile.neighbors.any { it.getCity() == city }
-    }
-    /** This tests whether the buy button should be _enabled_ */
-    private fun isTilePurchaseAllowed(goldCostOfTile: Int) = when {
-        city.isPuppet -> false
-        !cityScreen.canChangeState -> false
-        city.civ.gameInfo.gameParameters.godMode -> true
-        goldCostOfTile == 0 -> true
-        else -> city.civ.gold >= goldCostOfTile
     }
 
     private fun getTileStatsTable(stats: Stats): Table {

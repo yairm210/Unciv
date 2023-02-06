@@ -70,21 +70,29 @@ object BattleHelper {
                 else reachableTile.tileMap.getViewableTiles(reachableTile.position, rangeOfAttack, true).asSequence()
 
             for (tile in tilesInAttackRange) {
+                // Since military units can technically enter tiles with enemy civilians,
+                // some try to move to to the tile and then attack the unit it contains, which is silly
+                if (tile == reachableTile) continue
                 if (tile in tilesWithEnemies) attackableTiles += AttackableTile(
                     reachableTile,
                     tile,
-                    movementLeft
+                    movementLeft,
+                    Battle.getMapCombatantOfTile(tile)!!
                 )
                 else if (tile in tilesWithoutEnemies) continue // avoid checking the same empty tile multiple times
                 else if (checkTile(unit, tile, tilesToCheck)) {
                     tilesWithEnemies += tile
-                    attackableTiles += AttackableTile(reachableTile, tile, movementLeft)
-                } else if (unit.isPreparingAirSweep()){
+                    attackableTiles += AttackableTile(
+                        reachableTile, tile, movementLeft,
+                        Battle.getMapCombatantOfTile(tile)!!
+                    )
+                } else if (unit.isPreparingAirSweep()) {
                     tilesWithEnemies += tile
-                    attackableTiles += AttackableTile(reachableTile, tile, movementLeft)
-                } else {
-                    tilesWithoutEnemies += tile
-                }
+                    attackableTiles += AttackableTile(
+                        reachableTile, tile, movementLeft,
+                        Battle.getMapCombatantOfTile(tile)!!
+                    )
+                } else tilesWithoutEnemies += tile
             }
         }
         return attackableTiles
@@ -192,8 +200,9 @@ object BattleHelper {
                     ).toFloat().coerceAtLeast(1f) }
 
             // kill a unit if possible, prioritizing by attack strength
-            val canKill = attacksToKill.filter { it.value <= 1 }
-                .maxByOrNull { MapUnitCombatant(it.key.tileToAttack.militaryUnit!!).getAttackingStrength() }?.key
+            val canKill = attacksToKill.filter { it.value <= 1 }.keys
+                .sortedByDescending { it.movementLeftAfterMovingToAttackTile } // Among equal kills, prioritize the closest unit
+                .maxByOrNull { MapUnitCombatant(it.tileToAttack.militaryUnit!!).getAttackingStrength() }
             if (canKill != null) return canKill
 
             // otherwise pick the unit we can kill the fastest
@@ -211,7 +220,7 @@ object BattleHelper {
             return unitsToConsider.maxByOrNull { it.movementLeftAfterMovingToAttackTile }!!
         }
 
-        // We're ranged, prioritize what we can kill
+        // We're ranged, prioritize that we can kill
         return unitsToConsider.minByOrNull {
             Battle.getMapCombatantOfTile(it.tileToAttack)!!.getHealth()
         }!!

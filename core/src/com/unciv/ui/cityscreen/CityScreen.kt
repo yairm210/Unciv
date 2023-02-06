@@ -16,9 +16,11 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
+import com.unciv.models.translations.tr
 import com.unciv.ui.audio.CityAmbiencePlayer
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.tilegroups.TileGroupMap
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.tilegroups.CityTileGroup
@@ -26,7 +28,6 @@ import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.RecreateOnResize
-import com.unciv.ui.utils.ZoomableScrollPane
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.keyShortcuts
 import com.unciv.ui.utils.extensions.onActivation
@@ -88,7 +89,7 @@ class CityScreen(
     private var tileGroups = ArrayList<CityTileGroup>()
 
     /** The ScrollPane for the background map view of the city surroundings */
-    private val mapScrollPane = ZoomableScrollPane()
+    private val mapScrollPane = CityMapHolder()
 
     /** Support for [UniqueType.CreatesOneImprovement] - need user to pick a tile */
     class PickTileForImprovementData (
@@ -302,9 +303,8 @@ class CityScreen(
                 .map { CityTileGroup(cityInfo, it, tileSetStrings) }
 
         for (tileGroup in cityTileGroups) {
-            tileGroup.onClick {
-                tileGroupOnClick(tileGroup, cityInfo)
-            }
+            tileGroup.onClick { tileGroupOnClick(tileGroup, cityInfo) }
+            tileGroup.layerMisc.onClick { tileWorkedIconOnClick(tileGroup, cityInfo) }
             tileGroups.add(tileGroup)
         }
 
@@ -328,6 +328,45 @@ class CityScreen(
         mapScrollPane.scrollPercentX = 0.5f
         mapScrollPane.scrollPercentY = 0.5f
         mapScrollPane.updateVisualScroll()
+    }
+
+    private fun tileWorkedIconOnClick(tileGroup: CityTileGroup, city: City) {
+
+        if (!canChangeState || city.isPuppet) return
+        val tile = tileGroup.tile
+
+        // Cycling as: Not-worked -> Worked -> Locked -> Not-worked
+        if (tileGroup.isWorkable) {
+            if (!tile.providesYield() && city.population.getFreePopulation() > 0) {
+                city.workedTiles.add(tile.position)
+                game.settings.addCompletedTutorialTask("Reassign worked tiles")
+            } else if (tile.isWorked() && !tile.isLocked()) {
+                city.lockedTiles.add(tile.position)
+            } else if (tile.isLocked()) {
+                city.workedTiles.remove(tile.position)
+                city.lockedTiles.remove(tile.position)
+            }
+            city.cityStats.update()
+            update()
+
+        } else if (tileGroup.isPurchasable) {
+
+            val price = city.expansion.getGoldCostOfTile(tile)
+            val purchasePrompt = "Currently you have [${city.civ.gold}] [Gold].".tr() + "\n\n" +
+                    "Would you like to purchase [Tile] for [$price] [${Stat.Gold.character}]?".tr()
+            ConfirmPopup(
+                this,
+                purchasePrompt,
+                "Purchase",
+                true,
+                restoreDefault = { update() }
+            ) {
+                SoundPlayer.play(UncivSound.Coin)
+                city.expansion.buyTile(tile)
+                // preselect the next tile on city screen rebuild so bulk buying can go faster
+                UncivGame.Current.replaceCurrentScreen(CityScreen(city, initSelectedTile = city.expansion.chooseNewTileToOwn()))
+            }.open()
+        }
     }
 
     private fun tileGroupOnClick(tileGroup: CityTileGroup, city: City) {
@@ -356,17 +395,6 @@ class CityScreen(
         }
 
         selectTile(tileInfo)
-        if (tileGroup.isWorkable && canChangeState) {
-            if (!tileInfo.providesYield() && city.population.getFreePopulation() > 0) {
-                city.workedTiles.add(tileInfo.position)
-                city.lockedTiles.add(tileInfo.position)
-                game.settings.addCompletedTutorialTask("Reassign worked tiles")
-            } else if (tileInfo.isWorked()) {
-                city.workedTiles.remove(tileInfo.position)
-                city.lockedTiles.remove(tileInfo.position)
-            }
-            city.cityStats.update()
-        }
         update()
     }
 

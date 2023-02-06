@@ -169,7 +169,8 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
                 list.forEach {
                     clearTile(it)
                     it.naturalWonder = wonder.name
-                    it.baseTerrain = wonder.turnsInto!!
+                    if (wonder.turnsInto != null)
+                        it.baseTerrain = wonder.turnsInto!!
                     // Add all tiles within a certain distance to a blacklist so NW:s don't cluster
                     blockedTiles.addAll(it.getTilesInDistance(it.tileMap.mapParameters.mapSize.height / 5))
                 }
