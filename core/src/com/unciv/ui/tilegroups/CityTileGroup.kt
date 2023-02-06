@@ -8,6 +8,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.stats.Stat
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.extensions.addToCenter
 import com.unciv.ui.utils.extensions.darken
@@ -52,7 +53,7 @@ class CityTileGroup(private val city: City, tile: Tile, tileSetStrings: TileSetS
                     label.y -= 15f
 
                     // Can be purchased now?
-                    if (!city.civ.hasGoldToBuy(price)) {
+                    if (!city.civ.hasStatToBuy(Stat.Gold, price)) {
                         image.color = Color.WHITE.darken(0.5f)
                         label.setFontColor(Color.RED)
                     } else {
@@ -64,7 +65,6 @@ class CityTileGroup(private val city: City, tile: Tile, tileSetStrings: TileSetS
             // Out of city range
             tile !in city.tilesInRange -> {
                 layerTerrain.dim(0.5f)
-                layerMisc.setYieldVisible(UncivGame.Current.settings.showTileYields)
                 layerMisc.dimYields(true)
             }
 
@@ -81,7 +81,7 @@ class CityTileGroup(private val city: City, tile: Tile, tileSetStrings: TileSetS
             }
 
             // Does not provide yields
-            tile.stats.getTileStats(viewingCiv).isEmpty() -> {
+            tile.stats.getTileStats(city.civ).isEmpty() -> {
                 // Do nothing
             }
 
