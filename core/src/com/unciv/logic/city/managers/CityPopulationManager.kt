@@ -1,5 +1,6 @@
 package com.unciv.logic.city.managers
 
+import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.City
@@ -185,11 +186,16 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         city.cityStats.update()
     }
 
+    fun stopWorkingTile(position: Vector2){
+        city.workedTiles = city.workedTiles.withoutItem(position)
+        city.lockedTiles.remove(position)
+    }
+
     fun unassignExtraPopulation() {
         for (tile in city.workedTiles.map { city.tileMap[it] }) {
             if (tile.getOwner() != city.civ || tile.getWorkingCity() != city
                     || tile.aerialDistanceTo(city.getCenterTile()) > 3)
-                city.workedTiles = city.workedTiles.withoutItem(tile.position)
+                city.population.stopWorkingTile(tile.position)
         }
 
         // unassign specialists that cannot be (e.g. the city was captured and one of the specialist buildings was destroyed)
@@ -227,13 +233,14 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
             when {
                 worstAutoJob != null && worstWorkedTile != null -> {
                     // choose between removing a specialist and removing a tile
-                    if (valueWorstTile < valueWorstSpecialist)
-                        city.workedTiles = city.workedTiles.withoutItem(worstWorkedTile.position)
+                    if (valueWorstTile < valueWorstSpecialist) {
+                        stopWorkingTile(worstWorkedTile.position)
+                    }
                     else
                         specialistAllocations.add(worstAutoJob, -1)
                 }
                 worstAutoJob != null -> specialistAllocations.add(worstAutoJob, -1)
-                worstWorkedTile != null -> city.workedTiles = city.workedTiles.withoutItem(worstWorkedTile.position)
+                worstWorkedTile != null -> stopWorkingTile(worstWorkedTile.position)
                 else -> {
                     // It happens when "cityInfo.manualSpecialists == true"
                     //  and population goes below the number of specialists, e.g. city is razing.
