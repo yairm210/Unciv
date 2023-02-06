@@ -697,6 +697,14 @@ class Civilization : IsPartOfGameInfoSerialization {
         }
     }
 
+    fun hasGoldToBuy(price: Int): Boolean {
+        return when {
+            gameInfo.gameParameters.godMode -> true
+            price == 0 -> true
+            else -> gold >= price
+        }
+    }
+
     fun addStats(stats: Stats){
         for ((stat, amount) in stats) addStat(stat, amount.toInt())
     }

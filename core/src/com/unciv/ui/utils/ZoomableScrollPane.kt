@@ -294,6 +294,8 @@ open class ZoomableScrollPane(
         }
 
         override fun panStop(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+            if (zoomListener.isZooming)
+                zoomListener.isZooming = false
             isPanning = false
             onPanStopListener?.invoke()
         }

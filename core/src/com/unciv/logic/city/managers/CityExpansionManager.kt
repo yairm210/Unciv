@@ -55,6 +55,15 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         return cultureToNextTile.roundToInt()
     }
 
+    fun canBuyTile(tile: Tile): Boolean {
+        return when {
+            city.isPuppet -> false
+            tile.getOwner() != null -> false
+            tile !in city.tilesInRange -> false
+            else -> tile.neighbors.any { it.getCity() == city }
+        }
+    }
+
     fun buyTile(tile: Tile) {
         val goldCost = getGoldCostOfTile(tile)
 

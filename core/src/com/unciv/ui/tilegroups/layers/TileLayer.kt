@@ -1,6 +1,7 @@
 package com.unciv.ui.tilegroups.layers
 
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
@@ -11,6 +12,7 @@ import com.unciv.ui.tilegroups.TileSetStrings
 abstract class TileLayer(val tileGroup: TileGroup, size: Float) : Group() {
 
     init {
+        touchable = Touchable.disabled
         isTransform = false
         @Suppress("LeakingThis")
         setSize(size, size)
