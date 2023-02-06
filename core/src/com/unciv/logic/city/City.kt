@@ -167,7 +167,7 @@ class City : IsPartOfGameInfoSerialization {
 
         for (tileInfo in getTiles().filter { it.resource != null }) {
             val resource = tileInfo.tileResource
-            val amount = getTileResourceAmount(tileInfo) * civ.getResourceModifier(resource)
+            val amount = getTileResourceAmount(tileInfo)
             if (amount > 0) cityResources.add(resource, "Tiles", amount)
         }
 
@@ -179,7 +179,7 @@ class City : IsPartOfGameInfoSerialization {
                 val resource = getRuleset().tileResources[unique.params[1]] ?: continue
                 cityResources.add(
                     resource, "Improvements",
-                    unique.params[0].toInt() * civ.getResourceModifier(resource)
+                    unique.params[0].toInt()
                 )
             }
             for (unique in tileImprovement.getMatchingUniques(UniqueType.ConsumesResources, stateForConditionals)) {
@@ -203,7 +203,7 @@ class City : IsPartOfGameInfoSerialization {
                 ?: continue
             cityResources.add(
                 resource, "Buildings",
-                unique.params[0].toInt() * civ.getResourceModifier(resource)
+                unique.params[0].toInt()
             )
         }
 
