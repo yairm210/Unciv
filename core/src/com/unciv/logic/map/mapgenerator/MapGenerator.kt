@@ -7,8 +7,8 @@ import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapType
-import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Ruleset
@@ -18,6 +18,7 @@ import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.mapeditor.MapGeneratorSteps
+import com.unciv.ui.mapeditor.TileInfoNormalizer
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import kotlin.math.abs
@@ -164,6 +165,11 @@ class MapGenerator(val ruleset: Ruleset) {
         runAndMeasure("spreadAncientRuins") {
             spreadAncientRuins(map)
         }
+
+        // Map generation may generate incompatible terrain/feature combinations
+        for (tile in map.values)
+            TileInfoNormalizer.normalizeToRuleset(tile, ruleset)
+
         return map
     }
 

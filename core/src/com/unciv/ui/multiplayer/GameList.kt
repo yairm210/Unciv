@@ -93,9 +93,9 @@ private class GameDisplay(
         onClick { onSelected(gameName) }
 
         val isOurGame: (HasMultiplayerGameName) -> Boolean = { it.name == gameName }
-        events.receive(MultiplayerGameUpdateStarted::class, isOurGame, {
+        events.receive(MultiplayerGameUpdateStarted::class, isOurGame) {
             statusIndicators.addActor(refreshIndicator)
-        })
+        }
         events.receive(MultiplayerGameUpdateEnded::class, isOurGame) {
             refreshIndicator.remove()
         }
