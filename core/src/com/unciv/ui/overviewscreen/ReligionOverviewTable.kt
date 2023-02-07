@@ -89,7 +89,7 @@ class ReligionOverviewTab(
         val existingReligions: List<Religion> = gameInfo.civilizations.mapNotNull { it.religionManager.religion }
         for (religion in existingReligions) {
             val image = if (religion.isPantheon()) {
-                if (viewingPlayer.knows(religion.foundingCivName) || viewingPlayer.civName == religion.foundingCivName)
+                if (viewingPlayer.knows(religion.foundingCivName))
                     ImageGetter.getNationPortrait(religion.getFounder().nation, 60f)
                 else
                     ImageGetter.getRandomNationPortrait(60f)
@@ -136,7 +136,7 @@ class ReligionOverviewTab(
         statsTable.add(religion.getReligionDisplayName().toLabel()).right().row()
         statsTable.add("Founding Civ:".toLabel())
         val foundingCivName =
-            if (viewingPlayer.knows(religion.foundingCivName) || viewingPlayer.civName == religion.foundingCivName)
+            if (viewingPlayer.knows(religion.foundingCivName))
                 religion.foundingCivName
             else Constants.unknownNationName
         statsTable.add(foundingCivName.toLabel()).right().row()

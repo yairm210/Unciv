@@ -16,7 +16,7 @@ class TradeTable(private val otherCivilization: Civilization, stage: DiplomacySc
     var offerColumnsTable = OfferColumnsTable(tradeLogic, stage) { onChange() }
     // This is so that after a trade has been traded, we can switch out the offersToDisplay to start anew - this is the easiest way
     private var offerColumnsTableWrapper = Table()
-    private val offerButton = "Offer trade".toTextButton().apply{ isEnabled = false }
+    private val offerButton = "Offer trade".toTextButton().apply { isEnabled = false }
 
     private fun isTradeOffered() = otherCivilization.tradeRequests.any { it.requestingCiv == currentPlayerCiv.civName }
 
