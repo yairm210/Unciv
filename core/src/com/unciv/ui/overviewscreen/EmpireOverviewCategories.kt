@@ -3,6 +3,7 @@ package com.unciv.ui.overviewscreen
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
+import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.ui.overviewscreen.EmpireOverviewTab.EmpireOverviewTabPersistableData
 import com.unciv.ui.utils.KeyCharAndCode
 
@@ -47,7 +48,7 @@ enum class EmpireOverviewCategories(
     Resources("StatIcons/Happiness", 'R', Align.topLeft,
         fun (viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?)
                 = ResourcesOverviewTab(viewingPlayer, overviewScreen, persistedData),
-        fun (viewingPlayer: Civilization) = viewingPlayer.detailedCivResources.isEmpty().toState()),
+        fun (viewingPlayer: Civilization) = (!viewingPlayer.detailedCivResources.any { it.resource.resourceType != ResourceType.Bonus }).toState()),
     Religion("StatIcons/Faith", 'F', Align.top,
         fun (viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?)
                 = ReligionOverviewTab(viewingPlayer, overviewScreen, persistedData),
