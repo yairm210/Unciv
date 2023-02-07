@@ -217,7 +217,7 @@ class DiplomacyScreen(
         var ally = otherCiv.getAllyCiv()
         if (ally != null) {
             val allyInfluence = otherCiv.getDiplomacyManager(ally).getInfluence().toInt()
-            if (!viewingCiv.knows(ally) && ally != viewingCiv.civName)
+            if (!viewingCiv.knows(ally))
                 ally = "Unknown civilization"
             diplomacyTable
                 .add("Ally: [$ally] with [$allyInfluence] Influence".toLabel())
