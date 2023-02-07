@@ -1,3 +1,23 @@
+## 4.4.12
+
+Better great general placement calc
+
+Resolved "dead population working tiles" bug
+
+Resolved  - generated maps no longer contain forbidden tile arrangements
+
+Resolved  - games where it's your turn are displayed first in multiplayer popup
+
+Order indicators in TechScreen like original Civ V  - By lishaoxia1985
+
+By Gualdimar:
+- Fixed the display of political relations  
+- Fixed overview resources tab state check 
+- Non-integer resource modifier now applied to the civ-wide scope 
+- Fixed pillaged improvement defence bonus 
+
+Fix MapEditor world-wrap flickering  - By vegeta1k95
+
 ## 4.4.11
 
 AI tweaks for better targeting
