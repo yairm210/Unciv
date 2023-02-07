@@ -29,16 +29,17 @@ class TradeEvaluation {
             if (!isOfferValid(offer, offerer, tradePartner))
                 return false
         for (offer in trade.theirOffers)
-            if (!isOfferValid(offer, tradePartner, offerer))
+            if (!isOfferValid(offer, tradePartner, offerer, true))
                 return false
         return true
     }
 
-    private fun isOfferValid(tradeOffer: TradeOffer, offerer: Civilization, tradePartner: Civilization): Boolean {
+    private fun isOfferValid(tradeOffer: TradeOffer, offerer: Civilization, tradePartner: Civilization, isTradePartnerCheck: Boolean = false): Boolean {
 
-        fun hasResource(tradeOffer: TradeOffer): Boolean {
+        fun hasResource(tradeOffer: TradeOffer, isTradePartnerCheck: Boolean): Boolean {
             val resourcesByName = offerer.getCivResourcesByName()
-            return resourcesByName.containsKey(tradeOffer.name) && resourcesByName[tradeOffer.name]!! >= 0
+            val amount = if (isTradePartnerCheck) 0 else tradeOffer.amount
+            return resourcesByName.containsKey(tradeOffer.name) && resourcesByName[tradeOffer.name]!! >= amount
         }
 
         return when (tradeOffer.type) {
@@ -46,8 +47,8 @@ class TradeEvaluation {
             TradeType.Gold_Per_Turn -> true // even if they go negative it's okay
             TradeType.Treaty -> true
             TradeType.Agreement -> true
-            TradeType.Luxury_Resource -> hasResource(tradeOffer)
-            TradeType.Strategic_Resource -> hasResource(tradeOffer)
+            TradeType.Luxury_Resource -> hasResource(tradeOffer, isTradePartnerCheck)
+            TradeType.Strategic_Resource -> hasResource(tradeOffer, isTradePartnerCheck)
             TradeType.Technology -> true
             TradeType.Introduction -> !tradePartner.knows(tradeOffer.name) // You can't introduce them to someone they already know!
             TradeType.WarDeclaration -> true
