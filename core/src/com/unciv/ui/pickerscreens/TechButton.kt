@@ -11,7 +11,6 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.extensions.addBorder
@@ -20,7 +19,6 @@ import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.centerY
 import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.setFontSize
-import com.unciv.ui.utils.extensions.surroundWithCircle
 import com.unciv.ui.utils.extensions.toLabel
 
 class TechButton(techName:String, private val techManager: TechManager, isWorldScreen: Boolean = true) : Table(BaseScreen.skin) {
@@ -34,7 +32,6 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
         setFontSize(14)
         setAlignment(Align.right)
     }
-    var orderIndicator: IconCircleGroup? = null
     var bg = Image(BaseScreen.skinStrings.getUiBackground("TechPickerScreen/TechButton", BaseScreen.skinStrings.roundedEdgeRectangleMidShape))
 
     init {
@@ -169,15 +166,6 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
             .prefWidth(195f)
             .maxWidth(195f)
             .expandX().left().row()
-    }
-
-    fun addOrderIndicator(number:Int){
-        orderIndicator = number.toString().toLabel(fontSize = 18)
-            .apply { setAlignment(Align.center) }
-            .surroundWithCircle(28f, color = BaseScreen.skinStrings.skinConfig.baseColor)
-            .surroundWithCircle(30f,false)
-        orderIndicator!!.setPosition(0f, height, Align.topLeft)
-        addActor(orderIndicator)
     }
 
 }
