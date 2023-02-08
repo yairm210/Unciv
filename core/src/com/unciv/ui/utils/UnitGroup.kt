@@ -12,7 +12,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.extensions.addToCenter
-import com.unciv.ui.utils.extensions.center
 import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.setSize
 import com.unciv.ui.utils.extensions.surroundWithCircle
