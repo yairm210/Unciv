@@ -28,6 +28,7 @@ import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.RecreateOnResize
+import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.keyShortcuts
 import com.unciv.ui.utils.extensions.onActivation
@@ -229,8 +230,7 @@ class CityScreen(
             tileGroup.layerOverlay.hideHighlight()
             when {
                 tileGroup.tile == nextTileToOwn -> {
-                    tileGroup.layerOverlay.showHighlight(Color.PURPLE)
-                    tileGroup.setColor(0f, 0f, 0f, 0.7f)
+                    tileGroup.layerMisc.addHexOutline(colorFromRGB(200, 20, 220))
                 }
                 /** Support for [UniqueType.CreatesOneImprovement] */
                 tileGroup.tile == selectedQueueEntryTargetTile ->
