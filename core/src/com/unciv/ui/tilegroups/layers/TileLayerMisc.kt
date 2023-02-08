@@ -60,6 +60,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
     private val arrowsToDraw = ArrayList<MapArrow>()
     private val arrows = HashMap<Tile, ArrayList<Actor>>()
 
+    private var hexOutlineIcon: Actor? = null
     private var resourceName: String? = null
     private var resourceIcon: Actor? = null
     private var workedIcon: Actor? = null
@@ -252,6 +253,21 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         determineVisibility()
     }
 
+    fun addHexOutline(color: Color) {
+        hexOutlineIcon?.remove()
+        hexOutlineIcon = ImageGetter.getImage("OtherIcons/HexagonOutline").setHexagonSize(1f)
+        hexOutlineIcon!!.color = color
+        addActor(hexOutlineIcon)
+        hexOutlineIcon!!.toBack()
+        determineVisibility()
+    }
+
+    fun removeHexOutline() {
+        hexOutlineIcon?.remove()
+        hexOutlineIcon = null
+        determineVisibility()
+    }
+
 
     fun addArrow(targetTile: Tile, type: MapArrowType) {
         if (targetTile.position != tile().position)
@@ -293,6 +309,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
                 || resourceIcon?.isVisible == true
                 || improvementIcon != null
                 || workedIcon != null
+                || hexOutlineIcon != null
                 || arrows.isNotEmpty()
                 || startingLocationIcons.isNotEmpty()
     }

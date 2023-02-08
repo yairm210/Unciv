@@ -78,13 +78,14 @@ open class TileGroup(
         layerTerrain.reset()
         layerBorders.reset()
         layerMisc.reset()
+        layerOverlay.reset()
         layerUnitArt.reset()
         layerUnitFlag.reset()
-        layerOverlay.setFog(true)
     }
 
     open fun update(viewingCiv: Civilization? = null) {
 
+        layerMisc.removeHexOutline()
         layerOverlay.hideHighlight()
         layerOverlay.hideCrosshair()
 
