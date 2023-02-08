@@ -79,8 +79,8 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             skinStrings.roundedEdgeRectangleShape,
             skinStrings.skinConfig.baseColor
         )
-        table.add(ImageGetter.getImage(icon)).size(50f).padRight(30f)
-        table.add(text.toLabel().setFontSize(30)).minWidth(200f)
+        table.add(ImageGetter.getImage(icon)).size(50f).padRight(20f)
+        table.add(text.toLabel(fontSize = 30, alignment = Align.left)).expand().left().minWidth(200f)
 
         table.touchable = Touchable.enabled
         table.onActivation(function)

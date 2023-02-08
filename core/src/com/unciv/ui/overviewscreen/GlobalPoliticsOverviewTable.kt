@@ -168,7 +168,7 @@ class GlobalPoliticsOverviewTable (
     }
 
     private fun getCivName(otherciv: Civilization): String {
-        if (viewingPlayer.knows(otherciv)){
+        if (viewingPlayer.knows(otherciv) || otherciv.civName == viewingPlayer.civName) {
             return otherciv.civName
         }
         return "an unknown civilization"
@@ -177,11 +177,11 @@ class GlobalPoliticsOverviewTable (
     private fun getPoliticsOfCivTable(civ: Civilization): Table {
         val politicsTable = Table(skin)
 
+        if (!viewingPlayer.knows(civ) && civ.civName != viewingPlayer.civName)
+            return politicsTable
+
         // wars
         for (otherCiv in civ.getKnownCivs()) {
-            if (!viewingPlayer.knows(civ))
-                continue
-
             if(civ.isAtWarWith(otherCiv)) {
                 println(getCivName(otherCiv))
                 val warText = "At war with [${getCivName(otherCiv)}]".toLabel()
@@ -193,9 +193,6 @@ class GlobalPoliticsOverviewTable (
 
         // declaration of friendships
         for (otherCiv in civ.getKnownCivs()) {
-            if (!viewingPlayer.knows(otherCiv))
-                continue
-
             if(civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.DeclarationOfFriendship) == true) {
                 val friendText = "Friends with [${getCivName(otherCiv)}]".toLabel()
                 friendText.color = Color.GREEN
@@ -208,9 +205,6 @@ class GlobalPoliticsOverviewTable (
 
         // denounced civs
         for (otherCiv in civ.getKnownCivs()) {
-            if (!viewingPlayer.knows(otherCiv))
-                continue
-
             if(civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.Denunciation) == true) {
                 val denouncedText = "Denounced [${getCivName(otherCiv)}]".toLabel()
                 denouncedText.color = Color.RED
@@ -223,9 +217,6 @@ class GlobalPoliticsOverviewTable (
 
         //allied CS
         for (cityState in gameInfo.getAliveCityStates()) {
-            if (!viewingPlayer.knows(cityState))
-                continue
-
             if (cityState.diplomacy[civ.civName]?.relationshipLevel() == RelationshipLevel.Ally) {
                 val alliedText = "Allied with [${getCivName(cityState)}]".toLabel()
                 alliedText.color = Color.GREEN
