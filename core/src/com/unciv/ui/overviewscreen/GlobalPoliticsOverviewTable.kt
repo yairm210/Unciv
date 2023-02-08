@@ -168,7 +168,7 @@ class GlobalPoliticsOverviewTable (
     }
 
     private fun getCivName(otherciv: Civilization): String {
-        if (viewingPlayer.knows(otherciv)){
+        if (viewingPlayer.knows(otherciv) || otherciv.civName != viewingPlayer.civName) {
             return otherciv.civName
         }
         return "an unknown civilization"
@@ -179,7 +179,7 @@ class GlobalPoliticsOverviewTable (
 
         // wars
         for (otherCiv in civ.getKnownCivs()) {
-            if (!viewingPlayer.knows(civ))
+            if (!viewingPlayer.knows(otherCiv))
                 continue
 
             if(civ.isAtWarWith(otherCiv)) {
