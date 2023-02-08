@@ -317,7 +317,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     /** Returns only undefeated civs, aka the ones we care about */
     fun getKnownCivs() = diplomacy.values.map { it.otherCiv() }.filter { !it.isDefeated() }
-    fun knows(otherCivName: String) = (civName == otherCivName || diplomacy.containsKey(otherCivName))
+    fun knows(otherCivName: String) = diplomacy.containsKey(otherCivName)
     fun knows(otherCiv: Civilization) = knows(otherCiv.civName)
 
     fun getCapital() = cities.firstOrNull { it.isCapital() }
