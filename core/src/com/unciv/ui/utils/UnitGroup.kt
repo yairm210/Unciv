@@ -211,7 +211,7 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
                 Actions.repeat(
                     RepeatAction.FOREVER,
                     Actions.sequence(
-                        Actions.alpha(0.5f, 1f),
+                        Actions.alpha(0.7f, 1f),
                         Actions.alpha(1f, 1f)
                     )
                 )

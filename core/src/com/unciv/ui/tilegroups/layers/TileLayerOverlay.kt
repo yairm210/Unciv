@@ -67,7 +67,7 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
         val isViewable = viewingCiv == null || isViewable(viewingCiv)
 
-        if (isViewable && !tileGroup.isForceVisible)
+        if (!isViewable && !tileGroup.isForceVisible)
             fog.isVisible = true
 
         if (viewingCiv == null)
