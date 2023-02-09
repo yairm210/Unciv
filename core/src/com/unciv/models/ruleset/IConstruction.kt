@@ -190,7 +190,7 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
 open class PerpetualConstruction(override var name: String, val description: String) : IConstruction {
 
     override fun shouldBeDisplayed(cityConstructions: CityConstructions) = isBuildable(cityConstructions)
-    open fun getProductionTooltip(city: City) : String = ""
+    open fun getProductionTooltip(city: City, withIcon: Boolean = false) : String = ""
 
     companion object {
         val science = PerpetualStatConversion(Stat.Science)
@@ -217,8 +217,8 @@ open class PerpetualConstruction(override var name: String, val description: Str
 open class PerpetualStatConversion(val stat: Stat) :
     PerpetualConstruction(stat.name, "Convert production to [${stat.name}] at a rate of [rate] to 1") {
 
-    override fun getProductionTooltip(city: City) : String
-            = "\r\n${(city.cityStats.currentCityStats.production / getConversionRate(city)).roundToInt()}/${Fonts.turn}"
+    override fun getProductionTooltip(city: City, withIcon: Boolean) : String
+            = "\r\n${(city.cityStats.currentCityStats.production / getConversionRate(city)).roundToInt()}${if (withIcon) stat.character else ""}/${Fonts.turn}"
     fun getConversionRate(city: City) : Int = (1/city.cityStats.getStatConversionRate(stat)).roundToInt()
 
     override fun isBuildable(cityConstructions: CityConstructions): Boolean {

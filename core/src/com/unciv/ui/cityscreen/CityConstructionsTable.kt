@@ -224,7 +224,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             constructionButtonDTOList.add(
                 ConstructionButtonDTO(
                     specialConstruction,
-                    "Produce [${specialConstruction.name}]".tr() + specialConstruction.getProductionTooltip(city)
+                    "Produce [${specialConstruction.name}]".tr() + " " + specialConstruction.getProductionTooltip(city).trim()
                 )
             )
         }
@@ -251,6 +251,11 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
                 var maxButtonWidth = constructionsQueueTable.width
                 for (dto in constructionButtonDTOList) {
+
+                    if (dto.construction is Building
+                            && dto.rejectionReason?.type == RejectionReasonType.RequiresBuildingInThisCity)
+                        continue
+
                     val constructionButton = getConstructionButton(dto)
                     when (dto.construction) {
                         is BaseUnit -> units.add(constructionButton)
@@ -373,11 +378,12 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             )
         }
 
+        val icon = ImageGetter.getConstructionPortrait(construction.name, 40f)
         pickConstructionButton.add(getProgressBar(construction.name)).padRight(5f)
-        pickConstructionButton.add(ImageGetter.getConstructionPortrait(construction.name, 40f)).padRight(10f)
+        pickConstructionButton.add(icon).padRight(10f)
 
-        val table = Table()
-        val tableRes = Table()
+        val table = Table().apply { isTransform = false }
+        val tableRes = Table().apply { isTransform = false }
 
         val textColor = if (constructionButtonDTO.rejectionReason == null) Color.WHITE else Color.RED
         table.add(construction.name.tr().toLabel(fontColor = textColor)).expandX().left().row()
@@ -409,7 +415,8 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         // no rejection reason means we can build it!
         if (constructionButtonDTO.rejectionReason != null) {
-            pickConstructionButton.color.a = 0.5f
+            pickConstructionButton.color.a = 0.9f
+            icon.color.a = 0.5f
             if (constructionButtonDTO.rejectionReason.type != RejectionReasonType.ConsumesResources) {
                 pickConstructionButton.add(constructionButtonDTO.rejectionReason.errorMessage
                     .toLabel(Color.RED).apply { wrap = true })
