@@ -253,7 +253,11 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 for (dto in constructionButtonDTOList) {
 
                     if (dto.construction is Building
-                            && dto.rejectionReason?.type == RejectionReasonType.RequiresBuildingInThisCity)
+                            && dto.rejectionReason?.type == RejectionReasonType.RequiresBuildingInThisCity
+                            && constructionButtonDTOList.any {
+                                (it.construction is Building) && (it.construction.name == dto.construction.requiredBuilding
+                                        || it.construction.replaces == dto.construction.requiredBuilding || it.construction.hasUnique(dto.construction.requiredBuilding!!))
+                            })
                         continue
 
                     val constructionButton = getConstructionButton(dto)
