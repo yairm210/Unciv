@@ -1,18 +1,14 @@
 ## 4.4.13
 
-Attempt to fix strange bug in github api (https://github.com/yairm210/Unciv/actions/runs/4136712446/jobs/7151150557)
+Enemy indicator, city culture hex outline + misc - By vegeta1k95
 
-Resolved  - modding: conditionally-unbuildable buildings display their cost
+Fixed air sweep crash
 
-Resolved  - Can no longer 'upgrade unit' between turns
+Some modifications for performance optimization - By lishaoxia1985
 
-Resolved  - fixed air sweep crash
+modding: conditionally-unbuildable buildings display their cost
 
-4.4.12-patch1
-
-Enemy indicator, city culture hex outline + misc  - By vegeta1k95
-
-Some modifications for performance optimization  - By lishaoxia1985
+Can no longer 'upgrade unit' between turns
 
 By Gualdimar:
 - Fixed getDiplomacyManager() Exception
