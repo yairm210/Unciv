@@ -2,6 +2,7 @@ package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -24,6 +25,7 @@ import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.onDoubleClick
+import com.unciv.ui.utils.extensions.surroundWithCircle
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.utils.concurrency.Concurrency
 import kotlin.math.abs
@@ -40,6 +42,7 @@ class TechPickerScreen(
     private var civTech: TechManager = civInfo.tech
     private var tempTechsToResearch: ArrayList<String>
     private var lines = ArrayList<Image>()
+    private var orderIndicators = Group()
     private var eraLabels = ArrayList<Label>()
 
     /** We need this to be a separate table, and NOT the topTable, because *inhales*
@@ -193,8 +196,7 @@ class TechPickerScreen(
     }
 
     private fun setButtonsInfo() {
-        for (techName in techNameToButton.keys) {
-            val techButton = techNameToButton[techName]!!
+        for ((techName, techButton) in techNameToButton) {
             techButton.setButtonColor(when {
                 civTech.isResearched(techName) && techName != Constants.futureTech -> researchedTechColor
                 // if we're here to pick a free tech, show the current tech like the rest of the researchables so it'll be obvious what we can pick
@@ -213,11 +215,6 @@ class TechPickerScreen(
                 techButton.setButtonColor(colorFromRGB(230, 220, 114))
             }
 
-            techButton.orderIndicator?.remove()
-            if (tempTechsToResearch.contains(techName) && tempTechsToResearch.size > 1) {
-                techButton.addOrderIndicator(tempTechsToResearch.indexOf(techName) + 1)
-            }
-
             if (!civTech.isResearched(techName) || techName == Constants.futureTech) {
                 techButton.turns.setText(turnsToTech[techName] + "${Fonts.turn}".tr())
             }
@@ -226,6 +223,8 @@ class TechPickerScreen(
         }
 
         addConnectingLines()
+
+        addOrderIndicators()
     }
 
     private fun addConnectingLines() {
@@ -367,6 +366,26 @@ class TechPickerScreen(
             if (line.color == currentTechColor)
                 line.toFront()
         }
+    }
+
+    private fun addOrderIndicators() {
+        orderIndicators.clear()
+        for ((techName, techButton) in techNameToButton) {
+            val techButtonCoords = Vector2(0f, techButton.height / 2)
+            techButton.localToStageCoordinates(techButtonCoords)
+            techTable.stageToLocalCoordinates(techButtonCoords)
+            if (tempTechsToResearch.contains(techName) && tempTechsToResearch.size > 1) {
+                val index = tempTechsToResearch.indexOf(techName) + 1
+                val orderIndicator = index.toString().toLabel(fontSize = 18)
+                    .apply { setAlignment(Align.center) }
+                    .surroundWithCircle(28f, color = skinStrings.skinConfig.baseColor)
+                    .surroundWithCircle(30f,false)
+                    .apply { setPosition(techButtonCoords.x - width, techButtonCoords.y - height / 2) }
+                orderIndicators.addActor(orderIndicator)
+            }
+        }
+        techTable.addActor(orderIndicators)
+        orderIndicators.toFront()
     }
 
     private fun selectTechnology(tech: Technology?, center: Boolean = false, switchFromWorldScreen: Boolean = true) {

@@ -145,7 +145,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         return true
     }
 
-    class ParentTileAndTotalDistance(val parentTile: Tile, val totalDistance: Float)
+    class ParentTileAndTotalDistance(val tile:Tile, val parentTile: Tile, val totalDistance: Float)
 
     fun isUnknownTileWeShouldAssumeToBePassable(tile: Tile) = !unit.civ.hasExplored(tile)
 
@@ -160,7 +160,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
         val currentUnitTile = unit.currentTile
         // This is for performance, because this is called all the time
         val unitTile = if (origin == currentUnitTile.position) currentUnitTile else currentUnitTile.tileMap[origin]
-        distanceToTiles[unitTile] = ParentTileAndTotalDistance(unitTile, 0f)
+        distanceToTiles[unitTile] = ParentTileAndTotalDistance(unitTile, unitTile, 0f)
         var tilesToCheck = listOf(unitTile)
 
         while (tilesToCheck.isNotEmpty()) {
@@ -189,7 +189,7 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
                         // In Civ V, you can always travel between adjacent tiles, even if you don't technically
                         // have enough movement points - it simply depletes what you have
 
-                        distanceToTiles[neighbor] = ParentTileAndTotalDistance(tileToCheck, totalDistanceToTile)
+                        distanceToTiles[neighbor] = ParentTileAndTotalDistance(neighbor, tileToCheck, totalDistanceToTile)
                     }
                 }
 

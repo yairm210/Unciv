@@ -14,6 +14,7 @@ import com.unciv.models.helpers.MiscArrowTypes
 import com.unciv.models.helpers.TintedMapArrow
 import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.tilegroups.CityTileGroup
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.tilegroups.WorldTileGroup
@@ -226,7 +227,10 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
 
         if (showTileYields) {
             // Setting up YieldGroup Icon
-            yields.setStats(tile().stats.getTileStats(viewingCiv))
+            if (tileGroup is CityTileGroup)
+                yields.setStats(tile().stats.getTileStats(tileGroup.city, viewingCiv))
+            else
+                yields.setStats(tile().stats.getTileStats(viewingCiv))
             yields.setOrigin(Align.center)
             yields.setScale(0.7f)
             yields.toFront()
@@ -269,6 +273,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
 
     fun setYieldVisible(isVisible: Boolean) {
         yields.isVisible = isVisible
+        determineVisibility()
     }
 
     override fun doUpdate(viewingCiv: Civilization?) {

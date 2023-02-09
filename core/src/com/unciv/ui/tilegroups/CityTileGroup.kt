@@ -16,7 +16,7 @@ import com.unciv.ui.utils.extensions.setFontColor
 import com.unciv.ui.utils.extensions.toGroup
 import com.unciv.ui.utils.extensions.toLabel
 
-class CityTileGroup(private val city: City, tile: Tile, tileSetStrings: TileSetStrings) : TileGroup(tile,tileSetStrings) {
+class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings) : TileGroup(tile,tileSetStrings) {
 
     var isWorkable = false
     var isPurchasable = false
