@@ -227,17 +227,16 @@ class CityScreen(
         }
         for (tileGroup in tileGroups) {
             tileGroup.update()
-            tileGroup.layerOverlay.hideHighlight()
+            tileGroup.layerMisc.removeHexOutline()
             when {
-                tileGroup.tile == nextTileToOwn -> {
+                tileGroup.tile == nextTileToOwn ->
                     tileGroup.layerMisc.addHexOutline(colorFromRGB(200, 20, 220))
-                }
                 /** Support for [UniqueType.CreatesOneImprovement] */
                 tileGroup.tile == selectedQueueEntryTargetTile ->
-                    tileGroup.layerOverlay.showHighlight(Color.BROWN, 0.7f)
+                    tileGroup.layerMisc.addHexOutline(Color.BROWN)
                 pickTileData != null && city.tiles.contains(tileGroup.tile.position) ->
                     getPickImprovementColor(tileGroup.tile).run {
-                        tileGroup.layerOverlay.showHighlight(first, second) }
+                        tileGroup.layerMisc.addHexOutline(first.cpy().apply { this.a = second }) }
             }
         }
     }
