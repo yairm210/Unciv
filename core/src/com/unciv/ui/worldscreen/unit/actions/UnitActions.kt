@@ -376,7 +376,7 @@ object UnitActions {
         actionList += UnitAction(UnitActionType.ConstructImprovement,
             isCurrentAction = unit.currentTile.hasImprovementInProgress(),
             action = {
-                worldScreen.game.pushScreen(ImprovementPickerScreen(tile, unit) { worldScreen.switchToNextUnit() })
+                worldScreen.game.pushScreen(ImprovementPickerScreen(tile, unit) { if (UncivGame.Current.settings.autoUnitCycle) worldScreen.switchToNextUnit() })
             }.takeIf { couldConstruct }
         )
     }
