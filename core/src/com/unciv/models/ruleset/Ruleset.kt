@@ -415,7 +415,7 @@ class Ruleset {
      *  */
     fun updateBuildingCosts() {
         for (building in buildings.values) {
-            if (building.cost == 0 && !building.hasUnique(UniqueType.Unbuildable)) {
+            if (building.cost == 0 && building.getMatchingUniques(UniqueType.Unbuildable).none { it.conditionals.isEmpty() }) {
                 val column = technologies[building.requiredTech]?.column
                         ?: throw UncivShowableException("Building '[${building.name}]' is buildable and therefore must either have an explicit cost or reference an existing tech.")
                 building.cost = if (building.isAnyWonder()) column.wonderCost else column.buildingCost
