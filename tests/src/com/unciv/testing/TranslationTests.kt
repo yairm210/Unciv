@@ -87,8 +87,8 @@ class TranslationTests {
     fun allTranslationsHaveCorrectPlaceholders() {
         var allTranslationsHaveCorrectPlaceholders = true
         val languages = translations.getLanguages()
-        for (key in translations.keys) {
-            val translationEntry = translations[key]!!.entry
+        for ((key, translation) in translations) {
+            val translationEntry = translation.entry
             val placeholders = squareBraceRegex.findAll(translationEntry)
                     .map { it.value }.toList()
             for (language in languages) {
@@ -111,9 +111,9 @@ class TranslationTests {
     @Test
     fun allPlaceholderKeysMatchEntry() {
         var allPlaceholderKeysMatchEntry = true
-        for (key in translations.keys) {
+        for ((key, translation) in translations) {
             if (!key.contains('[') || key.contains('<')) continue
-            val translationEntry = translations[key]!!.entry
+            val translationEntry = translation.entry
             val keyFromEntry = translationEntry.replace(squareBraceRegex, "[]")
             if (key != keyFromEntry) {
                 allPlaceholderKeysMatchEntry = false
