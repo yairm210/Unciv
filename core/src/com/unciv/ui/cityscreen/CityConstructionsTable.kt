@@ -357,7 +357,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
     private fun getConstructionButton(constructionButtonDTO: ConstructionButtonDTO): Table {
         val construction = constructionButtonDTO.construction
-        val pickConstructionButton = Table()
+        val pickConstructionButton = Table().apply { isTransform = false }
 
         pickConstructionButton.align(Align.left).pad(5f)
         pickConstructionButton.background = BaseScreen.skinStrings.getUiBackground(
@@ -378,18 +378,17 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         val table = Table()
         val tableRes = Table()
-        table.add(construction.name.tr().toLabel()).expandX().left().row()
+
+        val textColor = if (constructionButtonDTO.rejectionReason == null) Color.WHITE else Color.RED
+        table.add(construction.name.tr().toLabel(fontColor = textColor)).expandX().left().row()
 
         tableRes.add(constructionButtonDTO.buttonText.toLabel()).expandX().left()
         if (constructionButtonDTO.resourcesRequired != null) {
             for ((resource, amount) in constructionButtonDTO.resourcesRequired) {
-
-                val color = when (constructionButtonDTO.rejectionReason?.type) {
-                    RejectionReasonType.ConsumesResources -> Color.RED
-                    else -> Color.WHITE
-                }
-
-                tableRes.add(amount.toString().toLabel(fontColor = color)).expandX().left().padLeft(5f)
+                if (constructionButtonDTO.rejectionReason?.type == RejectionReasonType.ConsumesResources)
+                    tableRes.add(amount.toString().toLabel(fontColor = Color.RED)).expandX().left().padLeft(5f)
+                else
+                    tableRes.add(amount.toString().toLabel(fontColor = Color.WHITE)).expandX().left().padLeft(5f)
                 tableRes.add(ImageGetter.getResourcePortrait(resource, 15f)).padBottom(1f)
             }
         }
@@ -409,12 +408,15 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         pickConstructionButton.row()
 
         // no rejection reason means we can build it!
-        if (constructionButtonDTO.rejectionReason != null
-                && constructionButtonDTO.rejectionReason.type != RejectionReasonType.ConsumesResources) {
-            pickConstructionButton.color = Color.GRAY
-            pickConstructionButton.add(constructionButtonDTO.rejectionReason.errorMessage.toLabel(Color.RED).apply { wrap = true })
+        if (constructionButtonDTO.rejectionReason != null) {
+            pickConstructionButton.color.a = 0.5f
+            if (constructionButtonDTO.rejectionReason.type != RejectionReasonType.ConsumesResources) {
+                pickConstructionButton.add(constructionButtonDTO.rejectionReason.errorMessage
+                    .toLabel(Color.RED).apply { wrap = true })
                     .colspan(pickConstructionButton.columns).fillX().left().padTop(2f)
+            }
         }
+
         pickConstructionButton.onClick {
             if (cityScreen.selectedConstruction == construction) {
                 addConstructionToQueue(construction, cityScreen.city.cityConstructions)
