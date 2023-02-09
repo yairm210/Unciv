@@ -13,6 +13,8 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
+import com.unciv.logic.city.RejectionReason
+import com.unciv.logic.city.RejectionReasonType
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
@@ -48,6 +50,12 @@ import com.unciv.utils.concurrency.launchOnGLThread
 import kotlin.math.max
 import kotlin.math.min
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
+
+private class ConstructionButtonDTO(
+    val construction: IConstruction,
+    val buttonText: String,
+    val resourcesRequired: HashMap<String, Int>? = null,
+    val rejectionReason: RejectionReason? = null)
 
 /**
  * Manager to hold and coordinate two widgets for the city screen left side:
@@ -191,21 +199,21 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         city.cityStats.updateTileStats() // only once
         for (entry in constructionsSequence.filter { it.shouldBeDisplayed(cityConstructions) }) {
-            val useStoredProduction = entry is Building || !cityConstructions.isBeingConstructedOrEnqueued(entry.name)
-            var buttonText = entry.name.tr() + cityConstructions.getTurnsToConstructionString(entry.name, useStoredProduction)
-            for ((resource, amount) in entry.getResourceRequirements()) {
-                buttonText += "\n" + resource.getConsumesAmountString(amount).tr()
-            }
 
+            val useStoredProduction = entry is Building || !cityConstructions.isBeingConstructedOrEnqueued(entry.name)
+            val buttonText = cityConstructions.getTurnsToConstructionString(entry.name, useStoredProduction).trim()
+            val resourcesRequired = entry.getResourceRequirements()
             val mostImportantRejection =
                     entry.getRejectionReasons(cityConstructions)
                         .filter { it.isImportantRejection() }
                         .minByOrNull { it.getRejectionPrecedence() }
+
             constructionButtonDTOList.add(
                 ConstructionButtonDTO(
                     entry,
                     buttonText,
-                    mostImportantRejection?.errorMessage
+                    if (resourcesRequired.isEmpty()) null else resourcesRequired,
+                    mostImportantRejection
                 )
             )
         }
@@ -347,8 +355,6 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 Color.BROWN.brighten(0.5f), Color.WHITE)
     }
 
-    private class ConstructionButtonDTO(val construction: IConstruction, val buttonText: String, val rejectionReason: String? = null)
-
     private fun getConstructionButton(constructionButtonDTO: ConstructionButtonDTO): Table {
         val construction = constructionButtonDTO.construction
         val pickConstructionButton = Table()
@@ -369,7 +375,27 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         pickConstructionButton.add(getProgressBar(construction.name)).padRight(5f)
         pickConstructionButton.add(ImageGetter.getConstructionPortrait(construction.name, 40f)).padRight(10f)
-        pickConstructionButton.add(constructionButtonDTO.buttonText.toLabel()).expandX().fillX()
+
+        val table = Table()
+        val tableRes = Table()
+        table.add(construction.name.tr().toLabel()).expandX().left().row()
+
+        tableRes.add(constructionButtonDTO.buttonText.toLabel()).expandX().left()
+        if (constructionButtonDTO.resourcesRequired != null) {
+            for ((resource, amount) in constructionButtonDTO.resourcesRequired) {
+
+                val color = when (constructionButtonDTO.rejectionReason?.type) {
+                    RejectionReasonType.ConsumesResources -> Color.RED
+                    else -> Color.WHITE
+                }
+
+                tableRes.add(amount.toString().toLabel(fontColor = color)).expandX().left().padLeft(5f)
+                tableRes.add(ImageGetter.getResourcePortrait(resource, 15f)).padBottom(1f)
+            }
+        }
+        table.add(tableRes).expandX().left()
+
+        pickConstructionButton.add(table).expandX().left()
 
         if (!cannotAddConstructionToQueue(construction, cityScreen.city, cityScreen.city.cityConstructions)) {
             val addToQueueButton = ImageGetter.getImage("OtherIcons/New").apply { color = Color.BLACK }.surroundWithCircle(40f)
@@ -383,9 +409,10 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         pickConstructionButton.row()
 
         // no rejection reason means we can build it!
-        if (constructionButtonDTO.rejectionReason != null) {
+        if (constructionButtonDTO.rejectionReason != null
+                && constructionButtonDTO.rejectionReason.type != RejectionReasonType.ConsumesResources) {
             pickConstructionButton.color = Color.GRAY
-            pickConstructionButton.add(constructionButtonDTO.rejectionReason.toLabel(Color.RED).apply { wrap = true })
+            pickConstructionButton.add(constructionButtonDTO.rejectionReason.errorMessage.toLabel(Color.RED).apply { wrap = true })
                     .colspan(pickConstructionButton.columns).fillX().left().padTop(2f)
         }
         pickConstructionButton.onClick {
@@ -418,12 +445,12 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         if (isSelectedQueueEntry()) {
             button = "Remove from queue".toTextButton()
-                button.onClick {
-                    cityConstructions.removeFromQueue(selectedQueueEntry, false)
-                    cityScreen.clearSelection()
-                    selectedQueueEntry = -1
-                    cityScreen.update()
-                }
+            button.onClick {
+                cityConstructions.removeFromQueue(selectedQueueEntry, false)
+                cityScreen.clearSelection()
+                selectedQueueEntry = -1
+                cityScreen.update()
+            }
         } else {
             button = "Add to queue".toTextButton()
             if (construction == null
