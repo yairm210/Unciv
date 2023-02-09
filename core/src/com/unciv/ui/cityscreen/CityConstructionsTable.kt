@@ -370,7 +370,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             addToQueueButton.onClick(UncivSound.Silent) {
                 // Since the pickConstructionButton.onClick adds the construction if it's selected,
                 // this effectively adds the construction even if it's unselected
-                addConstructionToQueue(construction, cityScreen.city.cityConstructions)
+                cityScreen.selectConstruction(construction)
             }
             pickConstructionButton.add(addToQueueButton)
         }
@@ -383,7 +383,11 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                     .colspan(pickConstructionButton.columns).fillX().left().padTop(2f)
         }
         pickConstructionButton.onClick {
-            cityScreen.selectConstruction(construction)
+            if (cityScreen.selectedConstruction == construction) {
+                addConstructionToQueue(construction, cityScreen.city.cityConstructions)
+            } else {
+                cityScreen.selectConstruction(construction)
+            }
             selectedQueueEntry = -1
             cityScreen.update()
         }
