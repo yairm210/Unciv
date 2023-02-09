@@ -40,8 +40,6 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
         }
         rightSideButton.keyShortcuts.add(KeyCharAndCode.RETURN)
         rightSideButton.enable()
-
-        stage.keyboardFocus = gameNameTextField
     }
 
     private fun Table.initRightSideTable() {
@@ -67,7 +65,6 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
 
         add("Saved game name".toLabel()).row()
         add(gameNameTextField).width(300f).row()
-        stage.keyboardFocus = gameNameTextField
     }
 
     private fun copyToClipboardHandler() {
