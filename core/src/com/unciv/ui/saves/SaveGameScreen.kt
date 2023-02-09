@@ -35,11 +35,7 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
         rightSideButton.setText("Save game".tr())
         rightSideButton.onActivation {
             if (game.files.getSave(gameNameTextField.text).exists())
-                ConfirmPopup(
-                    this,
-                    "Overwrite existing file?",
-                    "Overwrite",
-                ) { saveGame() }.open()
+                doubleClickAction()
             else saveGame()
         }
         rightSideButton.keyShortcuts.add(KeyCharAndCode.RETURN)
@@ -126,6 +122,14 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
 
     override fun onExistingSaveSelected(saveGameFile: FileHandle) {
         gameNameTextField.text = saveGameFile.name()
+    }
+
+    override fun doubleClickAction() {
+        ConfirmPopup(
+            this,
+            "Overwrite existing file?",
+            "Overwrite",
+        ) { saveGame() }.open()
     }
 
 }

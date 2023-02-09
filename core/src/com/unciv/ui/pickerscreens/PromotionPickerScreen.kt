@@ -21,6 +21,7 @@ import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.isEnabled
 import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.onDoubleClick
 import com.unciv.ui.utils.extensions.setFontColor
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
@@ -367,6 +368,11 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
 
             addConnectingLines()
         }
+
+        if (isPickable)
+            button.onDoubleClick(UncivSound.Promote) {
+                acceptPromotion(node)
+            }
 
         return button
     }

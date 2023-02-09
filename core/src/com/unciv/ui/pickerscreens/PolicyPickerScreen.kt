@@ -31,6 +31,7 @@ import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.enable
 import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.onDoubleClick
 import com.unciv.ui.utils.extensions.pad
 import com.unciv.ui.utils.extensions.toGroup
 import com.unciv.ui.utils.extensions.toLabel
@@ -177,23 +178,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, val viewingCiv: Civilizat
             closeButton.disable()
 
         rightSideButton.onClick(UncivSound.Policy) {
-            val policy = selectedPolicyButton!!.policy
-
-            // Evil people clicking on buttons too fast to confuse the screen - #4977
-            if (!policy.isPickable()) return@onClick
-
-            viewingCiv.policies.adopt(policy)
-
-            // If we've moved to another screen in the meantime (great person pick, victory screen) ignore this
-            if (game.screen !is PolicyPickerScreen) {
-                game.popScreen()
-            } else {
-                val policyScreen = PolicyPickerScreen(worldScreen)
-                policyScreen.scrollPane.scrollPercentX = scrollPane.scrollPercentX
-                policyScreen.scrollPane.scrollPercentY = scrollPane.scrollPercentY
-                policyScreen.scrollPane.updateVisualScroll()
-                game.replaceCurrentScreen(policyScreen)  // update policies
-            }
+            confirmAction()
         }
 
         if (!worldScreen.canChangeState)
@@ -262,11 +247,6 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, val viewingCiv: Civilizat
             rightSideButton.disable()
         } else {
             rightSideButton.enable()
-        }
-        if (viewingCiv.gameInfo.gameParameters.godMode && selectedPolicyButton?.policy == policy
-                && viewingCiv.policies.isAdoptable(policy)) {
-            viewingCiv.policies.adopt(policy)
-            game.replaceCurrentScreen(PolicyPickerScreen(worldScreen))
         }
 
         selectedPolicyButton?.isSelected = false
@@ -671,7 +651,29 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, val viewingCiv: Civilizat
     private fun getPolicyButton(policy: Policy, size: Float = 30f): PolicyButton {
         val button = PolicyButton(policy, size = size)
         button.onClick { pickPolicy(button = button) }
+        if (policy.isPickable())
+            button.onDoubleClick(UncivSound.Policy) { confirmAction() }
         return button
+    }
+
+    private fun confirmAction() {
+        val policy = selectedPolicyButton!!.policy
+
+        // Evil people clicking on buttons too fast to confuse the screen - #4977
+        if (!policy.isPickable()) return
+
+        viewingCiv.policies.adopt(policy)
+
+        // If we've moved to another screen in the meantime (great person pick, victory screen) ignore this
+        if (game.screen !is PolicyPickerScreen) {
+            game.popScreen()
+        } else {
+            val policyScreen = PolicyPickerScreen(worldScreen)
+            policyScreen.scrollPane.scrollPercentX = scrollPane.scrollPercentX
+            policyScreen.scrollPane.scrollPercentY = scrollPane.scrollPercentY
+            policyScreen.scrollPane.updateVisualScroll()
+            game.replaceCurrentScreen(policyScreen)  // update policies
+        }
     }
 
     override fun recreate(): BaseScreen = PolicyPickerScreen(worldScreen, viewingCiv)
