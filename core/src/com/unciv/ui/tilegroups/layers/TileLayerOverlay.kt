@@ -40,11 +40,6 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         determineVisibility()
     }
 
-    fun setFog(isVisible: Boolean) {
-        fog.isVisible = isVisible && !tileGroup.isForceVisible
-        determineVisibility()
-    }
-
     fun showHighlight(color: Color, alpha: Float = 0.3f) {
         highlight.isVisible = true
         highlight.color = color.cpy().apply { a = alpha }
@@ -61,10 +56,19 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         determineVisibility()
     }
 
+    fun reset() {
+        fog.isVisible = true
+        highlight.isVisible = false
+        crosshair.isVisible = false
+        determineVisibility()
+    }
+
     override fun doUpdate(viewingCiv: Civilization?) {
 
         val isViewable = viewingCiv == null || isViewable(viewingCiv)
-        setFog(!isViewable)
+
+        if (!isViewable && !tileGroup.isForceVisible)
+            fog.isVisible = true
 
         if (viewingCiv == null)
             return

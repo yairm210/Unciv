@@ -1,102 +1,149 @@
 package com.unciv.ui.utils
 
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.extensions.center
+import com.unciv.ui.utils.extensions.addToCenter
 import com.unciv.ui.utils.extensions.colorFromRGB
+import com.unciv.ui.utils.extensions.setSize
 import com.unciv.ui.utils.extensions.surroundWithCircle
 import com.unciv.ui.utils.extensions.surroundWithThinCircle
 
-class UnitGroup(val unit: MapUnit, val size: Float): Group() {
-    var actionGroup :Group? = null
-    val flagIcon = ImageGetter.getUnitIcon(unit.name, unit.civ.nation.getInnerColor())
-        .apply {
-            if (unit.isCivilian())
-                setSize(size * 0.60f, size * 0.60f)
-            else
-                setSize(size * 0.75f, size * 0.75f) }
-    var flagSelection: Image = getBackgroundSelectionForUnit()
-    var flagBg: Group = Group()
+class FlagBackground(drawable: TextureRegionDrawable, size: Float): Image(drawable) {
+
+    var drawableInner: TextureRegionDrawable? = null
+
+    var innerColor: Color = Color.WHITE
+    var outerColor: Color = Color.RED
+    var outlineColor: Color = Color.WHITE
+
+    var drawOutline = false
+
+    private val innerMultiplier = 0.88f
+    private val outlineMultiplier = 1.08f
+
+    private val innerWidth: Float; private val innerHeight: Float
+    private val innerOffsetX: Float; private val innerOffsetY: Float
+
+    private val outlineWidth: Float; private val outlineHeight: Float
+    private val outlineOffsetX: Float; private val outlineOffsetY: Float
 
     init {
 
-        val outerBg = getBackgroundImageForUnit()
-        val innerBg = getBackgroundImageForUnit()
-        val maskBg = getBackgroundMaskForUnit()
+        val ratio = height/width
+        width = size
+        height = size * ratio
 
-        val sizeSelectionX = size*1.9f; val sizeSelectionY = sizeSelectionX*flagSelection.height/flagSelection.width
-        val sizeOuterBgX = size*1.15f; val sizeOuterBgY = sizeOuterBgX*outerBg.height/outerBg.width
-        val sizeInnerBgX = size; val sizeInnerBgY = sizeInnerBgX*innerBg.height/innerBg.width
+        innerWidth = width * innerMultiplier; innerHeight = height * innerMultiplier
+        innerOffsetX = (width - innerWidth) / 2; innerOffsetY = (height - innerHeight) / 2
 
-        setSize(sizeOuterBgX, sizeOuterBgY)
+        outlineWidth = width * outlineMultiplier; outlineHeight = height * outlineMultiplier
+        outlineOffsetX = (outlineWidth - width) / 2; outlineOffsetY = (outlineHeight - height) / 2
+    }
 
-        flagSelection.color.set(1f, 1f, 1f, 0f)
+    override fun getDrawable(): TextureRegionDrawable {
+        return super.getDrawable() as TextureRegionDrawable
+    }
+
+    override fun draw(batch: Batch?, parentAlpha: Float) {
+        val alpha = color.a*parentAlpha
+        val drawable = drawable
+
+        if (drawOutline) {
+            batch?.setColor(outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a*alpha)
+            drawable.draw(batch, x-outlineOffsetX, y-outlineOffsetY, outlineWidth, outlineHeight)
+        }
+
+        batch?.setColor(outerColor.r, outerColor.g, outerColor.b, outerColor.a*alpha)
+        drawable.draw(batch, x, y, width, height)
+
+        batch?.setColor(innerColor.r, innerColor.g, innerColor.b, innerColor.a * alpha)
+        if (drawableInner == null) {
+            drawable.draw(batch, x + innerOffsetX, y + innerOffsetY, innerWidth, innerHeight)
+        } else {
+            drawableInner!!.draw(batch, x, y, width, height)
+        }
+    }
+
+}
+
+class UnitGroup(val unit: MapUnit, val size: Float): Group() {
+    var actionGroup :Group? = null
+
+    private val flagIcon = ImageGetter.getUnitIcon(unit.name, unit.civ.nation.getInnerColor())
+    private var flagBg: FlagBackground = FlagBackground(getBackgroundDrawableForUnit(), size)
+    private var flagSelection: Image = getBackgroundSelectionForUnit()
+    private var flagMask: Image? = getBackgroundMaskForUnit()
+
+    init {
+
+        isTransform = false // performance helper - nothing here is rotated or scaled
+        color.a *= UncivGame.Current.settings.unitIconOpacity
+
+        val sizeSelectionX = size*1.6f
+        val sizeSelectionY = sizeSelectionX*flagSelection.height/flagSelection.width
+
+        setSize(flagBg.width, flagBg.height)
+
+        flagSelection.color.set(1f, 1f, 0.9f, 0f)
         flagSelection.align = Align.center
         flagSelection.setSize(sizeSelectionX, sizeSelectionY)
-        flagSelection.center(this)
 
-        flagBg.setSize(sizeOuterBgX, sizeOuterBgY)
+        flagBg.innerColor = unit.civ.nation.getOuterColor()
+        flagBg.outerColor = unit.civ.nation.getInnerColor()
+        flagBg.outlineColor = flagBg.innerColor
+        flagBg.drawableInner = getBackgroundInnerDrawableForUnit()
 
-        // 0f (invisible) to 1f (fully opaque)
-        flagIcon.color.a = UncivGame.Current.settings.unitIconOpacity
+        if (flagMask != null) {
+            flagMask!!.setSize(size*0.88f, size*0.88f * flagMask!!.height / flagMask!!.width)
+        }
 
-        outerBg.color = unit.civ.nation.getInnerColor()
-        outerBg.color.a = UncivGame.Current.settings.unitIconOpacity
-        outerBg.setSize(sizeOuterBgX, sizeOuterBgY)
-        outerBg.center(flagBg)
+        val flagIconSizeMultiplier: Float = if (unit.isCivilian()) 0.5f else 0.65f
+        flagIcon.setSize(size * flagIconSizeMultiplier)
 
-        innerBg.color = unit.civ.nation.getOuterColor()
-        innerBg.color.a = UncivGame.Current.settings.unitIconOpacity
-        innerBg.setSize(sizeInnerBgX, sizeInnerBgY)
-        innerBg.center(flagBg)
-
-        maskBg?.color?.a = UncivGame.Current.settings.unitIconOpacity
-        maskBg?.setSize(size, size*maskBg.height / maskBg.width)
-        maskBg?.center(flagBg)
-
-        flagBg.addActor(outerBg)
-        flagBg.addActor(innerBg)
-        if (maskBg != null)
-            flagBg.addActor(maskBg)
-        flagBg.center(this)
-
-        flagIcon.center(this)
-
-        addActor(flagSelection)
-        addActor(flagBg)
-        addActor(flagIcon)
+        addToCenter(flagSelection)
+        addToCenter(flagBg)
+        if (flagMask != null)
+            addToCenter(flagMask!!)
+        addToCenter(flagIcon)
 
         val actionImage = getActionImage()
         if (actionImage != null) {
-            val actionCircle = actionImage
-                .surroundWithCircle(size / 2 * 0.9f)
+            actionGroup = actionImage
+                .surroundWithCircle(size/2 * 0.9f)
                 .surroundWithThinCircle()
-            actionCircle.setPosition(size / 2, 0f)
-            actionCircle.color.a = UncivGame.Current.settings.unitIconOpacity
-            addActor(actionCircle)
-            actionGroup = actionCircle
-            actionCircle.toFront()
+            actionGroup!!.setPosition(size/2, 0f)
+            addActor(actionGroup)
         }
 
         if (unit.health < 100) { // add health bar
             addActor(ImageGetter.getHealthBar(unit.health.toFloat(), 100f, size))
         }
-
-        isTransform = false // performance helper - nothing here is rotated or scaled
     }
 
-    private fun getBackgroundImageForUnit(): Image {
+    private fun getBackgroundDrawableForUnit(): TextureRegionDrawable {
         return when {
-            unit.isEmbarked() -> ImageGetter.getImage("UnitFlagIcons/UnitFlagEmbark")
-            unit.isFortified() -> ImageGetter.getImage("UnitFlagIcons/UnitFlagFortify")
-            unit.isCivilian() -> ImageGetter.getImage("UnitFlagIcons/UnitFlagCivilian")
-            else -> ImageGetter.getImage("UnitFlagIcons/UnitFlag")
+            unit.isEmbarked() -> ImageGetter.getDrawable("UnitFlagIcons/UnitFlagEmbark")
+            unit.isFortified() -> ImageGetter.getDrawable("UnitFlagIcons/UnitFlagFortify")
+            unit.isCivilian() -> ImageGetter.getDrawable("UnitFlagIcons/UnitFlagCivilian")
+            else -> ImageGetter.getDrawable("UnitFlagIcons/UnitFlag")
+        }
+    }
+
+    private fun getBackgroundInnerDrawableForUnit(): TextureRegionDrawable? {
+        return when {
+            unit.isEmbarked() -> ImageGetter.getDrawableOrNull("UnitFlagIcons/UnitFlagEmbarkInner")
+            unit.isFortified() -> ImageGetter.getDrawableOrNull("UnitFlagIcons/UnitFlagFortifyInner")
+            unit.isCivilian() -> ImageGetter.getDrawableOrNull("UnitFlagIcons/UnitFlagCivilianInner")
+            else -> ImageGetter.getDrawableOrNull("UnitFlagIcons/UnitFlagInner")
         }
     }
 
@@ -135,16 +182,12 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
     }
 
     fun highlightRed() {
-        flagSelection.color = colorFromRGB(230, 20, 0).apply { a = 1.0f }
-        flagSelection.width *= 0.9f
-        flagSelection.height *= 0.9f
-        flagSelection.center(flagSelection.parent)
+        flagSelection.color = colorFromRGB(230, 0, 0).apply { a = 1f }
+        flagBg.drawOutline = true
     }
 
     fun selectUnit() {
-
-        //Make unit icon background colors fully opaque when units are selected
-        flagBg.children.forEach { it.color?.a = 1f }
+        color.a = 1f
 
         //If unit is idle, leave actionGroup at 50% opacity when selected
         if (unit.isIdle()) {
@@ -160,6 +203,7 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
         val alpha = if (shouldBeFaded) 0.5f else 1f
         flagIcon.color.a = alpha
         flagBg.color.a = alpha
+        flagSelection.color.a = 1f
 
         if (UncivGame.Current.settings.continuousRendering) {
             flagSelection.color.a = 1f
@@ -167,7 +211,7 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
                 Actions.repeat(
                     RepeatAction.FOREVER,
                     Actions.sequence(
-                        Actions.alpha(0.6f, 1f),
+                        Actions.alpha(0.7f, 1f),
                         Actions.alpha(1f, 1f)
                     )
                 )

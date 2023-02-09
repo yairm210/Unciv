@@ -8,15 +8,17 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.tilegroups.TileGroup
 
+private class UnitArtSlot : Group() {
+    var imageLocation = ""
+}
+
 class TileLayerUnitArt(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
 
     override fun act(delta: Float) {}
     override fun hit(x: Float, y: Float, touchable: Boolean): Actor? = null
 
-    private var locations = Array(2){""}
-
-    private var slot1: Group = Group()
-    private var slot2: Group = Group()
+    private var slot1: UnitArtSlot = UnitArtSlot()
+    private var slot2: UnitArtSlot = UnitArtSlot()
 
     init {
         addActor(slot1)
@@ -27,7 +29,7 @@ class TileLayerUnitArt(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             || viewingCiv.viewableInvisibleUnitsTiles.contains(tileGroup.tile)
             || !tileGroup.tile.hasEnemyInvisibleUnit(viewingCiv)
 
-    private fun updateSlot(index: Int, unit: MapUnit?, isShown: Boolean) {
+    private fun updateSlot(slot: UnitArtSlot, unit: MapUnit?, isShown: Boolean) {
 
         var location = ""
         var nationName = ""
@@ -37,11 +39,9 @@ class TileLayerUnitArt(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
             nationName = "${unit.civ.civName}-"
         }
 
-        if (locations[index] != "$nationName$location") {
-            locations[index] = "$nationName$location"
-
-            val group: Group = if (index == 0) slot1 else slot2
-            group.clear()
+        if (slot.imageLocation != "$nationName$location") {
+            slot.imageLocation = "$nationName$location"
+            slot.clear()
 
             if (location != "" && ImageGetter.imageExists(location)) {
                 val nation = unit!!.civ.nation
@@ -52,7 +52,7 @@ class TileLayerUnitArt(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
                     nation.getOuterColor()
                 )
                 for (pixelUnitImage in pixelUnitImages) {
-                    group.addActor(pixelUnitImage)
+                    slot.addActor(pixelUnitImage)
                     pixelUnitImage.setHexagonSize()// Treat this as A TILE, which gets overlayed on the base tile.
                 }
             }
@@ -75,8 +75,8 @@ class TileLayerUnitArt(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         val isSlot1Shown = isPixelUnitsEnabled && isViewable
         val isSlot2Shown = isPixelUnitsEnabled && isViewable && isVisibleMilitary
 
-        updateSlot(0, slot1Unit, isShown = isSlot1Shown)
-        updateSlot(1, slot2Unit, isShown = isSlot2Shown)
+        updateSlot(slot1, slot1Unit, isShown = isSlot1Shown)
+        updateSlot(slot2, slot2Unit, isShown = isSlot2Shown)
     }
 
     override fun determineVisibility() {
@@ -84,7 +84,10 @@ class TileLayerUnitArt(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
     }
 
     fun reset() {
-        updateSlot(0, null, false)
-        updateSlot(1, null, false)
+        slot1.clear()
+        slot2.clear()
+
+        slot1.imageLocation = ""
+        slot2.imageLocation = ""
     }
 }

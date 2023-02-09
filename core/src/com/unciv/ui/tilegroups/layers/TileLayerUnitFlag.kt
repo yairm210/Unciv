@@ -51,7 +51,7 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
         var newIcon: UnitGroup? = null
 
         if (unit != null && isViewable) {
-            newIcon = UnitGroup(unit, 25f)
+            newIcon = UnitGroup(unit, 30f)
             addActor(newIcon)
             setIconPosition(slot, newIcon)
 

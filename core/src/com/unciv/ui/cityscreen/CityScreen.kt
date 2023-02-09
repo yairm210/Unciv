@@ -28,6 +28,7 @@ import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.RecreateOnResize
+import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.keyShortcuts
 import com.unciv.ui.utils.extensions.onActivation
@@ -226,18 +227,16 @@ class CityScreen(
         }
         for (tileGroup in tileGroups) {
             tileGroup.update()
-            tileGroup.layerOverlay.hideHighlight()
+            tileGroup.layerMisc.removeHexOutline()
             when {
-                tileGroup.tile == nextTileToOwn -> {
-                    tileGroup.layerOverlay.showHighlight(Color.PURPLE)
-                    tileGroup.setColor(0f, 0f, 0f, 0.7f)
-                }
+                tileGroup.tile == nextTileToOwn ->
+                    tileGroup.layerMisc.addHexOutline(colorFromRGB(200, 20, 220))
                 /** Support for [UniqueType.CreatesOneImprovement] */
                 tileGroup.tile == selectedQueueEntryTargetTile ->
-                    tileGroup.layerOverlay.showHighlight(Color.BROWN, 0.7f)
+                    tileGroup.layerMisc.addHexOutline(Color.BROWN)
                 pickTileData != null && city.tiles.contains(tileGroup.tile.position) ->
                     getPickImprovementColor(tileGroup.tile).run {
-                        tileGroup.layerOverlay.showHighlight(first, second) }
+                        tileGroup.layerMisc.addHexOutline(first.cpy().apply { this.a = second }) }
             }
         }
     }

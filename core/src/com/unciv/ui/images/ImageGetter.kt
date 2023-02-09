@@ -178,6 +178,12 @@ object ImageGetter {
         return textureRegionDrawables[fileName] ?: textureRegionDrawables[whiteDotLocation]!!
     }
 
+    fun getDrawableOrNull(fileName: String?): TextureRegionDrawable? {
+        if (fileName == null)
+            return null
+        return textureRegionDrawables[fileName]
+    }
+
     fun getNinePatch(fileName: String?, tintColor: Color? = null): NinePatchDrawable {
         val drawable = ninePatchDrawables[fileName] ?: NinePatchDrawable(NinePatch(textureRegionDrawables[whiteDotLocation]!!.region))
 
