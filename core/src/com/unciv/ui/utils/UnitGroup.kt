@@ -12,6 +12,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.extensions.addToCenter
+import com.unciv.ui.utils.extensions.centerX
 import com.unciv.ui.utils.extensions.colorFromRGB
 import com.unciv.ui.utils.extensions.setSize
 import com.unciv.ui.utils.extensions.surroundWithCircle
@@ -125,7 +126,9 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
         }
 
         if (unit.health < 100) { // add health bar
-            addActor(ImageGetter.getHealthBar(unit.health.toFloat(), 100f, size))
+            val hp = ImageGetter.getHealthBar(unit.health.toFloat(), 100f, size*0.78f)
+            addActor(hp)
+            hp.centerX(this)
         }
     }
 
