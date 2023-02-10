@@ -223,12 +223,13 @@ class ResourcesOverviewTab(
     private fun getExtraDrilldown(): ResourceSupplyList {
         val newResourceSupplyList = ResourceSupplyList()
         for (city in viewingPlayer.cities) {
-            if (city.demandedResource.isEmpty()) continue
-            val wltkResource = gameInfo.ruleset.tileResources[city.demandedResource] ?: continue
-            if (city.isWeLoveTheKingDayActive()) {
-                newResourceSupplyList.add(wltkResource, ExtraInfoOrigin.CelebratingWLKT.name)
-            } else {
-                newResourceSupplyList.add(wltkResource, ExtraInfoOrigin.DemandingWLTK.name)
+            if (!city.demandedResource.isEmpty()) {
+                val wltkResource = gameInfo.ruleset.tileResources[city.demandedResource]!!
+                if (city.isWeLoveTheKingDayActive()) {
+                    newResourceSupplyList.add(wltkResource, ExtraInfoOrigin.CelebratingWLKT.name)
+                } else {
+                    newResourceSupplyList.add(wltkResource, ExtraInfoOrigin.DemandingWLTK.name)
+                }
             }
             for (tile in city.getTiles()) {
                 if (tile.isCityCenter()) continue
