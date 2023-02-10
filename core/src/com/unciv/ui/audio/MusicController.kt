@@ -215,7 +215,7 @@ class MusicController {
                             !chooseTrack(
                                 MusicMood.peaceOrWar(!worldScreen.viewingCiv.isAtWar()), 
                                 MusicMood.Ambient, 
-                                EnumSet.of(MusicTrackChooserFlags.PrefixMustNotMatch, MusicTrackChooserFlags.SuffixMustMatch)
+                                EnumSet.of(MusicTrackChooserFlags.NoMatchingPrefix, MusicTrackChooserFlags.SuffixMustMatch)
                             )
                     ) {
                         chooseTrack()
@@ -294,7 +294,7 @@ class MusicController {
         // get a path list (as strings) of music folder candidates - existence unchecked
         return getAllMusicFiles()
             .filter {
-                (!flags.contains(MusicTrackChooserFlags.PrefixMustNotMatch) || !it.nameWithoutExtension().startsWith(prefix))
+                (!flags.contains(MusicTrackChooserFlags.NoMatchingPrefix) || !it.nameWithoutExtension().startsWith(prefix))
                         && (!flags.contains(MusicTrackChooserFlags.PrefixMustMatch) || it.nameWithoutExtension().startsWith(prefix))
                         && (!flags.contains(MusicTrackChooserFlags.SuffixMustMatch) || it.nameWithoutExtension().endsWith(suffix))
             }
