@@ -209,7 +209,17 @@ class MusicController {
             ControllerState.Silence ->
                 if (++ticksOfSilence > silenceLengthInTicks) {
                     ticksOfSilence = 0
-                    chooseTrack()
+                    
+					val worldScreen = UncivGame.Current.getWorldScreenIfActive()
+                    if (worldScreen == null ||
+                            !chooseTrack(
+                                MusicMood.peaceOrWar(!worldScreen.viewingCiv.isAtWar()), 
+                                MusicMood.Ambient, 
+                                EnumSet.of(MusicTrackChooserFlags.PrefixMustNotMatch, MusicTrackChooserFlags.SuffixMustMatch)
+                            )
+                    ) {
+                        chooseTrack()
+                    }
                 }
             ControllerState.Shutdown -> {
                 // Fade out first, when all queue entries are idle set up for real shutdown
@@ -284,7 +294,8 @@ class MusicController {
         // get a path list (as strings) of music folder candidates - existence unchecked
         return getAllMusicFiles()
             .filter {
-                (!flags.contains(MusicTrackChooserFlags.PrefixMustMatch) || it.nameWithoutExtension().startsWith(prefix))
+                (!flags.contains(MusicTrackChooserFlags.PrefixMustNotMatch) || !it.nameWithoutExtension().startsWith(prefix))
+                        && (!flags.contains(MusicTrackChooserFlags.PrefixMustMatch) || it.nameWithoutExtension().startsWith(prefix))
                         && (!flags.contains(MusicTrackChooserFlags.SuffixMustMatch) || it.nameWithoutExtension().endsWith(suffix))
             }
             // randomize

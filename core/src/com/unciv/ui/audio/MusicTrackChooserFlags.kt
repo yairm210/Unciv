@@ -7,6 +7,8 @@ enum class MusicTrackChooserFlags {
     PrefixMustMatch,
     /** Makes suffix parameter a mandatory match */
     SuffixMustMatch,
+    /** Signalizes that prefix parameter must not match */
+    PrefixMustNotMatch,
     /** Extends fade duration by factor 5 */
     SlowFade,
     /** Lets music controller shut down after track ends instead of choosing a random next track */
