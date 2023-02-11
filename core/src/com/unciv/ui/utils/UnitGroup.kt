@@ -185,42 +185,45 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
     }
 
     fun highlightRed() {
-        flagSelection.color = colorFromRGB(230, 0, 0).apply { a = 1f }
+        flagSelection.color = colorFromRGB(230, 0, 0)
         flagBg.drawOutline = true
     }
 
     fun selectUnit() {
-        color.a = 1f
+
+        val opacity = UncivGame.Current.settings.unitIconOpacity
+
+        color.a = opacity
 
         //If unit is idle, leave actionGroup at 50% opacity when selected
         if (unit.isIdle()) {
-            actionGroup?.color?.a = 0.5f
+            actionGroup?.color?.a = opacity * 0.5f
         } else { //Else set to 100% opacity when selected
-            actionGroup?.color?.a = 1f
+            actionGroup?.color?.a = opacity
         }
 
         // Unit base icon is faded out only if out of moves
         // Foreign unit icons are never faded!
         val shouldBeFaded = (unit.owner == UncivGame.Current.worldScreen?.viewingCiv?.civName
                 && unit.currentMovement == 0f)
-        val alpha = if (shouldBeFaded) 0.5f else 1f
+        val alpha = if (shouldBeFaded) opacity * 0.5f else opacity
         flagIcon.color.a = alpha
         flagBg.color.a = alpha
-        flagSelection.color.a = 1f
+        flagSelection.color.a = opacity
 
         if (UncivGame.Current.settings.continuousRendering) {
-            flagSelection.color.a = 1f
+            flagSelection.color.a = opacity
             flagSelection.addAction(
                 Actions.repeat(
                     RepeatAction.FOREVER,
                     Actions.sequence(
-                        Actions.alpha(0.7f, 1f),
-                        Actions.alpha(1f, 1f)
+                        Actions.alpha(opacity*0.7f, 1f),
+                        Actions.alpha(opacity, 1f)
                     )
                 )
             )
         } else {
-            flagSelection.color.a = 0.8f
+            flagSelection.color.a = opacity * 0.8f
         }
     }
 }
