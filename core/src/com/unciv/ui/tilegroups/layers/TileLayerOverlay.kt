@@ -66,9 +66,7 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
     override fun doUpdate(viewingCiv: Civilization?) {
 
         val isViewable = viewingCiv == null || isViewable(viewingCiv)
-
-        if (!isViewable && !tileGroup.isForceVisible)
-            fog.isVisible = true
+        fog.isVisible = !isViewable && !tileGroup.isForceVisible
 
         if (viewingCiv == null)
             return
