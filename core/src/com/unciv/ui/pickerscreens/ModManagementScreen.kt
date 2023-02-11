@@ -432,8 +432,6 @@ class ModManagementScreen(
             Concurrency.run("GitHubParser") {
                 try {
                     val repoSize = Github.getRepoSize(repo)
-                    Log.debug("Total size: $repoSize")
-
                     if (repoSize > 0f) {
                         launchOnGLThread {
                             repo.size = repoSize.toInt()
@@ -442,9 +440,8 @@ class ModManagementScreen(
                                 updateModInfo()
                         }
                     }
-
-                } catch (e: IOException) {
-                    /* ... */
+                } catch (ignore: IOException) {
+                    /* Parsing of mod size failed, do nothing  */
                 }
 
             }.start()

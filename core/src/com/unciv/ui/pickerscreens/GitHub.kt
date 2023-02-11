@@ -250,49 +250,18 @@ object Github {
         return null
     }
 
-    class Commit {
-        var sha = ""
-    }
-
-    class Branch {
-        var commit = Commit()
-    }
-
-    class TreeFile {
-        var size: Long = 0L
-    }
-
     class Tree {
+
+        class TreeFile {
+            var size: Long = 0L
+        }
+
         var url: String = ""
         var tree = ArrayList<TreeFile>()
-        var truncated: Boolean = false
-    }
-
-    private fun getBranchTreeSha(link: String): String? {
-        var retries = 2
-        while (retries > 0) {
-            retries--
-            // obey rate limit
-            if (RateLimit.waitForLimit()) return null
-            // try download
-            val inputStream = download(link) {
-                if (it.responseCode == 403 || it.responseCode == 200 && retries == 1) {
-                    // Pass the response headers to the rate limit handler so it can process the rate limit headers
-                    RateLimit.notifyHttpResponse(it)
-                    retries++   // An extra retry so the 403 is ignored in the retry count
-                }
-            } ?: continue
-            return json().fromJson(Branch::class.java, inputStream.bufferedReader().readText()).commit.sha
-        }
-        return null
     }
 
     fun getRepoSize(repo: Repo): Float {
-
-        val sha = getBranchTreeSha("https://api.github.com/repos/${repo.full_name}/branches/${repo.default_branch}")
-            ?: return 0f
-
-        val link = "https://api.github.com/repos/${repo.full_name}/git/trees/$sha?recursive=true"
+        val link = "https://api.github.com/repos/${repo.full_name}/git/trees/${repo.default_branch}?recursive=true"
 
         var retries = 2
         while (retries > 0) {
@@ -313,7 +282,7 @@ object Github {
             for (file in tree.tree)
                 totalSizeBytes += file.size
 
-            return totalSizeBytes * 0.000977f
+            return totalSizeBytes / 1024f
         }
         return 0f
     }
