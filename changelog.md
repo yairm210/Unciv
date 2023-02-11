@@ -1,3 +1,19 @@
+## 4.4.13
+
+Enemy indicator, city culture hex outline + misc - By vegeta1k95
+
+Fixed air sweep crash
+
+Some modifications for performance optimization - By lishaoxia1985
+
+modding: conditionally-unbuildable buildings display their cost
+
+Can no longer 'upgrade unit' between turns
+
+By Gualdimar:
+- Fixed getDiplomacyManager() Exception
+- Revert knows() changes
+
 ## 4.4.12
 
 Resolved "dead population working tiles" bug

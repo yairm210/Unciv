@@ -20,11 +20,11 @@ open class Counter<K> : LinkedHashMap<K, Int>(), IsPartOfGameInfoSerialization {
     }
 
     fun add(other: Counter<K>) {
-        for (key in other.keys) add(key, other[key]!!)
+        for ((key, value) in other) add(key, value)
     }
 
     fun remove(other: Counter<K>) {
-        for (key in other.keys) add(key, -other[key]!!)
+        for ((key, value) in other) add(key, -value)
     }
 
     fun times(amount:Int): Counter<K> {

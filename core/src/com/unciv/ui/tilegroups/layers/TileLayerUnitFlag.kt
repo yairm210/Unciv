@@ -51,17 +51,17 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
         var newIcon: UnitGroup? = null
 
         if (unit != null && isViewable) {
-            newIcon = UnitGroup(unit, 25f)
+            newIcon = UnitGroup(unit, 30f)
             addActor(newIcon)
             setIconPosition(slot, newIcon)
 
             // Display air unit table for carriers/transports
             if (unit.getTile().airUnits.any { unit.isTransportTypeOf(it) } && !unit.getTile().isCityCenter()) {
                 val table = getAirUnitTable(unit)
-                addActor(table)
+                newIcon.addActor(table)
                 table.toBack()
-                table.y = newIcon.y + newIcon.height/2 - table.height/2
-                table.x = newIcon.x + newIcon.width - table.width/2
+                table.y = newIcon.height/2 - table.height/2
+                table.x = newIcon.width - table.width*0.45f
             }
 
             // Fade out action indicator for own non-idle units
@@ -70,7 +70,7 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
 
             // Fade out flag for own out-of-moves units
             if (unit.civ == viewingCiv && unit.currentMovement == 0f)
-                newIcon.color.a = 0.5f
+                newIcon.color.a = 0.5f * UncivGame.Current.settings.unitIconOpacity
 
         }
 

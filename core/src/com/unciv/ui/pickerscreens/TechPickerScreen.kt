@@ -41,8 +41,8 @@ class TechPickerScreen(
     private var selectedTech: Technology? = null
     private var civTech: TechManager = civInfo.tech
     private var tempTechsToResearch: ArrayList<String>
-    private var lines = ArrayList<Image>()
-    private var orderIndicators = Group()
+    private var lines = Group().apply { isTransform = false }
+    private var orderIndicators = Group().apply { isTransform = false }
     private var eraLabels = ArrayList<Label>()
 
     /** We need this to be a separate table, and NOT the topTable, because *inhales*
@@ -79,6 +79,8 @@ class TechPickerScreen(
 
         createTechTable()
         setButtonsInfo()
+        techTable.addActor(lines)
+        techTable.addActor(orderIndicators)
         topTable.add(techTable)
         techTable.background = skinStrings.getUiBackground("TechPickerScreen/Background", tintColor = skinStrings.skinConfig.clearColor)
         pickerPane.bottomTable.background = skinStrings.getUiBackground("TechPickerScreen/BottomTable", tintColor = skinStrings.skinConfig.clearColor)
@@ -231,7 +233,6 @@ class TechPickerScreen(
         techTable.pack() // required for the table to have the button positions set, so topTable.stageToLocalCoordinates will be correct
         scrollPane.updateVisualScroll()
 
-        for (line in lines) line.remove()
         lines.clear()
 
         for (eraLabel in eraLabels) {
@@ -241,8 +242,7 @@ class TechPickerScreen(
             val line = ImageGetter.getLine(coords.x-1f, coords.y, coords.x-1f, coords.y - 1000f, 1f)
             line.color = Color.GRAY.cpy().apply { a = 0.6f }
             line.toBack()
-            techTable.addActor(line)
-            lines.add(line)
+            lines.addActor(line)
         }
 
         for (tech in civInfo.gameInfo.ruleset.technologies.values) {
@@ -321,23 +321,11 @@ class TechPickerScreen(
                     line3.color = lineColor
                     line4.color = lineColor
 
-                    techTable.addActor(line)
-                    techTable.addActor(line1)
-                    techTable.addActor(line2)
-                    techTable.addActor(line3)
-                    techTable.addActor(line4)
-
-                    line.toFront()
-                    line1.toFront()
-                    line2.toFront()
-                    line3.toFront()
-                    line4.toFront()
-
-                    lines.add(line)
-                    lines.add(line1)
-                    lines.add(line2)
-                    lines.add(line3)
-                    lines.add(line4)
+                    lines.addActor(line)
+                    lines.addActor(line1)
+                    lines.addActor(line2)
+                    lines.addActor(line3)
+                    lines.addActor(line4)
 
                 } else {
 
@@ -349,23 +337,13 @@ class TechPickerScreen(
                     }
                     line.color = lineColor
 
-                    techTable.addActor(line)
-
-                    if (tempTechsToResearch.contains(tech.name))
-                        line.zIndex = 200000
-                    else
-                        line.zIndex = 500
-
-                    lines.add(line)
-
+                    lines.addActor(line)
                 }
             }
         }
 
-        for (line in lines) {
-            if (line.color == currentTechColor)
-                line.toFront()
-        }
+        lines.children.filter { it.color == currentTechColor && it.color != Color.WHITE.cpy() }
+            .forEach { it.toFront() }
     }
 
     private fun addOrderIndicators() {
@@ -384,7 +362,6 @@ class TechPickerScreen(
                 orderIndicators.addActor(orderIndicator)
             }
         }
-        techTable.addActor(orderIndicators)
         orderIndicators.toFront()
     }
 

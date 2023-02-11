@@ -80,17 +80,17 @@ object BattleHelper {
                     Battle.getMapCombatantOfTile(tile)!!
                 )
                 else if (tile in tilesWithoutEnemies) continue // avoid checking the same empty tile multiple times
-                else if (checkTile(unit, tile, tilesToCheck)) {
+                else if (tileContainsAttackableEnemy(unit, tile, tilesToCheck)) {
                     tilesWithEnemies += tile
                     attackableTiles += AttackableTile(
                         reachableTile, tile, movementLeft,
-                        Battle.getMapCombatantOfTile(tile)!!
+                        Battle.getMapCombatantOfTile(tile)
                     )
                 } else if (unit.isPreparingAirSweep()) {
                     tilesWithEnemies += tile
                     attackableTiles += AttackableTile(
                         reachableTile, tile, movementLeft,
-                        Battle.getMapCombatantOfTile(tile)!!
+                        Battle.getMapCombatantOfTile(tile)
                     )
                 } else tilesWithoutEnemies += tile
             }
@@ -98,10 +98,12 @@ object BattleHelper {
         return attackableTiles
     }
 
-    private fun checkTile(unit: MapUnit, tile: Tile, tilesToCheck: List<Tile>?): Boolean {
+    private fun tileContainsAttackableEnemy(unit: MapUnit, tile: Tile, tilesToCheck: List<Tile>?): Boolean {
         if (!containsAttackableEnemy(tile, MapUnitCombatant(unit))) return false
         if (tile !in (tilesToCheck ?: unit.civ.viewableTiles)) return false
         val mapCombatant = Battle.getMapCombatantOfTile(tile)
+
+
         return (!unit.baseUnit.isMelee() || mapCombatant !is MapUnitCombatant || !mapCombatant.unit.isCivilian() || unit.movement.canPassThrough(tile))
     }
 
@@ -179,10 +181,10 @@ object BattleHelper {
         if (unit.baseUnit.isMelee() && capturableCity != null)
             return capturableCity // enter it quickly, top priority!
 
-        else if (nonCityTilesToAttack.isNotEmpty()) // second priority, units
+        if (nonCityTilesToAttack.isNotEmpty()) // second priority, units
             return chooseUnitToAttack(unit, nonCityTilesToAttack)
 
-        else if (cityWithHealthLeft != null) return cityWithHealthLeft // third priority, city
+        if (cityWithHealthLeft != null) return cityWithHealthLeft // third priority, city
 
         return null
     }
@@ -206,7 +208,7 @@ object BattleHelper {
             if (canKill != null) return canKill
 
             // otherwise pick the unit we can kill the fastest
-            return attacksToKill.minByOrNull { it.value }!!.key
+            return attacksToKill.minBy { it.value }.key
         }
 
         // only civilians in attacking range - GP most important, second settlers, then anything else
@@ -217,12 +219,12 @@ object BattleHelper {
 
         // Melee - prioritize by distance, so we have most movement left
         if (unit.baseUnit.isMelee()){
-            return unitsToConsider.maxByOrNull { it.movementLeftAfterMovingToAttackTile }!!
+            return unitsToConsider.maxBy { it.movementLeftAfterMovingToAttackTile }
         }
 
         // We're ranged, prioritize that we can kill
-        return unitsToConsider.minByOrNull {
+        return unitsToConsider.minBy {
             Battle.getMapCombatantOfTile(it.tileToAttack)!!.getHealth()
-        }!!
+        }
     }
 }

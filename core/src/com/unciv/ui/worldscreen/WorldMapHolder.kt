@@ -733,8 +733,7 @@ class WorldMapHolder(
             for (tileGroup in tileGroups.values) {
                 tileGroup.layerCityButton.isTransform = false // to save on rendering time to improve framerate
             }
-        }
-        if (clampedCityButtonZoom < 1 && clampedCityButtonZoom >= minZoom) {
+        } else if (clampedCityButtonZoom >= minZoom) {
             for (tileGroup in tileGroups.values) {
                 // ONLY set those groups that have active city buttons as transformable!
                 // This is massively framerate-improving!
