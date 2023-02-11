@@ -150,7 +150,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         val currentCiv = city.civ
 
         val tilesToEvaluate = city.getCenterTile().getTilesInDistance(3)
-            .filter { it.getOwner() == currentCiv }.toList().asSequence()
+            .filter { it.getOwner() == currentCiv && !it.isBlockaded() }.toList().asSequence()
         for (i in 1..getFreePopulation()) {
             //evaluate tiles
             val (bestTile, valueBestTile) = tilesToEvaluate

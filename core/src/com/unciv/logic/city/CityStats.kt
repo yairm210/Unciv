@@ -354,7 +354,7 @@ class CityStats(val city: City) {
     fun updateTileStats() {
         val stats = Stats()
         val localUniqueCache = LocalUniqueCache()
-        val workedTiles = city.tilesInRange
+        val workedTiles = city.tilesInRange.asSequence()
             .filter {
                 city.location == it.position
                         || city.isWorked(it)
@@ -362,9 +362,15 @@ class CityStats(val city: City) {
                     ?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation) == true
                         || it.terrainHasUnique(UniqueType.TileProvidesYieldWithoutPopulation))
             }
-        for (cell in workedTiles) {
-            val cellStats = cell.stats.getTileStats(city, city.civ, localUniqueCache)
-            stats.add(cellStats)
+        for (tile in workedTiles) {
+            if (tile.isBlockaded() && city.isWorked(tile)) {
+                city.workedTiles.remove(tile.position)
+                city.lockedTiles.remove(tile.position)
+                city.updateCitizens = true
+                continue
+            }
+            val tileStats = tile.stats.getTileStats(city, city.civ, localUniqueCache)
+            stats.add(tileStats)
         }
         statsFromTiles = stats
     }

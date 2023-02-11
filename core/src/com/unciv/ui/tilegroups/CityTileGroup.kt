@@ -85,6 +85,11 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings) 
                 // Do nothing
             }
 
+            tile.isBlockaded() -> {
+                icon = ImageGetter.getImage("TileIcons/Blockaded")
+                layerMisc.dimYields(true)
+            }
+
             // Locked
             tile.isLocked() -> {
                 icon = ImageGetter.getImage("TileIcons/Locked")

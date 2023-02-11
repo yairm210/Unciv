@@ -84,7 +84,7 @@ class City : IsPartOfGameInfoSerialization {
     var attackedThisTurn = false
     var hasSoldBuildingThisTurn = false
     var isPuppet = false
-    var updateCitizens = false  // flag so that on endTurn() the Governor reassigns Citizens
+    var updateCitizens = false  // flag so that on startTurn() the Governor reassigns Citizens
     var cityAIFocus: CityFocus = CityFocus.NoFocus
     var avoidGrowth: Boolean = false
     @Transient var currentGPPBonus: Int = 0  // temporary variable saved for rankSpecialist()

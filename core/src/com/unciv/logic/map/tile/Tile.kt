@@ -429,6 +429,12 @@ open class Tile : IsPartOfGameInfoSerialization {
         return civInfo.cities.firstOrNull { it.isWorked(this) }
     }
 
+    fun isBlockaded(): Boolean {
+        val owner = getOwner() ?: return false
+        val unit = militaryUnit ?: return false
+        return owner.isAtWarWith(unit.civ)
+    }
+
     fun isWorked(): Boolean = getWorkingCity() != null
     fun providesYield() = getCity() != null && (isCityCenter() || isWorked()
             || getUnpillagedTileImprovement()?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation) == true

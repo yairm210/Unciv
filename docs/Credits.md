@@ -769,6 +769,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [Nothing](https://www.flaticon.com/free-icon/nothing_5084125) created by Freepik for Nothing construction process
 - Icon for Unique created by [vegeta1k95](https://github.com/vegeta1k95)
 - [Transform] created by letstalkaboutdune
+- [Swords](https://thenounproject.com/icon/swords-1580316/) created by Muhajir ila Robbi for Blockaded tile marker
 
 ### Main menu
 
