@@ -339,14 +339,8 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         table.touchable = Touchable.enabled
         table.onClick {
-            if (selectedQueueEntry == constructionQueueIndex) {
-                city.cityConstructions.removeFromQueue(constructionQueueIndex, false)
-                selectedQueueEntry = -1
-                cityScreen.clearSelection()
-            } else {
-                cityScreen.selectConstruction(constructionName)
-                selectedQueueEntry = constructionQueueIndex
-            }
+            cityScreen.selectConstruction(constructionName)
+            selectedQueueEntry = constructionQueueIndex
             cityScreen.update()
         }
         return table
