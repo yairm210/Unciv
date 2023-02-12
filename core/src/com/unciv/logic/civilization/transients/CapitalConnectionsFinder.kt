@@ -81,7 +81,7 @@ class CapitalConnectionsFinder(private val civInfo: Civilization) {
                 transportType = if(cityToConnectFrom.wasPreviouslyReached(railroad,null)) harborFromRailroad else harborFromRoad,
                 overridingTransportType = harborFromRailroad,
                 tileFilter = { tile -> tile.isWater },
-                cityFilter = { city -> city.containsHarbor() && city.civ == civInfo } // use only own harbors
+                cityFilter = { city -> city.civ == civInfo && city.containsHarbor() && !city.isBlockaded() } // use only own harbors
         )
     }
 

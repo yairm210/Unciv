@@ -431,29 +431,34 @@ open class Tile : IsPartOfGameInfoSerialization {
 
     fun isBlockaded(): Boolean {
         val owner = getOwner() ?: return false
-        if (isLand) {
-            val unit = militaryUnit ?: return false
-            return owner.isAtWarWith(unit.civ)
-        } else if (isWater) {
+        val unit = militaryUnit
 
-            // If tile has friendly military on it - then not blockaded!
-            if (militaryUnit?.civ == owner)
-                return false
-
-            // Enemy water units blockade all adjacent tiles
-            // So we need to check tile + water neighbors
-            val tiles = sequence {
-                yield(this@Tile)
-                yieldAll(neighbors.filter { it.isWater })
+        // If tile has unit
+        if (unit != null) {
+            return when {
+                unit.civ == owner -> false              // Own - unblocks tile;
+                unit.civ.isAtWarWith(owner) -> true     // Enemy - blocks tile;
+                else -> false                           // Neutral - unblocks tile;
             }
+        }
 
-            for (tile in tiles) {
-                if (tile.militaryUnit == null)
-                    continue
-                if (owner.isAtWarWith(tile.militaryUnit!!.civ))
-                    return true
-            }
+        // No unit -> land tile is not blocked
+        if (isLand)
             return false
+
+        // For water tiles need also to check neighbors:
+        // enemy military naval units blockade all adjacent water tiles.
+        for (neighbor in neighbors) {
+
+            // Check only water neighbors
+            if (!neighbor.isWater)
+                continue
+
+            val neighborUnit = neighbor.militaryUnit ?: continue
+
+            // Embarked units do not blockade adjacent tiles
+            if (neighborUnit.civ.isAtWarWith(owner) && !neighborUnit.isEmbarked())
+                return true
         }
         return false
     }
