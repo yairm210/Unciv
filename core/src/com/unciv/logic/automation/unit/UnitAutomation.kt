@@ -679,7 +679,7 @@ object UnitAutomation {
         return false
     }
 
-    fun runAway(unit: MapUnit) {
+    private fun runAway(unit: MapUnit) {
         val reachableTiles = unit.movement.getDistanceToTiles()
         val enterableCity = reachableTiles.keys
             .firstOrNull { it.isCityCenter() && unit.movement.canMoveTo(it) }

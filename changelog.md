@@ -1,23 +1,20 @@
 ## 4.4.14
 
-Offers we receive for more resources than we have are invalid
-
-Resolved  - fixed Guruship belief
-
-Was unable to upload previous version to Google Play, re-attempting
+Fixed Guruship belief
 
 By vegeta1k95:
-- Mod sizes are updated to proper values upon selection 
-- Fix UI bugs 
-- Fix centering of unit HP bar 
-- Improvements to construction table 
+- Mod sizes are updated to proper values upon selection
+- Fix UI bugs
+- Fix centering of unit HP bar
+- Improvements to construction table
 
-AbsoluteUnits - Berserker, Samurai, Longswordsman_v2  - By letstalkaboutdune
+AbsoluteUnits - Berserker, Samurai, Longswordsman v2  - By letstalkaboutdune
 
 By Gualdimar:
-- Fixed selecting an improvement switched to another unit even if the setting is disabled 
-- Fixed missing unimproved resources in the overview table 
-- Research agreement cost display 
+- Selecting an improvement switches to another unit only if enabled
+- Fixed missing unimproved resources in the overview table
+- Research agreement cost display
+- Offers we receive for more resources than we have are invalid
 
 ## 4.4.13
 
