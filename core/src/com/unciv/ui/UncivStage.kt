@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.Viewport
+import com.unciv.UncivGame
 import com.unciv.logic.event.Event
 import com.unciv.logic.event.EventBus
 import com.unciv.ui.crashhandling.wrapCrashHandling
@@ -20,9 +21,13 @@ class UncivStage(viewport: Viewport) : Stage(viewport, getBatch()) {
     companion object {
         fun getBatch(size: Int=1000): Batch {
             // If for some reason it fails, we resort to usual SpriteBatch
-            return try {
-                TextureArraySpriteBatch(size)
-            } catch (e: Exception) {
+            return if (UncivGame.Current.settings.experimentalRendering) {
+                try {
+                    TextureArraySpriteBatch(size)
+                } catch (e: Exception) {
+                    SpriteBatch(size)
+                }
+            } else {
                 SpriteBatch(size)
             }
         }
