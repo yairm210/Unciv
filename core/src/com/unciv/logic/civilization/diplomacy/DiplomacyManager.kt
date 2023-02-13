@@ -343,11 +343,6 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                 newResourceSupplyList.add(resourcesMap[offer.name]!!, "Trade", offer.amount)
         }
 
-        for (trade in otherCiv().tradeRequests.filter { it.requestingCiv == civInfo.civName }) {
-            for (offer in trade.trade.theirOffers.filter(isResourceFilter))
-                newResourceSupplyList.add(resourcesMap[offer.name]!!, "Trade request", -offer.amount)
-        }
-
         return newResourceSupplyList
     }
 

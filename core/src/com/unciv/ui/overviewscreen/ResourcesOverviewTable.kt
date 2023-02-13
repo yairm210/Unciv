@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
@@ -100,6 +101,7 @@ class ResourcesOverviewTab(
             "Number of your cities celebrating\n'We Love The King Day' thanks\nto access to this resource"),
         DemandingWLTK("WLTK demand", "WLTK-",
             "Number of your cities\ndemanding this resource for\n'We Love The King Day'"),
+        TradeOffer("Trade offer","Trade offer", "Resources we're offering in trades")
         ;
         companion object {
             fun safeValueOf(name: String) = values().firstOrNull { it.name == name }
@@ -241,6 +243,12 @@ class ResourcesOverviewTab(
                 newResourceSupplyList.add(tileResource, ExtraInfoOrigin.Unimproved.name)
             }
         }
+
+        for (otherCiv in viewingPlayer.getKnownCivs())
+            for (trade in otherCiv.tradeRequests.filter { it.requestingCiv == viewingPlayer.civName })
+                for (offer in trade.trade.theirOffers.filter{it.type == TradeType.Strategic_Resource || it.type == TradeType.Luxury_Resource})
+                    newResourceSupplyList.add(gameInfo.ruleset.tileResources[offer.name]!!, ExtraInfoOrigin.TradeOffer.name, offer.amount)
+
         return newResourceSupplyList
     }
 }
