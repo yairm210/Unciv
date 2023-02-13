@@ -65,12 +65,12 @@ class TileLayerUnitFlag(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
             }
 
             // Fade out action indicator for own non-idle units
-            if (unit.civ == viewingCiv && !unit.isIdle())
-                newIcon.actionGroup?.color?.a = 0.5f * UncivGame.Current.settings.unitIconOpacity
+            if (unit.civ == viewingCiv && !unit.isIdle() && UncivGame.Current.settings.unitIconOpacity == 1f)
+                newIcon.actionGroup?.color?.a = 0.5f
 
             // Fade out flag for own out-of-moves units
-            if (unit.civ == viewingCiv && unit.currentMovement == 0f)
-                newIcon.color.a = 0.5f * UncivGame.Current.settings.unitIconOpacity
+            if (unit.civ == viewingCiv && unit.currentMovement == 0f && UncivGame.Current.settings.unitIconOpacity == 1f)
+                newIcon.color.a = 0.5f
 
         }
 
