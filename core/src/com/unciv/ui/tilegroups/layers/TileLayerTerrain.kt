@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.BaseScreen
@@ -36,6 +37,12 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         else resourceAndImprovementSequence.map { strings().orFallback { getTile(it) } }.toList()
     }
 
+    private fun usePillagedImprovementImage(tile: Tile, viewingCiv: Civilization?): Boolean {
+        if (!tile.improvementIsPillaged || !UncivGame.Current.settings.showPixelImprovements) return false
+        val shownImprovement = tile.getShownImprovement(viewingCiv) ?: return false
+        return ImageGetter.imageExists(strings().getTile("$shownImprovement-Pillaged"))
+    }
+
     private fun getTileBaseImageLocations(viewingCiv: Civilization?): List<String> {
 
         val isForceVisible = tileGroup.isForceVisible
@@ -57,7 +64,11 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
         val resourceAndImprovementSequence = sequence {
             if (shouldShowResource)  yield(tile.resource!!)
-            if (shouldShowImprovement) yield(shownImprovement!!)
+            if (shouldShowImprovement) {
+                if (usePillagedImprovementImage(tile, viewingCiv))
+                    yield("$shownImprovement-Pillaged")
+                else yield(shownImprovement!!)
+            }
         }
 
         val terrainImages = if (tile.naturalWonder != null)
@@ -120,13 +131,15 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         }
     }
 
-    private fun updateTileColor(isViewable: Boolean) {
-
+    private fun updateTileColor(viewingCiv: Civilization?) {
+        val isViewable = viewingCiv == null || isViewable(viewingCiv)
         val tile = tileGroup.tile
+        val colorPillagedTile = isViewable && tile.isPillaged() && !usePillagedImprovementImage(tile, viewingCiv)
+
         val baseTerrainColor = when {
-            isViewable && tile.isPillaged() && strings().tileSetConfig.useColorAsBaseTerrain -> tile.getBaseTerrain()
+            colorPillagedTile && strings().tileSetConfig.useColorAsBaseTerrain -> tile.getBaseTerrain()
                 .getColor().lerp(Color.BROWN, 0.6f)
-            isViewable && tile.isPillaged() -> Color.WHITE.cpy().lerp(Color.BROWN, 0.6f)
+            colorPillagedTile -> Color.WHITE.cpy().lerp(Color.BROWN, 0.6f)
             strings().tileSetConfig.useColorAsBaseTerrain && !isViewable -> tile.getBaseTerrain()
                 .getColor().lerp(strings().tileSetConfig.fogOfWarColor, 0.6f)
             strings().tileSetConfig.useColorAsBaseTerrain -> tile.getBaseTerrain()
@@ -136,8 +149,8 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         }
 
         val color = when {
-            isViewable && tile.isPillaged() -> Color.WHITE.cpy().lerp(Color.RED.cpy(), 0.5f)
-            (!isViewable) -> Color.WHITE.cpy()
+            colorPillagedTile -> Color.WHITE.cpy().lerp(Color.RED.cpy(), 0.5f)
+            !isViewable -> Color.WHITE.cpy()
                 .lerp(strings().tileSetConfig.fogOfWarColor, 0.6f)
             else -> Color.WHITE.cpy()
         }
@@ -184,7 +197,7 @@ class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
     override fun doUpdate(viewingCiv: Civilization?) {
         updateTileImage(viewingCiv)
         updateRivers(tileGroup.tile.hasBottomRightRiver, tileGroup.tile.hasBottomRiver, tileGroup.tile.hasBottomLeftRiver)
-        updateTileColor(viewingCiv == null || isViewable(viewingCiv))
+        updateTileColor(viewingCiv)
     }
 
     fun reset() {
