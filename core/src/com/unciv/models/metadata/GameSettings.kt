@@ -62,6 +62,7 @@ class GameSettings {
     val showPixelUnits: Boolean get() = unitSet != null
     var showPixelImprovements: Boolean = true
     var continuousRendering = false
+    var experimentalRendering = false
     var orderTradeOffersByAmount = true
     var confirmNextTurn = false
     var windowState = WindowState()
