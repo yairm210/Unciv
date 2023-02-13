@@ -23,6 +23,7 @@ import com.unciv.ui.utils.extensions.isEnabled
 import com.unciv.ui.utils.extensions.keyShortcuts
 import com.unciv.ui.utils.extensions.onActivation
 import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.onDoubleClick
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
 import com.unciv.utils.Log
@@ -98,6 +99,10 @@ class LoadGameScreen : LoadOrSaveScreen() {
         rightSideButton.isVisible = true
         rightSideButton.setText("Load [$selectedSave]".tr())
         rightSideButton.enable()
+    }
+
+    override fun doubleClickAction() {
+        onLoadGame()
     }
 
     private fun Table.initRightSideTable() {

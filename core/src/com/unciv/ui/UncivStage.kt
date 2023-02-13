@@ -1,18 +1,37 @@
 package com.unciv.ui
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.Viewport
+import com.unciv.UncivGame
 import com.unciv.logic.event.Event
 import com.unciv.logic.event.EventBus
 import com.unciv.ui.crashhandling.wrapCrashHandling
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
+import com.unciv.ui.utils.TextureArraySpriteBatch
 import com.unciv.utils.Log
 
 
 /** Main stage for the game. Catches all exceptions or errors thrown by event handlers, calling [com.unciv.UncivGame.handleUncaughtThrowable] with the thrown exception or error. */
-class UncivStage(viewport: Viewport) : Stage(viewport) {
+class UncivStage(viewport: Viewport) : Stage(viewport, getBatch()) {
+
+    companion object {
+        fun getBatch(size: Int=1000): Batch {
+            // If for some reason it fails, we resort to usual SpriteBatch
+            return if (UncivGame.Current.settings.experimentalRendering) {
+                try {
+                    TextureArraySpriteBatch(size)
+                } catch (e: Exception) {
+                    SpriteBatch(size)
+                }
+            } else {
+                SpriteBatch(size)
+            }
+        }
+    }
 
     /**
      * Enables/disables sending pointer enter/exit events to actors on this stage.

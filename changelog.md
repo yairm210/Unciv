@@ -1,3 +1,21 @@
+## 4.4.14
+
+Fixed Guruship belief
+
+By vegeta1k95:
+- Mod sizes are updated to proper values upon selection
+- Fix UI bugs
+- Fix centering of unit HP bar
+- Improvements to construction table
+
+AbsoluteUnits - Berserker, Samurai, Longswordsman v2  - By letstalkaboutdune
+
+By Gualdimar:
+- Selecting an improvement switches to another unit only if enabled
+- Fixed missing unimproved resources in the overview table
+- Research agreement cost display
+- Offers we receive for more resources than we have are invalid
+
 ## 4.4.13
 
 Enemy indicator, city culture hex outline + misc - By vegeta1k95

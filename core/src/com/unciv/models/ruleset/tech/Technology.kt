@@ -13,7 +13,6 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
-import java.util.*
 
 class Technology: RulesetObject() {
 
@@ -38,16 +37,16 @@ class Technology: RulesetObject() {
         for (unique in uniques) lineList += unique.tr()
 
         for (improvement in ruleset.tileImprovements.values) {
-            for (unique in improvement.uniqueObjects) {
-                if (unique.isOfType(UniqueType.Stats)) {
-                    val requiredTech = unique.conditionals.firstOrNull { it.isOfType(UniqueType.ConditionalTech) }?.params?.get(0)
-                    if (requiredTech != name) continue
-                    lineList += "[${unique.params[0]}] from every [${improvement.name}]"
-                } else if (unique.isOfType(UniqueType.ImprovementStatsOnTile)) {
-                    val requiredTech = unique.conditionals.firstOrNull { it.isOfType(UniqueType.ConditionalTech) }?.params?.get(0)
-                    if (requiredTech != name) continue
-                    lineList += "[${unique.params[0]}] from every [${improvement.name}] on [${unique.params[1]}] tiles"
-                }
+            for (unique in improvement.getMatchingUniques(UniqueType.Stats)) {
+                val requiredTech = unique.conditionals.firstOrNull { it.isOfType(UniqueType.ConditionalTech) }?.params?.get(0)
+                if (requiredTech != name) continue
+                lineList += "[${unique.params[0]}] from every [${improvement.name}]"
+            }
+
+            for (unique in improvement.getMatchingUniques(UniqueType.ImprovementStatsOnTile)) {
+                val requiredTech = unique.conditionals.firstOrNull { it.isOfType(UniqueType.ConditionalTech) }?.params?.get(0)
+                if (requiredTech != name) continue
+                lineList += "[${unique.params[0]}] from every [${improvement.name}] on [${unique.params[1]}] tiles"
             }
         }
 

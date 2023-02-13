@@ -38,7 +38,7 @@ class TradeEvaluation {
 
         fun hasResource(tradeOffer: TradeOffer): Boolean {
             val resourcesByName = offerer.getCivResourcesByName()
-            return resourcesByName.containsKey(tradeOffer.name) && resourcesByName[tradeOffer.name]!! >= 0
+            return resourcesByName.containsKey(tradeOffer.name) && resourcesByName[tradeOffer.name]!! >= tradeOffer.amount
         }
 
         return when (tradeOffer.type) {
@@ -64,7 +64,7 @@ class TradeEvaluation {
                 .filter { it.type != TradeType.Treaty } // since treaties should only be evaluated once for 2 sides
                 .map { evaluateBuyCost(it, evaluator, tradePartner) }.sum()
 
-        var sumOfOurOffers = trade.ourOffers.map { evaluateSellCost(it, evaluator, tradePartner) }.sum()
+        var sumOfOurOffers = trade.ourOffers.sumOf { evaluateSellCost(it, evaluator, tradePartner) }
 
         // If we're making a peace treaty, don't try to up the bargain for people you don't like.
         // Leads to spartan behaviour where you demand more, the more you hate the enemy...unhelpful
@@ -270,7 +270,7 @@ class TradeEvaluation {
         }
     }
 
-    fun distanceCityTradeModifier(civInfo: Civilization, capitalcity: City, city: City): Int{
+    private fun distanceCityTradeModifier(civInfo: Civilization, capitalcity: City, city: City): Int{
         val distanceBetweenCities = capitalcity.getCenterTile().aerialDistanceTo(city.getCenterTile())
 
         if (distanceBetweenCities < 500) return 0

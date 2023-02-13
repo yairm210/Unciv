@@ -250,6 +250,43 @@ object Github {
         return null
     }
 
+    class Tree {
+
+        class TreeFile {
+            var size: Long = 0L
+        }
+
+        var url: String = ""
+        var tree = ArrayList<TreeFile>()
+    }
+
+    fun getRepoSize(repo: Repo): Float {
+        val link = "https://api.github.com/repos/${repo.full_name}/git/trees/${repo.default_branch}?recursive=true"
+
+        var retries = 2
+        while (retries > 0) {
+            retries--
+            // obey rate limit
+            if (RateLimit.waitForLimit()) return 0f
+            // try download
+            val inputStream = download(link) {
+                if (it.responseCode == 403 || it.responseCode == 200 && retries == 1) {
+                    // Pass the response headers to the rate limit handler so it can process the rate limit headers
+                    RateLimit.notifyHttpResponse(it)
+                    retries++   // An extra retry so the 403 is ignored in the retry count
+                }
+            } ?: continue
+            val tree = json().fromJson(Tree::class.java, inputStream.bufferedReader().readText())
+
+            var totalSizeBytes = 0L
+            for (file in tree.tree)
+                totalSizeBytes += file.size
+
+            return totalSizeBytes / 1024f
+        }
+        return 0f
+    }
+
     /**
      * Parsed GitHub repo search response
      * @property total_count Total number of hits for the search (ignoring paging window)
@@ -268,6 +305,9 @@ object Github {
     /** Part of [RepoSearch] in Github API response - one repository entry in [items][RepoSearch.items] */
     @Suppress("PropertyName")
     class Repo {
+
+        var hasUpdatedSize = false
+
         var name = ""
         var full_name = ""
         var description: String? = null

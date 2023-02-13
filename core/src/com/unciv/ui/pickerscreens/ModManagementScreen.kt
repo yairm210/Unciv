@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
+import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.SerializationException
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
@@ -47,8 +48,13 @@ import com.unciv.ui.utils.extensions.toTextButton
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
+import com.unciv.utils.concurrency.withGLContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
+import java.io.IOException
+import java.net.HttpURLConnection
+import java.net.URL
+import java.net.URLConnection
 import kotlin.math.max
 
 /**
@@ -73,8 +79,7 @@ class ModManagementScreen(
 
     private var lastSelectedButton: Button? = null
     private var lastSyncMarkedButton: Button? = null
-    private var selectedModName = ""
-    private var selectedAuthor = ""
+    private var selectedMod: Github.Repo? = null
 
     private val modDescriptionLabel: WrappableLabel
 
@@ -357,8 +362,6 @@ class ModManagementScreen(
     }
     private fun addModInfoToActionTable(modName: String, repoUrl: String, updatedAt: String, author: String, modSize: Int) {
         // remember selected mod - for now needed only to display a background-fetched image while the user is watching
-        selectedModName = modName
-        selectedAuthor = author
 
         // Display metadata
         if (author.isNotEmpty())
@@ -407,6 +410,13 @@ class ModManagementScreen(
         return downloadButton
     }
 
+    private fun updateModInfo() {
+        if (selectedMod != null) {
+            modActionTable.clear()
+            addModInfoToActionTable(selectedMod!!)
+        }
+    }
+
     /** Used as onClick handler for the online Mod list buttons */
     private fun onlineButtonAction(repo: Github.Repo, button: Button) {
         syncOnlineSelected(repo.name, button)
@@ -417,6 +427,26 @@ class ModManagementScreen(
         val label = if (installedModInfo[repo.name]?.state?.hasUpdate == true)
             "Update [${repo.name}]"
         else "Download [${repo.name}]"
+
+        if (!repo.hasUpdatedSize) {
+            Concurrency.run("GitHubParser") {
+                try {
+                    val repoSize = Github.getRepoSize(repo)
+                    if (repoSize > 0f) {
+                        launchOnGLThread {
+                            repo.size = repoSize.toInt()
+                            repo.hasUpdatedSize = true
+                            if (selectedMod == repo)
+                                updateModInfo()
+                        }
+                    }
+                } catch (ignore: IOException) {
+                    /* Parsing of mod size failed, do nothing  */
+                }
+
+            }.start()
+        }
+
         rightSideButton.setText(label.tr())
         rightSideButton.onClick {
             rightSideButton.setText("Downloading...".tr())
@@ -426,8 +456,8 @@ class ModManagementScreen(
             }
         }
 
-        modActionTable.clear()
-        addModInfoToActionTable(repo)
+        selectedMod = repo
+        updateModInfo()
     }
 
     /** Download and install a mod in the background, called both from the right-bottom button and the URL entry popup */
@@ -481,6 +511,7 @@ class ModManagementScreen(
      *  Display single mod metadata, offer additional actions (delete is elsewhere)
     */
     private fun refreshInstalledModActions(mod: Ruleset) {
+        selectedMod = null
         modActionTable.clear()
         // show mod information first
         addModInfoToActionTable(mod.name, mod.modOptions)

@@ -18,6 +18,7 @@ import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.extensions.disable
 import com.unciv.ui.utils.extensions.keyShortcuts
 import com.unciv.ui.utils.extensions.onClick
+import com.unciv.ui.utils.extensions.onDoubleClick
 import com.unciv.ui.utils.extensions.toLabel
 import kotlin.math.roundToInt
 
@@ -184,6 +185,8 @@ class ImprovementPickerScreen(
                 pick(improvement.name.tr())
                 descriptionLabel.setText(improvement.getDescription(ruleSet))
             }
+
+            improvementButton.onDoubleClick { accept(improvement) }
 
             if (improvement.name == tile.improvementInProgress) improvementButton.color = Color.GREEN
             if (proposedSolutions.isNotEmpty() || tileMarkedForCreatesOneImprovement) {
