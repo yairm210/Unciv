@@ -581,22 +581,6 @@ class WorldMapHolder(
             tileGroup.layerUnitFlag.selectFlag(unit)
         }
 
-        // Fade out less relevant images if a military unit is selected
-        if (unit.isMilitary()) {
-            for (group in tileGroups.values) {
-
-                // Fade out population icons
-                group.layerMisc.dimPopulation(true)
-
-                val shownImprovement = unit.civ.lastSeenImprovement[group.tile.position]
-
-                // Fade out improvement icons (but not barb camps or ruins)
-                if (shownImprovement != null && shownImprovement != Constants.barbarianEncampment
-                        && !unit.civ.gameInfo.ruleset.tileImprovements[shownImprovement]!!.isAncientRuinsEquivalent())
-                    group.layerMisc.dimImprovement(true)
-            }
-        }
-
         // Highlight suitable tiles in swapping-mode
         if (worldScreen.bottomUnitTable.selectedUnitIsSwapping) {
             val unitSwappableTiles = unit.movement.getUnitSwappableTiles()
