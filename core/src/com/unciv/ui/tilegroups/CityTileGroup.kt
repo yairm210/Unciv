@@ -16,10 +16,16 @@ import com.unciv.ui.utils.extensions.setFontColor
 import com.unciv.ui.utils.extensions.toGroup
 import com.unciv.ui.utils.extensions.toLabel
 
+enum class CityTileState {
+    NONE,
+    WORKABLE,
+    PURCHASABLE,
+    BLOCKADED
+}
+
 class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings) : TileGroup(tile,tileSetStrings) {
 
-    var isWorkable = false
-    var isPurchasable = false
+    var tileState = CityTileState.NONE
 
     init {
         layerMisc.touchable = Touchable.childrenOnly
@@ -28,8 +34,7 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings) 
     override fun update(viewingCiv: Civilization?) {
         super.update(city.civ)
 
-        isWorkable = false
-        isPurchasable = false
+        tileState = CityTileState.NONE
 
         layerMisc.removeWorkedIcon()
         var icon: Actor? = null
@@ -57,7 +62,7 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings) 
                         image.color = Color.WHITE.darken(0.5f)
                         label.setFontColor(Color.RED)
                     } else {
-                        isPurchasable = true
+                        tileState = CityTileState.PURCHASABLE
                     }
                 }
             }
@@ -85,24 +90,31 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings) 
                 // Do nothing
             }
 
+            // Blockaded
+            tile.isBlockaded() -> {
+                icon = ImageGetter.getImage("TileIcons/Blockaded")
+                tileState = CityTileState.BLOCKADED
+                layerMisc.dimYields(true)
+            }
+
             // Locked
             tile.isLocked() -> {
                 icon = ImageGetter.getImage("TileIcons/Locked")
-                isWorkable = true
+                tileState = CityTileState.WORKABLE
                 layerMisc.dimYields(false)
             }
 
             // Worked
             tile.isWorked() -> {
                 icon = ImageGetter.getImage("TileIcons/Worked")
-                isWorkable = true
+                tileState = CityTileState.WORKABLE
                 layerMisc.dimYields(false)
             }
 
             // Not-worked
             else -> {
                 icon = ImageGetter.getImage("TileIcons/NotWorked")
-                isWorkable = true
+                tileState = CityTileState.WORKABLE
                 layerMisc.dimYields(true)
             }
         }

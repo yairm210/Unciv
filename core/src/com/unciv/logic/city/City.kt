@@ -84,7 +84,7 @@ class City : IsPartOfGameInfoSerialization {
     var attackedThisTurn = false
     var hasSoldBuildingThisTurn = false
     var isPuppet = false
-    var updateCitizens = false  // flag so that on endTurn() the Governor reassigns Citizens
+    var updateCitizens = false  // flag so that on startTurn() the Governor reassigns Citizens
     var cityAIFocus: CityFocus = CityFocus.NoFocus
     var avoidGrowth: Boolean = false
     @Transient var currentGPPBonus: Int = 0  // temporary variable saved for rankSpecialist()
@@ -158,7 +158,27 @@ class City : IsPartOfGameInfoSerialization {
 
     fun isWeLoveTheKingDayActive() = hasFlag(CityFlags.WeLoveTheKing)
     fun isInResistance() = hasFlag(CityFlags.Resistance)
+    fun isBlockaded(): Boolean {
 
+        // Landlocked cities are not blockaded
+        if (!isCoastal())
+            return false
+
+        // Coastal cities are blocked if every adjacent water tile is blocked
+        for (tile in getCenterTile().neighbors) {
+
+            // Consider only water tiles
+            if (!tile.isWater)
+                continue
+
+            // One unblocked tile breaks whole city blockade
+            if (!tile.isBlockaded())
+                return false
+        }
+
+        // All tiles are blocked
+        return true
+    }
 
     fun getRuleset() = civ.gameInfo.ruleset
 
