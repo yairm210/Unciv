@@ -1,16 +1,12 @@
 ## 4.4.15
 
-Added Farm-Pillaged image
-
-Resolved  - added option for pillaged improvements
-
-Resolved  - trades evaluated correctly
+Tile improvements can now have pillaged versions of images
 
 By vegeta1k95:
-- Blockade mechanics 
-- Out-of-move units are half-opaque relative to base setting 
-- Fix selection opacity for non-full-opaque flags. 
-- Experimental: mitigate texture swapping with TextureArraySpriteBatch 
+- Blockade mechanics
+- Out-of-move units are half-opaque relative to base setting
+- Fix selection opacity for non-full-opaque flags.
+- Experimental: mitigate texture swapping with TextureArraySpriteBatch
 
 Improve UX  - By Gualdimar
 
