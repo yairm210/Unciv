@@ -37,7 +37,7 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2.3.3
-        
+
       - name: Compile kotlin and build classes
         run: ./gradlew classes
 
@@ -45,7 +45,7 @@ jobs:
         run: ./gradlew check
 
       - name: Run unit tests
-        run: ./gradlew tests:test
+        run: ./gradlew --no-build-cache cleanTest test tests:test
 
 
 # RELEASE
