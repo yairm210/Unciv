@@ -23,6 +23,11 @@ enum class ScreenSize(val virtualWidth:Float, val virtualHeight:Float){
     Huge(1500f,1000f)
 }
 
+enum class ScreenWindow {
+    Windowed,
+    Fullscreen
+}
+
 class GameSettings {
     var showWorkedTiles: Boolean = false
     var showResourcesAndImprovements: Boolean = true
@@ -38,6 +43,7 @@ class GameSettings {
     @Deprecated("Since 4.3.6 - replaces with screenSize")
     var resolution: String = "900x600"
     var screenSize:ScreenSize = ScreenSize.Small
+    var screenWindow: ScreenWindow = ScreenWindow.Windowed
     var tutorialsShown = HashSet<String>()
     var tutorialTasksCompleted = HashSet<String>()
 
@@ -138,6 +144,24 @@ class GameSettings {
 
     fun getCollatorFromLocale(): Collator {
         return Collator.getInstance(getCurrentLocale())
+    }
+
+    fun refreshScreenMode() {
+
+        if (Gdx.app.type != Application.ApplicationType.Desktop)
+            return
+
+        when (screenWindow) {
+            ScreenWindow.Windowed -> {
+                val mode = Gdx.graphics.displayMode
+                Gdx.graphics.setUndecorated(false)
+                Gdx.graphics.setWindowedMode(mode.width, mode.height)
+            }
+
+            ScreenWindow.Fullscreen -> {
+                Gdx.graphics.setFullscreenMode(Gdx.graphics.displayMode)
+            }
+        }
     }
 }
 

@@ -1,5 +1,6 @@
 package com.unciv.ui.options
 
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
@@ -8,6 +9,7 @@ import com.badlogic.gdx.utils.Array
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.ScreenSize
+import com.unciv.models.metadata.ScreenWindow
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
@@ -33,6 +35,9 @@ fun displayTab(
     defaults().pad(2.5f)
 
     val settings = optionsPopup.settings
+
+    if (Gdx.app.type == Application.ApplicationType.Desktop)
+        addFullscreenSelectBox(this, settings, optionsPopup.selectBoxMinWidth)
 
     optionsPopup.addCheckbox(this, "Show unit movement arrows", settings.showUnitMovements, true) { settings.showUnitMovements = it }
     optionsPopup.addCheckbox(this, "Show tile yields", settings.showTileYields, true) { settings.showTileYields = it } // JN
@@ -121,6 +126,18 @@ private fun addUnitIconAlphaSlider(table: Table, settings: GameSettings, selectB
 
     }
     table.add(unitIconAlphaSlider).minWidth(selectBoxMinWidth).pad(10f).row()
+}
+
+private fun addFullscreenSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
+    table.add("Screen Window".toLabel()).left().fillX()
+
+    val screenSizeSelectBox = TranslatedSelectBox(ScreenWindow.values().map { it.name }, settings.screenWindow.name,table.skin)
+    table.add(screenSizeSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()
+
+    screenSizeSelectBox.onChange {
+        settings.screenWindow = ScreenWindow.valueOf(screenSizeSelectBox.selected.value)
+        settings.refreshScreenMode()
+    }
 }
 
 private fun addScreenSizeSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float, onResolutionChange: () -> Unit) {

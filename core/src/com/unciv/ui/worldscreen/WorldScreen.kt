@@ -1,5 +1,6 @@
 package com.unciv.ui.worldscreen
 
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
@@ -177,6 +178,8 @@ class WorldScreen(
                     viewingCiv.units.getCivUnits().any() -> viewingCiv.units.getCivUnits().first().getTile().position
                     else -> Vector2.Zero
                 }
+
+        mapHolder.isAutoScrollEnabled = Gdx.app.type == Application.ApplicationType.Desktop
 
         // Don't select unit and change selectedCiv when centering as spectator
         if (viewingCiv.isSpectator())

@@ -117,6 +117,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
          * - Font (hence Fonts.resetFont() inside setSkin())
          */
         settings = files.getGeneralSettings() // needed for the screen
+        settings.refreshScreenMode()
         setAsRootScreen(GameStartScreen())  // NOT dependent on any atlas or skin
         GameSounds.init()
 
