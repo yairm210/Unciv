@@ -10,6 +10,7 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.City
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.TutorialTrigger
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TileImprovement
@@ -24,6 +25,7 @@ import com.unciv.ui.popup.ConfirmPopup
 import com.unciv.ui.tilegroups.TileGroupMap
 import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.tilegroups.CityTileGroup
+import com.unciv.ui.tilegroups.CityTileState
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.KeyCharAndCode
@@ -228,6 +230,10 @@ class CityScreen(
         for (tileGroup in tileGroups) {
             tileGroup.update()
             tileGroup.layerMisc.removeHexOutline()
+
+            if (tileGroup.tileState == CityTileState.BLOCKADED)
+                displayTutorial(TutorialTrigger.CityTileBlockade)
+
             when {
                 tileGroup.tile == nextTileToOwn ->
                     tileGroup.layerMisc.addHexOutline(colorFromRGB(200, 20, 220))
@@ -335,7 +341,7 @@ class CityScreen(
         val tile = tileGroup.tile
 
         // Cycling as: Not-worked -> Worked -> Locked -> Not-worked
-        if (tileGroup.isWorkable) {
+        if (tileGroup.tileState == CityTileState.WORKABLE) {
             if (!tile.providesYield() && city.population.getFreePopulation() > 0) {
                 city.workedTiles.add(tile.position)
                 game.settings.addCompletedTutorialTask("Reassign worked tiles")
@@ -348,7 +354,7 @@ class CityScreen(
             city.cityStats.update()
             update()
 
-        } else if (tileGroup.isPurchasable) {
+        } else if (tileGroup.tileState == CityTileState.PURCHASABLE) {
 
             val price = city.expansion.getGoldCostOfTile(tile)
             val purchasePrompt = "Currently you have [${city.civ.gold}] [Gold].".tr() + "\n\n" +

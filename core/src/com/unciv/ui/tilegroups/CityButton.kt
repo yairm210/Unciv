@@ -15,6 +15,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.models.TutorialTrigger
 import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.CityReligionInfoTable
 import com.unciv.ui.cityscreen.CityScreen
@@ -31,6 +32,7 @@ import com.unciv.ui.utils.extensions.darken
 import com.unciv.ui.utils.extensions.onClick
 import com.unciv.ui.utils.extensions.toGroup
 import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.math.max
 import kotlin.math.min
 
@@ -158,16 +160,22 @@ class AirUnitTable(city: City, numberOfUnits: Int, size: Float=14f) : BorderedTa
 
 }
 
-private class StatusTable(city: City, iconSize: Float = 18f) : Table() {
+private class StatusTable(worldScreen: WorldScreen, city: City, iconSize: Float = 18f) : Table() {
 
     init {
 
         val padBetween = 2f
         val viewingCiv = UncivGame.Current.worldScreen!!.viewingCiv
 
-        if (city.civ == viewingCiv && city.isConnectedToCapital() && !city.isCapital()) {
-            val connectionImage = ImageGetter.getStatIcon("CityConnection")
-            add(connectionImage).size(iconSize)
+        if (city.civ == viewingCiv) {
+            if (city.isBlockaded()) {
+                val connectionImage = ImageGetter.getImage("OtherIcons/Blockade")
+                add(connectionImage).size(iconSize)
+                worldScreen.displayTutorial(TutorialTrigger.CityBlockade)
+            } else if (!city.isCapital() && city.isConnectedToCapital()) {
+                val connectionImage = ImageGetter.getStatIcon("CityConnection")
+                add(connectionImage).size(iconSize)
+            }
         }
 
         if (city.isInResistance()) {
@@ -429,7 +437,7 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
         }
 
         // Add statuses: connection, resistance, puppet, raze, WLTKD
-        add(StatusTable(city)).padTop(3f)
+        add(StatusTable(worldScreen, city)).padTop(3f)
 
         pack()
 
