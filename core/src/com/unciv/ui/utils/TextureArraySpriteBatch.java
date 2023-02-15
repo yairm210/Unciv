@@ -20,6 +20,7 @@ import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.BufferUtils;
+import com.unciv.utils.Log;
 
 /** Draws batched quads using indices.
  * <p>
@@ -44,8 +45,15 @@ public class TextureArraySpriteBatch implements Batch {
 
     private final float[] vertices;
 
-    private final int spriteVertexSize = 5;
-    private final int spriteFloatSize = 20;
+    /** 2 coords, 1 color, 2 UV */
+    private final int unmodifiedVertexSize = 5;
+    /** 4 vertices for each sprite (rectangle) */
+    private final int unmodifiedSpriteSize = 4 * unmodifiedVertexSize;
+
+    /** 2 coords, 1 color, 2 UV, 1 texture id */
+    private final int spriteVertexSize = 6;
+    /** 4 vertices for each sprite (rectangle) */
+    private final int spriteSize = spriteVertexSize * 4;
 
     /** The maximum number of available texture units for the fragment shader */
     private static int maxTextureUnits = -1;
@@ -164,7 +172,7 @@ public class TextureArraySpriteBatch implements Batch {
 
         projectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        vertices = new float[size * (spriteFloatSize + 4)];
+        vertices = new float[size * spriteSize];
 
         int len = size * 6;
         short[] indices = new short[len];
@@ -675,23 +683,26 @@ public class TextureArraySpriteBatch implements Batch {
             throw new IllegalStateException("TextureArraySpriteBatch.begin must be called before draw.");
         }
 
-        flushIfFull();
-
         // Assigns a texture unit to this texture, flushing if none is available
         final float ti = (float)activateTexture(texture);
 
-        // spriteVertexSize is the number of floats an unmodified input vertex consists of,
-        // therefore this loop iterates over the vertices stored in parameter spriteVertices.
-        for (int srcPos = 0; srcPos < count; srcPos += spriteVertexSize) {
+        // We copy by 1 sprite at a time, because we need to additionally inject texture id
+        // to each vertex of a sprite.
+        for (int srcPos = offset; srcPos < count; srcPos += unmodifiedSpriteSize) {
 
-            // Copy the vertices
-            System.arraycopy(spriteVertices, srcPos, vertices, idx, spriteVertexSize);
+            // Flush if there is not enough space for 1 full sprite (including texture id)
+            flushIfFull();
 
-            // Advance idx by vertex float count
-            idx += spriteVertexSize;
+            // Copy 4 vertexes
+            for (int i=0; i<4; i++) {
 
-            // Inject texture unit index and advance idx
-            vertices[idx++] = ti;
+                // Copy default vertex info
+                System.arraycopy(spriteVertices, srcPos+i*unmodifiedVertexSize, vertices, idx, unmodifiedVertexSize);
+                idx += 5;
+
+                // Additionally inject texture id
+                vertices[idx++] = ti;
+            }
         }
     }
 
@@ -1068,7 +1079,7 @@ public class TextureArraySpriteBatch implements Batch {
     /** Flushes if the vertices array cannot hold an additional sprite ((spriteVertexSize + 1) * 4 vertices) anymore. */
     private void flushIfFull () {
         // original Sprite attribute size plus one extra float per sprite vertex
-        if (vertices.length - idx < spriteFloatSize + spriteFloatSize / spriteVertexSize) {
+        if (vertices.length - idx < spriteSize) {
             flush();
         }
     }
@@ -1081,7 +1092,7 @@ public class TextureArraySpriteBatch implements Batch {
         renderCalls++;
         totalRenderCalls++;
 
-        int spritesInBatch = idx / (spriteFloatSize + 4);
+        int spritesInBatch = idx / spriteSize;
         if (spritesInBatch > maxSpritesInBatch) maxSpritesInBatch = spritesInBatch;
         int count = spritesInBatch * 6;
 
