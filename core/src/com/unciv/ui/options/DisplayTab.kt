@@ -38,7 +38,10 @@ fun displayTab(
 
     if (Gdx.app.type == Application.ApplicationType.Desktop) {
         addFullscreenSelectBox(this, settings, optionsPopup.selectBoxMinWidth)
-        optionsPopup.addCheckbox(this, "Map mouse auto-scroll", settings.mapAutoScroll, true) { settings.mapAutoScroll = it }
+        optionsPopup.addCheckbox(this, "Map mouse auto-scroll", settings.mapAutoScroll, true) {
+            UncivGame.Current.worldScreen?.mapHolder?.isAutoScrollEnabled = it
+            settings.mapAutoScroll = it
+        }
     }
 
     optionsPopup.addCheckbox(this, "Show unit movement arrows", settings.showUnitMovements, true) { settings.showUnitMovements = it }

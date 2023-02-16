@@ -277,15 +277,15 @@ open class ZoomableScrollPane(
             val posY = Gdx.input.y
 
             if (posX <= 2f) {
-                scrollX -= 2f
+                scrollX -= 3f
             } else if (posX >= stage.viewport.screenWidth - 2f) {
-                scrollX += 2f
+                scrollX += 3f
             }
 
             if (posY <= 6f) {
-                scrollY -= 2f
+                scrollY -= 3f
             } else if (posY >= stage.viewport.screenHeight - 6f) {
-                scrollY += 2f
+                scrollY += 3f
             }
 
             updateVisualScroll()
