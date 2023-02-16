@@ -29,6 +29,8 @@ enum class ScreenWindow {
 }
 
 class GameSettings {
+
+    var mapAutoScroll: Boolean = false
     var showWorkedTiles: Boolean = false
     var showResourcesAndImprovements: Boolean = true
     var showTileYields: Boolean = false

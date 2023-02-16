@@ -179,7 +179,7 @@ class WorldScreen(
                     else -> Vector2.Zero
                 }
 
-        mapHolder.isAutoScrollEnabled = Gdx.app.type == Application.ApplicationType.Desktop
+        mapHolder.isAutoScrollEnabled = Gdx.app.type == Application.ApplicationType.Desktop && game.settings.mapAutoScroll
 
         // Don't select unit and change selectedCiv when centering as spectator
         if (viewingCiv.isSpectator())
