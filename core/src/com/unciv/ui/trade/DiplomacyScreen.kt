@@ -712,6 +712,7 @@ class DiplomacyScreen(
             tradeTable.tradeLogic.currentTrade.theirOffers.add(peaceTreaty)
             tradeTable.tradeLogic.currentTrade.ourOffers.add(peaceTreaty)
             tradeTable.offerColumnsTable.update()
+            tradeTable.enableOfferButton(true)
         }
 
         if (isNotPlayersTurn()) negotiatePeaceButton.disable()
@@ -757,6 +758,7 @@ class DiplomacyScreen(
             tradeTable.tradeLogic.theirAvailableOffers.add(researchAgreement)
             tradeTable.tradeLogic.theirAvailableOffers.add(goldCostOfSignResearchAgreement)
             tradeTable.offerColumnsTable.update()
+            tradeTable.enableOfferButton(true)
         }
         if (isNotPlayersTurn()) researchAgreementButton.disable()
         return researchAgreementButton

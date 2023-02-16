@@ -1,6 +1,7 @@
 package com.unciv.ui.overviewscreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffersList
@@ -15,7 +16,15 @@ class TradesOverviewTab(
 
     init {
         defaults().pad(10f)
-        val diplomacies = viewingPlayer.diplomacy.values.filter { it.trades.isNotEmpty() }
+        val diplomaciesWithPendingTrade = viewingPlayer.diplomacy.values.filter { it.otherCiv().tradeRequests.any { it.requestingCiv == viewingPlayer.civName } }
+        if (diplomaciesWithPendingTrade.isNotEmpty())
+            add("Pending trades".toLabel(fontSize = Constants.headingFontSize)).padTop(10f).row()
+        for (diplomacy in diplomaciesWithPendingTrade) {
+            for (tradeRequest in diplomacy.otherCiv().tradeRequests.filter { it.requestingCiv == viewingPlayer.civName })
+                add(createTradeTable(tradeRequest.trade.reverse(), diplomacy.otherCiv())).row()
+        }
+
+        val diplomaciesWithExistingTrade = viewingPlayer.diplomacy.values.filter { it.trades.isNotEmpty() }
             .sortedWith { diplomacyManager1, diplomacyManager2 ->
                 val d1OffersFromFirstTrade = diplomacyManager1.trades.first().ourOffers
                 val d2OffersFromFirstTrade = diplomacyManager2.trades.first().ourOffers
@@ -27,7 +36,9 @@ class TradesOverviewTab(
                     else -> -1
                 }
             }
-        for (diplomacy in diplomacies) {
+        if (diplomaciesWithExistingTrade.isNotEmpty())
+            add("Current trades".toLabel(fontSize = Constants.headingFontSize)).padTop(10f).row()
+        for (diplomacy in diplomaciesWithExistingTrade) {
             for (trade in diplomacy.trades)
                 add(createTradeTable(trade, diplomacy.otherCiv())).row()
         }
