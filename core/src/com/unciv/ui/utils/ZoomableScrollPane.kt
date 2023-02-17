@@ -1,5 +1,7 @@
 package com.unciv.ui.utils
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Rectangle
@@ -36,6 +38,8 @@ open class ZoomableScrollPane(
 
     private val horizontalPadding get() = width / 2
     private val verticalPadding get() = height / 2
+
+    var isAutoScrollEnabled = false
 
     init {
         this.addListener(zoomListener)
@@ -266,6 +270,29 @@ open class ZoomableScrollPane(
         }
     }
 
+    override fun draw(batch: Batch?, parentAlpha: Float) {
+        if (isAutoScrollEnabled && !Gdx.input.isTouched) {
+
+            val posX = Gdx.input.x
+            val posY = Gdx.input.y
+
+            if (posX <= 2f) {
+                scrollX -= 3f
+            } else if (posX >= stage.viewport.screenWidth - 2f) {
+                scrollX += 3f
+            }
+
+            if (posY <= 6f) {
+                scrollY -= 3f
+            } else if (posY >= stage.viewport.screenHeight - 6f) {
+                scrollY += 3f
+            }
+
+            updateVisualScroll()
+        }
+        super.draw(batch, parentAlpha)
+    }
+
     inner class FlickScrollListener : ActorGestureListener() {
         private var isPanning = false
         override fun pan(event: InputEvent, x: Float, y: Float, deltaX: Float, deltaY: Float) {
@@ -277,7 +304,6 @@ open class ZoomableScrollPane(
             scrollX -= deltaX
             scrollY += deltaY
 
-            //this is the new feature to fake an infinite scroll
             when {
                 continuousScrollingX && scrollPercentX >= 1 && deltaX < 0 -> {
                     scrollPercentX = 0f
