@@ -138,7 +138,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     }
 
     fun getRejectionReasons(civ: Civilization, city:City?=null): Sequence<RejectionReason> {
-        //var result = sequence<RejectionReason> {}
         val result = mutableListOf<RejectionReason>()
         if (requiredTech != null && !civ.tech.isResearched(requiredTech!!))
             result.add(RejectionReasonType.RequiresTech.toInstance("$requiredTech not researched"))
