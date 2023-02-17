@@ -156,9 +156,9 @@ class GameSettings {
 
         when (screenWindow) {
             ScreenWindow.Windowed -> {
-                val mode = Gdx.graphics.displayMode
-                Gdx.graphics.setUndecorated(false)
-                Gdx.graphics.setWindowedMode(mode.width, mode.height)
+                Gdx.graphics.setWindowedMode(
+                    windowState.width.coerceAtLeast(120),
+                    windowState.height.coerceAtLeast(80))
             }
 
             ScreenWindow.Fullscreen -> {
