@@ -137,30 +137,34 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         yieldAll(getRejectionReasons(civInfo, cityConstructions.city))
     }
 
-    fun getRejectionReasons(civ: Civilization, city:City?=null): Sequence<RejectionReason> = sequence {
+    fun getRejectionReasons(civ: Civilization, city:City?=null): Sequence<RejectionReason> {
+        var result = sequence<RejectionReason> {}
         if (requiredTech != null && !civ.tech.isResearched(requiredTech!!))
-            yield(RejectionReasonType.RequiresTech.toInstance("$requiredTech not researched"))
+            result += sequence { yield(RejectionReasonType.RequiresTech.toInstance("$requiredTech not researched")) }
         if (obsoleteTech != null && civ.tech.isResearched(obsoleteTech!!))
-            yield(RejectionReasonType.Obsoleted.toInstance("Obsolete by $obsoleteTech"))
+            result += sequence { yield(RejectionReasonType.Obsoleted.toInstance("Obsolete by $obsoleteTech")) }
 
         if (uniqueTo != null && uniqueTo != civ.civName)
-            yield(RejectionReasonType.UniqueToOtherNation.toInstance("Unique to $uniqueTo"))
+            result += sequence { yield(RejectionReasonType.UniqueToOtherNation.toInstance("Unique to $uniqueTo")) }
         if (civ.cache.uniqueUnits.any { it.replaces == name })
-            yield(RejectionReasonType.ReplacedByOurUnique.toInstance("Our unique unit replaces this"))
+            result += sequence { yield(RejectionReasonType.ReplacedByOurUnique.toInstance("Our unique unit replaces this")) }
 
         if (!civ.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon())
-            yield(RejectionReasonType.DisabledBySetting.toInstance())
+            result += sequence { yield(RejectionReasonType.DisabledBySetting.toInstance()) }
 
         for (unique in uniqueObjects.filter { it.conditionalsApply(civ, city) }) {
             when (unique.type) {
                 UniqueType.Unbuildable ->
-                    yield(RejectionReasonType.Unbuildable.toInstance())
+                    result += sequence { yield(RejectionReasonType.Unbuildable.toInstance()) }
 
                 UniqueType.FoundCity -> if (civ.isCityState() || civ.isOneCityChallenger())
-                    yield(RejectionReasonType.NoSettlerForOneCityPlayers.toInstance())
+                    result += sequence { yield(RejectionReasonType.NoSettlerForOneCityPlayers.toInstance()) }
 
-                UniqueType.MaxNumberBuildable -> if (civ.civConstructions.countConstructedObjects(this@BaseUnit) >= unique.params[0].toInt())
-                    yield(RejectionReasonType.MaxNumberBuildable.toInstance())
+                UniqueType.MaxNumberBuildable -> if (civ.civConstructions.countConstructedObjects(
+                            this@BaseUnit
+                        ) >= unique.params[0].toInt()
+                )
+                    result += sequence { yield(RejectionReasonType.MaxNumberBuildable.toInstance()) }
 
                 else -> {}
             }
@@ -170,18 +174,33 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             for ((resource, requiredAmount) in getResourceRequirements()) {
                 val availableAmount = civ.getCivResourcesByName()[resource]!!
                 if (availableAmount < requiredAmount) {
-                    yield(RejectionReasonType.ConsumesResources.toInstance(resource.getNeedMoreAmountString(requiredAmount - availableAmount)))
+                    result += sequence {
+                        yield(
+                            RejectionReasonType.ConsumesResources.toInstance(
+                                resource.getNeedMoreAmountString(
+                                    requiredAmount - availableAmount
+                                )
+                            )
+                        )
+                    }
                 }
             }
         }
 
         for (unique in civ.getMatchingUniques(UniqueType.CannotBuildUnits))
             if (this@BaseUnit.matchesFilter(unique.params[0])) {
-                if (unique.conditionals.any { it.type == UniqueType.ConditionalBelowHappiness }){
-                    yield(RejectionReasonType.CannotBeBuilt.toInstance(unique.text, true))
-                }
-                else yield(RejectionReasonType.CannotBeBuilt.toInstance())
+                if (unique.conditionals.any { it.type == UniqueType.ConditionalBelowHappiness }) {
+                    result += sequence {
+                        yield(
+                            RejectionReasonType.CannotBeBuilt.toInstance(
+                                unique.text,
+                                true
+                            )
+                        )
+                    }
+                } else result += sequence { yield(RejectionReasonType.CannotBeBuilt.toInstance()) }
             }
+        return result
     }
 
     fun isBuildable(civInfo: Civilization) = getRejectionReasons(civInfo).none()
