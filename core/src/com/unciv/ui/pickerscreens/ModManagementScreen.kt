@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
-import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.SerializationException
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
@@ -48,13 +47,9 @@ import com.unciv.ui.utils.extensions.toTextButton
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
-import com.unciv.utils.concurrency.withGLContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import java.io.IOException
-import java.net.HttpURLConnection
-import java.net.URL
-import java.net.URLConnection
 import kotlin.math.max
 
 /**
@@ -364,10 +359,16 @@ class ModManagementScreen(
         // remember selected mod - for now needed only to display a background-fetched image while the user is watching
 
         // Display metadata
+
+
         if (author.isNotEmpty())
             modActionTable.add("Author: [$author]".toLabel()).row()
-        if (modSize > 0)
-            modActionTable.add("Size: [$modSize] kB".toLabel()).padBottom(15f).row()
+        if (modSize > 0){
+            if (modSize < 2048)
+                modActionTable.add("Size: [$modSize] kB".toLabel()).padBottom(15f).row()
+            else
+                modActionTable.add("Size: [${modSize/1024}] MB".toLabel()).padBottom(15f).row()
+        }
 
         // offer link to open the repo itself in a browser
         if (repoUrl != "") {
