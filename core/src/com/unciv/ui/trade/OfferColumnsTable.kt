@@ -54,20 +54,41 @@ class OfferColumnsTable(private val tradeLogic: TradeLogic, val screen: Diplomac
 
     init {
         defaults().pad(5f)
-        val columnWidth = screen.stage.width / 3
 
-        add("Our items".tr())
-        add("[${tradeLogic.otherCivilization.civName}]'s items".tr()).row()
+        val isPortraitMode = screen.isNarrowerThan4to3()
 
-        add(ourAvailableOffersTable).prefSize(columnWidth, screen.stage.height / 2)
-        add(theirAvailableOffersTable).prefSize(columnWidth, screen.stage.height / 2).row()
+        val columnWidth = (screen.stage.width - screen.leftSideScroll.width) / 2
 
-        addSeparator().height(2f)
+        if (!isPortraitMode) {
+            add("Our items".tr())
+            add("[${tradeLogic.otherCivilization.civName}]'s items".tr()).row()
 
-        add("Our trade offer".tr())
-        add("[${tradeLogic.otherCivilization.civName}]'s trade offer".tr()).row()
-        add(ourOffersTable).size(columnWidth, screen.stage.height / 3)
-        add(theirOffersTable).size(columnWidth, screen.stage.height / 3)
+            add(ourAvailableOffersTable).prefSize(columnWidth, screen.stage.height / 2)
+            add(theirAvailableOffersTable).prefSize(columnWidth, screen.stage.height / 2).row()
+
+            addSeparator().height(2f)
+
+            add("Our trade offer".tr())
+            add("[${tradeLogic.otherCivilization.civName}]'s trade offer".tr()).row()
+            add(ourOffersTable).size(columnWidth, screen.stage.height / 3)
+            add(theirOffersTable).size(columnWidth, screen.stage.height / 3)
+        }
+        else {
+            add("Our items".tr()).colspan(2).row()
+            add(ourAvailableOffersTable).height(screen.stage.height / 4f).colspan(2).row()
+
+            addSeparator().height(2f)
+
+            add("[${tradeLogic.otherCivilization.civName}]'s items".tr()).colspan(2).row()
+            add(theirAvailableOffersTable).height(screen.stage.height / 4f).colspan(2).row()
+
+            addSeparator().height(5f)
+
+            add("Our trade offer".tr())
+            add("[${tradeLogic.otherCivilization.civName}]'s trade offer".tr()).row()
+            add(ourOffersTable).height(screen.stage.height / 4f).width(columnWidth)
+            add(theirOffersTable).height(screen.stage.height / 4f).width(columnWidth)
+        }
         pack()
         update()
     }
