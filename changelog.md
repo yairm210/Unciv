@@ -1,3 +1,19 @@
+## 4.4.16
+
+Display mod categories in mod page
+
+Mod sizes larger than 2 MB are displayed in MB
+
+4.4.15-patch1
+
+Do not cache test results!
+
+By Gualdimar:
+- Fixed unit upgrade check 
+- Pending trades 
+
+Desktop: world camera autoscroll, selectable window mode  - By vegeta1k95
+
 ## 4.4.15
 
 Tile improvements can now have pillaged versions of images
