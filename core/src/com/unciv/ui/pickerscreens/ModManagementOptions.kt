@@ -22,7 +22,6 @@ import com.unciv.ui.utils.extensions.onChange
 import com.unciv.ui.utils.extensions.surroundWithCircle
 import com.unciv.ui.utils.extensions.toLabel
 import com.unciv.ui.utils.extensions.toTextButton
-import com.unciv.utils.Log
 import kotlin.math.sign
 
 /**
@@ -210,6 +209,22 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
     }
 }
 
+private fun getTextButton(nameString:String, topics: List<String>): TextButton {
+    val categories = ArrayList<ModManagementOptions.Category>()
+    for (category in ModManagementOptions.Category.values()) {
+        if (category==ModManagementOptions.Category.All) continue
+        if (topics.contains(category.topic)) categories += category
+    }
+
+    val button = nameString.toTextButton()
+    val topicString = categories.joinToString { it.label.tr() }
+    if (categories.isNotEmpty()) {
+        button.row()
+        button.add(topicString.toLabel(fontSize = 14))
+    }
+    return button
+}
+
 /** Helper class holds combined mod info for ModManagementScreen, used for both installed and online lists */
 class ModUIData(
     val name: String,
@@ -227,7 +242,7 @@ class ModUIData(
         ruleset.getSummary().let {
             "Installed".tr() + (if (it.isEmpty()) "" else ": $it")
         },
-        ruleset, null, 0f, 0f, ruleset.name.toTextButton()
+        ruleset, null, 0f, 0f, getTextButton(ruleset.name, ruleset.modOptions.topics)
     )
 
     constructor(repo: Github.Repo, isUpdated: Boolean): this (
@@ -235,14 +250,16 @@ class ModUIData(
         (repo.description ?: "-{No description provided}-".tr()) +
                 "\n" + "[${repo.stargazers_count}]✯".tr(),
         null, repo, 0f, 0f,
-        (repo.name + (if (isUpdated) " - {Updated}" else "" )).toTextButton()
+        getTextButton(repo.name + (if (isUpdated) " - {Updated}" else ""), repo.topics)
     ) {
         state.hasUpdate = isUpdated
     }
 
+
     fun lastUpdated() = ruleset?.modOptions?.lastUpdated ?: repo?.pushed_at ?: ""
     fun stargazers() = repo?.stargazers_count ?: 0
     fun author() = ruleset?.modOptions?.author ?: repo?.owner?.login ?: ""
+
     fun matchesFilter(filter: ModManagementOptions.Filter): Boolean = when {
         !matchesCategory(filter) -> false
         filter.text.isEmpty() -> true
@@ -251,6 +268,7 @@ class ModUIData(
         author().contains(filter.text, true) -> true
         else -> false
     }
+
     private fun matchesCategory(filter: ModManagementOptions.Filter): Boolean {
         val modTopic = repo?.topics ?: ruleset?.modOptions?.topics!!
         if (filter.topic == ModManagementOptions.Category.All.topic)
