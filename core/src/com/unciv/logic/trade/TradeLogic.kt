@@ -4,7 +4,9 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.civilization.diplomacy.CityStateFunctions
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
@@ -141,6 +143,12 @@ class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civili
             transferTrade(otherCivilization, ourCivilization, offer)
         for (offer in currentTrade.ourOffers.filter { it.type == TradeType.Treaty })
             transferTrade(ourCivilization, otherCivilization, offer)
+
+        if (currentTrade.ourOffers.isEmpty()){
+            val goldValueOfTrade = TradeEvaluation().getTradeAcceptability(currentTrade, ourCivilization, otherCivilization)
+            val diplomaticValueOfTrade = CityStateFunctions(ourCivilization).influenceGainedByGift(otherCivilization, goldValueOfTrade) / 10
+            ourCivilization.getDiplomacyManager(otherCivilization).addModifier(DiplomaticModifiers.GaveUsGifts, diplomaticValueOfTrade.toFloat())
+        }
 
         ourCivilization.cache.updateCivResources()
         ourCivilization.updateStatsForNextTurn()

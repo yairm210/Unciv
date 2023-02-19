@@ -88,6 +88,7 @@ enum class DiplomaticModifiers(val text:String) {
     OpenBorders("Our open borders have brought us closer together."),
     FulfilledPromiseToNotSettleCitiesNearUs("You fulfilled your promise to stop settling cities near us!"),
     GaveUsUnits("You gave us units!"),
+    GaveUsGifts("We appreciate your gifts"),
     ReturnedCapturedUnits("You returned captured units to us"),
 
 }
@@ -589,6 +590,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         if (openBorders > 0) addModifier(DiplomaticModifiers.OpenBorders, openBorders / 8f) // so if we both have open borders it'll grow by 0.25 per turn
         else revertToZero(DiplomaticModifiers.OpenBorders, 1 / 8f)
 
+        // Negatives
         revertToZero(DiplomaticModifiers.DeclaredWarOnUs, 1 / 8f) // this disappears real slow - it'll take 160 turns to really forget, this is war declaration we're talking about
         revertToZero(DiplomaticModifiers.WarMongerer, 1 / 2f) // warmongering gives a big negative boost when it happens but they're forgotten relatively quickly, like WWII amirite
         revertToZero(DiplomaticModifiers.CapturedOurCities, 1 / 4f) // if you captured our cities, though, that's harder to forget
@@ -596,12 +598,15 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         revertToZero(DiplomaticModifiers.RefusedToNotSettleCitiesNearUs, 1 / 4f)
         revertToZero(DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs, 1 / 8f) // That's a bastardly thing to do
         revertToZero(DiplomaticModifiers.UnacceptableDemands, 1 / 4f)
-        revertToZero(DiplomaticModifiers.LiberatedCity, 1 / 8f)
         revertToZero(DiplomaticModifiers.StealingTerritory, 1 / 4f)
         revertToZero(DiplomaticModifiers.DenouncedOurAllies, 1 / 4f)
         revertToZero(DiplomaticModifiers.DenouncedOurEnemies, 1 / 4f)
         revertToZero(DiplomaticModifiers.Denunciation, 1 / 8f) // That's personal, it'll take a long time to fade
+
+        // Positives
         revertToZero(DiplomaticModifiers.GaveUsUnits, 1 / 4f)
+        revertToZero(DiplomaticModifiers.LiberatedCity, 1 / 8f)
+        revertToZero(DiplomaticModifiers.GaveUsGifts, 1 / 4f)
 
         setFriendshipBasedModifier()
 
