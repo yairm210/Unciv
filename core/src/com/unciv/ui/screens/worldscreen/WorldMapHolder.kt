@@ -53,6 +53,7 @@ import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
+import java.lang.Float.max
 
 
 class WorldMapHolder(
@@ -71,7 +72,6 @@ class WorldMapHolder(
     init {
         if (Gdx.app.type == Application.ApplicationType.Desktop) this.setFlingTime(0f)
         continuousScrollingX = tileMap.mapParameters.worldWrap
-        reloadMaxZoom()
         setupZoomPanListeners()
     }
 
@@ -752,6 +752,28 @@ class WorldMapHolder(
             overlay.remove()
         unitActionOverlays.clear()
     }
+
+    override fun reloadMaxZoom()
+    {
+        if (continuousScrollingX) {
+            // For world-wrap we do not allow viewport to become bigger than the map size,
+            // because we don't want to render the same tiles multiple times (they will be
+            // flickering because of movement).
+            // Hence we limit minimal possible zoom to content width + some extra offset.
+
+            val pad = width / tileMap.mapParameters.mapSize.radius * 0.7f
+            minZoom = max(
+                (width + pad) * scaleX / maxX,
+                1f / UncivGame.Current.settings.maxWorldZoomOut
+            )// add some extra padding offset
+
+            // If the window becomes too wide and minZoom > maxZoom, we cannot zoom
+            maxZoom = max(2f * minZoom, UncivGame.Current.settings.maxWorldZoomOut)
+        }
+        else
+            super.reloadMaxZoom()
+    }
+
 
     // For debugging purposes
     override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)

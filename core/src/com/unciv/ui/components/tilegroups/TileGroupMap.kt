@@ -163,9 +163,14 @@ class TileGroupMap<T: TileGroup>(
 
         if (worldWrap) {
 
+            // Prevent flickering when zoomed out so you can see entire map
+            val visibleMapWidth: Float
+            if(mapHolder.width > width) visibleMapWidth = width - groupSize * 1.5f
+            else visibleMapWidth = mapHolder.width
+
             // Where is viewport's boundaries
-            val rightSide = mapHolder.scrollX + mapHolder.width/2f
-            val leftSide = mapHolder.scrollX - mapHolder.width/2f
+            val rightSide = mapHolder.scrollX + visibleMapWidth/2f
+            val leftSide = mapHolder.scrollX - visibleMapWidth/2f
 
             // Have we looked beyond map?
             val diffRight = rightSide - topX

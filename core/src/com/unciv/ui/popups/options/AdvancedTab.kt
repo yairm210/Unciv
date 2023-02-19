@@ -169,6 +169,7 @@ private fun addMaxZoomSlider(table: Table, settings: GameSettings) {
     ) {
         settings.maxWorldZoomOut = it
         settings.save()
+        UncivGame.Current.worldScreen?.mapHolder?.reloadMaxZoom()
     }
     table.add(maxZoomSlider).pad(5f).row()
 }
