@@ -5,8 +5,8 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.NamedStats
-import com.unciv.ui.civilopedia.FormattedLine
-import com.unciv.ui.civilopedia.ICivilopediaText
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
 
 interface IRulesetObject: INamed, IHasUniques, ICivilopediaText
 

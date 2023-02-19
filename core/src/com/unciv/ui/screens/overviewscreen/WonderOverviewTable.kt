@@ -1,0 +1,268 @@
+package com.unciv.ui.screens.overviewscreen
+
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
+import com.unciv.UncivGame
+import com.unciv.logic.city.City
+import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.QuestName
+import com.unciv.models.ruleset.tech.Era
+import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.tr
+import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
+import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.extensions.toLabel
+
+class WonderOverviewTab(
+    viewingPlayer: Civilization,
+    overviewScreen: EmpireOverviewScreen
+) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
+    val ruleSet = gameInfo.ruleset
+
+    val wonderInfo = WonderInfo()
+    private val wonders: Array<WonderInfo.WonderInfo> = wonderInfo.collectInfo(viewingPlayer)
+
+    private val fixedContent = Table()
+    override fun getFixedContent() = fixedContent
+
+    init {
+        fixedContent.apply {
+            defaults().pad(10f).align(Align.center)
+            add()
+            add("Name".toLabel())
+            add("Status".toLabel())
+            add("Location".toLabel())
+            add().minWidth(30f)
+            row()
+        }
+
+        top()
+        defaults().pad(10f).align(Align.center)
+        (1..5).forEach { _ -> add() }  // dummies so equalizeColumns can work because the first grid cell is colspan(5)
+        row()
+
+        createGrid()
+
+        equalizeColumns(fixedContent, this)
+    }
+
+    fun createGrid() {
+        var lastGroup = ""
+
+        for (wonder in wonders) {
+            if (wonder.status == WonderInfo.WonderStatus.Hidden) continue
+            if (wonder.groupName != lastGroup) {
+                lastGroup = wonder.groupName
+                val groupRow = Table().apply {
+                    add(ImageGetter.getDot(wonder.groupColor)).minHeight(2f).growX()
+                    add(lastGroup.toLabel(wonder.groupColor).apply { setAlignment(Align.right) }).padLeft(1f).right()
+                }
+                add(groupRow).fillX().colspan(5).padBottom(0f).row()
+            }
+
+            val image = wonder.getImage()
+            image?.onClick {
+                UncivGame.Current.pushScreen(CivilopediaScreen(ruleSet, wonder.category, wonder.name))
+            }
+            // Terrain image padding is a bit unpredictable, they need ~5f more. Ensure equal line spacing on name, not image:
+            add(image).pad(0f, 10f, 0f, 10f)
+
+            add(wonder.getNameColumn().toLabel()).pad(15f, 10f, 15f, 10f)
+            add(wonder.getStatusColumn().toLabel())
+            val locationText = wonder.getLocationColumn()
+            if (locationText.isNotEmpty()) {
+                val locationLabel = locationText.toLabel()
+                if (wonder.location != null)
+                    locationLabel.onClick{
+                        val worldScreen = UncivGame.Current.resetToWorldScreen()
+                        worldScreen.mapHolder.setCenterPosition(wonder.location.position)
+                    }
+                add(locationLabel).fillY()
+            }
+            row()
+        }
+    }
+}
+
+
+class WonderInfo {
+    val gameInfo = UncivGame.Current.gameInfo!!
+    val ruleSet = gameInfo.ruleset
+    private val hideReligionItems = !gameInfo.isReligionEnabled()
+    private val startingObsolete = ruleSet.eras[gameInfo.gameParameters.startingEra]!!.startingObsoleteWonders
+
+    enum class WonderStatus(val label: String) {
+        Hidden(""),
+        Unknown("Unknown"),
+        Unbuilt("Not built"),
+        NotFound("Not found"),
+        Known("Known"),
+        Owned("Owned")
+    }
+
+    class WonderInfo (
+        val name: String,
+        val category: CivilopediaCategories,
+        val groupName: String,
+        val groupColor: Color,
+        val status: WonderStatus,
+        val civ: Civilization?,
+        val city: City?,
+        val location: Tile?
+    ) {
+        val viewEntireMapForDebug = UncivGame.Current.viewEntireMapForDebug
+
+        fun getImage() = if (status == WonderStatus.Unknown && !viewEntireMapForDebug) null
+        else category.getImage?.invoke(name, if (category == CivilopediaCategories.Terrain) 50f else 45f)
+
+        fun getNameColumn() = when {
+            viewEntireMapForDebug -> name
+            status == WonderStatus.Unknown -> status.label
+            else -> name
+        }
+
+        fun getStatusColumn() = when {
+            status != WonderStatus.Known -> status.label
+            civ == null -> status.label
+            else -> civ.civName
+        }
+
+        fun getLocationColumn() = when {
+            status <= WonderStatus.NotFound -> ""
+            location == null -> ""
+            location.isCityCenter() -> location.getCity()!!.name
+            location.getCity() != null -> "Near [${location.getCity()!!}]"
+            city != null -> "Somewhere around [$city]"
+            viewEntireMapForDebug -> location.position.toString()
+            else -> "Far away"
+        }
+    }
+
+    private fun shouldBeDisplayed(viewingPlayer: Civilization, wonder: Building, wonderEra: Int) = when {
+        wonder.hasUnique(UniqueType.HiddenFromCivilopedia) -> false
+        wonder.hasUnique(UniqueType.HiddenWithoutReligion) && hideReligionItems -> false
+        wonder.name in startingObsolete -> false
+        wonder.getMatchingUniques(UniqueType.HiddenWithoutVictoryType)
+            .any { unique ->
+                !gameInfo.gameParameters.victoryTypes.contains(unique.params[0])
+            } -> false
+        else -> wonderEra <= viewingPlayer.getEraNumber()
+    }
+
+    /** Do we know about a natural wonder despite not having found it yet? */
+    private fun knownFromQuest(viewingPlayer: Civilization, name: String): Boolean {
+        // No, *your* civInfo's QuestManager has no idea about your quests
+        for (civ in gameInfo.civilizations) {
+            for (quest in civ.questManager.assignedQuests) {
+                if (quest.assignee != viewingPlayer.civName) continue
+                if (quest.questName == QuestName.FindNaturalWonder.value && quest.data1 == name)
+                    return true
+            }
+        }
+        return false
+    }
+
+    fun collectInfo(viewingPlayer: Civilization): Array<WonderInfo> {
+        val collator = UncivGame.Current.settings.getCollatorFromLocale()
+
+        // Maps all World Wonders by name to their era for grouping
+        val wonderEraMap: Map<String, Era> =
+                ruleSet.buildings.values.asSequence()
+                    .filter { it.isWonder }
+                    .associate { it.name to (ruleSet.eras[ruleSet.technologies[it.requiredTech]?.era()] ?: viewingPlayer.getEra()) }
+
+        // Maps all World Wonders by their position in sort order to their name
+        val allWonderMap: Map<Int, String> =
+                ruleSet.buildings.values.asSequence()
+                    .filter { it.isWonder }
+                    .sortedWith(compareBy<Building> { wonderEraMap[it.name]!!.eraNumber }.thenBy(collator) { it.name.tr() })
+                    .withIndex()
+                    .associate { it.index to it.value.name }
+        val wonderCount = allWonderMap.size
+
+        // Inverse of the above
+        val wonderIndexMap: Map<String, Int> = allWonderMap.map { it.value to it.key }.toMap()
+
+        // Maps all Natural Wonders on the map by name to their tile
+        val allNaturalsMap: Map<String, Tile> =
+                gameInfo.tileMap.values.asSequence()
+                    .filter { it.isNaturalWonder() }
+                    .associateBy { it.naturalWonder!! }
+        val naturalsCount = allNaturalsMap.size
+
+        // Natural Wonders sort order index to name
+        val naturalsIndexMap: Map<Int, String> = allNaturalsMap.keys
+            .sortedWith(compareBy(collator) { it.tr() })
+            .withIndex()
+            .associate { it.index to it.value }
+
+        // Pre-populate result with "Unknown" entries
+        val wonders = Array(wonderCount + naturalsCount) { index ->
+            if (index < wonderCount) {
+                val wonder = ruleSet.buildings[allWonderMap[index]!!]!!
+                val era = wonderEraMap[wonder.name]!!
+                val status = if (shouldBeDisplayed(viewingPlayer, wonder, era.eraNumber)) WonderStatus.Unbuilt else WonderStatus.Hidden
+                WonderInfo(
+                    allWonderMap[index]!!, CivilopediaCategories.Wonder,
+                    era.name, era.getColor(), status, null, null, null
+                )
+            } else {
+                WonderInfo(
+                    naturalsIndexMap[index - wonderCount]!!,
+                    CivilopediaCategories.Terrain,
+                    "Natural Wonders",
+                    Color.FOREST,
+                    WonderStatus.Unknown,
+                    null,
+                    null,
+                    null
+                )
+            }
+        }
+
+        for (city in gameInfo.getCities()) {
+            for (wonderName in city.cityConstructions.builtBuildings.intersect(wonderIndexMap.keys)) {
+                val index = wonderIndexMap[wonderName]!!
+                val status = when {
+                    viewingPlayer == city.civ -> WonderStatus.Owned
+                    viewingPlayer.hasExplored(city.getCenterTile()) -> WonderStatus.Known
+                    else -> WonderStatus.NotFound
+                }
+                wonders[index] = WonderInfo(
+                    wonderName, CivilopediaCategories.Wonder,
+                    wonders[index].groupName, wonders[index].groupColor,
+                    status, city.civ, city, city.getCenterTile()
+                )
+            }
+        }
+
+        for ((index, name) in naturalsIndexMap) {
+            val tile = allNaturalsMap[name]!!
+            val civ = tile.getOwner()
+            val status = when {
+                civ == viewingPlayer -> WonderStatus.Owned
+                name in viewingPlayer.naturalWonders -> WonderStatus.Known
+                else -> WonderStatus.NotFound
+            }
+            if (status == WonderStatus.NotFound && !knownFromQuest(viewingPlayer, name)) continue
+            val city = if (status == WonderStatus.NotFound) null
+            else tile.getTilesInDistance(5)
+                .filter { it.isCityCenter() }
+                .filter { viewingPlayer.knows(it.getOwner()!!) }
+                .filter { viewingPlayer.hasExplored(it) }
+                .sortedBy { it.aerialDistanceTo(tile) }
+                .firstOrNull()?.getCity()
+            wonders[index + wonderCount] = WonderInfo(
+                name, CivilopediaCategories.Terrain,
+                "Natural Wonders", Color.FOREST, status, civ, city, tile
+            )
+        }
+
+        return wonders
+    }
+}

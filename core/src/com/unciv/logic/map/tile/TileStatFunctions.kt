@@ -9,7 +9,7 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
-import com.unciv.ui.utils.extensions.toPercent
+import com.unciv.ui.components.extensions.toPercent
 
 class TileStatFunctions(val tile: Tile) {
 

@@ -15,7 +15,7 @@ import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.utils.extensions.toPercent
+import com.unciv.ui.components.extensions.toPercent
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min

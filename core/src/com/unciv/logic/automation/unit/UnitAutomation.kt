@@ -15,9 +15,9 @@ import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.worldscreen.unit.actions.UnitActions
-import com.unciv.ui.worldscreen.unit.actions.UnitActionsPillage
-import com.unciv.ui.worldscreen.unit.actions.UnitActionsUpgrade
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 
 object UnitAutomation {
 

@@ -10,15 +10,15 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.files.UncivFiles
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.ui.components.AutoScrollPane
+import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.components.extensions.addBorder
+import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.extensions.setFontSize
+import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popup.ToastPopup
-import com.unciv.ui.utils.AutoScrollPane
-import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.extensions.addBorder
-import com.unciv.ui.utils.extensions.onClick
-import com.unciv.ui.utils.extensions.setFontSize
-import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.popups.ToastPopup
 import java.io.PrintWriter
 import java.io.StringWriter
 

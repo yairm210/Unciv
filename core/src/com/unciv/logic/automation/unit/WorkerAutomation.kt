@@ -18,7 +18,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.worldscreen.unit.actions.UnitActions
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 

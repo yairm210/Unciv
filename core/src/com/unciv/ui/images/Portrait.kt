@@ -7,13 +7,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.stats.Stats
-import com.unciv.ui.utils.extensions.center
-import com.unciv.ui.utils.extensions.centerX
-import com.unciv.ui.utils.extensions.colorFromRGB
-import com.unciv.ui.utils.extensions.darken
-import com.unciv.ui.utils.extensions.surroundWithCircle
-import com.unciv.ui.utils.extensions.toGroup
-import com.unciv.ui.utils.extensions.toLabel
+import com.unciv.ui.components.extensions.center
+import com.unciv.ui.components.extensions.centerX
+import com.unciv.ui.components.extensions.colorFromRGB
+import com.unciv.ui.components.extensions.darken
+import com.unciv.ui.components.extensions.surroundWithCircle
+import com.unciv.ui.components.extensions.toGroup
+import com.unciv.ui.components.extensions.toLabel
 
 open class Portrait(val type: Type, val imageName: String, val size: Float, val borderSize: Float = 2f) : Group() {
 

@@ -13,7 +13,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
 import com.unciv.models.stats.Stats
-import com.unciv.ui.utils.extensions.toPercent
+import com.unciv.ui.components.extensions.toPercent
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow

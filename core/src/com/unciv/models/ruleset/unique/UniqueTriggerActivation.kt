@@ -19,8 +19,8 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
-import com.unciv.ui.utils.MayaCalendar
-import com.unciv.ui.worldscreen.unit.actions.UnitActionsUpgrade
+import com.unciv.ui.components.MayaCalendar
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.roundToInt
 import kotlin.random.Random
 

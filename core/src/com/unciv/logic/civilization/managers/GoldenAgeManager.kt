@@ -7,7 +7,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.utils.extensions.toPercent
+import com.unciv.ui.components.extensions.toPercent
 
 class GoldenAgeManager : IsPartOfGameInfoSerialization {
     @Transient

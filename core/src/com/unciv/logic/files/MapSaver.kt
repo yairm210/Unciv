@@ -5,7 +5,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.unciv.json.json
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.TileMap
-import com.unciv.ui.saves.Gzip
+import com.unciv.ui.savescreens.Gzip
 
 object MapSaver {
 

@@ -1,8 +1,8 @@
 package com.unciv.app.desktop
 
 import com.badlogic.gdx.graphics.Pixmap
-import com.unciv.ui.utils.FontFamilyData
-import com.unciv.ui.utils.NativeFontImplementation
+import com.unciv.ui.components.FontFamilyData
+import com.unciv.ui.components.NativeFontImplementation
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.util.*

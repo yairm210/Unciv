@@ -8,7 +8,7 @@ import com.unciv.models.Counter
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
-import com.unciv.ui.utils.extensions.toTextButton
+import com.unciv.ui.components.extensions.toTextButton
 
 
 enum class MilestoneType(val text: String) {

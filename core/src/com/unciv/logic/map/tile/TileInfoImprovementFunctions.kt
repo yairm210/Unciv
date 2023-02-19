@@ -1,15 +1,10 @@
 package com.unciv.logic.map.tile
 
 import com.unciv.Constants
-import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.stats.Stat
-import com.unciv.models.stats.Stats
-import com.unciv.ui.utils.extensions.toPercent
 
 
 enum class ImprovementBuildingProblem {

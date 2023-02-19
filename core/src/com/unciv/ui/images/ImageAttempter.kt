@@ -1,7 +1,7 @@
 package com.unciv.ui.images
 
 import com.unciv.logic.civilization.Civilization
-import com.unciv.ui.tilegroups.TileSetStrings
+import com.unciv.ui.components.tilegroups.TileSetStrings
 
 /**
  * Metaprogrammy class for short-circuitingly finding the first existing of multiple image options according to [ImageGetter.imageExists].
@@ -56,7 +56,7 @@ class ImageAttempter<out T: Any>(val scope: T) {
      * [locationToCheck]: the beginning of the filename to check
      * [style]: an optional string to load a civ- or style-specific sprite
      * */
-     fun tryEraImage(civInfo: Civilization, locationToCheck: String, style: String?, tileSetStrings:TileSetStrings): ImageAttempter<T> {
+     fun tryEraImage(civInfo: Civilization, locationToCheck: String, style: String?, tileSetStrings: TileSetStrings): ImageAttempter<T> {
         return tryImages(
             (civInfo.getEraNumber() downTo 0).asSequence().map {
                 {

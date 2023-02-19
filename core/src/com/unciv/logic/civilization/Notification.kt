@@ -5,12 +5,12 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.ui.cityscreen.CityScreen
+import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.pickerscreens.TechPickerScreen
-import com.unciv.ui.trade.DiplomacyScreen
-import com.unciv.ui.utils.MayaCalendar
-import com.unciv.ui.worldscreen.WorldScreen
+import com.unciv.ui.screens.pickerscreens.TechPickerScreen
+import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
+import com.unciv.ui.components.MayaCalendar
+import com.unciv.ui.screens.worldscreen.WorldScreen
 
 object NotificationIcon {
     // Remember: The typical white-on-transparency icon will not be visible on Notifications

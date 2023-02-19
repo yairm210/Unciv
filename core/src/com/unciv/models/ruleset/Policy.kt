@@ -1,13 +1,11 @@
 package com.unciv.models.ruleset
 
-import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.tr
-import com.unciv.ui.civilopedia.FormattedLine
-import com.unciv.utils.Log
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 
 open class Policy : RulesetObject() {
     lateinit var branch: PolicyBranch // not in json - added in gameBasics

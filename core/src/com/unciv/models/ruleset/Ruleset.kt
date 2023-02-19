@@ -30,8 +30,8 @@ import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.extensions.colorFromRGB
-import com.unciv.ui.utils.getRelativeTextDistance
+import com.unciv.ui.components.extensions.colorFromRGB
+import com.unciv.ui.components.getRelativeTextDistance
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import kotlin.collections.set

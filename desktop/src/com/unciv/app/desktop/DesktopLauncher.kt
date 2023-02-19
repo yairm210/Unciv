@@ -15,7 +15,7 @@ import com.unciv.logic.files.SETTINGS_FILE_NAME
 import com.unciv.logic.files.UncivFiles
 import com.unciv.models.metadata.ScreenSize
 import com.unciv.models.metadata.WindowState
-import com.unciv.ui.utils.Fonts
+import com.unciv.ui.components.Fonts
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import java.awt.GraphicsEnvironment

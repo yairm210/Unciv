@@ -9,10 +9,10 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
-import com.unciv.ui.civilopedia.CivilopediaScreen.Companion.showReligionInCivilopedia
-import com.unciv.ui.civilopedia.FormattedLine
-import com.unciv.ui.utils.Fonts
-import com.unciv.ui.utils.extensions.colorFromRGB
+import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showReligionInCivilopedia
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.extensions.colorFromRGB
 import kotlin.math.pow
 
  class Nation : RulesetObject() {
@@ -249,15 +249,19 @@ import kotlin.math.pow
                     yield(FormattedLine(unique.text.tr(), indent = 1))
                 }
                 for (unique in originalUnit.uniqueObjects.filterNot { it.text in unit.uniques || it.hasFlag(UniqueFlag.HiddenToUsers) }) {
-                    yield(FormattedLine("Lost ability".tr() + " (" + "vs [${originalUnit.name}]".tr() + "): " +
-                            unique.text.tr(), indent = 1))
+                    yield(
+                        FormattedLine("Lost ability".tr() + " (" + "vs [${originalUnit.name}]".tr() + "): " +
+                            unique.text.tr(), indent = 1)
+                    )
                 }
                 for (promotion in unit.promotions.filter { it !in originalUnit.promotions }) {
                     val effect = ruleset.unitPromotions[promotion]!!.uniques
                     // "{$promotion} ({$effect})" won't work as effect may contain [] and tr() does not support that kind of nesting
-                    yield(FormattedLine(
+                    yield(
+                        FormattedLine(
                         "${promotion.tr()} (${effect.joinToString(",") { it.tr() }})",
-                        link = "Promotion/$promotion", indent = 1 ))
+                        link = "Promotion/$promotion", indent = 1 )
+                    )
                 }
             } else if (unit.replaces != null) {
                 yield(FormattedLine("Replaces [${unit.replaces}], which is not found in the ruleset!", indent = 1))
@@ -279,8 +283,10 @@ import kotlin.math.pow
             yield(FormattedLine(improvement.cloneStats().toString(), indent = 1))   // = (improvement as Stats).toString minus import plus copy overhead
             if (improvement.terrainsCanBeBuiltOn.isNotEmpty()) {
                 improvement.terrainsCanBeBuiltOn.withIndex().forEach {
-                    yield(FormattedLine(if (it.index == 0) "{Can be built on} {${it.value}}" else "or [${it.value}]",
-                        link = "Terrain/${it.value}", indent = if (it.index == 0) 1 else 2))
+                    yield(
+                        FormattedLine(if (it.index == 0) "{Can be built on} {${it.value}}" else "or [${it.value}]",
+                        link = "Terrain/${it.value}", indent = if (it.index == 0) 1 else 2)
+                    )
                 }
             }
             for (unique in improvement.uniques)

@@ -10,8 +10,8 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.utils.extensions.toPercent
-import com.unciv.ui.victoryscreen.RankingType
+import com.unciv.ui.components.extensions.toPercent
+import com.unciv.ui.screens.victoryscreen.RankingType
 import kotlin.math.min
 import kotlin.math.sqrt
 

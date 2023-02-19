@@ -20,7 +20,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.ui.utils.extensions.randomWeighted
+import com.unciv.ui.components.extensions.randomWeighted
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min

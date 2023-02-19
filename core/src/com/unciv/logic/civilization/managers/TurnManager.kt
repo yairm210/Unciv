@@ -17,7 +17,7 @@ import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unique.endTurn
-import com.unciv.ui.utils.MayaCalendar
+import com.unciv.ui.components.MayaCalendar
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min

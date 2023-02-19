@@ -6,7 +6,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.extensions.toGroup
+import com.unciv.ui.components.extensions.toGroup
 import com.unciv.utils.Log
 
 class TacticalAI : IsPartOfGameInfoSerialization {

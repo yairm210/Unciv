@@ -16,8 +16,8 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
-import com.unciv.ui.worldscreen.unit.actions.UnitActions
-import com.unciv.ui.worldscreen.unit.actions.UnitActionsReligion
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsReligion
 import kotlin.math.max
 import kotlin.math.min
 

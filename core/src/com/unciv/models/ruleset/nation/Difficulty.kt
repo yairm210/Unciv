@@ -3,9 +3,9 @@ package com.unciv.models.ruleset.nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.INamed
-import com.unciv.ui.civilopedia.FormattedLine
-import com.unciv.ui.civilopedia.ICivilopediaText
-import com.unciv.ui.utils.Fonts
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
+import com.unciv.ui.components.Fonts
 
 class Difficulty: INamed, ICivilopediaText {
     override lateinit var name: String

@@ -4,7 +4,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.stats.INamed
-import com.unciv.ui.utils.extensions.colorFromRGB
+import com.unciv.ui.components.extensions.colorFromRGB
 
 class CityStateType: INamed {
     override var name = ""

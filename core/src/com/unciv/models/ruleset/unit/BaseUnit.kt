@@ -12,10 +12,10 @@ import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
-import com.unciv.ui.civilopedia.FormattedLine
-import com.unciv.ui.utils.extensions.filterAndLogic
-import com.unciv.ui.utils.extensions.getNeedMoreAmountString
-import com.unciv.ui.utils.extensions.toPercent
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.components.extensions.filterAndLogic
+import com.unciv.ui.components.extensions.getNeedMoreAmountString
+import com.unciv.ui.components.extensions.toPercent
 import kotlin.math.pow
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up

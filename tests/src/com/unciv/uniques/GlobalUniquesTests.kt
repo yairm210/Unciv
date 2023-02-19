@@ -7,7 +7,7 @@ import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.stats.Stats
 import com.unciv.testing.GdxTestRunner
-import com.unciv.ui.worldscreen.unit.actions.UnitActionsPillage
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

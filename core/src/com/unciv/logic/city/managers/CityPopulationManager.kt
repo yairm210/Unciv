@@ -10,9 +10,9 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
-import com.unciv.ui.utils.extensions.toPercent
-import com.unciv.ui.utils.extensions.withItem
-import com.unciv.ui.utils.extensions.withoutItem
+import com.unciv.ui.components.extensions.toPercent
+import com.unciv.ui.components.extensions.withItem
+import com.unciv.ui.components.extensions.withoutItem
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.pow

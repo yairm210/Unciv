@@ -4,7 +4,7 @@ import com.unciv.logic.city.RejectionReasonType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
-import com.unciv.ui.utils.extensions.toPercent
+import com.unciv.ui.components.extensions.toPercent
 import kotlin.math.pow
 
 class UnitUpgradeManager(val unit:MapUnit) {

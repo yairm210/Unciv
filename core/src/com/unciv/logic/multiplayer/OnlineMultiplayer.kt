@@ -11,7 +11,7 @@ import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
 import com.unciv.logic.multiplayer.storage.OnlineMultiplayerFiles
-import com.unciv.ui.utils.extensions.isLargerThan
+import com.unciv.ui.components.extensions.isLargerThan
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.Dispatcher
 import com.unciv.utils.concurrency.launchOnThreadPool

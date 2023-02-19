@@ -6,8 +6,8 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
-import com.unciv.ui.utils.Fonts
-import com.unciv.ui.utils.extensions.toPercent
+import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.extensions.toPercent
 import kotlin.math.pow
 import kotlin.math.roundToInt
 

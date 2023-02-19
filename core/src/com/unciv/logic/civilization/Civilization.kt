@@ -50,8 +50,8 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.extensions.toPercent
-import com.unciv.ui.victoryscreen.RankingType
+import com.unciv.ui.components.extensions.toPercent
+import com.unciv.ui.screens.victoryscreen.RankingType
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min

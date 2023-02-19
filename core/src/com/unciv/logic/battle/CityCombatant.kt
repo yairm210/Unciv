@@ -7,7 +7,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.UnitType
-import com.unciv.ui.utils.extensions.toPercent
+import com.unciv.ui.components.extensions.toPercent
 import kotlin.math.pow
 import kotlin.math.roundToInt
 

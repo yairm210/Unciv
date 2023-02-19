@@ -20,9 +20,9 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
-import com.unciv.ui.utils.MayaCalendar
-import com.unciv.ui.utils.extensions.toPercent
-import com.unciv.ui.utils.extensions.withItem
+import com.unciv.ui.components.MayaCalendar
+import com.unciv.ui.components.extensions.toPercent
+import com.unciv.ui.components.extensions.withItem
 import java.util.*
 import kotlin.math.ceil
 import kotlin.math.max

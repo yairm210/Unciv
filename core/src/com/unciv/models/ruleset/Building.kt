@@ -21,11 +21,11 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
-import com.unciv.ui.civilopedia.FormattedLine
-import com.unciv.ui.utils.Fonts
-import com.unciv.ui.utils.extensions.getConsumesAmountString
-import com.unciv.ui.utils.extensions.getNeedMoreAmountString
-import com.unciv.ui.utils.extensions.toPercent
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.extensions.getConsumesAmountString
+import com.unciv.ui.components.extensions.getNeedMoreAmountString
+import com.unciv.ui.components.extensions.toPercent
 import kotlin.math.pow
 
 

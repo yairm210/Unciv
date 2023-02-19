@@ -19,8 +19,8 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
-import com.unciv.ui.LanguagePickerScreen
-import com.unciv.ui.LoadingScreen
+import com.unciv.ui.screens.LanguagePickerScreen
+import com.unciv.ui.screens.LoadingScreen
 import com.unciv.ui.audio.GameSounds
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
@@ -29,13 +29,14 @@ import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popup.ConfirmPopup
-import com.unciv.ui.popup.Popup
-import com.unciv.ui.saves.LoadGameScreen
-import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.extensions.center
-import com.unciv.ui.worldscreen.PlayerReadyScreen
-import com.unciv.ui.worldscreen.WorldScreen
+import com.unciv.ui.popups.ConfirmPopup
+import com.unciv.ui.popups.Popup
+import com.unciv.ui.savescreens.LoadGameScreen
+import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
+import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.components.extensions.center
+import com.unciv.ui.screens.worldscreen.PlayerReadyScreen
+import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
@@ -200,7 +201,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         val isLoadingSameGame = worldScreen != null && prevGameInfo != null && prevGameInfo.gameId == newGameInfo.gameId
         val worldScreenRestoreState = if (isLoadingSameGame) worldScreen!!.getRestoreState() else null
 
-        lateinit var loadingScreen:LoadingScreen
+        lateinit var loadingScreen: LoadingScreen
 
         withGLContext {
             // this is not merged with the below GL context block so that our loading screen gets a chance to show - otherwise
@@ -330,7 +331,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     /** Resets the game to the stored world screen and automatically [disposes][Screen.dispose] all other screens. */
     fun resetToWorldScreen(): WorldScreen {
-        for (screen in screenStack.filter { it !is WorldScreen}) screen.dispose()
+        for (screen in screenStack.filter { it !is WorldScreen }) screen.dispose()
         screenStack.removeAll { it !is WorldScreen }
         val worldScreen= screenStack.last() as WorldScreen
 

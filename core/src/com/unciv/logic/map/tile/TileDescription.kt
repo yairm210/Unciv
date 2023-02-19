@@ -5,8 +5,8 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.translations.tr
-import com.unciv.ui.civilopedia.FormattedLine
-import com.unciv.ui.utils.Fonts
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.components.Fonts
 
 object TileDescription {
 

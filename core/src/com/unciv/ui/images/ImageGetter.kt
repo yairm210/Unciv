@@ -24,8 +24,8 @@ import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
-import com.unciv.ui.utils.*
-import com.unciv.ui.utils.extensions.*
+import com.unciv.ui.components.*
+import com.unciv.ui.components.extensions.*
 import com.unciv.utils.debug
 import kotlin.math.atan2
 import kotlin.math.max

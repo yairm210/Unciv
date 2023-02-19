@@ -16,7 +16,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import java.lang.Integer.max
 import kotlin.math.abs
 
-/** An Unciv map with all properties as produced by the [map editor][com.unciv.ui.mapeditor.MapEditorScreen]
+/** An Unciv map with all properties as produced by the [map editor][com.unciv.ui.screens.mapeditorscreen.MapEditorScreen]
  * or [MapGenerator][com.unciv.logic.map.mapgenerator.MapGenerator]; or as part of a running [game][GameInfo].
  *
  * Note: Will be Serialized -> Take special care with lateinit and lazy!

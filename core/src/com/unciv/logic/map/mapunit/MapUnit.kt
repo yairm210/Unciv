@@ -23,7 +23,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stats
-import com.unciv.ui.utils.extensions.filterAndLogic
+import com.unciv.ui.components.extensions.filterAndLogic
 import java.text.DecimalFormat
 import kotlin.math.pow
 

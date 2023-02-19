@@ -9,7 +9,7 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueParameterType.Companion.guessTypeForTranslationWriter
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.TranslationFileWriter
-import com.unciv.ui.utils.extensions.filterCompositeLogic
+import com.unciv.ui.components.extensions.filterCompositeLogic
 
 // 'region' names beginning with an underscore are used here for a prettier "Structure window" - they go in front ot the rest.
 

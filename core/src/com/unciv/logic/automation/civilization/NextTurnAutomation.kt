@@ -44,7 +44,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
-import com.unciv.ui.victoryscreen.RankingType
+import com.unciv.ui.screens.victoryscreen.RankingType
 import kotlin.math.min
 
 object NextTurnAutomation {
