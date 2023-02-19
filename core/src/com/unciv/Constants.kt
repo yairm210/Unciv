@@ -1,7 +1,6 @@
 package com.unciv
 
 object Constants {
-    const val worker = "Worker"
     const val settler = "Settler"
     const val eraSpecificUnit = "Era Starting Unit"
     const val spreadReligion = "Spread Religion"

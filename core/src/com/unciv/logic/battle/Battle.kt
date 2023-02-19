@@ -625,20 +625,7 @@ object Battle {
                 attacker.getCivInfo().popupAlerts.add(PopupAlert(AlertType.RecapturedCivilian, capturedUnitTile.position.toString()))
             }
 
-            // Captured settlers are converted to workers unless captured by barbarians (so they can be returned later).
-            capturedUnit.hasUnique(UniqueType.FoundCity) && !attacker.getCivInfo().isBarbarian() -> {
-                capturedUnit.destroy()
-                // This is so that future checks which check if a unit has been captured are caught give the right answer
-                //  For example, in postBattleMoveToAttackedTile
-                capturedUnit.civ = attacker.getCivInfo()
-
-                val workerTypeUnit = attacker.getCivInfo().gameInfo.ruleset.units.values
-                    .firstOrNull { it.isCivilian() && it.getMatchingUniques(UniqueType.BuildImprovements).any { it.params[0] == "Land" } }
-
-                if (workerTypeUnit != null)
-                    attacker.getCivInfo().units.placeUnitNearTile(capturedUnitTile.position, workerTypeUnit.name)
-            }
-            else -> capturedUnit.capturedBy(attacker.getCivInfo())
+            else -> captureOrConvertToWorker(capturedUnit, attacker.getCivInfo())
         }
 
         if (!wasDestroyedInstead)
@@ -651,6 +638,23 @@ object Battle {
         if (checkDefeat)
             destroyIfDefeated(defenderCiv, attacker.getCivInfo())
         capturedUnit.updateVisibleTiles()
+    }
+
+    fun captureOrConvertToWorker(capturedUnit: MapUnit, capturingCiv: Civilization){
+        // Captured settlers are converted to workers unless captured by barbarians (so they can be returned later).
+        if (capturedUnit.hasUnique(UniqueType.FoundCity) && !capturingCiv.isBarbarian()) {
+            capturedUnit.destroy()
+            // This is so that future checks which check if a unit has been captured are caught give the right answer
+            //  For example, in postBattleMoveToAttackedTile
+            capturedUnit.civ = capturingCiv
+
+            val workerTypeUnit = capturingCiv.gameInfo.ruleset.units.values
+                .firstOrNull { it.isCivilian() && it.getMatchingUniques(UniqueType.BuildImprovements).any { it.params[0] == "Land" } }
+
+            if (workerTypeUnit != null)
+                capturingCiv.units.placeUnitNearTile(capturedUnit.currentTile.position, workerTypeUnit.name)
+        }
+        else capturedUnit.capturedBy(capturingCiv)
     }
 
     fun destroyIfDefeated(attackedCiv: Civilization, attacker: Civilization) {

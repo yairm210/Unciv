@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.battle.Battle
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.LocationAction
@@ -13,14 +14,10 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popups.Popup
-import com.unciv.ui.screens.diplomacyscreen.LeaderIntroTable
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.keyShortcuts
@@ -28,6 +25,9 @@ import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.Popup
+import com.unciv.ui.screens.diplomacyscreen.LeaderIntroTable
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
 import java.util.*
 
@@ -363,15 +363,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
         })
         responseTable.add(getCloseButton(Constants.no, 'n') {
             // Take it for ourselves
-            // Settlers become workers at this point
-            if (capturedUnit.hasUnique(UniqueType.FoundCity)) {
-                capturedUnit.destroy()
-                // This is so that future checks which check if a unit has been captured are caught give the right answer
-                //  For example, in postBattleMoveToAttackedTile
-                capturedUnit.civ = captor
-                captor.units.placeUnitNearTile(tile.position, Constants.worker)
-            } else
-                capturedUnit.capturedBy(captor)
+            Battle.captureOrConvertToWorker(capturedUnit, captor)
         }).row()
         add(responseTable)
     }
