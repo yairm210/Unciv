@@ -45,7 +45,7 @@ open class ZoomableScrollPane(
         this.addListener(zoomListener)
     }
 
-    fun reloadMaxZoom() {
+    open fun reloadMaxZoom() {
 
         maxZoom = UncivGame.Current.settings.maxWorldZoomOut
         minZoom = 1f / maxZoom
