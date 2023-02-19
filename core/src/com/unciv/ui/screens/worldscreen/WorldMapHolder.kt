@@ -30,6 +30,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UncivSound
 import com.unciv.models.helpers.MapArrowType
 import com.unciv.models.helpers.MiscArrowTypes
+import com.unciv.models.metadata.GameSetting
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -755,13 +756,11 @@ class WorldMapHolder(
 
     override fun reloadMaxZoom()
     {
-        if (continuousScrollingX) {
-            // For world-wrap we do not allow viewport to become bigger than the map size,
-            // because we don't want to render the same tiles multiple times (they will be
-            // flickering because of movement).
-            // Hence we limit minimal possible zoom to content width + some extra offset.
+        if (UncivGame.Current.settings.enableZoomLimit) {
 
-            val pad = width / tileMap.mapParameters.mapSize.radius * 0.7f
+            // For world-wrap we limit minimal possible zoom to content width + some extra offset
+            // to hide one column of tiles so that the player doesn't see it teleporting from side to side
+            val pad = if (continuousScrollingX) width / tileMap.mapParameters.mapSize.radius * 0.7f else 0f
             minZoom = max(
                 (width + pad) * scaleX / maxX,
                 1f / UncivGame.Current.settings.maxWorldZoomOut

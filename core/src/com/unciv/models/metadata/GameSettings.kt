@@ -104,6 +104,9 @@ class GameSettings {
     /** Maximum zoom-out of the map - performance heavy */
     var maxWorldZoomOut = 2f
 
+    /** Limit max zoom out by map width to hide the empty space on the sides */
+    var enableZoomLimit = true
+
     /** used to migrate from older versions of the settings */
     var version: Int? = null
 

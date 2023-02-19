@@ -58,6 +58,8 @@ fun advancedTab(
 
     addMaxZoomSlider(this, settings)
 
+    addZoomLimitCheckBox(this, settings)
+
     val helper = UncivGame.Current.platformSpecificHelper
     if (helper != null && Gdx.app.type == Application.ApplicationType.Android) {
         optionsPopup.addCheckbox(this, "Enable portrait orientation", settings.allowAndroidPortrait) {
@@ -172,6 +174,12 @@ private fun addMaxZoomSlider(table: Table, settings: GameSettings) {
         UncivGame.Current.worldScreen?.mapHolder?.reloadMaxZoom()
     }
     table.add(maxZoomSlider).pad(5f).row()
+}
+
+private fun addZoomLimitCheckBox(table: Table, settings: GameSettings) {
+    val checkbox = "Limit max zoom out by map width".toCheckBox(settings.enableZoomLimit) { settings.enableZoomLimit = it }
+    checkbox.onChange { UncivGame.Current.worldScreen?.mapHolder?.reloadMaxZoom() }
+    table.add(checkbox).colspan(2).row()
 }
 
 private fun addTranslationGeneration(table: Table, optionsPopup: OptionsPopup) {
