@@ -71,7 +71,6 @@ class WorldMapHolder(
     init {
         if (Gdx.app.type == Application.ApplicationType.Desktop) this.setFlingTime(0f)
         continuousScrollingX = tileMap.mapParameters.worldWrap
-        reloadMaxZoom()
         setupZoomPanListeners()
     }
 

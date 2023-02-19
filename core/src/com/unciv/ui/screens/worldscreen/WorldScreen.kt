@@ -137,6 +137,7 @@ class WorldScreen(
 
         // This is the most memory-intensive operation we have currently, most OutOfMemory errors will occur here
         mapHolder.addTiles()
+        mapHolder.reloadMaxZoom()
 
         // resume music (in case choices from the menu lead to instantiation of a new WorldScreen)
         UncivGame.Current.musicController.resume()
@@ -242,7 +243,6 @@ class WorldScreen(
         }
         globalShortcuts.add(KeyCharAndCode.ctrl('O')) { // Game Options
             this.openOptionsPopup(onClose = {
-                mapHolder.reloadMaxZoom()
                 nextTurnButton.update(this)
             })
         }
