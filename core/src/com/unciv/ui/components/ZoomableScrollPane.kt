@@ -90,17 +90,6 @@ open class ZoomableScrollPane(
         updatePadding()
         super.sizeChanged()
         updateCulling()
-
-        if (continuousScrollingX) {
-            // For world-wrap we do not allow viewport to become bigger than the map size,
-            // because we don't want to render the same tiles multiple times (they will be
-            // flickering because of movement).
-            // Hence we limit minimal possible zoom to content width + some extra offset.
-            val content = actor
-            if (content != null)
-                minZoom = max((width + 80f) * scaleX / content.width, 1f / UncivGame.Current.settings.maxWorldZoomOut)// add some extra padding offset
-        }
-
     }
 
     private fun updatePadding() {
