@@ -17,27 +17,21 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.automation.unit.AttackableTile
 import com.unciv.logic.automation.unit.BattleHelper
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.TileMap
-import com.unciv.logic.automation.unit.AttackableTile
 import com.unciv.models.UncivSound
 import com.unciv.models.helpers.MapArrowType
 import com.unciv.models.helpers.MiscArrowTypes
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.components.tilegroups.TileGroupMap
-import com.unciv.ui.components.tilegroups.TileGroup
-import com.unciv.ui.components.tilegroups.TileSetStrings
-import com.unciv.ui.components.tilegroups.WorldTileGroup
 import com.unciv.ui.components.BaseScreen
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.UnitGroup
@@ -50,6 +44,12 @@ import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.tilegroups.TileGroup
+import com.unciv.ui.components.tilegroups.TileGroupMap
+import com.unciv.ui.components.tilegroups.TileSetStrings
+import com.unciv.ui.components.tilegroups.WorldTileGroup
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
@@ -256,6 +256,8 @@ class WorldMapHolder(
                 Log.error("Exception in getTileToMoveToThisTurn", ex)
                 return@run
             } // can't move here
+
+            worldScreen.preActionGameInfo = worldScreen.gameInfo.clone()
 
             launchOnGLThread {
                 try {

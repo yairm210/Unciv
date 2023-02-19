@@ -414,7 +414,7 @@ class UncivFiles(
         }
 
         // keep auto-saves for the last 10 turns for debugging purposes
-        if(nextTurn) {
+        if (nextTurn) {
             val newAutosaveFilename =
                 SAVE_FILES_FOLDER + File.separator + AUTOSAVE_FILE_NAME + "-${gameInfo.currentPlayer}-${gameInfo.turns}"
             val file =

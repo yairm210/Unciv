@@ -7,17 +7,18 @@ import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.overviewscreen.EspionageOverviewScreen
-import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
-import com.unciv.ui.screens.pickerscreens.TechButton
-import com.unciv.ui.screens.pickerscreens.TechPickerScreen
-import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
 import com.unciv.ui.components.BaseScreen
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
+import com.unciv.ui.screens.overviewscreen.EspionageOverviewScreen
+import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
+import com.unciv.ui.screens.pickerscreens.TechButton
+import com.unciv.ui.screens.pickerscreens.TechPickerScreen
+import com.unciv.utils.concurrency.Concurrency
 
 
 /** A holder for Tech, Policies and Diplomacy buttons going in the top left of the WorldScreen just under WorldScreenTopBar */
@@ -30,6 +31,8 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
     private val policyScreenButton = Button(skin)
     private val diplomacyButtonHolder = Container<Button?>()
     private val diplomacyButton = Button(skin)
+    private val undoButtonHolder = Container<Button?>()
+    private val undoButton = Button(skin)
     private val espionageButtonHolder = Container<Button?>()
     private val espionageButton = Button(skin)
 
@@ -39,6 +42,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
     init {
         defaults().left()
         add(techButtonHolder).colspan(4).row()
+        add(undoButtonHolder).padTop(10f).padRight(10f)
         add(policyButtonHolder).padTop(10f).padRight(10f)
         add(diplomacyButtonHolder).padTop(10f).padRight(10f)
         add(espionageButtonHolder).padTop(10f)
@@ -49,6 +53,15 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
         pickTechButton.add(pickTechLabel)
         techButtonHolder.onClick(UncivSound.Paper) {
             game.pushScreen(TechPickerScreen(viewingCiv))
+        }
+
+        undoButton.add(ImageGetter.getImage("OtherIcons/Resume")).size(30f).pad(15f)
+        undoButton.onClick {
+            Concurrency.run {
+                // Most of the time we won't load this, so we only set transients once we see it's relevant
+                worldScreen.preActionGameInfo.setTransients()
+                game.loadGame(worldScreen.preActionGameInfo)
+            }
         }
 
         policyScreenButton.add(ImageGetter.getImage("PolicyIcons/Constitution")).size(30f).pad(15f)
@@ -69,6 +82,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
     }
 
     fun update(): Boolean {
+        updateUndoButton()
         updateTechButton()
         updatePolicyButton()
         val result = updateDiplomacyButton()
@@ -100,6 +114,17 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
                 pickTechLabel.setText(text.tr())
                 techButtonHolder.actor = pickTechButton
             }
+        }
+    }
+
+    private fun updateUndoButton() {
+        // Don't show policies until they become relevant
+        if (worldScreen.gameInfo != worldScreen.preActionGameInfo) {
+            undoButtonHolder.touchable = Touchable.enabled
+            undoButtonHolder.actor = undoButton
+        } else {
+            undoButtonHolder.touchable = Touchable.disabled
+            undoButtonHolder.actor = null
         }
     }
 

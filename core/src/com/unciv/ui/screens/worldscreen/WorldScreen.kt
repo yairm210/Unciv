@@ -13,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
@@ -27,20 +26,6 @@ import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.screens.cityscreen.CityScreen
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.overviewscreen.EmpireOverviewScreen
-import com.unciv.ui.screens.pickerscreens.DiplomaticVoteResultScreen
-import com.unciv.ui.screens.pickerscreens.GreatPersonPickerScreen
-import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
-import com.unciv.ui.screens.pickerscreens.TechPickerScreen
-import com.unciv.ui.popups.Popup
-import com.unciv.ui.popups.ToastPopup
-import com.unciv.ui.popups.hasOpenPopups
-import com.unciv.ui.screens.savescreens.LoadGameScreen
-import com.unciv.ui.screens.savescreens.QuickSave
-import com.unciv.ui.screens.savescreens.SaveGameScreen
 import com.unciv.ui.components.BaseScreen
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.extensions.centerX
@@ -50,6 +35,21 @@ import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.setFontSize
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.Popup
+import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.popups.hasOpenPopups
+import com.unciv.ui.screens.cityscreen.CityScreen
+import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
+import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
+import com.unciv.ui.screens.overviewscreen.EmpireOverviewScreen
+import com.unciv.ui.screens.pickerscreens.DiplomaticVoteResultScreen
+import com.unciv.ui.screens.pickerscreens.GreatPersonPickerScreen
+import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
+import com.unciv.ui.screens.pickerscreens.TechPickerScreen
+import com.unciv.ui.screens.savescreens.LoadGameScreen
+import com.unciv.ui.screens.savescreens.QuickSave
+import com.unciv.ui.screens.savescreens.SaveGameScreen
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTable
 import com.unciv.ui.screens.worldscreen.bottombar.TileInfoTable
@@ -125,6 +125,8 @@ class WorldScreen(
     private val events = EventBus.EventReceiver()
 
     var uiEnabled = true
+
+    var preActionGameInfo = gameInfo
 
 
     init {
