@@ -28,10 +28,6 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popups.ConfirmPopup
-import com.unciv.ui.components.tilegroups.InfluenceTable
 import com.unciv.ui.components.BaseScreen
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.KeyCharAndCode
@@ -46,6 +42,10 @@ import com.unciv.ui.components.extensions.setFontSize
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.tilegroups.InfluenceTable
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.ConfirmPopup
+import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import kotlin.math.floor
 import kotlin.math.roundToInt
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
@@ -826,35 +826,7 @@ class DiplomacyScreen(
                 && otherCivDiplomacyManager.hasModifier(DestroyedProtectedMinor))
                 continue
 
-            var text = when (DiplomaticModifiers.valueOf(modifier.key)) {
-                DeclaredWarOnUs -> "You declared war on us!"
-                WarMongerer -> "Your warmongering ways are unacceptable to us."
-                LiberatedCity -> "We applaud your liberation of conquered cities!"
-                CapturedOurCities -> "You have captured our cities!"
-                YearsOfPeace -> "Years of peace have strengthened our relations."
-                SharedEnemy -> "Our mutual military struggle brings us closer together."
-                DeclarationOfFriendship -> "We have signed a public declaration of friendship"
-                DeclaredFriendshipWithOurEnemies -> "You have declared friendship with our enemies!"
-                DeclaredFriendshipWithOurAllies -> "You have declared friendship with our allies"
-                OpenBorders -> "Our open borders have brought us closer together."
-                BetrayedDeclarationOfFriendship -> "Your so-called 'friendship' is worth nothing."
-                Denunciation -> "You have publicly denounced us!"
-                DenouncedOurAllies -> "You have denounced our allies"
-                DenouncedOurEnemies -> "You have denounced our enemies"
-                BetrayedPromiseToNotSettleCitiesNearUs -> "You betrayed your promise to not settle cities near us"
-                RefusedToNotSettleCitiesNearUs -> "You refused to stop settling cities near us"
-                FulfilledPromiseToNotSettleCitiesNearUs -> "You fulfilled your promise to stop settling cities near us!"
-                UnacceptableDemands -> "Your arrogant demands are in bad taste"
-                UsedNuclearWeapons -> "Your use of nuclear weapons is disgusting!"
-                StealingTerritory -> "You have stolen our lands!"
-                GaveUsUnits -> "You gave us units!"
-                DestroyedProtectedMinor -> "You destroyed City-States that were under our protection!"
-                AttackedProtectedMinor -> "You attacked City-States that were under our protection!"
-                BulliedProtectedMinor -> "You demanded tribute from City-States that were under our protection!"
-                SidedWithProtectedMinor -> "You sided with a City-State over us"
-                ReturnedCapturedUnits -> "You returned captured units to us"
-            }
-            text = text.tr() + " "
+            var text = DiplomaticModifiers.valueOf(modifier.key).text.tr() + " "
             if (modifier.value > 0) text += "+"
             text += modifier.value.roundToInt()
             val color = if (modifier.value < 0) Color.RED else Color.GREEN
