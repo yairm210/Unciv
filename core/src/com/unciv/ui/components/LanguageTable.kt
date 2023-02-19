@@ -9,6 +9,7 @@ import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.screens.basescreen.BaseScreen
 import java.util.*
 import kotlin.collections.ArrayList
 

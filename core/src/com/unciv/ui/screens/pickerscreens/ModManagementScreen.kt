@@ -26,10 +26,10 @@ import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.components.AutoScrollPane
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.KeyCharAndCode
-import com.unciv.ui.components.RecreateOnResize
+import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.WrappableLabel
 import com.unciv.ui.components.extensions.UncivDateFormat.formatDate

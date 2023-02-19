@@ -15,6 +15,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
 
 interface NativeFontImplementation {
     fun getFontSize(): Int

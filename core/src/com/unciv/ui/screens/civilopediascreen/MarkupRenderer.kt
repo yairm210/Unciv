@@ -3,7 +3,7 @@ package com.unciv.ui.screens.civilopediascreen
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.onClick
 

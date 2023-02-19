@@ -4,7 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Civilization
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.toLabel

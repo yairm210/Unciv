@@ -1,10 +1,12 @@
 # Installing on macOS
 
-There is currently two ways to install Unciv on macOS. It is recommended that you use the first method as the second one is overly complicated and the end result will be the same. Both installation methods require that you have Java 8 installed on your mac.
+There is currently several ways to install Unciv on macOS.
+
+It is recommended that you use the first method as the second one is overly complicated and the end result will be the same. Both installation methods require that you have Java 8 installed on your mac.
 
 ## Installing using JAR
 
-1. If you don't already have Java 8 or OpenJDK (versions 11 and 18 do work) installed on your mac, either 
+1. If you don't already have Java 8 or OpenJDK (versions 11 and 18 do work) installed on your mac, either
   * Download it from the [official website](https://java.com/en/download/). Once you have downloaded the file, open it and follow the instructions on screen.
   * If you use [Homebrew](https://brew.sh/), just run `brew install java`
 2. Now that you have Java installed it's time to download the latest Unciv JAR. This can be done from the [releases](https://github.com/yairm210/Unciv/releases) screen here on Github. Download the file called *Unciv.jar*.

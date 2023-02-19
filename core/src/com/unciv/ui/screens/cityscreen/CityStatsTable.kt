@@ -17,7 +17,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.addSeparator

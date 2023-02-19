@@ -7,7 +7,7 @@ import com.unciv.logic.multiplayer.OnlineMultiplayerGame
 import com.unciv.models.translations.tr
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.savescreens.LoadGameScreen
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.formatShort
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.utils.concurrency.Concurrency

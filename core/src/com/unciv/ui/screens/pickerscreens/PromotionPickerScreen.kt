@@ -14,9 +14,9 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.BorderedTable
-import com.unciv.ui.components.RecreateOnResize
+import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.isEnabled

@@ -12,7 +12,7 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.addBorder
 import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.center
@@ -21,7 +21,8 @@ import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.setFontSize
 import com.unciv.ui.components.extensions.toLabel
 
-class TechButton(techName:String, private val techManager: TechManager, isWorldScreen: Boolean = true) : Table(BaseScreen.skin) {
+class TechButton(techName:String, private val techManager: TechManager, isWorldScreen: Boolean = true) : Table(
+    BaseScreen.skin) {
     val text = "".toLabel().apply {
         wrap = false
         setFontSize(14)

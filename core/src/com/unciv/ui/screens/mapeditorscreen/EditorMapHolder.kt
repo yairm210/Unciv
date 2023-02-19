@@ -14,7 +14,7 @@ import com.unciv.logic.map.TileMap
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.TileSetStrings
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.ZoomableScrollPane
 import com.unciv.ui.components.extensions.onClick
 

@@ -19,7 +19,7 @@ import com.unciv.ui.screens.multiplayerscreens.MultiplayerHelpers
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.components.AutoScrollPane
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.UncivSlider

@@ -9,7 +9,7 @@ import com.unciv.logic.files.MapSaver
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
 import com.unciv.ui.popups.ToastPopup
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.extensions.addSeparator

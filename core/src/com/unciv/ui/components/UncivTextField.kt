@@ -13,6 +13,7 @@ import com.unciv.ui.components.extensions.getOverlap
 import com.unciv.ui.components.extensions.right
 import com.unciv.ui.components.extensions.stageBoundingBox
 import com.unciv.ui.components.extensions.top
+import com.unciv.ui.screens.basescreen.BaseScreen
 
 object UncivTextField {
     /**

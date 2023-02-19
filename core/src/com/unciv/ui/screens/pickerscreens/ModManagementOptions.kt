@@ -11,7 +11,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.newgamescreen.TranslatedSelectBox
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.UncivTextField

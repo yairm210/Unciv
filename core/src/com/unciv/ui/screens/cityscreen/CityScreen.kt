@@ -27,9 +27,9 @@ import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.components.tilegroups.CityTileGroup
 import com.unciv.ui.components.tilegroups.CityTileState
 import com.unciv.ui.components.tilegroups.TileSetStrings
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.KeyCharAndCode
-import com.unciv.ui.components.RecreateOnResize
+import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.keyShortcuts

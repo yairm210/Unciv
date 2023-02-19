@@ -11,7 +11,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.ui.screens.civilopediascreen.FormattedLine.IconDisplay
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.WrappableLabel
 import com.unciv.ui.components.extensions.pad
 

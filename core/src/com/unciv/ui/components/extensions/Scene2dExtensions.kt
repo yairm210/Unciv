@@ -29,7 +29,7 @@ import com.unciv.Constants
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.KeyShortcut

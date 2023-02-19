@@ -9,12 +9,13 @@ import com.unciv.logic.trade.TradeType
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.AskNumberPopup
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.surroundWithCircle
 
 /** This is the class that holds the 4 columns of the offers (ours/theirs/ offered/available) in trade */
-class OfferColumnsTable(private val tradeLogic: TradeLogic, val screen: DiplomacyScreen, val onChange: () -> Unit): Table(BaseScreen.skin) {
+class OfferColumnsTable(private val tradeLogic: TradeLogic, val screen: DiplomacyScreen, val onChange: () -> Unit): Table(
+    BaseScreen.skin) {
 
     private fun addOffer(offer: TradeOffer, offerList: TradeOffersList, correspondingOfferList: TradeOffersList) {
         offerList.add(offer.copy())

@@ -16,7 +16,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.newgamescreen.TranslatedSelectBox
 import com.unciv.ui.popups.ConfirmPopup
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.WrappableLabel
 import com.unciv.ui.components.extensions.brighten

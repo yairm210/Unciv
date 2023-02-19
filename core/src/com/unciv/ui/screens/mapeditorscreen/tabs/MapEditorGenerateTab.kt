@@ -18,7 +18,7 @@ import com.unciv.ui.screens.mapeditorscreen.MapGeneratorSteps
 import com.unciv.ui.screens.newgamescreen.MapParametersTable
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.extensions.disable

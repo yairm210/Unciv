@@ -22,7 +22,7 @@ import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.BorderedTable
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.center

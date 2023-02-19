@@ -21,7 +21,7 @@ import com.unciv.ui.screens.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
 import com.unciv.ui.popups.popups
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
@@ -92,7 +92,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         val statsTable = Table()
         statsTable.defaults().pad(8f, 3f, 3f, 3f)
 
-        fun addStat(label: Label, icon: String, isLast: Boolean = false, screenFactory: ()->BaseScreen) {
+        fun addStat(label: Label, icon: String, isLast: Boolean = false, screenFactory: ()-> BaseScreen) {
             val image = ImageGetter.getStatIcon(icon)
             val action = {
                 worldScreen.game.pushScreen(screenFactory())

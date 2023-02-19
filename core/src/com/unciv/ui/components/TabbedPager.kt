@@ -26,6 +26,7 @@ import com.unciv.ui.components.extensions.keyShortcuts
 import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.pad
+import com.unciv.ui.screens.basescreen.BaseScreen
 
 //TODO If keys are assigned, the widget is in a popup not filling stage width, and a button is
 // partially visible on the right end, the key tooltip will show outside the parent.

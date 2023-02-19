@@ -26,6 +26,7 @@ import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.components.*
 import com.unciv.ui.components.extensions.*
+import com.unciv.ui.screens.basescreen.BaseScreen
 import java.util.*
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
 
@@ -237,7 +238,7 @@ class PlayerPickerTable(
      * @param player current player
      */
     private fun popupFriendPicker(player: Player) {
-        FriendSelectionPopup(this, player, previousScreen as BaseScreen ).open()
+        FriendSelectionPopup(this, player, previousScreen as BaseScreen).open()
         update()
     }
 

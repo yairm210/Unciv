@@ -10,7 +10,7 @@ import com.unciv.logic.UncivShowableException
 import com.unciv.logic.map.MapGeneratedMainType
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.popups.Popup
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.onChange
 import com.unciv.ui.components.extensions.toLabel
 

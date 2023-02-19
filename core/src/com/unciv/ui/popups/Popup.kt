@@ -15,9 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.event.EventBus
-import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.ui.components.AutoScrollPane
-import com.unciv.ui.components.BaseScreen
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
@@ -26,6 +24,8 @@ import com.unciv.ui.components.extensions.keyShortcuts
 import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.basescreen.UncivStage
 
 /**
  * Base class for all Popups, i.e. Tables that get rendered in the middle of a screen and on top of everything else

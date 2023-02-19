@@ -25,7 +25,7 @@ import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorEditTab
 import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorEditTab.BrushHandlerType
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.TileSetStrings
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.onClick

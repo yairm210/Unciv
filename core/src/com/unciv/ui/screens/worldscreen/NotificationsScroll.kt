@@ -8,7 +8,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.WrappableLabel
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel

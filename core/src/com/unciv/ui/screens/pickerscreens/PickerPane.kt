@@ -9,7 +9,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.components.AutoScrollPane
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.isEnabled

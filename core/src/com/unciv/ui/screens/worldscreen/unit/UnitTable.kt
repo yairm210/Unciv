@@ -20,7 +20,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.pickerscreens.CityRenamePopup
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.UnitGroup
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
@@ -65,7 +65,8 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
     private var selectedUnitHasChanged = false
     val separator: Actor
 
-    private var bg = Image(BaseScreen.skinStrings.getUiBackground("WorldScreen/UnitTable",
+    private var bg = Image(
+        BaseScreen.skinStrings.getUiBackground("WorldScreen/UnitTable",
         BaseScreen.skinStrings.roundedEdgeRectangleMidShape,
         BaseScreen.skinStrings.skinConfig.baseColor.darken(0.5f)))
 

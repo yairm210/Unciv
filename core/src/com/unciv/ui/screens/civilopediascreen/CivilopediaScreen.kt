@@ -17,10 +17,10 @@ import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.KeyCharAndCode
-import com.unciv.ui.components.RecreateOnResize
+import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.onClick

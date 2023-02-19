@@ -5,12 +5,13 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toTextButton
 
-class TradeTable(private val otherCivilization: Civilization, stage: DiplomacyScreen): Table(BaseScreen.skin) {
+class TradeTable(private val otherCivilization: Civilization, stage: DiplomacyScreen): Table(
+    BaseScreen.skin) {
     val currentPlayerCiv = otherCivilization.gameInfo.getCurrentPlayerCivilization()
     var tradeLogic = TradeLogic(currentPlayerCiv,otherCivilization)
     var offerColumnsTable = OfferColumnsTable(tradeLogic, stage) { onChange() }

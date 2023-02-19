@@ -6,7 +6,7 @@ import android.os.Build
 import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
 import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
-import com.unciv.ui.utils.GeneralPlatformSpecificHelpers
+import com.unciv.ui.components.GeneralPlatformSpecificHelpers
 import kotlin.concurrent.thread
 
 /** See also interface [GeneralPlatformSpecificHelpers].

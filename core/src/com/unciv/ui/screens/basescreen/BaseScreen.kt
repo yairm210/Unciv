@@ -1,4 +1,4 @@
-package com.unciv.ui.components
+package com.unciv.ui.screens.basescreen
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
@@ -18,15 +18,16 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.unciv.UncivGame
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.skins.SkinStrings
-import com.unciv.ui.screens.basescreen.UncivStage
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popups.options.OptionsPopup
-import com.unciv.ui.popups.activePopup
-import com.unciv.ui.tutorials.TutorialController
+import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.KeyShortcutDispatcher
 import com.unciv.ui.components.extensions.DispatcherVetoResult
 import com.unciv.ui.components.extensions.DispatcherVetoer
 import com.unciv.ui.components.extensions.installShortcutDispatcher
 import com.unciv.ui.components.extensions.isNarrowerThan4to3
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.activePopup
+import com.unciv.ui.popups.options.OptionsPopup
+import com.unciv.ui.tutorials.TutorialController
 
 abstract class BaseScreen : Screen {
 
@@ -125,7 +126,8 @@ abstract class BaseScreen : Screen {
                 add("Rectangle", ImageGetter.getDrawable(""), Drawable::class.java)
                 add("Circle", ImageGetter.getDrawable("OtherIcons/Circle").apply { setMinSize(20f, 20f) }, Drawable::class.java)
                 add("Scrollbar", ImageGetter.getDrawable("").apply { setMinSize(10f, 10f) }, Drawable::class.java)
-                add("RectangleWithOutline",skinStrings.getUiBackground("", skinStrings.rectangleWithOutlineShape), Drawable::class.java)
+                add("RectangleWithOutline",
+                    skinStrings.getUiBackground("", skinStrings.rectangleWithOutlineShape), Drawable::class.java)
                 add("Select-box", skinStrings.getUiBackground("", skinStrings.selectBoxShape), Drawable::class.java)
                 add("Select-box-pressed", skinStrings.getUiBackground("", skinStrings.selectBoxPressedShape), Drawable::class.java)
                 add("Checkbox", skinStrings.getUiBackground("", skinStrings.checkboxShape), Drawable::class.java)

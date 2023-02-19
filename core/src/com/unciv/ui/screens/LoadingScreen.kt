@@ -9,7 +9,7 @@ import com.unciv.Constants
 import com.unciv.ui.images.ImageWithCustomSize
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.popups
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.toLabel
 
 /** A loading screen that creates a screenshot of the current screen and adds a "Loading..." popup on top of that */

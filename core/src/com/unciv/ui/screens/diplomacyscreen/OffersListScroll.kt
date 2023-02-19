@@ -23,7 +23,7 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.onClick

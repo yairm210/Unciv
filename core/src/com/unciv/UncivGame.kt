@@ -33,7 +33,7 @@ import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.screens.worldscreen.PlayerReadyScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
@@ -266,7 +266,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     override fun getScreen(): BaseScreen? {
         val curScreen = super.getScreen()
-        return if (curScreen == null) { null } else { curScreen as BaseScreen }
+        return if (curScreen == null) { null } else { curScreen as BaseScreen
+        }
     }
 
     private fun setScreen(newScreen: BaseScreen) {

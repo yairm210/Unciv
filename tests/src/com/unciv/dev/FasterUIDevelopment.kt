@@ -16,7 +16,7 @@ import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.throttle
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.ImageWithCustomSize
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.FontFamilyData
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.NativeFontImplementation

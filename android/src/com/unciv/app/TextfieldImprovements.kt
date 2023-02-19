@@ -9,11 +9,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener
 import com.unciv.logic.event.EventBus
 import com.unciv.models.translations.tr
-import com.unciv.ui.UncivStage
-import com.unciv.ui.popup.Popup
-import com.unciv.ui.utils.KeyCharAndCode
-import com.unciv.ui.utils.extensions.getAscendant
-import com.unciv.ui.utils.scrollAscendantToTextField
+import com.unciv.ui.screens.basescreen.UncivStage
+import com.unciv.ui.popups.Popup
+import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.extensions.getAscendant
+import com.unciv.ui.components.scrollAscendantToTextField
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.withGLContext
 import kotlinx.coroutines.delay

@@ -25,6 +25,7 @@ import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.screens.basescreen.BaseScreen
 import kotlin.math.abs
 import kotlin.math.sign
 

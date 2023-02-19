@@ -26,6 +26,7 @@ import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.components.*
 import com.unciv.ui.components.extensions.*
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.debug
 import kotlin.math.atan2
 import kotlin.math.max
@@ -272,7 +273,7 @@ object ImageGetter {
 
     fun religionIconExists(iconName: String) = imageExists("ReligionIcons/$iconName")
 
-    @Deprecated("Use skin defined base color instead", ReplaceWith("BaseScreen.skinStrings.skinConfig.baseColor", "com.unciv.ui.utils.BaseScreen"))
+    @Deprecated("Use skin defined base color instead", ReplaceWith("BaseScreen.skinStrings.skinConfig.baseColor", "com.unciv.ui.screens.basescreen.BaseScreen"))
     fun getBlue() = Color(0x004085bf)
 
     fun getCircle() = getImage("OtherIcons/Circle")

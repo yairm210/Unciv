@@ -8,7 +8,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.tilegroups.TileGroup
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import kotlin.random.Random
 
 class TileLayerTerrain(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {

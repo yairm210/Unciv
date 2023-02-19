@@ -17,9 +17,9 @@ import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.event.EventBus
-import com.unciv.ui.UncivStage
-import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.Fonts
+import com.unciv.ui.screens.basescreen.UncivStage
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.components.Fonts
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import java.io.File

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.unciv.Constants
 import com.unciv.models.translations.tr
+import com.unciv.ui.screens.basescreen.BaseScreen
 import kotlin.math.floor
 
 /** A [Label] that unlike the original participates correctly in layout

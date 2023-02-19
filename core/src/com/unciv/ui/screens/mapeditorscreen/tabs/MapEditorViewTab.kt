@@ -20,7 +20,7 @@ import com.unciv.ui.screens.civilopediascreen.FormattedLine.IconDisplay
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
 import com.unciv.ui.popups.ToastPopup
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.WrappableLabel

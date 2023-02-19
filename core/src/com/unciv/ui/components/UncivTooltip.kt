@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Tooltip
 import com.badlogic.gdx.utils.Align
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.screens.basescreen.BaseScreen
 
 /**
  * A **Replacement** for Gdx [Tooltip], placement does not follow the mouse.

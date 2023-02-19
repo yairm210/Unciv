@@ -12,7 +12,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.components.AutoScrollPane
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.brighten

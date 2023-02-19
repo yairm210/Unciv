@@ -12,7 +12,7 @@ import com.unciv.ui.screens.mapeditorscreen.TileInfoNormalizer
 import com.unciv.ui.screens.newgamescreen.ModCheckboxTable
 import com.unciv.ui.screens.newgamescreen.TranslatedSelectBox
 import com.unciv.ui.popups.Popup
-import com.unciv.ui.components.BaseScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.isEnabled

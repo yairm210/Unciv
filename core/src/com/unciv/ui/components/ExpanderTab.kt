@@ -12,6 +12,7 @@ import com.unciv.UncivGame
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.screens.basescreen.BaseScreen
 
 /**
  * A widget with a header that when clicked shows/hides a sub-Table.
