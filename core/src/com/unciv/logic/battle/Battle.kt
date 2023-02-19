@@ -631,7 +631,12 @@ object Battle {
                 // This is so that future checks which check if a unit has been captured are caught give the right answer
                 //  For example, in postBattleMoveToAttackedTile
                 capturedUnit.civ = attacker.getCivInfo()
-                attacker.getCivInfo().units.placeUnitNearTile(capturedUnitTile.position, Constants.worker)
+
+                val workerTypeUnit = attacker.getCivInfo().gameInfo.ruleset.units.values
+                    .firstOrNull { it.isCivilian() && it.getMatchingUniques(UniqueType.BuildImprovements).any { it.params[0] == "Land" } }
+
+                if (workerTypeUnit != null)
+                    attacker.getCivInfo().units.placeUnitNearTile(capturedUnitTile.position, workerTypeUnit.name)
             }
             else -> capturedUnit.capturedBy(attacker.getCivInfo())
         }
