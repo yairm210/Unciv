@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.managers.SpyAction
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.LocaleCode
@@ -89,12 +90,34 @@ object TranslationFileWriter {
             if (templateFile.exists())
                 linesToTranslate.addAll(templateFile.reader(TranslationFileReader.charset).readLines())
 
+            linesToTranslate += "\n\n#################### Lines from Unique Types #######################\n"
+            for (uniqueType in UniqueType.values()) {
+                val deprecationAnnotation = uniqueType.getDeprecationAnnotation()
+                if (deprecationAnnotation != null) continue
+                if (uniqueType.flags.contains(UniqueFlag.HiddenToUsers)) continue
+
+                linesToTranslate += "${uniqueType.getTranslatable()} = "
+            }
+
             for (uniqueParameterType in UniqueParameterType.values()) {
                 val strings = uniqueParameterType.getTranslationWriterStringsForOutput()
                 if (strings.isEmpty()) continue
                 linesToTranslate += "\n######### ${uniqueParameterType.displayName} ###########\n"
                 linesToTranslate.addAll(strings.map { "$it = " })
             }
+
+            for (uniqueTarget in UniqueTarget.values())
+                linesToTranslate += "$uniqueTarget = "
+
+            linesToTranslate += "\n\n#################### Lines from spy actions #######################\n"
+            for (spyAction in SpyAction.values()) {
+                linesToTranslate += "$spyAction = "
+            }
+
+            linesToTranslate += "\n\n#################### Lines from diplomatic modifiers #######################\n"
+            for (diplomaticModifier in DiplomaticModifiers.values())
+                linesToTranslate += "${diplomaticModifier.text} = "
+
 
             for (baseRuleset in BaseRuleset.values()) {
                 val generatedStringsFromBaseRuleset =
@@ -112,28 +135,10 @@ object TranslationFileWriter {
 
         for ((key, value) in fileNameToGeneratedStrings) {
             if (value.isEmpty()) continue
-            linesToTranslate.add("\n#################### Lines from $key ####################\n")
+            linesToTranslate += "\n#################### Lines from $key ####################\n"
             linesToTranslate.addAll(value)
         }
         fileNameToGeneratedStrings.clear()  // No longer needed
-
-        if (modFolder == null) { // base game
-            linesToTranslate.add("\n\n#################### Lines from Unique Types #######################\n")
-            for (uniqueType in UniqueType.values()) {
-                val deprecationAnnotation = uniqueType.getDeprecationAnnotation()
-                if (deprecationAnnotation != null) continue
-                if (uniqueType.flags.contains(UniqueFlag.HiddenToUsers)) continue
-
-                linesToTranslate.add("${uniqueType.getTranslatable()} = ")
-            }
-
-            for (uniqueTarget in UniqueTarget.values())
-                linesToTranslate.add("$uniqueTarget = ")
-
-            for (spyAction in SpyAction.values()) {
-                linesToTranslate.add("$spyAction = ")
-            }
-        }
 
         var countOfTranslatableLines = 0
         val countOfTranslatedLines = HashMap<String, Int>()
