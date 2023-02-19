@@ -1,4 +1,4 @@
-package com.unciv.ui.savescreens
+package com.unciv.ui.screens.savescreens
 
 import com.unciv.Constants
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
@@ -77,7 +77,10 @@ object QuickSave {
                 Log.error("Could not autoload game", ex)
                 launchOnGLThread {
                     loadingPopup.close()
-                    val (message) = LoadGameScreen.getLoadExceptionMessage(ex, "Cannot resume game!")
+                    val (message) = LoadGameScreen.getLoadExceptionMessage(
+                        ex,
+                        "Cannot resume game!"
+                    )
                     ToastPopup(message, screen)
                 }
                 return@run

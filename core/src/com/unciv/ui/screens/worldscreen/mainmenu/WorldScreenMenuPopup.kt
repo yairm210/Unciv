@@ -10,8 +10,8 @@ import com.unciv.ui.popups.options.addMusicCurrentlyPlaying
 import com.unciv.ui.popups.options.addMusicPauseSlider
 import com.unciv.ui.popups.options.addMusicVolumeSlider
 import com.unciv.ui.popups.Popup
-import com.unciv.ui.savescreens.LoadGameScreen
-import com.unciv.ui.savescreens.SaveGameScreen
+import com.unciv.ui.screens.savescreens.LoadGameScreen
+import com.unciv.ui.screens.savescreens.SaveGameScreen
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 

@@ -38,9 +38,9 @@ import com.unciv.ui.screens.pickerscreens.TechPickerScreen
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.popups.hasOpenPopups
-import com.unciv.ui.savescreens.LoadGameScreen
-import com.unciv.ui.savescreens.QuickSave
-import com.unciv.ui.savescreens.SaveGameScreen
+import com.unciv.ui.screens.savescreens.LoadGameScreen
+import com.unciv.ui.screens.savescreens.QuickSave
+import com.unciv.ui.screens.savescreens.SaveGameScreen
 import com.unciv.ui.components.BaseScreen
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.extensions.centerX

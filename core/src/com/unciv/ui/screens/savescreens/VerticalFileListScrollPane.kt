@@ -1,4 +1,4 @@
-package com.unciv.ui.savescreens
+package com.unciv.ui.screens.savescreens
 
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.files.FileHandle

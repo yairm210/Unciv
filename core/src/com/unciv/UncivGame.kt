@@ -31,7 +31,7 @@ import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
-import com.unciv.ui.savescreens.LoadGameScreen
+import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.components.BaseScreen
 import com.unciv.ui.components.extensions.center

@@ -39,8 +39,8 @@ import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.popups.popups
-import com.unciv.ui.savescreens.LoadGameScreen
-import com.unciv.ui.savescreens.QuickSave
+import com.unciv.ui.screens.savescreens.LoadGameScreen
+import com.unciv.ui.screens.savescreens.QuickSave
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.newgamescreen.NewGameScreen
 import com.unciv.ui.screens.pickerscreens.ModManagementScreen

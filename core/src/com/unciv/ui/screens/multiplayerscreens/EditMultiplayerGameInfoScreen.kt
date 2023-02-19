@@ -8,7 +8,7 @@ import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
-import com.unciv.ui.savescreens.LoadGameScreen
+import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable

@@ -9,7 +9,6 @@ import com.badlogic.gdx.utils.viewport.Viewport
 import com.unciv.UncivGame
 import com.unciv.logic.event.Event
 import com.unciv.logic.event.EventBus
-import com.unciv.ui.components.TextureArraySpriteBatch
 import com.unciv.ui.crashhandling.wrapCrashHandling
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import com.unciv.utils.Log

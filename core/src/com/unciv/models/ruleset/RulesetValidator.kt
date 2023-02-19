@@ -13,7 +13,6 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stats
-import com.unciv.ui.components.getRelativeTextDistance
 
 class RulesetValidator(val ruleset: Ruleset) {
 

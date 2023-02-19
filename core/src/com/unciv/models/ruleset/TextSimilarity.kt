@@ -1,4 +1,4 @@
-package com.unciv.ui.components
+package com.unciv.models.ruleset
 
 /**
  * Algorithm:

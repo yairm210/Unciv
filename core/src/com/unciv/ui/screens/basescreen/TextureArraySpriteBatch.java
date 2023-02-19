@@ -1,4 +1,4 @@
-package com.unciv.ui.components;
+package com.unciv.ui.screens.basescreen;
 
 import java.nio.IntBuffer;
 import java.util.Arrays;

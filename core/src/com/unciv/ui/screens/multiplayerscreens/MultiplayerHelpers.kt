@@ -6,7 +6,7 @@ import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.logic.multiplayer.OnlineMultiplayerGame
 import com.unciv.models.translations.tr
 import com.unciv.ui.popups.Popup
-import com.unciv.ui.savescreens.LoadGameScreen
+import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.components.BaseScreen
 import com.unciv.ui.components.extensions.formatShort
 import com.unciv.ui.components.extensions.toCheckBox

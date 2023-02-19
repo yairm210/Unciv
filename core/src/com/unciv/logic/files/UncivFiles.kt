@@ -12,7 +12,7 @@ import com.unciv.logic.*
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.doMigrations
 import com.unciv.models.metadata.isMigrationNecessary
-import com.unciv.ui.savescreens.Gzip
+import com.unciv.ui.screens.savescreens.Gzip
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.debug
