@@ -68,7 +68,7 @@ class DiplomacyScreen(
     }
 
     private val leftSideTable = Table().apply { defaults().pad(nationIconPad) }
-    private val leftSideScroll = ScrollPane(leftSideTable)
+    val leftSideScroll = ScrollPane(leftSideTable)
     private val rightSideTable = Table()
     private val closeButton = Constants.close.toTextButton()
 
