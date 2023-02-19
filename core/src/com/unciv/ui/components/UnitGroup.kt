@@ -10,13 +10,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.extensions.addToCenter
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.surroundWithThinCircle
+import com.unciv.ui.images.ImageGetter
 
 class FlagBackground(drawable: TextureRegionDrawable, size: Float): Image(drawable) {
 
@@ -178,6 +178,8 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
             unit.isSleeping() -> ImageGetter.getImage("UnitActionIcons/Sleep")
             unit.isMoving() -> ImageGetter.getImage("UnitActionIcons/MoveTo")
             unit.isExploring() -> ImageGetter.getImage("UnitActionIcons/Explore")
+            unit.getTile().improvementInProgress!=null && unit.canBuildImprovement(unit.getTile().getTileImprovementInProgress()!!) ->
+                ImageGetter.getImage("ImprovementIcons/${unit.getTile().improvementInProgress}")
             unit.isAutomated() -> ImageGetter.getImage("UnitActionIcons/Automate")
             unit.isSetUpForSiege() -> ImageGetter.getImage("UnitActionIcons/SetUp")
             else -> null
