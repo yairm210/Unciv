@@ -1,8 +1,14 @@
 # Installing on macOS
 
-There is currently several ways to install Unciv on macOS.
+There are currently several ways to install Unciv on macOS.
 
-It is recommended that you use the first method as the second one is overly complicated and the end result will be the same. Both installation methods require that you have Java 8 installed on your mac.
+It is recommended that you do not install from source, since the end result will be the same.
+
+# Installing using MacPort
+
+Details [here](https://ports.macports.org/port/unciv/) - simply run `sudo port install unciv` from command line and you're good to go!
+
+Does not require JDK to be preinstalled
 
 ## Installing using JAR
 
