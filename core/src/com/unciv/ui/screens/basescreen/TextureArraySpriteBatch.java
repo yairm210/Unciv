@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.basescreen;
 
+import java.nio.Buffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
 
@@ -158,7 +159,7 @@ public class TextureArraySpriteBatch implements Batch {
         for (int i = 0; i < maxTextureUnits; i++) {
             textureUnitIndicesBuffer.put(i);
         }
-        textureUnitIndicesBuffer.flip();
+        ((Buffer) textureUnitIndicesBuffer).flip();
 
         VertexDataType vertexDataType = (Gdx.gl30 != null) ? VertexDataType.VertexBufferObjectWithVAO : VertexDataType.VertexArray;
 
