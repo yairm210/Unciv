@@ -1,31 +1,11 @@
-
-
-Added documentation for installing on mac with macport
-
-Added Macports badge
+Added Undo button for unit moves!
 
 Better trade screen for portrait mode
 
-Fix android build
-
 "Gift" trades to AI civs make them more friendly towards you
 
-chore: diplomatic modifier text auto-translated
+Add improvement action image to workers actively building improvement
 
-chore: diplomatic modifier text as part of class
+Replace settlers with modded worker-like units in mods
 
-Added Undo button for unit moves!
-
-Resolve  - add improvement action image to workers actively building improvement
-
-Allow settlers to be captured when worker replacements exist
-
-Allow settlers to be captured when worker replacements exist
-
-chore: more ui class reorg
-
-chore: huge code reorg for ui classes
-
-chore: moved next turn actions into next turn button
-
-Removed zoom limit for world-wrap maps  - By Gualdimar
+Removed zoom limit for world-wrap maps - By Gualdimar
