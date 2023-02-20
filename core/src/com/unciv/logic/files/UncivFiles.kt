@@ -351,7 +351,8 @@ class UncivFiles(
                 Log.error("Exception while deserializing GameInfo JSON", ex)
                 val onlyVersion = json().fromJson(GameInfoSerializationVersion::class.java, unzippedJson)
                 throw IncompatibleGameInfoVersionException(onlyVersion.version, ex)
-            }
+            } ?: throw UncivShowableException("The file data seems to be corrupted.")
+
             if (gameInfo.version > GameInfo.CURRENT_COMPATIBILITY_VERSION) {
                 // this means there wasn't an immediate error while serializing, but this version will cause other errors later down the line
                 throw IncompatibleGameInfoVersionException(gameInfo.version)
