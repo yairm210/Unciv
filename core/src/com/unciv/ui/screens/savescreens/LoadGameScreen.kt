@@ -96,7 +96,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
     override fun onExistingSaveSelected(saveGameFile: FileHandle) {
         copySavedGameToClipboardButton.enable()
         rightSideButton.isVisible = true
-        rightSideButton.setText("Load [$selectedSave]".tr())
+        rightSideButton.setText("Load [${saveGameFile.name()}]".tr())
         rightSideButton.enable()
     }
 
@@ -115,14 +115,14 @@ class LoadGameScreen : LoadOrSaveScreen() {
     }
 
     private fun onLoadGame() {
-        if (selectedSave.isEmpty()) return
+        if (selectedSave == null) return
         val loadingPopup = Popup( this)
         loadingPopup.addGoodSizedLabel(Constants.loading)
         loadingPopup.open()
         Concurrency.run(loadGame) {
             try {
                 // This is what can lead to ANRs - reading the file and setting the transients, that's why this is in another thread
-                val loadedGame = game.files.loadGameByName(selectedSave)
+                val loadedGame = game.files.loadGameFromFile(selectedSave!!)
                 game.loadGame(loadedGame)
             } catch (notAPlayer: UncivShowableException) {
                 launchOnGLThread {
@@ -183,9 +183,10 @@ class LoadGameScreen : LoadOrSaveScreen() {
     private fun getCopyExistingSaveToClipboardButton(): TextButton {
         val copyButton = copyExistingSaveToClipboard.toTextButton()
         copyButton.onActivation {
+            if (selectedSave == null) return@onActivation
             Concurrency.run(copyExistingSaveToClipboard) {
                 try {
-                    val gameText = game.files.getSave(selectedSave).readString()
+                    val gameText = selectedSave!!.readString()
                     Gdx.app.clipboard.contents = if (gameText[0] == '{') Gzip.zip(gameText) else gameText
                 } catch (ex: Throwable) {
                     ex.printStackTrace()
