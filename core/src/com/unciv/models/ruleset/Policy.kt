@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset
 
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
@@ -90,6 +91,41 @@ open class Policy : RulesetObject() {
                 }
             }
         }
+
+        fun isEnabledByPolicy(rulesetObject: IRulesetObject) =
+                rulesetObject.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals).any { it.conditionals.any {
+                    it.type == UniqueType.ConditionalAfterPolicy && it.params[0] == name
+                } }
+
+        val enabledBuildings = ruleset.buildings.values.filter { isEnabledByPolicy(it) }
+        val enabledUnits = ruleset.units.values.filter { isEnabledByPolicy(it) }
+
+        if (enabledBuildings.isNotEmpty() || enabledUnits.isNotEmpty()){
+            lineList += FormattedLine("Enables:")
+            for (building in enabledBuildings)
+                lineList += FormattedLine(building.name, link = building.makeLink(), indent = 1)
+            for (unit in enabledUnits)
+                lineList += FormattedLine(unit.name, link = unit.makeLink(), indent = 1)
+        }
+
+
+        fun isDisabledByPolicy(rulesetObject: IRulesetObject) =
+                rulesetObject.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals).any { it.conditionals.any {
+                    it.type == UniqueType.ConditionalBeforePolicy && it.params[0] == name
+                } }
+
+
+        val disabledBuildings = ruleset.buildings.values.filter { isDisabledByPolicy(it) }
+        val disabledUnits = ruleset.units.values.filter { isDisabledByPolicy(it) }
+
+        if (disabledBuildings.isNotEmpty() || disabledUnits.isNotEmpty()){
+            lineList += FormattedLine("Disables:")
+            for (building in disabledBuildings)
+                lineList += FormattedLine(building.name, link = building.makeLink(), indent = 1)
+            for (unit in disabledUnits)
+                lineList += FormattedLine(unit.name, link = unit.makeLink(), indent = 1)
+        }
+
 
         if (uniques.isNotEmpty()) {
             lineList += FormattedLine()

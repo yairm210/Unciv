@@ -452,7 +452,7 @@ enum class UniqueParameterType(
         }
     },
 
-    /** [UniqueType.ConditionalPolicy] and others, no central implementation */
+    /** [UniqueType.ConditionalAfterPolicy] and others, no central implementation */
     Policy("policy", "Oligarchy", "The name of any policy") {
         override fun getErrorSeverity(
             parameterText: String,

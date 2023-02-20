@@ -185,9 +185,9 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.civInfo != null && state.civInfo.tech.isResearched(condition.params[0])
             UniqueType.ConditionalNoTech ->
                 state.civInfo != null && !state.civInfo.tech.isResearched(condition.params[0])
-            UniqueType.ConditionalPolicy ->
+            UniqueType.ConditionalAfterPolicy ->
                 state.civInfo != null && state.civInfo.policies.isAdopted(condition.params[0])
-            UniqueType.ConditionalNoPolicy ->
+            UniqueType.ConditionalBeforePolicy ->
                 state.civInfo != null && !state.civInfo.policies.isAdopted(condition.params[0])
             UniqueType.ConditionalBeforePantheon ->
                 state.civInfo != null && state.civInfo.religionManager.religionState == ReligionState.None
