@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.ScreenSize
@@ -169,7 +170,8 @@ private fun addMaxZoomSlider(table: Table, settings: GameSettings) {
     ) {
         settings.maxWorldZoomOut = it
         settings.save()
-        UncivGame.Current.worldScreen?.mapHolder?.reloadMaxZoom()
+        if (GUI.isWorldLoaded())
+            GUI.getMap().reloadMaxZoom()
     }
     table.add(maxZoomSlider).pad(5f).row()
 }

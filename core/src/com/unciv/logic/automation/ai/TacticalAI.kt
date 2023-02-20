@@ -1,6 +1,7 @@
 package com.unciv.logic.automation.ai
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.Civilization
@@ -32,7 +33,7 @@ class TacticalAI : IsPartOfGameInfoSerialization {
         Log.debug("MYTAG Zone $zoneId City: ${zone?.city} Area: ${zone?.area} Area size: ${
             tile.tileMap.continentSizes[tile.getContinent()]} Zone size: ${zone?.tileCount}")
 
-        val mapHolder = UncivGame.Current.worldScreen!!.mapHolder
+        val mapHolder = GUI.getMap()
 
         for (otherTile in mapHolder.tileMap.values.asSequence()) {
 

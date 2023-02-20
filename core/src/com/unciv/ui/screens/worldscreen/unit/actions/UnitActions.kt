@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.worldscreen.unit.actions
 
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.automation.unit.WorkerAutomation
@@ -30,14 +31,13 @@ import com.unciv.ui.screens.worldscreen.unit.UnitTable
 
 object UnitActions {
 
-    fun getUnitActions(unit: MapUnit, worldScreen: WorldScreen): List<UnitAction> {
-        return if (unit.showAdditionalActions) getAdditionalActions(unit, worldScreen)
-        else getNormalActions(unit, worldScreen)
+    fun getUnitActions(unit: MapUnit): List<UnitAction> {
+        return if (unit.showAdditionalActions) getAdditionalActions(unit)
+        else getNormalActions(unit)
     }
 
-    private fun getNormalActions(unit: MapUnit, worldScreen: WorldScreen): List<UnitAction> {
+    private fun getNormalActions(unit: MapUnit): List<UnitAction> {
         val tile = unit.getTile()
-        val unitTable = worldScreen.bottomUnitTable
         val actionList = ArrayList<UnitAction>()
 
         if (unit.isMoving())
@@ -53,12 +53,12 @@ object UnitActions {
         addPromoteAction(unit, actionList)
         UnitActionsUpgrade.addUnitUpgradeAction(unit, actionList)
         addTransformAction(unit, actionList)
-        UnitActionsPillage.addPillageAction(unit, actionList, worldScreen)
+        UnitActionsPillage.addPillageAction(unit, actionList)
         addParadropAction(unit, actionList)
         addAirSweepAction(unit, actionList)
         addSetupAction(unit, actionList)
         addFoundCityAction(unit, actionList, tile)
-        addBuildingImprovementsAction(unit, actionList, tile, worldScreen)
+        addBuildingImprovementsAction(unit, actionList, tile)
         addRepairAction(unit, actionList)
         addCreateWaterImprovements(unit, actionList)
         UnitActionsGreatPerson.addGreatPersonActions(unit, actionList, tile)
@@ -71,32 +71,32 @@ object UnitActions {
         addTriggerUniqueActions(unit, actionList)
         addAddInCapitalAction(unit, actionList, tile)
 
-        addWaitAction(unit, actionList, worldScreen)
+        addWaitAction(unit, actionList)
 
-        addToggleActionsAction(unit, actionList, unitTable)
+        addToggleActionsAction(unit, actionList)
 
         return actionList
     }
 
-    private fun getAdditionalActions(unit: MapUnit, worldScreen: WorldScreen): List<UnitAction> {
+    private fun getAdditionalActions(unit: MapUnit): List<UnitAction> {
         val tile = unit.getTile()
-        val unitTable = worldScreen.bottomUnitTable
         val actionList = ArrayList<UnitAction>()
 
         addSleepActions(actionList, unit, true)
         addFortifyActions(actionList, unit, true)
 
-        addSwapAction(unit, actionList, worldScreen)
-        addDisbandAction(actionList, unit, worldScreen)
+        addSwapAction(unit, actionList)
+        addDisbandAction(actionList, unit)
         addGiftAction(unit, actionList, tile)
 
 
-        addToggleActionsAction(unit, actionList, unitTable)
+        addToggleActionsAction(unit, actionList)
 
         return actionList
     }
 
-    private fun addSwapAction(unit: MapUnit, actionList: ArrayList<UnitAction>, worldScreen: WorldScreen) {
+    private fun addSwapAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
+        val worldScreen = GUI.getWorldScreen()
         // Air units cannot swap
         if (unit.baseUnit.movesLikeAirUnits()) return
         // Disable unit swapping if multiple units are selected. It would make little sense.
@@ -118,16 +118,18 @@ object UnitActions {
         )
     }
 
-    private fun addDisbandAction(actionList: ArrayList<UnitAction>, unit: MapUnit, worldScreen: WorldScreen) {
+    private fun addDisbandAction(actionList: ArrayList<UnitAction>, unit: MapUnit) {
+        val worldScreen = GUI.getWorldScreen()
         actionList += UnitAction(type = UnitActionType.DisbandUnit, action = {
             if (!worldScreen.hasOpenPopups()) {
                 val disbandText = if (unit.currentTile.getOwner() == unit.civ)
                     "Disband this unit for [${unit.baseUnit.getDisbandGold(unit.civ)}] gold?".tr()
                 else "Do you really want to disband this unit?".tr()
-                ConfirmPopup(UncivGame.Current.worldScreen!!, disbandText, "Disband unit") {
+                ConfirmPopup(worldScreen, disbandText, "Disband unit") {
                     unit.disband()
-                    worldScreen.shouldUpdate = true
-                    if (UncivGame.Current.settings.autoUnitCycle) worldScreen.switchToNextUnit()
+                    GUI.setUpdateWorldOnNextRender()
+                    if (GUI.getSettings().autoUnitCycle)
+                        worldScreen.switchToNextUnit()
                 }.open()
             }
         }.takeIf { unit.currentMovement > 0 })
@@ -189,7 +191,7 @@ object UnitActions {
                 tile.changeImprovement("City center")
             tile.removeRoad()
             unit.destroy()
-            UncivGame.Current.worldScreen!!.shouldUpdate = true
+            GUI.setUpdateWorldOnNextRender()
         }
 
         if (unit.civ.playerType == PlayerType.AI)
@@ -206,7 +208,7 @@ object UnitActions {
                     else {
                         // ask if we would be breaking a promise
                         val text = "Do you want to break your promise to [$leaders]?"
-                        ConfirmPopup(UncivGame.Current.worldScreen!!, text, "Break promise", action = foundAction).open(force = true)
+                        ConfirmPopup(GUI.getWorldScreen(), text, "Break promise", action = foundAction).open(force = true)
                     }
                 }
             )
@@ -360,9 +362,7 @@ object UnitActions {
     private fun addBuildingImprovementsAction(
         unit: MapUnit,
         actionList: ArrayList<UnitAction>,
-        tile: Tile,
-        worldScreen: WorldScreen
-    ) {
+        tile: Tile) {
         if (!unit.cache.hasUniqueToBuildImprovements) return
         if (unit.isEmbarked()) return
 
@@ -376,7 +376,10 @@ object UnitActions {
         actionList += UnitAction(UnitActionType.ConstructImprovement,
             isCurrentAction = unit.currentTile.hasImprovementInProgress(),
             action = {
-                worldScreen.game.pushScreen(ImprovementPickerScreen(tile, unit) { if (UncivGame.Current.settings.autoUnitCycle) worldScreen.switchToNextUnit() })
+                GUI.pushScreen(ImprovementPickerScreen(tile, unit) {
+                    if (GUI.getSettings().autoUnitCycle)
+                        GUI.getWorldScreen().switchToNextUnit()
+                })
             }.takeIf { couldConstruct }
         )
     }
@@ -628,7 +631,7 @@ object UnitActions {
                 unit.destroy()  // City states don't get GPs
             else
                 unit.gift(recipient)
-            UncivGame.Current.worldScreen!!.shouldUpdate = true
+            GUI.setUpdateWorldOnNextRender()
         }
 
         return UnitAction(UnitActionType.GiftUnit, action = giftAction)
@@ -645,23 +648,23 @@ object UnitActions {
         }
     }
 
-    private fun addWaitAction(unit: MapUnit, actionList: ArrayList<UnitAction>, worldScreen: WorldScreen) {
+    private fun addWaitAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
         actionList += UnitAction(
             type = UnitActionType.Wait,
             action = {
                 unit.due = false
-                worldScreen.switchToNextUnit()
+                GUI.getWorldScreen().switchToNextUnit()
             }
         )
     }
 
-    private fun addToggleActionsAction(unit: MapUnit, actionList: ArrayList<UnitAction>, unitTable: UnitTable) {
+    private fun addToggleActionsAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
         actionList += UnitAction(
             type = if (unit.showAdditionalActions) UnitActionType.HideAdditionalActions
             else UnitActionType.ShowAdditionalActions,
             action = {
                 unit.showAdditionalActions = !unit.showAdditionalActions
-                unitTable.update()
+                GUI.getWorldScreen().bottomUnitTable.update()
             }
         )
     }

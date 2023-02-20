@@ -1,6 +1,7 @@
 ﻿package com.unciv.logic.city.managers
 
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.city.City
@@ -158,10 +159,7 @@ class CityInfoConquestFunctions(val city: City){
         city.isPuppet = false
         city.cityConstructions.inProgressConstructions.clear() // undo all progress of the previous civ on units etc.
         city.cityStats.update()
-        val worldScreen = UncivGame.Current.worldScreen
-        if (!UncivGame.Current.consoleMode && worldScreen != null) {
-            worldScreen.shouldUpdate = true
-        }
+        GUI.setUpdateWorldOnNextRender()
     }
 
     private fun diplomaticRepercussionsForConqueringCity(oldCiv: Civilization, conqueringCiv: Civilization) {

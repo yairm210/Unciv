@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.City
@@ -53,7 +54,7 @@ class CityScreen(
     }
 
     /** Toggles or adds/removes all state changing buttons */
-    val canChangeState = UncivGame.Current.worldScreen!!.canChangeState
+    val canChangeState = GUI.isAllowedChangeState()
 
     // Clockwise from the top-left
 

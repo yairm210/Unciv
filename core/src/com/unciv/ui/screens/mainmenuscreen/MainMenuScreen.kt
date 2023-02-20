@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
@@ -219,11 +220,10 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
 
 
     private fun resumeGame() {
-        val curWorldScreen = game.worldScreen
-        if (curWorldScreen != null) {
-            game.resetToWorldScreen()
+        if (GUI.isWorldLoaded()) {
+            GUI.resetToWorldScreen()
+            GUI.getWorldScreen().popups.filterIsInstance(WorldScreenMenuPopup::class.java).forEach(Popup::close)
             ImageGetter.ruleset = game.gameInfo!!.ruleset
-            curWorldScreen.popups.filterIsInstance(WorldScreenMenuPopup::class.java).forEach(Popup::close)
         } else {
             QuickSave.autoLoadGame(this)
         }

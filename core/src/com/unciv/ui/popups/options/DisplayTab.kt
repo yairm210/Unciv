@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.ScreenSize
@@ -39,8 +40,9 @@ fun displayTab(
     if (Gdx.app.type == Application.ApplicationType.Desktop) {
         addFullscreenSelectBox(this, settings, optionsPopup.selectBoxMinWidth)
         optionsPopup.addCheckbox(this, "Map mouse auto-scroll", settings.mapAutoScroll, true) {
-            UncivGame.Current.worldScreen?.mapHolder?.isAutoScrollEnabled = it
             settings.mapAutoScroll = it
+            if (GUI.isWorldLoaded())
+                GUI.getMap().isAutoScrollEnabled = settings.mapAutoScroll
         }
     }
 
@@ -112,9 +114,9 @@ private fun addMinimapSizeSlider(table: Table, settings: GameSettings, selectBox
             settings.minimapSize = size
         }
         settings.save()
-        val worldScreen = UncivGame.Current.getWorldScreenIfActive()
+        val worldScreen = GUI.getWorldScreenIfActive()
         if (worldScreen != null)
-            worldScreen.shouldUpdate = true
+            GUI.setUpdateWorldOnNextRender()
     }
     table.add(minimapSlider).minWidth(selectBoxMinWidth).pad(10f).row()
 }

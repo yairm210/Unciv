@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.components.AutoScrollPane
@@ -73,7 +74,7 @@ class PickerPane(
 
     /** Sets the text of the [rightSideButton] and enables it if it's the player's turn */
     fun pick(rightButtonText: String) {
-        if (UncivGame.Current.worldScreen!!.isPlayersTurn) rightSideButton.enable()
+        if (GUI.isMyTurn()) rightSideButton.enable()
         rightSideButton.setText(rightButtonText)
     }
 

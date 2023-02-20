@@ -3,6 +3,7 @@ package com.unciv.ui.screens.overviewscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.ModOptionsConstants
@@ -138,7 +139,7 @@ class StatsOverviewTab(
             for (city in viewingPlayer.cities) { city.cityStats.update() }
             update()
         }
-        slider.isDisabled = !UncivGame.Current.worldScreen!!.canChangeState
+        slider.isDisabled = !GUI.isAllowedChangeState()
 
         sliderTable.add(slider).padTop(15f)
         add(sliderTable).colspan(2)

@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.GUI
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.UncivSound
@@ -161,7 +162,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
         }
 
         val canBePromoted = unit.promotions.canBePromoted()
-        val canChangeState = game.worldScreen!!.canChangeState
+        val canChangeState = GUI.isAllowedChangeState()
         val canPromoteNow = canBePromoted && canChangeState
                 && unit.currentMovement > 0 && unit.attacksThisTurn == 0
         rightSideButton.isEnabled = canPromoteNow
@@ -202,7 +203,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
         val availablePromotions = unit.promotions.getAvailablePromotions()
 
         val canBePromoted = unit.promotions.canBePromoted()
-        val canChangeState = game.worldScreen!!.canChangeState
+        val canChangeState = GUI.isAllowedChangeState()
 
         // Create nodes
         // Pass 1 - create nodes for all promotions

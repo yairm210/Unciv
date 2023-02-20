@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.ui.components.extensions.addToCenter
@@ -206,14 +207,14 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
 
         // Unit base icon is faded out only if out of moves
         // Foreign unit icons are never faded!
-        val shouldBeFaded = (unit.owner == UncivGame.Current.worldScreen?.viewingCiv?.civName
-                && unit.currentMovement == 0f && UncivGame.Current.settings.unitIconOpacity == 1f)
+        val shouldBeFaded = (unit.owner == GUI.getSelectedPlayer().civName
+                && unit.currentMovement == 0f && GUI.getSettings().unitIconOpacity == 1f)
         val alpha = if (shouldBeFaded) opacity * 0.5f else opacity
         flagIcon.color.a = alpha
         flagBg.color.a = alpha
         flagSelection.color.a = opacity
 
-        if (UncivGame.Current.settings.continuousRendering) {
+        if (GUI.getSettings().continuousRendering) {
             flagSelection.color.a = opacity
             flagSelection.addAction(
                 Actions.repeat(
