@@ -14,14 +14,6 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.overviewscreen.EmpireOverviewScreen
-import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
-import com.unciv.ui.screens.pickerscreens.TechPickerScreen
-import com.unciv.ui.popups.popups
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
@@ -32,6 +24,14 @@ import com.unciv.ui.components.extensions.setFontColor
 import com.unciv.ui.components.extensions.setFontSize
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.popups
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
+import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
+import com.unciv.ui.screens.overviewscreen.EmpireOverviewScreen
+import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
+import com.unciv.ui.screens.pickerscreens.TechPickerScreen
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
 import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMenuPopup
 import kotlin.math.abs
@@ -118,7 +118,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         happinessImage.onClick(invokeResourcesPage)
         happinessLabel.onClick(invokeResourcesPage)
 
-        addStat(cultureLabel, "Culture") { PolicyPickerScreen(worldScreen, worldScreen.selectedCiv) }
+        addStat(cultureLabel, "Culture") { PolicyPickerScreen(worldScreen.selectedCiv, worldScreen.canChangeState) }
         if (worldScreen.gameInfo.isReligionEnabled()) {
             addStat(faithLabel, "Faith", "Religion", isLast = true)
         } else {

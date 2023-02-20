@@ -7,12 +7,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
 import com.unciv.ui.screens.overviewscreen.EspionageOverviewScreen
 import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
@@ -66,7 +66,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
 
         policyScreenButton.add(ImageGetter.getImage("PolicyIcons/Constitution")).size(30f).pad(15f)
         policyButtonHolder.onClick {
-            game.pushScreen(PolicyPickerScreen(worldScreen))
+            game.pushScreen(PolicyPickerScreen(worldScreen.selectedCiv, worldScreen.canChangeState))
         }
 
         diplomacyButton.add(ImageGetter.getImage("OtherIcons/DiplomacyW")).size(30f).pad(15f)

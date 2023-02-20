@@ -124,7 +124,7 @@ class WorldScreen(
 
     private val events = EventBus.EventReceiver()
 
-    var uiEnabled = true
+    private var uiEnabled = true
 
     var preActionGameInfo = gameInfo
 
@@ -228,7 +228,7 @@ class WorldScreen(
         globalShortcuts.add(Input.Keys.F2) { game.pushScreen(EmpireOverviewScreen(selectedCiv, "Trades")) }    // Economic info
         globalShortcuts.add(Input.Keys.F3) { game.pushScreen(EmpireOverviewScreen(selectedCiv, "Units")) }    // Military info
         globalShortcuts.add(Input.Keys.F4) { game.pushScreen(EmpireOverviewScreen(selectedCiv, "Politics")) }    // Diplomacy info
-        globalShortcuts.add(Input.Keys.F5) { game.pushScreen(PolicyPickerScreen(this, selectedCiv)) }    // Social Policies Screen
+        globalShortcuts.add(Input.Keys.F5) { game.pushScreen(PolicyPickerScreen(selectedCiv, canChangeState)) }    // Social Policies Screen
         globalShortcuts.add(Input.Keys.F6) { game.pushScreen(TechPickerScreen(viewingCiv)) }    // Tech Screen
         globalShortcuts.add(Input.Keys.F7) { game.pushScreen(EmpireOverviewScreen(selectedCiv, "Cities")) }    // originally Notification Log
         globalShortcuts.add(Input.Keys.F8) { game.pushScreen(VictoryScreen(this)) }    // Victory Progress
@@ -551,7 +551,7 @@ class WorldScreen(
         tutorialTaskTable.pack()
         tutorialTaskTable.centerX(stage)
         tutorialTaskTable.y = topBar.y - tutorialTaskTable.height
-        tutorialTaskTable.onClick() {
+        tutorialTaskTable.onClick {
             UncivGame.Current.isTutorialTaskCollapsed = !UncivGame.Current.isTutorialTaskCollapsed
             displayTutorialTaskOnUpdate()
         }

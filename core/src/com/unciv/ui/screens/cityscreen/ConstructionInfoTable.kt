@@ -14,16 +14,16 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popups.ConfirmPopup
-import com.unciv.ui.popups.closeAllPopups
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.ConfirmPopup
+import com.unciv.ui.popups.closeAllPopups
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 
 class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
     private val selectedConstructionTable = Table()
@@ -117,6 +117,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
                         cityScreen.update()
                     }.open()
                 }
+
                 if (cityScreen.city.hasSoldBuildingThisTurn && !cityScreen.city.civ.gameInfo.gameParameters.godMode
                         || cityScreen.city.isPuppet
                         || !GUI.isMyTurn() || !GUI.isAllowedChangeState())

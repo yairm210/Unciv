@@ -6,16 +6,6 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.cityscreen.CityScreen
-import com.unciv.ui.images.IconTextButton
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.pickerscreens.DiplomaticVotePickerScreen
-import com.unciv.ui.screens.pickerscreens.PantheonPickerScreen
-import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
-import com.unciv.ui.screens.pickerscreens.ReligiousBeliefsPickerScreen
-import com.unciv.ui.screens.pickerscreens.TechPickerScreen
-import com.unciv.ui.popups.ConfirmPopup
-import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.KeyShortcut
 import com.unciv.ui.components.extensions.disable
@@ -24,12 +14,21 @@ import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.keyShortcuts
 import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.setSize
+import com.unciv.ui.images.IconTextButton
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.ConfirmPopup
+import com.unciv.ui.popups.hasOpenPopups
+import com.unciv.ui.screens.cityscreen.CityScreen
+import com.unciv.ui.screens.pickerscreens.DiplomaticVotePickerScreen
+import com.unciv.ui.screens.pickerscreens.PantheonPickerScreen
+import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
+import com.unciv.ui.screens.pickerscreens.ReligiousBeliefsPickerScreen
+import com.unciv.ui.screens.pickerscreens.TechPickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 
-class NextTurnButton(
-) : IconTextButton("", null, 30) {
+class NextTurnButton : IconTextButton("", null, 30) {
     private var nextTurnAction = NextTurnAction("", Color.BLACK) {}
 
     init {
@@ -94,7 +93,7 @@ class NextTurnButton(
             worldScreen.viewingCiv.policies.shouldOpenPolicyPicker
                     || worldScreen.viewingCiv.policies.freePolicies > 0 && worldScreen.viewingCiv.policies.canAdoptPolicy() ->
                 NextTurnAction("Pick a policy", Color.VIOLET, "NotificationIcons/PickPolicy") {
-                    worldScreen.game.pushScreen(PolicyPickerScreen(worldScreen))
+                    worldScreen.game.pushScreen(PolicyPickerScreen(worldScreen.selectedCiv, worldScreen.canChangeState))
                     worldScreen.viewingCiv.policies.shouldOpenPolicyPicker = false
                 }
 
