@@ -32,7 +32,6 @@ import com.unciv.models.helpers.MapArrowType
 import com.unciv.models.helpers.MiscArrowTypes
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.UnitGroup
 import com.unciv.ui.components.ZoomableScrollPane
@@ -49,6 +48,7 @@ import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.components.tilegroups.WorldTileGroup
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
@@ -271,7 +271,8 @@ class WorldMapHolder(
                         selectedUnit.action = null // remove explore on manual move
                     SoundPlayer.play(UncivSound.Whoosh)
                     if (selectedUnit.currentTile != targetTile)
-                        selectedUnit.action = "moveTo " + targetTile.position.x.toInt() + "," + targetTile.position.y.toInt()
+                        selectedUnit.action =
+                                "moveTo ${targetTile.position.x.toInt()},${targetTile.position.y.toInt()}"
                     if (selectedUnit.currentMovement > 0) worldScreen.bottomUnitTable.selectUnit(selectedUnit)
 
                     worldScreen.shouldUpdate = true
@@ -279,8 +280,7 @@ class WorldMapHolder(
                         moveUnitToTargetTile(selectedUnits.subList(1, selectedUnits.size), targetTile)
                     } else removeUnitActionOverlay() //we're done here
 
-                    if (UncivGame.Current.settings.autoUnitCycle &&
-                            selectedUnit.currentMovement == 0f)
+                    if (UncivGame.Current.settings.autoUnitCycle && selectedUnit.currentMovement == 0f)
                         worldScreen.switchToNextUnit()
 
                 } catch (ex: Exception) {

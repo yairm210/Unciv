@@ -18,8 +18,6 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.UnitGroup
 import com.unciv.ui.components.extensions.addBorderAllowOpacity
@@ -28,6 +26,8 @@ import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers.flashWoundedCombatants
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers.getHealthBar
@@ -300,6 +300,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         // There was a direct worldScreen.update() call here, removing its 'private' but not the comment justifying the modifier.
         // My tests (desktop only) show the red-flash animations look just fine without.
         worldScreen.shouldUpdate = true
+        worldScreen.preActionGameInfo = worldScreen.gameInfo // Reset - can no longer undo
         //Gdx.graphics.requestRendering()  // Use this if immediate rendering is required
 
         if (!canStillAttack) return
