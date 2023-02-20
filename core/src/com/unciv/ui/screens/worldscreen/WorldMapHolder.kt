@@ -30,7 +30,6 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UncivSound
 import com.unciv.models.helpers.MapArrowType
 import com.unciv.models.helpers.MiscArrowTypes
-import com.unciv.models.metadata.GameSetting
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.screens.basescreen.BaseScreen
