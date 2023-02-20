@@ -1,6 +1,7 @@
 package com.unciv.ui.popups.options
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.metadata.GameSettings
@@ -21,7 +22,7 @@ fun gameplayTab(
     optionsPopup.addCheckbox(this, "Move units with a single tap", settings.singleTapMove) { settings.singleTapMove = it }
     optionsPopup.addCheckbox(this, "Auto-assign city production", settings.autoAssignCityProduction, true) { shouldAutoAssignCityProduction ->
         settings.autoAssignCityProduction = shouldAutoAssignCityProduction
-        val worldScreen = UncivGame.Current.getWorldScreenIfActive()
+        val worldScreen = GUI.getWorldScreenIfActive()
         if (shouldAutoAssignCityProduction && worldScreen != null &&
                 worldScreen.viewingCiv.isCurrentPlayer() && worldScreen.viewingCiv.playerType == PlayerType.Human
         ) {

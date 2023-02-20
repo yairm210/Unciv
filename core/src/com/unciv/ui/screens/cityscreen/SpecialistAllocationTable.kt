@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -82,7 +83,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.s
             cityInfo.cityStats.update()
             cityScreen.update()
         }
-        if (cityInfo.population.getFreePopulation() == 0 || !UncivGame.Current.worldScreen!!.isPlayersTurn)
+        if (cityInfo.population.getFreePopulation() == 0 || !GUI.isMyTurn())
             assignButton.clear()
         return assignButton
     }
@@ -99,7 +100,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.s
         }
 
         if (assignedSpecialists <= 0 || cityInfo.isPuppet) unassignButton.isVisible = false
-        if (!UncivGame.Current.worldScreen!!.isPlayersTurn) unassignButton.clear()
+        if (!GUI.isMyTurn()) unassignButton.clear()
         return unassignButton
     }
 

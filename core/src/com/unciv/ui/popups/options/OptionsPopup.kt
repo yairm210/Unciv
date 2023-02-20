@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
+import com.unciv.GUI
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
@@ -161,7 +162,7 @@ class OptionsPopup(
         val checkbox = text.toCheckBox(initialState) {
             action(it)
             settings.save()
-            val worldScreen = UncivGame.Current.getWorldScreenIfActive()
+            val worldScreen = GUI.getWorldScreenIfActive()
             if (updateWorld && worldScreen != null) worldScreen.shouldUpdate = true
         }
         if (newRow) table.add(checkbox).colspan(2).left().row()

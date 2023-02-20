@@ -3,6 +3,7 @@ package com.unciv.ui.screens.worldscreen.unit.actions
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.UnitAction
@@ -21,7 +22,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         clear()
         if (unit == null) return
         if (!worldScreen.canChangeState) return // No actions when it's not your turn or spectator!
-        for (button in UnitActions.getUnitActions(unit, worldScreen)
+        for (button in UnitActions.getUnitActions(unit)
             .map { getUnitActionButton(unit, it) })
             add(button).left().padBottom(2f).row()
         pack()
@@ -46,7 +47,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         } else {
             actionButton.onActivation(unitAction.uncivSound) {
                 unitAction.action.invoke()
-                UncivGame.Current.worldScreen!!.shouldUpdate = true
+                GUI.setUpdateWorldOnNextRender()
                 // We keep the unit action/selection overlay from the previous unit open even when already selecting another unit
                 // so you need less clicks/touches to do things, but once we do an action with the new unit, we want to close this
                 // overlay, since the user definitely wants to interact with the new unit.

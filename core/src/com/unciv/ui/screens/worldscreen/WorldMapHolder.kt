@@ -109,7 +109,7 @@ class WorldMapHolder(
 
     internal fun addTiles() {
         val tileSetStrings = TileSetStrings()
-        val tileGroupsNew = tileMap.values.map { WorldTileGroup(worldScreen, it, tileSetStrings) }
+        val tileGroupsNew = tileMap.values.map { WorldTileGroup(it, tileSetStrings) }
         tileGroupMap = TileGroupMap(this, tileGroupsNew, continuousScrollingX)
 
         for (tileGroup in tileGroupsNew) {

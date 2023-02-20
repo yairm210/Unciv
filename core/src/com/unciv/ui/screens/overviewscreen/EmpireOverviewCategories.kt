@@ -64,7 +64,7 @@ enum class EmpireOverviewCategories(
         fun (viewingPlayer: Civilization) = (viewingPlayer.naturalWonders.isEmpty() && viewingPlayer.cities.isEmpty()).toState()),
     Notifications("OtherIcons/Notifications", 'N', Align.top,
         fun (viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?)
-                = NotificationsOverviewTable(worldScreen = UncivGame.Current.worldScreen!!, viewingPlayer, overviewScreen, persistedData),
+                = NotificationsOverviewTable(viewingPlayer, overviewScreen, persistedData),
         fun (_: Civilization) = EmpireOverviewTabState.Normal)
 
     ; //must be here

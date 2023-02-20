@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.worldscreen.unit.actions
 
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
@@ -17,7 +18,7 @@ import kotlin.random.Random
 
 object UnitActionsPillage {
 
-    fun addPillageAction(unit: MapUnit, actionList: ArrayList<UnitAction>, worldScreen: WorldScreen) {
+    fun addPillageAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
         val pillageAction = getPillageAction(unit)
             ?: return
         if (pillageAction.action == null)
@@ -27,16 +28,16 @@ object UnitActionsPillage {
                 action = null)
         else actionList += UnitAction(type = UnitActionType.Pillage,
             title = "${UnitActionType.Pillage} [${unit.currentTile.getImprovementToPillageName()!!}]") {
-            if (!worldScreen.hasOpenPopups()) {
+            if (!GUI.getWorldScreen().hasOpenPopups()) {
                 val pillageText = "Are you sure you want to pillage this [${unit.currentTile.getImprovementToPillageName()!!}]?"
                 ConfirmPopup(
-                    UncivGame.Current.worldScreen!!,
+                    GUI.getWorldScreen(),
                     pillageText,
                     "Pillage",
                     true
                 ) {
                     (pillageAction.action)()
-                    worldScreen.shouldUpdate = true
+                    GUI.setUpdateWorldOnNextRender()
                 }.open()
             }
         }

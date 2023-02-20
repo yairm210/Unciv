@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.tech
 
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Building
@@ -50,7 +51,7 @@ class Technology: RulesetObject() {
             }
         }
 
-        val viewingCiv = UncivGame.Current.worldScreen!!.viewingCiv
+        val viewingCiv = GUI.getViewingPlayer()
         val enabledUnits = getEnabledUnits(ruleset, viewingCiv)
         if (enabledUnits.any()) {
             lineList += "{Units enabled}: "
@@ -224,7 +225,7 @@ class Technology: RulesetObject() {
                 }
             }
 
-        val viewingCiv = UncivGame.Current.worldScreen?.viewingCiv
+        val viewingCiv = GUI.getViewingPlayer()
         val enabledUnits = getEnabledUnits(ruleset, viewingCiv)
         if (enabledUnits.any()) {
             lineList += FormattedLine()

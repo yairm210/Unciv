@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
@@ -72,7 +73,7 @@ class DiplomacyScreen(
     private val rightSideTable = Table()
     private val closeButton = Constants.close.toTextButton()
 
-    private fun isNotPlayersTurn() = !UncivGame.Current.worldScreen!!.canChangeState
+    private fun isNotPlayersTurn() = !GUI.isMyTurn() || !GUI.isAllowedChangeState()
 
     init {
         val splitPane = SplitPane(leftSideScroll, rightSideTable, false, skin)

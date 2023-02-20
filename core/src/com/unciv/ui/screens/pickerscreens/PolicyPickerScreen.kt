@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.TutorialTrigger
@@ -51,16 +52,13 @@ private object PolicyColors {
 }
 
 fun Policy.isAdopted() : Boolean {
-    val worldScreen = UncivGame.Current.worldScreen ?: return false
-    val viewingCiv = worldScreen.selectedCiv
-    return viewingCiv.policies.isAdopted(this.name)
+    return GUI.getSelectedPlayer().policies.isAdopted(this.name)
 }
 
 fun Policy.isPickable() : Boolean {
-    val worldScreen = UncivGame.Current.worldScreen ?: return false
-    val viewingCiv = worldScreen.viewingCiv
-    val selectedCiv = worldScreen.selectedCiv
-    if (!worldScreen.isPlayersTurn
+    val viewingCiv = GUI.getViewingPlayer()
+    val selectedCiv = GUI.getSelectedPlayer()
+    if (!GUI.isMyTurn()
             || viewingCiv.isDefeated()
             || selectedCiv.policies.isAdopted(this.name)
             || this.policyBranchType == PolicyBranchType.BranchComplete
@@ -109,13 +107,10 @@ class PolicyButton(val policy: Policy, size: Float = 30f) : BorderedTable(
         return this
     }
 
-    fun updateState() {
-
-        val worldScreen = UncivGame.Current.worldScreen ?: return
-        val viewingCiv = worldScreen.selectedCiv
+    private fun updateState() {
 
         val isPickable = policy.isPickable()
-        val isAdopted = viewingCiv.policies.isAdopted(policy.name)
+        val isAdopted = GUI.getSelectedPlayer().policies.isAdopted(policy.name)
 
         when {
 

@@ -2,6 +2,7 @@ package com.unciv.logic.civilization.managers
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
@@ -835,16 +836,14 @@ class AssignedQuest(val questName: String = "",
     }
 
     fun onClickAction() {
-        val game = UncivGame.Current
-
         when (questName) {
             QuestName.ClearBarbarianCamp.value -> {
-                game.resetToWorldScreen()
-                game.worldScreen!!.mapHolder.setCenterPosition(Vector2(data1.toFloat(), data2.toFloat()), selectUnit = false)
+                GUI.resetToWorldScreen()
+                GUI.getMap().setCenterPosition(Vector2(data1.toFloat(), data2.toFloat()), selectUnit = false)
             }
             QuestName.Route.value -> {
-                game.resetToWorldScreen()
-                game.worldScreen!!.mapHolder.setCenterPosition(gameInfo.getCivilization(assigner).getCapital()!!.location, selectUnit = false)
+                GUI.resetToWorldScreen()
+                GUI.getMap().setCenterPosition(gameInfo.getCivilization(assigner).getCapital()!!.location, selectUnit = false)
             }
         }
     }

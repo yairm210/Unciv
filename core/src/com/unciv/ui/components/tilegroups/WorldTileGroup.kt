@@ -11,7 +11,7 @@ import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 
-class WorldTileGroup(internal val worldScreen: WorldScreen, tile: Tile, tileSetStrings: TileSetStrings)
+class WorldTileGroup(tile: Tile, tileSetStrings: TileSetStrings)
     : TileGroup(tile,tileSetStrings) {
 
     init {
@@ -50,5 +50,5 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tile: Tile, tileSetS
         }
     }
 
-    override fun clone(): WorldTileGroup = WorldTileGroup(worldScreen, tile , tileSetStrings)
+    override fun clone(): WorldTileGroup = WorldTileGroup(tile , tileSetStrings)
 }
