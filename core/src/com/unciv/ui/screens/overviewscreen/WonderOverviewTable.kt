@@ -12,11 +12,11 @@ import com.unciv.models.ruleset.QuestName
 import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
+import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 
 class WonderOverviewTab(
     viewingPlayer: Civilization,
@@ -143,7 +143,7 @@ class WonderInfo {
         }
     }
 
-    private fun shouldBeDisplayed(viewingPlayer: Civilization, wonder: Building, wonderEra: Int) = when {
+    private fun shouldBeDisplayed(viewingPlayer: Civilization, wonder: Building, wonderEra: Int?) = when {
         wonder.hasUnique(UniqueType.HiddenFromCivilopedia) -> false
         wonder.hasUnique(UniqueType.HiddenWithoutReligion) && hideReligionItems -> false
         wonder.name in startingObsolete -> false
@@ -151,7 +151,7 @@ class WonderInfo {
             .any { unique ->
                 !gameInfo.gameParameters.victoryTypes.contains(unique.params[0])
             } -> false
-        else -> wonderEra <= viewingPlayer.getEraNumber()
+        else -> wonderEra==null || wonderEra <= viewingPlayer.getEraNumber()
     }
 
     /** Do we know about a natural wonder despite not having found it yet? */
@@ -171,16 +171,17 @@ class WonderInfo {
         val collator = UncivGame.Current.settings.getCollatorFromLocale()
 
         // Maps all World Wonders by name to their era for grouping
-        val wonderEraMap: Map<String, Era> =
+        val wonderEraMap: Map<String, Era?> =
                 ruleSet.buildings.values.asSequence()
                     .filter { it.isWonder }
-                    .associate { it.name to (ruleSet.eras[ruleSet.technologies[it.requiredTech]?.era()] ?: viewingPlayer.getEra()) }
+                    .associate { it.name to ruleSet.eras[ruleSet.technologies[it.requiredTech]?.era()] }
 
         // Maps all World Wonders by their position in sort order to their name
         val allWonderMap: Map<Int, String> =
                 ruleSet.buildings.values.asSequence()
                     .filter { it.isWonder }
-                    .sortedWith(compareBy<Building> { wonderEraMap[it.name]!!.eraNumber }.thenBy(collator) { it.name.tr() })
+                        // 100 is so wonders with no era get displayed after all eras, not before
+                    .sortedWith(compareBy<Building> { wonderEraMap[it.name]?.eraNumber ?: 100 }.thenBy(collator) { it.name.tr() })
                     .withIndex()
                     .associate { it.index to it.value.name }
         val wonderCount = allWonderMap.size
@@ -205,11 +206,11 @@ class WonderInfo {
         val wonders = Array(wonderCount + naturalsCount) { index ->
             if (index < wonderCount) {
                 val wonder = ruleSet.buildings[allWonderMap[index]!!]!!
-                val era = wonderEraMap[wonder.name]!!
-                val status = if (shouldBeDisplayed(viewingPlayer, wonder, era.eraNumber)) WonderStatus.Unbuilt else WonderStatus.Hidden
+                val era = wonderEraMap[wonder.name]
+                val status = if (shouldBeDisplayed(viewingPlayer, wonder, era?.eraNumber)) WonderStatus.Unbuilt else WonderStatus.Hidden
                 WonderInfo(
                     allWonderMap[index]!!, CivilopediaCategories.Wonder,
-                    era.name, era.getColor(), status, null, null, null
+                    era?.name ?: "Other", era?.getColor() ?: Color.WHITE, status, null, null, null
                 )
             } else {
                 WonderInfo(
