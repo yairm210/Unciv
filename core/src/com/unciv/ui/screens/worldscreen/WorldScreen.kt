@@ -26,7 +26,6 @@ import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.darken
@@ -39,6 +38,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.popups.hasOpenPopups
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
@@ -84,7 +84,7 @@ class WorldScreen(
     var shouldUpdate = false
 
     /** Indicates it's the player's ([viewingCiv]) turn */
-    var isPlayersTurn = viewingCiv == gameInfo.currentPlayerCiv
+    var isPlayersTurn = viewingCiv.isCurrentPlayer()
         internal set     // only this class is allowed to make changes
 
     /** Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games */
@@ -93,7 +93,7 @@ class WorldScreen(
     var fogOfWar = true
         private set
 
-    /** `true` when it's the player's turn unless he is a spectator*/
+    /** `true` when it's the player's turn unless he is a spectator */
     val canChangeState
         get() = isPlayersTurn && !viewingCiv.isSpectator()
 
