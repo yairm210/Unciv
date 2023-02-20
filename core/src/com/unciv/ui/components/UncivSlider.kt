@@ -54,6 +54,7 @@ class UncivSlider (
     plusMinus: Boolean = true,
     initial: Float,
     sound: UncivSound = UncivSound.Slider,
+    private var permanentTip: Boolean = true,
     private val getTipText: ((Float) -> String)? = null,
     onChange: ((Float) -> Unit)? = null
 ): Table(BaseScreen.skin) {
@@ -76,7 +77,11 @@ class UncivSlider (
     private val plusButton: IconCircleGroup?
     private val tipLabel = "".toLabel(Color.LIGHT_GRAY)
     private val tipContainer: Container<Label> = Container(tipLabel)
-    private val tipHideTask: Timer.Task
+    private val tipHideTask = object : Timer.Task() {
+        override fun run() {
+            hideTip()
+        }
+    }
 
     // copies of maliciously protected Slider members
     private var snapToValues: FloatArray? = null
@@ -126,20 +131,17 @@ class UncivSlider (
     // java format string for the value tip, set by changing stepSize
     private var tipFormat = "%.1f"
 
-    /** Prevents hiding the value tooltip over the slider knob */
-    var permanentTip = false
-
     // Detect changes in isDragging
     private var hasFocus = false
 
     init {
         tipLabel.setOrigin(Align.center)
         tipContainer.touchable = Touchable.disabled
-        tipHideTask = object : Timer.Task() {
-            override fun run() {
-                hideTip()
-            }
-        }
+
+        /** Prevents hiding the value tooltip over the slider knob */
+        if(permanentTip)
+            tipHideTask.cancel()
+
 
         stepChanged()   // Initialize tip formatting
 
