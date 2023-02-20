@@ -5,10 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.GUI
-import com.unciv.UncivGame
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.extensions.addBorder
 import com.unciv.ui.components.extensions.addSeparatorVertical
@@ -17,6 +13,8 @@ import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toGroup
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
 
 class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.skin) {
     val cityInfo = cityScreen.city
@@ -83,7 +81,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.s
             cityInfo.cityStats.update()
             cityScreen.update()
         }
-        if (cityInfo.population.getFreePopulation() == 0 || !GUI.isMyTurn())
+        if (cityInfo.population.getFreePopulation() == 0 || !cityScreen.canChangeState)
             assignButton.clear()
         return assignButton
     }
@@ -100,7 +98,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.s
         }
 
         if (assignedSpecialists <= 0 || cityInfo.isPuppet) unassignButton.isVisible = false
-        if (!GUI.isMyTurn()) unassignButton.clear()
+        if (!cityScreen.canChangeState) unassignButton.clear()
         return unassignButton
     }
 

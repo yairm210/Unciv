@@ -29,10 +29,8 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.KeyCharAndCode
-import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.disable
@@ -46,6 +44,8 @@ import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.tilegroups.InfluenceTable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import kotlin.math.floor
 import kotlin.math.roundToInt
@@ -73,7 +73,7 @@ class DiplomacyScreen(
     private val rightSideTable = Table()
     private val closeButton = Constants.close.toTextButton()
 
-    private fun isNotPlayersTurn() = !GUI.isMyTurn() || !GUI.isAllowedChangeState()
+    private fun isNotPlayersTurn() = !GUI.isAllowedChangeState()
 
     init {
         val splitPane = SplitPane(leftSideScroll, rightSideTable, false, skin)

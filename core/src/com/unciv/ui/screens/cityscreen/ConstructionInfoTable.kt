@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.city.PerpetualConstruction
@@ -120,7 +119,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
 
                 if (cityScreen.city.hasSoldBuildingThisTurn && !cityScreen.city.civ.gameInfo.gameParameters.godMode
                         || cityScreen.city.isPuppet
-                        || !GUI.isMyTurn() || !GUI.isAllowedChangeState())
+                        || !cityScreen.canChangeState)
                     sellBuildingButton.disable()
             }
         }
