@@ -757,10 +757,11 @@ class WorldMapHolder(
     {
         val maxWorldZoomOut = UncivGame.Current.settings.maxWorldZoomOut
         val mapRadius = tileMap.mapParameters.mapSize.radius
+
+        // Limit max zoom out by the map width
         val enableZoomLimit = (mapRadius < 21 && maxWorldZoomOut < 3f) || (mapRadius > 20 && maxWorldZoomOut < 4f)
 
         if (enableZoomLimit) {
-
             // For world-wrap we limit minimal possible zoom to content width + some extra offset
             // to hide one column of tiles so that the player doesn't see it teleporting from side to side
             val pad = if (continuousScrollingX) width / mapRadius * 0.7f else 0f
