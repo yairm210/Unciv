@@ -195,7 +195,7 @@ private fun addMultiplayerServerOptions(
         }
     }).colspan(2).row()
 
-    tab.add("Set server password".toLabel()).padTop(16f).colspan(2).row()
+    tab.add("Set password".toLabel()).padTop(16f).colspan(2).row()
     tab.add(passwordTextField).colspan(2).growX().row()
     tab.add(setPasswordButton.onClick {
         if (passwordTextField.text.isNullOrBlank())
