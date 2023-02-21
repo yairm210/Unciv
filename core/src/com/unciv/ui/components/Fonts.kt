@@ -246,9 +246,4 @@ object Fonts {
     const val greatGeneral = '⛤'       // U+26E4 'pentagram'
     const val greatMerchant = '⚖'      // U+2696 'scale'
     const val greatScientist = '⚛'      // U+269B 'atom'
-
-    const val EMOJIS: String = "" +
-            turn + strength + rangedStrength + movement + range + production + gold +
-            food + science + culture + happiness + faith + greatArtist + greatEngineer +
-            greatGeneral + greatMerchant + greatScientist
 }
