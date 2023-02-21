@@ -47,6 +47,7 @@ import com.unciv.ui.screens.newgamescreen.NewGameScreen
 import com.unciv.ui.screens.pickerscreens.ModManagementScreen
 import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMenuPopup
 import com.unciv.ui.screens.mainmenuscreen.EasterEggRulesets.modifyForEasterEgg
+import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import kotlin.math.min
@@ -221,9 +222,18 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
 
     private fun resumeGame() {
         if (GUI.isWorldLoaded()) {
-            GUI.resetToWorldScreen()
-            GUI.getWorldScreen().popups.filterIsInstance(WorldScreenMenuPopup::class.java).forEach(Popup::close)
-            ImageGetter.ruleset = game.gameInfo!!.ruleset
+            val currentTileSet = GUI.getMap().currentTileSetStrings
+            val currentGameSetting = GUI.getSettings()
+            if (currentTileSet.tileSetName != currentGameSetting.tileSet ||
+                    currentTileSet.unitSetName != currentGameSetting.unitSet) {
+                for (screen in game.screenStack.filterIsInstance<WorldScreen>()) screen.dispose()
+                game.screenStack.removeAll { it is WorldScreen }
+                QuickSave.autoLoadGame(this)
+            } else {
+                GUI.resetToWorldScreen()
+                GUI.getWorldScreen().popups.filterIsInstance(WorldScreenMenuPopup::class.java).forEach(Popup::close)
+                ImageGetter.ruleset = game.gameInfo!!.ruleset
+            }
         } else {
             QuickSave.autoLoadGame(this)
         }
