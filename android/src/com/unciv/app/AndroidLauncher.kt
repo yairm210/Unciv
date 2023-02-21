@@ -19,7 +19,6 @@ import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.event.EventBus
 import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.Fonts
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import java.io.File
@@ -41,7 +40,6 @@ open class AndroidLauncher : AndroidApplication() {
         }
 
         val settings = UncivFiles.getSettingsForPlatformLaunchers(filesDir.path)
-        val fontFamily = settings.fontFamily
 
         // Manage orientation lock and display cutout
         val platformSpecificHelper = PlatformSpecificHelpersAndroid(this)
@@ -51,7 +49,7 @@ open class AndroidLauncher : AndroidApplication() {
 
         val androidParameters = UncivGameParameters(
             crashReportSysInfo = CrashReportSysInfoAndroid,
-            fontImplementation = NativeFontAndroid((Fonts.ORIGINAL_FONT_SIZE * settings.fontSizeMultiplier).toInt(), fontFamily),
+            fontImplementation = FontAndroid(),
             customFileLocationHelper = customFileLocationHelper,
             platformSpecificHelper = platformSpecificHelper
         )

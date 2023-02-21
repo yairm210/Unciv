@@ -6,6 +6,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.UncivSound
+import com.unciv.ui.components.FontFamilyData
 import com.unciv.ui.components.Fonts
 import java.text.Collator
 import java.time.Duration
@@ -96,7 +97,7 @@ class GameSettings {
     /** Saves the last successful new game's setup */
     var lastGameSetup: GameSetupInfo? = null
 
-    var fontFamily: String = Fonts.DEFAULT_FONT_FAMILY
+    var fontFamilyData: FontFamilyData = FontFamilyData.default
     var fontSizeMultiplier: Float = 1f
 
     var enableEasterEggs: Boolean = true
@@ -137,6 +138,10 @@ class GameSettings {
         } catch (e: Exception) {
             Locale.getDefault()
         }
+    }
+
+    fun getFontSize(): Int {
+        return (Fonts.ORIGINAL_FONT_SIZE * fontSizeMultiplier).toInt()
     }
 
     fun getCurrentLocale(): Locale {

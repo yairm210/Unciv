@@ -4,11 +4,11 @@ import com.unciv.logic.files.CustomFileLocationHelper
 import com.unciv.ui.crashhandling.CrashReportSysInfo
 import com.unciv.ui.components.AudioExceptionHelper
 import com.unciv.ui.components.GeneralPlatformSpecificHelpers
-import com.unciv.ui.components.NativeFontImplementation
+import com.unciv.ui.components.FontImplementation
 
 class UncivGameParameters(val crashReportSysInfo: CrashReportSysInfo? = null,
                           val cancelDiscordEvent: (() -> Unit)? = null,
-                          val fontImplementation: NativeFontImplementation? = null,
+                          val fontImplementation: FontImplementation? = null,
                           val consoleMode: Boolean = false,
                           val customFileLocationHelper: CustomFileLocationHelper? = null,
                           val platformSpecificHelper: GeneralPlatformSpecificHelpers? = null,
