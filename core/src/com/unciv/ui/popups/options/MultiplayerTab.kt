@@ -195,7 +195,8 @@ private fun addMultiplayerServerOptions(
         }
     }).colspan(2).row()
 
-    tab.add(passwordTextField).colspan(2).row()
+    tab.add("Set server password".toLabel()).padTop(16f).colspan(2).row()
+    tab.add(passwordTextField).colspan(2).growX().row()
     tab.add(setPasswordButton.onClick {
         if (passwordTextField.text.isNullOrBlank())
             return@onClick
@@ -261,17 +262,23 @@ private fun addTurnCheckerOptions(
 
 private fun successfullyConnectedToServer(action: (Boolean, Boolean) -> Unit) {
     Concurrency.run("TestIsAlive") {
-        val connectionSuccess = UncivGame.Current.onlineMultiplayer.checkServerStatus()
-        var authSuccess = false
-        if (connectionSuccess) {
-            try {
-                authSuccess = UncivGame.Current.onlineMultiplayer.authenticate(null)
-            } catch (_: Exception) {
-                // We ignore the exception here, because we handle the failed auth onGLThread
+        try {
+            val connectionSuccess = UncivGame.Current.onlineMultiplayer.checkServerStatus()
+            var authSuccess = false
+            if (connectionSuccess) {
+                try {
+                    authSuccess = UncivGame.Current.onlineMultiplayer.authenticate(null)
+                } catch (_: Exception) {
+                    // We ignore the exception here, because we handle the failed auth onGLThread
+                }
             }
-        }
-        launchOnGLThread {
-            action(connectionSuccess, authSuccess)
+            launchOnGLThread {
+                action(connectionSuccess, authSuccess)
+            }
+        } catch (_: Exception) {
+            launchOnGLThread {
+                action(false, false)
+            }
         }
     }
 }

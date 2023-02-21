@@ -1,6 +1,7 @@
 package com.unciv.ui.popups
 
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UncivGame
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.extensions.onClick
@@ -15,22 +16,26 @@ class AuthPopup(stage: Stage, authSuccessful: ((Boolean) -> Unit)? = null)
     init {
         val passwordField = UncivTextField.create("Password").apply { isPasswordMode = true }
         val button = "Authenticate".toTextButton()
+        val negativeButtonStyle = BaseScreen.skin.get("negative", TextButton.TextButtonStyle::class.java)
+
         button.onClick {
             try {
                 UncivGame.Current.onlineMultiplayer.authenticate(passwordField.text)
                 authSuccessful?.invoke(true)
                 close()
             } catch (ex: Exception) {
-                reuseWith("Authentication failed: ${ex.message}")
-                row()
-                add(passwordField).row()
-                add(button)
+                innerTable.clear()
+                addGoodSizedLabel("Authentication failed").colspan(2).row()
+                add(passwordField).colspan(2).growX().pad(16f, 0f, 16f, 0f).row()
+                addCloseButton(style=negativeButtonStyle) { authSuccessful?.invoke(false) }.growX().padRight(8f)
+                add(button).growX().padLeft(8f)
                 return@onClick
             }
         }
 
-        addGoodSizedLabel("The server must authenticate you before proceeding").row()
-        add(passwordField).row()
-        add(button)
+        addGoodSizedLabel("Please enter your server password").colspan(2).row()
+        add(passwordField).colspan(2).growX().pad(16f, 0f, 16f, 0f).row()
+        addCloseButton(style=negativeButtonStyle) { authSuccessful?.invoke(false) }.growX().padRight(8f)
+        add(button).growX().padLeft(8f)
     }
 }
