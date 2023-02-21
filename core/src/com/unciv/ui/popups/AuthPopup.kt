@@ -2,10 +2,10 @@ package com.unciv.ui.popups
 
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.unciv.UncivGame
-import com.unciv.ui.components.BaseScreen
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.screens.basescreen.BaseScreen
 
 class AuthPopup(stage: Stage, authSuccessful: ((Boolean) -> Unit)? = null)
     : Popup(stage) {
