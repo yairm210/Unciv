@@ -89,19 +89,26 @@ object DropBox: FileStorage {
         return json().fromJson(MetaData::class.java, reader.readText())
     }
 
-    override fun saveFileData(fileName: String, data: String, overwrite: Boolean) {
-        val overwriteModeString = if(!overwrite) "" else ""","mode":{".tag":"overwrite"}"""
+    override fun saveFileData(fileName: String, data: String) {
         dropboxApi(
             url="https://content.dropboxapi.com/2/files/upload",
             data=data,
             contentType="application/octet-stream",
-            dropboxApiArg = """{"path":"${getLocalGameLocation(fileName)}"$overwriteModeString}"""
+            dropboxApiArg = """{"path":"${getLocalGameLocation(fileName)}","mode":{".tag":"overwrite"}}"""
         )
     }
 
     override fun loadFileData(fileName: String): String {
         val inputStream = downloadFile(getLocalGameLocation(fileName))
         return BufferedReader(InputStreamReader(inputStream)).readText()
+    }
+
+    override fun authenticate(userId: String, password: String): Boolean {
+        throw NotImplementedError()
+    }
+
+    override fun setPassword(newPassword: String): Boolean {
+        throw NotImplementedError()
     }
 
     fun downloadFile(fileName: String): InputStream {

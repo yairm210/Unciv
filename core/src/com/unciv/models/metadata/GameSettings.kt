@@ -215,6 +215,8 @@ enum class LocaleCode(var language: String, var country: String) {
 
 class GameSettingsMultiplayer {
     var userId = ""
+    var password = ""
+    var userName: String = ""
     var server = Constants.uncivXyzServer
     var friendList: MutableList<FriendList.Friend> = mutableListOf()
     var turnCheckerEnabled = true
