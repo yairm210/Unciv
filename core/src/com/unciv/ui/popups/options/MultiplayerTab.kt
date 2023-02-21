@@ -5,8 +5,10 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.OnlineMultiplayer
-import com.unciv.logic.multiplayer.storage.SimpleHttp
+import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
+import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.models.UncivSound
 import com.unciv.models.metadata.GameSetting
 import com.unciv.models.metadata.GameSettings
@@ -24,6 +26,7 @@ import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toGdxArray
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.popups.AuthPopup
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import java.time.Duration
@@ -143,6 +146,9 @@ private fun addMultiplayerServerOptions(
     multiplayerServerTextField.programmaticChangeEvents = true
     val serverIpTable = Table()
 
+    val passwordTextField = UncivTextField.create("Password")
+    val setPasswordButton = "Set password".toTextButton()
+
     serverIpTable.add("Server address".toLabel().onClick {
         multiplayerServerTextField.text = Gdx.app.clipboard.contents
         }).row()
@@ -177,9 +183,50 @@ private fun addMultiplayerServerOptions(
         }
         popup.open(true)
 
-        successfullyConnectedToServer(settings) { success, _, _ ->
-            popup.addGoodSizedLabel(if (success) "Success!" else "Failed!").row()
-            popup.addCloseButton()
+        successfullyConnectedToServer { connectionSuccess, authSuccess ->
+            if (connectionSuccess && authSuccess) {
+                popup.reuseWith("Success!", true)
+            } else if (connectionSuccess) {
+                popup.close()
+                AuthPopup(optionsPopup.stageToShowOn).open(true)
+            } else {
+                popup.reuseWith("Failed!", true)
+            }
+        }
+    }).colspan(2).row()
+
+    tab.add(passwordTextField).colspan(2).row()
+    tab.add(setPasswordButton.onClick {
+        if (passwordTextField.text.isNullOrBlank())
+            return@onClick
+
+        if (UncivGame.Current.onlineMultiplayer.serverFeatureSet.authVersion == 0) {
+            Popup(optionsPopup.stageToShowOn).apply {
+                addGoodSizedLabel("This server does not support authentication").row()
+                addCloseButton()
+                open()
+            }
+            return@onClick
+        }
+
+        try {
+            UncivGame.Current.onlineMultiplayer.setPassword(passwordTextField.text)
+        } catch (ex: Exception) {
+            if (ex is MultiplayerAuthException) {
+                AuthPopup(optionsPopup.stageToShowOn).open(true)
+                return@onClick
+            }
+
+            val message = when (ex) {
+                is FileStorageRateLimitReached -> "Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds"
+                else -> "Failed to set password!"
+            }
+
+            Popup(optionsPopup.stageToShowOn).apply {
+                addGoodSizedLabel(message).row()
+                addCloseButton()
+                open()
+            }
         }
     }).colspan(2).row()
 }
@@ -212,12 +259,19 @@ private fun addTurnCheckerOptions(
     return turnCheckerSelect
 }
 
-private fun successfullyConnectedToServer(settings: GameSettings, action: (Boolean, String, Int?) -> Unit) {
+private fun successfullyConnectedToServer(action: (Boolean, Boolean) -> Unit) {
     Concurrency.run("TestIsAlive") {
-        SimpleHttp.sendGetRequest("${settings.multiplayer.server}/isalive") { success, result, code ->
-            launchOnGLThread {
-                action(success, result, code)
+        val connectionSuccess = UncivGame.Current.onlineMultiplayer.checkServerStatus()
+        var authSuccess = false
+        if (connectionSuccess) {
+            try {
+                authSuccess = UncivGame.Current.onlineMultiplayer.authenticate(null)
+            } catch (_: Exception) {
+                // We ignore the exception here, because we handle the failed auth onGLThread
             }
+        }
+        launchOnGLThread {
+            action(connectionSuccess, authSuccess)
         }
     }
 }
