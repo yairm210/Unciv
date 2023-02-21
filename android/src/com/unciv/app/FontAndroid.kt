@@ -9,7 +9,6 @@ import android.graphics.fonts.FontFamily
 import android.graphics.fonts.FontStyle
 import android.graphics.fonts.SystemFonts
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Pixmap
@@ -44,40 +43,36 @@ class FontAndroid : FontImplementation {
             // Mod font
             if (fontFamilyData.filePath != null)
             {
-                paint.typeface = createFontFromFile(fontFamilyData.filePath!!)
+                paint.typeface = createTypefaceCustom(fontFamilyData.filePath!!)
             }
             // System font
             else
             {
-                val fontName = fontFamilyData.invariantName
-                paint.typeface =
-                        if (fontName.isNotBlank() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                        {
-                            val font = fontList.mapNotNull {
-                                val distanceToRegular = it.matchesFamily(fontName)
-                                if (distanceToRegular == Int.MAX_VALUE) null else it to distanceToRegular
-                            }.minByOrNull { it.second }?.first
+                paint.typeface = createTypefaceSystem(fontFamilyData.invariantName)
 
-                            if (font != null)
-                            {
-                                Typeface.CustomFallbackBuilder(FontFamily.Builder(font).build())
-                                    .setSystemFallback(fontName).build()
-                            }
-                            else
-                            {
-                                Typeface.create(fontName, Typeface.NORMAL)
-                            }
-                        }
-                        else
-                        {
-                            Typeface.create(fontName, Typeface.NORMAL)
-                        }
             }
 
         }
     }
 
-    private fun createFontFromFile(path: String): Typeface {
+    private fun createTypefaceSystem(name: String): Typeface {
+        if (name.isNotBlank() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+        {
+            val font = fontList.mapNotNull {
+                val distanceToRegular = it.matchesFamily(name)
+                if (distanceToRegular == Int.MAX_VALUE) null else it to distanceToRegular
+            }.minByOrNull { it.second }?.first
+
+            if (font != null)
+            {
+                return Typeface.CustomFallbackBuilder(FontFamily.Builder(font).build())
+                    .setSystemFallback(name).build()
+            }
+        }
+        return Typeface.create(name, Typeface.NORMAL)
+    }
+
+    private fun createTypefaceCustom(path: String): Typeface {
         return try
         {
             Typeface.createFromFile(Gdx.files.local(path).file())
