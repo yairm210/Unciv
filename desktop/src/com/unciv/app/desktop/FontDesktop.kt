@@ -1,35 +1,66 @@
 package com.unciv.app.desktop
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Pixmap
 import com.unciv.ui.components.FontFamilyData
-import com.unciv.ui.components.NativeFontImplementation
+import com.unciv.ui.components.FontImplementation
+import com.unciv.ui.components.Fonts
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.util.*
 
-class NativeFontDesktop(private val size: Int, private val fontFamily: String) :
-    NativeFontImplementation {
-    private val font by lazy {
-        Font(fontFamily, Font.PLAIN, size)
+
+class FontDesktop : FontImplementation {
+
+    private lateinit var font: Font
+    private lateinit var metric: FontMetrics
+
+    override fun setFontFamily(fontFamilyData: FontFamilyData, size: Int) {
+
+        // Mod font
+        if (fontFamilyData.filePath != null)
+        {
+            this.font = createFontFromFile(fontFamilyData.filePath!!, size)
+        }
+        // System font
+        else
+        {
+            this.font = Font(fontFamilyData.invariantName, Font.PLAIN, size)
+        }
+
+        val bufferedImage = BufferedImage(1, 1, BufferedImage.TYPE_4BYTE_ABGR)
+        val graphics = bufferedImage.createGraphics()
+        this.metric = graphics.getFontMetrics(font)
+        graphics.dispose()
     }
-    private val metric by lazy {
-        val bi = BufferedImage(1, 1, BufferedImage.TYPE_4BYTE_ABGR)
-        val g = bi.createGraphics()
-        g.font = font
-        val fontMetrics = g.fontMetrics
-        g.dispose()
-        fontMetrics
+
+    private fun createFontFromFile(path: String, size: Int): Font {
+        var font: Font
+        try
+        {
+            // Try to create and register new font
+            val fontFile = Gdx.files.local(path).file()
+            val ge = GraphicsEnvironment.getLocalGraphicsEnvironment()
+            font = Font.createFont(Font.TRUETYPE_FONT, fontFile).deriveFont(size.toFloat())
+            ge.registerFont(font)
+        }
+        catch (e: Exception)
+        {
+            // Fallback to default, if failed.
+            font = Font(Fonts.DEFAULT_FONT_FAMILY, Font.PLAIN, size)
+        }
+        return font
     }
 
     override fun getFontSize(): Int {
-        return size
+        return font.size
     }
 
     override fun getCharPixmap(char: Char): Pixmap {
         var width = metric.charWidth(char)
         var height = metric.ascent + metric.descent
         if (width == 0) {
-            height = size
+            height = font.size
             width = height
         }
         val bi = BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR)
@@ -50,7 +81,7 @@ class NativeFontDesktop(private val size: Int, private val fontFamily: String) :
         return pixmap
     }
 
-    override fun getAvailableFontFamilies(): Sequence<FontFamilyData> {
+    override fun getSystemFonts(): Sequence<FontFamilyData> {
         val cjkLanguage = " CJK " +System.getProperty("user.language").uppercase()
         return GraphicsEnvironment.getLocalGraphicsEnvironment().allFonts.asSequence()
             .filter { " CJK " !in it.fontName || cjkLanguage in it.fontName }

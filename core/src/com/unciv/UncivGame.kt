@@ -27,6 +27,7 @@ import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.audio.SoundPlayer
+import com.unciv.ui.components.FontImplementation
 import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import com.unciv.ui.images.ImageGetter
@@ -71,6 +72,10 @@ object GUI {
 
     fun getSettings(): GameSettings {
         return UncivGame.Current.settings
+    }
+
+    fun getFontImpl(): FontImplementation {
+        return UncivGame.Current.fontImplementation!!
     }
 
     fun isWorldLoaded(): Boolean {
@@ -216,7 +221,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
             // Loading available fonts can take a long time on Android phones.
             // Therefore we initialize the lazy parameters in the font implementation, while we're in another thread, to avoid ANRs on main thread
-            fontImplementation?.getCharPixmap('S')
+            fontImplementation?.setFontFamily(settings.fontFamilyData, settings.getFontSize())
 
             // This stuff needs to run on the main thread because it needs the GL context
             launchOnGLThread {

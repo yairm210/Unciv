@@ -9,55 +9,95 @@ import android.graphics.fonts.FontFamily
 import android.graphics.fonts.FontStyle
 import android.graphics.fonts.SystemFonts
 import android.os.Build
+import androidx.annotation.RequiresApi
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Pixmap
 import com.unciv.ui.components.FontFamilyData
-import com.unciv.ui.components.NativeFontImplementation
+import com.unciv.ui.components.FontImplementation
+import com.unciv.ui.components.Fonts
 import java.util.*
 import kotlin.math.abs
 
-/**
- * Created by tian on 2016/10/2.
- */
-class NativeFontAndroid(
-    private val size: Int,
-    private val fontFamily: String
-) : NativeFontImplementation {
-    private val fontList by lazy{
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) emptySet()
-        else SystemFonts.getAvailableFonts()
+class FontAndroid : FontImplementation {
+
+    private val fontList: HashSet<Font> = hashSetOf()
+    private val paint: Paint = Paint()
+    private var currentFontFamily: String? = null
+
+    init {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            fontList.addAll(SystemFonts.getAvailableFonts())
+        paint.isAntiAlias = true
+        paint.strokeWidth = 0f
+        paint.setARGB(255, 255, 255, 255)
+
     }
 
-    private val paint by lazy{ createPaint() }
-    fun createPaint() = Paint().apply {
-        typeface = if (fontFamily.isNotBlank() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            // Helper within the VERSION_CODES.Q gate: Evaluate a Font's desirability (lower = better) for a given family.
-            fun Font.matchesFamily(family: String): Int {
-                val name = file?.nameWithoutExtension ?: return Int.MAX_VALUE
-                if (name == family) return 0
-                if (!name.startsWith("$family-")) return Int.MAX_VALUE
-                if (style.weight == FontStyle.FONT_WEIGHT_NORMAL && style.slant == FontStyle.FONT_SLANT_UPRIGHT) return 1
-                return 2 +
-                        abs(style.weight - FontStyle.FONT_WEIGHT_NORMAL) / 100 +
-                        abs(style.slant - FontStyle.FONT_SLANT_UPRIGHT)
+    override fun setFontFamily(fontFamilyData: FontFamilyData, size: Int) {
+        paint.textSize = size.toFloat()
+
+        // Don't have to reload typeface if font-family didn't change
+        if (currentFontFamily != fontFamilyData.invariantName) {
+            currentFontFamily = fontFamilyData.invariantName
+
+            // Mod font
+            if (fontFamilyData.filePath != null)
+            {
+                paint.typeface = createTypefaceCustom(fontFamilyData.filePath!!)
             }
+            // System font
+            else
+            {
+                paint.typeface = createTypefaceSystem(fontFamilyData.invariantName)
+
+            }
+
+        }
+    }
+
+    private fun createTypefaceSystem(name: String): Typeface {
+        if (name.isNotBlank() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+        {
             val font = fontList.mapNotNull {
-                val distanceToRegular = it.matchesFamily(fontFamily)
+                val distanceToRegular = it.matchesFamily(name)
                 if (distanceToRegular == Int.MAX_VALUE) null else it to distanceToRegular
             }.minByOrNull { it.second }?.first
-            if (font != null) {
-                Typeface.CustomFallbackBuilder(FontFamily.Builder(font).build())
-                    .setSystemFallback(fontFamily).build()
-            } else Typeface.create(fontFamily, Typeface.NORMAL)
-        } else Typeface.create(fontFamily, Typeface.NORMAL)
 
-        isAntiAlias = true
-        textSize = size.toFloat()
-        strokeWidth = 0f
-        setARGB(255, 255, 255, 255)
+            if (font != null)
+            {
+                return Typeface.CustomFallbackBuilder(FontFamily.Builder(font).build())
+                    .setSystemFallback(name).build()
+            }
+        }
+        return Typeface.create(name, Typeface.NORMAL)
+    }
+
+    private fun createTypefaceCustom(path: String): Typeface {
+        return try
+        {
+            Typeface.createFromFile(Gdx.files.local(path).file())
+        }
+        catch (e: Exception)
+        {
+            // Falling back to default
+            Typeface.create(Fonts.DEFAULT_FONT_FAMILY, Typeface.NORMAL)
+        }
+    }
+
+    /** Helper within the VERSION_CODES.Q gate: Evaluate a Font's desirability (lower = better) for a given family. */
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun Font.matchesFamily(family: String): Int {
+        val name = file?.nameWithoutExtension ?: return Int.MAX_VALUE
+        if (name == family) return 0
+        if (!name.startsWith("$family-")) return Int.MAX_VALUE
+        if (style.weight == FontStyle.FONT_WEIGHT_NORMAL && style.slant == FontStyle.FONT_SLANT_UPRIGHT) return 1
+        return 2 +
+                abs(style.weight - FontStyle.FONT_WEIGHT_NORMAL) / 100 +
+                abs(style.slant - FontStyle.FONT_SLANT_UPRIGHT)
     }
 
     override fun getFontSize(): Int {
-        return size
+        return paint.textSize.toInt()
     }
 
     override fun getCharPixmap(char: Char): Pixmap {
@@ -65,7 +105,7 @@ class NativeFontAndroid(
         var width = paint.measureText(char.toString()).toInt()
         var height = (metric.descent - metric.ascent).toInt()
         if (width == 0) {
-            height = size
+            height = getFontSize()
             width = height
         }
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
@@ -84,7 +124,7 @@ class NativeFontAndroid(
         return pixmap
     }
 
-    override fun getAvailableFontFamilies(): Sequence<FontFamilyData> {
+    override fun getSystemFonts(): Sequence<FontFamilyData> {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
             return sequenceOf(FontFamilyData("sans-serif"), FontFamilyData("serif"), FontFamilyData("mono"))
 
