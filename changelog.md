@@ -1,27 +1,20 @@
 ## 4.4.18
 
+By vegeta1k95:
+- Modding: allow mods to supply custom fonts
+- Fix TextureArraySpriteBatch missing method issue
+
+By Gualdimar:
+- Option to disable max zoom limit
+- Slider tip permanent by default
+
 Better error message for multiplayer games that get corrupted data from the server
-
-chore: more direct 'can change state' propagations
-
-Cleanup of policy screen
-
-Removed static references from policy buttons
 
 Civilopedia entry for policy links to units and buildings that it enables/disables
 
-Resolved  - wonders with no tech requirement displayed in separate category
+Wonders with no tech requirement displayed in separate category
 
-Attacking of any sort prevents udo of unit move
-
-By vegeta1k95:
-- Modding: allow mods to supply custom fonts 
-- Fix TextureArraySpriteBatch missing method issue 
-- UI Helper: GUI class 
-
-By Gualdimar:
-- Option to disable max zoom limit 
-- Slider tip permanent by default 
+Attacking of any sort prevents undo of unit move
 
 ## 4.4.17
 
