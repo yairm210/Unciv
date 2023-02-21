@@ -18,12 +18,6 @@ import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.cityscreen.CityReligionInfoTable
-import com.unciv.ui.screens.cityscreen.CityScreen
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popups.Popup
-import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.BorderedTable
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.center
@@ -33,7 +27,12 @@ import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toGroup
 import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.screens.worldscreen.WorldScreen
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.Popup
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.cityscreen.CityReligionInfoTable
+import com.unciv.ui.screens.cityscreen.CityScreen
+import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
 import kotlin.math.max
 import kotlin.math.min
 
@@ -403,6 +402,8 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
     private var isButtonMoved = false
     private var isViewable = true
 
+    val viewingPlayer = GUI.getViewingPlayer()
+
     fun isMoved(): Boolean {
         return isButtonMoved
     }
@@ -429,8 +430,8 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
         add(cityTable).row()
 
         // If city state - add influence bar
-        if (city.civ.isCityState() && city.civ.knows(GUI.getViewingPlayer())) {
-            val diplomacyManager = city.civ.getDiplomacyManager(GUI.getViewingPlayer())
+        if (city.civ.isCityState() && city.civ.knows(viewingPlayer)) {
+            val diplomacyManager = city.civ.getDiplomacyManager(viewingPlayer)
             add(InfluenceTable(diplomacyManager.getInfluence(), diplomacyManager.relationshipLevel())).padTop(1f).row()
         }
 
@@ -479,13 +480,13 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
                     (tile.civilianUnit != null) && direction.epsilonEquals(0f, 1f) ->
                         insertHiddenUnitMarker(HiddenUnitMarkerPosition.Left)
                     // detect military under the city
-                    (tile.militaryUnit != null && !tile.hasEnemyInvisibleUnit(GUI.getViewingPlayer())) && direction.epsilonEquals(1f, 1f) ->
+                    (tile.militaryUnit != null && !tile.hasEnemyInvisibleUnit(viewingPlayer)) && direction.epsilonEquals(1f, 1f) ->
                         insertHiddenUnitMarker(HiddenUnitMarkerPosition.Center)
                     // detect civilian right-below the city
                     (tile.civilianUnit != null) && direction.epsilonEquals(1f, 0f) ->
                         insertHiddenUnitMarker(HiddenUnitMarkerPosition.Right)
                 }
-            } else if (tile.militaryUnit != null && !tile.hasEnemyInvisibleUnit(GUI.getViewingPlayer())) {
+            } else if (tile.militaryUnit != null && !tile.hasEnemyInvisibleUnit(viewingPlayer)) {
                 when {
                     // detect military left from the city
                     direction.epsilonEquals(0f, 1f) ->
@@ -516,7 +517,7 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
         listOfHiddenUnitMarkers.add(indicator)
     }
 
-    private fun belongsToViewingCiv() = city.civ == GUI.getViewingPlayer()
+    private fun belongsToViewingCiv() = city.civ == viewingPlayer
 
     private fun setButtonActions() {
 
@@ -529,13 +530,12 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
             // clicking swings the button a little down to allow selection of units there.
             // this also allows to target selected units to move to the city tile from elsewhere.
             if (isButtonMoved) {
-                val viewingCiv = GUI.getViewingPlayer()
                 // second tap on the button will go to the city screen
                 // if this city belongs to you and you are not iterating though the air units
-                if (GUI.isDebugMapVisible() || viewingCiv.isSpectator()
+                if (GUI.isDebugMapVisible() || viewingPlayer.isSpectator()
                     || (belongsToViewingCiv() && !tileGroup.tile.airUnits.contains(unitTable.selectedUnit))) {
                         GUI.pushScreen(CityScreen(city))
-                } else if (viewingCiv.knows(city.civ)) {
+                } else if (viewingPlayer.knows(city.civ)) {
                     foreignCityInfoPopup()
                 }
             } else {
@@ -582,7 +582,7 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
     private fun foreignCityInfoPopup() {
         fun openDiplomacy() {
             // If city doesn't belong to you, go directly to its owner's diplomacy screen.
-            GUI.pushScreen(DiplomacyScreen(GUI.getViewingPlayer(), city.civ))
+            GUI.pushScreen(DiplomacyScreen(viewingPlayer, city.civ))
         }
 
         // If there's nothing to display cuz no Religion - skip popup
