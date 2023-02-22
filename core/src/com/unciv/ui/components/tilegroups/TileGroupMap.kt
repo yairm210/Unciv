@@ -94,6 +94,9 @@ class TileGroupMap<T: TileGroup>(
             group.moveBy(-bottomX, -bottomY)
         }
 
+        topX -= bottomX
+        bottomX -= bottomX
+
         val baseLayers = ArrayList<TileLayerTerrain>()
         val featureLayers = ArrayList<TileLayerFeatures>()
         val borderLayers = ArrayList<TileLayerBorders>()
@@ -133,9 +136,6 @@ class TileGroupMap<T: TileGroup>(
         // If map is not wrapped, Map's width doesn't need to be reduce by groupSize
         if (worldWrap) setSize(topX - bottomX - groupSize, topY - bottomY)
         else setSize(topX - bottomX, topY - bottomY)
-
-        topY -= bottomX
-        bottomX -= bottomX
 
         cullingArea = Rectangle(0f, 0f, width, height)
     }
