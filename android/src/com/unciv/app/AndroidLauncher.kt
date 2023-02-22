@@ -3,9 +3,14 @@ package com.unciv.app
 import android.content.Intent
 import android.graphics.Rect
 import android.net.Uri
+import android.opengl.GLSurfaceView
+import android.os.Build
 import android.os.Bundle
+import android.view.Surface
+import android.view.SurfaceHolder
 import android.view.View
 import android.view.ViewTreeObserver
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.WorkManager
 import com.badlogic.gdx.Gdx
@@ -59,11 +64,31 @@ open class AndroidLauncher : AndroidApplication() {
 
         setDeepLinkedGame(intent)
 
-        addScreenObscuredListener((Gdx.graphics as AndroidGraphics).view)
+        val glView = (Gdx.graphics as AndroidGraphics).view as GLSurfaceView
+
+        addScreenObscuredListener(glView)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+            addScreenRefreshRateListener(glView)
     }
 
-    private fun addScreenObscuredListener(contentView: View) {
-        contentView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+    /** Request the best available device frame rate for
+     *  the game, as soon as OpenGL surface is created */
+    @RequiresApi(Build.VERSION_CODES.R)
+    private fun addScreenRefreshRateListener(surfaceView: GLSurfaceView) {
+        surfaceView.holder.addCallback(object: SurfaceHolder.Callback {
+            override fun surfaceCreated(holder: SurfaceHolder) {
+                val modes = display?.supportedModes ?: return
+                val bestRefreshRate = modes.maxOf { it.refreshRate }
+                holder.surface.setFrameRate(bestRefreshRate, Surface.FRAME_RATE_COMPATIBILITY_DEFAULT)
+            }
+            override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
+            override fun surfaceDestroyed(holder: SurfaceHolder) {}
+        })
+    }
+
+    private fun addScreenObscuredListener(surfaceView: GLSurfaceView) {
+        surfaceView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
             /** [onGlobalLayout] gets triggered not only when the [windowVisibleDisplayFrame][View.getWindowVisibleDisplayFrame] changes, but also on other things.
              * So we need to check if that was actually the thing that changed. */
             private var lastVisibleDisplayFrame: Rect? = null
@@ -73,18 +98,18 @@ open class AndroidLauncher : AndroidApplication() {
                     return
                 }
                 val r = Rect()
-                contentView.getWindowVisibleDisplayFrame(r)
+                surfaceView.getWindowVisibleDisplayFrame(r)
                 if (r.equals(lastVisibleDisplayFrame)) return
                 lastVisibleDisplayFrame = r
 
                 val stage = (UncivGame.Current.screen as BaseScreen).stage
 
-                val horizontalRatio = stage.width / contentView.width
-                val verticalRatio = stage.height / contentView.height
+                val horizontalRatio = stage.width / surfaceView.width
+                val verticalRatio = stage.height / surfaceView.height
 
                 val visibleStage = Rectangle(
                     r.left * horizontalRatio,
-                    (contentView.height - r.bottom)  * verticalRatio, // Android coordinate system has the origin in the top left, while GDX uses bottom left
+                    (surfaceView.height - r.bottom)  * verticalRatio, // Android coordinate system has the origin in the top left, while GDX uses bottom left
                     r.width() * horizontalRatio,
                     r.height() * verticalRatio
                 )
