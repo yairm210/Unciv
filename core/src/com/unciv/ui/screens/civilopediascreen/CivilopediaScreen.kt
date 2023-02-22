@@ -206,6 +206,7 @@ class CivilopediaScreen(
                 CivilopediaCategories.Terrain -> ruleset.terrains.values
                 CivilopediaCategories.Improvement -> ruleset.tileImprovements.values
                 CivilopediaCategories.Unit -> ruleset.units.values
+                CivilopediaCategories.UnitType -> ruleset.unitTypes.values.filter { it.isUsed(ruleset) }
                 CivilopediaCategories.Nation -> ruleset.nations.values.filter { !it.isSpectator() }
                 CivilopediaCategories.Technology -> ruleset.technologies.values
                 CivilopediaCategories.Promotion -> ruleset.unitPromotions.values

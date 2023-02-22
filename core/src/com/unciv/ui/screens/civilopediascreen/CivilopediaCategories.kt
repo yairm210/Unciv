@@ -137,6 +137,11 @@ enum class CivilopediaCategories (
         KeyCharAndCode('U'),
         "OtherIcons/Shield"
     ),
+    UnitType ("Unit types", false,
+        getImage = null,
+        KeyCharAndCode('U'),
+        "OtherIcons/Shield"
+    ),
     Nation ("Nations", false,
         CivilopediaImageGetters.nation,
         KeyCharAndCode('N'),

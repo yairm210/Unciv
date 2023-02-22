@@ -22,7 +22,7 @@ object BaseUnitDescriptions {
         for (promotion in baseUnit.promotions)
             infoList += promotion.tr()
         if (baseUnit.replacementTextForUniques != "") infoList += baseUnit.replacementTextForUniques
-        else for (unique in baseUnit.uniqueObjects) if(!unique.hasFlag(UniqueFlag.HiddenToUsers))
+        else for (unique in baseUnit.uniqueObjects) if (!unique.hasFlag(UniqueFlag.HiddenToUsers))
             infoList += unique.text.tr()
         return infoList.joinToString()
     }
@@ -61,9 +61,12 @@ object BaseUnitDescriptions {
         return lines.joinToString("\n")
     }
 
-     fun getCivilopediaTextLines(baseUnit: BaseUnit, ruleset: Ruleset): List<FormattedLine> {
+    fun getCivilopediaTextLines(baseUnit: BaseUnit, ruleset: Ruleset): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
-        textList += FormattedLine("{Unit type}: ${baseUnit.unitType.tr()}")
+
+        // Don't call baseUnit.getType() here - coming from the main menu baseUnit isn't fully initialized
+        val unitTypeLink = ruleset.unitTypes[baseUnit.unitType]?.makeLink() ?: ""
+        textList += FormattedLine("{Unit type}: ${baseUnit.unitType.tr()}", unitTypeLink)
 
         val stats = ArrayList<String>()
         if (baseUnit.strength != 0) stats += "${baseUnit.strength}${Fonts.strength}"
@@ -187,4 +190,28 @@ object BaseUnitDescriptions {
         return textList
     }
 
+    fun UnitType.getUnitTypeCivilopediaTextLines(ruleset: Ruleset) =
+            sequence<FormattedLine> {
+                getMovementType()?.let {
+                    val (icon, color) = when (it) {
+                        UnitMovementType.Land -> "Unit/Cavalry" to "#ffc080"
+                        UnitMovementType.Water -> "Promotion/Amphibious" to "#80d0ff"
+                        UnitMovementType.Air -> "Promotion/Interception" to "#e0e0ff"
+                    }
+                    yield(FormattedLine("Movement type: ${it.name}", icon = icon, color = color))
+                    yield(FormattedLine(separator = true))
+                }
+                yield(FormattedLine("Units:", header = 4))
+                for (unit in ruleset.units.values) {
+                    if (unit.unitType != name) continue
+                    yield(FormattedLine(unit.name, unit.makeLink()))
+                }
+                if (uniqueObjects.isNotEmpty()) {
+                    yield(FormattedLine(separator = true))
+                    for (unique in uniqueObjects) {
+                        if (unique.hasFlag(UniqueFlag.HiddenToUsers)) continue
+                        yield(FormattedLine(unique))
+                    }
+                }
+            }.toList()
 }
