@@ -134,6 +134,9 @@ class TileGroupMap<T: TileGroup>(
         if (worldWrap) setSize(topX - bottomX - groupSize, topY - bottomY)
         else setSize(topX - bottomX, topY - bottomY)
 
+        topY -= bottomX
+        bottomX -= bottomX
+
         cullingArea = Rectangle(0f, 0f, width, height)
     }
 
