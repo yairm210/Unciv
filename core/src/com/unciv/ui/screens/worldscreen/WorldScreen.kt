@@ -488,7 +488,7 @@ class WorldScreen(
                     "\n Click 'Construct improvement' (above the unit table, bottom left)" +
                     "\n > Choose the farm > \n Leave the worker there until it's finished"
         if (!completedTasks.contains("Create a trade route")
-                && viewingCiv.citiesConnectedToCapitalToMediums.any { it.key.civ == viewingCiv })
+                && viewingCiv.cache.citiesConnectedToCapitalToMediums.any { it.key.civ == viewingCiv })
             game.settings.addCompletedTutorialTask("Create a trade route")
         if (viewingCiv.cities.size > 1 && !completedTasks.contains("Create a trade route"))
             return "Create a trade route!\nConstruct roads between your capital and another city" +

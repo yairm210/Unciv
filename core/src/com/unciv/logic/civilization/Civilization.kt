@@ -99,10 +99,6 @@ class Civilization : IsPartOfGameInfoSerialization {
     @Transient
     var viewableInvisibleUnitsTiles = setOf<Tile>()
 
-    /** Contains mapping of cities to travel mediums from ALL civilizations connected by trade routes to the capital */
-    @Transient
-    var citiesConnectedToCapitalToMediums = mapOf<City, Set<String>>()
-
     /** This is for performance since every movement calculation depends on this, see MapUnit comment */
     @Transient
     var hasActiveEnemyMovementPenalty = false
@@ -396,7 +392,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         return newResourceSupplyList
     }
 
-    fun isCapitalConnectedToCity(city: City): Boolean = citiesConnectedToCapitalToMediums.keys.contains(city)
+    fun isCapitalConnectedToCity(city: City): Boolean = cache.citiesConnectedToCapitalToMediums.keys.contains(city)
 
 
     /**
