@@ -27,11 +27,11 @@ class OnlineMultiplayerFiles(
         return if (identifier == Constants.dropboxMultiplayerServer) {
             DropBox
         } else {
-            val multiplayerSettings = UncivGame.Current.settings.multiplayer
+            val settings = UncivGame.Current.settings.multiplayer
             UncivServerFileStorage.apply {
                 serverUrl = identifier!!
                 authHeader = mapOf(
-                    "Authorization" to "Basic ${Gzip.zip(multiplayerSettings.userId)}:${Gzip.zip(multiplayerSettings.password)}"
+                    "Authorization" to "Basic ${Gzip.zip(settings.userId)}:${Gzip.zip(settings.passwords[settings.server] ?: "")}"
                 )
             }
         }

@@ -362,12 +362,14 @@ class OnlineMultiplayer {
         }
 
 
+        val settings = UncivGame.Current.settings.multiplayer
+
         val success = multiplayerFiles.fileStorage().authenticate(
-            userId=UncivGame.Current.settings.multiplayer.userId,
-            password=password ?: UncivGame.Current.settings.multiplayer.password
+            userId=settings.userId,
+            password=password ?: settings.passwords[settings.server] ?: ""
         )
         if (password != null && success) {
-            UncivGame.Current.settings.multiplayer.password = password
+            settings.passwords[settings.server] = password
         }
         return success
     }
@@ -382,7 +384,8 @@ class OnlineMultiplayer {
             featureSet.authVersion > 0 &&
             multiplayerFiles.fileStorage().setPassword(newPassword = password)
         ) {
-            UncivGame.Current.settings.multiplayer.password = password
+            val settings = UncivGame.Current.settings.multiplayer
+            settings.passwords[settings.server] = password
             return true
         }
 

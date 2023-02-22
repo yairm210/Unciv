@@ -146,12 +146,9 @@ private fun addMultiplayerServerOptions(
     multiplayerServerTextField.programmaticChangeEvents = true
     val serverIpTable = Table()
 
-    val passwordTextField = UncivTextField.create("Password")
-    val setPasswordButton = "Set password".toTextButton()
-
     serverIpTable.add("Server address".toLabel().onClick {
         multiplayerServerTextField.text = Gdx.app.clipboard.contents
-        }).row()
+        }).colspan(2).row()
     multiplayerServerTextField.onChange {
         val isCustomServer = OnlineMultiplayer.usesCustomServer()
         connectionToServerButton.isEnabled = isCustomServer
@@ -168,16 +165,17 @@ private fun addMultiplayerServerOptions(
         settings.save()
     }
 
-    serverIpTable.add(multiplayerServerTextField).minWidth(optionsPopup.stageToShowOn.width / 2).growX()
-    tab.add(serverIpTable).colspan(2).fillX().row()
+    serverIpTable.add(multiplayerServerTextField)
+        .minWidth(optionsPopup.stageToShowOn.width / 2)
+        .colspan(2).growX().padBottom(8f).row()
 
-    tab.add("Reset to Dropbox".toTextButton().onClick {
+    serverIpTable.add("Reset to Dropbox".toTextButton().onClick {
         multiplayerServerTextField.text = Constants.dropboxMultiplayerServer
         for (refreshSelect in toUpdate) refreshSelect.update(false)
         settings.save()
-    }).colspan(2).row()
+    })
 
-    tab.add(connectionToServerButton.onClick {
+    serverIpTable.add(connectionToServerButton.onClick {
         val popup = Popup(optionsPopup.stageToShowOn).apply {
             addGoodSizedLabel("Awaiting response...").row()
             open(true)
@@ -193,13 +191,32 @@ private fun addMultiplayerServerOptions(
                 popup.reuseWith("Failed!", true)
             }
         }
-    }).colspan(2).row()
+    }).row()
 
-    tab.add("Set password".toLabel()).padTop(16f).colspan(2).row()
-    tab.add(passwordTextField).colspan(2).growX().row()
-    tab.add(setPasswordButton.onClick {
-        setPassword(passwordTextField.text, optionsPopup)
-    }).colspan(2).row()
+    if (UncivGame.Current.onlineMultiplayer.serverFeatureSet.authVersion > 0) {
+        val passwordTextField = UncivTextField.create("Password")
+        val setPasswordButton = "Set password".toTextButton()
+
+        serverIpTable.add("Set password".toLabel()).padTop(16f).colspan(2).row()
+        serverIpTable.add(passwordTextField).colspan(2).growX().padBottom(8f).row()
+
+        val passwordStatusTable = Table().apply {
+            add(
+                if (settings.multiplayer.passwords.containsKey(settings.multiplayer.server)) {
+                    "Your userId is password secured"
+                } else {
+                    "Set a password to secure your userId"
+                }.toLabel()
+            )
+            add(setPasswordButton.onClick {
+                setPassword(passwordTextField.text, optionsPopup)
+            }).padLeft(16f)
+        }
+
+        serverIpTable.add(passwordStatusTable).colspan(2).row()
+    }
+
+    tab.add(serverIpTable).colspan(2).fillX().row()
 }
 
 private fun addTurnCheckerOptions(
