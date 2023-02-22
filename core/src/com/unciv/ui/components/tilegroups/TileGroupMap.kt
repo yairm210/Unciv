@@ -97,9 +97,6 @@ class TileGroupMap<T: TileGroup>(
             group.moveBy(-bottomX, -bottomY)
         }
 
-        topX -= bottomX
-        bottomX -= bottomX
-
         drawTopX = topX - bottomX
         drawBottomX = bottomX - bottomX
 
