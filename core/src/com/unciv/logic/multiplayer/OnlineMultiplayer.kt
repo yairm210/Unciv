@@ -357,7 +357,7 @@ class OnlineMultiplayer {
      * @throws MultiplayerAuthException if the authentication failed
      */
     fun authenticate(password: String?): Boolean {
-        if (featureSet.authVersion < 1) {
+        if (featureSet.authVersion == 0) {
             return true
         }
 

@@ -180,8 +180,8 @@ private fun addMultiplayerServerOptions(
     tab.add(connectionToServerButton.onClick {
         val popup = Popup(optionsPopup.stageToShowOn).apply {
             addGoodSizedLabel("Awaiting response...").row()
+            open(true)
         }
-        popup.open(true)
 
         successfullyConnectedToServer { connectionSuccess, authSuccess ->
             if (connectionSuccess && authSuccess) {
@@ -198,37 +198,7 @@ private fun addMultiplayerServerOptions(
     tab.add("Set password".toLabel()).padTop(16f).colspan(2).row()
     tab.add(passwordTextField).colspan(2).growX().row()
     tab.add(setPasswordButton.onClick {
-        if (passwordTextField.text.isNullOrBlank())
-            return@onClick
-
-        if (UncivGame.Current.onlineMultiplayer.serverFeatureSet.authVersion == 0) {
-            Popup(optionsPopup.stageToShowOn).apply {
-                addGoodSizedLabel("This server does not support authentication").row()
-                addCloseButton()
-                open()
-            }
-            return@onClick
-        }
-
-        try {
-            UncivGame.Current.onlineMultiplayer.setPassword(passwordTextField.text)
-        } catch (ex: Exception) {
-            if (ex is MultiplayerAuthException) {
-                AuthPopup(optionsPopup.stageToShowOn).open(true)
-                return@onClick
-            }
-
-            val message = when (ex) {
-                is FileStorageRateLimitReached -> "Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds"
-                else -> "Failed to set password!"
-            }
-
-            Popup(optionsPopup.stageToShowOn).apply {
-                addGoodSizedLabel(message).row()
-                addCloseButton()
-                open()
-            }
-        }
+        setPassword(passwordTextField.text, optionsPopup)
     }).colspan(2).row()
 }
 
@@ -278,6 +248,65 @@ private fun successfullyConnectedToServer(action: (Boolean, Boolean) -> Unit) {
         } catch (_: Exception) {
             launchOnGLThread {
                 action(false, false)
+            }
+        }
+    }
+}
+
+private fun setPassword(password: String, optionsPopup: OptionsPopup) {
+    if (password.isNullOrBlank())
+        return
+
+    val popup = Popup(optionsPopup.stageToShowOn).apply {
+        addGoodSizedLabel("Awaiting response...").row()
+        open(true)
+    }
+
+    if (UncivGame.Current.onlineMultiplayer.serverFeatureSet.authVersion == 0) {
+        popup.reuseWith("This server does not support authentication", true)
+        return
+    }
+
+    successfullySetPassword(password) { success, ex ->
+        if (success) {
+            popup.reuseWith(
+                "Password set successfully for server [${optionsPopup.settings.multiplayer.server}]",
+                true
+            )
+        } else {
+            if (ex is MultiplayerAuthException) {
+                AuthPopup(optionsPopup.stageToShowOn) { authSuccess ->
+                    // If auth was successful, try to set password again
+                    if (authSuccess) {
+                        popup.close()
+                        setPassword(password, optionsPopup)
+                    } else {
+                        popup.reuseWith("Failed to set password!", true)
+                    }
+                }.open(true)
+                return@successfullySetPassword
+            }
+
+            val message = when (ex) {
+                is FileStorageRateLimitReached -> "Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds"
+                else -> "Failed to set password!"
+            }
+
+            popup.reuseWith(message, true)
+        }
+    }
+}
+
+private fun successfullySetPassword(password: String, action: (Boolean, Exception?) -> Unit) {
+    Concurrency.run("SetPassword") {
+        try {
+            val setSuccess = UncivGame.Current.onlineMultiplayer.setPassword(password)
+            launchOnGLThread {
+                action(setSuccess, null)
+            }
+        } catch (ex: Exception) {
+            launchOnGLThread {
+                action(false, ex)
             }
         }
     }
