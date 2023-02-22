@@ -103,13 +103,13 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
     }
 
     private fun getTilesExertingZoneOfControl(tile: Tile, civInfo: Civilization) = sequence {
-        for (tile in tile.neighbors) {
-            if (tile.isCityCenter() && civInfo.isAtWarWith(tile.getOwner()!!)) {
-                yield(tile)
+        for (neighbor in tile.neighbors) {
+            if (neighbor.isCityCenter() && civInfo.isAtWarWith(neighbor.getOwner()!!)) {
+                yield(neighbor)
             }
-            else if (tile.militaryUnit != null && civInfo.isAtWarWith(tile.militaryUnit!!.civ)) {
-                if (tile.militaryUnit!!.type.isWaterUnit() || (unit.type.isLandUnit() && !tile.militaryUnit!!.isEmbarked()))
-                    yield(tile)
+            else if (neighbor.militaryUnit != null && civInfo.isAtWarWith(neighbor.militaryUnit!!.civ)) {
+                if (neighbor.militaryUnit!!.type.isWaterUnit() || (unit.type.isLandUnit() && !neighbor.militaryUnit!!.isEmbarked()))
+                    yield(neighbor)
             }
         }
     }
