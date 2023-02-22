@@ -2,6 +2,7 @@ package com.unciv.app
 
 import android.content.Intent
 import android.graphics.Rect
+import android.hardware.display.DisplayManager
 import android.net.Uri
 import android.opengl.GLSurfaceView
 import android.os.Build
@@ -68,19 +69,27 @@ open class AndroidLauncher : AndroidApplication() {
 
         addScreenObscuredListener(glView)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
             addScreenRefreshRateListener(glView)
     }
 
     /** Request the best available device frame rate for
      *  the game, as soon as OpenGL surface is created */
-    @RequiresApi(Build.VERSION_CODES.R)
     private fun addScreenRefreshRateListener(surfaceView: GLSurfaceView) {
         surfaceView.holder.addCallback(object: SurfaceHolder.Callback {
             override fun surfaceCreated(holder: SurfaceHolder) {
-                val modes = display?.supportedModes ?: return
-                val bestRefreshRate = modes.maxOf { it.refreshRate }
-                holder.surface.setFrameRate(bestRefreshRate, Surface.FRAME_RATE_COMPATIBILITY_DEFAULT)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    val modes = display?.supportedModes ?: return
+                    val bestRefreshRate = modes.maxOf { it.refreshRate }
+                    holder.surface.setFrameRate(bestRefreshRate, Surface.FRAME_RATE_COMPATIBILITY_DEFAULT)
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    val display = windowManager.defaultDisplay
+                    val modes = display?.supportedModes ?: return
+                    val bestMode =  modes.maxBy { it.refreshRate }
+                    val params = window.attributes
+                    params.preferredDisplayModeId = bestMode.modeId
+                    window.attributes = params
+                }
             }
             override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
             override fun surfaceDestroyed(holder: SurfaceHolder) {}
