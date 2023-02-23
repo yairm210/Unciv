@@ -193,6 +193,14 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.civInfo != null && state.civInfo.religionManager.religionState == ReligionState.None
             UniqueType.ConditionalAfterPantheon ->
                 state.civInfo != null && state.civInfo.religionManager.religionState != ReligionState.None
+            UniqueType.ConditionalBeforeReligion ->
+                state.civInfo != null && state.civInfo.religionManager.religionState < ReligionState.Religion
+            UniqueType.ConditionalAfterReligion ->
+                state.civInfo != null && state.civInfo.religionManager.religionState >= ReligionState.Religion
+            UniqueType.ConditionalBeforeEnhancingReligion ->
+                state.civInfo != null && state.civInfo.religionManager.religionState < ReligionState.EnhancedReligion
+            UniqueType.ConditionalAfterEnhancingReligion ->
+                state.civInfo != null && state.civInfo.religionManager.religionState >= ReligionState.EnhancedReligion
             UniqueType.ConditionalBuildingBuilt ->
                 state.civInfo != null && state.civInfo.cities.any { it.cityConstructions.containsBuildingOrEquivalent(condition.params[0]) }
 

@@ -609,6 +609,10 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     ConditionalBeforePantheon("before founding a Pantheon", UniqueTarget.Conditional),
     ConditionalAfterPantheon("after founding a Pantheon", UniqueTarget.Conditional),
+    ConditionalBeforeReligion("before founding a religion", UniqueTarget.Conditional),
+    ConditionalAfterReligion("after founding a religion", UniqueTarget.Conditional),
+    ConditionalBeforeEnhancingReligion("before enhancing a religion", UniqueTarget.Conditional),
+    ConditionalAfterEnhancingReligion("after enhancing a religion", UniqueTarget.Conditional),
 
     ConditionalBuildingBuilt("if [buildingFilter] is constructed", UniqueTarget.Conditional),
 
