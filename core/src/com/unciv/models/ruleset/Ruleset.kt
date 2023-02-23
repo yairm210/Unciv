@@ -120,34 +120,41 @@ class Ruleset {
 
     fun add(ruleset: Ruleset) {
         beliefs.putAll(ruleset.beliefs)
+        if ("*" in ruleset.modOptions.buildingsToRemove) buildings.clear()
         buildings.putAll(ruleset.buildings)
-        for (buildingToRemove in ruleset.modOptions.buildingsToRemove) buildings.remove(
-            buildingToRemove
-        )
+        for (buildingToRemove in ruleset.modOptions.buildingsToRemove)
+            buildings.remove(buildingToRemove)
         difficulties.putAll(ruleset.difficulties)
         eras.putAll(ruleset.eras)
         speeds.putAll(ruleset.speeds)
         globalUniques = GlobalUniques().apply {
-            uniques.addAll(globalUniques.uniques); uniques.addAll(ruleset.globalUniques.uniques)
+            uniques.addAll(globalUniques.uniques)
+            uniques.addAll(ruleset.globalUniques.uniques)
         }
+        if ("*" in ruleset.modOptions.nationsToRemove) nations.clear()
         nations.putAll(ruleset.nations)
-        for (nationToRemove in ruleset.modOptions.nationsToRemove) nations.remove(nationToRemove)
+        for (nationToRemove in ruleset.modOptions.nationsToRemove)
+            nations.remove(nationToRemove)
         policyBranches.putAll(ruleset.policyBranches)
         policies.putAll(ruleset.policies)
         quests.putAll(ruleset.quests)
         religions.addAll(ruleset.religions)
         ruinRewards.putAll(ruleset.ruinRewards)
         specialists.putAll(ruleset.specialists)
+        if ("*" in ruleset.modOptions.techsToRemove) technologies.clear()
         technologies.putAll(ruleset.technologies)
-        for (techToRemove in ruleset.modOptions.techsToRemove) technologies.remove(techToRemove)
+        for (techToRemove in ruleset.modOptions.techsToRemove)
+            technologies.remove(techToRemove)
         terrains.putAll(ruleset.terrains)
         tileImprovements.putAll(ruleset.tileImprovements)
         tileResources.putAll(ruleset.tileResources)
-        units.putAll(ruleset.units)
         unitTypes.putAll(ruleset.unitTypes)
         victories.putAll(ruleset.victories)
         cityStateTypes.putAll(ruleset.cityStateTypes)
-        for (unitToRemove in ruleset.modOptions.unitsToRemove) units.remove(unitToRemove)
+        if ("*" in ruleset.modOptions.unitsToRemove) units.clear()
+        units.putAll(ruleset.units)
+        for (unitToRemove in ruleset.modOptions.unitsToRemove)
+            units.remove(unitToRemove)
         modOptions.uniques.addAll(ruleset.modOptions.uniques)
         modOptions.constants.merge(ruleset.modOptions.constants)
 
@@ -565,7 +572,7 @@ object RulesetCache : HashMap<String,Ruleset>() {
 
         for (mod in loadedMods.sortedByDescending { it.modOptions.isBaseRuleset }) {
             if (mod.modOptions.isBaseRuleset) {
-                // This is so we don't keep using the base ruleset's unqiues *by reference* and add to in ad infinitum
+                // This is so we don't keep using the base ruleset's uniques *by reference* and add to in ad infinitum
                 newRuleset.modOptions.uniques = ArrayList()
                 newRuleset.modOptions.isBaseRuleset = true
             }
