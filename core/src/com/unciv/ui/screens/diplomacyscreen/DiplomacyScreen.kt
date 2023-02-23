@@ -167,6 +167,8 @@ class DiplomacyScreen(
 
     private fun updateRightSide(otherCiv: Civilization) {
         rightSideTable.clear()
+        UncivGame.Current.musicController.chooseTrack(otherCiv.civName,
+            MusicMood.peaceOrWar(viewingCiv.isAtWarWith(otherCiv)),MusicTrackChooserFlags.setSelectNation)
         if (otherCiv.isCityState()) rightSideTable.add(
             ScrollPane(getCityStateDiplomacyTable(otherCiv))
         )
@@ -695,9 +697,6 @@ class DiplomacyScreen(
             val promisesTable = getPromisesTable(diplomacyManager, otherCivDiplomacyManager)
             if (promisesTable != null) diplomacyTable.add(promisesTable).row()
         }
-
-        UncivGame.Current.musicController.chooseTrack(otherCiv.civName,
-            MusicMood.peaceOrWar(viewingCiv.isAtWarWith(otherCiv)), MusicTrackChooserFlags.setSelectNation)
 
         return diplomacyTable
     }
