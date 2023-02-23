@@ -1,3 +1,25 @@
+## 4.4.19
+
+chore: code cleanup
+
+Fix unique parameter type
+
+modding: Added "upon gaining a [unitFilter] unit" trigger condition
+
+chore: moved citiesConnectedToCapitalToMediums to cache
+
+By Gualdimar:
+- Limit camera movement within explored region 
+- Fixed world wrap coordinates check 
+
+Android: use best possible device frame rate  - By vegeta1k95
+
+Allow filters in the ModOptions "ToRemove" lists  - By SomeTroglodyte
+
+Play city-state music if available  - By Skekdog
+
+Add 'neutral' Flood plains  - By Caballero-Arepa
+
 ## 4.4.18
 
 By vegeta1k95:
