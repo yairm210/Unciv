@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization.transients
 
+import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.City
@@ -74,7 +75,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     }
 
     // This is a big performance
-    fun updateViewableTiles() {
+    fun updateViewableTiles(explorerPosition: Vector2? = null) {
         setNewViewableTiles()
 
         updateViewableInvisibleTiles()
@@ -87,7 +88,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         // and we never actually iterate on the explored tiles (only check contains()),
         // so there's no fear of concurrency problems.
         civInfo.viewableTiles.asSequence().forEach { tile ->
-            tile.setExplored(civInfo, true)
+            tile.setExplored(civInfo, true, explorerPosition)
         }
 
 

@@ -290,8 +290,8 @@ open class ZoomableScrollPane(
                 onPanStartListener?.invoke()
             }
             setScrollbarsVisible(true)
-            scrollX -= deltaX
-            scrollY += deltaY
+            scrollX = restrictX(deltaX)
+            scrollY = restrictY(deltaY)
 
             when {
                 continuousScrollingX && scrollPercentX >= 1 && deltaX < 0 -> {
@@ -315,6 +315,9 @@ open class ZoomableScrollPane(
             onPanStopListener?.invoke()
         }
     }
+
+    open fun restrictX(deltaX: Float): Float = scrollX - deltaX
+    open fun restrictY(deltaY:Float): Float = scrollY + deltaY
 
     override fun getFlickScrollListener(): ActorGestureListener {
         return FlickScrollListener()

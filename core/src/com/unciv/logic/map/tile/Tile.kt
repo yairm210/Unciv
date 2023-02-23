@@ -245,10 +245,12 @@ open class Tile : IsPartOfGameInfoSerialization {
         return exploredBy.contains(player.civName) || player.exploredTiles.contains(position)
     }
 
-    fun setExplored(player: Civilization, isExplored: Boolean) {
+    fun setExplored(player: Civilization, isExplored: Boolean, explorerPosition: Vector2? = null) {
         if (isExplored) {
             exploredBy.add(player.civName)
             player.exploredTiles.add(position)
+            if(player.playerType == PlayerType.Human)
+                player.exploredRegion.checkTilePosition(position, explorerPosition)
         } else {
             exploredBy.remove(player.civName)
             player.exploredTiles.remove(position)

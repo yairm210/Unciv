@@ -777,6 +777,40 @@ class WorldMapHolder(
             super.reloadMaxZoom()
     }
 
+    override fun restrictX(deltaX: Float): Float {
+        val exploredRegion = worldScreen.viewingCiv.exploredRegion
+        var result = scrollX - deltaX
+
+        if (exploredRegion.shouldRecalculateCoords()) exploredRegion.calculateStageCoords(maxX, maxY)
+
+        if (!exploredRegion.shouldRestrictX()) return result
+
+        val leftX = exploredRegion.getLeftX()
+        val rightX = exploredRegion.getRightX()
+
+        if (deltaX < 0 && scrollX <= rightX && result > rightX)
+            result = rightX
+        else if (deltaX > 0 && scrollX >= leftX && result < leftX)
+            result = leftX
+
+        return result
+    }
+
+    override fun restrictY(deltaY: Float): Float {
+        val exploredRegion = worldScreen.viewingCiv.exploredRegion
+        var result = scrollY + deltaY
+
+        if (exploredRegion.shouldRecalculateCoords()) exploredRegion.calculateStageCoords(maxX, maxY)
+
+        val topY = exploredRegion.getTopY()
+        val bottomY = exploredRegion.getBottomY()
+
+        if (result < topY) result = topY
+        else if (result > bottomY) result = bottomY
+
+        return result
+    }
+
 
     // For debugging purposes
     override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
