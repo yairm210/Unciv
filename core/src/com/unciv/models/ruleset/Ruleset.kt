@@ -120,10 +120,13 @@ class Ruleset {
 
     fun add(ruleset: Ruleset) {
         beliefs.putAll(ruleset.beliefs)
-        if ("*" in ruleset.modOptions.buildingsToRemove) buildings.clear()
+        ruleset.modOptions.buildingsToRemove
+            .flatMap { buildingToRemove ->
+                buildings.filter { it.value.matchesFilter(buildingToRemove) }.keys
+            }.toSet().forEach {
+                buildings.remove(it)
+            }
         buildings.putAll(ruleset.buildings)
-        for (buildingToRemove in ruleset.modOptions.buildingsToRemove)
-            buildings.remove(buildingToRemove)
         difficulties.putAll(ruleset.difficulties)
         eras.putAll(ruleset.eras)
         speeds.putAll(ruleset.speeds)
@@ -131,30 +134,39 @@ class Ruleset {
             uniques.addAll(globalUniques.uniques)
             uniques.addAll(ruleset.globalUniques.uniques)
         }
-        if ("*" in ruleset.modOptions.nationsToRemove) nations.clear()
+        ruleset.modOptions.nationsToRemove
+            .flatMap { nationToRemove ->
+                nations.filter { it.value.matchesFilter(nationToRemove) }.keys
+            }.toSet().forEach {
+                nations.remove(it)
+            }
         nations.putAll(ruleset.nations)
-        for (nationToRemove in ruleset.modOptions.nationsToRemove)
-            nations.remove(nationToRemove)
         policyBranches.putAll(ruleset.policyBranches)
         policies.putAll(ruleset.policies)
         quests.putAll(ruleset.quests)
         religions.addAll(ruleset.religions)
         ruinRewards.putAll(ruleset.ruinRewards)
         specialists.putAll(ruleset.specialists)
-        if ("*" in ruleset.modOptions.techsToRemove) technologies.clear()
+        ruleset.modOptions.techsToRemove
+            .flatMap { techToRemove ->
+                technologies.filter { it.value.matchesFilter(techToRemove) }.keys
+            }.toSet().forEach {
+                technologies.remove(it)
+            }
         technologies.putAll(ruleset.technologies)
-        for (techToRemove in ruleset.modOptions.techsToRemove)
-            technologies.remove(techToRemove)
         terrains.putAll(ruleset.terrains)
         tileImprovements.putAll(ruleset.tileImprovements)
         tileResources.putAll(ruleset.tileResources)
         unitTypes.putAll(ruleset.unitTypes)
         victories.putAll(ruleset.victories)
         cityStateTypes.putAll(ruleset.cityStateTypes)
-        if ("*" in ruleset.modOptions.unitsToRemove) units.clear()
+        ruleset.modOptions.unitsToRemove
+            .flatMap { unitToRemove ->
+                units.filter { it.value.matchesFilter(unitToRemove) }.keys
+            }.toSet().forEach {
+                units.remove(it)
+            }
         units.putAll(ruleset.units)
-        for (unitToRemove in ruleset.modOptions.unitsToRemove)
-            units.remove(unitToRemove)
         modOptions.uniques.addAll(ruleset.modOptions.uniques)
         modOptions.constants.merge(ruleset.modOptions.constants)
 

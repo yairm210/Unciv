@@ -1,7 +1,6 @@
 package com.unciv.models.ruleset.tech
 
 import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
@@ -284,5 +283,14 @@ class Technology: RulesetObject() {
         }
 
         return lineList
+    }
+
+    fun matchesFilter(filter: String): Boolean {
+        return when (filter) {
+            "All" -> true
+            name -> true
+            era() -> true
+            else -> uniques.contains(filter)
+        }
     }
 }
