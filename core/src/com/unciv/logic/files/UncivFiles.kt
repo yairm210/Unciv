@@ -59,7 +59,10 @@ class UncivFiles(
         val localFile = files.local(location)
         val externalFile = files.external(location)
 
-        val toReturn = if (preferExternalStorage && files.isExternalStorageAvailable && (externalFile.exists() || !localFile.exists())) {
+        val toReturn = if (files.isExternalStorageAvailable && (
+                        preferExternalStorage && (externalFile.exists() || !localFile.exists())
+                        || !preferExternalStorage && (externalFile.exists() && !localFile.exists())
+                ) ) {
             externalFile
         } else {
             localFile
@@ -97,7 +100,7 @@ class UncivFiles(
         debug("Getting saves from folder %s, externalStoragePath: %s", saveFolder, files.externalStoragePath)
         val localFiles = files.local(saveFolder).list().asSequence()
 
-        val externalFiles = if (files.isExternalStorageAvailable) {
+        val externalFiles = if (files.isExternalStorageAvailable && files.local("").file().absolutePath != files.external("").file().absolutePath) {
             files.external(saveFolder).list().asSequence()
         } else {
             emptySequence()
