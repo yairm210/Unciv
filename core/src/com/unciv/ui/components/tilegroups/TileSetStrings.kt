@@ -17,6 +17,8 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, unitS
 
     // this is so that when we have 100s of TileGroups, they won't all individually come up with all these strings themselves,
     // it gets pretty memory-intensive (10s of MBs which is a lot for lower-end phones)
+    val tileSetName = tileSet
+    val unitSetName = unitSet
     val tileSetLocation = "TileSets/$tileSet/"
     val unitSetLocation = "TileSets/$unitSet/"
     val tileSetConfig = TileSetCache[tileSet]?.config ?: TileSetConfig()

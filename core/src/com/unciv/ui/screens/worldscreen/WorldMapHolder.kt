@@ -69,6 +69,8 @@ class WorldMapHolder(
 
     private lateinit var tileGroupMap: TileGroupMap<WorldTileGroup>
 
+    lateinit var currentTileSetStrings: TileSetStrings
+
     init {
         if (Gdx.app.type == Application.ApplicationType.Desktop) this.setFlingTime(0f)
         continuousScrollingX = tileMap.mapParameters.worldWrap
@@ -109,6 +111,7 @@ class WorldMapHolder(
 
     internal fun addTiles() {
         val tileSetStrings = TileSetStrings()
+        currentTileSetStrings = tileSetStrings
         val tileGroupsNew = tileMap.values.map { WorldTileGroup(it, tileSetStrings) }
         tileGroupMap = TileGroupMap(this, tileGroupsNew, continuousScrollingX)
 
