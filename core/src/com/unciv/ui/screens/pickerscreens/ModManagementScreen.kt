@@ -11,7 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.SerializationException
-import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
@@ -20,16 +19,9 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.pickerscreens.ModManagementOptions.SortType
-import com.unciv.ui.popups.ConfirmPopup
-import com.unciv.ui.popups.Popup
-import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.components.AutoScrollPane
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.KeyCharAndCode
-import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.WrappableLabel
 import com.unciv.ui.components.extensions.UncivDateFormat.formatDate
@@ -44,6 +36,14 @@ import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.ConfirmPopup
+import com.unciv.ui.popups.Popup
+import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.basescreen.RecreateOnResize
+import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
+import com.unciv.ui.screens.pickerscreens.ModManagementOptions.SortType
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
@@ -346,16 +346,26 @@ class ModManagementScreen(
      * @param repo: the repository instance as received from the GitHub api
      */
     private fun addModInfoToActionTable(repo: Github.Repo) {
-        addModInfoToActionTable(repo.name, repo.html_url, repo.pushed_at, repo.owner.login, repo.size)
+        addModInfoToActionTable(repo.html_url, repo.pushed_at, repo.owner.login, repo.size)
     }
     /** Recreate the information part of the right-hand column
      * @param modName: The mod name (name from the RuleSet)
      * @param modOptions: The ModOptions as enriched by us with GitHub metadata when originally downloaded
      */
     private fun addModInfoToActionTable(modName: String, modOptions: ModOptions) {
-        addModInfoToActionTable(modName, modOptions.modUrl, modOptions.lastUpdated, modOptions.author, modOptions.modSize)
+        addModInfoToActionTable(
+            modOptions.modUrl,
+            modOptions.lastUpdated,
+            modOptions.author,
+            modOptions.modSize
+        )
     }
-    private fun addModInfoToActionTable(modName: String, repoUrl: String, updatedAt: String, author: String, modSize: Int) {
+    private fun addModInfoToActionTable(
+        repoUrl: String,
+        updatedAt: String,
+        author: String,
+        modSize: Int
+    ) {
         // remember selected mod - for now needed only to display a background-fetched image while the user is watching
 
         // Display metadata

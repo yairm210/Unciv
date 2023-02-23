@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.ScreenSize
@@ -115,25 +116,57 @@ private fun addFontFamilySelect(table: Table, settings: GameSettings, selectBoxM
         // Therefore, _selecting_ an item in a `SelectBox` by an instance of `FontFamilyData` where only the `invariantName` is valid won't work properly.
         //
         // This is why it's _not_ `fontSelectBox.selected = FontFamilyData(settings.fontFamily)`
-        val fontToSelect = settings.fontFamily
-        fontSelectBox.selected = fonts.firstOrNull { it.invariantName == fontToSelect } // will default to first entry if `null` is passed
+        val fontToSelect = settings.fontFamilyData
+        fontSelectBox.selected = fonts.firstOrNull { it.invariantName == fontToSelect.invariantName } // will default to first entry if `null` is passed
 
         selectCell.setActor(fontSelectBox).minWidth(selectBoxMinWidth).pad(10f)
 
         fontSelectBox.onChange {
-            settings.fontFamily = fontSelectBox.selected.invariantName
-            Fonts.resetFont(settings.fontFamily)
+            settings.fontFamilyData = fontSelectBox.selected
             onFontChange()
         }
     }
 
+    // This is a heavy operation and causes ANRs
     Concurrency.run("Add Font Select") {
-        // This is a heavy operation and causes ANRs
-        val fonts = Array<FontFamilyData>().apply {
-            add(FontFamilyData.default)
-            for (font in Fonts.getAvailableFontFamilyNames())
-                add(font)
+
+        val fonts = Array<FontFamilyData>()
+
+        // Add default font
+        fonts.add(FontFamilyData.default)
+
+        // Add mods fonts
+        val modsDir = Gdx.files.local("mods/")
+        for (mod in modsDir.list()) {
+
+            // Not a dir, continue
+            if (!mod.isDirectory)
+                continue
+
+            val modFontsDir = mod.child("fonts")
+
+            // Mod doesn't have fonts, continue
+            if (!modFontsDir.exists())
+                continue
+
+            // Find .ttf files and add construct FontFamilyData
+            for (fontFile in modFontsDir.list()) {
+                if (fontFile.extension().lowercase() == "ttf") {
+                    fonts.add(
+                        FontFamilyData(
+                            "${fontFile.nameWithoutExtension()} (${mod.name()})",
+                            fontFile.nameWithoutExtension(),
+                            fontFile.path())
+                    )
+                }
+            }
+
         }
+
+        // Add system fonts
+        for (font in Fonts.getSystemFonts())
+            fonts.add(font)
+
         launchOnGLThread { loadFontSelect(fonts, selectCell) }
     }
 }
@@ -153,10 +186,8 @@ private fun addFontSizeMultiplier(
         settings.save()
     }
     fontSizeSlider.onChange {
-        if (!fontSizeSlider.isDragging) {
-            Fonts.resetFont(settings.fontFamily)
+        if (!fontSizeSlider.isDragging)
             onFontChange()
-        }
     }
     table.add(fontSizeSlider).pad(5f).row()
 }
@@ -169,7 +200,8 @@ private fun addMaxZoomSlider(table: Table, settings: GameSettings) {
     ) {
         settings.maxWorldZoomOut = it
         settings.save()
-        UncivGame.Current.worldScreen?.mapHolder?.reloadMaxZoom()
+        if (GUI.isWorldLoaded())
+            GUI.getMap().reloadMaxZoom()
     }
     table.add(maxZoomSlider).pad(5f).row()
 }

@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.City
@@ -17,12 +18,6 @@ import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.cityscreen.CityReligionInfoTable
-import com.unciv.ui.screens.cityscreen.CityScreen
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popups.Popup
-import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.BorderedTable
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.center
@@ -32,7 +27,12 @@ import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toGroup
 import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.screens.worldscreen.WorldScreen
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.Popup
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.cityscreen.CityReligionInfoTable
+import com.unciv.ui.screens.cityscreen.CityScreen
+import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
 import kotlin.math.max
 import kotlin.math.min
 
@@ -112,7 +112,7 @@ private class DefenceTable(city: City) : BorderedTable(
 
     init {
 
-        val viewingCiv = UncivGame.Current.worldScreen!!.viewingCiv
+        val viewingCiv = GUI.getViewingPlayer()
 
         borderSize = 4f
         bgColor = Color.BLACK
@@ -160,18 +160,18 @@ class AirUnitTable(city: City, numberOfUnits: Int, size: Float=14f) : BorderedTa
 
 }
 
-private class StatusTable(worldScreen: WorldScreen, city: City, iconSize: Float = 18f) : Table() {
+private class StatusTable(city: City, iconSize: Float = 18f) : Table() {
 
     init {
 
         val padBetween = 2f
-        val viewingCiv = UncivGame.Current.worldScreen!!.viewingCiv
+        val viewingCiv = GUI.getViewingPlayer()
 
         if (city.civ == viewingCiv) {
             if (city.isBlockaded()) {
                 val connectionImage = ImageGetter.getImage("OtherIcons/Blockade")
                 add(connectionImage).size(iconSize)
-                worldScreen.displayTutorial(TutorialTrigger.CityBlockade)
+                GUI.getWorldScreen().displayTutorial(TutorialTrigger.CityBlockade)
             } else if (!city.isCapital() && city.isConnectedToCapital()) {
                 val connectionImage = ImageGetter.getStatIcon("CityConnection")
                 add(connectionImage).size(iconSize)
@@ -210,7 +210,7 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
         isTransform = false
         touchable = Touchable.enabled
 
-        val viewingCiv = UncivGame.Current.worldScreen!!.viewingCiv
+        val viewingCiv = GUI.getViewingPlayer()
 
         bgBorderColor = when {
             city.civ == viewingCiv -> colorFromRGB(233, 233, 172)
@@ -392,9 +392,6 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
 
 class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseScreen.skin){
 
-    val worldScreen = UncivGame.Current.worldScreen!!
-    val uncivGame = worldScreen.game
-
     init {
         touchable = Touchable.disabled
     }
@@ -404,6 +401,8 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
     private val listOfHiddenUnitMarkers: MutableList<Actor> = mutableListOf()
     private var isButtonMoved = false
     private var isViewable = true
+
+    val viewingPlayer = GUI.getViewingPlayer()
 
     fun isMoved(): Boolean {
         return isButtonMoved
@@ -431,13 +430,13 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
         add(cityTable).row()
 
         // If city state - add influence bar
-        if (city.civ.isCityState() && city.civ.knows(worldScreen.viewingCiv)) {
-            val diplomacyManager = city.civ.getDiplomacyManager(worldScreen.viewingCiv)
+        if (city.civ.isCityState() && city.civ.knows(viewingPlayer)) {
+            val diplomacyManager = city.civ.getDiplomacyManager(viewingPlayer)
             add(InfluenceTable(diplomacyManager.getInfluence(), diplomacyManager.relationshipLevel())).padTop(1f).row()
         }
 
         // Add statuses: connection, resistance, puppet, raze, WLTKD
-        add(StatusTable(worldScreen, city)).padTop(3f)
+        add(StatusTable(city)).padTop(3f)
 
         pack()
 
@@ -481,13 +480,13 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
                     (tile.civilianUnit != null) && direction.epsilonEquals(0f, 1f) ->
                         insertHiddenUnitMarker(HiddenUnitMarkerPosition.Left)
                     // detect military under the city
-                    (tile.militaryUnit != null && !tile.hasEnemyInvisibleUnit(worldScreen.viewingCiv)) && direction.epsilonEquals(1f, 1f) ->
+                    (tile.militaryUnit != null && !tile.hasEnemyInvisibleUnit(viewingPlayer)) && direction.epsilonEquals(1f, 1f) ->
                         insertHiddenUnitMarker(HiddenUnitMarkerPosition.Center)
                     // detect civilian right-below the city
                     (tile.civilianUnit != null) && direction.epsilonEquals(1f, 0f) ->
                         insertHiddenUnitMarker(HiddenUnitMarkerPosition.Right)
                 }
-            } else if (tile.militaryUnit != null && !tile.hasEnemyInvisibleUnit(worldScreen.viewingCiv)) {
+            } else if (tile.militaryUnit != null && !tile.hasEnemyInvisibleUnit(viewingPlayer)) {
                 when {
                     // detect military left from the city
                     direction.epsilonEquals(0f, 1f) ->
@@ -518,11 +517,11 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
         listOfHiddenUnitMarkers.add(indicator)
     }
 
-    private fun belongsToViewingCiv() = city.civ == worldScreen.viewingCiv
+    private fun belongsToViewingCiv() = city.civ == viewingPlayer
 
     private fun setButtonActions() {
 
-        val unitTable = worldScreen.bottomUnitTable
+        val unitTable = GUI.getUnitTable()
 
         // So you can click anywhere on the button to go to the city
         touchable = Touchable.childrenOnly
@@ -531,13 +530,12 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
             // clicking swings the button a little down to allow selection of units there.
             // this also allows to target selected units to move to the city tile from elsewhere.
             if (isButtonMoved) {
-                val viewingCiv = worldScreen.viewingCiv
                 // second tap on the button will go to the city screen
                 // if this city belongs to you and you are not iterating though the air units
-                if (uncivGame.viewEntireMapForDebug || viewingCiv.isSpectator()
+                if (GUI.isDebugMapVisible() || viewingPlayer.isSpectator()
                     || (belongsToViewingCiv() && !tileGroup.tile.airUnits.contains(unitTable.selectedUnit))) {
-                        uncivGame.pushScreen(CityScreen(city))
-                } else if (viewingCiv.knows(city.civ)) {
+                        GUI.pushScreen(CityScreen(city))
+                } else if (viewingPlayer.knows(city.civ)) {
                     foreignCityInfoPopup()
                 }
             } else {
@@ -584,13 +582,13 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
     private fun foreignCityInfoPopup() {
         fun openDiplomacy() {
             // If city doesn't belong to you, go directly to its owner's diplomacy screen.
-            worldScreen.game.pushScreen(DiplomacyScreen(worldScreen.viewingCiv, city.civ))
+            GUI.pushScreen(DiplomacyScreen(viewingPlayer, city.civ))
         }
 
         // If there's nothing to display cuz no Religion - skip popup
         if (!city.civ.gameInfo.isReligionEnabled()) return openDiplomacy()
 
-        val popup = Popup(worldScreen).apply {
+        val popup = Popup(GUI.getWorldScreen()).apply {
             name = "ForeignCityInfoPopup"
             add(CityTable(city, true)).fillX().padBottom(5f).colspan(3).row()
             add(CityReligionInfoTable(city.religion, true)).colspan(3).row()

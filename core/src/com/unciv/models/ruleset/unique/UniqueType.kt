@@ -561,8 +561,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     DefensiveBonus("Gives a defensive bonus of [relativeAmount]%", UniqueTarget.Improvement),
     ImprovementMaintenance("Costs [amount] [stat] per turn when in your territory", UniqueTarget.Improvement), // Roads
     ImprovementAllMaintenance("Costs [amount] [stat] per turn", UniqueTarget.Improvement), // Roads
-    @Deprecated("as of 4.3.9", ReplaceWith("Costs [amount] [stats] per turn when in your territory"))
-    OldImprovementMaintenance("Costs [amount] gold per turn when in your territory", UniqueTarget.Improvement), // unused
     DamagesAdjacentEnemyUnits("Adjacent enemy units ending their turn take [amount] damage", UniqueTarget.Improvement),
 
     GreatImprovement("Great Improvement", UniqueTarget.Improvement),
@@ -606,8 +604,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ConditionalTech("after discovering [tech]", UniqueTarget.Conditional),
     ConditionalNoTech("before discovering [tech]", UniqueTarget.Conditional),
 
-    ConditionalPolicy("after adopting [policy]", UniqueTarget.Conditional),
-    ConditionalNoPolicy("before adopting [policy]", UniqueTarget.Conditional),
+    ConditionalAfterPolicy("after adopting [policy]", UniqueTarget.Conditional),
+    ConditionalBeforePolicy("before adopting [policy]", UniqueTarget.Conditional),
 
     ConditionalBeforePantheon("before founding a Pantheon", UniqueTarget.Conditional),
     ConditionalAfterPantheon("after founding a Pantheon", UniqueTarget.Conditional),
@@ -715,6 +713,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     TriggerUponConstructingBuilding("upon constructing [buildingFilter]", UniqueTarget.TriggerCondition),
     // We have a separate trigger to include the cityFilter, since '[in all cities]' can be read '*only* if it's in all cities'
     TriggerUponConstructingBuildingCityFilter("upon constructing [buildingFilter] [cityFilter]", UniqueTarget.TriggerCondition),
+    TriggerUponGainingUnit("upon gaining a [baseUnitFilter] unit", UniqueTarget.TriggerCondition),
 
     TriggerUponFoundingPantheon("upon founding a Pantheon", UniqueTarget.TriggerCondition),
     TriggerUponFoundingReligion("upon founding a Religion", UniqueTarget.TriggerCondition),
@@ -734,6 +733,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     // region DEPRECATED AND REMOVED
 
+    @Deprecated("as of 4.3.9", ReplaceWith("Costs [amount] [stats] per turn when in your territory"), DeprecationLevel.ERROR)
+    OldImprovementMaintenance("Costs [amount] gold per turn when in your territory", UniqueTarget.Improvement),
     @Deprecated("as of 4.3.4", ReplaceWith("[+1 Happiness] per [2] social policies adopted"), DeprecationLevel.ERROR)
     HappinessPer2Policies("Provides 1 happiness per 2 additional social policies adopted", UniqueTarget.Global),
     @Deprecated("as of 4.3.6", ReplaceWith("[+1 Happiness] for every known Natural Wonder"), DeprecationLevel.ERROR)

@@ -90,7 +90,7 @@ class MapEditorEditTab(
             defaults().pad(10f).left()
             add(brushLabel)
             brushCell = add().padLeft(0f)
-            brushSlider = UncivSlider(1f,6f,1f, initial = 1f, getTipText = { getBrushTip(it).tr() }) {
+            brushSlider = UncivSlider(1f,6f,1f, initial = 1f, getTipText = { getBrushTip(it).tr() }, permanentTip = false) {
                 brushSize = if (it > 5f) -1 else it.toInt()
                 brushLabel.setText("Brush ([${getBrushTip(it, true)}]):".tr())
             }

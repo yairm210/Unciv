@@ -19,7 +19,7 @@ import com.unciv.ui.images.ImageWithCustomSize
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.FontFamilyData
 import com.unciv.ui.components.Fonts
-import com.unciv.ui.components.NativeFontImplementation
+import com.unciv.ui.components.FontImplementation
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.utils.concurrency.Concurrency
@@ -62,7 +62,7 @@ object FasterUIDevelopment {
 
     class UIDevGame : Game() {
         val game = UncivGame(UncivGameParameters(
-            fontImplementation = NativeFontDesktop()
+            fontImplementation = FontDesktop()
         ))
         override fun create() {
             UncivGame.Current = game
@@ -126,7 +126,7 @@ object FasterUIDevelopment {
 }
 
 
-class NativeFontDesktop : NativeFontImplementation {
+class FontDesktop : FontImplementation {
     private val font by lazy {
         Font(Fonts.DEFAULT_FONT_FAMILY, Font.PLAIN, Fonts.ORIGINAL_FONT_SIZE.toInt())
     }
@@ -137,6 +137,10 @@ class NativeFontDesktop : NativeFontImplementation {
         val fontMetrics = g.fontMetrics
         g.dispose()
         fontMetrics
+    }
+
+    override fun setFontFamily(fontFamilyData: FontFamilyData, size: Int) {
+        // Empty
     }
 
     override fun getFontSize(): Int {
@@ -168,7 +172,7 @@ class NativeFontDesktop : NativeFontImplementation {
         return pixmap
     }
 
-    override fun getAvailableFontFamilies(): Sequence<FontFamilyData> {
+    override fun getSystemFonts(): Sequence<FontFamilyData> {
         return sequenceOf(FontFamilyData(Fonts.DEFAULT_FONT_FAMILY))
     }
 }

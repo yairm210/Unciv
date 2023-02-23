@@ -1,5 +1,6 @@
 package com.unciv.logic.city
 
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.Automation
@@ -673,8 +674,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         city.cityStats.update()
         city.civ.cache.updateCivResources()
         // If bought the worldscreen will not have been marked to update, and the new improvement won't show until later...
-        if (UncivGame.isCurrentInitialized() && UncivGame.Current.worldScreen != null)
-            UncivGame.Current.worldScreen!!.shouldUpdate = true
+        GUI.setUpdateWorldOnNextRender()
     }
 
     /** Support for [UniqueType.CreatesOneImprovement]:

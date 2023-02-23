@@ -108,10 +108,6 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
                         transportationUpkeep.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
                     }
                 }
-                // backwards compatible
-                if (road.hasUnique(UniqueType.OldImprovementMaintenance, StateForConditionals(civInfo, tile = tile))) {
-                    transportationUpkeep.add(Stat.Gold, tile.getUnpillagedRoad().upkeep.toFloat())
-                }
             }
         }
         // tabulate neutral roads

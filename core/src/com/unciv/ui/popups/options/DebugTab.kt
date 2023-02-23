@@ -1,6 +1,7 @@
 package com.unciv.ui.popups.options
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.files.MapSaver
@@ -19,8 +20,7 @@ fun debugTab() = Table(BaseScreen.skin).apply {
     defaults().pad(5f)
     val game = UncivGame.Current
 
-    val worldScreen = game.worldScreen
-    if (worldScreen != null) {
+    if (GUI.isWorldLoaded()) {
         val simulateButton = "Simulate until turn:".toTextButton()
         val simulateTextField = UncivTextField.create("Turn", game.simulateUntilTurnForDebug.toString())
         val invalidInputLabel = "This is not a valid integer!".toLabel().also { it.isVisible = false }
@@ -32,7 +32,7 @@ fun debugTab() = Table(BaseScreen.skin).apply {
             }
             game.simulateUntilTurnForDebug = simulateUntilTurns
             invalidInputLabel.isVisible = false
-            worldScreen.nextTurn()
+            GUI.getWorldScreen().nextTurn()
         }
         add(simulateButton)
         add(simulateTextField).row()
@@ -89,7 +89,7 @@ fun debugTab() = Table(BaseScreen.skin).apply {
             }
         }
         curGameInfo.getCurrentPlayerCivilization().cache.updateSightAndResources()
-        if (worldScreen != null) worldScreen.shouldUpdate = true
+        GUI.setUpdateWorldOnNextRender()
     }
     add(unlockTechsButton).colspan(2).row()
 
@@ -107,7 +107,7 @@ fun debugTab() = Table(BaseScreen.skin).apply {
             tile.changeImprovement(resource.getImprovements().first())
         }
         curGameInfo.getCurrentPlayerCivilization().cache.updateSightAndResources()
-        if (worldScreen != null) worldScreen.shouldUpdate = true
+        GUI.setUpdateWorldOnNextRender()
     }
     add(giveResourcesButton).colspan(2).row()
 }

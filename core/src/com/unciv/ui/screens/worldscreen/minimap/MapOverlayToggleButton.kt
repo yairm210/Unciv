@@ -3,6 +3,7 @@ package com.unciv.ui.screens.worldscreen.minimap
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.components.extensions.onClick
@@ -42,7 +43,7 @@ class MapOverlayToggleButton(
     /** Toggle overlay. Called on click. */
     fun toggle() {
         setter(!getter())
-        UncivGame.Current.worldScreen!!.shouldUpdate = true
+        GUI.setUpdateWorldOnNextRender()
         // Setting worldScreen.shouldUpdate implicitly causes this.update() to be called by the WorldScreen on the next update.
     }
 

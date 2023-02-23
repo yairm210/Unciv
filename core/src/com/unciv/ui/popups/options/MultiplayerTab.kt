@@ -190,7 +190,11 @@ private fun addTurnCheckerOptions(
 ): RefreshSelect? {
     val settings = optionsPopup.settings
 
-    optionsPopup.addCheckbox(tab, "Enable out-of-game turn notifications", settings.multiplayer::turnCheckerEnabled)
+    optionsPopup.addCheckbox(
+        tab,
+        "Enable out-of-game turn notifications",
+        settings.multiplayer::turnCheckerEnabled
+    )
 
     if (!settings.multiplayer.turnCheckerEnabled) return null
 

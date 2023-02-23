@@ -15,7 +15,6 @@ import com.unciv.logic.files.SETTINGS_FILE_NAME
 import com.unciv.logic.files.UncivFiles
 import com.unciv.models.metadata.ScreenSize
 import com.unciv.models.metadata.WindowState
-import com.unciv.ui.components.Fonts
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import java.awt.GraphicsEnvironment
@@ -73,7 +72,7 @@ internal object DesktopLauncher {
         val platformSpecificHelper = PlatformSpecificHelpersDesktop(config)
         val desktopParameters = UncivGameParameters(
             cancelDiscordEvent = { discordTimer?.cancel() },
-            fontImplementation = NativeFontDesktop((Fonts.ORIGINAL_FONT_SIZE * settings.fontSizeMultiplier).toInt(), settings.fontFamily),
+            fontImplementation = FontDesktop(),
             customFileLocationHelper = CustomFileLocationHelperDesktop(),
             crashReportSysInfo = CrashReportSysInfoDesktop(),
             platformSpecificHelper = platformSpecificHelper,

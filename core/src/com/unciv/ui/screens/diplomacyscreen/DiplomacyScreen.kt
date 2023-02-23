@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
@@ -28,10 +29,8 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.KeyCharAndCode
-import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.disable
@@ -45,6 +44,8 @@ import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.tilegroups.InfluenceTable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import kotlin.math.floor
 import kotlin.math.roundToInt
@@ -72,7 +73,7 @@ class DiplomacyScreen(
     private val rightSideTable = Table()
     private val closeButton = Constants.close.toTextButton()
 
-    private fun isNotPlayersTurn() = !UncivGame.Current.worldScreen!!.canChangeState
+    private fun isNotPlayersTurn() = !GUI.isAllowedChangeState()
 
     init {
         val splitPane = SplitPane(leftSideScroll, rightSideTable, false, skin)
@@ -166,6 +167,8 @@ class DiplomacyScreen(
 
     private fun updateRightSide(otherCiv: Civilization) {
         rightSideTable.clear()
+        UncivGame.Current.musicController.chooseTrack(otherCiv.civName,
+            MusicMood.peaceOrWar(viewingCiv.isAtWarWith(otherCiv)),MusicTrackChooserFlags.setSelectNation)
         if (otherCiv.isCityState()) rightSideTable.add(
             ScrollPane(getCityStateDiplomacyTable(otherCiv))
         )
@@ -694,9 +697,6 @@ class DiplomacyScreen(
             val promisesTable = getPromisesTable(diplomacyManager, otherCivDiplomacyManager)
             if (promisesTable != null) diplomacyTable.add(promisesTable).row()
         }
-
-        UncivGame.Current.musicController.chooseTrack(otherCiv.civName,
-            MusicMood.peaceOrWar(viewingCiv.isAtWarWith(otherCiv)), MusicTrackChooserFlags.setSelectNation)
 
         return diplomacyTable
     }

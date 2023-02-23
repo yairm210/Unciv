@@ -149,7 +149,7 @@ class City : IsPartOfGameInfoSerialization {
     }
 
     fun isConnectedToCapital(connectionTypePredicate: (Set<String>) -> Boolean = { true }): Boolean {
-        val mediumTypes = civ.citiesConnectedToCapitalToMediums[this] ?: return false
+        val mediumTypes = civ.cache.citiesConnectedToCapitalToMediums[this] ?: return false
         return connectionTypePredicate(mediumTypes)
     }
 

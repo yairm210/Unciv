@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 
@@ -67,7 +68,12 @@ class UnitManager(val civInfo:Civilization) {
      * @return created [MapUnit] or null if no suitable location was found
      * */
     fun placeUnitNearTile(location: Vector2, unitName: String): MapUnit? {
-        return civInfo.gameInfo.tileMap.placeUnitNearTile(location, unitName, civInfo)
+        val unit = civInfo.gameInfo.tileMap.placeUnitNearTile(location, unitName, civInfo)
+
+        if (unit != null)
+            for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponGainingUnit))
+                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+        return unit
     }
     fun getCivUnitsSize(): Int = unitList.size
     fun getCivUnits(): Sequence<MapUnit> = unitList.asSequence()

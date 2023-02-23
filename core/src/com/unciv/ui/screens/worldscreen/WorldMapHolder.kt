@@ -32,7 +32,6 @@ import com.unciv.models.helpers.MapArrowType
 import com.unciv.models.helpers.MiscArrowTypes
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.UnitGroup
 import com.unciv.ui.components.ZoomableScrollPane
@@ -49,6 +48,7 @@ import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.components.tilegroups.WorldTileGroup
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
@@ -109,7 +109,7 @@ class WorldMapHolder(
 
     internal fun addTiles() {
         val tileSetStrings = TileSetStrings()
-        val tileGroupsNew = tileMap.values.map { WorldTileGroup(worldScreen, it, tileSetStrings) }
+        val tileGroupsNew = tileMap.values.map { WorldTileGroup(it, tileSetStrings) }
         tileGroupMap = TileGroupMap(this, tileGroupsNew, continuousScrollingX)
 
         for (tileGroup in tileGroupsNew) {
@@ -271,7 +271,8 @@ class WorldMapHolder(
                         selectedUnit.action = null // remove explore on manual move
                     SoundPlayer.play(UncivSound.Whoosh)
                     if (selectedUnit.currentTile != targetTile)
-                        selectedUnit.action = "moveTo " + targetTile.position.x.toInt() + "," + targetTile.position.y.toInt()
+                        selectedUnit.action =
+                                "moveTo ${targetTile.position.x.toInt()},${targetTile.position.y.toInt()}"
                     if (selectedUnit.currentMovement > 0) worldScreen.bottomUnitTable.selectUnit(selectedUnit)
 
                     worldScreen.shouldUpdate = true
@@ -279,8 +280,7 @@ class WorldMapHolder(
                         moveUnitToTargetTile(selectedUnits.subList(1, selectedUnits.size), targetTile)
                     } else removeUnitActionOverlay() //we're done here
 
-                    if (UncivGame.Current.settings.autoUnitCycle &&
-                            selectedUnit.currentMovement == 0f)
+                    if (UncivGame.Current.settings.autoUnitCycle && selectedUnit.currentMovement == 0f)
                         worldScreen.switchToNextUnit()
 
                 } catch (ex: Exception) {
@@ -755,20 +755,23 @@ class WorldMapHolder(
 
     override fun reloadMaxZoom()
     {
-        if (continuousScrollingX) {
-            // For world-wrap we do not allow viewport to become bigger than the map size,
-            // because we don't want to render the same tiles multiple times (they will be
-            // flickering because of movement).
-            // Hence we limit minimal possible zoom to content width + some extra offset.
+        val maxWorldZoomOut = UncivGame.Current.settings.maxWorldZoomOut
+        val mapRadius = tileMap.mapParameters.mapSize.radius
 
-            val pad = width / tileMap.mapParameters.mapSize.radius * 0.7f
+        // Limit max zoom out by the map width
+        val enableZoomLimit = (mapRadius < 21 && maxWorldZoomOut < 3f) || (mapRadius > 20 && maxWorldZoomOut < 4f)
+
+        if (enableZoomLimit) {
+            // For world-wrap we limit minimal possible zoom to content width + some extra offset
+            // to hide one column of tiles so that the player doesn't see it teleporting from side to side
+            val pad = if (continuousScrollingX) width / mapRadius * 0.7f else 0f
             minZoom = max(
                 (width + pad) * scaleX / maxX,
-                1f / UncivGame.Current.settings.maxWorldZoomOut
+                1f / maxWorldZoomOut
             )// add some extra padding offset
 
             // If the window becomes too wide and minZoom > maxZoom, we cannot zoom
-            maxZoom = max(2f * minZoom, UncivGame.Current.settings.maxWorldZoomOut)
+            maxZoom = max(2f * minZoom, maxWorldZoomOut)
         }
         else
             super.reloadMaxZoom()

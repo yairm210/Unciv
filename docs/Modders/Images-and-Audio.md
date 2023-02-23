@@ -25,6 +25,12 @@ You will need to supply the graphics for new elements - a new unit needs its ico
 
 Additionally, there there are two kinds of images where the game has display capability but does not supply graphics itself, as described in the next paragraphs:
 
+### Adding custom Fonts
+
+You can add custom `.ttf` fonts into the game: place `.ttf` file inside of `/fonts/` directory of your mod. The font you have added will be visible and choosable in `Options-Advanced` tab at the top of font list as `<fontname> (<modname>)`.
+
+All fonts are rendered by default at 50 pixel size and rescaled later for the game's needs. Currently fonts are NOT mipmapped on minification.
+
 ### Adding Wonder Splash Screens
 
 You can add wonder images to mods and they'll be displayed instead of the standard icon when a wonder is finished. The image needs to be a .png and 2:1 ratio so for example 200x100 px.

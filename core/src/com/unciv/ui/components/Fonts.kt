@@ -12,15 +12,24 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.Disposable
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.basescreen.BaseScreen
 
-interface NativeFontImplementation {
+
+interface FontImplementation {
+    fun setFontFamily(fontFamilyData: FontFamilyData, size: Int)
     fun getFontSize(): Int
     fun getCharPixmap(char: Char): Pixmap
-    fun getAvailableFontFamilies(): Sequence<FontFamilyData>
+    fun getSystemFonts(): Sequence<FontFamilyData>
+
+    fun getBitmapFont(): BitmapFont {
+        val fontData = NativeBitmapFontData(this)
+        val font = BitmapFont(fontData, fontData.regions, false)
+        font.setOwnsTexture(true)
+        return font
+    }
 }
 
 // If save in `GameSettings` need use invariantFamily.
@@ -28,8 +37,13 @@ interface NativeFontImplementation {
 // If save localName in `GameSettings` may generate garbled characters by encoding.
 class FontFamilyData(
     val localName: String,
-    val invariantName: String = localName
+    val invariantName: String = localName,
+    val filePath: String? = null
 ) {
+
+    // For serialization
+    constructor() : this(default.localName, default.invariantName)
+
     // Implement kotlin equality contract such that _only_ the invariantName field is compared.
     override fun equals(other: Any?): Boolean {
         return if (other is FontFamilyData) invariantName == other.invariantName
@@ -39,16 +53,16 @@ class FontFamilyData(
     override fun hashCode() = invariantName.hashCode()
 
     /** For SelectBox usage */
-    override fun toString() = localName
+    override fun toString() = localName.tr()
 
     companion object {
-        val default = FontFamilyData("Default Font".tr(), Fonts.DEFAULT_FONT_FAMILY)
+        val default = FontFamilyData("Default Font", Fonts.DEFAULT_FONT_FAMILY)
     }
 }
 
 // This class is loosely based on libgdx's FreeTypeBitmapFontData
 class NativeBitmapFontData(
-    private val fontImplementation: NativeFontImplementation
+    private val fontImplementation: FontImplementation
 ) : BitmapFontData(), Disposable {
 
     val regions: Array<TextureRegion>
@@ -80,6 +94,8 @@ class NativeBitmapFontData(
         // Set space glyph.
         val spaceGlyph = getGlyph(' ')
         spaceXadvance = spaceGlyph.xadvance.toFloat()
+
+        setScale(Constants.defaultFontSize / Fonts.ORIGINAL_FONT_SIZE)
     }
 
     override fun getGlyph(ch: Char): Glyph {
@@ -167,29 +183,17 @@ object Fonts {
      *  Do not call from normal code - reset the Skin instead: `BaseScreen.setSkin()`
      */
     fun resetFont() {
-        val fontData = NativeBitmapFontData(UncivGame.Current.fontImplementation!!)
-        font = BitmapFont(fontData, fontData.regions, false)
-        font.setOwnsTexture(true)
-        font.data.setScale(Constants.defaultFontSize / ORIGINAL_FONT_SIZE)
-    }
-
-    /** This resets all cached font data and allows changing the font */
-    fun resetFont(newFamily: String) {
-        try {
-            val fontImplementationClass = UncivGame.Current.fontImplementation!!::class.java
-            val fontImplementationConstructor = fontImplementationClass.constructors.first()
-            val newFontImpl = fontImplementationConstructor.newInstance((ORIGINAL_FONT_SIZE * UncivGame.Current.settings.fontSizeMultiplier).toInt(), newFamily)
-            if (newFontImpl is NativeFontImplementation)
-                UncivGame.Current.fontImplementation = newFontImpl
-        } catch (ex: Exception) {}
-        BaseScreen.setSkin()  // calls our resetFont() - needed - the Skin seems to cache glyphs
+        val settings = GUI.getSettings()
+        val fontImpl = GUI.getFontImpl()
+        fontImpl.setFontFamily(settings.fontFamilyData, settings.getFontSize())
+        font = fontImpl.getBitmapFont()
     }
 
     /** Reduce the font list returned by platform-specific code to font families (plain variant if possible) */
-    fun getAvailableFontFamilyNames(): Sequence<FontFamilyData> {
+    fun getSystemFonts(): Sequence<FontFamilyData> {
         val fontImplementation = UncivGame.Current.fontImplementation
             ?: return emptySequence()
-        return fontImplementation.getAvailableFontFamilies()
+        return fontImplementation.getSystemFonts()
             .sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.localName })
     }
 

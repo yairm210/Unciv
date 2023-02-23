@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
@@ -80,9 +81,8 @@ class UnitOverviewTab(
     }
 
     private fun showWorldScreenAt(position: Vector2, unit: MapUnit?) {
-        val game = overviewScreen.game
-        game.resetToWorldScreen()
-        game.worldScreen!!.mapHolder.setCenterPosition(position, forceSelectUnit = unit)
+        GUI.resetToWorldScreen()
+        GUI.getMap().setCenterPosition(position, forceSelectUnit = unit)
     }
     private fun showWorldScreenAt(unit: MapUnit) = showWorldScreenAt(unit.currentTile.position, unit)
     private fun showWorldScreenAt(tile: Tile) = showWorldScreenAt(tile.position, null)
@@ -216,7 +216,7 @@ class UnitOverviewTab(
             if (unit.promotions.canBePromoted())
                 promotionsTable.add(
                     ImageGetter.getImage("OtherIcons/Star").apply {
-                        color = if (game.worldScreen!!.canChangeState && unit.currentMovement > 0f && unit.attacksThisTurn == 0)
+                        color = if (GUI.isAllowedChangeState() && unit.currentMovement > 0f && unit.attacksThisTurn == 0)
                                 Color.GOLDENROD
                             else Color.GOLDENROD.darken(0.25f)
                     }

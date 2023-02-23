@@ -1918,6 +1918,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: TriggerCondition
 
+??? example  "&lt;upon gaining a [baseUnitFilter] unit&gt;"
+	Example: "&lt;upon gaining a [Melee] unit&gt;"
+
+	Applicable to: TriggerCondition
+
 ??? example  "&lt;upon founding a Pantheon&gt;"
 	Applicable to: TriggerCondition
 

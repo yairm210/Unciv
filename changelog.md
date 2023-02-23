@@ -1,3 +1,35 @@
+## 4.4.18
+
+By vegeta1k95:
+- Modding: allow mods to supply custom fonts
+- Fix TextureArraySpriteBatch missing method issue
+
+By Gualdimar:
+- Option to disable max zoom limit
+- Slider tip permanent by default
+
+Better error message for multiplayer games that get corrupted data from the server
+
+Civilopedia entry for policy links to units and buildings that it enables/disables
+
+Wonders with no tech requirement displayed in separate category
+
+Attacking of any sort prevents undo of unit move
+
+## 4.4.17
+
+Added Undo button for unit moves!
+
+Better trade screen for portrait mode
+
+"Gift" trades to AI civs make them more friendly towards you
+
+Add improvement action image to workers actively building improvement
+
+Replace settlers with modded worker-like units in mods
+
+Removed zoom limit for world-wrap maps - By Gualdimar
+
 ## 4.4.16
 
 Display mod categories in mod page, mod sizes larger than 2 MB are displayed in MB

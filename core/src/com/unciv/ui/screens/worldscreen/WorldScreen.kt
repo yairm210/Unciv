@@ -26,7 +26,6 @@ import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.darken
@@ -39,6 +38,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.popups.hasOpenPopups
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
@@ -84,7 +84,7 @@ class WorldScreen(
     var shouldUpdate = false
 
     /** Indicates it's the player's ([viewingCiv]) turn */
-    var isPlayersTurn = viewingCiv == gameInfo.currentPlayerCiv
+    var isPlayersTurn = viewingCiv.isCurrentPlayer()
         internal set     // only this class is allowed to make changes
 
     /** Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games */
@@ -93,7 +93,7 @@ class WorldScreen(
     var fogOfWar = true
         private set
 
-    /** `true` when it's the player's turn unless he is a spectator*/
+    /** `true` when it's the player's turn unless he is a spectator */
     val canChangeState
         get() = isPlayersTurn && !viewingCiv.isSpectator()
 
@@ -124,7 +124,7 @@ class WorldScreen(
 
     private val events = EventBus.EventReceiver()
 
-    var uiEnabled = true
+    private var uiEnabled = true
 
     var preActionGameInfo = gameInfo
 
@@ -228,7 +228,7 @@ class WorldScreen(
         globalShortcuts.add(Input.Keys.F2) { game.pushScreen(EmpireOverviewScreen(selectedCiv, "Trades")) }    // Economic info
         globalShortcuts.add(Input.Keys.F3) { game.pushScreen(EmpireOverviewScreen(selectedCiv, "Units")) }    // Military info
         globalShortcuts.add(Input.Keys.F4) { game.pushScreen(EmpireOverviewScreen(selectedCiv, "Politics")) }    // Diplomacy info
-        globalShortcuts.add(Input.Keys.F5) { game.pushScreen(PolicyPickerScreen(this, selectedCiv)) }    // Social Policies Screen
+        globalShortcuts.add(Input.Keys.F5) { game.pushScreen(PolicyPickerScreen(selectedCiv, canChangeState)) }    // Social Policies Screen
         globalShortcuts.add(Input.Keys.F6) { game.pushScreen(TechPickerScreen(viewingCiv)) }    // Tech Screen
         globalShortcuts.add(Input.Keys.F7) { game.pushScreen(EmpireOverviewScreen(selectedCiv, "Cities")) }    // originally Notification Log
         globalShortcuts.add(Input.Keys.F8) { game.pushScreen(VictoryScreen(this)) }    // Victory Progress
@@ -488,7 +488,7 @@ class WorldScreen(
                     "\n Click 'Construct improvement' (above the unit table, bottom left)" +
                     "\n > Choose the farm > \n Leave the worker there until it's finished"
         if (!completedTasks.contains("Create a trade route")
-                && viewingCiv.citiesConnectedToCapitalToMediums.any { it.key.civ == viewingCiv })
+                && viewingCiv.cache.citiesConnectedToCapitalToMediums.any { it.key.civ == viewingCiv })
             game.settings.addCompletedTutorialTask("Create a trade route")
         if (viewingCiv.cities.size > 1 && !completedTasks.contains("Create a trade route"))
             return "Create a trade route!\nConstruct roads between your capital and another city" +
@@ -551,7 +551,7 @@ class WorldScreen(
         tutorialTaskTable.pack()
         tutorialTaskTable.centerX(stage)
         tutorialTaskTable.y = topBar.y - tutorialTaskTable.height
-        tutorialTaskTable.onClick() {
+        tutorialTaskTable.onClick {
             UncivGame.Current.isTutorialTaskCollapsed = !UncivGame.Current.isTutorialTaskCollapsed
             displayTutorialTaskOnUpdate()
         }

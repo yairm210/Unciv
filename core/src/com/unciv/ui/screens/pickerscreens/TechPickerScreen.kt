@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.TechManager
@@ -398,7 +399,7 @@ class TechPickerScreen(
             return
         }
 
-        if (!UncivGame.Current.worldScreen!!.canChangeState) {
+        if (!GUI.isAllowedChangeState()) {
             rightSideButton.disable()
             return
         }

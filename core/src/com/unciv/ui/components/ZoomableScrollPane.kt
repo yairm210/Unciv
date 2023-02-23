@@ -86,7 +86,7 @@ open class ZoomableScrollPane(
         onViewportChanged()
     }
 
-    public override fun sizeChanged() {
+    override fun sizeChanged() {
         updatePadding()
         super.sizeChanged()
         updateCulling()

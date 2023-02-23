@@ -3,6 +3,7 @@ package com.unciv.ui.screens.overviewscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.Notification
@@ -16,7 +17,6 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 class NotificationsOverviewTable(
-    val worldScreen: WorldScreen,
     viewingPlayer: Civilization,
     overviewScreen: EmpireOverviewScreen,
     persistedData: EmpireOverviewTabPersistableData? = null
@@ -36,12 +36,14 @@ class NotificationsOverviewTable(
         persistableData.scrollY = pager.getPageScrollY(index)
     }
 
-    val notificationLog = viewingPlayer.notificationsLog
 
+    private val worldScreen = GUI.getWorldScreen()
+
+    private val notificationLog = viewingPlayer.notificationsLog
     private val notificationTable = Table(BaseScreen.skin)
 
-    val scaleFactor = 0.3f
-    val inverseScaleFactor = 1f / scaleFactor
+    private val scaleFactor = 0.3f
+    private val inverseScaleFactor = 1f / scaleFactor
     private val maxWidthOfStage = 0.333f
     private val maxEntryWidth = worldScreen.stage.width * maxWidthOfStage * inverseScaleFactor
 

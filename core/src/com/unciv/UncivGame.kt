@@ -12,6 +12,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.models.metadata.GameSettings
@@ -26,6 +27,7 @@ import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.audio.SoundPlayer
+import com.unciv.ui.components.FontImplementation
 import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import com.unciv.ui.images.ImageGetter
@@ -36,7 +38,9 @@ import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.screens.worldscreen.PlayerReadyScreen
+import com.unciv.ui.screens.worldscreen.WorldMapHolder
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import com.unciv.ui.screens.worldscreen.unit.UnitTable
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
@@ -47,6 +51,70 @@ import kotlinx.coroutines.CancellationException
 import java.io.PrintWriter
 import java.util.*
 import kotlin.collections.ArrayDeque
+
+object GUI {
+
+    fun isDebugMapVisible(): Boolean {
+        return UncivGame.Current.viewEntireMapForDebug
+    }
+
+    fun setUpdateWorldOnNextRender() {
+        UncivGame.Current.worldScreen?.shouldUpdate = true
+    }
+
+    fun pushScreen(screen: BaseScreen) {
+        UncivGame.Current.pushScreen(screen)
+    }
+
+    fun resetToWorldScreen() {
+        UncivGame.Current.resetToWorldScreen()
+    }
+
+    fun getSettings(): GameSettings {
+        return UncivGame.Current.settings
+    }
+
+    fun getFontImpl(): FontImplementation {
+        return UncivGame.Current.fontImplementation!!
+    }
+
+    fun isWorldLoaded(): Boolean {
+        return UncivGame.Current.worldScreen != null
+    }
+
+    fun isMyTurn(): Boolean {
+        return UncivGame.Current.worldScreen!!.isPlayersTurn
+    }
+
+    fun isAllowedChangeState(): Boolean {
+        return UncivGame.Current.worldScreen!!.canChangeState
+    }
+
+    fun getWorldScreen(): WorldScreen {
+        return UncivGame.Current.worldScreen!!
+    }
+
+    fun getWorldScreenIfActive(): WorldScreen? {
+        return UncivGame.Current.getWorldScreenIfActive()
+    }
+
+    fun getMap(): WorldMapHolder {
+        return UncivGame.Current.worldScreen!!.mapHolder
+    }
+
+    fun getUnitTable(): UnitTable {
+        return UncivGame.Current.worldScreen!!.bottomUnitTable
+    }
+
+    fun getViewingPlayer(): Civilization {
+        return UncivGame.Current.worldScreen!!.viewingCiv
+    }
+
+    fun getSelectedPlayer(): Civilization {
+        return UncivGame.Current.worldScreen!!.selectedCiv
+    }
+
+}
 
 class UncivGame(parameters: UncivGameParameters) : Game() {
     constructor() : this(UncivGameParameters())
@@ -61,7 +129,6 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     var deepLinkedMultiplayerGame: String? = null
     var gameInfo: GameInfo? = null
-        private set
     lateinit var settings: GameSettings
     lateinit var musicController: MusicController
     lateinit var onlineMultiplayer: OnlineMultiplayer
@@ -154,7 +221,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
             // Loading available fonts can take a long time on Android phones.
             // Therefore we initialize the lazy parameters in the font implementation, while we're in another thread, to avoid ANRs on main thread
-            fontImplementation?.getCharPixmap('S')
+            fontImplementation?.setFontFamily(settings.fontFamilyData, settings.getFontSize())
 
             // This stuff needs to run on the main thread because it needs the GL context
             launchOnGLThread {
@@ -475,7 +542,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.4.16", 815)
+        val VERSION = Version("4.4.18", 817)
         //endregion
 
         lateinit var Current: UncivGame
