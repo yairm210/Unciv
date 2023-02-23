@@ -116,4 +116,4 @@ Legend:
 -   [^4]: Excluding City States.
 -   [^5]: Both in the alert when another player declares War on you and declaring War yourself in Diplomacy screen.
 -   [^6]: Yes these flags are not optimal.
--   [^7]: Prefix is optional. Tracks with any of these prefixes will play based on whether the player is at war with anybody. Tracks with no prefix will play independent of that.
+-   [^7]: This prefix is optional. Tracks with and without prefix have the same chance to play, the only difference is that tracks with prefix will play based on whether the player is at war with anybody, while tracks with no prefix are unaffected by that.
