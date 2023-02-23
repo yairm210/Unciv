@@ -1730,6 +1730,18 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;after founding a Pantheon&gt;"
 	Applicable to: Conditional
 
+??? example  "&lt;before founding a religion&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;after founding a religion&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;before enhancing a religion&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;after enhancing a religion&gt;"
+	Applicable to: Conditional
+
 ??? example  "&lt;if [buildingFilter] is constructed&gt;"
 	Example: "&lt;if [Culture] is constructed&gt;"
 

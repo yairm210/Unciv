@@ -1,16 +1,11 @@
-
-
-chore: code cleanup
-
-Fix unique parameter type
-
-modding: Added "upon gaining a [unitFilter] unit" trigger condition
-
-chore: moved citiesConnectedToCapitalToMediums to cache
-
 By Gualdimar:
-- Limit camera movement within explored region 
-- Fixed world wrap coordinates check 
+- Limit camera movement within explored region
+
+modding:
+- Added "upon gaining a [unitFilter] unit" trigger condition
+- Added religion state conditionals
+
+Reload world screen after tileset/unitset change from in main menu screen - Ryg-git
 
 Android: use best possible device frame rate  - By vegeta1k95
 
