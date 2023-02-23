@@ -213,8 +213,8 @@ class MusicController {
 					val worldScreen = UncivGame.Current.getWorldScreenIfActive()
                     if (worldScreen == null ||
                             !chooseTrack(
-                                MusicMood.peaceOrWar(!worldScreen.viewingCiv.isAtWar()), 
-                                MusicMood.Ambient, 
+                                prefix = MusicMood.peaceOrWar(!worldScreen.viewingCiv.isAtWar()), 
+                                suffix = MusicMood.Ambient, 
                                 EnumSet.of(MusicTrackChooserFlags.NoMatchingPrefix, MusicTrackChooserFlags.SuffixMustMatch)
                             )
                     ) {
