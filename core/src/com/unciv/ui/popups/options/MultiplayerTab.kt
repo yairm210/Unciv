@@ -186,7 +186,12 @@ private fun addMultiplayerServerOptions(
                 popup.reuseWith("Success!", true)
             } else if (connectionSuccess) {
                 popup.close()
-                AuthPopup(optionsPopup.stageToShowOn).open(true)
+                AuthPopup(optionsPopup.stageToShowOn) {
+                    success -> popup.apply{
+                        reuseWith(if (success) "Success!" else "Failed!", true)
+                        open(true)
+                    }
+                }.open(true)
             } else {
                 popup.reuseWith("Failed!", true)
             }
@@ -194,7 +199,9 @@ private fun addMultiplayerServerOptions(
     }).row()
 
     if (UncivGame.Current.onlineMultiplayer.serverFeatureSet.authVersion > 0) {
-        val passwordTextField = UncivTextField.create("Password")
+        val passwordTextField = UncivTextField.create(
+            settings.multiplayer.passwords[settings.multiplayer.server] ?: "Password"
+        )
         val setPasswordButton = "Set password".toTextButton()
 
         serverIpTable.add("Set password".toLabel()).padTop(16f).colspan(2).row()
