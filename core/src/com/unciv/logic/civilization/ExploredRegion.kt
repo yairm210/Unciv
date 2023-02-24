@@ -115,13 +115,12 @@ class ExploredRegion () : IsPartOfGameInfoSerialization {
                 }
 
                 // Expand region from the nearest edge
-                if (rightSideDistance > leftSideDistance) {
+                if (rightSideDistance > leftSideDistance)
                     topLeft.x = longitude
-                    shouldRecalculateCoords = true
-                } else {
+                else
                     bottomRight.x = longitude
-                    shouldRecalculateCoords = true
-                }
+
+                shouldRecalculateCoords = true
             }
         }
 
@@ -146,7 +145,7 @@ class ExploredRegion () : IsPartOfGameInfoSerialization {
         val bottomRightWorld = worldFromLatLong(bottomRight, tileRadius)
 
         // Convert X to the stage coords
-        val mapCenterX = mapMaxX * 0.5f + tileRadius
+        val mapCenterX = if (isWorldWrap) mapMaxX * 0.5f + tileRadius else mapMaxX * 0.5f
         var left = mapCenterX + topLeftWorld.x
         var right = mapCenterX + bottomRightWorld.x
 
