@@ -2,6 +2,7 @@
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
@@ -248,7 +249,13 @@ open class Tile : IsPartOfGameInfoSerialization {
     fun setExplored(player: Civilization, isExplored: Boolean, explorerPosition: Vector2? = null) {
         if (isExplored) {
             exploredBy.add(player.civName)
-            player.exploredTiles.add(position)
+
+            // Disable the undo button if a new tile has been explored
+            if (player.exploredTiles.add(position) && GUI.isWorldLoaded()) {
+                val worldScreen = GUI.getWorldScreen()
+                worldScreen.preActionGameInfo = worldScreen.gameInfo
+            }
+
             if(player.playerType == PlayerType.Human)
                 player.exploredRegion.checkTilePosition(position, explorerPosition)
         } else {

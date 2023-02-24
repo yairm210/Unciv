@@ -305,10 +305,10 @@ class WorldScreen(
                     fun whileKeyPressedLoop() {
                         for (keycode in pressedKeys) {
                             when (keycode) {
-                                Input.Keys.W, Input.Keys.UP -> mapHolder.scrollY -= amountToMove
-                                Input.Keys.S, Input.Keys.DOWN -> mapHolder.scrollY += amountToMove
-                                Input.Keys.A, Input.Keys.LEFT -> mapHolder.scrollX -= amountToMove
-                                Input.Keys.D, Input.Keys.RIGHT -> mapHolder.scrollX += amountToMove
+                                Input.Keys.W, Input.Keys.UP -> mapHolder.scrollY = mapHolder.restrictY(-amountToMove)
+                                Input.Keys.S, Input.Keys.DOWN -> mapHolder.scrollY = mapHolder.restrictY(amountToMove)
+                                Input.Keys.A, Input.Keys.LEFT -> mapHolder.scrollX = mapHolder.restrictX(amountToMove)
+                                Input.Keys.D, Input.Keys.RIGHT -> mapHolder.scrollX = mapHolder.restrictX(-amountToMove)
                             }
                         }
                         mapHolder.updateVisualScroll()
