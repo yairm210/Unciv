@@ -17,11 +17,24 @@ import kotlin.reflect.KMutableProperty0
 data class WindowState(
     val width: Int = 900,
     val height: Int = 600,
+    // The following are only used on Desktop
     val isMaximized: Boolean = false,
+    // x/y defaults are what setWindowPosition will interpret as "please center on primary monitor",
+    // despite being potentially valid in weird multi-monitor setups
     val x: Int = -1,
     val y: Int = -1,
     val monitor: String = ""
-)
+) {
+    companion object {
+        const val minWidth = 120
+        const val minHeight = 80
+    }
+
+    fun sanitized(): WindowState {
+        if (width >= minWidth && height >= minHeight) return this
+        return copy(width = width.coerceAtLeast(minWidth), height = height.coerceAtLeast(minHeight))
+    }
+}
 
 enum class ScreenSize(val virtualWidth:Float, val virtualHeight:Float){
     Tiny(750f,500f),
@@ -123,7 +136,9 @@ class GameSettings {
     }
 
     fun save() {
-        if (!isFreshlyCreated && Gdx.app?.type == Application.ApplicationType.Desktop) {
+        if (!isFreshlyCreated &&
+                Gdx.app?.type == Application.ApplicationType.Desktop &&
+                screenWindow != ScreenWindow.Fullscreen) {
             windowState = UncivGame.Current.platformSpecificHelper?.getWindowState()
                 ?: WindowState(Gdx.graphics.width, Gdx.graphics.height)
         }
@@ -163,21 +178,20 @@ class GameSettings {
     }
 
     fun refreshScreenMode() {
-
         if (Gdx.app.type != Application.ApplicationType.Desktop)
             return
 
         when (screenWindow) {
-            ScreenWindow.Windowed -> {
-                Gdx.graphics.setWindowedMode(
-                    windowState.width.coerceAtLeast(120),
-                    windowState.height.coerceAtLeast(80))
-            }
-
-            ScreenWindow.Fullscreen -> {
+            ScreenWindow.Windowed ->
+                Gdx.graphics.setWindowedMode(windowState.width, windowState.height)
+            ScreenWindow.Fullscreen ->
                 Gdx.graphics.setFullscreenMode(Gdx.graphics.displayMode)
-            }
         }
+    }
+
+    fun sanitize(): GameSettings {
+        windowState = windowState.sanitized()
+        return this
     }
 }
 

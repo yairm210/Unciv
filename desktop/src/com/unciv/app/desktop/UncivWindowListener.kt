@@ -82,8 +82,12 @@ class UncivWindowListener(initialState: WindowState) : Lwjgl3WindowAdapter() {
         if (window == null) return null
         val handle = window!!.windowHandle
         GLFW.glfwGetWindowSize(handle, widthBuffer,  heightBuffer)
-        // GLFW.glfwGetWindowPos won't work on Wayland (see its JDoc, Lwjgl3Window hides that fact in the getPositionX/Y proxies)
-        //todo: Find out **how** the heck a void function "emits" FEATURE_UNAVAILABLE, then set x/y to -1 which later will be interpreted as "please center the window"
+
+        // GLFW.glfwGetWindowPos can't give values on Wayland (see its JDoc, Lwjgl3Window hides that fact in the getPositionX/Y proxies)
+        // GLFW on Wayland will ignore _both_ GetWindowPos and SetWindowPos -
+        // see https://github.com/glfw/glfw/blob/master/src/wl_window.c - So it won't matter that we store the 0/0 coords we'll get
+        // The FEATURE_UNAVAILABLE signal sent downstream to _glfwInputError means unnecessary error message handling overhead, but we can't do anything about that
+
         GLFW.glfwGetWindowPos(handle, xPosBuffer, yPosBuffer)
         return java.awt.Rectangle(xPosBuffer[0], yPosBuffer[0], widthBuffer[0], heightBuffer[0])
     }
@@ -114,12 +118,12 @@ class UncivWindowListener(initialState: WindowState) : Lwjgl3WindowAdapter() {
         try {
             if (window == null || hasFocus) return
             if (user32 == null) return window!!.flash()
-            val flashwinfo = WinUser.FLASHWINFO()
-            val hwnd = GLFWNativeWin32.glfwGetWin32Window(window!!.windowHandle)
-            flashwinfo.hWnd = WinNT.HANDLE(Pointer.createConstant(hwnd))
-            flashwinfo.dwFlags = WinUser.FLASHW_ALL  // Flash both caption and taskbar button
-            flashwinfo.uCount = 3                    // Flash three times
-            user32.FlashWindowEx(flashwinfo)
+            val flashWInfo = WinUser.FLASHWINFO()
+            val hWnd = GLFWNativeWin32.glfwGetWin32Window(window!!.windowHandle)
+            flashWInfo.hWnd = WinNT.HANDLE(Pointer.createConstant(hWnd))
+            flashWInfo.dwFlags = WinUser.FLASHW_ALL  // Flash both caption and taskbar button
+            flashWInfo.uCount = 3                    // Flash three times
+            user32.FlashWindowEx(flashWInfo)
         } catch (e: Throwable) {
             /** try to ignore even if we get an [Error], just log it */
             Log.error("Error while notifying the user of their turn", e)

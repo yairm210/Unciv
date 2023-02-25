@@ -311,7 +311,7 @@ class UncivFiles(
             }
         }
 
-        return settings ?: GameSettings().apply { isFreshlyCreated = true }
+        return settings?.sanitize() ?: GameSettings().apply { isFreshlyCreated = true }
     }
 
     fun setGeneralSettings(gameSettings: GameSettings) {
@@ -334,7 +334,7 @@ class UncivFiles(
                 json().fromJsonFile(
                     GameSettings::class.java,
                     file
-                )
+                ).sanitize()
             else GameSettings().apply { isFreshlyCreated = true }
         }
 

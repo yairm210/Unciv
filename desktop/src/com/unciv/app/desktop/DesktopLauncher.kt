@@ -17,7 +17,6 @@ import com.unciv.models.metadata.ScreenSize
 import com.unciv.models.metadata.WindowState
 import com.unciv.utils.Log
 import com.unciv.utils.debug
-import java.awt.Toolkit
 import java.awt.GraphicsEnvironment
 import java.util.*
 import kotlin.concurrent.timer
@@ -26,9 +25,6 @@ import kotlin.math.min
 
 
 internal object DesktopLauncher {
-    private const val minWidth = 120
-    private const val minHeight = 80
-
     private var discordTimer: Timer? = null
 
     @JvmStatic
@@ -50,7 +46,7 @@ internal object DesktopLauncher {
         config.setTitle("Unciv")
         config.setHdpiMode(HdpiMode.Logical)
         config.setMaximized(true)
-        config.setWindowSizeLimits(minWidth, minHeight, -1, -1)
+        config.setWindowSizeLimits(WindowState.minWidth, WindowState.minHeight, -1, -1)  // Note - doesn't limit setting smaller sizes via API
 
         // We don't need the initial Audio created in Lwjgl3Application, HardenGdxAudio will replace it anyway.
         // Note that means config.setAudioConfig() would be ignored too, those would need to go into the HardenedGdxAudio constructor.
@@ -80,8 +76,8 @@ internal object DesktopLauncher {
         var windowState = settings.windowState  // will be replaced if window found outside hardware
         val x = windowState.x
         val y = windowState.y
-        val width = windowState.width.coerceAtLeast(minWidth)
-        val height = windowState.height.coerceAtLeast(minHeight)
+        val width = windowState.width
+        val height = windowState.height
 
         // Calculate how much of the saved window is visible on the current monitor config
         // - which might differ from the monitors available when the WindowState was saved
