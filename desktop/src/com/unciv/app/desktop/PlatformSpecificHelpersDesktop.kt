@@ -3,7 +3,7 @@ package com.unciv.app.desktop
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.unciv.models.metadata.WindowState
-import com.unciv.ui.utils.GeneralPlatformSpecificHelpers
+import com.unciv.ui.components.GeneralPlatformSpecificHelpers
 
 class PlatformSpecificHelpersDesktop(
     config: Lwjgl3ApplicationConfiguration,

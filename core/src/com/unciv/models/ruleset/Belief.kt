@@ -5,8 +5,8 @@ import com.unciv.UncivGame
 import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.translations.tr
-import com.unciv.ui.civilopedia.CivilopediaScreen.Companion.showReligionInCivilopedia
-import com.unciv.ui.civilopedia.FormattedLine
+import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showReligionInCivilopedia
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import kotlin.collections.ArrayList
 
 class Belief() : RulesetObject() {

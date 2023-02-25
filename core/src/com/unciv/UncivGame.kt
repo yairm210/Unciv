@@ -10,8 +10,9 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
-import com.unciv.logic.UncivFiles
+import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.models.metadata.GameSettings
@@ -19,23 +20,27 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
-import com.unciv.ui.LanguagePickerScreen
-import com.unciv.ui.LoadingScreen
+import com.unciv.ui.screens.LanguagePickerScreen
+import com.unciv.ui.screens.LoadingScreen
 import com.unciv.ui.audio.GameSounds
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.audio.SoundPlayer
+import com.unciv.ui.components.FontImplementation
 import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popup.ConfirmPopup
-import com.unciv.ui.popup.Popup
-import com.unciv.ui.saves.LoadGameScreen
-import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.extensions.center
-import com.unciv.ui.worldscreen.PlayerReadyScreen
-import com.unciv.ui.worldscreen.WorldScreen
+import com.unciv.ui.popups.ConfirmPopup
+import com.unciv.ui.popups.Popup
+import com.unciv.ui.screens.savescreens.LoadGameScreen
+import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.components.extensions.center
+import com.unciv.ui.screens.worldscreen.PlayerReadyScreen
+import com.unciv.ui.screens.worldscreen.WorldMapHolder
+import com.unciv.ui.screens.worldscreen.WorldScreen
+import com.unciv.ui.screens.worldscreen.unit.UnitTable
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
@@ -46,6 +51,70 @@ import kotlinx.coroutines.CancellationException
 import java.io.PrintWriter
 import java.util.*
 import kotlin.collections.ArrayDeque
+
+object GUI {
+
+    fun isDebugMapVisible(): Boolean {
+        return UncivGame.Current.viewEntireMapForDebug
+    }
+
+    fun setUpdateWorldOnNextRender() {
+        UncivGame.Current.worldScreen?.shouldUpdate = true
+    }
+
+    fun pushScreen(screen: BaseScreen) {
+        UncivGame.Current.pushScreen(screen)
+    }
+
+    fun resetToWorldScreen() {
+        UncivGame.Current.resetToWorldScreen()
+    }
+
+    fun getSettings(): GameSettings {
+        return UncivGame.Current.settings
+    }
+
+    fun getFontImpl(): FontImplementation {
+        return UncivGame.Current.fontImplementation!!
+    }
+
+    fun isWorldLoaded(): Boolean {
+        return UncivGame.Current.worldScreen != null
+    }
+
+    fun isMyTurn(): Boolean {
+        return UncivGame.Current.worldScreen!!.isPlayersTurn
+    }
+
+    fun isAllowedChangeState(): Boolean {
+        return UncivGame.Current.worldScreen!!.canChangeState
+    }
+
+    fun getWorldScreen(): WorldScreen {
+        return UncivGame.Current.worldScreen!!
+    }
+
+    fun getWorldScreenIfActive(): WorldScreen? {
+        return UncivGame.Current.getWorldScreenIfActive()
+    }
+
+    fun getMap(): WorldMapHolder {
+        return UncivGame.Current.worldScreen!!.mapHolder
+    }
+
+    fun getUnitTable(): UnitTable {
+        return UncivGame.Current.worldScreen!!.bottomUnitTable
+    }
+
+    fun getViewingPlayer(): Civilization {
+        return UncivGame.Current.worldScreen!!.viewingCiv
+    }
+
+    fun getSelectedPlayer(): Civilization {
+        return UncivGame.Current.worldScreen!!.selectedCiv
+    }
+
+}
 
 class UncivGame(parameters: UncivGameParameters) : Game() {
     constructor() : this(UncivGameParameters())
@@ -60,11 +129,12 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     var deepLinkedMultiplayerGame: String? = null
     var gameInfo: GameInfo? = null
-        private set
     lateinit var settings: GameSettings
     lateinit var musicController: MusicController
     lateinit var onlineMultiplayer: OnlineMultiplayer
     lateinit var files: UncivFiles
+
+    var isTutorialTaskCollapsed = false
 
     /**
      * This exists so that when debugging we can see the entire map.
@@ -115,6 +185,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
          * - Font (hence Fonts.resetFont() inside setSkin())
          */
         settings = files.getGeneralSettings() // needed for the screen
+        settings.refreshScreenMode()
         setAsRootScreen(GameStartScreen())  // NOT dependent on any atlas or skin
         GameSounds.init()
 
@@ -141,6 +212,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             TileSetCache.loadTileSetConfigs()
             SkinCache.loadSkinConfigs()
 
+            val vanillaRuleset = RulesetCache.getVanillaRuleset()
+
             if (settings.multiplayer.userId.isEmpty()) { // assign permanent user id
                 settings.multiplayer.userId = UUID.randomUUID().toString()
                 settings.save()
@@ -148,7 +221,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
             // Loading available fonts can take a long time on Android phones.
             // Therefore we initialize the lazy parameters in the font implementation, while we're in another thread, to avoid ANRs on main thread
-            fontImplementation?.getCharPixmap('S')
+            fontImplementation?.setFontFamily(settings.fontFamilyData, settings.getFontSize())
 
             // This stuff needs to run on the main thread because it needs the GL context
             launchOnGLThread {
@@ -157,7 +230,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
                 musicController.chooseTrack(suffixes = listOf(MusicMood.Menu, MusicMood.Ambient),
                     flags = EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch))
 
-                ImageGetter.ruleset = RulesetCache.getVanillaRuleset() // so that we can enter the map editor without having to load a game first
+                ImageGetter.ruleset = vanillaRuleset // so that we can enter the map editor without having to load a game first
 
                 when {
                     settings.isFreshlyCreated -> setAsRootScreen(LanguagePickerScreen())
@@ -179,26 +252,29 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
      *
      * Sets the returned `WorldScreen` as the only active screen.
      */
-    suspend fun loadGame(newGameInfo: GameInfo): WorldScreen = withThreadPoolContext toplevel@{
+    suspend fun loadGame(newGameInfo: GameInfo, callFromLoadScreen: Boolean = false): WorldScreen = withThreadPoolContext toplevel@{
         val prevGameInfo = gameInfo
         gameInfo = newGameInfo
 
 
-        if (gameInfo?.gameParameters?.isOnlineMultiplayer == true && gameInfo?.gameParameters?.anyoneCanSpectate == false) {
-            if (gameInfo!!.civilizations.none { it.playerId == settings.multiplayer.userId }) {
-                throw UncivShowableException("You are not allowed to spectate!")
-            }
+        if (gameInfo?.gameParameters?.isOnlineMultiplayer == true
+                && gameInfo?.gameParameters?.anyoneCanSpectate == false
+                && gameInfo!!.civilizations.none { it.playerId == settings.multiplayer.userId }) {
+            throw UncivShowableException("You are not allowed to spectate!")
         }
 
         initializeResources(prevGameInfo, newGameInfo)
 
         val isLoadingSameGame = worldScreen != null && prevGameInfo != null && prevGameInfo.gameId == newGameInfo.gameId
-        val worldScreenRestoreState = if (isLoadingSameGame) worldScreen!!.getRestoreState() else null
+        val worldScreenRestoreState = if (!callFromLoadScreen && isLoadingSameGame) worldScreen!!.getRestoreState() else null
+
+        lateinit var loadingScreen: LoadingScreen
 
         withGLContext {
             // this is not merged with the below GL context block so that our loading screen gets a chance to show - otherwise
             // we do it all in one swoop on the same thread and the application just "freezes" without loading screen for the duration.
-            setScreen(LoadingScreen(getScreen()))
+            loadingScreen = LoadingScreen(getScreen())
+            setScreen(loadingScreen)
         }
 
         return@toplevel withGLContext {
@@ -219,6 +295,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
             screenStack.addLast(screenToShow)
             setScreen(screenToShow)
+            loadingScreen.dispose()
 
             return@withGLContext newWorldScreen
         }
@@ -226,16 +303,12 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     /** The new game info may have different mods or rulesets, which may use different resources that need to be loaded. */
     private suspend fun initializeResources(prevGameInfo: GameInfo?, newGameInfo: GameInfo) {
-        if (prevGameInfo == null || prevGameInfo.ruleSet != newGameInfo.ruleSet) {
+        if (prevGameInfo == null
+                || prevGameInfo.gameParameters.baseRuleset != newGameInfo.gameParameters.baseRuleset
+                || prevGameInfo.gameParameters.mods != newGameInfo.gameParameters.mods) {
             withGLContext {
-                ImageGetter.setNewRuleset(newGameInfo.ruleSet)
+                ImageGetter.setNewRuleset(newGameInfo.ruleset)
             }
-        }
-
-        if (prevGameInfo == null ||
-                prevGameInfo.gameParameters.baseRuleset != newGameInfo.gameParameters.baseRuleset ||
-                prevGameInfo.gameParameters.mods != newGameInfo.gameParameters.mods
-        ) {
             val fullModList = newGameInfo.gameParameters.getModsAndBaseRuleset()
             musicController.setModList(fullModList)
         }
@@ -260,7 +333,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     override fun getScreen(): BaseScreen? {
         val curScreen = super.getScreen()
-        return if (curScreen == null) { null } else { curScreen as BaseScreen }
+        return if (curScreen == null) { null } else { curScreen as BaseScreen
+        }
     }
 
     private fun setScreen(newScreen: BaseScreen) {
@@ -303,16 +377,14 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
                 question = "Do you want to exit the game?",
                 confirmText = "Exit",
                 restoreDefault = { musicController.resume() },
-                action = {
-                    Gdx.app.exit()
-
-                }
+                action = { Gdx.app.exit() }
             ).open(force = true)
             return null
         }
         val oldScreen = screenStack.removeLast()
         val newScreen = screenStack.last()
         setScreen(newScreen)
+        newScreen.resume()
         oldScreen.dispose()
         return newScreen
     }
@@ -327,11 +399,17 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     /** Resets the game to the stored world screen and automatically [disposes][Screen.dispose] all other screens. */
     fun resetToWorldScreen(): WorldScreen {
-        for (screen in screenStack.filter { it !is WorldScreen}) screen.dispose()
+        for (screen in screenStack.filter { it !is WorldScreen }) screen.dispose()
         screenStack.removeAll { it !is WorldScreen }
-        val worldScreen = screenStack.last()
+        val worldScreen= screenStack.last() as WorldScreen
+
+        // Re-initialize translations, images etc. that may have been 'lost' when we were playing around in NewGameScreen
+        val ruleset = worldScreen.gameInfo.ruleset
+        translations.translationActiveMods = ruleset.mods
+        ImageGetter.setNewRuleset(ruleset)
+
         setScreen(worldScreen)
-        return worldScreen as WorldScreen
+        return worldScreen
     }
 
     private fun tryLoadDeepLinkedGame() = Concurrency.run("LoadDeepLinkedGame") {
@@ -375,7 +453,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     override fun pause() {
         val curGameInfo = gameInfo
         if (curGameInfo != null) files.requestAutoSave(curGameInfo)
-        musicController.pause()
+        if (::musicController.isInitialized) musicController.pause()
         super.pause()
     }
 
@@ -464,7 +542,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.2.11", 755)
+        val VERSION = Version("4.4.19", 818)
         //endregion
 
         lateinit var Current: UncivGame
@@ -479,6 +557,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     ) : IsPartOfGameInfoSerialization {
         @Suppress("unused") // used by json serialization
         constructor() : this("", -1)
+        fun toNiceString() = "$text (Build $number)"
     }
 }
 

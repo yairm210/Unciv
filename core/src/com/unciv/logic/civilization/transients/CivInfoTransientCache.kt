@@ -1,0 +1,383 @@
+package com.unciv.logic.civilization.transients
+
+import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
+import com.unciv.UncivGame
+import com.unciv.logic.city.City
+import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.Proximity
+import com.unciv.logic.map.MapShape
+import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.tile.ResourceSupplyList
+import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.UniqueTarget
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
+import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unit.BaseUnit
+
+/** CivInfo class was getting too crowded */
+class CivInfoTransientCache(val civInfo: Civilization) {
+
+    @Transient
+    var lastEraResourceUsedForBuilding = java.util.HashMap<String, Int>()
+
+    @Transient
+    val lastEraResourceUsedForUnit = java.util.HashMap<String, Int>()
+
+    /** Easy way to look up a Civilization's unique units and buildings */
+    @Transient
+    val uniqueUnits = hashSetOf<BaseUnit>()
+
+    @Transient
+    val uniqueBuildings = hashSetOf<Building>()
+
+    /** Contains mapping of cities to travel mediums from ALL civilizations connected by trade routes to the capital */
+    @Transient
+    var citiesConnectedToCapitalToMediums = mapOf<City, Set<String>>()
+
+    fun setTransients(){
+        val ruleset = civInfo.gameInfo.ruleset
+        for (resource in ruleset.tileResources.values.asSequence().filter { it.resourceType == ResourceType.Strategic }.map { it.name }) {
+            val applicableBuildings = ruleset.buildings.values.filter { it.requiresResource(resource) && civInfo.getEquivalentBuilding(it) == it }
+            val applicableUnits = ruleset.units.values.filter { it.requiresResource(resource) && civInfo.getEquivalentUnit(it) == it }
+
+            val lastEraForBuilding = applicableBuildings.maxOfOrNull { ruleset.eras[ruleset.technologies[it.requiredTech]?.era()]?.eraNumber ?: 0 }
+            val lastEraForUnit = applicableUnits.maxOfOrNull { ruleset.eras[ruleset.technologies[it.requiredTech]?.era()]?.eraNumber ?: 0 }
+
+            if (lastEraForBuilding != null)
+                lastEraResourceUsedForBuilding[resource] = lastEraForBuilding
+            if (lastEraForUnit != null)
+                lastEraResourceUsedForUnit[resource] = lastEraForUnit
+        }
+
+        for (building in ruleset.buildings.values) {
+            if (building.uniqueTo == civInfo.civName) {
+                uniqueBuildings.add(building)
+            }
+        }
+
+        for (unit in ruleset.units.values) {
+            if (unit.uniqueTo == civInfo.civName) {
+                uniqueUnits.add(unit)
+            }
+        }
+    }
+
+    fun updateSightAndResources() {
+        updateViewableTiles()
+        updateHasActiveEnemyMovementPenalty()
+        updateCivResources()
+    }
+
+    // This is a big performance
+    fun updateViewableTiles(explorerPosition: Vector2? = null) {
+        setNewViewableTiles()
+
+        updateViewableInvisibleTiles()
+
+        updateLastSeenImprovements()
+
+        // updating the viewable tiles also affects the explored tiles, obviously.
+        // So why don't we play switcharoo with the explored tiles as well?
+        // Well, because it gets REALLY LARGE so it's a lot of memory space,
+        // and we never actually iterate on the explored tiles (only check contains()),
+        // so there's no fear of concurrency problems.
+        civInfo.viewableTiles.asSequence().forEach { tile ->
+            tile.setExplored(civInfo, true, explorerPosition)
+        }
+
+
+        val viewedCivs = HashMap<Civilization, Tile>()
+        for (tile in civInfo.viewableTiles) {
+            val tileOwner = tile.getOwner()
+            if (tileOwner != null) viewedCivs[tileOwner] = tile
+            for (unit in tile.getUnits()) viewedCivs[unit.civ] = tile
+        }
+
+        if (!civInfo.isBarbarian()) {
+            for (entry in viewedCivs) {
+                val metCiv = entry.key
+                if (metCiv == civInfo || metCiv.isBarbarian() || civInfo.diplomacy.containsKey(metCiv.civName)) continue
+                civInfo.diplomacyFunctions.makeCivilizationsMeet(metCiv)
+                if(!civInfo.isSpectator())
+                    civInfo.addNotification("We have encountered [${metCiv.civName}]!",
+                        entry.value.position,
+                        NotificationCategory.Diplomacy, metCiv.civName,
+                        NotificationIcon.Diplomacy
+                    )
+                metCiv.addNotification("We have encountered [${civInfo.civName}]!",
+                    entry.value.position,
+                    NotificationCategory.Diplomacy, civInfo.civName,
+                    NotificationIcon.Diplomacy
+                )
+            }
+
+            discoverNaturalWonders()
+        }
+    }
+
+    private fun updateViewableInvisibleTiles() {
+        val newViewableInvisibleTiles = HashSet<Tile>()
+        for (unit in civInfo.units.getCivUnits()) {
+            val invisibleUnitUniques = unit.getMatchingUniques(UniqueType.CanSeeInvisibleUnits)
+            if (invisibleUnitUniques.none()) continue
+            val visibleUnitTypes = invisibleUnitUniques.map { it.params[0] }
+                .toList() // save this, it'll be seeing a lot of use
+            for (tile in unit.viewableTiles) {
+                if (tile.militaryUnit == null) continue
+                if (visibleUnitTypes.any { tile.militaryUnit!!.matchesFilter(it) })
+                    newViewableInvisibleTiles.add(tile)
+            }
+        }
+
+        civInfo.viewableInvisibleUnitsTiles = newViewableInvisibleTiles
+    }
+
+    private fun setNewViewableTiles() {
+        val newViewableTiles = HashSet<Tile>()
+
+        // while spectating all map is visible
+        if (civInfo.isSpectator() || UncivGame.Current.viewEntireMapForDebug) {
+            val allTiles = civInfo.gameInfo.tileMap.values.toSet()
+            civInfo.viewableTiles = allTiles
+            civInfo.viewableInvisibleUnitsTiles = allTiles
+            return
+        }
+
+        // There are a LOT of tiles usually.
+        // And making large lists of them just as intermediaries before we shove them into the hashset is very space-inefficient.
+        // And so, sequences to the rescue!
+        val ownedTiles = civInfo.cities.asSequence().flatMap { it.getTiles() }
+        newViewableTiles.addAll(ownedTiles)
+        val neighboringUnownedTiles = ownedTiles.flatMap { tile -> tile.neighbors.filter { it.getOwner() != civInfo } }
+        newViewableTiles.addAll(neighboringUnownedTiles)
+        newViewableTiles.addAll(civInfo.units.getCivUnits().flatMap { unit -> unit.viewableTiles.asSequence().filter { it.getOwner() != civInfo } })
+
+        for (otherCiv in civInfo.getKnownCivs()) {
+            if (otherCiv.getAllyCiv() == civInfo.civName || otherCiv.civName == civInfo.getAllyCiv()) {
+                newViewableTiles.addAll(otherCiv.cities.asSequence().flatMap { it.getTiles() })
+            }
+        }
+
+        for (spy in civInfo.espionageManager.spyList) {
+            val spyCity = spy.getLocation() ?: continue
+            if (!spy.isSetUp()) continue // Can't see cities when you haven't set up yet
+            newViewableTiles.addAll(spyCity.getCenterTile().getTilesInDistance(1))
+        }
+
+        civInfo.viewableTiles = newViewableTiles // to avoid concurrent modification problems
+    }
+
+    private fun updateLastSeenImprovements() {
+        if (civInfo.playerType == PlayerType.AI) return // don't bother for AI, they don't really use the info anyway
+
+        for (tile in civInfo.viewableTiles) {
+            if (tile.improvement == null)
+                civInfo.lastSeenImprovement.remove(tile.position)
+            else
+                civInfo.lastSeenImprovement[tile.position] = tile.improvement!!
+        }
+    }
+
+    private fun discoverNaturalWonders() {
+        val newlyViewedNaturalWonders = HashSet<Tile>()
+        for (tile in civInfo.viewableTiles) {
+            if (tile.naturalWonder != null && !civInfo.naturalWonders.contains(tile.naturalWonder!!))
+                newlyViewedNaturalWonders += tile
+        }
+
+        for (tile in newlyViewedNaturalWonders) {
+            // GBR could be discovered twice otherwise!
+            if (civInfo.naturalWonders.contains(tile.naturalWonder))
+                continue
+            civInfo.naturalWonders.add(tile.naturalWonder!!)
+            if(!civInfo.isSpectator())
+                civInfo.addNotification("We have discovered [${tile.naturalWonder}]!",
+                    tile.position, NotificationCategory.General, "StatIcons/Happiness")
+
+            var goldGained = 0
+            val discoveredNaturalWonders = civInfo.gameInfo.civilizations.filter { it != civInfo && it.isMajorCiv() }
+                    .flatMap { it.naturalWonders }
+            if (tile.terrainHasUnique(UniqueType.GrantsGoldToFirstToDiscover)
+                    && !discoveredNaturalWonders.contains(tile.naturalWonder!!)) {
+                goldGained += 500
+            }
+
+            if (civInfo.hasUnique(UniqueType.GoldWhenDiscoveringNaturalWonder)) {
+                goldGained += if (discoveredNaturalWonders.contains(tile.naturalWonder!!)) 100 else 500
+            }
+
+            if (goldGained > 0) {
+                civInfo.addGold(goldGained)
+                civInfo.addNotification("We have received [$goldGained] Gold for discovering [${tile.naturalWonder}]",
+                    NotificationCategory.General, NotificationIcon.Gold
+                )
+            }
+
+            for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDiscoveringNaturalWonder,
+                StateForConditionals(civInfo, tile = tile)
+            ))
+                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, tile=tile, triggerNotificationText = "due to discovering a Natural Wonder")
+
+
+        }
+    }
+
+    fun updateHasActiveEnemyMovementPenalty() {
+        civInfo.hasActiveEnemyMovementPenalty = civInfo.hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement)
+        civInfo.enemyMovementPenaltyUniques =
+                civInfo.getMatchingUniques(UniqueType.EnemyLandUnitsSpendExtraMovement)
+    }
+
+    fun updateCitiesConnectedToCapital(initialSetup: Boolean = false) {
+        if (civInfo.cities.isEmpty() || civInfo.getCapital() == null) return // eg barbarians
+
+        val citiesReachedToMediums = CapitalConnectionsFinder(civInfo).find()
+
+        if (!initialSetup) { // In the initial setup we're loading an old game state, so it doesn't really count
+            for (city in citiesReachedToMediums.keys)
+                if (city !in citiesConnectedToCapitalToMediums && city.civ == civInfo && city != civInfo.getCapital()!!)
+                    civInfo.addNotification("[${city.name}] has been connected to your capital!",
+                        city.location, NotificationCategory.Cities, NotificationIcon.Gold
+                    )
+
+            // This may still contain cities that have just been destroyed by razing - thus the population test
+            for (city in citiesConnectedToCapitalToMediums.keys)
+                if (!citiesReachedToMediums.containsKey(city) && city.civ == civInfo && city.population.population > 0)
+                    civInfo.addNotification("[${city.name}] has been disconnected from your capital!",
+                        city.location, NotificationCategory.Cities, NotificationIcon.Gold
+                    )
+        }
+
+        citiesConnectedToCapitalToMediums = citiesReachedToMediums
+    }
+
+    fun updateCivResources() {
+        val newDetailedCivResources = ResourceSupplyList()
+        for (city in civInfo.cities) newDetailedCivResources.add(city.getCityResources())
+
+        for (resourceSupply in newDetailedCivResources)
+            if(resourceSupply.amount > 0)
+                resourceSupply.amount = (resourceSupply.amount * civInfo.getResourceModifier(resourceSupply.resource)).toInt()
+
+        if (!civInfo.isCityState()) {
+            // First we get all these resources of each city state separately
+            val cityStateProvidedResources = ResourceSupplyList()
+            var resourceBonusPercentage = 1f
+            for (unique in civInfo.getMatchingUniques(UniqueType.CityStateResources))
+                resourceBonusPercentage += unique.params[0].toFloat() / 100
+            for (cityStateAlly in civInfo.getKnownCivs().filter { it.getAllyCiv() == civInfo.civName }) {
+                for (resourceSupply in cityStateAlly.cityStateFunctions.getCityStateResourcesForAlly()) {
+                    val newAmount = (resourceSupply.amount * resourceBonusPercentage).toInt()
+                    cityStateProvidedResources.add(resourceSupply.copy(amount = newAmount))
+                }
+            }
+            // Then we combine these into one
+            newDetailedCivResources.addByResource(cityStateProvidedResources, Constants.cityStates)
+        }
+
+        for (unique in civInfo.getMatchingUniques(UniqueType.ProvidesResources)) {
+            if (unique.sourceObjectType == UniqueTarget.Building || unique.sourceObjectType == UniqueTarget.Wonder) continue // already calculated in city
+            newDetailedCivResources.add(
+                civInfo.gameInfo.ruleset.tileResources[unique.params[1]]!!,
+                unique.sourceObjectType?.name ?: "",
+                unique.params[0].toInt()
+            )
+        }
+
+        for (diplomacyManager in civInfo.diplomacy.values)
+            newDetailedCivResources.add(diplomacyManager.resourcesFromTrade())
+
+        for (unit in civInfo.units.getCivUnits())
+            newDetailedCivResources.subtractResourceRequirements(
+                unit.baseUnit.getResourceRequirements(), civInfo.gameInfo.ruleset, "Units")
+
+        // Check if anything has actually changed so we don't update stats for no reason - this uses List equality which means it checks the elements
+        if (civInfo.detailedCivResources == newDetailedCivResources) return
+
+        civInfo.detailedCivResources = newDetailedCivResources
+        civInfo.summarizedCivResources = newDetailedCivResources.sumByResource("All")
+
+        civInfo.updateStatsForNextTurn() // More or less resources = more or less happiness, with potential domino effects
+    }
+
+
+    fun updateProximity(otherCiv: Civilization, preCalculated: Proximity? = null): Proximity {
+        if (otherCiv == civInfo)   return Proximity.None
+        if (preCalculated != null) {
+            // We usually want to update this for a pair of civs at the same time
+            // Since this function *should* be symmetrical for both civs, we can just do it once
+            civInfo.proximity[otherCiv.civName] = preCalculated
+            return preCalculated
+        }
+        if (civInfo.cities.isEmpty() || otherCiv.cities.isEmpty()) {
+            civInfo.proximity[otherCiv.civName] = Proximity.None
+            return Proximity.None
+        }
+
+        val mapParams = civInfo.gameInfo.tileMap.mapParameters
+        var minDistance = 100000 // a long distance
+        var totalDistance = 0
+        var connections = 0
+
+        var proximity = Proximity.None
+
+        for (ourCity in civInfo.cities) {
+            for (theirCity in otherCiv.cities) {
+                val distance = ourCity.getCenterTile().aerialDistanceTo(theirCity.getCenterTile())
+                totalDistance += distance
+                connections++
+                if (minDistance > distance) minDistance = distance
+            }
+        }
+
+        if (minDistance <= 7) {
+            proximity = Proximity.Neighbors
+        } else if (connections > 0) {
+            val averageDistance = totalDistance / connections
+            val mapFactor = if (mapParams.shape == MapShape.rectangular)
+                (mapParams.mapSize.height + mapParams.mapSize.width) / 2
+            else  (mapParams.mapSize.radius * 3) / 2 // slightly less area than equal size rect
+
+            val closeDistance = ((mapFactor * 25) / 100).coerceIn(10, 20)
+            val farDistance = ((mapFactor * 45) / 100).coerceIn(20, 50)
+
+            proximity = if (minDistance <= 11 && averageDistance <= closeDistance)
+                Proximity.Close
+            else if (averageDistance <= farDistance)
+                Proximity.Far
+            else
+                Proximity.Distant
+        }
+
+        // Check if different continents (unless already max distance, or water map)
+        if (connections > 0 && proximity != Proximity.Distant && !civInfo.gameInfo.tileMap.isWaterMap()
+                && civInfo.getCapital()!!.getCenterTile().getContinent() != otherCiv.getCapital()!!.getCenterTile().getContinent()
+        ) {
+            // Different continents - increase separation by one step
+            proximity = when (proximity) {
+                Proximity.Far -> Proximity.Distant
+                Proximity.Close -> Proximity.Far
+                Proximity.Neighbors -> Proximity.Close
+                else -> proximity
+            }
+        }
+
+        // If there aren't many players (left) we can't be that far
+        val numMajors = civInfo.gameInfo.getAliveMajorCivs().size
+        if (numMajors <= 2 && proximity > Proximity.Close)
+            proximity = Proximity.Close
+        if (numMajors <= 4 && proximity > Proximity.Far)
+            proximity = Proximity.Far
+
+        civInfo.proximity[otherCiv.civName] = proximity
+
+        return proximity
+    }
+
+}

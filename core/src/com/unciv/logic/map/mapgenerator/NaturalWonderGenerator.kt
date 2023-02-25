@@ -2,7 +2,7 @@ package com.unciv.logic.map.mapgenerator
 
 import com.unciv.Constants
 import com.unciv.utils.debug
-import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.Terrain
@@ -18,7 +18,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
         .filter { it.type == TerrainType.TerrainFeature }
         .map { it.name }.toSet()
 
-    private val blockedTiles = HashSet<TileInfo>()
+    private val blockedTiles = HashSet<Tile>()
 
     /*
     https://gaming.stackexchange.com/questions/95095/do-natural-wonders-spawn-more-closely-to-city-states/96479
@@ -37,7 +37,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
         }.roundToInt()
 
         val chosenWonders = mutableListOf<Terrain>()
-        val wonderCandidateTiles = mutableMapOf<Terrain, Collection<TileInfo>>()
+        val wonderCandidateTiles = mutableMapOf<Terrain, Collection<Tile>>()
         val allNaturalWonders = ruleset.terrains.values
                 .filter { it.type == TerrainType.NaturalWonder }.toMutableList()
         val spawned = mutableListOf<Terrain>()
@@ -87,7 +87,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
 
     private fun Unique.getIntParam(index: Int) = params[index].toInt()
 
-    private fun getCandidateTilesForWonder(tileMap: TileMap, naturalWonder: Terrain): Collection<TileInfo> {
+    private fun getCandidateTilesForWonder(tileMap: TileMap, naturalWonder: Terrain): Collection<Tile> {
         val continentsRelevant = naturalWonder.hasUnique(UniqueType.NaturalWonderLargerLandmass) ||
                 naturalWonder.hasUnique(UniqueType.NaturalWonderSmallerLandmass)
         val sortedContinents = if (continentsRelevant)
@@ -133,7 +133,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
         return suitableLocations
     }
 
-    private fun trySpawnOnSuitableLocation(suitableLocations: List<TileInfo>, wonder: Terrain): Boolean {
+    private fun trySpawnOnSuitableLocation(suitableLocations: List<Tile>, wonder: Terrain): Boolean {
         val minGroupSize: Int
         val maxGroupSize: Int
         val groupUnique = wonder.getMatchingUniques(UniqueType.NaturalWonderGroups).firstOrNull()
@@ -169,7 +169,8 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
                 list.forEach {
                     clearTile(it)
                     it.naturalWonder = wonder.name
-                    it.baseTerrain = wonder.turnsInto!!
+                    if (wonder.turnsInto != null)
+                        it.baseTerrain = wonder.turnsInto!!
                     // Add all tiles within a certain distance to a blacklist so NW:s don't cluster
                     blockedTiles.addAll(it.getTilesInDistance(it.tileMap.mapParameters.mapSize.height / 5))
                 }
@@ -200,15 +201,15 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
         return false
     }
 
-    private fun clearTile(tile: TileInfo){
+    private fun clearTile(tile: Tile){
         tile.setTerrainFeatures(listOf())
         tile.resource = null
-        tile.improvement = null
+        tile.changeImprovement(null)
         tile.setTerrainTransients()
     }
 
     /** Implements [UniqueParameterType.SimpleTerrain][com.unciv.models.ruleset.unique.UniqueParameterType.SimpleTerrain] */
-    private fun TileInfo.matchesWonderFilter(filter: String) = when (filter) {
+    private fun Tile.matchesWonderFilter(filter: String) = when (filter) {
         "Elevated" -> baseTerrain == Constants.mountain || isHill()
         "Water" -> isWater
         "Land" -> isLand

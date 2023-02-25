@@ -2,15 +2,16 @@ package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
-import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.map.RoadStatus
-import com.unciv.logic.map.TileInfo
+import com.unciv.logic.civilization.transients.CapitalConnectionsFinder
+import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.TileMap
-import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.GdxTestRunner
@@ -42,20 +43,20 @@ class CapitalConnectionsFinderTests {
     private val slot = slot<String>()
 
     private val testCivilizationNames = arrayListOf("America", "Germany", "Greece")
-    private val civilizations = testCivilizationNames.associateWith { CivilizationInfo(it) }
+    private val civilizations = testCivilizationNames.associateWith { Civilization(it) }
     private val ourCiv = civilizations.values.first()
     private val tilesMap = TileMap().apply { tileMatrix = ArrayList() }
     private var rules = Ruleset()
 
     @Before
     fun setup() {
-        RulesetCache.loadRulesets()
+        RulesetCache.loadRulesets(noMods = true)
         rules = RulesetCache.getVanillaRuleset()
         // Setup the GameInfo mock
         every { mockGameInfo.getCivilization(capture(slot)) } answers { civilizations.getValue(slot.captured) }
         every { mockGameInfo.civilizations } answers { civilizations.values.toMutableList() }
         every { mockGameInfo.tileMap } returns tilesMap
-        every { mockGameInfo.ruleSet } returns rules
+        every { mockGameInfo.ruleset } returns rules
         every { mockGameInfo.getCities() } answers { civilizations.values.asSequence().flatMap { it.cities } }
         // Needs for founding cities
         every { mockGameInfo.turns } returns 1
@@ -72,7 +73,7 @@ class CapitalConnectionsFinderTests {
 
     @After
     fun tearDown() {
-        (tilesMap.values as ArrayList<TileInfo>).clear()
+        (tilesMap.values as ArrayList<Tile>).clear()
         for (civ in civilizations.values) {
             civ.cities = emptyList()
             civ.diplomacy.clear()
@@ -85,7 +86,7 @@ class CapitalConnectionsFinderTests {
         tilesMap.bottomY = from
         tiles.add(ArrayList())
         for (y in from..to)
-            tiles.last().add(TileInfo().apply { tileMap = tilesMap
+            tiles.last().add(Tile().apply { tileMap = tilesMap
                 position = Vector2(tiles.size-1f, y.toFloat())
                 baseTerrain = rules.terrains.values.first { it.type == TerrainType.Land }.name })
     }
@@ -97,7 +98,7 @@ class CapitalConnectionsFinderTests {
         // here we assume the row with a land is already created
         tiles.add(ArrayList())
         for (y in from..to)
-            tiles.last().add(TileInfo().apply { tileMap = tilesMap
+            tiles.last().add(Tile().apply { tileMap = tilesMap
                 position = Vector2(tiles.size-1f, y.toFloat())
                 isWater = true
                 baseTerrain = rules.terrains.values.first { it.type == TerrainType.Water }.name })
@@ -110,16 +111,15 @@ class CapitalConnectionsFinderTests {
                 tile.roadStatus = type
     }
 
-    private fun createCity(civInfo: CivilizationInfo, position: Vector2, name: String, capital: Boolean = false, hasHarbor: Boolean = false): CityInfo {
-        return CityInfo().apply {
-            this.civInfo = civInfo
+    private fun createCity(civInfo: Civilization, position: Vector2, name: String, capital: Boolean = false, hasHarbor: Boolean = false): City {
+        return City().apply {
             location = position
             if (capital)
                 cityConstructions.builtBuildings.add(rules.buildings.values.first { it.hasUnique(UniqueType.IndicatesCapital) }.name)
             if (hasHarbor)
                 cityConstructions.builtBuildings.add(rules.buildings.values.first { it.hasUnique(UniqueType.ConnectTradeRoutes) }.name)
             this.name = name
-            setTransients()
+            setTransients(civInfo)
             tilesMap[location].setOwningCity(this)
         }
     }
@@ -243,13 +243,13 @@ class CapitalConnectionsFinderTests {
             createCity(ourCiv, Vector2(0f, 4f), "Connected"))
 
         val openCiv = civilizations["Germany"]!!
-        openCiv.nation.cityStateType = CityStateType.Cultured
+        openCiv.nation.cityStateType = "Cultured"
         openCiv.cities = listOf( createCity(openCiv, Vector2(0f, 2f), "Berlin", true))
         ourCiv.diplomacy["Germany"] = DiplomacyManager(ourCiv, "Germany")
             .apply { diplomaticStatus = DiplomaticStatus.Peace }
 
         val closedCiv = civilizations["Greece"]!!
-        closedCiv.nation.cityStateType = CityStateType.Cultured
+        closedCiv.nation.cityStateType = "Cultured"
         closedCiv.cities = listOf( createCity(closedCiv, Vector2(0f, -2f), "Athens", true))
         ourCiv.diplomacy["Greece"] = DiplomacyManager(ourCiv, "Greece")
             .apply { diplomaticStatus = DiplomaticStatus.War }

@@ -2,10 +2,16 @@ package com.unciv.app
 
 import android.content.Intent
 import android.graphics.Rect
+import android.hardware.display.DisplayManager
 import android.net.Uri
+import android.opengl.GLSurfaceView
+import android.os.Build
 import android.os.Bundle
+import android.view.Surface
+import android.view.SurfaceHolder
 import android.view.View
 import android.view.ViewTreeObserver
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.WorkManager
 import com.badlogic.gdx.Gdx
@@ -15,11 +21,10 @@ import com.badlogic.gdx.backends.android.AndroidGraphics
 import com.badlogic.gdx.math.Rectangle
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
-import com.unciv.logic.UncivFiles
+import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.event.EventBus
-import com.unciv.ui.UncivStage
-import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.Fonts
+import com.unciv.ui.screens.basescreen.UncivStage
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import java.io.File
@@ -41,7 +46,6 @@ open class AndroidLauncher : AndroidApplication() {
         }
 
         val settings = UncivFiles.getSettingsForPlatformLaunchers(filesDir.path)
-        val fontFamily = settings.fontFamily
 
         // Manage orientation lock and display cutout
         val platformSpecificHelper = PlatformSpecificHelpersAndroid(this)
@@ -51,7 +55,7 @@ open class AndroidLauncher : AndroidApplication() {
 
         val androidParameters = UncivGameParameters(
             crashReportSysInfo = CrashReportSysInfoAndroid,
-            fontImplementation = NativeFontAndroid((Fonts.ORIGINAL_FONT_SIZE * settings.fontSizeMultiplier).toInt(), fontFamily),
+            fontImplementation = FontAndroid(),
             customFileLocationHelper = customFileLocationHelper,
             platformSpecificHelper = platformSpecificHelper
         )
@@ -61,11 +65,39 @@ open class AndroidLauncher : AndroidApplication() {
 
         setDeepLinkedGame(intent)
 
-        addScreenObscuredListener((Gdx.graphics as AndroidGraphics).view)
+        val glView = (Gdx.graphics as AndroidGraphics).view as GLSurfaceView
+
+        addScreenObscuredListener(glView)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            addScreenRefreshRateListener(glView)
     }
 
-    private fun addScreenObscuredListener(contentView: View) {
-        contentView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+    /** Request the best available device frame rate for
+     *  the game, as soon as OpenGL surface is created */
+    private fun addScreenRefreshRateListener(surfaceView: GLSurfaceView) {
+        surfaceView.holder.addCallback(object: SurfaceHolder.Callback {
+            override fun surfaceCreated(holder: SurfaceHolder) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    val modes = display?.supportedModes ?: return
+                    val bestRefreshRate = modes.maxOf { it.refreshRate }
+                    holder.surface.setFrameRate(bestRefreshRate, Surface.FRAME_RATE_COMPATIBILITY_DEFAULT)
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    val display = windowManager.defaultDisplay
+                    val modes = display?.supportedModes ?: return
+                    val bestMode =  modes.maxBy { it.refreshRate }
+                    val params = window.attributes
+                    params.preferredDisplayModeId = bestMode.modeId
+                    window.attributes = params
+                }
+            }
+            override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
+            override fun surfaceDestroyed(holder: SurfaceHolder) {}
+        })
+    }
+
+    private fun addScreenObscuredListener(surfaceView: GLSurfaceView) {
+        surfaceView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
             /** [onGlobalLayout] gets triggered not only when the [windowVisibleDisplayFrame][View.getWindowVisibleDisplayFrame] changes, but also on other things.
              * So we need to check if that was actually the thing that changed. */
             private var lastVisibleDisplayFrame: Rect? = null
@@ -75,18 +107,18 @@ open class AndroidLauncher : AndroidApplication() {
                     return
                 }
                 val r = Rect()
-                contentView.getWindowVisibleDisplayFrame(r)
+                surfaceView.getWindowVisibleDisplayFrame(r)
                 if (r.equals(lastVisibleDisplayFrame)) return
                 lastVisibleDisplayFrame = r
 
                 val stage = (UncivGame.Current.screen as BaseScreen).stage
 
-                val horizontalRatio = stage.width / contentView.width
-                val verticalRatio = stage.height / contentView.height
+                val horizontalRatio = stage.width / surfaceView.width
+                val verticalRatio = stage.height / surfaceView.height
 
                 val visibleStage = Rectangle(
                     r.left * horizontalRatio,
-                    (contentView.height - r.bottom)  * verticalRatio, // Android coordinate system has the origin in the top left, while GDX uses bottom left
+                    (surfaceView.height - r.bottom)  * verticalRatio, // Android coordinate system has the origin in the top left, while GDX uses bottom left
                     r.width() * horizontalRatio,
                     r.height() * verticalRatio
                 )

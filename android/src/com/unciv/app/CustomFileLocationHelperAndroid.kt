@@ -6,7 +6,7 @@ import android.net.Uri
 import android.provider.DocumentsContract
 import android.provider.OpenableColumns
 import androidx.annotation.GuardedBy
-import com.unciv.logic.CustomFileLocationHelper
+import com.unciv.logic.files.CustomFileLocationHelper
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -23,14 +23,17 @@ class CustomFileLocationHelperAndroid(private val activity: Activity) : CustomFi
         // When we loaded, we returned a "content://" URI as file location.
         val uri = Uri.parse(suggestedLocation)
         val fileName = if (uri.scheme == "content") {
-            val cursor = activity.contentResolver.query(uri, null, null, null, null)
-            cursor.use {
-                // we should have a direct URI to a file, so first is enough
-                if (it?.moveToFirst() == true) {
-                    it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
-                } else {
-                    ""
+            try {
+                val cursor = activity.contentResolver.query(uri, null, null, null, null)
+                cursor.use {
+                    // we should have a direct URI to a file, so first is enough
+                    if (it?.moveToFirst() == true) {
+                        it.getString(it.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME))
+                    } else ""
                 }
+            }
+            catch(ex:Exception) {
+                suggestedLocation.split("2F").last() // I have no idea why but the content path ends with this before the filename
             }
         } else {
             // if we didn't load, this is some file name entered by the user

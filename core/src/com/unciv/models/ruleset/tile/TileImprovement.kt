@@ -2,9 +2,9 @@ package com.unciv.models.ruleset.tile
 
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.MapUnit
-import com.unciv.logic.map.RoadStatus
+import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetStatsObject
@@ -13,10 +13,10 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
-import com.unciv.ui.civilopedia.CivilopediaScreen.Companion.showReligionInCivilopedia
-import com.unciv.ui.civilopedia.FormattedLine
-import com.unciv.ui.utils.extensions.toPercent
-import com.unciv.ui.worldscreen.unit.UnitActions
+import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showReligionInCivilopedia
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.components.extensions.toPercent
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import kotlin.math.roundToInt
 
 class TileImprovement : RulesetStatsObject() {
@@ -30,7 +30,7 @@ class TileImprovement : RulesetStatsObject() {
     val turnsToBuild: Int = 0
 
 
-    fun getTurnsToBuild(civInfo: CivilizationInfo, unit: MapUnit): Int {
+    fun getTurnsToBuild(civInfo: Civilization, unit: MapUnit): Int {
         val state = StateForConditionals(civInfo, unit = unit)
         return unit.getMatchingUniques(UniqueType.TileImprovementTime, state, checkCivInfoUniques = true)
             .fold(turnsToBuild.toFloat() * civInfo.gameInfo.speed.improvementBuildLengthModifier) { it, unique ->
@@ -81,7 +81,7 @@ class TileImprovement : RulesetStatsObject() {
             val city = builder.getTile().getCity()
             if (city != null) {
                 city.cityStats.update()
-                city.civInfo.updateDetailedCivResources()
+                city.civ.cache.updateCivResources()
             }
         }
         if (hasUnique(UniqueType.RemovesFeaturesIfBuilt)) {
@@ -93,7 +93,7 @@ class TileImprovement : RulesetStatsObject() {
                 removingAction in tile.ruleset.tileImprovements
                 && !isAllowedOnFeature(feature)
                 && tile.ruleset.tileImprovements[removingAction]!!.let {
-                    it.techRequired == null || builder.civInfo.tech.isResearched(it.techRequired!!)
+                    it.techRequired == null || builder.civ.tech.isResearched(it.techRequired!!)
                 }
             }
 

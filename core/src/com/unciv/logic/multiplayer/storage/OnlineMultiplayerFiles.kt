@@ -4,7 +4,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
-import com.unciv.logic.UncivFiles
+import com.unciv.logic.files.UncivFiles
 
 /**
  * Allows access to games stored on a server for multiplayer purposes.

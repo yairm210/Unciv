@@ -4,10 +4,15 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
-import com.unciv.logic.civilization.SpyAction
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
+import com.unciv.logic.civilization.managers.SpyAction
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.LocaleCode
 import com.unciv.models.ruleset.*
+import com.unciv.models.ruleset.nation.CityStateType
+import com.unciv.models.ruleset.nation.Difficulty
+import com.unciv.models.ruleset.nation.Nation
+import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
@@ -85,12 +90,34 @@ object TranslationFileWriter {
             if (templateFile.exists())
                 linesToTranslate.addAll(templateFile.reader(TranslationFileReader.charset).readLines())
 
+            linesToTranslate += "\n\n#################### Lines from Unique Types #######################\n"
+            for (uniqueType in UniqueType.values()) {
+                val deprecationAnnotation = uniqueType.getDeprecationAnnotation()
+                if (deprecationAnnotation != null) continue
+                if (uniqueType.flags.contains(UniqueFlag.HiddenToUsers)) continue
+
+                linesToTranslate += "${uniqueType.getTranslatable()} = "
+            }
+
             for (uniqueParameterType in UniqueParameterType.values()) {
                 val strings = uniqueParameterType.getTranslationWriterStringsForOutput()
                 if (strings.isEmpty()) continue
                 linesToTranslate += "\n######### ${uniqueParameterType.displayName} ###########\n"
                 linesToTranslate.addAll(strings.map { "$it = " })
             }
+
+            for (uniqueTarget in UniqueTarget.values())
+                linesToTranslate += "$uniqueTarget = "
+
+            linesToTranslate += "\n\n#################### Lines from spy actions #######################\n"
+            for (spyAction in SpyAction.values()) {
+                linesToTranslate += "$spyAction = "
+            }
+
+            linesToTranslate += "\n\n#################### Lines from diplomatic modifiers #######################\n"
+            for (diplomaticModifier in DiplomaticModifiers.values())
+                linesToTranslate += "${diplomaticModifier.text} = "
+
 
             for (baseRuleset in BaseRuleset.values()) {
                 val generatedStringsFromBaseRuleset =
@@ -108,28 +135,10 @@ object TranslationFileWriter {
 
         for ((key, value) in fileNameToGeneratedStrings) {
             if (value.isEmpty()) continue
-            linesToTranslate.add("\n#################### Lines from $key ####################\n")
+            linesToTranslate += "\n#################### Lines from $key ####################\n"
             linesToTranslate.addAll(value)
         }
         fileNameToGeneratedStrings.clear()  // No longer needed
-
-        if (modFolder == null) { // base game
-            linesToTranslate.add("\n\n#################### Lines from Unique Types #######################\n")
-            for (uniqueType in UniqueType.values()) {
-                val deprecationAnnotation = uniqueType.getDeprecationAnnotation()
-                if (deprecationAnnotation != null) continue
-                if (uniqueType.flags.contains(UniqueFlag.HiddenToUsers)) continue
-
-                linesToTranslate.add("${uniqueType.getTranslatable()} = ")
-            }
-
-            for (uniqueTarget in UniqueTarget.values())
-                linesToTranslate.add("$uniqueTarget = ")
-
-            for (spyAction in SpyAction.values()) {
-                linesToTranslate.add("$spyAction = ")
-            }
-        }
 
         var countOfTranslatableLines = 0
         val countOfTranslatedLines = HashMap<String, Int>()
@@ -424,7 +433,8 @@ object TranslationFileWriter {
                 "revealedBy", "startBias", "techRequired", "terrainsCanBeBuiltOn",
                 "terrainsCanBeFoundOn", "turnsInto", "uniqueTo", "upgradesTo",
                 "link", "icon", "extraImage", "color",  // FormattedLine
-                "RuinReward.uniques", "TerrainType.name"
+                "RuinReward.uniques", "TerrainType.name",
+                "CityStateType.friendBonusUniques", "CityStateType.allyBonusUniques",
             )
 
             /** Specifies Enums where the name property _is_ translatable, by Class name */
@@ -473,6 +483,7 @@ object TranslationFileWriter {
                     "Units" -> emptyArray<BaseUnit>().javaClass
                     "UnitTypes" -> emptyArray<UnitType>().javaClass
                     "VictoryTypes" -> emptyArray<Victory>().javaClass
+                    "CityStateTypes" -> emptyArray<CityStateType>().javaClass
                     else -> this.javaClass // dummy value
                 }
             }

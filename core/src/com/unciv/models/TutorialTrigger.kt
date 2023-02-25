@@ -50,4 +50,6 @@ enum class TutorialTrigger(val value: String, val isCivilopedia: Boolean = !valu
     Inquisitors("Inquisitors"),
     MayanCalendar("Maya_Long_Count_calendar_cycle"),
     WeLoveTheKingDay("We_Love_The_King_Day"),
+    CityTileBlockade("City_Tile_Blockade"),
+    CityBlockade("City_Blockade")
 }

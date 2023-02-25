@@ -3,7 +3,7 @@ package com.unciv.logic.map.mapgenerator
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.utils.debug
-import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Ruleset
 import kotlin.math.roundToInt
@@ -36,14 +36,14 @@ class RiverGenerator(
         for (tile in riverStarts) spawnRiver(tile)
     }
 
-    private fun TileInfo.isFarEnoughFromWater(): Boolean {
+    private fun Tile.isFarEnoughFromWater(): Boolean {
         for (distance in 1 until minRiverLength) {
             if (getTilesAtDistance(distance).any { it.isWater }) return false
         }
         return true
     }
 
-    fun getClosestWaterTile(tile: TileInfo): TileInfo? {
+    fun getClosestWaterTile(tile: Tile): Tile? {
         for (distance in 1..maxRiverLength) {
             val waterTiles = tile.getTilesAtDistance(distance).filter { it.isWater }
             if (waterTiles.any())
@@ -52,13 +52,13 @@ class RiverGenerator(
         return null
     }
 
-    private fun spawnRiver(initialPosition: TileInfo) {
+    private fun spawnRiver(initialPosition: Tile) {
         val endPosition = getClosestWaterTile(initialPosition)
             ?: throw IllegalStateException("No water found for river destination")
         spawnRiver(initialPosition, endPosition)
     }
 
-    fun spawnRiver(initialPosition: TileInfo, endPosition: TileInfo, resultingTiles: MutableSet<TileInfo>? = null) {
+    fun spawnRiver(initialPosition: Tile, endPosition: Tile, resultingTiles: MutableSet<Tile>? = null) {
         // Recommendation: Draw a bunch of hexagons on paper before trying to understand this, it's super helpful!
 
         var riverCoordinate = RiverCoordinate(initialPosition.position,
@@ -152,7 +152,7 @@ class RiverGenerator(
         }
 
         /** Lists the three neighboring hexes to this vertex which are on the map */
-        fun getAdjacentTiles(tileMap: TileMap): Sequence<TileInfo> = sequence {
+        fun getAdjacentTiles(tileMap: TileMap): Sequence<Tile> = sequence {
             val x = position.x.toInt()
             val y = position.y.toInt()
             yield(tileMap[x, y])

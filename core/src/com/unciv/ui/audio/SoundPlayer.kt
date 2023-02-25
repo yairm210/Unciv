@@ -60,7 +60,7 @@ object SoundPlayer {
 
         // Get a hash covering all mods - quickly, so don't map, cast or copy the Set types
         val gameInfo = game.gameInfo
-        val hash1 = if (gameInfo != null) gameInfo.ruleSet.mods.hashCode() else 0
+        val hash1 = if (gameInfo != null) gameInfo.ruleset.mods.hashCode() else 0
         val newHash = hash1.xor(game.settings.visualMods.hashCode())
 
         // If hash the same, leave the cache as is
@@ -94,7 +94,7 @@ object SoundPlayer {
         val modList: MutableSet<String> = mutableSetOf()
         val gameInfo = game.gameInfo
         if (gameInfo != null) {
-            modList.addAll(gameInfo.ruleSet.mods)  // Sounds from game mods
+            modList.addAll(gameInfo.ruleset.mods)  // Sounds from game mods
         }
         modList.addAll(game.settings.visualMods)
 
@@ -173,9 +173,7 @@ object SoundPlayer {
         if (initialDelay > 0 || resource.play(volume) == -1L) {
             Concurrency.run("DelayedSound") {
                 delay(initialDelay.toLong())
-                while (resource.play(volume) == -1L) {
-                    delay(20L)
-                }
+                while (resource.play(volume) == -1L) delay(20L)
             }
         }
     }

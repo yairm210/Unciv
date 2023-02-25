@@ -41,7 +41,8 @@ async function parseCommits() {
     var reachedPreviousVersion = false;
     var nextVersionString = "";
     result.data.forEach(commit => {
-            if (reachedPreviousVersion) return;
+    // See https://github.com/yairm210/Unciv/actions/runs/4136712446/jobs/7151150557 for example of strange commit with null author
+            if (reachedPreviousVersion || commit.author == null) return;
             var author = commit.author.login;
             if (author === "uncivbot[bot]") return;
             var commitMessage = commit.commit.message.split("\n")[0];

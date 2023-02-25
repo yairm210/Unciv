@@ -6,13 +6,32 @@ import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
-import com.unciv.ui.civilopedia.FormattedLine
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 
 
 class Promotion : RulesetObject() {
     var prerequisites = listOf<String>()
 
     var unitTypes = listOf<String>() // The json parser wouldn't agree to deserialize this as a list of UnitTypes. =(
+
+    /** Row of -1 determines that the modder has not set a position */
+    var row = -1
+    var column = 0
+
+    fun clone():Promotion {
+        val newPromotion = Promotion()
+
+        // RulesetObject fields
+        newPromotion.name = name
+        newPromotion.uniques = uniques
+
+        // Promotion fields
+        newPromotion.prerequisites = prerequisites
+        newPromotion.unitTypes = unitTypes
+        newPromotion.row = row
+        newPromotion.column = column
+        return newPromotion
+    }
 
     override fun getUniqueTarget() = UniqueTarget.Promotion
 

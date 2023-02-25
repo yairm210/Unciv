@@ -5,31 +5,32 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.GreatGeneralImplementation
 import com.unciv.logic.battle.MapUnitCombatant
-import com.unciv.logic.city.CityInfo
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.city.City
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
-import com.unciv.logic.map.MapUnit
-import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitAction
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
-import com.unciv.ui.worldscreen.unit.UnitActions
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsReligion
 import kotlin.math.max
 import kotlin.math.min
 
 object SpecificUnitAutomation {
 
-    private fun hasWorkableSeaResource(tileInfo: TileInfo, civInfo: CivilizationInfo): Boolean =
-            tileInfo.isWater && tileInfo.improvement == null && tileInfo.hasViewableResource(civInfo)
+    private fun hasWorkableSeaResource(tile: Tile, civInfo: Civilization): Boolean =
+            tile.isWater && tile.improvement == null && tile.hasViewableResource(civInfo)
 
     fun automateWorkBoats(unit: MapUnit) {
-        val closestReachableResource = unit.civInfo.cities.asSequence()
+        val closestReachableResource = unit.civ.cities.asSequence()
                 .flatMap { city -> city.getWorkableTiles() }
                 .filter {
-                    hasWorkableSeaResource(it, unit.civInfo)
+                    hasWorkableSeaResource(it, unit.civ)
                             && (unit.currentTile == it || unit.movement.canMoveTo(it))
                 }
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }
@@ -59,16 +60,16 @@ object SpecificUnitAutomation {
 
     fun automateCitadelPlacer(unit: MapUnit): Boolean {
         // try to revenge and capture their tiles
-        val enemyCities = unit.civInfo.getKnownCivs()
-                .filter { unit.civInfo.getDiplomacyManager(it).hasModifier(DiplomaticModifiers.StealingTerritory) }
+        val enemyCities = unit.civ.getKnownCivs()
+                .filter { unit.civ.getDiplomacyManager(it).hasModifier(DiplomaticModifiers.StealingTerritory) }
                 .flatMap { it.cities }.asSequence()
         // find the suitable tiles (or their neighbours)
         val tileToSteal = enemyCities.flatMap { it.getTiles() } // City tiles
-                .filter { it.neighbors.any { tile -> tile.getOwner() != unit.civInfo } } // Edge city tiles
+                .filter { it.neighbors.any { tile -> tile.getOwner() != unit.civ } } // Edge city tiles
                 .flatMap { it.neighbors.asSequence() } // Neighbors of edge city tiles
                 .filter {
-                    it in unit.civInfo.viewableTiles // we can see them
-                            && it.neighbors.any { tile -> tile.getOwner() == unit.civInfo }// they are close to our borders
+                    it in unit.civ.viewableTiles // we can see them
+                            && it.neighbors.any { tile -> tile.getOwner() == unit.civ }// they are close to our borders
                 }
                 .sortedBy {
                     // get closest tiles
@@ -89,7 +90,7 @@ object SpecificUnitAutomation {
         }
 
         // try to build a citadel for defensive purposes
-        if (WorkerAutomation.evaluateFortPlacement(unit.currentTile, unit.civInfo, true)) {
+        if (WorkerAutomation.evaluateFortPlacement(unit.currentTile, unit.civ, true)) {
             UnitActions.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
             return true
         }
@@ -98,16 +99,16 @@ object SpecificUnitAutomation {
 
     fun automateGreatGeneralFallback(unit: MapUnit) {
         // if no unit to follow, take refuge in city or build citadel there.
-        val reachableTest: (TileInfo) -> Boolean = {
+        val reachableTest: (Tile) -> Boolean = {
             it.civilianUnit == null &&
                     unit.movement.canMoveTo(it)
                     && unit.movement.canReach(it)
         }
-        val cityToGarrison = unit.civInfo.cities.asSequence().map { it.getCenterTile() }
+        val cityToGarrison = unit.civ.cities.asSequence().map { it.getCenterTile() }
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                 .firstOrNull { reachableTest(it) }
             ?: return
-        if (!unit.hasCitadelPlacementUnique) {
+        if (!unit.cache.hasCitadelPlacementUnique) {
             unit.movement.headTowards(cityToGarrison)
             return
         }
@@ -116,7 +117,7 @@ object SpecificUnitAutomation {
         val tileForCitadel = cityToGarrison.getTilesInDistanceRange(3..4)
             .firstOrNull {
                 reachableTest(it) &&
-                        WorkerAutomation.evaluateFortPlacement(it, unit.civInfo, true)
+                        WorkerAutomation.evaluateFortPlacement(it, unit.civ, true)
             }
         if (tileForCitadel == null) {
             unit.movement.headTowards(cityToGarrison)
@@ -128,17 +129,17 @@ object SpecificUnitAutomation {
                 .firstOrNull()?.action?.invoke()
     }
 
-    private fun rankTileAsCityCenter(tileInfo: TileInfo, nearbyTileRankings: Map<TileInfo, Float>,
+    private fun rankTileAsCityCenter(tile: Tile, nearbyTileRankings: Map<Tile, Float>,
                                      luxuryResourcesInCivArea: Sequence<TileResource>): Float {
-        val bestTilesFromOuterLayer = tileInfo.getTilesAtDistance(2)
+        val bestTilesFromOuterLayer = tile.getTilesAtDistance(2)
                 .sortedByDescending { nearbyTileRankings[it] }.take(2)
-        val top5Tiles = (tileInfo.neighbors + bestTilesFromOuterLayer)
+        val top5Tiles = (tile.neighbors + bestTilesFromOuterLayer)
                 .sortedByDescending { nearbyTileRankings[it] }
                 .take(5)
         var rank = top5Tiles.map { nearbyTileRankings.getValue(it) }.sum()
-        if (tileInfo.isCoastalTile()) rank += 5
+        if (tile.isCoastalTile()) rank += 5
 
-        val luxuryResourcesInCityArea = tileInfo.getTilesAtDistance(2).filter { it.resource != null }
+        val luxuryResourcesInCityArea = tile.getTilesAtDistance(2).filter { it.resource != null }
                 .map { it.tileResource }.filter { it.resourceType == ResourceType.Luxury }.distinct()
         val luxuryResourcesAlreadyInCivArea = luxuryResourcesInCivArea.map { it.name }.toHashSet()
         val luxuryResourcesNotYetInCiv = luxuryResourcesInCityArea
@@ -149,17 +150,17 @@ object SpecificUnitAutomation {
     }
 
     fun automateSettlerActions(unit: MapUnit) {
-        val modConstants = unit.civInfo.gameInfo.ruleSet.modOptions.constants
+        val modConstants = unit.civ.gameInfo.ruleset.modOptions.constants
         if (unit.getTile().militaryUnit == null     // Don't move until you're accompanied by a military unit
-            && !unit.civInfo.isCityState()          // ..unless you're a city state that was unable to settle its city on turn 1
+            && !unit.civ.isCityState()          // ..unless you're a city state that was unable to settle its city on turn 1
             && unit.getDamageFromTerrain() < unit.health) return    // Also make sure we won't die waiting
 
         val tilesNearCities = sequence {
-            for (city in unit.civInfo.gameInfo.getCities()) {
+            for (city in unit.civ.gameInfo.getCities()) {
                 val center = city.getCenterTile()
-                if (unit.civInfo.knows(city.civInfo) &&
+                if (unit.civ.knows(city.civ) &&
                     // If the CITY OWNER knows that the UNIT OWNER agreed not to settle near them
-                    city.civInfo.getDiplomacyManager(unit.civInfo).hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)
+                    city.civ.getDiplomacyManager(unit.civ).hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)
                 ) {
                     yieldAll(center.getTilesInDistance(6))
                     continue
@@ -175,29 +176,29 @@ object SpecificUnitAutomation {
 
         // This is to improve performance - instead of ranking each tile in the area up to 19 times, do it once.
         val nearbyTileRankings = unit.getTile().getTilesInDistance(7)
-                .associateBy({ it }, { Automation.rankTile(it, unit.civInfo) })
+                .associateBy({ it }, { Automation.rankTile(it, unit.civ) })
 
-        val distanceFromHome = if (unit.civInfo.cities.isEmpty()) 0
-            else unit.civInfo.cities.minOf { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
+        val distanceFromHome = if (unit.civ.cities.isEmpty()) 0
+            else unit.civ.cities.minOf { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
         val range = max(1, min(5, 8 - distanceFromHome)) // Restrict vision when far from home to avoid death marches
 
         val possibleCityLocations = unit.getTile().getTilesInDistance(range)
                 .filter {
                     val tileOwner = it.getOwner()
-                    it.isLand && !it.isImpassible() && (tileOwner == null || tileOwner == unit.civInfo) // don't allow settler to settle inside other civ's territory
+                    it.isLand && !it.isImpassible() && (tileOwner == null || tileOwner == unit.civ) // don't allow settler to settle inside other civ's territory
                             && (unit.currentTile == it || unit.movement.canMoveTo(it))
                             && it !in tilesNearCities
                 }.toList()
 
-        val luxuryResourcesInCivArea = unit.civInfo.cities.asSequence()
+        val luxuryResourcesInCivArea = unit.civ.cities.asSequence()
                 .flatMap { it.getTiles().asSequence() }.filter { it.resource != null }
                 .map { it.tileResource }.filter { it.resourceType == ResourceType.Luxury }
                 .distinct()
 
-        if (unit.civInfo.gameInfo.turns == 0) {   // Special case, we want AI to settle in place on turn 1.
+        if (unit.civ.gameInfo.turns == 0) {   // Special case, we want AI to settle in place on turn 1.
             val foundCityAction = UnitActions.getFoundCityAction(unit, unit.getTile())
             // Depending on era and difficulty we might start with more than one settler. In that case settle the one with the best location
-            val otherSettlers = unit.civInfo.getCivUnits().filter { it.currentMovement > 0 && it.baseUnit == unit.baseUnit }
+            val otherSettlers = unit.civ.units.getCivUnits().filter { it.currentMovement > 0 && it.baseUnit == unit.baseUnit }
             if(foundCityAction?.action != null &&
                     otherSettlers.none {
                         rankTileAsCityCenter(it.getTile(), nearbyTileRankings, emptySequence()) > rankTileAsCityCenter(unit.getTile(), nearbyTileRankings, emptySequence())
@@ -213,15 +214,21 @@ object SpecificUnitAutomation {
 
         // It's possible that we'll see a tile "over the sea" that's better than the tiles close by, but that's not a reason to abandon the close tiles!
         // Also this lead to some routing problems, see https://github.com/yairm210/Unciv/issues/3653
-        val bestCityLocation: TileInfo? = citiesByRanking.firstOrNull {
+        val bestCityLocation: Tile? = citiesByRanking.firstOrNull {
             val pathSize = unit.movement.getShortestPath(it.first).size
             return@firstOrNull pathSize in 1..3
         }?.first
 
         if (bestCityLocation == null) { // We got a badass over here, all tiles within 5 are taken?
             // Try to move towards the frontier
-            val frontierCity = unit.civInfo.cities.maxByOrNull { it.getFrontierScore() }
-            if (frontierCity != null && frontierCity.getFrontierScore() > 0  && unit.movement.canReach(frontierCity.getCenterTile()))
+
+            /** @return the number of tiles 4 (un-modded) out from this city that could hold a city, ie how lonely this city is */
+            fun getFrontierScore(city: City) = city.getCenterTile()
+                .getTilesAtDistance(city.civ.gameInfo.ruleset.modOptions.constants.minimalCityDistance + 1)
+                .count { it.canBeSettled() && (it.getOwner() == null || it.getOwner() == city.civ ) }
+
+            val frontierCity = unit.civ.cities.maxByOrNull { getFrontierScore(it) }
+            if (frontierCity != null && getFrontierScore(frontierCity) > 0  && unit.movement.canReach(frontierCity.getCenterTile()))
                 unit.movement.headTowards(frontierCity.getCenterTile())
             if (UnitAutomation.tryExplore(unit)) return // try to find new areas
             UnitAutomation.wander(unit) // go around aimlessly
@@ -241,16 +248,14 @@ object SpecificUnitAutomation {
     }
 
     fun automateImprovementPlacer(unit: MapUnit) {
-        var improvementBuildingUniques = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
-        if (unit.religiousActionsUnitCanDo().all { unit.abilityUsesLeft[it] == unit.maxAbilityUses[it] })
-            improvementBuildingUniques += unit.getMatchingUniques(UniqueType.CanConstructIfNoOtherActions)
+        val improvementBuildingUniques = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
 
         val improvementName = improvementBuildingUniques.first().params[0]
-        val improvement = unit.civInfo.gameInfo.ruleSet.tileImprovements[improvementName]
+        val improvement = unit.civ.gameInfo.ruleset.tileImprovements[improvementName]
             ?: return
         val relatedStat = improvement.maxByOrNull { it.value }?.key ?: Stat.Culture
 
-        val citiesByStatBoost = unit.civInfo.cities.sortedByDescending {
+        val citiesByStatBoost = unit.civ.cities.sortedByDescending {
             it.cityStats.statPercentBonusTree.totalStats[relatedStat]
         }
 
@@ -259,7 +264,7 @@ object SpecificUnitAutomation {
             val applicableTiles = city.getWorkableTiles().filter {
                 it.isLand && it.resource == null && !it.isCityCenter()
                         && (unit.currentTile == it || unit.movement.canMoveTo(it))
-                        && !it.containsGreatImprovement() && it.canBuildImprovement(improvement, unit.civInfo)
+                        && !it.containsGreatImprovement() && it.improvementFunctions.canBuildImprovement(improvement, unit.civ)
             }
             if (applicableTiles.none()) continue
 
@@ -276,7 +281,7 @@ object SpecificUnitAutomation {
             val chosenTile = applicableTiles.sortedByDescending {
                 Automation.rankTile(
                     it,
-                    unit.civInfo
+                    unit.civ
                 )
             }
                 .firstOrNull { unit.movement.canReach(it) }
@@ -284,14 +289,17 @@ object SpecificUnitAutomation {
 
             unit.movement.headTowards(chosenTile)
             if (unit.currentTile == chosenTile)
-                UnitActions.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
+                if (unit.currentTile.isPillaged())
+                    UnitActions.getRepairAction(unit).invoke()
+                else
+                    UnitActions.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
             return
         }
     }
 
     fun automateAddInCapital(unit: MapUnit) {
-        if (unit.civInfo.getCapital() == null) return // safeguard
-        val capitalTile = unit.civInfo.getCapital()!!.getCenterTile()
+        if (unit.civ.getCapital() == null) return // safeguard
+        val capitalTile = unit.civ.getCapital()!!.getCenterTile()
         if (unit.movement.canReach(capitalTile))
             unit.movement.headTowards(capitalTile)
         if (unit.getTile() == capitalTile) {
@@ -301,19 +309,19 @@ object SpecificUnitAutomation {
     }
 
     fun automateMissionary(unit: MapUnit) {
-        if (unit.religion != unit.civInfo.religionManager.religion?.name || unit.religion == null)
+        if (unit.religion != unit.civ.religionManager.religion?.name || unit.religion == null)
             return unit.disband()
 
-        val ourCitiesWithoutReligion = unit.civInfo.cities.filter {
-            it.religion.getMajorityReligion() != unit.civInfo.religionManager.religion
+        val ourCitiesWithoutReligion = unit.civ.cities.filter {
+            it.religion.getMajorityReligion() != unit.civ.religionManager.religion
         }
 
         val city =
             if (ourCitiesWithoutReligion.any())
                 ourCitiesWithoutReligion.minByOrNull { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
-            else unit.civInfo.gameInfo.getCities().asSequence()
-                .filter { it.religion.getMajorityReligion() != unit.civInfo.religionManager.religion }
-                .filter { it.civInfo.knows(unit.civInfo) && !it.civInfo.isAtWarWith(unit.civInfo) }
+            else unit.civ.gameInfo.getCities().asSequence()
+                .filter { it.religion.getMajorityReligion() != unit.civ.religionManager.religion }
+                .filter { it.civ.knows(unit.civ) && !it.civ.isAtWarWith(unit.civ) }
                 .filterNot { it.religion.isProtectedByInquisitor(unit.religion) }
                 .minByOrNull { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
 
@@ -325,24 +333,24 @@ object SpecificUnitAutomation {
 
         unit.movement.headTowards(destination)
 
-        if (unit.getTile() in city.getTiles() && unit.civInfo.religionManager.maySpreadReligionNow(unit)) {
+        if (unit.getTile() in city.getTiles() && unit.civ.religionManager.maySpreadReligionNow(unit)) {
             doReligiousAction(unit, unit.getTile())
         }
     }
 
     fun automateInquisitor(unit: MapUnit) {
-        val civReligion = unit.civInfo.religionManager.religion
+        val civReligion = unit.civ.religionManager.religion
 
         if (unit.religion != civReligion?.name || unit.religion == null)
             return unit.disband() // No need to keep a unit we can't use, as it only blocks religion spreads of religions other that its own
 
-        val holyCity = unit.civInfo.religionManager.getHolyCity()
+        val holyCity = unit.civ.religionManager.getHolyCity()
         val cityToConvert = determineBestInquisitorCityToConvert(unit) // Also returns null if the inquisitor can't convert cities
         val pressureDeficit =
             if (cityToConvert == null) 0
             else cityToConvert.religion.getPressureDeficit(civReligion?.name)
 
-        val citiesToProtect = unit.civInfo.cities.asSequence()
+        val citiesToProtect = unit.civ.cities.asSequence()
             .filter { it.religion.getMajorityReligion() == civReligion }
             // We only look at cities that are not currently protected or are protected by us
             .filter { !it.religion.isProtectedByInquisitor() || unit.getTile() in it.getCenterTile().getTilesInDistance(1) }
@@ -350,7 +358,7 @@ object SpecificUnitAutomation {
         // cities with most populations will be prioritized by the AI
         val cityToProtect = citiesToProtect.maxByOrNull { it.population.population }
 
-        var destination: TileInfo?
+        var destination: Tile?
 
         destination = when {
             cityToConvert != null
@@ -388,32 +396,33 @@ object SpecificUnitAutomation {
 
     private fun determineBestInquisitorCityToConvert(
         unit: MapUnit,
-    ): CityInfo? {
-        if (unit.religion != unit.civInfo.religionManager.religion?.name || !unit.canDoReligiousAction(Constants.removeHeresy))
+    ): City? {
+        if (unit.religion != unit.civ.religionManager.religion?.name || !unit.canDoReligiousAction(Constants.removeHeresy))
             return null
 
-        val holyCity = unit.civInfo.religionManager.getHolyCity()
-        if (holyCity != null && holyCity.religion.getMajorityReligion() != unit.civInfo.religionManager.religion!!)
+        val holyCity = unit.civ.religionManager.getHolyCity()
+        if (holyCity != null && holyCity.religion.getMajorityReligion() != unit.civ.religionManager.religion!!)
             return holyCity
 
-        val blockedHolyCity = unit.civInfo.cities.firstOrNull { it.religion.isBlockedHolyCity && it.religion.religionThisIsTheHolyCityOf == unit.religion }
+        val blockedHolyCity = unit.civ.cities.firstOrNull { it.religion.isBlockedHolyCity && it.religion.religionThisIsTheHolyCityOf == unit.religion }
         if (blockedHolyCity != null)
             return blockedHolyCity
 
-        return unit.civInfo.cities.asSequence()
+        return unit.civ.cities.asSequence()
             .filter { it.religion.getMajorityReligion() != null }
-            .filter { it.religion.getMajorityReligion()!! != unit.civInfo.religionManager.religion }
+            .filter { it.religion.getMajorityReligion()!! != unit.civ.religionManager.religion }
             // Don't go if it takes too long
             .filter { it.getCenterTile().aerialDistanceTo(unit.currentTile) <= 20 }
-            .maxByOrNull { it.religion.getPressureDeficit(unit.civInfo.religionManager.religion?.name) }
+            .maxByOrNull { it.religion.getPressureDeficit(unit.civ.religionManager.religion?.name) }
     }
 
     fun automateFighter(unit: MapUnit) {
         val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange())
         val enemyAirUnitsInRange = tilesInRange
-                .flatMap { it.airUnits.asSequence() }.filter { it.civInfo.isAtWarWith(unit.civInfo) }
+                .flatMap { it.airUnits.asSequence() }.filter { it.civ.isAtWarWith(unit.civ) }
 
         if (enemyAirUnitsInRange.any()) return // we need to be on standby in case they attack
+
         if (BattleHelper.tryAttackNearbyEnemy(unit)) return
 
         if (tryRelocateToCitiesWithEnemyNearBy(unit)) return
@@ -426,7 +435,7 @@ object SpecificUnitAutomation {
                     key.getTilesInDistance(unit.getMaxMovementForAirUnits())
                             .count {
                                 val firstAirUnit = it.airUnits.firstOrNull()
-                                firstAirUnit != null && firstAirUnit.civInfo.isAtWarWith(unit.civInfo)
+                                firstAirUnit != null && firstAirUnit.civ.isAtWarWith(unit.civ)
                             }
                 }
 
@@ -454,7 +463,7 @@ object SpecificUnitAutomation {
         tryMoveToCitiesToAerialAttackFrom(pathsToCities, unit)
     }
 
-    private fun tryMoveToCitiesToAerialAttackFrom(pathsToCities: HashMap<TileInfo, ArrayList<TileInfo>>, airUnit: MapUnit) {
+    private fun tryMoveToCitiesToAerialAttackFrom(pathsToCities: HashMap<Tile, ArrayList<Tile>>, airUnit: MapUnit) {
         val citiesThatCanAttackFrom = pathsToCities.keys
             .filter { destinationCity ->
                 destinationCity != airUnit.currentTile
@@ -475,9 +484,20 @@ object SpecificUnitAutomation {
         val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange())
         for (tile in tilesInRange) {
             // For now AI will only use nukes against cities because in all honesty that's the best use for them.
-            if (tile.isCityCenter() && tile.getOwner()!!.isAtWarWith(unit.civInfo) && Battle.mayUseNuke(MapUnitCombatant(unit), tile)) {
-                Battle.NUKE(MapUnitCombatant(unit), tile)
-                return
+            if (tile.isCityCenter()
+                    && tile.getOwner()!!.isAtWarWith(unit.civ)
+                    && tile.getCity()!!.health > tile.getCity()!!.getMaxHealth() / 2
+                    && Battle.mayUseNuke(MapUnitCombatant(unit), tile)) {
+                val blastRadius = unit.getMatchingUniques(UniqueType.BlastRadius)
+                    .firstOrNull()?.params?.get(0)?.toInt() ?: 2
+                val tilesInBlastRadius = tile.getTilesInDistance(blastRadius)
+                val civsInBlastRadius = tilesInBlastRadius.mapNotNull { it.getOwner() } +
+                        tilesInBlastRadius.mapNotNull { it.getFirstUnit()?.civ }
+                // Don't nuke if it means we will be declaring war on someone!
+                if (civsInBlastRadius.none { it != unit.civ && !it.isAtWarWith(unit.civ) }) {
+                    Battle.NUKE(MapUnitCombatant(unit), tile)
+                    return
+                }
             }
         }
         tryRelocateToNearbyAttackableCities(unit)
@@ -495,7 +515,7 @@ object SpecificUnitAutomation {
             .filter { unit.movement.canMoveTo(it) }
 
         for (city in immediatelyReachableCities) if (city.getTilesInDistance(unit.getRange())
-                .any { it.isCityCenter() && it.getOwner()!!.isAtWarWith(unit.civInfo) }
+                .any { it.isCityCenter() && it.getOwner()!!.isAtWarWith(unit.civ) }
         ) {
             unit.movement.moveToTile(city)
             return
@@ -530,7 +550,7 @@ object SpecificUnitAutomation {
     fun foundReligion(unit: MapUnit) {
         val cityToFoundReligionAt =
             if (unit.getTile().isCityCenter() && !unit.getTile().owningCity!!.isHolyCity()) unit.getTile().owningCity
-            else unit.civInfo.cities.firstOrNull {
+            else unit.civ.cities.firstOrNull {
                 !it.isHolyCity()
                 && unit.movement.canMoveTo(it.getCenterTile())
                 && unit.movement.canReach(it.getCenterTile())
@@ -541,7 +561,7 @@ object SpecificUnitAutomation {
             return
         }
 
-        UnitActions.getFoundReligionAction(unit)()
+        UnitActionsReligion.getFoundReligionAction(unit)()
     }
 
     fun enhanceReligion(unit: MapUnit) {
@@ -553,12 +573,12 @@ object SpecificUnitAutomation {
         if (!unit.getTile().isCityCenter())
             return
 
-        UnitActions.getEnhanceReligionAction(unit)()
+        UnitActionsReligion.getEnhanceReligionAction(unit)()
     }
 
-    private fun doReligiousAction(unit: MapUnit, destination: TileInfo) {
+    private fun doReligiousAction(unit: MapUnit, destination: Tile) {
         val religiousActions = ArrayList<UnitAction>()
-        UnitActions.addActionsWithLimitedUses(unit, religiousActions, destination)
+        UnitActionsReligion.addActionsWithLimitedUses(unit, religiousActions, destination)
         if (religiousActions.firstOrNull()?.action == null) return
         religiousActions.first().action!!.invoke()
     }

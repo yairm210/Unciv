@@ -2,7 +2,8 @@ package com.unciv.logic.trade
 
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 
@@ -50,7 +51,7 @@ class Trade : IsPartOfGameInfoSerialization {
 
 
 class TradeRequest : IsPartOfGameInfoSerialization {
-    fun decline(decliningCiv:CivilizationInfo) {
+    fun decline(decliningCiv:Civilization) {
         val requestingCivInfo = decliningCiv.gameInfo.getCivilization(requestingCiv)
         val diplomacyManager = requestingCivInfo.getDiplomacyManager(decliningCiv)
         // the numbers of the flags (20,5) are the amount of turns to wait until offering again
@@ -61,7 +62,8 @@ class TradeRequest : IsPartOfGameInfoSerialization {
             diplomacyManager.setFlag(DiplomacyFlags.DeclinedResearchAgreement,20)
         if (trade.isPeaceTreaty()) diplomacyManager.setFlag(DiplomacyFlags.DeclinedPeace, 5)
 
-        requestingCivInfo.addNotification("[${decliningCiv.civName}] has denied your trade request", decliningCiv.civName, NotificationIcon.Trade)
+        requestingCivInfo.addNotification("[${decliningCiv.civName}] has denied your trade request",
+            NotificationCategory.Trade, decliningCiv.civName, NotificationIcon.Trade)
     }
 
 

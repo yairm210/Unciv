@@ -201,7 +201,7 @@
   {
     "name": "City-States",
     "steps": [
-	"Not all nations are contending with you for victory.\nCity-States are nations that can't win, don't conquer other cities and can't be traded with.",
+	"Not all nations are contending with you for victory.\nCity-States are nations that can't win, can't be traded with, and instead confer certain bonuses to friendly civilizations.",
 	"Instead, diplomatic relations with City-States are determined by Influence - a meter of 'how much the City-State likes you'.\nInfluence can be increased by attacking their enemies, liberating their city, and giving them sums of gold.",
 	"Certain bonuses are given when you are at above 30 influence.\nWhen you have above 60 Influence, and you have the highest influence with them of all civilizations, you are considered their 'Ally', and gain further bonuses and access to the Luxury and Strategic resources in their lands."
     ]
@@ -232,7 +232,7 @@
     "If you have a keyboard, some shortcut keys become available. Unit command or improvement picker keys, for example, are shown directly in their corresponding buttons.",
     "On the world screen the hotkeys are as follows:", "Space or 'N' - Next unit or turn\n'E' - Empire overview (last viewed page)\n'+', '-' - Zoom in / out\nHome - center on capital or open its city screen if already centered",
     "F1 - Open Civilopedia\nF2 - Empire overview Trades\nF3 - Empire overview Units\nF4 - Empire overview Diplomacy\nF5 - Social policies\nF6 - Technologies\nF7 - Empire overview Cities\nF8 - Victory Progress\nF9 - Empire overview Stats\nF10 - Empire overview Resources\nF11 - Quicksave\nF12 - Quickload",
-    "Ctrl-R - Toggle tile resource display\nCtrl-Y - Toggle tile yield display\nCtrl-O - Game options\nCtrl-S - Save game\nCtrl-L - Load game"
+    "Ctrl-R - Toggle tile resource display\nCtrl-Y - Toggle tile yield display\nCtrl-O - Game options\nCtrl-S - Save game\nCtrl-L - Load game\nCtrl-U - Toggle UI (World Screen only)"
     ]
   },
   {
@@ -281,7 +281,7 @@
     "steps": [
         "After building a shrine, your civilization will start generating ☮Faith.",
         "When enough ☮Faith has been generated, you will be able to found a pantheon.",
-        "A pantheon will provide a small bonus for your civilization that will apply to all your cities.",
+        "A pantheon will provide a small bonus for your civilization that will apply to all cities that have it as a majority religion.",
         "Each civilization can only choose a single pantheon belief, and each pantheon can only be chosen once.",
         "Generating more ☮Faith will allow you to found a religion."
       ]
@@ -376,6 +376,19 @@
         "Your unit will always draw an Interception, if one can reach the target tile, even if the Intercepting unit has a chance to miss.",
         "If the Interceptor is not an Air Unit (eg Land or Sea), the Air Sweeping unit and Interceptor take no damage!",
         "If the Interceptor is an Air Unit, the two units will damage each other in a straight fight with no Interception bonuses. And only the Attacking Air Sweep Unit gets any Air Sweep strength bonuses."
+    ]
+  },
+  {
+    "name": "City Tile Blockade",
+    "steps": [
+        "One of your tiles is blocked by an enemy: when an enemy unit stands on a tile you own, the tile will not produce yields and cannot be worked by a city this turn. City will reallocate population from a blocked tile automatically.",
+        "Enemy military land units block tiles they are standing on. Enemy military naval units additionally block adjacent water tiles. To protect your tiles from blockade, place a friendly military unit on it or fight off invaders."
+    ]
+  },
+  {
+    "name": "City Blockade",
+    "steps": [
+        "One of your cities is under a naval blockade! When all adjacent water tiles of a coastal city are blocked - city loses harbor connection to all other cities, including capital. Make sure to de-blockade cities by deploying friendly military naval units to fight off invaders."
     ]
   }
 ]

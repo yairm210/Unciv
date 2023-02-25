@@ -1,0 +1,15 @@
+Can pick a policy with enough culture even if you have no cities
+
+Korea's unique applies to Library
+
+Notifications scroll retains position
+
+Displayed Great Person point requirements always take game speed into account
+
+Conditioned trigger uniques do not 'go off' without the trigger (e.g. when tech researched, building built)
+
+Global alerts now translated properly
+
+Add options to use random number of players and city states - By FiretronP75
+
+Refactor Cannot Move Unique  - By itanasi

@@ -1,6 +1,7 @@
 package com.unciv.models.translations
 
 import com.badlogic.gdx.Gdx
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
@@ -32,7 +33,7 @@ import java.util.*
 class Translations : LinkedHashMap<String, TranslationEntry>(){
 
     var percentCompleteOfLanguages = HashMap<String,Int>()
-            .apply { put("English",100) } // So even if we don't manage to load the percentages, we can still pass the language screen
+            .apply { put(Constants.english, 100) } // So even if we don't manage to load the percentages, we can still pass the language screen
 
     internal var modsWithTranslations: HashMap<String, Translations> = hashMapOf() // key == mod name
 
@@ -207,13 +208,18 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         return get(shouldCapitalizeString, language, null)?.get(language)?.toBoolean() ?: true
     }
 
+    fun triggerNotificationEffectBeforeCause(language: String): Boolean{
+        return get(effectBeforeCause, language, null)?.get(language)?.toBoolean() ?: true
+    }
+
     companion object {
         // Whenever this string is changed, it should also be changed in the translation files!
         // It is mostly used as the template for translating the order of conditionals
         const val englishConditionalOrderingString =
-            "<with a garrison> <for [mapUnitFilter] units> <above [amount] HP> <below [amount] HP> <vs cities> <vs [mapUnitFilter] units> <when fighting in [tileFilter] tiles> <when attacking> <when defending> <if this city has at least [amount] specialists> <when at war> <when not at war> <while the empire is happy> <during a Golden Age> <during the [era]> <before the [era]> <starting from the [era]> <with [techOrPolicy]> <without [techOrPolicy]>"
+            "<with a garrison> <for [mapUnitFilter] units> <above [amount] HP> <below [amount] HP> <vs cities> <vs [mapUnitFilter] units> <when fighting in [tileFilter] tiles> <when attacking> <when defending> <if this city has at least [amount] specialists> <when at war> <when not at war> <while the empire is happy> <during a Golden Age> <during the [era]> <starting from the [era]> <before the [era]> <with [techOrPolicy]> <without [techOrPolicy]>"
         const val conditionalUniqueOrderString = "ConditionalsPlacement"
         const val shouldCapitalizeString = "StartWithCapitalLetter"
+        const val effectBeforeCause = "EffectBeforeCause"
     }
 }
 
@@ -285,9 +291,7 @@ object TranslationActiveModsCache {
  *                  defaults to the input string if no translation is available,
  *                  but with placeholder or sentence brackets removed.
  */
-fun String.tr(): String {
-    val language = UncivGame.Current.settings.language
-
+fun String.tr(language:String = UncivGame.Current.settings.language): String {
     if (contains('<') && contains('>')) { // Conditionals!
         /**
          * So conditionals can contain placeholders, such as <vs [unitFilter] units>, which themselves
@@ -305,7 +309,7 @@ fun String.tr(): String {
         var translatedBaseUnique = this.removeConditionals().tr()
 
         val conditionals = this.getConditionals().map { it.placeholderText }
-        val conditionsWithTranslation: HashMap<String, String> = hashMapOf()
+        val conditionsWithTranslation: LinkedHashMap<String, String> = linkedMapOf()
 
         for (conditional in this.getConditionals())
             conditionsWithTranslation[conditional.placeholderText] = conditional.text.tr()

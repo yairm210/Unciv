@@ -3,12 +3,11 @@ package com.unciv.uniques
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.logic.civilization.CityStateType
-import com.unciv.logic.map.RoadStatus
+import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.stats.Stats
 import com.unciv.testing.GdxTestRunner
-import com.unciv.ui.worldscreen.unit.UnitActions
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -27,7 +26,7 @@ class GlobalUniquesTests {
     // region base stat bonus providing uniques
 
     @Test
-    fun stats() {
+    fun statsOnBuilding() {
         val civInfo = game.addCiv()
         val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
         val cityInfo = game.addCity(civInfo, tile, true)
@@ -37,6 +36,22 @@ class GlobalUniquesTests {
         cityInfo.cityStats.update()
         Assert.assertTrue(cityInfo.cityStats.finalStatList["Buildings"]!!.equals(Stats(food=1f)))
     }
+
+
+    @Test
+    fun statsNotOnBuilding() {
+        val civInfo = game.addCiv("[+2 Gold]")
+        civInfo.updateStatsForNextTurn()
+        Assert.assertTrue(civInfo.stats.statsForNextTurn.equals(Stats(gold=2f)))
+    }
+
+    @Test
+    fun statsHappinessNotOnBuilding() {
+        val civInfo = game.addCiv("[+7 Happiness]")
+        civInfo.updateStatsForNextTurn()
+        Assert.assertTrue(civInfo.stats.happiness == civInfo.getDifficulty().baseHappiness + 7)
+    }
+
 
     @Test
     fun statsPerCity() {
@@ -118,7 +133,7 @@ class GlobalUniquesTests {
         cityInfo.cityConstructions.addBuilding(building.name)
 
         val tile2 = game.setTileFeatures(Vector2(0f,1f), Constants.grassland)
-        Assert.assertTrue(tile2.getTileStats(cityInfo, civInfo).gold == 4f)
+        Assert.assertTrue(tile2.stats.getTileStats(cityInfo, civInfo).gold == 4f)
     }
 
     @Test
@@ -132,11 +147,11 @@ class GlobalUniquesTests {
 
         val tile2 = game.setTileFeatures(Vector2(0f,1f), Constants.grassland)
         game.addTileToCity(cityInfo, tile2)
-        Assert.assertTrue(tile2.getTileStats(cityInfo, civInfo).gold == 4f)
+        Assert.assertTrue(tile2.stats.getTileStats(cityInfo, civInfo).gold == 4f)
 
         val tile3 = game.setTileFeatures(Vector2(0f, 2f), Constants.grassland, listOf(Constants.forest))
         game.addTileToCity(cityInfo, tile3)
-        Assert.assertFalse(tile3.getTileStats(cityInfo, civInfo).gold == 4f)
+        Assert.assertFalse(tile3.stats.getTileStats(cityInfo, civInfo).gold == 4f)
     }
 
     @Test
@@ -159,7 +174,7 @@ class GlobalUniquesTests {
         cityInfo.cityConstructions.addBuilding(building2.name)
 
         val tile2 = game.setTileFeatures(Vector2(0f,1f), Constants.grassland)
-        Assert.assertTrue(tile2.getTileStats(cityInfo, civInfo).faith == 3f)
+        Assert.assertTrue(tile2.stats.getTileStats(cityInfo, civInfo).faith == 3f)
 
         cityInfo.cityConstructions.removeBuilding(building2.name)
 
@@ -186,10 +201,23 @@ class GlobalUniquesTests {
         val city2 = game.addCity(civInfo, tile2)
         val inBetweenTile = game.setTileFeatures(Vector2(0f, 1f), Constants.desert)
         inBetweenTile.roadStatus = RoadStatus.Road
-        civInfo.transients().updateCitiesConnectedToCapital()
+        civInfo.cache.updateCitiesConnectedToCapital()
         city2.cityStats.update()
 
         Assert.assertTrue(city2.cityStats.finalStatList["Trade routes"]!!.science == 30f)
+    }
+
+    @Test
+    fun statsFromPolicies() {
+        game.makeHexagonalMap(3)
+        val civInfo = game.addCiv("[+30 Science] per [2] social policies adopted")
+        val policiesToAdopt = listOf("Tradition", "Aristocracy", "Legalism")
+        civInfo.policies.freePolicies = 3
+        for (policyName in policiesToAdopt){
+            val policy = game.ruleset.policies[policyName]!!
+            civInfo.policies.adopt(policy)
+        }
+        Assert.assertTrue(civInfo.stats.getStatMapForNextTurn()["Policies"]!!.science == 30f)
     }
 
     @Test
@@ -207,7 +235,7 @@ class GlobalUniquesTests {
 
         civ1.updateStatsForNextTurn()
 
-        Assert.assertTrue(civ1.statsForNextTurn.science == 30f)
+        Assert.assertTrue(civ1.stats.statsForNextTurn.science == 30f)
     }
 
     @Test
@@ -225,7 +253,7 @@ class GlobalUniquesTests {
 
         val baseHappiness = civ1.getDifficulty().baseHappiness
         // Since civ1 has no cities, there are no other happiness sources
-        Assert.assertTrue(civ1.happinessForNextTurn == baseHappiness + 42)
+        Assert.assertTrue(civ1.stats.happiness == baseHappiness + 42)
     }
 
     @Test
@@ -241,7 +269,7 @@ class GlobalUniquesTests {
 
         civ1.updateStatsForNextTurn()
 
-        Assert.assertTrue(civ1.statsForNextTurn.science == 90f)
+        Assert.assertTrue(civ1.stats.statsForNextTurn.science == 90f)
     }
 
     // endregion
@@ -288,8 +316,8 @@ class GlobalUniquesTests {
         city.cityConstructions.addBuilding(faithBuilding.name)
 
         val tile2 = game.setTileFeatures(Vector2(0f,1f), Constants.grassland)
-        tile2.improvement = "Farm"
-        Assert.assertTrue(tile2.getTileStats(city, civInfo).faith == 9f)
+        tile2.changeImprovement("Farm")
+        Assert.assertTrue(tile2.stats.getTileStats(city, civInfo).faith == 9f)
 
         city.cityConstructions.addBuilding(emptyBuilding.name)
         city.cityStats.update()
@@ -313,8 +341,8 @@ class GlobalUniquesTests {
         city.cityConstructions.addBuilding(faithBuilding.name)
 
         val tile2 = game.setTileFeatures(Vector2(0f,1f), Constants.grassland)
-        tile2.improvement = "Farm"
-        Assert.assertTrue(tile2.getTileStats(city, civInfo).faith == 9f)
+        tile2.changeImprovement("Farm")
+        Assert.assertTrue(tile2.stats.getTileStats(city, civInfo).faith == 9f)
 
         city.cityConstructions.addBuilding(emptyBuilding.name)
         city.cityStats.update()
@@ -348,14 +376,14 @@ class GlobalUniquesTests {
     fun bonusStatsFromCityStates() {
         game.makeHexagonalMap(1)
         val civInfo = game.addCiv()
-        val cityState = game.addCiv(cityState = CityStateType.Maritime)
+        val cityState = game.addCiv(cityStateType = "Maritime")
 
         val tile = game.getTile(Vector2(0f,0f))
         val city = game.addCity(civInfo, tile, true)
         val cityStateTile = game.getTile(Vector2(0f, 1f))
         @Suppress("UNUSED_VARIABLE")
         val cityStateCity = game.addCity(cityState, cityStateTile, true)
-        civInfo.makeCivilizationsMeet(cityState)
+        civInfo.diplomacyFunctions.makeCivilizationsMeet(cityState)
         cityState.getDiplomacyManager(civInfo).addInfluence(100f)
 
         city.cityStats.update()
@@ -382,7 +410,7 @@ class GlobalUniquesTests {
         val inBetweenTile = game.setTileFeatures(Vector2(0f, 1f), Constants.desert)
         inBetweenTile.roadStatus = RoadStatus.Road
 
-        civInfo.transients().updateCitiesConnectedToCapital()
+        civInfo.cache.updateCitiesConnectedToCapital()
         Assert.assertTrue(city2.cityStats.isConnectedToCapital(RoadStatus.Road))
 
         city2.cityStats.update()
@@ -523,11 +551,11 @@ class GlobalUniquesTests {
         civInfo.addGold(-civInfo.gold) // reset gold just to be sure
 
         val testImprovement = game.createTileImprovement("Pillaging this improvement yields [+20 Gold, +11 Food]")
-        tile.improvement = testImprovement.name
+        tile.changeImprovement(testImprovement.name)
         val unit = game.addUnit("Warrior", civInfo, tile)
         unit.currentMovement = 2f
 
-        val pillageAction = UnitActions.getPillageAction(unit)
+        val pillageAction = UnitActionsPillage.getPillageAction(unit)
         pillageAction?.action?.invoke()
         Assert.assertTrue("Pillaging should transfer gold to the civ", civInfo.gold == 20)
         Assert.assertTrue("Pillaging should transfer food to the nearest city", cityInfo.population.foodStored == 11)

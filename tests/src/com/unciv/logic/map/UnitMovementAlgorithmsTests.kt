@@ -3,11 +3,15 @@ package com.unciv.logic.map
 
 import com.unciv.Constants
 import com.unciv.logic.GameInfo
-import com.unciv.logic.city.CityInfo
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.city.City
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.*
+import com.unciv.models.ruleset.nation.Difficulty
+import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.testing.GdxTestRunner
 import org.junit.Assert
@@ -18,14 +22,14 @@ import org.junit.runner.RunWith
 @RunWith(GdxTestRunner::class)
 class UnitMovementAlgorithmsTests {
 
-    private var tile = TileInfo()
-    private var civInfo = CivilizationInfo()
+    private var tile = Tile()
+    private var civInfo = Civilization()
     private var ruleSet = Ruleset()
     private var unit = MapUnit()
 
     @Before
     fun initTheWorld() {
-        RulesetCache.loadRulesets()
+        RulesetCache.loadRulesets(noMods = true)
         ruleSet = RulesetCache.getVanillaRuleset()
         tile.ruleset = ruleSet
         tile.baseTerrain = Constants.grassland
@@ -33,17 +37,17 @@ class UnitMovementAlgorithmsTests {
         civInfo.tech.embarkedUnitsCanEnterOcean = true
         civInfo.tech.unitsCanEmbark = true
         civInfo.gameInfo = GameInfo()
-        civInfo.gameInfo.ruleSet = ruleSet
+        civInfo.gameInfo.ruleset = ruleSet
         civInfo.gameInfo.difficultyObject = Difficulty()
         civInfo.gameInfo.speed = ruleSet.speeds[Speed.DEFAULTFORSIMULATION]!!
         civInfo.nation = Nation().apply { name = "My nation" }
         civInfo.gameInfo.civilizations.add(civInfo)
-        unit.civInfo = civInfo
+        unit.civ = civInfo
         unit.owner = civInfo.civName
 
         // Needed for convertHillToTerrainFeature to not crash
         val tileMap = TileMap()
-        tileMap.tileMatrix.add(ArrayList<TileInfo?>().apply { add(tile) })
+        tileMap.tileMatrix.add(ArrayList<Tile?>().apply { add(tile) })
         tile.tileMap = tileMap
         tile.setTransients()
     }
@@ -77,9 +81,9 @@ class UnitMovementAlgorithmsTests {
         otherTile.position.y = 1f
         map.tileMatrix[0].add(otherTile)
 
-        val city = CityInfo()
+        val city = City()
         city.location = cityTile.position
-        city.civInfo = civInfo
+        city.civ = civInfo
         cityTile.setOwningCity(city)
 
         for (type in ruleSet.unitTypes)
@@ -115,7 +119,7 @@ class UnitMovementAlgorithmsTests {
 
         for (type in ruleSet.unitTypes) {
             unit.baseUnit = BaseUnit().apply { unitType = type.key; ruleset = ruleSet }
-            unit.updateUniques(ruleSet)
+            unit.updateUniques()
 
             Assert.assertTrue(
                 "$type cannot be in Ice",
@@ -187,7 +191,7 @@ class UnitMovementAlgorithmsTests {
                 if (this.isRanged())
                     uniques.add("Cannot enter ocean tiles <before researching [Astronomy]>")
             }
-            unit.updateUniques(ruleSet)
+            unit.updateUniques()
 
             Assert.assertTrue("$type cannot be in Ocean",
                     (unit.baseUnit.isMelee()) != unit.movement.canPassThrough(tile))
@@ -209,11 +213,11 @@ class UnitMovementAlgorithmsTests {
 
         unit.currentTile = tile
 
-        val otherCiv = CivilizationInfo()
+        val otherCiv = Civilization()
         otherCiv.civName = Constants.barbarians // they are always enemies
         otherCiv.nation = Nation().apply { name = Constants.barbarians }
         val otherUnit = MapUnit()
-        otherUnit.civInfo = otherCiv
+        otherUnit.civ = otherCiv
         otherUnit.baseUnit = BaseUnit()
         // melee check
         otherUnit.baseUnit.strength = 1
@@ -240,13 +244,13 @@ class UnitMovementAlgorithmsTests {
         tile.baseTerrain = Constants.desert
         tile.setTransients()
 
-        val otherCiv = CivilizationInfo()
+        val otherCiv = Civilization()
         otherCiv.civName = "Other civ"
         otherCiv.nation = Nation().apply { name = "Other nation" }
 
-        val city = CityInfo()
+        val city = City()
         city.location = tile.position.cpy().add(1f,1f)
-        city.civInfo = otherCiv
+        city.civ = otherCiv
         tile.setOwningCity(city)
 
         unit.baseUnit = BaseUnit().apply { unitType = ruleSet.unitTypes.keys.first(); ruleset = ruleSet }
@@ -269,8 +273,8 @@ class UnitMovementAlgorithmsTests {
      * Creates an [amount] of tiles connected to each other of the same type and ownership as initial one.
      * Remember to set the ownership of the initial tile _before_ calling this method.
      */
-    private fun generateTileCopies(amount: Int): ArrayList<TileInfo> {
-        val newTiles = arrayListOf<TileInfo>()
+    private fun generateTileCopies(amount: Int): ArrayList<Tile> {
+        val newTiles = arrayListOf<Tile>()
         for (i in 1..amount) {
             tile.clone().apply {
                 position.set(0f, i.toFloat())
@@ -283,8 +287,8 @@ class UnitMovementAlgorithmsTests {
         return newTiles
     }
 
-    private fun createOpponentCiv(namePrefix: String, relations: DiplomaticStatus): CivilizationInfo {
-        val otherCiv = CivilizationInfo()
+    private fun createOpponentCiv(namePrefix: String, relations: DiplomaticStatus): Civilization {
+        val otherCiv = Civilization()
         otherCiv.civName = "$namePrefix civ"
         otherCiv.nation = Nation().apply { name = "$namePrefix nation" }
         otherCiv.gameInfo = civInfo.gameInfo
@@ -301,9 +305,9 @@ class UnitMovementAlgorithmsTests {
 
         val otherCiv = createOpponentCiv("Other", DiplomaticStatus.Peace)
 
-        val city = CityInfo()
+        val city = City()
         city.location = tile.position.cpy().add(5f, 5f) // random shift to avoid of being in city
-        city.civInfo = otherCiv
+        city.civ = otherCiv
         tile.setOwningCity(city)
     }
 
@@ -364,7 +368,7 @@ class UnitMovementAlgorithmsTests {
 
         // Other unit on the way
         val otherUnit = MapUnit()
-        otherUnit.civInfo = civInfo
+        otherUnit.civ = civInfo
         otherUnit.owner = civInfo.civName
         otherUnit.baseUnit = BaseUnit().apply { unitType = "Melee Water"; strength = 1; ruleset = ruleSet }
         otherUnit.currentTile = newTiles[0]
@@ -410,13 +414,13 @@ class UnitMovementAlgorithmsTests {
         newTiles[3].baseTerrain = "Grand Mesa"
         newTiles[3].setTransients()
         // create our city
-        CityInfo().apply {
-            this.civInfo = this@UnitMovementAlgorithmsTests.civInfo
+        City().apply {
+            this.civ = this@UnitMovementAlgorithmsTests.civInfo
             location = newTiles.last().position.cpy()
             tiles.add(location)
             tiles.add(newTiles[5].position)
             tileMap = tile.tileMap
-            civInfo.cities = listOf(this)
+            civ.cities = listOf(this)
             newTiles[5].setOwningCity(this)
             newTiles.last().setOwningCity(this)
         }
@@ -469,13 +473,13 @@ class UnitMovementAlgorithmsTests {
         otherUnit.currentTile = newTiles.last()
         newTiles.last().civilianUnit = otherUnit
         otherUnit.name = "Worker"
-        otherUnit.civInfo = thirdCiv
+        otherUnit.civ = thirdCiv
         otherUnit.owner = thirdCiv.civName
 
         unit.movement.teleportToClosestMoveableTile()
 
         Assert.assertTrue("Civilian unit must be captured by teleported unit",
-            unit.currentTile == newTiles.last() && otherUnit.civInfo == unit.civInfo)
+            unit.currentTile == newTiles.last() && otherUnit.civ == unit.civ)
     }
 
     @Test
@@ -490,29 +494,29 @@ class UnitMovementAlgorithmsTests {
 
         setupMilitaryUnitInTheCurrentTile("Aircraft Carrier")
         unit.owner = civInfo.civName
-        unit.civInfo = civInfo
+        unit.civ = civInfo
         unit.baseUnit.uniques.add("Can carry [2] [Aircraft] units")
-        unit.updateUniques(ruleSet)
-        civInfo.addUnit(unit, false)
+        unit.updateUniques()
+        civInfo.units.addUnit(unit, false)
 
         val fighters = ArrayList<MapUnit>()
         for (i in 0..1) {
             val newFighter = MapUnit()
             newFighter.baseUnit = BaseUnit().apply { unitType = "Fighter"; ruleset = ruleSet }
             newFighter.owner = civInfo.civName
-            newFighter.civInfo = civInfo
+            newFighter.civ = civInfo
             newFighter.currentTile = unit.getTile()
             tile.airUnits += newFighter
             newFighter.name = "Fighter"
             newFighter.isTransported = true
-            civInfo.addUnit(newFighter, false)
+            civInfo.units.addUnit(newFighter, false)
             fighters += newFighter
         }
 
         // simulate ejecting all units within foreign territory
-        for (unit in civInfo.getCivUnits()) unit.movement.teleportToClosestMoveableTile()
+        for (unit in civInfo.units.getCivUnits()) unit.movement.teleportToClosestMoveableTile()
         Assert.assertTrue("Transport and transported units must be teleported to the same tile",
-            civInfo.getCivUnits().toList().size == 3 && civInfo.getCivUnits().all { it.getTile() == newTiles.last() })
+            civInfo.units.getCivUnits().toList().size == 3 && civInfo.units.getCivUnits().all { it.getTile() == newTiles.last() })
     }
 
 }

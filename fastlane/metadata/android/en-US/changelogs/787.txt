@@ -1,0 +1,17 @@
+AI moves civilians off capital to make way for spaceship parts
+
+AI considers capital city strength when deciding to declare war
+
+By vegeta1k95:
+- Big rework of City buttons
+- Fix PolicyScreen for odd-numbered branches
+- Better tech buttons
+
+By CrispyXYZ:
+- Fixed removing improvements in map editor
+
+Solved 'tiles still belonging to razed cities' - By nacro711072
+
+Negative stats UI Updates - By itanasi
+
+Add setting to disable easter eggs. - By FiretronP75

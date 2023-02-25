@@ -3,16 +3,16 @@ package com.unciv.logic.automation.civilization
 import com.unciv.Constants
 import com.unciv.logic.automation.unit.BattleHelper
 import com.unciv.logic.automation.unit.UnitAutomation
-import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.MapUnit
+import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.mapunit.MapUnit
 
-class BarbarianAutomation(val civInfo: CivilizationInfo) {
+class BarbarianAutomation(val civInfo: Civilization) {
 
     fun automate() {
         // ranged go first, after melee and then everyone else
-        civInfo.getCivUnits().filter { it.baseUnit.isRanged() }.forEach { automateUnit(it) }
-        civInfo.getCivUnits().filter { it.baseUnit.isMelee() }.forEach { automateUnit(it) }
-        civInfo.getCivUnits().filter { !it.baseUnit.isRanged() && !it.baseUnit.isMelee() }.forEach { automateUnit(it) }
+        civInfo.units.getCivUnits().filter { it.baseUnit.isRanged() }.forEach { automateUnit(it) }
+        civInfo.units.getCivUnits().filter { it.baseUnit.isMelee() }.forEach { automateUnit(it) }
+        civInfo.units.getCivUnits().filter { !it.baseUnit.isRanged() && !it.baseUnit.isMelee() }.forEach { automateUnit(it) }
     }
 
     private fun automateUnit(unit: MapUnit) {
@@ -25,7 +25,7 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
         // 1 - Stay on current encampment
         if (unit.currentTile.improvement == Constants.barbarianEncampment) return
 
-        val campTiles = unit.civInfo.gameInfo.barbarians.camps.map { unit.civInfo.gameInfo.tileMap[it.key] }
+        val campTiles = unit.civ.gameInfo.barbarians.camps.map { unit.civ.gameInfo.tileMap[it.key] }
             .sortedBy { unit.currentTile.aerialDistanceTo(it) }
         val bestCamp = campTiles.firstOrNull { it.civilianUnit == null && unit.movement.canReach(it)}
         if (bestCamp != null)

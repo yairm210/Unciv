@@ -1,11 +1,12 @@
 package com.unciv
 
 object Constants {
-    const val worker = "Worker"
     const val settler = "Settler"
     const val eraSpecificUnit = "Era Starting Unit"
     const val spreadReligion = "Spread Religion"
     const val removeHeresy = "Remove Foreign religions from your own cities"
+
+    const val english = "English"
 
     const val impassable = "Impassable"
     const val ocean = "Ocean"
@@ -75,12 +76,15 @@ object Constants {
     const val rising = "Rising"
     const val lowering = "Lowering"
     const val remove = "Remove "
+    const val repair = "Repair"
 
     const val uniqueOrDelimiter = "\" OR \""
 
     const val dropboxMultiplayerServer = "Dropbox"
+    const val uncivXyzServer = "https://uncivserver.xyz"
 
     const val defaultTileset = "HexaRealm"
+    const val defaultUnitset = "AbsoluteUnits"
     const val defaultSkin = "Minimal"
 
     /**

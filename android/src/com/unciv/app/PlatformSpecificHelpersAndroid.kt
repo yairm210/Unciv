@@ -6,7 +6,7 @@ import android.os.Build
 import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
 import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
-import com.unciv.ui.utils.GeneralPlatformSpecificHelpers
+import com.unciv.ui.components.GeneralPlatformSpecificHelpers
 import kotlin.concurrent.thread
 
 /** See also interface [GeneralPlatformSpecificHelpers].
@@ -61,11 +61,6 @@ Sources for Info about current orientation in case need:
      * External is probably on an SD-card or similar which is always accessible by the user.
      */
     override fun shouldPreferExternalStorage(): Boolean = true
-
-    override fun handleUncaughtThrowable(ex: Throwable): Boolean {
-        thread { throw ex } // this will kill the app but report the exception to the Google Play Console if the user allows it
-        return true
-    }
 
     override fun addImprovements(textField: TextField): TextField {
         return TextfieldImprovements.add(textField)

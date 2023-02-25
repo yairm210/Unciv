@@ -1,7 +1,7 @@
 package com.unciv.models.ruleset.tech
 
-import com.unciv.UncivGame
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.GUI
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
@@ -11,9 +11,8 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
-import com.unciv.ui.civilopedia.FormattedLine
-import com.unciv.ui.utils.Fonts
-import java.util.*
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.components.Fonts
 
 class Technology: RulesetObject() {
 
@@ -38,25 +37,25 @@ class Technology: RulesetObject() {
         for (unique in uniques) lineList += unique.tr()
 
         for (improvement in ruleset.tileImprovements.values) {
-            for (unique in improvement.uniqueObjects) {
-                if (unique.isOfType(UniqueType.Stats)) {
-                    val requiredTech = unique.conditionals.firstOrNull { it.isOfType(UniqueType.ConditionalTech) }?.params?.get(0)
-                    if (requiredTech != name) continue
-                    lineList += "[${unique.params[0]}] from every [${improvement.name}]"
-                } else if (unique.isOfType(UniqueType.ImprovementStatsOnTile)) {
-                    val requiredTech = unique.conditionals.firstOrNull { it.isOfType(UniqueType.ConditionalTech) }?.params?.get(0)
-                    if (requiredTech != name) continue
-                    lineList += "[${unique.params[0]}] from every [${improvement.name}] on [${unique.params[1]}] tiles"
-                }
+            for (unique in improvement.getMatchingUniques(UniqueType.Stats)) {
+                val requiredTech = unique.conditionals.firstOrNull { it.isOfType(UniqueType.ConditionalTech) }?.params?.get(0)
+                if (requiredTech != name) continue
+                lineList += "[${unique.params[0]}] from every [${improvement.name}]"
+            }
+
+            for (unique in improvement.getMatchingUniques(UniqueType.ImprovementStatsOnTile)) {
+                val requiredTech = unique.conditionals.firstOrNull { it.isOfType(UniqueType.ConditionalTech) }?.params?.get(0)
+                if (requiredTech != name) continue
+                lineList += "[${unique.params[0]}] from every [${improvement.name}] on [${unique.params[1]}] tiles"
             }
         }
 
-        val viewingCiv = UncivGame.Current.worldScreen!!.viewingCiv
+        val viewingCiv = GUI.getViewingPlayer()
         val enabledUnits = getEnabledUnits(ruleset, viewingCiv)
         if (enabledUnits.any()) {
             lineList += "{Units enabled}: "
             for (unit in enabledUnits)
-                lineList += " * " + unit.name.tr() + " (" + unit.getShortDescription() + ")"
+                lineList += " • " + unit.name.tr() + " (" + unit.getShortDescription() + ")"
         }
 
         val enabledBuildings = getEnabledBuildings(ruleset, viewingCiv)
@@ -65,14 +64,14 @@ class Technology: RulesetObject() {
         if (regularBuildings.any()) {
             lineList += "{Buildings enabled}: "
             for (building in regularBuildings)
-                lineList += "* " + building.name.tr() + " (" + building.getShortDescription() + ")"
+                lineList += " • " + building.name.tr() + " (" + building.getShortDescription() + ")"
         }
 
         val wonders = enabledBuildings.filter { it.isAnyWonder() }
         if (wonders.any()) {
             lineList += "{Wonders enabled}: "
             for (wonder in wonders)
-                lineList += " * " + wonder.name.tr() + " (" + wonder.getShortDescription() + ")"
+                lineList += " • " + wonder.name.tr() + " (" + wonder.getShortDescription() + ")"
         }
 
         for (obj in getObsoletedObjects(ruleset, viewingCiv))
@@ -94,7 +93,7 @@ class Technology: RulesetObject() {
      * nuclear weapons and religion settings, and without those expressly hidden from Civilopedia.
      */
     // Used for Civilopedia, Alert and Picker, so if any of these decide to ignore the "Will not be displayed in Civilopedia" unique this needs refactoring
-    fun getEnabledBuildings(ruleset: Ruleset, civInfo: CivilizationInfo?) = getFilteredBuildings(ruleset, civInfo)
+    fun getEnabledBuildings(ruleset: Ruleset, civInfo: Civilization?) = getFilteredBuildings(ruleset, civInfo)
         { it.requiredTech == name }
 
     /**
@@ -103,7 +102,7 @@ class Technology: RulesetObject() {
      */
     // Used for Civilopedia, Alert and Picker, so if any of these decide to ignore the "Will not be displayed in Civilopedia" unique this needs refactoring
 
-    fun getObsoletedObjects(ruleset: Ruleset, civInfo: CivilizationInfo?): Sequence<RulesetStatsObject> =
+    fun getObsoletedObjects(ruleset: Ruleset, civInfo: Civilization?): Sequence<RulesetStatsObject> =
         (getFilteredBuildings(ruleset, civInfo){true}
                 + ruleset.tileResources.values.asSequence()
                 + ruleset.tileImprovements.values.filter {
@@ -115,7 +114,7 @@ class Technology: RulesetObject() {
     // Helper: common filtering for both getEnabledBuildings and getObsoletedBuildings, difference via predicate parameter
     private fun getFilteredBuildings(
         ruleset: Ruleset,
-        civInfo: CivilizationInfo?,
+        civInfo: Civilization?,
         predicate: (Building)->Boolean
     ): Sequence<Building> {
         val (nuclearWeaponsEnabled, religionEnabled) = getNukeAndReligionSwitches(civInfo)
@@ -129,7 +128,7 @@ class Technology: RulesetObject() {
             }
     }
 
-    private fun getNukeAndReligionSwitches(civInfo: CivilizationInfo?): Pair<Boolean, Boolean> {
+    private fun getNukeAndReligionSwitches(civInfo: Civilization?): Pair<Boolean, Boolean> {
         if (civInfo == null) return true to true
         return civInfo.gameInfo.run { gameParameters.nuclearWeaponsEnabled to isReligionEnabled() }
     }
@@ -139,7 +138,7 @@ class Technology: RulesetObject() {
      * nuclear weapons and religion settings, and without those expressly hidden from Civilopedia.
      */
     // Used for Civilopedia, Alert and Picker, so if any of these decide to ignore the "Will not be displayed in Civilopedia"/HiddenFromCivilopedia unique this needs refactoring
-    fun getEnabledUnits(ruleset: Ruleset, civInfo: CivilizationInfo?): Sequence<BaseUnit> {
+    fun getEnabledUnits(ruleset: Ruleset, civInfo: Civilization?): Sequence<BaseUnit> {
         val (nuclearWeaponsEnabled, religionEnabled) = getNukeAndReligionSwitches(civInfo)
         return ruleset.units.values.asSequence()
             .filter {
@@ -225,7 +224,7 @@ class Technology: RulesetObject() {
                 }
             }
 
-        val viewingCiv = UncivGame.Current.worldScreen?.viewingCiv
+        val viewingCiv = GUI.getViewingPlayer()
         val enabledUnits = getEnabledUnits(ruleset, viewingCiv)
         if (enabledUnits.any()) {
             lineList += FormattedLine()
@@ -284,5 +283,14 @@ class Technology: RulesetObject() {
         }
 
         return lineList
+    }
+
+    fun matchesFilter(filter: String): Boolean {
+        return when (filter) {
+            "All" -> true
+            name -> true
+            era() -> true
+            else -> uniques.contains(filter)
+        }
     }
 }

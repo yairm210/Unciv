@@ -7,7 +7,7 @@ import com.unciv.utils.concurrency.Concurrency
 /**
  * Returns a wrapped version of a function that automatically handles an uncaught exception or error. In case of an uncaught exception or error, the return will be null.
  *
- * [com.unciv.ui.UncivStage], [UncivGame.render] and [Concurrency] already use this to wrap nearly everything that can happen during the lifespan of the Unciv application.
+ * [com.unciv.ui.screens.basescreen.UncivStage], [UncivGame.render] and [Concurrency] already use this to wrap nearly everything that can happen during the lifespan of the Unciv application.
  * Therefore, it usually shouldn't be necessary to manually use this.
  */
 fun <R> (() -> R).wrapCrashHandling(
@@ -24,7 +24,7 @@ fun <R> (() -> R).wrapCrashHandling(
 /**
  * Returns a wrapped version of a function that automatically handles an uncaught exception or error.
  *
- * [com.unciv.ui.UncivStage], [UncivGame.render] and [Concurrency] already use this to wrap nearly everything that can happen during the lifespan of the Unciv application.
+ * [com.unciv.ui.screens.basescreen.UncivStage], [UncivGame.render] and [Concurrency] already use this to wrap nearly everything that can happen during the lifespan of the Unciv application.
  * Therefore, it usually shouldn't be necessary to manually use this.
  */
 fun (() -> Unit).wrapCrashHandlingUnit(): () -> Unit {

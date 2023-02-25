@@ -6,7 +6,7 @@ import com.badlogic.gdx.backends.lwjgl3.audio.OpenALLwjgl3Audio
 import com.badlogic.gdx.backends.lwjgl3.audio.OpenALMusic
 import com.badlogic.gdx.backends.lwjgl3.audio.mock.MockAudio
 import com.badlogic.gdx.utils.Array
-import com.unciv.ui.utils.AudioExceptionHelper
+import com.unciv.ui.components.AudioExceptionHelper
 
 /**
  *  Problem: Not all exceptions playing Music can be caught on the desktop platform using a try-catch around the play method.

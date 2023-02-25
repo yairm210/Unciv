@@ -6,10 +6,9 @@ import com.unciv.json.HashMapVector2
 import com.unciv.json.json
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.PerpetualConstruction
-import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.TechManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
+import com.unciv.logic.civilization.managers.TechManager
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.Ruleset
 
@@ -28,31 +27,31 @@ object BackwardCompatibility {
      * This function removes them so the game doesn't crash when it tries to access them.
      */
     fun GameInfo.removeMissingModReferences() {
-        tileMap.removeMissingTerrainModReferences(ruleSet)
+        tileMap.removeMissingTerrainModReferences(ruleset)
 
         for (tile in tileMap.values) {
             for (unit in tile.getUnits()) {
-                if (!ruleSet.units.containsKey(unit.name)) tile.removeUnit(unit)
+                if (!ruleset.units.containsKey(unit.name)) tile.removeUnit(unit)
 
                 for (promotion in unit.promotions.promotions.toList())
-                    if (!ruleSet.unitPromotions.containsKey(promotion))
+                    if (!ruleset.unitPromotions.containsKey(promotion))
                         unit.promotions.promotions.remove(promotion)
             }
         }
 
         for (city in civilizations.asSequence().flatMap { it.cities.asSequence() }) {
 
-            changeBuildingNameIfNotInRuleset(ruleSet, city.cityConstructions, "Hanse", "Bank")
+            changeBuildingNameIfNotInRuleset(ruleset, city.cityConstructions, "Hanse", "Bank")
 
             for (building in city.cityConstructions.builtBuildings.toHashSet()) {
 
-                if (!ruleSet.buildings.containsKey(building))
+                if (!ruleset.buildings.containsKey(building))
                     city.cityConstructions.builtBuildings.remove(building)
             }
 
             fun isInvalidConstruction(construction: String) =
-                !ruleSet.buildings.containsKey(construction)
-                        && !ruleSet.units.containsKey(construction)
+                !ruleset.buildings.containsKey(construction)
+                        && !ruleset.units.containsKey(construction)
                         && !PerpetualConstruction.perpetualConstructionsMap.containsKey(construction)
 
             // Remove invalid buildings or units from the queue - don't just check buildings and units because it might be a special construction as well
@@ -68,10 +67,10 @@ object BackwardCompatibility {
 
         for (civInfo in civilizations) {
             for (tech in civInfo.tech.techsResearched.toList())
-                if (!ruleSet.technologies.containsKey(tech))
+                if (!ruleset.technologies.containsKey(tech))
                     civInfo.tech.techsResearched.remove(tech)
             for (policy in civInfo.policies.adoptedPolicies.toList())
-                if (!ruleSet.policies.containsKey(policy))
+                if (!ruleset.policies.containsKey(policy))
                     civInfo.policies.adoptedPolicies.remove(policy)
         }
     }
@@ -144,14 +143,6 @@ object BackwardCompatibility {
                     unit.promotions.addPromotion(startingPromo, true)
     }
 
-    /** Upgrade the uniques from deprecated format to the new more general one **/
-    fun GameInfo.updateGreatGeneralUniques() {
-        ruleSet.units.values.filter { it.uniques.contains("Bonus for units in 2 tile radius 15%") }.forEach {
-            it.uniques.remove("Bonus for units in 2 tile radius 15%")
-            it.uniques.add("[+15]% Strength bonus for [Military] units within [2] tiles")
-        }
-    }
-
     /** Move max XP from barbarians to new home */
     @Suppress("DEPRECATION")
     fun ModOptions.updateDeprecations() {
@@ -159,16 +150,6 @@ object BackwardCompatibility {
             constants.maxXPfromBarbarians = maxXPfromBarbarians
             maxXPfromBarbarians = 30
         }
-    }
-
-    /** Removes the workaround previously used for storing a map that does not have a [String] key
-     * @see com.unciv.json.NonStringKeyMapSerializer
-     */
-    @Suppress("DEPRECATION")
-    fun CivilizationInfo.migrateSeenImprovements() {
-        if (lastSeenImprovementSaved.isEmpty()) return
-        lastSeenImprovement.putAll(lastSeenImprovementSaved.mapKeys { Vector2().fromString(it.key) })
-        lastSeenImprovementSaved.clear()
     }
 
     /**
@@ -197,7 +178,7 @@ object BackwardCompatibility {
     fun GameInfo.convertFortify() {
         val reg = Regex("""^Fortify\s+(\d+)([\w\s]*)""")
         for (civInfo in civilizations) {
-            for (unit in civInfo.getCivUnits()) {
+            for (unit in civInfo.units.getCivUnits()) {
                 if (unit.action != null && reg.matches(unit.action!!)) {
                     val (turns, heal) = reg.find(unit.action!!)!!.destructured
                     unit.turnsFortified = turns.toInt()
@@ -221,7 +202,7 @@ object BackwardCompatibility {
 
     @Suppress("DEPRECATION")
     fun GameInfo.convertOldGameSpeed() {
-        if (gameParameters.gameSpeed != "" && gameParameters.gameSpeed in ruleSet.speeds.keys) {
+        if (gameParameters.gameSpeed != "" && gameParameters.gameSpeed in ruleset.speeds.keys) {
             gameParameters.speed = gameParameters.gameSpeed
             gameParameters.gameSpeed = ""
         }

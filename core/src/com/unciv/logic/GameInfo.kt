@@ -7,28 +7,28 @@ import com.unciv.logic.BackwardCompatibility.convertFortify
 import com.unciv.logic.BackwardCompatibility.convertOldGameSpeed
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
 import com.unciv.logic.BackwardCompatibility.migrateBarbarianCamps
-import com.unciv.logic.BackwardCompatibility.migrateSeenImprovements
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
-import com.unciv.logic.BackwardCompatibility.updateGreatGeneralUniques
 import com.unciv.logic.GameInfo.Companion.CURRENT_COMPATIBILITY_NUMBER
 import com.unciv.logic.GameInfo.Companion.FIRST_WITHOUT
-import com.unciv.logic.automation.civilization.NextTurnAutomation
-import com.unciv.logic.city.CityInfo
-import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.city.City
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.CivilizationInfoPreview
 import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.logic.civilization.TechManager
-import com.unciv.logic.map.TileInfo
+import com.unciv.logic.civilization.managers.TechManager
+import com.unciv.logic.civilization.managers.TurnManager
+import com.unciv.logic.map.CityDistanceData
 import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Religion
 import com.unciv.models.metadata.GameParameters
-import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Speed
+import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
@@ -64,11 +64,15 @@ data class CompatibilityVersion(
 
 }
 
+data class VictoryData(val winningCiv:String, val victoryType:String, val victoryTurn:Int){
+    constructor(): this("","",0) // for serializer
+}
+
 class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion {
     companion object {
         /** The current compatibility version of [GameInfo]. This number is incremented whenever changes are made to the save file structure that guarantee that
          * previous versions of the game will not be able to load or play a game normally. */
-        const val CURRENT_COMPATIBILITY_NUMBER = 1
+        const val CURRENT_COMPATIBILITY_NUMBER = 3
 
         val CURRENT_COMPATIBILITY_VERSION = CompatibilityVersion(CURRENT_COMPATIBILITY_NUMBER, UncivGame.VERSION)
 
@@ -79,7 +83,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
     override var version = FIRST_WITHOUT
 
-    var civilizations = mutableListOf<CivilizationInfo>()
+    var civilizations = mutableListOf<Civilization>()
     var barbarians = BarbarianManager()
     var religions: HashMap<String, Religion> = hashMapOf()
     var difficulty = "Chieftain" // difficulty is game-wide, think what would happen if 2 human players could play on different difficulties?
@@ -90,6 +94,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var currentPlayer = ""
     var currentTurnStartTime = 0L
     var gameId = UUID.randomUUID().toString() // random string
+
+    var victoryData:VictoryData? = null
 
     // Maps a civ to the civ they voted for
     var diplomaticVictoryVotesCast = HashMap<String, String>()
@@ -112,7 +118,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     lateinit var speed: Speed
 
     @Transient
-    lateinit var currentPlayerCiv: CivilizationInfo // this is called thousands of times, no reason to search for it with a find{} every time
+    lateinit var currentPlayerCiv: Civilization // this is called thousands of times, no reason to search for it with a find{} every time
 
     /** This is used in multiplayer games, where I may have a saved game state on my phone
      * that is inconsistent with the saved game on the cloud */
@@ -120,7 +126,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var isUpToDate = false
 
     @Transient
-    lateinit var ruleSet: Ruleset
+    lateinit var ruleset: Ruleset
 
     /** Simulate until any player wins,
      *  or turns exceeds indicated number
@@ -134,6 +140,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
     @Transient
     var spaceResources = HashSet<String>()
+
+    @Transient
+    var cityDistances: CityDistanceData = CityDistanceData()
 
     //endregion
     //region Pure functions
@@ -153,10 +162,12 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         toReturn.diplomaticVictoryVotesCast.putAll(diplomaticVictoryVotesCast)
         toReturn.oneMoreTurnMode = oneMoreTurnMode
         toReturn.customSaveLocation = customSaveLocation
+        toReturn.victoryData = victoryData
+
         return toReturn
     }
 
-    fun getPlayerToViewAs(): CivilizationInfo {
+    fun getPlayerToViewAs(): Civilization {
         if (!gameParameters.isOnlineMultiplayer) return getCurrentPlayerCivilization() // non-online, play as human player
         val userId = UncivGame.Current.settings.multiplayer.userId
 
@@ -189,7 +200,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     fun getAliveMajorCivs() = civilizations.filter { it.isAlive() && it.isMajorCiv() }
 
     /** Returns the first spectator for a [playerId] or creates one if none found */
-    fun getSpectator(playerId: String): CivilizationInfo {
+    fun getSpectator(playerId: String): Civilization {
         val gameSpectatorCiv = civilizations.firstOrNull {
             it.isSpectator() && it.playerId == playerId
         }
@@ -197,7 +208,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
     }
 
-    private fun createTemporarySpectatorCiv(playerId: String) = CivilizationInfo(Constants.spectator).also {
+    private fun createTemporarySpectatorCiv(playerId: String) = Civilization(Constants.spectator).also {
         it.playerType = PlayerType.Human
         it.playerId = playerId
         civilizations.add(it)
@@ -207,9 +218,9 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     }
 
     fun isReligionEnabled(): Boolean {
-        val religionDisabledByRuleset = (ruleSet.eras[gameParameters.startingEra]!!.hasUnique(UniqueType.DisablesReligion)
-                || ruleSet.modOptions.uniques.contains(ModOptionsConstants.disableReligion))
-        return !religionDisabledByRuleset && gameParameters.religionEnabled
+        val religionDisabledByRuleset = (ruleset.eras[gameParameters.startingEra]!!.hasUnique(UniqueType.DisablesReligion)
+                || ruleset.modOptions.uniques.contains(ModOptionsConstants.disableReligion))
+        return !religionDisabledByRuleset
     }
 
     fun isEspionageEnabled(): Boolean {
@@ -218,7 +229,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
     private fun getEquivalentTurn(): Int {
         val totalTurns = speed.numTotalTurns()
-        val startPercent = ruleSet.eras[gameParameters.startingEra]!!.startPercent
+        val startPercent = ruleset.eras[gameParameters.startingEra]!!.startPercent
         return turns + (totalTurns * startPercent / 100)
     }
 
@@ -241,64 +252,82 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     //endregion
     //region State changing functions
 
+    // Do we automatically simulate until N turn?
+    fun isSimulation(): Boolean = turns < UncivGame.Current.simulateUntilTurnForDebug
+            || turns < simulateMaxTurns && simulateUntilWin
+
     fun nextTurn() {
-        val previousHumanPlayer = getCurrentPlayerCivilization()
-        var thisPlayer = previousHumanPlayer // not calling it currentPlayer because that's already taken and I can't think of a better name
-        var currentPlayerIndex = civilizations.indexOf(thisPlayer)
 
+        var player = currentPlayerCiv
+        var playerIndex = civilizations.indexOf(player)
 
-        fun endTurn() {
-            thisPlayer.endTurn()
-            currentPlayerIndex = (currentPlayerIndex + 1) % civilizations.size
-            if (currentPlayerIndex == 0) {
+        // We rotate Players in cycle: 1,2...N,1,2...
+        fun setNextPlayer() {
+            playerIndex = (playerIndex + 1) % civilizations.size
+            if (playerIndex == 0) {
                 turns++
                 if (UncivGame.Current.simulateUntilTurnForDebug != 0)
                     debug("Starting simulation of turn %s", turns)
             }
-            thisPlayer = civilizations[currentPlayerIndex]
+            player = civilizations[playerIndex]
         }
 
-        //check is important or else switchTurn
-        //would skip a turn if an AI civ calls nextTurn
-        //this happens when resigning a multiplayer game
-        if (thisPlayer.isPlayerCivilization()) {
-            endTurn()
+
+        // Ending current player's turn
+        //  (Check is important or else switchTurn
+        //  would skip a turn if an AI civ calls nextTurn
+        //  this happens when resigning a multiplayer game)
+        if (player.isHuman()) {
+            TurnManager(player).endTurn()
+            setNextPlayer()
         }
 
-        while (thisPlayer.playerType == PlayerType.AI
-                || turns < UncivGame.Current.simulateUntilTurnForDebug
-                || turns < simulateMaxTurns && simulateUntilWin
-                // For multiplayer, if there are 3+ players and one is defeated or spectator,
-                // we'll want to skip over their turn
-                || gameParameters.isOnlineMultiplayer && (thisPlayer.isDefeated() || thisPlayer.isSpectator() && thisPlayer.playerId != UncivGame.Current.settings.multiplayer.userId)
-        ) {
-            thisPlayer.startTurn()
-            if (!thisPlayer.isDefeated() || thisPlayer.isBarbarian()) {
-                NextTurnAutomation.automateCivMoves(thisPlayer)
 
-                // Placing barbarians after their turn
-                if (thisPlayer.isBarbarian() && !gameParameters.noBarbarians)
-                    barbarians.updateEncampments()
+        val isOnline = gameParameters.isOnlineMultiplayer
 
-                // exit simulation mode when player wins
-                if (thisPlayer.victoryManager.hasWon() && simulateUntilWin) {
-                    // stop simulation
-                    simulateUntilWin = false
-                    break
-                }
+        // We process player automatically if:
+        while (isSimulation() ||                    // simulation is active
+                player.isAI() ||                    // or player is AI
+                isOnline && (player.isDefeated() || // or player is online defeated
+                        player.isSpectator()))      // or player is online spectator
+        {
+
+            // Starting preparations
+            TurnManager(player).startTurn()
+
+            // Automation done here
+            TurnManager(player).automateTurn()
+
+            // Do we need to break if player won?
+            if (simulateUntilWin && player.victoryManager.hasWon()) {
+                simulateUntilWin = false
+                break
             }
-            endTurn()
+
+            // Clean up
+            TurnManager(player).endTurn()
+
+            // To the next player
+            setNextPlayer()
         }
+
         if (turns == UncivGame.Current.simulateUntilTurnForDebug)
             UncivGame.Current.simulateUntilTurnForDebug = 0
 
+        // We found human player, so we are making him current
         currentTurnStartTime = System.currentTimeMillis()
-        currentPlayer = thisPlayer.civName
+        currentPlayer = player.civName
         currentPlayerCiv = getCivilization(currentPlayer)
-        thisPlayer.startTurn()
-        if (currentPlayerCiv.isSpectator()) currentPlayerCiv.popupAlerts.clear() // no popups for spectators
 
-        if (turns % 10 == 0) //todo measuring actual play time might be nicer
+        // Starting his turn
+        TurnManager(player).startTurn()
+
+        // No popups for spectators
+        if (currentPlayerCiv.isSpectator())
+            currentPlayerCiv.popupAlerts.clear()
+
+        // Play some nice music TODO: measuring actual play time might be nicer
+        if (turns % 10 == 0)
             UncivGame.Current.musicController.chooseTrack(
                 currentPlayerCiv.civName,
                 MusicMood.peaceOrWar(currentPlayerCiv.isAtWar()), MusicTrackChooserFlags.setNextTurn
@@ -306,15 +335,15 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         // Start our turn immediately before the player can make decisions - affects
         // whether our units can commit automated actions and then be attacked immediately etc.
-        notifyOfCloseEnemyUnits(thisPlayer)
+        notifyOfCloseEnemyUnits(player)
     }
 
-    private fun notifyOfCloseEnemyUnits(thisPlayer: CivilizationInfo) {
+    private fun notifyOfCloseEnemyUnits(thisPlayer: Civilization) {
         val viewableInvisibleTiles = thisPlayer.viewableInvisibleUnitsTiles.map { it.position }
         val enemyUnitsCloseToTerritory = thisPlayer.viewableTiles
             .filter {
-                it.militaryUnit != null && it.militaryUnit!!.civInfo != thisPlayer
-                        && thisPlayer.isAtWarWith(it.militaryUnit!!.civInfo)
+                it.militaryUnit != null && it.militaryUnit!!.civ != thisPlayer
+                        && thisPlayer.isAtWarWith(it.militaryUnit!!.civ)
                         && (it.getOwner() == thisPlayer || it.neighbors.any { neighbor -> neighbor.getOwner() == thisPlayer }
                         && (!it.militaryUnit!!.isInvisible(thisPlayer) || viewableInvisibleTiles.contains(it.position)))
             }
@@ -341,7 +370,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         )
     }
 
-    fun getEnabledVictories() = ruleSet.victories.filter { !it.value.hiddenInVictoryScreen && gameParameters.victoryTypes.contains(it.key) }
+    fun getEnabledVictories() = ruleset.victories.filter { !it.value.hiddenInVictoryScreen && gameParameters.victoryTypes.contains(it.key) }
 
     fun processDiplomaticVictory() {
         if (diplomaticVictoryVotesProcessed) return
@@ -353,26 +382,26 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         diplomaticVictoryVotesProcessed = true
     }
 
-    private fun addEnemyUnitNotification(thisPlayer: CivilizationInfo, tiles: List<TileInfo>, inOrNear: String) {
+    private fun addEnemyUnitNotification(thisPlayer: Civilization, tiles: List<Tile>, inOrNear: String) {
         // don't flood the player with similar messages. instead cycle through units by clicking the message multiple times.
         if (tiles.size < 3) {
             for (tile in tiles) {
                 val unitName = tile.militaryUnit!!.name
-                thisPlayer.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", tile.position, NotificationIcon.War, unitName)
+                thisPlayer.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", tile.position, NotificationCategory.War, NotificationIcon.War, unitName)
             }
         } else {
             val positions = tiles.asSequence().map { it.position }
-            thisPlayer.addNotification("[${tiles.size}] enemy units were spotted $inOrNear our territory", LocationAction(positions), NotificationIcon.War)
+            thisPlayer.addNotification("[${tiles.size}] enemy units were spotted $inOrNear our territory", LocationAction(positions), NotificationCategory.War, NotificationIcon.War)
         }
     }
 
-    private fun addBombardNotification(thisPlayer: CivilizationInfo, cities: List<CityInfo>) {
+    private fun addBombardNotification(thisPlayer: Civilization, cities: List<City>) {
         if (cities.size < 3) {
             for (city in cities)
-                thisPlayer.addNotification("Your city [${city.name}] can bombard the enemy!", city.location, NotificationIcon.City, NotificationIcon.Crosshair)
+                thisPlayer.addNotification("Your city [${city.name}] can bombard the enemy!", city.location, NotificationCategory.War, NotificationIcon.City, NotificationIcon.Crosshair)
         } else {
             val positions = cities.asSequence().map { it.location }
-            thisPlayer.addNotification("[${cities.size}] of your cities can bombard the enemy!", LocationAction(positions), NotificationIcon.City, NotificationIcon.Crosshair)
+            thisPlayer.addNotification("[${cities.size}] of your cities can bombard the enemy!", LocationAction(positions),  NotificationCategory.War, NotificationIcon.City, NotificationIcon.Crosshair)
         }
     }
 
@@ -383,15 +412,15 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
      * @return `false` if no resources were found and no notification was added.
      */
     fun notifyExploredResources(
-        civInfo: CivilizationInfo,
+        civInfo: Civilization,
         resourceName: String,
         maxDistance: Int,
         showForeign: Boolean
     ): Boolean {
-        data class CityTileAndDistance(val city: CityInfo, val tile: TileInfo, val distance: Int)
+        data class CityTileAndDistance(val city: City, val tile: Tile, val distance: Int)
 
-        val exploredRevealTiles: Sequence<TileInfo> =
-                if (ruleSet.tileResources[resourceName]!!.hasUnique(UniqueType.CityStateOnlyResource)) {
+        val exploredRevealTiles: Sequence<Tile> =
+                if (ruleset.tileResources[resourceName]!!.hasUnique(UniqueType.CityStateOnlyResource)) {
                     // Look for matching mercantile CS centers
                     getAliveCityStates()
                         .asSequence()
@@ -404,7 +433,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
                 }
 
         val exploredRevealInfo = exploredRevealTiles
-            .filter { it.position in civInfo.exploredTiles }
+            .filter { civInfo.hasExplored(it) }
             .flatMap { tile ->
                 civInfo.cities.asSequence()
                     .map {
@@ -434,6 +463,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         civInfo.addNotification(
             text,
             LocationAction(positions),
+            NotificationCategory.General,
             "ResourceIcons/$resourceName"
         )
         return true
@@ -450,17 +480,15 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             gameParameters.baseRuleset = baseRulesetInMods
             gameParameters.mods = LinkedHashSet(gameParameters.mods.filter { it != baseRulesetInMods })
         }
-        // [TEMPORARY] Convert old saves to remove json workaround
-        for (civInfo in civilizations) civInfo.migrateSeenImprovements()
         barbarians.migrateBarbarianCamps()
 
-        ruleSet = RulesetCache.getComplexRuleset(gameParameters)
+        ruleset = RulesetCache.getComplexRuleset(gameParameters)
 
         // any mod the saved game lists that is currently not installed causes null pointer
         // exceptions in this routine unless it contained no new objects or was very simple.
         // Player's fault, so better complain early:
         val missingMods = (gameParameters.mods + gameParameters.baseRuleset)
-            .filterNot { it in ruleSet.mods }
+            .filterNot { it in ruleset.mods }
             .joinToString(limit = 120) { it }
         if (missingMods.isNotEmpty()) {
             throw MissingModsException(missingMods)
@@ -468,34 +496,41 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         removeMissingModReferences()
 
-        updateGreatGeneralUniques()
-
         convertOldGameSpeed()
 
-        for (baseUnit in ruleSet.units.values)
-            baseUnit.ruleset = ruleSet
+        for (baseUnit in ruleset.units.values)
+            baseUnit.ruleset = ruleset
 
         // This needs to go before tileMap.setTransients, as units need to access
         // the nation of their civilization when setting transients
         for (civInfo in civilizations) civInfo.gameInfo = this
         for (civInfo in civilizations) civInfo.setNationTransient()
+        // must be done before updating tileMap, since unit uniques depend on civ uniques depend on allied city-state uniques depend on diplomacy
+        for (civInfo in civilizations) {
+            for (diplomacyManager in civInfo.diplomacy.values) {
+                diplomacyManager.civInfo = civInfo
+                diplomacyManager.updateHasOpenBorders()
+            }
+        }
 
-        tileMap.setTransients(ruleSet)
+        tileMap.setTransients(ruleset)
 
-        if (currentPlayer == "") currentPlayer = civilizations.first { it.isPlayerCivilization() }.civName
+        if (currentPlayer == "") currentPlayer = civilizations.first { it.isHuman() }.civName
         currentPlayerCiv = getCivilization(currentPlayer)
 
-        difficultyObject = ruleSet.difficulties[difficulty]!!
+        difficultyObject = ruleset.difficulties[difficulty]!!
 
-        speed = ruleSet.speeds[gameParameters.speed]!!
+        speed = ruleset.speeds[gameParameters.speed]!!
 
         for (religion in religions.values) religion.setTransients(this)
+
 
         for (civInfo in civilizations) civInfo.setTransients()
         for (civInfo in civilizations) {
             civInfo.thingsToFocusOnForVictory =
                     civInfo.getPreferredVictoryTypeObject()?.getThingsToFocus(civInfo) ?: setOf()
         }
+        tileMap.setNeutralTransients() // has to happen after civInfo.setTransients() sets owningCity
 
         convertFortify()
 
@@ -503,21 +538,26 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             // update city-state resource first since the happiness of major civ depends on it.
             // See issue: https://github.com/yairm210/Unciv/issues/7781
             yieldAll(civilizations.filter { it.isCityState() })
-            yieldAll(civilizations.filter { it.isMajorCiv() })
+            yieldAll(civilizations.filter { !it.isCityState() })
         }) {
-            for (unit in civInfo.getCivUnits())
+            for (unit in civInfo.units.getCivUnits())
                 unit.updateVisibleTiles(false) // this needs to be done after all the units are assigned to their civs and all other transients are set
-            civInfo.updateSightAndResources() // only run ONCE and not for each unit - this is a huge performance saver!
+            if(civInfo.playerType == PlayerType.Human)
+                civInfo.exploredRegion.setMapParameters(tileMap.mapParameters.worldWrap, tileMap.mapParameters.mapSize.radius) // Required for the correct calculation of the explored region on world wrap maps
+            civInfo.cache.updateSightAndResources() // only run ONCE and not for each unit - this is a huge performance saver!
 
             // Since this depends on the cities of ALL civilizations,
             // we need to wait until we've set the transients of all the cities before we can run this.
             // Hence why it's not in CivInfo.setTransients().
-            civInfo.initialSetCitiesConnectedToCapitalTransients()
+            civInfo.cache.updateCitiesConnectedToCapital(true)
 
             // We need to determine the GLOBAL happiness state in order to determine the city stats
-            for (cityInfo in civInfo.cities) cityInfo.cityStats.updateCityHappiness(
-                cityInfo.cityConstructions.getStats()
-            )
+            for (cityInfo in civInfo.cities) {
+                cityInfo.cityStats.updateTileStats() // Some nat wonders can give happiness!
+                cityInfo.cityStats.updateCityHappiness(
+                    cityInfo.cityConstructions.getStats()
+                )
+            }
 
             for (cityInfo in civInfo.cities) {
                 /** We remove constructions from the queue that aren't defined in the ruleset.
@@ -529,7 +569,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
                     cityInfo.cityConstructions.chooseNextConstruction()
 
                 // We also remove resources that the city may be demanding but are no longer in the ruleset
-                if (!ruleSet.tileResources.containsKey(cityInfo.demandedResource))
+                if (!ruleset.tileResources.containsKey(cityInfo.demandedResource))
                     cityInfo.demandedResource = ""
 
                 cityInfo.cityStats.update()
@@ -541,13 +581,19 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         }
 
         spaceResources.clear()
-        spaceResources.addAll(ruleSet.buildings.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
+        spaceResources.addAll(ruleset.buildings.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
             .flatMap { it.getResourceRequirements().keys })
-        spaceResources.addAll(ruleSet.victories.values.flatMap { it.requiredSpaceshipParts })
+        spaceResources.addAll(ruleset.victories.values.flatMap { it.requiredSpaceshipParts })
 
         barbarians.setTransients(this)
 
+        cityDistances.game = this
+
         guaranteeUnitPromotions()
+
+        for (player in civilizations)
+            for (tile in player.exploredTiles)
+                tileMap[tile].setExplored(player, true)
     }
 
     //endregion

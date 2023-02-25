@@ -1,0 +1,16 @@
+Resolved "dead population working tiles" bug
+
+Order indicators in TechScreen like original Civ V - By lishaoxia1985
+
+By Gualdimar:
+- Fixed the display of political relations
+- Modding: fixed +percentage resource unique
+- Pillaged improvements no longer provide bonuses
+
+Better AI Great General placement
+
+Generated maps no longer contain forbidden tile arrangements
+
+Games where it's your turn are displayed first in multiplayer popup
+
+Fix MapEditor world-wrap flickering  - By vegeta1k95

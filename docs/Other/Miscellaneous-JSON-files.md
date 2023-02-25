@@ -108,20 +108,20 @@ This file is a little different:
 
 The file can have the following attributes, including the values Unciv sets (no point in a mod author setting those):
 
-| Attribute | Type | Optional | Notes |
-| --------- | ---- | -------- | ----- |
-| isBaseRuleset | Boolean | false | Differentiates mods that change the vanilla ruleset or replace it |
-| maxXPfromBarbarians | Integer | 30 | *Deprecated*, see [constants](#ModConstants) |
-| uniques | List | empty | Mod-wide specials, [see here](../Modders/uniques.md#modoptions-uniques) |
-| techsToRemove | List | empty | List of [Technologies](Civilization-related-JSON-files.md#techsjson) to remove (isBaseRuleset=false only) |
-| buildingsToRemove | List | empty | List of [Buildings or Wonders](Civilization-related-JSON-files.md#buildingsjson) to remove (isBaseRuleset=false only) |
-| unitsToRemove | List | empty | List of [Units](Unit-related-JSON-files.md#unitsjson) to remove (isBaseRuleset=false only) |
-| nationsToRemove | List | empty | List of [Nations](Civilization-related-JSON-files.md#nationsjson) to remove (isBaseRuleset=false only) |
-| lastUpdated | String | empty | Set automatically after download - Last repository update, not necessarily last content change |
-| modUrl | String | empty | Set automatically after download - URL of repository |
-| author | String | empty | Set automatically after download - Owner of repository |
-| modSize | Integer | empty | Set automatically after download - kB in entire repository, not sum of default branch files |
-| constants | Object | empty | see [ModConstants](#ModConstants) |
+| Attribute           | Type    | Optional | Notes                                                                                                                                                                               |
+|---------------------|---------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| isBaseRuleset       | Boolean | false    | Differentiates mods that change the vanilla ruleset or replace it                                                                                                                   |
+| maxXPfromBarbarians | Integer | 30       | *Deprecated*, see [constants](#ModConstants)                                                                                                                                        |
+| uniques             | List    | empty    | Mod-wide specials, [see here](../Modders/uniques.md#modoptions-uniques)                                                                                                             |
+| techsToRemove       | List    | empty    | List of [Technologies](Civilization-related-JSON-files.md#techsjson) or [-filters](../Modders/Unique-parameters.md#technologyfilter) to remove (isBaseRuleset=false only)           |
+| buildingsToRemove   | List    | empty    | List of [Buildings or Wonders](Civilization-related-JSON-files.md#buildingsjson) or [-filters](../Modders/Unique-parameters.md#buildingfilter) to remove (isBaseRuleset=false only) |
+| unitsToRemove       | List    | empty    | List of [Units](Unit-related-JSON-files.md#unitsjson) or [-filters](../Modders/Unique-parameters.md#baseunitfilter) to remove (isBaseRuleset=false only)                            |
+| nationsToRemove     | List    | empty    | List of [Nations](Civilization-related-JSON-files.md#nationsjson) or [-filters](../Modders/Unique-parameters.md#nationfilter) to remove (isBaseRuleset=false only)                  |
+| lastUpdated         | String  | empty    | Set automatically after download - Last repository update, not necessarily last content change                                                                                      |
+| modUrl              | String  | empty    | Set automatically after download - URL of repository                                                                                                                                |
+| author              | String  | empty    | Set automatically after download - Owner of repository                                                                                                                              |
+| modSize             | Integer | empty    | Set automatically after download - kB in entire repository, not sum of default branch files                                                                                         |
+| constants           | Object  | empty    | see [ModConstants](#ModConstants)                                                                                                                                                   |
 
 ### ModConstants
 
@@ -192,7 +192,7 @@ The formula for the gold cost of a unit upgrade is (rounded down to a multiple o
         ( max((`base` + `perProduction` * (new_unit_cost - old_unit_cost)), 0)
             * (1 + eraNumber * `eraMultiplier`) * `civModifier`
         ) ^ `exponent`
-With `civModifier` being the multiplicative aggregate of ["\[relativeAmount\]% Gold cost of upgrading"](../uniques.md#global_uniques) uniques that apply.
+With `civModifier` being the multiplicative aggregate of ["\[relativeAmount\]% Gold cost of upgrading"](../Modders/uniques.md#global-uniques) uniques that apply.
 
 
 ## VictoryTypes.json

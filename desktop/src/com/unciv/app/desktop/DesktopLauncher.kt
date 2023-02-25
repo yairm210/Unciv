@@ -11,17 +11,19 @@ import com.sun.jna.Native
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
 import com.unciv.json.json
-import com.unciv.logic.SETTINGS_FILE_NAME
-import com.unciv.logic.UncivFiles
+import com.unciv.logic.files.SETTINGS_FILE_NAME
+import com.unciv.logic.files.UncivFiles
+import com.unciv.models.metadata.ScreenSize
 import com.unciv.models.metadata.WindowState
-import com.unciv.ui.utils.Fonts
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import java.awt.Toolkit
+import java.awt.GraphicsEnvironment
 import java.util.*
 import kotlin.concurrent.timer
 import kotlin.math.max
 import kotlin.math.min
+
 
 internal object DesktopLauncher {
     private const val minWidth = 120
@@ -47,6 +49,7 @@ internal object DesktopLauncher {
         config.setWindowIcon("ExtraImages/Icon.png")
         config.setTitle("Unciv")
         config.setHdpiMode(HdpiMode.Logical)
+        config.setMaximized(true)
         config.setWindowSizeLimits(minWidth, minHeight, -1, -1)
 
         // We don't need the initial Audio created in Lwjgl3Application, HardenGdxAudio will replace it anyway.
@@ -55,12 +58,13 @@ internal object DesktopLauncher {
 
         val settings = UncivFiles.getSettingsForPlatformLaunchers()
         if (settings.isFreshlyCreated) {
-            settings.resolution = "1200x800" // By default Desktops should have a higher resolution
+            settings.screenSize = ScreenSize.Large // By default we guess that Desktops have larger screens
             // LibGDX not yet configured, use regular java class
-            val screenSize = Toolkit.getDefaultToolkit().screenSize
+            val graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment()
+            val maximumWindowBounds = graphicsEnvironment.maximumWindowBounds
             settings.windowState = WindowState(
-                width = screenSize.width * 4 / 5,
-                height = screenSize.height * 4 / 5,
+                width = maximumWindowBounds.width * 4 / 5,
+                height = maximumWindowBounds.height * 4 / 5,
                 isMaximized = true
             )
             FileHandle(SETTINGS_FILE_NAME).writeString(json().toJson(settings), false) // so when we later open the game we get fullscreen
@@ -104,13 +108,14 @@ internal object DesktopLauncher {
 
         if (!isRunFromJAR) {
             UniqueDocsWriter().write()
+            UiElementDocsWriter().write()
         }
 
         val platformSpecificHelper = PlatformSpecificHelpersDesktop(config, windowState)
 
         val desktopParameters = UncivGameParameters(
             cancelDiscordEvent = { discordTimer?.cancel() },
-            fontImplementation = NativeFontDesktop((Fonts.ORIGINAL_FONT_SIZE * settings.fontSizeMultiplier).toInt(), settings.fontFamily),
+            fontImplementation = FontDesktop(),
             customFileLocationHelper = CustomFileLocationHelperDesktop(),
             crashReportSysInfo = CrashReportSysInfoDesktop(),
             platformSpecificHelper = platformSpecificHelper,

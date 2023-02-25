@@ -1,8 +1,8 @@
 package com.unciv.logic.battle
 
-import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.MapUnit
-import com.unciv.logic.map.TileInfo
+import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
@@ -12,11 +12,11 @@ import com.unciv.models.ruleset.unit.UnitType
 class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     override fun getHealth(): Int = unit.health
     override fun getMaxHealth() = 100
-    override fun getCivInfo(): CivilizationInfo = unit.civInfo
-    override fun getTile(): TileInfo = unit.getTile()
+    override fun getCivInfo(): Civilization = unit.civ
+    override fun getTile(): Tile = unit.getTile()
     override fun getName(): String = unit.name
     override fun isDefeated(): Boolean = unit.health <= 0
-    override fun isInvisible(to: CivilizationInfo): Boolean = unit.isInvisible(to)
+    override fun isInvisible(to: Civilization): Boolean = unit.isInvisible(to)
     override fun canAttack(): Boolean = unit.canAttack()
     override fun matchesCategory(category: String) = unit.matchesFilter(category)
     override fun getAttackSound() = unit.baseUnit.attackSound.let {
@@ -36,7 +36,7 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
 
     override fun getDefendingStrength(attackedByRanged: Boolean): Int {
         return if (unit.isEmbarked() && !isCivilian())
-            unit.civInfo.getEra().embarkDefense
+            unit.civ.getEra().embarkDefense
         else if (isRanged() && attackedByRanged)
             unit.baseUnit().rangedStrength
         else unit.baseUnit().strength
@@ -47,7 +47,7 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     }
 
     override fun toString(): String {
-        return unit.name+" of "+unit.civInfo.civName
+        return unit.name+" of "+unit.civ.civName
     }
 
     fun getMatchingUniques(uniqueType: UniqueType, conditionalState: StateForConditionals, checkCivUniques: Boolean): Sequence<Unique> =

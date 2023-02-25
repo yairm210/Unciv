@@ -4,9 +4,9 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
-import com.unciv.models.stats.Stat
 
 /** Data object for Religions */
 class Religion() : INamed, IsPartOfGameInfoSerialization {
@@ -53,7 +53,7 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
         else name
 
     private fun mapToExistingBeliefs(beliefs: HashSet<String>): List<Belief> {
-        val rulesetBeliefs = gameInfo.ruleSet.beliefs
+        val rulesetBeliefs = gameInfo.ruleset.beliefs
         return beliefs.mapNotNull {
             if (it !in rulesetBeliefs) null
             else rulesetBeliefs[it]!!
@@ -85,8 +85,9 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
             mapToExistingBeliefs(founderBeliefs).asSequence().filter { it.type == BeliefType.Enhancer }
     }
 
-    private fun getUniquesOfBeliefs(beliefs: HashSet<String>) =
-        mapToExistingBeliefs(beliefs).asSequence().flatMap { it.uniqueObjects }
+    private fun getUniquesOfBeliefs(beliefs: HashSet<String>): Sequence<Unique> {
+        return mapToExistingBeliefs(beliefs).asSequence().flatMap { it.uniqueObjects }
+    }
 
     fun getFollowerUniques() = getUniquesOfBeliefs(followerBeliefs)
 

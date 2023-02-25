@@ -148,7 +148,7 @@
     {
         "name": "Guruship",
         "type": "Follower",
-        "uniques": ["[+2 Production] <in cities with at least [1] [Specialists]>"]
+        "uniques": ["[+2 Production] [in cities following this religion] <in cities with at least [1] [Specialists]>"]
     },
     {
         "name": "Holy Warriors",

@@ -1,0 +1,147 @@
+package com.unciv.logic.city.managers
+
+import com.unciv.logic.city.CityFlags
+import com.unciv.logic.city.CityFocus
+import com.unciv.logic.city.City
+import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.unique.UniqueType
+import java.util.*
+import kotlin.math.min
+
+class CityTurnManager(val city: City) {
+
+
+    fun startTurn() {
+        // Construct units at the beginning of the turn,
+        // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
+        city.cityConstructions.constructIfEnough()
+        city.cityConstructions.addFreeBuildings()
+
+        city.cityStats.update()
+        city.tryUpdateRoadStatus()
+        city.attackedThisTurn = false
+
+        if (city.isPuppet) {
+            city.cityAIFocus = CityFocus.GoldFocus
+            city.reassignAllPopulation()
+        } else if (city.updateCitizens) {
+            city.reassignPopulation()
+            city.updateCitizens = false
+        }
+
+        // The ordering is intentional - you get a turn without WLTKD even if you have the next resource already
+        if (!city.hasFlag(CityFlags.WeLoveTheKing))
+            tryWeLoveTheKing()
+        nextTurnFlags()
+
+        // Seed resource demand countdown
+        if (city.demandedResource == "" && !city.hasFlag(CityFlags.ResourceDemand)) {
+            city.setFlag(
+                CityFlags.ResourceDemand,
+                (if (city.isCapital()) 25 else 15) + Random().nextInt(10))
+        }
+    }
+
+    private fun tryWeLoveTheKing() {
+        if (city.demandedResource == "") return
+        if (city.civ.getCivResourcesByName()[city.demandedResource]!! > 0) {
+            city.setFlag(CityFlags.WeLoveTheKing, 20 + 1) // +1 because it will be decremented by 1 in the same startTurn()
+            city.civ.addNotification(
+                "Because they have [${city.demandedResource}], the citizens of [${city.name}] are celebrating We Love The King Day!",
+                city.location, NotificationCategory.General, NotificationIcon.City, NotificationIcon.Happiness)
+        }
+    }
+
+    // cf DiplomacyManager nextTurnFlags
+    private fun nextTurnFlags() {
+        for (flag in city.flagsCountdown.keys.toList()) {
+            if (city.flagsCountdown[flag]!! > 0)
+                city.flagsCountdown[flag] = city.flagsCountdown[flag]!! - 1
+
+            if (city.flagsCountdown[flag] == 0) {
+                city.flagsCountdown.remove(flag)
+
+                when (flag) {
+                    CityFlags.ResourceDemand.name -> {
+                        demandNewResource()
+                    }
+                    CityFlags.WeLoveTheKing.name -> {
+                        city.civ.addNotification(
+                            "We Love The King Day in [${city.name}] has ended.",
+                            city.location, NotificationCategory.General, NotificationIcon.City)
+                        demandNewResource()
+                    }
+                    CityFlags.Resistance.name -> {
+                        city.civ.addNotification(
+                            "The resistance in [${city.name}] has ended!",
+                            city.location, NotificationCategory.General, "StatIcons/Resistance")
+                    }
+                }
+            }
+        }
+    }
+
+
+    private fun demandNewResource() {
+        val candidates = city.getRuleset().tileResources.values.filter {
+            it.resourceType == ResourceType.Luxury && // Must be luxury
+                    !it.hasUnique(UniqueType.CityStateOnlyResource) && // Not a city-state only resource eg jewelry
+                    it.name != city.demandedResource && // Not same as last time
+                    !city.civ.hasResource(it.name) && // Not one we already have
+                    it.name in city.tileMap.resources && // Must exist somewhere on the map
+                    city.getCenterTile().getTilesInDistance(3).none { nearTile -> nearTile.resource == it.name } // Not in this city's radius
+        }
+
+        val chosenResource = candidates.randomOrNull()
+        /* What if we had a WLTKD before but now the player has every resource in the game? We can't
+           pick a new resource, so the resource will stay stay the same and the city will demand it
+           again even if the player still has it. But we shouldn't punish success. */
+        if (chosenResource != null)
+            city.demandedResource = chosenResource.name
+        if (city.demandedResource == "") // Failed to get a valid resource, try again some time later
+            city.setFlag(CityFlags.ResourceDemand, 15 + Random().nextInt(10))
+        else
+            city.civ.addNotification("[${city.name}] demands [${city.demandedResource}]!",
+                city.location, NotificationCategory.General, NotificationIcon.City, "ResourceIcons/${city.demandedResource}")
+    }
+
+
+    fun endTurn() {
+        val stats = city.cityStats.currentCityStats
+
+        city.cityConstructions.endTurn(stats)
+        city.expansion.nextTurn(stats.culture)
+        if (city.isBeingRazed) {
+            val removedPopulation =
+                    1 + city.civ.getMatchingUniques(UniqueType.CitiesAreRazedXTimesFaster)
+                        .sumOf { it.params[0].toInt() - 1 }
+            city.population.addPopulation(-1 * removedPopulation)
+
+            if (city.population.population <= 0) {
+                city.civ.addNotification(
+                    "[${city.name}] has been razed to the ground!",
+                    city.location, NotificationCategory.General,
+                    "OtherIcons/Fire"
+                )
+                city.destroyCity()
+            } else { //if not razed yet:
+                if (city.population.foodStored >= city.population.getFoodToNextPopulation()) { //if surplus in the granary...
+                    city.population.foodStored =
+                            city.population.getFoodToNextPopulation() - 1 //...reduce below the new growth threshold
+                }
+            }
+        } else city.population.nextTurn(city.foodForNextTurn())
+
+        // This should go after the population change, as that might impact the amount of followers in this city
+        if (city.civ.gameInfo.isReligionEnabled()) city.religion.endTurn()
+
+        if (city in city.civ.cities) { // city was not destroyed
+            city.health = min(city.health + 20, city.getMaxHealth())
+            city.population.unassignExtraPopulation()
+        }
+    }
+
+
+}

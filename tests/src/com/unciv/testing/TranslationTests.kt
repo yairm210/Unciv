@@ -2,6 +2,7 @@
 package com.unciv.testing
 
 import com.badlogic.gdx.Gdx
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
@@ -29,7 +30,7 @@ class TranslationTests {
             override fun write(b: Int) {}
         }))
         translations.readAllLanguagesTranslation()
-        RulesetCache.loadRulesets()
+        RulesetCache.loadRulesets(noMods = true)
         ruleset = RulesetCache.getVanillaRuleset()
         System.setOut(outputChannel)
     }
@@ -86,8 +87,8 @@ class TranslationTests {
     fun allTranslationsHaveCorrectPlaceholders() {
         var allTranslationsHaveCorrectPlaceholders = true
         val languages = translations.getLanguages()
-        for (key in translations.keys) {
-            val translationEntry = translations[key]!!.entry
+        for ((key, translation) in translations) {
+            val translationEntry = translation.entry
             val placeholders = squareBraceRegex.findAll(translationEntry)
                     .map { it.value }.toList()
             for (language in languages) {
@@ -110,9 +111,9 @@ class TranslationTests {
     @Test
     fun allPlaceholderKeysMatchEntry() {
         var allPlaceholderKeysMatchEntry = true
-        for (key in translations.keys) {
+        for ((key, translation) in translations) {
             if (!key.contains('[') || key.contains('<')) continue
-            val translationEntry = translations[key]!!.entry
+            val translationEntry = translation.entry
             val keyFromEntry = translationEntry.replace(squareBraceRegex, "[]")
             if (key != keyFromEntry) {
                 allPlaceholderKeysMatchEntry = false
@@ -258,7 +259,7 @@ class TranslationTests {
 
         fun addTranslation(original:String, result:String){
             UncivGame.Current.translations[original.getPlaceholderText()] =TranslationEntry(original)
-                .apply { this["English"] = result }
+                .apply { this[Constants.english] = result }
         }
         addTranslation("The brother of [person]", "The sibling of [person]")
         Assert.assertEquals("The sibling of bob", "The brother of [bob]".tr())

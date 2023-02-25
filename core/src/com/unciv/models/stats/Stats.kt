@@ -1,5 +1,6 @@
 package com.unciv.models.stats
 
+import com.unciv.Constants
 import com.unciv.models.translations.tr
 import kotlin.reflect.KMutableProperty0
 
@@ -81,7 +82,7 @@ open class Stats(
     }
 
     /** Adds each value of another [Stats] instance to this one in place */
-    fun add(other: Stats) {
+    fun add(other: Stats): Stats {
         production += other.production
         food += other.food
         gold += other.gold
@@ -89,6 +90,7 @@ open class Stats(
         culture += other.culture
         happiness += other.happiness
         faith += other.faith
+        return this
     }
 
     /** @return a new [Stats] instance containing the sum of its operands value by value */
@@ -146,6 +148,11 @@ open class Stats(
         return this.joinToString {
             (if (it.value > 0) "+" else "") + it.value.toInt() + " " + it.key.toString().tr()
         }
+    }
+
+    /** Since notificaitons are translated on the fly, when saving stats there we need to do so in English */
+    fun toStringForNotifications() = this.joinToString {
+        (if (it.value > 0) "+" else "") + it.value.toInt() + " " + it.key.toString().tr(Constants.english)
     }
 
     // For display in diplomacy window
@@ -239,9 +246,8 @@ open class Stats(
 
 class StatMap:LinkedHashMap<String,Stats>() {
     fun add(source: String, stats: Stats) {
-        if (!containsKey(source)) put(source, stats)
-        else put(source, get(source)!! + stats)
-        // This CAN'T be get(source)!!.add() because the initial stats we get are sometimes from other places -
-        // for instance the Cities is from the currentCityStats and if we add to that we change the value in the cities themselves!
+        // We always clone to avoid touching the mutable stats of uniques
+        if (!containsKey(source)) put(source, stats.clone())
+        else get(source)!!.add(stats)
     }
 }

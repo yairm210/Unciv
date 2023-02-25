@@ -5,12 +5,13 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
+import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
 import com.unciv.logic.multiplayer.storage.OnlineMultiplayerFiles
-import com.unciv.ui.utils.extensions.isLargerThan
+import com.unciv.ui.components.extensions.isLargerThan
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.Dispatcher
 import com.unciv.utils.concurrency.launchOnThreadPool
@@ -70,11 +71,9 @@ class OnlineMultiplayer {
 
     private fun getCurrentGame(): OnlineMultiplayerGame? {
         val gameInfo = UncivGame.Current.gameInfo
-        if (gameInfo != null) {
-            return getGameByGameId(gameInfo.gameId)
-        } else {
-            return null
-        }
+        return if (gameInfo != null) {
+            getGameByGameId(gameInfo.gameId)
+        } else null
     }
 
     /**
@@ -201,7 +200,8 @@ class OnlineMultiplayer {
         //Add notification so everyone knows what happened
         //call for every civ cause AI players are skipped anyway
         for (civ in gameInfo.civilizations) {
-            civ.addNotification("[${playerCiv.civName}] resigned and is now controlled by AI", playerCiv.civName)
+            civ.addNotification("[${playerCiv.civName}] resigned and is now controlled by AI",
+                NotificationCategory.General, playerCiv.civName)
         }
 
         val newPreview = gameInfo.asPreview()
@@ -273,8 +273,7 @@ class OnlineMultiplayer {
     private fun deleteGame(fileHandle: FileHandle) {
         files.deleteSave(fileHandle)
 
-        val game = savedGames[fileHandle]
-        if (game == null) return
+        val game = savedGames[fileHandle] ?: return
 
         debug("Deleting game %s with id %s", fileHandle.name(), game.preview?.gameId)
         savedGames.remove(game.fileHandle)
@@ -284,18 +283,18 @@ class OnlineMultiplayer {
     /**
      * Fires [MultiplayerGameNameChanged]
      */
-    fun changeGameName(game: OnlineMultiplayerGame, newName: String) {
+    fun changeGameName(game: OnlineMultiplayerGame, newName: String, onException:(Exception?)->Unit) {
         debug("Changing name of game %s to", game.name, newName)
         val oldPreview = game.preview ?: throw game.error!!
         val oldLastUpdate = game.lastUpdate
         val oldName = game.name
 
-        savedGames.remove(game.fileHandle)
-        files.deleteSave(game.fileHandle)
-        val newFileHandle = files.saveGame(oldPreview, newName)
-
+        val newFileHandle = files.saveGame(oldPreview, newName, onException)
         val newGame = OnlineMultiplayerGame(newFileHandle, oldPreview, oldLastUpdate)
         savedGames[newFileHandle] = newGame
+
+        savedGames.remove(game.fileHandle)
+        files.deleteSave(game.fileHandle)
         EventBus.send(MultiplayerGameNameChanged(oldName, newName))
     }
 

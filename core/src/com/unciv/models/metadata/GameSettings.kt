@@ -6,7 +6,8 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.UncivSound
-import com.unciv.ui.utils.Fonts
+import com.unciv.ui.components.FontFamilyData
+import com.unciv.ui.components.Fonts
 import java.text.Collator
 import java.time.Duration
 import java.util.*
@@ -22,21 +23,39 @@ data class WindowState(
     val monitor: String = ""
 )
 
+enum class ScreenSize(val virtualWidth:Float, val virtualHeight:Float){
+    Tiny(750f,500f),
+    Small(900f,600f),
+    Medium(1050f,700f),
+    Large(1200f,800f),
+    Huge(1500f,1000f)
+}
+
+enum class ScreenWindow {
+    Windowed,
+    Fullscreen
+}
+
 class GameSettings {
+
+    var mapAutoScroll: Boolean = false
     var showWorkedTiles: Boolean = false
     var showResourcesAndImprovements: Boolean = true
     var showTileYields: Boolean = false
     var showUnitMovements: Boolean = false
 
     var checkForDueUnits: Boolean = true
+    var autoUnitCycle: Boolean = true
     var singleTapMove: Boolean = false
-    var language: String = "English"
+    var language: String = Constants.english
     @Transient
     var locale: Locale? = null
-    var resolution: String = "900x600" // Auto-detecting resolution was a BAD IDEA since it needs to be based on DPI AND resolution.
+    @Deprecated("Since 4.3.6 - replaces with screenSize")
+    var resolution: String = "900x600"
+    var screenSize:ScreenSize = ScreenSize.Small
+    var screenWindow: ScreenWindow = ScreenWindow.Windowed
     var tutorialsShown = HashSet<String>()
     var tutorialTasksCompleted = HashSet<String>()
-    var hasCrashedRecently = false
 
     var soundEffectsVolume = 0.5f
     var citySoundsVolume = 0.5f
@@ -45,18 +64,21 @@ class GameSettings {
 
     var turnsBetweenAutosaves = 1
     var tileSet: String = Constants.defaultTileset
+    var unitSet: String? = Constants.defaultUnitset
     var skin: String = Constants.defaultSkin
     var showTutorials: Boolean = true
     var autoAssignCityProduction: Boolean = true
     var autoBuildingRoads: Boolean = true
     var automatedWorkersReplaceImprovements = true
+    var automatedUnitsMoveOnTurnStart: Boolean = false
 
     var showMinimap: Boolean = true
     var minimapSize: Int = 6    // default corresponds to 15% screen space
     var unitIconOpacity = 1f // default corresponds to fully opaque
-    var showPixelUnits: Boolean = true
+    val showPixelUnits: Boolean get() = unitSet != null
     var showPixelImprovements: Boolean = true
     var continuousRendering = false
+    var experimentalRendering = false
     var orderTradeOffersByAmount = true
     var confirmNextTurn = false
     var windowState = WindowState()
@@ -67,11 +89,12 @@ class GameSettings {
 
     var notificationsLogMaxTurns = 5
 
+    var showAutosaves: Boolean = false
+
     var androidCutout: Boolean = false
 
     var multiplayer = GameSettingsMultiplayer()
 
-    var showExperimentalWorldWrap = false // We're keeping this as a config due to ANR problems on Android phones for people who don't know what they're doing :/
     var enableEspionageOption = false
 
     var lastOverviewPage: String = "Cities"
@@ -81,8 +104,10 @@ class GameSettings {
     /** Saves the last successful new game's setup */
     var lastGameSetup: GameSetupInfo? = null
 
-    var fontFamily: String = Fonts.DEFAULT_FONT_FAMILY
+    var fontFamilyData: FontFamilyData = FontFamilyData.default
     var fontSizeMultiplier: Float = 1f
+
+    var enableEasterEggs: Boolean = true
 
     /** Maximum zoom-out of the map - performance heavy */
     var maxWorldZoomOut = 2f
@@ -107,6 +132,7 @@ class GameSettings {
 
     fun addCompletedTutorialTask(tutorialTask: String): Boolean {
         if (!tutorialTasksCompleted.add(tutorialTask)) return false
+        UncivGame.Current.isTutorialTaskCollapsed = false
         save()
         return true
     }
@@ -122,6 +148,10 @@ class GameSettings {
         }
     }
 
+    fun getFontSize(): Int {
+        return (Fonts.ORIGINAL_FONT_SIZE * fontSizeMultiplier).toInt()
+    }
+
     fun getCurrentLocale(): Locale {
         if (locale == null)
             updateLocaleFromLanguage()
@@ -130,6 +160,24 @@ class GameSettings {
 
     fun getCollatorFromLocale(): Collator {
         return Collator.getInstance(getCurrentLocale())
+    }
+
+    fun refreshScreenMode() {
+
+        if (Gdx.app.type != Application.ApplicationType.Desktop)
+            return
+
+        when (screenWindow) {
+            ScreenWindow.Windowed -> {
+                Gdx.graphics.setWindowedMode(
+                    windowState.width.coerceAtLeast(120),
+                    windowState.height.coerceAtLeast(80))
+            }
+
+            ScreenWindow.Fullscreen -> {
+                Gdx.graphics.setFullscreenMode(Gdx.graphics.displayMode)
+            }
+        }
     }
 }
 
@@ -175,18 +223,19 @@ enum class LocaleCode(var language: String, var country: String) {
     Turkish("tr", "TR"),
     Ukrainian("uk", "UA"),
     Vietnamese("vi", "VN"),
+    Afrikaans("af", "ZA")
 }
 
 class GameSettingsMultiplayer {
     var userId = ""
-    var server = Constants.dropboxMultiplayerServer
+    var server = Constants.uncivXyzServer
     var friendList: MutableList<FriendList.Friend> = mutableListOf()
     var turnCheckerEnabled = true
     var turnCheckerPersistentNotificationEnabled = true
-    var turnCheckerDelay: Duration = Duration.ofMinutes(5)
+    var turnCheckerDelay = Duration.ofMinutes(5)
     var statusButtonInSinglePlayer = false
-    var currentGameRefreshDelay: Duration = Duration.ofSeconds(10)
-    var allGameRefreshDelay: Duration = Duration.ofMinutes(5)
+    var currentGameRefreshDelay = Duration.ofSeconds(10)
+    var allGameRefreshDelay = Duration.ofMinutes(5)
     var currentGameTurnNotificationSound: UncivSound = UncivSound.Silent
     var otherGameTurnNotificationSound: UncivSound = UncivSound.Silent
     var hideDropboxWarning = false

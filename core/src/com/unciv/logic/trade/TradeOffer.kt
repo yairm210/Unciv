@@ -6,7 +6,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.trade.TradeType.TradeTypeNumberType
 import com.unciv.models.ruleset.Speed
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.Fonts
+import com.unciv.ui.components.Fonts
 
 data class TradeOffer(val name: String, val type: TradeType, var amount: Int = 1, var duration: Int) : IsPartOfGameInfoSerialization {
 
@@ -42,8 +42,8 @@ data class TradeOffer(val name: String, val type: TradeType, var amount: Int = 1
             else -> name
         }.tr()
 
-        if (type.numberType == TradeTypeNumberType.Simple || name == Constants.researchAgreement) offerText += " ($amount)"
-        else if (type.numberType == TradeTypeNumberType.Gold) offerText += " ($amount)"
+        if (type.numberType == TradeTypeNumberType.Simple || type.numberType == TradeTypeNumberType.Gold) offerText += " ($amount)"
+        else if (name == Constants.researchAgreement) offerText += " (-$amount${Fonts.gold})"
 
         if (duration > 0) offerText += "\n" + duration + Fonts.turn
 
