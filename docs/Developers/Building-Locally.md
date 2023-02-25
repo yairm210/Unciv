@@ -26,6 +26,7 @@ So first things first - the initial "No assumptions" setup to have Unciv run fro
     -   Choose "Application"
     -   Give the configuration a name, we recommend "Desktop"
     -   Set the module classpath (the box to the right of the Java selection) to `Unciv.desktop.main` (`Unciv.desktop` for Bumblebee or below), main class to `com.unciv.app.desktop.DesktopLauncher` and `<repo_folder>\android\assets\` as the Working directory, OK to close the window
+        -   It _may_ be useful to set some VM options - activate the field in the run config editor with Alt-V or via the Modify Options menu, then add `-Xmx4096m -Xms256m -XX:MaxMetaspaceSize=256m` to allow a debugged game a little more memory. Or, use the `-DnoLog=` or `-DonlyLog=` options to control console logging. See the [Log.kt](https://github.com/yairm210/Unciv/blob/master/core/src/com/unciv/utils/Log.kt) comments for details.
         -   If you get a `../../docs/uniques.md (No such file or directory)` error that means you forgot to set the working directory!
 -   Select the Desktop configuration (or however you chose to name it) and click the green arrow button to run! Or you can use the next button -the green critter with six legs and two feelers - to start debugging.
 -   A few Android Studio settings that are recommended:
@@ -37,7 +38,7 @@ So first things first - the initial "No assumptions" setup to have Unciv run fro
 
 Unciv uses Gradle to specify dependencies and how to run. In the background, the Gradle gnomes will be off fetching the packages (a one-time effort) and, once that's done, will build the project!
 
-Unciv uses Gradle 7.2 and the Android Gradle Plugin 7.1.3. Can check in File > Project Structure > Project
+Unciv uses Gradle 7.5 and the Android Gradle Plugin 7.3.1. Can check in File > Project Structure > Project
 
 Note advanced build commands as described in the next paragraph, specifically the `gradlew desktop:dist` one to build a jar, run just fine in Android Studio's terminal (Alt+F12), with most dependencies already taken care of.
 
