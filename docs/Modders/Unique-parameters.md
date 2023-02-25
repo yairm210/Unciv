@@ -96,6 +96,18 @@ It can be any value noted in `baseUnitFilter` or one of the following:
 -   `Barbarians`, `Barbarian`
 -   Again, any combination of the above is also allowed, e.g. `[{Wounded} {Water}]` units.
 
+## nationFilter
+
+At the moment only implemented for [ModOptions.nationsToRemove](../Other/Miscellaneous-JSON-files.md#modoptionsjson).
+
+Allowed values are:
+
+- `All`
+- `Major`
+- `CityState`
+- The name of a Nation
+- A unique a Nation has (verbatim, no placeholders)
+
 ## populationFilter
 
 A filter determining a part of the population of a city. It can be any of the following values:
@@ -132,6 +144,17 @@ Each stats is comprised of several stat changes, each in the form of `+{amount} 
 For example: `+1 Science`.
 
 These can be strung together with ", " between them, for example: `+2 Production, +3 Food`.
+
+## technologyFilter
+
+At the moment only implemented for [ModOptions.techsToRemove](../Other/Miscellaneous-JSON-files.md#modoptionsjson).
+
+Allowed values are:
+
+- `All`
+- The name of an Era
+- The name of a Technology
+- A unique a Technology has (verbatim, no placeholders)
 
 ## terrainFilter
 

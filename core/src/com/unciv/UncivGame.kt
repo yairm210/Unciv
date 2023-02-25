@@ -252,7 +252,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
      *
      * Sets the returned `WorldScreen` as the only active screen.
      */
-    suspend fun loadGame(newGameInfo: GameInfo): WorldScreen = withThreadPoolContext toplevel@{
+    suspend fun loadGame(newGameInfo: GameInfo, callFromLoadScreen: Boolean = false): WorldScreen = withThreadPoolContext toplevel@{
         val prevGameInfo = gameInfo
         gameInfo = newGameInfo
 
@@ -266,7 +266,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         initializeResources(prevGameInfo, newGameInfo)
 
         val isLoadingSameGame = worldScreen != null && prevGameInfo != null && prevGameInfo.gameId == newGameInfo.gameId
-        val worldScreenRestoreState = if (isLoadingSameGame) worldScreen!!.getRestoreState() else null
+        val worldScreenRestoreState = if (!callFromLoadScreen && isLoadingSameGame) worldScreen!!.getRestoreState() else null
 
         lateinit var loadingScreen: LoadingScreen
 
@@ -542,7 +542,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.4.18", 817)
+        val VERSION = Version("4.4.19", 818)
         //endregion
 
         lateinit var Current: UncivGame

@@ -290,7 +290,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     /**
      * Update this unit's cache of viewable tiles and its civ's as well.
      */
-    fun updateVisibleTiles(updateCivViewableTiles:Boolean = true) {
+    fun updateVisibleTiles(updateCivViewableTiles:Boolean = true, explorerPosition: Vector2? = null) {
         val oldViewableTiles = viewableTiles
 
         viewableTiles = when {
@@ -302,7 +302,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         // Set equality automatically determines if anything changed - https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-abstract-set/equals.html
         if (updateCivViewableTiles && oldViewableTiles != viewableTiles)
-            civ.cache.updateViewableTiles()
+            civ.cache.updateViewableTiles(explorerPosition)
     }
 
     fun isActionUntilHealed() = action?.endsWith("until healed") == true
@@ -607,7 +607,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             promotions.addPromotion(promotion, true)
         }
 
-        updateVisibleTiles()
+        updateVisibleTiles(true, currentTile.position)
     }
 
     fun putInTile(tile: Tile) {

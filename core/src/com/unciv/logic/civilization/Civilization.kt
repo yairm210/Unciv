@@ -188,6 +188,9 @@ class Civilization : IsPartOfGameInfoSerialization {
     var citiesCreated = 0
     var exploredTiles = HashSet<Vector2>()
 
+    // Limit camera within explored region
+    var exploredRegion = ExploredRegion()
+
     fun hasExplored(tile: Tile) = tile.isExplored(this)
 
     var lastSeenImprovement = HashMapVector2<String>()
@@ -271,6 +274,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         // Cloning it by-pointer is a horrific move, since the serialization would go over it ANYWAY and still lead to concurrency problems.
         // Cloning it by iterating on the tilemap values may seem ridiculous, but it's a perfectly thread-safe way to go about it, unlike the other solutions.
         toReturn.exploredTiles.addAll(gameInfo.tileMap.values.asSequence().map { it.position }.filter { it in exploredTiles })
+        toReturn.exploredRegion = exploredRegion.clone()
         toReturn.lastSeenImprovement.putAll(lastSeenImprovement)
         toReturn.notifications.addAll(notifications)
         toReturn.notificationsLog.addAll(notificationsLog)

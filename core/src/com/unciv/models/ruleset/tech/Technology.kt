@@ -1,7 +1,6 @@
 package com.unciv.models.ruleset.tech
 
 import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
@@ -56,7 +55,7 @@ class Technology: RulesetObject() {
         if (enabledUnits.any()) {
             lineList += "{Units enabled}: "
             for (unit in enabledUnits)
-                lineList += " * " + unit.name.tr() + " (" + unit.getShortDescription() + ")"
+                lineList += " • " + unit.name.tr() + " (" + unit.getShortDescription() + ")"
         }
 
         val enabledBuildings = getEnabledBuildings(ruleset, viewingCiv)
@@ -65,14 +64,14 @@ class Technology: RulesetObject() {
         if (regularBuildings.any()) {
             lineList += "{Buildings enabled}: "
             for (building in regularBuildings)
-                lineList += "* " + building.name.tr() + " (" + building.getShortDescription() + ")"
+                lineList += " • " + building.name.tr() + " (" + building.getShortDescription() + ")"
         }
 
         val wonders = enabledBuildings.filter { it.isAnyWonder() }
         if (wonders.any()) {
             lineList += "{Wonders enabled}: "
             for (wonder in wonders)
-                lineList += " * " + wonder.name.tr() + " (" + wonder.getShortDescription() + ")"
+                lineList += " • " + wonder.name.tr() + " (" + wonder.getShortDescription() + ")"
         }
 
         for (obj in getObsoletedObjects(ruleset, viewingCiv))
@@ -284,5 +283,14 @@ class Technology: RulesetObject() {
         }
 
         return lineList
+    }
+
+    fun matchesFilter(filter: String): Boolean {
+        return when (filter) {
+            "All" -> true
+            name -> true
+            era() -> true
+            else -> uniques.contains(filter)
+        }
     }
 }
