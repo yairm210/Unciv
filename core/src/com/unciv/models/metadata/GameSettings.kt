@@ -22,8 +22,7 @@ data class WindowState(
     // x/y defaults are what setWindowPosition will interpret as "please center on primary monitor",
     // despite being potentially valid in weird multi-monitor setups
     val x: Int = -1,
-    val y: Int = -1,
-    val monitor: String = ""
+    val y: Int = -1
 ) {
     companion object {
         const val minWidth = 120
