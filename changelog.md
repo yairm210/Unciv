@@ -1,3 +1,14 @@
+## 4.4.20
+
+By SomeTroglodyte:
+- Fix problems with dual save folder support 
+- Show UnitTypes in Civilopedia 
+- Resilient UiElementDocsWriter 
+
+Added password authentication as server feature  - By GGGuenni
+
+Map exploring disables undo button + ExploredRegion smallfixes  - By Gualdimar
+
 ## 4.4.19
 
 By Gualdimar:
