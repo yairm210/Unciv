@@ -177,6 +177,7 @@ class FormattedLine (
                 yield(CivilopediaCategories.Improvement to ruleSet.tileImprovements)
                 yield(CivilopediaCategories.Resource to ruleSet.tileResources)
                 yield(CivilopediaCategories.Nation to ruleSet.nations)
+                yield(CivilopediaCategories.UnitType to ruleSet.unitTypes)
                 yield(CivilopediaCategories.Unit to ruleSet.units)
                 yield(CivilopediaCategories.Technology to ruleSet.technologies)
                 yield(CivilopediaCategories.Building to ruleSet.buildings.filter { !it.value.isAnyWonder() })
