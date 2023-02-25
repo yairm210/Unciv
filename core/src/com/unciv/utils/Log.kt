@@ -9,27 +9,23 @@ import java.util.regex.Pattern
  *
  * To stop logging/start logging classes, you have these options:
  *
- * 1. Edit the sets [disableLogsFrom] and/or [onlyLogsFrom] here in the source code
+ * 1. Edit the set [disableLogsFrom] here in the source code
  * 2. Use a Java system property `-DnoLog=<comma-separated-list-of-class-names>` to overwrite [disableLogsFrom] completely
  *    (potentially copy/pasting the default class list from here and adjusting to your liking)
- *    and/or use `-DonlyLog=<comma-separated-list-of-class-names>` to overwrite [onlyLogsFrom]
- * 3. While the application is running, set a breakpoint somewhere and do a "Watch"/"Evaluate expression"
- *    with `Log.disableLogsFrom.add/remove("Something")` and/or `Log.onlyLogsFrom.add/remove("Something")`
- *
- * **Note**: [disableLogsFrom] / [onlyLogsFrom] work as a logical `and`, either test can turn off logging of a class.
+ * 3. While the application is running, set a breakpoint somewhere and do a "Watch"/"Evaluate expression" with `Log.disableLogsFrom.add/remove("Something")`
  */
 object Log {
 
     /** Add -DnoLog=<comma-separated-list-of-class-names> to not log these classes. */
-    /** Log tags (= class names) **containing** these Strings will **not** be logged. */
-    val disableLogsFrom = (System.getProperty("noLog") ?: "")
-        .ifEmpty { "Battle,Music,Sounds,Translations,WorkerAutomation" }
-        .split(',').toMutableSet()
+    private val disabledLogsFromProperty = System.getProperty("noLog")?.split(',')?.toMutableSet() ?: mutableSetOf()
 
-    /** Add -DonlyLog=<comma-separated-list-of-class-names> to log only these classes. */
-    /** Log tags (= class names) **containing** these Strings will be logged, others won't. */
-    val onlyLogsFrom = (System.getProperty("onlyLog") ?: "")
-        .split(',').toMutableSet()
+    /** Log tags (= class names) **containing** these Strings will not be logged.  */
+    val disableLogsFrom = if (disabledLogsFromProperty.isEmpty()) {
+        "Battle,Music,Sounds,Translations,WorkerAutomation"
+            .split(',').toMutableSet()
+    } else {
+        disabledLogsFromProperty
+    }
 
     var backend: LogBackend = DefaultLogBackend()
 
@@ -190,9 +186,6 @@ private fun doLog(logger: (Tag, String, String) -> Unit, tag: Tag, msg: String, 
 }
 
 private fun isTagDisabled(tag: Tag): Boolean {
-    // if we have onlyLog defined and the current tag is _not_ mentioned, then it's disabled
-    if (Log.onlyLogsFrom.isNotEmpty() && Log.onlyLogsFrom.none { it in tag.name })
-        return true
     return Log.disableLogsFrom.any { it in tag.name }
 }
 
@@ -202,7 +195,7 @@ private fun buildThrowableMessage(msg: String, throwable: Throwable): String {
 
 private fun replaceLambdasWithValues(params: Array<out Any?>): Array<out Any?> {
     var out: Array<Any?>? = null
-    for (i in params.indices) {
+    for (i in 0 until params.size) {
         val param = params[i]
         if (param is Function0<*>) {
             if (out == null) out = arrayOf(*params)
@@ -214,8 +207,7 @@ private fun replaceLambdasWithValues(params: Array<out Any?>): Array<out Any?> {
 
 
 private fun getTag(): Tag {
-    val firstOutsideStacktrace =
-            Throwable().stackTrace.first { "com.unciv.utils.Log" !in it.className }
+    val firstOutsideStacktrace = Throwable().stackTrace.filter { "com.unciv.utils.Log" !in it.className }.first()
     val simpleClassName = firstOutsideStacktrace.className.substringAfterLast('.')
     return Tag(removeAnonymousSuffix(simpleClassName))
 }
