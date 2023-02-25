@@ -119,7 +119,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
 
     private fun updateUndoButton() {
         // Don't show the undo button if there is no action to undo
-        if (worldScreen.gameInfo != worldScreen.preActionGameInfo) {
+        if (worldScreen.gameInfo != worldScreen.preActionGameInfo && worldScreen.canChangeState) {
             undoButtonHolder.touchable = Touchable.enabled
             undoButtonHolder.actor = undoButton
         } else {
