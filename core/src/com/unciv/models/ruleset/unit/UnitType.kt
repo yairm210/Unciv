@@ -48,11 +48,25 @@ class UnitType() : RulesetObject() {
         }
     }
 
-    override fun getCivilopediaTextLines(ruleset: Ruleset)  = getUnitTypeCivilopediaTextLines(ruleset)
+    override fun getCivilopediaTextLines(ruleset: Ruleset) = getUnitTypeCivilopediaTextLines(ruleset)
+    override fun getSortGroup(ruleset: Ruleset): Int {
+        return if (name.startsWith("Domain: ")) 1 else 2
+    }
 
     fun isUsed(ruleset: Ruleset) = ruleset.units.values.any { it.unitType == name }
 
     companion object {
         val City = UnitType("City", "Land")
+
+        fun getCivilopediaIterator(ruleset: Ruleset): Collection<UnitType> {
+            return UnitMovementType.values().map {
+                // Create virtual UnitTypes to describe the movement domains - Civilopedia only.
+                // It is important that the name includes the [] _everywhere_
+                // (here, CivilopediaImageGetters, links, etc.) so translation comes as cheap as possible.
+                UnitType("Domain: [${it.name}]", it.name)
+            } + ruleset.unitTypes.values.filter {
+                it.isUsed(ruleset)
+            }
+        }
     }
 }

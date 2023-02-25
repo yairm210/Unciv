@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.IconTextButton
@@ -206,7 +207,7 @@ class CivilopediaScreen(
                 CivilopediaCategories.Terrain -> ruleset.terrains.values
                 CivilopediaCategories.Improvement -> ruleset.tileImprovements.values
                 CivilopediaCategories.Unit -> ruleset.units.values
-                CivilopediaCategories.UnitType -> ruleset.unitTypes.values.filter { it.isUsed(ruleset) }
+                CivilopediaCategories.UnitType -> UnitType.getCivilopediaIterator(ruleset)
                 CivilopediaCategories.Nation -> ruleset.nations.values.filter { !it.isSpectator() }
                 CivilopediaCategories.Technology -> ruleset.technologies.values
                 CivilopediaCategories.Promotion -> ruleset.unitPromotions.values

@@ -9,10 +9,12 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.unit.UnitMovementType
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.surroundWithCircle
 import java.io.File
 
@@ -91,6 +93,13 @@ object CivilopediaImageGetters {
     val belief = { name: String, size: Float ->
         ImageGetter.getReligionPortrait(name, size)
     }
+    val unitType = { name: String, size: Float ->
+        val path = UnitMovementType.values().firstOrNull { "Domain: [${it.name}]" == name }
+            ?.let {"UnitTypeIcons/Domain${it.name}" }
+            ?: "UnitTypeIcons/$name"
+        if (ImageGetter.imageExists(path)) ImageGetter.getImage(path).apply { setSize(size) }
+        else null
+    }
 }
 
 /** Enum used as keys for Civilopedia "pages" (categories).
@@ -138,9 +147,9 @@ enum class CivilopediaCategories (
         "OtherIcons/Shield"
     ),
     UnitType ("Unit types", false,
-        getImage = null,
+        CivilopediaImageGetters.unitType,
         KeyCharAndCode('U'),
-        "OtherIcons/Shield"
+        "UnitTypeIcons/UnitTypes"
     ),
     Nation ("Nations", false,
         CivilopediaImageGetters.nation,
@@ -188,7 +197,7 @@ enum class CivilopediaCategories (
         "OtherIcons/Timer"
     );
 
-    fun getByOffset(offset: Int) = values()[(ordinal + count + offset) % count]
+    private fun getByOffset(offset: Int) = values()[(ordinal + count + offset) % count]
 
     fun nextForKey(key: KeyCharAndCode): CivilopediaCategories {
         for (i in 1..count) {

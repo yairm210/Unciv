@@ -620,7 +620,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Move](https://thenounproject.com/search/?q=move&i=790952) By Sandra for Mobility
 -   [accuracy](https://thenounproject.com/search/?q=accuracy&i=2017348) By vigtographics for Targeting
 -   [location](https://thenounproject.com/search/?q=location&i=2858979) by Humantech for Accuracy
--   [Plane](https://thenounproject.com/search/?q=plane&i=1875398) By Tran Minh Villageois for Interception
+-   [Plane](https://thenounproject.com/search/?q=plane&i=1875398) By Tran Minh Villageois for Interception / Domain Air
 -   [Hammer](https://thenounproject.com/search/?q=hammer&i=854936) by Thengakola for Air Repair
 -   [Hook](https://thenounproject.com/search/?q=hook&i=738678) By Yeong Rong Kim for Boarding Party
 -   [Leaf](https://thenounproject.com/search/?q=Leaf&i=1627477) By Paul Verhulst for Indirect Fire
@@ -633,7 +633,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   Icon for Flight Deck is made by [JackRainy](https://github.com/JackRainy)
 -   Icon for Armor Plating is made by [JackRainy](https://github.com/JackRainy)
 -   [Slingshot](https://thenounproject.com/term/slingshot/9106/) by James Keuning for Slinger Withdraw
--   [Anchor](https://thenounproject.com/term/anchor/676586) by Gregor Cresnar for Amphibious
+-   [Anchor](https://thenounproject.com/term/anchor/676586) by Gregor Cresnar for Amphibious / Domain Water
 -   [survival knife](https://thenounproject.com/search/?q=survival&i=2663392) by b faris for Survivalism
 -   [Shamrock](https://thenounproject.com/term/shamrock/358507/) By P Thanga Vignesh for Pictish Courage
 -   [home sweet home](https://thenounproject.com/term/home-sweet-home/3817166/) By Silviu Ojog for Home Sweet Home
@@ -694,7 +694,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [Magnifying Glass](https://thenounproject.com/term/magnifying-glass/1311/) by John Caserta for Mod filter
 - [tick](https://thenounproject.com/term/tick/3968142/) by Adrien Coquet on Nation picker
 - [people](https://thenounproject.com/term/people/458671) by Wilson Joseph as base for Civilopedia category Nations
-- [Mountains ](https://thenounproject.com/term/mountains/15616/) by Andrew J. Young as base for Civilopedia category Terrains
+- [Mountains ](https://thenounproject.com/term/mountains/15616/) by Andrew J. Young as base for Civilopedia category Terrains / Domain Land
+- Civilopedia category UnitTypes icon done by [SomeTroglodyte](https://github.com/SomeTroglodyte) from sources cited for Interception, Cavalry and Longbowman
 - [File:Maya.svg](https://en.wikipedia.org/wiki/File:Maya.svg) for Mayan numerals
 - [East side of stela C, Quirigua](https://en.wikipedia.org/wiki/File:East_side_of_stela_C,_Quirigua.PNG) for Mayan calendar symbols
 - [Footprints](https://thenounproject.com/icon/footprints-1393611/) by Abdul Wahhab for movement overlay toggle, slightly modified. Currently unused.
@@ -717,51 +718,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [Funny christmas vector](https://www.freepik.com/free-vector/reindeer-santa-hat-peeping-out_1430479.htm) by katemangostar
 - [Santa beard vector](https://www.freepik.com/free-vector/positive-santa-ringing-bell-waving-hand_3636285.htm) by katemangostar
 - [Funny christmas vector](https://www.freepik.com/free-vector/snowman-wearing-santa-hat-scarf-mittens_3636292.htm) by katemangostar
-
-- [Circle](https://thenounproject.com/term/circle/1841891/) By Aybige
-- [Arrow](https://thenounproject.com/term/arrow/18123/) By Joe Mortell for movement
-- [Swap](https://thenounproject.com/search/?q=swap&i=1259600) By iconomania for swapping units
-- [Connection](https://thenounproject.com/search/?q=connection&i=1521886) By Travis Avery
-- [Skull](https://thenounproject.com/search/?q=Skull&i=1030702) By Vladimir Belochkin for disbanding units
-- [Crosshair](https://thenounproject.com/search/?q=crosshairs&i=916030) By Bakunetsu Kaito for selecting enemies to attack
-- [City](https://thenounproject.com/search/?q=city&i=571332) By Felix Westphal
-- [Fire](https://thenounproject.com/search/?q=Fire&i=96564) By Lloyd Humphreys for "city being razed" icon
-- [Sleep](https://thenounproject.com/search/?q=sleep&i=1760085) By Saeful Muslim
-- [Banner](https://thenounproject.com/term/banner/866282/) By Emir Palavan for embarked units
-- [Arrow](https://thenounproject.com/term/arrow/18123/) By uzeir syarief for moving between idle units
-- [Replace](https://thenounproject.com/search/?q=replace&i=17858) By Mike Rowe for switching tiles between cities
-- [Resistance](https://thenounproject.com/term/revolution/1315305/) By HeadsOfBirds
-- [Viking Hat](https://thenounproject.com/search/?q=pillage&i=185405) By my name is mud for pillaging improvements
-- [Aim](https://thenounproject.com/search/?q=aim&i=2034920) By Kaviashri for ranged strength
-- [Capitol](https://thenounproject.com/search/?q=capitol&i=160031) By Loren Klein for City-States
-- [Aircraft](https://thenounproject.com/search/?q=aircraft&i=1629000) By Tom Fricker for aircraft icon in city button
-- [radar scan](https://thenounproject.com/search/?q=range&i=1500234) By icon 54 for Range
-- [short range radar](https://thenounproject.com/search/?q=air%20range&i=2612731) by Vectors Point for Intercept range
 - [AirSweep](https://thenounproject.com/icon/jet-134340/) by Creative Stall for Air Sweep icon
-- [Puppet](https://thenounproject.com/search/?q=puppet&i=285735) By Ben Davis for puppeted cities
-- [City](https://thenounproject.com/search/?q=city&i=1765370) By Muhajir ila Robbi in the Icon center
-- [Lock](https://thenounproject.com/search/?q=lock&i=3217613) by Vadim Solomakhin for locked tiles
-- [Hourglass](https://thenounproject.com/search/?q=hourglass&i=142268) by I Create Stuff for the 'Turn' icon
-- [Shield](https://thenounproject.com/search/?q=shield&i=813568) by Gregor Cresnar for Religious Strength
-- [skill sword flame](https://thenounproject.com/term/skill-sword-flame/2360212/) by Maxicons) for Remove Heresy
-- [Pencil](https://thenounproject.com/search/?q=pencil&i=4195852) by Muhamad Aldi Maulana for Enter Text Prompt Button / Pencil
-- [Parchment](https://thenounproject.com/term/parchment/1516378/) by hans draiman for Cultured City-States
-- [connection](https://thenounproject.com/term/connection/1365233/) by Popular for Mercantile City-States
-- [crossed sword](https://thenounproject.com/term/crossed-sword/2427559/) by ProSymbols for Militaristic City-States
-- [ship helm](https://thenounproject.com/term/ship-helm/2170591/) by Vectors Market for Maritime City-States
-- [Magnifying Glass](https://thenounproject.com/term/magnifying-glass/1311/) by John Caserta for Mod filter
-- [tick](https://thenounproject.com/term/tick/3968142/) by Adrien Coquet on Nation picker
-- [people](https://thenounproject.com/term/people/458671) by Wilson Joseph as base for Civilopedia category Nations
-- [Mountains ](https://thenounproject.com/term/mountains/15616/) by Andrew J. Young as base for Civilopedia category Terrains
-- [File:Maya.svg](https://en.wikipedia.org/wiki/File:Maya.svg) for Mayan numerals
-- [East side of stela C, Quirigua](https://en.wikipedia.org/wiki/File:East_side_of_stela_C,_Quirigua.PNG) for Mayan calendar symbols
-- [Footprints](https://thenounproject.com/icon/footprints-1393611/) by Abdul Wahhab for movement overlay toggle, slightly modified. Currently unused.
-- Arrows.svg by Intralexical (@will-ca), CC0.
-- [favor](https://thenounproject.com/icon/favor-1029350/) by MICHAEL G BROWN for WLTK marker on City Overview
-- [Party](https://thenounproject.com/icon/party-1784941/) by Adrien Coquet for WLTK header on City Overview
-- [Party](https://thenounproject.com/icon/party-2955155/) by Lars Meiertoberens as additional WLKT decoration
-- [turn right](https://thenounproject.com/icon/turn-right-1920867/) by Alice Design for Resource Overview
-- [Tyrannosaurus Rex](https://thenounproject.com/icon/tyrannosaurus-rex-4130976/) by Amethyst Studio for Civilopedia Eras header
 - [Timer](https://www.flaticon.com/free-icons/timer) created by Gregor Cresnar Premium - Flaticon
 - [Political Science](https://www.flaticon.com/premium-icon/political-science_5403775) created by Hilmy Abiyyu A. - Flaticon
 - [Question](https://thenounproject.com/icon/question-1157126/) created by Aneeque Ahmed for Question Icon
