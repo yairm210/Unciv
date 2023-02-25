@@ -34,7 +34,7 @@ abstract class LoadOrSaveScreen(
     abstract fun onExistingSaveSelected(saveGameFile: FileHandle)
     abstract fun doubleClickAction()
 
-    protected var selectedSave = ""
+    protected var selectedSave: FileHandle? = null
         private set
 
     private val savesScrollPane = VerticalFileListScrollPane()
@@ -79,19 +79,20 @@ abstract class LoadOrSaveScreen(
     }
 
     private fun onDeleteClicked() {
-        if (selectedSave.isEmpty()) return
+        if (selectedSave == null) return
+        val name = selectedSave!!.name()
         ConfirmPopup(this, "Are you sure you want to delete this save?", "Delete save") {
             val result = try {
-                if (game.files.deleteSave(selectedSave)) {
+                if (game.files.deleteSave(selectedSave!!)) {
                     resetWindowState()
-                    "[$selectedSave] deleted successfully."
+                    "[$name] deleted successfully."
                 } else {
-                    "Failed to delete [$selectedSave]."
+                    "Failed to delete [$name]."
                 }
             } catch (ex: SecurityException) {
-                "Insufficient permissions to delete [$selectedSave]."
+                "Insufficient permissions to delete [$name]."
             } catch (ex: Throwable) {
-                "Failed to delete [$selectedSave]."
+                "Failed to delete [$name]."
             }
             descriptionLabel.setText(result.tr())
         }.open()
@@ -104,7 +105,7 @@ abstract class LoadOrSaveScreen(
     private fun selectExistingSave(saveGameFile: FileHandle) {
         deleteSaveButton.enable()
 
-        selectedSave = saveGameFile.name()
+        selectedSave = saveGameFile
         showSaveInfo(saveGameFile)
         rightSideButton.isVisible = true
         onExistingSaveSelected(saveGameFile)
