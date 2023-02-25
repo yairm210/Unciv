@@ -197,6 +197,13 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
         onlineMultiplayer = OnlineMultiplayer()
 
+        // Check if the server is available in case the feature set has changed
+        try {
+            onlineMultiplayer.checkServerStatus()
+        } catch (ex: Exception) {
+            debug("Couldn't connect to server: " + ex.message)
+        }
+
         ImageGetter.resetAtlases()
         ImageGetter.setNewRuleset(ImageGetter.ruleset)  // This needs to come after the settings, since we may have default visual mods
         if (settings.tileSet !in ImageGetter.getAvailableTilesets()) { // If one of the tilesets is no longer available, default back

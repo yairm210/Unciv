@@ -3,15 +3,19 @@ package com.unciv.logic.multiplayer
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.json.json
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
+import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
 import com.unciv.logic.multiplayer.storage.OnlineMultiplayerFiles
 import com.unciv.ui.components.extensions.isLargerThan
+import com.unciv.logic.multiplayer.storage.SimpleHttp
+import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.Dispatcher
 import com.unciv.utils.concurrency.launchOnThreadPool
@@ -42,6 +46,7 @@ private val FILE_UPDATE_THROTTLE_PERIOD = Duration.ofSeconds(60)
 class OnlineMultiplayer {
     private val files = UncivGame.Current.files
     private val multiplayerFiles = OnlineMultiplayerFiles()
+    private var featureSet = ServerFeatureSet()
 
     private val savedGames: MutableMap<FileHandle, OnlineMultiplayerGame> = Collections.synchronizedMap(mutableMapOf())
 
@@ -50,6 +55,7 @@ class OnlineMultiplayer {
     private val lastCurGameRefresh: AtomicReference<Instant?> = AtomicReference()
 
     val games: Set<OnlineMultiplayerGame> get() = savedGames.values.toSet()
+    val serverFeatureSet: ServerFeatureSet get() = featureSet
 
     init {
         flow<Unit> {
@@ -178,6 +184,7 @@ class OnlineMultiplayer {
      *
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      * @throws MultiplayerFileNotFoundException if the file can't be found
+     * @throws MultiplayerAuthException if the authentication failed
      * @return false if it's not the user's turn and thus resigning did not happen
      */
     suspend fun resign(game: OnlineMultiplayerGame): Boolean {
@@ -301,6 +308,7 @@ class OnlineMultiplayer {
     /**
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      * @throws MultiplayerFileNotFoundException if the file can't be found
+     * @throws MultiplayerAuthException if the authentication failed
      */
     suspend fun updateGame(gameInfo: GameInfo) {
         debug("Updating remote game %s", gameInfo.gameId)
@@ -321,6 +329,67 @@ class OnlineMultiplayer {
         // TODO look into how to maybe extract interfaces to not make this take two different methods
         return gameInfo.currentPlayer == preview.currentPlayer
                 && gameInfo.turns == preview.turns
+    }
+
+    /**
+     * Checks if the server is alive and sets the [serverFeatureSet] accordingly.
+     * @return true if the server is alive, false otherwise
+     */
+    fun checkServerStatus(): Boolean {
+        var statusOk = false
+        SimpleHttp.sendGetRequest("${UncivGame.Current.settings.multiplayer.server}/isalive") { success, result, _ ->
+            statusOk = success
+            if (result.isNotEmpty()) {
+                featureSet = try {
+                    json().fromJson(ServerFeatureSet::class.java, result)
+                } catch (ex: Exception) {
+                    Log.error("${UncivGame.Current.settings.multiplayer.server} does not support server feature set")
+                    ServerFeatureSet()
+                }
+            }
+        }
+        return statusOk
+    }
+
+    /**
+     * @return true if the authentication was successful or the server does not support authentication.
+     * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
+     * @throws MultiplayerAuthException if the authentication failed
+     */
+    fun authenticate(password: String?): Boolean {
+        if (featureSet.authVersion == 0) {
+            return true
+        }
+
+
+        val settings = UncivGame.Current.settings.multiplayer
+
+        val success = multiplayerFiles.fileStorage().authenticate(
+            userId=settings.userId,
+            password=password ?: settings.passwords[settings.server] ?: ""
+        )
+        if (password != null && success) {
+            settings.passwords[settings.server] = password
+        }
+        return success
+    }
+
+    /**
+     * @return true if setting the password was successful, false otherwise.
+     * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
+     * @throws MultiplayerAuthException if the authentication failed
+     */
+    fun setPassword(password: String): Boolean {
+        if (
+            featureSet.authVersion > 0 &&
+            multiplayerFiles.fileStorage().setPassword(newPassword = password)
+        ) {
+            val settings = UncivGame.Current.settings.multiplayer
+            settings.passwords[settings.server] = password
+            return true
+        }
+
+        return false
     }
 
     /**

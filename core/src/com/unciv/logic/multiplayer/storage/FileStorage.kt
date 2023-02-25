@@ -6,6 +6,7 @@ import java.util.*
 class FileStorageConflictException : Exception()
 class FileStorageRateLimitReached(val limitRemainingSeconds: Int) : UncivShowableException("Server limit reached! Please wait for [${limitRemainingSeconds}] seconds")
 class MultiplayerFileNotFoundException(cause: Throwable?) : UncivShowableException("File could not be found on the multiplayer server", cause)
+class MultiplayerAuthException(cause: Throwable?) : UncivShowableException("Authentication failed", cause)
 
 interface FileMetaData {
     fun getLastModified(): Date?
@@ -14,9 +15,9 @@ interface FileMetaData {
 interface FileStorage {
     /**
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
-     * @throws FileStorageConflictException if the file already exists and [overwrite] is false
+     * @throws MultiplayerAuthException if the authentication failed
      */
-    fun saveFileData(fileName: String, data: String, overwrite: Boolean)
+    fun saveFileData(fileName: String, data: String)
     /**
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      * @throws FileNotFoundException if the file can't be found
@@ -30,6 +31,17 @@ interface FileStorage {
     /**
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      * @throws FileNotFoundException if the file can't be found
+     * @throws MultiplayerAuthException if the authentication failed
      */
     fun deleteFile(fileName: String)
+    /**
+     * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
+     * @throws MultiplayerAuthException if the authentication failed
+     */
+    fun authenticate(userId: String, password: String): Boolean
+    /**
+     * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
+     * @throws MultiplayerAuthException if the authentication failed
+     */
+    fun setPassword(newPassword: String): Boolean
 }

@@ -5,6 +5,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.files.UncivFiles
+import com.unciv.ui.screens.savescreens.Gzip
 
 /**
  * Allows access to games stored on a server for multiplayer purposes.
@@ -23,13 +24,26 @@ class OnlineMultiplayerFiles(
     fun fileStorage(): FileStorage {
         val identifier = if (fileStorageIdentifier == null) UncivGame.Current.settings.multiplayer.server else fileStorageIdentifier
 
-        return if (identifier == Constants.dropboxMultiplayerServer) DropBox else UncivServerFileStorage(identifier!!)
+        return if (identifier == Constants.dropboxMultiplayerServer) {
+            DropBox
+        } else {
+            val settings = UncivGame.Current.settings.multiplayer
+            UncivServerFileStorage.apply {
+                serverUrl = identifier!!
+                authHeader = mapOf(
+                    "Authorization" to "Basic ${Gzip.zip(settings.userId)}:${Gzip.zip(settings.passwords[settings.server] ?: "")}"
+                )
+            }
+        }
     }
 
-    /** @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time */
+    /**
+     * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
+     * @throws MultiplayerAuthException if the authentication failed
+     */
     suspend fun tryUploadGame(gameInfo: GameInfo, withPreview: Boolean) {
         val zippedGameInfo = UncivFiles.gameInfoToString(gameInfo, forceZip = true)
-        fileStorage().saveFileData(gameInfo.gameId, zippedGameInfo, true)
+        fileStorage().saveFileData(gameInfo.gameId, zippedGameInfo)
 
         // We upload the preview after the game because otherwise the following race condition will happen:
         // Current player ends turn -> Uploads Game Preview
@@ -48,13 +62,14 @@ class OnlineMultiplayerFiles(
      * the gameInfo, it is recommended to use tryUploadGame(gameInfo, withPreview = true)
      *
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
+     * @throws MultiplayerAuthException if the authentication failed
      *
      * @see tryUploadGame
      * @see GameInfo.asPreview
      */
     suspend fun tryUploadGamePreview(gameInfo: GameInfoPreview) {
         val zippedGameInfo = UncivFiles.gameInfoToString(gameInfo)
-        fileStorage().saveFileData("${gameInfo.gameId}_Preview", zippedGameInfo, true)
+        fileStorage().saveFileData("${gameInfo.gameId}_Preview", zippedGameInfo)
     }
 
     /**
