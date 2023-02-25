@@ -1,3 +1,15 @@
+## 4.5.0
+
+Added password authentication as server feature  - By GGGuenni
+
+Map exploring disables undo button + ExploredRegion smallfixes  - By Gualdimar
+
+By SomeTroglodyte:
+- Fix problems with dual save folder support
+- Show UnitTypes in Civilopedia
+
+Modding: "must be on/next to" unique for buildings can accepts tile filter
+
 ## 4.4.19
 
 By Gualdimar:

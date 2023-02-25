@@ -949,23 +949,23 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Enables nuclear weapon"
 	Applicable to: Building
 
-??? example  "Must be on [terrainFilter]"
-	Example: "Must be on [Fresh Water]"
+??? example  "Must be on [tileFilter]"
+	Example: "Must be on [Farm]"
 
 	Applicable to: Building
 
-??? example  "Must not be on [terrainFilter]"
-	Example: "Must not be on [Fresh Water]"
+??? example  "Must not be on [tileFilter]"
+	Example: "Must not be on [Farm]"
 
 	Applicable to: Building
 
-??? example  "Must be next to [terrainFilter]"
-	Example: "Must be next to [Fresh Water]"
+??? example  "Must be next to [tileFilter]"
+	Example: "Must be next to [Farm]"
 
 	Applicable to: Building, Improvement
 
-??? example  "Must not be next to [terrainFilter]"
-	Example: "Must not be next to [Fresh Water]"
+??? example  "Must not be next to [tileFilter]"
+	Example: "Must not be next to [Farm]"
 
 	Applicable to: Building
 

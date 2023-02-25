@@ -10,33 +10,33 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
-import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
-import com.unciv.ui.screens.LanguagePickerScreen
-import com.unciv.ui.screens.LoadingScreen
 import com.unciv.ui.audio.GameSounds
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.FontImplementation
+import com.unciv.ui.components.extensions.center
 import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
-import com.unciv.ui.screens.savescreens.LoadGameScreen
-import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
+import com.unciv.ui.screens.LanguagePickerScreen
+import com.unciv.ui.screens.LoadingScreen
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.extensions.center
+import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
+import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.screens.worldscreen.PlayerReadyScreen
 import com.unciv.ui.screens.worldscreen.WorldMapHolder
 import com.unciv.ui.screens.worldscreen.WorldScreen
@@ -196,6 +196,15 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         )
 
         onlineMultiplayer = OnlineMultiplayer()
+
+        Concurrency.run {
+            // Check if the server is available in case the feature set has changed
+            try {
+                onlineMultiplayer.checkServerStatus()
+            } catch (ex: Exception) {
+                debug("Couldn't connect to server: " + ex.message)
+            }
+        }
 
         ImageGetter.resetAtlases()
         ImageGetter.setNewRuleset(ImageGetter.ruleset)  // This needs to come after the settings, since we may have default visual mods
@@ -542,7 +551,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.4.19", 818)
+        val VERSION = Version("4.5.0", 819)
         //endregion
 
         lateinit var Current: UncivGame

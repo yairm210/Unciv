@@ -317,10 +317,10 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     // This doesn't actually directly affect anything, the "Only available <if [Manhattan Project] is constructed>" of the nuclear weapons does that.
     EnablesNuclearWeapons("Enables nuclear weapon", UniqueTarget.Building),
 
-    MustBeOn("Must be on [terrainFilter]", UniqueTarget.Building),
-    MustNotBeOn("Must not be on [terrainFilter]", UniqueTarget.Building),
-    MustBeNextTo("Must be next to [terrainFilter]", UniqueTarget.Building, UniqueTarget.Improvement),
-    MustNotBeNextTo("Must not be next to [terrainFilter]", UniqueTarget.Building),
+    MustBeOn("Must be on [tileFilter]", UniqueTarget.Building),
+    MustNotBeOn("Must not be on [tileFilter]", UniqueTarget.Building),
+    MustBeNextTo("Must be next to [tileFilter]", UniqueTarget.Building, UniqueTarget.Improvement),
+    MustNotBeNextTo("Must not be next to [tileFilter]", UniqueTarget.Building),
 
     Unsellable("Unsellable", UniqueTarget.Building),
     ObsoleteWith("Obsolete with [tech]", UniqueTarget.Building, UniqueTarget.Resource, UniqueTarget.Improvement),
