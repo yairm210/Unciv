@@ -1,6 +1,5 @@
 package com.unciv.app.desktop
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3WindowAdapter
 import com.sun.jna.Native
@@ -102,7 +101,7 @@ class UncivWindowListener(initialState: WindowState) : Lwjgl3WindowAdapter() {
 
     internal fun getWindowState(): WindowState? {
         return (if (isMaximized) normalWindowDimensions else getCurrentWindowDimensions())
-            ?.run { WindowState(width, height, isMaximized, x, y, Gdx.graphics.monitor.name) }
+            ?.run { WindowState(width, height, isMaximized, x, y) }
     }
 
 
