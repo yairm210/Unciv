@@ -366,6 +366,16 @@ object Battle {
         val defenderDamageDealt = attackerHealthBefore - attacker.getHealth()
         val attackerDamageDealt = defenderHealthBefore - defender.getHealth()
 
+        if (attacker is MapUnitCombatant)
+            for (unique in attacker.unit.getTriggeredUniques(UniqueType.TriggerUponPromotion))
+                if (unique.conditionals.any { it.params[0].toInt() <= defenderDamageDealt })
+                    UniqueTriggerActivation.triggerUnitwideUnique(unique, attacker.unit)
+
+        if (defender is MapUnitCombatant)
+            for (unique in defender.unit.getTriggeredUniques(UniqueType.TriggerUponPromotion))
+                if (unique.conditionals.any { it.params[0].toInt() <= attackerDamageDealt })
+                    UniqueTriggerActivation.triggerUnitwideUnique(unique, defender.unit)
+
         plunderFromDamage(attacker, defender, attackerDamageDealt)
         return DamageDealt(attackerDamageDealt, defenderDamageDealt)
     }

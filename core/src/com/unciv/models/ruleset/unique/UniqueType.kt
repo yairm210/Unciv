@@ -735,6 +735,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     TriggerUponDefeatingUnit("upon defeating a [mapUnitFilter] unit", UniqueTarget.UnitTriggerCondition),
     TriggerUponDefeat("upon being defeated", UniqueTarget.UnitTriggerCondition),
     TriggerUponPromotion("upon being promoted", UniqueTarget.UnitTriggerCondition),
+    TriggerUponLosingHealth("upon losing at least [amount] HP in a single attack", UniqueTarget.UnitTriggerCondition),
 
     //endregion
 
