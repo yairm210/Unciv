@@ -28,6 +28,7 @@ import com.unciv.ui.components.extensions.keyShortcuts
 import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.onChange
 import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
@@ -36,16 +37,13 @@ import com.unciv.ui.components.extensions.toTextButton
 class GameOptionsTable(
     val previousScreen: IPreviousScreen,
     val isPortrait: Boolean = false,
-    val updatePlayerPickerTable:(desiredCiv:String)->Unit
+    val updatePlayerPickerTable: (desiredCiv:String)->Unit
 ) : Table(BaseScreen.skin) {
     var gameParameters = previousScreen.gameSetupInfo.gameParameters
     val ruleset = previousScreen.ruleset
     var locked = false
     var modCheckboxes: ModCheckboxTable? = null
         private set
-    var keepAdvancedTabOpenForNationsPool = false
-    var keepAdvancedTabOpenForRandomNations = false
-    var keepAdvancedTabOpenForRandomCityStates = false
 
     init {
         getGameOptionsTable()
@@ -92,8 +90,6 @@ class GameOptionsTable(
         }).row()
         addVictoryTypeCheckboxes()
 
-
-
         val checkboxTable = Table().apply { defaults().left().pad(2.5f) }
         checkboxTable.addIsOnlineMultiplayerCheckbox()
         if (gameParameters.isOnlineMultiplayer)
@@ -102,7 +98,10 @@ class GameOptionsTable(
 
         val expander = ExpanderTab(
             "Advanced Settings",
-            startsOutOpened = keepAdvancedTabOpenForNationsPool || keepAdvancedTabOpenForRandomNations || keepAdvancedTabOpenForRandomCityStates) {
+            startsOutOpened = gameParameters.enableRandomNationsPool,
+            persistenceID = "GameOptionsTable.Advanced"
+        ) {
+            it.defaults().pad(5f, 0f)
             it.addNoCityRazingCheckbox()
             it.addNoBarbariansCheckbox()
             it.addRagingBarbariansCheckbox()
@@ -118,11 +117,10 @@ class GameOptionsTable(
                 it.addNationsSelectTextButton()
             }
         }
-        add(expander).pad(10f).padTop(10f).growX().row()
-
+        add(expander).pad(10f).row()
 
         if (!isPortrait)
-            add(modCheckboxes).row()
+            add(modCheckboxes).padTop(0f).row()
 
         pack()
     }
@@ -178,8 +176,7 @@ class GameOptionsTable(
     private fun Table.addRandomNationsPoolCheckbox() =
             addCheckbox("Set available nations for random pool", gameParameters.enableRandomNationsPool) {
                 gameParameters.enableRandomNationsPool = it
-                keepAdvancedTabOpenForNationsPool = it
-                update()
+                update()  // To show the button opening the chooser popup
             }
 
     private fun Table.addNationsSelectTextButton() {
@@ -209,16 +206,14 @@ class GameOptionsTable(
             addCheckbox("Random number of Civilizations", gameParameters.randomNumberOfPlayers)
             {
                 gameParameters.randomNumberOfPlayers = it
-                keepAdvancedTabOpenForRandomNations = it
-                update()
+                update()  // To see the new sliders
             }
 
     private fun Table.addRandomCityStatesCheckbox() =
             addCheckbox("Random number of City-States", gameParameters.randomNumberOfCityStates)
             {
                 gameParameters.randomNumberOfCityStates = it
-                keepAdvancedTabOpenForRandomCityStates = it
-                update()
+                update()  // To see the changed sliders
             }
 
     private fun Table.addMinPlayersSlider() {
@@ -459,12 +454,14 @@ private class RandomNationPickerPopup(
     private val selectedNationsListTable = Table()
     private val selectedNationsListScroll = AutoScrollPane(selectedNationsListTable)
     private var bannedNations = gameParameters.randomNations
-    var availableNations = arrayListOf<Nation>()
+    var availableNations = arrayListOf<String>()
+
+    private val ruleset = previousScreen.ruleset
 
     init {
         var nationListScrollY = 0f
-        availableNations += previousScreen.ruleset.nations.values.asSequence()
-            .filter { it.isMajorCiv() }
+        availableNations += ruleset.nations.values.asSequence()
+            .filter { it.isMajorCiv() }.map { it.name }
         nationListScroll.setOverscroll(false, false)
         // +10, because the nation table has a 5f pad, for a total of +10f
         if (stageToShowOn.isNarrowerThan4to3()) {
@@ -515,10 +512,11 @@ private class RandomNationPickerPopup(
         nationListTable.clear()
         bannedNations = gameParameters.randomNations
         availableNations -= bannedNations.toSet()
-        availableNations = availableNations.sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.name.tr() }).toMutableList() as ArrayList<Nation>
+        availableNations = availableNations.sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.tr() }).toMutableList() as ArrayList<String>
 
         var currentY = 0f
-        for (nation in availableNations) {
+        for (nationName in availableNations) {
+            val nation = ruleset.nations[nationName] ?: continue
             val nationTable = NationTable(nation, civBlocksWidth, 0f) // no need for min height
             val cell = nationListTable.add(nationTable)
             currentY += cell.padBottom + cell.prefHeight + cell.padTop
@@ -528,15 +526,7 @@ private class RandomNationPickerPopup(
             }
         }
 
-        if (bannedNations.isNotEmpty()) {
-            selectedNationsListTable.clear()
-
-            for (currentNation in bannedNations) {
-                val nationTable = NationTable(currentNation, civBlocksWidth, 0f)
-                nationTable.onClick { removeNationFromPool(currentNation) }
-                selectedNationsListTable.add(nationTable).row()
-            }
-        }
+        updateNationListTable()
     }
 
     private fun String.toImageButton(overColor: Color): Group {
@@ -553,7 +543,8 @@ private class RandomNationPickerPopup(
     private fun updateNationListTable() {
         selectedNationsListTable.clear()
 
-        for (currentNation in bannedNations) {
+        for (nationName in bannedNations) {
+            val currentNation = ruleset.nations[nationName] ?: continue
             val nationTable = NationTable(currentNation, civBlocksWidth, 0f)
             nationTable.onClick { removeNationFromPool(currentNation) }
             selectedNationsListTable.add(nationTable).row()
@@ -561,18 +552,17 @@ private class RandomNationPickerPopup(
     }
 
     private fun addNationToPool(nation: Nation) {
-        bannedNations.add(nation)
+        availableNations.remove(nation.name)
+        bannedNations.add(nation.name)
 
         update()
-        updateNationListTable()
     }
 
     private fun removeNationFromPool(nation: Nation) {
-        availableNations.add(nation)
-        bannedNations.remove(nation)
+        availableNations.add(nation.name)
+        bannedNations.remove(nation.name)
 
         update()
-        updateNationListTable()
     }
 
     private fun returnSelected() {
@@ -588,8 +578,5 @@ private class RandomNationPickerPopup(
         gameParameters.randomNations = bannedNations
 
         update()
-        updateNationListTable()
     }
 }
-
-

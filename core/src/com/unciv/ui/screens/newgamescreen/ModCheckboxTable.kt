@@ -30,7 +30,7 @@ class ModCheckboxTable(
     private val screen: BaseScreen,
     isPortrait: Boolean = false,
     onUpdate: (String) -> Unit
-): Table(){
+): Table() {
     private val modRulesets = RulesetCache.values.filter { it.name != "" && !it.modOptions.isBaseRuleset}
     private var lastToast: ToastPopup? = null
     private val extensionRulesetModButtons = ArrayList<CheckBox>()
