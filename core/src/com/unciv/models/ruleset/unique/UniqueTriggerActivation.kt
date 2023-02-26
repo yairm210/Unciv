@@ -624,7 +624,7 @@ object UniqueTriggerActivation {
                     unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units, unit.name)
                 return true
             }
-            else -> return false
+            else -> return triggerCivwideUnique(unique, civInfo = unit.civ, tile=unit.currentTile)
         }
     }
 }
