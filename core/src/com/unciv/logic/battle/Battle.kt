@@ -557,7 +557,7 @@ object Battle {
             for (airUnit in airUnits.toList()) airUnit.destroy()
         }
 
-        val stateForConditionals = StateForConditionals(civInfo = attackerCiv, unit = attacker.unit, ourCombatant = attacker, attackedTile = city.getCenterTile())
+        val stateForConditionals = StateForConditionals(civInfo = attackerCiv, city=city, unit = attacker.unit, ourCombatant = attacker, attackedTile = city.getCenterTile())
         for (unique in attacker.getMatchingUniques(UniqueType.CaptureCityPlunder, stateForConditionals, true)) {
             attackerCiv.addStat(
                 Stat.valueOf(unique.params[2]),
@@ -584,9 +584,8 @@ object Battle {
         if (attackerCiv.isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Conquer a city")
 
-        for (unique in attackerCiv.getTriggeredUniques(UniqueType.TriggerUponConqueringCity,
-                StateForConditionals(attackerCiv, city, attacker.unit, attackedTile = city.getCenterTile() )
-        ))
+        for (unique in attackerCiv.getTriggeredUniques(UniqueType.TriggerUponConqueringCity, stateForConditionals)
+                + attacker.unit.getTriggeredUniques(UniqueType.TriggerUponConqueringCity, stateForConditionals))
             UniqueTriggerActivation.triggerCivwideUnique(unique, attackerCiv, city)
     }
 
