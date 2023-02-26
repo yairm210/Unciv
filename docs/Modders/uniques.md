@@ -92,9 +92,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Triggerable, UnitTriggerable, Global, Nation, Era, Tech, Policy, FounderBelief, FollowerBelief, Building, Wonder, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Tutorial, CityState, ModOptions, Conditional, TriggerCondition, UnitTriggerCondition
-
 ## UnitTriggerable uniques
 ??? example  "Heal this unit by [amount] HP"
 	Example: "Heal this unit by [3] HP"
@@ -840,6 +837,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "Starts with [Oligarchy] adopted"
 
 	Applicable to: Nation
+
+??? example  "Will not be displayed in Civilopedia"
+	Applicable to: Nation, Tech, Policy, Building, Unit, Promotion, Terrain, Improvement, Resource, Ruins
 
 ## Era uniques
 ??? example  "Starting in this era disables religion"
@@ -1959,6 +1959,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;upon losing at least [amount] HP in a single attack&gt;"
 	Example: "&lt;upon losing at least [3] HP in a single attack&gt;"
+
+	Applicable to: UnitTriggerCondition
+
+??? example  "&lt;upon ending a turn in a [tileFilter] tile&gt;"
+	Example: "&lt;upon ending a turn in a [Farm] tile&gt;"
 
 	Applicable to: UnitTriggerCondition
 
