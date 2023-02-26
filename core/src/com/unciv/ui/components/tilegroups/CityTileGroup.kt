@@ -111,6 +111,11 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings) 
                 layerMisc.dimYields(false)
             }
 
+            // Provides yield without worker assigned (isWorked already tested above)
+            tile.providesYield() -> {
+                // defaults are OK
+            }
+
             // Not-worked
             else -> {
                 icon = ImageGetter.getImage("TileIcons/NotWorked")
