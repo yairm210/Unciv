@@ -689,11 +689,11 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     OneTimeGlobalAlert("Triggers the following global alert: [comment]", UniqueTarget.Policy), // used in Policy
     OneTimeGlobalSpiesWhenEnteringEra("Every major Civilization gains a spy once a civilization enters this era", UniqueTarget.Era),
 
-    OneTimeUnitHeal("Heal this unit by [amount] HP", UniqueTarget.Promotion),
-    OneTimeUnitGainXP("This Unit gains [amount] XP", UniqueTarget.Ruins),
-    OneTimeUnitUpgrade("This Unit upgrades for free", UniqueTarget.Global),  // Not used in Vanilla
+    OneTimeUnitHeal("Heal this unit by [amount] HP", UniqueTarget.Unit),
+    OneTimeUnitGainXP("This Unit gains [amount] XP", UniqueTarget.Ruins, UniqueTarget.Unit),
+    OneTimeUnitUpgrade("This Unit upgrades for free", UniqueTarget.Global, UniqueTarget.Unit),  // Not used in Vanilla
     OneTimeUnitSpecialUpgrade("This Unit upgrades for free including special upgrades", UniqueTarget.Ruins),
-    OneTimeUnitGainPromotion("This Unit gains the [promotion] promotion", UniqueTarget.Triggerable),  // Not used in Vanilla
+    OneTimeUnitGainPromotion("This Unit gains the [promotion] promotion", UniqueTarget.Triggerable, UniqueTarget.Unit),  // Not used in Vanilla
     SkipPromotion("Doing so will consume this opportunity to choose a Promotion", UniqueTarget.Promotion),
 
     UnitsGainPromotion("[mapUnitFilter] units gain the [promotion] promotion", UniqueTarget.Triggerable),  // Not used in Vanilla
@@ -723,6 +723,12 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     TriggerUponFoundingReligion("upon founding a Religion", UniqueTarget.TriggerCondition),
     TriggerUponEnhancingReligion("upon enhancing a Religion", UniqueTarget.TriggerCondition),
 
+    //endregion
+
+
+    ///////////////////////////////////////// region UNIT TRIGGERS /////////////////////////////////////////
+
+    TriggerUponDefeatingUnit("upon defeating a [mapUnitFilter] unit", UniqueTarget.TriggerCondition),
 
     //endregion
 
