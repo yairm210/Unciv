@@ -1104,9 +1104,10 @@ object Battle {
     }
 
     private fun doDestroyImprovementsAbility(attacker: MapUnitCombatant, attackedTile: Tile, defender: ICombatant) {
+        if (attackedTile.improvement == null) return
+
         val conditionalState = StateForConditionals(attacker.getCivInfo(), ourCombatant = attacker, theirCombatant = defender, combatAction = CombatAction.Attack, attackedTile = attackedTile)
-        if (attackedTile.improvement != Constants.barbarianEncampment
-            && attackedTile.getTileImprovement()?.isAncientRuinsEquivalent() != true
+        if (!attackedTile.getTileImprovement()!!.hasUnique(UniqueType.Unpillagable)
             && attacker.hasUnique(UniqueType.DestroysImprovementUponAttack, conditionalState)
         ) {
             attackedTile.changeImprovement(null)
