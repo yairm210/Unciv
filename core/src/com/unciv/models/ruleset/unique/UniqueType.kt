@@ -52,7 +52,8 @@ enum class UniqueTarget(val inheritsFrom: UniqueTarget? = null) {
     CityState(Global),
     ModOptions,
     Conditional,
-    TriggerCondition(Global)
+    TriggerCondition(Global),
+    UnitTriggerCondition(TriggerCondition)
     ;
 
     fun canAcceptUniqueTarget(uniqueTarget: UniqueTarget): Boolean {
@@ -730,7 +731,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     ///////////////////////////////////////// region UNIT TRIGGERS /////////////////////////////////////////
 
-    TriggerUponDefeatingUnit("upon defeating a [mapUnitFilter] unit", UniqueTarget.TriggerCondition),
+    TriggerUponDefeatingUnit("upon defeating a [mapUnitFilter] unit", UniqueTarget.UnitTriggerCondition),
+    TriggerUponDefeat("upon defeat", UniqueTarget.UnitTriggerCondition),
 
     //endregion
 

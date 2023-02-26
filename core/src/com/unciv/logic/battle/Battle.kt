@@ -149,7 +149,7 @@ object Battle {
         if (!defender.isDefeated() && defender is MapUnitCombatant && defender.unit.isExploring())
             defender.unit.action = null
 
-        fun triggerUniques(ourUnit:MapUnitCombatant, enemy:MapUnitCombatant){
+        fun triggerVictoryUniques(ourUnit:MapUnitCombatant, enemy:MapUnitCombatant){
             val stateForConditionals = StateForConditionals(civInfo = ourUnit.getCivInfo(),
                 ourCombatant = ourUnit, theirCombatant=enemy, tile = attackedTile)
             for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeatingUnit, stateForConditionals))
@@ -158,19 +158,28 @@ object Battle {
                     UniqueTriggerActivation.triggerUnitwideUnique(unique, ourUnit.unit)
         }
 
+        fun triggerDefeatUniques(ourUnit: MapUnitCombatant, enemy: ICombatant){
+            val stateForConditionals = StateForConditionals(civInfo = ourUnit.getCivInfo(),
+                ourCombatant = ourUnit, theirCombatant=enemy, tile = attackedTile)
+            for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeat, stateForConditionals))
+                UniqueTriggerActivation.triggerUnitwideUnique(unique, ourUnit.unit)
+        }
+
         // Add culture when defeating a barbarian when Honor policy is adopted, gold from enemy killed when honor is complete
         // or any enemy military unit with Sacrificial captives unique (can be either attacker or defender!)
         if (defender.isDefeated() && defender is MapUnitCombatant && !defender.unit.isCivilian()) {
             tryEarnFromKilling(attacker, defender)
             tryHealAfterKilling(attacker)
 
-            if (attacker is MapUnitCombatant) triggerUniques(attacker, defender)
+            if (attacker is MapUnitCombatant) triggerVictoryUniques(attacker, defender)
+            triggerDefeatUniques(defender, attacker)
 
         } else if (attacker.isDefeated() && attacker is MapUnitCombatant && !attacker.unit.isCivilian()) {
             tryEarnFromKilling(defender, attacker)
             tryHealAfterKilling(defender)
 
-            if (defender is MapUnitCombatant) triggerUniques(defender, attacker)
+            if (defender is MapUnitCombatant) triggerVictoryUniques(defender, attacker)
+            triggerDefeatUniques(attacker, defender)
         }
 
         if (attacker is MapUnitCombatant) {
