@@ -53,7 +53,9 @@ object UniqueTriggerActivation {
             UniqueType.OneTimeFreeUnit -> {
                 val unitName = unique.params[0]
                 val unit = ruleSet.units[unitName]
-                if (chosenCity == null || unit == null || (unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger()))
+                if (chosenCity == null
+                        || unit == null
+                        || unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger())
                     return false
 
                 val placedUnit = civInfo.units.addUnit(unitName, chosenCity) ?: return false
