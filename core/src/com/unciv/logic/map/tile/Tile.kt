@@ -243,20 +243,20 @@ open class Tile : IsPartOfGameInfoSerialization {
     fun isExplored(player: Civilization): Boolean {
         if (UncivGame.Current.viewEntireMapForDebug || player.isSpectator())
             return true
-        return exploredBy.contains(player.civName) || player.exploredTiles.contains(position)
+        return exploredBy.contains(player.civName)
     }
 
     fun setExplored(player: Civilization, isExplored: Boolean, explorerPosition: Vector2? = null) {
         if (isExplored) {
-            exploredBy.add(player.civName)
+            player.exploredTiles.add(position)
 
             // Disable the undo button if a new tile has been explored
-            if (player.exploredTiles.add(position) && GUI.isWorldLoaded()) {
+            if (exploredBy.add(player.civName) && GUI.isWorldLoaded()) {
                 val worldScreen = GUI.getWorldScreen()
                 worldScreen.preActionGameInfo = worldScreen.gameInfo
             }
 
-            if(player.playerType == PlayerType.Human)
+            if (player.playerType == PlayerType.Human)
                 player.exploredRegion.checkTilePosition(position, explorerPosition)
         } else {
             exploredBy.remove(player.civName)
