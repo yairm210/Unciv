@@ -39,7 +39,7 @@ class UniqueDocsWriter {
         // The UniqueType are shown in enum order within their group, and groups are ordered
         // by their UniqueTarget.ordinal as well - source code order.
         val targetTypesToUniques: Map<UniqueTarget, List<UniqueType>> =
-            if(showUniqueOnOneTarget)
+            if (showUniqueOnOneTarget)
                 UniqueType.values().asSequence()
                     .groupBy { it.targetTypes.minOrNull()!! }
                     .toSortedMap()
