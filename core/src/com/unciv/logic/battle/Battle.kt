@@ -149,14 +149,28 @@ object Battle {
         if (!defender.isDefeated() && defender is MapUnitCombatant && defender.unit.isExploring())
             defender.unit.action = null
 
+        fun triggerUniques(ourUnit:MapUnitCombatant, enemy:MapUnitCombatant){
+            val stateForConditionals = StateForConditionals(civInfo = ourUnit.getCivInfo(),
+                ourCombatant = ourUnit, theirCombatant=enemy, tile = attackedTile)
+            for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeatingUnit, stateForConditionals))
+                if (unique.conditionals.any { it.type == UniqueType.TriggerUponDefeatingUnit
+                                && enemy.unit.matchesFilter(it.params[0]) })
+                    UniqueTriggerActivation.triggerUnitwideUnique(unique, ourUnit.unit)
+        }
+
         // Add culture when defeating a barbarian when Honor policy is adopted, gold from enemy killed when honor is complete
         // or any enemy military unit with Sacrificial captives unique (can be either attacker or defender!)
         if (defender.isDefeated() && defender is MapUnitCombatant && !defender.unit.isCivilian()) {
             tryEarnFromKilling(attacker, defender)
             tryHealAfterKilling(attacker)
+
+            if (attacker is MapUnitCombatant) triggerUniques(attacker, defender)
+
         } else if (attacker.isDefeated() && attacker is MapUnitCombatant && !attacker.unit.isCivilian()) {
             tryEarnFromKilling(defender, attacker)
             tryHealAfterKilling(defender)
+
+            if (defender is MapUnitCombatant) triggerUniques(defender, attacker)
         }
 
         if (attacker is MapUnitCombatant) {

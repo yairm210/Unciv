@@ -186,6 +186,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     // This is basically a way to ensure our lists are immutable.
     var cities = listOf<City>()
     var citiesCreated = 0
+    @Deprecated("4.5.0 - in favor of Tile.exploredBy")
     var exploredTiles = HashSet<Vector2>()
 
     // Limit camera within explored region

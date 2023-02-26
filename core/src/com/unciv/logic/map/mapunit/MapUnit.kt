@@ -425,6 +425,11 @@ class MapUnit : IsPartOfGameInfoSerialization {
         updateUniques()
     }
 
+    fun getTriggeredUniques(trigger: UniqueType,
+                            stateForConditionals: StateForConditionals = StateForConditionals(civInfo = civ, unit = this)): Sequence<Unique> {
+        return getUniques().filter { it.conditionals.any { it.type == trigger } && it.conditionalsApply(stateForConditionals) }
+    }
+
     fun useMovementPoints(amount: Float) {
         turnsFortified = 0
         currentMovement -= amount

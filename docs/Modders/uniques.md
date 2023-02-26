@@ -80,7 +80,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "This Unit gains the [promotion] promotion"
 	Example: "This Unit gains the [Shock I] promotion"
 
-	Applicable to: Triggerable
+	Applicable to: Triggerable, Unit
 
 ??? example  "[mapUnitFilter] units gain the [promotion] promotion"
 	Example: "[Wounded] units gain the [Shock I] promotion"
@@ -814,7 +814,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, Unit
 
 ??? example  "This Unit upgrades for free"
-	Applicable to: Global
+	Applicable to: Global, Unit
 
 ## Nation uniques
 ??? example  "Will not be chosen for new games"
@@ -1300,12 +1300,17 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Unit
 
-## Promotion uniques
 ??? example  "Heal this unit by [amount] HP"
 	Example: "Heal this unit by [3] HP"
 
-	Applicable to: Promotion
+	Applicable to: Unit
 
+??? example  "This Unit gains [amount] XP"
+	Example: "This Unit gains [3] XP"
+
+	Applicable to: Unit, Ruins
+
+## Promotion uniques
 ??? example  "Doing so will consume this opportunity to choose a Promotion"
 	Applicable to: Promotion
 
@@ -1609,11 +1614,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "From a randomly chosen tile [amount] tiles away from the ruins, reveal tiles up to [amount] tiles away with [amount]% chance"
 	Example: "From a randomly chosen tile [3] tiles away from the ruins, reveal tiles up to [3] tiles away with [3]% chance"
-
-	Applicable to: Ruins
-
-??? example  "This Unit gains [amount] XP"
-	Example: "This Unit gains [3] XP"
 
 	Applicable to: Ruins
 
@@ -1942,6 +1942,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: TriggerCondition
 
 ??? example  "&lt;upon enhancing a Religion&gt;"
+	Applicable to: TriggerCondition
+
+??? example  "&lt;upon defeating a [unitFilter] unit&gt;"
+	Example: "&lt;upon defeating a [Unknown] unit&gt;"
+
 	Applicable to: TriggerCondition
 
 

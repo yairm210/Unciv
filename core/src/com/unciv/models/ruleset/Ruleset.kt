@@ -162,7 +162,7 @@ class Ruleset {
         cityStateTypes.putAll(ruleset.cityStateTypes)
         ruleset.modOptions.unitsToRemove
             .flatMap { unitToRemove ->
-                units.filter { it.value.matchesFilter(unitToRemove) }.keys
+                units.filter { it.apply { value.ruleset=this@Ruleset }.value.matchesFilter(unitToRemove) }.keys
             }.toSet().forEach {
                 units.remove(it)
             }
