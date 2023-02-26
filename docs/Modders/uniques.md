@@ -114,9 +114,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: UnitTriggerable
 
-??? example  "upon conquering a city"
-	Applicable to: UnitTriggerable, TriggerCondition
-
 ## Global uniques
 ??? example  "[stats]"
 	Example: "[+1 Gold, +2 Production]"
@@ -1914,6 +1911,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;upon entering a Golden Age&gt;"
 	Applicable to: TriggerCondition
+
+??? example  "&lt;upon conquering a city&gt;"
+	Applicable to: TriggerCondition, UnitTriggerCondition
 
 ??? example  "&lt;upon founding a city&gt;"
 	Applicable to: TriggerCondition

@@ -715,7 +715,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     TriggerUponDeclaringFriendship("upon declaring friendship", UniqueTarget.TriggerCondition),
     TriggerUponEnteringGoldenAge("upon entering a Golden Age", UniqueTarget.TriggerCondition),
     /** Can be placed upon both units and as global */
-    TriggerUponConqueringCity("upon conquering a city", UniqueTarget.TriggerCondition, UniqueTarget.UnitTriggerable),
+    TriggerUponConqueringCity("upon conquering a city", UniqueTarget.TriggerCondition, UniqueTarget.UnitTriggerCondition),
     TriggerUponFoundingCity("upon founding a city", UniqueTarget.TriggerCondition),
     TriggerUponDiscoveringNaturalWonder("upon discovering a Natural Wonder", UniqueTarget.TriggerCondition),
     TriggerUponConstructingBuilding("upon constructing [buildingFilter]", UniqueTarget.TriggerCondition),
