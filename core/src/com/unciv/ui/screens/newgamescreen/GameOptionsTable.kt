@@ -195,7 +195,7 @@ class GameOptionsTable(
         val button = "Select nations".toTextButton()
         button.onClick {
             val popup = RandomNationPickerPopup(previousScreen, gameParameters) {
-                if (gameParameters.randomNations.isEmpty()) {
+                if (gameParameters.randomNationsPool.isEmpty()) {
                     gameParameters.enableRandomNationsPool = false
                     randomNationsPoolCheckbox?.isChecked = false
                 }
@@ -487,7 +487,7 @@ private class RandomNationPickerPopup(
             sortedNations.map { NationTable(it, civBlocksWidth, 0f) }  // no need for min height
         )
         availableNations = sortedNations.map { it.name }.toMutableSet()
-        selectedNations = gameParameters.randomNations.intersect(availableNations) as MutableSet<String>
+        selectedNations = gameParameters.randomNationsPool.intersect(availableNations) as MutableSet<String>
         availableNations.removeAll(selectedNations)
 
         availableNationsListScroll.setOverscroll(false, false)
@@ -574,7 +574,7 @@ private class RandomNationPickerPopup(
 
     private fun returnSelected() {
         close()
-        gameParameters.randomNations = ArrayList(selectedNations)
+        gameParameters.randomNationsPool = ArrayList(selectedNations)
         onExit()
     }
 
