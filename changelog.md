@@ -1,47 +1,18 @@
 ## 4.5.1
 
+Introduced unit triggers!
+
 Added triggered uniques to grant specific tech / policy
 
-Added 'upon ending turn in tile' unit trigger
+Civilopedia does not crash when displaying techs on fresh start
 
-Fixed 'HiddenFromCivilopedia' targets
+'upon declaring friendship' triggers for both sides
 
-Resolved  - Civilopedia does not crash when displaying techs on fresh start
-
-Resolved  - 'upon declaring friendship' triggers for both sides
-
-Resolved  - all unpillagable improvements are not destroyed by 'destroy improvements' unique
-
-'upon conquering' is a condition not a triggered unique
-
-Add new uniques to wiki
-
-Added 'trigger upon losing over X HP in single attack'
-
-Added 'trigger upon promotion', 'trigger upon conquering city' unit trigger
-
-Added unit trigger for 'upon defeat'
-
-Special type for unit triggerables
-
-unit triggers also activate civ triggers
-
-Introduced "upon defeating [unitFilter] unit" trigger
-
-4.5.0-patch3
-
-4.5.0-patch2
-
-exploredTiles deprecation, step 1 - do not check exploredTiles when checking if a tile is explored 
-
-Resolved  - cannot 'undo' if you cannot change state
-
-4.5.0-patch1
+all unpillagable improvements are not destroyed by 'destroy improvements' unique
 
 By SomeTroglodyte:
-- Better control over debug messages 
-- Fix broken random nations pool 
-- City screen displays "free" tile yields undimmed 
+- Fix broken random nations pool
+- City screen displays "free" tile yields undimmed
 
 AbsoluteUnits - Chu-Ko-Nu, Longbowman, Crossbowman v2  - By letstalkaboutdune
 
