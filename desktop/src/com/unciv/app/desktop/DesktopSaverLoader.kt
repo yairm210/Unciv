@@ -1,7 +1,8 @@
 package com.unciv.app.desktop
 
 import com.badlogic.gdx.Gdx
-import com.unciv.logic.files.CustomFileLocationHelper
+import com.unciv.logic.files.PlatformSaverLoader
+import com.unciv.utils.Log
 import java.awt.Component
 import java.awt.EventQueue
 import java.awt.event.WindowEvent
@@ -11,17 +12,45 @@ import java.io.OutputStream
 import javax.swing.JFileChooser
 import javax.swing.JFrame
 
-class CustomFileLocationHelperDesktop : CustomFileLocationHelper() {
+class DesktopSaverLoader : PlatformSaverLoader {
 
-    override fun createOutputStream(suggestedLocation: String, callback: (String?, OutputStream?, Exception?) -> Unit) {
-        pickFile(callback, JFileChooser::showSaveDialog, File::outputStream, suggestedLocation)
+    override fun saveGame(
+        data: String,
+        suggestedLocation: String,
+        onSaved: (location: String) -> Unit,
+        onError: (ex: Exception) -> Unit
+    ) {
+        val onFileChosen = { stream: OutputStream, location: String ->
+            try {
+                stream.writer().use { it.write(data) }
+                onSaved(location)
+            } catch (ex: Exception) {
+                onError(ex)
+            }
+        }
+
+        pickFile(onFileChosen, onError, JFileChooser::showSaveDialog, File::outputStream, suggestedLocation)
+
     }
 
-    override fun createInputStream(callback: (String?, InputStream?, Exception?) -> Unit) {
-        pickFile(callback, JFileChooser::showOpenDialog, File::inputStream)
+    override fun loadGame(
+        onLoaded: (data: String, location: String) -> Unit,
+        onError: (ex: Exception) -> Unit
+    ) {
+        val onFileChosen = { stream: InputStream, location: String ->
+            try {
+                val data = stream.reader().use { it.readText() }
+                onLoaded(data, location)
+            } catch (ex: Exception) {
+                onError(ex)
+            }
+        }
+
+        pickFile(onFileChosen, onError, JFileChooser::showOpenDialog, File::inputStream)
     }
 
-    private fun <T> pickFile(callback: (String?, T?, Exception?) -> Unit,
+    private fun <T> pickFile(onSuccess: (T, String) -> Unit,
+                             onError: (Exception) -> Unit,
                              chooseAction: (JFileChooser, Component) -> Int,
                              createValue: (File) -> T,
                              suggestedLocation: String? = null) {
@@ -47,13 +76,13 @@ class CustomFileLocationHelperDesktop : CustomFileLocationHelper() {
                 frame.dispose()
 
                 if (result == JFileChooser.CANCEL_OPTION) {
-                    callback(null, null, null)
+                    return@invokeLater
                 } else {
                     val value = createValue(fileChooser.selectedFile)
-                    callback(fileChooser.selectedFile.absolutePath, value, null)
+                    onSuccess(value, fileChooser.selectedFile.absolutePath)
                 }
             } catch (ex: Exception) {
-                callback(null, null, ex)
+                onError(ex)
             }
         }
     }

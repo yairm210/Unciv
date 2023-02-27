@@ -17,6 +17,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.toPercent
+import com.unciv.utils.DebugUtils
 import kotlin.math.min
 
 
@@ -464,7 +465,7 @@ class CityStats(val city: City) {
 
         newStatsBonusTree.add(getStatsPercentBonusesFromUniquesBySource(currentConstruction))
 
-        if (UncivGame.Current.superchargedForDebug) {
+        if (DebugUtils.SUPERCHARGED) {
             val stats = Stats()
             for (stat in Stat.values()) stats[stat] = 10000f
             newStatsBonusTree.addStats(stats, "Supercharged")

@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Align
-import com.unciv.UncivGame
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
@@ -13,6 +12,7 @@ import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.surroundWithCircle
+import com.unciv.utils.DebugUtils
 import kotlin.math.PI
 import kotlin.math.atan
 
@@ -36,7 +36,7 @@ internal class MinimapTile(val tile: Tile, tileSize: Float, val onClick: () -> U
     }
 
     fun updateColor(isTileUnrevealed: Boolean) {
-        image.isVisible = UncivGame.Current.viewEntireMapForDebug || !isTileUnrevealed
+        image.isVisible = DebugUtils.VISIBLE_MAP || !isTileUnrevealed
         if (!image.isVisible) return
         image.color = when {
             tile.isCityCenter() && !tile.isWater -> tile.getOwner()!!.nation.getInnerColor()

@@ -14,6 +14,7 @@ import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.utils.DebugUtils
 
 fun debugTab() = Table(BaseScreen.skin).apply {
     pad(10f)
@@ -22,7 +23,7 @@ fun debugTab() = Table(BaseScreen.skin).apply {
 
     if (GUI.isWorldLoaded()) {
         val simulateButton = "Simulate until turn:".toTextButton()
-        val simulateTextField = UncivTextField.create("Turn", game.simulateUntilTurnForDebug.toString())
+        val simulateTextField = UncivTextField.create("Turn", DebugUtils.SIMULATE_UNTIL_TURN.toString())
         val invalidInputLabel = "This is not a valid integer!".toLabel().also { it.isVisible = false }
         simulateButton.onClick {
             val simulateUntilTurns = simulateTextField.text.toIntOrNull()
@@ -30,7 +31,7 @@ fun debugTab() = Table(BaseScreen.skin).apply {
                 invalidInputLabel.isVisible = true
                 return@onClick
             }
-            game.simulateUntilTurnForDebug = simulateUntilTurns
+            DebugUtils.SIMULATE_UNTIL_TURN = simulateUntilTurns
             invalidInputLabel.isVisible = false
             GUI.getWorldScreen().nextTurn()
         }
@@ -39,11 +40,11 @@ fun debugTab() = Table(BaseScreen.skin).apply {
         add(invalidInputLabel).colspan(2).row()
     }
 
-    add("Supercharged".toCheckBox(game.superchargedForDebug) {
-        game.superchargedForDebug = it
+    add("Supercharged".toCheckBox(DebugUtils.SUPERCHARGED) {
+        DebugUtils.SUPERCHARGED = it
     }).colspan(2).row()
-    add("View entire map".toCheckBox(game.viewEntireMapForDebug) {
-        game.viewEntireMapForDebug = it
+    add("View entire map".toCheckBox(DebugUtils.VISIBLE_MAP) {
+        DebugUtils.VISIBLE_MAP = it
     }).colspan(2).row()
     val curGameInfo = game.gameInfo
     if (curGameInfo != null) {

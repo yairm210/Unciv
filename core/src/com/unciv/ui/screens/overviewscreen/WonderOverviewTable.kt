@@ -17,6 +17,7 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
+import com.unciv.utils.DebugUtils
 
 class WonderOverviewTab(
     viewingPlayer: Civilization,
@@ -115,7 +116,7 @@ class WonderInfo {
         val city: City?,
         val location: Tile?
     ) {
-        val viewEntireMapForDebug = UncivGame.Current.viewEntireMapForDebug
+        val viewEntireMapForDebug = DebugUtils.VISIBLE_MAP
 
         fun getImage() = if (status == WonderStatus.Unknown && !viewEntireMapForDebug) null
         else category.getImage?.invoke(name, if (category == CivilopediaCategories.Terrain) 50f else 45f)

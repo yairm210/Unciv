@@ -1944,8 +1944,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;upon enhancing a Religion&gt;"
 	Applicable to: TriggerCondition
 
-??? example  "&lt;upon defeating a [unitFilter] unit&gt;"
-	Example: "&lt;upon defeating a [Unknown] unit&gt;"
+??? example  "&lt;upon defeating a [mapUnitFilter] unit&gt;"
+	Example: "&lt;upon defeating a [Wounded] unit&gt;"
 
 	Applicable to: TriggerCondition
 

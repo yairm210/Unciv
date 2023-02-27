@@ -4,11 +4,11 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.utils.Align
-import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.components.tilegroups.CityButton
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.WorldTileGroup
+import com.unciv.utils.DebugUtils
 
 class TileLayerCityButton(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
 
@@ -60,7 +60,7 @@ class TileLayerCityButton(tileGroup: TileGroup, size: Float) : TileLayer(tileGro
             return
 
         val tileIsViewable = isViewable(viewingCiv)
-        val shouldShow = UncivGame.Current.viewEntireMapForDebug
+        val shouldShow = DebugUtils.VISIBLE_MAP
 
         // Create (if not yet) and update city button
         if (city != null && tileGroup.tile.isCityCenter()) {

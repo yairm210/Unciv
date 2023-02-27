@@ -1,8 +1,8 @@
 package com.unciv.app
 
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.graphics.Rect
-import android.hardware.display.DisplayManager
 import android.net.Uri
 import android.opengl.GLSurfaceView
 import android.os.Build
@@ -11,7 +11,7 @@ import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.View
 import android.view.ViewTreeObserver
-import androidx.annotation.RequiresApi
+import android.view.WindowManager
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.WorkManager
 import com.badlogic.gdx.Gdx
@@ -20,9 +20,9 @@ import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
 import com.badlogic.gdx.backends.android.AndroidGraphics
 import com.badlogic.gdx.math.Rectangle
 import com.unciv.UncivGame
-import com.unciv.UncivGameParameters
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.event.EventBus
+import com.unciv.ui.components.Fonts
 import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Log
@@ -30,37 +30,36 @@ import com.unciv.utils.concurrency.Concurrency
 import java.io.File
 
 open class AndroidLauncher : AndroidApplication() {
-    private var customFileLocationHelper: CustomFileLocationHelperAndroid? = null
+
     private var game: UncivGame? = null
     private var deepLinkedMultiplayerGame: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Setup Android logging
         Log.backend = AndroidLogBackend()
-        customFileLocationHelper = CustomFileLocationHelperAndroid(this)
+
+        // Setup Android fonts
+        Fonts.fontImplementation = AndroidFont()
+
+        // Setup Android custom saver-loader
+        UncivFiles.saverLoader = AndroidSaverLoader(this)
+        UncivFiles.preferExternalStorage = true
+
+        // Create notification channels for Multiplayer notificator
         MultiplayerTurnCheckWorker.createNotificationChannels(applicationContext)
 
         copyMods()
 
-        val config = AndroidApplicationConfiguration().apply {
-            useImmersiveMode = true
-        }
-
+        val config = AndroidApplicationConfiguration().apply { useImmersiveMode = true }
         val settings = UncivFiles.getSettingsForPlatformLaunchers(filesDir.path)
 
-        // Manage orientation lock and display cutout
-        val platformSpecificHelper = PlatformSpecificHelpersAndroid(this)
-        platformSpecificHelper.allowPortrait(settings.allowAndroidPortrait)
+        // Setup orientation lock and display cutout
+        allowPortrait(settings.allowAndroidPortrait)
+        setDisplayCutout(settings.androidCutout)
 
-        platformSpecificHelper.toggleDisplayCutout(settings.androidCutout)
-
-        val androidParameters = UncivGameParameters(
-            crashReportSysInfo = CrashReportSysInfoAndroid,
-            fontImplementation = FontAndroid(),
-            customFileLocationHelper = customFileLocationHelper,
-            platformSpecificHelper = platformSpecificHelper
-        )
-
-        game = UncivGame(androidParameters)
+        game = AndroidGame(this)
         initialize(game, config)
 
         setDeepLinkedGame(intent)
@@ -71,6 +70,23 @@ open class AndroidLauncher : AndroidApplication() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
             addScreenRefreshRateListener(glView)
+    }
+
+    fun allowPortrait(allow: Boolean) {
+        val orientation = when {
+            allow -> ActivityInfo.SCREEN_ORIENTATION_USER
+            else -> ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE
+        }
+        // Comparison ensures ActivityTaskManager.getService().setRequestedOrientation isn't called unless necessary
+        if (requestedOrientation != orientation) requestedOrientation = orientation
+    }
+
+    private fun setDisplayCutout(cutout: Boolean) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return
+        window.attributes.layoutInDisplayCutoutMode = when {
+            cutout -> WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+            else -> WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
+        }
     }
 
     /** Request the best available device frame rate for
@@ -196,7 +212,8 @@ open class AndroidLauncher : AndroidApplication() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        customFileLocationHelper?.onActivityResult(requestCode, data)
+        val saverLoader = UncivFiles.saverLoader as AndroidSaverLoader
+        saverLoader.onActivityResult(requestCode, data)
         super.onActivityResult(requestCode, resultCode, data)
     }
 }

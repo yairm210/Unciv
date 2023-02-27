@@ -133,6 +133,13 @@ object Log {
     fun error(tag: Tag, msg: String, throwable: Throwable) {
         doLog(backend::error, tag, buildThrowableMessage(msg, throwable))
     }
+
+    /**
+     * Get string information about operation system
+     */
+    fun getSystemInfo(): String {
+        return backend.getSystemInfo()
+    }
 }
 
 class Tag(val name: String)
@@ -143,6 +150,9 @@ interface LogBackend {
 
     /** Do not log on release builds for performance reasons. */
     fun isRelease(): Boolean
+
+    /** Get string information about operation system */
+    fun getSystemInfo(): String
 }
 
 /** Only for tests, or temporary main() functions */
@@ -157,6 +167,10 @@ open class DefaultLogBackend : LogBackend {
 
     override fun isRelease(): Boolean {
         return false
+    }
+
+    override fun getSystemInfo(): String {
+        return ""
     }
 }
 

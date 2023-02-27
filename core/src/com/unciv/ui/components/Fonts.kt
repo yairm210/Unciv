@@ -177,6 +177,7 @@ object Fonts {
     const val ORIGINAL_FONT_SIZE = 50f
     const val DEFAULT_FONT_FAMILY = ""
 
+    lateinit var fontImplementation: FontImplementation
     lateinit var font: BitmapFont
 
     /** This resets all cached font data in object Fonts.
@@ -184,15 +185,12 @@ object Fonts {
      */
     fun resetFont() {
         val settings = GUI.getSettings()
-        val fontImpl = GUI.getFontImpl()
-        fontImpl.setFontFamily(settings.fontFamilyData, settings.getFontSize())
-        font = fontImpl.getBitmapFont()
+        fontImplementation.setFontFamily(settings.fontFamilyData, settings.getFontSize())
+        font = fontImplementation.getBitmapFont()
     }
 
     /** Reduce the font list returned by platform-specific code to font families (plain variant if possible) */
     fun getSystemFonts(): Sequence<FontFamilyData> {
-        val fontImplementation = UncivGame.Current.fontImplementation
-            ?: return emptySequence()
         return fontImplementation.getSystemFonts()
             .sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.localName })
     }

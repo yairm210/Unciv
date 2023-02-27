@@ -350,7 +350,7 @@ class WorldScreen(
             debug("loadLatestMultiplayerState downloaded game: gameId: %s, turn: %s, curCiv: %s",
                 latestGame.gameId, latestGame.turns, latestGame.currentPlayer)
             if (viewingCiv.civName == latestGame.currentPlayer || viewingCiv.civName == Constants.spectator) {
-                game.platformSpecificHelper?.notifyTurnStarted()
+                game.notifyTurnStarted()
             }
             launchOnGLThread {
                 loadingGamePopup.close()

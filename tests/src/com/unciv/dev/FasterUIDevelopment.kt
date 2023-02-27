@@ -61,10 +61,11 @@ object FasterUIDevelopment {
     }
 
     class UIDevGame : Game() {
-        val game = UncivGame(UncivGameParameters(
-            fontImplementation = FontDesktop()
-        ))
+
+        private val game = UncivGame()
+
         override fun create() {
+            Fonts.fontImplementation = FontDesktop()
             UncivGame.Current = game
             UncivGame.Current.files = UncivFiles(Gdx.files)
             game.settings = UncivGame.Current.files.getGeneralSettings()

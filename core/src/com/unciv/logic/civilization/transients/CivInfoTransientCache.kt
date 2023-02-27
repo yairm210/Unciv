@@ -2,7 +2,6 @@ package com.unciv.logic.civilization.transients
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
@@ -19,6 +18,7 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.utils.DebugUtils
 
 /** CivInfo class was getting too crowded */
 class CivInfoTransientCache(val civInfo: Civilization) {
@@ -142,7 +142,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         val newViewableTiles = HashSet<Tile>()
 
         // while spectating all map is visible
-        if (civInfo.isSpectator() || UncivGame.Current.viewEntireMapForDebug) {
+        if (civInfo.isSpectator() || DebugUtils.VISIBLE_MAP) {
             val allTiles = civInfo.gameInfo.tileMap.values.toSet()
             civInfo.viewableTiles = allTiles
             civInfo.viewableInvisibleUnitsTiles = allTiles
