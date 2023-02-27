@@ -1,3 +1,21 @@
+## 4.5.1
+
+Introduced unit triggers!
+
+Added triggered uniques to grant specific tech / policy
+
+Civilopedia does not crash when displaying techs on fresh start
+
+'upon declaring friendship' triggers for both sides
+
+all unpillagable improvements are not destroyed by 'destroy improvements' unique
+
+By SomeTroglodyte:
+- Fix broken random nations pool
+- City screen displays "free" tile yields undimmed
+
+AbsoluteUnits - Chu-Ko-Nu, Longbowman, Crossbowman v2  - By letstalkaboutdune
+
 ## 4.5.0
 
 Added password authentication as server feature  - By GGGuenni

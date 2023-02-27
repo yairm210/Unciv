@@ -64,6 +64,9 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
         if (!isFree) {
             XP -= xpForNextPromotion()
             numberOfPromotions++
+
+            for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponPromotion))
+                UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
         }
 
         val ruleset = unit.civ.gameInfo.ruleset

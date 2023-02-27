@@ -7,7 +7,6 @@ import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffer
@@ -822,10 +821,6 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         setFlag(DiplomacyFlags.DeclarationOfFriendship, 30)
         otherCivDiplomacy().setFlag(DiplomacyFlags.DeclarationOfFriendship, 30)
 
-        if (otherCiv().playerType == PlayerType.Human)
-            otherCiv().addNotification("[${civInfo.civName}] and [$otherCivName] have signed the Declaration of Friendship!",
-                NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
-
         for (thirdCiv in getCommonKnownCivs().filter { it.isMajorCiv() }) {
             thirdCiv.addNotification("[${civInfo.civName}] and [$otherCivName] have signed the Declaration of Friendship!",
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
@@ -834,6 +829,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringFriendship))
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+        for (unique in otherCiv().getTriggeredUniques(UniqueType.TriggerUponDeclaringFriendship))
+            UniqueTriggerActivation.triggerCivwideUnique(unique, otherCiv())
     }
 
     private fun setFriendshipBasedModifier() {

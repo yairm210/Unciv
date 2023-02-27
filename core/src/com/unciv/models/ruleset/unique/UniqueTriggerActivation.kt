@@ -53,7 +53,9 @@ object UniqueTriggerActivation {
             UniqueType.OneTimeFreeUnit -> {
                 val unitName = unique.params[0]
                 val unit = ruleSet.units[unitName]
-                if (chosenCity == null || unit == null || (unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger()))
+                if (chosenCity == null
+                        || unit == null
+                        || unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger())
                     return false
 
                 val placedUnit = civInfo.units.addUnit(unitName, chosenCity) ?: return false
@@ -129,13 +131,11 @@ object UniqueTriggerActivation {
                 if (civInfo.isSpectator()) return false
                 civInfo.policies.freePolicies++
 
-
                 val notificationText = getNotificationText(notification, triggerNotificationText,
                     "You may choose a free Policy")
                     ?: return true
 
                 civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Culture)
-
                 return true
             }
             UniqueType.OneTimeAmountFreePolicies -> {
@@ -148,7 +148,20 @@ object UniqueTriggerActivation {
                     ?: return true
 
                 civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Culture)
+                return true
+            }
+            UniqueType.OneTimeAdoptPolicy -> {
+                val policyName = unique.params[0]
+                if (civInfo.policies.isAdopted(policyName)) return false
+                val policy = civInfo.gameInfo.ruleset.policies[policyName] ?: return false
+                civInfo.policies.freePolicies++
+                civInfo.policies.adopt(policy)
 
+                val notificationText = getNotificationText(notification, triggerNotificationText,
+                    "You gain the [$policyName] Policy")
+                    ?: return true
+
+                civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Culture)
                 return true
             }
             UniqueType.OneTimeEnterGoldenAge -> {
@@ -159,7 +172,6 @@ object UniqueTriggerActivation {
                     ?: return true
 
                 civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Happiness)
-
                 return true
             }
 
@@ -276,6 +288,18 @@ object UniqueTriggerActivation {
                         NotificationCategory.General, NotificationIcon.Science)
                 }
 
+                return true
+            }
+            UniqueType.OneTimeDiscoverTech -> {
+                val techName = unique.params[0]
+                if (civInfo.tech.isResearched(techName)) return false
+                civInfo.tech.addTechnology(techName)
+
+                val notificationText = getNotificationText(notification, triggerNotificationText,
+                    "You have discovered the secrets of [$techName]")
+                    ?: return true
+
+                civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Science)
                 return true
             }
 
@@ -624,7 +648,7 @@ object UniqueTriggerActivation {
                     unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units, unit.name)
                 return true
             }
-            else -> return false
+            else -> return triggerCivwideUnique(unique, civInfo = unit.civ, tile=unit.currentTile)
         }
     }
 }

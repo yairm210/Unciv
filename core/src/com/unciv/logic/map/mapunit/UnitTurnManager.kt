@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 
 class UnitTurnManager(val unit: MapUnit) {
@@ -56,6 +57,11 @@ class UnitTurnManager(val unit: MapUnit) {
         doTerrainDamage()
 
         unit.addMovementMemory()
+
+        for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponEndingTurnInTile))
+            if (unique.conditionals.any { it.type == UniqueType.TriggerUponEndingTurnInTile
+                            && unit.getTile().matchesFilter(it.params[0]) })
+                UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
     }
 
 

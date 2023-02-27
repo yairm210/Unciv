@@ -3,8 +3,9 @@ package com.unciv.models.metadata
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.Speed
-import com.unciv.models.ruleset.nation.Nation
 
+
+@Suppress("EnumEntryName")  // These merit unusual names
 enum class BaseRuleset(val fullName:String){
     Civ_V_Vanilla("Civ V - Vanilla"),
     Civ_V_GnK("Civ V - Gods & Kings"),
@@ -29,7 +30,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var numberOfCityStates = 6
 
     var enableRandomNationsPool = false
-    var randomNations = arrayListOf<Nation>()
+    var randomNationsPool = arrayListOf<String>()
 
     var noCityRazing = false
     var noBarbarians = false
@@ -54,21 +55,28 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
         val parameters = GameParameters()
         parameters.difficulty = difficulty
         parameters.speed = speed
-        parameters.players = ArrayList(players)
         parameters.randomNumberOfPlayers = randomNumberOfPlayers
         parameters.minNumberOfPlayers = minNumberOfPlayers
         parameters.maxNumberOfPlayers = maxNumberOfPlayers
+        parameters.players = ArrayList(players)
         parameters.randomNumberOfCityStates = randomNumberOfCityStates
         parameters.minNumberOfCityStates = minNumberOfCityStates
         parameters.maxNumberOfCityStates = maxNumberOfCityStates
         parameters.numberOfCityStates = numberOfCityStates
+        parameters.enableRandomNationsPool = enableRandomNationsPool
+        parameters.randomNationsPool = ArrayList(randomNationsPool)
+        parameters.noCityRazing = noCityRazing
         parameters.noBarbarians = noBarbarians
         parameters.ragingBarbarians = ragingBarbarians
         parameters.oneCityChallenge = oneCityChallenge
+        // godMode intentionally reset on clone
         parameters.nuclearWeaponsEnabled = nuclearWeaponsEnabled
+        parameters.espionageEnabled = espionageEnabled
+        parameters.noStartBias = noStartBias
         parameters.victoryTypes = ArrayList(victoryTypes)
         parameters.startingEra = startingEra
         parameters.isOnlineMultiplayer = isOnlineMultiplayer
+        parameters.anyoneCanSpectate = anyoneCanSpectate
         parameters.baseRuleset = baseRuleset
         parameters.mods = LinkedHashSet(mods)
         parameters.maxTurns = maxTurns

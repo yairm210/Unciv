@@ -11,8 +11,8 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.components.Fonts
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 
 class Technology: RulesetObject() {
 
@@ -224,7 +224,7 @@ class Technology: RulesetObject() {
                 }
             }
 
-        val viewingCiv = GUI.getViewingPlayer()
+        val viewingCiv = if (GUI.isWorldLoaded()) GUI.getViewingPlayer() else null
         val enabledUnits = getEnabledUnits(ruleset, viewingCiv)
         if (enabledUnits.any()) {
             lineList += FormattedLine()

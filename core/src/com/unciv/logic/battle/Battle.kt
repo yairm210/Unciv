@@ -149,7 +149,7 @@ object Battle {
         if (!defender.isDefeated() && defender is MapUnitCombatant && defender.unit.isExploring())
             defender.unit.action = null
 
-        fun triggerUniques(ourUnit:MapUnitCombatant, enemy:MapUnitCombatant){
+        fun triggerVictoryUniques(ourUnit:MapUnitCombatant, enemy:MapUnitCombatant){
             val stateForConditionals = StateForConditionals(civInfo = ourUnit.getCivInfo(),
                 ourCombatant = ourUnit, theirCombatant=enemy, tile = attackedTile)
             for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeatingUnit, stateForConditionals))
@@ -158,19 +158,28 @@ object Battle {
                     UniqueTriggerActivation.triggerUnitwideUnique(unique, ourUnit.unit)
         }
 
+        fun triggerDefeatUniques(ourUnit: MapUnitCombatant, enemy: ICombatant){
+            val stateForConditionals = StateForConditionals(civInfo = ourUnit.getCivInfo(),
+                ourCombatant = ourUnit, theirCombatant=enemy, tile = attackedTile)
+            for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeat, stateForConditionals))
+                UniqueTriggerActivation.triggerUnitwideUnique(unique, ourUnit.unit)
+        }
+
         // Add culture when defeating a barbarian when Honor policy is adopted, gold from enemy killed when honor is complete
         // or any enemy military unit with Sacrificial captives unique (can be either attacker or defender!)
         if (defender.isDefeated() && defender is MapUnitCombatant && !defender.unit.isCivilian()) {
             tryEarnFromKilling(attacker, defender)
             tryHealAfterKilling(attacker)
 
-            if (attacker is MapUnitCombatant) triggerUniques(attacker, defender)
+            if (attacker is MapUnitCombatant) triggerVictoryUniques(attacker, defender)
+            triggerDefeatUniques(defender, attacker)
 
         } else if (attacker.isDefeated() && attacker is MapUnitCombatant && !attacker.unit.isCivilian()) {
             tryEarnFromKilling(defender, attacker)
             tryHealAfterKilling(defender)
 
-            if (defender is MapUnitCombatant) triggerUniques(defender, attacker)
+            if (defender is MapUnitCombatant) triggerVictoryUniques(defender, attacker)
+            triggerDefeatUniques(attacker, defender)
         }
 
         if (attacker is MapUnitCombatant) {
@@ -356,6 +365,16 @@ object Battle {
 
         val defenderDamageDealt = attackerHealthBefore - attacker.getHealth()
         val attackerDamageDealt = defenderHealthBefore - defender.getHealth()
+
+        if (attacker is MapUnitCombatant)
+            for (unique in attacker.unit.getTriggeredUniques(UniqueType.TriggerUponPromotion))
+                if (unique.conditionals.any { it.params[0].toInt() <= defenderDamageDealt })
+                    UniqueTriggerActivation.triggerUnitwideUnique(unique, attacker.unit)
+
+        if (defender is MapUnitCombatant)
+            for (unique in defender.unit.getTriggeredUniques(UniqueType.TriggerUponPromotion))
+                if (unique.conditionals.any { it.params[0].toInt() <= attackerDamageDealt })
+                    UniqueTriggerActivation.triggerUnitwideUnique(unique, defender.unit)
 
         plunderFromDamage(attacker, defender, attackerDamageDealt)
         return DamageDealt(attackerDamageDealt, defenderDamageDealt)
@@ -548,7 +567,7 @@ object Battle {
             for (airUnit in airUnits.toList()) airUnit.destroy()
         }
 
-        val stateForConditionals = StateForConditionals(civInfo = attackerCiv, unit = attacker.unit, ourCombatant = attacker, attackedTile = city.getCenterTile())
+        val stateForConditionals = StateForConditionals(civInfo = attackerCiv, city=city, unit = attacker.unit, ourCombatant = attacker, attackedTile = city.getCenterTile())
         for (unique in attacker.getMatchingUniques(UniqueType.CaptureCityPlunder, stateForConditionals, true)) {
             attackerCiv.addStat(
                 Stat.valueOf(unique.params[2]),
@@ -575,9 +594,8 @@ object Battle {
         if (attackerCiv.isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Conquer a city")
 
-        for (unique in attackerCiv.getTriggeredUniques(UniqueType.TriggerUponConqueringCity,
-                StateForConditionals(attackerCiv, city, attacker.unit, attackedTile = city.getCenterTile() )
-        ))
+        for (unique in attackerCiv.getTriggeredUniques(UniqueType.TriggerUponConqueringCity, stateForConditionals)
+                + attacker.unit.getTriggeredUniques(UniqueType.TriggerUponConqueringCity, stateForConditionals))
             UniqueTriggerActivation.triggerCivwideUnique(unique, attackerCiv, city)
     }
 
@@ -1086,9 +1104,10 @@ object Battle {
     }
 
     private fun doDestroyImprovementsAbility(attacker: MapUnitCombatant, attackedTile: Tile, defender: ICombatant) {
+        if (attackedTile.improvement == null) return
+
         val conditionalState = StateForConditionals(attacker.getCivInfo(), ourCombatant = attacker, theirCombatant = defender, combatAction = CombatAction.Attack, attackedTile = attackedTile)
-        if (attackedTile.improvement != Constants.barbarianEncampment
-            && attackedTile.getTileImprovement()?.isAncientRuinsEquivalent() != true
+        if (!attackedTile.getTileImprovement()!!.hasUnique(UniqueType.Unpillagable)
             && attacker.hasUnique(UniqueType.DestroysImprovementUponAttack, conditionalState)
         ) {
             attackedTile.changeImprovement(null)

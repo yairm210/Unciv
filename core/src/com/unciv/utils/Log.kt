@@ -16,16 +16,26 @@ import java.util.regex.Pattern
  */
 object Log {
 
-    /** Add -DnoLog=<comma-separated-list-of-class-names> to not log these classes. */
-    private val disabledLogsFromProperty = System.getProperty("noLog")?.split(',')?.toMutableSet() ?: mutableSetOf()
+    /**
+     * Add -DnoLog=<comma-separated-list-of-partial-class-names> to not log these classes.
+     * Log tags (= class names) **containing** these Strings will not be logged.
+     * You _can_ disable the default exclusions with an empty `-DnoLog=` argument.
+     */
+    val disableLogsFrom = (
+            System.getProperty("noLog")
+            ?: "Battle,Music,Sounds,Translations,WorkerAutomation"
+        ).split(',').filterNot { it.isEmpty() }.toMutableSet()
 
-    /** Log tags (= class names) **containing** these Strings will not be logged.  */
-    val disableLogsFrom = if (disabledLogsFromProperty.isEmpty()) {
-        "Battle,Music,Sounds,Translations,WorkerAutomation"
-            .split(',').toMutableSet()
-    } else {
-        disabledLogsFromProperty
-    }
+    /**
+     * Add -DonlyLog=<comma-separated-list-of-partial-class-names> to only log specific classes.
+     * Only Log tags (= class names) **containing** these Strings will be logged (Not set means all)
+     * [disableLogsFrom] will still be respected if this is set.
+     * Note you cannot disable all logging with `-DonlyLog=`, use `-DonlyLog=~~~` instead.
+     */
+    val enableLogsFrom = (
+            System.getProperty("onlyLog")
+            ?: ""
+        ).split(',').filterNot { it.isEmpty() }.toMutableSet()
 
     var backend: LogBackend = DefaultLogBackend()
 
@@ -200,7 +210,8 @@ private fun doLog(logger: (Tag, String, String) -> Unit, tag: Tag, msg: String, 
 }
 
 private fun isTagDisabled(tag: Tag): Boolean {
-    return Log.disableLogsFrom.any { it in tag.name }
+    return Log.disableLogsFrom.any { it in tag.name } ||
+            (Log.enableLogsFrom.isNotEmpty() && Log.enableLogsFrom.none { it in tag.name })
 }
 
 private fun buildThrowableMessage(msg: String, throwable: Throwable): String {
@@ -209,7 +220,7 @@ private fun buildThrowableMessage(msg: String, throwable: Throwable): String {
 
 private fun replaceLambdasWithValues(params: Array<out Any?>): Array<out Any?> {
     var out: Array<Any?>? = null
-    for (i in 0 until params.size) {
+    for (i in params.indices) {
         val param = params[i]
         if (param is Function0<*>) {
             if (out == null) out = arrayOf(*params)
