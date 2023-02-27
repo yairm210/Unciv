@@ -71,6 +71,9 @@ enum class UniqueFlag {
     }
 }
 
+
+// I didn't put this is a companion object because APPARENTLY doing that means you can't use it in the init function.
+val numberRegex = Regex("\\d+$") // Any number of trailing digits
 enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags: List<UniqueFlag> = emptyList()) {
 
     //////////////////////////////////////// region GLOBAL UNIQUES ////////////////////////////////////////
@@ -515,7 +518,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     RegionRequirePercentSingleType("A Region is formed with at least [amount]% [simpleTerrain] tiles, with priority [amount]", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
     RegionRequirePercentTwoTypes("A Region is formed with at least [amount]% [simpleTerrain] tiles and [simpleTerrain] tiles, with priority [amount]",
-            UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
+        UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
     RegionRequireFirstLessThanSecond("A Region can not contain more [simpleTerrain] tiles than [simpleTerrain] tiles", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
     IgnoreBaseTerrainForRegion("Base Terrain on this tile is not counted for Region determination", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
     RegionExtraResource("Starts in regions of this type receive an extra [resource]", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
@@ -674,6 +677,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     OneTimeFreeGreatPerson("Free Great Person", UniqueTarget.Triggerable),  // used in Policies, Buildings
     OneTimeGainPopulation("[amount] population [cityFilter]", UniqueTarget.Triggerable),  // used in CN tower
     OneTimeGainPopulationRandomCity("[amount] population in a random city", UniqueTarget.Triggerable),
+    OneTimeDiscoverTech("Discover [tech]", UniqueTarget.Triggerable),
+    OneTimeAdoptPolicy("Adopt [policy]", UniqueTarget.Triggerable),
     OneTimeFreeTech("Free Technology", UniqueTarget.Triggerable),  // used in Buildings
     OneTimeAmountFreeTechs("[amount] Free Technologies", UniqueTarget.Triggerable),  // used in Policy
     OneTimeFreeTechRuins("[amount] free random researchable Tech(s) from the [era]", UniqueTarget.Triggerable),
@@ -745,7 +750,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     HiddenAfterGreatProphet("Hidden after generating a Great Prophet", UniqueTarget.Ruins),
     HiddenWithoutVictoryType("Hidden when [victoryType] Victory is disabled", UniqueTarget.Building, UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),
-    HiddenFromCivilopedia("Will not be displayed in Civilopedia", UniqueTarget.Building, UniqueTarget.Unit, UniqueTarget.Improvement,
+    HiddenFromCivilopedia("Will not be displayed in Civilopedia", UniqueTarget.Building, UniqueTarget.Unit, UniqueTarget.UnitType, UniqueTarget.Improvement,
         UniqueTarget.Tech, UniqueTarget.Terrain, UniqueTarget.Resource, UniqueTarget.Policy, UniqueTarget.Promotion,
         UniqueTarget.Nation, UniqueTarget.Ruins, flags = UniqueFlag.setOfHiddenToUsers),
 
@@ -1148,10 +1153,10 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
         for ((index, param) in unique.params.withIndex()) {
             val acceptableParamTypes = parameterTypeMap[index]
             val errorTypesForAcceptableParameters =
-                acceptableParamTypes.map { it.getErrorSeverity(param, ruleset) }
+                    acceptableParamTypes.map { it.getErrorSeverity(param, ruleset) }
             if (errorTypesForAcceptableParameters.any { it == null }) continue // This matches one of the types!
             val leastSevereWarning =
-                errorTypesForAcceptableParameters.minByOrNull { it!!.ordinal }!!
+                    errorTypesForAcceptableParameters.minByOrNull { it!!.ordinal }!!
             errorList += UniqueComplianceError(param, acceptableParamTypes, leastSevereWarning)
         }
         return errorList
@@ -1161,6 +1166,3 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
         .getAnnotation(Deprecated::class.java)
 
 }
-
-// I didn't put this is a companion object because APPARENTLY doing that means you can't use it in the init function.
-val numberRegex = Regex("\\d+$") // Any number of trailing digits

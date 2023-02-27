@@ -35,6 +35,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "Discover [tech]"
+	Example: "Discover [Agriculture]"
+
+	Applicable to: Triggerable
+
+??? example  "Adopt [policy]"
+	Example: "Adopt [Oligarchy]"
+
+	Applicable to: Triggerable
+
 ??? example  "Free Technology"
 	Applicable to: Triggerable
 
@@ -839,7 +849,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Nation
 
 ??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Nation, Tech, Policy, Building, Unit, Promotion, Terrain, Improvement, Resource, Ruins
+	Applicable to: Nation, Tech, Policy, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins
 
 ## Era uniques
 ??? example  "Starting in this era disables religion"
