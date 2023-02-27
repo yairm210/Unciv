@@ -30,7 +30,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var numberOfCityStates = 6
 
     var enableRandomNationsPool = false
-    var randomNations = arrayListOf<String>()
+    var randomNationsPool = arrayListOf<String>()
 
     var noCityRazing = false
     var noBarbarians = false
@@ -64,7 +64,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
         parameters.maxNumberOfCityStates = maxNumberOfCityStates
         parameters.numberOfCityStates = numberOfCityStates
         parameters.enableRandomNationsPool = enableRandomNationsPool
-        parameters.randomNations = ArrayList(randomNations)
+        parameters.randomNationsPool = ArrayList(randomNationsPool)
         parameters.noCityRazing = noCityRazing
         parameters.noBarbarians = noBarbarians
         parameters.ragingBarbarians = ragingBarbarians
