@@ -35,6 +35,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "Discover [tech]"
+	Example: "Discover [Agriculture]"
+
+	Applicable to: Triggerable
+
+??? example  "Adopt [policy]"
+	Example: "Adopt [Oligarchy]"
+
+	Applicable to: Triggerable
+
 ??? example  "Free Technology"
 	Applicable to: Triggerable
 
@@ -77,11 +87,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "This Unit gains the [promotion] promotion"
-	Example: "This Unit gains the [Shock I] promotion"
-
-	Applicable to: Triggerable
-
 ??? example  "[mapUnitFilter] units gain the [promotion] promotion"
 	Example: "[Wounded] units gain the [Shock I] promotion"
 
@@ -97,8 +102,24 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Triggerable, Global, Nation, Era, Tech, Policy, FounderBelief, FollowerBelief, Building, Wonder, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Tutorial, CityState, ModOptions, Conditional, TriggerCondition
+## UnitTriggerable uniques
+??? example  "Heal this unit by [amount] HP"
+	Example: "Heal this unit by [3] HP"
+
+	Applicable to: UnitTriggerable
+
+??? example  "This Unit gains [amount] XP"
+	Example: "This Unit gains [3] XP"
+
+	Applicable to: UnitTriggerable, Ruins
+
+??? example  "This Unit upgrades for free"
+	Applicable to: UnitTriggerable, Global
+
+??? example  "This Unit gains the [promotion] promotion"
+	Example: "This Unit gains the [Shock I] promotion"
+
+	Applicable to: UnitTriggerable
 
 ## Global uniques
 ??? example  "[stats]"
@@ -813,9 +834,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
-??? example  "This Unit upgrades for free"
-	Applicable to: Global
-
 ## Nation uniques
 ??? example  "Will not be chosen for new games"
 	Applicable to: Nation
@@ -829,6 +847,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "Starts with [Oligarchy] adopted"
 
 	Applicable to: Nation
+
+??? example  "Will not be displayed in Civilopedia"
+	Applicable to: Nation, Tech, Policy, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins
 
 ## Era uniques
 ??? example  "Starting in this era disables religion"
@@ -1301,11 +1322,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ## Promotion uniques
-??? example  "Heal this unit by [amount] HP"
-	Example: "Heal this unit by [3] HP"
-
-	Applicable to: Promotion
-
 ??? example  "Doing so will consume this opportunity to choose a Promotion"
 	Applicable to: Promotion
 
@@ -1612,11 +1628,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Ruins
 
-??? example  "This Unit gains [amount] XP"
-	Example: "This Unit gains [3] XP"
-
-	Applicable to: Ruins
-
 ??? example  "This Unit upgrades for free including special upgrades"
 	Applicable to: Ruins
 
@@ -1912,7 +1923,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: TriggerCondition
 
 ??? example  "&lt;upon conquering a city&gt;"
-	Applicable to: TriggerCondition
+	Applicable to: TriggerCondition, UnitTriggerCondition
 
 ??? example  "&lt;upon founding a city&gt;"
 	Applicable to: TriggerCondition
@@ -1943,6 +1954,28 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;upon enhancing a Religion&gt;"
 	Applicable to: TriggerCondition
+
+## UnitTriggerCondition uniques
+??? example  "&lt;upon defeating a [mapUnitFilter] unit&gt;"
+	Example: "&lt;upon defeating a [Wounded] unit&gt;"
+
+	Applicable to: UnitTriggerCondition
+
+??? example  "&lt;upon being defeated&gt;"
+	Applicable to: UnitTriggerCondition
+
+??? example  "&lt;upon being promoted&gt;"
+	Applicable to: UnitTriggerCondition
+
+??? example  "&lt;upon losing at least [amount] HP in a single attack&gt;"
+	Example: "&lt;upon losing at least [3] HP in a single attack&gt;"
+
+	Applicable to: UnitTriggerCondition
+
+??? example  "&lt;upon ending a turn in a [tileFilter] tile&gt;"
+	Example: "&lt;upon ending a turn in a [Farm] tile&gt;"
+
+	Applicable to: UnitTriggerCondition
 
 
 *[action]: An action that a unit can perform. Currently, there are only two actions part of this: 'Spread Religion' and 'Remove Foreign religions from your own cities'

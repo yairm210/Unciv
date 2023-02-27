@@ -11,6 +11,8 @@ enum class UniqueTarget(val inheritsFrom: UniqueTarget? = null) {
 
     /** Only includes uniques that have immediate effects, caused by UniqueTriggerActivation */
     Triggerable,
+    UnitTriggerable(Triggerable),
+
     /** Buildings, units, nations, policies, religions, techs etc.
      * Basically anything caught by CivInfo.getMatchingUniques. */
     Global(Triggerable),
@@ -34,7 +36,7 @@ enum class UniqueTarget(val inheritsFrom: UniqueTarget? = null) {
     //  they're all just Unit uniques in different places.
     //  So there should be no uniqueType that has a Promotion or UnitType target.
     //  Except meta-level uniques, such as 'incompatible with [promotion]', of course
-    Unit,
+    Unit(UnitTriggerable),
     UnitType(Unit),
     Promotion(Unit),
 
@@ -50,7 +52,8 @@ enum class UniqueTarget(val inheritsFrom: UniqueTarget? = null) {
     CityState(Global),
     ModOptions,
     Conditional,
-    TriggerCondition(Global)
+    TriggerCondition(Global),
+    UnitTriggerCondition(TriggerCondition)
     ;
 
     fun canAcceptUniqueTarget(uniqueTarget: UniqueTarget): Boolean {
@@ -68,6 +71,9 @@ enum class UniqueFlag {
     }
 }
 
+
+// I didn't put this is a companion object because APPARENTLY doing that means you can't use it in the init function.
+val numberRegex = Regex("\\d+$") // Any number of trailing digits
 enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags: List<UniqueFlag> = emptyList()) {
 
     //////////////////////////////////////// region GLOBAL UNIQUES ////////////////////////////////////////
@@ -512,7 +518,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     RegionRequirePercentSingleType("A Region is formed with at least [amount]% [simpleTerrain] tiles, with priority [amount]", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
     RegionRequirePercentTwoTypes("A Region is formed with at least [amount]% [simpleTerrain] tiles and [simpleTerrain] tiles, with priority [amount]",
-            UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
+        UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
     RegionRequireFirstLessThanSecond("A Region can not contain more [simpleTerrain] tiles than [simpleTerrain] tiles", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
     IgnoreBaseTerrainForRegion("Base Terrain on this tile is not counted for Region determination", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
     RegionExtraResource("Starts in regions of this type receive an extra [resource]", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
@@ -671,6 +677,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     OneTimeFreeGreatPerson("Free Great Person", UniqueTarget.Triggerable),  // used in Policies, Buildings
     OneTimeGainPopulation("[amount] population [cityFilter]", UniqueTarget.Triggerable),  // used in CN tower
     OneTimeGainPopulationRandomCity("[amount] population in a random city", UniqueTarget.Triggerable),
+    OneTimeDiscoverTech("Discover [tech]", UniqueTarget.Triggerable),
+    OneTimeAdoptPolicy("Adopt [policy]", UniqueTarget.Triggerable),
     OneTimeFreeTech("Free Technology", UniqueTarget.Triggerable),  // used in Buildings
     OneTimeAmountFreeTechs("[amount] Free Technologies", UniqueTarget.Triggerable),  // used in Policy
     OneTimeFreeTechRuins("[amount] free random researchable Tech(s) from the [era]", UniqueTarget.Triggerable),
@@ -689,11 +697,11 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     OneTimeGlobalAlert("Triggers the following global alert: [comment]", UniqueTarget.Policy), // used in Policy
     OneTimeGlobalSpiesWhenEnteringEra("Every major Civilization gains a spy once a civilization enters this era", UniqueTarget.Era),
 
-    OneTimeUnitHeal("Heal this unit by [amount] HP", UniqueTarget.Promotion),
-    OneTimeUnitGainXP("This Unit gains [amount] XP", UniqueTarget.Ruins),
-    OneTimeUnitUpgrade("This Unit upgrades for free", UniqueTarget.Global),  // Not used in Vanilla
+    OneTimeUnitHeal("Heal this unit by [amount] HP", UniqueTarget.UnitTriggerable),
+    OneTimeUnitGainXP("This Unit gains [amount] XP", UniqueTarget.Ruins, UniqueTarget.UnitTriggerable),
+    OneTimeUnitUpgrade("This Unit upgrades for free", UniqueTarget.Global, UniqueTarget.UnitTriggerable),  // Not used in Vanilla
     OneTimeUnitSpecialUpgrade("This Unit upgrades for free including special upgrades", UniqueTarget.Ruins),
-    OneTimeUnitGainPromotion("This Unit gains the [promotion] promotion", UniqueTarget.Triggerable),  // Not used in Vanilla
+    OneTimeUnitGainPromotion("This Unit gains the [promotion] promotion", UniqueTarget.UnitTriggerable),  // Not used in Vanilla
     SkipPromotion("Doing so will consume this opportunity to choose a Promotion", UniqueTarget.Promotion),
 
     UnitsGainPromotion("[mapUnitFilter] units gain the [promotion] promotion", UniqueTarget.Triggerable),  // Not used in Vanilla
@@ -711,7 +719,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     TriggerUponDeclaringWar("upon declaring war with a major Civilization", UniqueTarget.TriggerCondition),
     TriggerUponDeclaringFriendship("upon declaring friendship", UniqueTarget.TriggerCondition),
     TriggerUponEnteringGoldenAge("upon entering a Golden Age", UniqueTarget.TriggerCondition),
-    TriggerUponConqueringCity("upon conquering a city", UniqueTarget.TriggerCondition),
+    /** Can be placed upon both units and as global */
+    TriggerUponConqueringCity("upon conquering a city", UniqueTarget.TriggerCondition, UniqueTarget.UnitTriggerCondition),
     TriggerUponFoundingCity("upon founding a city", UniqueTarget.TriggerCondition),
     TriggerUponDiscoveringNaturalWonder("upon discovering a Natural Wonder", UniqueTarget.TriggerCondition),
     TriggerUponConstructingBuilding("upon constructing [buildingFilter]", UniqueTarget.TriggerCondition),
@@ -723,6 +732,16 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     TriggerUponFoundingReligion("upon founding a Religion", UniqueTarget.TriggerCondition),
     TriggerUponEnhancingReligion("upon enhancing a Religion", UniqueTarget.TriggerCondition),
 
+    //endregion
+
+
+    ///////////////////////////////////////// region UNIT TRIGGERS /////////////////////////////////////////
+
+    TriggerUponDefeatingUnit("upon defeating a [mapUnitFilter] unit", UniqueTarget.UnitTriggerCondition),
+    TriggerUponDefeat("upon being defeated", UniqueTarget.UnitTriggerCondition),
+    TriggerUponPromotion("upon being promoted", UniqueTarget.UnitTriggerCondition),
+    TriggerUponLosingHealth("upon losing at least [amount] HP in a single attack", UniqueTarget.UnitTriggerCondition),
+    TriggerUponEndingTurnInTile("upon ending a turn in a [tileFilter] tile", UniqueTarget.UnitTriggerCondition),
 
     //endregion
 
@@ -731,7 +750,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     HiddenAfterGreatProphet("Hidden after generating a Great Prophet", UniqueTarget.Ruins),
     HiddenWithoutVictoryType("Hidden when [victoryType] Victory is disabled", UniqueTarget.Building, UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),
-    HiddenFromCivilopedia("Will not be displayed in Civilopedia", *UniqueTarget.values(), flags = UniqueFlag.setOfHiddenToUsers),
+    HiddenFromCivilopedia("Will not be displayed in Civilopedia", UniqueTarget.Building, UniqueTarget.Unit, UniqueTarget.UnitType, UniqueTarget.Improvement,
+        UniqueTarget.Tech, UniqueTarget.Terrain, UniqueTarget.Resource, UniqueTarget.Policy, UniqueTarget.Promotion,
+        UniqueTarget.Nation, UniqueTarget.Ruins, flags = UniqueFlag.setOfHiddenToUsers),
 
     // endregion
 
@@ -1132,10 +1153,10 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
         for ((index, param) in unique.params.withIndex()) {
             val acceptableParamTypes = parameterTypeMap[index]
             val errorTypesForAcceptableParameters =
-                acceptableParamTypes.map { it.getErrorSeverity(param, ruleset) }
+                    acceptableParamTypes.map { it.getErrorSeverity(param, ruleset) }
             if (errorTypesForAcceptableParameters.any { it == null }) continue // This matches one of the types!
             val leastSevereWarning =
-                errorTypesForAcceptableParameters.minByOrNull { it!!.ordinal }!!
+                    errorTypesForAcceptableParameters.minByOrNull { it!!.ordinal }!!
             errorList += UniqueComplianceError(param, acceptableParamTypes, leastSevereWarning)
         }
         return errorList
@@ -1145,6 +1166,3 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
         .getAnnotation(Deprecated::class.java)
 
 }
-
-// I didn't put this is a companion object because APPARENTLY doing that means you can't use it in the init function.
-val numberRegex = Regex("\\d+$") // Any number of trailing digits
