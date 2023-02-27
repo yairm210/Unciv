@@ -72,7 +72,7 @@ class AndroidSaverLoader(private val activity: Activity) : PlatformSaverLoader {
 
     fun onActivityResult(requestCode: Int, data: Intent?) {
         val uri: Uri = data?.data ?: return
-        val request = requests[requestCode] ?: return
+        val request = requests.remove(requestCode) ?: return
         request.onFileChosen(uri)
     }
 
