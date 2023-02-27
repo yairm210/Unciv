@@ -19,20 +19,26 @@ import com.unciv.ui.screens.savescreens.Gzip
  */
 @Suppress("RedundantSuspendModifier") // Methods can take a long time, so force users to use them in a coroutine to not get ANRs on Android
 class OnlineMultiplayerFiles(
-    private var fileStorageIdentifier: String? = null
+    private var fileStorageIdentifier: String? = null,
+    private var authenticationHeader: Map<String, String>? = null
 ) {
     fun fileStorage(): FileStorage {
         val identifier = if (fileStorageIdentifier == null) UncivGame.Current.settings.multiplayer.server else fileStorageIdentifier
+        val authHeader = if (authenticationHeader == null) {
+            val settings = UncivGame.Current.settings.multiplayer
+            mapOf(
+                "Authorization" to "Basic ${Gzip.zip(settings.userId)}:${Gzip.zip(settings.passwords[settings.server] ?: "")}"
+            )
+        } else {
+            authenticationHeader
+        }
 
         return if (identifier == Constants.dropboxMultiplayerServer) {
             DropBox
         } else {
-            val settings = UncivGame.Current.settings.multiplayer
             UncivServerFileStorage.apply {
                 serverUrl = identifier!!
-                authHeader = mapOf(
-                    "Authorization" to "Basic ${Gzip.zip(settings.userId)}:${Gzip.zip(settings.passwords[settings.server] ?: "")}"
-                )
+                this.authHeader = authHeader
             }
         }
     }

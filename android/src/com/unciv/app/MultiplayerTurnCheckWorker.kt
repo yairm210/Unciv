@@ -24,6 +24,7 @@ import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.OnlineMultiplayerFiles
 import com.unciv.models.metadata.GameSettingsMultiplayer
+import com.unciv.ui.screens.savescreens.Gzip
 import kotlinx.coroutines.runBlocking
 import java.io.FileNotFoundException
 import java.io.PrintWriter
@@ -59,6 +60,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         private const val CONFIGURED_DELAY = "CONFIGURED_DELAY"
         private const val PERSISTENT_NOTIFICATION_ENABLED = "PERSISTENT_NOTIFICATION_ENABLED"
         private const val FILE_STORAGE = "FILE_STORAGE"
+        private const val AUTH_HEADER = "AUTH_HEADER"
 
         fun enqueue(appContext: Context, delay: Duration, inputData: Data) {
 
@@ -213,7 +215,8 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 val inputData = workDataOf(Pair(FAIL_COUNT, 0), Pair(GAME_ID, gameIds), Pair(GAME_NAME, gameNames),
                         Pair(USER_ID, settings.userId), Pair(CONFIGURED_DELAY, settings.turnCheckerDelay.seconds),
                         Pair(PERSISTENT_NOTIFICATION_ENABLED, settings.turnCheckerPersistentNotificationEnabled),
-                        Pair(FILE_STORAGE, settings.server))
+                        Pair(FILE_STORAGE, settings.server),
+                        Pair(AUTH_HEADER, "Basic ${Gzip.zip(settings.userId)}:${Gzip.zip(settings.passwords[settings.server] ?: "")}"))
 
                 if (settings.turnCheckerPersistentNotificationEnabled) {
                     showPersistentNotification(applicationContext, "—", settings.turnCheckerDelay)
@@ -274,6 +277,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         val showPersistNotific = inputData.getBoolean(PERSISTENT_NOTIFICATION_ENABLED, true)
         val configuredDelay = getConfiguredDelay(inputData)
         val fileStorage = inputData.getString(FILE_STORAGE)
+        val authHeader = inputData.getString(AUTH_HEADER)!!
 
         try {
             val gameIds = inputData.getStringArray(GAME_ID)!!
@@ -283,7 +287,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
             // to download all games to update the files so we save the first one we find
             var foundGame: Pair<String, String>? = null
 
-            for (idx in 0 until gameIds.size){
+            for (idx in gameIds.indices){
                 val gameId = gameIds[idx]
                 //gameId could be an empty string if startTurnChecker fails to load all files
                 if (gameId.isEmpty())
@@ -295,9 +299,9 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 }
 
                 try {
-                    Log.d(LOG_TAG, "doWork download ${gameId}")
-                    val gamePreview = OnlineMultiplayerFiles(fileStorage).tryDownloadGamePreview(gameId)
-                    Log.d(LOG_TAG, "doWork download ${gameId} done")
+                    Log.d(LOG_TAG, "doWork download $gameId")
+                    val gamePreview = OnlineMultiplayerFiles(fileStorage, mapOf("Authorization" to authHeader)).tryDownloadGamePreview(gameId)
+                    Log.d(LOG_TAG, "doWork download $gameId done")
                     val currentTurnPlayer = gamePreview.getCivilization(gamePreview.currentPlayer)
 
                     //Save game so MultiplayerScreen gets updated
