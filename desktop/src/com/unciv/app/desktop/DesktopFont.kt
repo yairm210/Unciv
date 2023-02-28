@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage
 import java.util.*
 
 
-class FontDesktop : FontImplementation {
+class DesktopFont : FontImplementation {
 
     private lateinit var font: Font
     private lateinit var metric: FontMetrics

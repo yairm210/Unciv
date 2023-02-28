@@ -44,6 +44,8 @@ class OptionsPopup(
     private val selectPage: Int = defaultPage,
     private val onClose: () -> Unit = {}
 ) : Popup(screen.stage, /** [TabbedPager] handles scrolling */ scrollable = false ) {
+
+    val game = screen.game
     val settings = screen.game.settings
     val tabs: TabbedPager
     val selectBoxMinWidth: Float
@@ -120,7 +122,7 @@ class OptionsPopup(
 
         addCloseButton {
             screen.game.musicController.onChange(null)
-            screen.game.platformSpecificHelper?.allowPortrait(settings.allowAndroidPortrait)
+            screen.game.allowPortrait(settings.allowAndroidPortrait)
             onClose()
         }.padBottom(10f)
 
@@ -205,7 +207,7 @@ open class SettingsSelect<T : Any>(
 ) {
     private val settingsProperty: KMutableProperty0<T> = setting.getProperty(settings)
     private val label = createLabel(labelText)
-    protected val refreshSelectBox = createSelectBox(items.toGdxArray(), settings)
+    private val refreshSelectBox = createSelectBox(items.toGdxArray(), settings)
     val items by refreshSelectBox::items
 
     private fun createLabel(labelText: String): Label {

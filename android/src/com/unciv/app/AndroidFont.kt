@@ -18,7 +18,7 @@ import com.unciv.ui.components.Fonts
 import java.util.*
 import kotlin.math.abs
 
-class FontAndroid : FontImplementation {
+class AndroidFont : FontImplementation {
 
     private val fontList by lazy {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) emptySet()

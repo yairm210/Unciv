@@ -33,6 +33,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.cityscreen.CityReligionInfoTable
 import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
+import com.unciv.utils.DebugUtils
 import kotlin.math.max
 import kotlin.math.min
 
@@ -228,7 +229,7 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
         pad(0f)
         defaults().pad(0f)
 
-        val isShowDetailedInfo = UncivGame.Current.viewEntireMapForDebug
+        val isShowDetailedInfo = DebugUtils.VISIBLE_MAP
                 || city.civ == viewingCiv
                 || viewingCiv.isSpectator()
 
@@ -532,7 +533,7 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
             if (isButtonMoved) {
                 // second tap on the button will go to the city screen
                 // if this city belongs to you and you are not iterating though the air units
-                if (GUI.isDebugMapVisible() || viewingPlayer.isSpectator()
+                if (DebugUtils.VISIBLE_MAP || viewingPlayer.isSpectator()
                     || (belongsToViewingCiv() && !tileGroup.tile.airUnits.contains(unitTable.selectedUnit))) {
                         GUI.pushScreen(CityScreen(city))
                 } else if (viewingPlayer.knows(city.civ)) {

@@ -3,7 +3,6 @@
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
@@ -22,6 +21,7 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.utils.DebugUtils
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.random.Random
@@ -235,13 +235,13 @@ open class Tile : IsPartOfGameInfoSerialization {
             else ruleset.terrains[naturalWonder!!]!!
 
     fun isVisible(player: Civilization): Boolean {
-        if (UncivGame.Current.viewEntireMapForDebug)
+        if (DebugUtils.VISIBLE_MAP)
             return true
         return player.viewableTiles.contains(this)
     }
 
     fun isExplored(player: Civilization): Boolean {
-        if (UncivGame.Current.viewEntireMapForDebug || player.isSpectator())
+        if (DebugUtils.VISIBLE_MAP || player.isSpectator())
             return true
         return exploredBy.contains(player.civName)
     }

@@ -11,7 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.unciv.UncivGame
-import com.unciv.UncivGameParameters
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.throttle
 import com.unciv.ui.images.ImageGetter
@@ -61,10 +60,11 @@ object FasterUIDevelopment {
     }
 
     class UIDevGame : Game() {
-        val game = UncivGame(UncivGameParameters(
-            fontImplementation = FontDesktop()
-        ))
+
+        private val game = UncivGame()
+
         override fun create() {
+            Fonts.fontImplementation = FontDesktop()
             UncivGame.Current = game
             UncivGame.Current.files = UncivFiles(Gdx.files)
             game.settings = UncivGame.Current.files.getGeneralSettings()

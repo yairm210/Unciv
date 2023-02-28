@@ -32,6 +32,7 @@ import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
+import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
 import java.util.*
 
@@ -253,7 +254,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     //region State changing functions
 
     // Do we automatically simulate until N turn?
-    fun isSimulation(): Boolean = turns < UncivGame.Current.simulateUntilTurnForDebug
+    fun isSimulation(): Boolean = turns < DebugUtils.SIMULATE_UNTIL_TURN
             || turns < simulateMaxTurns && simulateUntilWin
 
     fun nextTurn() {
@@ -266,7 +267,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             playerIndex = (playerIndex + 1) % civilizations.size
             if (playerIndex == 0) {
                 turns++
-                if (UncivGame.Current.simulateUntilTurnForDebug != 0)
+                if (DebugUtils.SIMULATE_UNTIL_TURN != 0)
                     debug("Starting simulation of turn %s", turns)
             }
             player = civilizations[playerIndex]
@@ -311,8 +312,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             setNextPlayer()
         }
 
-        if (turns == UncivGame.Current.simulateUntilTurnForDebug)
-            UncivGame.Current.simulateUntilTurnForDebug = 0
+        if (turns == DebugUtils.SIMULATE_UNTIL_TURN)
+            DebugUtils.SIMULATE_UNTIL_TURN = 0
 
         // We found human player, so we are making him current
         currentTurnStartTime = System.currentTimeMillis()

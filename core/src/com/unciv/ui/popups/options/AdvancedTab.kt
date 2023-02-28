@@ -54,17 +54,18 @@ fun advancedTab(
 
     addAutosaveTurnsSelectBox(this, settings)
 
-    if (UncivGame.Current.platformSpecificHelper?.hasDisplayCutout() == true)
-        optionsPopup.addCheckbox(this, "Enable display cutout (requires restart)", settings.androidCutout, false) { settings.androidCutout = it }
+    if (UncivGame.Current.hasDisplayCutout())
+        optionsPopup.addCheckbox(this, "Enable display cutout (requires restart)", settings.androidCutout) {
+            settings.androidCutout = it
+        }
 
     addMaxZoomSlider(this, settings)
 
-    val helper = UncivGame.Current.platformSpecificHelper
-    if (helper != null && Gdx.app.type == Application.ApplicationType.Android) {
+    if (Gdx.app.type == Application.ApplicationType.Android) {
         optionsPopup.addCheckbox(this, "Enable portrait orientation", settings.allowAndroidPortrait) {
             settings.allowAndroidPortrait = it
             // Note the following might close the options screen indirectly and delayed
-            helper.allowPortrait(it)
+            UncivGame.Current.allowPortrait(it)
         }
     }
 
@@ -237,7 +238,7 @@ private fun addTranslationGeneration(table: Table, optionsPopup: OptionsPopup) {
         Concurrency.run("GenerateScreenshot") {
             val extraImagesLocation = "../../extraImages"
             // I'm not sure why we need to advance the y by 2 for every screenshot... but that's the only way it remains centered
-            generateScreenshots(arrayListOf(
+            generateScreenshots(optionsPopup.settings, arrayListOf(
                 ScreenshotConfig(630, 500, ScreenSize.Medium, "$extraImagesLocation/itch.io image.png", Vector2(-2f, 2f),false),
                 ScreenshotConfig(1280, 640, ScreenSize.Medium, "$extraImagesLocation/GithubPreviewImage.png", Vector2(-2f, 4f)),
                 ScreenshotConfig(1024, 500, ScreenSize.Medium, "$extraImagesLocation/Feature graphic - Google Play.png",Vector2(-2f, 6f)),
@@ -251,12 +252,12 @@ private fun addTranslationGeneration(table: Table, optionsPopup: OptionsPopup) {
 
 data class ScreenshotConfig(val width: Int, val height: Int, val screenSize: ScreenSize, var fileLocation:String, var centerTile:Vector2, var attackCity:Boolean=true)
 
-private fun CoroutineScope.generateScreenshots(configs:ArrayList<ScreenshotConfig>) {
+private fun CoroutineScope.generateScreenshots(settings: GameSettings, configs:ArrayList<ScreenshotConfig>) {
     val currentConfig = configs.first()
     launchOnGLThread {
         val screenshotGame =
                 UncivGame.Current.files.loadGameByName("ScreenshotGenerationGame")
-        UncivGame.Current.settings.screenSize = currentConfig.screenSize
+        settings.screenSize = currentConfig.screenSize
         val newScreen = UncivGame.Current.loadGame(screenshotGame)
         newScreen.stage.viewport.update(currentConfig.width, currentConfig.height, true)
 
@@ -290,7 +291,7 @@ private fun CoroutineScope.generateScreenshots(configs:ArrayList<ScreenshotConfi
                 )
                 pixmap.dispose()
                 val newConfigs = configs.withoutItem(currentConfig)
-                if (newConfigs.isNotEmpty()) generateScreenshots(newConfigs)
+                if (newConfigs.isNotEmpty()) generateScreenshots(settings, newConfigs)
             }
         }
     }

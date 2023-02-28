@@ -269,7 +269,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         val gdxFiles = DefaultAndroidFiles(applicationContext.assets, ContextWrapper(applicationContext), true)
         // GDX's AndroidFileHandle uses Gdx.files internally, so we need to set that to our new instance
         Gdx.files = gdxFiles
-        files = UncivFiles(gdxFiles, null, true)
+        files = UncivFiles(gdxFiles)
     }
 
     override fun doWork(): Result = runBlocking {

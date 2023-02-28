@@ -2,7 +2,6 @@ package com.unciv.ui.components.tilegroups
 
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.components.tilegroups.layers.TileLayerBorders
@@ -13,6 +12,7 @@ import com.unciv.ui.components.tilegroups.layers.TileLayerOverlay
 import com.unciv.ui.components.tilegroups.layers.TileLayerTerrain
 import com.unciv.ui.components.tilegroups.layers.TileLayerUnitArt
 import com.unciv.ui.components.tilegroups.layers.TileLayerUnitFlag
+import com.unciv.utils.DebugUtils
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -40,7 +40,7 @@ open class TileGroup(
     val hexagonImageOrigin = Pair(hexagonImageWidth / 2f, sqrt((hexagonImageWidth / 2f).pow(2) - (hexagonImageWidth / 4f).pow(2)))
     val hexagonImagePosition = Pair(-hexagonImageOrigin.first / 3f, -hexagonImageOrigin.second / 4f)
 
-    var isForceVisible = UncivGame.Current.viewEntireMapForDebug
+    var isForceVisible = DebugUtils.VISIBLE_MAP
     var isForMapEditorIcon = false
 
     @Suppress("LeakingThis") val layerTerrain = TileLayerTerrain(this, groupSize)
