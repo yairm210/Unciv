@@ -376,11 +376,11 @@
 	"Desert+Hill+Gems+Farm": ["Desert+Hill","Gems","FarmDH"],
 	"Desert+Hill+Gold Ore+Farm": ["Desert+Hill","Gold Ore","FarmDH"],
 	
-	"Desert+Flood plains+Farm": ["Flood plains","FarmP","HutFarm"],
-	"Desert+Flood plains+Cotton+Farm": ["Flood plains","FarmP","Cotton"],
-	"Desert+Flood plains+Incense+Farm": ["Flood plains","FarmP","Incense"],
-	"Desert+Flood plains+Sugar+Farm": ["Flood plains","FarmP","Sugar"],
-	"Desert+Flood plains+Citrus+Farm": ["Flood plains","FarmP","Citrus"],
+	"Desert+Flood plains+Farm": ["Desert","Flood plains","FarmP","HutFarm"],
+	"Desert+Flood plains+Cotton+Farm": ["Desert","Flood plains","FarmP","Cotton"],
+	"Desert+Flood plains+Incense+Farm": ["Desert","Flood plains","FarmP","Incense"],
+	"Desert+Flood plains+Sugar+Farm": ["Desert","Flood plains","FarmP","Sugar"],
+	"Desert+Flood plains+Citrus+Farm": ["Desert ","Flood plains","FarmP","Citrus"],
 	
 	"Plains+Wheat+Farm": ["Plains","Farm+Wheat","HutFarm"],
 	"Desert+Wheat+Farm": ["Desert","Farm+Wheat","HutFarm"],
