@@ -380,7 +380,7 @@
 	"Desert+Flood plains+Cotton+Farm": ["Desert","Flood plains","FarmP","Cotton"],
 	"Desert+Flood plains+Incense+Farm": ["Desert","Flood plains","FarmP","Incense"],
 	"Desert+Flood plains+Sugar+Farm": ["Desert","Flood plains","FarmP","Sugar"],
-	"Desert+Flood plains+Citrus+Farm": ["Desert ","Flood plains","FarmP","Citrus"],
+	"Desert+Flood plains+Citrus+Farm": ["Desert","Flood plains","FarmP","Citrus"],
 	
 	"Plains+Wheat+Farm": ["Plains","Farm+Wheat","HutFarm"],
 	"Desert+Wheat+Farm": ["Desert","Farm+Wheat","HutFarm"],
