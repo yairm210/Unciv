@@ -186,8 +186,6 @@ class Civilization : IsPartOfGameInfoSerialization {
     // This is basically a way to ensure our lists are immutable.
     var cities = listOf<City>()
     var citiesCreated = 0
-    @Deprecated("4.5.0 - in favor of Tile.exploredBy")
-    var exploredTiles = HashSet<Vector2>()
 
     // Limit camera within explored region
     var exploredRegion = ExploredRegion()
@@ -270,11 +268,6 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.proximity.putAll(proximity)
         toReturn.cities = cities.map { it.clone() }
         toReturn.neutralRoads = neutralRoads
-
-        // This is the only thing that is NOT switched out, which makes it a source of ConcurrentModification errors.
-        // Cloning it by-pointer is a horrific move, since the serialization would go over it ANYWAY and still lead to concurrency problems.
-        // Cloning it by iterating on the tilemap values may seem ridiculous, but it's a perfectly thread-safe way to go about it, unlike the other solutions.
-        toReturn.exploredTiles.addAll(gameInfo.tileMap.values.asSequence().map { it.position }.filter { it in exploredTiles })
         toReturn.exploredRegion = exploredRegion.clone()
         toReturn.lastSeenImprovement.putAll(lastSeenImprovement)
         toReturn.notifications.addAll(notifications)

@@ -591,10 +591,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         cityDistances.game = this
 
         guaranteeUnitPromotions()
-
-        for (player in civilizations)
-            for (tile in player.exploredTiles)
-                tileMap[tile].setExplored(player, true)
     }
 
     //endregion

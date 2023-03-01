@@ -248,8 +248,6 @@ open class Tile : IsPartOfGameInfoSerialization {
 
     fun setExplored(player: Civilization, isExplored: Boolean, explorerPosition: Vector2? = null) {
         if (isExplored) {
-            player.exploredTiles.add(position)
-
             // Disable the undo button if a new tile has been explored
             if (exploredBy.add(player.civName) && GUI.isWorldLoaded()) {
                 val worldScreen = GUI.getWorldScreen()
@@ -260,7 +258,6 @@ open class Tile : IsPartOfGameInfoSerialization {
                 player.exploredRegion.checkTilePosition(position, explorerPosition)
         } else {
             exploredBy.remove(player.civName)
-            player.exploredTiles.remove(position)
         }
     }
 
