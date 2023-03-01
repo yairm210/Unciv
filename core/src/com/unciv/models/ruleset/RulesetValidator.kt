@@ -542,15 +542,6 @@ class RulesetValidator(val ruleset: Ruleset) {
             rulesetErrors.add(deprecationText, severity)
         }
 
-        if (unique.type.targetTypes.none { uniqueTarget.canAcceptUniqueTarget(it) }
-                // the 'consume unit' conditional causes a triggerable unique to become a unit action
-                && !(uniqueTarget== UniqueTarget.Unit
-                        && unique.isTriggerable
-                        && unique.conditionals.any { it.type == UniqueType.UnitActionConsumeUnit }))
-            rulesetErrors.add(
-                "$name's unique \"${unique.text}\" cannot be put on this type of object!",
-                RulesetErrorSeverity.Warning
-            )
         return rulesetErrors
     }
 }

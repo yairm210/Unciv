@@ -19,6 +19,7 @@ import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.removeConditionals
@@ -642,7 +643,7 @@ object UnitActions {
 
     private fun addTriggerUniqueActions(unit: MapUnit, actionList: ArrayList<UnitAction>){
         for (unique in unit.getUniques()) {
-            if (!unique.conditionals.any { it.type == UniqueType.UnitActionTriggerUnitUnique }) continue
+            if (unique.conditionals.none { it.type?.targetTypes?.contains(UniqueTarget.UnitActionModifier) == true }) continue
 
             val unitAction = UnitAction(type = UnitActionType.TriggerUnique, unique.text.removeConditionals()){
                 UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
@@ -674,11 +675,14 @@ object UnitActions {
     }
 
     fun activateSideEffects(unit: MapUnit, actionUnique: Unique){
+        var conditionalsWithNoSideEffect = 0
         for (conditional in actionUnique.conditionals){
             when (conditional.type){
                 UniqueType.UnitActionConsumeUnit -> unit.consume()
-                else -> unit.useMovementPoints(1f)
+                else -> conditionalsWithNoSideEffect++
             }
         }
+        if (conditionalsWithNoSideEffect == actionUnique.conditionals.size)
+            unit.useMovementPoints(1f)
     }
 }

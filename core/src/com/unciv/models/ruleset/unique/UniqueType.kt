@@ -351,7 +351,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     FoundCity("Founds a new city", UniqueTarget.Unit),
     ConstructImprovementInstantly("Can instantly construct a [improvementName] improvement", UniqueTarget.Unit),
-    @Deprecated("as of 4.5.2", ReplaceWith("Can instantly construct a [improvementName] improvement"))
+    @Deprecated("as of 4.5.2", ReplaceWith("Can instantly construct a [improvementName] improvement <by consuming this unit>"))
     ConstructImprovementConsumingUnit("Can construct [improvementName]", UniqueTarget.Unit),
     BuildImprovements("Can build [improvementFilter/terrainFilter] improvements on tiles", UniqueTarget.Unit),
     CreateWaterImprovements("May create improvements on water resources", UniqueTarget.Unit),
@@ -505,10 +505,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     ///////////////////////////////////////// region UNIT ACTION MODIFIERS /////////////////////////////////////////
 
-    UnitActionConsumeUnit("consuming this unit", UniqueTarget.UnitActionModifier),
-    UnitActionTriggerUnitUnique("as an action", UniqueTarget.UnitActionModifier),
-    @Deprecated("as of 4.5.2", ReplaceWith("consuming this unit"))
-    UnitActionConsumeUnitOld("by consuming this unit", UniqueTarget.UnitActionModifier),
+    UnitActionConsumeUnit("by consuming this unit", UniqueTarget.UnitActionModifier),
 
     // endregion
 

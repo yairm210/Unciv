@@ -1975,12 +1975,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: UnitTriggerCondition
 
 ## UnitActionModifier uniques
-??? example  "&lt;consuming this unit&gt;"
-	Applicable to: UnitActionModifier
-
-??? example  "&lt;as an action&gt;"
-	Applicable to: UnitActionModifier
-
 ??? example  "&lt;by consuming this unit&gt;"
 	Applicable to: UnitActionModifier
 
