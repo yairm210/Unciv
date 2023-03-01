@@ -1,6 +1,7 @@
 package com.unciv.logic.multiplayer.storage
 
 import com.badlogic.gdx.Net
+import com.badlogic.gdx.utils.Base64Coder
 import com.unciv.ui.screens.savescreens.Gzip
 import com.unciv.utils.debug
 import kotlin.Exception
@@ -58,7 +59,8 @@ object UncivServerFileStorage : FileStorage {
 
     override fun authenticate(userId: String, password: String): Boolean {
         var authenticated = false
-        authHeader = mapOf("Authorization" to "Basic ${Gzip.zip(userId)}:${Gzip.zip(password)}")
+        val preEncodedAuthValue = "$userId:$password"
+        authHeader = mapOf("Authorization" to "Basic ${Base64Coder.encodeString(preEncodedAuthValue)}")
         SimpleHttp.sendGetRequest("$serverUrl/auth", timeout=timeout, header=authHeader) {
                 success, result, code ->
             if (!success) {
