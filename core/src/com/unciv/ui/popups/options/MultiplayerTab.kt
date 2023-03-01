@@ -282,12 +282,17 @@ private fun successfullyConnectedToServer(action: (Boolean, Boolean) -> Unit) {
 }
 
 private fun setPassword(password: String, optionsPopup: OptionsPopup) {
-    if (password.isNullOrBlank())
+    if (password.isBlank())
         return
 
     val popup = Popup(optionsPopup.stageToShowOn).apply {
         addGoodSizedLabel("Awaiting response...").row()
         open(true)
+    }
+
+    if (password.length < 6) {
+        popup.reuseWith("Password must be at least 6 characters long", true)
+        return
     }
 
     if (UncivGame.Current.onlineMultiplayer.serverFeatureSet.authVersion == 0) {

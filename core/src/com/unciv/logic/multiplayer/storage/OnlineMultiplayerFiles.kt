@@ -27,7 +27,7 @@ class OnlineMultiplayerFiles(
         val authHeader = if (authenticationHeader == null) {
             val settings = UncivGame.Current.settings.multiplayer
             mapOf(
-                "Authorization" to "Basic ${Gzip.zip(settings.userId)}:${Gzip.zip(settings.passwords[settings.server] ?: "")}"
+                "Authorization" to "Basic ${Gzip.zip("${settings.userId}:${settings.passwords[settings.server] ?: ""}")}"
             )
         } else {
             authenticationHeader

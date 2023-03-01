@@ -58,7 +58,7 @@ object UncivServerFileStorage : FileStorage {
 
     override fun authenticate(userId: String, password: String): Boolean {
         var authenticated = false
-        authHeader = mapOf("Authorization" to "Basic ${Gzip.zip(userId)}:${Gzip.zip(password)}")
+        authHeader = mapOf("Authorization" to "Basic ${Gzip.zip("${userId}:${password}")}")
         SimpleHttp.sendGetRequest("$serverUrl/auth", timeout=timeout, header=authHeader) {
                 success, result, code ->
             if (!success) {
