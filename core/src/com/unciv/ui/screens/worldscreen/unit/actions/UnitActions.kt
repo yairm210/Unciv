@@ -470,8 +470,12 @@ object UnitActions {
                         (civResources[unique.params[1]] ?: 0) < unique.params[0].toInt()
             }
 
+            val sideEffectsString = getSideEffectString(unique)
+            val title = if (sideEffectsString.isEmpty()) "Create [$improvementName]"
+            else "{Create [$improvementName]} {$sideEffectsString}"
+
             finalActions += UnitAction(UnitActionType.Create,
-                title = "Create [$improvementName]",
+                title = title,
                 action = {
                     val unitTile = unit.getTile()
                     unitTile.improvementFunctions.removeCreatesOneImprovementMarker()
@@ -642,8 +646,10 @@ object UnitActions {
     }
 
     private fun addTriggerUniqueActions(unit: MapUnit, actionList: ArrayList<UnitAction>){
+        val triggerableTypes = setOf(UniqueTarget.Triggerable, UniqueTarget.UnitTriggerable)
         for (unique in unit.getUniques()) {
             if (unique.conditionals.none { it.type?.targetTypes?.contains(UniqueTarget.UnitActionModifier) == true }) continue
+            if (unique.type?.targetTypes?.any { it in triggerableTypes }!=true) continue
 
             val unitAction = UnitAction(type = UnitActionType.TriggerUnique, unique.text.removeConditionals()){
                 UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
@@ -684,5 +690,12 @@ object UnitActions {
         }
         if (conditionalsWithNoSideEffect == actionUnique.conditionals.size)
             unit.useMovementPoints(1f)
+    }
+
+    fun getSideEffectString(actionUnique: Unique): String {
+        val effects = ArrayList<String>()
+        if (actionUnique.conditionals.any { it.type == UniqueType.UnitActionConsumeUnit }) effects += Fonts.death.toString()
+        return if (effects.isEmpty()) ""
+        else "(${effects.joinToString { it.tr() }})"
     }
 }

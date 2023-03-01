@@ -46,86 +46,93 @@ EmojiIcons/Culture
   orig: 50, 50
   offset: 0, 0
   index: -1
-EmojiIcons/Faith
+EmojiIcons/Death
   rotate: false
   xy: 436, 468
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-EmojiIcons/Food
+EmojiIcons/Faith
   rotate: false
   xy: 436, 410
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-EmojiIcons/Gold
+EmojiIcons/Food
   rotate: false
   xy: 436, 352
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-EmojiIcons/Great Artist
+EmojiIcons/Gold
   rotate: false
   xy: 436, 294
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-EmojiIcons/Great Engineer
+EmojiIcons/Great Artist
   rotate: false
   xy: 436, 236
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-EmojiIcons/Great General
+EmojiIcons/Great Engineer
   rotate: false
   xy: 436, 178
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-EmojiIcons/Great Merchant
+EmojiIcons/Great General
   rotate: false
   xy: 436, 120
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-EmojiIcons/Great Scientist
+EmojiIcons/Great Merchant
   rotate: false
   xy: 436, 62
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-EmojiIcons/Happiness
+EmojiIcons/Great Scientist
   rotate: false
   xy: 436, 4
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
+EmojiIcons/Happiness
+  rotate: false
+  xy: 494, 642
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
 EmojiIcons/Production
   rotate: false
-  xy: 494, 352
+  xy: 494, 294
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Science
   rotate: false
-  xy: 494, 178
+  xy: 494, 120
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Turn
   rotate: false
-  xy: 494, 62
+  xy: 494, 4
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -636,14 +643,14 @@ OtherIcons/HexagonOutline
   index: -1
 OtherIcons/Improvements
   rotate: false
-  xy: 494, 642
+  xy: 494, 584
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 OtherIcons/Link
   rotate: false
-  xy: 494, 526
+  xy: 494, 468
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -678,7 +685,7 @@ NotificationIcons/Working
   index: -1
 OtherIcons/LockSmall
   rotate: false
-  xy: 494, 468
+  xy: 494, 410
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -720,7 +727,7 @@ OtherIcons/NationSwap
   index: -1
 OtherIcons/Nations
   rotate: false
-  xy: 494, 410
+  xy: 494, 352
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1252,7 +1259,7 @@ StatIcons/Happiness
   index: -1
 StatIcons/InterceptRange
   rotate: false
-  xy: 494, 584
+  xy: 494, 526
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1280,14 +1287,14 @@ TileIcons/Worked
   index: -1
 StatIcons/Range
   rotate: false
-  xy: 494, 294
+  xy: 494, 236
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 StatIcons/RangedStrength
   rotate: false
-  xy: 494, 236
+  xy: 494, 178
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1315,7 +1322,7 @@ StatIcons/Specialist
   index: -1
 StatIcons/Strength
   rotate: false
-  xy: 494, 120
+  xy: 494, 62
   size: 50, 50
   orig: 50, 50
   offset: 0, 0

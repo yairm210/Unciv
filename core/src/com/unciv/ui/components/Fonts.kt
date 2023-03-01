@@ -126,30 +126,34 @@ class NativeBitmapFontData(
         return glyph
     }
 
+    private fun getPixmap(fileName:String) = Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable(fileName).region)
+
     private fun getPixmapFromChar(ch: Char): Pixmap {
         // Images must be 50*50px so they're rendered at the same height as the text - see Fonts.ORIGINAL_FONT_SIZE
         return when (ch) {
-            Fonts.strength -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("StatIcons/Strength").region)
-            Fonts.rangedStrength -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("StatIcons/RangedStrength").region)
-            Fonts.range -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("StatIcons/Range").region)
-            Fonts.movement -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("StatIcons/Movement").region)
-            Fonts.turn -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Turn").region)
-            Fonts.production -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Production").region)
-            Fonts.gold -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Gold").region)
-            Fonts.food -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Food").region)
-            Fonts.science -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Science").region)
-            Fonts.culture -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Culture").region)
-            Fonts.faith -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Faith").region)
-            Fonts.happiness -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Happiness").region)
-            Fonts.greatArtist -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Great Artist").region)
-            Fonts.greatEngineer -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Great Engineer").region)
-            Fonts.greatGeneral -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Great General").region)
-            Fonts.greatMerchant -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Great Merchant").region)
-            Fonts.greatScientist -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Great Scientist").region)
-            MayaCalendar.tun -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable(MayaCalendar.tunIcon).region)
-            MayaCalendar.katun -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable(MayaCalendar.katunIcon).region)
-            MayaCalendar.baktun -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable(MayaCalendar.baktunIcon).region)
-            in MayaCalendar.digits -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable(MayaCalendar.digitIcon(ch)).region)
+            Fonts.strength -> getPixmap("StatIcons/Strength")
+            Fonts.rangedStrength -> getPixmap("StatIcons/RangedStrength")
+            Fonts.range -> getPixmap("StatIcons/Range")
+            Fonts.movement -> getPixmap("StatIcons/Movement")
+            Fonts.turn -> getPixmap("EmojiIcons/Turn")
+            Fonts.production -> getPixmap("EmojiIcons/Production")
+            Fonts.gold -> getPixmap("EmojiIcons/Gold")
+            Fonts.food -> getPixmap("EmojiIcons/Food")
+            Fonts.science -> getPixmap("EmojiIcons/Science")
+            Fonts.culture -> getPixmap("EmojiIcons/Culture")
+            Fonts.faith -> getPixmap("EmojiIcons/Faith")
+            Fonts.happiness -> getPixmap("EmojiIcons/Happiness")
+            Fonts.greatArtist -> getPixmap("EmojiIcons/Great Artist")
+            Fonts.greatEngineer -> getPixmap("EmojiIcons/Great Engineer")
+            Fonts.greatGeneral -> getPixmap("EmojiIcons/Great General")
+            Fonts.greatMerchant -> getPixmap("EmojiIcons/Great Merchant")
+            Fonts.greatScientist -> getPixmap("EmojiIcons/Great Scientist")
+            Fonts.death -> getPixmap("EmojiIcons/Death")
+
+            MayaCalendar.tun -> getPixmap(MayaCalendar.tunIcon)
+            MayaCalendar.katun -> getPixmap(MayaCalendar.katunIcon)
+            MayaCalendar.baktun -> getPixmap(MayaCalendar.baktunIcon)
+            in MayaCalendar.digits -> getPixmap(MayaCalendar.digitIcon(ch))
             else -> fontImplementation.getCharPixmap(ch)
         }
     }
@@ -244,4 +248,5 @@ object Fonts {
     const val greatGeneral = '⛤'       // U+26E4 'pentagram'
     const val greatMerchant = '⚖'      // U+2696 'scale'
     const val greatScientist = '⚛'      // U+269B 'atom'
+    const val death = '☠' // U+2620 'skull and crossbones'
 }
