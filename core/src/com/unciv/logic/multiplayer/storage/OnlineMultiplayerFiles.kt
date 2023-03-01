@@ -5,7 +5,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.files.UncivFiles
-import com.unciv.ui.screens.savescreens.Gzip
 
 /**
  * Allows access to games stored on a server for multiplayer purposes.
@@ -26,9 +25,7 @@ class OnlineMultiplayerFiles(
         val identifier = if (fileStorageIdentifier == null) UncivGame.Current.settings.multiplayer.server else fileStorageIdentifier
         val authHeader = if (authenticationHeader == null) {
             val settings = UncivGame.Current.settings.multiplayer
-            mapOf(
-                "Authorization" to "Basic ${Gzip.zip("${settings.userId}:${settings.passwords[settings.server] ?: ""}")}"
-            )
+            mapOf("Authorization" to settings.getAuthHeader())
         } else {
             authenticationHeader
         }

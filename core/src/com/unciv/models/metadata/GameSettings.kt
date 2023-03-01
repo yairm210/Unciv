@@ -2,6 +2,7 @@ package com.unciv.models.metadata
 
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.utils.Base64Coder
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.FriendList
@@ -233,6 +234,12 @@ class GameSettingsMultiplayer {
     var currentGameTurnNotificationSound: UncivSound = UncivSound.Silent
     var otherGameTurnNotificationSound: UncivSound = UncivSound.Silent
     var hideDropboxWarning = false
+
+    fun getAuthHeader(): String {
+        val serverPassword = passwords[server] ?: ""
+        val preEncodedAuthValue = "$userId:$serverPassword"
+        return "Basic ${Base64Coder.encodeString(preEncodedAuthValue)}"
+    }
 }
 
 enum class GameSetting(
