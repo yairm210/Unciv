@@ -1,3 +1,27 @@
+## 4.5.2
+
+Death symbols for Great Person actions
+
+Show death symbol next to actions that expend the unit
+
+"by consuming this unit" is better
+
+'create improvement' action, <consuming this unit> and <as an action> modifiers
+
+Preparation for unit action modifiers
+
+Resolved  - gifting cities no longer causes crash
+
+By GGGuenni:
+- Fixed wrong implementation of Basic auth 
+- Fixed TurnChecker can not authenticate 
+
+Cleaning: platform specifics and UncivGame  - By vegeta1k95
+
+Fix missing desert for flood plains in hexarealm tileset  - By AdityaMH
+
+Fix random nations pool popup  - By SomeTroglodyte
+
 ## 4.5.1
 
 Introduced unit triggers!
