@@ -18,8 +18,10 @@ import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.removeConditionals
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.popups.ConfirmPopup
@@ -453,7 +455,8 @@ object UnitActions {
 
     fun getImprovementConstructionActions(unit: MapUnit, tile: Tile): ArrayList<UnitAction> {
         val finalActions = ArrayList<UnitAction>()
-        val uniquesToCheck = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
+        val uniquesToCheck = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit) +
+                unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)
         val civResources = unit.civ.getCivResourcesByName()
 
         for (unique in uniquesToCheck) {
@@ -474,7 +477,9 @@ object UnitActions {
                     unitTile.changeImprovement(improvementName)
                     unitTile.stopWorkingOnImprovement()
                     improvement.handleImprovementCompletion(unit)
-                    unit.consume()
+
+                    if (unique.type == UniqueType.ConstructImprovementConsumingUnit) unit.consume()
+                    else activateSideEffects(unit, unique)
                 }.takeIf {
                     resourcesAvailable
                     && unit.currentMovement > 0f
@@ -637,10 +642,11 @@ object UnitActions {
 
     private fun addTriggerUniqueActions(unit: MapUnit, actionList: ArrayList<UnitAction>){
         for (unique in unit.getUniques()) {
-            if (!unique.conditionals.any { it.type == UniqueType.ConditionalConsumeUnit }) continue
-            val unitAction = UnitAction(type = UnitActionType.TriggerUnique, unique.text){
-                UniqueTriggerActivation.triggerCivwideUnique(unique, unit.civ)
-                unit.consume()
+            if (!unique.conditionals.any { it.type == UniqueType.UnitActionTriggerUnitUnique }) continue
+
+            val unitAction = UnitAction(type = UnitActionType.TriggerUnique, unique.text.removeConditionals()){
+                UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
+                activateSideEffects(unit, unique)
             }
             actionList += unitAction
         }
@@ -665,5 +671,14 @@ object UnitActions {
                 GUI.getWorldScreen().bottomUnitTable.update()
             }
         )
+    }
+
+    fun activateSideEffects(unit: MapUnit, actionUnique: Unique){
+        for (conditional in actionUnique.conditionals){
+            when (conditional.type){
+                UniqueType.UnitActionConsumeUnit -> unit.consume()
+                else -> unit.useMovementPoints(1f)
+            }
+        }
     }
 }

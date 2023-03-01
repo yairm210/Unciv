@@ -248,7 +248,8 @@ object SpecificUnitAutomation {
     }
 
     fun automateImprovementPlacer(unit: MapUnit) {
-        val improvementBuildingUniques = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
+        val improvementBuildingUniques = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit) +
+                unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)
 
         val improvementName = improvementBuildingUniques.first().params[0]
         val improvement = unit.civ.gameInfo.ruleset.tileImprovements[improvementName]

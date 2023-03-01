@@ -1039,8 +1039,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Founds a new city"
 	Applicable to: Unit
 
-??? example  "Can construct [improvementName]"
-	Example: "Can construct [Trading Post]"
+??? example  "Can instantly construct a [improvementName] improvement"
+	Example: "Can instantly construct a [Trading Post] improvement"
 
 	Applicable to: Unit
 
@@ -1975,6 +1975,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: UnitTriggerCondition
 
 ## UnitActionModifier uniques
+??? example  "&lt;consuming this unit&gt;"
+	Applicable to: UnitActionModifier
+
+??? example  "&lt;as an action&gt;"
+	Applicable to: UnitActionModifier
+
 ??? example  "&lt;by consuming this unit&gt;"
 	Applicable to: UnitActionModifier
 

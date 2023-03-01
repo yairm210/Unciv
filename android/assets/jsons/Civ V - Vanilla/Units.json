@@ -380,22 +380,6 @@
 		"promotions": ["[Mohawk Warrior] ability"],
 		"attackSound": "metalhit"
 	},
-	/*
-	{
-		"name": "Swordsman",
-		"unitType": "Sword",
-		"movement": 2,
-		"strength": 14,
-		"cost": 75,
-		"requiredTech": "Iron Working",
-		"upgradesTo": "Longswordsman",
-		"obsoleteTech": "Gunpowder",
-		"requiredResource": "Iron",
-		"hurryCostModifier": 20,
-		"attackSound": "metalhit"
-		// Barbarian unique Swordsman. Has same icon and name but slightly different 3d texture
-	},
-	*/
 
 	// Medieval Era
 	{
@@ -1274,33 +1258,44 @@
 	{
 		"name": "Great Artist",
 		"unitType": "Civilian",
-		"uniques": ["Can start an [8]-turn golden age", "Can construct [Landmark]", "Great Person - [Culture]", "Unbuildable", "Uncapturable"],
+		"uniques": ["Can start an [8]-turn golden age",
+            "Can instantly construct a [Landmark] improvement <consuming this unit>",
+            "Great Person - [Culture]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
 	{
 		"name": "Great Scientist",
 		"unitType": "Civilian",
-		"uniques": ["Can hurry technology research", "Can construct [Academy]", "Great Person - [Science]", "Unbuildable", "Uncapturable"],
+		"uniques": ["Can hurry technology research",
+            "Can instantly construct a [Academy] improvement <consuming this unit>",
+            "Great Person - [Science]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
 	{
 		"name": "Great Merchant",
 		"unitType": "Civilian",
 		"uniques": ["Can undertake a trade mission with City-State, giving a large sum of gold and [30] Influence",
-			"Can construct [Customs house]", "Great Person - [Gold]", "Unbuildable", "Uncapturable"],
+            "Can instantly construct a [Customs house] improvement <consuming this unit>",
+			"Great Person - [Gold]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
 	{
 		"name": "Great Engineer",
 		"unitType": "Civilian",
-		"uniques": ["Can speed up construction of a building", "Can construct [Manufactory]", "Great Person - [Production]", "Unbuildable", "Uncapturable"],
+		"uniques": ["Can speed up construction of a building",
+            "Can instantly construct a [Manufactory] improvement <consuming this unit>",
+            "Great Person - [Production]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
 	{
 		"name": "Great Prophet",
 		"unitType": "Civilian",
-		"uniques": ["Can construct [Holy site] <if it hasn't used other actions yet>", "Can [Spread Religion] [4] times",
-			"Removes other religions when spreading religion", "May found a religion", "May enhance a religion",
+		"uniques": [
+            "Can instantly construct a [Holy site] improvement <consuming this unit> <if it hasn't used other actions yet>",
+            "Can [Spread Religion] [4] times",
+			"Removes other religions when spreading religion",
+            "May found a religion",
+            "May enhance a religion",
 			"May enter foreign tiles without open borders", "[-1] Sight", "Great Person - [Faith]",
 			"Unbuildable", "Religious Unit", "Hidden when religion is disabled",
 			"Takes your religion over the one in their birth city"],
@@ -1310,7 +1305,8 @@
 	{
 		"name": "Great General",
 		"unitType": "Civilian",
-		"uniques": ["Can start an [8]-turn golden age", "[+15]% Strength bonus for [Military] units within [2] tiles", "Can construct [Citadel]",
+		"uniques": ["Can start an [8]-turn golden age", "[+15]% Strength bonus for [Military] units within [2] tiles",
+            "Can instantly construct a [Citadel] improvement <consuming this unit>",
 			"Great Person - [War]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},
@@ -1320,7 +1316,9 @@
 		"uniqueTo": "Mongolia",
 		"replaces": "Great General",
 		"uniques": ["Can start an [8]-turn golden age", "[+15]% Strength bonus for [Military] units within [2] tiles",
-			"All adjacent units heal [+15] HP when healing", "[+15] HP when healing", "Can construct [Citadel]", "Great Person - [War]", "Unbuildable", "Uncapturable"],
+			"All adjacent units heal [+15] HP when healing", "[+15] HP when healing",
+            "Can instantly construct a [Citadel] improvement <consuming this unit>",
+            "Great Person - [War]", "Unbuildable", "Uncapturable"],
 		"movement": 5
 	},
 
