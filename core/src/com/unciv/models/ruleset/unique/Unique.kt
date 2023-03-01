@@ -125,7 +125,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         state: StateForConditionals
     ): Boolean {
 
-        if (condition.type!!.targetTypes.contains(UniqueTarget.TriggerCondition))
+        val nonConditionalConditionTypes = setOf(UniqueTarget.TriggerCondition, UniqueTarget.UnitTriggerCondition, UniqueTarget.UnitActionModifier)
+        if (condition.type!!.targetTypes.any { it in nonConditionalConditionTypes })
             return true // not a filtering condition
 
         fun ruleset() = state.civInfo!!.gameInfo.ruleset
@@ -146,7 +147,6 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         return when (condition.type) {
             // These are 'what to do' and not 'when to do' conditionals
             UniqueType.ConditionalTimedUnique -> true
-            UniqueType.ConditionalConsumeUnit -> true
 
             UniqueType.ConditionalBeforeTurns -> state.civInfo != null && state.civInfo.gameInfo.turns < condition.params[0].toInt()
             UniqueType.ConditionalAfterTurns -> state.civInfo != null && state.civInfo.gameInfo.turns >= condition.params[0].toInt()

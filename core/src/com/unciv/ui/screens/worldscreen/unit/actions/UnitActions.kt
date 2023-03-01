@@ -21,13 +21,11 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.pickerscreens.ImprovementPickerScreen
-import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
+import com.unciv.ui.components.Fonts
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.hasOpenPopups
-import com.unciv.ui.components.Fonts
-import com.unciv.ui.screens.worldscreen.WorldScreen
-import com.unciv.ui.screens.worldscreen.unit.UnitTable
+import com.unciv.ui.screens.pickerscreens.ImprovementPickerScreen
+import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 
 object UnitActions {
 
@@ -52,8 +50,13 @@ object UnitActions {
 
         addPromoteAction(unit, actionList)
         UnitActionsUpgrade.addUnitUpgradeAction(unit, actionList)
-        addTransformAction(unit, actionList)
         UnitActionsPillage.addPillageAction(unit, actionList)
+        addExplorationActions(unit, actionList)
+        addWaitAction(unit, actionList)
+        addToggleActionsAction(unit, actionList)
+
+        // Determined by unit uniques
+        addTransformAction(unit, actionList)
         addParadropAction(unit, actionList)
         addAirSweepAction(unit, actionList)
         addSetupAction(unit, actionList)
@@ -66,14 +69,9 @@ object UnitActions {
         UnitActionsReligion.addEnhanceReligionAction(unit, actionList)
         actionList += getImprovementConstructionActions(unit, tile)
         UnitActionsReligion.addActionsWithLimitedUses(unit, actionList, tile)
-        addExplorationActions(unit, actionList)
         addAutomateBuildingImprovementsAction(unit, actionList)
         addTriggerUniqueActions(unit, actionList)
         addAddInCapitalAction(unit, actionList, tile)
-
-        addWaitAction(unit, actionList)
-
-        addToggleActionsAction(unit, actionList)
 
         return actionList
     }

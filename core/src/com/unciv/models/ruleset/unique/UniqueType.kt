@@ -53,7 +53,8 @@ enum class UniqueTarget(val inheritsFrom: UniqueTarget? = null) {
     ModOptions,
     Conditional,
     TriggerCondition(Global),
-    UnitTriggerCondition(TriggerCondition)
+    UnitTriggerCondition(TriggerCondition),
+    UnitActionModifier,
     ;
 
     fun canAcceptUniqueTarget(uniqueTarget: UniqueTarget): Boolean {
@@ -345,11 +346,30 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     ///////////////////////////////////////// region UNIT UNIQUES /////////////////////////////////////////
 
+    // Unit action uniques
     FoundCity("Founds a new city", UniqueTarget.Unit),
     ConstructImprovementConsumingUnit("Can construct [improvementName]", UniqueTarget.Unit),
     BuildImprovements("Can build [improvementFilter/terrainFilter] improvements on tiles", UniqueTarget.Unit),
     CreateWaterImprovements("May create improvements on water resources", UniqueTarget.Unit),
 
+    MayFoundReligion("May found a religion", UniqueTarget.Unit),
+    MayEnhanceReligion("May enhance a religion", UniqueTarget.Unit),
+
+    StartGoldenAge("Can start an [amount]-turn golden age", UniqueTarget.Unit),
+    AddInCapital("Can be added to [comment] in the Capital", UniqueTarget.Unit),
+    PreventSpreadingReligion("Prevents spreading of religion to the city it is next to", UniqueTarget.Unit),
+    RemoveOtherReligions("Removes other religions when spreading religion", UniqueTarget.Unit),
+
+    MayParadrop("May Paradrop up to [amount] tiles from inside friendly territory", UniqueTarget.Unit),
+    CanAirsweep("Can perform Air Sweep", UniqueTarget.Unit),
+    CanActionSeveralTimes("Can [action] [amount] times", UniqueTarget.Unit),
+    CanSpeedupConstruction("Can speed up construction of a building", UniqueTarget.Unit),
+    CanSpeedupWonderConstruction("Can speed up the construction of a wonder", UniqueTarget.Unit),
+    CanHurryResearch("Can hurry technology research", UniqueTarget.Unit),
+    CanTradeWithCityStateForGoldAndInfluence("Can undertake a trade mission with City-State, giving a large sum of gold and [amount] Influence", UniqueTarget.Unit),
+    CanTransform("Can transform to [unit]", UniqueTarget.Unit),
+
+    // Strength bonuses
     Strength("[relativeAmount]% Strength", UniqueTarget.Unit, UniqueTarget.Global),
     StrengthNearCapital("[relativeAmount]% Strength decreasing with distance from the capital", UniqueTarget.Unit, UniqueTarget.Global),
     FlankAttackBonus("[relativeAmount]% to Flank Attack bonuses", UniqueTarget.Unit, UniqueTarget.Global),
@@ -359,6 +379,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     StrengthWhenStacked("[relativeAmount]% Strength when stacked with [mapUnitFilter]", UniqueTarget.Unit),  // candidate for conditional!
     StrengthBonusInRadius("[relativeAmount]% Strength bonus for [mapUnitFilter] units within [amount] tiles", UniqueTarget.Unit),
 
+    // Stat bonuses
     AdditionalAttacks("[amount] additional attacks per turn", UniqueTarget.Unit, UniqueTarget.Global),
     Movement("[amount] Movement", UniqueTarget.Unit, UniqueTarget.Global),
     Sight("[amount] Sight", UniqueTarget.Unit, UniqueTarget.Global, UniqueTarget.Terrain),
@@ -366,15 +387,21 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     Heal("[amount] HP when healing", UniqueTarget.Unit, UniqueTarget.Global),
 
     SpreadReligionStrength("[relativeAmount]% Spread Religion Strength", UniqueTarget.Unit, UniqueTarget.Global),
-    MayFoundReligion("May found a religion", UniqueTarget.Unit),
-    MayEnhanceReligion("May enhance a religion", UniqueTarget.Unit),
     StatsWhenSpreading("When spreading religion to a city, gain [amount] times the amount of followers of other religions as [stat]", UniqueTarget.Unit, UniqueTarget.Global),
 
+    // Attack restrictions
     CanOnlyAttackUnits("Can only attack [combatantFilter] units", UniqueTarget.Unit),
     CanOnlyAttackTiles("Can only attack [tileFilter] tiles", UniqueTarget.Unit),
     CannotAttack("Cannot attack", UniqueTarget.Unit),
     MustSetUp("Must set up to ranged attack", UniqueTarget.Unit),
     SelfDestructs("Self-destructs when attacking", UniqueTarget.Unit),
+
+    // Attack unrestrictions
+    AttackAcrossCoast("Eliminates combat penalty for attacking across a coast", UniqueTarget.Unit),
+    AttackOnSea("May attack when embarked", UniqueTarget.Unit),
+    AttackAcrossRiver("Eliminates combat penalty for attacking over a river", UniqueTarget.Unit),
+
+    // Missiles
     BlastRadius("Blast radius [amount]", UniqueTarget.Unit),
     IndirectFire("Ranged attacks may be performed over obstacles", UniqueTarget.Unit),
     NuclearWeapon("Nuclear weapon of Strength [amount]", UniqueTarget.Unit),
@@ -387,12 +414,13 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     MayWithdraw("May withdraw before melee ([amount]%)", UniqueTarget.Unit),
     CannotCaptureCities("Unable to capture cities", UniqueTarget.Unit),
 
+    // Movement
     NoMovementToPillage("No movement cost to pillage", UniqueTarget.Unit, UniqueTarget.Global),
     CanMoveAfterAttacking("Can move after attacking", UniqueTarget.Unit),
     TransferMovement("Transfer Movement to [mapUnitFilter]", UniqueTarget.Unit),
     MoveImmediatelyOnceBought("Can move immediately once bought", UniqueTarget.Unit),
-    MayParadrop("May Paradrop up to [amount] tiles from inside friendly territory", UniqueTarget.Unit),
 
+    // Healing
     HealsOutsideFriendlyTerritory("May heal outside of friendly territory", UniqueTarget.Unit, UniqueTarget.Global),
     HealingEffectsDoubled("All healing effects doubled", UniqueTarget.Unit, UniqueTarget.Global),
     HealsAfterKilling("Heals [amount] damage if it kills a unit", UniqueTarget.Unit, UniqueTarget.Global),
@@ -400,41 +428,42 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     HealsEvenAfterAction("Unit will heal every turn, even if it performs an action", UniqueTarget.Unit),
     HealAdjacentUnits("All adjacent units heal [amount] HP when healing", UniqueTarget.Unit),
 
+    // Vision
     NormalVisionWhenEmbarked("Normal vision when embarked", UniqueTarget.Unit, UniqueTarget.Global),
     DefenceBonusWhenEmbarked("Defense bonus when embarked", UniqueTarget.Unit, UniqueTarget.Global),
-    AttackAcrossCoast("Eliminates combat penalty for attacking across a coast", UniqueTarget.Unit),
-    AttackOnSea("May attack when embarked", UniqueTarget.Unit),
-    AttackAcrossRiver("Eliminates combat penalty for attacking over a river", UniqueTarget.Unit),
-
     NoSight("No Sight", UniqueTarget.Unit),
     CanSeeOverObstacles("Can see over obstacles", UniqueTarget.Unit),
 
+    // Carrying
     CarryAirUnits("Can carry [amount] [mapUnitFilter] units", UniqueTarget.Unit),
     CarryExtraAirUnits("Can carry [amount] extra [mapUnitFilter] units", UniqueTarget.Unit),
     CannotBeCarriedBy("Cannot be carried by [mapUnitFilter] units", UniqueTarget.Unit),
 
+    // Interception
     ChanceInterceptAirAttacks("[relativeAmount]% chance to intercept air attacks", UniqueTarget.Unit),
     DamageFromInterceptionReduced("Damage taken from interception reduced by [relativeAmount]%", UniqueTarget.Unit),
     DamageWhenIntercepting("[relativeAmount]% Damage when intercepting", UniqueTarget.Unit),
     ExtraInterceptionsPerTurn("[amount] extra interceptions may be made per turn", UniqueTarget.Unit),
     CannotBeIntercepted("Cannot be intercepted", UniqueTarget.Unit),
     CannotInterceptUnits("Cannot intercept [mapUnitFilter] units", UniqueTarget.Unit),
-    CanAirsweep("Can perform Air Sweep", UniqueTarget.Unit),
     StrengthWhenAirsweep("[relativeAmount]% Strength when performing Air Sweep", UniqueTarget.Unit),
 
     UnitMaintenanceDiscount("[relativeAmount]% maintenance costs", UniqueTarget.Unit, UniqueTarget.Global),
     UnitUpgradeCost("[relativeAmount]% Gold cost of upgrading", UniqueTarget.Unit, UniqueTarget.Global),
 
+    // Gains from battle
     DamageUnitsPlunder("Earn [amount]% of the damage done to [combatantFilter] units as [civWideStat]", UniqueTarget.Unit, UniqueTarget.Global),
     CaptureCityPlunder("Upon capturing a city, receive [amount] times its [stat] production as [civWideStat] immediately", UniqueTarget.Unit, UniqueTarget.Global),
     KillUnitPlunder("Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [civWideStat]", UniqueTarget.Unit, UniqueTarget.Global),
     KillUnitPlunderNearCity("Earn [amount]% of [mapUnitFilter] unit's [costOrStrength] as [civWideStat] when killed within 4 tiles of a city following this religion", UniqueTarget.FollowerBelief),
     KillUnitCapture("May capture killed [mapUnitFilter] units", UniqueTarget.Unit),
 
+    // XP
     FlatXPGain("[amount] XP gained from combat", UniqueTarget.Unit, UniqueTarget.Global),
     PercentageXPGain("[relativeAmount]% XP gained from combat", UniqueTarget.Unit, UniqueTarget.Global),
     GreatPersonEarnedFaster("[greatPerson] is earned [relativeAmount]% faster", UniqueTarget.Unit, UniqueTarget.Global),
 
+    // Invisibility
     Invisible("Invisible to others", UniqueTarget.Unit),
     InvisibleToNonAdjacent("Invisible to non-adjacent units", UniqueTarget.Unit),
     CanSeeInvisibleUnits("Can see invisible [mapUnitFilter] units", UniqueTarget.Unit),
@@ -443,7 +472,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     DestroysImprovementUponAttack("Destroys tile improvements when attacking", UniqueTarget.Unit),
 
-    // The following block gets cached in MapUnit for faster getMovementCostBetweenAdjacentTiles
+    // Movement - The following block gets cached in MapUnit for faster getMovementCostBetweenAdjacentTiles
     CannotMove("Cannot move", UniqueTarget.Unit),
     DoubleMovementOnTerrain("Double movement in [terrainFilter]", UniqueTarget.Unit),
     AllTilesCost1Move("All tiles cost 1 movement", UniqueTarget.Unit),
@@ -462,27 +491,19 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     ReligiousUnit("Religious Unit", UniqueTarget.Unit),
     SpaceshipPart("Spaceship part", UniqueTarget.Unit, UniqueTarget.Building), // Should be deprecated in the near future
-    AddInCapital("Can be added to [comment] in the Capital", UniqueTarget.Unit),
-
-    StartGoldenAge("Can start an [amount]-turn golden age", UniqueTarget.Unit),
-    GreatPerson("Great Person - [comment]", UniqueTarget.Unit),
-
-    PreventSpreadingReligion("Prevents spreading of religion to the city it is next to", UniqueTarget.Unit),
     TakeReligionOverBirthCity("Takes your religion over the one in their birth city", UniqueTarget.Unit),
-    RemoveOtherReligions("Removes other religions when spreading religion", UniqueTarget.Unit),
-
-    CanActionSeveralTimes("Can [action] [amount] times", UniqueTarget.Unit),
 
     // Hurried means: sped up using great engineer/scientist ability, so this is in some sense a unit unique that should be here
     CannotBeHurried("Cannot be hurried", UniqueTarget.Building, UniqueTarget.Tech),
-    CanSpeedupConstruction("Can speed up construction of a building", UniqueTarget.Unit),
-    CanSpeedupWonderConstruction("Can speed up the construction of a wonder", UniqueTarget.Unit),
-    CanHurryResearch("Can hurry technology research", UniqueTarget.Unit),
-    CanTradeWithCityStateForGoldAndInfluence("Can undertake a trade mission with City-State, giving a large sum of gold and [amount] Influence", UniqueTarget.Unit),
-
-    CanTransform("Can transform to [unit]", UniqueTarget.Unit),
+    GreatPerson("Great Person - [comment]", UniqueTarget.Unit),
 
     //endregion
+
+    ///////////////////////////////////////// region UNIT ACTION MODIFIERS /////////////////////////////////////////
+
+    ConditionalConsumeUnit("by consuming this unit", UniqueTarget.UnitActionModifier),
+
+    // endregion
 
     ///////////////////////////////////////// region TILE UNIQUES /////////////////////////////////////////
 
@@ -585,11 +606,11 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     /////// general conditionals
     ConditionalTimedUnique("for [amount] turns", UniqueTarget.Conditional),
-    ConditionalConsumeUnit("by consuming this unit", UniqueTarget.Conditional),
     ConditionalChance("with [amount]% chance", UniqueTarget.Conditional),
-
     ConditionalBeforeTurns("before [amount] turns", UniqueTarget.Conditional),
+
     ConditionalAfterTurns("after [amount] turns", UniqueTarget.Conditional),
+
 
     /////// civ conditionals
     ConditionalWar("when at war", UniqueTarget.Conditional),
