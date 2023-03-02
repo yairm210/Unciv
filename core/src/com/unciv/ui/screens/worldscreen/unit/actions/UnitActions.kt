@@ -176,14 +176,15 @@ object UnitActions {
      * (no movement left, too close to another city).
       */
     fun getFoundCityAction(unit: MapUnit, tile: Tile): UnitAction? {
-        if (!unit.hasUnique(UniqueType.FoundCity)
-                || tile.isWater || tile.isImpassible()) return null
+        val unique = unit.getMatchingUniques(UniqueType.FoundCity).firstOrNull()
+        if (unique == null || tile.isWater || tile.isImpassible()) return null
         // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
         if (unit.civ.isOneCityChallenger() && unit.civ.hasEverOwnedOriginalCapital == true) return null
 
         if (unit.currentMovement <= 0 || !tile.canBeSettled())
             return UnitAction(UnitActionType.FoundCity, action = null)
 
+        val hasActionModifiers = unique.conditionals.any { it.type?.targetTypes?.contains(UniqueTarget.UnitActionModifier) == true }
         val foundAction = {
             if (unit.civ.playerType != PlayerType.AI)
                 UncivGame.Current.settings.addCompletedTutorialTask("Found city")
@@ -191,8 +192,9 @@ object UnitActions {
             if (tile.ruleset.tileImprovements.containsKey("City center"))
                 tile.changeImprovement("City center")
             tile.removeRoad()
-            unit.destroy()
-            GUI.setUpdateWorldOnNextRender()
+
+            if (hasActionModifiers) activateSideEffects(unit, unique)
+            else unit.destroy()
         }
 
         if (unit.civ.playerType == PlayerType.AI)
@@ -684,7 +686,9 @@ object UnitActions {
     }
 
     fun getMovementPointsToUse(actionUnique: Unique): Int {
-        val movementCost = actionUnique.conditionals.filter { it.type == UniqueType.UnitActionMovementCost }.minOfOrNull { it.params[0].toInt() }
+        val movementCost = actionUnique.conditionals
+            .filter { it.type == UniqueType.UnitActionMovementCost }
+            .minOfOrNull { it.params[0].toInt() }
         if (movementCost != null) return movementCost
         return 1
     }

@@ -350,6 +350,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     // Unit actions should look like: "Can {action description}, to allow them to be combined with modifiers
 
     FoundCity("Founds a new city", UniqueTarget.Unit),
+
     ConstructImprovementInstantly("Can instantly construct a [improvementName] improvement", UniqueTarget.Unit),
     @Deprecated("as of 4.5.2", ReplaceWith("Can instantly construct a [improvementName] improvement <by consuming this unit>"))
     ConstructImprovementConsumingUnit("Can construct [improvementName]", UniqueTarget.Unit),
