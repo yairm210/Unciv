@@ -205,29 +205,17 @@ class TileMap : IsPartOfGameInfoSerialization {
                 }.filterNotNull()
 
     /** @return all tiles within [rectangle], respecting world edges and wrap.
-     *  If using row/column coordinates the rectangle will be "straight" ie parallel with rectangular map edges. */
-    fun getTilesInRectangle(rectangle: Rectangle, rowsAndColumns: Boolean = false): Sequence<Tile> =
-            if (rectangle.width <= 0 || rectangle.height <= 0) {
-                val tile = getIfTileExistsOrNull(rectangle.x.toInt(), rectangle.y.toInt())
-                if (tile == null) sequenceOf()
-                else sequenceOf(tile)
+     *  The rectangle will be "straight" ie parallel with rectangular map edges. */
+    fun getTilesInRectangle(rectangle: Rectangle) = sequence {
+            val x = rectangle.x.toInt()
+            val y = rectangle.y.toInt()
+            for (worldColumnNumber in x until x + rectangle.width.toInt()) {
+                for (worldRowNumber in y until y + rectangle.height.toInt()) {
+                    val hexCoords = HexMath.getTileCoordsFromColumnRow(worldColumnNumber, worldRowNumber)
+                    yield(getIfTileExistsOrNull(hexCoords.x.toInt(), hexCoords.y.toInt()))
+                }
             }
-            else
-                sequence {
-                    for (rectColumnNumber in 0 until rectangle.width.toInt()) {
-                        for (rectRowNumber in 0 until rectangle.height.toInt()) {
-                            val worldColumnNumber = rectangle.x.toInt() + rectColumnNumber
-                            val worldRowNumber = rectangle.y.toInt() + rectRowNumber
-
-                            if (rowsAndColumns) {
-                                val hexCoords = HexMath.getTileCoordsFromColumnRow(worldColumnNumber, worldRowNumber)
-                                yield(getIfTileExistsOrNull(hexCoords.x.toInt(), hexCoords.y.toInt()))
-                            }
-                            else
-                                yield(getIfTileExistsOrNull(worldColumnNumber, worldRowNumber))
-                        }
-                    }
-                }.filterNotNull()
+        }.filterNotNull()
 
     /** @return tile at hex coordinates ([x],[y]) or null if they are outside the map. Respects map edges and world wrap. */
     fun getIfTileExistsOrNull(x: Int, y: Int): Tile? {
