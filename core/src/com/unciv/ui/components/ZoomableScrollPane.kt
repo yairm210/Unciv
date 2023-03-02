@@ -333,15 +333,17 @@ open class ZoomableScrollPane(
         return if (isScrolling()) scrollingTo!! else Vector2(scrollX, scrollY)
     }
 
-    class ScrollToAction(private val zoomableScrollPane: ZoomableScrollPane):FloatAction(0f, 1f, 0.4f) {
+    class ScrollToAction(private val zoomableScrollPane: ZoomableScrollPane) : FloatAction(0f, 1f, 0.4f) {
 
         private val originalScrollX = zoomableScrollPane.scrollX
         private val originalScrollY = zoomableScrollPane.scrollY
 
-        override fun update(percent: Float) {
-            zoomableScrollPane.scrollX = zoomableScrollPane.scrollingTo!!.x * percent + originalScrollX * (1 - percent)
-            zoomableScrollPane.scrollY = zoomableScrollPane.scrollingTo!!.y * percent + originalScrollY * (1 - percent)
-            zoomableScrollPane.updateVisualScroll()
+        override fun update(percent: Float) = zoomableScrollPane.run {
+            var newX = scrollingTo!!.x * percent + originalScrollX * (1 - percent)
+            if (newX < 0f) newX += maxX else if (newX > maxX) newX -= maxX
+            scrollX = newX
+            scrollY = scrollingTo!!.y * percent + originalScrollY * (1 - percent)
+            updateVisualScroll()
         }
     }
 
