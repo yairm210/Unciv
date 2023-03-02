@@ -37,6 +37,7 @@ class DesktopDisplay : PlatformDisplay {
     init {
         modes[0] = DesktopScreenMode(0, ScreenWindowType.Windowed)
         modes[1] = DesktopScreenMode(1, ScreenWindowType.Fullscreen)
+        modes[2] = DesktopScreenMode(2, ScreenWindowType.Borderless)
     }
 
     override fun getDefaultMode(): ScreenMode {
