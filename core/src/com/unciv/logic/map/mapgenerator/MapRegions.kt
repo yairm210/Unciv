@@ -173,13 +173,11 @@ class MapRegions (val ruleset: Ruleset){
             val nextRect = if (widerThanTall)
                 splitOffRegion.tileMap.getTilesInRectangle(Rectangle(
                         splitOffRegion.rect.x + splitPoint - 1, splitOffRegion.rect.y,
-                        1f, splitOffRegion.rect.height),
-                        rowsAndColumns = true)
+                        1f, splitOffRegion.rect.height))
             else
                 splitOffRegion.tileMap.getTilesInRectangle(Rectangle(
                         splitOffRegion.rect.x, splitOffRegion.rect.y + splitPoint - 1,
-                        splitOffRegion.rect.width, 1f),
-                        rowsAndColumns = true)
+                        splitOffRegion.rect.width, 1f))
 
             cumulativeFertility += if (splitOffRegion.continentID == -1)
                 nextRect.sumOf { it.getTileFertility(false) }
@@ -408,7 +406,7 @@ class MapRegions (val ruleset: Ruleset){
         val fallbackTiles = HashSet<Vector2>()
 
         // First check center
-        val centerTiles = region.tileMap.getTilesInRectangle(centerRect, rowsAndColumns = true)
+        val centerTiles = region.tileMap.getTilesInRectangle(centerRect)
         for (tile in centerTiles) {
             if (tileData[tile.position]!!.isTwoFromCoast)
                 continue // Don't even consider tiles two from coast
@@ -436,7 +434,7 @@ class MapRegions (val ruleset: Ruleset){
         }
 
         // Now check middle donut
-        val middleDonut = region.tileMap.getTilesInRectangle(middleRect, rowsAndColumns = true).filterNot { it in centerTiles }
+        val middleDonut = region.tileMap.getTilesInRectangle(middleRect).filterNot { it in centerTiles }
         riverTiles.clear()
         wetTiles.clear()
         dryTiles.clear()
@@ -467,7 +465,7 @@ class MapRegions (val ruleset: Ruleset){
         }
 
         // Now check the outer tiles. For these we don't care about rivers, coasts etc
-        val outerDonut = region.tileMap.getTilesInRectangle(region.rect, rowsAndColumns = true).filterNot { it in centerTiles || it in middleDonut}
+        val outerDonut = region.tileMap.getTilesInRectangle(region.rect).filterNot { it in centerTiles || it in middleDonut}
         dryTiles.clear()
         for (tile in outerDonut) {
             if (region.continentID != -1 && region.continentID != tile.getContinent())
@@ -1153,13 +1151,11 @@ class MapRegions (val ruleset: Ruleset){
         regionTargetNumber = max(1, regionTargetNumber)
         for (region in regions) {
             val resource = ruleset.tileResources[region.luxury] ?: continue
-            if (isWaterOnlyResource(resource))
-                tryAddingResourceToTiles(resource, regionTargetNumber,
-                        tileMap.getTilesInRectangle(region.rect).filter { it.isWater && it.neighbors.any { neighbor -> neighbor.getContinent() == region.continentID } }.shuffled(),
-                        0.4f, true, 4, 2)
-            else
-                tryAddingResourceToTiles(resource, regionTargetNumber, region.tiles.asSequence().shuffled(), 0.4f,
-                    true, 4, 2)
+            fun Tile.isShoreOfContinent(continent: Int) = isWater && neighbors.any { it.getContinent() == continent }
+            val candidates = if (isWaterOnlyResource(resource))
+                tileMap.getTilesInRectangle(region.rect).filter { it.isShoreOfContinent(region.continentID) }
+            else region.tiles.asSequence()
+            tryAddingResourceToTiles(resource, regionTargetNumber, candidates.shuffled(), 0.4f, true, 4, 2)
         }
         // Fourth add random luxuries
         if (randomLuxuries.isNotEmpty()) {
@@ -1693,12 +1689,11 @@ class Region (val tileMap: TileMap, val rect: Rectangle, val continentID: Int = 
         val columnHasTile = HashSet<Int>()
 
         tiles.clear()
-        for (tile in tileMap.getTilesInRectangle(rect, rowsAndColumns = true).filter {
-            continentID == -1 || it.getContinent() == continentID } ) {
+        for (tile in tileMap.getTilesInRectangle(rect).filter {
+                continentID == -1 || it.getContinent() == continentID } ) {
             val fertility = tile.getTileFertility(continentID != -1)
             tiles.add(tile)
             totalFertility += fertility
-
 
             if (affectedByWorldWrap)
                 columnHasTile.add(tile.getColumn())
