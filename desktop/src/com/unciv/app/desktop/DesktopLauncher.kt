@@ -10,6 +10,7 @@ import com.unciv.logic.files.UncivFiles
 import com.unciv.models.metadata.ScreenSize
 import com.unciv.models.metadata.WindowState
 import com.unciv.ui.components.Fonts
+import com.unciv.utils.Display
 import com.unciv.utils.Log
 import java.awt.GraphicsEnvironment
 
@@ -20,6 +21,9 @@ internal object DesktopLauncher {
 
         // Setup Desktop logging
         Log.backend = DesktopLogBackend()
+
+        // Setup Desktop display
+        Display.platform = DesktopDisplay()
 
         // Setup Desktop font
         Fonts.fontImplementation = DesktopFont()
@@ -62,7 +66,6 @@ internal object DesktopLauncher {
             )
             FileHandle(SETTINGS_FILE_NAME).writeString(json().toJson(settings), false) // so when we later open the game we get fullscreen
         }
-
 
         if (!isRunFromJAR) {
             UniqueDocsWriter().write()
