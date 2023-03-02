@@ -17,7 +17,7 @@ import com.unciv.ui.screens.worldscreen.WorldMapHolder
 import kotlin.math.max
 import kotlin.math.min
 
-class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Group() {
+class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civInfo: Civilization? = null) : Group() {
     private val tileLayer = Group()
     private val minimapTiles: List<MinimapTile>
     private val scrollPositionIndicators: List<ClippingImage>
@@ -27,10 +27,10 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Group() {
         // don't try to resize rotate etc - this table has a LOT of children so that's valuable render time!
         isTransform = false
 
-        var topX = 0f
-        var topY = 0f
-        var bottomX = 0f
-        var bottomY = 0f
+        var topX = Float.MIN_VALUE
+        var topY = Float.MIN_VALUE
+        var bottomX = Float.MAX_VALUE
+        var bottomY = Float.MAX_VALUE
 
         val tileSize = calcTileSize(minimapSize)
         minimapTiles = createMinimapTiles(tileSize)
@@ -53,22 +53,29 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Group() {
         tileLayer.setSize(topX - bottomX, topY - bottomY)
 
         scrollPositionIndicators = createScrollPositionIndicators()
-        scrollPositionIndicators.forEach(tileLayer::addActor)
+        //scrollPositionIndicators.forEach(tileLayer::addActor)
 
         setSize(tileLayer.width, tileLayer.height)
         addActor(tileLayer)
 
-        mapHolder.onViewportChangedListener = ::updateScrollPosition
+        //mapHolder.onViewportChangedListener = ::updateScrollPosition
     }
 
     private fun calcTileSize(minimapSize: Int): Float {
         // Support rectangular maps with extreme aspect ratios by scaling to the larger coordinate with a slight weighting to make the bounding box 4:3
-        val effectiveRadius = with(mapHolder.tileMap.mapParameters) {
-            if (shape != MapShape.rectangular) mapSize.radius
-            else max(
-                mapSize.height,
-                mapSize.width * 3 / 4
-            ) * MapSize.Huge.radius / MapSize.Huge.height
+        val effectiveRadius = if(civInfo == null) {
+            with(mapHolder.tileMap.mapParameters) {
+                if (shape != MapShape.rectangular) mapSize.radius
+                else max(
+                    mapSize.height,
+                    mapSize.width * 3 / 4
+                ) * MapSize.Huge.radius / MapSize.Huge.height
+            }
+        } else {
+            max(
+                (civInfo.exploredRegion.getWidth() + 1) / 2,
+                (civInfo.exploredRegion.getHeight() + 1) / 2
+            )
         }
         val mapSizePercent = if (minimapSize < 22) minimapSize + 9 else minimapSize * 5 - 75
         val smallerWorldDimension = mapHolder.worldScreen.stage.let { min(it.width, it.height) }
@@ -89,10 +96,15 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Group() {
 
     private fun createMinimapTiles(tileSize: Float): List<MinimapTile> {
         val tiles = ArrayList<MinimapTile>()
+        val pad = mapHolder.tileMap.mapParameters.mapSize.radius * tileSize * 1.5f
+        val leftSide = if(civInfo != null) civInfo.exploredRegion.getMinimapLeft(tileSize) else Float.MIN_VALUE
         for (tileInfo in mapHolder.tileMap.values) {
+            if (civInfo?.exploredRegion?.isPositionInRegion(tileInfo.position) == false) continue
             val minimapTile = MinimapTile(tileInfo, tileSize, onClick = {
                 mapHolder.setCenterPosition(tileInfo.position)
             })
+            if(minimapTile.image.x < leftSide)
+                minimapTile.image.x += pad
             tiles.add(minimapTile)
         }
         return tiles

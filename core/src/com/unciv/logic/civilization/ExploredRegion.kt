@@ -23,6 +23,9 @@ class ExploredRegion () : IsPartOfGameInfoSerialization {
     private var shouldRecalculateCoords = true
 
     @Transient
+    private var shouldUpdateMinimap = true
+
+    @Transient
     private var shouldRestrictX = false
 
     // Top left point of the explored region in stage (x;y) starting from the top left corner
@@ -41,6 +44,7 @@ class ExploredRegion () : IsPartOfGameInfoSerialization {
 
     // Getters
     fun shouldRecalculateCoords(): Boolean = shouldRecalculateCoords
+    fun shouldUpdateMinimap(): Boolean = shouldUpdateMinimap
     fun shouldRestrictX(): Boolean = shouldRestrictX
     fun getLeftX(): Float = topLeftStage.x
     fun getRightX():Float = bottomRightStage.x
@@ -62,6 +66,7 @@ class ExploredRegion () : IsPartOfGameInfoSerialization {
 
     // Check if tilePosition is beyond explored region
     fun checkTilePosition(tilePosition: Vector2, explorerPosition: Vector2?) {
+        var mapExplored = false
         var longitude = getLongitude(tilePosition)
         val latitude = getLatitude(tilePosition)
 
@@ -78,12 +83,12 @@ class ExploredRegion () : IsPartOfGameInfoSerialization {
                 // For world wrap maps when the maximumX is reached, we move to a minimumX - 1f
                 if (isWorldWrap && longitude == mapRadius) longitude = mapRadius * -1f
                 topLeft.x = longitude
-                shouldRecalculateCoords = true
+                mapExplored = true
             } else if (longitude < bottomRight.x) {
                 // For world wrap maps when the minimumX is reached, we move to a maximumX + 1f
                 if (isWorldWrap && longitude == (mapRadius * -1f + 1f)) longitude = mapRadius + 1f
                 bottomRight.x = longitude
-                shouldRecalculateCoords = true
+                mapExplored = true
             }
         } else {
             // When we cross the map edge with world wrap, the vectors are swapped along the x-axis
@@ -120,17 +125,22 @@ class ExploredRegion () : IsPartOfGameInfoSerialization {
                 else
                     bottomRight.x = longitude
 
-                shouldRecalculateCoords = true
+                mapExplored = true
             }
         }
 
         // Check Y coord
         if (latitude > topLeft.y) {
             topLeft.y = latitude
-            shouldRecalculateCoords = true
+            mapExplored = true
         } else if (latitude < bottomRight.y) {
             bottomRight.y = latitude
+            mapExplored = true
+        }
+
+        if(mapExplored){
             shouldRecalculateCoords = true
+            shouldUpdateMinimap = true
         }
     }
 
@@ -160,5 +170,28 @@ class ExploredRegion () : IsPartOfGameInfoSerialization {
 
         topLeftStage = Vector2(left, top)
         bottomRightStage = Vector2(right, bottom)
+    }
+
+    fun isPositionInRegion(postition: Vector2): Boolean {
+        val long = getLongitude(postition)
+        val lat = getLatitude(postition)
+        return if (topLeft.x > bottomRight.x)
+                (long <= topLeft.x && long >= bottomRight.x && lat <= topLeft.y && lat >= bottomRight.y)
+            else
+                (((long >= topLeft.x && long >= bottomRight.x) || (long <= topLeft.x && long <= bottomRight.x)) && lat <= topLeft.y && lat >= bottomRight.y)
+    }
+
+    fun getWidth(): Int {
+        val result: Float
+        if (topLeft.x > bottomRight.x) result = topLeft.x - bottomRight.x
+        else result = mapRadius * 2f - (bottomRight.x - topLeft.x)
+        return result.toInt()
+    }
+
+    fun getHeight(): Int = ((topLeft.y - bottomRight.y)/2).toInt()
+
+    fun getMinimapLeft(tileSize: Float): Float {
+        shouldUpdateMinimap = false
+        return (topLeft.x + 1f) * tileSize * -1f
     }
 }

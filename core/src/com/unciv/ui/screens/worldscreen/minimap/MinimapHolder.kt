@@ -47,16 +47,16 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         rebuildIfSizeChanged()
     }
 
-    private fun rebuildIfSizeChanged() {
+    private fun rebuildIfSizeChanged(civInfo: Civilization? = null) {
         val newMinimapSize = worldScreen.game.settings.minimapSize
-        if (newMinimapSize == minimapSize) return
+        if (newMinimapSize == minimapSize && civInfo?.exploredRegion?.shouldUpdateMinimap() != true) return
         minimapSize = newMinimapSize
-        rebuild()
+        rebuild(civInfo)
     }
 
-    private fun rebuild(){
+    private fun rebuild(civInfo: Civilization? = null){
         this.clear()
-        minimap = Minimap(mapHolder, minimapSize)
+        minimap = Minimap(mapHolder, minimapSize, civInfo)
         add(getToggleIcons()).align(Align.bottom)
         add(getWrappedMinimap())
         pack()
@@ -97,7 +97,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     }
 
     fun update(civInfo: Civilization) {
-        rebuildIfSizeChanged()
+        rebuildIfSizeChanged(civInfo)
         isVisible = UncivGame.Current.settings.showMinimap
         if (isVisible) {
             minimap.update(civInfo)
