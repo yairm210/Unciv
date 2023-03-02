@@ -483,6 +483,9 @@ object UnitActions {
                     unitTile.stopWorkingOnImprovement()
                     improvement.handleImprovementCompletion(unit)
 
+                    // without this the world screen won't the improvement because it isn't the 'last seen improvement'
+                    unit.civ.cache.updateViewableTiles()
+
                     if (unique.type == UniqueType.ConstructImprovementConsumingUnit) unit.consume()
                     else activateSideEffects(unit, unique)
                 }.takeIf {
@@ -680,21 +683,29 @@ object UnitActions {
         )
     }
 
+    fun getMovementPointsToUse(actionUnique: Unique): Int {
+        val movementCost = actionUnique.conditionals.filter { it.type == UniqueType.UnitActionMovementCost }.minOfOrNull { it.params[0].toInt() }
+        if (movementCost != null) return movementCost
+        return 1
+    }
+
     fun activateSideEffects(unit: MapUnit, actionUnique: Unique){
-        var conditionalsWithNoSideEffect = 0
+        val movementCost = getMovementPointsToUse(actionUnique)
+        unit.useMovementPoints(movementCost.toFloat())
+
         for (conditional in actionUnique.conditionals){
             when (conditional.type){
                 UniqueType.UnitActionConsumeUnit -> unit.consume()
-                else -> conditionalsWithNoSideEffect++
+                else -> continue
             }
         }
-        if (conditionalsWithNoSideEffect == actionUnique.conditionals.size)
-            unit.useMovementPoints(1f)
     }
 
     fun getSideEffectString(actionUnique: Unique): String {
         val effects = ArrayList<String>()
         if (actionUnique.conditionals.any { it.type == UniqueType.UnitActionConsumeUnit }) effects += Fonts.death.toString()
+        else effects += getMovementPointsToUse(actionUnique).toString() + Fonts.movement
+
         return if (effects.isEmpty()) ""
         else "(${effects.joinToString { it.tr() }})"
     }

@@ -98,7 +98,7 @@ enum class UnitActionType(
     Repair(Constants.repair,
         { ImageGetter.getUnitActionPortrait("Repair") }, 'r', UncivSound.Construction),
     Create("Create",
-        null, 'i', UncivSound.Chimes),
+        null, 'i', false, UncivSound.Chimes),
     HurryResearch("{Hurry Research} (${Fonts.death})",
         { ImageGetter.getUnitActionPortrait("HurryResearch") }, 'g', UncivSound.Chimes),
     StartGoldenAge("Start Golden Age",
