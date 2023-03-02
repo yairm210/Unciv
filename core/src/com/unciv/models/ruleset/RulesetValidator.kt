@@ -132,7 +132,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         val vanillaRuleset = RulesetCache.getVanillaRuleset()  // for UnitTypes fallback
 
 
-        if (ruleset.units.values.none { it.hasUnique(UniqueType.FoundCity) })
+        if (ruleset.units.values.none { it.hasUnique(UniqueType.FoundCity, StateForConditionals.IgnoreConditionals) })
             lines += "No city-founding units in ruleset!"
 
         for (unit in ruleset.units.values) {

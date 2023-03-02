@@ -202,6 +202,8 @@ object UnitActions {
 
         return UnitAction(
                 type = UnitActionType.FoundCity,
+                title = if (!hasActionModifiers) UnitActionType.FoundCity.value
+                    else "${UnitActionType.FoundCity.value} ${getSideEffectString(unique)}",
                 uncivSound = UncivSound.Chimes,
                 action = {
                     // check if we would be breaking a promise
