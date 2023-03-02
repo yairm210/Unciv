@@ -18,6 +18,7 @@ import io.ktor.utils.io.jvm.javaio.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 
@@ -74,15 +75,11 @@ private class UncivServerRunner : CliktCommand() {
      * or the password is correct
      */
     private fun validateGameAccess(file: File, authString: String?): Boolean {
-        if (!authV1Enabled || !file.exists())
+        if (!file.exists())
             return true
 
-        // If auth is enabled, an auth string is required
-        if (authString == null || !authString.startsWith("Basic "))
-            return false
-
         // Extract the user id and password from the auth string
-        val (userId, password) = authString.drop(6).split(":")
+        val (userId, password) = extractAuth(authString) ?: return false
 
         if (authMap[userId] == null || authMap[userId] == password)
             return true
@@ -95,14 +92,27 @@ private class UncivServerRunner : CliktCommand() {
     private fun validateAuth(authString: String?): Boolean {
         if (!authV1Enabled)
             return true
-        // If auth is enabled a auth string is required
-        if (authString == null || !authString.startsWith("Basic "))
-            return false
 
-        val (userId, password) = authString.drop(6).split(":")
+        val (userId, password) = extractAuth(authString) ?: return false
         if (authMap[userId] == null || authMap[userId] == password)
             return true
         return false
+    }
+
+    private fun extractAuth(authString: String?): Pair<String, String>? {
+        if (!authV1Enabled)
+            return null
+
+        // If auth is enabled a auth string is required
+        if (authString == null || !authString.startsWith("Basic "))
+            return null
+
+        val decodedString = String(Base64.getDecoder().decode(authString.drop(6)))
+        val splitAuthString = decodedString.split(":", limit=2)
+        if (splitAuthString.size != 2)
+            return null
+
+        return splitAuthString.let { it[0] to it[1] }
     }
     // endregion Auth
 
@@ -159,7 +169,7 @@ private class UncivServerRunner : CliktCommand() {
                         log.info("Received auth password set from ${call.request.local.remoteHost}")
                         val authHeader = call.request.headers["Authorization"]
                         if (validateAuth(authHeader)) {
-                            val userId = authHeader?.drop(6)?.split(":")?.get(0)
+                            val (userId, _) = extractAuth(authHeader) ?: Pair(null, null)
                             if (userId != null) {
                                 authMap[userId] = call.receiveText()
                                 call.respond(HttpStatusCode.OK)
