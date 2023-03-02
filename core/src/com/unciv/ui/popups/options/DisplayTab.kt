@@ -143,11 +143,11 @@ private fun addUnitIconAlphaSlider(table: Table, settings: GameSettings, selectB
 private fun addScreenModeSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
     table.add("Screen Mode".toLabel()).left().fillX()
 
-    val modes = Array(Display.getScreenModes().toTypedArray())
-    val current: ScreenMode = modes.first { it.getId() == settings.screenMode }
+    val modes = Display.getScreenModes()
+    val current: ScreenMode? = modes[settings.screenMode]
 
     val selectBox = SelectBox<ScreenMode>(table.skin)
-    selectBox.items = modes
+    selectBox.items = Array(modes.values.toTypedArray())
     selectBox.selected = current
     selectBox.onChange {
         val mode = selectBox.selected

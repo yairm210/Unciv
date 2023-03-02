@@ -44,7 +44,7 @@ class GameSettings {
     @Deprecated("Since 4.3.6 - replaces with screenSize")
     var resolution: String = "900x600"
     var screenSize:ScreenSize = ScreenSize.Small
-    var screenMode: Int = Display.getDefaultMode().getId()
+    var screenMode: Int = 0
     var tutorialsShown = HashSet<String>()
     var tutorialTasksCompleted = HashSet<String>()
 

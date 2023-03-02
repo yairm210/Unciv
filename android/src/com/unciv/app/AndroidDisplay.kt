@@ -14,24 +14,13 @@ import com.unciv.utils.ScreenMode
 
 
 class AndroidScreenMode(
-    val modeId: Int,
-    val refreshRate: Float,
-    val width: Int,
-    val height: Int) : ScreenMode {
-
-    var name: String = "Default"
+    private val modeId: Int) : ScreenMode {
+    private var name: String = "Default"
 
     @RequiresApi(Build.VERSION_CODES.M)
-    constructor(mode: Mode) : this(
-        mode.modeId,
-        mode.refreshRate,
-        mode.physicalWidth,
-        mode.physicalHeight
-    ) {
-        name = "${width}x${height} (${refreshRate.toInt()}HZ)"
+    constructor(mode: Mode) : this(mode.modeId) {
+        name = "${mode.physicalWidth}x${mode.physicalHeight} (${mode.refreshRate.toInt()}HZ)"
     }
-
-    constructor() : this(0,0f,0,0)
 
     override fun getId(): Int {
         return modeId
@@ -46,46 +35,45 @@ class AndroidScreenMode(
 class AndroidDisplay(private val activity: Activity) : PlatformDisplay {
 
     private var display: Display? = null
-    private var displayModes: ArrayList<ScreenMode> = arrayListOf()
-    private var defaultMode = AndroidScreenMode()
+    private var displayModes: HashMap<Int, ScreenMode> = hashMapOf()
 
     init {
 
+        // Fetch current display
         display = when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> activity.display
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> activity.windowManager.defaultDisplay
             else -> null
         }
 
+        // Add default mode
+        displayModes[0] = AndroidScreenMode(0)
+
+        // Add other supported modes
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
             fetchScreenModes()
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun fetchScreenModes() {
-        displayModes.add(defaultMode)
         val display = display ?: return
         for (mode in display.supportedModes)
-            displayModes.add(AndroidScreenMode(mode))
+            displayModes[mode.modeId] = AndroidScreenMode(mode)
     }
 
-    override fun getScreenModes(): ArrayList<ScreenMode> {
+    override fun getScreenModes(): Map<Int, ScreenMode> {
         return displayModes
     }
 
     override fun getDefaultMode(): ScreenMode {
-        return defaultMode
+        return displayModes[0]!!
     }
 
-    override fun setScreenMode(mode: ScreenMode, settings: GameSettings) {
-
-        if (mode !is AndroidScreenMode)
-            return
-
+    override fun setScreenMode(id: Int, settings: GameSettings) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             activity.runOnUiThread {
                 val params = activity.window.attributes
-                params.preferredDisplayModeId = mode.modeId
+                params.preferredDisplayModeId = id
                 activity.window.attributes = params
             }
         }

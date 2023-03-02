@@ -8,8 +8,8 @@ interface ScreenMode {
 
 interface PlatformDisplay {
 
-    fun setScreenMode(mode: ScreenMode, settings: GameSettings) {}
-    fun getScreenModes(): ArrayList<ScreenMode> { return arrayListOf() }
+    fun setScreenMode(id: Int, settings: GameSettings) {}
+    fun getScreenModes(): Map<Int, ScreenMode> { return hashMapOf() }
     fun getDefaultMode(): ScreenMode
 
 }
@@ -22,13 +22,12 @@ object Display {
         return platform.getDefaultMode()
     }
 
-    fun getScreenModes(): ArrayList<ScreenMode> {
+    fun getScreenModes(): Map<Int, ScreenMode> {
         return platform.getScreenModes()
     }
 
     fun setScreenMode(id: Int, settings: GameSettings) {
-        val mode = getScreenModes().firstOrNull { it.getId() == id } ?: return
-        platform.setScreenMode(mode, settings)
+        platform.setScreenMode(id, settings)
     }
 
 }

@@ -60,6 +60,7 @@ open class AndroidLauncher : AndroidApplication() {
         val settings = UncivFiles.getSettingsForPlatformLaunchers(filesDir.path)
 
         // Setup orientation lock and display cutout
+        Display.setScreenMode(settings.screenMode, settings)
         allowPortrait(settings.allowAndroidPortrait)
         setDisplayCutout(settings.androidCutout)
 

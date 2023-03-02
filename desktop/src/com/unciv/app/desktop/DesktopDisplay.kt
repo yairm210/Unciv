@@ -6,53 +6,71 @@ import com.unciv.models.translations.tr
 import com.unciv.utils.PlatformDisplay
 import com.unciv.utils.ScreenMode
 
+enum class ScreenWindowType {
+    Windowed,
+    Borderless,
+    Fullscreen
+}
+
 
 class DesktopScreenMode(
-    val modeId: Int,
-    val isWindowed: Boolean) : ScreenMode {
+    private val modeId: Int,
+    val windowType: ScreenWindowType) : ScreenMode {
 
     override fun getId(): Int {
         return modeId
     }
 
     override fun toString(): String {
-        return when {
-            isWindowed -> "Windowed".tr()
-            else -> "Fullscreen".tr()
+        return when (windowType) {
+            ScreenWindowType.Windowed -> "Windowed".tr()
+            ScreenWindowType.Borderless -> "Borderless".tr()
+            ScreenWindowType.Fullscreen -> "Fullscreen".tr()
         }
     }
 }
 
 class DesktopDisplay : PlatformDisplay {
 
-    private val windowedMode = DesktopScreenMode(0,true)
-    private val fullscreenMode = DesktopScreenMode(1,false)
+    private val modes = HashMap<Int, DesktopScreenMode>()
+
+    init {
+        modes[0] = DesktopScreenMode(0, ScreenWindowType.Windowed)
+        modes[1] = DesktopScreenMode(1, ScreenWindowType.Fullscreen)
+    }
 
     override fun getDefaultMode(): ScreenMode {
-        return windowedMode
+        return modes[0]!!
     }
 
-    override fun getScreenModes(): ArrayList<ScreenMode> {
-        return arrayListOf(windowedMode, fullscreenMode)
+    override fun getScreenModes(): Map<Int, ScreenMode> {
+        return modes
     }
 
-    override fun setScreenMode(mode: ScreenMode, settings: GameSettings) {
+    override fun setScreenMode(id: Int, settings: GameSettings) {
 
-        if (mode !is DesktopScreenMode)
-            return
+        val mode = modes[id] ?: return
 
-        when {
+        when (mode.windowType) {
 
-            mode.isWindowed -> {
+            ScreenWindowType.Fullscreen -> {
+                Gdx.graphics.setFullscreenMode(Gdx.graphics.displayMode)
+            }
+
+            ScreenWindowType.Windowed -> {
+                Gdx.graphics.setUndecorated(false)
                 Gdx.graphics.setWindowedMode(
                     settings.windowState.width.coerceAtLeast(120),
                     settings.windowState.height.coerceAtLeast(80)
                 )
-                Gdx.graphics.setUndecorated(false)
             }
 
-            else -> {
-                Gdx.graphics.setFullscreenMode(Gdx.graphics.displayMode)
+            ScreenWindowType.Borderless -> {
+                Gdx.graphics.setUndecorated(true)
+                Gdx.graphics.setWindowedMode(
+                    settings.windowState.width.coerceAtLeast(120),
+                    settings.windowState.height.coerceAtLeast(80)
+                )
             }
 
         }
