@@ -19,6 +19,7 @@ class TileStatFunctions(val tile: Tile) {
                      localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)
     ): Stats {
         val stats = getTerrainStats()
+        var minimumStats = Stats()
 
         val stateForConditionals = StateForConditionals(civInfo = observingCiv, city = city, tile = tile)
 
@@ -58,9 +59,16 @@ class TileStatFunctions(val tile: Tile) {
 
             if (stats.gold != 0f && observingCiv.goldenAges.isGoldenAge())
                 stats.gold++
+
+            if (improvement != null) {
+                val ensureMinUnique = improvement
+                    .getMatchingUniques(UniqueType.EnsureMinimumStats, stateForConditionals)
+                    .firstOrNull()
+                if (ensureMinUnique != null) minimumStats = ensureMinUnique.stats
+            }
         }
 
-        stats.coerceMinima(tile.isCityCenter())
+        stats.coerceAtLeast(minimumStats)  // Minimum 0 or as defined by City center
 
         for ((stat, value) in getTilePercentageStats(observingCiv, city)) {
             stats[stat] *= value.toPercent()
@@ -85,16 +93,6 @@ class TileStatFunctions(val tile: Tile) {
             }
         }
         return stats!!
-    }
-
-    /** Helper finalizing the additive parts of [getTileStats] or [getTileStartYield] */
-    private fun Stats.coerceMinima(isCityCenter: Boolean) {
-        if (isCityCenter) {
-            if (food < 2f) food = 2f
-            if (production < 1f) production = 1f
-        }
-        for ((stat, value) in this)
-            if (value < 0f) this[stat] = 0f
     }
 
     // Only gets the tile percentage bonus, not the improvement percentage bonus
@@ -137,10 +135,13 @@ class TileStatFunctions(val tile: Tile) {
         return stats
     }
 
-    fun getTileStartScore(): Float {
+    fun getTileStartScore(cityCenterMinStats: Stats): Float {
+        val zeroStats = Stats()
         var sum = 0f
         for (closeTile in tile.getTilesInDistance(2)) {
-            val tileYield = closeTile.stats.getTileStartYield(closeTile == tile)
+            val tileYield = closeTile.stats.getTileStartYield(
+                if (closeTile == tile) cityCenterMinStats else zeroStats
+            )
             sum += tileYield
             if (closeTile in tile.neighbors)
                 sum += tileYield
@@ -160,10 +161,10 @@ class TileStatFunctions(val tile: Tile) {
         return sum
     }
 
-    private fun getTileStartYield(isCenter: Boolean) =
+    private fun getTileStartYield(minimumStats: Stats) =
         getTerrainStats().run {
             if (tile.resource != null) add(tile.tileResource)
-            coerceMinima(isCenter)
+            coerceAtLeast(minimumStats)
             food + production + gold
         }
 

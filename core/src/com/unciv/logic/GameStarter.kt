@@ -17,7 +17,9 @@ import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.stats.Stats
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.utils.debug
@@ -327,9 +329,15 @@ object GameStarter {
         var startingUnits: MutableList<String>
         var eraUnitReplacement: String
 
+        val cityCenterMinStats = sequenceOf(ruleSet.tileImprovements[Constants.cityCenter])
+            .filterNotNull()
+            .flatMap { it.getMatchingUniques(UniqueType.EnsureMinimumStats, StateForConditionals.IgnoreConditionals) }
+            .firstOrNull()
+            ?.stats ?: Stats(food = 2f, production = 1f)
+
         val startScores = HashMap<Tile, Float>(tileMap.values.size)
         for (tile in tileMap.values) {
-            startScores[tile] = tile.stats.getTileStartScore()
+            startScores[tile] = tile.stats.getTileStartScore(cityCenterMinStats)
         }
         val allCivs = gameInfo.civilizations.filter { !it.isBarbarian() }
         val landTilesInBigEnoughGroup = getCandidateLand(allCivs.size, tileMap, startScores)

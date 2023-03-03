@@ -248,7 +248,7 @@ class MapEditorEditImprovementsTab(
     companion object {
         //todo This should really be easier, the attributes should allow such a test in one go
         private val disallowImprovements = listOf(
-            "City center", Constants.repair, Constants.remove, Constants.cancelImprovementOrder
+            Constants.cityCenter, Constants.repair, Constants.remove, Constants.cancelImprovementOrder
         )
         private fun TileImprovement.group() = when {
             RoadStatus.values().any { it.name == name } -> 2

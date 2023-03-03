@@ -129,6 +129,18 @@ open class Stats(
 
     operator fun div(number: Float) = times(1/number)
 
+    /** Ensures each stat is >= [other].stat - modifies in place */
+    fun coerceAtLeast(other: Stats) {
+        // This also not a loop as the use in TileStatFunctions is frequent enough
+        if (production < other.production) production = other.production
+        if (food < other.food) food = other.food
+        if (gold < other.gold) gold = other.gold
+        if (science < other.science) science = other.science
+        if (culture < other.culture) culture = other.culture
+        if (happiness < other.happiness) happiness = other.happiness
+        if (faith < other.faith) faith = other.faith
+    }
+
     /** Apply weighting for Production Ranking */
     fun applyRankingWeights(){
         food *= 14
