@@ -180,6 +180,7 @@ object UnitActions {
         if (unique == null || tile.isWater || tile.isImpassible()) return null
         // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
         if (unit.civ.isOneCityChallenger() && unit.civ.hasEverOwnedOriginalCapital == true) return null
+        if (usagesLeft(unit, unique)==0) return null
 
         if (unit.currentMovement <= 0 || !tile.canBeSettled())
             return UnitAction(UnitActionType.FoundCity, action = null)
@@ -202,7 +203,7 @@ object UnitActions {
 
         return UnitAction(
                 type = UnitActionType.FoundCity,
-                title = actionTextWithSideEffects(UnitActionType.FoundCity.value, unique),
+                title = actionTextWithSideEffects(UnitActionType.FoundCity.value, unique, unit),
                 uncivSound = UncivSound.Chimes,
                 action = {
                     // check if we would be breaking a promise
@@ -467,6 +468,7 @@ object UnitActions {
             val improvementName = unique.params[0]
             val improvement = tile.ruleset.tileImprovements[improvementName]
                 ?: continue
+            if (usagesLeft(unit, unique)==0) continue
 
             val resourcesAvailable = improvement.uniqueObjects.none {
                 it.isOfType(UniqueType.ConsumesResources) &&
@@ -474,7 +476,7 @@ object UnitActions {
             }
 
             finalActions += UnitAction(UnitActionType.Create,
-                title = actionTextWithSideEffects("Create [$improvementName]", unique),
+                title = actionTextWithSideEffects("Create [$improvementName]", unique, unit),
                 action = {
                     val unitTile = unit.getTile()
                     unitTile.improvementFunctions.removeCreatesOneImprovementMarker()
@@ -652,9 +654,10 @@ object UnitActions {
         for (unique in unit.getUniques()) {
             if (unique.conditionals.none { it.type?.targetTypes?.contains(UniqueTarget.UnitActionModifier) == true }) continue
             if (unique.type?.targetTypes?.any { it in triggerableTypes }!=true) continue
+            if (usagesLeft(unit, unique)==0) continue
 
             val unitAction = UnitAction(type = UnitActionType.TriggerUnique,
-                title = actionTextWithSideEffects(unique.text.removeConditionals(), unique)
+                title = actionTextWithSideEffects(unique.text.removeConditionals(), unique, unit)
                 ){
                 UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
                 activateSideEffects(unit, unique)
@@ -699,21 +702,41 @@ object UnitActions {
         for (conditional in actionUnique.conditionals){
             when (conditional.type){
                 UniqueType.UnitActionConsumeUnit -> unit.consume()
+                UniqueType.UnitActionLimitedTimes -> {
+                    val usagesSoFar = unit.abilityToTimesUsed[actionUnique.placeholderText] ?: 0
+                    unit.abilityToTimesUsed[actionUnique.placeholderText] = usagesSoFar + 1
+                }
                 else -> continue
             }
         }
     }
 
-    fun actionTextWithSideEffects(originalText:String, actionUnique: Unique): String {
-        val sideEffectString = getSideEffectString(actionUnique)
+    /** Returns 'null' if usages are not limited */
+    fun usagesLeft(unit:MapUnit, actionUnique: Unique): Int?{
+        val usagesTotal = getMaxUsages(actionUnique) ?: return null
+        val usagesSoFar = unit.abilityToTimesUsed[actionUnique.placeholderText] ?: 0
+        return usagesTotal - usagesSoFar
+    }
+
+    fun getMaxUsages(actionUnique: Unique): Int? {
+        return actionUnique.conditionals
+            .filter { it.type == UniqueType.UnitActionLimitedTimes }
+            .maxOfOrNull { it.params[0].toInt() }
+    }
+
+    fun actionTextWithSideEffects(originalText:String, actionUnique: Unique, unit: MapUnit): String {
+        val sideEffectString = getSideEffectString(unit, actionUnique)
         if (sideEffectString == "") return originalText
         else return "$originalText $sideEffectString"
     }
 
-    fun getSideEffectString(actionUnique: Unique): String {
+    fun getSideEffectString(unit:MapUnit, actionUnique: Unique): String {
         val effects = ArrayList<String>()
         if (actionUnique.conditionals.any { it.type == UniqueType.UnitActionConsumeUnit }) effects += Fonts.death.toString()
         else effects += getMovementPointsToUse(actionUnique).toString() + Fonts.movement
+
+        val maxUsages = getMaxUsages(actionUnique)
+        if (maxUsages!=null) effects += "${usagesLeft(unit, actionUnique)}/$maxUsages"
 
         return if (effects.isEmpty()) ""
         else "(${effects.joinToString { it.tr() }})"

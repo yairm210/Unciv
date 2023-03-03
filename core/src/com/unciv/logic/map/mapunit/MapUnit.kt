@@ -110,8 +110,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
     var isTransported: Boolean = false
     var turnsFortified = 0
 
+    // Old, to be deprecated
+    @Deprecated("As of 4.5.3")
     var abilityUsesLeft: HashMap<String, Int> = hashMapOf()
+    @Deprecated("As of 4.5.3")
     var maxAbilityUses: HashMap<String, Int> = hashMapOf()
+
+    // New - track only *how many have been used*, derive max from uniques, left = max - used
+    var abilityToTimesUsed: HashMap<String, Int> = hashMapOf()
 
     var religion: String? = null
     var religiousStrengthLost = 0
@@ -174,6 +180,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         toReturn.isTransported = isTransported
         toReturn.abilityUsesLeft.putAll(abilityUsesLeft)
         toReturn.maxAbilityUses.putAll(maxAbilityUses)
+        toReturn.abilityToTimesUsed.putAll(abilityToTimesUsed)
         toReturn.religion = religion
         toReturn.religiousStrengthLost = religiousStrengthLost
         toReturn.movementMemories = movementMemories.copy()
