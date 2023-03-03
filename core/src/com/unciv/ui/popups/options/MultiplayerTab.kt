@@ -12,7 +12,6 @@ import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.models.UncivSound
 import com.unciv.models.metadata.GameSetting
 import com.unciv.models.metadata.GameSettings
-import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -27,6 +26,7 @@ import com.unciv.ui.components.extensions.toGdxArray
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.popups.AuthPopup
+import com.unciv.ui.popups.options.SettingsSelect.SelectItem
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import java.time.Duration
