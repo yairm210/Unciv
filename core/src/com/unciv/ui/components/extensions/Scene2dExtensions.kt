@@ -32,7 +32,6 @@ import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.KeyCharAndCode
-import com.unciv.ui.components.KeyShortcut
 import com.unciv.ui.components.KeyShortcutDispatcher
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
@@ -98,16 +97,16 @@ fun Color.brighten(t: Float): Color = Color(this).lerp(Color.WHITE, t)
  * [activating][Actor.activate] the actor. However, other actions are possible too.
  */
 class ActorKeyShortcutDispatcher internal constructor(val actor: Actor): KeyShortcutDispatcher() {
-    fun add(shortcut: KeyShortcut?): Unit = add(shortcut) { actor.activate() }
-    fun add(key: KeyCharAndCode?): Unit = add(key) { actor.activate() }
-    fun add(char: Char?): Unit = add(char) { actor.activate() }
-    fun add(keyCode: Int?): Unit = add(keyCode) { actor.activate() }
+    fun add(shortcut: KeyShortcut?) = add(shortcut) { actor.activate() }
+    fun add(key: KeyCharAndCode?) = add(key) { actor.activate() }
+    fun add(char: Char?) = add(char) { actor.activate() }
+    fun add(keyCode: Int?) = add(keyCode) { actor.activate() }
 
     override fun isActive(): Boolean = actor.isActive()
 }
 
 
-private class ActorAttachments {
+private class ActorAttachments private constructor(actor: Actor) {
     companion object {
         fun getOrNull(actor: Actor): ActorAttachments? {
             return actor.userObject as ActorAttachments?
@@ -127,11 +126,7 @@ private class ActorAttachments {
     private lateinit var activationActions: MutableList<() -> Unit>
     private var clickActivationListener: ClickListener? = null
 
-    val keyShortcuts: ActorKeyShortcutDispatcher
-
-    private constructor(actor: Actor) {
-        keyShortcuts = ActorKeyShortcutDispatcher(actor)
-    }
+    val keyShortcuts = ActorKeyShortcutDispatcher(actor)
 
     fun activate() {
         if (this::activationActions.isInitialized) {
@@ -175,7 +170,7 @@ fun Actor.removeActivationAction(action: (() -> Unit)?) {
         ActorAttachments.getOrNull(this)?.removeActivationAction(action)
 }
 
-fun Actor.isActive(): Boolean = isVisible() && !(this is Disableable && (this as Disableable).isDisabled())
+fun Actor.isActive(): Boolean = isVisible && ((this as? Disableable)?.isDisabled != true)
 
 fun Actor.activate() {
     if (isActive())
@@ -188,10 +183,10 @@ val Actor.keyShortcuts
     get() = ActorAttachments.get(this).keyShortcuts
 
 fun Actor.onActivation(sound: UncivSound = UncivSound.Click, action: () -> Unit): Actor {
-    addActivationAction({
+    addActivationAction {
         Concurrency.run("Sound") { SoundPlayer.play(sound) }
         action()
-    })
+    }
     return this
 }
 
@@ -202,7 +197,7 @@ enum class DispatcherVetoResult { Accept, Skip, SkipWithChildren }
 typealias DispatcherVetoer = (associatedActor: Actor?, keyDispatcher: KeyShortcutDispatcher?) -> DispatcherVetoResult
 
 /**
- * Install shorcut dispatcher for this stage. It activates all actions associated with the
+ * Install shortcut dispatcher for this stage. It activates all actions associated with the
  * pressed key in [additionalShortcuts] (if specified) and all actors in the stage. It is
  * possible to temporarily disable or veto some shortcut dispatchers by passing an appropriate
  * [dispatcherVetoerCreator] function. This function may return a [DispatcherVetoer], which
@@ -244,7 +239,7 @@ fun Stage.installShortcutDispatcher(additionalShortcuts: KeyShortcutDispatcher? 
 
         private fun activate(key: KeyCharAndCode, dispatcherVetoer: DispatcherVetoer): Boolean {
             val shortcutResolver = KeyShortcutDispatcher.Resolver(key)
-            val pendingActors = ArrayDeque<Actor>(getActors().toList())
+            val pendingActors = ArrayDeque<Actor>(actors.toList())
 
             if (additionalShortcuts != null && dispatcherVetoer(null, additionalShortcuts) == DispatcherVetoResult.Accept)
                 shortcutResolver.updateFor(additionalShortcuts)
@@ -257,12 +252,12 @@ fun Stage.installShortcutDispatcher(additionalShortcuts: KeyShortcutDispatcher? 
                 if (shortcuts != null && vetoResult == DispatcherVetoResult.Accept)
                     shortcutResolver.updateFor(shortcuts)
                 if (actor is Group && vetoResult != DispatcherVetoResult.SkipWithChildren)
-                    pendingActors.addAll(actor.getChildren())
+                    pendingActors.addAll(actor.children)
             }
 
-            for (action in shortcutResolver.trigerredActions)
+            for (action in shortcutResolver.triggeredActions)
                 action()
-            return shortcutResolver.trigerredActions.any()
+            return shortcutResolver.triggeredActions.any()
         }
     })
 }
@@ -377,13 +372,13 @@ fun Actor.getAscendant(predicate: (Actor) -> Boolean): Actor? {
 
 /** The actors bounding box in stage coordinates */
 val Actor.stageBoundingBox: Rectangle get() {
-    val bottomleft = localToStageCoordinates(Vector2(0f, 0f))
-    val topright = localToStageCoordinates(Vector2(width, height))
+    val bottomLeft = localToStageCoordinates(Vector2(0f, 0f))
+    val topRight = localToStageCoordinates(Vector2(width, height))
     return Rectangle(
-        bottomleft.x,
-        bottomleft.y,
-        topright.x - bottomleft.x,
-        topright.y - bottomleft.y
+        bottomLeft.x,
+        bottomLeft.y,
+        topRight.x - bottomLeft.x,
+        topRight.y - bottomLeft.y
     )
 }
 

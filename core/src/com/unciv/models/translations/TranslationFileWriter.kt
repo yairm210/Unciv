@@ -86,7 +86,7 @@ object TranslationFileWriter {
         val linesToTranslate = mutableListOf<String>()
 
         if (modFolder == null) { // base game
-            val templateFile = getFileHandle(modFolder, templateFileLocation) // read the template
+            val templateFile = getFileHandle(null, templateFileLocation) // read the template
             if (templateFile.exists())
                 linesToTranslate.addAll(templateFile.reader(TranslationFileReader.charset).readLines())
 

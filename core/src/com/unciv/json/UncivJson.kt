@@ -3,6 +3,7 @@ package com.unciv.json
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Json
+import com.badlogic.gdx.utils.SerializationException
 import java.time.Duration
 
 
@@ -12,6 +13,11 @@ import java.time.Duration
 fun json() = Json().apply {
     setIgnoreDeprecated(true)
     ignoreUnknownFields = true
+
+    // Default output type is JsonWriter.OutputType.minimal, which generates invalid Json - e.g. most quotes removed.
+    // To get better Json, use:
+    // setOutputType(JsonWriter.OutputType.json)
+    // Note an instance set to json can read minimal and vice versa
 
     setSerializer(HashMapVector2.getSerializerClass(), HashMapVector2.createSerializer())
     setSerializer(Duration::class.java, DurationSerializer())

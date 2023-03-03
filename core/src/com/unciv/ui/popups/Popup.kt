@@ -189,7 +189,7 @@ open class Popup(
                 action()
             }
         }
-        cell.getActor().keyShortcuts.add(KeyCharAndCode.RETURN)
+        cell.actor.keyShortcuts.add(KeyCharAndCode.RETURN)
         return cell
     }
 
@@ -242,7 +242,7 @@ val BaseScreen.popups
 private val Stage.popups: List<Popup>
     get() = actors.filterIsInstance<Popup>()
 
-/** @return The currently active [Popup] or [null] if none. */
+/** @return The currently active [Popup] or `null` if none. */
 val BaseScreen.activePopup: Popup?
     get() = popups.lastOrNull { it.isVisible }
 

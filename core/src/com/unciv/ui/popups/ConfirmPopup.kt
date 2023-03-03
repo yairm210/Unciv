@@ -8,11 +8,11 @@ import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.extensions.toLabel
 
 /** Variant of [Popup] pre-populated with one label, plus confirm and cancel buttons
+ * @param stageToShowOn Parent [Stage], see [Popup.stageToShowOn]
  * @param question The text for the label
  * @param confirmText The text for the "Confirm" button
  * @param isConfirmPositive If the action to be performed is positive or not (i.e. buy = positive, delete = negative), default false
  * @param action A lambda to execute when "Yes" is chosen
- * @param screen The parent screen - see [Popup.screen]. Optional, defaults to the current [WorldScreen][com.unciv.ui.worldscreen.WorldScreen]
  * @param restoreDefault A lambda to execute when "No" is chosen
  */
 open class ConfirmPopup(
@@ -45,4 +45,5 @@ open class ConfirmPopup(
         addOKButton(confirmText, KeyCharAndCode('y'), confirmStyle, action = action)
         equalizeLastTwoButtonWidths()
     }
+
 }

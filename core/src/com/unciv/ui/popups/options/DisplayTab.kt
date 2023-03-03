@@ -26,7 +26,6 @@ import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 
-private val resolutionArray = com.badlogic.gdx.utils.Array(arrayOf("750x500", "900x600", "1050x700", "1200x800", "1500x1000"))
 
 fun displayTab(
     optionsPopup: OptionsPopup,
@@ -231,7 +230,7 @@ private fun addSkinSelectBox(table: Table, settings: GameSettings, selectBoxMinW
 
 private fun addResetTutorials(table: Table, settings: GameSettings) {
     val resetTutorialsButton = "Reset tutorials".toTextButton()
-	resetTutorialsButton.onClick {
+    resetTutorialsButton.onClick {
             ConfirmPopup(
                 table.stage,
                 "Do you want to reset completed tutorials?",
