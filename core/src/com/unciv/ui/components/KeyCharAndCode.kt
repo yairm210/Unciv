@@ -79,74 +79,7 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
             val code = Input.Keys.valueOf(char.uppercaseChar().toString())
             return if (code == -1) KeyCharAndCode(char,0) else KeyCharAndCode(Char.MIN_VALUE, code)
         }
-    }
-}
 
-
-data class KeyShortcut(val key: KeyCharAndCode, val priority: Int = 0)
-
-
-open class KeyShortcutDispatcher {
-    private val shortcuts: MutableList<Pair<KeyShortcut, () -> Unit>> = mutableListOf()
-
-    fun add(shortcut: KeyShortcut?, action: (() -> Unit)?): Unit {
-        if (action == null || shortcut == null) return
-        shortcuts.removeIf { it.first == shortcut }
-        shortcuts.add(Pair(shortcut, action))
     }
 
-    fun add(key: KeyCharAndCode?, action: (() -> Unit)?): Unit {
-        if (key != null)
-            add(KeyShortcut(key), action)
-    }
-
-    fun add(char: Char?, action: (() -> Unit)?): Unit {
-        if (char != null)
-            add(KeyCharAndCode(char), action)
-    }
-
-    fun add(keyCode: Int?, action: (() -> Unit)?): Unit {
-        if (keyCode != null)
-            add(KeyCharAndCode(keyCode), action)
-    }
-
-    fun remove(shortcut: KeyShortcut?): Unit {
-        shortcuts.removeIf { it.first == shortcut }
-    }
-
-    fun remove(key: KeyCharAndCode?): Unit {
-        shortcuts.removeIf { it.first.key == key }
-    }
-
-    fun remove(char: Char?): Unit {
-        shortcuts.removeIf { it.first.key.char == char }
-    }
-
-    fun remove(keyCode: Int?): Unit {
-        shortcuts.removeIf { it.first.key.code == keyCode }
-    }
-
-    open fun isActive(): Boolean = true
-
-
-    class Resolver(val key: KeyCharAndCode) {
-        private var priority = Int.MIN_VALUE
-        val trigerredActions: MutableList<() -> Unit> = mutableListOf()
-
-        fun updateFor(dispatcher: KeyShortcutDispatcher) {
-            if (!dispatcher.isActive()) return
-
-            for (shortcut in dispatcher.shortcuts) {
-                if (shortcut.first.key == key) {
-                    if (shortcut.first.priority == priority)
-                        trigerredActions.add(shortcut.second)
-                    else if (shortcut.first.priority > priority) {
-                        priority = shortcut.first.priority
-                        trigerredActions.clear()
-                        trigerredActions.add(shortcut.second)
-                    }
-                }
-            }
-        }
-    }
 }
