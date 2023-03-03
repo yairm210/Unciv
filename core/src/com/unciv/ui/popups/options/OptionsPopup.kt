@@ -49,6 +49,7 @@ class OptionsPopup(
     val settings = screen.game.settings
     val tabs: TabbedPager
     val selectBoxMinWidth: Float
+    private var keyBindingsTab: KeyBindingsTab? = null
 
     //endregion
 
@@ -112,6 +113,14 @@ class OptionsPopup(
             ImageGetter.getImage("OtherIcons/Settings"), 24f
         )
 
+        if (GUI.keyboardAvailable) {
+            keyBindingsTab = KeyBindingsTab(this)
+            tabs.addPage(
+                "Keys", keyBindingsTab,
+                ImageGetter.getImage("OtherIcons/Keyboard"), 24f
+            )
+        }
+
         if (RulesetCache.size > BaseRuleset.values().size) {
             val content = ModCheckTab(screen)
             tabs.addPage("Locate mod errors", content, ImageGetter.getImage("OtherIcons/Mods"), 24f)
@@ -123,6 +132,7 @@ class OptionsPopup(
         addCloseButton {
             screen.game.musicController.onChange(null)
             screen.game.allowPortrait(settings.allowAndroidPortrait)
+            keyBindingsTab?.save()
             onClose()
         }.padBottom(10f)
 
@@ -208,7 +218,7 @@ open class SettingsSelect<T : Any>(
     private val settingsProperty: KMutableProperty0<T> = setting.getProperty(settings)
     private val label = createLabel(labelText)
     private val refreshSelectBox = createSelectBox(items.toGdxArray(), settings)
-    val items by refreshSelectBox::items
+    val items: Array<SelectItem<T>> by refreshSelectBox::items
 
     private fun createLabel(labelText: String): Label {
         val selectLabel = labelText.toLabel()

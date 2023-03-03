@@ -727,6 +727,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - Icon for Unique created by [vegeta1k95](https://github.com/vegeta1k95)
 - [Transform] created by letstalkaboutdune
 - [Swords](https://thenounproject.com/icon/swords-1580316/) created by Muhajir ila Robbi for Blockaded tile marker
+- [Keyboard](https://thenounproject.com/icon/keyboard-2685534/) by Twenty Foo Studio for Options Keys
 
 ### Main menu
 

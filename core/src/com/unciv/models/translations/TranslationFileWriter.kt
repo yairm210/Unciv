@@ -21,6 +21,7 @@ import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.ui.components.KeyboardBinding
 import com.unciv.utils.debug
 import java.io.File
 import java.lang.reflect.Field
@@ -118,6 +119,10 @@ object TranslationFileWriter {
             for (diplomaticModifier in DiplomaticModifiers.values())
                 linesToTranslate += "${diplomaticModifier.text} = "
 
+            linesToTranslate += "\n\n#################### Lines from key bindings #######################\n"
+            for (binding in KeyboardBinding.values()) {
+                linesToTranslate += "${binding.label} = "
+            }
 
             for (baseRuleset in BaseRuleset.values()) {
                 val generatedStringsFromBaseRuleset =
