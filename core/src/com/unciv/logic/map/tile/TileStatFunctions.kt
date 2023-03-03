@@ -18,27 +18,9 @@ class TileStatFunctions(val tile: Tile) {
     fun getTileStats(city: City?, observingCiv: Civilization?,
                      localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)
     ): Stats {
-        var stats = tile.getBaseTerrain().cloneStats()
+        val stats = getTerrainStats()
 
         val stateForConditionals = StateForConditionals(civInfo = observingCiv, city = city, tile = tile)
-
-        for (terrainFeatureBase in tile.terrainFeatureObjects) {
-            when {
-                terrainFeatureBase.hasUnique(UniqueType.NullifyYields) ->
-                    return terrainFeatureBase.cloneStats()
-                terrainFeatureBase.overrideStats -> stats = terrainFeatureBase.cloneStats()
-                else -> stats.add(terrainFeatureBase)
-            }
-        }
-
-        if (tile.naturalWonder != null) {
-            val wonderStats = tile.getNaturalWonder().cloneStats()
-
-            if (tile.getNaturalWonder().overrideStats)
-                stats = wonderStats
-            else
-                stats.add(wonderStats)
-        }
 
         if (city != null) {
             var tileUniques = city.getMatchingUniques(UniqueType.StatsFromTiles, StateForConditionals.IgnoreConditionals)
@@ -77,19 +59,42 @@ class TileStatFunctions(val tile: Tile) {
             if (stats.gold != 0f && observingCiv.goldenAges.isGoldenAge())
                 stats.gold++
         }
-        if (tile.isCityCenter()) {
-            if (stats.food < 2) stats.food = 2f
-            if (stats.production < 1) stats.production = 1f
-        }
 
-        for ((stat, value) in stats)
-            if (value < 0f) stats[stat] = 0f
+        stats.coerceMinima(tile.isCityCenter())
 
         for ((stat, value) in getTilePercentageStats(observingCiv, city)) {
             stats[stat] *= value.toPercent()
         }
 
         return stats
+    }
+
+    /** Gets basic stats to start off [getTileStats] or [getTileStartYield], independently mutable result */
+    private fun getTerrainStats(): Stats {
+        var stats: Stats? = null
+
+        // allTerrains iterates over base, natural wonder, then features
+        for (terrain in tile.allTerrains) {
+            when {
+                terrain.hasUnique(UniqueType.NullifyYields) ->
+                    return terrain.cloneStats()
+                terrain.overrideStats || stats == null ->
+                    stats = terrain.cloneStats()
+                else ->
+                    stats.add(terrain)
+            }
+        }
+        return stats!!
+    }
+
+    /** Helper finalizing the additive parts of [getTileStats] or [getTileStartYield] */
+    private fun Stats.coerceMinima(isCityCenter: Boolean) {
+        if (isCityCenter) {
+            if (food < 2f) food = 2f
+            if (production < 1f) production = 1f
+        }
+        for ((stat, value) in this)
+            if (value < 0f) this[stat] = 0f
     }
 
     // Only gets the tile percentage bonus, not the improvement percentage bonus
@@ -155,25 +160,12 @@ class TileStatFunctions(val tile: Tile) {
         return sum
     }
 
-    private fun getTileStartYield(isCenter: Boolean): Float {
-        var stats = tile.getBaseTerrain().cloneStats()
-
-        for (terrainFeatureBase in tile.terrainFeatureObjects) {
-            if (terrainFeatureBase.overrideStats)
-                stats = terrainFeatureBase.cloneStats()
-            else
-                stats.add(terrainFeatureBase)
+    private fun getTileStartYield(isCenter: Boolean) =
+        getTerrainStats().run {
+            if (tile.resource != null) add(tile.tileResource)
+            coerceMinima(isCenter)
+            food + production + gold
         }
-        if (tile.resource != null) stats.add(tile.tileResource)
-
-        if (stats.production < 0) stats.production = 0f
-        if (isCenter) {
-            if (stats.food < 2) stats.food = 2f
-            if (stats.production < 1) stats.production = 1f
-        }
-
-        return stats.food + stats.production + stats.gold
-    }
 
 
     // Also multiplies the stats by the percentage bonus for improvements (but not for tiles)
