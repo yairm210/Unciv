@@ -360,8 +360,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     MayFoundReligion("May found a religion", UniqueTarget.Unit),
     MayEnhanceReligion("May enhance a religion", UniqueTarget.Unit),
 
-
-
     @Deprecated("as of 4.5.3", ReplaceWith("Empire enters a [amount]-turn Golden Age <by consuming this unit>"))
     StartGoldenAge("Can start an [amount]-turn golden age", UniqueTarget.Unit),
     AddInCapital("Can be added to [comment] in the Capital", UniqueTarget.Unit),
@@ -511,6 +509,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     UnitActionConsumeUnit("by consuming this unit", UniqueTarget.UnitActionModifier),
     UnitActionMovementCost("for [amount] movement", UniqueTarget.UnitActionModifier),
+    UnitActionLimitedTimes("[amount] times", UniqueTarget.UnitActionModifier),
 
     // endregion
 

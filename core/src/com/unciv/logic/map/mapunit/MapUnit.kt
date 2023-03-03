@@ -815,12 +815,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return civ.gameInfo.religions[religion]!!.getReligionDisplayName()
     }
 
-    fun religiousActionsUnitCanDo(): Sequence<String> {
+    fun limitedActionsUnitCanDo(): Sequence<String> {
         return getMatchingUniques(UniqueType.CanActionSeveralTimes)
             .map { it.params[0] }
     }
 
-    fun canDoReligiousAction(action: String): Boolean {
+    fun canDoLimitedAction(action: String): Boolean {
         return getMatchingUniques(UniqueType.CanActionSeveralTimes).any { it.params[0] == action }
     }
 
@@ -833,7 +833,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun setupAbilityUses(buildCity: City? = null) {
-        for (action in religiousActionsUnitCanDo()) {
+        for (action in limitedActionsUnitCanDo()) {
             val baseAmount = getBaseMaxActionUses(action)
             val additional =
                 if (buildCity == null) 0

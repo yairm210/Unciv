@@ -49,7 +49,7 @@ object UnitActionsReligion {
 
     fun addActionsWithLimitedUses(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: Tile) {
 
-        val actionsToAdd = unit.religiousActionsUnitCanDo()
+        val actionsToAdd = unit.limitedActionsUnitCanDo()
         if (actionsToAdd.none()) return
         if (unit.religion == null || unit.civ.gameInfo.religions[unit.religion]!!.isPantheon()) return
         val city = tile.getCity() ?: return
