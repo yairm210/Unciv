@@ -653,7 +653,8 @@ object UnitActions {
         val triggerableTypes = setOf(UniqueTarget.Triggerable, UniqueTarget.UnitTriggerable)
         for (unique in unit.getUniques()) {
             if (unique.conditionals.none { it.type?.targetTypes?.contains(UniqueTarget.UnitActionModifier) == true }) continue
-            if (unique.type?.targetTypes?.any { it in triggerableTypes }!=true) continue
+            if (unique.type?.targetTypes?.any { it in triggerableTypes }!=true
+                    && unique.conditionals.none { it.type == UniqueType.ConditionalTimedUnique }) continue
             if (usagesLeft(unit, unique)==0) continue
 
             val unitAction = UnitAction(type = UnitActionType.TriggerUnique,
@@ -719,9 +720,12 @@ object UnitActions {
     }
 
     fun getMaxUsages(actionUnique: Unique): Int? {
-        return actionUnique.conditionals
+        val times = actionUnique.conditionals
             .filter { it.type == UniqueType.UnitActionLimitedTimes }
             .maxOfOrNull { it.params[0].toInt() }
+        if (times != null) return times
+        if (actionUnique.conditionals.any { it.type == UniqueType.UnitActionOnce }) return 1
+        return null
     }
 
     fun actionTextWithSideEffects(originalText:String, actionUnique: Unique, unit: MapUnit): String {
