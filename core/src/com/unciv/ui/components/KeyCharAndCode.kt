@@ -1,6 +1,5 @@
 package com.unciv.ui.components
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 
 /*
@@ -44,9 +43,6 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
     }
 
     companion object {
-        /** Tests presence of a physical keyboard - static here as convenience shortcut only */
-        val keyboardAvailable = Gdx.input.isPeripheralAvailable(Input.Peripheral.HardwareKeyboard)
-
         // Convenience shortcuts for frequently used constants
         /** Android back, assigns ESC automatically as well */
         val BACK = KeyCharAndCode(Input.Keys.BACK)

@@ -32,7 +32,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
     private fun getUnitActionButton(unit: MapUnit, unitAction: UnitAction): Button {
         val icon = unitAction.getIcon()
         // If peripheral keyboard not detected, hotkeys will not be displayed
-        val key = if (KeyCharAndCode.keyboardAvailable) unitAction.type.key else KeyCharAndCode.UNKNOWN
+        val key = if (GUI.keyboardAvailable) unitAction.type.key else KeyCharAndCode.UNKNOWN
 
         val fontColor = if (unitAction.isCurrentAction) Color.YELLOW else Color.WHITE
         val actionButton = IconTextButton(unitAction.title, icon, fontColor = fontColor)
