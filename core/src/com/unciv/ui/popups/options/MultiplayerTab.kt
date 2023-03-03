@@ -93,7 +93,9 @@ fun multiplayerTab(
 
     addSeparator(tab)
 
-    addMultiplayerServerOptions(tab, optionsPopup, listOf(curRefreshSelect, allRefreshSelect, turnCheckerSelect).filterNotNull())
+    addMultiplayerServerOptions(tab, optionsPopup,
+        listOfNotNull(curRefreshSelect, allRefreshSelect, turnCheckerSelect)
+    )
 
     return tab
 }
@@ -118,13 +120,13 @@ private fun createNotificationSoundOptions(): List<SelectItem<UncivSound>> = lis
 
 private fun buildUnitAttackSoundOptions(): List<SelectItem<UncivSound>> {
     return RulesetCache.getSortedBaseRulesets()
-        .map(RulesetCache::get).filterNotNull()
-        .map(Ruleset::units).map { it.values }
-        .flatMap { it }
-        .filter { it.attackSound != null }
-        .filter { it.attackSound != "nuke" } // much too long for a notification
+        .asSequence()
+        .mapNotNull(RulesetCache::get)
+        .flatMap { it.units.values }
+        .filter { it.attackSound != null && it.attackSound != "nuke" } // much too long for a notification
         .distinctBy { it.attackSound }
         .map { SelectItem("[${it.name}] Attack Sound", UncivSound(it.attackSound!!)) }
+        .toList()
 }
 
 private fun addMultiplayerServerOptions(
