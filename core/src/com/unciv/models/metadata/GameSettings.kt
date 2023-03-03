@@ -9,6 +9,7 @@ import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.UncivSound
 import com.unciv.ui.components.FontFamilyData
 import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.KeyboardBindings
 import java.text.Collator
 import java.time.Duration
 import java.util.*
@@ -105,6 +106,8 @@ class GameSettings {
 
     /** Maximum zoom-out of the map - performance heavy */
     var maxWorldZoomOut = 2f
+
+    var keyBindings = KeyboardBindings()
 
     /** used to migrate from older versions of the settings */
     var version: Int? = null

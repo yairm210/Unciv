@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.SerializationException
+import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.KeyboardBindings
 import java.time.Duration
 
 
@@ -21,6 +23,8 @@ fun json() = Json().apply {
 
     setSerializer(HashMapVector2.getSerializerClass(), HashMapVector2.createSerializer())
     setSerializer(Duration::class.java, DurationSerializer())
+    setSerializer(KeyCharAndCode::class.java, KeyCharAndCode.Serializer())
+    setSerializer(KeyboardBindings::class.java, KeyboardBindings.Serializer())
 }
 
 /**

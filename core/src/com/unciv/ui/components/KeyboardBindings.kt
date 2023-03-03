@@ -1,5 +1,7 @@
 package com.unciv.ui.components
 
+import com.badlogic.gdx.utils.Json
+import com.badlogic.gdx.utils.JsonValue
 import com.unciv.GUI
 
 /**
@@ -9,6 +11,11 @@ import com.unciv.GUI
  *  and is read/write accessible through the `KeyboardBindings[]` syntax.
  **/
 class KeyboardBindings : HashMap<KeyboardBinding, KeyCharAndCode>() {
+
+    /** this [put] overload helps the Json [Serializer] read method */
+    private fun put(element: JsonValue) {
+        put(element.name, (element["value"] ?: element).asString())
+    }
 
     /** Allows adding entries by [KeyboardBinding] as name / [KeyCharAndCode] as string representation */
     private fun put(name: String, value: String) {
@@ -52,5 +59,24 @@ class KeyboardBindings : HashMap<KeyboardBinding, KeyCharAndCode>() {
         operator fun get(binding: KeyboardBinding) = default[binding]
         operator fun set(binding: KeyboardBinding, key: KeyCharAndCode) { default[binding] = key }
         val default get() = GUI.getSettings().keyBindings
+    }
+
+    /**
+     *  This class helps Gdx Json to read/write a readable, minimal serialization
+     *  - without, KeyCharAndCode.Serializer.write will not be used properly
+     */
+    class Serializer : Json.Serializer<KeyboardBindings> {
+        override fun write(json: Json, bindings: KeyboardBindings, knownType: Class<*>?) {
+            json.writeObjectStart()
+            for ((binding, key) in bindings) {
+                json.writeValue(binding.name, key, KeyCharAndCode::class.java)
+            }
+            json.writeObjectEnd()
+        }
+
+        override fun read(json: Json, jsonData: JsonValue, type: Class<*>?) = KeyboardBindings().apply {
+            if (jsonData.isObject && jsonData.notEmpty())
+                for (element in jsonData) put(element)
+        }
     }
 }

@@ -1,6 +1,9 @@
 package com.unciv.ui.components
 
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.utils.Json
+import com.badlogic.gdx.utils.JsonValue
+
 
 /*
  * For now, many combination keys cannot easily be expressed.
@@ -80,6 +83,31 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
             return if (code == -1) KeyCharAndCode(char,0) else KeyCharAndCode(Char.MIN_VALUE, code)
         }
 
+        fun parse(text: String): KeyCharAndCode = when {
+                text.length == 1 && text[0].isDefined() -> KeyCharAndCode(text[0])
+                text.length == 3 && text[0] == '"' && text[2] == '"' -> KeyCharAndCode(text[1])
+                text.length == 6 && text.startsWith("Ctrl-") -> ctrl(text[5])
+                text == "ESC" -> ESC
+                text == "Backspace" -> KeyCharAndCode(Input.Keys.BACKSPACE)
+                text == "Del" -> DEL
+                Input.Keys.valueOf(text) != -1 -> KeyCharAndCode(Input.Keys.valueOf(text))
+                else -> UNKNOWN
+            }
     }
 
+    class Serializer : Json.Serializer<KeyCharAndCode> {
+        override fun write(json: Json, key: KeyCharAndCode, knownType: Class<*>?) {
+            // Gdx Json is.... No comment. This `Any` is needed to resolve the ambiguity between
+            //      public void writeValue (String name, @Null Object value, @Null Class knownType)
+            // and
+            //      public void writeValue (@Null Object value, @Null Class knownType, @Null Class elementType)
+            // - we want the latter. And without the explicitly provided knownType it will _unpredictably_ use
+            // `{"class":"java.lang.String","value":"Space"}` instead of `"Space"`.
+            json.writeValue(key.toString() as Any, String::class.java, null)
+        }
+
+        override fun read(json: Json, jsonData: JsonValue, type: Class<*>?): KeyCharAndCode {
+            return parse(jsonData.asString())
+        }
+    }
 }
