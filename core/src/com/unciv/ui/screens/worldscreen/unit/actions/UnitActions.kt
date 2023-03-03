@@ -704,6 +704,11 @@ object UnitActions {
             when (conditional.type){
                 UniqueType.UnitActionConsumeUnit -> unit.consume()
                 UniqueType.UnitActionLimitedTimes -> {
+                    if (usagesLeft(unit, actionUnique) == 1
+                            && actionUnique.conditionals.any { it.type==UniqueType.UnitActionAfterWhichConsumed }) {
+                        unit.consume()
+                        continue
+                    }
                     val usagesSoFar = unit.abilityToTimesUsed[actionUnique.placeholderText] ?: 0
                     unit.abilityToTimesUsed[actionUnique.placeholderText] = usagesSoFar + 1
                 }
@@ -736,11 +741,15 @@ object UnitActions {
 
     fun getSideEffectString(unit:MapUnit, actionUnique: Unique): String {
         val effects = ArrayList<String>()
-        if (actionUnique.conditionals.any { it.type == UniqueType.UnitActionConsumeUnit }) effects += Fonts.death.toString()
-        else effects += getMovementPointsToUse(actionUnique).toString() + Fonts.movement
 
         val maxUsages = getMaxUsages(actionUnique)
         if (maxUsages!=null) effects += "${usagesLeft(unit, actionUnique)}/$maxUsages"
+
+        if (actionUnique.conditionals.any { it.type == UniqueType.UnitActionConsumeUnit }
+                || actionUnique.conditionals.any { it.type == UniqueType.UnitActionAfterWhichConsumed } && usagesLeft(unit, actionUnique) == 1
+                ) effects += Fonts.death.toString()
+        else effects += getMovementPointsToUse(actionUnique).toString() + Fonts.movement
+
 
         return if (effects.isEmpty()) ""
         else "(${effects.joinToString { it.tr() }})"

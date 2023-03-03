@@ -511,6 +511,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     UnitActionMovementCost("for [amount] movement", UniqueTarget.UnitActionModifier),
     UnitActionOnce("once", UniqueTarget.UnitActionModifier),
     UnitActionLimitedTimes("[amount] times", UniqueTarget.UnitActionModifier),
+    UnitActionAfterWhichConsumed("after which this unit is consumed", UniqueTarget.UnitActionModifier),
 
     // endregion
 

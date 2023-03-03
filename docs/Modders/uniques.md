@@ -1983,9 +1983,15 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: UnitActionModifier
 
+??? example  "&lt;once&gt;"
+	Applicable to: UnitActionModifier
+
 ??? example  "&lt;[amount] times&gt;"
 	Example: "&lt;[3] times&gt;"
 
+	Applicable to: UnitActionModifier
+
+??? example  "&lt;after which this unit is consumed&gt;"
 	Applicable to: UnitActionModifier
 
 
