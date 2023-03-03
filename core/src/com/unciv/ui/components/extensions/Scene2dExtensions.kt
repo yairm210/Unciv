@@ -33,6 +33,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.KeyShortcutDispatcher
+import com.unciv.ui.components.KeyboardBinding
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.utils.concurrency.Concurrency
@@ -98,6 +99,7 @@ fun Color.brighten(t: Float): Color = Color(this).lerp(Color.WHITE, t)
  */
 class ActorKeyShortcutDispatcher internal constructor(val actor: Actor): KeyShortcutDispatcher() {
     fun add(shortcut: KeyShortcut?) = add(shortcut) { actor.activate() }
+    fun add(binding: KeyboardBinding) = add(binding) { actor.activate() }
     fun add(key: KeyCharAndCode?) = add(key) { actor.activate() }
     fun add(char: Char?) = add(char) { actor.activate() }
     fun add(keyCode: Int?) = add(keyCode) { actor.activate() }
