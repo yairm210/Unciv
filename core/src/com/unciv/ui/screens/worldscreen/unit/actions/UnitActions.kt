@@ -202,8 +202,7 @@ object UnitActions {
 
         return UnitAction(
                 type = UnitActionType.FoundCity,
-                title = if (!hasActionModifiers) UnitActionType.FoundCity.value
-                    else "${UnitActionType.FoundCity.value} ${getSideEffectString(unique)}",
+                title = actionTextWithSideEffects(UnitActionType.FoundCity.value, unique),
                 uncivSound = UncivSound.Chimes,
                 action = {
                     // check if we would be breaking a promise
@@ -474,12 +473,8 @@ object UnitActions {
                         (civResources[unique.params[1]] ?: 0) < unique.params[0].toInt()
             }
 
-            val sideEffectsString = getSideEffectString(unique)
-            val title = if (sideEffectsString.isEmpty()) "Create [$improvementName]"
-            else "{Create [$improvementName]} {$sideEffectsString}"
-
             finalActions += UnitAction(UnitActionType.Create,
-                title = title,
+                title = actionTextWithSideEffects("Create [$improvementName]", unique),
                 action = {
                     val unitTile = unit.getTile()
                     unitTile.improvementFunctions.removeCreatesOneImprovementMarker()
@@ -658,7 +653,9 @@ object UnitActions {
             if (unique.conditionals.none { it.type?.targetTypes?.contains(UniqueTarget.UnitActionModifier) == true }) continue
             if (unique.type?.targetTypes?.any { it in triggerableTypes }!=true) continue
 
-            val unitAction = UnitAction(type = UnitActionType.TriggerUnique, unique.text.removeConditionals()){
+            val unitAction = UnitAction(type = UnitActionType.TriggerUnique,
+                title = actionTextWithSideEffects(unique.text.removeConditionals(), unique)
+                ){
                 UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
                 activateSideEffects(unit, unique)
             }
@@ -705,6 +702,12 @@ object UnitActions {
                 else -> continue
             }
         }
+    }
+
+    fun actionTextWithSideEffects(originalText:String, actionUnique: Unique): String {
+        val sideEffectString = getSideEffectString(actionUnique)
+        if (sideEffectString == "") return originalText
+        else return "$originalText $sideEffectString"
     }
 
     fun getSideEffectString(actionUnique: Unique): String {
