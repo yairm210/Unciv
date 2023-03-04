@@ -18,6 +18,7 @@ import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.KeyboardPanningListener
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.worldscreen.ZoomButtonPair
 
@@ -117,7 +118,7 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen(), RecreateOnResize {
 
     fun getToolsWidth() = stage.width * 0.4f
 
-    private fun newMapHolder(): com.unciv.ui.screens.mapeditorscreen.EditorMapHolder {
+    private fun newMapHolder(): EditorMapHolder {
         ImageGetter.setNewRuleset(ruleset)
         // setNewRuleset is missing some graphics - those "EmojiIcons"&co already rendered as font characters
         // so to get the "Water" vs "Gold" icons when switching between Deciv and Vanilla to render properly,
@@ -130,9 +131,12 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen(), RecreateOnResize {
         tileMap.setStartingLocationsTransients()
         UncivGame.Current.translations.translationActiveMods = ruleset.mods
 
-        val result = com.unciv.ui.screens.mapeditorscreen.EditorMapHolder(this, tileMap) {
+        val result = EditorMapHolder(this, tileMap) {
             tileClickHandler?.invoke(it)
         }
+        for (oldPanningListener in stage.root.listeners.filterIsInstance<KeyboardPanningListener>())
+            stage.removeListener(oldPanningListener)  // otherwise they accumulate
+        stage.addListener(KeyboardPanningListener(result, allowWASD = false))
 
         stage.root.addActorAt(0, result)
         stage.scrollFocus = result

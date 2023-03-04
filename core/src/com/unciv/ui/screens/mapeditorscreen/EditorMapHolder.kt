@@ -1,5 +1,7 @@
 package com.unciv.ui.screens.mapeditorscreen
 
+import com.badlogic.gdx.Application
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.EventListener
@@ -8,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.unciv.UncivGame
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.TileMap
@@ -42,6 +45,10 @@ class EditorMapHolder(
     override val continuousScrollingX = tileMap.mapParameters.worldWrap
 
     init {
+        if (Gdx.app.type == Application.ApplicationType.Desktop) {
+            isAutoScrollEnabled = UncivGame.Current.settings.mapAutoScroll
+            mapAutoScrollSpeed = UncivGame.Current.settings.mapAutoScrollSpeed
+        }
         if (editorScreen == null) touchable = Touchable.disabled
         addTiles(parentScreen.stage)
         if (editorScreen != null) addCaptureListener(getDragPaintListener())

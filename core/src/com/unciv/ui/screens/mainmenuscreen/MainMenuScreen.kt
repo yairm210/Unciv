@@ -47,6 +47,7 @@ import com.unciv.ui.screens.newgamescreen.NewGameScreen
 import com.unciv.ui.screens.pickerscreens.ModManagementScreen
 import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMenuPopup
 import com.unciv.ui.screens.mainmenuscreen.EasterEggRulesets.modifyForEasterEgg
+import com.unciv.ui.screens.mapeditorscreen.EditorMapHolder
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
@@ -132,7 +133,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
 
             launchOnGLThread { // for GL context
                 ImageGetter.setNewRuleset(mapRuleset)
-                val mapHolder = com.unciv.ui.screens.mapeditorscreen.EditorMapHolder(
+                val mapHolder = EditorMapHolder(
                     this@MainMenuScreen,
                     newMap
                 ) {}
