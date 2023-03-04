@@ -10,7 +10,6 @@ import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.ScreenSize
-import com.unciv.models.metadata.ScreenWindow
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
@@ -25,8 +24,8 @@ import com.unciv.ui.components.extensions.onChange
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
-
-private val resolutionArray = com.badlogic.gdx.utils.Array(arrayOf("750x500", "900x600", "1050x700", "1200x800", "1500x1000"))
+import com.unciv.utils.Display
+import com.unciv.utils.ScreenMode
 
 fun displayTab(
     optionsPopup: OptionsPopup,
@@ -37,8 +36,9 @@ fun displayTab(
 
     val settings = optionsPopup.settings
 
+    addScreenModeSelectBox(this, settings, optionsPopup.selectBoxMinWidth)
+
     if (Gdx.app.type == Application.ApplicationType.Desktop) {
-        addFullscreenSelectBox(this, settings, optionsPopup.selectBoxMinWidth)
         optionsPopup.addCheckbox(this, "Map mouse auto-scroll", settings.mapAutoScroll, true) {
             settings.mapAutoScroll = it
             if (GUI.isWorldLoaded())
@@ -155,16 +155,22 @@ private fun addUnitIconAlphaSlider(table: Table, settings: GameSettings, selectB
     table.add(unitIconAlphaSlider).minWidth(selectBoxMinWidth).pad(10f).row()
 }
 
-private fun addFullscreenSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
-    table.add("Screen Window".toLabel()).left().fillX()
+private fun addScreenModeSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
+    table.add("Screen Mode".toLabel()).left().fillX()
 
-    val screenSizeSelectBox = TranslatedSelectBox(ScreenWindow.values().map { it.name }, settings.screenWindow.name,table.skin)
-    table.add(screenSizeSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()
+    val modes = Display.getScreenModes()
+    val current: ScreenMode? = modes[settings.screenMode]
 
-    screenSizeSelectBox.onChange {
-        settings.screenWindow = ScreenWindow.valueOf(screenSizeSelectBox.selected.value)
-        settings.refreshScreenMode()
+    val selectBox = SelectBox<ScreenMode>(table.skin)
+    selectBox.items = Array(modes.values.toTypedArray())
+    selectBox.selected = current
+    selectBox.onChange {
+        val mode = selectBox.selected
+        settings.screenMode = mode.getId()
+        Display.setScreenMode(mode.getId(), settings)
     }
+
+    table.add(selectBox).minWidth(selectBoxMinWidth).pad(10f).row()
 }
 
 private fun addScreenSizeSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float, onResolutionChange: () -> Unit) {

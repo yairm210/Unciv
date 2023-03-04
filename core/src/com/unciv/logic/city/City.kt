@@ -567,7 +567,7 @@ class City : IsPartOfGameInfoSerialization {
                 getLocalMatchingUniques(uniqueType, stateForConditionals)
     }
 
-    fun getLocalMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null): Sequence<Unique> {
+    fun getLocalMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(civ, this)): Sequence<Unique> {
         return (
             cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { !it.isAntiLocalEffect }
             + religion.getUniques().filter { it.isOfType(uniqueType) }

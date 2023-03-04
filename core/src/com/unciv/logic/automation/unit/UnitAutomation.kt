@@ -259,7 +259,7 @@ object UnitAutomation {
         if (unit.civ.religionManager.maySpreadReligionAtAll(unit))
             return SpecificUnitAutomation.automateMissionary(unit)
 
-        if (unit.hasUnique(UniqueType.PreventSpreadingReligion) || unit.canDoReligiousAction(Constants.removeHeresy))
+        if (unit.hasUnique(UniqueType.PreventSpreadingReligion) || unit.canDoLimitedAction(Constants.removeHeresy))
             return SpecificUnitAutomation.automateInquisitor(unit)
 
         if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit)
