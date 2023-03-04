@@ -2,6 +2,7 @@ package com.unciv.ui.screens.diplomacyscreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOffersList
@@ -14,8 +15,11 @@ import com.unciv.ui.popups.AskNumberPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 
 /** This is the class that holds the 4 columns of the offers (ours/theirs/ offered/available) in trade */
-class OfferColumnsTable(private val tradeLogic: TradeLogic, val screen: DiplomacyScreen, val onChange: () -> Unit): Table(
-    BaseScreen.skin) {
+class OfferColumnsTable(
+    private val tradeLogic: TradeLogic,
+    private val screen: DiplomacyScreen,
+    private val onChange: () -> Unit
+): Table(BaseScreen.skin) {
 
     private fun addOffer(offer: TradeOffer, offerList: TradeOffersList, correspondingOfferList: TradeOffersList) {
         offerList.add(offer.copy())
@@ -23,34 +27,31 @@ class OfferColumnsTable(private val tradeLogic: TradeLogic, val screen: Diplomac
         onChange()
     }
 
-    private val ourAvailableOffersTable = OffersListScroll("OurAvail") {
-        when (it.type) {
-            TradeType.Gold -> openGoldSelectionPopup(it, tradeLogic.currentTrade.ourOffers, tradeLogic.ourCivilization.gold)
-            TradeType.Gold_Per_Turn -> openGoldSelectionPopup(it, tradeLogic.currentTrade.ourOffers, tradeLogic.ourCivilization.stats.statsForNextTurn.gold.toInt())
-            else -> addOffer(it, tradeLogic.currentTrade.ourOffers, tradeLogic.currentTrade.theirOffers)
+    private fun offerClickImplementation(
+        offer: TradeOffer,
+        invert: Boolean,
+        list: TradeOffersList,
+        counterList: TradeOffersList,
+        civ: Civilization
+    ) {
+        when (offer.type) {
+            TradeType.Gold -> openGoldSelectionPopup(offer, list, civ.gold)
+            TradeType.Gold_Per_Turn -> openGoldSelectionPopup(offer, list, civ.stats.statsForNextTurn.gold.toInt())
+            else -> addOffer(if (invert) offer.copy(amount = -offer.amount) else offer, list, counterList)
         }
     }
 
+    private val ourAvailableOffersTable = OffersListScroll("OurAvail") {
+        tradeLogic.currentTrade.run { offerClickImplementation(it, false, ourOffers, theirOffers, tradeLogic.ourCivilization) }
+    }
     private val ourOffersTable = OffersListScroll("OurTrade") {
-        when (it.type) {
-            TradeType.Gold -> openGoldSelectionPopup(it, tradeLogic.currentTrade.ourOffers, tradeLogic.ourCivilization.gold)
-            TradeType.Gold_Per_Turn -> openGoldSelectionPopup(it, tradeLogic.currentTrade.ourOffers, tradeLogic.ourCivilization.stats.statsForNextTurn.gold.toInt())
-            else -> addOffer(it.copy(amount = -it.amount), tradeLogic.currentTrade.ourOffers, tradeLogic.currentTrade.theirOffers)
-        }
+        tradeLogic.currentTrade.run { offerClickImplementation(it, true, ourOffers, theirOffers, tradeLogic.ourCivilization) }
     }
     private val theirOffersTable = OffersListScroll("TheirTrade") {
-        when (it.type) {
-            TradeType.Gold -> openGoldSelectionPopup(it, tradeLogic.currentTrade.theirOffers, tradeLogic.otherCivilization.gold)
-            TradeType.Gold_Per_Turn -> openGoldSelectionPopup(it, tradeLogic.currentTrade.theirOffers, tradeLogic.otherCivilization.stats.statsForNextTurn.gold.toInt())
-            else -> addOffer(it.copy(amount = -it.amount), tradeLogic.currentTrade.theirOffers, tradeLogic.currentTrade.ourOffers)
-        }
+        tradeLogic.currentTrade.run { offerClickImplementation(it, true, theirOffers, ourOffers, tradeLogic.otherCivilization) }
     }
     private val theirAvailableOffersTable = OffersListScroll("TheirAvail") {
-        when (it.type) {
-            TradeType.Gold -> openGoldSelectionPopup(it, tradeLogic.currentTrade.theirOffers, tradeLogic.otherCivilization.gold)
-            TradeType.Gold_Per_Turn -> openGoldSelectionPopup(it, tradeLogic.currentTrade.theirOffers, tradeLogic.otherCivilization.stats.statsForNextTurn.gold.toInt())
-            else -> addOffer(it, tradeLogic.currentTrade.theirOffers, tradeLogic.currentTrade.ourOffers)
-        }
+        tradeLogic.currentTrade.run { offerClickImplementation(it, false, theirOffers, ourOffers, tradeLogic.otherCivilization) }
     }
 
     init {
@@ -58,9 +59,10 @@ class OfferColumnsTable(private val tradeLogic: TradeLogic, val screen: Diplomac
 
         val isPortraitMode = screen.isNarrowerThan4to3()
 
-        val columnWidth = (screen.stage.width - screen.leftSideScroll.width) / 2
+        val columnWidth = screen.getTradeColumnsWidth()
 
         if (!isPortraitMode) {
+            // In landscape, arrange in 4 panels: ours left / theirs right ; items top / offers bottom.
             add("Our items".tr())
             add("[${tradeLogic.otherCivilization.civName}]'s items".tr()).row()
 
@@ -73,8 +75,9 @@ class OfferColumnsTable(private val tradeLogic: TradeLogic, val screen: Diplomac
             add("[${tradeLogic.otherCivilization.civName}]'s trade offer".tr()).row()
             add(ourOffersTable).size(columnWidth, screen.stage.height / 3)
             add(theirOffersTable).size(columnWidth, screen.stage.height / 3)
-        }
-        else {
+        } else {
+            // In portrait, this will arrange the items lists vertically
+            // and the offers still side-by-side below that
             add("Our items".tr()).colspan(2).row()
             add(ourAvailableOffersTable).height(screen.stage.height / 4f).colspan(2).row()
 

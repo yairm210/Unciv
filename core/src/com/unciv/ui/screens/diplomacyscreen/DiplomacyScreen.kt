@@ -56,10 +56,11 @@ import com.unciv.ui.components.AutoScrollPane as ScrollPane
  *
  * When [selectCiv] is given and [selectTrade] is not, that Civilization is selected as if clicked on the left side.
  * When [selectCiv] and [selectTrade] are supplied, that Trade for that Civilization is selected, used for the counter-offer option from `TradePopup`.
+ * Note calling this with [selectCiv] a City State and [selectTrade] supplied is **not allowed**.
  */
 @Suppress("KDocUnresolvedReference")  // Mentioning non-field parameters is flagged, but they work anyway
 class DiplomacyScreen(
-    val viewingCiv: Civilization,
+    private val viewingCiv: Civilization,
     private val selectCiv: Civilization? = null,
     private val selectTrade: Trade? = null
 ): BaseScreen(), RecreateOnResize {
@@ -69,7 +70,7 @@ class DiplomacyScreen(
     }
 
     private val leftSideTable = Table().apply { defaults().pad(nationIconPad) }
-    val leftSideScroll = ScrollPane(leftSideTable)
+    private val leftSideScroll = ScrollPane(leftSideTable)
     private val rightSideTable = Table()
     private val closeButton = Constants.close.toTextButton()
 
@@ -169,20 +170,13 @@ class DiplomacyScreen(
         rightSideTable.clear()
         UncivGame.Current.musicController.chooseTrack(otherCiv.civName,
             MusicMood.peaceOrWar(viewingCiv.isAtWarWith(otherCiv)),MusicTrackChooserFlags.setSelectNation)
-        if (otherCiv.isCityState()) rightSideTable.add(
-            ScrollPane(getCityStateDiplomacyTable(otherCiv))
-        )
-        else rightSideTable.add(ScrollPane(getMajorCivDiplomacyTable(otherCiv)))
-            .height(stage.height)
+        rightSideTable.add(ScrollPane(
+            if (otherCiv.isCityState()) getCityStateDiplomacyTable(otherCiv)
+            else getMajorCivDiplomacyTable(otherCiv)
+        )).height(stage.height)
     }
 
-    private fun setTrade(civ: Civilization): TradeTable {
-        rightSideTable.clear()
-        val tradeTable = TradeTable(civ, this)
-        rightSideTable.add(tradeTable)
-        return tradeTable
-    }
-
+    //region City State Diplomacy
     private fun getCityStateDiplomacyTableHeader(otherCiv: Civilization): Table {
         val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
 
@@ -289,7 +283,6 @@ class DiplomacyScreen(
 
         return diplomacyTable
     }
-
 
     private fun getCityStateDiplomacyTable(otherCiv: Civilization): Table {
         val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
@@ -635,6 +628,8 @@ class DiplomacyScreen(
         return warTable
     }
 
+    //endregion
+    //region Major Civ Diplomacy
 
     private fun getMajorCivDiplomacyTable(otherCiv: Civilization): Table {
         val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
@@ -699,6 +694,13 @@ class DiplomacyScreen(
         }
 
         return diplomacyTable
+    }
+
+    private fun setTrade(civ: Civilization): TradeTable {
+        rightSideTable.clear()
+        val tradeTable = TradeTable(civ, this)
+        rightSideTable.add(tradeTable)
+        return tradeTable
     }
 
     private fun getNegotiatePeaceMajorCivButton(
@@ -909,6 +911,8 @@ class DiplomacyScreen(
         return declareWarButton
     }
 
+    //endregion
+
     // response currently always gets "Very Well.", but that may expand in the future.
     @Suppress("SameParameterValue")
     private fun setRightSideFlavorText(
@@ -939,6 +943,9 @@ class DiplomacyScreen(
         }
         return goToOnMapButton
     }
+
+    /** Calculate a width for [TradeTable] two-column layout, called from [OfferColumnsTable] */
+    internal fun getTradeColumnsWidth() = (stage.width - leftSideScroll.width) / 2
 
     override fun resize(width: Int, height: Int) {
         super.resize(width, height)
