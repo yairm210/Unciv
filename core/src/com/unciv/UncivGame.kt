@@ -42,6 +42,7 @@ import com.unciv.ui.screens.worldscreen.WorldMapHolder
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
 import com.unciv.utils.DebugUtils
+import com.unciv.utils.Display
 import com.unciv.utils.Log
 import com.unciv.utils.PlatformSpecific
 import com.unciv.utils.concurrency.Concurrency
@@ -158,7 +159,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
          * - Font (hence Fonts.resetFont() inside setSkin())
          */
         settings = files.getGeneralSettings() // needed for the screen
-        settings.refreshScreenMode()
+        Display.setScreenMode(settings.screenMode, settings)
         setAsRootScreen(GameStartScreen())  // NOT dependent on any atlas or skin
         GameSounds.init()
 

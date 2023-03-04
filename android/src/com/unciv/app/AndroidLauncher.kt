@@ -25,13 +25,14 @@ import com.unciv.logic.event.EventBus
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.utils.Display
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import java.io.File
 
 open class AndroidLauncher : AndroidApplication() {
 
-    private var game: UncivGame? = null
+    private var game: AndroidGame? = null
     private var deepLinkedMultiplayerGame: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,6 +40,9 @@ open class AndroidLauncher : AndroidApplication() {
 
         // Setup Android logging
         Log.backend = AndroidLogBackend()
+
+        // Setup Android display
+        Display.platform = AndroidDisplay(this)
 
         // Setup Android fonts
         Fonts.fontImplementation = AndroidFont()
@@ -67,9 +71,6 @@ open class AndroidLauncher : AndroidApplication() {
         val glView = (Gdx.graphics as AndroidGraphics).view as GLSurfaceView
 
         addScreenObscuredListener(glView)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-            addScreenRefreshRateListener(glView)
     }
 
     fun allowPortrait(allow: Boolean) {
@@ -87,29 +88,6 @@ open class AndroidLauncher : AndroidApplication() {
             cutout -> WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
             else -> WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
         }
-    }
-
-    /** Request the best available device frame rate for
-     *  the game, as soon as OpenGL surface is created */
-    private fun addScreenRefreshRateListener(surfaceView: GLSurfaceView) {
-        surfaceView.holder.addCallback(object: SurfaceHolder.Callback {
-            override fun surfaceCreated(holder: SurfaceHolder) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    val modes = display?.supportedModes ?: return
-                    val bestRefreshRate = modes.maxOf { it.refreshRate }
-                    holder.surface.setFrameRate(bestRefreshRate, Surface.FRAME_RATE_COMPATIBILITY_DEFAULT)
-                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    val display = windowManager.defaultDisplay
-                    val modes = display?.supportedModes ?: return
-                    val bestMode =  modes.maxBy { it.refreshRate }
-                    val params = window.attributes
-                    params.preferredDisplayModeId = bestMode.modeId
-                    window.attributes = params
-                }
-            }
-            override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
-            override fun surfaceDestroyed(holder: SurfaceHolder) {}
-        })
     }
 
     private fun addScreenObscuredListener(surfaceView: GLSurfaceView) {
