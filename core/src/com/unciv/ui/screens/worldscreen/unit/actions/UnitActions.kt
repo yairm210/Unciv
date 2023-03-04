@@ -203,7 +203,9 @@ object UnitActions {
 
         return UnitAction(
                 type = UnitActionType.FoundCity,
-                title = actionTextWithSideEffects(UnitActionType.FoundCity.value, unique, unit),
+                title =
+                    if (hasActionModifiers) actionTextWithSideEffects(UnitActionType.FoundCity.value, unique, unit)
+                    else UnitActionType.FoundCity.value,
                 uncivSound = UncivSound.Chimes,
                 action = {
                     // check if we would be breaking a promise
