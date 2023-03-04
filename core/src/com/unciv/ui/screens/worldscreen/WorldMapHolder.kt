@@ -71,9 +71,10 @@ class WorldMapHolder(
 
     lateinit var currentTileSetStrings: TileSetStrings
 
+    override val continuousScrollingX = tileMap.mapParameters.worldWrap
+
     init {
         if (Gdx.app.type == Application.ApplicationType.Desktop) this.setFlingTime(0f)
-        continuousScrollingX = tileMap.mapParameters.worldWrap
         setupZoomPanListeners()
     }
 
@@ -784,7 +785,13 @@ class WorldMapHolder(
         val exploredRegion = worldScreen.viewingCiv.exploredRegion
         var result = scrollX - deltaX
 
-        if (exploredRegion.shouldRecalculateCoords()) exploredRegion.calculateStageCoords(maxX, maxY)
+        if (continuousScrollingX) {
+            if (result < 0f) result += maxX
+            else if (result > maxX) result -= maxX
+        }
+
+        if (exploredRegion.shouldRecalculateCoords())
+            exploredRegion.calculateStageCoords(maxX, maxY)
 
         if (!exploredRegion.shouldRestrictX()) return result
 

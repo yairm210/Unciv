@@ -27,7 +27,7 @@ open class ZoomableScrollPane(
     var minZoom: Float = 0.5f,
     var maxZoom: Float = 1 / minZoom // if we can halve the size, then by default also allow to double it
 ) : ScrollPane(Group()) {
-    var continuousScrollingX = false
+    open val continuousScrollingX = false
 
     var onViewportChangedListener: ((width: Float, height: Float, viewport: Rectangle) -> Unit)? = null
     var onPanStopListener: (() -> Unit)? = null
@@ -39,7 +39,10 @@ open class ZoomableScrollPane(
     private val horizontalPadding get() = width / 2
     private val verticalPadding get() = height / 2
 
+    /** Linked to `GameSettings.mapAutoScroll` "Map mouse auto-scroll" */
     var isAutoScrollEnabled = false
+    // TODO Make this a setting with option UI
+    var panSpeed = 6f
 
     init {
         this.addListener(zoomListener)
@@ -261,23 +264,16 @@ open class ZoomableScrollPane(
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
         if (isAutoScrollEnabled && !Gdx.input.isTouched) {
-
-            val posX = Gdx.input.x
-            val posY = Gdx.input.y
-
-            if (posX <= 2f) {
-                scrollX -= 3f
-            } else if (posX >= stage.viewport.screenWidth - 2f) {
-                scrollX += 3f
+            fun getPanDelta(pos: Int, max: Int): Float {
+                if (pos < 8) return (pos - 8) / 6f  // negative!
+                if (pos > max - 8) return (8 - max + pos) / 6f
+                return 0f
             }
-
-            if (posY <= 6f) {
-                scrollY -= 3f
-            } else if (posY >= stage.viewport.screenHeight - 6f) {
-                scrollY += 3f
-            }
-
-            updateVisualScroll()
+            doKeyOrMousePanning(
+                getPanDelta(Gdx.input.x, stage.viewport.screenWidth),
+                // Gdx.input.y works opposite to the Gdx world coords - origin on top
+                -getPanDelta(Gdx.input.y, stage.viewport.screenHeight)
+            )
         }
         super.draw(batch, parentAlpha)
     }
@@ -292,15 +288,6 @@ open class ZoomableScrollPane(
             setScrollbarsVisible(true)
             scrollX = restrictX(deltaX)
             scrollY = restrictY(deltaY)
-
-            when {
-                continuousScrollingX && scrollPercentX >= 1 && deltaX < 0 -> {
-                    scrollPercentX = 0f
-                }
-                continuousScrollingX && scrollPercentX <= 0 && deltaX > 0-> {
-                    scrollPercentX = 1f
-                }
-            }
 
             //clamp() call is missing here but it doesn't seem to make any big difference in this case
 
@@ -317,7 +304,21 @@ open class ZoomableScrollPane(
     }
 
     open fun restrictX(deltaX: Float): Float = scrollX - deltaX
-    open fun restrictY(deltaY:Float): Float = scrollY + deltaY
+    open fun restrictY(deltaY: Float): Float = scrollY + deltaY
+
+    /**
+     * Perform keyboard WASD or mouse-at-edge panning.
+     *
+     * Positive [deltaX] means move Viewport to the right.
+     * Positive [deltaY] means move Viewport up.
+     */
+    fun doKeyOrMousePanning(deltaX: Float, deltaY: Float) {
+        if (deltaX == 0f && deltaY == 0f) return
+        val amountToMove = -panSpeed / scaleX  // Invert as "move Viewport" is opposite of "move Scroll edge"
+        scrollX = restrictX(deltaX * amountToMove)
+        scrollY = restrictY(deltaY * amountToMove)
+        updateVisualScroll()
+    }
 
     override fun getFlickScrollListener(): ActorGestureListener {
         return FlickScrollListener()

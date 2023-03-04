@@ -39,9 +39,10 @@ class EditorMapHolder(
     private var savedCaptureListeners = emptyList<EventListener>()
     private var savedListeners = emptyList<EventListener>()
 
+    override val continuousScrollingX = tileMap.mapParameters.worldWrap
+
     init {
         if (editorScreen == null) touchable = Touchable.disabled
-        continuousScrollingX = tileMap.mapParameters.worldWrap
         addTiles(parentScreen.stage)
         if (editorScreen != null) addCaptureListener(getDragPaintListener())
         reloadMaxZoom()

@@ -305,15 +305,17 @@ class WorldScreen(
                     }
 
                     fun whileKeyPressedLoop() {
+                        var deltaX = 0f
+                        var deltaY = 0f
                         for (keycode in pressedKeys) {
                             when (keycode) {
-                                Input.Keys.W, Input.Keys.UP -> mapHolder.scrollY = mapHolder.restrictY(-amountToMove)
-                                Input.Keys.S, Input.Keys.DOWN -> mapHolder.scrollY = mapHolder.restrictY(amountToMove)
-                                Input.Keys.A, Input.Keys.LEFT -> mapHolder.scrollX = mapHolder.restrictX(amountToMove)
-                                Input.Keys.D, Input.Keys.RIGHT -> mapHolder.scrollX = mapHolder.restrictX(-amountToMove)
+                                Input.Keys.W, Input.Keys.UP -> deltaY += 1f
+                                Input.Keys.S, Input.Keys.DOWN -> deltaY -= 1f
+                                Input.Keys.A, Input.Keys.LEFT -> deltaX -= 1f
+                                Input.Keys.D, Input.Keys.RIGHT -> deltaX += 1f
                             }
                         }
-                        mapHolder.updateVisualScroll()
+                        mapHolder.doKeyOrMousePanning(deltaX, deltaY)
                     }
 
                     override fun keyUp(event: InputEvent?, keycode: Int): Boolean {
