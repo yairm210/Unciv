@@ -1,3 +1,37 @@
+## 4.5.3
+
+Solved 'cannot start game' errors - 'always true' conditionals do not affect 'getMatchingUniques'
+
+Added 'after which this unit is consumed' for units whose only purpose is limited actions
+
+Added 'once' unit action modifier, effectively equal to '[1] times'
+
+Added limited usage for actions!
+
+chore: renames
+
+Replace unit action for timed golden ages with a generic triggered unique
+
+chore: Added explicit unit consumption to Settlers' Found City unique
+
+'founds a new city' now accepts action modifiers
+
+Added 'for [amount] movement' unit action modifier
+
+I would to maintain bel lang.  - By monodevx
+
+Android: "Screen Mode" option  - By vegeta1k95
+
+By SomeTroglodyte:
+- Better Religion info and some moddability 
+- Diplomacy trade layout fix 
+- Show terrain overriding yields in Civilopedia 
+- Simplify method `TileMap.getTilesInRectangle` 
+
+Fixed setPassword body is compressed  - By GGGuenni
+
+DragPaintListener fix  - By Gualdimar
+
 ## 4.5.2
 
 Show death symbol next to actions that expend the unit
