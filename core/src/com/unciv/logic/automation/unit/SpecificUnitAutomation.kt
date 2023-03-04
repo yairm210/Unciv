@@ -366,7 +366,7 @@ object SpecificUnitAutomation {
             && (cityToConvert == holyCity
                 || pressureDeficit > Constants.aiPreferInquisitorOverMissionaryPressureDifference
                 || cityToConvert.religion.isBlockedHolyCity && cityToConvert.religion.religionThisIsTheHolyCityOf == civReligion?.name
-            ) && unit.canDoReligiousAction(Constants.removeHeresy) -> {
+            ) && unit.canDoLimitedAction(Constants.removeHeresy) -> {
                 cityToConvert.getCenterTile()
             }
             cityToProtect != null && unit.hasUnique(UniqueType.PreventSpreadingReligion) -> {
@@ -398,7 +398,7 @@ object SpecificUnitAutomation {
     private fun determineBestInquisitorCityToConvert(
         unit: MapUnit,
     ): City? {
-        if (unit.religion != unit.civ.religionManager.religion?.name || !unit.canDoReligiousAction(Constants.removeHeresy))
+        if (unit.religion != unit.civ.religionManager.religion?.name || !unit.canDoLimitedAction(Constants.removeHeresy))
             return null
 
         val holyCity = unit.civ.religionManager.getHolyCity()

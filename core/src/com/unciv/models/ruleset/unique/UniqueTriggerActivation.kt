@@ -164,8 +164,9 @@ object UniqueTriggerActivation {
                 civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Culture)
                 return true
             }
-            UniqueType.OneTimeEnterGoldenAge -> {
-                civInfo.goldenAges.enterGoldenAge()
+            UniqueType.OneTimeEnterGoldenAge, UniqueType.OneTimeEnterGoldenAgeTurns -> {
+                if (unique.type == UniqueType.OneTimeEnterGoldenAgeTurns) civInfo.goldenAges.enterGoldenAge(unique.params[0].toInt())
+                else civInfo.goldenAges.enterGoldenAge()
 
                 val notificationText = getNotificationText(notification, triggerNotificationText,
                     "You enter a Golden Age")
