@@ -44,6 +44,7 @@ fun displayTab(
             if (GUI.isWorldLoaded())
                 GUI.getMap().isAutoScrollEnabled = settings.mapAutoScroll
         }
+        addScrollSpeedSlider(this, settings, optionsPopup.selectBoxMinWidth)
     }
 
     optionsPopup.addCheckbox(this, "Show unit movement arrows", settings.showUnitMovements, true) { settings.showUnitMovements = it }
@@ -119,6 +120,20 @@ private fun addMinimapSizeSlider(table: Table, settings: GameSettings, selectBox
             GUI.setUpdateWorldOnNextRender()
     }
     table.add(minimapSlider).minWidth(selectBoxMinWidth).pad(10f).row()
+}
+
+private fun addScrollSpeedSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
+    table.add("Map scroll speed".toLabel()).left().fillX()
+
+    val scrollSpeedSlider = UncivSlider(
+        0f, 25f, 0.2f, initial = settings.mapAutoScrollSpeed
+    ) {
+        settings.mapAutoScrollSpeed = it
+        settings.save()
+        if (GUI.isWorldLoaded())
+            GUI.getMap().mapAutoScrollSpeed = settings.mapAutoScrollSpeed
+    }
+    table.add(scrollSpeedSlider).minWidth(selectBoxMinWidth).pad(10f).row()
 }
 
 private fun addUnitIconAlphaSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {

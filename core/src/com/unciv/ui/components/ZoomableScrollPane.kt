@@ -41,8 +41,8 @@ open class ZoomableScrollPane(
 
     /** Linked to `GameSettings.mapAutoScroll` "Map mouse auto-scroll" */
     var isAutoScrollEnabled = false
-    // TODO Make this a setting with option UI
-    var panSpeed = 6f
+    /** Linked to `GameSettings.mapAutoScrollSpeed` - used for keyboard and mouse-at-edge panning */
+    var mapAutoScrollSpeed = 6f
 
     init {
         this.addListener(zoomListener)
@@ -314,7 +314,7 @@ open class ZoomableScrollPane(
      */
     fun doKeyOrMousePanning(deltaX: Float, deltaY: Float) {
         if (deltaX == 0f && deltaY == 0f) return
-        val amountToMove = -panSpeed / scaleX  // Invert as "move Viewport" is opposite of "move Scroll edge"
+        val amountToMove = -mapAutoScrollSpeed / scaleX  // Invert as "move Viewport" is opposite of "move Scroll edge"
         scrollX = restrictX(deltaX * amountToMove)
         scrollY = restrictY(deltaY * amountToMove)
         updateVisualScroll()

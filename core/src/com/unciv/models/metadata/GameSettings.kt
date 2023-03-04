@@ -33,6 +33,7 @@ enum class ScreenWindow {
 class GameSettings {
 
     var mapAutoScroll: Boolean = false
+    var mapAutoScrollSpeed: Float = 6f
     var showWorkedTiles: Boolean = false
     var showResourcesAndImprovements: Boolean = true
     var showTileYields: Boolean = false

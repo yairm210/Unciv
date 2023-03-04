@@ -74,7 +74,11 @@ class WorldMapHolder(
     override val continuousScrollingX = tileMap.mapParameters.worldWrap
 
     init {
-        if (Gdx.app.type == Application.ApplicationType.Desktop) this.setFlingTime(0f)
+        if (Gdx.app.type == Application.ApplicationType.Desktop) {
+            this.setFlingTime(0f)
+            isAutoScrollEnabled = UncivGame.Current.settings.mapAutoScroll
+            mapAutoScrollSpeed = UncivGame.Current.settings.mapAutoScrollSpeed
+        }
         setupZoomPanListeners()
     }
 
