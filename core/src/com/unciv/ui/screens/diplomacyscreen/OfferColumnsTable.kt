@@ -59,7 +59,7 @@ class OfferColumnsTable(
 
         val isPortraitMode = screen.isNarrowerThan4to3()
 
-        val columnWidth = screen.getTradeColumnsWidth()
+        val columnWidth = screen.getTradeColumnsWidth() - 20f // Subtract padding: ours and OffersListScroll's
 
         if (!isPortraitMode) {
             // In landscape, arrange in 4 panels: ours left / theirs right ; items top / offers bottom.

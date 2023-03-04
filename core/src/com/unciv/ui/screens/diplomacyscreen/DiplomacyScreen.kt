@@ -944,8 +944,12 @@ class DiplomacyScreen(
         return goToOnMapButton
     }
 
-    /** Calculate a width for [TradeTable] two-column layout, called from [OfferColumnsTable] */
-    internal fun getTradeColumnsWidth() = (stage.width - leftSideScroll.width) / 2
+    /** Calculate a width for [TradeTable] two-column layout, called from [OfferColumnsTable]
+     *
+     *  _Caller is responsible to not exceed this **including its own padding**_
+     */
+    // Note breaking the rule above will squeeze the leftSideScroll to the left - cumulatively.
+    internal fun getTradeColumnsWidth() = (stage.width - leftSideScroll.width - 3f) / 2  // 3 for SplitPane handle
 
     override fun resize(width: Int, height: Int) {
         super.resize(width, height)
