@@ -153,7 +153,10 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
 
     private fun createMinimapTiles(tileSize: Float): List<MinimapTile> {
         val tiles = ArrayList<MinimapTile>()
-        val pad = mapHolder.tileMap.mapParameters.mapSize.radius * tileSize * 1.5f
+        val pad = if(mapHolder.tileMap.mapParameters.shape != MapShape.rectangular)
+                mapHolder.tileMap.mapParameters.mapSize.radius * tileSize * 1.5f
+            else
+                (mapHolder.tileMap.mapParameters.mapSize.width - 1) * tileSize * 0.75f
         val leftSide = if(civInfo != null) civInfo.exploredRegion.getMinimapLeft(tileSize) else -Float.MAX_VALUE
         for (tileInfo in mapHolder.tileMap.values) {
             if (civInfo?.exploredRegion?.isPositionInRegion(tileInfo.position) == false) continue
