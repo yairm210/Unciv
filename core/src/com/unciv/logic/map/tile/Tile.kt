@@ -178,15 +178,6 @@ open class Tile : IsPartOfGameInfoSerialization {
         return getTileImprovement()?.isGreatImprovement() == true
     }
 
-    fun containsUnpillagedGreatImprovement(): Boolean {
-        return getUnpillagedTileImprovement()?.isGreatImprovement() == true
-    }
-
-    fun containsUnfinishedGreatImprovement(): Boolean {
-        if (improvementInProgress == null) return false
-        return ruleset.tileImprovements[improvementInProgress!!]!!.isGreatImprovement()
-    }
-
     /** Returns military, civilian and air units in tile */
     fun getUnits() = sequence {
         if (militaryUnit != null) yield(militaryUnit!!)

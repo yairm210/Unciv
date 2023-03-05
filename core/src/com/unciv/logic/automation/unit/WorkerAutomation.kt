@@ -97,7 +97,7 @@ class WorkerAutomation(
      *
      *  value: The [BFS] searching from that city, whether successful or not.
      */
-    //todo: If BFS were to deal in vectors instead of TileInfos, we could copy this on cloning
+    //todo: If BFS were to deal in vectors instead of Tiles, we could copy this on cloning
     private val bfsCache = HashMap<Vector2, BFS>()
 
     //todo: UnitMovementAlgorithms.canReach still very expensive and could benefit from caching, it's not using BFS
@@ -235,7 +235,7 @@ class WorkerAutomation(
                 }
 
             while (true) {
-                for (cityTile in cityTilesToSeek.toList()) { // copy since we cahnge while running
+                for (cityTile in cityTilesToSeek.toList()) { // copy since we change while running
                     if (!bfs.hasReachedTile(cityTile)) continue
                     // we have a winner!
                     val pathToCity = bfs.getPathTo(cityTile)
@@ -370,12 +370,14 @@ class WorkerAutomation(
         }
         if (potentialTileImprovements.isEmpty()) return null
 
-        val uniqueImprovement = potentialTileImprovements.values.asSequence()
-            .filter { it.uniqueTo == civInfo.civName }
-            .maxByOrNull { Automation.rankStatsValue(it, unit.civ) }
+        fun getRankingWithImprovement(improvementName: String): Float {
+            val improvement = ruleSet.tileImprovements[improvementName]!!
+            val stats = tile.stats.getImprovementStats(improvement, civInfo, tile.getCity())
+            return Automation.rankStatsValue(stats, unit.civ)
+        }
 
         val bestBuildableImprovement = potentialTileImprovements.values.asSequence()
-            .map { Pair(it, Automation.rankStatsValue(it, civInfo)) }
+            .map { Pair(it, getRankingWithImprovement(it.name)) }
             .filter { it.second > 0f }
             .maxByOrNull { it.second }?.first
 
@@ -384,38 +386,34 @@ class WorkerAutomation(
         fun isUnbuildableAndRemovable(terrain: Terrain): Boolean = terrain.unbuildable
                 && ruleSet.tileImprovements.containsKey(Constants.remove + terrain.name)
 
+
         val improvementStringForResource: String? = when {
             tile.resource == null || !tile.hasViewableResource(civInfo) -> null
             tile.terrainFeatures.isNotEmpty()
                     && isUnbuildableAndRemovable(lastTerrain)
-                    && !tile.tileResource.getImprovements().contains(tile.improvement)
+                    && !tile.providesResources(civInfo)
                     && !isResourceImprovementAllowedOnFeature(tile, potentialTileImprovements) -> Constants.remove + lastTerrain.name
             else -> tile.tileResource.getImprovements().filter { it in potentialTileImprovements || it==tile.improvement }
-                .maxByOrNull { Automation.rankStatsValue(ruleSet.tileImprovements[it]!!, unit.civ) }
+                .maxByOrNull { getRankingWithImprovement(it) }
         }
 
+        // After gathering all the data, we conduct the hierarchy in one place
         val improvementString = when {
             tile.improvementInProgress != null -> tile.improvementInProgress!!
             improvementStringForResource != null -> if (improvementStringForResource==tile.improvement) null else improvementStringForResource
             // if this is a resource that HAS an improvement, but this unit can't build it, don't waste your time
             tile.resource != null && tile.tileResource.getImprovements().any() -> return null
-            tile.containsGreatImprovement() -> return null
-            tile.containsUnfinishedGreatImprovement() -> return null
+            bestBuildableImprovement == null -> null
 
-            // Defence is more important that civilian improvements
-            // While AI sucks in strategical placement of forts, allow a human does it manually
-            !civInfo.isHuman() && evaluateFortPlacement(tile, civInfo,false) -> Constants.fort
-            // I think we can assume that the unique improvement is better
-            uniqueImprovement != null && tile.improvementFunctions.canBuildImprovement(uniqueImprovement, civInfo)
-                -> uniqueImprovement.name
+            tile.improvement!=null && getRankingWithImprovement(tile.improvement!!) > getRankingWithImprovement(bestBuildableImprovement.name)
+                -> null // What we have is better, even if it's pillaged we should repair it
 
             lastTerrain.let {
                 isUnbuildableAndRemovable(it) &&
                         (Automation.rankStatsValue(it, civInfo) < 0 || it.hasUnique(UniqueType.NullifyYields) )
             } -> Constants.remove + lastTerrain.name
 
-            bestBuildableImprovement != null -> bestBuildableImprovement.name
-            else -> return null
+            else -> bestBuildableImprovement.name
         }
         return ruleSet.tileImprovements[improvementString] // For mods, the tile improvement may not exist, so don't assume.
     }
@@ -449,7 +447,7 @@ class WorkerAutomation(
             || tile.improvement == Constants.fort // don't build fort if it is already here
             || tile.hasViewableResource(civInfo) // don't build on resource tiles
             || tile.containsGreatImprovement() // don't build on great improvements (including citadel)
-            || tile.containsUnfinishedGreatImprovement()) return false
+        ) return false
 
         return true
     }
@@ -463,9 +461,9 @@ class WorkerAutomation(
         //todo Is the Citadel code dead anyway? If not - why does the nearestTiles check not respect the param?
 
         // build on our land only
-        if ((tile.owningCity?.civ != civInfo &&
+        if (tile.owningCity?.civ != civInfo &&
                     // except citadel which can be built near-by
-                    (!isCitadel || tile.neighbors.all { it.getOwner() != civInfo })) ||
+                    (!isCitadel || tile.neighbors.all { it.getOwner() != civInfo }) ||
             !isAcceptableTileForFort(tile)) return false
 
         // if this place is not perfect, let's see if there is a better one
