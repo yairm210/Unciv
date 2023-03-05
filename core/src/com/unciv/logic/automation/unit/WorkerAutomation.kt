@@ -3,7 +3,6 @@ package com.unciv.logic.automation.unit
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.map.HexMath
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.automation.civilization.NextTurnAutomation
@@ -12,6 +11,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.map.BFS
+import com.unciv.logic.map.HexMath
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
@@ -388,6 +388,7 @@ class WorkerAutomation(
             tile.resource == null || !tile.hasViewableResource(civInfo) -> null
             tile.terrainFeatures.isNotEmpty()
                     && isUnbuildableAndRemovable(lastTerrain)
+                    && !tile.tileResource.getImprovements().contains(tile.improvement)
                     && !isResourceImprovementAllowedOnFeature(tile, potentialTileImprovements) -> Constants.remove + lastTerrain.name
             else -> tile.tileResource.getImprovements().filter { it in potentialTileImprovements || it==tile.improvement }
                 .maxByOrNull { Automation.rankStatsValue(ruleSet.tileImprovements[it]!!, unit.civ) }

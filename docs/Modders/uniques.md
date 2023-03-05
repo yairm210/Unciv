@@ -22,6 +22,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Empire enters golden age"
 	Applicable to: Triggerable
 
+??? example  "Empire enters a [amount]-turn Golden Age"
+	Example: "Empire enters a [3]-turn Golden Age"
+
+	Applicable to: Triggerable
+
 ??? example  "Free Great Person"
 	Applicable to: Triggerable
 
@@ -1058,11 +1063,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "May enhance a religion"
 	Applicable to: Unit
 
-??? example  "Can start an [amount]-turn golden age"
-	Example: "Can start an [3]-turn golden age"
-
-	Applicable to: Unit
-
 ??? example  "Can be added to [comment] in the Capital"
 	Example: "Can be added to [comment] in the Capital"
 
@@ -1981,6 +1981,17 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;for [amount] movement&gt;"
 	Example: "&lt;for [3] movement&gt;"
 
+	Applicable to: UnitActionModifier
+
+??? example  "&lt;once&gt;"
+	Applicable to: UnitActionModifier
+
+??? example  "&lt;[amount] times&gt;"
+	Example: "&lt;[3] times&gt;"
+
+	Applicable to: UnitActionModifier
+
+??? example  "&lt;after which this unit is consumed&gt;"
 	Applicable to: UnitActionModifier
 
 

@@ -48,8 +48,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         return conditionalsApply(StateForConditionals(civInfo, city))
     }
 
-    fun conditionalsApply(state: StateForConditionals?): Boolean {
-        if (state == null) return conditionals.isEmpty()
+    fun conditionalsApply(state: StateForConditionals = StateForConditionals()): Boolean {
         if (state.ignoreConditionals) return true
         for (condition in conditionals) {
             if (!conditionalApplies(condition, state)) return false
@@ -227,7 +226,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.ourCombatant != null && state.ourCombatant.getHealth() < condition.params[0].toInt()
             UniqueType.ConditionalHasNotUsedOtherActions ->
                 state.unit != null &&
-                state.unit.run { religiousActionsUnitCanDo().all { abilityUsesLeft[it] == maxAbilityUses[it] } }
+                state.unit.run { limitedActionsUnitCanDo().all { abilityUsesLeft[it] == maxAbilityUses[it] } }
 
             UniqueType.ConditionalInTiles ->
                 relevantTile?.matchesFilter(condition.params[0], state.civInfo) == true
