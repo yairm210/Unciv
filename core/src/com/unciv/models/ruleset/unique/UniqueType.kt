@@ -351,7 +351,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     FoundCity("Founds a new city", UniqueTarget.Unit),
 
-    ConstructImprovementInstantly("Can instantly construct a [improvementName] improvement", UniqueTarget.Unit),
+    ConstructImprovementInstantly("Can instantly construct a [improvementFilter] improvement", UniqueTarget.Unit),
     @Deprecated("as of 4.5.2", ReplaceWith("Can instantly construct a [improvementName] improvement <by consuming this unit>"))
     ConstructImprovementConsumingUnit("Can construct [improvementName]", UniqueTarget.Unit),
     BuildImprovements("Can build [improvementFilter/terrainFilter] improvements on tiles", UniqueTarget.Unit),
@@ -726,7 +726,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     // Or just reword it without the 'up to', so it reads "Reveal [amount/'all'] [tileFilter] tiles within [amount] tiles"
     OneTimeRevealSpecificMapTiles("Reveal up to [amount/'all'] [tileFilter] within a [amount] tile radius", UniqueTarget.Ruins),
     OneTimeRevealCrudeMap("From a randomly chosen tile [amount] tiles away from the ruins, reveal tiles up to [amount] tiles away with [amount]% chance", UniqueTarget.Ruins),
-    OneTimeGlobalAlert("Triggers the following global alert: [comment]", UniqueTarget.Policy), // used in Policy
+    OneTimeGlobalAlert("Triggers the following global alert: [comment]", UniqueTarget.Triggerable), // used in Policy
     OneTimeGlobalSpiesWhenEnteringEra("Every major Civilization gains a spy once a civilization enters this era", UniqueTarget.Era),
 
     OneTimeUnitHeal("Heal this unit by [amount] HP", UniqueTarget.UnitTriggerable),
