@@ -544,7 +544,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             for (unit in civInfo.units.getCivUnits())
                 unit.updateVisibleTiles(false) // this needs to be done after all the units are assigned to their civs and all other transients are set
             if(civInfo.playerType == PlayerType.Human)
-                civInfo.exploredRegion.setMapParameters(tileMap.mapParameters.worldWrap, tileMap.mapParameters.mapSize.radius) // Required for the correct calculation of the explored region on world wrap maps
+                civInfo.exploredRegion.setMapParameters(tileMap.mapParameters) // Required for the correct calculation of the explored region on world wrap maps
             civInfo.cache.updateSightAndResources() // only run ONCE and not for each unit - this is a huge performance saver!
 
             // Since this depends on the cities of ALL civilizations,

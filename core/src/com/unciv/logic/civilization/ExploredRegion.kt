@@ -5,6 +5,8 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.map.HexMath.getLatitude
 import com.unciv.logic.map.HexMath.getLongitude
 import com.unciv.logic.map.HexMath.worldFromLatLong
+import com.unciv.logic.map.MapParameters
+import com.unciv.logic.map.MapShape
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import kotlin.math.abs
 
@@ -54,10 +56,13 @@ class ExploredRegion () : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    fun setMapParameters(worldWrap: Boolean, radius: Int)
-    {
-        isWorldWrap = worldWrap
-        mapRadius = radius.toFloat()
+    fun setMapParameters(mapParameters: MapParameters) {
+        isWorldWrap = mapParameters.worldWrap
+
+        if (mapParameters.shape == MapShape.rectangular)
+            mapRadius = (mapParameters.mapSize.width / 2).toFloat()
+        else
+            mapRadius = mapParameters.mapSize.radius.toFloat()
     }
 
     // Check if tilePosition is beyond explored region
