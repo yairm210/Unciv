@@ -1,5 +1,6 @@
 package com.unciv.ui.components.extensions
 
+import com.badlogic.gdx.math.Vector2
 import com.unciv.models.translations.tr
 import java.text.SimpleDateFormat
 import java.time.Duration
@@ -95,3 +96,5 @@ fun <T> String.filterCompositeLogic(predicate: (String) -> T?, operation: (T, T)
 fun String.filterAndLogic(predicate: (String) -> Boolean): Boolean? =
         if (contains('{')) filterCompositeLogic(predicate) { a, b -> a && b } else null
 
+/** Format a Vector2 like (0,0) instead of (0.0,0.0) like [toString][Vector2.toString] does */
+fun Vector2.toPrettyString(): String = "(${x.toInt()},${y.toInt()})"
