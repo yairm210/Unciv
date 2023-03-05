@@ -1,3 +1,25 @@
+## 4.5.4
+
+Fixed endless loop for mod checker
+
+Modding: global alert available as triggerable for all objects
+
+Better order of unit actions
+
+Resolves  - can only purchase units when not disabled by setting or otherwise
+
+Resolved  - action texts properly translated.
+
+Fixed flanking bonus calculation when attacking unit is not adjacent to enemy
+
+Resolve  - don't remove Forest tiles for Camp improvements
+
+Fix ExploredRegion rectangular maps support + Zoomout flicker prevention reworked  - By Gualdimar
+
+Make "Borderless" display option translatable  - By Ouaz
+
+Belarusian Locale for better sorting  - By SomeTroglodyte
+
 ## 4.5.3
 
 Unit Action moddability!
