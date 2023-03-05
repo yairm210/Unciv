@@ -12,10 +12,10 @@ import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.components.extensions.filterAndLogic
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import kotlin.math.pow
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
@@ -84,6 +84,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     override fun canBePurchasedWithStat(city: City?, stat: Stat): Boolean {
         if (city == null) return super.canBePurchasedWithStat(city, stat)
+        if (getRejectionReasons(city.civ, city).any { it.type != RejectionReasonType.Unbuildable  })
+            return false
         if (costFunctions.canBePurchasedWithStat(city, stat)) return true
         return super.canBePurchasedWithStat(city, stat)
     }
