@@ -1990,6 +1990,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: UnitActionModifier
 
+??? example  "&lt;[amount] additional time(s)&gt;"
+	Example: "&lt;[3] additional time(s)&gt;"
+
+	Applicable to: UnitActionModifier
+
 ??? example  "&lt;after which this unit is consumed&gt;"
 	Applicable to: UnitActionModifier
 
