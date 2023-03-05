@@ -1,6 +1,8 @@
 import com.unciv.build.BuildConfig.gdxVersion
 import com.unciv.build.BuildConfig.roboVMVersion
 
+val ktorVersion: String by project
+
 
 // You'll still get kotlin-reflect-1.3.70.jar in your classpath, but will no longer be used
 configurations.all { resolutionStrategy {
@@ -27,6 +29,18 @@ buildscript {
         classpath("com.mobidevelop.robovm:robovm-gradle-plugin:2.3.1")
     }
 }
+
+// Fixes the error "Please initialize at least one Kotlin target in 'Unciv (:)'"
+kotlin {
+    jvm()
+}
+
+// Plugins used for serialization of JSON for networking
+plugins {
+    kotlin("multiplatform") version "1.8.10"
+    kotlin("plugin.serialization") version "1.8.10"
+}
+
 
 allprojects {
     apply(plugin = "eclipse")
@@ -113,11 +127,28 @@ project(":ios") {
 
 project(":core") {
     apply(plugin = "kotlin")
+    // Serialization features (especially JSON)
+    apply(plugin = "kotlinx-serialization")
 
     dependencies {
         "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
         "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
         "implementation"("org.jetbrains.kotlin:kotlin-reflect:${com.unciv.build.BuildConfig.kotlinVersion}")
+
+        // Ktor core
+        "implementation"("io.ktor:ktor-client-core:$ktorVersion")
+        // CIO engine
+        "implementation"("io.ktor:ktor-client-cio:$ktorVersion")
+        // WebSocket support
+        "implementation"("io.ktor:ktor-client-websockets:$ktorVersion")
+        // Gzip transport encoding
+        "implementation"("io.ktor:ktor-client-encoding:$ktorVersion")
+        // Logging support
+        "implementation"("io.ktor:ktor-client-logging:$ktorVersion")
+        // Content negotiation
+        "implementation"("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+        // JSON serialization and de-serialization
+        "implementation"("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     }
 
 
