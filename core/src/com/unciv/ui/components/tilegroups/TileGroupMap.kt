@@ -61,6 +61,8 @@ class TileGroupMap<T: TileGroup>(
     private var drawTopX = 0f
     private var drawBottomX = 0f
 
+    private var maxVisibleMapWidth = 0f
+
     init {
 
         for (tileGroup in tileGroups) {
@@ -141,6 +143,8 @@ class TileGroupMap<T: TileGroup>(
         else setSize(topX - bottomX, topY - bottomY)
 
         cullingArea = Rectangle(0f, 0f, width, height)
+
+        maxVisibleMapWidth = width - groupSize * 1.5f
     }
 
     /**
@@ -169,7 +173,7 @@ class TileGroupMap<T: TileGroup>(
 
         if (worldWrap) {
             // Prevent flickering when zoomed out so you can see entire map
-            val visibleMapWidth = if (mapHolder.width > width) width - groupSize * 1.75f
+            val visibleMapWidth = if (mapHolder.width > maxVisibleMapWidth) maxVisibleMapWidth
                 else mapHolder.width
 
             // Where is viewport's boundaries
