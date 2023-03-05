@@ -738,7 +738,7 @@ object UnitActions {
     fun actionTextWithSideEffects(originalText:String, actionUnique: Unique, unit: MapUnit): String {
         val sideEffectString = getSideEffectString(unit, actionUnique)
         if (sideEffectString == "") return originalText
-        else return "$originalText $sideEffectString"
+        else return "{$originalText} $sideEffectString"
     }
 
     fun getSideEffectString(unit:MapUnit, actionUnique: Unique): String {
