@@ -75,7 +75,7 @@ enum class UniqueParameterType(
         private val knownValues = setOf("Wounded", Constants.barbarians, "City-State", "Embarked", "Non-City")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
-            if ('{' in parameterText) // "{filter} {filter}" for and logic
+            if (parameterText.startsWith('{')) // "{filter} {filter}" for and logic
                 return parameterText.filterCompositeLogic({ getErrorSeverity(it, ruleset) }) { a, b -> maxOf(a, b) }
             if (parameterText in knownValues) return null
             if (ruleset.unitPromotions.values.any { it.hasUnique(parameterText) })
@@ -89,7 +89,7 @@ enum class UniqueParameterType(
     BaseUnitFilter("baseUnitFilter", "Melee") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
-            if ('{' in parameterText) // "{filter} {filter}" for and logic
+            if (parameterText.startsWith('{')) // "{filter} {filter}" for and logic
                 return parameterText.filterCompositeLogic({ getErrorSeverity(it, ruleset) }) { a, b -> maxOf(a, b) }
             if (UnitName.getErrorSeverity(parameterText, ruleset) == null) return null
             if (ruleset.units.values.any { it.uniques.contains(parameterText) }) return null
