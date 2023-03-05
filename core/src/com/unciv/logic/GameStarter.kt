@@ -333,7 +333,7 @@ object GameStarter {
             .filterNotNull()
             .flatMap { it.getMatchingUniques(UniqueType.EnsureMinimumStats, StateForConditionals.IgnoreConditionals) }
             .firstOrNull()
-            ?.stats ?: Stats(food = 2f, production = 1f)
+            ?.stats ?: Stats.DefaultCityCenterMinimum
 
         val startScores = HashMap<Tile, Float>(tileMap.values.size)
         for (tile in tileMap.values) {

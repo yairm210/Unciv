@@ -19,7 +19,7 @@ class TileStatFunctions(val tile: Tile) {
                      localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)
     ): Stats {
         val stats = getTerrainStats()
-        var minimumStats = Stats()
+        var minimumStats = if (tile.isCityCenter()) Stats.DefaultCityCenterMinimum else Stats.ZERO
 
         val stateForConditionals = StateForConditionals(civInfo = observingCiv, city = city, tile = tile)
 
@@ -136,11 +136,10 @@ class TileStatFunctions(val tile: Tile) {
     }
 
     fun getTileStartScore(cityCenterMinStats: Stats): Float {
-        val zeroStats = Stats()
         var sum = 0f
         for (closeTile in tile.getTilesInDistance(2)) {
             val tileYield = closeTile.stats.getTileStartYield(
-                if (closeTile == tile) cityCenterMinStats else zeroStats
+                if (closeTile == tile) cityCenterMinStats else Stats.ZERO
             )
             sum += tileYield
             if (closeTile in tile.neighbors)
