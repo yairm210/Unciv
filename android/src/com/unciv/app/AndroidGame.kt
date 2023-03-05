@@ -24,6 +24,7 @@ class AndroidGame : UncivGame() {
              * changes, but also on other things. So we need to check if that was actually
              * the thing that changed. */
             private var lastFrame: Rect? = null
+            private var lastVisibleStage: Rectangle? = null
 
             override fun onGlobalLayout() {
 
@@ -32,10 +33,6 @@ class AndroidGame : UncivGame() {
 
                 val currentFrame = Rect()
                 contentView.getWindowVisibleDisplayFrame(currentFrame)
-
-                if (lastFrame == currentFrame)
-                    return
-                lastFrame = currentFrame
 
                 val stage = (screen as BaseScreen).stage
                 val horizontalRatio = stage.width / contentView.width
@@ -50,6 +47,11 @@ class AndroidGame : UncivGame() {
                     currentFrame.width() * horizontalRatio,
                     currentFrame.height() * verticalRatio
                 )
+
+                if (lastFrame == currentFrame && lastVisibleStage == visibleStage)
+                    return
+                lastFrame = currentFrame
+                lastVisibleStage = visibleStage
 
                 Concurrency.runOnGLThread {
                     EventBus.send(UncivStage.VisibleAreaChanged(visibleStage))

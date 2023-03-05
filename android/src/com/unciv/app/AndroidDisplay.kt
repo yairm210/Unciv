@@ -2,13 +2,17 @@ package com.unciv.app
 
 import android.app.Activity
 import android.content.pm.ActivityInfo
+import android.database.ContentObserver
 import android.os.Build
+import android.os.Handler
+import android.provider.Settings
 import android.view.Display
 import android.view.Display.Mode
 import android.view.WindowManager
 import androidx.annotation.RequiresApi
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.translations.tr
+import com.unciv.utils.Log
 import com.unciv.utils.PlatformDisplay
 import com.unciv.utils.ScreenMode
 import com.unciv.utils.ScreenOrientation
@@ -121,7 +125,7 @@ class AndroidDisplay(private val activity: Activity) : PlatformDisplay {
         val mode = when (orientation) {
             ScreenOrientation.Landscape -> ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE
             ScreenOrientation.Portrait -> ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT
-            ScreenOrientation.Dynamic -> ActivityInfo.SCREEN_ORIENTATION_USER
+            ScreenOrientation.Auto -> ActivityInfo.SCREEN_ORIENTATION_SENSOR
         }
 
         // Ensure ActivityTaskManager.getService().setRequestedOrientation isn't called unless necessary!

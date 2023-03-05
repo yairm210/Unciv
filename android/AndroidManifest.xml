@@ -32,7 +32,7 @@
             android:launchMode="singleTask"
             android:exported="true"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:screenOrientation="landscape"
+            android:screenOrientation="userLandscape"
             tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
