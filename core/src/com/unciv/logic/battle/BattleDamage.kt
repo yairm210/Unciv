@@ -111,7 +111,7 @@ object BattleDamage {
 
         if (attacker is MapUnitCombatant) {
             if (attacker.unit.isEmbarked()
-                    && !(attacker.unit.hasUnique(UniqueType.AttackAcrossCoast)))
+                    && !attacker.unit.hasUnique(UniqueType.AttackAcrossCoast))
                 modifiers["Landing"] = -50
 
             // Land Melee Unit attacking to Water
@@ -127,17 +127,17 @@ object BattleDamage {
                 modifiers.add(getAirSweepAttackModifiers(attacker))
 
             if (attacker.isMelee()) {
-                val numberOfAttackersSurroundingDefender = defender.getTile().neighbors.count {
-                    it.militaryUnit != null
+                val numberOfOtherAttackersSurroundingDefender = defender.getTile().neighbors.count {
+                    it.militaryUnit != null && it.militaryUnit != attacker.unit
                             && it.militaryUnit!!.owner == attacker.getCivInfo().civName
                             && MapUnitCombatant(it.militaryUnit!!).isMelee()
                 }
-                if (numberOfAttackersSurroundingDefender > 1) {
+                if (numberOfOtherAttackersSurroundingDefender > 0) {
                     var flankingBonus = 10f //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
                     for (unique in attacker.unit.getMatchingUniques(UniqueType.FlankAttackBonus, checkCivInfoUniques = true))
                         flankingBonus *= unique.params[0].toPercent()
                     modifiers["Flanking"] =
-                        (flankingBonus * (numberOfAttackersSurroundingDefender - 1)).toInt()
+                        (flankingBonus * numberOfOtherAttackersSurroundingDefender).toInt()
                 }
                 if (attacker.getTile().aerialDistanceTo(defender.getTile()) == 1 &&
                         attacker.getTile().isConnectedByRiver(defender.getTile()) &&
