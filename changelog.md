@@ -1,3 +1,39 @@
+## 4.5.4
+
+Fixed endless loop for mod checker
+
+Modding: global alert available as triggerable for all objects
+
+Better order of unit actions
+
+Better checks for when units are purchasable
+
+Fixed flanking bonus calculation when attacking unit is not adjacent to enemy
+
+Automated workers do not remove Forest tiles for Camp improvements
+
+Fix ExploredRegion rectangular maps support + Zoomout flicker prevention reworked  - By Gualdimar
+
+Make "Borderless" display option translatable  - By Ouaz
+
+## 4.5.3
+
+Unit Action moddability!
+- 'founds a new city' now accepts action modifiers
+- 'for [amount] movement' modifier
+- '[amount] times', 'once', 'after which this unit is consumed'  modifiers for limited actions
+
+Android: "Screen Mode" option  - By vegeta1k95
+
+By SomeTroglodyte:
+- Better Religion info and some moddability
+- Diplomacy trade layout fix
+- Show terrain overriding yields in Civilopedia
+
+Fixed multiplayer password  - By GGGuenni
+
+Fixed map editor painting while dragging - By Gualdimar
+
 ## 4.5.2
 
 Show death symbol next to actions that expend the unit

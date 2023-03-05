@@ -74,9 +74,11 @@ class Terrain : RulesetStatsObject() {
         }
 
         val stats = cloneStats()
-        if (!stats.isEmpty()) {
+        if (!stats.isEmpty() || overrideStats) {
             textList += FormattedLine()
-            textList += FormattedLine("$stats")
+            textList += FormattedLine(if (stats.isEmpty()) "No yields" else "$stats")
+            if (overrideStats)
+                textList += FormattedLine("Overrides yields from underlying terrain")
         }
 
         if (occursOn.isNotEmpty() && !hasUnique(UniqueType.NoNaturalGeneration)) {

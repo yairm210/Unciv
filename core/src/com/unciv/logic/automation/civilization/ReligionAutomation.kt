@@ -41,7 +41,7 @@ object ReligionAutomation {
         val citiesWithoutOurReligion = civInfo.cities.filter { it.religion.getMajorityReligion() != civInfo.religionManager.religion!! }
         // The original had a cap at 4 missionaries total, but 1/4 * the number of cities should be more appropriate imo
         if (citiesWithoutOurReligion.count() >
-            4 * civInfo.units.getCivUnits().count { it.canDoReligiousAction(Constants.spreadReligion) || it.canDoReligiousAction(Constants.removeHeresy) }
+            4 * civInfo.units.getCivUnits().count { it.canDoLimitedAction(Constants.spreadReligion) || it.canDoLimitedAction(Constants.removeHeresy) }
         ) {
             val (city, pressureDifference) = citiesWithoutOurReligion.map { city ->
                 city to city.religion.getPressureDeficit(civInfo.religionManager.religion?.name)
@@ -77,7 +77,7 @@ object ReligionAutomation {
         // Todo: buy Great People post industrial era
 
         // Just buy missionaries to spread our religion outside of our civ
-        if (civInfo.units.getCivUnits().count { it.canDoReligiousAction(Constants.spreadReligion) } < 4) {
+        if (civInfo.units.getCivUnits().count { it.canDoLimitedAction(Constants.spreadReligion) } < 4) {
             buyMissionaryInAnyCity(civInfo)
             return
         }
@@ -160,7 +160,7 @@ object ReligionAutomation {
     private fun buyInquisitorNear(civInfo: Civilization, city: City) {
         if (civInfo.religionManager.religionState < ReligionState.Religion) return
         var inquisitors = civInfo.gameInfo.ruleset.units.values.filter {
-            it.getMapUnit(civInfo).canDoReligiousAction(Constants.removeHeresy)
+            it.getMapUnit(civInfo).canDoLimitedAction(Constants.removeHeresy)
             || it.hasUnique(UniqueType.PreventSpreadingReligion)
         }
 

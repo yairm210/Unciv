@@ -22,6 +22,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Empire enters golden age"
 	Applicable to: Triggerable
 
+??? example  "Empire enters a [amount]-turn Golden Age"
+	Example: "Empire enters a [3]-turn Golden Age"
+
+	Applicable to: Triggerable
+
 ??? example  "Free Great Person"
 	Applicable to: Triggerable
 
@@ -84,6 +89,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Gain enough Faith for [amount]% of a Great Prophet"
 	Example: "Gain enough Faith for [3]% of a Great Prophet"
+
+	Applicable to: Triggerable
+
+??? example  "Triggers the following global alert: [comment]"
+	Example: "Triggers the following global alert: [comment]"
 
 	Applicable to: Triggerable
 
@@ -868,12 +878,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Cannot be hurried"
 	Applicable to: Tech, Building
 
-## Policy uniques
-??? example  "Triggers the following global alert: [comment]"
-	Example: "Triggers the following global alert: [comment]"
-
-	Applicable to: Policy
-
 ## FounderBelief uniques
 ??? example  "[stats] for each global city following this religion"
 	Example: "[+1 Gold, +2 Production] for each global city following this religion"
@@ -1039,8 +1043,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Founds a new city"
 	Applicable to: Unit
 
-??? example  "Can instantly construct a [improvementName] improvement"
-	Example: "Can instantly construct a [Trading Post] improvement"
+??? example  "Can instantly construct a [improvementFilter] improvement"
+	Example: "Can instantly construct a [All Road] improvement"
 
 	Applicable to: Unit
 
@@ -1056,11 +1060,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "May enhance a religion"
-	Applicable to: Unit
-
-??? example  "Can start an [amount]-turn golden age"
-	Example: "Can start an [3]-turn golden age"
-
 	Applicable to: Unit
 
 ??? example  "Can be added to [comment] in the Capital"
@@ -1981,6 +1980,22 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;for [amount] movement&gt;"
 	Example: "&lt;for [3] movement&gt;"
 
+	Applicable to: UnitActionModifier
+
+??? example  "&lt;once&gt;"
+	Applicable to: UnitActionModifier
+
+??? example  "&lt;[amount] times&gt;"
+	Example: "&lt;[3] times&gt;"
+
+	Applicable to: UnitActionModifier
+
+??? example  "&lt;[amount] additional time(s)&gt;"
+	Example: "&lt;[3] additional time(s)&gt;"
+
+	Applicable to: UnitActionModifier
+
+??? example  "&lt;after which this unit is consumed&gt;"
 	Applicable to: UnitActionModifier
 
 
