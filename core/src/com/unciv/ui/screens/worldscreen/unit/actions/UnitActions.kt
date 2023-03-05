@@ -41,23 +41,6 @@ object UnitActions {
         val tile = unit.getTile()
         val actionList = ArrayList<UnitAction>()
 
-        if (unit.isMoving())
-            actionList += UnitAction(UnitActionType.StopMovement) { unit.action = null }
-        if (unit.isExploring())
-            actionList += UnitAction(UnitActionType.StopExploration) { unit.action = null }
-        if (unit.isAutomated())
-            actionList += UnitAction(UnitActionType.StopAutomation) { unit.action = null }
-
-        addSleepActions(actionList, unit, false)
-        addFortifyActions(actionList, unit, false)
-
-        addPromoteAction(unit, actionList)
-        UnitActionsUpgrade.addUnitUpgradeAction(unit, actionList)
-        UnitActionsPillage.addPillageAction(unit, actionList)
-        addExplorationActions(unit, actionList)
-        addWaitAction(unit, actionList)
-        addToggleActionsAction(unit, actionList)
-
         // Determined by unit uniques
         addTransformAction(unit, actionList)
         addParadropAction(unit, actionList)
@@ -76,6 +59,26 @@ object UnitActions {
         addTriggerUniqueActions(unit, actionList)
         addAddInCapitalAction(unit, actionList, tile)
 
+        if (unit.isMoving())
+            actionList += UnitAction(UnitActionType.StopMovement) { unit.action = null }
+        if (unit.isExploring())
+            actionList += UnitAction(UnitActionType.StopExploration) { unit.action = null }
+        if (unit.isAutomated())
+            actionList += UnitAction(UnitActionType.StopAutomation) { unit.action = null }
+
+        addPromoteAction(unit, actionList)
+        UnitActionsUpgrade.addUnitUpgradeAction(unit, actionList)
+        UnitActionsPillage.addPillageAction(unit, actionList)
+        addSleepActions(actionList, unit, false)
+        addFortifyActions(actionList, unit, false)
+
+
+        if (unit.isMilitary()) addExplorationActions(unit, actionList)
+
+        addWaitAction(unit, actionList)
+
+        addToggleActionsAction(unit, actionList)
+
         return actionList
     }
 
@@ -89,6 +92,7 @@ object UnitActions {
         addSwapAction(unit, actionList)
         addDisbandAction(actionList, unit)
         addGiftAction(unit, actionList, tile)
+        if (unit.isCivilian()) addExplorationActions(unit, actionList)
 
 
         addToggleActionsAction(unit, actionList)
