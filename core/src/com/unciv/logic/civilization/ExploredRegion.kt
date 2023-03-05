@@ -13,7 +13,7 @@ import kotlin.math.abs
 class ExploredRegion () : IsPartOfGameInfoSerialization {
 
     @Transient
-    private var isWorldWrap = false
+    private var worldWrap = false
 
     @Transient
     private var mapRadius = 0f
@@ -61,7 +61,7 @@ class ExploredRegion () : IsPartOfGameInfoSerialization {
     }
 
     fun setMapParameters(mapParameters: MapParameters) {
-        isWorldWrap = mapParameters.worldWrap
+        this.worldWrap = mapParameters.worldWrap
 
         if (mapParameters.shape == MapShape.rectangular)
             mapRadius = (mapParameters.mapSize.width / 2).toFloat()
@@ -86,12 +86,12 @@ class ExploredRegion () : IsPartOfGameInfoSerialization {
         if (topLeft.x >= bottomRight.x) {
             if (longitude > topLeft.x) {
                 // For world wrap maps when the maximumX is reached, we move to a minimumX - 1f
-                if (isWorldWrap && longitude == mapRadius) longitude = mapRadius * -1f
+                if (worldWrap && longitude == mapRadius) longitude = mapRadius * -1f
                 topLeft.x = longitude
                 mapExplored = true
             } else if (longitude < bottomRight.x) {
                 // For world wrap maps when the minimumX is reached, we move to a maximumX + 1f
-                if (isWorldWrap && longitude == (mapRadius * -1f + 1f)) longitude = mapRadius + 1f
+                if (worldWrap && longitude == (mapRadius * -1f + 1f)) longitude = mapRadius + 1f
                 bottomRight.x = longitude
                 mapExplored = true
             }
@@ -160,7 +160,7 @@ class ExploredRegion () : IsPartOfGameInfoSerialization {
         val bottomRightWorld = worldFromLatLong(bottomRight, tileRadius)
 
         // Convert X to the stage coords
-        val mapCenterX = if (isWorldWrap) mapMaxX * 0.5f + tileRadius else mapMaxX * 0.5f
+        val mapCenterX = if (worldWrap) mapMaxX * 0.5f + tileRadius else mapMaxX * 0.5f
         var left = mapCenterX + topLeftWorld.x
         var right = mapCenterX + bottomRightWorld.x
 
@@ -189,14 +189,14 @@ class ExploredRegion () : IsPartOfGameInfoSerialization {
     fun getWidth(): Int {
         val result: Float
         if (topLeft.x > bottomRight.x) result = topLeft.x - bottomRight.x
-        else result = mapRadius * 2f - (bottomRight.x - topLeft.x)
-        return result.toInt()
+        else result = mapRadius * 2 - (bottomRight.x - topLeft.x)
+        return result.toInt() + 1
     }
 
-    fun getHeight(): Int = ((topLeft.y - bottomRight.y)/2).toInt()
+    fun getHeight(): Int = (topLeft.y - bottomRight.y).toInt() + 1
 
     fun getMinimapLeft(tileSize: Float): Float {
         shouldUpdateMinimap = false
-        return (topLeft.x + 1f) * tileSize * -1f
+        return (topLeft.x + 1) * tileSize * -0.75f
     }
 }
