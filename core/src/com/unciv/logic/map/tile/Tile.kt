@@ -495,6 +495,20 @@ open class Tile : IsPartOfGameInfoSerialization {
         return fertility
     }
 
+    fun providesResources(civInfo: Civilization): Boolean {
+        if (!hasViewableResource(civInfo)) return false
+        if (isCityCenter()) return true
+        val improvement = getUnpillagedTileImprovement()
+        if (improvement != null && improvement.name in tileResource.getImprovements()
+                && (improvement.techRequired==null || civInfo.tech.isResearched(improvement.techRequired!!))) return true
+        // TODO: Generic-ify to unique
+        if (tileResource.resourceType==ResourceType.Strategic
+                && improvement!=null
+                && improvement.isGreatImprovement())
+            return true
+        return false
+    }
+
     // This should be the only adjacency function
     fun isAdjacentTo(terrainFilter:String): Boolean {
         // Rivers are odd, as they aren't technically part of any specific tile but still count towards adjacency
