@@ -67,5 +67,22 @@ jobs:
           ./gradlew :android:bundleDebug
           ./gradlew :android:assembleDebug
 
-      - name: Print all known files for debugging
-        run: find | sort
+      - name: Collect artifacts
+        run: |
+          rm -vrf artifacts && mkdir artifacts
+          mv android/build/outputs/apk/*/*.apk android/build/outputs/bundle/*/*.aab desktop/build/libs/*.jar server/build/libs/*.jar artifacts
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Build
+          path: artifacts
+          retention-days: 3
+
+      - name: Upload the current working directory if the build failed
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: Current-Workspace
+          path: .
+          retention-days: 1
