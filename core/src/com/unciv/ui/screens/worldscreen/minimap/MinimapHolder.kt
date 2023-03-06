@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.images.ImageGetter
@@ -48,6 +49,8 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     }
 
     private fun rebuildIfSizeChanged(civInfo: Civilization? = null) {
+        var civInfo = civInfo
+        if(civInfo != null && GUI.getViewingPlayer().isSpectator()) civInfo = null
         val newMinimapSize = worldScreen.game.settings.minimapSize
         if (newMinimapSize == minimapSize && civInfo?.exploredRegion?.shouldUpdateMinimap() != true) return
         minimapSize = newMinimapSize
