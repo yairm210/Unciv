@@ -2,12 +2,14 @@ package com.unciv.models.metadata
 
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.utils.Base64Coder
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.UncivSound
 import com.unciv.ui.components.FontFamilyData
 import com.unciv.ui.components.Fonts
+import com.unciv.utils.ScreenOrientation
 import java.text.Collator
 import java.time.Duration
 import java.util.*
@@ -22,11 +24,6 @@ enum class ScreenSize(val virtualWidth:Float, val virtualHeight:Float){
     Medium(1050f,700f),
     Large(1200f,800f),
     Huge(1500f,1000f)
-}
-
-enum class ScreenWindow {
-    Windowed,
-    Fullscreen
 }
 
 class GameSettings {
@@ -46,7 +43,7 @@ class GameSettings {
     @Deprecated("Since 4.3.6 - replaces with screenSize")
     var resolution: String = "900x600"
     var screenSize:ScreenSize = ScreenSize.Small
-    var screenWindow: ScreenWindow = ScreenWindow.Windowed
+    var screenMode: Int = 0
     var tutorialsShown = HashSet<String>()
     var tutorialTasksCompleted = HashSet<String>()
 
@@ -92,7 +89,8 @@ class GameSettings {
 
     var lastOverviewPage: String = "Cities"
 
-    var allowAndroidPortrait = false    // Opt-in to allow Unciv to follow a screen rotation to portrait
+    /** Orientation for mobile platforms */
+    var displayOrientation = ScreenOrientation.Landscape
 
     /** Saves the last successful new game's setup */
     var lastGameSetup: GameSetupInfo? = null
@@ -153,28 +151,11 @@ class GameSettings {
     fun getCollatorFromLocale(): Collator {
         return Collator.getInstance(getCurrentLocale())
     }
-
-    fun refreshScreenMode() {
-
-        if (Gdx.app.type != Application.ApplicationType.Desktop)
-            return
-
-        when (screenWindow) {
-            ScreenWindow.Windowed -> {
-                Gdx.graphics.setWindowedMode(
-                    windowState.width.coerceAtLeast(120),
-                    windowState.height.coerceAtLeast(80))
-            }
-
-            ScreenWindow.Fullscreen -> {
-                Gdx.graphics.setFullscreenMode(Gdx.graphics.displayMode)
-            }
-        }
-    }
 }
 
 enum class LocaleCode(var language: String, var country: String) {
     Arabic("ar", "IQ"),
+    Belarusian("be", "BY"),
     BrazilianPortuguese("pt", "BR"),
     Bulgarian("bg", "BG"),
     Catalan("ca", "ES"),
@@ -220,6 +201,8 @@ enum class LocaleCode(var language: String, var country: String) {
 
 class GameSettingsMultiplayer {
     var userId = ""
+    var passwords = mutableMapOf<String, String>()
+    var userName: String = ""
     var server = Constants.uncivXyzServer
     var friendList: MutableList<FriendList.Friend> = mutableListOf()
     var turnCheckerEnabled = true
@@ -231,6 +214,12 @@ class GameSettingsMultiplayer {
     var currentGameTurnNotificationSound: UncivSound = UncivSound.Silent
     var otherGameTurnNotificationSound: UncivSound = UncivSound.Silent
     var hideDropboxWarning = false
+
+    fun getAuthHeader(): String {
+        val serverPassword = passwords[server] ?: ""
+        val preEncodedAuthValue = "$userId:$serverPassword"
+        return "Basic ${Base64Coder.encodeString(preEncodedAuthValue)}"
+    }
 }
 
 enum class GameSetting(

@@ -23,7 +23,13 @@ You will need to supply the graphics for new elements - a new unit needs its ico
 -   Promotions can be named "Something I" (or " II" or " III"). The suffix will be removed and painted as little stars, only the base `UnitPromotionIcons/Something.png` will be loaded.
 -   The special rules for promotions can be combined, e.g. "`[Warrior] ability III`" will fall back to the Warrior unit icon and paint 3 Stars on it.
 
-Additionally, there there are two kinds of images where the game has display capability but does not supply graphics itself, as described in the next paragraphs:
+Additionally, there there are some kinds of images where the game has display capability but does not supply graphics itself, as described in the next paragraphs:
+
+### Adding custom Fonts
+
+You can add custom `.ttf` fonts into the game: place `.ttf` file inside of `/fonts/` directory of your mod. The font you have added will be visible and choosable in `Options-Advanced` tab at the top of font list as `<fontname> (<modname>)`.
+
+All fonts are rendered by default at 50 pixel size and rescaled later for the game's needs. Currently fonts are NOT mipmapped on minification.
 
 ### Adding Wonder Splash Screens
 
@@ -45,11 +51,16 @@ For example, [here](https://github.com/yairm210/Unciv-leader-portrait-mod-exampl
 
 The base game uses flat icons, surrounded with colored circles as backgrounds (e.g. for units to fit the civilization's flag colors), to denote entities such as: units, buildings, techs, resources, improvements, religions, promotions, uniques, unit actions and nations in the UI. A mod can supply "Portraits" - static images that will remain uncolored - by adding images to `/Images/<entityType>Portraits/` (e.g. `/Images/BuildingPortraits/`, /Images/ResourcesPortraits/, etc), which will be used in all UI elements (except for unit icons in the world map). The file name must correspond exactly with the unit/building/tech/resource/etc name  defined in corresponding JSONs (e.g. Units.json, Buildings.json, TileResources.json, etc) or have the same name as the file they suppose to replace, or they will be ignored.
 
-If mod supplies '/Images/<entityType>Portraits/Background.png' images, they will be used as a background for corresponding portraits instead of default circle. 
+If mod supplies '/Images/<entityType>Portraits/Background.png' images, they will be used as a background for corresponding portraits instead of default circle.
 
 Portraits and backgrounds work best if they are full RGB square, between 100x100 and 256x256 pixels, and include some transparent border within that area.
 
 For example, [here](https://github.com/vegeta1k95/Civ-5-Icons) is mod showing how to add custom portraits, which can complement the base game.
+
+### Adding icons for Unit Types
+
+The Unit Types as defined in [UnitTypes.json](../Other/Unit-related-JSON-files#unittypesjson) have no icons in the base game, but Civilopedia can decorate their entries if you supply images named 'Images/UnitTypeIcons/<UnitType>.png'.
+(while you're at it, you may override the default icon for the Unit Type _category header_ - it's 'UnitTypes.png' in the same folder, or the icons used for the movement domains - 'DomainLand', 'DomainWater', 'DomainAir')
 
 ## Sounds
 

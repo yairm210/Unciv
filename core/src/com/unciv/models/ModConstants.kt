@@ -62,6 +62,10 @@ class ModConstants {
     var minRiverLength = 5
     var maxRiverLength = 666  // Do not set to less than the maximal map radius
 
+    // Factors in formula for Maximum Number of foundable Religions
+    var religionLimitBase = 1
+    var religionLimitMultiplier = 0.5f
+
     fun merge(other: ModConstants) {
         if (other.maxXPfromBarbarians != defaults.maxXPfromBarbarians) maxXPfromBarbarians = other.maxXPfromBarbarians
         if (other.cityStrengthBase != defaults.cityStrengthBase) cityStrengthBase = other.cityStrengthBase
@@ -82,6 +86,8 @@ class ModConstants {
         if (other.riverCountMultiplier != defaults.riverCountMultiplier) riverCountMultiplier = other.riverCountMultiplier
         if (other.minRiverLength != defaults.minRiverLength) minRiverLength = other.minRiverLength
         if (other.maxRiverLength != defaults.maxRiverLength) maxRiverLength = other.maxRiverLength
+        if (other.religionLimitBase != defaults.religionLimitBase) religionLimitBase = other.religionLimitBase
+        if (other.religionLimitMultiplier != defaults.religionLimitMultiplier) religionLimitMultiplier = other.religionLimitMultiplier
     }
 
     companion object {

@@ -30,13 +30,11 @@ class UncivFiles(
      * This is necessary because the Android turn check background worker does not hold any reference to the actual [com.badlogic.gdx.Application],
      * which is normally responsible for keeping the [Gdx] static variables from being garbage collected.
      */
-    private val files: Files,
-    private val customFileLocationHelper: CustomFileLocationHelper? = null,
-    private val preferExternalStorage: Boolean = false
+    private val files: Files
 ) {
     init {
-        debug("Creating UncivFiles, localStoragePath: %s, externalStoragePath: %s, preferExternalStorage: %s",
-            files.localStoragePath, files.externalStoragePath, preferExternalStorage)
+        debug("Creating UncivFiles, localStoragePath: %s, externalStoragePath: %s",
+            files.localStoragePath, files.externalStoragePath)
     }
     //region Data
 
@@ -59,7 +57,10 @@ class UncivFiles(
         val localFile = files.local(location)
         val externalFile = files.external(location)
 
-        val toReturn = if (preferExternalStorage && files.isExternalStorageAvailable && (externalFile.exists() || !localFile.exists())) {
+        val toReturn = if (files.isExternalStorageAvailable && (
+                        preferExternalStorage && (externalFile.exists() || !localFile.exists())
+                        || !preferExternalStorage && (externalFile.exists() && !localFile.exists())
+                ) ) {
             externalFile
         } else {
             localFile
@@ -97,7 +98,7 @@ class UncivFiles(
         debug("Getting saves from folder %s, externalStoragePath: %s", saveFolder, files.externalStoragePath)
         val localFiles = files.local(saveFolder).list().asSequence()
 
-        val externalFiles = if (files.isExternalStorageAvailable) {
+        val externalFiles = if (files.isExternalStorageAvailable && files.local("").file().absolutePath != files.external("").file().absolutePath) {
             files.external(saveFolder).list().asSequence()
         } else {
             emptySequence()
@@ -108,8 +109,6 @@ class UncivFiles(
             { externalFiles.joinToString(prefix = "[", postfix = "]", transform = { it.file().absolutePath }) })
         return localFiles + externalFiles
     }
-
-    fun canLoadFromCustomSaveLocation() = customFileLocationHelper != null
 
     /**
      * @return `true` if successful.
@@ -138,15 +137,6 @@ class UncivFiles(
         return file.delete()
     }
 
-    interface ChooseLocationResult {
-        val location: String?
-        val exception: Exception?
-
-        fun isCanceled(): Boolean = location == null && exception == null
-        fun isError(): Boolean = exception != null
-        fun isSuccessful(): Boolean = location != null
-    }
-
     //endregion
     //region Saving
 
@@ -162,7 +152,8 @@ class UncivFiles(
     fun saveGame(game: GameInfo, file: FileHandle, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }) {
         try {
             debug("Saving GameInfo %s to %s", game.gameId, file.path())
-            file.writeString(gameInfoToString(game), false)
+            val string = gameInfoToString(game)
+            file.writeString(string, false)
             saveCompletionCallback(null)
         } catch (ex: Exception) {
             saveCompletionCallback(ex)
@@ -191,31 +182,35 @@ class UncivFiles(
         }
     }
 
-    class CustomSaveResult(
-        override val location: String? = null,
-        override val exception: Exception? = null
-    ) : ChooseLocationResult
-
     /**
      * [gameName] is a suggested name for the file. If the file has already been saved to or loaded from a custom location,
      * this previous custom location will be used.
      *
-     * Calls the [saveCompleteCallback] on the main thread with the save location on success, an [Exception] on error, or both null on cancel.
+     * Calls the [onSaved] on the main thread on success.
+     * Calls the [onError] on the main thread with an [Exception] on error.
      */
-    fun saveGameToCustomLocation(game: GameInfo, gameName: String, saveCompletionCallback: (CustomSaveResult) -> Unit) {
+    fun saveGameToCustomLocation(
+        game: GameInfo,
+        gameName: String,
+        onSaved: () -> Unit,
+        onError: (Exception) -> Unit) {
         val saveLocation = game.customSaveLocation ?: Gdx.files.local(gameName).path()
-        val gameData = try {
-            gameInfoToString(game)
+
+        try {
+            val data = gameInfoToString(game)
+            debug("Saving GameInfo %s to custom location %s", game.gameId, saveLocation)
+            saverLoader.saveGame(data, saveLocation,
+                { location ->
+                    game.customSaveLocation = location
+                    Concurrency.runOnGLThread { onSaved() }
+                },
+                {
+                    Concurrency.runOnGLThread { onError(it) }
+                }
+            )
+
         } catch (ex: Exception) {
-            Concurrency.runOnGLThread { saveCompletionCallback(CustomSaveResult(exception = ex)) }
-            return
-        }
-        debug("Saving GameInfo %s to custom location %s", game.gameId, saveLocation)
-        customFileLocationHelper!!.saveGame(gameData, saveLocation) {
-            if (it.isSuccessful()) {
-                game.customSaveLocation = it.location
-            }
-            saveCompletionCallback(it)
+            Concurrency.runOnGLThread { onError(ex) }
         }
     }
 
@@ -237,11 +232,7 @@ class UncivFiles(
             loadGamePreviewFromFile(getMultiplayerSave(gameName))
 
     fun loadGamePreviewFromFile(gameFile: FileHandle): GameInfoPreview {
-        val preview = json().fromJson(GameInfoPreview::class.java, gameFile)
-        if (preview == null) {
-            throw emptyFile(gameFile)
-        }
-        return preview
+        return json().fromJson(GameInfoPreview::class.java, gameFile) ?: throw emptyFile(gameFile)
     }
 
     /**
@@ -253,36 +244,29 @@ class UncivFiles(
         return SerializationException("The file for the game ${gameFile.name()} is empty")
     }
 
-    class CustomLoadResult<T>(
-        private val locationAndGameData: Pair<String, T>? = null,
-        override val exception: Exception? = null
-    ) : ChooseLocationResult {
-        override val location: String? get() = locationAndGameData?.first
-        val gameData: T? get() = locationAndGameData?.second
-    }
-
     /**
-     * Calls the [loadCompleteCallback] on the main thread with the [GameInfo] on success or the [Exception] on error or null in both on cancel.
-     *
-     * The exception may be [IncompatibleGameInfoVersionException] if the [gameData] was created by a version of this game that is incompatible with the current one.
+     * Calls the [onLoaded] on the main thread with the [GameInfo] on success.
+     * Calls the [onError] on the main thread with the [Exception] on error
+     * The exception may be [IncompatibleGameInfoVersionException] if the [GameInfo] was created by a version of this game that is incompatible with the current one.
      */
-    fun loadGameFromCustomLocation(loadCompletionCallback: (CustomLoadResult<GameInfo>) -> Unit) {
-        customFileLocationHelper!!.loadGame { result ->
-            val location = result.location
-            val gameData = result.gameData
-            if (location == null || gameData == null) {
-                loadCompletionCallback(CustomLoadResult(exception = result.exception))
-                return@loadGame
+    fun loadGameFromCustomLocation(
+        onLoaded: (GameInfo) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        saverLoader.loadGame(
+            { data, location ->
+                try {
+                    val game = gameInfoFromString(data)
+                    game.customSaveLocation = location
+                    Concurrency.runOnGLThread { onLoaded(game) }
+                } catch (ex: Exception) {
+                    Concurrency.runOnGLThread { onError(ex) }
+                }
+            },
+            {
+                Concurrency.runOnGLThread { onError(it) }
             }
-
-            try {
-                val gameInfo = gameInfoFromString(gameData)
-                gameInfo.customSaveLocation = location
-                loadCompletionCallback(CustomLoadResult(location to gameInfo))
-            } catch (ex: Exception) {
-                loadCompletionCallback(CustomLoadResult(exception = ex))
-            }
-        }
+        )
     }
 
 
@@ -290,7 +274,7 @@ class UncivFiles(
     //region Settings
 
     private fun getGeneralSettingsFile(): FileHandle {
-        return if (UncivGame.Current.consoleMode) FileHandle(SETTINGS_FILE_NAME)
+        return if (UncivGame.Current.isConsoleMode) FileHandle(SETTINGS_FILE_NAME)
         else files.local(SETTINGS_FILE_NAME)
     }
 
@@ -322,6 +306,17 @@ class UncivFiles(
 
         var saveZipped = false
 
+        /**
+         * If the GDX [com.badlogic.gdx.Files.getExternalStoragePath] should be preferred for this platform,
+         * otherwise uses [com.badlogic.gdx.Files.getLocalStoragePath]
+         */
+        var preferExternalStorage = false
+
+        /**
+         * Platform dependent saver-loader to custom system locations
+         */
+        lateinit var saverLoader: PlatformSaverLoader
+
         /** Specialized function to access settings before Gdx is initialized.
          *
          * @param base Path to the directory where the file should be - if not set, the OS current directory is used (which is "/" on Android)
@@ -330,11 +325,7 @@ class UncivFiles(
             // FileHandle is Gdx, but the class and JsonParser are not dependent on app initialization
             // In fact, at this point Gdx.app or Gdx.files are null but this still works.
             val file = FileHandle(base + File.separator + SETTINGS_FILE_NAME)
-            return if (file.exists())
-                json().fromJsonFile(
-                    GameSettings::class.java,
-                    file
-                )
+            return if (file.exists()) json().fromJsonFile(GameSettings::class.java, file)
             else GameSettings().apply { isFreshlyCreated = true }
         }
 

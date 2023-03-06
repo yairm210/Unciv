@@ -259,10 +259,11 @@ object UnitAutomation {
         if (unit.civ.religionManager.maySpreadReligionAtAll(unit))
             return SpecificUnitAutomation.automateMissionary(unit)
 
-        if (unit.hasUnique(UniqueType.PreventSpreadingReligion) || unit.canDoReligiousAction(Constants.removeHeresy))
+        if (unit.hasUnique(UniqueType.PreventSpreadingReligion) || unit.canDoLimitedAction(Constants.removeHeresy))
             return SpecificUnitAutomation.automateInquisitor(unit)
 
-        if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit))
+        if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit)
+                || unit.hasUnique(UniqueType.ConstructImprovementInstantly))
         // catch great prophet for civs who can't found/enhance/spread religion
             return SpecificUnitAutomation.automateImprovementPlacer(unit) // includes great people plus moddable units
 

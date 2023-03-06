@@ -1,98 +1,54 @@
 package com.unciv.app
 
 import android.content.Intent
-import android.graphics.Rect
-import android.net.Uri
 import android.os.Bundle
-import android.view.View
-import android.view.ViewTreeObserver
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.WorkManager
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
-import com.badlogic.gdx.backends.android.AndroidGraphics
-import com.badlogic.gdx.math.Rectangle
-import com.unciv.UncivGame
-import com.unciv.UncivGameParameters
 import com.unciv.logic.files.UncivFiles
-import com.unciv.logic.event.EventBus
-import com.unciv.ui.screens.basescreen.UncivStage
-import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.components.Fonts
+import com.unciv.utils.Display
 import com.unciv.utils.Log
-import com.unciv.utils.concurrency.Concurrency
 import java.io.File
 
 open class AndroidLauncher : AndroidApplication() {
-    private var customFileLocationHelper: CustomFileLocationHelperAndroid? = null
-    private var game: UncivGame? = null
-    private var deepLinkedMultiplayerGame: String? = null
+
+    private var game: AndroidGame? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Setup Android logging
         Log.backend = AndroidLogBackend()
-        customFileLocationHelper = CustomFileLocationHelperAndroid(this)
+
+        // Setup Android display
+        Display.platform = AndroidDisplay(this)
+
+        // Setup Android fonts
+        Fonts.fontImplementation = AndroidFont()
+
+        // Setup Android custom saver-loader
+        UncivFiles.saverLoader = AndroidSaverLoader(this)
+        UncivFiles.preferExternalStorage = true
+
+        // Create notification channels for Multiplayer notificator
         MultiplayerTurnCheckWorker.createNotificationChannels(applicationContext)
 
         copyMods()
 
-        val config = AndroidApplicationConfiguration().apply {
-            useImmersiveMode = true
-        }
-
+        val config = AndroidApplicationConfiguration().apply { useImmersiveMode = true }
         val settings = UncivFiles.getSettingsForPlatformLaunchers(filesDir.path)
 
-        // Manage orientation lock and display cutout
-        val platformSpecificHelper = PlatformSpecificHelpersAndroid(this)
-        platformSpecificHelper.allowPortrait(settings.allowAndroidPortrait)
+        // Setup orientation and display cutout
+        Display.setOrientation(settings.displayOrientation)
+        Display.setCutout(settings.androidCutout)
 
-        platformSpecificHelper.toggleDisplayCutout(settings.androidCutout)
-
-        val androidParameters = UncivGameParameters(
-            crashReportSysInfo = CrashReportSysInfoAndroid,
-            fontImplementation = FontAndroid(),
-            customFileLocationHelper = customFileLocationHelper,
-            platformSpecificHelper = platformSpecificHelper
-        )
-
-        game = UncivGame(androidParameters)
+        game = AndroidGame()
         initialize(game, config)
 
-        setDeepLinkedGame(intent)
-
-        addScreenObscuredListener((Gdx.graphics as AndroidGraphics).view)
-    }
-
-    private fun addScreenObscuredListener(contentView: View) {
-        contentView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-            /** [onGlobalLayout] gets triggered not only when the [windowVisibleDisplayFrame][View.getWindowVisibleDisplayFrame] changes, but also on other things.
-             * So we need to check if that was actually the thing that changed. */
-            private var lastVisibleDisplayFrame: Rect? = null
-
-            override fun onGlobalLayout() {
-                if (!UncivGame.isCurrentInitialized() || UncivGame.Current.screen == null) {
-                    return
-                }
-                val r = Rect()
-                contentView.getWindowVisibleDisplayFrame(r)
-                if (r.equals(lastVisibleDisplayFrame)) return
-                lastVisibleDisplayFrame = r
-
-                val stage = (UncivGame.Current.screen as BaseScreen).stage
-
-                val horizontalRatio = stage.width / contentView.width
-                val verticalRatio = stage.height / contentView.height
-
-                val visibleStage = Rectangle(
-                    r.left * horizontalRatio,
-                    (contentView.height - r.bottom)  * verticalRatio, // Android coordinate system has the origin in the top left, while GDX uses bottom left
-                    r.width() * horizontalRatio,
-                    r.height() * verticalRatio
-                )
-                Concurrency.runOnGLThread {
-                    EventBus.send(UncivStage.VisibleAreaChanged(visibleStage))
-                }
-            }
-        })
+        game!!.setDeepLinkedGame(intent)
+        game!!.addScreenObscuredListener()
     }
 
     /**
@@ -113,34 +69,29 @@ open class AndroidLauncher : AndroidApplication() {
     }
 
     override fun onPause() {
-        if (UncivGame.isCurrentInitialized()
-                && UncivGame.Current.gameInfo != null
-                && UncivGame.Current.settings.multiplayer.turnCheckerEnabled
-                && UncivGame.Current.files.getMultiplayerSaves().any()
+        val game = this.game!!
+        if (game.isInitialized
+                && game.gameInfo != null
+                && game.settings.multiplayer.turnCheckerEnabled
+                && game.files.getMultiplayerSaves().any()
         ) {
             MultiplayerTurnCheckWorker.startTurnChecker(
-                applicationContext, UncivGame.Current.files,
-                UncivGame.Current.gameInfo!!, UncivGame.Current.settings.multiplayer
-            )
+                applicationContext, game.files, game.gameInfo!!, game.settings.multiplayer)
         }
         super.onPause()
     }
 
     override fun onResume() {
-        try { // Sometimes this fails for no apparent reason - the multiplayer checker failing to cancel should not be enough of a reason for the game to crash!
+        try {
             WorkManager.getInstance(applicationContext).cancelAllWorkByTag(MultiplayerTurnCheckWorker.WORK_TAG)
             with(NotificationManagerCompat.from(this)) {
                 cancel(MultiplayerTurnCheckWorker.NOTIFICATION_ID_INFO)
                 cancel(MultiplayerTurnCheckWorker.NOTIFICATION_ID_SERVICE)
             }
-        } catch (ex: Exception) {
+        } catch (ignore: Exception) {
+            /* Sometimes this fails for no apparent reason - the multiplayer checker failing to
+               cancel should not be enough of a reason for the game to crash! */
         }
-
-        if (deepLinkedMultiplayerGame != null) {
-            game?.deepLinkedMultiplayerGame = deepLinkedMultiplayerGame
-            deepLinkedMultiplayerGame = null
-        }
-
         super.onResume()
     }
 
@@ -148,21 +99,12 @@ open class AndroidLauncher : AndroidApplication() {
         super.onNewIntent(intent)
         if (intent == null)
             return
-
-        setDeepLinkedGame(intent)
-    }
-
-    private fun setDeepLinkedGame(intent: Intent) {
-        // This is needed in onCreate _and_ onNewIntent to open links and notifications
-        // correctly even if the app was not running
-        deepLinkedMultiplayerGame = if (intent.action != Intent.ACTION_VIEW) null else {
-            val uri: Uri? = intent.data
-            uri?.getQueryParameter("id")
-        }
+        game?.setDeepLinkedGame(intent)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        customFileLocationHelper?.onActivityResult(requestCode, data)
+        val saverLoader = UncivFiles.saverLoader as AndroidSaverLoader
+        saverLoader.onActivityResult(requestCode, data)
         super.onActivityResult(requestCode, resultCode, data)
     }
 }

@@ -3,20 +3,25 @@ package com.unciv.app.desktop
 import java.io.File
 
 class UiElementDocsWriter {
-    fun write() {
-        val lines = File("../../docs/Modders/Creating-a-UI-skin.md").readLines()
-        val startIndex = lines.indexOf("<!--- DO NOT REMOVE OR MODIFY THIS LINE UI_ELEMENT_TABLE_REGION -->")
-        val endIndex = lines.indexOf("<!--- DO NOT REMOVE OR MODIFY THIS LINE UI_ELEMENT_TABLE_REGION_END -->")
+    companion object {
+        private const val docPath = "../../docs/Modders/Creating-a-UI-skin.md"
+        private const val startMarker = "<!--- DO NOT REMOVE OR MODIFY THIS LINE UI_ELEMENT_TABLE_REGION -->"
+        private const val endMarker = "<!--- DO NOT REMOVE OR MODIFY THIS LINE UI_ELEMENT_TABLE_REGION_END -->"
+        private const val srcPath = "../../core/src/com/unciv/"
+    }
 
-        val table = mutableListOf(
-            "<!--- DO NOT REMOVE OR MODIFY THIS LINE UI_ELEMENT_TABLE_REGION -->",
-            "| Directory | Name | Default shape | Image |",
-            "|---|:---:|:---:|---|"
-        )
+    fun write() {
+        val docFile = File(docPath)
+        val srcFile = File(srcPath)
+        if (!srcFile.exists() || !docFile.parentFile.exists()) return
+
+        val originalLines = if (docFile.exists()) docFile.readLines() else emptyList()
+        val endIndex = originalLines.indexOf(endMarker).takeIf { it != -1 } ?: (originalLines.size - 1)
+        val startIndex = originalLines.indexOf(startMarker).takeIf { it != -1 } ?: (endIndex + 1)
 
         val elements = mutableListOf<String>()
 
-        File("../../core/src/com/unciv/").walk().forEach { file ->
+        for (file in srcFile.walk()) {
             if (file.path.endsWith(".kt")) {
                 val results = Regex("getUiBackground\\((\\X*?)\"(?<path>.*)\"[ ,\n\r]*((BaseScreen\\.)?skinStrings\\.(?<defaultShape>.*)Shape)?\\X*?\\)")
                     .findAll(file.readText())
@@ -30,11 +35,16 @@ class UiElementDocsWriter {
             }
         }
 
-        table.addAll(elements.sorted())
-        table.add("<!--- DO NOT REMOVE OR MODIFY THIS LINE UI_ELEMENT_TABLE_REGION_END -->")
+        val newLines = sequence {
+            yieldAll(originalLines.subList(0, startIndex))
+            yield(startMarker)
+            yield("| Directory | Name | Default shape | Image |")
+            yield("|---|:---:|:---:|---|")
+            yieldAll(elements.asSequence().sorted())    // FileTreeWalk guarantees no specific order as it uses File.listFiles
+            yield(endMarker)
+            yieldAll(originalLines.subList(endIndex + 1, originalLines.size))
+        }
 
-        val newLines = lines.subList(0, startIndex) + table + lines.subList(endIndex + 1, lines.size)
-
-        File("../../docs/Modders/Creating-a-UI-skin.md").writeText(newLines.joinToString("\n"))
+        docFile.writeText(newLines.joinToString("\n"))
     }
 }

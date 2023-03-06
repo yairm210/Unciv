@@ -19,6 +19,7 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ToastPopup
+import com.unciv.utils.Log
 import java.io.PrintWriter
 import java.io.StringWriter
 
@@ -88,7 +89,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
 
             --------------------------------
 
-            ${UncivGame.Current.crashReportSysInfo?.getInfo().toString().prependIndentToOnlyNewLines(baseIndent)}
+            ${Log.getSystemInfo().prependIndentToOnlyNewLines(baseIndent)}
 
             --------------------------------
 

@@ -2,7 +2,6 @@ package com.unciv.app.desktop
 
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.UncivGameParameters
 import com.unciv.utils.Log
 import com.unciv.logic.GameStarter
 import com.unciv.logic.civilization.PlayerType
@@ -26,8 +25,7 @@ internal object ConsoleLauncher {
     fun main(arg: Array<String>) {
         Log.backend = DesktopLogBackend()
 
-        val consoleParameters = UncivGameParameters(consoleMode = true)
-        val game = UncivGame(consoleParameters)
+        val game = UncivGame(true)
 
         UncivGame.Current = game
         UncivGame.Current.settings = GameSettings().apply {

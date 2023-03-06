@@ -31,6 +31,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers.flashWoundedCombatants
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers.getHealthBar
+import com.unciv.utils.DebugUtils
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -102,15 +103,12 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         if (defender == null || (!includeFriendly && defender.getCivInfo() == attackerCiv))
             return null  // no enemy combatant in tile
 
-        val canSeeDefender =
-            if (UncivGame.Current.viewEntireMapForDebug) true
-            else {
-                when {
-                    defender.isInvisible(attackerCiv) -> attackerCiv.viewableInvisibleUnitsTiles.contains(selectedTile)
-                    defender.isCity() -> attackerCiv.hasExplored(selectedTile)
-                    else -> attackerCiv.viewableTiles.contains(selectedTile)
-                }
-            }
+        val canSeeDefender = when {
+            DebugUtils.VISIBLE_MAP -> true
+            defender.isInvisible(attackerCiv) -> attackerCiv.viewableInvisibleUnitsTiles.contains(selectedTile)
+            defender.isCity() -> attackerCiv.hasExplored(selectedTile)
+            else -> attackerCiv.viewableTiles.contains(selectedTile)
+        }
 
         if (!canSeeDefender) return null
 

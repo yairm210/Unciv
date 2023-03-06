@@ -22,6 +22,7 @@ import com.unciv.logic.event.EventBus
 import com.unciv.logic.map.MapVisualization
 import com.unciv.logic.multiplayer.MultiplayerGameUpdated
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
+import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.ruleset.tile.ResourceType
@@ -35,6 +36,7 @@ import com.unciv.ui.components.extensions.setFontSize
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.AuthPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.popups.hasOpenPopups
@@ -305,10 +307,10 @@ class WorldScreen(
                     fun whileKeyPressedLoop() {
                         for (keycode in pressedKeys) {
                             when (keycode) {
-                                Input.Keys.W, Input.Keys.UP -> mapHolder.scrollY -= amountToMove
-                                Input.Keys.S, Input.Keys.DOWN -> mapHolder.scrollY += amountToMove
-                                Input.Keys.A, Input.Keys.LEFT -> mapHolder.scrollX -= amountToMove
-                                Input.Keys.D, Input.Keys.RIGHT -> mapHolder.scrollX += amountToMove
+                                Input.Keys.W, Input.Keys.UP -> mapHolder.scrollY = mapHolder.restrictY(-amountToMove)
+                                Input.Keys.S, Input.Keys.DOWN -> mapHolder.scrollY = mapHolder.restrictY(amountToMove)
+                                Input.Keys.A, Input.Keys.LEFT -> mapHolder.scrollX = mapHolder.restrictX(amountToMove)
+                                Input.Keys.D, Input.Keys.RIGHT -> mapHolder.scrollX = mapHolder.restrictX(-amountToMove)
                             }
                         }
                         mapHolder.updateVisualScroll()
@@ -348,7 +350,7 @@ class WorldScreen(
             debug("loadLatestMultiplayerState downloaded game: gameId: %s, turn: %s, curCiv: %s",
                 latestGame.gameId, latestGame.turns, latestGame.currentPlayer)
             if (viewingCiv.civName == latestGame.currentPlayer || viewingCiv.civName == Constants.spectator) {
-                game.platformSpecificHelper?.notifyTurnStarted()
+                game.notifyTurnStarted()
             }
             launchOnGLThread {
                 loadingGamePopup.close()
@@ -488,7 +490,7 @@ class WorldScreen(
                     "\n Click 'Construct improvement' (above the unit table, bottom left)" +
                     "\n > Choose the farm > \n Leave the worker there until it's finished"
         if (!completedTasks.contains("Create a trade route")
-                && viewingCiv.citiesConnectedToCapitalToMediums.any { it.key.civ == viewingCiv })
+                && viewingCiv.cache.citiesConnectedToCapitalToMediums.any { it.key.civ == viewingCiv })
             game.settings.addCompletedTutorialTask("Create a trade route")
         if (viewingCiv.cities.size > 1 && !completedTasks.contains("Create a trade route"))
             return "Create a trade route!\nConstruct roads between your capital and another city" +
@@ -624,16 +626,25 @@ class WorldScreen(
                 try {
                     game.onlineMultiplayer.updateGame(gameInfoClone)
                 } catch (ex: Exception) {
-                    val message = when (ex) {
-                        is FileStorageRateLimitReached -> "Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds"
-                        else -> "Could not upload game!"
+                    if (ex is MultiplayerAuthException) {
+                        launchOnGLThread {
+                            AuthPopup(this@WorldScreen) {
+                                success -> if (success) nextTurn()
+                            }.open(true)
+                        }
+                    } else {
+                        val message = when (ex) {
+                            is FileStorageRateLimitReached -> "Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds"
+                            else -> "Could not upload game!"
+                        }
+                        launchOnGLThread { // Since we're changing the UI, that should be done on the main thread
+                            val cantUploadNewGamePopup = Popup(this@WorldScreen)
+                            cantUploadNewGamePopup.addGoodSizedLabel(message).row()
+                            cantUploadNewGamePopup.addCloseButton()
+                            cantUploadNewGamePopup.open()
+                        }
                     }
-                    launchOnGLThread { // Since we're changing the UI, that should be done on the main thread
-                        val cantUploadNewGamePopup = Popup(this@WorldScreen)
-                        cantUploadNewGamePopup.addGoodSizedLabel(message).row()
-                        cantUploadNewGamePopup.addCloseButton()
-                        cantUploadNewGamePopup.open()
-                    }
+
                     this@WorldScreen.isPlayersTurn = true // Since we couldn't push the new game clone, then it's like we never clicked the "next turn" button
                     this@WorldScreen.shouldUpdate = true
                     return@runOnNonDaemonThreadPool

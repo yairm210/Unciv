@@ -5,8 +5,10 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.OnlineMultiplayer
-import com.unciv.logic.multiplayer.storage.SimpleHttp
+import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
+import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.models.UncivSound
 import com.unciv.models.metadata.GameSetting
 import com.unciv.models.metadata.GameSettings
@@ -24,6 +26,7 @@ import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toGdxArray
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.popups.AuthPopup
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import java.time.Duration
@@ -145,7 +148,7 @@ private fun addMultiplayerServerOptions(
 
     serverIpTable.add("Server address".toLabel().onClick {
         multiplayerServerTextField.text = Gdx.app.clipboard.contents
-        }).row()
+        }).colspan(2).row()
     multiplayerServerTextField.onChange {
         val isCustomServer = OnlineMultiplayer.usesCustomServer()
         connectionToServerButton.isEnabled = isCustomServer
@@ -162,26 +165,65 @@ private fun addMultiplayerServerOptions(
         settings.save()
     }
 
-    serverIpTable.add(multiplayerServerTextField).minWidth(optionsPopup.stageToShowOn.width / 2).growX()
-    tab.add(serverIpTable).colspan(2).fillX().row()
+    serverIpTable.add(multiplayerServerTextField)
+        .minWidth(optionsPopup.stageToShowOn.width / 2)
+        .colspan(2).growX().padBottom(8f).row()
 
-    tab.add("Reset to Dropbox".toTextButton().onClick {
+    serverIpTable.add("Reset to Dropbox".toTextButton().onClick {
         multiplayerServerTextField.text = Constants.dropboxMultiplayerServer
         for (refreshSelect in toUpdate) refreshSelect.update(false)
         settings.save()
-    }).colspan(2).row()
+    })
 
-    tab.add(connectionToServerButton.onClick {
+    serverIpTable.add(connectionToServerButton.onClick {
         val popup = Popup(optionsPopup.stageToShowOn).apply {
             addGoodSizedLabel("Awaiting response...").row()
+            open(true)
         }
-        popup.open(true)
 
-        successfullyConnectedToServer(settings) { success, _, _ ->
-            popup.addGoodSizedLabel(if (success) "Success!" else "Failed!").row()
-            popup.addCloseButton()
+        successfullyConnectedToServer { connectionSuccess, authSuccess ->
+            if (connectionSuccess && authSuccess) {
+                popup.reuseWith("Success!", true)
+            } else if (connectionSuccess) {
+                popup.close()
+                AuthPopup(optionsPopup.stageToShowOn) {
+                    success -> popup.apply{
+                        reuseWith(if (success) "Success!" else "Failed!", true)
+                        open(true)
+                    }
+                }.open(true)
+            } else {
+                popup.reuseWith("Failed!", true)
+            }
         }
-    }).colspan(2).row()
+    }).row()
+
+    if (UncivGame.Current.onlineMultiplayer.serverFeatureSet.authVersion > 0) {
+        val passwordTextField = UncivTextField.create(
+            settings.multiplayer.passwords[settings.multiplayer.server] ?: "Password"
+        )
+        val setPasswordButton = "Set password".toTextButton()
+
+        serverIpTable.add("Set password".toLabel()).padTop(16f).colspan(2).row()
+        serverIpTable.add(passwordTextField).colspan(2).growX().padBottom(8f).row()
+
+        val passwordStatusTable = Table().apply {
+            add(
+                if (settings.multiplayer.passwords.containsKey(settings.multiplayer.server)) {
+                    "Your userId is password secured"
+                } else {
+                    "Set a password to secure your userId"
+                }.toLabel()
+            )
+            add(setPasswordButton.onClick {
+                setPassword(passwordTextField.text, optionsPopup)
+            }).padLeft(16f)
+        }
+
+        serverIpTable.add(passwordStatusTable).colspan(2).row()
+    }
+
+    tab.add(serverIpTable).colspan(2).fillX().row()
 }
 
 private fun addTurnCheckerOptions(
@@ -190,7 +232,11 @@ private fun addTurnCheckerOptions(
 ): RefreshSelect? {
     val settings = optionsPopup.settings
 
-    optionsPopup.addCheckbox(tab, "Enable out-of-game turn notifications", settings.multiplayer::turnCheckerEnabled)
+    optionsPopup.addCheckbox(
+        tab,
+        "Enable out-of-game turn notifications",
+        settings.multiplayer::turnCheckerEnabled
+    )
 
     if (!settings.multiplayer.turnCheckerEnabled) return null
 
@@ -212,11 +258,88 @@ private fun addTurnCheckerOptions(
     return turnCheckerSelect
 }
 
-private fun successfullyConnectedToServer(settings: GameSettings, action: (Boolean, String, Int?) -> Unit) {
+private fun successfullyConnectedToServer(action: (Boolean, Boolean) -> Unit) {
     Concurrency.run("TestIsAlive") {
-        SimpleHttp.sendGetRequest("${settings.multiplayer.server}/isalive") { success, result, code ->
+        try {
+            val connectionSuccess = UncivGame.Current.onlineMultiplayer.checkServerStatus()
+            var authSuccess = false
+            if (connectionSuccess) {
+                try {
+                    authSuccess = UncivGame.Current.onlineMultiplayer.authenticate(null)
+                } catch (_: Exception) {
+                    // We ignore the exception here, because we handle the failed auth onGLThread
+                }
+            }
             launchOnGLThread {
-                action(success, result, code)
+                action(connectionSuccess, authSuccess)
+            }
+        } catch (_: Exception) {
+            launchOnGLThread {
+                action(false, false)
+            }
+        }
+    }
+}
+
+private fun setPassword(password: String, optionsPopup: OptionsPopup) {
+    if (password.isBlank())
+        return
+
+    val popup = Popup(optionsPopup.stageToShowOn).apply {
+        addGoodSizedLabel("Awaiting response...").row()
+        open(true)
+    }
+
+    if (password.length < 6) {
+        popup.reuseWith("Password must be at least 6 characters long", true)
+        return
+    }
+
+    if (UncivGame.Current.onlineMultiplayer.serverFeatureSet.authVersion == 0) {
+        popup.reuseWith("This server does not support authentication", true)
+        return
+    }
+
+    successfullySetPassword(password) { success, ex ->
+        if (success) {
+            popup.reuseWith(
+                "Password set successfully for server [${optionsPopup.settings.multiplayer.server}]",
+                true
+            )
+        } else {
+            if (ex is MultiplayerAuthException) {
+                AuthPopup(optionsPopup.stageToShowOn) { authSuccess ->
+                    // If auth was successful, try to set password again
+                    if (authSuccess) {
+                        popup.close()
+                        setPassword(password, optionsPopup)
+                    } else {
+                        popup.reuseWith("Failed to set password!", true)
+                    }
+                }.open(true)
+                return@successfullySetPassword
+            }
+
+            val message = when (ex) {
+                is FileStorageRateLimitReached -> "Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds"
+                else -> "Failed to set password!"
+            }
+
+            popup.reuseWith(message, true)
+        }
+    }
+}
+
+private fun successfullySetPassword(password: String, action: (Boolean, Exception?) -> Unit) {
+    Concurrency.run("SetPassword") {
+        try {
+            val setSuccess = UncivGame.Current.onlineMultiplayer.setPassword(password)
+            launchOnGLThread {
+                action(setSuccess, null)
+            }
+        } catch (ex: Exception) {
+            launchOnGLThread {
+                action(false, ex)
             }
         }
     }

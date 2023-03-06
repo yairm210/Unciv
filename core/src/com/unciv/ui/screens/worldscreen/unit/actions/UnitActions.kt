@@ -18,16 +18,17 @@ import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.removeConditionals
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.pickerscreens.ImprovementPickerScreen
-import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
+import com.unciv.ui.components.Fonts
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.hasOpenPopups
-import com.unciv.ui.components.Fonts
-import com.unciv.ui.screens.worldscreen.WorldScreen
-import com.unciv.ui.screens.worldscreen.unit.UnitTable
+import com.unciv.ui.screens.pickerscreens.ImprovementPickerScreen
+import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 
 object UnitActions {
 
@@ -40,20 +41,8 @@ object UnitActions {
         val tile = unit.getTile()
         val actionList = ArrayList<UnitAction>()
 
-        if (unit.isMoving())
-            actionList += UnitAction(UnitActionType.StopMovement) { unit.action = null }
-        if (unit.isExploring())
-            actionList += UnitAction(UnitActionType.StopExploration) { unit.action = null }
-        if (unit.isAutomated())
-            actionList += UnitAction(UnitActionType.StopAutomation) { unit.action = null }
-
-        addSleepActions(actionList, unit, false)
-        addFortifyActions(actionList, unit, false)
-
-        addPromoteAction(unit, actionList)
-        UnitActionsUpgrade.addUnitUpgradeAction(unit, actionList)
+        // Determined by unit uniques
         addTransformAction(unit, actionList)
-        UnitActionsPillage.addPillageAction(unit, actionList)
         addParadropAction(unit, actionList)
         addAirSweepAction(unit, actionList)
         addSetupAction(unit, actionList)
@@ -66,10 +55,25 @@ object UnitActions {
         UnitActionsReligion.addEnhanceReligionAction(unit, actionList)
         actionList += getImprovementConstructionActions(unit, tile)
         UnitActionsReligion.addActionsWithLimitedUses(unit, actionList, tile)
-        addExplorationActions(unit, actionList)
         addAutomateBuildingImprovementsAction(unit, actionList)
         addTriggerUniqueActions(unit, actionList)
         addAddInCapitalAction(unit, actionList, tile)
+
+        if (unit.isMoving())
+            actionList += UnitAction(UnitActionType.StopMovement) { unit.action = null }
+        if (unit.isExploring())
+            actionList += UnitAction(UnitActionType.StopExploration) { unit.action = null }
+        if (unit.isAutomated())
+            actionList += UnitAction(UnitActionType.StopAutomation) { unit.action = null }
+
+        addPromoteAction(unit, actionList)
+        UnitActionsUpgrade.addUnitUpgradeAction(unit, actionList)
+        UnitActionsPillage.addPillageAction(unit, actionList)
+        addSleepActions(actionList, unit, false)
+        addFortifyActions(actionList, unit, false)
+
+
+        if (unit.isMilitary()) addExplorationActions(unit, actionList)
 
         addWaitAction(unit, actionList)
 
@@ -88,6 +92,7 @@ object UnitActions {
         addSwapAction(unit, actionList)
         addDisbandAction(actionList, unit)
         addGiftAction(unit, actionList, tile)
+        if (unit.isCivilian()) addExplorationActions(unit, actionList)
 
 
         addToggleActionsAction(unit, actionList)
@@ -175,14 +180,18 @@ object UnitActions {
      * (no movement left, too close to another city).
       */
     fun getFoundCityAction(unit: MapUnit, tile: Tile): UnitAction? {
-        if (!unit.hasUnique(UniqueType.FoundCity)
-                || tile.isWater || tile.isImpassible()) return null
+        val unique = unit.getMatchingUniques(UniqueType.FoundCity)
+            .filter { it.conditionals.none { it.type == UniqueType.UnitActionExtraLimitedTimes } }
+            .firstOrNull()
+        if (unique == null || tile.isWater || tile.isImpassible()) return null
         // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
         if (unit.civ.isOneCityChallenger() && unit.civ.hasEverOwnedOriginalCapital == true) return null
+        if (usagesLeft(unit, unique)==0) return null
 
         if (unit.currentMovement <= 0 || !tile.canBeSettled())
             return UnitAction(UnitActionType.FoundCity, action = null)
 
+        val hasActionModifiers = unique.conditionals.any { it.type?.targetTypes?.contains(UniqueTarget.UnitActionModifier) == true }
         val foundAction = {
             if (unit.civ.playerType != PlayerType.AI)
                 UncivGame.Current.settings.addCompletedTutorialTask("Found city")
@@ -190,8 +199,9 @@ object UnitActions {
             if (tile.ruleset.tileImprovements.containsKey("City center"))
                 tile.changeImprovement("City center")
             tile.removeRoad()
-            unit.destroy()
-            GUI.setUpdateWorldOnNextRender()
+
+            if (hasActionModifiers) activateSideEffects(unit, unique)
+            else unit.destroy()
         }
 
         if (unit.civ.playerType == PlayerType.AI)
@@ -199,6 +209,9 @@ object UnitActions {
 
         return UnitAction(
                 type = UnitActionType.FoundCity,
+                title =
+                    if (hasActionModifiers) actionTextWithSideEffects(UnitActionType.FoundCity.value, unique, unit)
+                    else UnitActionType.FoundCity.value,
                 uncivSound = UncivSound.Chimes,
                 action = {
                     // check if we would be breaking a promise
@@ -455,13 +468,17 @@ object UnitActions {
 
     fun getImprovementConstructionActions(unit: MapUnit, tile: Tile): ArrayList<UnitAction> {
         val finalActions = ArrayList<UnitAction>()
-        val uniquesToCheck = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
+        val uniquesToCheck = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit) +
+                unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)
         val civResources = unit.civ.getCivResourcesByName()
 
         for (unique in uniquesToCheck) {
+            if (unique.conditionals.any { it.type == UniqueType.UnitActionExtraLimitedTimes }) continue
+
             val improvementName = unique.params[0]
             val improvement = tile.ruleset.tileImprovements[improvementName]
                 ?: continue
+            if (usagesLeft(unit, unique)==0) continue
 
             val resourcesAvailable = improvement.uniqueObjects.none {
                 it.isOfType(UniqueType.ConsumesResources) &&
@@ -469,14 +486,19 @@ object UnitActions {
             }
 
             finalActions += UnitAction(UnitActionType.Create,
-                title = "Create [$improvementName]",
+                title = actionTextWithSideEffects("Create [$improvementName]", unique, unit),
                 action = {
                     val unitTile = unit.getTile()
                     unitTile.improvementFunctions.removeCreatesOneImprovementMarker()
                     unitTile.changeImprovement(improvementName)
                     unitTile.stopWorkingOnImprovement()
                     improvement.handleImprovementCompletion(unit)
-                    unit.consume()
+
+                    // without this the world screen won't the improvement because it isn't the 'last seen improvement'
+                    unit.civ.cache.updateViewableTiles()
+
+                    if (unique.type == UniqueType.ConstructImprovementConsumingUnit) unit.consume()
+                    else activateSideEffects(unit, unique)
                 }.takeIf {
                     resourcesAvailable
                     && unit.currentMovement > 0f
@@ -638,11 +660,19 @@ object UnitActions {
     }
 
     private fun addTriggerUniqueActions(unit: MapUnit, actionList: ArrayList<UnitAction>){
+        val triggerableTypes = setOf(UniqueTarget.Triggerable, UniqueTarget.UnitTriggerable)
         for (unique in unit.getUniques()) {
-            if (!unique.conditionals.any { it.type == UniqueType.ConditionalConsumeUnit }) continue
-            val unitAction = UnitAction(type = UnitActionType.TriggerUnique, unique.text){
-                UniqueTriggerActivation.triggerCivwideUnique(unique, unit.civ)
-                unit.consume()
+            if (unique.conditionals.none { it.type?.targetTypes?.contains(UniqueTarget.UnitActionModifier) == true }) continue
+            if (unique.conditionals.any { it.type == UniqueType.UnitActionExtraLimitedTimes }) continue
+            if (unique.type?.targetTypes?.any { it in triggerableTypes }!=true
+                    && unique.conditionals.none { it.type == UniqueType.ConditionalTimedUnique }) continue
+            if (usagesLeft(unit, unique)==0) continue
+
+            val unitAction = UnitAction(type = UnitActionType.TriggerUnique,
+                title = actionTextWithSideEffects(unique.text.removeConditionals(), unique, unit)
+                ){
+                UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
+                activateSideEffects(unit, unique)
             }
             actionList += unitAction
         }
@@ -667,5 +697,79 @@ object UnitActions {
                 GUI.getWorldScreen().bottomUnitTable.update()
             }
         )
+    }
+
+    fun getMovementPointsToUse(actionUnique: Unique): Int {
+        val movementCost = actionUnique.conditionals
+            .filter { it.type == UniqueType.UnitActionMovementCost }
+            .minOfOrNull { it.params[0].toInt() }
+        if (movementCost != null) return movementCost
+        return 1
+    }
+
+    fun activateSideEffects(unit: MapUnit, actionUnique: Unique){
+        val movementCost = getMovementPointsToUse(actionUnique)
+        unit.useMovementPoints(movementCost.toFloat())
+
+        for (conditional in actionUnique.conditionals){
+            when (conditional.type){
+                UniqueType.UnitActionConsumeUnit -> unit.consume()
+                UniqueType.UnitActionLimitedTimes, UniqueType.UnitActionOnce -> {
+                    if (usagesLeft(unit, actionUnique) == 1
+                            && actionUnique.conditionals.any { it.type==UniqueType.UnitActionAfterWhichConsumed }) {
+                        unit.consume()
+                        continue
+                    }
+                    val usagesSoFar = unit.abilityToTimesUsed[actionUnique.placeholderText] ?: 0
+                    unit.abilityToTimesUsed[actionUnique.placeholderText] = usagesSoFar + 1
+                }
+                else -> continue
+            }
+        }
+    }
+
+    /** Returns 'null' if usages are not limited */
+    fun usagesLeft(unit:MapUnit, actionUnique: Unique): Int?{
+        val usagesTotal = getMaxUsages(unit, actionUnique) ?: return null
+        val usagesSoFar = unit.abilityToTimesUsed[actionUnique.placeholderText] ?: 0
+        return usagesTotal - usagesSoFar
+    }
+
+    fun getMaxUsages(unit: MapUnit, actionUnique: Unique): Int? {
+        val extraTimes = unit.getMatchingUniques(actionUnique.type!!)
+            .filter { it.text.removeConditionals() == actionUnique.text.removeConditionals() }
+            .flatMap { it.conditionals.filter { it.type == UniqueType.UnitActionExtraLimitedTimes } }
+            .map { it.params[0].toInt() }
+            .sum()
+
+        val times = actionUnique.conditionals
+            .filter { it.type == UniqueType.UnitActionLimitedTimes }
+            .maxOfOrNull { it.params[0].toInt() }
+        if (times != null) return times + extraTimes
+        if (actionUnique.conditionals.any { it.type == UniqueType.UnitActionOnce }) return 1 + extraTimes
+
+        return null
+    }
+
+    fun actionTextWithSideEffects(originalText:String, actionUnique: Unique, unit: MapUnit): String {
+        val sideEffectString = getSideEffectString(unit, actionUnique)
+        if (sideEffectString == "") return originalText
+        else return "{$originalText} $sideEffectString"
+    }
+
+    fun getSideEffectString(unit:MapUnit, actionUnique: Unique): String {
+        val effects = ArrayList<String>()
+
+        val maxUsages = getMaxUsages(unit, actionUnique)
+        if (maxUsages!=null) effects += "${usagesLeft(unit, actionUnique)}/$maxUsages"
+
+        if (actionUnique.conditionals.any { it.type == UniqueType.UnitActionConsumeUnit }
+                || actionUnique.conditionals.any { it.type == UniqueType.UnitActionAfterWhichConsumed } && usagesLeft(unit, actionUnique) == 1
+                ) effects += Fonts.death.toString()
+        else effects += getMovementPointsToUse(actionUnique).toString() + Fonts.movement
+
+
+        return if (effects.isEmpty()) ""
+        else "(${effects.joinToString { it.tr() }})"
     }
 }

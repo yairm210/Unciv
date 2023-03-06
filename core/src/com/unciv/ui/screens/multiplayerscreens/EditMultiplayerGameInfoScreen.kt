@@ -3,6 +3,7 @@ package com.unciv.ui.screens.multiplayerscreens
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
 import com.unciv.logic.multiplayer.OnlineMultiplayerGame
+import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.popups.ConfirmPopup
@@ -15,6 +16,7 @@ import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.popups.AuthPopup
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 
@@ -116,6 +118,15 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame) 
                     }
                 }
             } catch (ex: Exception) {
+                if (ex is MultiplayerAuthException) {
+                    launchOnGLThread {
+                        AuthPopup(this@EditMultiplayerGameInfoScreen) {
+                            success -> if (success) resign(multiplayerGame)
+                        }.open(true)
+                    }
+                    return@runOnNonDaemonThreadPool
+                }
+
                 val (message) = LoadGameScreen.getLoadExceptionMessage(ex)
                 launchOnGLThread {
                     popup.reuseWith(message, true)

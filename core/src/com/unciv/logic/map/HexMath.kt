@@ -48,6 +48,15 @@ object HexMath {
         return Vector2(x, y)
     }
 
+    /**
+     * Convert hex latitude and longitude into world coordinates.
+     */
+    fun worldFromLatLong(vector: Vector2, tileRadius: Float): Vector2 {
+        val x = vector.x * tileRadius * 1.5f * -1f
+        val y = vector.y * tileRadius * sqrt(3f) * 0.5f
+        return Vector2(x, y)
+    }
+
     /** returns a vector containing width and height a rectangular map should have to have
      *  approximately the same number of tiles as an hexagonal map given a height/width ratio */
     fun getEquivalentRectangularSize(size: Int, ratio: Float = 0.65f): Vector2 {

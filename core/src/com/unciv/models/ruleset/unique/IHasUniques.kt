@@ -17,7 +17,7 @@ interface IHasUniques {
 
     fun getMatchingUniques(uniqueTemplate: String, stateForConditionals: StateForConditionals? = null): Sequence<Unique> {
         val matchingUniques = uniqueMap[uniqueTemplate] ?: return sequenceOf()
-        return matchingUniques.asSequence().filter { it.conditionalsApply(stateForConditionals) }
+        return matchingUniques.asSequence().filter { it.conditionalsApply(stateForConditionals ?: StateForConditionals()) }
     }
 
     fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) =

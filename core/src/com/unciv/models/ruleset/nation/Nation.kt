@@ -295,7 +295,17 @@ import kotlin.math.pow
     }
 
      fun getContrastRatio() = getContrastRatio(getInnerColor(), getOuterColor())
-}
+
+     fun matchesFilter(filter: String): Boolean {
+         return when (filter) {
+             "All" -> true
+             name -> true
+             "Major" -> isMajorCiv()
+             "CityState" -> isCityState()
+             else -> uniques.contains(filter)
+         }
+     }
+ }
 
 
  /** All defined by https://www.w3.org/TR/WCAG20/#relativeluminancedef */

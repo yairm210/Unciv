@@ -221,11 +221,10 @@ object GameStarter {
 
     private fun addCivilizations(newGameParameters: GameParameters, gameInfo: GameInfo, ruleset: Ruleset, existingMap: Boolean) {
         val availableCivNames = Stack<String>()
-        // CityState or Spectator civs are not available for Random pick
         if (gameSetupInfo.gameParameters.enableRandomNationsPool) {
-            for (nation in gameSetupInfo.gameParameters.randomNations)
-                availableCivNames.add(nation.name)
+            availableCivNames.addAll(gameSetupInfo.gameParameters.randomNationsPool.shuffled())
         } else
+            // CityState or Spectator civs are not available for Random pick
             availableCivNames.addAll(ruleset.nations.filter { it.value.isMajorCiv() }.keys.shuffled())
 
         availableCivNames.removeAll(newGameParameters.players.map { it.chosenCiv }.toSet())
@@ -237,7 +236,7 @@ object GameStarter {
             gameInfo.civilizations.add(barbarianCivilization)
         }
 
-        val civNamesWithStartingLocations = if(existingMap) gameInfo.tileMap.startingLocationsByNation.keys
+        val civNamesWithStartingLocations = if (existingMap) gameInfo.tileMap.startingLocationsByNation.keys
             else emptySet()
         val presetMajors = Stack<String>()
         presetMajors.addAll(availableCivNames.filter { it in civNamesWithStartingLocations })
@@ -248,12 +247,12 @@ object GameStarter {
             val max = newGameParameters.maxNumberOfPlayers.coerceAtLeast(newGameParameters.minNumberOfPlayers)
             var playerCount = (min..max).random()
 
-            val humanPlayerCount = newGameParameters.players.filter {
+            val humanPlayerCount = newGameParameters.players.count {
                 it.playerType === PlayerType.Human
-            }.count()
-            val spectatorCount = newGameParameters.players.filter {
+            }
+            val spectatorCount = newGameParameters.players.count {
                 it.chosenCiv === Constants.spectator
-            }.count()
+            }
             playerCount = playerCount.coerceAtLeast(humanPlayerCount + spectatorCount)
 
             if (newGameParameters.players.size < playerCount) {
@@ -265,6 +264,7 @@ object GameStarter {
                     it.playerType === PlayerType.AI
                 }.shuffled().subList(0, extraPlayers)
 
+                @Suppress("ConvertArgumentToSet")  // Not worth it for a handful entries
                 newGameParameters.players.removeAll(playersToRemove)
             }
         }

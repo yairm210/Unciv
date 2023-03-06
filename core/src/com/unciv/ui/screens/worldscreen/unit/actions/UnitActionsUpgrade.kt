@@ -68,10 +68,6 @@ object UnitActionsUpgrade{
                 /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
                  * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
                  */
-
-                /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
-                 * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
-                 */
                 if (newUnit == null) {
                     val resurrectedUnit = civInfo.units.placeUnitNearTile(unitTile.position, unit.name)!!
                     unit.copyStatisticsTo(resurrectedUnit)

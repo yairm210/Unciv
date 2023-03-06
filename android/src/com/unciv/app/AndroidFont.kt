@@ -18,15 +18,16 @@ import com.unciv.ui.components.Fonts
 import java.util.*
 import kotlin.math.abs
 
-class FontAndroid : FontImplementation {
+class AndroidFont : FontImplementation {
 
-    private val fontList: HashSet<Font> = hashSetOf()
+    private val fontList by lazy {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) emptySet()
+        else SystemFonts.getAvailableFonts()
+    }
     private val paint: Paint = Paint()
     private var currentFontFamily: String? = null
 
     init {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-            fontList.addAll(SystemFonts.getAvailableFonts())
         paint.isAntiAlias = true
         paint.strokeWidth = 0f
         paint.setARGB(255, 255, 255, 255)
@@ -49,7 +50,6 @@ class FontAndroid : FontImplementation {
             else
             {
                 paint.typeface = createTypefaceSystem(fontFamilyData.invariantName)
-
             }
 
         }

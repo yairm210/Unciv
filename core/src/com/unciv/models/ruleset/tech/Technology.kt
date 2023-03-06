@@ -1,7 +1,6 @@
 package com.unciv.models.ruleset.tech
 
 import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
@@ -12,8 +11,8 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.components.Fonts
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 
 class Technology: RulesetObject() {
 
@@ -56,7 +55,7 @@ class Technology: RulesetObject() {
         if (enabledUnits.any()) {
             lineList += "{Units enabled}: "
             for (unit in enabledUnits)
-                lineList += " * " + unit.name.tr() + " (" + unit.getShortDescription() + ")"
+                lineList += " • " + unit.name.tr() + " (" + unit.getShortDescription() + ")"
         }
 
         val enabledBuildings = getEnabledBuildings(ruleset, viewingCiv)
@@ -65,14 +64,14 @@ class Technology: RulesetObject() {
         if (regularBuildings.any()) {
             lineList += "{Buildings enabled}: "
             for (building in regularBuildings)
-                lineList += "* " + building.name.tr() + " (" + building.getShortDescription() + ")"
+                lineList += " • " + building.name.tr() + " (" + building.getShortDescription() + ")"
         }
 
         val wonders = enabledBuildings.filter { it.isAnyWonder() }
         if (wonders.any()) {
             lineList += "{Wonders enabled}: "
             for (wonder in wonders)
-                lineList += " * " + wonder.name.tr() + " (" + wonder.getShortDescription() + ")"
+                lineList += " • " + wonder.name.tr() + " (" + wonder.getShortDescription() + ")"
         }
 
         for (obj in getObsoletedObjects(ruleset, viewingCiv))
@@ -225,7 +224,7 @@ class Technology: RulesetObject() {
                 }
             }
 
-        val viewingCiv = GUI.getViewingPlayer()
+        val viewingCiv = if (GUI.isWorldLoaded()) GUI.getViewingPlayer() else null
         val enabledUnits = getEnabledUnits(ruleset, viewingCiv)
         if (enabledUnits.any()) {
             lineList += FormattedLine()
@@ -284,5 +283,14 @@ class Technology: RulesetObject() {
         }
 
         return lineList
+    }
+
+    fun matchesFilter(filter: String): Boolean {
+        return when (filter) {
+            "All" -> true
+            name -> true
+            era() -> true
+            else -> uniques.contains(filter)
+        }
     }
 }

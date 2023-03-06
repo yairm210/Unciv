@@ -32,6 +32,7 @@ import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
+import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
 import java.util.*
 
@@ -253,7 +254,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     //region State changing functions
 
     // Do we automatically simulate until N turn?
-    fun isSimulation(): Boolean = turns < UncivGame.Current.simulateUntilTurnForDebug
+    fun isSimulation(): Boolean = turns < DebugUtils.SIMULATE_UNTIL_TURN
             || turns < simulateMaxTurns && simulateUntilWin
 
     fun nextTurn() {
@@ -266,7 +267,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             playerIndex = (playerIndex + 1) % civilizations.size
             if (playerIndex == 0) {
                 turns++
-                if (UncivGame.Current.simulateUntilTurnForDebug != 0)
+                if (DebugUtils.SIMULATE_UNTIL_TURN != 0)
                     debug("Starting simulation of turn %s", turns)
             }
             player = civilizations[playerIndex]
@@ -311,8 +312,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             setNextPlayer()
         }
 
-        if (turns == UncivGame.Current.simulateUntilTurnForDebug)
-            UncivGame.Current.simulateUntilTurnForDebug = 0
+        if (turns == DebugUtils.SIMULATE_UNTIL_TURN)
+            DebugUtils.SIMULATE_UNTIL_TURN = 0
 
         // We found human player, so we are making him current
         currentTurnStartTime = System.currentTimeMillis()
@@ -542,6 +543,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         }) {
             for (unit in civInfo.units.getCivUnits())
                 unit.updateVisibleTiles(false) // this needs to be done after all the units are assigned to their civs and all other transients are set
+            if(civInfo.playerType == PlayerType.Human)
+                civInfo.exploredRegion.setMapParameters(tileMap.mapParameters) // Required for the correct calculation of the explored region on world wrap maps
             civInfo.cache.updateSightAndResources() // only run ONCE and not for each unit - this is a huge performance saver!
 
             // Since this depends on the cities of ALL civilizations,
@@ -588,10 +591,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         cityDistances.game = this
 
         guaranteeUnitPromotions()
-
-        for (player in civilizations)
-            for (tile in player.exploredTiles)
-                tileMap[tile].setExplored(player, true)
     }
 
     //endregion

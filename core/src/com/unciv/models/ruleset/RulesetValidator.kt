@@ -132,7 +132,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         val vanillaRuleset = RulesetCache.getVanillaRuleset()  // for UnitTypes fallback
 
 
-        if (ruleset.units.values.none { it.hasUnique(UniqueType.FoundCity) })
+        if (ruleset.units.values.none { it.hasUnique(UniqueType.FoundCity, StateForConditionals.IgnoreConditionals) })
             lines += "No city-founding units in ruleset!"
 
         for (unit in ruleset.units.values) {
@@ -167,7 +167,8 @@ class RulesetValidator(val ruleset: Ruleset) {
                     lines += "${unit.name} contains promotion $promotion which does not exist!"
             if (!ruleset.unitTypes.containsKey(unit.unitType) && (ruleset.unitTypes.isNotEmpty() || !vanillaRuleset.unitTypes.containsKey(unit.unitType)))
                 lines += "${unit.name} is of type ${unit.unitType}, which does not exist!"
-            for (unique in unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)) {
+            for (unique in unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
+                + unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)) {
                 val improvementName = unique.params[0]
                 if (ruleset.tileImprovements[improvementName]==null) continue // this will be caught in the checkUniques
                 if ((ruleset.tileImprovements[improvementName] as Stats).none() &&
@@ -541,15 +542,6 @@ class RulesetValidator(val ruleset: Ruleset) {
             rulesetErrors.add(deprecationText, severity)
         }
 
-        if (unique.type.targetTypes.none { uniqueTarget.canAcceptUniqueTarget(it) }
-                // the 'consume unit' conditional causes a triggerable unique to become a unit action
-                && !(uniqueTarget== UniqueTarget.Unit
-                        && unique.isTriggerable
-                        && unique.conditionals.any { it.type == UniqueType.ConditionalConsumeUnit }))
-            rulesetErrors.add(
-                "$name's unique \"${unique.text}\" cannot be put on this type of object!",
-                RulesetErrorSeverity.Warning
-            )
         return rulesetErrors
     }
 }

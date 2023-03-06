@@ -2,7 +2,7 @@
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.UncivGame
+import com.unciv.GUI
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
@@ -21,6 +21,7 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.utils.DebugUtils
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.random.Random
@@ -177,15 +178,6 @@ open class Tile : IsPartOfGameInfoSerialization {
         return getTileImprovement()?.isGreatImprovement() == true
     }
 
-    fun containsUnpillagedGreatImprovement(): Boolean {
-        return getUnpillagedTileImprovement()?.isGreatImprovement() == true
-    }
-
-    fun containsUnfinishedGreatImprovement(): Boolean {
-        if (improvementInProgress == null) return false
-        return ruleset.tileImprovements[improvementInProgress!!]!!.isGreatImprovement()
-    }
-
     /** Returns military, civilian and air units in tile */
     fun getUnits() = sequence {
         if (militaryUnit != null) yield(militaryUnit!!)
@@ -234,24 +226,29 @@ open class Tile : IsPartOfGameInfoSerialization {
             else ruleset.terrains[naturalWonder!!]!!
 
     fun isVisible(player: Civilization): Boolean {
-        if (UncivGame.Current.viewEntireMapForDebug)
+        if (DebugUtils.VISIBLE_MAP)
             return true
         return player.viewableTiles.contains(this)
     }
 
     fun isExplored(player: Civilization): Boolean {
-        if (UncivGame.Current.viewEntireMapForDebug || player.isSpectator())
+        if (DebugUtils.VISIBLE_MAP || player.isSpectator())
             return true
-        return exploredBy.contains(player.civName) || player.exploredTiles.contains(position)
+        return exploredBy.contains(player.civName)
     }
 
-    fun setExplored(player: Civilization, isExplored: Boolean) {
+    fun setExplored(player: Civilization, isExplored: Boolean, explorerPosition: Vector2? = null) {
         if (isExplored) {
-            exploredBy.add(player.civName)
-            player.exploredTiles.add(position)
+            // Disable the undo button if a new tile has been explored
+            if (exploredBy.add(player.civName) && GUI.isWorldLoaded()) {
+                val worldScreen = GUI.getWorldScreen()
+                worldScreen.preActionGameInfo = worldScreen.gameInfo
+            }
+
+            if (player.playerType == PlayerType.Human)
+                player.exploredRegion.checkTilePosition(position, explorerPosition)
         } else {
             exploredBy.remove(player.civName)
-            player.exploredTiles.remove(position)
         }
     }
 
@@ -487,6 +484,20 @@ open class Tile : IsPartOfGameInfoSerialization {
         if (isAdjacentTo(Constants.freshWater)) fertility += 1 // meaning total +2 for river
         if (checkCoasts && isCoastalTile()) fertility += 2
         return fertility
+    }
+
+    fun providesResources(civInfo: Civilization): Boolean {
+        if (!hasViewableResource(civInfo)) return false
+        if (isCityCenter()) return true
+        val improvement = getUnpillagedTileImprovement()
+        if (improvement != null && improvement.name in tileResource.getImprovements()
+                && (improvement.techRequired==null || civInfo.tech.isResearched(improvement.techRequired!!))) return true
+        // TODO: Generic-ify to unique
+        if (tileResource.resourceType==ResourceType.Strategic
+                && improvement!=null
+                && improvement.isGreatImprovement())
+            return true
+        return false
     }
 
     // This should be the only adjacency function

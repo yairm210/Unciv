@@ -69,6 +69,8 @@ class WorldMapHolder(
 
     private lateinit var tileGroupMap: TileGroupMap<WorldTileGroup>
 
+    lateinit var currentTileSetStrings: TileSetStrings
+
     init {
         if (Gdx.app.type == Application.ApplicationType.Desktop) this.setFlingTime(0f)
         continuousScrollingX = tileMap.mapParameters.worldWrap
@@ -109,6 +111,7 @@ class WorldMapHolder(
 
     internal fun addTiles() {
         val tileSetStrings = TileSetStrings()
+        currentTileSetStrings = tileSetStrings
         val tileGroupsNew = tileMap.values.map { WorldTileGroup(it, tileSetStrings) }
         tileGroupMap = TileGroupMap(this, tileGroupsNew, continuousScrollingX)
 
@@ -775,6 +778,40 @@ class WorldMapHolder(
         }
         else
             super.reloadMaxZoom()
+    }
+
+    override fun restrictX(deltaX: Float): Float {
+        val exploredRegion = worldScreen.viewingCiv.exploredRegion
+        var result = scrollX - deltaX
+
+        if (exploredRegion.shouldRecalculateCoords()) exploredRegion.calculateStageCoords(maxX, maxY)
+
+        if (!exploredRegion.shouldRestrictX()) return result
+
+        val leftX = exploredRegion.getLeftX()
+        val rightX = exploredRegion.getRightX()
+
+        if (deltaX < 0 && scrollX <= rightX && result > rightX)
+            result = rightX
+        else if (deltaX > 0 && scrollX >= leftX && result < leftX)
+            result = leftX
+
+        return result
+    }
+
+    override fun restrictY(deltaY: Float): Float {
+        val exploredRegion = worldScreen.viewingCiv.exploredRegion
+        var result = scrollY + deltaY
+
+        if (exploredRegion.shouldRecalculateCoords()) exploredRegion.calculateStageCoords(maxX, maxY)
+
+        val topY = exploredRegion.getTopY()
+        val bottomY = exploredRegion.getBottomY()
+
+        if (result < topY) result = topY
+        else if (result > bottomY) result = bottomY
+
+        return result
     }
 
 

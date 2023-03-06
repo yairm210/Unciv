@@ -1,7 +1,8 @@
 package com.unciv.logic.civilization.transients
 
+import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.UncivGame
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
@@ -17,6 +18,7 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.utils.DebugUtils
 
 /** CivInfo class was getting too crowded */
 class CivInfoTransientCache(val civInfo: Civilization) {
@@ -33,6 +35,10 @@ class CivInfoTransientCache(val civInfo: Civilization) {
 
     @Transient
     val uniqueBuildings = hashSetOf<Building>()
+
+    /** Contains mapping of cities to travel mediums from ALL civilizations connected by trade routes to the capital */
+    @Transient
+    var citiesConnectedToCapitalToMediums = mapOf<City, Set<String>>()
 
     fun setTransients(){
         val ruleset = civInfo.gameInfo.ruleset
@@ -69,7 +75,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     }
 
     // This is a big performance
-    fun updateViewableTiles() {
+    fun updateViewableTiles(explorerPosition: Vector2? = null) {
         setNewViewableTiles()
 
         updateViewableInvisibleTiles()
@@ -82,7 +88,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         // and we never actually iterate on the explored tiles (only check contains()),
         // so there's no fear of concurrency problems.
         civInfo.viewableTiles.asSequence().forEach { tile ->
-            tile.setExplored(civInfo, true)
+            tile.setExplored(civInfo, true, explorerPosition)
         }
 
 
@@ -136,7 +142,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         val newViewableTiles = HashSet<Tile>()
 
         // while spectating all map is visible
-        if (civInfo.isSpectator() || UncivGame.Current.viewEntireMapForDebug) {
+        if (civInfo.isSpectator() || DebugUtils.VISIBLE_MAP) {
             val allTiles = civInfo.gameInfo.tileMap.values.toSet()
             civInfo.viewableTiles = allTiles
             civInfo.viewableInvisibleUnitsTiles = allTiles
@@ -235,20 +241,20 @@ class CivInfoTransientCache(val civInfo: Civilization) {
 
         if (!initialSetup) { // In the initial setup we're loading an old game state, so it doesn't really count
             for (city in citiesReachedToMediums.keys)
-                if (city !in civInfo.citiesConnectedToCapitalToMediums && city.civ == civInfo && city != civInfo.getCapital()!!)
+                if (city !in citiesConnectedToCapitalToMediums && city.civ == civInfo && city != civInfo.getCapital()!!)
                     civInfo.addNotification("[${city.name}] has been connected to your capital!",
                         city.location, NotificationCategory.Cities, NotificationIcon.Gold
                     )
 
             // This may still contain cities that have just been destroyed by razing - thus the population test
-            for (city in civInfo.citiesConnectedToCapitalToMediums.keys)
+            for (city in citiesConnectedToCapitalToMediums.keys)
                 if (!citiesReachedToMediums.containsKey(city) && city.civ == civInfo && city.population.population > 0)
                     civInfo.addNotification("[${city.name}] has been disconnected from your capital!",
                         city.location, NotificationCategory.Cities, NotificationIcon.Gold
                     )
         }
 
-        civInfo.citiesConnectedToCapitalToMediums = citiesReachedToMediums
+        citiesConnectedToCapitalToMediums = citiesReachedToMediums
     }
 
     fun updateCivResources() {

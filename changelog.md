@@ -1,3 +1,105 @@
+## 4.5.4
+
+Fixed endless loop for mod checker
+
+Modding: global alert available as triggerable for all objects
+
+Better order of unit actions
+
+Better checks for when units are purchasable
+
+Fixed flanking bonus calculation when attacking unit is not adjacent to enemy
+
+Automated workers do not remove Forest tiles for Camp improvements
+
+Fix ExploredRegion rectangular maps support + Zoomout flicker prevention reworked  - By Gualdimar
+
+Make "Borderless" display option translatable  - By Ouaz
+
+## 4.5.3
+
+Unit Action moddability!
+- 'founds a new city' now accepts action modifiers
+- 'for [amount] movement' modifier
+- '[amount] times', 'once', 'after which this unit is consumed'  modifiers for limited actions
+
+Android: "Screen Mode" option  - By vegeta1k95
+
+By SomeTroglodyte:
+- Better Religion info and some moddability
+- Diplomacy trade layout fix
+- Show terrain overriding yields in Civilopedia
+
+Fixed multiplayer password  - By GGGuenni
+
+Fixed map editor painting while dragging - By Gualdimar
+
+## 4.5.2
+
+Show death symbol next to actions that expend the unit
+
+Modding:
+- 'create improvement' action, <consuming this unit> and <as an action> modifiers
+
+- gifting cities no longer causes crash
+
+By GGGuenni:
+- Fixed wrong implementation of Basic auth
+- Fixed TurnChecker can not authenticate
+
+Fix missing desert for flood plains in hexarealm tileset  - By AdityaMH
+
+Fix random nations pool popup  - By SomeTroglodyte
+
+## 4.5.1
+
+Introduced unit triggers!
+
+Added triggered uniques to grant specific tech / policy
+
+Civilopedia does not crash when displaying techs on fresh start
+
+'upon declaring friendship' triggers for both sides
+
+all unpillagable improvements are not destroyed by 'destroy improvements' unique
+
+By SomeTroglodyte:
+- Fix broken random nations pool
+- City screen displays "free" tile yields undimmed
+
+AbsoluteUnits - Chu-Ko-Nu, Longbowman, Crossbowman v2  - By letstalkaboutdune
+
+## 4.5.0
+
+Added password authentication as server feature  - By GGGuenni
+
+Map exploring disables undo button + ExploredRegion smallfixes  - By Gualdimar
+
+By SomeTroglodyte:
+- Fix problems with dual save folder support
+- Show UnitTypes in Civilopedia
+
+Modding: "must be on/next to" unique for buildings can accepts tile filter
+
+## 4.4.19
+
+By Gualdimar:
+- Limit camera movement within explored region
+
+modding:
+- Added "upon gaining a [unitFilter] unit" trigger condition
+- Added religion state conditionals
+
+Reload world screen after tileset/unitset change from in main menu screen - Ryg-git
+
+Android: use best possible device frame rate  - By vegeta1k95
+
+Allow filters in the ModOptions "ToRemove" lists  - By SomeTroglodyte
+
+Play city-state music if available  - By Skekdog
+
+Add 'neutral' Flood plains  - By Caballero-Arepa
+
 ## 4.4.18
 
 By vegeta1k95:

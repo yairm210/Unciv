@@ -8,12 +8,12 @@ import com.unciv.UncivGame
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
-import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.keyShortcuts
 import com.unciv.ui.components.extensions.onActivation
+import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
@@ -53,7 +53,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
                 // overlay, since the user definitely wants to interact with the new unit.
                 worldScreen.mapHolder.removeUnitActionOverlay()
                 if (UncivGame.Current.settings.autoUnitCycle
-                        && (unitAction.type.isSkippingToNextUnit || unit.currentMovement == 0f)) {
+                        && (unit.isDestroyed || unitAction.type.isSkippingToNextUnit || unit.currentMovement == 0f)) {
                     worldScreen.switchToNextUnit()
                 }
             }

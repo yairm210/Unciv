@@ -18,18 +18,35 @@ import com.unciv.logic.files.UncivFiles
  */
 @Suppress("RedundantSuspendModifier") // Methods can take a long time, so force users to use them in a coroutine to not get ANRs on Android
 class OnlineMultiplayerFiles(
-    private var fileStorageIdentifier: String? = null
+    private var fileStorageIdentifier: String? = null,
+    private var authenticationHeader: Map<String, String>? = null
 ) {
     fun fileStorage(): FileStorage {
         val identifier = if (fileStorageIdentifier == null) UncivGame.Current.settings.multiplayer.server else fileStorageIdentifier
+        val authHeader = if (authenticationHeader == null) {
+            val settings = UncivGame.Current.settings.multiplayer
+            mapOf("Authorization" to settings.getAuthHeader())
+        } else {
+            authenticationHeader
+        }
 
-        return if (identifier == Constants.dropboxMultiplayerServer) DropBox else UncivServerFileStorage(identifier!!)
+        return if (identifier == Constants.dropboxMultiplayerServer) {
+            DropBox
+        } else {
+            UncivServerFileStorage.apply {
+                serverUrl = identifier!!
+                this.authHeader = authHeader
+            }
+        }
     }
 
-    /** @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time */
+    /**
+     * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
+     * @throws MultiplayerAuthException if the authentication failed
+     */
     suspend fun tryUploadGame(gameInfo: GameInfo, withPreview: Boolean) {
         val zippedGameInfo = UncivFiles.gameInfoToString(gameInfo, forceZip = true)
-        fileStorage().saveFileData(gameInfo.gameId, zippedGameInfo, true)
+        fileStorage().saveFileData(gameInfo.gameId, zippedGameInfo)
 
         // We upload the preview after the game because otherwise the following race condition will happen:
         // Current player ends turn -> Uploads Game Preview
@@ -48,13 +65,14 @@ class OnlineMultiplayerFiles(
      * the gameInfo, it is recommended to use tryUploadGame(gameInfo, withPreview = true)
      *
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
+     * @throws MultiplayerAuthException if the authentication failed
      *
      * @see tryUploadGame
      * @see GameInfo.asPreview
      */
     suspend fun tryUploadGamePreview(gameInfo: GameInfoPreview) {
         val zippedGameInfo = UncivFiles.gameInfoToString(gameInfo)
-        fileStorage().saveFileData("${gameInfo.gameId}_Preview", zippedGameInfo, true)
+        fileStorage().saveFileData("${gameInfo.gameId}_Preview", zippedGameInfo)
     }
 
     /**

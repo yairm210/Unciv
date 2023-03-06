@@ -201,12 +201,12 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
                     unitDescriptionTable.add(unit.promotions.XP.toString() + "/" + unit.promotions.xpForNextPromotion())
                 }
 
-                if (unit.canDoReligiousAction(Constants.spreadReligion)) {
+                if (unit.canDoLimitedAction(Constants.spreadReligion)) {
                     unitDescriptionTable.add(ImageGetter.getStatIcon("Faith")).size(20f)
                     unitDescriptionTable.add(unit.getActionString(Constants.spreadReligion))
                 }
 
-                if (unit.canDoReligiousAction(Constants.removeHeresy)) {
+                if (unit.canDoLimitedAction(Constants.removeHeresy)) {
                     unitDescriptionTable.add(ImageGetter.getImage("OtherIcons/Remove Heresy")).size(20f)
                     unitDescriptionTable.add(unit.getActionString(Constants.removeHeresy))
                 }

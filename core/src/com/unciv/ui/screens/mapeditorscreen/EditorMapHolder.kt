@@ -169,7 +169,7 @@ class EditorMapHolder(
             }
 
             override fun touchDragged(event: InputEvent?, x: Float, y: Float, pointer: Int) {
-                if (!isDragging) {
+                if (!isDragging && !isPanning) {
                     isDragging = true
                     val deltaTime = System.currentTimeMillis() - touchDownTime
                     if (deltaTime > 400) {

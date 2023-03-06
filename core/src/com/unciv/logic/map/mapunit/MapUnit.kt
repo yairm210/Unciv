@@ -110,8 +110,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
     var isTransported: Boolean = false
     var turnsFortified = 0
 
+    // Old, to be deprecated
+    @Deprecated("As of 4.5.3")
     var abilityUsesLeft: HashMap<String, Int> = hashMapOf()
+    @Deprecated("As of 4.5.3")
     var maxAbilityUses: HashMap<String, Int> = hashMapOf()
+
+    // New - track only *how many have been used*, derive max from uniques, left = max - used
+    var abilityToTimesUsed: HashMap<String, Int> = hashMapOf()
 
     var religion: String? = null
     var religiousStrengthLost = 0
@@ -174,6 +180,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         toReturn.isTransported = isTransported
         toReturn.abilityUsesLeft.putAll(abilityUsesLeft)
         toReturn.maxAbilityUses.putAll(maxAbilityUses)
+        toReturn.abilityToTimesUsed.putAll(abilityToTimesUsed)
         toReturn.religion = religion
         toReturn.religiousStrengthLost = religiousStrengthLost
         toReturn.movementMemories = movementMemories.copy()
@@ -290,7 +297,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     /**
      * Update this unit's cache of viewable tiles and its civ's as well.
      */
-    fun updateVisibleTiles(updateCivViewableTiles:Boolean = true) {
+    fun updateVisibleTiles(updateCivViewableTiles:Boolean = true, explorerPosition: Vector2? = null) {
         val oldViewableTiles = viewableTiles
 
         viewableTiles = when {
@@ -302,7 +309,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         // Set equality automatically determines if anything changed - https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-abstract-set/equals.html
         if (updateCivViewableTiles && oldViewableTiles != viewableTiles)
-            civ.cache.updateViewableTiles()
+            civ.cache.updateViewableTiles(explorerPosition)
     }
 
     fun isActionUntilHealed() = action?.endsWith("until healed") == true
@@ -423,6 +430,11 @@ class MapUnit : IsPartOfGameInfoSerialization {
             ?: throw java.lang.Exception("Unit $name is not found!")
 
         updateUniques()
+    }
+
+    fun getTriggeredUniques(trigger: UniqueType,
+                            stateForConditionals: StateForConditionals = StateForConditionals(civInfo = civ, unit = this)): Sequence<Unique> {
+        return getUniques().filter { it.conditionals.any { it.type == trigger } && it.conditionalsApply(stateForConditionals) }
     }
 
     fun useMovementPoints(amount: Float) {
@@ -607,7 +619,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             promotions.addPromotion(promotion, true)
         }
 
-        updateVisibleTiles()
+        updateVisibleTiles(true, currentTile.position)
     }
 
     fun putInTile(tile: Tile) {
@@ -810,12 +822,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return civ.gameInfo.religions[religion]!!.getReligionDisplayName()
     }
 
-    fun religiousActionsUnitCanDo(): Sequence<String> {
+    fun limitedActionsUnitCanDo(): Sequence<String> {
         return getMatchingUniques(UniqueType.CanActionSeveralTimes)
             .map { it.params[0] }
     }
 
-    fun canDoReligiousAction(action: String): Boolean {
+    fun canDoLimitedAction(action: String): Boolean {
         return getMatchingUniques(UniqueType.CanActionSeveralTimes).any { it.params[0] == action }
     }
 
@@ -828,7 +840,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun setupAbilityUses(buildCity: City? = null) {
-        for (action in religiousActionsUnitCanDo()) {
+        for (action in limitedActionsUnitCanDo()) {
             val baseAmount = getBaseMaxActionUses(action)
             val additional =
                 if (buildCity == null) 0

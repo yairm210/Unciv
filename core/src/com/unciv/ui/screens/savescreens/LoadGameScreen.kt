@@ -96,7 +96,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
     override fun onExistingSaveSelected(saveGameFile: FileHandle) {
         copySavedGameToClipboardButton.enable()
         rightSideButton.isVisible = true
-        rightSideButton.setText("Load [$selectedSave]".tr())
+        rightSideButton.setText("Load [${saveGameFile.name()}]".tr())
         rightSideButton.enable()
     }
 
@@ -115,15 +115,15 @@ class LoadGameScreen : LoadOrSaveScreen() {
     }
 
     private fun onLoadGame() {
-        if (selectedSave.isEmpty()) return
+        if (selectedSave == null) return
         val loadingPopup = Popup( this)
         loadingPopup.addGoodSizedLabel(Constants.loading)
         loadingPopup.open()
         Concurrency.run(loadGame) {
             try {
                 // This is what can lead to ANRs - reading the file and setting the transients, that's why this is in another thread
-                val loadedGame = game.files.loadGameByName(selectedSave)
-                game.loadGame(loadedGame)
+                val loadedGame = game.files.loadGameFromFile(selectedSave!!)
+                game.loadGame(loadedGame, true)
             } catch (notAPlayer: UncivShowableException) {
                 launchOnGLThread {
                     val (message) = getLoadExceptionMessage(notAPlayer)
@@ -146,7 +146,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
                 try {
                     val clipboardContentsString = Gdx.app.clipboard.contents.trim()
                     val loadedGame = UncivFiles.gameInfoFromString(clipboardContentsString)
-                    game.loadGame(loadedGame)
+                    game.loadGame(loadedGame, true)
                 } catch (ex: Exception) {
                     launchOnGLThread { handleLoadGameException(ex, "Could not load game from clipboard!") }
                 }
@@ -159,22 +159,22 @@ class LoadGameScreen : LoadOrSaveScreen() {
     }
 
     private fun Table.addLoadFromCustomLocationButton() {
-        if (!game.files.canLoadFromCustomSaveLocation()) return
         val loadFromCustomLocation = loadFromCustomLocation.toTextButton()
         loadFromCustomLocation.onClick {
             errorLabel.isVisible = false
             loadFromCustomLocation.setText(Constants.loading.tr())
             loadFromCustomLocation.disable()
             Concurrency.run(Companion.loadFromCustomLocation) {
-                game.files.loadGameFromCustomLocation { result ->
-                    if (result.isError()) {
-                        handleLoadGameException(result.exception!!, "Could not load game from custom location!")
-                    } else if (result.isSuccessful()) {
-                        Concurrency.run {
-                            game.loadGame(result.gameData!!)
-                        }
+                game.files.loadGameFromCustomLocation(
+                    {
+                        Concurrency.run { game.loadGame(it, true) }
+                        loadFromCustomLocation.enable()
+                    },
+                    {
+                        handleLoadGameException(it, "Could not load game from custom location!")
+                        loadFromCustomLocation.enable()
                     }
-                }
+                )
             }
         }
         add(loadFromCustomLocation).row()
@@ -183,9 +183,10 @@ class LoadGameScreen : LoadOrSaveScreen() {
     private fun getCopyExistingSaveToClipboardButton(): TextButton {
         val copyButton = copyExistingSaveToClipboard.toTextButton()
         copyButton.onActivation {
+            if (selectedSave == null) return@onActivation
             Concurrency.run(copyExistingSaveToClipboard) {
                 try {
-                    val gameText = game.files.getSave(selectedSave).readString()
+                    val gameText = selectedSave!!.readString()
                     Gdx.app.clipboard.contents = if (gameText[0] == '{') Gzip.zip(gameText) else gameText
                 } catch (ex: Throwable) {
                     ex.printStackTrace()

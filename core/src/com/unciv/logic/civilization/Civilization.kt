@@ -99,10 +99,6 @@ class Civilization : IsPartOfGameInfoSerialization {
     @Transient
     var viewableInvisibleUnitsTiles = setOf<Tile>()
 
-    /** Contains mapping of cities to travel mediums from ALL civilizations connected by trade routes to the capital */
-    @Transient
-    var citiesConnectedToCapitalToMediums = mapOf<City, Set<String>>()
-
     /** This is for performance since every movement calculation depends on this, see MapUnit comment */
     @Transient
     var hasActiveEnemyMovementPenalty = false
@@ -190,7 +186,9 @@ class Civilization : IsPartOfGameInfoSerialization {
     // This is basically a way to ensure our lists are immutable.
     var cities = listOf<City>()
     var citiesCreated = 0
-    var exploredTiles = HashSet<Vector2>()
+
+    // Limit camera within explored region
+    var exploredRegion = ExploredRegion()
 
     fun hasExplored(tile: Tile) = tile.isExplored(this)
 
@@ -270,11 +268,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.proximity.putAll(proximity)
         toReturn.cities = cities.map { it.clone() }
         toReturn.neutralRoads = neutralRoads
-
-        // This is the only thing that is NOT switched out, which makes it a source of ConcurrentModification errors.
-        // Cloning it by-pointer is a horrific move, since the serialization would go over it ANYWAY and still lead to concurrency problems.
-        // Cloning it by iterating on the tilemap values may seem ridiculous, but it's a perfectly thread-safe way to go about it, unlike the other solutions.
-        toReturn.exploredTiles.addAll(gameInfo.tileMap.values.asSequence().map { it.position }.filter { it in exploredTiles })
+        toReturn.exploredRegion = exploredRegion.clone()
         toReturn.lastSeenImprovement.putAll(lastSeenImprovement)
         toReturn.notifications.addAll(notifications)
         toReturn.notificationsLog.addAll(notificationsLog)
@@ -396,7 +390,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         return newResourceSupplyList
     }
 
-    fun isCapitalConnectedToCity(city: City): Boolean = citiesConnectedToCapitalToMediums.keys.contains(city)
+    fun isCapitalConnectedToCity(city: City): Boolean = cache.citiesConnectedToCapitalToMediums.keys.contains(city)
 
 
     /**

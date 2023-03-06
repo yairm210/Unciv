@@ -20,6 +20,13 @@ class AndroidLogBackend : LogBackend {
     override fun isRelease(): Boolean {
         return !BuildConfig.DEBUG
     }
+
+    override fun getSystemInfo(): String {
+        return """
+        Device Model: ${Build.MODEL}
+        API Level: ${Build.VERSION.SDK_INT}
+        """.trimIndent()
+    }
 }
 
 private fun toAndroidTag(tag: Tag): String {

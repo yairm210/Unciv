@@ -58,6 +58,11 @@ class TileGroupMap<T: TileGroup>(
     private var bottomX = Float.MAX_VALUE
     private var bottomY = Float.MAX_VALUE
 
+    private var drawTopX = 0f
+    private var drawBottomX = 0f
+
+    private var maxVisibleMapWidth = 0f
+
     init {
 
         for (tileGroup in tileGroups) {
@@ -93,6 +98,9 @@ class TileGroupMap<T: TileGroup>(
         for (group in tileGroups) {
             group.moveBy(-bottomX, -bottomY)
         }
+
+        drawTopX = topX - bottomX
+        drawBottomX = bottomX - bottomX
 
         val baseLayers = ArrayList<TileLayerTerrain>()
         val featureLayers = ArrayList<TileLayerFeatures>()
@@ -135,6 +143,8 @@ class TileGroupMap<T: TileGroup>(
         else setSize(topX - bottomX, topY - bottomY)
 
         cullingArea = Rectangle(0f, 0f, width, height)
+
+        maxVisibleMapWidth = width - groupSize * 1.5f
     }
 
     /**
@@ -162,19 +172,17 @@ class TileGroupMap<T: TileGroup>(
     override fun draw(batch: Batch?, parentAlpha: Float) {
 
         if (worldWrap) {
-
             // Prevent flickering when zoomed out so you can see entire map
-            val visibleMapWidth: Float
-            if(mapHolder.width > width) visibleMapWidth = width - groupSize * 1.5f
-            else visibleMapWidth = mapHolder.width
+            val visibleMapWidth = if (mapHolder.width > maxVisibleMapWidth) maxVisibleMapWidth
+                else mapHolder.width
 
             // Where is viewport's boundaries
-            val rightSide = mapHolder.scrollX + visibleMapWidth/2f
-            val leftSide = mapHolder.scrollX - visibleMapWidth/2f
+            val rightSide = mapHolder.scrollX + visibleMapWidth / 2f
+            val leftSide = mapHolder.scrollX - visibleMapWidth / 2f
 
             // Have we looked beyond map?
-            val diffRight = rightSide - topX
-            val diffLeft = leftSide - bottomX
+            val diffRight = rightSide - drawTopX
+            val diffLeft = leftSide - drawBottomX
 
             val beyondRight = diffRight >= 0f
             val beyondLeft = diffLeft <= 0f
@@ -190,23 +198,21 @@ class TileGroupMap<T: TileGroup>(
                 children.forEach {
                     if (beyondRight) {
                         // Move from left to right
-                        if (it.x - bottomX <= diffRight)
+                        if (it.x - drawBottomX <= diffRight)
                             it.x += width
                     } else if (beyondLeft) {
                         // Move from right to left
-                        if (it.x + groupSize >= topX + diffLeft)
+                        if (it.x + groupSize >= drawTopX + diffLeft)
                             it.x -= width
                     }
                     newBottomX = min(newBottomX, it.x)
                     newTopX = max(newTopX, it.x + groupSize)
                 }
 
-                bottomX = newBottomX
-                topX = newTopX
+                drawBottomX = newBottomX
+                drawTopX = newTopX
             }
-
         }
-
         super.draw(batch, parentAlpha)
     }
 

@@ -22,6 +22,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Empire enters golden age"
 	Applicable to: Triggerable
 
+??? example  "Empire enters a [amount]-turn Golden Age"
+	Example: "Empire enters a [3]-turn Golden Age"
+
+	Applicable to: Triggerable
+
 ??? example  "Free Great Person"
 	Applicable to: Triggerable
 
@@ -32,6 +37,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[amount] population in a random city"
 	Example: "[3] population in a random city"
+
+	Applicable to: Triggerable
+
+??? example  "Discover [tech]"
+	Example: "Discover [Agriculture]"
+
+	Applicable to: Triggerable
+
+??? example  "Adopt [policy]"
+	Example: "Adopt [Oligarchy]"
 
 	Applicable to: Triggerable
 
@@ -77,8 +92,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "This Unit gains the [promotion] promotion"
-	Example: "This Unit gains the [Shock I] promotion"
+??? example  "Triggers the following global alert: [comment]"
+	Example: "Triggers the following global alert: [comment]"
 
 	Applicable to: Triggerable
 
@@ -97,8 +112,24 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
-??? example  "Will not be displayed in Civilopedia"
-	Applicable to: Triggerable, Global, Nation, Era, Tech, Policy, FounderBelief, FollowerBelief, Building, Wonder, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, Speed, Tutorial, CityState, ModOptions, Conditional, TriggerCondition
+## UnitTriggerable uniques
+??? example  "Heal this unit by [amount] HP"
+	Example: "Heal this unit by [3] HP"
+
+	Applicable to: UnitTriggerable
+
+??? example  "This Unit gains [amount] XP"
+	Example: "This Unit gains [3] XP"
+
+	Applicable to: UnitTriggerable, Ruins
+
+??? example  "This Unit upgrades for free"
+	Applicable to: UnitTriggerable, Global
+
+??? example  "This Unit gains the [promotion] promotion"
+	Example: "This Unit gains the [Shock I] promotion"
+
+	Applicable to: UnitTriggerable
 
 ## Global uniques
 ??? example  "[stats]"
@@ -813,9 +844,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
-??? example  "This Unit upgrades for free"
-	Applicable to: Global
-
 ## Nation uniques
 ??? example  "Will not be chosen for new games"
 	Applicable to: Nation
@@ -829,6 +857,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "Starts with [Oligarchy] adopted"
 
 	Applicable to: Nation
+
+??? example  "Will not be displayed in Civilopedia"
+	Applicable to: Nation, Tech, Policy, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins
 
 ## Era uniques
 ??? example  "Starting in this era disables religion"
@@ -846,12 +877,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Cannot be hurried"
 	Applicable to: Tech, Building
-
-## Policy uniques
-??? example  "Triggers the following global alert: [comment]"
-	Example: "Triggers the following global alert: [comment]"
-
-	Applicable to: Policy
 
 ## FounderBelief uniques
 ??? example  "[stats] for each global city following this religion"
@@ -949,23 +974,23 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Enables nuclear weapon"
 	Applicable to: Building
 
-??? example  "Must be on [terrainFilter]"
-	Example: "Must be on [Fresh Water]"
+??? example  "Must be on [tileFilter]"
+	Example: "Must be on [Farm]"
 
 	Applicable to: Building
 
-??? example  "Must not be on [terrainFilter]"
-	Example: "Must not be on [Fresh Water]"
+??? example  "Must not be on [tileFilter]"
+	Example: "Must not be on [Farm]"
 
 	Applicable to: Building
 
-??? example  "Must be next to [terrainFilter]"
-	Example: "Must be next to [Fresh Water]"
+??? example  "Must be next to [tileFilter]"
+	Example: "Must be next to [Farm]"
 
 	Applicable to: Building, Improvement
 
-??? example  "Must not be next to [terrainFilter]"
-	Example: "Must not be next to [Fresh Water]"
+??? example  "Must not be next to [tileFilter]"
+	Example: "Must not be next to [Farm]"
 
 	Applicable to: Building
 
@@ -1018,8 +1043,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Founds a new city"
 	Applicable to: Unit
 
-??? example  "Can construct [improvementName]"
-	Example: "Can construct [Trading Post]"
+??? example  "Can instantly construct a [improvementFilter] improvement"
+	Example: "Can instantly construct a [All Road] improvement"
 
 	Applicable to: Unit
 
@@ -1029,6 +1054,55 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "May create improvements on water resources"
+	Applicable to: Unit
+
+??? example  "May found a religion"
+	Applicable to: Unit
+
+??? example  "May enhance a religion"
+	Applicable to: Unit
+
+??? example  "Can be added to [comment] in the Capital"
+	Example: "Can be added to [comment] in the Capital"
+
+	Applicable to: Unit
+
+??? example  "Prevents spreading of religion to the city it is next to"
+	Applicable to: Unit
+
+??? example  "Removes other religions when spreading religion"
+	Applicable to: Unit
+
+??? example  "May Paradrop up to [amount] tiles from inside friendly territory"
+	Example: "May Paradrop up to [3] tiles from inside friendly territory"
+
+	Applicable to: Unit
+
+??? example  "Can perform Air Sweep"
+	Applicable to: Unit
+
+??? example  "Can [action] [amount] times"
+	Example: "Can [Spread Religion] [3] times"
+
+	Applicable to: Unit
+
+??? example  "Can speed up construction of a building"
+	Applicable to: Unit
+
+??? example  "Can speed up the construction of a wonder"
+	Applicable to: Unit
+
+??? example  "Can hurry technology research"
+	Applicable to: Unit
+
+??? example  "Can undertake a trade mission with City-State, giving a large sum of gold and [amount] Influence"
+	Example: "Can undertake a trade mission with City-State, giving a large sum of gold and [3] Influence"
+
+	Applicable to: Unit
+
+??? example  "Can transform to [unit]"
+	Example: "Can transform to [Musketman]"
+
 	Applicable to: Unit
 
 ??? example  "[relativeAmount]% Strength for enemy [combatantFilter] units in adjacent [tileFilter] tiles"
@@ -1044,12 +1118,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "[relativeAmount]% Strength bonus for [mapUnitFilter] units within [amount] tiles"
 	Example: "[+20]% Strength bonus for [Wounded] units within [3] tiles"
 
-	Applicable to: Unit
-
-??? example  "May found a religion"
-	Applicable to: Unit
-
-??? example  "May enhance a religion"
 	Applicable to: Unit
 
 ??? example  "Can only attack [combatantFilter] units"
@@ -1069,6 +1137,15 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Self-destructs when attacking"
+	Applicable to: Unit
+
+??? example  "Eliminates combat penalty for attacking across a coast"
+	Applicable to: Unit
+
+??? example  "May attack when embarked"
+	Applicable to: Unit
+
+??? example  "Eliminates combat penalty for attacking over a river"
 	Applicable to: Unit
 
 ??? example  "Blast radius [amount]"
@@ -1106,26 +1183,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Can move immediately once bought"
 	Applicable to: Unit
 
-??? example  "May Paradrop up to [amount] tiles from inside friendly territory"
-	Example: "May Paradrop up to [3] tiles from inside friendly territory"
-
-	Applicable to: Unit
-
 ??? example  "Unit will heal every turn, even if it performs an action"
 	Applicable to: Unit
 
 ??? example  "All adjacent units heal [amount] HP when healing"
 	Example: "All adjacent units heal [3] HP when healing"
 
-	Applicable to: Unit
-
-??? example  "Eliminates combat penalty for attacking across a coast"
-	Applicable to: Unit
-
-??? example  "May attack when embarked"
-	Applicable to: Unit
-
-??? example  "Eliminates combat penalty for attacking over a river"
 	Applicable to: Unit
 
 ??? example  "No Sight"
@@ -1175,9 +1238,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Cannot intercept [mapUnitFilter] units"
 	Example: "Cannot intercept [Wounded] units"
 
-	Applicable to: Unit
-
-??? example  "Can perform Air Sweep"
 	Applicable to: Unit
 
 ??? example  "[relativeAmount]% Strength when performing Air Sweep"
@@ -1252,14 +1312,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Religious Unit"
 	Applicable to: Unit
 
-??? example  "Can be added to [comment] in the Capital"
-	Example: "Can be added to [comment] in the Capital"
-
-	Applicable to: Unit
-
-??? example  "Can start an [amount]-turn golden age"
-	Example: "Can start an [3]-turn golden age"
-
+??? example  "Takes your religion over the one in their birth city"
 	Applicable to: Unit
 
 ??? example  "Great Person - [comment]"
@@ -1267,45 +1320,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Unit
 
-??? example  "Prevents spreading of religion to the city it is next to"
-	Applicable to: Unit
-
-??? example  "Takes your religion over the one in their birth city"
-	Applicable to: Unit
-
-??? example  "Removes other religions when spreading religion"
-	Applicable to: Unit
-
-??? example  "Can [action] [amount] times"
-	Example: "Can [Spread Religion] [3] times"
-
-	Applicable to: Unit
-
-??? example  "Can speed up construction of a building"
-	Applicable to: Unit
-
-??? example  "Can speed up the construction of a wonder"
-	Applicable to: Unit
-
-??? example  "Can hurry technology research"
-	Applicable to: Unit
-
-??? example  "Can undertake a trade mission with City-State, giving a large sum of gold and [amount] Influence"
-	Example: "Can undertake a trade mission with City-State, giving a large sum of gold and [3] Influence"
-
-	Applicable to: Unit
-
-??? example  "Can transform to [unit]"
-	Example: "Can transform to [Musketman]"
-
-	Applicable to: Unit
-
 ## Promotion uniques
-??? example  "Heal this unit by [amount] HP"
-	Example: "Heal this unit by [3] HP"
-
-	Applicable to: Promotion
-
 ??? example  "Doing so will consume this opportunity to choose a Promotion"
 	Applicable to: Promotion
 
@@ -1612,11 +1627,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Ruins
 
-??? example  "This Unit gains [amount] XP"
-	Example: "This Unit gains [3] XP"
-
-	Applicable to: Ruins
-
 ??? example  "This Unit upgrades for free including special upgrades"
 	Applicable to: Ruins
 
@@ -1636,9 +1646,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;for [amount] turns&gt;"
 	Example: "&lt;for [3] turns&gt;"
 
-	Applicable to: Conditional
-
-??? example  "&lt;by consuming this unit&gt;"
 	Applicable to: Conditional
 
 ??? example  "&lt;with [amount]% chance&gt;"
@@ -1728,6 +1735,18 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;after founding a Pantheon&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;before founding a religion&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;after founding a religion&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;before enhancing a religion&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;after enhancing a religion&gt;"
 	Applicable to: Conditional
 
 ??? example  "&lt;if [buildingFilter] is constructed&gt;"
@@ -1900,7 +1919,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: TriggerCondition
 
 ??? example  "&lt;upon conquering a city&gt;"
-	Applicable to: TriggerCondition
+	Applicable to: TriggerCondition, UnitTriggerCondition
 
 ??? example  "&lt;upon founding a city&gt;"
 	Applicable to: TriggerCondition
@@ -1918,6 +1937,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: TriggerCondition
 
+??? example  "&lt;upon gaining a [baseUnitFilter] unit&gt;"
+	Example: "&lt;upon gaining a [Melee] unit&gt;"
+
+	Applicable to: TriggerCondition
+
 ??? example  "&lt;upon founding a Pantheon&gt;"
 	Applicable to: TriggerCondition
 
@@ -1926,6 +1950,53 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;upon enhancing a Religion&gt;"
 	Applicable to: TriggerCondition
+
+## UnitTriggerCondition uniques
+??? example  "&lt;upon defeating a [mapUnitFilter] unit&gt;"
+	Example: "&lt;upon defeating a [Wounded] unit&gt;"
+
+	Applicable to: UnitTriggerCondition
+
+??? example  "&lt;upon being defeated&gt;"
+	Applicable to: UnitTriggerCondition
+
+??? example  "&lt;upon being promoted&gt;"
+	Applicable to: UnitTriggerCondition
+
+??? example  "&lt;upon losing at least [amount] HP in a single attack&gt;"
+	Example: "&lt;upon losing at least [3] HP in a single attack&gt;"
+
+	Applicable to: UnitTriggerCondition
+
+??? example  "&lt;upon ending a turn in a [tileFilter] tile&gt;"
+	Example: "&lt;upon ending a turn in a [Farm] tile&gt;"
+
+	Applicable to: UnitTriggerCondition
+
+## UnitActionModifier uniques
+??? example  "&lt;by consuming this unit&gt;"
+	Applicable to: UnitActionModifier
+
+??? example  "&lt;for [amount] movement&gt;"
+	Example: "&lt;for [3] movement&gt;"
+
+	Applicable to: UnitActionModifier
+
+??? example  "&lt;once&gt;"
+	Applicable to: UnitActionModifier
+
+??? example  "&lt;[amount] times&gt;"
+	Example: "&lt;[3] times&gt;"
+
+	Applicable to: UnitActionModifier
+
+??? example  "&lt;[amount] additional time(s)&gt;"
+	Example: "&lt;[3] additional time(s)&gt;"
+
+	Applicable to: UnitActionModifier
+
+??? example  "&lt;after which this unit is consumed&gt;"
+	Applicable to: UnitActionModifier
 
 
 *[action]: An action that a unit can perform. Currently, there are only two actions part of this: 'Spread Religion' and 'Remove Foreign religions from your own cities'

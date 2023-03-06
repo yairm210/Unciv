@@ -16,11 +16,11 @@ import java.nio.charset.Charset
 private typealias SendRequestCallback = (success: Boolean, result: String, code: Int?)->Unit
 
 object SimpleHttp {
-    fun sendGetRequest(url: String, timeout: Int = 5000, action: SendRequestCallback) {
-        sendRequest(Net.HttpMethods.GET, url, "", timeout, action)
+    fun sendGetRequest(url: String, timeout: Int = 5000, header: Map<String, String>? = null, action: SendRequestCallback) {
+        sendRequest(Net.HttpMethods.GET, url, "", timeout, header, action)
     }
 
-    fun sendRequest(method: String, url: String, content: String, timeout: Int = 5000, action: SendRequestCallback) {
+    fun sendRequest(method: String, url: String, content: String, timeout: Int = 5000, header: Map<String, String>? = null, action: SendRequestCallback) {
         var uri = URI(url)
         if (uri.host == null) uri = URI("http://$url")
 
@@ -42,6 +42,10 @@ object SimpleHttp {
                 setRequestProperty("User-Agent", "Unciv/Turn-Checker-GNU-Terry-Pratchett")
             setRequestProperty("Content-Type", "text/plain")
 
+            for ((key, value) in header.orEmpty()) {
+                setRequestProperty(key, value)
+            }
+
             try {
                 if (content.isNotEmpty()) {
                     doOutput = true
@@ -60,7 +64,7 @@ object SimpleHttp {
                     if (errorStream != null) BufferedReader(InputStreamReader(errorStream)).readText()
                     else t.message!!
                 debug("Returning error message [%s]", errorMessageToReturn)
-                action(false, errorMessageToReturn, if (errorStream != null) responseCode else null)
+                action(false, errorMessageToReturn, responseCode)
             }
         }
     }
