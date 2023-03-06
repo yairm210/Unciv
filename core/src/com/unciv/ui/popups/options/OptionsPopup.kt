@@ -122,7 +122,7 @@ class OptionsPopup(
 
         addCloseButton {
             screen.game.musicController.onChange(null)
-            screen.game.allowPortrait(settings.allowAndroidPortrait)
+            center(screen.stage)
             onClose()
         }.padBottom(10f)
 

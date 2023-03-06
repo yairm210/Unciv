@@ -40,10 +40,6 @@ class DesktopDisplay : PlatformDisplay {
         modes[2] = DesktopScreenMode(2, ScreenWindowType.Borderless)
     }
 
-    override fun getDefaultMode(): ScreenMode {
-        return modes[0]!!
-    }
-
     override fun getScreenModes(): Map<Int, ScreenMode> {
         return modes
     }
