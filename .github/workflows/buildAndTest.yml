@@ -77,7 +77,7 @@ jobs:
 
   # Builds for Windows don't require extensive checks
   windows-build:
-    name: Build for ${{ matrix.os }} (Java ${{ matrix.java_version }})
+    name: Build for windows-latest (Java ${{ matrix.java_version }})
     defaults:
       run:
         # Ensures that a UNIX-like shell is available (default would be Powershell)
