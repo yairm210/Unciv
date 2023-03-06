@@ -391,7 +391,7 @@ class WorldScreen(
 
             displayTutorialTaskOnUpdate()
 
-            if (fogOfWar) minimapWrapper.update(selectedCiv)
+            if (fogOfWar) minimapWrapper.update(viewingCiv)
             else minimapWrapper.update(viewingCiv)
 
             unitActionsTable.update(bottomUnitTable.selectedUnit)
