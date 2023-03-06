@@ -44,10 +44,6 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         backgroundColor = Color.GREEN
     )
 
-    init {
-        rebuildIfSizeChanged()
-    }
-
     private fun rebuildIfSizeChanged(civInfo: Civilization? = null) {
         var civInfo = civInfo
         if(civInfo != null && GUI.getViewingPlayer().isSpectator()) civInfo = null
