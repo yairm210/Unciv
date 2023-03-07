@@ -24,11 +24,11 @@ data class AccountResponse(
  */
 @Serializable
 data class ApiErrorResponse(
-    val message: String,
+    override val message: String,
     @SerialName("status_code")
     // TODO: @JsonValue or something similar, at least in Jackson
     val statusCode: ApiStatusCode
-)
+): Throwable()
 
 /**
  * The status code represents a unique identifier for an error.  Error codes in the range of 1000..2000 represent client errors that could be handled by the client. Error codes in the range of 2000..3000 represent server errors.
