@@ -18,7 +18,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  Build:
     # On push events only, if it's a "Update X" commit, it's probably something done through the UI -
     #  so an .md or yaml change, and not something we need to rebuild over
     # We can't simply put !startsWith - see https://github.community/t/expression-syntax-for-not-startswith/17040
@@ -77,6 +77,33 @@ jobs:
           echo "$r" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
+      ## DESKTOP
+
+      - name: Build UncivServer.jar
+        continue-on-error: true
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+        run: |
+          ./gradlew desktop:dist
+
+          ./gradlew desktop:zipLinuxFilesForJar
+
+          # Copy JAR for final Github version deploy
+          cp desktop/build/libs/Unciv.jar deploy/Unciv.jar
+
+      - name: Upload JAR
+        uses: actions/upload-artifact@v3
+        with:
+          name: UncivJar
+          path: desktop/build/libs/Unciv.jar
+
+      ## Server
+
+      - name: Build UncivServer.jar
+        continue-on-error: true
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+        run: |
+          ./gradlew server:dist
+          mv server/build/libs/UncivServer.jar deploy/UncivServer.jar
 
 ## ANDROID
 
@@ -140,33 +167,15 @@ jobs:
           name: APK
           path: deploy/Unciv-signed.apk
 
-## DESKTOP
-
-      - name: Build UncivServer.jar
-        continue-on-error: true
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-        run: |
-          ./gradlew desktop:dist
-
-          # Copy JAR for final Github version deploy
-          cp desktop/build/libs/Unciv.jar deploy/Unciv.jar
-
-      - name: Upload JAR
-        uses: actions/upload-artifact@v3
-        with:
-          name: UncivJar
-          path: desktop/build/libs/Unciv.jar
-
-## Server
-
-      - name: Build UncivServer.jar
-        continue-on-error: true
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-        run: |
-          ./gradlew server:dist
-          mv server/build/libs/UncivServer.jar deploy/UncivServer.jar
 
 ## Finalize
+
+      - name: Check if this is a real release or a test version, for Github release
+        id: check-version-tag
+        run: |
+          if [[ ${{steps.tag.outputs.tag}} =~ [0-9]\.[0-9]+\.[0-9]+ ]]; then
+            echo "real_release=true" >> $GITHUB_OUTPUT
+          fi
 
       - name: Upload binaries to Github release
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
@@ -176,6 +185,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: deploy/*
           tag: ${{ github.ref }}
+          prerelease: ${{ steps.check-version-tag.outputs.real_release != 'true' }}
           overwrite: true
           file_glob: true
             # <--- Use environment variables that was created earlier - see https://github.com/svenstaro/upload-release-action
@@ -226,7 +236,7 @@ jobs:
 
             ${{ env.RELEASE_BODY }}
 
-  upload_to_itch:
+  Upload to itch.io and Steam:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     needs: build
@@ -261,7 +271,6 @@ jobs:
           wget -q -O jre-linux-64.tar.gz https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.11%2B9/OpenJDK11U-jre_x64_linux_hotspot_11.0.11_9.tar.gz
           ./gradlew desktop:packrLinux64
           ./butler push deploy/Unciv-Linux64.zip yairm210/unciv:Linux64     --userversion ${{needs.build.outputs.version_tag}}
-          ./gradlew desktop:zipLinuxFilesForJar
 
           #  MacOS bundles correctly but does not run as intended, see https://github.com/yairm210/Unciv/issues/4970
           #  Disabled until this can be checked by sommeone who actually has a Mac computer
