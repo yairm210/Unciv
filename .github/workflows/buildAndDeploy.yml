@@ -236,7 +236,7 @@ jobs:
 
             ${{ env.RELEASE_BODY }}
 
-  Upload to itch.io and Steam:
+  Upload-to-itch-io-and-steam:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     needs: build
