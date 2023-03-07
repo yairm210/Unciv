@@ -149,6 +149,8 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
 
         city.civ.cache.updateCivResources()
         city.cityStats.update()
+
+        tile.history.recordRelinquishOwnership(tile)
     }
 
     /**
@@ -175,6 +177,8 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
                 unit.movement.teleportToClosestMoveableTile()
 
         city.civ.cache.updateViewableTiles()
+
+        tile.history.recordTakeOwnership(tile)
     }
 
     fun nextTurn(culture: Float) {
