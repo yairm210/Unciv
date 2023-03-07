@@ -137,10 +137,10 @@ jobs:
 ## DESKTOP
 
       - name: Upload JAR
-          uses: actions/upload-artifact@v3
-          with:
-            name: UncivJar
-            path: desktop/build/libs/Unciv.jar
+        uses: actions/upload-artifact@v3
+        with:
+          name: UncivJar
+          path: desktop/build/libs/Unciv.jar
 
       - name: Unzip zips for steam deployment
         continue-on-error: true
