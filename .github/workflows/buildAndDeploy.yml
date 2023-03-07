@@ -136,10 +136,10 @@ jobs:
 
 ## DESKTOP
 
-      - name: 'Upload JAR'
+      - name: Upload JAR
           uses: actions/upload-artifact@v3
           with:
-            name: Unciv.jar
+            name: UncivJar
             path: desktop/build/libs/Unciv.jar
 
       - name: Unzip zips for steam deployment
@@ -247,8 +247,9 @@ jobs:
     steps:
       - name: Download JAR
         uses: actions/download-artifact@v3
+        # See 'Upload JAR' step in 'build' job
         with:
-          name: my-artifact
+          name: UncivJar
 
       - name: Upload to itch.io
         continue-on-error: true
