@@ -134,6 +134,12 @@ jobs:
           ls android/build/outputs/apk/release
           mv android/build/outputs/apk/release/Unciv-release-unsigned-signed.apk deploy/Unciv-signed.apk
 
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: APK
+          path: deploy/Unciv-signed.apk
+
 ## DESKTOP
 
       - name: Build UncivServer.jar
@@ -230,6 +236,16 @@ jobs:
         # See 'Upload JAR' step in 'build' job
         with:
           name: UncivJar
+
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2.3.3
 
       - name: Upload to itch.io
         continue-on-error: true
