@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.map.HexMath.getLatitude
@@ -9,6 +10,7 @@ import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import kotlin.math.abs
+import kotlin.math.sqrt
 
 class ExploredRegion () : IsPartOfGameInfoSerialization {
 
@@ -16,10 +18,16 @@ class ExploredRegion () : IsPartOfGameInfoSerialization {
     private var worldWrap = false
 
     @Transient
+    private var evenMapWidth = false
+
+    @Transient
+    private var rectangularMap = false
+
+    @Transient
     private var mapRadius = 0f
 
     @Transient
-    private val tileRadius = (TileGroupMap.groupSize + 4) * 0.75f
+    private val tileRadius = TileGroupMap.groupSize * 0.8f
 
     @Transient
     private var shouldRecalculateCoords = true
@@ -62,9 +70,13 @@ class ExploredRegion () : IsPartOfGameInfoSerialization {
 
     fun setMapParameters(mapParameters: MapParameters) {
         this.worldWrap = mapParameters.worldWrap
+        evenMapWidth = worldWrap
 
-        if (mapParameters.shape == MapShape.rectangular)
+        if (mapParameters.shape == MapShape.rectangular) {
             mapRadius = (mapParameters.mapSize.width / 2).toFloat()
+            evenMapWidth = mapParameters.mapSize.width % 2 == 0 || evenMapWidth
+            rectangularMap = true
+        }
         else
             mapRadius = mapParameters.mapSize.radius.toFloat()
     }
@@ -160,7 +172,7 @@ class ExploredRegion () : IsPartOfGameInfoSerialization {
         val bottomRightWorld = worldFromLatLong(bottomRight, tileRadius)
 
         // Convert X to the stage coords
-        val mapCenterX = if (worldWrap) mapMaxX * 0.5f + tileRadius else mapMaxX * 0.5f
+        val mapCenterX = if (evenMapWidth) (mapMaxX + TileGroupMap.groupSize + 4f) * 0.5f else mapMaxX * 0.5f
         var left = mapCenterX + topLeftWorld.x
         var right = mapCenterX + bottomRightWorld.x
 
@@ -169,7 +181,7 @@ class ExploredRegion () : IsPartOfGameInfoSerialization {
         if (right < 0f) right = mapMaxX - 10f
 
         // Convert Y to the stage coords
-        val mapCenterY = mapMaxY * 0.5f
+        val mapCenterY = if (rectangularMap) mapMaxY * 0.5f + TileGroupMap.groupSize * 0.25f else mapMaxY * 0.5f
         val top = mapCenterY-topLeftWorld.y
         val bottom = mapCenterY-bottomRightWorld.y
 
@@ -189,7 +201,7 @@ class ExploredRegion () : IsPartOfGameInfoSerialization {
     fun getWidth(): Int {
         val result: Float
         if (topLeft.x > bottomRight.x) result = topLeft.x - bottomRight.x
-        else result = mapRadius * 2 - (bottomRight.x - topLeft.x)
+        else result = mapRadius * 2f - (bottomRight.x - topLeft.x)
         return result.toInt() + 1
     }
 
@@ -197,6 +209,16 @@ class ExploredRegion () : IsPartOfGameInfoSerialization {
 
     fun getMinimapLeft(tileSize: Float): Float {
         shouldUpdateMinimap = false
-        return (topLeft.x + 1) * tileSize * -0.75f
+        return (topLeft.x + 1f) * tileSize * -0.75f
+    }
+
+    fun getRectangle(worldHeight: Float): Rectangle {
+        val result = Rectangle()
+        val yOffset = tileRadius * sqrt(3f) * 0.5f
+        result.x = getLeftX() - tileRadius
+        result.y = worldHeight - getBottomY() - yOffset * 0.5f
+        result.width = getWidth() * tileRadius * 1.5f
+        result.height = getHeight() * yOffset
+        return result
     }
 }

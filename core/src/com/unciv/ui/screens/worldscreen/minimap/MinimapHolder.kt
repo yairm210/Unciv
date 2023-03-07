@@ -44,16 +44,17 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         backgroundColor = Color.GREEN
     )
 
-    private fun rebuildIfSizeChanged(civInfo: Civilization? = null) {
-        var civInfo = civInfo
-        if(civInfo != null && GUI.getViewingPlayer().isSpectator()) civInfo = null
+    private fun rebuildIfSizeChanged(civInfo: Civilization) {
+        // For Spectator should not restrict minimap
+        var civInfo: Civilization? = civInfo
+        if(GUI.getViewingPlayer().isSpectator()) civInfo = null
         val newMinimapSize = worldScreen.game.settings.minimapSize
         if (newMinimapSize == minimapSize && civInfo?.exploredRegion?.shouldUpdateMinimap() != true) return
         minimapSize = newMinimapSize
         rebuild(civInfo)
     }
 
-    private fun rebuild(civInfo: Civilization? = null){
+    private fun rebuild(civInfo: Civilization?){
         this.clear()
         minimap = Minimap(mapHolder, minimapSize, civInfo)
         add(getToggleIcons()).align(Align.bottom)
