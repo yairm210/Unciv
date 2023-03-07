@@ -130,6 +130,8 @@ open class Tile : IsPartOfGameInfoSerialization {
     var hasBottomRiver = false
     var hasBottomLeftRiver = false
 
+    var history: TileHistory = TileHistory()
+
     private var continent = -1
 
     val latitude: Float
@@ -169,6 +171,7 @@ open class Tile : IsPartOfGameInfoSerialization {
         toReturn.hasBottomRiver = hasBottomRiver
         toReturn.continent = continent
         toReturn.exploredBy.addAll(exploredBy)
+        toReturn.history = history.clone()
         return toReturn
     }
 

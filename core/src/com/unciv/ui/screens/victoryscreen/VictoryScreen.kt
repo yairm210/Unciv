@@ -1,23 +1,28 @@
 package com.unciv.ui.screens.victoryscreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.Cell.defaults
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.badlogic.gdx.utils.Timer
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.translations.tr
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.newgamescreen.NewGameScreen
-import com.unciv.ui.screens.pickerscreens.PickerScreen
+import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.newgamescreen.NewGameScreen
+import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import kotlin.math.abs
 
 class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
@@ -41,9 +46,6 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         val rankingLabel = if (UncivGame.Current.settings.useDemographics) "Demographics" else "Rankings"
         val setCivRankingsButton = rankingLabel.toTextButton().onClick { setCivRankingsTable() }
         tabsTable.add(setCivRankingsButton)
-        topTable.add(tabsTable)
-        topTable.addSeparator()
-        topTable.add(contentsTable)
 
         if (playerCivInfo.isSpectator())
             setGlobalVictoryTable()
@@ -72,6 +74,16 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         } else if (!someoneHasWon) {
             setDefaultCloseAction()
         }
+
+        if (playerCivInfo.isSpectator() || someoneHasWon || playerCivInfo.isDefeated()) {
+            val replayLabel = "Replay"
+            val replayButton = replayLabel.toTextButton().onClick { setReplayTable() }
+            tabsTable.add(replayButton)
+        }
+
+        topTable.add(tabsTable)
+        topTable.addSeparator()
+        topTable.add(contentsTable)
     }
 
 
@@ -185,6 +197,43 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
         if (UncivGame.Current.settings.useDemographics) contentsTable.add(buildDemographicsTable(majorCivs))
         else contentsTable.add(buildRankingsTable(majorCivs))
+    }
+
+    private fun setReplayTable() {
+        val replayTable = Table().apply { defaults().pad(10f) }
+        val yearLabel = "".toLabel()
+        replayTable.add(yearLabel).row().apply { defaults().padBottom(5f) }
+        val replayMap = ReplayMap(gameInfo.tileMap)
+        replayTable.add(replayMap).row()
+
+        var nextTurn = 0
+        val finalTurn = UncivGame.Current.gameInfo?.turns ?: 0
+        Timer.schedule(
+            object : Timer.Task() {
+                override fun run() {
+                    updateReplayTable(yearLabel, replayMap, nextTurn++)
+                }
+            }, 0.0f,
+            // A game of 600 rounds will take one minute.
+            0.1f,
+            // End at the last turn.
+            finalTurn
+        )
+
+        contentsTable.clear()
+        contentsTable.add(replayTable)
+    }
+
+    private fun updateReplayTable(yearLabel: Label, replayMap: ReplayMap, turn: Int) {
+        val finalTurn = UncivGame.Current.gameInfo?.turns ?: 0
+        val year = UncivGame.Current.gameInfo?.getYear(turn - finalTurn) ?: 0
+        // TODO: This logic is duplicated. It would be great to move it to a common location.
+        val yearText =
+                if (UncivGame.Current.gameInfo?.currentPlayerCiv?.isLongCountDisplay() == true
+                ) MayaCalendar.yearToMayaDate(year)
+                else abs(year).toString() + (if (year < 0) "BC" else "AD")
+        yearLabel.setText(yearText)
+        replayMap.update(turn)
     }
 
     enum class RankLabels { Rank, Value, Best, Average, Worst}
