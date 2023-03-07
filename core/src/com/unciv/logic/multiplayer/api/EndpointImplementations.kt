@@ -21,7 +21,7 @@ class AccountsApi constructor(private val client: HttpClient) {
      */
     suspend fun get(): AccountResponse {
         val response = client.get("/api/v2/accounts/me")
-        if (response.status.equals(200)) {
+        if (response.status.isSuccess()) {
             return response.body()
         } else {
             val err: ApiErrorResponse = response.body()
@@ -48,7 +48,7 @@ class AccountsApi constructor(private val client: HttpClient) {
             contentType(ContentType.Application.Json)
             setBody(r)
         }
-        if (response.status.equals(200)) {
+        if (response.status.isSuccess()) {
             return true
         } else {
             val err: ApiErrorResponse = response.body()
@@ -61,7 +61,7 @@ class AccountsApi constructor(private val client: HttpClient) {
      */
     suspend fun delete(): Boolean {
         val response = client.delete("/api/v2/accounts/me")
-        if (response.status.equals(200)) {
+        if (response.status.isSuccess()) {
             return true
         } else {
             val err: ApiErrorResponse = response.body()
@@ -84,7 +84,7 @@ class AccountsApi constructor(private val client: HttpClient) {
             contentType(ContentType.Application.Json)
             setBody(r)
         }
-        if (response.status.equals(200)) {
+        if (response.status.isSuccess()) {
             return true
         } else {
             val err: ApiErrorResponse = response.body()
@@ -107,7 +107,7 @@ class AccountsApi constructor(private val client: HttpClient) {
             contentType(ContentType.Application.Json)
             setBody(r)
         }
-        if (response.status.equals(200)) {
+        if (response.status.isSuccess()) {
             return true
         } else {
             val err: ApiErrorResponse = response.body()
@@ -141,10 +141,11 @@ class AuthApi constructor(private val client: HttpClient) {
             contentType(ContentType.Application.Json)
             setBody(r)
         }
-        return if (response.status.equals(200)) {
-            true
+        if (response.status.isSuccess()) {
+            return true
         } else {
-            response.body()
+            val err: ApiErrorResponse = response.body()
+            throw err
         }
     }
 
@@ -155,11 +156,12 @@ class AuthApi constructor(private val client: HttpClient) {
      */
     suspend fun logout(): Boolean {
         val response = client.post("/api/v2/auth/logout")
-        return if (response.status.equals(200)) {
+        if (response.status.isSuccess()) {
             // TODO: Maybe clear cookie here
-            true
+            return true
         } else {
-            response.body()
+            val err: ApiErrorResponse = response.body()
+            throw err
         }
     }
 

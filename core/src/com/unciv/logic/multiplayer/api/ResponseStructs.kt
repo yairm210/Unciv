@@ -4,8 +4,16 @@
 
 package com.unciv.logic.multiplayer.api
 
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializer
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 
 /**
  * The account data
@@ -28,13 +36,32 @@ data class ApiErrorResponse(
     @SerialName("status_code")
     // TODO: @JsonValue or something similar, at least in Jackson
     val statusCode: ApiStatusCode
-): Throwable()
+) : Throwable()
+
+/**
+ * Experimental serializer for the ApiStatusCode enum to make encoding/decoding as integer work
+ */
+@OptIn(ExperimentalSerializationApi::class)
+@Serializer(forClass = ApiStatusCode::class)
+class ApiStatusCodeSerializer : KSerializer<ApiStatusCode> {
+    override val descriptor: SerialDescriptor =
+            PrimitiveSerialDescriptor("ApiStatusCode", PrimitiveKind.INT)
+
+    override fun serialize(encoder: Encoder, value: ApiStatusCode) {
+        encoder.encodeInt(value.value)
+    }
+
+    override fun deserialize(decoder: Decoder): ApiStatusCode {
+        val key = decoder.decodeInt()
+        return ApiStatusCode.getByValue(key)
+    }
+}
 
 /**
  * The status code represents a unique identifier for an error.  Error codes in the range of 1000..2000 represent client errors that could be handled by the client. Error codes in the range of 2000..3000 represent server errors.
  * Values: C1000,C1001,C1002,C1003,C1004,C1005,C1006,C1007,C1008,C1009,C1010,C1011,C1012,C1013,C1014,C2000,C2001,C2002
  */
-@Serializable  // TODO: Is the following required: (with = ApiStatusCode.Serializer::class)
+@Serializable(with = ApiStatusCodeSerializer::class)
 enum class ApiStatusCode(val value: Int) {
     C1000(1000),
     C1001(1001),
@@ -55,18 +82,11 @@ enum class ApiStatusCode(val value: Int) {
     C2001(2001),
     C2002(2002);
 
-    /**
-     * This override toString avoids using the enum var name and uses the actual api value instead.
-     * In cases the var name and value are different, the client would send incorrect enums to the server.
-     */
-    override fun toString(): String {
-        return value.toString()
+    companion object {
+        private val VALUES = values()
+        fun getByValue(value: Int) = VALUES.first { it.value == value }
     }
-
-    // TODO: Verify this enum works as expected
-    //object Serializer : CommonEnumSerializer<ApiStatusCode>("ApiStatusCode", values(), values().map { it.value.toString() }.toTypedArray())
 }
-
 
 /**
  * A single friend or friend request
