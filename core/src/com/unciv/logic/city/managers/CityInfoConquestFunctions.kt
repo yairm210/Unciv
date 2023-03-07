@@ -324,6 +324,12 @@ class CityInfoConquestFunctions(val city: City){
             // Update proximity rankings
             civ.updateProximity(oldCiv,
                 oldCiv.updateProximity(civ))
+
+            // Update history
+            city.tiles.map { vector2 -> civ.gameInfo.tileMap[vector2] }
+                .forEach { tile ->
+                    tile.history.recordTakeOwnership(tile)
+                }
         }
     }
 
