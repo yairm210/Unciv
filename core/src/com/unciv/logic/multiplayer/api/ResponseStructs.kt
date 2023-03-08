@@ -109,18 +109,21 @@ data class CreateLobbyResponse(
 @Serializable
 data class FriendResponse(
     val id: Long,
-    @SerialName("is_request")
-    val isRequest: Boolean,
     val from: String,
     val to: String
 )
 
 /**
  * A list of your friends and friend requests
+ *
+ * ``friends`` is a list of already established friendships
+ * ``friend_requests`` is a list of friend requests (ingoing and outgoing)
  */
 @Serializable
 data class GetFriendResponse(
-    val friends: List<FriendResponse>
+    val friends: List<FriendResponse>,
+    @SerialName("friend_requests")
+    val friendRequests: List<FriendResponse>
 )
 
 /**

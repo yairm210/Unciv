@@ -187,6 +187,132 @@ class AuthApi(private val client: HttpClient, private val authCookieHelper: Auth
 }
 
 /**
+ * API wrapper for friend handling (do not use directly; use the Api class instead)
+ */
+class FriendApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper, private val logger: Logger) {
+
+    /**
+     * Retrieve a list of your established friendships
+     */
+    suspend fun listFriends(): List<FriendResponse> {
+        val response = client.get("/api/v2/friends") {
+            authCookieHelper.add(this)
+        }
+        if (response.status.isSuccess()) {
+            val responseBody: GetFriendResponse = response.body()
+            return responseBody.friends
+        } else {
+            val err: ApiErrorResponse = response.body()
+            throw err
+        }
+    }
+
+    /**
+     * Retrieve a list of your open friendship requests (incoming and outgoing)
+     *
+     * If you have a request with ``from`` equal to your username, it means you
+     * have requested a friendship, but the destination hasn't accepted yet.
+     * In the other case, if your username is in ``to``, you have received a friend request.
+     */
+    suspend fun listFriendRequests(): List<FriendResponse> {
+        val response = client.get("/api/v2/friends") {
+            authCookieHelper.add(this)
+        }
+        if (response.status.isSuccess()) {
+            val responseBody: GetFriendResponse = response.body()
+            return responseBody.friendRequests
+        } else {
+            val err: ApiErrorResponse = response.body()
+            throw err
+        }
+    }
+
+    /**
+     * Retrieve a list of your open incoming friendship requests
+     *
+     * The argument [myUsername] should be filled with the username of the currently logged in user.
+     */
+    suspend fun listIncomingFriendRequests(myUsername: String): List<FriendResponse> {
+        return listFriendRequests().filter {
+            it.to == myUsername
+        }
+    }
+
+    /**
+     * Retrieve a list of your open outgoing friendship requests
+     *
+     * The argument [myUsername] should be filled with the username of the currently logged in user.
+     */
+    suspend fun listOutgoingFriendRequests(myUsername: String): List<FriendResponse> {
+        return listFriendRequests().filter {
+            it.from == myUsername
+        }
+    }
+
+    /**
+     * Request friendship with another user
+     */
+    suspend fun request(other: String): Boolean {
+        return request(CreateFriendRequest(other))
+    }
+
+    /**
+     * Request friendship with another user
+     */
+    suspend fun request(r: CreateFriendRequest): Boolean {
+        val response = client.post("/api/v2/friends") {
+            contentType(ContentType.Application.Json)
+            setBody(r)
+            authCookieHelper.add(this)
+        }
+        if (response.status.isSuccess()) {
+            logger.info("You have requested friendship with user ${r.username}")
+            return true
+        } else {
+            val err: ApiErrorResponse = response.body()
+            throw err
+        }
+    }
+
+    /**
+     * Accept a friend request
+     */
+    suspend fun accept(friendRequestID: Long): Boolean {
+        val response = client.delete("/api/v2/friends/$friendRequestID") {
+            authCookieHelper.add(this)
+        }
+        if (response.status.isSuccess()) {
+            logger.info("You have successfully accepted friendship request ID $friendRequestID")
+            return true
+        } else {
+            val err: ApiErrorResponse = response.body()
+            throw err
+        }
+    }
+
+    /**
+     * Don't want your friends anymore? Just delete them!
+     *
+     * This function accepts both friend IDs and friendship request IDs,
+     * since they are the same thing in the server's database anyways.
+     */
+    suspend fun delete(friendID: Long): Boolean {
+        val response = client.delete("/api/v2/friends/$friendID") {
+            authCookieHelper.add(this)
+        }
+        if (response.status.isSuccess()) {
+            logger.info("You have successfully dropped friendship ID $friendID")
+            return true
+        } else {
+            val err: ApiErrorResponse = response.body()
+            throw err
+        }
+    }
+
+}
+
+
+/**
  * API wrapper for lobby handling (do not use directly; use the Api class instead)
  */
 class LobbyApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper, private val logger: Logger) {

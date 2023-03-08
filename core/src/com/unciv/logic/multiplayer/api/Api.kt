@@ -81,6 +81,16 @@ class Api(val baseUrl: String) {
     val auth = AuthApi(client, authCookieHelper, logger)
 
     /**
+     * API for friendship management
+     */
+    val friend = FriendApi(client, authCookieHelper, logger)
+
+    /**
+     * API for lobby management
+     */
+    val lobby = LobbyApi(client, authCookieHelper, logger)
+
+    /**
      * Handle existing WebSocket connections
      *
      * This method should be dispatched to a non-daemon thread pool executor.
