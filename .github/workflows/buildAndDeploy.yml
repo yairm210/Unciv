@@ -191,20 +191,17 @@ jobs:
 
   AUR-update:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    continue-on-error: true
     runs-on: ubuntu-latest
     needs: build
     steps:
 
       - name: Get AUR PKGBUILD
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-        continue-on-error: true
         run: |
           curl --silent --output PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=unciv-bin'
-          sed -E -e "s#(_pkgver=).*#\1${{steps.tag.outputs.tag}}#" -e "s#(pkgrel=).*#\10#" -i PKGBUILD
+          sed -E -e "s#(_pkgver=).*#\1${{needs.build.outputs.version_tag}}#" -e "s#(pkgrel=).*#\10#" -i PKGBUILD
 
       - name: Publish AUR package
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-        continue-on-error: true
         uses: Thyrum/github-actions-deploy-aur@master
         with:
           pkgname: unciv-bin
@@ -213,13 +210,12 @@ jobs:
           commit_email: ${{ secrets.AUR_COMMIT_EMAIL }}
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
           commit_message: |
-            Update to ${{steps.tag.outputs.tag}}
+            Update to ${{needs.build.outputs.version_tag}}
 
-            ${{steps.read_release.outputs.release_body}}
+            ${{needs.build.outputs.release_body}}
           ssh_keyscan_types: rsa,dsa,ecdsa,ed25519
           updpkgsums: true
           allow_empty_commits: false
-
 
   packr-build:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
@@ -371,7 +367,7 @@ jobs:
       - name: Post announcement on Discord
         continue-on-error: true
         ## On patch releases, don't notify Discord
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') && steps.read_release.outputs.release_body != ''
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') && needs.build.outputs.release_body != ''
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         uses: Ilshidur/action-discord@0.3.2
