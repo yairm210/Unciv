@@ -27,6 +27,7 @@ jobs:
 
     outputs:
       version_tag: ${{ steps.tag.outputs.tag }}
+      release_body: ${{steps.read_release.outputs.release_body}}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -73,9 +74,9 @@ jobs:
 
           echo "--- Set variable manually in github env ---"
 
-          echo "RELEASE_BODY<<EOF" >> $GITHUB_ENV
-          echo "$r" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          echo "release_body<<EOF" >> $GITHUB_OUTPUT
+          echo "$r" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       ## DESKTOP
 
@@ -113,7 +114,7 @@ jobs:
         shell: bash
         run: |
           mkdir whatsNewDirectory
-          echo "${{ env.RELEASE_BODY }}" > whatsNewDirectory/whatsnew-en-US
+          echo "${{steps.read_release.outputs.release_body}}" > whatsNewDirectory/whatsnew-en-US
           ./gradlew :android:bundleRelease
           ./gradlew :android:assembleRelease
 
@@ -194,7 +195,7 @@ jobs:
           body: |
             ## ${{steps.tag.outputs.tag}}
 
-            ${{ env.RELEASE_BODY }}
+            ${{steps.read_release.outputs.release_body}}
 
 
       - name: Get AUR PKGBUILD
@@ -217,7 +218,7 @@ jobs:
           commit_message: |
             Update to ${{steps.tag.outputs.tag}}
 
-            ${{ env.RELEASE_BODY }}
+            ${{steps.read_release.outputs.release_body}}
           ssh_keyscan_types: rsa,dsa,ecdsa,ed25519
           updpkgsums: true
           allow_empty_commits: false
@@ -226,7 +227,7 @@ jobs:
       - name: Post announcement on Discord
         continue-on-error: true
         ## On patch releases, don't notify Discord
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') && env.RELEASE_BODY != ''
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') && steps.read_release.outputs.release_body != ''
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         uses: Ilshidur/action-discord@0.3.2
@@ -235,7 +236,7 @@ jobs:
             <@&663705024265715743>
             *${{steps.tag.outputs.tag}} rolling out!*
 
-            ${{ env.RELEASE_BODY }}
+            ${{steps.read_release.outputs.release_body}}
 
   Upload-to-itch-io-and-steam:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
