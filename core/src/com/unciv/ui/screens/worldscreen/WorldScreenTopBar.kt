@@ -17,6 +17,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.components.YearTextUtil
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.onClick
@@ -34,7 +35,6 @@ import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
 import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMenuPopup
-import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -340,11 +340,10 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     }
 
     private fun updateResourcesTable(civInfo: Civilization) {
-        val year = civInfo.gameInfo.getYear()
-        val yearText = if (civInfo.isLongCountDisplay()) MayaCalendar.yearToMayaDate(year)
-        else "[" + abs(year) + "] " + (if (year < 0) "BC" else "AD")
-        turnsLabel.setText(Fonts.turn + "" + civInfo.gameInfo.turns + " | " + yearText.tr())
-
+        val yearText = YearTextUtil.toYearText(
+            civInfo.gameInfo.getYear(), civInfo.isLongCountDisplay()
+        )
+        turnsLabel.setText(Fonts.turn + "" + civInfo.gameInfo.turns + " | " + yearText)
         resourcesWrapper.clearChildren()
         var firstPadLeft = 20f  // We want a distance from the turns entry to the first resource, but only if any resource is displayed
         val civResources = civInfo.getCivResources()
