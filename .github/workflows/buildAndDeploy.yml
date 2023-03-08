@@ -81,7 +81,6 @@ jobs:
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         run: |
           ./gradlew desktop:dist
-
           ./gradlew desktop:zipLinuxFilesForJar
 
       - name: Upload JAR
@@ -90,6 +89,12 @@ jobs:
           name: UncivJar
           path: |
             desktop/build/libs/Unciv.jar
+
+      - name: Upload linux files
+        uses: actions/upload-artifact@v3
+        with:
+          name: UncivLinuxFiles
+          path: |
             deploy/linuxFilesForJar.zip
 
       ## Server
@@ -183,6 +188,12 @@ jobs:
 
 
 ## Finalize
+
+  AUR-update:
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    needs: Build
+    steps:
 
       - name: Get AUR PKGBUILD
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
@@ -327,7 +338,7 @@ jobs:
         run: |
           mkdir deploy
           mv UncivJar/Unciv.jar deploy
-          mv UncivJar/linuxFilesForJar.zip deploy
+          mv UncivLinuxFiles/linuxFilesForJar.zip deploy
           mv UncivDeploymentZips/Unciv-Windows64.zip deploy
           mv UncivDeploymentZips/Unciv-Linux64.zip deploy
           mv UncivAPK/Unciv-signed.apk deploy
