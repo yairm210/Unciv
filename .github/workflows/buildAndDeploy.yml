@@ -228,7 +228,7 @@ jobs:
             deploy/Unciv-Windows64.zip
             deploy/Unciv-Linux64.zip
 
-  Upload-to-itch:
+  upload-to-itch:
     runs-on: ubuntu-latest
     needs: packr-build
     continue-on-error: true
@@ -251,7 +251,7 @@ jobs:
           ./butler push Unciv-Linux64.zip yairm210/unciv:Linux64     --userversion ${{needs.build.outputs.version_tag}}
           ./butler push Unciv-Windows64.zip yairm210/unciv:Windows64 --userversion ${{needs.build.outputs.version_tag}}
 
-  Upload-to-steam:
+  upload-to-steam:
     runs-on: ubuntu-latest
     needs: packr-build
     continue-on-error: true
@@ -285,7 +285,7 @@ jobs:
           depot2Path: Unciv-Linux64
           releaseBranch: release
 
-  Finalize:
+  finalize:
     needs: [build, android-build, packr-build]
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
@@ -346,7 +346,7 @@ jobs:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     continue-on-error: true
     runs-on: ubuntu-latest
-    needs: build
+    needs: finalize
     steps:
 
       - name: Get AUR PKGBUILD
