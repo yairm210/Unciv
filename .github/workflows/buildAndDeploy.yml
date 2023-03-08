@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Build and deploy
+name: build and deploy
 
 # Controls when the action will run.
 on:
@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  Build:
+  build:
     # On push events only, if it's a "Update X" commit, it's probably something done through the UI -
     #  so an .md or yaml change, and not something we need to rebuild over
     # We can't simply put !startsWith - see https://github.community/t/expression-syntax-for-not-startswith/17040
@@ -76,7 +76,7 @@ jobs:
 
       ## DESKTOP
 
-      - name: Build UncivServer.jar
+      - name: build UncivServer.jar
         continue-on-error: true
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         run: |
@@ -99,7 +99,7 @@ jobs:
 
       ## Server
 
-      - name: Build UncivServer.jar
+      - name: build UncivServer.jar
         continue-on-error: true
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         run: |
@@ -116,7 +116,7 @@ jobs:
   android-build:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
-    needs: Build
+    needs: build
     steps:
       - uses: actions/checkout@v3
 
@@ -134,7 +134,7 @@ jobs:
         shell: bash
         run: |
           mkdir whatsNewDirectory
-          echo "${{needs.Build.outputs.release_body}}" > whatsNewDirectory/whatsnew-en-US
+          echo "${{needs.build.outputs.release_body}}" > whatsNewDirectory/whatsnew-en-US
           ./gradlew :android:bundleRelease
           ./gradlew :android:assembleRelease
 
@@ -192,7 +192,7 @@ jobs:
   AUR-update:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
-    needs: Build
+    needs: build
     steps:
 
       - name: Get AUR PKGBUILD
@@ -224,7 +224,7 @@ jobs:
   packr-build:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
-    needs: Build
+    needs: build
     steps:
       - uses: actions/checkout@v3
 
@@ -287,8 +287,8 @@ jobs:
           unzip butler.zip
           chmod +x butler
 
-          ./butler push Unciv-Linux64.zip yairm210/unciv:Linux64     --userversion ${{needs.Build.outputs.version_tag}}
-          ./butler push Unciv-Windows64.zip yairm210/unciv:Windows64 --userversion ${{needs.Build.outputs.version_tag}}
+          ./butler push Unciv-Linux64.zip yairm210/unciv:Linux64     --userversion ${{needs.build.outputs.version_tag}}
+          ./butler push Unciv-Windows64.zip yairm210/unciv:Windows64 --userversion ${{needs.build.outputs.version_tag}}
 
   Upload-to-steam:
     runs-on: ubuntu-latest
@@ -327,7 +327,7 @@ jobs:
           releaseBranch: release
 
   Finalize:
-    needs: [android-build, packr-build]
+    needs: [build, android-build, packr-build]
     runs-on: ubuntu-latest
     steps:
 
@@ -347,7 +347,7 @@ jobs:
       - name: Check if this is a real release or a test version, for Github release
         id: check-version-tag
         run: |
-          if [[ ${{needs.Build.outputs.version_tag}} =~ [0-9]\.[0-9]+\.[0-9]+ ]]; then
+          if [[ ${{needs.build.outputs.version_tag}} =~ [0-9]\.[0-9]+\.[0-9]+ ]]; then
             echo "real_release=true" >> $GITHUB_OUTPUT
           fi
 
@@ -364,9 +364,9 @@ jobs:
           # <--- Use environment variables that was created earlier - see https://github.com/svenstaro/upload-release-action
           # Single-quotes do not solve the multiline problem.
           body: |
-            ## ${{needs.Build.outputs.version_tag}}
+            ## ${{needs.build.outputs.version_tag}}
 
-            ${{needs.Build.outputs.release_body}}
+            ${{needs.build.outputs.release_body}}
 
       - name: Post announcement on Discord
         continue-on-error: true
@@ -378,6 +378,6 @@ jobs:
         with:
           args: | # See https://discordjs.guide/miscellaneous/parsing-mention-arguments.html#how-discord-mentions-work
             <@&663705024265715743>
-            *${{needs.Build.outputs.version_tag}} rolling out!*
+            *${{needs.build.outputs.version_tag}} rolling out!*
 
-            ${{needs.Build.outputs.release_body}}
+            ${{needs.build.outputs.release_body}}
