@@ -1,0 +1,49 @@
+
+
+Finalize needs 'build' dependency to get the tag and release notes
+
+Split upload of Unciv.jar and linux files
+
+I don't know where the zip has gone
+
+Hopefully fixed packr build
+
+Parallelize Android build, try fix 'no deployed zips'
+
+yaml fix
+
+separate itch and steam uploads from packr build
+
+fix id
+
+Multi job deploy
+
+Change release_body from env to step and job output
+
+Move Unciv.jar into correct folder for gradle packr
+
+download jar after git setup
+
+fix job id
+
+Test upload 'prerelease' versions when testing Github actions
+
+Split itch upload to separate job - test5
+
+Split itch upload to separate job - test4
+
+Split itch upload to separate job - test3
+
+Split itch upload to separate job - test2
+
+Split itch upload to separate job - test1
+
+Better AI evaluation of which improvement to build on a tile
+
+chore: convert 'provides resources' to separate function
+
+Added 'additional times' to limited actions
+
+Updated checkout CI action to v3 to fix deprecation warnings  - By CrsiX
+
+Android: selectable orientation  - By vegeta1k95
