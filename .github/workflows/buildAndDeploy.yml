@@ -230,9 +230,8 @@ jobs:
 
   upload-to-itch:
     runs-on: ubuntu-latest
-    needs: packr-build
+    needs: [build, packr-build] # build required for tag and version
     continue-on-error: true
-    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     steps:
 
       - name: Download packed zips
@@ -253,7 +252,7 @@ jobs:
 
   upload-to-steam:
     runs-on: ubuntu-latest
-    needs: packr-build
+    needs: [build, packr-build]  # build required for tag and version
     continue-on-error: true
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     steps:
@@ -286,8 +285,7 @@ jobs:
           releaseBranch: release
 
   upload-github-release-and-post-to-discord:
-    needs: [build, android-build, packr-build]
-    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    needs: [build, android-build, packr-build]  # build required for tag and version
     runs-on: ubuntu-latest
     steps:
 
@@ -345,7 +343,7 @@ jobs:
   AUR-update:
     continue-on-error: true
     runs-on: ubuntu-latest
-    needs: [build, upload-github-release-and-post-to-discord]
+    needs: [build, upload-github-release-and-post-to-discord]  # build required for tag and version
     steps:
 
       - name: Get AUR PKGBUILD
