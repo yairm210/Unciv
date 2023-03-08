@@ -63,24 +63,28 @@ class ApiStatusCodeSerializer : KSerializer<ApiStatusCode> {
  */
 @Serializable(with = ApiStatusCodeSerializer::class)
 enum class ApiStatusCode(val value: Int) {
-    C1000(1000),
-    C1001(1001),
-    C1002(1002),
-    C1003(1003),
-    C1004(1004),
-    C1005(1005),
-    C1006(1006),
-    C1007(1007),
-    C1008(1008),
-    C1009(1009),
-    C1010(1010),
-    C1011(1011),
-    C1012(1012),
-    C1013(1013),
-    C1014(1014),
-    C2000(2000),
-    C2001(2001),
-    C2002(2002);
+    Unauthenticated(1000),
+    NotFound(1001),
+    InvalidContentType(1002),
+    InvalidJson(1003),
+    PayloadOverflow(1004),
+
+    LoginFailed(1005),
+    UsernameAlreadyOccupied(1006),
+    InvalidPassword(1007),
+    EmptyJson(1008),
+    InvalidUsername(1009),
+    InvalidDisplayName(1010),
+    FriendshipAlreadyRequested(1011),
+    AlreadyFriends(1012),
+    InvalidId(1013),
+    MissingPrivileges(1014),
+    InvalidMaxPlayersCount(1017),
+    AlreadyInALobby(1018),
+
+    InternalServerError(2000),
+    DatabaseError(2001),
+    SessionError(2002);
 
     companion object {
         private val VALUES = values()

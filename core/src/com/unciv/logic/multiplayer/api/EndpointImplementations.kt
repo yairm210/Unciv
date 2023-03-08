@@ -6,6 +6,7 @@
 
 package com.unciv.logic.multiplayer.api
 
+import java.util.logging.Logger
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.cookies.*
@@ -15,13 +16,15 @@ import io.ktor.http.*
 /**
  * API wrapper for account handling (do not use directly; use the Api class instead)
  */
-class AccountsApi constructor(private val client: HttpClient) {
+class AccountsApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper, private val logger: Logger) {
 
     /**
      * Retrieve information about the currently logged in user
      */
     suspend fun get(): AccountResponse {
-        val response = client.get("/api/v2/accounts/me")
+        val response = client.get("/api/v2/accounts/me") {
+            authCookieHelper.add(this)
+        }
         if (response.status.isSuccess()) {
             return response.body()
         } else {
@@ -48,6 +51,7 @@ class AccountsApi constructor(private val client: HttpClient) {
         val response = client.put("/api/v2/accounts/me") {
             contentType(ContentType.Application.Json)
             setBody(r)
+            authCookieHelper.add(this)
         }
         if (response.status.isSuccess()) {
             return true
@@ -61,8 +65,12 @@ class AccountsApi constructor(private val client: HttpClient) {
      * Deletes the currently logged-in account
      */
     suspend fun delete(): Boolean {
-        val response = client.delete("/api/v2/accounts/me")
+        val response = client.delete("/api/v2/accounts/me") {
+            authCookieHelper.add(this)
+        }
         if (response.status.isSuccess()) {
+            logger.info("The current user has been deleted")
+            authCookieHelper.unset()
             return true
         } else {
             val err: ApiErrorResponse = response.body()
@@ -84,8 +92,10 @@ class AccountsApi constructor(private val client: HttpClient) {
         val response = client.post("/api/v2/accounts/setPassword") {
             contentType(ContentType.Application.Json)
             setBody(r)
+            authCookieHelper.add(this)
         }
         if (response.status.isSuccess()) {
+            logger.info("Password has been changed successfully")
             return true
         } else {
             val err: ApiErrorResponse = response.body()
@@ -107,8 +117,10 @@ class AccountsApi constructor(private val client: HttpClient) {
         val response = client.post("/api/v2/accounts/register") {
             contentType(ContentType.Application.Json)
             setBody(r)
+            authCookieHelper.add(this)
         }
         if (response.status.isSuccess()) {
+            logger.info("A new account for username ${r.username} has been created")
             return true
         } else {
             val err: ApiErrorResponse = response.body()
@@ -121,7 +133,7 @@ class AccountsApi constructor(private val client: HttpClient) {
 /**
  * API wrapper for authentication handling (do not use directly; use the Api class instead)
  */
-class AuthApi constructor(private val client: HttpClient) {
+class AuthApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper, private val logger: Logger) {
 
     /**
      * Try logging in with username and password
@@ -143,6 +155,11 @@ class AuthApi constructor(private val client: HttpClient) {
             setBody(r)
         }
         if (response.status.isSuccess()) {
+            val authCookie = response.setCookie()["id"]
+            logger.info("Received new session cookie: $authCookie")
+            if (authCookie != null) {
+                authCookieHelper.set(authCookie.value)
+            }
             return true
         } else {
             val err: ApiErrorResponse = response.body()
@@ -158,7 +175,8 @@ class AuthApi constructor(private val client: HttpClient) {
     suspend fun logout(): Boolean {
         val response = client.post("/api/v2/auth/logout")
         if (response.status.isSuccess()) {
-            // TODO: Maybe clear cookie here
+            logger.info("Logged out successfully (dropping session cookie...)")
+            authCookieHelper.unset()
             return true
         } else {
             val err: ApiErrorResponse = response.body()
