@@ -93,6 +93,17 @@ enum class ApiStatusCode(val value: Int) {
 }
 
 /**
+ * The response of a create lobby request
+ *
+ * It contains the ``id`` of the created lobby.
+ */
+@Serializable
+data class CreateLobbyResponse(
+    @SerialName("lobby_name")
+    val lobbyID: Long
+)
+
+/**
  * A single friend or friend request
  */
 @Serializable
@@ -110,6 +121,30 @@ data class FriendResponse(
 @Serializable
 data class GetFriendResponse(
     val friends: List<FriendResponse>
+)
+
+/**
+ * The lobbies that are open
+ */
+@Serializable
+data class GetLobbiesResponse(
+    val lobbies: List<LobbyResponse>
+)
+
+/**
+ * A single lobby
+ */
+@Serializable
+data class LobbyResponse(
+    val name: String,
+    @SerialName("max_players")
+    val maxPlayers: Int,
+    @SerialName("current_players")
+    val currentPlayers: Int,
+    @SerialName("created_at")
+    val createdAt: Int,
+    @SerialName("password")
+    val hasPassword: Boolean
 )
 
 /**

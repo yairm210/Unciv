@@ -27,6 +27,19 @@ data class CreateFriendRequest(
 )
 
 /**
+ * The parameters to create a lobby
+ *
+ * The parameter ``max_players`` must be greater or equals 2.
+ */
+@Serializable
+data class CreateLobbyRequest(
+    val name: String,
+    val password: String?,
+    @SerialName("max_players")
+    val maxPlayers: Int
+)
+
+/**
  * The request data of a login request
  */
 @Serializable
@@ -38,7 +51,7 @@ data class LoginRequest(
 /**
  * The set password request data
  *
- * The parameter new_password must not be empty
+ * The parameter ``new_password`` must not be empty.
  */
 @Serializable
 data class SetPasswordRequest(

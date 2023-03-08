@@ -185,3 +185,73 @@ class AuthApi(private val client: HttpClient, private val authCookieHelper: Auth
     }
 
 }
+
+/**
+ * API wrapper for lobby handling (do not use directly; use the Api class instead)
+ */
+class LobbyApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper, private val logger: Logger) {
+
+    /**
+     * Retrieves all open lobbies
+     *
+     * If hasPassword is true, the lobby is secured by a user-set password
+     */
+    suspend fun list(): List<LobbyResponse> {
+        val response = client.get("/api/v2/lobbies") {
+            authCookieHelper.add(this)
+        }
+        if (response.status.isSuccess()) {
+            val responseBody: GetLobbiesResponse = response.body()
+            return responseBody.lobbies
+        } else {
+            val err: ApiErrorResponse = response.body()
+            throw err
+        }
+    }
+
+    /**
+     * Create a new lobby and return the new lobby ID
+     *
+     * If you are already in another lobby, an error is returned.
+     * ``max_players`` must be between 2 and 34 (inclusive).
+     * If password is an empty string, an error is returned.
+     */
+    suspend fun open(name: String, maxPlayers: Int): Long {
+        return open(CreateLobbyRequest(name, null, maxPlayers))
+    }
+
+    /**
+     * Create a new lobby and return the new lobby ID
+     *
+     * If you are already in another lobby, an error is returned.
+     * ``max_players`` must be between 2 and 34 (inclusive).
+     * If password is an empty string, an error is returned.
+     */
+    suspend fun open(name: String, password: String?, maxPlayers: Int): Long {
+        return open(CreateLobbyRequest(name, password, maxPlayers))
+    }
+
+    /**
+     * Create a new lobby and return the new lobby ID
+     *
+     * If you are already in another lobby, an error is returned.
+     * ``max_players`` must be between 2 and 34 (inclusive).
+     * If password is an empty string, an error is returned.
+     */
+    suspend fun open(r: CreateLobbyRequest): Long {
+        val response = client.post("/api/v2/lobbies") {
+            contentType(ContentType.Application.Json)
+            setBody(r)
+            authCookieHelper.add(this)
+        }
+        if (response.status.isSuccess()) {
+            val responseBody: CreateLobbyResponse = response.body()
+            logger.info("A new lobby with ID ${responseBody.lobbyID} has been created")
+            return responseBody.lobbyID
+        } else {
+            val err: ApiErrorResponse = response.body()
+            throw err
+        }
+    }
+
+}
