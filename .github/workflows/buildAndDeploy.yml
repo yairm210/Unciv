@@ -345,7 +345,7 @@ jobs:
   AUR-update:
     continue-on-error: true
     runs-on: ubuntu-latest
-    needs: upload-github-release-and-post-to-discord
+    needs: [build, upload-github-release-and-post-to-discord]
     steps:
 
       - name: Get AUR PKGBUILD
