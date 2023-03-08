@@ -285,7 +285,7 @@ jobs:
           depot2Path: Unciv-Linux64
           releaseBranch: release
 
-  finalize:
+  upload-github-release-and-post-to-discord:
     needs: [build, android-build, packr-build]
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
@@ -343,10 +343,9 @@ jobs:
             ${{needs.build.outputs.release_body}}
 
   AUR-update:
-    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     continue-on-error: true
     runs-on: ubuntu-latest
-    needs: finalize
+    needs: upload-github-release-and-post-to-discord
     steps:
 
       - name: Get AUR PKGBUILD
