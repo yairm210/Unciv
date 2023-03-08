@@ -35,6 +35,10 @@ class ExploredRegion () : IsPartOfGameInfoSerialization {
     @Transient
     private var shouldUpdateMinimap = true
 
+    // Rectangle for positioning the camera viewport on the minimap
+    @Transient
+    private val exploredRectangle = Rectangle()
+
     @Transient
     private var shouldRestrictX = false
 
@@ -55,6 +59,7 @@ class ExploredRegion () : IsPartOfGameInfoSerialization {
     // Getters
     fun shouldRecalculateCoords(): Boolean = shouldRecalculateCoords
     fun shouldUpdateMinimap(): Boolean = shouldUpdateMinimap
+    fun getRectangle(): Rectangle = exploredRectangle
     fun shouldRestrictX(): Boolean = shouldRestrictX
     fun getLeftX(): Float = topLeftStage.x
     fun getRightX():Float = bottomRightStage.x
@@ -187,6 +192,13 @@ class ExploredRegion () : IsPartOfGameInfoSerialization {
 
         topLeftStage = Vector2(left, top)
         bottomRightStage = Vector2(right, bottom)
+
+        // Calculate rectangle for positioning the camera viewport on the minimap
+        val yOffset = tileRadius * sqrt(3f) * 0.5f
+        exploredRectangle.x = left - tileRadius
+        exploredRectangle.y = mapMaxY - bottom - yOffset * 0.5f
+        exploredRectangle.width = getWidth() * tileRadius * 1.5f
+        exploredRectangle.height = getHeight() * yOffset
     }
 
     fun isPositionInRegion(postition: Vector2): Boolean {
@@ -210,15 +222,5 @@ class ExploredRegion () : IsPartOfGameInfoSerialization {
     fun getMinimapLeft(tileSize: Float): Float {
         shouldUpdateMinimap = false
         return (topLeft.x + 1f) * tileSize * -0.75f
-    }
-
-    fun getRectangle(worldHeight: Float): Rectangle {
-        val result = Rectangle()
-        val yOffset = tileRadius * sqrt(3f) * 0.5f
-        result.x = getLeftX() - tileRadius
-        result.y = worldHeight - getBottomY() - yOffset * 0.5f
-        result.width = getWidth() * tileRadius * 1.5f
-        result.height = getHeight() * yOffset
-        return result
     }
 }

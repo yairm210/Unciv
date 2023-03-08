@@ -61,8 +61,8 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
         // Center tiles in minimap holder
         tileMapWidth = topX - bottomX
         tileMapHeight = topY - bottomY
-        val padX = (stageMinimapSize.x - tileMapWidth) / 2f - bottomX
-        val padY = (stageMinimapSize.y - tileMapHeight) / 2f - bottomY
+        val padX = (stageMinimapSize.x - tileMapWidth) * 0.5f - bottomX
+        val padY = (stageMinimapSize.y - tileMapHeight) * 0.5f - bottomY
         for (group in tileLayer.children) {
             group.moveBy(padX, padY)
         }
@@ -206,7 +206,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
                 worldHeight
             )
 
-            val exploredRectangle = civInfo.exploredRegion.getRectangle(worldHeight)
+            val exploredRectangle = civInfo.exploredRegion.getRectangle()
             worldToMiniFactor = Vector2(
                 tileMapWidth / exploredRectangle.width,
                 tileMapHeight / exploredRectangle.height
