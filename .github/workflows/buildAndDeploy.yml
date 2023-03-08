@@ -162,15 +162,13 @@ jobs:
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         shell: bash
         run: |
-          mkdir deploy
-          ls android/build/outputs/apk/release
-          mv android/build/outputs/apk/release/Unciv-release-unsigned-signed.apk deploy/Unciv-signed.apk
+          mv android/build/outputs/apk/release/Unciv-release-unsigned-signed.apk Unciv-signed.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v3
         with:
           name: UncivAPK
-          path: deploy/Unciv-signed.apk
+          path: Unciv-signed.apk
 
 
 ## Finalize
@@ -201,7 +199,7 @@ jobs:
           allow_empty_commits: false
 
 
-  Upload-to-itch-io-and-steam:
+  packr-build:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     needs: build
@@ -225,30 +223,16 @@ jobs:
       - name: Upload to itch.io
         continue-on-error: true
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-        env:
-          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
         run: |
-          wget -q -O butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
-          unzip butler.zip
-          chmod +x butler
-
           mkdir -p desktop/build/libs
           mv Unciv.jar desktop/build/libs
 
           wget -q -O packr-all-4.0.0.jar https://github.com/libgdx/packr/releases/download/4.0.0/packr-all-4.0.0.jar
           wget -q -O jre-linux-64.tar.gz https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.11%2B9/OpenJDK11U-jre_x64_linux_hotspot_11.0.11_9.tar.gz
           ./gradlew desktop:packrLinux64
-          ./butler push deploy/Unciv-Linux64.zip yairm210/unciv:Linux64     --userversion ${{needs.Build.outputs.version_tag}}
-
-          #  MacOS bundles correctly but does not run as intended, see https://github.com/yairm210/Unciv/issues/4970
-          #  Disabled until this can be checked by sommeone who actually has a Mac computer
-          #  wget -q -O jre-macOS.tar.gz https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.11%2B9/OpenJDK11U-jre_x64_mac_hotspot_11.0.11_9.tar.gz
-          #  ./gradlew desktop:packrMacOS
-          #  ./butler push deploy/Unciv-MacOS.zip yairm210/unciv:MacOS --userversion ${{needs.Build.outputs.version_tag}}
 
           wget -q -O jdk-windows-64.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip
           ./gradlew desktop:packrWindows64
-          ./butler push deploy/Unciv-Windows64.zip yairm210/unciv:Windows64 --userversion ${{needs.Build.outputs.version_tag}}
 
       - name: Upload packed zips
         uses: actions/upload-artifact@v3
@@ -258,14 +242,46 @@ jobs:
             deploy/Unciv-Windows64.zip
             deploy/Unciv-Linux64.zip
 
+  Upload-to-itch:
+    runs-on: ubuntu-latest
+    needs: packr-build
+
+      - name: Download packed zips
+        uses: actions/download-artifact@v3
+        with:
+          name: UncivDeploymentZips
+
+      - name: Upload to itch.io
+        continue-on-error: true
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+        run: |
+          wget -q -O butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
+          unzip butler.zip
+          chmod +x butler
+
+          ./butler push Unciv-Linux64.zip yairm210/unciv:Linux64     --userversion ${{needs.Build.outputs.version_tag}}
+          ./butler push Unciv-Windows64.zip yairm210/unciv:Windows64 --userversion ${{needs.Build.outputs.version_tag}}
+
+  Upload-to-steam:
+    runs-on: ubuntu-latest
+    needs: packr-build
+    steps:
+
+      - name: Download packed zips
+        uses: actions/download-artifact@v3
+        with:
+          name: UncivDeploymentZips
+
       - name: Unzip zips for steam deployment
         continue-on-error: true
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         shell: bash
         run: |
           mkdir steam
-          unzip deploy/Unciv-Windows64.zip -d steam/Unciv-Windows64
-          unzip deploy/Unciv-Linux64.zip -d steam/Unciv-Linux64
+          unzip Unciv-Windows64.zip -d steam/Unciv-Windows64
+          unzip Unciv-Linux64.zip -d steam/Unciv-Linux64
 
       - name: Steam deploy
         continue-on-error: true
@@ -285,29 +301,22 @@ jobs:
           releaseBranch: release
 
   Finalize:
-    needs: Upload-to-itch-io-and-steam
+    needs: packr-build
     runs-on: ubuntu-latest
     steps:
 
-      - name: Download JAR
+      - name: Download all artifacts
         uses: actions/download-artifact@v3
-        # See 'Upload JAR' step in 'build' job
-        with:
-          name: |
-            UncivJar
-            UncivDeploymentZips
-            UncivAPK
-            UncivServer
 
       - name: consolidate deploy folder
         run: |
           mkdir deploy
-          mv Unciv.jar deploy
-          mv Unciv-Windows64.zip deploy
-          mv Unciv-Linux64.zip deploy
-          mv Unciv-signed.apk deploy
-          mv UncivServer.jar deploy
-          mv linuxFilesForJar.zip deploy
+          mv UncivJar/Unciv.jar deploy
+          mv UncivJar/linuxFilesForJar.zip deploy
+          mv UncivDeploymentZips/Unciv-Windows64.zip deploy
+          mv UncivDeploymentZips/Unciv-Linux64.zip deploy
+          mv UncivAPK/Unciv-signed.apk deploy
+          mv UncivServer/UncivServer.jar deploy
 
       - name: Check if this is a real release or a test version, for Github release
         id: check-version-tag
