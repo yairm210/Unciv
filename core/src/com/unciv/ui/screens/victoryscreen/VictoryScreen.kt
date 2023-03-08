@@ -12,7 +12,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.MayaCalendar
+import com.unciv.ui.components.YearTextUtil
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.onClick
@@ -22,7 +22,6 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.newgamescreen.NewGameScreen
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
-import kotlin.math.abs
 
 class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
@@ -227,12 +226,12 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
     private fun updateReplayTable(yearLabel: Label, replayMap: ReplayMap, turn: Int) {
         val finalTurn = UncivGame.Current.gameInfo?.turns ?: 0
         val year = UncivGame.Current.gameInfo?.getYear(turn - finalTurn) ?: 0
-        // TODO: This logic is duplicated. It would be great to move it to a common location.
-        val yearText =
-                if (UncivGame.Current.gameInfo?.currentPlayerCiv?.isLongCountDisplay() == true
-                ) MayaCalendar.yearToMayaDate(year)
-                else abs(year).toString() + (if (year < 0) "BC" else "AD")
-         yearLabel.setText(yearText.tr())
+        yearLabel.setText(
+            YearTextUtil.toYearText(
+                year,
+                UncivGame.Current.gameInfo?.currentPlayerCiv?.isLongCountDisplay() == true
+            )
+        )
         replayMap.update(turn)
     }
 
