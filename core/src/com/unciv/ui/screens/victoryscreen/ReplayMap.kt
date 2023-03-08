@@ -4,13 +4,14 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.UncivGame
 import com.unciv.logic.map.TileMap
+import com.unciv.ui.screens.worldscreen.minimap.MinimapTile
 import kotlin.math.max
 import kotlin.math.min
 
 // Mostly copied from MiniMap
 class ReplayMap(val tileMap: TileMap) : Group() {
     private val tileLayer = Group()
-    private val minimapTiles: List<ReplayMapTile>
+    private val minimapTiles: List<MinimapTile>
 
     init {
         // don't try to resize rotate etc - this table has a LOT of children so that's valuable
@@ -63,10 +64,10 @@ class ReplayMap(val tileMap: TileMap) : Group() {
         return smallerWorldDimension * mapSizePercent / 100 / effectiveRadius
     }
 
-    private fun createReplayMap(tileSize: Float): List<ReplayMapTile> {
-        val tiles = ArrayList<ReplayMapTile>()
+    private fun createReplayMap(tileSize: Float): List<MinimapTile> {
+        val tiles = ArrayList<MinimapTile>()
         for (tile in tileMap.values) {
-            val minimapTile = ReplayMapTile(tile, tileSize)
+            val minimapTile = MinimapTile(tile, tileSize) {}
             tiles.add(minimapTile)
         }
         return tiles
@@ -75,19 +76,9 @@ class ReplayMap(val tileMap: TileMap) : Group() {
 
     fun update(turn: Int) {
         for (minimapTile in minimapTiles) {
-            val historyState = minimapTile.tile.history.getState(turn)
-            val owningCivName = historyState.ownedByCivName
-            val owningCiv = if (owningCivName == null) null else tileMap.gameInfo.getCivilization(
-                owningCivName
-            )
-            minimapTile.updateColor(owningCiv, historyState.isCityCenter)
-            minimapTile.updateBorders(owningCiv, turn).updateActorsIn(this)
-            minimapTile.updateCityCircle(
-                owningCiv,
-                historyState.isCityCenter,
-                historyState.isCapital
-            )
-                .updateActorsIn(this)
+            minimapTile.updateColor(false, turn)
+            minimapTile.updateBorders(turn).updateActorsIn(this)
+            minimapTile.updateCityCircle(turn).updateActorsIn(this)
         }
     }
 
