@@ -232,7 +232,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
                 if (UncivGame.Current.gameInfo?.currentPlayerCiv?.isLongCountDisplay() == true
                 ) MayaCalendar.yearToMayaDate(year)
                 else abs(year).toString() + (if (year < 0) "BC" else "AD")
-        yearLabel.setText(yearText)
+         yearLabel.setText(yearText.tr())
         replayMap.update(turn)
     }
 
