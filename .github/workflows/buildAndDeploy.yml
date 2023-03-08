@@ -245,6 +245,7 @@ jobs:
   Upload-to-itch:
     runs-on: ubuntu-latest
     needs: packr-build
+    steps:
 
       - name: Download packed zips
         uses: actions/download-artifact@v3
