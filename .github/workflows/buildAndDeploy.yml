@@ -300,7 +300,6 @@ jobs:
             UncivServer
 
       - name: consolidate deploy folder
-        id: check-version-tag
         run: |
           mkdir deploy
           mv Unciv.jar deploy
