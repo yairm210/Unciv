@@ -88,14 +88,13 @@ jobs:
 
           ./gradlew desktop:zipLinuxFilesForJar
 
-          # Copy JAR for final Github version deploy
-          mv desktop/build/libs/Unciv.jar deploy/Unciv.jar
-
       - name: Upload JAR
         uses: actions/upload-artifact@v3
         with:
           name: UncivJar
-          path: deploy/Unciv.jar
+          path: |
+            desktop/build/libs/Unciv.jar
+            deploy/linuxFilesForJar.zip
 
       ## Server
 
@@ -104,7 +103,12 @@ jobs:
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         run: |
           ./gradlew server:dist
-          mv server/build/libs/UncivServer.jar deploy/UncivServer.jar
+
+      - name: Upload Server
+        uses: actions/upload-artifact@v3
+        with:
+          name: UncivServer
+          path: server/build/libs/UncivServer.jar
 
 ## ANDROID
 
@@ -165,38 +169,11 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v3
         with:
-          name: APK
+          name: UncivAPK
           path: deploy/Unciv-signed.apk
 
 
 ## Finalize
-
-      - name: Check if this is a real release or a test version, for Github release
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-        id: check-version-tag
-        run: |
-          if [[ ${{steps.tag.outputs.tag}} =~ [0-9]\.[0-9]+\.[0-9]+ ]]; then
-            echo "real_release=true" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Upload binaries to Github release
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-        continue-on-error: true
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: deploy/*
-          tag: ${{ github.ref }}
-          prerelease: ${{ steps.check-version-tag.outputs.real_release != 'true' }}
-          overwrite: true
-          file_glob: true
-            # <--- Use environment variables that was created earlier - see https://github.com/svenstaro/upload-release-action
-            # Single-quotes do not solve the multiline problem.
-          body: |
-            ## ${{steps.tag.outputs.tag}}
-
-            ${{steps.read_release.outputs.release_body}}
-
 
       - name: Get AUR PKGBUILD
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
@@ -223,20 +200,6 @@ jobs:
           updpkgsums: true
           allow_empty_commits: false
 
-
-      - name: Post announcement on Discord
-        continue-on-error: true
-        ## On patch releases, don't notify Discord
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') && steps.read_release.outputs.release_body != ''
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        uses: Ilshidur/action-discord@0.3.2
-        with:
-          args: | # See https://discordjs.guide/miscellaneous/parsing-mention-arguments.html#how-discord-mentions-work
-            <@&663705024265715743>
-            *${{steps.tag.outputs.tag}} rolling out!*
-
-            ${{steps.read_release.outputs.release_body}}
 
   Upload-to-itch-io-and-steam:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
@@ -275,18 +238,25 @@ jobs:
           wget -q -O packr-all-4.0.0.jar https://github.com/libgdx/packr/releases/download/4.0.0/packr-all-4.0.0.jar
           wget -q -O jre-linux-64.tar.gz https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.11%2B9/OpenJDK11U-jre_x64_linux_hotspot_11.0.11_9.tar.gz
           ./gradlew desktop:packrLinux64
-          ./butler push deploy/Unciv-Linux64.zip yairm210/unciv:Linux64     --userversion ${{needs.build.outputs.version_tag}}
+          ./butler push deploy/Unciv-Linux64.zip yairm210/unciv:Linux64     --userversion ${{needs.Build.outputs.version_tag}}
 
           #  MacOS bundles correctly but does not run as intended, see https://github.com/yairm210/Unciv/issues/4970
           #  Disabled until this can be checked by sommeone who actually has a Mac computer
           #  wget -q -O jre-macOS.tar.gz https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.11%2B9/OpenJDK11U-jre_x64_mac_hotspot_11.0.11_9.tar.gz
           #  ./gradlew desktop:packrMacOS
-          #  ./butler push deploy/Unciv-MacOS.zip yairm210/unciv:MacOS --userversion ${{needs.build.outputs.version_tag}}
+          #  ./butler push deploy/Unciv-MacOS.zip yairm210/unciv:MacOS --userversion ${{needs.Build.outputs.version_tag}}
 
           wget -q -O jdk-windows-64.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip
           ./gradlew desktop:packrWindows64
-          ./butler push deploy/Unciv-Windows64.zip yairm210/unciv:Windows64 --userversion ${{needs.build.outputs.version_tag}}
+          ./butler push deploy/Unciv-Windows64.zip yairm210/unciv:Windows64 --userversion ${{needs.Build.outputs.version_tag}}
 
+      - name: Upload packed zips
+        uses: actions/upload-artifact@v3
+        with:
+          name: UncivDeploymentZips
+          path: |
+            deploy/Unciv-Windows64.zip
+            deploy/Unciv-Linux64.zip
 
       - name: Unzip zips for steam deployment
         continue-on-error: true
@@ -313,3 +283,67 @@ jobs:
           depot1Path: Unciv-Windows64
           depot2Path: Unciv-Linux64
           releaseBranch: release
+
+  Finalize:
+    needs: Upload-to-itch-io-and-steam
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Download JAR
+        uses: actions/download-artifact@v3
+        # See 'Upload JAR' step in 'build' job
+        with:
+          name: |
+            UncivJar
+            UncivDeploymentZips
+            UncivAPK
+            UncivServer
+
+      - name: consolidate deploy folder
+        id: check-version-tag
+        run: |
+          mkdir deploy
+          mv Unciv.jar deploy
+          mv Unciv-Windows64.zip deploy
+          mv Unciv-Linux64.zip deploy
+          mv Unciv-signed.apk deploy
+          mv UncivServer.jar deploy
+          mv linuxFilesForJar.zip deploy
+
+      - name: Check if this is a real release or a test version, for Github release
+        id: check-version-tag
+        run: |
+          if [[ ${{needs.Build.outputs.version_tag}} =~ [0-9]\.[0-9]+\.[0-9]+ ]]; then
+            echo "real_release=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload binaries to Github release
+        continue-on-error: true
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: deploy/*
+          tag: ${{ github.ref }}
+          prerelease: ${{ steps.check-version-tag.outputs.real_release != 'true' }}
+          overwrite: true
+          file_glob: true
+          # <--- Use environment variables that was created earlier - see https://github.com/svenstaro/upload-release-action
+          # Single-quotes do not solve the multiline problem.
+          body: |
+            ## ${{needs.Build.outputs.version_tag}}
+
+            ${{needs.Build.outputs.release_body}}
+
+      - name: Post announcement on Discord
+        continue-on-error: true
+        ## On patch releases, don't notify Discord
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') && steps.read_release.outputs.release_body != ''
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@0.3.2
+        with:
+          args: | # See https://discordjs.guide/miscellaneous/parsing-mention-arguments.html#how-discord-mentions-work
+            <@&663705024265715743>
+            *${{needs.Build.outputs.version_tag}} rolling out!*
+
+            ${{needs.Build.outputs.release_body}}
