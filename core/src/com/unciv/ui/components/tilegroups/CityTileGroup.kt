@@ -86,7 +86,7 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings) 
             }
 
             // Does not provide yields
-            tile.stats.getTileStats(city.civ).isEmpty() -> {
+            tile.stats.getTileStats(city, city.civ).isEmpty() -> {
                 // Do nothing
             }
 
