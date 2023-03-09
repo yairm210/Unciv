@@ -19,7 +19,7 @@ class ReplayMap(val tileMap: TileMap) : Group() {
         // render time!
         isTransform = false
 
-        val tileSize = calcTileSize(22)
+        val tileSize = calcTileSize()
         minimapTiles = createReplayMap(tileSize)
         val tileExtension = MinimapTileUtil.spreadOutMinimapTiles(tileLayer, minimapTiles, tileSize)
 
@@ -37,7 +37,7 @@ class ReplayMap(val tileMap: TileMap) : Group() {
         addActor(tileLayer)
     }
 
-    private fun calcTileSize(minimapSize: Int): Float {
+    private fun calcTileSize(): Float {
         // Support rectangular maps with extreme aspect ratios by scaling to the larger coordinate
         // with a slight weighting to make the bounding box 4:3
         val effectiveRadius = with(tileMap.mapParameters) {
@@ -47,10 +47,9 @@ class ReplayMap(val tileMap: TileMap) : Group() {
                 mapSize.width * 3 / 4
             ) * com.unciv.logic.map.MapSize.Huge.radius / com.unciv.logic.map.MapSize.Huge.height
         }
-        val mapSizePercent = if (minimapSize < 22) minimapSize + 9 else minimapSize * 5 - 75
         val smallerWorldDimension =
                 UncivGame.Current.worldScreen!!.stage.let { min(it.width, it.height) }
-        return smallerWorldDimension * mapSizePercent / 100 / effectiveRadius
+        return smallerWorldDimension * 0.5f / effectiveRadius
     }
 
     private fun createReplayMap(tileSize: Float): List<MinimapTile> {
