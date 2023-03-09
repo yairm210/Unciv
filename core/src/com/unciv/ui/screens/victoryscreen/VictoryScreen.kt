@@ -318,9 +318,9 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
             backgroundColor = Color.LIGHT_GRAY
             labelColor = Color.BLACK
         } else if (currentPlayer == civ // || game.viewEntireMapForDebug
-            || currentPlayer.knows(civ)
-            || currentPlayer.isDefeated()
-            || currentPlayer.victoryManager.hasWon()
+                || currentPlayer.knows(civ)
+                || currentPlayer.isDefeated()
+                || currentPlayer.victoryManager.hasWon()
         ) {
             civGroup.add(ImageGetter.getNationPortrait(civ.nation, 30f))
             backgroundColor = civ.nation.getOuterColor()
