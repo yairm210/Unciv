@@ -6,6 +6,7 @@ package com.unciv.logic.multiplayer.api
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
+import java.util.UUID
 
 /**
  * The content to register a new account
@@ -23,7 +24,8 @@ data class AccountRegistrationRequest(
  */
 @Serializable
 data class CreateFriendRequest(
-    val username: String
+    @Serializable(with = UUIDSerializer::class)
+    val uuid: UUID
 )
 
 /**

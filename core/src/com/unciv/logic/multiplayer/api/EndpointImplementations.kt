@@ -12,6 +12,7 @@ import io.ktor.client.call.*
 import io.ktor.client.plugins.cookies.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import java.util.*
 
 /**
  * API wrapper for account handling (do not use directly; use the Api class instead)
@@ -163,6 +164,9 @@ class AuthApi(private val client: HttpClient, private val authCookieHelper: Auth
             return true
         } else {
             val err: ApiErrorResponse = response.body()
+            if (err.statusCode == ApiStatusCode.LoginFailed) {
+                return false
+            }
             throw err
         }
     }
@@ -214,7 +218,7 @@ class FriendApi(private val client: HttpClient, private val authCookieHelper: Au
      * have requested a friendship, but the destination hasn't accepted yet.
      * In the other case, if your username is in ``to``, you have received a friend request.
      */
-    suspend fun listFriendRequests(): List<FriendResponse> {
+    suspend fun listFriendRequests(): List<FriendRequestResponse> {
         val response = client.get("/api/v2/friends") {
             authCookieHelper.add(this)
         }
@@ -230,29 +234,29 @@ class FriendApi(private val client: HttpClient, private val authCookieHelper: Au
     /**
      * Retrieve a list of your open incoming friendship requests
      *
-     * The argument [myUsername] should be filled with the username of the currently logged in user.
+     * The argument [myUUID] should be filled with the username of the currently logged in user.
      */
-    suspend fun listIncomingFriendRequests(myUsername: String): List<FriendResponse> {
+    suspend fun listIncomingFriendRequests(myUUID: UUID): List<FriendRequestResponse> {
         return listFriendRequests().filter {
-            it.to == myUsername
+            it.to.uuid == myUUID
         }
     }
 
     /**
      * Retrieve a list of your open outgoing friendship requests
      *
-     * The argument [myUsername] should be filled with the username of the currently logged in user.
+     * The argument [myUUID] should be filled with the username of the currently logged in user.
      */
-    suspend fun listOutgoingFriendRequests(myUsername: String): List<FriendResponse> {
+    suspend fun listOutgoingFriendRequests(myUUID: UUID): List<FriendRequestResponse> {
         return listFriendRequests().filter {
-            it.from == myUsername
+            it.from.uuid == myUUID
         }
     }
 
     /**
      * Request friendship with another user
      */
-    suspend fun request(other: String): Boolean {
+    suspend fun request(other: UUID): Boolean {
         return request(CreateFriendRequest(other))
     }
 
@@ -266,7 +270,7 @@ class FriendApi(private val client: HttpClient, private val authCookieHelper: Au
             authCookieHelper.add(this)
         }
         if (response.status.isSuccess()) {
-            logger.info("You have requested friendship with user ${r.username}")
+            logger.info("You have requested friendship with user ${r.uuid}")
             return true
         } else {
             val err: ApiErrorResponse = response.body()

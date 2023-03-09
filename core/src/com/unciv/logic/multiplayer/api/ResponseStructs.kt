@@ -4,16 +4,9 @@
 
 package com.unciv.logic.multiplayer.api
 
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Serializer
-import kotlinx.serialization.descriptors.PrimitiveKind
-import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
-import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
+import java.util.UUID
 
 /**
  * The account data
@@ -22,7 +15,9 @@ import kotlinx.serialization.encoding.Encoder
 data class AccountResponse(
     val username: String,
     @SerialName("display_name")
-    val displayName: String
+    val displayName: String,
+    @Serializable(with = UUIDSerializer::class)
+    val uuid: UUID
 )
 
 /**
@@ -34,32 +29,16 @@ data class AccountResponse(
 data class ApiErrorResponse(
     override val message: String,
     @SerialName("status_code")
-    // TODO: @JsonValue or something similar, at least in Jackson
+    @Serializable(with = ApiStatusCodeSerializer::class)
     val statusCode: ApiStatusCode
 ) : Throwable()
 
 /**
- * Experimental serializer for the ApiStatusCode enum to make encoding/decoding as integer work
- */
-@OptIn(ExperimentalSerializationApi::class)
-@Serializer(forClass = ApiStatusCode::class)
-class ApiStatusCodeSerializer : KSerializer<ApiStatusCode> {
-    override val descriptor: SerialDescriptor =
-            PrimitiveSerialDescriptor("ApiStatusCode", PrimitiveKind.INT)
-
-    override fun serialize(encoder: Encoder, value: ApiStatusCode) {
-        encoder.encodeInt(value.value)
-    }
-
-    override fun deserialize(decoder: Decoder): ApiStatusCode {
-        val key = decoder.decodeInt()
-        return ApiStatusCode.getByValue(key)
-    }
-}
-
-/**
- * The status code represents a unique identifier for an error.  Error codes in the range of 1000..2000 represent client errors that could be handled by the client. Error codes in the range of 2000..3000 represent server errors.
- * Values: C1000,C1001,C1002,C1003,C1004,C1005,C1006,C1007,C1008,C1009,C1010,C1011,C1012,C1013,C1014,C2000,C2001,C2002
+ * API status code enum for mapping integer codes to names
+ *
+ * The status code represents a unique identifier for an error.
+ * Error codes in the range of 1000..2000 represent client errors that could be handled
+ * by the client. Error codes in the range of 2000..3000 represent server errors.
  */
 @Serializable(with = ApiStatusCodeSerializer::class)
 enum class ApiStatusCode(val value: Int) {
@@ -104,13 +83,23 @@ data class CreateLobbyResponse(
 )
 
 /**
- * A single friend or friend request
+ * A single friend
  */
 @Serializable
 data class FriendResponse(
     val id: Long,
-    val from: String,
-    val to: String
+    val from: AccountResponse,
+    val to: OnlineAccountResponse
+)
+
+/**
+ * A single friend request
+ */
+@Serializable
+data class FriendRequestResponse(
+    val id: Long,
+    val from: AccountResponse,
+    val to: AccountResponse
 )
 
 /**
@@ -123,7 +112,7 @@ data class FriendResponse(
 data class GetFriendResponse(
     val friends: List<FriendResponse>,
     @SerialName("friend_requests")
-    val friendRequests: List<FriendResponse>
+    val friendRequests: List<FriendRequestResponse>
 )
 
 /**
@@ -139,6 +128,7 @@ data class GetLobbiesResponse(
  */
 @Serializable
 data class LobbyResponse(
+    val id: Long,
     val name: String,
     @SerialName("max_players")
     val maxPlayers: Int,
@@ -147,7 +137,23 @@ data class LobbyResponse(
     @SerialName("created_at")
     val createdAt: Int,
     @SerialName("password")
-    val hasPassword: Boolean
+    val hasPassword: Boolean,
+    val owner: AccountResponse
+)
+
+/**
+ * The account data
+ *
+ * It provides the extra field ``online`` indicating whether the account has any connected client.
+ */
+@Serializable
+data class OnlineAccountResponse(
+    val online: Boolean,
+    @Serializable(with = UUIDSerializer::class)
+    val uuid: UUID,
+    val username: String,
+    @SerialName("display_name")
+    val displayName: String
 )
 
 /**
