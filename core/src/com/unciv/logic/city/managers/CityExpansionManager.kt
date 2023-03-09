@@ -115,7 +115,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         takeOwnership(city.getCenterTile())
 
         for (tile in city.getCenterTile().getTilesInDistance(1)
-            .filter { it.getCity() == null }) // can't take ownership of owned tiles (by other cities)
+                .filter { it.getCity() == null }) // can't take ownership of owned tiles (by other cities)
             takeOwnership(tile)
     }
 
