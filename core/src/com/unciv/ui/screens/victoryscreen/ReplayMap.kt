@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.UncivGame
 import com.unciv.logic.map.TileMap
 import com.unciv.ui.screens.worldscreen.minimap.MinimapTile
+import com.unciv.ui.screens.worldscreen.minimap.MinimapTileUtil
 import kotlin.math.max
 import kotlin.math.min
 
@@ -18,32 +19,20 @@ class ReplayMap(val tileMap: TileMap) : Group() {
         // render time!
         isTransform = false
 
-        var topX = 0f
-        var topY = 0f
-        var bottomX = 0f
-        var bottomY = 0f
-
         val tileSize = calcTileSize(22)
         minimapTiles = createReplayMap(tileSize)
-        for (image in minimapTiles.map { it.image }) {
-            tileLayer.addActor(image)
-
-            // keeps track of the current top/bottom/left/rightmost tiles to size and position the
-            // minimap correctly
-            topX = max(topX, image.x + tileSize)
-            topY = max(topY, image.y + tileSize)
-            bottomX = min(bottomX, image.x)
-            bottomY = min(bottomY, image.y)
-        }
+        val tileExtension = MinimapTileUtil.spreadOutMinimapTiles(tileLayer, minimapTiles, tileSize)
 
         for (group in tileLayer.children) {
-            group.moveBy(-bottomX, -bottomY)
+            group.moveBy(
+                tileExtension.width - tileExtension.x,
+                tileExtension.height - tileExtension.y
+            )
         }
 
         // there are tiles "below the zero",
         // so we zero out the starting position of the whole board so they will be displayed as well
-        tileLayer.setSize(topX - bottomX, topY - bottomY)
-
+        tileLayer.setSize(tileExtension.width, tileExtension.height)
         setSize(tileLayer.width, tileLayer.height)
         addActor(tileLayer)
     }
