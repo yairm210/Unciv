@@ -16,7 +16,7 @@ import com.unciv.utils.DebugUtils
 import kotlin.math.PI
 import kotlin.math.atan
 
-class MinimapTile(val tile: Tile, tileSize: Float, val onClick: () -> Unit) {
+internal class MinimapTile(val tile: Tile, tileSize: Float, val onClick: () -> Unit) {
     val image: Image = ImageGetter.getImage("OtherIcons/Hexagon")
     private var cityCircleImage: IconCircleGroup? = null
     var owningCiv: Civilization? = null
