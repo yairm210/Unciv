@@ -1,3 +1,13 @@
+## 4.5.5
+
+Dynamic minimap - By Gualdimar
+
+Better AI evaluation of which improvement to build on a tile
+
+Added 'additional times' to limited actions
+
+Android: selectable orientation  - By vegeta1k95
+
 ## 4.5.4
 
 Fixed endless loop for mod checker

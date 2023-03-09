@@ -36,8 +36,10 @@ class TileGroupMap<T: TileGroup>(
         /** Vertical size of a hex in world coordinates, or the distance between the centers of any two opposing edges
          *  (the hex is oriented so it has corners to the left and right of the center and its upper and lower bounds are horizontal edges) */
         const val groupSize = 50f
+
         /** Length of the diagonal of a hex, or distance between two opposing corners */
         const val groupSizeDiagonal = groupSize * 1.1547005f  // groupSize * sqrt(4/3)
+
         /** Horizontal displacement per hex, meaning the increase in overall map size (in world coordinates) when adding a column.
          *  On the hex, this can be visualized as the horizontal distance between the leftmost corner and the
          *  line connecting the two corners at 2 and 4 o'clock. */
@@ -74,21 +76,19 @@ class TileGroupMap<T: TileGroup>(
                 HexMath.hex2WorldCoords(tileGroup.tile.position)
             }
 
-            tileGroup.setPosition(positionalVector.x * 0.8f * groupSize,
-                    positionalVector.y * 0.8f * groupSize
+            tileGroup.setPosition(
+                positionalVector.x * 0.8f * groupSize,
+                positionalVector.y * 0.8f * groupSize
             )
 
             topX =
-                if (worldWrap)
+                    if (worldWrap)
                     // Well it's not pretty but it works
-                    // This is so topX is the same no matter what worldWrap is
-                    // wrapped worlds are missing one tile width on the right side
-                    // which would result in a smaller topX
                     // The resulting topX was always missing 1.2 * groupSize in every possible
                     // combination of map size and shape
-                    max(topX, tileGroup.x + groupSize * 2.2f)
-                else
-                    max(topX, tileGroup.x + groupSize)
+                        max(topX, tileGroup.x + groupSize * 1.2f)
+                    else
+                        max(topX, tileGroup.x + groupSize + 4f)
 
             topY = max(topY, tileGroup.y + groupSize)
             bottomX = min(bottomX, tileGroup.x)
@@ -114,14 +114,14 @@ class TileGroupMap<T: TileGroup>(
         // Apparently the sortedByDescending is kinda memory-intensive because it needs to sort ALL the tiles
         for (group in tileGroups.sortedByDescending { it.tile.position.x + it.tile.position.y }) {
             // now, we steal the subgroups from all the tilegroups, that's how we form layers!
-            baseLayers.add(group.layerTerrain.apply { setPosition(group.x,group.y) })
-            featureLayers.add(group.layerFeatures.apply { setPosition(group.x,group.y) })
-            borderLayers.add(group.layerBorders.apply { setPosition(group.x,group.y) })
-            miscLayers.add(group.layerMisc.apply { setPosition(group.x,group.y) })
-            pixelUnitLayers.add(group.layerUnitArt.apply { setPosition(group.x,group.y) })
-            circleFogCrosshairLayers.add(group.layerOverlay.apply { setPosition(group.x,group.y) })
-            unitLayers.add(group.layerUnitFlag.apply { setPosition(group.x,group.y) })
-            cityButtonLayers.add(group.layerCityButton.apply { setPosition(group.x,group.y) })
+            baseLayers.add(group.layerTerrain.apply { setPosition(group.x, group.y) })
+            featureLayers.add(group.layerFeatures.apply { setPosition(group.x, group.y) })
+            borderLayers.add(group.layerBorders.apply { setPosition(group.x, group.y) })
+            miscLayers.add(group.layerMisc.apply { setPosition(group.x, group.y) })
+            pixelUnitLayers.add(group.layerUnitArt.apply { setPosition(group.x, group.y) })
+            circleFogCrosshairLayers.add(group.layerOverlay.apply { setPosition(group.x, group.y) })
+            unitLayers.add(group.layerUnitFlag.apply { setPosition(group.x, group.y) })
+            cityButtonLayers.add(group.layerCityButton.apply { setPosition(group.x, group.y) })
         }
 
         for (group in baseLayers) addActor(group)
@@ -136,11 +136,7 @@ class TileGroupMap<T: TileGroup>(
 
         // there are tiles "below the zero",
         // so we zero out the starting position of the whole board so they will be displayed as well
-        // Map's width is reduced by groupSize if it is wrapped, because wrapped map will miss a tile on the right.
-        // This ensures that wrapped maps have a smooth transition.
-        // If map is not wrapped, Map's width doesn't need to be reduce by groupSize
-        if (worldWrap) setSize(topX - bottomX - groupSize, topY - bottomY)
-        else setSize(topX - bottomX, topY - bottomY)
+        setSize(topX - bottomX, topY - bottomY)
 
         cullingArea = Rectangle(0f, 0f, width, height)
 
@@ -153,9 +149,9 @@ class TileGroupMap<T: TileGroup>(
     fun getPositionalVector(stageCoords: Vector2): Vector2 {
         val trueGroupSize = 0.8f * groupSize
         return Vector2(bottomX, bottomY)
-                .add(stageCoords)
-                .sub(groupSize / 2f, groupSize / 2f)
-                .scl(1f / trueGroupSize)
+            .add(stageCoords)
+            .sub(groupSize / 2f, groupSize / 2f)
+            .scl(1f / trueGroupSize)
     }
 
     override fun act(delta: Float) {
@@ -173,8 +169,9 @@ class TileGroupMap<T: TileGroup>(
 
         if (worldWrap) {
             // Prevent flickering when zoomed out so you can see entire map
-            val visibleMapWidth = if (mapHolder.width > maxVisibleMapWidth) maxVisibleMapWidth
-                else mapHolder.width
+            val visibleMapWidth =
+                    if (mapHolder.width > maxVisibleMapWidth) maxVisibleMapWidth
+                    else mapHolder.width
 
             // Where is viewport's boundaries
             val rightSide = mapHolder.scrollX + visibleMapWidth / 2f
@@ -202,11 +199,11 @@ class TileGroupMap<T: TileGroup>(
                             it.x += width
                     } else if (beyondLeft) {
                         // Move from right to left
-                        if (it.x + groupSize >= drawTopX + diffLeft)
+                        if (it.x + groupSize + 4f >= drawTopX + diffLeft)
                             it.x -= width
                     }
                     newBottomX = min(newBottomX, it.x)
-                    newTopX = max(newTopX, it.x + groupSize)
+                    newTopX = max(newTopX, it.x + groupSize + 4f)
                 }
 
                 drawBottomX = newBottomX
@@ -215,5 +212,4 @@ class TileGroupMap<T: TileGroup>(
         }
         super.draw(batch, parentAlpha)
     }
-
 }
