@@ -361,6 +361,14 @@ class UncivFiles(
             return json().fromJson(GameInfoPreview::class.java, Gzip.unzip(gameData))
         }
 
+        /**
+         * Returns pretty-printed (= manually readable) serialization of [game], optionally gzipped
+         */
+        fun gameInfoToPrettyString(game: GameInfo, useZip: Boolean = false): String {
+            val prettyJson = json().prettyPrint(game)
+            return if (useZip) Gzip.zip(prettyJson) else prettyJson
+        }
+
         /** Returns gzipped serialization of [game], optionally gzipped ([forceZip] overrides [saveZipped]) */
         fun gameInfoToString(game: GameInfo, forceZip: Boolean? = null): String {
             val plainJson = json().toJson(game)

@@ -6,8 +6,12 @@ import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.JsonContentPolymorphicSerializer
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import java.time.Instant
-import java.util.UUID
+import java.util.*
 
 /**
  * Serializer for the ApiStatusCode enum to make encoding/decoding as integer work
@@ -51,5 +55,41 @@ internal class UUIDSerializer : KSerializer<UUID> {
 
     override fun deserialize(decoder: Decoder): UUID {
         return UUID.fromString(decoder.decodeString())
+    }
+}
+
+/**
+ * Serializer for incoming and outgoing WebSocket messages that also differentiate by type
+ */
+internal class WebSocketMessageSerializer : JsonContentPolymorphicSerializer<WebSocketMessage>(WebSocketMessage::class) {
+    override fun selectDeserializer(element: JsonElement) = when {
+        // Text frames in JSON format but without 'type' field are invalid
+        "type" !in element.jsonObject -> InvalidMessage.serializer()
+        else -> {
+            // This mapping of the enum enforces to specify all serializer types at compile time
+            when (WebSocketMessageType.getByValue(element.jsonObject["type"]!!.jsonPrimitive.content)) {
+                WebSocketMessageType.InvalidMessage -> InvalidMessage.serializer()
+                WebSocketMessageType.FinishedTurn -> FinishedTurnMessage.serializer()
+                WebSocketMessageType.UpdateGameData -> UpdateGameDataMessage.serializer()
+                WebSocketMessageType.ClientDisconnected -> ClientDisconnectedMessage.serializer()
+                WebSocketMessageType.ClientReconnected -> ClientReconnectedMessage.serializer()
+                WebSocketMessageType.IncomingChatMessage -> IncomingChatMessageMessage.serializer()
+            }
+        }
+    }
+}
+
+/**
+ * Serializer for the WebSocket message type enum to make encoding/decoding as string work
+ */
+internal class WebSocketMessageTypeSerializer : KSerializer<WebSocketMessageType> {
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("WebSocketMessageType", PrimitiveKind.STRING)
+
+    override fun serialize(encoder: Encoder, value: WebSocketMessageType) {
+        encoder.encodeString(value.type)
+    }
+
+    override fun deserialize(decoder: Decoder): WebSocketMessageType {
+        return WebSocketMessageType.getByValue(decoder.decodeString())
     }
 }

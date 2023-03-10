@@ -45,7 +45,7 @@ class OnlineMultiplayerFiles(
      * @throws MultiplayerAuthException if the authentication failed
      */
     suspend fun tryUploadGame(gameInfo: GameInfo, withPreview: Boolean) {
-        val zippedGameInfo = UncivFiles.gameInfoToString(gameInfo, forceZip = true)
+        val zippedGameInfo = UncivFiles.gameInfoToPrettyString(gameInfo, useZip = true)
         fileStorage().saveFileData(gameInfo.gameId, zippedGameInfo)
 
         // We upload the preview after the game because otherwise the following race condition will happen:
