@@ -9,19 +9,15 @@ import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.event.EventBus
-import com.unciv.logic.multiplayer.api.AccountResponse
-import com.unciv.logic.multiplayer.api.Api
-import com.unciv.logic.multiplayer.api.ApiErrorResponse
-import com.unciv.logic.multiplayer.api.ApiStatusCode
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
 import com.unciv.logic.multiplayer.storage.OnlineMultiplayerFiles
+import com.unciv.ui.components.extensions.isLargerThan
 import com.unciv.logic.multiplayer.storage.SimpleHttp
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.Dispatcher
-import com.unciv.utils.concurrency.launchOnNonDaemonThreadPool
 import com.unciv.utils.concurrency.launchOnThreadPool
 import com.unciv.utils.concurrency.withGLContext
 import com.unciv.utils.debug
@@ -30,13 +26,11 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.Json
 import java.time.Duration
 import java.time.Instant
 import java.util.*
 import java.util.concurrent.atomic.AtomicReference
-import java.util.logging.Logger
+
 
 /**
  * How often files can be checked for new multiplayer games (could be that the user modified their file system directly). More checks within this time period
@@ -45,13 +39,11 @@ import java.util.logging.Logger
 private val FILE_UPDATE_THROTTLE_PERIOD = Duration.ofSeconds(60)
 
 /**
- * Provides multiplayer functionality to the rest of the game using the v2 API.
+ * Provides multiplayer functionality to the rest of the game.
  *
  * See the file of [com.unciv.logic.multiplayer.MultiplayerGameAdded] for all available [EventBus] events.
  */
-class OnlineMultiplayer {
-    private val logger = java.util.logging.Logger.getLogger(this::class.qualifiedName)
-
+class OldOnlineMultiplayer {
     private val files = UncivGame.Current.files
     private val multiplayerFiles = OnlineMultiplayerFiles()
     private var featureSet = ServerFeatureSet()
@@ -65,34 +57,22 @@ class OnlineMultiplayer {
     val games: Set<OnlineMultiplayerGame> get() = savedGames.values.toSet()
     val serverFeatureSet: ServerFeatureSet get() = featureSet
 
-    private val api = Api(UncivGame.Current.settings.multiplayer.server)
-
     init {
-        var password = UncivGame.Current.settings.multiplayer.passwords[UncivGame.Current.settings.multiplayer.server]
-        if (password == null) {
-            password = "SomePasswordForThoseFolksWhoDoNotHaveAnyStrongPasswordYet!" // TODO: Obviously, replace this password
-        }
-        val username = UncivGame.Current.settings.multiplayer.userName
-        runBlocking {
-            coroutineScope {
-                launchOnNonDaemonThreadPool {
-                    if (api.auth.login(username, password)) {
-                        logger.warning("Login failed. Trying to create account for $username")
-                        try {
-                            api.accounts.register(username, username, password)
-                        } catch (e: ApiErrorResponse) {
-                            // TODO: Improve exception handling
-                            if (e.statusCode == ApiStatusCode.InvalidUsername || e.statusCode == ApiStatusCode.InvalidDisplayName || e.statusCode == ApiStatusCode.InvalidPassword) {
-                                logger.warning("Invalid credentials: $e")
-                            }
-                            throw e
-                        }
-                        api.auth.login(username, password)
-                        api.websocket()
-                    }
+        flow<Unit> {
+            while (true) {
+                delay(500)
+
+                val currentGame = getCurrentGame()
+                val multiplayerSettings = UncivGame.Current.settings.multiplayer
+                val preview = currentGame?.preview
+                if (currentGame != null && (usesCustomServer() || preview == null || !preview.isUsersTurn())) {
+                    throttle(lastCurGameRefresh, multiplayerSettings.currentGameRefreshDelay, {}) { currentGame.requestUpdate() }
                 }
+
+                val doNotUpdate = if (currentGame == null) listOf() else listOf(currentGame)
+                throttle(lastAllGamesRefresh, multiplayerSettings.allGameRefreshDelay, {}) { requestUpdate(doNotUpdate = doNotUpdate) }
             }
-        }
+        }.launchIn(CoroutineScope(Dispatcher.DAEMON))
     }
 
     private fun getCurrentGame(): OnlineMultiplayerGame? {
@@ -145,7 +125,6 @@ class OnlineMultiplayer {
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      */
     suspend fun createGame(newGame: GameInfo) {
-        logger.info("Creating game")
         multiplayerFiles.tryUploadGame(newGame, withPreview = true)
         addGame(newGame)
     }
@@ -402,8 +381,8 @@ class OnlineMultiplayer {
      */
     fun setPassword(password: String): Boolean {
         if (
-                featureSet.authVersion > 0 &&
-                multiplayerFiles.fileStorage().setPassword(newPassword = password)
+            featureSet.authVersion > 0 &&
+            multiplayerFiles.fileStorage().setPassword(newPassword = password)
         ) {
             val settings = UncivGame.Current.settings.multiplayer
             settings.passwords[settings.server] = password
@@ -426,3 +405,58 @@ class OnlineMultiplayer {
     }
 
 }
+
+/**
+ * Calls the given [action] when [lastSuccessfulExecution] lies further in the past than [throttleInterval].
+ *
+ * Also updates [lastSuccessfulExecution] to [Instant.now], but only when [action] did not result in an exception.
+ *
+ * Any exception thrown by [action] is propagated.
+ *
+ * @return true if the update happened
+ */
+suspend fun <T> throttle(
+    lastSuccessfulExecution: AtomicReference<Instant?>,
+    throttleInterval: Duration,
+    onNoExecution: () -> T,
+    onFailed: (Exception) -> T = { throw it },
+    action: suspend () -> T
+): T {
+    val lastExecution = lastSuccessfulExecution.get()
+    val now = Instant.now()
+    val shouldRunAction = lastExecution == null || Duration.between(lastExecution, now).isLargerThan(throttleInterval)
+    return if (shouldRunAction) {
+        attemptAction(lastSuccessfulExecution, onNoExecution, onFailed, action)
+    } else {
+        onNoExecution()
+    }
+}
+
+/**
+ * Attempts to run the [action], changing [lastSuccessfulExecution], but only if no other thread changed [lastSuccessfulExecution] in the meantime
+ * and [action] did not throw an exception.
+ */
+suspend fun <T> attemptAction(
+    lastSuccessfulExecution: AtomicReference<Instant?>,
+    onNoExecution: () -> T,
+    onFailed: (Exception) -> T = { throw it },
+    action: suspend () -> T
+): T {
+    val lastExecution = lastSuccessfulExecution.get()
+    val now = Instant.now()
+    return if (lastSuccessfulExecution.compareAndSet(lastExecution, now)) {
+        try {
+            action()
+        } catch (e: Exception) {
+            lastSuccessfulExecution.compareAndSet(now, lastExecution)
+            onFailed(e)
+        }
+    } else {
+        onNoExecution()
+    }
+}
+
+
+fun GameInfoPreview.isUsersTurn() = getCivilization(currentPlayer).playerId == UncivGame.Current.settings.multiplayer.userId
+fun GameInfo.isUsersTurn() = getCivilization(currentPlayer).playerId == UncivGame.Current.settings.multiplayer.userId
+
