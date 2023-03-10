@@ -239,31 +239,16 @@ class City : IsPartOfGameInfoSerialization {
 
     fun getTileResourceAmount(tile: Tile): Int {
         if (tile.resource == null) return 0
+        if (!tile.providesResources(civ)) return 0
+
         val resource = tile.tileResource
-        if (resource.revealedBy != null && !civ.tech.isResearched(resource.revealedBy!!)) return 0
+        var amountToAdd = if (resource.resourceType == ResourceType.Strategic) tile.resourceAmount
+            else 1
+        if (resource.resourceType == ResourceType.Luxury
+            && containsBuildingUnique(UniqueType.ProvidesExtraLuxuryFromCityResources))
+            amountToAdd += 1
 
-        // Even if the improvement exists (we conquered an enemy city or somesuch) or we have a city on it, we won't get the resource until the correct tech is researched
-        if (resource.getImprovements().any()) {
-            if (!resource.getImprovements().any { improvementString ->
-                val improvement = getRuleset().tileImprovements[improvementString]!!
-                improvement.techRequired == null || civ.tech.isResearched(improvement.techRequired!!)
-            }) return 0
-        }
-
-        if ((tile.getUnpillagedImprovement() != null && resource.isImprovedBy(tile.improvement!!)) || tile.isCityCenter()
-            // Per https://gaming.stackexchange.com/questions/53155/do-manufactories-and-customs-houses-sacrifice-the-strategic-or-luxury-resources
-            || resource.resourceType == ResourceType.Strategic && tile.containsUnpillagedGreatImprovement()
-        ) {
-            var amountToAdd = if (resource.resourceType == ResourceType.Strategic) tile.resourceAmount
-                else 1
-            if (resource.resourceType == ResourceType.Luxury
-                && containsBuildingUnique(UniqueType.ProvidesExtraLuxuryFromCityResources)
-            )
-                amountToAdd += 1
-
-            return amountToAdd
-        }
-        return 0
+        return amountToAdd
     }
 
     fun isGrowing() = foodForNextTurn() > 0

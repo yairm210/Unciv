@@ -195,7 +195,7 @@
 		"rangedStrength": 10,
 		"cost": 56,
 		"requiredTech": "Sailing",
-		"uniques": ["Cannot enter ocean tiles", "[+50]% Strength <vs [Water] units>"],
+		"uniques": ["Cannot enter ocean tiles", "[+50]% Strength <vs [Wounded] units>"],
 		"upgradesTo": "Galleass",
 		"obsoleteTech": "Astronomy",
 		"attackSound": "arrow"
@@ -1610,7 +1610,8 @@
 		"unitType": "Civilian",
 		"uniques": [
             "Can hurry technology research",
-            "Can instantly construct a [Academy] improvement <by consuming this unit>",
+            "Can instantly construct a [Academy] improvement <once>",
+            "Can instantly construct a [Academy] improvement <[1] additional time(s)>",
             "Great Person - [Science]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},

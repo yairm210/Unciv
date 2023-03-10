@@ -1,3 +1,31 @@
+## 4.5.5
+
+Dynamic minimap - By Gualdimar
+
+Better AI evaluation of which improvement to build on a tile
+
+Added 'additional times' to limited actions
+
+Android: selectable orientation  - By vegeta1k95
+
+## 4.5.4
+
+Fixed endless loop for mod checker
+
+Modding: global alert available as triggerable for all objects
+
+Better order of unit actions
+
+Better checks for when units are purchasable
+
+Fixed flanking bonus calculation when attacking unit is not adjacent to enemy
+
+Automated workers do not remove Forest tiles for Camp improvements
+
+Fix ExploredRegion rectangular maps support + Zoomout flicker prevention reworked  - By Gualdimar
+
+Make "Borderless" display option translatable  - By Ouaz
+
 ## 4.5.3
 
 Unit Action moddability!

@@ -9,8 +9,7 @@ import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.UncivSound
 import com.unciv.ui.components.FontFamilyData
 import com.unciv.ui.components.Fonts
-import com.unciv.utils.Display
-import com.unciv.utils.ScreenMode
+import com.unciv.utils.ScreenOrientation
 import java.text.Collator
 import java.time.Duration
 import java.util.*
@@ -90,7 +89,8 @@ class GameSettings {
 
     var lastOverviewPage: String = "Cities"
 
-    var allowAndroidPortrait = false    // Opt-in to allow Unciv to follow a screen rotation to portrait
+    /** Orientation for mobile platforms */
+    var displayOrientation = ScreenOrientation.Landscape
 
     /** Saves the last successful new game's setup */
     var lastGameSetup: GameSetupInfo? = null
@@ -155,6 +155,7 @@ class GameSettings {
 
 enum class LocaleCode(var language: String, var country: String) {
     Arabic("ar", "IQ"),
+    Belarusian("be", "BY"),
     BrazilianPortuguese("pt", "BR"),
     Bulgarian("bg", "BG"),
     Catalan("ca", "ES"),
