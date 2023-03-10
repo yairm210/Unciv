@@ -6,7 +6,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.map.TileMap
 import com.unciv.ui.screens.worldscreen.minimap.MinimapTile
 import com.unciv.ui.screens.worldscreen.minimap.MinimapTileUtil
-import kotlin.math.max
 import kotlin.math.min
 
 // Mostly copied from MiniMap
@@ -38,18 +37,21 @@ class ReplayMap(val tileMap: TileMap) : Group() {
     }
 
     private fun calcTileSize(): Float {
-        // Support rectangular maps with extreme aspect ratios by scaling to the larger coordinate
-        // with a slight weighting to make the bounding box 4:3
-        val effectiveRadius = with(tileMap.mapParameters) {
-            if (shape != com.unciv.logic.map.MapShape.rectangular) mapSize.radius
-            else max(
-                mapSize.height,
-                mapSize.width * 3 / 4
-            ) * com.unciv.logic.map.MapSize.Huge.radius / com.unciv.logic.map.MapSize.Huge.height
+        val mapIsNotRectangular =
+                tileMap.mapParameters.shape != com.unciv.logic.map.MapShape.rectangular
+        val tileRows = with(tileMap.mapParameters.mapSize) {
+            if (mapIsNotRectangular) radius * 2 + 1 else height
         }
-        val smallerWorldDimension =
-                UncivGame.Current.worldScreen!!.stage.let { min(it.width, it.height) }
-        return smallerWorldDimension * 0.5f / effectiveRadius
+        val tileColumns = with(tileMap.mapParameters.mapSize) {
+            if (mapIsNotRectangular) radius * 2 + 1 else width
+        }
+        // 200 is about how much space we need for the top navigation and close button at the
+        // bottom.
+        val tileSizeToFitHeight =
+                (UncivGame.Current.worldScreen!!.stage.height - 200) / tileRows
+        val tileSizeToFitWidth =
+                UncivGame.Current.worldScreen!!.stage.width / tileColumns
+        return min(tileSizeToFitHeight, tileSizeToFitWidth)
     }
 
     private fun createReplayMap(tileSize: Float): List<MinimapTile> {
