@@ -46,8 +46,8 @@ fun debugTab() = Table(BaseScreen.skin).apply {
     add("View entire map".toCheckBox(DebugUtils.VISIBLE_MAP) {
         DebugUtils.VISIBLE_MAP = it
     }).colspan(2).row()
-    add("Show coordinates on tiles".toCheckBox(DebugUtils.PAINT_COORDS) {
-        DebugUtils.PAINT_COORDS = it
+    add("Show coordinates on tiles".toCheckBox(DebugUtils.SHOW_TILE_COORDS) {
+        DebugUtils.SHOW_TILE_COORDS = it
     }).colspan(2).row()
 
     val curGameInfo = game.gameInfo

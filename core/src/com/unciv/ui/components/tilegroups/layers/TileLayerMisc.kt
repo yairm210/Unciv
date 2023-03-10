@@ -170,7 +170,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         if (!isVisible || tileGroup.isForMapEditorIcon)
             return
 
-        if (DebugUtils.PAINT_COORDS) {
+        if (DebugUtils.SHOW_TILE_COORDS) {
             val label = this.tile().position.toPrettyString()
             startingLocationIcons.add(label.toLabel(Color.BLACK.cpy().apply { a = 0.7f }, 14).apply {
                 tileGroup.layerMisc.addActor(this)
@@ -328,7 +328,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         updateImprovementIcon(viewingCiv, showResourcesAndImprovements)
         updateYieldIcon(viewingCiv, showTileYields)
         updateResourceIcon(viewingCiv, showResourcesAndImprovements)
-        if (tileGroup !is WorldTileGroup || DebugUtils.PAINT_COORDS)
+        if (tileGroup !is WorldTileGroup || DebugUtils.SHOW_TILE_COORDS)
             updateStartingLocationIcon(true)
         updateArrows()
     }

@@ -9,7 +9,8 @@ object DebugUtils {
      */
     var VISIBLE_MAP: Boolean = false
 
-    var PAINT_COORDS: Boolean = false
+    /** This flag paints the tile coordinates directly onto the map tiles. */
+    var SHOW_TILE_COORDS: Boolean = false
 
     /** For when you need to test something in an advanced game and don't have time to faff around */
     var SUPERCHARGED: Boolean = false
