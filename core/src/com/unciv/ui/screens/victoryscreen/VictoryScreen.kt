@@ -1,7 +1,6 @@
 package com.unciv.ui.screens.victoryscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Cell.defaults
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -201,7 +200,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
     private fun setReplayTable() {
         val replayTable = Table().apply { defaults().pad(10f) }
         val yearLabel = "".toLabel()
-        replayTable.add(yearLabel).row().apply { defaults().padBottom(5f) }
+        replayTable.add(yearLabel).row()
         val replayMap = ReplayMap(gameInfo.tileMap)
         replayTable.add(replayMap).row()
 
