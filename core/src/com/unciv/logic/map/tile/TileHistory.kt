@@ -1,6 +1,7 @@
 package com.unciv.logic.map.tile
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.map.tile.TileHistory.TileHistoryState.CityCenterType
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -11,17 +12,19 @@ import kotlin.collections.HashMap
  */
 open class TileHistory : IsPartOfGameInfoSerialization {
 
-    class TileHistoryState : IsPartOfGameInfoSerialization {
-        var ownedByCivName: String? = null
-        var isCityCenter: Boolean = false
-        var isCapital: Boolean = false
+    /** We use very short identifiers here to save space in the serialization (assuming it isn't zipped) */
+    class TileHistoryState(
+        /** The name of the civilization owning this tile or `null` if there is no owner. */
+        var oc: String? = null,
+        /** `null` if this tile does not have a city center. Otherwise this field denotes of which type this city center is. */
+        var hc: CityCenterType? = null
+    ) : IsPartOfGameInfoSerialization {
+        enum class CityCenterType {
+            /** A regular city. */
+            R,
 
-        constructor() {}
-
-        constructor(ownedByCivName: String?, isCityCenter: Boolean, isCapital: Boolean) {
-            this.ownedByCivName = ownedByCivName
-            this.isCityCenter = isCityCenter
-            this.isCapital = isCapital
+            /** A capital. */
+            C
         }
     }
 
@@ -38,8 +41,12 @@ open class TileHistory : IsPartOfGameInfoSerialization {
         historyForSerialization[tile.tileMap.gameInfo.turns.toString()] =
                 TileHistoryState(
                     tile.getOwner()?.civName,
-                    tile.isCityCenter(),
-                    tile.getCity()?.isCapital() ?: false
+                    when {
+                        tile.isCityCenter() && tile.getCity()
+                            ?.isCapital() ?: false -> CityCenterType.C
+                        tile.isCityCenter() -> CityCenterType.R
+                        else -> null
+                    }
                 )
         historyForLookup = null
     }
