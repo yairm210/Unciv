@@ -381,6 +381,9 @@ class WorldScreen(
         if(uiEnabled){
             displayTutorialsOnUpdate()
 
+            if (fogOfWar) minimapWrapper.update(selectedCiv)
+            else minimapWrapper.update(viewingCiv)
+
             bottomUnitTable.update()
             bottomTileInfoTable.updateTileTable(mapHolder.selectedTile)
             bottomTileInfoTable.x = stage.width - bottomTileInfoTable.width
@@ -390,9 +393,6 @@ class WorldScreen(
             updateSelectedCiv()
 
             displayTutorialTaskOnUpdate()
-
-            if (fogOfWar) minimapWrapper.update(selectedCiv)
-            else minimapWrapper.update(viewingCiv)
 
             unitActionsTable.update(bottomUnitTable.selectedUnit)
             unitActionsTable.y = bottomUnitTable.height
