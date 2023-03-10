@@ -59,7 +59,7 @@ class FormattedLine (
     val indent: Int = 0,
     /** Defines vertical padding between rows, defaults to 5f. */
     val padding: Float = Float.NaN,
-    /** Sets text color, accepts Java names or 6/3-digit web colors (e.g. #FFA040). */
+    /** Sets text color, accepts 6/3-digit web colors (e.g. #FFA040). */
     val color: String = "",
     /** Renders a separator line instead of text. Can be combined only with [color] and [size] (line width, default 2) */
     val separator: Boolean = false,
