@@ -26,6 +26,8 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import java.util.concurrent.ConcurrentLinkedQueue
 
+internal const val LOBBY_MAX_PLAYERS = 34
+
 /**
  * API wrapper around the newly implemented REST API for multiplayer game handling
  *
@@ -79,6 +81,11 @@ class Api(val baseUrl: String) {
      * API for authentication management
      */
     val auth = AuthApi(client, authCookieHelper, logger)
+
+    /**
+     * API for chat management
+     */
+    val chat = ChatApi(client, authCookieHelper, logger)
 
     /**
      * API for friendship management

@@ -35,6 +35,53 @@ class AccountsApi(private val client: HttpClient, private val authCookieHelper: 
     }
 
     /**
+     * Retrieve details for an account by its UUID (always preferred to using usernames)
+     */
+    suspend fun lookup(uuid: UUID): AccountResponse {
+        val response = client.get("/api/v2/accounts/$uuid") {
+            authCookieHelper.add(this)
+        }
+        if (response.status.isSuccess()) {
+            return response.body()
+        } else {
+            val err: ApiErrorResponse = response.body()
+            throw err
+        }
+    }
+
+    /**
+     * Retrieve details for an account by its username
+     *
+     * Important note: Usernames can be changed, so don't assume they can be
+     * cached to do lookups for their display names or UUIDs later. Always convert usernames
+     * to UUIDs when handling any user interactions (e.g., inviting, sending messages, ...).
+     */
+    suspend fun lookup(username: String): AccountResponse {
+        return lookup(LookupAccountUsernameRequest(username))
+    }
+
+    /**
+     * Retrieve details for an account by its username
+     *
+     * Important note: Usernames can be changed, so don't assume they can be
+     * cached to do lookups for their display names or UUIDs later. Always convert usernames
+     * to UUIDs when handling any user interactions (e.g., inviting, sending messages, ...).
+     */
+    suspend fun lookup(r: LookupAccountUsernameRequest): AccountResponse {
+        val response = client.post("/api/v2/accounts/lookup") {
+            contentType(ContentType.Application.Json)
+            setBody(r)
+            authCookieHelper.add(this)
+        }
+        if (response.status.isSuccess()) {
+            return response.body()
+        } else {
+            val err: ApiErrorResponse = response.body()
+            throw err
+        }
+    }
+
+    /**
      * Update the currently logged in user information
      *
      * At least one value must be set to a non-null value.
@@ -191,6 +238,30 @@ class AuthApi(private val client: HttpClient, private val authCookieHelper: Auth
 }
 
 /**
+ * API wrapper for chat room handling (do not use directly; use the Api class instead)
+ */
+class ChatApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper, private val logger: Logger) {
+
+    /**
+     * Retrieve the messages of a chatroom
+     *
+     * [GetChatResponse.members] holds information about all members that are currently in the chat room (including yourself)
+     */
+    suspend fun get(roomID: Long): GetChatResponse {
+        val response = client.get("/api/v2/chats/$roomID") {
+            authCookieHelper.add(this)
+        }
+        if (response.status.isSuccess()) {
+            return response.body()
+        } else {
+            val err: ApiErrorResponse = response.body()
+            throw err
+        }
+    }
+
+}
+
+/**
  * API wrapper for friend handling (do not use directly; use the Api class instead)
  */
 class FriendApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper, private val logger: Logger) {
@@ -198,7 +269,7 @@ class FriendApi(private val client: HttpClient, private val authCookieHelper: Au
     /**
      * Retrieve a list of your established friendships
      */
-    suspend fun listFriends(): List<FriendResponse> {
+    suspend fun list(): List<FriendResponse> {
         val response = client.get("/api/v2/friends") {
             authCookieHelper.add(this)
         }
@@ -218,7 +289,7 @@ class FriendApi(private val client: HttpClient, private val authCookieHelper: Au
      * have requested a friendship, but the destination hasn't accepted yet.
      * In the other case, if your username is in ``to``, you have received a friend request.
      */
-    suspend fun listFriendRequests(): List<FriendRequestResponse> {
+    suspend fun listRequests(): List<FriendRequestResponse> {
         val response = client.get("/api/v2/friends") {
             authCookieHelper.add(this)
         }
@@ -236,8 +307,8 @@ class FriendApi(private val client: HttpClient, private val authCookieHelper: Au
      *
      * The argument [myUUID] should be filled with the username of the currently logged in user.
      */
-    suspend fun listIncomingFriendRequests(myUUID: UUID): List<FriendRequestResponse> {
-        return listFriendRequests().filter {
+    suspend fun listIncomingRequests(myUUID: UUID): List<FriendRequestResponse> {
+        return listRequests().filter {
             it.to.uuid == myUUID
         }
     }
@@ -247,8 +318,8 @@ class FriendApi(private val client: HttpClient, private val authCookieHelper: Au
      *
      * The argument [myUUID] should be filled with the username of the currently logged in user.
      */
-    suspend fun listOutgoingFriendRequests(myUUID: UUID): List<FriendRequestResponse> {
-        return listFriendRequests().filter {
+    suspend fun listOutgoingRequests(myUUID: UUID): List<FriendRequestResponse> {
+        return listRequests().filter {
             it.from.uuid == myUUID
         }
     }
@@ -315,7 +386,6 @@ class FriendApi(private val client: HttpClient, private val authCookieHelper: Au
 
 }
 
-
 /**
  * API wrapper for lobby handling (do not use directly; use the Api class instead)
  */
@@ -343,8 +413,16 @@ class LobbyApi(private val client: HttpClient, private val authCookieHelper: Aut
      * Create a new lobby and return the new lobby ID
      *
      * If you are already in another lobby, an error is returned.
+     */
+    suspend fun open(name: String): Long {
+        return open(CreateLobbyRequest(name, null, LOBBY_MAX_PLAYERS))
+    }
+
+    /**
+     * Create a new lobby and return the new lobby ID
+     *
+     * If you are already in another lobby, an error is returned.
      * ``max_players`` must be between 2 and 34 (inclusive).
-     * If password is an empty string, an error is returned.
      */
     suspend fun open(name: String, maxPlayers: Int): Long {
         return open(CreateLobbyRequest(name, null, maxPlayers))

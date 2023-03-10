@@ -6,6 +6,7 @@ package com.unciv.logic.multiplayer.api
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.time.Instant
 import java.util.UUID
 
 /**
@@ -72,13 +73,41 @@ enum class ApiStatusCode(val value: Int) {
 }
 
 /**
- * The response of a create lobby request
+ * A member of a chatroom
+ */
+@Serializable
+data class ChatMember(
+    @Serializable(with = UUIDSerializer::class)
+    val uuid: UUID,
+    val username: String,
+    @SerialName("display_name")
+    val displayName: String,
+    @SerialName("joined_at")
+    @Serializable(with = InstantSerializer::class)
+    val joinedAt: Instant
+)
+
+/**
+ * The message of a chatroom
  *
- * It contains the ``id`` of the created lobby.
+ * The parameter [id] should be used to uniquely identify a message.
+ */
+@Serializable
+data class ChatMessage(
+    val id: Long,
+    val sender: AccountResponse,
+    val message: String,
+    @SerialName("created_at")
+    @Serializable(with = InstantSerializer::class)
+    val createdAt: Instant
+)
+
+/**
+ * The response of a create lobby request, which contains the [lobbyID] of the created lobby
  */
 @Serializable
 data class CreateLobbyResponse(
-    @SerialName("lobby_name")
+    @SerialName("lobby_id")
     val lobbyID: Long
 )
 
@@ -103,10 +132,21 @@ data class FriendRequestResponse(
 )
 
 /**
+ * The response to a get chat
+ *
+ * [messages] should be sorted by the datetime of message.created_at.
+ */
+@Serializable
+data class GetChatResponse(
+    val members: List<ChatMember>,
+    val messages: List<ChatMessage>
+)
+
+/**
  * A list of your friends and friend requests
  *
- * ``friends`` is a list of already established friendships
- * ``friend_requests`` is a list of friend requests (ingoing and outgoing)
+ * [friends] is a list of already established friendships
+ * [friendRequests] is a list of friend requests (incoming and outgoing)
  */
 @Serializable
 data class GetFriendResponse(
@@ -135,7 +175,8 @@ data class LobbyResponse(
     @SerialName("current_players")
     val currentPlayers: Int,
     @SerialName("created_at")
-    val createdAt: Int,
+    @Serializable(with = InstantSerializer::class)
+    val createdAt: Instant,
     @SerialName("password")
     val hasPassword: Boolean,
     val owner: AccountResponse

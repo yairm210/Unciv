@@ -51,6 +51,14 @@ data class LoginRequest(
 )
 
 /**
+ * The request to lookup an account by its username
+ */
+@Serializable
+data class LookupAccountUsernameRequest(
+    val username: String
+)
+
+/**
  * The set password request data
  *
  * The parameter ``new_password`` must not be empty.
