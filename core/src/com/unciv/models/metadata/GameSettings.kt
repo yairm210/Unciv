@@ -225,6 +225,7 @@ class GameSettingsMultiplayer {
     var passwords = mutableMapOf<String, String>()
     @Suppress("unused")  // @GGuenni knows what he intended with this field
     var userName: String = ""
+    var username: String = ""  // duplicate to avoid using a field which may have other intentions at the moment
     var server = Constants.uncivXyzServer
     var friendList: MutableList<FriendList.Friend> = mutableListOf()
     var turnCheckerEnabled = true

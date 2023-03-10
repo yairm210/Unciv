@@ -63,6 +63,7 @@ class Api(val baseUrl: String) {
 
     private val authCookieHelper = AuthCookieHelper()
 
+    // Queue to keep references to all opened WebSocket handler jobs
     private var websocketJobs = ConcurrentLinkedQueue<Job>()
 
     init {
@@ -105,6 +106,7 @@ class Api(val baseUrl: String) {
     private suspend fun handleWebSocketSession(session: ClientWebSocketSession) {
         try {
             val incomingMessage = session.incoming.receive()
+
             logger.info("Incoming message: $incomingMessage")
             if (incomingMessage.frameType == FrameType.PING) {
                 logger.info("Received PING frame")
@@ -126,8 +128,13 @@ class Api(val baseUrl: String) {
 
     /**
      * Start a new WebSocket connection
+     *
+     * The parameter [handler] is a coroutine that will be fed the established
+     * [ClientWebSocketSession] on success at a later point. Note that this
+     * method does instantly return, detaching the creation of the WebSocket.
+     * The [handler] coroutine might not get called, if opening the WS fails.
      */
-    suspend fun websocket(): Boolean {
+    suspend fun websocket(handler: suspend (ClientWebSocketSession) -> Unit): Boolean {
         logger.info("Starting a new WebSocket connection ...")
 
         coroutineScope {
@@ -137,14 +144,13 @@ class Api(val baseUrl: String) {
                     authCookieHelper.add(this)
                     url {
                         takeFrom(baseUrl)
-                        protocol =
-                                URLProtocol.WS  // TODO: Verify that secure WebSockets (WSS) work as well
+                        protocol = URLProtocol.WS  // TODO: Verify that secure WebSockets (WSS) work as well
                         path("/api/v2/ws")
                     }
                 }
                 val job = Concurrency.runOnNonDaemonThreadPool {
                     launch {
-                        handleWebSocketSession(session)
+                        handler(session)
                     }
                 }
                 websocketJobs.add(job)

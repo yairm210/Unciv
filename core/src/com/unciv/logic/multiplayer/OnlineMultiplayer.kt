@@ -9,10 +9,10 @@ import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.event.EventBus
-import com.unciv.logic.multiplayer.api.AccountResponse
 import com.unciv.logic.multiplayer.api.Api
 import com.unciv.logic.multiplayer.api.ApiErrorResponse
 import com.unciv.logic.multiplayer.api.ApiStatusCode
+import com.unciv.logic.multiplayer.api.WebSocketMessageSerializer
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
@@ -20,23 +20,22 @@ import com.unciv.logic.multiplayer.storage.OnlineMultiplayerFiles
 import com.unciv.logic.multiplayer.storage.SimpleHttp
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.Dispatcher
-import com.unciv.utils.concurrency.launchOnNonDaemonThreadPool
 import com.unciv.utils.concurrency.launchOnThreadPool
 import com.unciv.utils.concurrency.withGLContext
 import com.unciv.utils.debug
-import kotlinx.coroutines.CoroutineScope
+import io.ktor.client.plugins.websocket.*
+import io.ktor.websocket.*
+import kotlinx.coroutines.channels.ClosedReceiveChannelException
+import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import java.time.Duration
 import java.time.Instant
 import java.util.*
 import java.util.concurrent.atomic.AtomicReference
-import java.util.logging.Logger
 
 /**
  * How often files can be checked for new multiplayer games (could be that the user modified their file system directly). More checks within this time period
@@ -72,11 +71,15 @@ class OnlineMultiplayer {
         if (password == null) {
             password = "SomePasswordForThoseFolksWhoDoNotHaveAnyStrongPasswordYet!" // TODO: Obviously, replace this password
         }
-        val username = UncivGame.Current.settings.multiplayer.userName
+        var username = UncivGame.Current.settings.multiplayer.username
+        // TODO: Since the username is currently never used and therefore unset, update the username below and re-compile!
+        if (username == "") {
+            username = "MyValidUsername"
+        }
         runBlocking {
             coroutineScope {
-                launchOnNonDaemonThreadPool {
-                    if (api.auth.login(username, password)) {
+                Concurrency.runOnNonDaemonThreadPool {
+                    if (!api.auth.login(username, password)) {
                         logger.warning("Login failed. Trying to create account for $username")
                         try {
                             api.accounts.register(username, username, password)
@@ -88,11 +91,52 @@ class OnlineMultiplayer {
                             throw e
                         }
                         api.auth.login(username, password)
-                        api.websocket()
                     }
+                    api.websocket(::handleWS)
                 }
             }
         }
+    }
+
+    private var sendChannel: SendChannel<Frame>? = null
+
+    /**
+     * Send text as a [FrameType.TEXT] frame to the remote side (fire & forget)
+     *
+     * Returns [Unit] if no exception is thrown, otherwise the exception is thrown
+     */
+    internal suspend fun sendText(text: String): Unit {
+        if (sendChannel == null) {
+            return
+        }
+        try {
+            sendChannel!!.send(Frame.Text(text))
+        } catch (e: Throwable) {
+            logger.warning(e.localizedMessage)
+            logger.warning(e.stackTraceToString())
+            throw e
+        }
+    }
+
+    /**
+     * Send text as a [FrameType.TEXT] frame to the remote side (fire & forget)
+     *
+     * Returns true on success, false otherwise. Any error is suppressed!
+     */
+    internal suspend fun sendTextSuppressed(text: String): Boolean {
+        if (sendChannel == null) {
+            return false
+        }
+        try {
+            sendChannel!!.send(Frame.Text(text))
+        } catch (e: Throwable) {
+            logger.severe(e.localizedMessage)
+            logger.severe(e.stackTraceToString())
+        }
+        return true
+    }
+
+    private suspend fun handleWS(session: ClientWebSocketSession) {
     }
 
     private fun getCurrentGame(): OnlineMultiplayerGame? {
