@@ -94,7 +94,8 @@ for (platform in Platform.values()) {
     val platformName = platform.toString()
 
     tasks.create("packr${platformName}") {
-        dependsOn(tasks.getByName("dist"))
+        // This task assumes that 'dist' has already been called - does not 'gradle depend' on it
+        // so we can run 'dist' from one job and then run the packr builds from a different job
 
         // Needs to be here and not in doLast because the zip task depends on the outDir
         val jarFile = "$rootDir/desktop/build/libs/${BuildConfig.appName}.jar"

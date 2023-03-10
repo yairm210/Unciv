@@ -178,15 +178,6 @@ open class Tile : IsPartOfGameInfoSerialization {
         return getTileImprovement()?.isGreatImprovement() == true
     }
 
-    fun containsUnpillagedGreatImprovement(): Boolean {
-        return getUnpillagedTileImprovement()?.isGreatImprovement() == true
-    }
-
-    fun containsUnfinishedGreatImprovement(): Boolean {
-        if (improvementInProgress == null) return false
-        return ruleset.tileImprovements[improvementInProgress!!]!!.isGreatImprovement()
-    }
-
     /** Returns military, civilian and air units in tile */
     fun getUnits() = sequence {
         if (militaryUnit != null) yield(militaryUnit!!)
@@ -493,6 +484,20 @@ open class Tile : IsPartOfGameInfoSerialization {
         if (isAdjacentTo(Constants.freshWater)) fertility += 1 // meaning total +2 for river
         if (checkCoasts && isCoastalTile()) fertility += 2
         return fertility
+    }
+
+    fun providesResources(civInfo: Civilization): Boolean {
+        if (!hasViewableResource(civInfo)) return false
+        if (isCityCenter()) return true
+        val improvement = getUnpillagedTileImprovement()
+        if (improvement != null && improvement.name in tileResource.getImprovements()
+                && (improvement.techRequired==null || civInfo.tech.isResearched(improvement.techRequired!!))) return true
+        // TODO: Generic-ify to unique
+        if (tileResource.resourceType==ResourceType.Strategic
+                && improvement!=null
+                && improvement.isGreatImprovement())
+            return true
+        return false
     }
 
     // This should be the only adjacency function
