@@ -46,7 +46,7 @@ private val FILE_UPDATE_THROTTLE_PERIOD = Duration.ofSeconds(60)
 class OldOnlineMultiplayer {
     private val files = UncivGame.Current.files
     private val multiplayerFiles = OnlineMultiplayerFiles()
-    private var featureSet = ServerFeatureSet()
+    private var featureSet = ServerFeatureSet(apiVersion = 0)
 
     private val savedGames: MutableMap<FileHandle, OnlineMultiplayerGame> = Collections.synchronizedMap(mutableMapOf())
 
@@ -344,7 +344,7 @@ class OldOnlineMultiplayer {
                     json().fromJson(ServerFeatureSet::class.java, result)
                 } catch (ex: Exception) {
                     Log.error("${UncivGame.Current.settings.multiplayer.server} does not support server feature set")
-                    ServerFeatureSet()
+                    ServerFeatureSet(apiVersion = 1)
                 }
             }
         }

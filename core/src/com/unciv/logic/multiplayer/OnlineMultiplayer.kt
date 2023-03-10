@@ -12,7 +12,9 @@ import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.api.Api
 import com.unciv.logic.multiplayer.api.ApiErrorResponse
 import com.unciv.logic.multiplayer.api.ApiStatusCode
+import com.unciv.logic.multiplayer.api.WebSocketMessage
 import com.unciv.logic.multiplayer.api.WebSocketMessageSerializer
+import com.unciv.logic.multiplayer.api.WebSocketMessageType
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
@@ -36,6 +38,7 @@ import java.time.Duration
 import java.time.Instant
 import java.util.*
 import java.util.concurrent.atomic.AtomicReference
+import java.util.logging.Level
 
 /**
  * How often files can be checked for new multiplayer games (could be that the user modified their file system directly). More checks within this time period
@@ -53,7 +56,7 @@ class OnlineMultiplayer {
 
     private val files = UncivGame.Current.files
     private val multiplayerFiles = OnlineMultiplayerFiles()
-    private var featureSet = ServerFeatureSet()
+    private var featureSet = ServerFeatureSet(apiVersion = 2)
 
     private val savedGames: MutableMap<FileHandle, OnlineMultiplayerGame> = Collections.synchronizedMap(mutableMapOf())
 
@@ -67,6 +70,7 @@ class OnlineMultiplayer {
     private val api = Api(UncivGame.Current.settings.multiplayer.server)
 
     init {
+        logger.level = Level.FINER  // for debugging
         var password = UncivGame.Current.settings.multiplayer.passwords[UncivGame.Current.settings.multiplayer.server]
         if (password == null) {
             password = "SomePasswordForThoseFolksWhoDoNotHaveAnyStrongPasswordYet!" // TODO: Obviously, replace this password
@@ -136,7 +140,77 @@ class OnlineMultiplayer {
         return true
     }
 
+    /**
+     * Handle incoming WebSocket messages
+     */
+    private fun handleIncomingWSMessage(msg: WebSocketMessage) {
+        when (msg.type) {
+            WebSocketMessageType.InvalidMessage -> {
+                logger.warning("Received invalid message from WebSocket connection")
+            }
+            WebSocketMessageType.FinishedTurn -> {
+                // This message type is not meant to be received from the server
+                logger.warning("Received FinishedTurn message from WebSocket connection")
+            }
+            WebSocketMessageType.UpdateGameData -> {
+                // TODO: The body of this message contains a whole game state, so we need to unpack and use it here
+            }
+            WebSocketMessageType.ClientDisconnected -> {
+                logger.info("Received ClientDisconnected message from WebSocket connection")
+                // TODO: Implement client connectivity handling
+            }
+            WebSocketMessageType.ClientReconnected -> {
+                logger.info("Received ClientReconnected message from WebSocket connection")
+                // TODO: Implement client connectivity handling
+            }
+            WebSocketMessageType.IncomingChatMessage -> {
+                logger.info("Received IncomingChatMessage message from WebSocket connection")
+                // TODO: Implement chat message handling
+            }
+        }
+    }
+
+    /**
+     * Handle a newly established WebSocket connection
+     */
     private suspend fun handleWS(session: ClientWebSocketSession) {
+        sendChannel?.close()
+        sendChannel = session.outgoing
+
+        try {
+            while (true) {
+                val incomingFrame = session.incoming.receive()
+                when (incomingFrame.frameType) {
+                    FrameType.CLOSE, FrameType.PING, FrameType.PONG -> {
+                        // This handler won't handle control frames
+                        logger.info("Received CLOSE, PING or PONG as message")
+                    }
+                    FrameType.BINARY -> {
+                        logger.warning("Received binary packet which can't be parsed at the moment")
+                    }
+                    FrameType.TEXT -> {
+                        try {
+                            logger.fine("Incoming text message: $incomingFrame")
+                            val text = (incomingFrame as Frame.Text).readText()
+                            logger.fine("Message text: $text")
+                            val msg = Json.decodeFromString(WebSocketMessageSerializer(), text)
+                            logger.fine("Message type: ${msg::class.java.canonicalName}")
+                            logger.fine("Deserialized: $msg")
+                            handleIncomingWSMessage(msg)
+                        } catch (e: Throwable) {
+                            logger.severe(e.localizedMessage)
+                            logger.severe(e.stackTraceToString())
+                        }
+                    }
+                }
+            }
+        } catch (e: ClosedReceiveChannelException) {
+            logger.warning("The WebSocket channel was closed: $e")
+        } catch (e: Throwable) {
+            logger.severe(e.localizedMessage)
+            logger.severe(e.stackTraceToString())
+            throw e
+        }
     }
 
     private fun getCurrentGame(): OnlineMultiplayerGame? {
@@ -409,7 +483,7 @@ class OnlineMultiplayer {
                     json().fromJson(ServerFeatureSet::class.java, result)
                 } catch (ex: Exception) {
                     Log.error("${UncivGame.Current.settings.multiplayer.server} does not support server feature set")
-                    ServerFeatureSet()
+                    ServerFeatureSet(apiVersion = 0)
                 }
             }
         }
