@@ -41,8 +41,6 @@ class GameSettings {
     var language: String = Constants.english
     @Transient
     var locale: Locale? = null
-    @Deprecated("Since 4.3.6 - replaces with screenSize")
-    var resolution: String = "900x600"
     var screenSize:ScreenSize = ScreenSize.Small
     var screenMode: Int = 0
     var tutorialsShown = HashSet<String>()
