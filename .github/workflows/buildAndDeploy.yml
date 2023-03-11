@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: build and deploy
+name: Deploy
 
 # Controls when the action will run.
 on:
@@ -14,17 +14,41 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    # On push events only, if it's a "Update X" commit, it's probably something done through the UI -
-    #  so an .md or yaml change, and not something we need to rebuild over
-    # We can't simply put !startsWith - see https://github.community/t/expression-syntax-for-not-startswith/17040
-    if: github.event_name != 'push' || startsWith(github.event.commits[0].message, 'Update ') != true
+  get-tag-and-release-body:
     runs-on: ubuntu-latest
 
     outputs:
       version_tag: ${{ steps.tag.outputs.tag }}
       release_body: ${{ steps.read_release.outputs.release_body }}
 
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Get release tag # We can then get the tag using ${{steps.tag.outputs.tag}} as below
+        id: tag
+        uses: dawidd6/action-get-tag@v1
+
+      - name: Read release.md and use it as a body of new release. This will fail for patch releases, since they have no readme.
+        continue-on-error: true
+        id: read_release
+        shell: bash
+        run: |
+          ## To test this in Windows PS:  cat .\changelog.md | wsl grep -Pzo --color '\\#{2}.3.15.7[^\\#]*?\\#{2}' | wsl head -n -2
+          r=$(grep -Pzo '\#{2}.${{steps.tag.outputs.tag}}[^\#]*\#' changelog.md)  # grep to get only our release
+          r=$(echo "$r" | head -n -2 | tail -n +3)
+
+          ## See https://trstringer.com/github-actions-multiline-strings/
+
+          echo "--- Set variable manually in github env ---"
+
+          echo "release_body<<EOF" >> $GITHUB_OUTPUT
+          echo "$r" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+
+  build-jar:
+    runs-on: ubuntu-latest
+    needs: get-tag-and-release-body
     steps:
       - uses: actions/checkout@v3
 
@@ -45,44 +69,14 @@ jobs:
       - name: Run unit tests
         run: ./gradlew --no-build-cache cleanTest test tests:test
 
-
-# RELEASE
-
-      - name: Get release tag # We can then get the tag using ${{steps.tag.outputs.tag}} as below
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-        id: tag
-        uses: dawidd6/action-get-tag@v1
-
-      - name: Read release.md and use it as a body of new release. This will fail for patch releases, since they have no readme.
-        continue-on-error: true
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-        id: read_release
-        shell: bash
-        run: |
-          ## To test this in Windows PS:  cat .\changelog.md | wsl grep -Pzo --color '\\#{2}.3.15.7[^\\#]*?\\#{2}' | wsl head -n -2
-          r=$(grep -Pzo '\#{2}.${{steps.tag.outputs.tag}}[^\#]*\#' changelog.md)  # grep to get only our release
-          r=$(echo "$r" | head -n -2 | tail -n +3)
-
-          ## See https://trstringer.com/github-actions-multiline-strings/
-
-          echo "--- Set variable manually in github env ---"
-
-          echo "release_body<<EOF" >> $GITHUB_OUTPUT
-          echo "$r" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
-      ## DESKTOP
-
       - name: build UncivServer.jar
         continue-on-error: true
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         run: |
           ./gradlew desktop:dist
           ./gradlew desktop:zipLinuxFilesForJar
 
       - name: Upload JAR
         continue-on-error: true
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         uses: actions/upload-artifact@v3
         with:
           name: UncivJar
@@ -91,36 +85,29 @@ jobs:
 
       - name: Upload linux files
         continue-on-error: true
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         uses: actions/upload-artifact@v3
         with:
           name: UncivLinuxFiles
           path: |
             deploy/linuxFilesForJar.zip
 
-      ## Server
-
       - name: build UncivServer.jar
         continue-on-error: true
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         run: |
           ./gradlew server:dist
 
       - name: Upload Server
         continue-on-error: true
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         uses: actions/upload-artifact@v3
         with:
           name: UncivServer
           path: server/build/libs/UncivServer.jar
 
-## ANDROID
 
   android-build:
-    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     continue-on-error: true
     runs-on: ubuntu-latest
-    needs: build
+    needs: get-tag-and-release-body
     steps:
       - uses: actions/checkout@v3
 
@@ -136,7 +123,7 @@ jobs:
         shell: bash
         run: |
           mkdir whatsNewDirectory
-          echo "${{needs.build.outputs.release_body}}" > whatsNewDirectory/whatsnew-en-US
+          echo "${{needs.get-tag-and-release-body.outputs.release_body}}" > whatsNewDirectory/whatsnew-en-US
           ./gradlew :android:bundleRelease
           ./gradlew :android:assembleRelease
 
@@ -182,10 +169,10 @@ jobs:
           name: UncivAPK
           path: Unciv-signed.apk
 
+
   packr-build:
-    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
-    needs: build
+    needs: build-jar
     steps:
       - uses: actions/checkout@v3
 
@@ -245,14 +232,13 @@ jobs:
           unzip butler.zip
           chmod +x butler
 
-          ./butler push Unciv-Linux64.zip yairm210/unciv:Linux64     --userversion ${{needs.build.outputs.version_tag}}
-          ./butler push Unciv-Windows64.zip yairm210/unciv:Windows64 --userversion ${{needs.build.outputs.version_tag}}
+          ./butler push Unciv-Linux64.zip yairm210/unciv:Linux64     --userversion ${{needs.get-tag-and-release-body.outputs.version_tag}}
+          ./butler push Unciv-Windows64.zip yairm210/unciv:Windows64 --userversion ${{needs.get-tag-and-release-body.outputs.version_tag}}
 
   upload-to-steam:
     runs-on: ubuntu-latest
     needs: [build, packr-build]  # build required for tag and version
     continue-on-error: true
-    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     steps:
 
       - name: Download packed zips
@@ -303,7 +289,7 @@ jobs:
       - name: Check if this is a real release or a test version, for Github release
         id: check-version-tag
         run: |
-          if [[ ${{needs.build.outputs.version_tag}} =~ [0-9]\.[0-9]+\.[0-9]+ ]]; then
+          if [[ ${{needs.get-tag-and-release-body.outputs.version_tag}} =~ [0-9]\.[0-9]+\.[0-9]+ ]]; then
             echo "real_release=true" >> $GITHUB_OUTPUT
           fi
 
@@ -320,23 +306,23 @@ jobs:
           # <--- Use environment variables that was created earlier - see https://github.com/svenstaro/upload-release-action
           # Single-quotes do not solve the multiline problem.
           body: |
-            ## ${{needs.build.outputs.version_tag}}
+            ## ${{needs.get-tag-and-release-body.outputs.version_tag}}
 
-            ${{needs.build.outputs.release_body}}
+            ${{needs.get-tag-and-release-body.outputs.release_body}}
 
       - name: Post announcement on Discord
         continue-on-error: true
         ## On patch releases, don't notify Discord
-        if: needs.build.outputs.release_body != ''
+        if: needs.get-tag-and-release-body.outputs.release_body != ''
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         uses: Ilshidur/action-discord@0.3.2
         with:
           args: | # See https://discordjs.guide/miscellaneous/parsing-mention-arguments.html#how-discord-mentions-work
             <@&663705024265715743>
-            *${{needs.build.outputs.version_tag}} rolling out!*
+            *${{needs.get-tag-and-release-body.outputs.version_tag}} rolling out!*
 
-            ${{needs.build.outputs.release_body}}
+            ${{needs.get-tag-and-release-body.outputs.release_body}}
 
   AUR-update:
     continue-on-error: true
@@ -347,7 +333,7 @@ jobs:
       - name: Get AUR PKGBUILD
         run: |
           curl --silent --output PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=unciv-bin'
-          sed -E -e "s#(_pkgver=).*#\1${{needs.build.outputs.version_tag}}#" -e "s#(pkgrel=).*#\10#" -i PKGBUILD
+          sed -E -e "s#(_pkgver=).*#\1${{needs.get-tag-and-release-body.outputs.version_tag}}#" -e "s#(pkgrel=).*#\10#" -i PKGBUILD
 
       - name: Publish AUR package
         uses: Thyrum/github-actions-deploy-aur@master
@@ -358,9 +344,9 @@ jobs:
           commit_email: ${{ secrets.AUR_COMMIT_EMAIL }}
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
           commit_message: |
-            Update to ${{needs.build.outputs.version_tag}}
+            Update to ${{needs.get-tag-and-release-body.outputs.version_tag}}
 
-            ${{needs.build.outputs.release_body}}
+            ${{needs.get-tag-and-release-body.outputs.release_body}}
           ssh_keyscan_types: rsa,dsa,ecdsa,ed25519
           updpkgsums: true
           allow_empty_commits: false
