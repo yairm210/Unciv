@@ -10,6 +10,8 @@ import java.util.*
  * Records events throughout the game related to a tile.
  *
  * Used for end of game replay.
+ *
+ * @see com.unciv.ui.screens.victoryscreen.ReplayMap
  */
 open class TileHistory : IsPartOfGameInfoSerialization {
 

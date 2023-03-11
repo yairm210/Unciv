@@ -75,7 +75,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
             setDefaultCloseAction()
         }
 
-        if (playerCivInfo.isSpectator() || someoneHasWon || playerCivInfo.isDefeated()) {
+        if (true || playerCivInfo.isSpectator() || someoneHasWon || playerCivInfo.isDefeated()) {
             val replayLabel = "Replay"
             val replayButton = replayLabel.toTextButton().onClick { setReplayTable() }
             tabsTable.add(replayButton)
@@ -206,7 +206,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         val replayMap = ReplayMap(gameInfo.tileMap)
         replayTable.add(replayMap).row()
 
-        var nextTurn = 0
+        var nextTurn = gameInfo.historyStartTurn
         val finalTurn = UncivGame.Current.gameInfo?.turns ?: 0
         resetContent()
         replayTimer = Timer.schedule(
@@ -218,7 +218,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
             // A game of 600 rounds will take one minute.
             0.1f,
             // End at the last turn.
-            finalTurn
+            finalTurn - nextTurn
         )
         contentsTable.add(replayTable)
     }
