@@ -16,6 +16,7 @@ import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import com.unciv.utils.DebugUtils
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.withGLContext
 import kotlin.reflect.KMutableProperty0
@@ -35,12 +36,19 @@ class OptionsPopup(
     val settings = screen.game.settings
     val tabs: TabbedPager
     val selectBoxMinWidth: Float
+    private val tabMinWidth: Float
+
     private var keyBindingsTab: KeyBindingsTab? = null
+    /** Enable the still experimental Keyboard Bindings page in OptionsPopup */
+    var enableKeyBindingsTab: Boolean = false
 
     //endregion
 
     companion object {
         const val defaultPage = 2  // Gameplay
+
+        const val keysTabCaption = "Keys"
+        const val keysTabBeforeCaption = "Advanced"
     }
 
     init {
@@ -49,7 +57,6 @@ class OptionsPopup(
 
         innerTable.pad(0f)
         val tabMaxWidth: Float
-        val tabMinWidth: Float
         val tabMaxHeight: Float
         screen.run {
             selectBoxMinWidth = if (stage.width < 600f) 200f else 240f
@@ -93,26 +100,19 @@ class OptionsPopup(
             multiplayerTab(this),
             ImageGetter.getImage("OtherIcons/Multiplayer"), 24f
         )
+
         tabs.addPage(
             "Advanced",
             advancedTab(this, ::reloadWorldAndOptions),
             ImageGetter.getImage("OtherIcons/Settings"), 24f
         )
 
-        if (GUI.keyboardAvailable && false) {
-            keyBindingsTab = KeyBindingsTab(this, tabMinWidth - 40f)  // 40 = padding
-            tabs.addPage(
-                "Keys", keyBindingsTab,
-                ImageGetter.getImage("OtherIcons/Keyboard"), 24f
-            )
-        }
-
         if (RulesetCache.size > BaseRuleset.values().size) {
             val content = ModCheckTab(screen)
             tabs.addPage("Locate mod errors", content, ImageGetter.getImage("OtherIcons/Mods"), 24f)
         }
         if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT) && (Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) || Gdx.input.isKeyPressed(Input.Keys.ALT_RIGHT))) {
-            tabs.addPage("Debug", debugTab(), ImageGetter.getImage("OtherIcons/SecretOptions"), 24f, secret = true)
+            tabs.addPage("Debug", debugTab(this), ImageGetter.getImage("OtherIcons/SecretOptions"), 24f, secret = true)
         }
 
         addCloseButton {
@@ -121,6 +121,10 @@ class OptionsPopup(
             keyBindingsTab?.save()
             onClose()
         }.padBottom(10f)
+
+        if (GUI.keyboardAvailable) {
+            showOrHideKeyBindings()  // Do this late because it looks for the page to insert before
+        }
 
         pack() // Needed to show the background.
         center(screen.stage)
@@ -180,4 +184,22 @@ class OptionsPopup(
         }
     }
 
+    internal fun showOrHideKeyBindings() {
+        // At the moment, the Key bindings Tab exists only on-demand. To refactor it back to permanent,
+        // move the `keyBindingsTab =` line and addPage call to before the Advanced Tab creation,
+        // then delete this function, delete the enableKeyBindingsTab flag and clean up what is flagged by the compiler as missing or unused.
+        val existingIndex = tabs.getPageIndex(keysTabCaption)
+        if (enableKeyBindingsTab && existingIndex < 0) {
+            if (keyBindingsTab == null)
+                keyBindingsTab = KeyBindingsTab(this, tabMinWidth - 40f)  // 40 = padding
+            val beforeIndex = tabs.getPageIndex(keysTabBeforeCaption)
+            tabs.addPage(
+                keysTabCaption, keyBindingsTab,
+                ImageGetter.getImage("OtherIcons/Keyboard"), 24f,
+                insertBefore = beforeIndex
+            )
+        } else if (!enableKeyBindingsTab && existingIndex >= 0) {
+            tabs.removePage(existingIndex)
+        }
+    }
 }
