@@ -30,6 +30,8 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
     private val contentsTable = Table()
 
+    private var replayTimer : Timer.Task? = null
+
     init {
         val difficultyLabel = ("{Difficulty}: {${gameInfo.difficulty}}").toLabel()
         difficultyLabel.setPosition(10f, stage.height - 10, Align.topLeft)
@@ -206,7 +208,8 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
         var nextTurn = 0
         val finalTurn = UncivGame.Current.gameInfo?.turns ?: 0
-        Timer.schedule(
+        replayTimer?.cancel()
+        replayTimer = Timer.schedule(
             object : Timer.Task() {
                 override fun run() {
                     updateReplayTable(yearLabel, replayMap, nextTurn++)
@@ -337,5 +340,10 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         civGroup.add(label).padLeft(10f)
         civGroup.pack()
         return civGroup
+    }
+
+    override fun dispose() {
+        super.dispose()
+        replayTimer?.cancel()
     }
 }
