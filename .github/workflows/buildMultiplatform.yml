@@ -8,7 +8,6 @@ on:
     # Once when deploying a version is a good compromise.
     tags:
       - '*'
-    branches: [ master ]
 
 jobs:
 
