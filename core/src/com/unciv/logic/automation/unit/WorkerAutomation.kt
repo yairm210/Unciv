@@ -85,7 +85,7 @@ class WorkerAutomation(
             if (result.isEmpty())
                 debug("\tempty")
             else result.forEach {
-                debug("\t$it")    //  ${it.getCity()?.name} included in TileInfo toString()
+                debug("\t$it")    //  ${it.getCity()?.name} included in Tile toString()
             }
         }
         result

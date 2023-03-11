@@ -37,7 +37,7 @@ abstract class BaseScreen : Screen {
     protected val tutorialController by lazy { TutorialController(this) }
 
     /**
-     * Keyboard shorcuts global to the screen. While this is public and can be modified,
+     * Keyboard shortcuts global to the screen. While this is public and can be modified,
      * you most likely should use [keyShortcuts][Actor.keyShortcuts] on appropriate [Actor] instead.
      */
     val globalShortcuts = KeyShortcutDispatcher()

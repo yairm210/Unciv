@@ -15,6 +15,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.addBorderAllowOpacity
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toPrettyString
 import com.unciv.utils.DebugUtils
 
 class TileInfoTable(private val viewingCiv :Civilization) : Table(BaseScreen.skin) {
@@ -34,7 +35,7 @@ class TileInfoTable(private val viewingCiv :Civilization) : Table(BaseScreen.ski
                 UncivGame.Current.pushScreen(CivilopediaScreen(viewingCiv.gameInfo.ruleset, link = it))
             } ).pad(5f).row()
             if (DebugUtils.VISIBLE_MAP)
-                add(tile.position.run { "(${x.toInt()},${y.toInt()})" }.toLabel()).colspan(2).pad(5f)
+                add(tile.position.toPrettyString().toLabel()).colspan(2).pad(5f)
         }
 
         pack()

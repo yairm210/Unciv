@@ -22,6 +22,8 @@ import com.unciv.ui.components.tilegroups.YieldGroup
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toPrettyString
+import com.unciv.utils.DebugUtils
 import kotlin.math.atan2
 import kotlin.math.min
 import kotlin.math.pow
@@ -156,12 +158,33 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
     }
 
     private fun updateStartingLocationIcon(isVisible: Boolean) {
-        // These are visible in map editor only, but making that bit available here seems overkill
+        // The starting location icons are visible in map editor only, but this method is abused for the
+        // "Show coordinates on tiles" debug option as well. Calling code made sure this is only called
+        // with isVisible=false for reset, or for non-WorldMap TileGroups, or with the debug option set.
+        // Note that starting locations should always be empty on the normal WorldMap - they're cleared after use.
+        // Also remember the main menu background is an EditorMapHolder which we can't distinguish from
+        // The actual editor use here.
 
         startingLocationIcons.forEach { it.remove() }
         startingLocationIcons.clear()
         if (!isVisible || tileGroup.isForMapEditorIcon)
             return
+
+        if (DebugUtils.SHOW_TILE_COORDS) {
+            val label = this.tile().position.toPrettyString()
+            startingLocationIcons.add(label.toLabel(Color.BLACK.cpy().apply { a = 0.7f }, 14).apply {
+                tileGroup.layerMisc.addActor(this)
+                setOrigin(Align.center)
+                center(tileGroup)
+                moveBy(15.4f, -0.6f)
+            })
+            startingLocationIcons.add(label.toLabel(Color.FIREBRICK, 14).apply {
+                tileGroup.layerMisc.addActor(this)
+                setOrigin(Align.center)
+                center(tileGroup)
+                moveBy(15f, 0f)
+            })
+        }
 
         val tilemap = tile().tileMap
 
@@ -305,7 +328,8 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         updateImprovementIcon(viewingCiv, showResourcesAndImprovements)
         updateYieldIcon(viewingCiv, showTileYields)
         updateResourceIcon(viewingCiv, showResourcesAndImprovements)
-        updateStartingLocationIcon(showResourcesAndImprovements)
+        if (tileGroup !is WorldTileGroup || DebugUtils.SHOW_TILE_COORDS)
+            updateStartingLocationIcon(true)
         updateArrows()
     }
 

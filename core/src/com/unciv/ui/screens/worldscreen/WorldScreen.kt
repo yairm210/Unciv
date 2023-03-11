@@ -27,6 +27,7 @@ import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.components.KeyboardBinding
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.darken
@@ -219,9 +220,9 @@ class WorldScreen(
     }
 
     private fun addKeyboardPresses() {
-        // Space and N are assigned in createNextTurnButton
-        globalShortcuts.add(Input.Keys.F1) { game.pushScreen(CivilopediaScreen(gameInfo.ruleset)) }
-        globalShortcuts.add('E') { game.pushScreen(EmpireOverviewScreen(selectedCiv)) }     // Empire overview last used page
+        // Space and N are assigned in NextTurnButton constructor
+        globalShortcuts.add(KeyboardBinding.Civilopedia) { game.pushScreen(CivilopediaScreen(gameInfo.ruleset)) }
+        globalShortcuts.add(KeyboardBinding.EmpireOverview) { game.pushScreen(EmpireOverviewScreen(selectedCiv)) }     // Empire overview last used page
         /*
          * These try to be faithful to default Civ5 key bindings as found in several places online
          * Some are a little arbitrary, e.g. Economic info, Military info
@@ -265,7 +266,7 @@ class WorldScreen(
             notificationsScroll.isVisible = uiEnabled
             minimapWrapper.isVisible = uiEnabled
             bottomUnitTable.isVisible = uiEnabled
-            battleTable.isVisible = uiEnabled && battleTable.update() != hide()
+            if (uiEnabled) battleTable.update() else battleTable.isVisible = false
             fogOfWarButton.isVisible = uiEnabled && viewingCiv.isSpectator()
         }
     }
@@ -518,7 +519,7 @@ class WorldScreen(
                     .map { it.otherCiv() } // we're now lazily enumerating over CivilizationInfo's we're at war with
                     .flatMap { it.cities.asSequence() } // ... all *their* cities
                     .filter { it.health == 1 } // ... those ripe for conquering
-                    .flatMap { it.getCenterTile().getTilesInDistance(2).asSequence() }
+                    .flatMap { it.getCenterTile().getTilesInDistance(2) }
                     // ... all tiles around those in range of an average melee unit
                     // -> and now we look for a unit that could do the conquering because it's ours
                     //    no matter whether civilian, air or ranged, tell user he needs melee

@@ -381,7 +381,7 @@ class TileMap : IsPartOfGameInfoSerialization {
             rulesetIncompatibilities.addAll(set)
 
         // All the rest is to find missing nations
-        try { // This can fail if the map contains a resource that isn't in the ruleset, in TileInfo.tileResource
+        try { // This can fail if the map contains a resource that isn't in the ruleset, in Tile.tileResource
             setTransients(ruleset)
         } catch (ex: Exception) {
             return rulesetIncompatibilities
@@ -438,10 +438,10 @@ class TileMap : IsPartOfGameInfoSerialization {
             tileMatrix[tileInfo.position.x.toInt() - leftX][tileInfo.position.y.toInt() - bottomY] = tileInfo
         }
         for (tileInfo in values) {
-            // Do ***NOT*** call TileInfo.setTerrainTransients before the tileMatrix is complete -
+            // Do ***NOT*** call Tile.setTerrainTransients before the tileMatrix is complete -
             // setting transients might trigger the neighbors lazy (e.g. thanks to convertHillToTerrainFeature).
             // When that lazy runs, some directions might be omitted because getIfTileExistsOrNull
-            // looks at tileMatrix. Thus filling TileInfos into tileMatrix and setting their
+            // looks at tileMatrix. Thus filling Tiles into tileMatrix and setting their
             // transients in the same loop will leave incomplete cached `neighbors`.
             tileInfo.tileMap = this
             tileInfo.ruleset = this.ruleset!!
@@ -450,8 +450,8 @@ class TileMap : IsPartOfGameInfoSerialization {
         }
     }
 
-    /** Initialize based on TileInfo which Civ has neutral tile roads
-     */
+    /** Initialize Civilization.neutralRoads based on Tile.roadOwner
+     *  - which Civ owns roads on which neutral tiles */
     fun setNeutralTransients() {
         for (tileInfo in values) {
             tileInfo.setOwnerTransients()
