@@ -75,7 +75,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
             setDefaultCloseAction()
         }
 
-        if (true || playerCivInfo.isSpectator() || someoneHasWon || playerCivInfo.isDefeated()) {
+        if (playerCivInfo.isSpectator() || someoneHasWon || playerCivInfo.isDefeated()) {
             val replayLabel = "Replay"
             val replayButton = replayLabel.toTextButton().onClick { setReplayTable() }
             tabsTable.add(replayButton)
