@@ -23,7 +23,6 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.components.extensions.withItem
-import java.util.*
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
@@ -153,13 +152,13 @@ class TechManager : IsPartOfGameInfoSerialization {
     //endregion
 
     fun getRequiredTechsToDestination(destinationTech: Technology): List<Technology> {
-        val prerequisites = Stack<Technology>()
+        val prerequisites = mutableListOf<Technology>()
 
         val checkPrerequisites = ArrayDeque<Technology>()
         checkPrerequisites.add(destinationTech)
 
         while (!checkPrerequisites.isEmpty()) {
-            val techToCheck = checkPrerequisites.pop()
+            val techToCheck = checkPrerequisites.removeFirst()
             // future tech can have been researched even when we're researching it,
             // so...if we skip it we'll end up with 0 techs in the "required techs", which will mean that we don't have anything to research. Yeah.
             if (!techToCheck.isContinuallyResearchable() &&
