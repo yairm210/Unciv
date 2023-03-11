@@ -23,6 +23,6 @@ object MinimapTileUtil {
             bottomY = min(bottomY, image.y)
         }
 
-        return Rectangle2D.Float(topX, topY, topX-bottomX, topY-bottomY)
+        return Rectangle2D.Float(bottomX, bottomY, topX-bottomX, topY-bottomY)
     }
 }

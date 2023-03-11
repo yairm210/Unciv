@@ -49,9 +49,9 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
         tileMapWidth = tileExtension.width
         tileMapHeight = tileExtension.height
         val padX =
-                (stageMinimapSize.x - tileMapWidth) * 0.5f - (tileExtension.x - tileExtension.width)
+                (stageMinimapSize.x - tileMapWidth) * 0.5f - (tileExtension.x)
         val padY =
-                (stageMinimapSize.y - tileMapHeight) * 0.5f - (tileExtension.y - tileExtension.height)
+                (stageMinimapSize.y - tileMapHeight) * 0.5f - (tileExtension.y)
         for (group in tileLayer.children) {
             group.moveBy(padX, padY)
         }

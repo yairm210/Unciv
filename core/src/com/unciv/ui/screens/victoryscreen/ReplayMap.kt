@@ -23,10 +23,7 @@ class ReplayMap(val tileMap: TileMap) : Group() {
         val tileExtension = MinimapTileUtil.spreadOutMinimapTiles(tileLayer, minimapTiles, tileSize)
 
         for (group in tileLayer.children) {
-            group.moveBy(
-                tileExtension.width - tileExtension.x,
-                tileExtension.height - tileExtension.y
-            )
+            group.moveBy(-tileExtension.x, -tileExtension.y)
         }
 
         // there are tiles "below the zero",
@@ -47,10 +44,8 @@ class ReplayMap(val tileMap: TileMap) : Group() {
         }
         // 200 is about how much space we need for the top navigation and close button at the
         // bottom.
-        val tileSizeToFitHeight =
-                (UncivGame.Current.worldScreen!!.stage.height - 200) / tileRows
-        val tileSizeToFitWidth =
-                UncivGame.Current.worldScreen!!.stage.width / tileColumns
+        val tileSizeToFitHeight = (UncivGame.Current.worldScreen!!.stage.height - 200) / tileRows
+        val tileSizeToFitWidth = UncivGame.Current.worldScreen!!.stage.width / tileColumns
         return min(tileSizeToFitHeight, tileSizeToFitWidth)
     }
 
