@@ -48,7 +48,7 @@ class MapEditorViewTab(
     }
 
     private fun createMockCiv(ruleset: Ruleset) = Civilization().apply {
-        // This crappy construct exists only to allow us to call TileInfo.getTileStats
+        // This crappy construct exists only to allow us to call Tile.TileStatFunctions.getTileStats
         nation = Nation()
         nation.name = "Test"
         gameInfo = GameInfo()

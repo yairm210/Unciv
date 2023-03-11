@@ -629,7 +629,7 @@ open class Tile : IsPartOfGameInfoSerialization {
 
     /** Shows important properties of this tile for debugging _only_, it helps to see what you're doing */
     override fun toString(): String {
-        val lineList = arrayListOf("TileInfo @$position")
+        val lineList = arrayListOf("Tile @$position")
         if (!this::baseTerrain.isInitialized) return lineList[0] + ", uninitialized"
         if (isCityCenter()) lineList += getCity()!!.name
         lineList += baseTerrain

@@ -261,7 +261,7 @@ enum class UniqueParameterType(
         override fun getTranslationWriterStringsForOutput() = knownValues
     },
 
-    /** Implemented by [TileInfo.matchesTerrainFilter][com.unciv.logic.map.TileInfo.matchesTerrainFilter] */
+    /** Implemented by [Tile.matchesTerrainFilter][com.unciv.logic.map.tile.Tile.matchesTerrainFilter] */
     TerrainFilter("terrainFilter", Constants.freshWaterFilter, null, "Terrain Filters") {
         private val knownValues = setOf("All",
                 Constants.coastal, "River", "Open terrain", "Rough terrain", "Water resource",
@@ -282,7 +282,7 @@ enum class UniqueParameterType(
         override fun getTranslationWriterStringsForOutput() = knownValues
     },
 
-    /** Implemented by [TileInfo.matchesFilter][com.unciv.logic.map.TileInfo.matchesFilter] */
+    /** Implemented by [Tile.matchesFilter][com.unciv.logic.map.tile.Tile.matchesFilter] */
     TileFilter("tileFilter", "Farm", "Anything that can be used either in an improvementFilter or in a terrainFilter can be used here, plus 'unimproved'", "Tile Filters") {
         private val knownValues = setOf("unimproved", "All Road", "Great Improvement")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
