@@ -256,6 +256,7 @@ class TechManager : IsPartOfGameInfoSerialization {
             techsToResearch.remove(techName)
         else
             repeatingTechsResearched++
+        techsInProgress.remove(techName)
         researchedTechnologies = researchedTechnologies.withItem(newTech)
         addTechToTransients(newTech)
 
