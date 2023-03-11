@@ -615,9 +615,10 @@
 				"name": "Future Tech",
 				"row": 5,
 				"prerequisites": ["Globalization", "Nuclear Fusion", "Nanotechnology"],
-				"uniques": ["Who knows what the future holds?", "Can be continually researched",
+				"uniques": ["Can be continually researched",
                     "Adds [10] points to your score each time it is researched"],
-				"quote": "'I think we agree, the past is over.' - George W. Bush"
+				"quote": "'I think we agree, the past is over.' - George W. Bush",
+                "civilopediaText":[{"text":"Who knows what the future holds?", "color":"#ffc0a0"}]
 			}
 		]
 	}
