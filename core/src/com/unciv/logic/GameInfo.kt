@@ -579,6 +579,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             if (civInfo.hasEverOwnedOriginalCapital == null) {
                 civInfo.hasEverOwnedOriginalCapital = civInfo.cities.any { it.isOriginalCapital }
             }
+
+            civInfo.tech.migrateRepeatableTechsResearched(ruleset)
         }
 
         spaceResources.clear()

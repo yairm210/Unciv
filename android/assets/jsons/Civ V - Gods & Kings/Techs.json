@@ -648,8 +648,9 @@
 			{
 				"name": "Future Tech",
 				"row": 5,
-				"prerequisites": ["Globalization","Particle Physics", "Nuclear Fusion", "Nanotechnology", "Stealth"],
-				"uniques": ["Who knows what the future holds?", "Can be continually researched"],
+				"prerequisites": ["Globalization", "Particle Physics", "Nuclear Fusion", "Nanotechnology", "Stealth"],
+				"uniques": ["Who knows what the future holds?", "Can be continually researched",
+                    "Adds [10] points to your score each time it is researched"],
 				"quote": "'I think we agree, the past is over.' - George W. Bush"
 			}
 		]

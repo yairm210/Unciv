@@ -685,9 +685,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "Can be continually researched"
-	Applicable to: Global
-
 ??? example  "[amount] Unit Supply"
 	Example: "[3] Unit Supply"
 
@@ -870,6 +867,24 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ## Tech uniques
 ??? example  "Starting tech"
+	Applicable to: Tech
+
+??? example  "Can be continually researched"
+	Applicable to: Tech
+
+??? example  "Adds [amount] points to your score each time it is researched"
+	Example: "Adds [3] points to your score each time it is researched"
+
+	Applicable to: Tech
+
+??? example  "Cost increases by [amount] each time it is researched"
+	Example: "Cost increases by [3] each time it is researched"
+
+	Applicable to: Tech
+
+??? example  "Cost increases by [amount]% each time it is researched"
+	Example: "Cost increases by [3]% each time it is researched"
+
 	Applicable to: Tech
 
 ??? example  "Only available"

@@ -594,7 +594,7 @@ class Civilization : IsPartOfGameInfoSerialization {
                 .filter { gameInfo.ruleset.buildings[it]!!.isWonder }.size
             }.toDouble()
         scoreBreakdown["Technologies"] = tech.getNumberOfTechsResearched() * 4.toDouble()
-        scoreBreakdown["Future Tech"] = tech.repeatingTechsResearched * 10.toDouble()
+        scoreBreakdown[Constants.futureTech] = tech.getRepeatableTechScore().toDouble()
 
         return scoreBreakdown
     }

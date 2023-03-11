@@ -275,7 +275,11 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     StartingTech("Starting tech", UniqueTarget.Tech),
     StartsWithTech("Starts with [tech]", UniqueTarget.Nation),
     StartsWithPolicy("Starts with [policy] adopted", UniqueTarget.Nation),
-    ResearchableMultipleTimes("Can be continually researched", UniqueTarget.Global),
+
+    ResearchableMultipleTimes("Can be continually researched", UniqueTarget.Tech),
+    ResearchableMultipleTimesScore("Adds [amount] points to your score each time it is researched", UniqueTarget.Tech),
+    ResearchableMultipleTimesCost("Cost increases by [amount] each time it is researched", UniqueTarget.Tech),
+    ResearchableMultipleTimesCostPercent("Cost increases by [amount]% each time it is researched", UniqueTarget.Tech),
 
     BaseUnitSupply("[amount] Unit Supply", UniqueTarget.Global),
     UnitSupplyPerPop("[amount] Unit Supply per [amount] population [cityFilter]", UniqueTarget.Global),

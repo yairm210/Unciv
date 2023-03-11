@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization.managers
 
+import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.AlertType
@@ -28,7 +29,7 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
-class TechManager : IsPartOfGameInfoSerialization {
+class TechManager : RepeatableTechManager, IsPartOfGameInfoSerialization {
     @Transient
     var era: Era = Era()
 
@@ -57,8 +58,11 @@ class TechManager : IsPartOfGameInfoSerialization {
     var roadsConnectAcrossRivers = false
 
     var freeTechs = 0
+
     // For calculating score
+    @Deprecated("as of 4.5.x", ReplaceWith("repeatableTechs[\"${Constants.futureTech}\"].count"), DeprecationLevel.WARNING)
     var repeatingTechsResearched = 0
+    override var repeatableTechs = HashMap<String, RepeatableTechManager.RepeatableTechCounter>(1)
 
     /** For calculating Great Scientist yields - see https://civilization.fandom.com/wiki/Great_Scientist_(Civ5)  */
     var scienceOfLast8Turns = IntArray(8) { 0 }
@@ -79,7 +83,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         val toReturn = TechManager()
         toReturn.techsResearched.addAll(techsResearched)
         toReturn.freeTechs = freeTechs
-        toReturn.repeatingTechsResearched = repeatingTechsResearched
+        toReturn.repeatableTechs = repeatableTechs
         toReturn.techsInProgress.putAll(techsInProgress)
         toReturn.techsToResearch.addAll(techsToResearch)
         toReturn.scienceOfLast8Turns = scienceOfLast8Turns.clone()
@@ -94,7 +98,10 @@ class TechManager : IsPartOfGameInfoSerialization {
     private fun getRuleset() = civInfo.gameInfo.ruleset
 
     fun costOfTech(techName: String): Int {
-        var techCost = getRuleset().technologies[techName]!!.cost.toFloat()
+        var techCost = (
+                costOfRepeatableTech(techName)
+                ?: getRuleset().technologies[techName]!!.cost
+            ).toFloat()
         if (civInfo.isHuman())
             techCost *= civInfo.getDifficulty().researchCostModifier
         techCost *= civInfo.gameInfo.speed.scienceCostModifier
@@ -255,7 +262,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         if (!newTech.isContinuallyResearchable())
             techsToResearch.remove(techName)
         else
-            repeatingTechsResearched++
+            incrementRepeatableTech(newTech)
         techsInProgress.remove(techName)
         researchedTechnologies = researchedTechnologies.withItem(newTech)
         addTechToTransients(newTech)
