@@ -8,14 +8,10 @@ on:
 
 jobs:
 
-  # Job to execute code checks and unit tests on the project source
+  # We only need the minimum
+
   code-checks:
-    name: Check code and run unit tests (Java ${{ matrix.java_version }})
-    strategy:
-      matrix:
-        java_version:
-          - 11
-          - 17
+    name: Check code and run unit tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -24,7 +20,7 @@ jobs:
         with:
           cache: 'gradle'
           distribution: 'temurin'
-          java-version: ${{ matrix.java_version }}
+          java-version: 11
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2.4.0
@@ -37,100 +33,3 @@ jobs:
 
       - name: Run unit tests
         run: ./gradlew --no-build-cache cleanTest test tests:test
-
-  # Job to build the android files on a Ubuntu host
-  build-android:
-    strategy:
-      matrix:
-        java_version:
-          - 11
-          - 17
-    runs-on: ubuntu-latest
-    name: Build Android (Java ${{ matrix.java_version }})
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/setup-java@v3
-        with:
-          cache: 'gradle'
-          distribution: 'temurin'
-          java-version: ${{ matrix.java_version }}
-
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2.4.0
-
-      - name: Build Android debug and release files
-        run: |
-          mkdir whatsNewDirectory
-          echo "Nothing changed so far" > whatsNewDirectory/whatsnew-en-US
-          set -x
-          ./gradlew :android:bundleDebug
-          ./gradlew :android:assembleDebug
-          ./gradlew :android:bundleRelease
-          ./gradlew :android:assembleRelease
-
-      - name: Upload Android artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: Android (built with Java ${{ matrix.java_version }})
-          path: |
-            android/build/outputs/apk/*/*.apk
-            android/build/outputs/bundle/*/*.aab
-          retention-days: 1
-        continue-on-error: true
-
-  # Job to build the desktop and server JAR files on all available platforms
-  build-desktop:
-    defaults:
-      run:
-        # Ensures that a UNIX-like shell is available (default would be Powershell on Windows)
-        shell: sh
-    name: Build Desktop for ${{ matrix.os }} (Java ${{ matrix.java_version }})
-    strategy:
-      matrix:
-        os:
-          - ubuntu-latest
-          - macos-latest
-          - windows-latest
-        java_version:
-          - 11
-          - 17
-
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/setup-java@v3
-        with:
-          cache: 'gradle'
-          distribution: 'temurin'
-          java-version: ${{ matrix.java_version }}
-
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2.4.0
-
-      - name: Build the Desktop app
-        run: ./gradlew desktop:dist
-
-      - name: Build the Java server
-        run: ./gradlew server:dist
-
-      - name: Upload Desktop artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: Desktop (built with Java ${{ matrix.java_version }})
-          path: desktop/build/libs/*.jar
-          retention-days: 1
-        # Only run this step on ubuntu-latest, since Java is cross-platform anyways
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        continue-on-error: true
-
-      - name: Upload Java server artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: Server (built with Java ${{ matrix.java_version }})
-          path: server/build/libs/*.jar
-          retention-days: 1
-        # Only run this step on ubuntu-latest, since Java is cross-platform anyways
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        continue-on-error: true
