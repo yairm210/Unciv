@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.Tooltip
 import com.badlogic.gdx.utils.Align
+import com.unciv.GUI
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -181,7 +182,7 @@ class UncivTooltip <T: Actor>(
             targetAlign: Int = Align.topRight,
             tipAlign: Int = Align.top
         ) {
-            if (!(always || KeyCharAndCode.keyboardAvailable) || text.isEmpty()) return
+            if (!(always || GUI.keyboardAvailable) || text.isEmpty()) return
 
             val label = text.toLabel(BaseScreen.skinStrings.skinConfig.baseColor, 38)
             label.setAlignment(Align.center)

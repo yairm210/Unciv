@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.TechManager
 import com.unciv.models.UncivSound
@@ -370,7 +369,7 @@ class TechPickerScreen(
 
         val previousSelectedTech = selectedTech
         selectedTech = tech
-        descriptionLabel.setText(tech?.getDescription(civInfo.gameInfo.ruleset))
+        descriptionLabel.setText(tech?.getDescription(civInfo))
 
         if (!switchFromWorldScreen)
             return

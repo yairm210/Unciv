@@ -17,6 +17,8 @@ import com.unciv.Constants
 import com.unciv.logic.event.EventBus
 import com.unciv.ui.components.AutoScrollPane
 import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.KeyboardBinding
+import com.unciv.ui.components.KeyboardBindings
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.darken
@@ -189,8 +191,17 @@ open class Popup(
                 action()
             }
         }
-        cell.getActor().keyShortcuts.add(KeyCharAndCode.RETURN)
+        cell.actor.keyShortcuts.add(KeyCharAndCode.RETURN)
         return cell
+    }
+
+    /** Overload of [addCloseButton] accepting a bindable key definition as [additionalKey] */
+    fun addCloseButton(text: String, additionalKey: KeyboardBinding, action: () -> Unit) {
+        addCloseButton(text, KeyboardBindings[additionalKey], action = action)
+    }
+    /** Overload of [addOKButton] accepting a bindable key definition as [additionalKey] */
+    fun addOKButton(text: String, additionalKey: KeyboardBinding, style: TextButtonStyle? = null, action: () -> Unit) {
+        addOKButton(text, KeyboardBindings[additionalKey], style, action = action)
     }
 
     /**
@@ -242,7 +253,7 @@ val BaseScreen.popups
 private val Stage.popups: List<Popup>
     get() = actors.filterIsInstance<Popup>()
 
-/** @return The currently active [Popup] or [null] if none. */
+/** @return The currently active [Popup] or `null` if none. */
 val BaseScreen.activePopup: Popup?
     get() = popups.lastOrNull { it.isVisible }
 

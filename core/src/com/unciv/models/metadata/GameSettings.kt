@@ -9,6 +9,7 @@ import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.UncivSound
 import com.unciv.ui.components.FontFamilyData
 import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.KeyboardBindings
 import com.unciv.utils.ScreenOrientation
 import java.text.Collator
 import java.time.Duration
@@ -40,8 +41,6 @@ class GameSettings {
     var language: String = Constants.english
     @Transient
     var locale: Locale? = null
-    @Deprecated("Since 4.3.6 - replaces with screenSize")
-    var resolution: String = "900x600"
     var screenSize:ScreenSize = ScreenSize.Small
     var screenMode: Int = 0
     var tutorialsShown = HashSet<String>()
@@ -102,6 +101,8 @@ class GameSettings {
 
     /** Maximum zoom-out of the map - performance heavy */
     var maxWorldZoomOut = 2f
+
+    var keyBindings = KeyboardBindings()
 
     /** used to migrate from older versions of the settings */
     var version: Int? = null

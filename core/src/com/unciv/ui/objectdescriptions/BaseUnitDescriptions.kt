@@ -1,9 +1,12 @@
-package com.unciv.models.ruleset.unit
+package com.unciv.ui.objectdescriptions
 
 import com.unciv.logic.city.City
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.ruleset.unit.UnitMovementType
+import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.civilopediascreen.FormattedLine

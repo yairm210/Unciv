@@ -3,7 +3,7 @@ package com.unciv.models.ruleset.unit
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.UniqueTarget
-import com.unciv.models.ruleset.unit.BaseUnitDescriptions.getUnitTypeCivilopediaTextLines
+import com.unciv.ui.objectdescriptions.BaseUnitDescriptions.getUnitTypeCivilopediaTextLines
 
 
 enum class UnitLayer { // The layer in which the unit moves

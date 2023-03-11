@@ -1,0 +1,7 @@
+By SomeTroglodyte:
+- Custom key bindings
+- Fix city desert tiles with Petra selectable
+- Fix possible crash involving right-click attack
+- Improve completeness and consistency of Technology descriptions
+
+AbsoluteUnits - Great Prophet, Settler (Industrial Era)  - By letstalkaboutdune

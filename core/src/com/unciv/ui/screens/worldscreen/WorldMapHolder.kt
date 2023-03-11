@@ -209,32 +209,42 @@ class WorldMapHolder(
         removeUnitActionOverlay()
         selectedTile = tile
         unitMovementPaths.clear()
-        worldScreen.shouldUpdate = true
+
+        // Concurrency might open up a race condition window - if worldScreen.shouldUpdate is on too
+        // early, concurrent code might possibly call worldScreen.render() and then our request will be
+        // 'consumed' prematurely, and worse, the update might update and show the BattleTable for our
+        // right-click attack, and leave it visible after we have resolved the battle here in code -
+        // including its onClick closures which will be outdated if the user clicks Attack -> crash!
+        var localShouldUpdate = worldScreen.shouldUpdate
+        worldScreen.shouldUpdate = false
+        // Below, there's 4 outcomes, one of which will have done nothing and will restore the old
+        // shouldUpdate - maybe overkill done in a "better safe than sorry" mindset.
 
         if (worldScreen.bottomUnitTable.selectedUnitIsSwapping) {
+            /** ****** Right-click Swap ****** */
             if (unit.movement.canUnitSwapTo(tile)) {
                 swapMoveUnitToTargetTile(unit, tile)
+                localShouldUpdate = true
             }
-            // If we are in unit-swapping mode, we don't want to move or attack
-            return
+            /** If we are in unit-swapping mode and didn't find a swap partner, we don't want to move or attack */
+        } else {
+            val attackableTile = BattleHelper
+                    .getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
+                    .firstOrNull { it.tileToAttack == tile }
+            if (unit.canAttack() && attackableTile != null) {
+                /** ****** Right-click Attack ****** */
+                val attacker = MapUnitCombatant(unit)
+                if (!Battle.movePreparingAttack(attacker, attackableTile)) return
+                SoundPlayer.play(attacker.getAttackSound())
+                Battle.attackOrNuke(attacker, attackableTile)
+                localShouldUpdate = true
+            } else if (unit.movement.canReach(tile)) {
+                /** ****** Right-click Move ****** */
+                moveUnitToTargetTile(listOf(unit), tile)
+                localShouldUpdate = true
+            }
         }
-
-        val attackableTile = BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
-            .firstOrNull { it.tileToAttack == tile }
-        if (unit.canAttack() && attackableTile != null) {
-            worldScreen.shouldUpdate = true
-            val attacker = MapUnitCombatant(unit)
-            if (!Battle.movePreparingAttack(attacker, attackableTile)) return
-            SoundPlayer.play(attacker.getAttackSound())
-            Battle.attackOrNuke(attacker, attackableTile)
-            return
-        }
-
-        val canUnitReachTile = unit.movement.canReach(tile)
-        if (canUnitReachTile) {
-            moveUnitToTargetTile(listOf(unit), tile)
-            return
-        }
+        worldScreen.shouldUpdate = localShouldUpdate
     }
 
     private fun moveUnitToTargetTile(selectedUnits: List<MapUnit>, targetTile: Tile) {

@@ -1,3 +1,13 @@
+## 4.5.6
+
+By SomeTroglodyte:
+- Custom key bindings
+- Fix city desert tiles with Petra selectable
+- Fix possible crash involving right-click attack
+- Improve completeness and consistency of Technology descriptions
+
+AbsoluteUnits - Great Prophet, Settler (Industrial Era)  - By letstalkaboutdune
+
 ## 4.5.5
 
 Dynamic minimap - By Gualdimar
