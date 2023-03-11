@@ -110,6 +110,16 @@ object GUI {
         return UncivGame.Current.worldScreen!!.selectedCiv
     }
 
+    private var keyboardAvailableCache: Boolean? = null
+    /** Tests availability of a physical keyboard */
+    val keyboardAvailable: Boolean
+        get() {
+            // defer decision if Gdx.input not yet initialized
+            if (keyboardAvailableCache == null && Gdx.input != null)
+                keyboardAvailableCache = Gdx.input.isPeripheralAvailable(Input.Peripheral.HardwareKeyboard)
+            return keyboardAvailableCache ?: false
+        }
+
 }
 
 open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpecific {

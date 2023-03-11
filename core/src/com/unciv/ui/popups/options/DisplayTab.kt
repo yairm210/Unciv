@@ -27,6 +27,7 @@ import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenMode
 
+
 fun displayTab(
     optionsPopup: OptionsPopup,
     onChange: () -> Unit,
@@ -237,7 +238,7 @@ private fun addSkinSelectBox(table: Table, settings: GameSettings, selectBoxMinW
 
 private fun addResetTutorials(table: Table, settings: GameSettings) {
     val resetTutorialsButton = "Reset tutorials".toTextButton()
-	resetTutorialsButton.onClick {
+    resetTutorialsButton.onClick {
             ConfirmPopup(
                 table.stage,
                 "Do you want to reset completed tutorials?",
