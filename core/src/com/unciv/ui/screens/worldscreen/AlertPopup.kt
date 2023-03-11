@@ -229,7 +229,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 val centerTable = Table()
                 centerTable.add(tech.quote.toLabel().apply { wrap = true }).width(worldScreen.stage.width / 3)
                 centerTable.add(ImageGetter.getTechIconPortrait(tech.name, 100f)).pad(20f)
-                val descriptionScroll = ScrollPane(tech.getDescription(gameBasics).toLabel().apply { wrap = true })
+                val descriptionScroll = ScrollPane(tech.getDescription(worldScreen.viewingCiv).toLabel().apply { wrap = true })
                 centerTable.add(descriptionScroll).width(worldScreen.stage.width / 3).maxHeight(worldScreen.stage.height / 2)
                 add(centerTable).row()
                 add(getCloseButton(Constants.close))
