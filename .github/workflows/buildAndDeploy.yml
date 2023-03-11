@@ -215,7 +215,7 @@ jobs:
 
   upload-to-itch:
     runs-on: ubuntu-latest
-    needs: [build, packr-build] # build required for tag and version
+    needs: [get-tag-and-release-body, packr-build] # build required for tag and version
     continue-on-error: true
     steps:
 
@@ -237,7 +237,7 @@ jobs:
 
   upload-to-steam:
     runs-on: ubuntu-latest
-    needs: [build, packr-build]  # build required for tag and version
+    needs: [get-tag-and-release-body, packr-build]  # build required for tag and version
     continue-on-error: true
     steps:
 
@@ -269,7 +269,7 @@ jobs:
           releaseBranch: release
 
   upload-github-release-and-post-to-discord:
-    needs: [build, android-build, packr-build]  # build required for tag and version
+    needs: [get-tag-and-release-body, android-build, packr-build]
     runs-on: ubuntu-latest
     steps:
 
@@ -327,7 +327,7 @@ jobs:
   AUR-update:
     continue-on-error: true
     runs-on: ubuntu-latest
-    needs: [build, upload-github-release-and-post-to-discord]  # build required for tag and version
+    needs: [get-tag-and-release-body, upload-github-release-and-post-to-discord]
     steps:
 
       - name: Get AUR PKGBUILD
