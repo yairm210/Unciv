@@ -133,7 +133,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
             ourVictoryStatusTable.add(victory.value.victoryScreenHeader.toLabel())
         }
 
-        contentsTable.clear()
+        resetContent()
         contentsTable.add(ourVictoryStatusTable)
     }
 
@@ -168,7 +168,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
             globalVictoryTable.add(getGlobalVictoryColumn(majorCivs, victory.key))
         }
 
-        contentsTable.clear()
+        resetContent()
         contentsTable.add(globalVictoryTable)
     }
 
@@ -193,7 +193,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
     private fun setCivRankingsTable() {
         val majorCivs = gameInfo.civilizations.filter { it.isMajorCiv() }
-        contentsTable.clear()
+        resetContent()
 
         if (UncivGame.Current.settings.useDemographics) contentsTable.add(buildDemographicsTable(majorCivs))
         else contentsTable.add(buildRankingsTable(majorCivs))
@@ -208,7 +208,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
         var nextTurn = 0
         val finalTurn = UncivGame.Current.gameInfo?.turns ?: 0
-        replayTimer?.cancel()
+        resetContent()
         replayTimer = Timer.schedule(
             object : Timer.Task() {
                 override fun run() {
@@ -220,8 +220,6 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
             // End at the last turn.
             finalTurn
         )
-
-        contentsTable.clear()
         contentsTable.add(replayTable)
     }
 
@@ -340,6 +338,11 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         civGroup.add(label).padLeft(10f)
         civGroup.pack()
         return civGroup
+    }
+
+    private fun resetContent() {
+        replayTimer?.cancel()
+        contentsTable.clear()
     }
 
     override fun dispose() {
