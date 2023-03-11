@@ -132,6 +132,17 @@ data class FriendRequestResponse(
 )
 
 /**
+ * All chat rooms your user has access to
+ */
+@Serializable
+data class GetAllChatsResponse(
+    @SerialName("friend_chat_rooms")
+    val friendChatRooms: List<Long>,
+    @SerialName("lobby_chat_rooms")
+    val lobbyChatRooms: List<Long>
+)
+
+/**
  * The response to a get chat
  *
  * [messages] should be sorted by the datetime of message.created_at.

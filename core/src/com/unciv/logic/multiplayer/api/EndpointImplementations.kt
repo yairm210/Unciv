@@ -243,6 +243,23 @@ class AuthApi(private val client: HttpClient, private val authCookieHelper: Auth
 class ChatApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper, private val logger: Logger) {
 
     /**
+     * Retrieve all messages a user has access to
+     *
+     * In the response, you will find different categories, currently friend rooms and lobby rooms.
+     */
+    suspend fun list(): GetAllChatsResponse {
+        val response = client.get("/api/v2/chats") {
+            authCookieHelper.add(this)
+        }
+        if (response.status.isSuccess()) {
+            return response.body()
+        } else {
+            val err: ApiErrorResponse = response.body()
+            throw err
+        }
+    }
+
+    /**
      * Retrieve the messages of a chatroom
      *
      * [GetChatResponse.members] holds information about all members that are currently in the chat room (including yourself)
