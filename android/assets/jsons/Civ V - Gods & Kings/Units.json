@@ -1610,8 +1610,7 @@
 		"unitType": "Civilian",
 		"uniques": [
             "Can hurry technology research",
-            "Can instantly construct a [Academy] improvement <once>",
-            "Can instantly construct a [Academy] improvement <[1] additional time(s)>",
+            "Can instantly construct a [Academy] improvement <by consuming this unit>",
             "Great Person - [Science]", "Unbuildable", "Uncapturable"],
 		"movement": 2
 	},

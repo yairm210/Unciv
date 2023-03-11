@@ -93,8 +93,6 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | TechPickerScreen/ | Background | null | |
 | TechPickerScreen/ | Background | null | |
 | TechPickerScreen/ | BottomTable | null | |
-| TechPickerScreen/ | TechButton | roundedEdgeRectangleMid | |
-| TechPickerScreen/ | TechButton | roundedEdgeRectangleMid | |
 | TechPickerScreen/ | TechButtonIconsOutline | roundedEdgeRectangleSmall | |
 | VictoryScreen/ | CivGroup | roundedEdgeRectangle | |
 | WorldScreen/ | AirUnitTable | null | |

@@ -1,27 +1,7 @@
-
-
-"build and deploy" only activates on tag
-
-Everyone needs build
-
-AUR *also* needs build, for the tag and release notes
-
-AUR dependant on Github release upload
-
-AUR dependant on Github version upload
-
-Even if aab not uploaded, keep going and uploda the APK
-
-Cleaned up task 'on release' restrictions to be on job level
-
 By SomeTroglodyte:
-- Debug option to paint coords on map tiles 
-- Custom key bindings 
-- Fix possible crash involving right-click attack 
-- Improve completeness and consistency of Technology descriptions 
-- Comments only - TileInfo to Tile 
-- Fix city desert tiles with Petra selectable 
+- Custom key bindings
+- Fix city desert tiles with Petra selectable
+- Fix possible crash involving right-click attack
+- Improve completeness and consistency of Technology descriptions
 
 AbsoluteUnits - Great Prophet, Settler (Industrial Era)  - By letstalkaboutdune
-
-Extended CI with various extra tests, added Java 17 support in unit tests (fixes )  - By CrsiX

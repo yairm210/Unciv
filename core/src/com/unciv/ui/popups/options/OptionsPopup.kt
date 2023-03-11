@@ -99,7 +99,7 @@ class OptionsPopup(
             ImageGetter.getImage("OtherIcons/Settings"), 24f
         )
 
-        if (GUI.keyboardAvailable) {
+        if (GUI.keyboardAvailable && false) {
             keyBindingsTab = KeyBindingsTab(this, tabMinWidth - 40f)  // 40 = padding
             tabs.addPage(
                 "Keys", keyBindingsTab,
