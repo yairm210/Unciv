@@ -1,6 +1,66 @@
 package com.unciv.logic.multiplayer.api
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.util.*
+
+/**
+ * Upload a new game state from a client after finishing a turn
+ */
+@Serializable
+data class FinishedTurn(
+    @SerialName("gameId")
+    val gameID: Long,
+    val gameData: String,  // base64-encoded, gzipped game state
+)
+
+/**
+ * An update of the game data
+ *
+ * This variant is sent from the server to all accounts that are in the game.
+ */
+@Serializable
+data class UpdateGameData(
+    @SerialName("gameId")
+    val gameID: Long,
+    val gameData: String,  // base64-encoded, gzipped game state
+    /** A unique counter that is incremented every time a [FinishedTurn]
+     *  is received from the same `game_id`. */
+    @SerialName("gameDataId")
+    val gameDataID: Long
+)
+
+/**
+ * Notification for clients if a client in their game disconnected
+ */
+@Serializable
+data class ClientDisconnected(
+    @SerialName("gameId")
+    val gameID: Long,
+    @Serializable(with = UUIDSerializer::class)
+    val uuid: UUID  // client identifier
+)
+
+/**
+ * Notification for clients if a client in their game reconnected
+ */
+@Serializable
+data class ClientReconnected(
+    @SerialName("gameId")
+    val gameID: Long,
+    @Serializable(with = UUIDSerializer::class)
+    val uuid: UUID  // client identifier
+)
+
+/**
+ * A new chat message is sent to the client
+ */
+@Serializable
+data class IncomingChatMessage(
+    @SerialName("chatId")
+    val chatID: Long,
+    val message: ChatMessage
+)
 
 /**
  * The base WebSocket message, encapsulating only the type of the message
@@ -23,7 +83,7 @@ data class InvalidMessage(
 @Serializable
 data class FinishedTurnMessage (
     override val type: WebSocketMessageType,
-    val content: String  // TODO
+    val content: FinishedTurn
 ) : WebSocketMessage
 
 /**
@@ -32,7 +92,7 @@ data class FinishedTurnMessage (
 @Serializable
 data class UpdateGameDataMessage (
     override val type: WebSocketMessageType,
-    val content: String  // TODO
+    val content: UpdateGameData
 ) : WebSocketMessage
 
 /**
@@ -41,7 +101,7 @@ data class UpdateGameDataMessage (
 @Serializable
 data class ClientDisconnectedMessage (
     override val type: WebSocketMessageType,
-    val content: String  // TODO
+    val content: ClientDisconnected
 ) : WebSocketMessage
 
 /**
@@ -50,7 +110,7 @@ data class ClientDisconnectedMessage (
 @Serializable
 data class ClientReconnectedMessage (
     override val type: WebSocketMessageType,
-    val content: String  // TODO
+    val content: ClientReconnected
 ) : WebSocketMessage
 
 /**
@@ -59,9 +119,8 @@ data class ClientReconnectedMessage (
 @Serializable
 data class IncomingChatMessageMessage (
     override val type: WebSocketMessageType,
-    val content: String  // TODO
+    val content: IncomingChatMessage
 ) : WebSocketMessage
-
 
 /**
  * Type enum of all known WebSocket messages
