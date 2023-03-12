@@ -7,6 +7,7 @@ import com.unciv.logic.BackwardCompatibility.convertFortify
 import com.unciv.logic.BackwardCompatibility.convertOldGameSpeed
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
 import com.unciv.logic.BackwardCompatibility.migrateBarbarianCamps
+import com.unciv.logic.BackwardCompatibility.migrateToTileHistory
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.GameInfo.Companion.CURRENT_COMPATIBILITY_NUMBER
 import com.unciv.logic.GameInfo.Companion.FIRST_WITHOUT
@@ -103,6 +104,17 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     // Set to false whenever the results still need te be processed
     var diplomaticVictoryVotesProcessed = false
 
+    /** The turn the replay history started recording.
+     *
+     *  *   `-1` means the game was serialized with an older version without replay
+     *  *   `0`  would be the normal value in any newer game
+     *      (remember gameParameters.startingEra is not implemented through turns starting > 0)
+     *  *   `>0` would be set by compatibility migration, handled in [BackwardCompatibility.migrateToTileHistory]
+     *
+     *  @see [com.unciv.logic.map.tile.TileHistory]
+     */
+    var historyStartTurn = -1
+
     /**
      * Keep track of a custom location this game was saved to _or_ loaded from, using it as the default custom location for any further save/load attempts.
      */
@@ -164,6 +176,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         toReturn.oneMoreTurnMode = oneMoreTurnMode
         toReturn.customSaveLocation = customSaveLocation
         toReturn.victoryData = victoryData
+        toReturn.historyStartTurn = historyStartTurn
 
         return toReturn
     }
@@ -591,6 +604,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         cityDistances.game = this
 
         guaranteeUnitPromotions()
+
+        migrateToTileHistory()
     }
 
     //endregion

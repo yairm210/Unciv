@@ -2,7 +2,6 @@
 
 import com.unciv.Constants
 import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFlags
@@ -324,6 +323,11 @@ class CityInfoConquestFunctions(val city: City){
             // Update proximity rankings
             civ.updateProximity(oldCiv,
                 oldCiv.updateProximity(civ))
+
+            // Update history
+            city.getTiles().forEach { tile ->
+                tile.history.recordTakeOwnership(tile)
+            }
         }
     }
 

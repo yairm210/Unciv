@@ -32,11 +32,6 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
         // don't try to resize rotate etc - this table has a LOT of children so that's valuable render time!
         isTransform = false
 
-        var topX = -Float.MAX_VALUE
-        var topY = -Float.MAX_VALUE
-        var bottomX = Float.MAX_VALUE
-        var bottomY = Float.MAX_VALUE
-
         // Set fixed minimap size
         val stageMinimapSize = calcMinimapSize(minimapSize)
         setSize(stageMinimapSize.x, stageMinimapSize.y)
@@ -44,25 +39,19 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int, private val civIn
         // Calculate max tileSize to fit in mimimap
         tileSize = calcTileSize(stageMinimapSize)
         minimapTiles = createMinimapTiles(tileSize)
-        for (image in minimapTiles.map { it.image }) {
-            tileLayer.addActor(image)
 
-            // keeps track of the current top/bottom/left/rightmost tiles to size and position the minimap correctly
-            topX = max(topX, image.x + tileSize)
-            topY = max(topY, image.y + tileSize)
-            bottomX = min(bottomX, image.x)
-            bottomY = min(bottomY, image.y)
-        }
-
+        val tileExtension = MinimapTileUtil.spreadOutMinimapTiles(tileLayer, minimapTiles, tileSize)
         // there are tiles "below the zero",
         // so we zero out the starting position of the whole board so they will be displayed as well
         tileLayer.setSize(width, height)
 
         // Center tiles in minimap holder
-        tileMapWidth = topX - bottomX
-        tileMapHeight = topY - bottomY
-        val padX = (stageMinimapSize.x - tileMapWidth) * 0.5f - bottomX
-        val padY = (stageMinimapSize.y - tileMapHeight) * 0.5f - bottomY
+        tileMapWidth = tileExtension.width
+        tileMapHeight = tileExtension.height
+        val padX =
+                (stageMinimapSize.x - tileMapWidth) * 0.5f - (tileExtension.x)
+        val padY =
+                (stageMinimapSize.y - tileMapHeight) * 0.5f - (tileExtension.y)
         for (group in tileLayer.children) {
             group.moveBy(padX, padY)
         }

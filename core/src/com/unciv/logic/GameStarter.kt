@@ -100,6 +100,8 @@ object GameStarter {
             }
 
         runAndMeasure("setTransients") {
+            // mark as no migrateToTileHistory necessary
+            gameInfo.historyStartTurn = 0
             tileMap.setTransients(ruleset) // if we're starting from a map with pre-placed units, they need the civs to exist first
             tileMap.setStartingLocationsTransients()
 
