@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener
-import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.basescreen.UncivStage
@@ -30,7 +29,7 @@ object UncivTextField {
      * @param hint The text that should be displayed in the text field when no text is entered, will automatically be translated
      * @param preEnteredText the text already entered within this text field. Supported on all platforms.
      */
-    fun create(hint: String, preEnteredText: String = ""): TextField {
+    fun create(hint: String, preEnteredText: String = "", onFocusChange: ((Boolean) -> Unit)? = null): TextField {
         @Suppress("UNCIV_RAW_TEXTFIELD")
         val textField = TextField(preEnteredText, BaseScreen.skin)
         val translatedHint = hint.tr()
@@ -40,6 +39,7 @@ object UncivTextField {
                 if (focused) {
                     textField.scrollAscendantToTextField()
                 }
+                onFocusChange?.invoke(focused)
             }
         })
 

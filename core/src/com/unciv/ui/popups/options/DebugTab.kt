@@ -16,7 +16,9 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.utils.DebugUtils
 
-fun debugTab() = Table(BaseScreen.skin).apply {
+fun debugTab(
+    optionsPopup: OptionsPopup
+) = Table(BaseScreen.skin).apply {
     pad(10f)
     defaults().pad(5f)
     val game = UncivGame.Current
@@ -59,12 +61,20 @@ fun debugTab() = Table(BaseScreen.skin).apply {
     add("Enable espionage option".toCheckBox(game.settings.enableEspionageOption) {
         game.settings.enableEspionageOption = it
     }).colspan(2).row()
+
     add("Save games compressed".toCheckBox(UncivFiles.saveZipped) {
         UncivFiles.saveZipped = it
     }).colspan(2).row()
     add("Save maps compressed".toCheckBox(MapSaver.saveZipped) {
         MapSaver.saveZipped = it
     }).colspan(2).row()
+
+    if (GUI.keyboardAvailable) {
+        add("Show keyboard bindings".toCheckBox(optionsPopup.enableKeyBindingsTab) {
+            optionsPopup.enableKeyBindingsTab = it
+            optionsPopup.showOrHideKeyBindings()
+        }).colspan(2).row()
+    }
 
     add("Gdx Scene2D debug".toCheckBox(BaseScreen.enableSceneDebug) {
         BaseScreen.enableSceneDebug = it
