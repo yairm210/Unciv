@@ -1,28 +1,20 @@
 package com.unciv.ui.popups.options
 
-import com.badlogic.gdx.Input
-import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.InputEvent
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextField
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
-import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.ui.components.KeyCapturingButton
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.KeyboardBinding
 import com.unciv.ui.components.KeyboardBindings
+import com.unciv.ui.components.KeysSelectBox
 import com.unciv.ui.components.TabbedPager
-import com.unciv.ui.components.UncivTextField
-import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
+
 
 class KeyBindingsTab(
     optionsPopup: OptionsPopup,
@@ -75,114 +67,56 @@ class KeyBindingsTab(
         save()
     }
 
-    /** A button that captures keyboard keys and reports them through [onKeyHit] */
-    class KeyCapturingButton(
-        private val onKeyHit: (keyCode: Int, control: Boolean) -> Unit
-    ) : ImageButton(getStyle()) {
-        companion object {
-            private const val buttonSize = 36f
-            private const val buttonImage = "OtherIcons/Keyboard"
-            private val controlKeys = setOf(Input.Keys.CONTROL_LEFT, Input.Keys.CONTROL_RIGHT)
-
-            private fun getStyle() = ImageButtonStyle().apply {
-                val image = ImageGetter.getDrawable(buttonImage)
-                imageUp = image
-                imageOver = image.tint(Color.LIME)
-            }
-        }
-
-        private var savedFocus: Actor? = null
-
-        init {
-            setSize(buttonSize, buttonSize)
-            addTooltip("Hit the desired key now", 18f, targetAlign = Align.bottomRight)
-            addListener(ButtonListener(this))
-        }
-
-        class ButtonListener(private val myButton: KeyCapturingButton) : ClickListener() {
-            private var controlDown = false
-
-            override fun enter(event: InputEvent?, x: Float, y: Float, pointer: Int, fromActor: Actor?) {
-                if (myButton.stage == null) return
-                myButton.savedFocus = myButton.stage.keyboardFocus
-                myButton.stage.keyboardFocus = myButton
-            }
-
-            override fun exit(event: InputEvent?, x: Float, y: Float, pointer: Int, toActor: Actor?) {
-                if (myButton.stage == null) return
-                myButton.stage.keyboardFocus = myButton.savedFocus
-                myButton.savedFocus = null
-            }
-
-            override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
-                if (keycode == Input.Keys.ESCAPE) return false
-                if (keycode in controlKeys) {
-                    controlDown = true
-                } else {
-                    myButton.onKeyHit(keycode, controlDown)
-                }
-                return true
-            }
-
-            override fun keyUp(event: InputEvent?, keycode: Int): Boolean {
-                if (keycode == Input.Keys.ESCAPE) return false
-                if (keycode in controlKeys)
-                    controlDown = false
-                return true
-            }
-        }
-    }
-
     class KeyboardBindingWidget(
         /** The specific binding to edit */
         private val binding: KeyboardBinding
     ) : Table(BaseScreen.skin) {
-        private val textField: TextField =
-                UncivTextField.create(binding.defaultKey.toString()) { focused ->
-                    if (!focused) validateText()
-                }
+        private val selectBox = KeysSelectBox(binding.defaultKey.toString()) {
+            validateSelection()
+        }
 
         private val button = KeyCapturingButton { code, control ->
+            selectBox.hideScrollPane()
             boundKey = if (control)
                 KeyCharAndCode.ctrlFromCode(code)
                 else KeyCharAndCode(code)
-            resetText()
+            resetSelection()
         }
 
-        private var boundKey: KeyCharAndCode? = null
+        private var boundKey: KeyCharAndCode = binding.defaultKey
 
         init {
             pad(0f)
             defaults().pad(0f)
-            textField.setScale(0.1f)
-            add(textField)
-            addActor(button)
+            add(selectBox)
+            add(button).size(36f).padLeft(2f)
         }
 
+        /** Get the (untranslated) key name selected by the Widget */
+        // we let the KeysSelectBox handle undesired mappings
         val text: String
-            get() = textField.text
+            get() = selectBox.selected.name
 
+        /** Update control to show current binding */
         fun update(keyBindings: KeyboardBindings) {
             boundKey = keyBindings[binding]
-            resetText()
-
-            // Since the TextField itself is temporary, this is only quick & dirty
-            button.setPosition(textField.width - (textField.height - button.height) / 2, textField.height / 2, Align.right)
+            resetSelection()
         }
 
-        private fun validateText() {
+        /** Set boundKey from selectBox */
+        private fun validateSelection() {
             val value = text
             val parsedKey = KeyCharAndCode.parse(value)
             if (parsedKey == KeyCharAndCode.UNKNOWN) {
-                resetText()
+                resetSelection()
             } else {
                 boundKey = parsedKey
             }
         }
 
-        private fun resetText() {
-            if (boundKey == binding.defaultKey) boundKey = null
-            textField.text = boundKey?.toString() ?: ""
+        /** Set selectBox from boundKey */
+        private fun resetSelection() {
+            selectBox.setSelected(boundKey.toString())
         }
     }
 }

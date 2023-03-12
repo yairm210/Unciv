@@ -16,7 +16,6 @@ import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
-import com.unciv.utils.DebugUtils
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.withGLContext
 import kotlin.reflect.KMutableProperty0
