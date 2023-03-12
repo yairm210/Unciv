@@ -207,7 +207,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         replayTable.add(replayMap).row()
 
         var nextTurn = gameInfo.historyStartTurn
-        val finalTurn = UncivGame.Current.gameInfo?.turns ?: 0
+        val finalTurn = gameInfo.turns
         resetContent()
         replayTimer = Timer.schedule(
             object : Timer.Task() {
@@ -224,12 +224,11 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
     }
 
     private fun updateReplayTable(yearLabel: Label, replayMap: ReplayMap, turn: Int) {
-        val finalTurn = UncivGame.Current.gameInfo?.turns ?: 0
-        val year = UncivGame.Current.gameInfo?.getYear(turn - finalTurn) ?: 0
+        val finalTurn = gameInfo.turns
+        val year = gameInfo.getYear(turn - finalTurn)
         yearLabel.setText(
             YearTextUtil.toYearText(
-                year,
-                UncivGame.Current.gameInfo?.currentPlayerCiv?.isLongCountDisplay() == true
+                year, gameInfo.currentPlayerCiv.isLongCountDisplay()
             )
         )
         replayMap.update(turn)
