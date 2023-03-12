@@ -77,6 +77,12 @@ class TileStatFunctions(val tile: Tile) {
         return stats
     }
 
+    /** Ensures each stat is >= [other].stat - modifies in place */
+    private fun Stats.coerceAtLeast(other: Stats) {
+        for ((stat, value) in other)
+            if (this[stat] < value) this[stat] = value
+    }
+
     /** Gets basic stats to start off [getTileStats] or [getTileStartYield], independently mutable result */
     private fun getTerrainStats(): Stats {
         var stats: Stats? = null
