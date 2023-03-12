@@ -207,4 +207,12 @@ object BackwardCompatibility {
             gameParameters.gameSpeed = ""
         }
     }
+
+    fun GameInfo.migrateToTileHistory() {
+        if (historyStartTurn >= 0) return
+        for (tile in getCities().flatMap { it.getTiles() }) {
+            tile.history.recordTakeOwnership(tile)
+        }
+        historyStartTurn = turns
+    }
 }

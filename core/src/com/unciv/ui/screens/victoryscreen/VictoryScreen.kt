@@ -1,22 +1,25 @@
 package com.unciv.ui.screens.victoryscreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.badlogic.gdx.utils.Timer
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.translations.tr
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.newgamescreen.NewGameScreen
-import com.unciv.ui.screens.pickerscreens.PickerScreen
+import com.unciv.ui.components.YearTextUtil
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.newgamescreen.NewGameScreen
+import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
@@ -26,6 +29,8 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
     private val enabledVictoryTypes = gameInfo.gameParameters.victoryTypes
 
     private val contentsTable = Table()
+
+    private var replayTimer : Timer.Task? = null
 
     init {
         val difficultyLabel = ("{Difficulty}: {${gameInfo.difficulty}}").toLabel()
@@ -41,9 +46,6 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         val rankingLabel = if (UncivGame.Current.settings.useDemographics) "Demographics" else "Rankings"
         val setCivRankingsButton = rankingLabel.toTextButton().onClick { setCivRankingsTable() }
         tabsTable.add(setCivRankingsButton)
-        topTable.add(tabsTable)
-        topTable.addSeparator()
-        topTable.add(contentsTable)
 
         if (playerCivInfo.isSpectator())
             setGlobalVictoryTable()
@@ -72,6 +74,16 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         } else if (!someoneHasWon) {
             setDefaultCloseAction()
         }
+
+        if (playerCivInfo.isSpectator() || someoneHasWon || playerCivInfo.isDefeated()) {
+            val replayLabel = "Replay"
+            val replayButton = replayLabel.toTextButton().onClick { setReplayTable() }
+            tabsTable.add(replayButton)
+        }
+
+        topTable.add(tabsTable)
+        topTable.addSeparator()
+        topTable.add(contentsTable)
     }
 
 
@@ -121,7 +133,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
             ourVictoryStatusTable.add(victory.value.victoryScreenHeader.toLabel())
         }
 
-        contentsTable.clear()
+        resetContent()
         contentsTable.add(ourVictoryStatusTable)
     }
 
@@ -156,7 +168,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
             globalVictoryTable.add(getGlobalVictoryColumn(majorCivs, victory.key))
         }
 
-        contentsTable.clear()
+        resetContent()
         contentsTable.add(globalVictoryTable)
     }
 
@@ -181,10 +193,45 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
     private fun setCivRankingsTable() {
         val majorCivs = gameInfo.civilizations.filter { it.isMajorCiv() }
-        contentsTable.clear()
+        resetContent()
 
         if (UncivGame.Current.settings.useDemographics) contentsTable.add(buildDemographicsTable(majorCivs))
         else contentsTable.add(buildRankingsTable(majorCivs))
+    }
+
+    private fun setReplayTable() {
+        val replayTable = Table().apply { defaults().pad(10f) }
+        val yearLabel = "".toLabel()
+        replayTable.add(yearLabel).row()
+        val replayMap = ReplayMap(gameInfo.tileMap)
+        replayTable.add(replayMap).row()
+
+        var nextTurn = gameInfo.historyStartTurn
+        val finalTurn = gameInfo.turns
+        resetContent()
+        replayTimer = Timer.schedule(
+            object : Timer.Task() {
+                override fun run() {
+                    updateReplayTable(yearLabel, replayMap, nextTurn++)
+                }
+            }, 0.0f,
+            // A game of 600 rounds will take one minute.
+            0.1f,
+            // End at the last turn.
+            finalTurn - nextTurn
+        )
+        contentsTable.add(replayTable)
+    }
+
+    private fun updateReplayTable(yearLabel: Label, replayMap: ReplayMap, turn: Int) {
+        val finalTurn = gameInfo.turns
+        val year = gameInfo.getYear(turn - finalTurn)
+        yearLabel.setText(
+            YearTextUtil.toYearText(
+                year, gameInfo.currentPlayerCiv.isLongCountDisplay()
+            )
+        )
+        replayMap.update(turn)
     }
 
     enum class RankLabels { Rank, Value, Best, Average, Worst}
@@ -290,5 +337,15 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         civGroup.add(label).padLeft(10f)
         civGroup.pack()
         return civGroup
+    }
+
+    private fun resetContent() {
+        replayTimer?.cancel()
+        contentsTable.clear()
+    }
+
+    override fun dispose() {
+        super.dispose()
+        replayTimer?.cancel()
     }
 }
