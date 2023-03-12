@@ -20,10 +20,13 @@ class KeyBindingsTab(
         FormattedLine("This is a work in progress.", color = "#b22222", centered = true),  // FIREBRICK
         FormattedLine(),
         // FormattedLine("Do not pester the developers for missing entries!"),  // little joke
-        FormattedLine("For discussion about missing entries, see the linked issue.",
-            link = "https://github.com/yairm210/Unciv/issues/8862"),
+        FormattedLine("Please see the Tutorial.", link = "Tutorial/Keyboard Bindings"),
         FormattedLine(separator = true),
-    ), labelWidth)
+    ), labelWidth) {
+        // This ruleset is a kludge - but since OptionPopup can be called from anywhere, getting the relevant one is a chore
+        //TODO better pedia call architecture, or a tutorial render method once that has markup capability
+        GUI.pushScreen(CivilopediaScreen(RulesetCache.getVanillaRuleset(), link = it))
+    }
 
     init {
         pad(10f)
