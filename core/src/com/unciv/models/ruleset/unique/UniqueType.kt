@@ -100,6 +100,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     StatsFromTradeRoute("[stats] from each Trade Route", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatsFromGlobalCitiesFollowingReligion("[stats] for each global city following this religion", UniqueTarget.FounderBelief),
     StatsFromGlobalFollowers("[stats] from every [amount] global followers [cityFilter]", UniqueTarget.FounderBelief),
+    // Used for City center
+    EnsureMinimumStats("Ensures a minimum tile yield of [stats]", UniqueTarget.Improvement),
 
     // Stat percentage boosts
     StatPercentBonus("[relativeAmount]% [stat]", UniqueTarget.Global, UniqueTarget.FollowerBelief),

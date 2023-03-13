@@ -38,6 +38,7 @@ object Constants {
     const val freshWaterFilter = "Fresh Water"
 
     const val barbarianEncampment = "Barbarian encampment"
+    const val cityCenter = "City center"
 
     const val peaceTreaty = "Peace Treaty"
     const val researchAgreement = "Research Agreement"

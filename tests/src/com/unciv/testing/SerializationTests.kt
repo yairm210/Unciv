@@ -1,6 +1,7 @@
 package com.unciv.testing
 
 import com.badlogic.gdx.Gdx
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.json.json
 import com.unciv.logic.GameInfo
@@ -74,8 +75,8 @@ class SerializationTests {
         val unit = civ.units.getCivUnits().first { it.hasUnique(UniqueType.FoundCity) }
         val tile = unit.getTile()
         unit.civ.addCity(tile.position)
-        if (tile.ruleset.tileImprovements.containsKey("City center"))
-            tile.changeImprovement("City center")
+        if (tile.ruleset.tileImprovements.containsKey(Constants.cityCenter))
+            tile.changeImprovement(Constants.cityCenter)
         unit.destroy()
 
         // Ensure some diplomacy objects are instantiated

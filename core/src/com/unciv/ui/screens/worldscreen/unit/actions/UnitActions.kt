@@ -197,8 +197,8 @@ object UnitActions {
             if (unit.civ.playerType != PlayerType.AI)
                 UncivGame.Current.settings.addCompletedTutorialTask("Found city")
             unit.civ.addCity(tile.position)
-            if (tile.ruleset.tileImprovements.containsKey("City center"))
-                tile.changeImprovement("City center")
+            if (tile.ruleset.tileImprovements.containsKey(Constants.cityCenter))
+                tile.changeImprovement(Constants.cityCenter)
             tile.removeRoad()
 
             if (hasActionModifiers) activateSideEffects(unit, unique)
