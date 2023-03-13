@@ -1105,6 +1105,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Unit
 
+??? example  "Automation is a primary action"
+	Applicable to: Unit
+
 ??? example  "[relativeAmount]% Strength for enemy [combatantFilter] units in adjacent [tileFilter] tiles"
 	Example: "[+20]% Strength for enemy [City] units in adjacent [Farm] tiles"
 
