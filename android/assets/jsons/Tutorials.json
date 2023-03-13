@@ -401,16 +401,15 @@
             {"text":"Currently, there are no checks to prevent conflicting assignments.","starred":true},
             {},
             {"text":"Using the Keys page","header":3},
-            {"text":"Each binding has a label, a text field, and a key button looking like this:"},
+            {"text":"Each binding has a label, a dropdown select, and a key button looking like this:"},
             {"extraImage":"OtherIcons/Keyboard","imageSize":36},
             {"text":"While hovering the mouse over the key button, you can press a desired key directly to assign it."},
-            {"text":"Alternatively, you can enter the key's name in the text field."},
-            {"text":"To reset a binding to its default, simply clear the text field."},
+            {"text":"Alternatively, you can select the key in the dropdown."},
             {},
             {"text":"Bindings mapped to their default keys are displayed in gray, those reassigned by you in white."},
             {},
             {"text":"For discussion about missing entries, see the linked github issue.","link":"https://github.com/yairm210/Unciv/issues/8862"}
-        ],
+        ]
         // "uniques": ["Will not be displayed in Civilopedia"] // would prevent use for help link
     }
 ]
