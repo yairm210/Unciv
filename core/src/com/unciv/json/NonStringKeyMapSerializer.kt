@@ -1,5 +1,6 @@
 package com.unciv.json
 
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.Json.Serializer
 import com.badlogic.gdx.utils.JsonValue
@@ -41,6 +42,7 @@ class NonStringKeyMapSerializer<MT: MutableMap<KT, Any>, KT>(
         val result = mutableMapFactory()
         val entries = jsonData.get("entries")
         if (entries == null) {
+            @Suppress("DEPRECATION")
             readOldFormat(jsonData, json, result)
         } else {
             readNewFormat(entries, json, result)
@@ -50,16 +52,27 @@ class NonStringKeyMapSerializer<MT: MutableMap<KT, Any>, KT>(
 
     @Deprecated("This is only here temporarily until all users migrate the old properties to the new ones")
     private fun readOldFormat(jsonData: JsonValue, json: Json, result: MT) {
-        @Suppress("UNCHECKED_CAST")  // We know better
-        val map = result as MutableMap<String, Any>
-        var child: JsonValue? = jsonData.child
-        while (child != null) {
-            if (child.name == "class") {
-                child = child.next
+        var entry = jsonData.child
+        while (entry != null) {
+            if (entry.name == "class") {
+                entry = entry.next
                 continue
             }
-            map[child.name] = json.readValue(null, child)
-            child = child.next
+            val key = entry.name.run {
+                when {
+                    // Need explicit parsers here for every key historically serialized as just its toString()
+                    keyClass == Vector2::class.java ->
+                        @Suppress("UNCHECKED_CAST")  // we just checked at runtime instead
+                        Vector2().fromString(this) as KT
+                    // In case the original toString did Json itself
+                    startsWith("{") && endsWith("}") ->
+                        json.fromJson(keyClass, this)
+                    // Sorry, can't convert to <KT>, skip
+                    else -> null
+                }
+            } ?: continue
+            result[key] = json.readValue(null, entry)
+            entry = entry.next
         }
     }
 

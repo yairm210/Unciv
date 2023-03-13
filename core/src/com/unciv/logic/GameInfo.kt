@@ -6,7 +6,6 @@ import com.unciv.UncivGame.Version
 import com.unciv.logic.BackwardCompatibility.convertFortify
 import com.unciv.logic.BackwardCompatibility.convertOldGameSpeed
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
-import com.unciv.logic.BackwardCompatibility.migrateBarbarianCamps
 import com.unciv.logic.BackwardCompatibility.migrateToTileHistory
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.GameInfo.Companion.CURRENT_COMPATIBILITY_NUMBER
@@ -67,7 +66,8 @@ data class CompatibilityVersion(
 }
 
 data class VictoryData(val winningCiv:String, val victoryType:String, val victoryTurn:Int){
-    constructor(): this("","",0) // for serializer
+    @Suppress("unused") // for serializer
+    constructor(): this("","",0)
 }
 
 class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion {
@@ -420,7 +420,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     }
 
     /** Generate a notification pointing out resources.
-     *  Used by [addTechnology][TechManager.addTechnology] and [ResourcesOverviewTab][com.unciv.ui.overviewscreen.ResourcesOverviewTab]
+     *  Used by [addTechnology][TechManager.addTechnology] and [ResourcesOverviewTab][com.unciv.ui.screens.overviewscreen.ResourcesOverviewTab]
      * @param maxDistance from next City, 0 removes distance limitation.
      * @param showForeign Disables filter to exclude foreign territory.
      * @return `false` if no resources were found and no notification was added.
@@ -494,7 +494,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             gameParameters.baseRuleset = baseRulesetInMods
             gameParameters.mods = LinkedHashSet(gameParameters.mods.filter { it != baseRulesetInMods })
         }
-        barbarians.migrateBarbarianCamps()
 
         ruleset = RulesetCache.getComplexRuleset(gameParameters)
 
