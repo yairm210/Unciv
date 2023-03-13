@@ -1,9 +1,5 @@
 package com.unciv.logic
 
-import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.utils.JsonValue
-import com.unciv.json.HashMapVector2
-import com.unciv.json.json
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -152,27 +148,6 @@ object BackwardCompatibility {
         }
     }
 
-    /**
-     * Fixes barbarian manager camps not being correctly serialized. Previously we had a [HashMap<Vector2, Encampment] but it was being
-     * serialized as [HashMap<String, Encampment>]. We need to fix that each time an old save is loaded.
-     *
-     * When removing this, also remove [com.unciv.json.NonStringKeyMapSerializer.readOldFormat]
-     */
-    @Suppress("DEPRECATION")
-    fun BarbarianManager.migrateBarbarianCamps() {
-        if (isOldFormat(this)) {
-            val newFormat = HashMapVector2<Encampment>()
-            @Suppress("UNCHECKED_CAST") // The old format is deserialized to a <String, JsonValue> map
-            for ((key, value) in camps as MutableMap<String, JsonValue>) {
-                val newKey = Vector2().fromString(key)
-                val newValue = json().readValue(Encampment::class.java, value)
-                newFormat[newKey] = newValue
-            }
-
-            camps.clear()
-            camps.putAll(newFormat)
-        }
-    }
 
     /** Convert from Fortify X to Fortify and save off X */
     fun GameInfo.convertFortify() {
@@ -206,5 +181,13 @@ object BackwardCompatibility {
             gameParameters.speed = gameParameters.gameSpeed
             gameParameters.gameSpeed = ""
         }
+    }
+
+    fun GameInfo.migrateToTileHistory() {
+        if (historyStartTurn >= 0) return
+        for (tile in getCities().flatMap { it.getTiles() }) {
+            tile.history.recordTakeOwnership(tile)
+        }
+        historyStartTurn = turns
     }
 }

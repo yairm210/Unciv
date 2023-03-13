@@ -1105,6 +1105,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Unit
 
+??? example  "Automation is a primary action"
+	Applicable to: Unit
+
 ??? example  "[relativeAmount]% Strength for enemy [combatantFilter] units in adjacent [tileFilter] tiles"
 	Example: "[+20]% Strength for enemy [City] units in adjacent [Farm] tiles"
 
@@ -1488,6 +1491,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Terrain
 
 ## Improvement uniques
+??? example  "Ensures a minimum tile yield of [stats]"
+	Example: "Ensures a minimum tile yield of [+1 Gold, +2 Production]"
+
+	Applicable to: Improvement
+
 ??? example  "Can also be built on tiles adjacent to fresh water"
 	Applicable to: Improvement
 

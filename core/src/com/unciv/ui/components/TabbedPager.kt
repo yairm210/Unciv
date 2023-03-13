@@ -621,7 +621,14 @@ open class TabbedPager(
         if (insertBefore >= 0 && insertBefore < pages.size) {
             newIndex = insertBefore
             pages.add(insertBefore, page)
-            header.addActorAt(insertBefore, page.button)
+            // Table.addActorAt breaks the Table, it's a Group method that updates children but not cells
+            // So we add an empty cell and move cell actors around
+            header.add()
+            for (i in header.cells.size - 1 downTo insertBefore + 1) {
+                val actor = header.removeActorAt(i - 1, true) as Button
+                header.cells[i].setActor<Button>(actor)
+            }
+            header.cells[insertBefore].setActor<Button>(page.button)
             buttonCell = header.getCell(page.button)
         } else {
             newIndex = pages.size

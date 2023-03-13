@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.unit.UnitAutomation
-import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
@@ -478,7 +477,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             return
         }
 
-        if (isAutomated()) WorkerAutomation.automateWorkerAction(this)
+        if (isAutomated()) UnitAutomation.automateUnitMoves(this)
 
         if (isExploring()) UnitAutomation.automatedExplore(this)
     }

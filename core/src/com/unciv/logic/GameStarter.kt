@@ -17,7 +17,9 @@ import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.stats.Stats
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.utils.debug
@@ -98,6 +100,8 @@ object GameStarter {
             }
 
         runAndMeasure("setTransients") {
+            // mark as no migrateToTileHistory necessary
+            gameInfo.historyStartTurn = 0
             tileMap.setTransients(ruleset) // if we're starting from a map with pre-placed units, they need the civs to exist first
             tileMap.setStartingLocationsTransients()
 
@@ -327,9 +331,15 @@ object GameStarter {
         var startingUnits: MutableList<String>
         var eraUnitReplacement: String
 
+        val cityCenterMinStats = sequenceOf(ruleSet.tileImprovements[Constants.cityCenter])
+            .filterNotNull()
+            .flatMap { it.getMatchingUniques(UniqueType.EnsureMinimumStats, StateForConditionals.IgnoreConditionals) }
+            .firstOrNull()
+            ?.stats ?: Stats.DefaultCityCenterMinimum
+
         val startScores = HashMap<Tile, Float>(tileMap.values.size)
         for (tile in tileMap.values) {
-            startScores[tile] = tile.stats.getTileStartScore()
+            startScores[tile] = tile.stats.getTileStartScore(cityCenterMinStats)
         }
         val allCivs = gameInfo.civilizations.filter { !it.isBarbarian() }
         val landTilesInBigEnoughGroup = getCandidateLand(allCivs.size, tileMap, startScores)

@@ -4,7 +4,6 @@ import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.automation.unit.UnitAutomation
-import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
@@ -55,7 +54,8 @@ object UnitActions {
         UnitActionsReligion.addEnhanceReligionAction(unit, actionList)
         actionList += getImprovementConstructionActions(unit, tile)
         UnitActionsReligion.addActionsWithLimitedUses(unit, actionList, tile)
-        addAutomateBuildingImprovementsAction(unit, actionList)
+
+        addAutomateAction(unit, actionList, true)
         addTriggerUniqueActions(unit, actionList)
         addAddInCapitalAction(unit, actionList, tile)
 
@@ -88,6 +88,7 @@ object UnitActions {
 
         addSleepActions(actionList, unit, true)
         addFortifyActions(actionList, unit, true)
+        addAutomateAction(unit, actionList, false)
 
         addSwapAction(unit, actionList)
         addDisbandAction(actionList, unit)
@@ -196,8 +197,8 @@ object UnitActions {
             if (unit.civ.playerType != PlayerType.AI)
                 UncivGame.Current.settings.addCompletedTutorialTask("Found city")
             unit.civ.addCity(tile.position)
-            if (tile.ruleset.tileImprovements.containsKey("City center"))
-                tile.changeImprovement("City center")
+            if (tile.ruleset.tileImprovements.containsKey(Constants.cityCenter))
+                tile.changeImprovement(Constants.cityCenter)
             tile.removeRoad()
 
             if (hasActionModifiers) activateSideEffects(unit, unique)
@@ -437,15 +438,19 @@ object UnitActions {
         }
     }
 
-    private fun addAutomateBuildingImprovementsAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        if (!unit.cache.hasUniqueToBuildImprovements) return
+    private fun addAutomateAction(unit: MapUnit, actionList: ArrayList<UnitAction>, showingAdditionalActions:Boolean) {
+
+        // If either of these are true it goes in primary actions, else in additional actions
+        if ((unit.hasUnique(UniqueType.AutomationPrimaryAction) || unit.cache.hasUniqueToBuildImprovements) != showingAdditionalActions)
+            return
+
         if (unit.isAutomated()) return
 
         actionList += UnitAction(UnitActionType.Automate,
             isCurrentAction = unit.isAutomated(),
             action = {
                 unit.action = UnitActionType.Automate.value
-                WorkerAutomation.automateWorkerAction(unit)
+                UnitAutomation.automateUnitMoves(unit)
             }.takeIf { unit.currentMovement > 0 }
         )
     }

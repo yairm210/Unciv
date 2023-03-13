@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.map.HexMath
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
+import com.unciv.logic.map.tile.TileHistory.TileHistoryState.CityCenterType
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.extensions.onClick
@@ -16,7 +17,7 @@ import com.unciv.utils.DebugUtils
 import kotlin.math.PI
 import kotlin.math.atan
 
-internal class MinimapTile(val tile: Tile, tileSize: Float, val onClick: () -> Unit) {
+class MinimapTile(val tile: Tile, tileSize: Float, val onClick: () -> Unit) {
     val image: Image = ImageGetter.getImage("OtherIcons/Hexagon")
     private var cityCircleImage: IconCircleGroup? = null
     var owningCiv: Civilization? = null
@@ -35,12 +36,15 @@ internal class MinimapTile(val tile: Tile, tileSize: Float, val onClick: () -> U
         image.onClick(onClick)
     }
 
-    fun updateColor(isTileUnrevealed: Boolean) {
+    fun updateColor(isTileUnrevealed: Boolean, turn: Int? = null) {
         image.isVisible = DebugUtils.VISIBLE_MAP || !isTileUnrevealed
         if (!image.isVisible) return
+        val isCityCenter =
+                if (turn == null) tile.isCityCenter() else tile.history.getState(turn).cityCenterType != CityCenterType.None
+        val owningCiv = if (turn == null) tile.getOwner() else getOwningCivFromHistory(tile, turn)
         image.color = when {
-            tile.isCityCenter() && !tile.isWater -> tile.getOwner()!!.nation.getInnerColor()
-            tile.getCity() != null && !tile.isWater -> tile.getOwner()!!.nation.getOuterColor()
+            isCityCenter && !tile.isWater -> owningCiv!!.nation.getInnerColor()
+            owningCiv != null && !tile.isWater -> owningCiv.nation.getOuterColor()
             else -> tile.getBaseTerrain().getColor().lerp(Color.GRAY, 0.5f)
         }
     }
@@ -52,16 +56,25 @@ internal class MinimapTile(val tile: Tile, tileSize: Float, val onClick: () -> U
         }
     }
 
-    fun updateBorders(): ActorChange {
+    fun updateBorders(turn: Int? = null): ActorChange {
+        val owningCiv = if (turn == null) tile.getOwner() else getOwningCivFromHistory(tile, turn)
         val imagesBefore = neighborToBorderImage.values.toSet()
         for (neighbor in tile.neighbors) {
-            val shouldHaveBorderDisplayed = tile.getOwner() != null
-                    && neighbor.getOwner() != tile.getOwner()
+            val neighborOwningCiv =
+                    if (turn == null) neighbor.getOwner() else getOwningCivFromHistory(
+                        neighbor,
+                        turn
+                    )
+            val shouldHaveBorderDisplayed = owningCiv != null
+                    && neighborOwningCiv != owningCiv
             if (!shouldHaveBorderDisplayed) {
                 neighborToBorderImage.remove(neighbor)
                 continue
             }
-            if (neighbor in neighborToBorderImage) continue
+            if (neighbor in neighborToBorderImage) {
+                neighborToBorderImage[neighbor]!!.color = owningCiv!!.nation.getInnerColor()
+                continue
+            }
 
             val borderImage = ImageGetter.getWhiteDot()
 
@@ -86,18 +99,34 @@ internal class MinimapTile(val tile: Tile, tileSize: Float, val onClick: () -> U
                 -relativeWorldPosition.y * hexagonEdgeLength / 2
             )
             borderImage.rotateBy(angle)
-            borderImage.color = tile.getOwner()!!.nation.getInnerColor()
+            borderImage.color = owningCiv!!.nation.getInnerColor()
             neighborToBorderImage[neighbor] = borderImage
         }
         val imagesAfter = neighborToBorderImage.values.toSet()
         return ActorChange(imagesBefore - imagesAfter, imagesAfter - imagesBefore)
     }
 
-    fun updateCityCircle(): ActorChange {
+    fun updateCityCircle(turn: Int? = null): ActorChange {
         val prevCircle = cityCircleImage
+        val owningCiv = if (turn == null) tile.getOwner() else getOwningCivFromHistory(tile, turn)
+        val isCityCenter =
+                if (turn == null) tile.isCityCenter() else tile.history.getState(turn).cityCenterType != CityCenterType.None
 
-        val nation = tile.getOwner()!!.nation
-        val nationIconSize = (if (tile.getCity()!!.isCapital() && tile.getOwner()!!.isMajorCiv()) 1.667f else 1.25f) * image.width
+        if (owningCiv == null || !isCityCenter) {
+            return ActorChange(
+                if (prevCircle != null) setOf(prevCircle) else emptySet(),
+                emptySet()
+            )
+        }
+
+        val nation = owningCiv.nation
+        val isCapital =
+                if (turn == null)
+                    tile.getCity()!!.isCapital()
+                else
+                    tile.history.getState(turn).cityCenterType ==
+                            CityCenterType.Capital
+        val nationIconSize = (if (isCapital && owningCiv.isMajorCiv()) 1.667f else 1.25f) * image.width
         val cityCircle = ImageGetter.getCircle().apply { color = nation.getInnerColor() }
             .surroundWithCircle(nationIconSize, color = nation.getOuterColor())
         val hexCenterXPosition = image.x + image.width / 2
@@ -109,4 +138,12 @@ internal class MinimapTile(val tile: Tile, tileSize: Float, val onClick: () -> U
 
         return ActorChange(if (prevCircle != null) setOf(prevCircle) else emptySet(), setOf(cityCircle))
     }
+
+    fun getOwningCivFromHistory(tile: Tile, turn: Int) : Civilization? {
+        val owningCivName = tile.history.getState(turn).owningCivName
+        return if (owningCivName == null) null else tile.tileMap.gameInfo.getCivilization(
+            owningCivName
+        )
+    }
+
 }
