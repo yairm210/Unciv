@@ -1,21 +1,6 @@
-
-
-Resolved  - deprecated old barb camp serialzation
+Add Replay feature in VictoryScreen  - By WhoIsJohannes
 
 All units can be automated
 
-Matrix build and deploy *only* for tags
-
-Fix job dependencies
-
-Better workflow - Android build parallel to JAR
-
-Resolved  - Deprecated GameSettings.resolution
-
-Separate large multiplatform tests to be performed once per release, and regular tests for PRs and pushes
-
 By SomeTroglodyte:
-- Make City center minimum tile yields moddable 
-- Key bindings Step 2 
-
-Add Replay feature in VictoryScreen  - By WhoIsJohannes
+- Make City center minimum tile yields moddable
