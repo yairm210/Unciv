@@ -1,13 +1,13 @@
 package com.unciv.ui.screens.worldscreen.minimap
 
+import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.scenes.scene2d.Group
-import java.awt.geom.Rectangle2D
 import kotlin.math.max
 import kotlin.math.min
 
 object MinimapTileUtil {
 
-    fun spreadOutMinimapTiles(tileLayer: Group, tiles: List<MinimapTile>, tileSize: Float) : Rectangle2D.Float {
+    fun spreadOutMinimapTiles(tileLayer: Group, tiles: List<MinimapTile>, tileSize: Float) : Rectangle {
         var topX = -Float.MAX_VALUE
         var topY = -Float.MAX_VALUE
         var bottomX = Float.MAX_VALUE
@@ -23,6 +23,6 @@ object MinimapTileUtil {
             bottomY = min(bottomY, image.y)
         }
 
-        return Rectangle2D.Float(bottomX, bottomY, topX-bottomX, topY-bottomY)
+        return Rectangle(bottomX, bottomY, topX-bottomX, topY-bottomY)
     }
 }
