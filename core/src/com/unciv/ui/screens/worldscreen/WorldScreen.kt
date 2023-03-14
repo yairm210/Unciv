@@ -454,8 +454,8 @@ class WorldScreen(
         updateGameplayButtons()
 
         val maxNotificationsHeight = statusButtons.y -
-                (if (game.settings.showMinimap) minimapWrapper.height else 0f) - 5f
-        notificationsScroll.update(viewingCiv.notifications, maxNotificationsHeight, bottomTileInfoTable.height)
+                (if (game.settings.showMinimap) minimapWrapper.height else 0f) - bottomTileInfoTable.height - 5f
+        notificationsScroll.update(viewingCiv.notifications, maxNotificationsHeight)
         notificationsScroll.setTopRight(stage.width - 10f, statusButtons.y - 5f)
 
         val posZoomFromRight = if (game.settings.showMinimap) minimapWrapper.width
