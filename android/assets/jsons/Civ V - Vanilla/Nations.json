@@ -14,8 +14,8 @@
 		"startBias": ["Avoid [Tundra]"],
 		"preferredVictoryType": "Scientific",
 
-        "startIntroPart1": "",
-        "startIntroPart2": "",
+        "startIntroPart1": "May the blessings of Heaven be upon you, Oh Great Nebuchadnezzar, father of mighty and ancient Babylon! Young was the world when Sargon built Babylon some five years ago. Long did it grow and prosper, gaining its first empire the 18th century BC, under Godlike Hammurabi, the Giver of Law. Although conquered by the Kassites and then by the Assyrians, Babylon endured, emerging phoenix-like from the ashes of destruction and regaining its independence despite its many enemies. Truly was Babylon the center of arts and learning in the ancient world!",
+        "startIntroPart2": "Oh Nebuchadnezzar, your empire endured but a short time after your death, falling to the mighty Persian and then to the Greeks, until the great city was destroyed by 141 BC. But is Babylon indeed gone forever, Great Nebuchadnezzar? Your people look to you to bring the empire back to life once more! Will you accept the challenge? Can you build a civilization that will stand the test of time",
 
         "declaringWar": "The demon wants the blood of soldiers!",
 		"attacked": "Oh well, I presume you know what you're doing.",
@@ -43,8 +43,8 @@
 		"startBias": ["Coast"],
 		"preferredVictoryType":"Diplomatic",
 
-        "startIntroPart1": "",
-        "startIntroPart2": "",
+        "startIntroPart1": "May the blessings of the gods be upon you, oh great King Alexander! You are the ruler of the mighty Greek nation. Your people lived for so many years in isolated city-states - legendary cities such as Athens, Sparta, Thebes - where they gave the world many great things, such as democracy, philosophy, tragedy, art and architecture, the very foundations of Western Civilization. Although few in number and often hostile to each other, in the 5th century BC they were able to defeat their much larger neighbor, Persia, on land and sea.",
+        "startIntroPart2": "Alexander, your people stand ready to march to war, to spread the great Greek culture to millions and to bring you everlasting glory. Are you ready to accept your destiny, King Alexander? Will you lead your people to triumph and greatness? Can you build a civilization that will stand the test of time?",
 
         "declaringWar": "You are in my way, you must be destroyed.",
 		"attacked": "As a matter of fact I too grow weary of peace.",
@@ -72,8 +72,8 @@
 		"adjective": ["Chinese"],
 		"preferredVictoryType": "Scientific",
 
-        "startIntroPart1": "",
-        "startIntroPart2": "",
+        "startIntroPart1": "The Blessings of Heaven be upon you, Empress Wu Zetian, most beautiful and haughty ruler of China! Oh great Empress, whose shadow causes the flowers to blossom and the rivers to flow! You are the leader of the Chinese, the oldest and the greatest civilization that humanity has ever produced. China's history stretches back into the mists of time, its people achieving many great things long before the other upstart civilizations were even conceived. China's contributions to the arts and sciences are too many and too wondrous to do justice to - the printing press, gunpowder, the works of Confucius - these are but a few of the gifts China has given to an undeserving world!",
+        "startIntroPart2": "You, great Queen, who, with cunning and beauty, rose from the position of lowly concubine to that of Divine Empress - your people call out to you to lead them! Great China is once again beset on all sides by barbarians. Can you defeat all your manyy foes and return your country to greatness? Can you build a civilization that will stand the test of time?",
 
         "declaringWar": "You won't ever be able to bother me again. Go meet Yama.",
 		"attacked": "Fool! I will disembowel you all!",
@@ -100,8 +100,8 @@
 		"startBias": ["Avoid [Jungle]","Avoid [Forest]"],
 		"preferredVictoryType": "Cultural",
 
-        "startIntroPart1": "",
-        "startIntroPart2": "",
+        "startIntroPart1": "We greet thee, oh great Ramesses, Pharaoh of Egypt, who causes the sun to rise and the Nile to flow, and who blesses his fortunate people with all the good things of life! Oh great lord, from time immemorial your people lived on the banks of the Nile river, where they brought writing to the world, and advanced mathematics, sculpture, and architecture. Thousands of years ago they created the great monuments which still stand tall and proud.",
+        "startIntroPart2": "Oh, Ramesses, for uncounted years your people endured, as other petty nations aroudn them have risen and then fallen into dust. They look to you to lead them once more into greatness. Can you honor the gods and bring Egypt back to her rightful place at the very center of the world? Can you build a civilization that will stand the test of time?",
 
         "declaringWar": "You are but a pest on this Earth, prepare to be eliminated!",
 		"attacked": "You are a fool who evokes pity. You have brought my hostility upon yourself and your repulsive civilization!",
@@ -130,8 +130,8 @@
 		"startBias": ["Coast"],
 		"preferredVictoryType": "Diplomatic",
 
-        "startIntroPart1": "",
-        "startIntroPart2": "",
+        "startIntroPart1": "Praises upon her serene highness, Queen Elizabeth Gloriana. You lead and protect the celebrated maritime nation of England. England is an ancient land, settled as early as 35.000 years ago. The island has seen countless waves of invaders, each in turn becoming a part of the fabric of the prople. Although England is a small island, for many years your people dominated the world stage. Their matchless navy, brilliant artists and shrewd merchants, giving them power and influence far in excess of their mere numbers.",
+        "startIntroPart2": "Queen Elizabeth, will you bring about a new golden age for the English people? They look to you once more to return peace and prosperity to the nation. Will you take up the manthe of greatness? Can you build a civilization that will stand the test of time?",
 
         "declaringWar": "By the grace of God, your days are numbered.",
 		"attacked": "We shall never surrender.",
@@ -155,8 +155,8 @@
 		"adjective": ["French"],
 		"preferredVictoryType": "Cultural",
 
-        "startIntroPart1": "",
-        "startIntroPart2": "",
+        "startIntroPart1": "Long life and triumph to you, First Consul and Emperor of France, Napoleon I, ruler of the French people. France lies at the heart of Europe. Long has Paris been the world center of culture, arts and letters. Although surrounded by competitors - and often enemies - France has endured as a great nation. Its armies have marched triumphantly into battle from one end of the world to ther other, its soldiers and generals among the best in history.",
+        "startIntroPart2": "Napoleon Bonaparte, France years for you to rebuild your empire, to lead her once more to glory and greatness, to make France once more the epicenter of culture and refinement. Emperor, will you ride once more against your foes? Can you build a civilization that will stand the test of time?",
 
         "declaringWar": "You're disturbing us, prepare for war.",
 		"attacked": "You've fallen into my trap. I'll bury you.",
