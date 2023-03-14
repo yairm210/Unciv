@@ -50,13 +50,12 @@ class NotificationsScroll(
      */
     internal fun update(
         notifications: MutableList<Notification>,
-        maxNotificationsHeight: Float,
-        tileInfoTableHeight: Float
+        maxNotificationsHeight: Float
     ) {
         val previousScrollY = scrollY
 
         updateContent(notifications)
-        updateLayout(maxNotificationsHeight, tileInfoTableHeight)
+        updateLayout(maxNotificationsHeight)
 
         scrollY = previousScrollY
         updateVisualScroll()
@@ -120,27 +119,12 @@ class NotificationsScroll(
         notificationsTable.pack()  // needed to get height - prefHeight is set and close but not quite the same value
     }
 
-    private fun updateLayout(maxNotificationsHeight: Float, tileInfoTableHeight: Float) {
+    private fun updateLayout(maxNotificationsHeight: Float) {
         val newHeight = min(notificationsTable.height, maxNotificationsHeight * inverseScaleFactor)
-
-        sizeScrollingSpacer(tileInfoTableHeight)
 
         pack()
         height = newHeight  // after this, maxY is still incorrect until layout()
         layout()
-    }
-
-    /** Add some empty space that can be scrolled under the TileInfoTable which is covering our lower part */
-    private fun sizeScrollingSpacer(tileInfoTableHeight: Float) {
-        if (endOfTableSpacerCell == null) {
-            endOfTableSpacerCell = notificationsTable.add().pad(5f)
-            notificationsTable.row()
-        }
-        val scaledHeight = tileInfoTableHeight * inverseScaleFactor
-        endOfTableSpacerCell!!.height(scaledHeight)
-        notificationsTable.invalidate() // looks redundant but isn't
-        // (the flags it sets are already on when inspected in debugger, but when omitting it the
-        // ScrollPane will not properly scroll down to the new maxY when TileInfoTable changes to a smaller height)
     }
 
     fun setTopRight (right: Float, top: Float) {
