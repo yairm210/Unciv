@@ -32,7 +32,6 @@ class NotificationsScroll(
     private var notificationsHash: Int = 0
 
     private var notificationsTable = Table()
-    private var endOfTableSpacerCell: Cell<*>? = null
 
     private val maxEntryWidth = worldScreen.stage.width * maxWidthOfStage * inverseScaleFactor
 
@@ -68,7 +67,6 @@ class NotificationsScroll(
         notificationsHash = newHash
 
         notificationsTable.clearChildren()
-        endOfTableSpacerCell = null
 
         val reversedNotifications = notifications.asReversed().toList() // toList to avoid concurrency problems
         for (category in NotificationCategory.values()){
