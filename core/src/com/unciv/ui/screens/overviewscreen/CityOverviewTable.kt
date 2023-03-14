@@ -243,6 +243,9 @@ class CityOverviewTab(
                 val garrisonUnitName = garrisonUnit.displayName()
                 val garrisonUnitIcon = ImageGetter.getConstructionPortrait(garrisonUnit.baseUnit.getIconName(), iconSize * 0.7f)
                 garrisonUnitIcon.addTooltip(garrisonUnitName, 18f, tipAlign = Align.topLeft)
+                garrisonUnitIcon.onClick {
+                    overviewScreen.select(EmpireOverviewCategories.Units, UnitOverviewTab.getUnitIdentifier(garrisonUnit) )
+                }
                 cityInfoTableDetails.add(garrisonUnitIcon)
             }
             cityInfoTableDetails.row()
