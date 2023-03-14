@@ -949,7 +949,7 @@ class DiplomacyScreen(
      *  _Caller is responsible to not exceed this **including its own padding**_
      */
     // Note breaking the rule above will squeeze the leftSideScroll to the left - cumulatively.
-    internal fun getTradeColumnsWidth() = (stage.width - leftSideScroll.width - 3f) / 2  // 3 for SplitPane handle
+    internal fun getTradeColumnsWidth() = (stage.width * 0.8f - 3f) / 2  // 3 for SplitPane handle
 
     override fun resize(width: Int, height: Int) {
         super.resize(width, height)

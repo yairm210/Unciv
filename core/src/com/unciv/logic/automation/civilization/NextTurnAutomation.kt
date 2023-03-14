@@ -653,7 +653,7 @@ object NextTurnAutomation {
         }) {
 
             val relationshipLevel = civInfo.getDiplomacyManager(otherCiv).relationshipLevel()
-            if (relationshipLevel <= RelationshipLevel.Enemy)
+            if (relationshipLevel <= RelationshipLevel.Enemy || otherCiv.tradeRequests.any { it.requestingCiv == civInfo.civName })
                 continue
 
             val trades = potentialLuxuryTrades(civInfo, otherCiv)
