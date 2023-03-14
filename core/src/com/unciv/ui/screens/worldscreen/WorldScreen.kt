@@ -382,6 +382,8 @@ class WorldScreen(
         if(uiEnabled){
             displayTutorialsOnUpdate()
 
+            updateSelectedCiv()
+
             if (fogOfWar) minimapWrapper.update(selectedCiv)
             else minimapWrapper.update(viewingCiv)
 
@@ -390,8 +392,6 @@ class WorldScreen(
             bottomTileInfoTable.x = stage.width - bottomTileInfoTable.width
             bottomTileInfoTable.y = if (game.settings.showMinimap) minimapWrapper.height else 0f
             battleTable.update()
-
-            updateSelectedCiv()
 
             displayTutorialTaskOnUpdate()
 
@@ -564,7 +564,7 @@ class WorldScreen(
         when {
             bottomUnitTable.selectedUnit != null -> selectedCiv = bottomUnitTable.selectedUnit!!.civ
             bottomUnitTable.selectedCity != null -> selectedCiv = bottomUnitTable.selectedCity!!.civ
-            else -> viewingCiv
+            else -> selectedCiv = viewingCiv
         }
     }
 
