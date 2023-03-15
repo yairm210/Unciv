@@ -3,7 +3,6 @@ package com.unciv.ui.screens.overviewscreen
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.unciv.logic.GameInfo
-import java.util.Comparator
 
 
 /**
@@ -14,8 +13,10 @@ import java.util.Comparator
  * - [headerTip] and [getHeaderIcon] define how the header row looks
  * - [getEntryValue] or [getEntryActor] define what the cells display
  * - [getEntryValue] or [getTotalsActor] define what the totals row displays
+ * @param IT The item type - what defines the row
+ * @param ST The parent Screen Type - passed to [getEntryActor] for potential OnClick calls
  */
-interface ISortableGridContentProvider<T> {
+interface ISortableGridContentProvider<IT, ST> {
     /** tooltip for the column header, defaults to enum name, will be auto-translated */
     val headerTip: String
 
@@ -40,19 +41,19 @@ interface ISortableGridContentProvider<T> {
     /** [Comparator] Factory used for sorting.
      * @return positive to sort second lambda argument before first lambda argument
      */
-    fun getComparator(): Comparator<T>
+    fun getComparator(): Comparator<IT>
 
     /** Factory for the header cell [Actor] */
     fun getHeaderIcon(): Actor?
 
     /** A getter for the numeric value to display in a cell */
-    fun getEntryValue(item: T): Int
+    fun getEntryValue(item: IT): Int
 
     /** Factory for entry cell [Actor]
      * - By default displays the (numeric) result of [getEntryValue].
-     * - [overviewScreen] can be used to define `onClick` actions.
+     * - [parentScreen] can be used to define `onClick` actions.
      */
-    fun getEntryActor(item: T, overviewScreen: EmpireOverviewScreen): Actor?
+    fun getEntryActor(item: IT, parentScreen: ST): Actor?
 
     /** Factory for totals cell [Actor]
      * - By default displays the sum over [getEntryValue].
@@ -61,5 +62,6 @@ interface ISortableGridContentProvider<T> {
      * - On the other hand, a sum may not be meaningful even if the cells are numbers - to leave
      *   the total empty override to return `null`.
      */
-    fun getTotalsActor(items: Iterable<T>): Actor?
+    fun getTotalsActor(items: Iterable<IT>): Actor?
+
 }
