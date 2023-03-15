@@ -117,10 +117,12 @@ abstract class BaseScreen : Screen {
 
         lateinit var skin: Skin
         lateinit var skinStrings: SkinStrings
+
         fun setSkin() {
             Fonts.resetFont()
             skinStrings = SkinStrings()
             skin = Skin().apply {
+                add("default-clear", clearColor, Color::class.java)
                 add("Nativefont", Fonts.font, BitmapFont::class.java)
                 add("RoundedEdgeRectangle", skinStrings.getUiBackground("", skinStrings.roundedEdgeRectangleShape), Drawable::class.java)
                 add("Rectangle", ImageGetter.getDrawable(""), Drawable::class.java)
