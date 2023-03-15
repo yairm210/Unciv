@@ -92,6 +92,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Triggerable
 
+??? example  "Reveal up to [amount/'all'] [tileFilter] within a [amount] tile radius"
+	Example: "Reveal up to [3] [Farm] within a [3] tile radius"
+
+	Applicable to: Triggerable
+
 ??? example  "Triggers the following global alert: [comment]"
 	Example: "Triggers the following global alert: [comment]"
 
@@ -121,10 +126,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "This Unit gains [amount] XP"
 	Example: "This Unit gains [3] XP"
 
-	Applicable to: UnitTriggerable, Ruins
+	Applicable to: UnitTriggerable
 
 ??? example  "This Unit upgrades for free"
-	Applicable to: UnitTriggerable, Global
+	Applicable to: UnitTriggerable
+
+??? example  "This Unit upgrades for free including special upgrades"
+	Applicable to: UnitTriggerable
 
 ??? example  "This Unit gains the [promotion] promotion"
 	Example: "This Unit gains the [Shock I] promotion"
@@ -1625,17 +1633,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Ruins
 
-??? example  "Reveal up to [amount/'all'] [tileFilter] within a [amount] tile radius"
-	Example: "Reveal up to [3] [Farm] within a [3] tile radius"
-
-	Applicable to: Ruins
-
 ??? example  "From a randomly chosen tile [amount] tiles away from the ruins, reveal tiles up to [amount] tiles away with [amount]% chance"
 	Example: "From a randomly chosen tile [3] tiles away from the ruins, reveal tiles up to [3] tiles away with [3]% chance"
 
-	Applicable to: Ruins
-
-??? example  "This Unit upgrades for free including special upgrades"
 	Applicable to: Ruins
 
 ??? example  "Hidden after generating a Great Prophet"

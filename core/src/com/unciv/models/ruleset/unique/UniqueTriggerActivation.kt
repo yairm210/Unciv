@@ -58,6 +58,11 @@ object UniqueTriggerActivation {
                         || unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger())
                     return false
 
+                val limit = unit.getMatchingUniques(UniqueType.MaxNumberBuildable)
+                    .map { it.params[0].toInt() }.minOrNull()
+                if (limit!=null && limit <= civInfo.units.getCivUnits().count { it.name==unitName })
+                    return false
+
                 val placedUnit = civInfo.units.addUnit(unitName, chosenCity) ?: return false
 
                 val notificationText = getNotificationText(notification, triggerNotificationText,
@@ -77,6 +82,15 @@ object UniqueTriggerActivation {
                 val unit = ruleSet.units[unitName]
                 if (chosenCity == null || unit == null || (unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger()))
                     return false
+
+                val limit = unit.getMatchingUniques(UniqueType.MaxNumberBuildable)
+                    .map { it.params[0].toInt() }.minOrNull()
+                val amountFromTriggerable = unique.params[0].toInt()
+                val actualAmount =
+                        if (limit==null) amountFromTriggerable
+                        else civInfo.units.getCivUnits().count { it.name==unitName } - limit
+
+                if (actualAmount <= 0) return false
 
                 val tilesUnitsWerePlacedOn: MutableList<Vector2> = mutableListOf()
                 for (i in 1..unique.params[0].toInt()) {
