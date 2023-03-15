@@ -1,3 +1,19 @@
+## 4.5.8
+
+Resolved translation errors at 
+
+4.5.7-patch1
+
+By SomeTroglodyte:
+- Key bindings Step 3 - Better UI 
+- Fix SelectBox ScrollPane being transparent 
+
+By Gualdimar:
+- World wrap scrolling fix 
+- Notifications scroll pane position fix 
+- Double trades fix + Diplomacy screen layout fix 
+- Minimap hotseat fix 
+
 ## 4.5.7
 
 Add Replay feature in VictoryScreen  - By WhoIsJohannes
