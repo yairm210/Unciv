@@ -22,22 +22,17 @@ import kotlin.math.roundToInt
 
 
 /**
- * This defines all behaviour of the [CityOverviewTab] columns through overridable parts:
- * - [isVisible][CityOverviewTabColumn.isVisible] can hide a column
- * - [align], [fillX], [expandX], [equalizeHeight] control geometry
- * - [getComparator] or [getEntryValue] control sorting
- * - [headerTip] and [getHeaderIcon] define how the header row looks
- * - [getEntryValue] or [getEntryActor] define what the cells display
- * - [getEntryValue] or [getTotalsActor] define what the totals row displays
+ * This defines all behaviour of the [CityOverviewTab] columns through overridable parts
  */
 @Suppress("unused")
-enum class CityOverviewTabColumn {
+enum class CityOverviewTabColumn : ISortableGridContentProvider<City> {
     //region Enum Instances
     CityColumn {
         //override val label = "City"
         override val headerTip = "Name"
         override val align = Align.left
         override val fillX = true
+        override val defaultDescending = false
         override fun getComparator() = Comparator { city2: City, city1: City ->
             collator.compare(city2.name.tr(), city1.name.tr())
         }
@@ -72,6 +67,7 @@ enum class CityOverviewTabColumn {
         override val expandX = true
         override val equalizeHeight = true
         override val headerTip = "Current construction"
+        override val defaultDescending = false
         override fun getComparator() = Comparator { city2: City, city1: City ->
             collator.compare(
                 city2.cityConstructions.currentConstructionFromQueue.tr(),
@@ -111,6 +107,7 @@ enum class CityOverviewTabColumn {
 
     WLTK {
         override val headerTip = "We Love The King Day"
+        override val defaultDescending = false
         override fun getHeaderIcon() =
                 getCircledIcon("OtherIcons/WLTK 2", Color.TAN)
         override fun getEntryValue(city: City) =
@@ -135,6 +132,7 @@ enum class CityOverviewTabColumn {
 
     Garrison {
         override val headerTip = "Garrisoned by unit"
+        override val defaultDescending = false
         override fun getComparator() = Comparator { city2: City, city1: City ->
             collator.compare(
                 city2.getCenterTile().militaryUnit?.name?.tr() ?: "",
@@ -165,37 +163,29 @@ enum class CityOverviewTabColumn {
 
     //region Overridable fields
 
-    /** tooltip for the column header, defaults to enum name, will be auto-translated */
-    open val headerTip get() = name
-    /** [Cell.align] - used on header, entry and total cells */
-    open val align = Align.center
-    /** [Cell.fillX] - used on header, entry and total cells */
-    open val fillX = false
-    /** [Cell.expandX] - used on header, entry and total cells */
-    open val expandX = false
-    /** When overridden `true`, the entry cells of this column will be equalized to their max height */
-    open val equalizeHeight = false
+    override val headerTip get() = name
+    override val align = Align.center
+    override val fillX = false
+    override val expandX = false
+    override val equalizeHeight = false
+    override val defaultDescending = true
 
     //endregion
     //region Overridable methods
 
-    /** @return whether the column should be rendered */
-    open fun isVisible(gameInfo: GameInfo) = true
-
     /** [Comparator] Factory used for sorting.
-     * - Note: determine default ordering here by inverting the result if needed.
-     * - The default will sort by [getEntryValue] descending.
+     * - The default will sort by [getEntryValue] ascending.
      * @return positive to sort second lambda argument before first lambda argument
      */
-    open fun getComparator() = Comparator { city2: City, city1: City ->
-        getEntryValue(city1) - getEntryValue(city2)
+    override fun getComparator() = Comparator { city2: City, city1: City ->
+        getEntryValue(city2) - getEntryValue(city1)
     }
 
     /** Factory for the header cell [Actor]
      * - Must override unless a texture exists for "StatIcons/$name" - e.g. a [Stat] column or [Population].
      * - _Should_ be sized to [CityOverviewTab.iconSize].
      */
-    open fun getHeaderIcon(): Actor? =
+    override fun getHeaderIcon(): Actor? =
             ImageGetter.getStatIcon(name)
 
     /** A getter for the numeric value to display in a cell
@@ -204,15 +194,17 @@ enum class CityOverviewTabColumn {
      * - By default this feeds [getComparator], [getEntryActor] _and_ [getTotalsActor],
      *   so an override may be useful for sorting and/or a total even if you do override [getEntryActor].
      */
-    open fun getEntryValue(city: City): Int =
-            city.cityStats.currentCityStats[stat!!].roundToInt()
+    override fun getEntryValue(item: City): Int =
+            item.cityStats.currentCityStats[stat!!].roundToInt()
 
     /** Factory for entry cell [Actor]
      * - By default displays the (numeric) result of [getEntryValue].
      * - [overviewScreen] can be used to define `onClick` actions.
      */
-    open fun getEntryActor(city: City, overviewScreen: EmpireOverviewScreen): Actor? =
-            getEntryValue(city).toCenteredLabel()
+    override fun getEntryActor(item: City, overviewScreen: EmpireOverviewScreen): Actor? =
+            getEntryValue(item).toCenteredLabel()
+
+    //endregion
 
     /** Factory for totals cell [Actor]
      * - By default displays the sum over [getEntryValue].
@@ -221,10 +213,8 @@ enum class CityOverviewTabColumn {
      * - On the other hand, a sum may not be meaningful even if the cells are numbers - to leave
      *   the total empty override to return `null`.
      */
-    open fun getTotalsActor(cities: Iterable<City>): Actor? =
-            cities.sumOf { getEntryValue(it) }.toCenteredLabel()
-
-    //endregion
+    override fun getTotalsActor(items: Iterable<City>): Actor? =
+            items.sumOf { getEntryValue(it) }.toCenteredLabel()
 
     companion object {
         private val collator = UncivGame.Current.settings.getCollatorFromLocale()

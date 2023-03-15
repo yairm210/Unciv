@@ -64,7 +64,7 @@ class CityOverviewTab(
             persistableData.descending = !persistableData.descending
         } else {
             persistableData.sortedBy = sortBy
-            persistableData.descending = false
+            persistableData.descending = sortBy.defaultDescending
         }
     }
 
