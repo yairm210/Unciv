@@ -91,7 +91,7 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
         for (unique in promotion.uniqueObjects)
             if (unique.conditionalsApply(StateForConditionals(civInfo = unit.civ, unit = unit))
                     && unique.conditionals.none { it.type?.targetTypes?.contains(UniqueTarget.TriggerCondition) == true })
-                UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
+                UniqueTriggerActivation.triggerUnitwideUnique(unique, unit, "due to our [${unit.name}] being promoted")
     }
 
     /** Gets all promotions this unit could currently "buy" with enough [XP]

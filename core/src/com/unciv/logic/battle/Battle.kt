@@ -155,7 +155,7 @@ object Battle {
             for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeatingUnit, stateForConditionals))
                 if (unique.conditionals.any { it.type == UniqueType.TriggerUponDefeatingUnit
                                 && enemy.unit.matchesFilter(it.params[0]) })
-                    UniqueTriggerActivation.triggerUnitwideUnique(unique, ourUnit.unit)
+                    UniqueTriggerActivation.triggerUnitwideUnique(unique, ourUnit.unit, triggerNotificationText = "due to our [${ourUnit.getName()}] defeating a [${enemy.getName()}]")
         }
 
 
@@ -197,7 +197,7 @@ object Battle {
         val stateForConditionals = StateForConditionals(civInfo = ourUnit.getCivInfo(),
             ourCombatant = ourUnit, theirCombatant=enemy, tile = attackedTile)
         for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeat, stateForConditionals))
-            UniqueTriggerActivation.triggerUnitwideUnique(unique, ourUnit.unit)
+            UniqueTriggerActivation.triggerUnitwideUnique(unique, ourUnit.unit, triggerNotificationText = "due to our [${ourUnit.getName()}] being defeated by a [${enemy.getName()}]")
     }
 
     private fun tryEarnFromKilling(civUnit: ICombatant, defeatedUnit: MapUnitCombatant) {
@@ -368,14 +368,14 @@ object Battle {
         val attackerDamageDealt = defenderHealthBefore - defender.getHealth()
 
         if (attacker is MapUnitCombatant)
-            for (unique in attacker.unit.getTriggeredUniques(UniqueType.TriggerUponPromotion))
+            for (unique in attacker.unit.getTriggeredUniques(UniqueType.TriggerUponLosingHealth))
                 if (unique.conditionals.any { it.params[0].toInt() <= defenderDamageDealt })
-                    UniqueTriggerActivation.triggerUnitwideUnique(unique, attacker.unit)
+                    UniqueTriggerActivation.triggerUnitwideUnique(unique, attacker.unit, "due to losing [$defenderDamageDealt] HP")
 
         if (defender is MapUnitCombatant)
-            for (unique in defender.unit.getTriggeredUniques(UniqueType.TriggerUponPromotion))
+            for (unique in defender.unit.getTriggeredUniques(UniqueType.TriggerUponLosingHealth))
                 if (unique.conditionals.any { it.params[0].toInt() <= attackerDamageDealt })
-                    UniqueTriggerActivation.triggerUnitwideUnique(unique, defender.unit)
+                    UniqueTriggerActivation.triggerUnitwideUnique(unique, defender.unit, "due to losing [$attackerDamageDealt] HP")
 
         plunderFromDamage(attacker, defender, attackerDamageDealt)
         return DamageDealt(attackerDamageDealt, defenderDamageDealt)

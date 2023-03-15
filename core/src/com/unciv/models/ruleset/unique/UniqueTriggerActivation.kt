@@ -608,7 +608,8 @@ object UniqueTriggerActivation {
     fun triggerUnitwideUnique(
         unique: Unique,
         unit: MapUnit,
-        notification: String? = null
+        notification: String? = null,
+        triggerNotificationText:String? = null
     ): Boolean {
         when (unique.type) {
             UniqueType.OneTimeUnitHeal -> {
@@ -649,7 +650,7 @@ object UniqueTriggerActivation {
                     unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units, unit.name)
                 return true
             }
-            else -> return triggerCivwideUnique(unique, civInfo = unit.civ, tile=unit.currentTile)
+            else -> return triggerCivwideUnique(unique, civInfo = unit.civ, tile=unit.currentTile, triggerNotificationText = triggerNotificationText)
         }
     }
 }
