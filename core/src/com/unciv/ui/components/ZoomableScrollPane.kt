@@ -80,6 +80,17 @@ open class ZoomableScrollPane(
         onViewportChanged()
     }
 
+    override fun setScrollX(pixels: Float) {
+        var result = pixels
+
+        if (continuousScrollingX) {
+            if (result < 0f) result += maxX
+            else if (result > maxX) result -= maxX
+        }
+
+        super.setScrollX(result)
+    }
+
     override fun scrollY(pixelsY: Float) {
         super.scrollY(pixelsY)
         updateCulling()
@@ -292,15 +303,6 @@ open class ZoomableScrollPane(
             setScrollbarsVisible(true)
             scrollX = restrictX(deltaX)
             scrollY = restrictY(deltaY)
-
-            when {
-                continuousScrollingX && scrollPercentX >= 1 && deltaX < 0 -> {
-                    scrollPercentX = 0f
-                }
-                continuousScrollingX && scrollPercentX <= 0 && deltaX > 0-> {
-                    scrollPercentX = 1f
-                }
-            }
 
             //clamp() call is missing here but it doesn't seem to make any big difference in this case
 
