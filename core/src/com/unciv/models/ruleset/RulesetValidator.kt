@@ -413,11 +413,6 @@ class RulesetValidator(val ruleset: Ruleset) {
             }
         }
 
-        @Suppress("DEPRECATION")
-        if (ruleset.modOptions.maxXPfromBarbarians != 30) {
-            lines.add("maxXPfromBarbarians is moved to the constants object, instead use: \nconstants: {\n    maxXPfromBarbarians: ${ruleset.modOptions.maxXPfromBarbarians},\n}", RulesetErrorSeverity.Warning)
-        }
-
         return lines
     }
 

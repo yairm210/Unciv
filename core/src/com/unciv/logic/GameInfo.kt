@@ -4,7 +4,6 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.UncivGame.Version
 import com.unciv.logic.BackwardCompatibility.convertFortify
-import com.unciv.logic.BackwardCompatibility.convertOldGameSpeed
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
 import com.unciv.logic.BackwardCompatibility.migrateToTileHistory
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
@@ -509,8 +508,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         removeMissingModReferences()
 
-        convertOldGameSpeed()
-
         for (baseUnit in ruleset.units.values)
             baseUnit.ruleset = ruleset
 
@@ -585,10 +582,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
                     cityInfo.demandedResource = ""
 
                 cityInfo.cityStats.update()
-            }
-
-            if (civInfo.hasEverOwnedOriginalCapital == null) {
-                civInfo.hasEverOwnedOriginalCapital = civInfo.cities.any { it.isOriginalCapital }
             }
         }
 
