@@ -1,5 +1,6 @@
 package com.unciv.app
 
+import android.app.Activity
 import android.content.Intent
 import android.graphics.Rect
 import android.net.Uri
@@ -14,7 +15,9 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.utils.concurrency.Concurrency
 
-class AndroidGame : UncivGame() {
+class AndroidGame(private val activity: Activity) : UncivGame() {
+
+    private var lastOrientation = activity.resources.configuration.orientation
 
     fun addScreenObscuredListener() {
         val contentView = (Gdx.graphics as AndroidGraphics).view
@@ -52,6 +55,12 @@ class AndroidGame : UncivGame() {
                     return
                 lastFrame = currentFrame
                 lastVisibleStage = visibleStage
+
+                val currentOrientation = activity.resources.configuration.orientation
+                if (lastOrientation != currentOrientation) {
+                    lastOrientation = currentOrientation
+                    return
+                }
 
                 Concurrency.runOnGLThread {
                     EventBus.send(UncivStage.VisibleAreaChanged(visibleStage))
