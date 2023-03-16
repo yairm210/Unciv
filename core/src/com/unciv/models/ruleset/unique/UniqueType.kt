@@ -44,7 +44,7 @@ enum class UniqueTarget(val inheritsFrom: UniqueTarget? = null) {
     Terrain,
     Improvement,
     Resource(Global),
-    Ruins(Triggerable),
+    Ruins(UnitTriggerable),
 
     // Other
     Speed,
@@ -729,15 +729,15 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     OneTimeGainProphet("Gain enough Faith for [amount]% of a Great Prophet", UniqueTarget.Triggerable),
     // todo: The "up to [All]" used in vanilla json is not nice to read. Split?
     // Or just reword it without the 'up to', so it reads "Reveal [amount/'all'] [tileFilter] tiles within [amount] tiles"
-    OneTimeRevealSpecificMapTiles("Reveal up to [amount/'all'] [tileFilter] within a [amount] tile radius", UniqueTarget.Ruins),
+    OneTimeRevealSpecificMapTiles("Reveal up to [amount/'all'] [tileFilter] within a [amount] tile radius", UniqueTarget.Triggerable),
     OneTimeRevealCrudeMap("From a randomly chosen tile [amount] tiles away from the ruins, reveal tiles up to [amount] tiles away with [amount]% chance", UniqueTarget.Ruins),
     OneTimeGlobalAlert("Triggers the following global alert: [comment]", UniqueTarget.Triggerable), // used in Policy
     OneTimeGlobalSpiesWhenEnteringEra("Every major Civilization gains a spy once a civilization enters this era", UniqueTarget.Era),
 
     OneTimeUnitHeal("Heal this unit by [amount] HP", UniqueTarget.UnitTriggerable),
-    OneTimeUnitGainXP("This Unit gains [amount] XP", UniqueTarget.Ruins, UniqueTarget.UnitTriggerable),
-    OneTimeUnitUpgrade("This Unit upgrades for free", UniqueTarget.Global, UniqueTarget.UnitTriggerable),  // Not used in Vanilla
-    OneTimeUnitSpecialUpgrade("This Unit upgrades for free including special upgrades", UniqueTarget.Ruins),
+    OneTimeUnitGainXP("This Unit gains [amount] XP", UniqueTarget.UnitTriggerable),
+    OneTimeUnitUpgrade("This Unit upgrades for free", UniqueTarget.UnitTriggerable),  // Not used in Vanilla
+    OneTimeUnitSpecialUpgrade("This Unit upgrades for free including special upgrades", UniqueTarget.UnitTriggerable),
     OneTimeUnitGainPromotion("This Unit gains the [promotion] promotion", UniqueTarget.UnitTriggerable),  // Not used in Vanilla
     SkipPromotion("Doing so will consume this opportunity to choose a Promotion", UniqueTarget.Promotion),
 

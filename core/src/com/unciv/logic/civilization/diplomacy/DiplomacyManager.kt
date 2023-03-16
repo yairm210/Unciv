@@ -573,6 +573,14 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                         civInfo.cache.updateCivResources()
                 }
             }
+
+            for (offer in trade.theirOffers.filter { it.duration <= 3 })
+            {
+                if (offer.duration == 3)
+                    civInfo.addNotification("[${offer.name}] from [$otherCivName] will end in [3] turns", NotificationCategory.Trade, otherCivName, NotificationIcon.Trade)
+                else if (offer.duration == 1)
+                    civInfo.addNotification("[${offer.name}] from [$otherCivName] will end next turn", NotificationCategory.Trade, otherCivName, NotificationIcon.Trade)
+            }
         }
     }
 

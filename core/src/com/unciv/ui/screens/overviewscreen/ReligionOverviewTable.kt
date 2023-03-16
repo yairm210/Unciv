@@ -125,10 +125,11 @@ class ReligionOverviewTab(
         }
     }
 
-    override fun select(selection: String) {
+    override fun select(selection: String): Float? {
         persistableData.selectedReligion = selection
         loadReligionButtons()  // so the icon is "highlighted"
         loadReligion(selection)
+        return null
     }
     private fun loadReligion(religionName: String?) {
         if (religionName == null) return

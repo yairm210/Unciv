@@ -65,8 +65,9 @@ data class CompatibilityVersion(
 
 }
 
-data class VictoryData(val winningCiv:String, val victoryType:String, val victoryTurn:Int){
-    constructor(): this("","",0) // for serializer
+data class VictoryData(val winningCiv: String, val victoryType: String, val victoryTurn: Int) {
+    @Suppress("unused")  // used by json serialization
+    constructor(): this("","",0)
 }
 
 class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion {
@@ -419,7 +420,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     }
 
     /** Generate a notification pointing out resources.
-     *  Used by [addTechnology][TechManager.addTechnology] and [ResourcesOverviewTab][com.unciv.ui.overviewscreen.ResourcesOverviewTab]
+     *  Used by [addTechnology][TechManager.addTechnology] and [ResourcesOverviewTab][com.unciv.ui.screens.overviewscreen.ResourcesOverviewTab]
      * @param maxDistance from next City, 0 removes distance limitation.
      * @param showForeign Disables filter to exclude foreign territory.
      * @return `false` if no resources were found and no notification was added.
@@ -546,12 +547,11 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         convertFortify()
 
-        for (civInfo in sequence {
+        for (civInfo in civilizations.asSequence()
             // update city-state resource first since the happiness of major civ depends on it.
             // See issue: https://github.com/yairm210/Unciv/issues/7781
-            yieldAll(civilizations.filter { it.isCityState() })
-            yieldAll(civilizations.filter { !it.isCityState() })
-        }) {
+            .sortedByDescending { it.isCityState() }
+        ) {
             for (unit in civInfo.units.getCivUnits())
                 unit.updateVisibleTiles(false) // this needs to be done after all the units are assigned to their civs and all other transients are set
             if(civInfo.playerType == PlayerType.Human)

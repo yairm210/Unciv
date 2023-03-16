@@ -26,8 +26,10 @@ abstract class EmpireOverviewTab (
         settings.lastOverviewPage = caption
     }
 
-    /** Override if the tab can _select_ something specific */
-    open fun select(selection: String) {}
+    /** Override if the tab can _select_ something specific.
+     *  @return non-null to set that tab's ScrollPane.scrollY
+     */
+    open fun select(selection: String): Float? = null
 
     val gameInfo = viewingPlayer.gameInfo
 
