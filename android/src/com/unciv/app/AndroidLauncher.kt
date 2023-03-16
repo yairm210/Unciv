@@ -44,7 +44,7 @@ open class AndroidLauncher : AndroidApplication() {
         Display.setOrientation(settings.displayOrientation)
         Display.setCutout(settings.androidCutout)
 
-        game = AndroidGame()
+        game = AndroidGame(this)
         initialize(game, config)
 
         game!!.setDeepLinkedGame(intent)
