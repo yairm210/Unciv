@@ -1,3 +1,31 @@
+## 4.5.9
+
+Mod checker tab aligns all mods to the left
+
+translation fix
+
+.
+
+Resolved  - Modding: Units from triggers respect "limited to [amount] per civilization" limits
+
+Resolved  - Added trigger condition notification for several unit triggers
+
+Resolved  - Modding: 'upon being defeated' now applies to destroyed civilians as well
+
+Resolved  - Modding: Ruins now contain unit triggerables, changed some ruin uniques to unit triggerables
+
+By SomeTroglodyte:
+- Harden and improve "Download Mod from Url" parser 
+- Keyboard Bindings small fix : 
+- Show garrison in City overview 
+- Future tech fix 
+
+By Gualdimar:
+- Fixed the positioning of popups after changing the screen orientation on Android 
+- Trade ending notification 
+
+Improved Minimap colors  - By Caballero-Arepa
+
 ## 4.5.8
 
 By Gualdimar:
