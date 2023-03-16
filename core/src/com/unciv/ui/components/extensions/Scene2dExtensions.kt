@@ -552,3 +552,35 @@ fun Group.addToCenter(actor: Actor) {
     addActor(actor)
     actor.center(this)
 }
+
+/**
+ *  These methods deal with a mistake in Gdx.Input.Keys, where DEL is defined as the keycode actually
+ *  produced by the physical Backspace key, while the physical Del key fires the keycode Gdx lists as
+ *  FORWARD_DEL. Neither valueOf("Del") and valueOf("Backspace") work as expected.
+ *
+ *  | Identifier | KeyCode | Physical key | toString() | valueOf(name.TitleCase) | valueOf(toString) |
+ *  | ---- |:----:|:----:|:----:|:----:|:----:|
+ *  | DEL | 67 | Backspace | Delete | -1 | 67 |
+ *  | BACKSPACE | 67 | Backspace | Delete | -1 | 67 |
+ *  | FORWARD_DEL | 112 | Del | Forward Delete | -1 | 112 |
+ *
+ *  This acts as proxy, you replace [Input.Keys] by [GdxKeyCodeFixes] and get sensible [DEL], [toString] and [valueOf].
+ */
+@Suppress("GDX_KEYS_BUG", "MemberVisibilityCanBePrivate")
+object GdxKeyCodeFixes {
+
+    const val DEL = Input.Keys.FORWARD_DEL
+    const val BACKSPACE = Input.Keys.BACKSPACE
+
+    fun toString(keyCode: Int): String = when(keyCode) {
+        DEL -> "Del"
+        BACKSPACE -> "Backspace"
+        else -> Input.Keys.toString(keyCode)
+    }
+
+    fun valueOf(name: String): Int = when (name) {
+        "Del" -> DEL
+        "Backspace" -> BACKSPACE
+        else -> Input.Keys.valueOf(name)
+    }
+}
