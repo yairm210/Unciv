@@ -2,7 +2,10 @@ package com.unciv.ui.screens.overviewscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.Action
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
@@ -28,6 +31,7 @@ import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toPrettyString
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.abs
 
@@ -53,12 +57,23 @@ class UnitOverviewTab(
     }
     override fun deactivated(index: Int, caption: String, pager: TabbedPager) {
         persistableData.scrollY = pager.getPageScrollY(index)
+        removeBlinkAction()
     }
 
     private val supplyTableWidth = (overviewScreen.stage.width * 0.25f).coerceAtLeast(240f)
     private val unitListTable = Table() // could be `this` instead, extra nesting helps readability a little
     private val unitHeaderTable = Table()
     private val fixedContent = Table()
+
+    // used for select()
+    private var blinkAction: Action? = null
+    private var blinkActor: Actor? = null
+    private fun removeBlinkAction() {
+        if (blinkAction == null || blinkActor == null) return
+        blinkActor!!.removeAction(blinkAction)
+        blinkAction = null
+        blinkActor = null
+    }
 
     override fun getFixedContent() = fixedContent
 
@@ -170,6 +185,7 @@ class UnitOverviewTab(
                     UnitGroup(unit, 20f),
                     fontColor = if (unit.due && unit.isIdle()) Color.WHITE else Color.LIGHT_GRAY
                 )
+            button.name = getUnitIdentifier(unit)  // Marker to find a unit in select()
             button.onClick {
                 showWorldScreenAt(unit)
             }
@@ -247,5 +263,28 @@ class UnitOverviewTab(
             row()
         }
         return this
+    }
+
+    companion object {
+        fun getUnitIdentifier(unit: MapUnit) = unit.run { "$name@${getTile().position.toPrettyString()}" }
+    }
+
+    override fun select(selection: String): Float? {
+        val cell = unitListTable.cells.asSequence()
+                .filter { it.actor is IconTextButton && it.actor.name == selection }
+                .firstOrNull() ?: return null
+        val button = cell.actor as IconTextButton
+        val scrollY = (0 until cell.row)
+            .map { unitListTable.getRowHeight(it) }.sum() -
+                (parent.height - unitListTable.getRowHeight(cell.row)) / 2
+
+        removeBlinkAction()
+        blinkAction = Actions.repeat(3, Actions.sequence(
+            Actions.fadeOut(0.17f),
+            Actions.fadeIn(0.17f)
+        ))
+        blinkActor = button
+        button.addAction(blinkAction)
+        return scrollY
     }
 }

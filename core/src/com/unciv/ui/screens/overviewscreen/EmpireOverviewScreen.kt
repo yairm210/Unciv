@@ -73,7 +73,7 @@ class EmpireOverviewScreen(
             )
             if (category.name == page) {
                 tabbedPager.selectPage(index)
-                pageObject.select(selection)
+                select(pageObject, selection)
             }
         }
 
@@ -93,5 +93,15 @@ class EmpireOverviewScreen(
     fun resizePage(tab: EmpireOverviewTab) {
         val category = (pageObjects.entries.find { it.value == tab } ?: return).key
         tabbedPager.replacePage(category.name, tab)
+    }
+
+    fun select(category: EmpireOverviewCategories, selection: String) {
+        tabbedPager.selectPage(category.name)
+        select(pageObjects[category], selection)
+    }
+    private fun select(tab: EmpireOverviewTab?, selection: String) {
+        if (tab == null) return
+        val scrollY = tab.select(selection) ?: return
+        tabbedPager.setPageScrollY(tabbedPager.activePage, scrollY)
     }
 }
