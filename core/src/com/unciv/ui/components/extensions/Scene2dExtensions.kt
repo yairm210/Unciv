@@ -565,22 +565,32 @@ fun Group.addToCenter(actor: Actor) {
  *  | FORWARD_DEL | 112 | Del | Forward Delete | -1 | 112 |
  *
  *  This acts as proxy, you replace [Input.Keys] by [GdxKeyCodeFixes] and get sensible [DEL], [toString] and [valueOf].
+ *  Differences in behaviour: toString will return an empty string for un-mapped keycodes and UNKNOWN
+ *  instead of `null` or "Unknown" respectively,
+ *  valueOf will return UNKNOWN for un-mapped names or "" instead of -1.
  */
 @Suppress("GDX_KEYS_BUG", "MemberVisibilityCanBePrivate")
 object GdxKeyCodeFixes {
 
     const val DEL = Input.Keys.FORWARD_DEL
     const val BACKSPACE = Input.Keys.BACKSPACE
+    const val UNKNOWN = Input.Keys.UNKNOWN
 
     fun toString(keyCode: Int): String = when(keyCode) {
+        UNKNOWN -> ""
         DEL -> "Del"
         BACKSPACE -> "Backspace"
         else -> Input.Keys.toString(keyCode)
+            ?: ""
     }
 
     fun valueOf(name: String): Int = when (name) {
+        "" -> UNKNOWN
         "Del" -> DEL
         "Backspace" -> BACKSPACE
-        else -> Input.Keys.valueOf(name)
+        else -> {
+            val code = Input.Keys.valueOf(name)
+            if (code == -1) UNKNOWN else code
+        }
     }
 }

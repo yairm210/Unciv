@@ -9,6 +9,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.KeyboardBindings
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.keyShortcuts
@@ -32,7 +33,8 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
     private fun getUnitActionButton(unit: MapUnit, unitAction: UnitAction): Button {
         val icon = unitAction.getIcon()
         // If peripheral keyboard not detected, hotkeys will not be displayed
-        val key = if (GUI.keyboardAvailable) unitAction.type.key else KeyCharAndCode.UNKNOWN
+        val binding = unitAction.type.binding
+        val key = if (GUI.keyboardAvailable) KeyboardBindings[binding] else KeyCharAndCode.UNKNOWN
 
         val fontColor = if (unitAction.isCurrentAction) Color.YELLOW else Color.WHITE
         val actionButton = IconTextButton(unitAction.title, icon, fontColor = fontColor)
@@ -57,7 +59,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
                     worldScreen.switchToNextUnit()
                 }
             }
-            actionButton.keyShortcuts.add(key)
+            actionButton.keyShortcuts.add(binding)
         }
 
         return actionButton
