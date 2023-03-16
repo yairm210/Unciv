@@ -238,8 +238,9 @@ private fun addTranslationGeneration(table: Table, optionsPopup: OptionsPopup) {
     generateTranslationsButton.onActivation {
         optionsPopup.tabs.selectPage("Advanced")
         generateTranslationsButton.setText("Working...".tr())
+        val includeMods = !Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)
         Concurrency.run("WriteTranslations") {
-            val result = TranslationFileWriter.writeNewTranslationFiles()
+            val result = TranslationFileWriter.writeNewTranslationFiles(includeMods)
             launchOnGLThread {
                 // notify about completion
                 generateTranslationsButton.setText(result.tr())

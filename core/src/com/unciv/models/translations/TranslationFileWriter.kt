@@ -22,6 +22,8 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.components.KeyboardBinding
+import com.unciv.ui.components.KeysSelectBox
+import com.unciv.utils.Log
 import com.unciv.utils.debug
 import java.io.File
 import java.lang.reflect.Field
@@ -40,30 +42,35 @@ object TranslationFileWriter {
     private const val fastlanePath = "../../fastlane/metadata/android/"
 
     //region Update translation files
-    fun writeNewTranslationFiles(): String {
+    fun writeNewTranslationFiles(includeMods: Boolean): String {
         try {
             val translations = Translations()
             translations.readAllLanguagesTranslation()
 
-            var fastlaneOutput = ""
+            val outputLines = mutableListOf<String>()
+
             // check to make sure we're not running from a jar since these users shouldn't need to
             // regenerate base game translation and fastlane files
             if (TranslationFileWriter.javaClass.`package`.specificationVersion == null) {
                 val percentages = generateTranslationFiles(translations)
                 writeLanguagePercentages(percentages)
-                fastlaneOutput = "\n" + writeTranslatedFastlaneFiles(translations)
+                outputLines += "Translation files are generated successfully.".tr()
+                outputLines += writeTranslatedFastlaneFiles(translations)
             }
 
-            // See #5168 for some background on this
-            for ((modName, modTranslations) in translations.modsWithTranslations) {
-                val modFolder = Gdx.files.local("mods").child(modName)
-                val modPercentages = generateTranslationFiles(modTranslations, modFolder, translations)
-                writeLanguagePercentages(modPercentages, modFolder)  // unused by the game but maybe helpful for the mod developer
+            if (includeMods && translations.modsWithTranslations.isNotEmpty()) {
+                // See #5168 for some background on this
+                for ((modName, modTranslations) in translations.modsWithTranslations) {
+                    val modFolder = Gdx.files.local("mods").child(modName)
+                    val modPercentages = generateTranslationFiles(modTranslations, modFolder, translations)
+                    writeLanguagePercentages(modPercentages, modFolder)  // unused by the game but maybe helpful for the mod developer
+                }
+                outputLines += "Translation files for mods are generated successfully.".tr()
             }
 
-            return "Translation files are generated successfully.".tr() + fastlaneOutput
+            return outputLines.joinToString("\n")
         } catch (ex: Throwable) {
-            ex.printStackTrace()
+            Log.error("writeNewTranslationFiles failed", ex)
             return ex.localizedMessage ?: ex.javaClass.simpleName
         }
     }
@@ -85,6 +92,7 @@ object TranslationFileWriter {
 
         val fileNameToGeneratedStrings = LinkedHashMap<String, MutableSet<String>>()
         val linesToTranslate = mutableListOf<String>()
+        val keyboardTranslationKeys = KeysSelectBox.getAllTranslationKeys()
 
         if (modFolder == null) { // base game
             val templateFile = getFileHandle(null, templateFileLocation) // read the template
@@ -124,6 +132,13 @@ object TranslationFileWriter {
                 linesToTranslate += "${binding.label} = "
             }
 
+            linesToTranslate += "\n\n#################### Lines for keyboard key names #######################\n" +
+                    "## These are optional!\n## One can use the Options \"Keys\" tab to see what needs translation\n" +
+                    "## Hit keys over the capturing widget then see which entry here corresponds\n"
+            for (key in keyboardTranslationKeys) {
+                linesToTranslate += "$key = "
+            }
+
             for (baseRuleset in BaseRuleset.values()) {
                 val generatedStringsFromBaseRuleset =
                         GenerateStringsFromJSONs(Gdx.files.local("jsons/${baseRuleset.fullName}"))
@@ -138,10 +153,10 @@ object TranslationFileWriter {
             fileNameToGeneratedStrings.putAll(GenerateStringsFromJSONs(modFolder.child("jsons")))
         }
 
-        for ((key, value) in fileNameToGeneratedStrings) {
-            if (value.isEmpty()) continue
-            linesToTranslate += "\n#################### Lines from $key ####################\n"
-            linesToTranslate.addAll(value)
+        for ((fileName, lines) in fileNameToGeneratedStrings) {
+            if (lines.isEmpty()) continue
+            linesToTranslate += "\n#################### Lines from $fileName ####################\n"
+            linesToTranslate.addAll(lines)
         }
         fileNameToGeneratedStrings.clear()  // No longer needed
 
@@ -177,19 +192,21 @@ object TranslationFileWriter {
                 if (existingTranslationKeys.contains(hashMapKey)) continue // don't add it twice
                 existingTranslationKeys.add(hashMapKey)
 
-                // count translatable lines only once
-                if (languageIndex == 0) countOfTranslatableLines++
+                val isRequired = !keyboardTranslationKeys.contains(translationKey)
+
+                // count translatable lines only once - and don't let untranslated keyboard key names mar the percentage
+                if (languageIndex == 0 && isRequired) countOfTranslatableLines++
 
                 val existingTranslation = translations[hashMapKey]
                 var translationValue = if (existingTranslation != null && language in existingTranslation) {
-                    translationsOfThisLanguage++
+                    if (isRequired) translationsOfThisLanguage++
                     existingTranslation[language]!!
                 } else if (baseTranslations?.get(hashMapKey)?.containsKey(language) == true) {
                     // String is used in the mod but also exists in base - ignore
                     continue
                 } else {
                     // String is not translated either here or in base
-                    stringBuilder.appendLine(" # Requires translation!")
+                    if (isRequired) stringBuilder.appendLine(" # Requires translation!")
                     ""
                 }
 

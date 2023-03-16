@@ -84,7 +84,10 @@ class KeysSelectBox(
         }
 
         private fun getTranslationKey(keyName: String): String {
+            // Need to take make sure these don't match Translations.squareBraceRegex or Translations.pointyBraceRegex
+            // OK because Input.Keys.toString will only return those braces as single characters, they're not used for other key names
             val noSpaces = keyName.replace(' ','-')
+            // quote the last character if it isn't a letter or digit - only because it looks nicer for translators
             if (noSpaces.last().isLetterOrDigit()) return "Key-$noSpaces"
             return "Key-${noSpaces.dropLast(1)}\"${noSpaces.last()}\""
         }
