@@ -68,7 +68,8 @@ enum class KeyboardBinding(
     ;
 
     enum class Category {
-        None, WorldScreen, UnitActions, Popups
+        None, WorldScreen, UnitActions, Popups;
+        val label = unCamelCase(name)
     }
 
     val label: String
