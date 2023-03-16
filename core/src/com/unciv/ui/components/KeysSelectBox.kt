@@ -5,7 +5,9 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
+import com.badlogic.gdx.utils.Align
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.extensions.GdxKeyCodeFixes
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.badlogic.gdx.utils.Array as GdxArray
 
@@ -44,7 +46,7 @@ class KeysSelectBox(
         // but it's private and only used for valueOf() - So we do the same here...
         private val keyCodeMap = LinkedHashMap<String, Int>(200).apply {
             for (code in 0..Input.Keys.MAX_KEYCODE) {
-                val name = Input.Keys.toString(code) ?: continue
+                val name = GdxKeyCodeFixes.toString(code) ?: continue
                 put(name, code)
             }
         }
@@ -108,6 +110,8 @@ class KeysSelectBox(
         setSelected(default)
 
         maxListCount = 12  // or else the dropdown will fill as much vertical space as it can, including upwards
+        list.alignment = Align.center  // default left is ugly, especially when a Mod Skin removes padding
+        setAlignment(Align.center)
 
         addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {

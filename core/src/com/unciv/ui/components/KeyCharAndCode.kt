@@ -3,6 +3,7 @@ package com.unciv.ui.components
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
+import com.unciv.ui.components.extensions.GdxKeyCodeFixes
 
 
 /*
@@ -30,15 +31,10 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
     /** express keys that only have a keyCode like F1 */
     constructor(code: Int): this(Char.MIN_VALUE, code)
 
+    //** debug helper, but also used for tooltips */
     override fun toString(): String {
-        // debug helper, but also used for tooltips
-        fun fixedKeysToString(code: Int) = when (code) {
-            Input.Keys.BACKSPACE -> "Backspace"  // Gdx displaying this as "Delete" is Bullshit!
-            Input.Keys.FORWARD_DEL -> "Del"      // Likewise
-            else -> Input.Keys.toString(code)
-        }
         return when {
-            char == Char.MIN_VALUE -> fixedKeysToString(code)
+            char == Char.MIN_VALUE -> GdxKeyCodeFixes.toString(code)
             this == ESC -> "ESC"
             char < ' ' -> "Ctrl-" + (char.toCode() + 64).makeChar()
             else -> "\"$char\""
@@ -56,7 +52,7 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
         /** Automatically assigned for [RETURN] */
         val NUMPAD_ENTER = KeyCharAndCode(Input.Keys.NUMPAD_ENTER)
         val SPACE = KeyCharAndCode(Input.Keys.SPACE)
-        val DEL = KeyCharAndCode(Input.Keys.FORWARD_DEL)        // Gdx "DEL" is just plain wrong!
+        val DEL = KeyCharAndCode(GdxKeyCodeFixes.DEL)
         val TAB = KeyCharAndCode(Input.Keys.TAB)
         /** Guaranteed to be ignored by [KeyShortcutDispatcher] and never to be generated for an actual event, used as fallback to ensure no action is taken */
         val UNKNOWN = KeyCharAndCode(Input.Keys.UNKNOWN)
@@ -69,7 +65,7 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
 
         /** mini-factory for control codes from keyCodes */
         fun ctrlFromCode(keyCode: Int): KeyCharAndCode {
-            val name = Input.Keys.toString(keyCode)
+            val name = GdxKeyCodeFixes.toString(keyCode)
             if (name.length != 1 || !name[0].isLetter()) return KeyCharAndCode(Char.MIN_VALUE, keyCode)
             return ctrl(name[0])
         }
@@ -79,7 +75,7 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
 
         /** factory maps a Char to a keyCode if possible, returns a Char-based instance otherwise */
         fun mapChar(char: Char): KeyCharAndCode {
-            val code = Input.Keys.valueOf(char.uppercaseChar().toString())
+            val code = GdxKeyCodeFixes.valueOf(char.uppercaseChar().toString())
             return if (code == -1) KeyCharAndCode(char,0) else KeyCharAndCode(Char.MIN_VALUE, code)
         }
 
@@ -88,10 +84,10 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
                 text.length == 3 && text[0] == '"' && text[2] == '"' -> KeyCharAndCode(text[1])
                 text.length == 6 && text.startsWith("Ctrl-") -> ctrl(text[5])
                 text == "ESC" -> ESC
-                text == "Backspace" -> KeyCharAndCode(Input.Keys.BACKSPACE)
-                text == "Del" -> DEL
-                Input.Keys.valueOf(text) != -1 -> KeyCharAndCode(Input.Keys.valueOf(text))
-                else -> UNKNOWN
+                else -> {
+                    val code = GdxKeyCodeFixes.valueOf(text)
+                    if (code == -1) UNKNOWN else KeyCharAndCode(code)
+                }
             }
     }
 
