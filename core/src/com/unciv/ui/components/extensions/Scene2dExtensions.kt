@@ -99,7 +99,7 @@ fun Color.brighten(t: Float): Color = Color(this).lerp(Color.WHITE, t)
  */
 class ActorKeyShortcutDispatcher internal constructor(val actor: Actor): KeyShortcutDispatcher() {
     fun add(shortcut: KeyShortcut?) = add(shortcut) { actor.activate() }
-    fun add(binding: KeyboardBinding) = add(binding) { actor.activate() }
+    fun add(binding: KeyboardBinding, priority: Int = 1) = add(binding, priority) { actor.activate() }
     fun add(key: KeyCharAndCode?) = add(key) { actor.activate() }
     fun add(char: Char?) = add(char) { actor.activate() }
     fun add(keyCode: Int?) = add(keyCode) { actor.activate() }
