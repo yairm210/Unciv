@@ -400,8 +400,8 @@ class ModManagementScreen(
         val downloadButton = "Download mod from URL".toTextButton()
         downloadButton.onClick {
             val popup = Popup(this)
-            popup.addGoodSizedLabel("Please enter the mod repository -or- archive zip url:").row()
-            val textField = UncivTextField.create("")
+            popup.addGoodSizedLabel("Please enter the mod repository -or- archive zip -or- branch url:").row()
+            val textField = UncivTextField.create("").apply { maxLength = 666 }
             popup.add(textField).width(stage.width / 2).row()
             val pasteLinkButton = "Paste from clipboard".toTextButton()
             pasteLinkButton.onClick {
@@ -412,7 +412,12 @@ class ModManagementScreen(
             actualDownloadButton.onClick {
                 actualDownloadButton.setText("Downloading...".tr())
                 actualDownloadButton.disable()
-                downloadMod(Github.Repo().parseUrl(textField.text)) { popup.close() }
+                val repo = Github.Repo().parseUrl(textField.text)
+                if (repo == null) {
+                    ToastPopup("Invalid link!", this@ModManagementScreen)
+                    popup.close()  // Re-enabling button would be nice, but Toast doesn't work over other Popups
+                } else
+                    downloadMod(repo) { popup.close() }
             }
             popup.add(actualDownloadButton).row()
             popup.addCloseButton()
