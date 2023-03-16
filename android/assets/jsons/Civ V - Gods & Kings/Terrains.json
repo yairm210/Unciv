@@ -6,14 +6,14 @@
 		"food": 1,
 		"gold": 1,
 		"movementCost": 1,
-		"RGB": [45,108,145]
+		"RGB": [43, 87, 151]
 	},
 	{
 		"name": "Coast",
 		"type": "Water",
 		"food": 1,
 		"movementCost": 1,
-		"RGB": [107,167,193],
+		"RGB": [70, 138, 216], //Darker87, 139, 199  Lighter59, 137, 227
 		"uniques": ["[+2] to Fertility for Map Generation",
             "Considered [Desirable] when determining start locations <on water maps>",
             "Every [60] tiles with this terrain will receive a major deposit of a strategic resource."]
@@ -23,7 +23,7 @@
 		"type": "Land",
 		"food": 2,
 		"movementCost": 1,
-        "RGB": [97,171,58],
+        "RGB": [0, 163, 0],
         "uniques": ["Occurs at temperature between [-0.4] and [0.1] and humidity between [0.2] and [0.4]",
             "Occurs at temperature between [0.1] and [0.2] and humidity between [0.3] and [0.4]",
             "Occurs at temperature between [-0.5] and [0.5] and humidity between [0.6] and [0.8]",
@@ -49,7 +49,7 @@
 		"food": 1,
 		"production": 1,
 		"movementCost": 1,
-		"RGB": [168,185,102],
+		"RGB": [153, 180, 51],
 		"uniques": ["Occurs at temperature between [-0.4] and [-0.1] and humidity between [0] and [0.2]",
             "Occurs at temperature between [-0.4] and [0.4] and humidity between [0.4] and [0.6]",
             "Occurs at temperature between [0.4] and [0.5] and humidity between [0.5] and [0.6]",
@@ -76,7 +76,7 @@
 		"type": "Land",
 		"food": 1,
 		"movementCost": 1,
-		"RGB": [189,204,191],
+		"RGB": [30, 113, 69],
 		"uniques": ["Occurs at temperature between [-0.9] and [-0.6] and humidity between [0.8] and [1]",
             "Occurs at temperature between [-0.8] and [-0.5] and humidity between [0.6] and [0.8]",
             "Occurs at temperature between [-0.7] and [-0.4] and humidity between [0.4] and [0.6]",
@@ -93,7 +93,7 @@
 		"name": "Desert",
 		"type": "Land",
 		"movementCost": 1,
-		"RGB": [ 230, 230, 113],
+		"RGB": [230, 172, 0],
 		"uniques": ["Occurs at temperature between [-0.1] and [0.9] and humidity between [0] and [0.2]",
             "Occurs at temperature between [0.1] and [0.8] and humidity between [0.2] and [0.3]",
             "Occurs at temperature between [0.2] and [0.7] and humidity between [0.3] and [0.4]",
@@ -110,7 +110,7 @@
 		"type": "Water",
 		"food": 2,
 		"gold": 1,
-		"RGB": [ 123, 202, 226],
+		"RGB": [0, 171, 169],
 		"uniques": ["Fresh water",
 					"Considered [Food] when determining start locations",
 					"Considered [Desirable] when determining start locations"]
@@ -120,7 +120,7 @@
 		"type": "Land",
 		"impassable": true,
 		"defenceBonus": 0.25,
-		"RGB": [120, 120, 120],
+		"RGB": [102, 102, 102],
 		"uniques": ["Rough terrain",
             "Has an elevation of [2] for visibility calculations",
             "Occurs in chains at high elevations",
@@ -132,7 +132,7 @@
 		"name": "Snow",
 		"type": "Land",
 		"movementCost": 1,
-		"RGB": [231, 242, 249],
+		"RGB": [230, 238, 255], //Darker229, 229, 255
 		"uniques": [
             "Occurs at temperature between [-1] and [-0.9] and humidity between [0] and [1]",
             "Occurs at temperature between [-0.9] and [-0.8] and humidity between [0] and [0.8]",
