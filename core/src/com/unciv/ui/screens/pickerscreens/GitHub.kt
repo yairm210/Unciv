@@ -323,36 +323,50 @@ object Github {
         //var has_wiki = false              // a wiki could mean proper documentation for the mod?
 
         /**
-         * Initialize `this` with an url, extracting all possible fields from it.
+         * Initialize `this` with an url, extracting all possible fields from it
+         * (html_url, author, repoName, branchName).
          *
-         * Allows basic repo url or complete 'zip' url from github's code->download zip menu
+         * Allow url formats:
+         * * Basic repo url:
+         *   https://github.com/author/repoName
+         * * or complete 'zip' url from github's code->download zip menu:
+         *   https://github.com/author/repoName/archive/refs/heads/branchName.zip
+         * * or the branch url same as one navigates to on github through the "branches" menu:
+         *   https://github.com/author/repoName/tree/branchName
          *
-         * @return `this` to allow chaining
+         * In the case of the basic repo url, an API query is sent to determine the default branch.
+         * Other url forms will not go online.
+         *
+         * @return `this` to allow chaining, `null` for invalid links or any other failures
          */
-        fun parseUrl(url: String): Repo {
-            // Allow url formats
-            //  https://github.com/author/repoName
-            // or
-            //  https://github.com/author/repoName/archive/refs/heads/branchName.zip
-            // and extract author, repoName, branchName
+        fun parseUrl(url: String): Repo? {
+            fun processMatch(matchResult: MatchResult): Repo {
+                html_url = matchResult.groups[1]!!.value
+                owner.login = matchResult.groups[2]!!.value
+                name = matchResult.groups[3]!!.value
+                default_branch = matchResult.groups[4]!!.value
+                return this
+            }
 
             html_url = url
             default_branch = "master"
             val matchZip = Regex("""^(.*/(.*)/(.*))/archive/(?:.*/)?([^.]+).zip$""").matchEntire(url)
-            if (matchZip != null && matchZip.groups.size > 3) {
-                html_url = matchZip.groups[1]!!.value
-                owner.login = matchZip.groups[2]!!.value
-                name = matchZip.groups[3]!!.value
-                default_branch = matchZip.groups[4]!!.value
-            } else {
-                val matchRepo = Regex("""^.*/(.*)/(.*)/?$""").matchEntire(url)
-                if (matchRepo != null && matchRepo.groups.size > 2) {
-                    val repoString = download("https://api.github.com/repos/${matchRepo.groups[1]!!.value}/${matchRepo.groups[2]!!.value}")!!
-                        .bufferedReader().readText()
-                    return json().fromJson(Repo::class.java, repoString)
-                }
+            if (matchZip != null && matchZip.groups.size > 4)
+                return processMatch(matchZip)
+
+            val matchBranch = Regex("""^(.*/(.*)/(.*))/tree/([^/]+)$""").matchEntire(url)
+            if (matchBranch != null && matchBranch.groups.size > 4)
+                return processMatch(matchBranch)
+
+            val matchRepo = Regex("""^.*//.*/(.+)/(.+)/?$""").matchEntire(url)
+            if (matchRepo != null && matchRepo.groups.size > 2) {
+                // Query API if we got the first URL format to get the correct default branch
+                val response = download("https://api.github.com/repos/${matchRepo.groups[1]!!.value}/${matchRepo.groups[2]!!.value}")
+                    ?: return null
+                val repoString = response.bufferedReader().readText()
+                return json().fromJson(Repo::class.java, repoString)
             }
-            return this
+            return null
         }
     }
 
