@@ -263,7 +263,7 @@ class CityStateFunctions(val civInfo: Civilization) {
                     }
                 }
             }
-            if (oldAllyName != null) {
+            if (oldAllyName != null && civInfo.isAlive()) {
                 val oldAllyCiv = civInfo.gameInfo.getCivilization(oldAllyName)
                 val text = "We have lost alliance with [${civInfo.civName}]."
                 if (capitalLocation != null) oldAllyCiv.addNotification(text, capitalLocation,
