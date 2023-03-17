@@ -404,6 +404,7 @@
             {"text":"Each binding has a button with an image looking like this:"},
             {"extraImage":"OtherIcons/Keyboard","imageSize":36},
             {"text":"While hovering the mouse over the key button, you can press a desired key directly to assign it."},
+            {"text":"Double-click the image to reset the binding to default."},
             {},
             {"text":"Bindings mapped to their default keys are displayed in gray, those reassigned by you in white."},
             {},

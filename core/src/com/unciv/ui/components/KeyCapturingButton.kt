@@ -4,6 +4,7 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
@@ -89,7 +90,11 @@ class KeyCapturingButton(
         update(if (control) KeyCharAndCode.ctrlFromCode(code) else KeyCharAndCode(code))
         onKeyHit?.invoke(currentField)
     }
+    private fun resetKey() {
+        current = default
+    }
 
+    // Instead of storing a button reference one could use `(event?.listenerActor as? KeyCapturingButton)?.`
     private class ButtonListener(private val myButton: KeyCapturingButton) : ClickListener() {
         private var controlDown = false
 
@@ -120,6 +125,11 @@ class KeyCapturingButton(
             if (keycode == Input.Keys.CONTROL_LEFT || keycode == Input.Keys.CONTROL_RIGHT)
                 controlDown = false
             return true
+        }
+
+        override fun clicked(event: InputEvent?, x: Float, y: Float) {
+            if (tapCount < 2 || event?.target !is Image) return
+            myButton.resetKey()
         }
     }
 }
