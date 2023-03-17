@@ -94,6 +94,9 @@ class KeyCapturingButton(
         current = default
         onKeyHit?.invoke(current)
     }
+    private fun resetKey() {
+        current = default
+    }
 
     // Instead of storing a button reference one could use `(event?.listenerActor as? KeyCapturingButton)?.`
     private class ButtonListener(private val myButton: KeyCapturingButton) : ClickListener() {
@@ -118,6 +121,11 @@ class KeyCapturingButton(
             if (keycode == Input.Keys.CONTROL_LEFT || keycode == Input.Keys.CONTROL_RIGHT) return false
             myButton.handleKey(keycode, controlDown())
             return true
+        }
+
+        override fun clicked(event: InputEvent?, x: Float, y: Float) {
+            if (tapCount < 2 || event?.target !is Image) return
+            myButton.resetKey()
         }
 
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
