@@ -4,13 +4,8 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.InputEvent
-import com.badlogic.gdx.scenes.scene2d.InputListener
-import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -27,8 +22,9 @@ import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.components.KeyboardBinding
 import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.KeyboardBinding
+import com.unciv.ui.components.KeyboardPanningListener
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.isEnabled
@@ -272,67 +268,7 @@ class WorldScreen(
     }
 
     private fun addKeyboardListener() {
-        stage.addListener(
-                object : InputListener() {
-                    private val pressedKeys = mutableSetOf<Int>()
-                    private var infiniteAction: RepeatAction? = null
-                    private val amountToMove = 6 / mapHolder.scaleX
-                    private val ALLOWED_KEYS = setOf(Input.Keys.W, Input.Keys.S, Input.Keys.A, Input.Keys.D,
-                            Input.Keys.UP, Input.Keys.DOWN, Input.Keys.LEFT, Input.Keys.RIGHT)
-
-
-                    override fun keyDown(event: InputEvent, keycode: Int): Boolean {
-                        if (event.target !is TextField) {
-                            if (keycode !in ALLOWED_KEYS) return false
-                            // Without the following Ctrl-S would leave WASD map scrolling stuck
-                            // Might be obsolete with keyboard shortcut refactoring
-                            if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(
-                                        Input.Keys.CONTROL_RIGHT
-                                    )
-                            ) return false
-
-                            pressedKeys.add(keycode)
-                            if (infiniteAction == null) {
-                                // create a copy of the action, because removeAction() will destroy this instance
-                                infiniteAction = Actions.forever(
-                                    Actions.delay(
-                                        0.01f,
-                                        Actions.run { whileKeyPressedLoop() })
-                                )
-                                mapHolder.addAction(infiniteAction)
-                            }
-                        }
-                        return true
-                    }
-
-                    fun whileKeyPressedLoop() {
-                        for (keycode in pressedKeys) {
-                            when (keycode) {
-                                Input.Keys.W, Input.Keys.UP -> mapHolder.scrollY = mapHolder.restrictY(-amountToMove)
-                                Input.Keys.S, Input.Keys.DOWN -> mapHolder.scrollY = mapHolder.restrictY(amountToMove)
-                                Input.Keys.A, Input.Keys.LEFT -> mapHolder.scrollX = mapHolder.restrictX(amountToMove)
-                                Input.Keys.D, Input.Keys.RIGHT -> mapHolder.scrollX = mapHolder.restrictX(-amountToMove)
-                            }
-                        }
-                        mapHolder.updateVisualScroll()
-                    }
-
-                    override fun keyUp(event: InputEvent?, keycode: Int): Boolean {
-                        if (keycode !in ALLOWED_KEYS) return false
-
-                        pressedKeys.remove(keycode)
-                        if (infiniteAction != null && pressedKeys.isEmpty()) {
-                            // stop the loop otherwise it keeps going even after removal
-                            infiniteAction?.finish()
-                            // remove and nil the action
-                            mapHolder.removeAction(infiniteAction)
-                            infiniteAction = null
-                        }
-                        return true
-                    }
-                }
-        )
-
+        stage.addListener(KeyboardPanningListener(mapHolder, allowWASD = true))
     }
 
     private suspend fun loadLatestMultiplayerState(): Unit = coroutineScope {
