@@ -12,6 +12,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.city.CityFlags
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.cityscreen.CityScreen
@@ -21,6 +22,7 @@ import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.pad
+import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
@@ -48,6 +50,7 @@ class CityOverviewTab(
         private const val CITY = "City"
         private const val WLTK = "WLTK"
         private const val CONSTRUCTION = "Construction"
+        private const val GARRISON = "Garrison"
         private val alphabeticColumns = listOf(CITY, CONSTRUCTION, WLTK)
 
         private val citySortIcon = ImageGetter.getUnitIcon("Settler")
@@ -61,6 +64,10 @@ class CityOverviewTab(
             .apply { color = Color.BLACK }
             .surroundWithCircle(iconSize, color = Color.LIGHT_GRAY)
             .apply { addTooltip("Current construction", 18f, tipAlign = Align.center) }
+        private val garrisonSortIcon = ImageGetter.getImage("OtherIcons/Shield")
+            .apply { color = Color.WHITE }
+            .surroundWithCircle(iconSize, color = Color.BLACK)
+            .apply { addTooltip(GARRISON, 18f, tipAlign = Align.center) }
 
         // Readability helpers
         private fun String.isStat() = Stat.isStat(this)
@@ -74,8 +81,19 @@ class CityOverviewTab(
             this.toLabel().apply { setAlignment(Align.center) }
     }
 
-    private val columnsNames = arrayListOf("Population", "Food", "Gold", "Science", "Production", "Culture", "Happiness")
-            .apply { if (gameInfo.isReligionEnabled()) add("Faith") }
+    private val columnsNames = arrayListOf(
+        "Population",
+        "Food",
+        "Gold",
+        "Science",
+        "Production",
+        "Culture",
+        "Happiness"
+    )
+        .apply {
+            if (gameInfo.isReligionEnabled()) add("Faith")
+            add(GARRISON)
+        }
 
     private val cityInfoTableHeader = Table(skin)
     private val cityInfoTableDetails = Table(skin)
@@ -120,6 +138,19 @@ class CityOverviewTab(
                 city1.cityConstructions.currentConstructionFromQueue.tr())
             "Population" -> city2.population.population - city1.population.population
             WLTK -> city2.isWeLoveTheKingDayActive().compareTo(city1.isWeLoveTheKingDayActive())
+            GARRISON -> with(city1.getGarrison()) {
+                val a = city1.getGarrison()
+                val b = city2.getGarrison()
+                if (a == null && b == null) {
+                    collator.compare(city2.name.tr(), city1.name.tr())
+                } else if (a == null) {
+                    1
+                } else if (b == null) {
+                    -1
+                } else {
+                    a.toString().compareTo(b.toString())
+                }
+            }
             else -> {
                 val stat = Stat.safeValueOf(persistableData.sortedBy)!!
                 city2.getStat(stat) - city1.getStat(stat)
@@ -169,7 +200,11 @@ class CityOverviewTab(
         cityInfoTableHeader.add()  // construction _icon_ column
         addSortIcon(CONSTRUCTION, constructionSortIcon).left()
         for (name in columnsNames) {
-            addSortIcon(name)
+            if (name == GARRISON) {
+                addSortIcon(GARRISON, garrisonSortIcon)
+            } else {
+                addSortIcon(name)
+            }
         }
         addSortIcon(WLTK, wltkSortIcon)
         cityInfoTableHeader.pack()
@@ -211,6 +246,17 @@ class CityOverviewTab(
                 cityInfoTableDetails.add(city.getStat(stat).toCenteredLabel())
             }
 
+            val garrison = city.getGarrison()
+            if (garrison != null) {
+                val garrisonIcon = ImageGetter.getUnitIcon(garrison.name, color = Color.BLACK)
+                    .apply { setSize(iconSize * 0.5f) }
+                    .surroundWithCircle(iconSize * 0.7f, color = Color.WHITE)
+                garrisonIcon.addTooltip(garrison.displayName().tr(), tipAlign = Align.topLeft)
+                cityInfoTableDetails.add(garrisonIcon)
+            } else {
+                cityInfoTableDetails.add()
+            }
+
             when {
                 city.isWeLoveTheKingDayActive() -> {
                     val image = ImageGetter.getImage("OtherIcons/WLTK 1").surroundWithCircle(
@@ -247,7 +293,13 @@ class CityOverviewTab(
             if (stat == Stat.Food || stat == Stat.Production) cityInfoTableTotal.add() // an intended empty space
             else cityInfoTableTotal.add(viewingPlayer.cities.sumOf { it.getStat(stat) }.toCenteredLabel())
         }
+        cityInfoTableTotal.add(viewingPlayer.cities.count { it.getGarrison() != null }.toCenteredLabel())
         cityInfoTableTotal.add(viewingPlayer.cities.count { it.isWeLoveTheKingDayActive() }.toCenteredLabel())
         cityInfoTableTotal.pack()
+    }
+
+    private fun City.getGarrison(): MapUnit? {
+        return this.getCenterTile().getUnits()
+            .firstOrNull() { it.civ == this.civ && it.canGarrison() }
     }
 }
