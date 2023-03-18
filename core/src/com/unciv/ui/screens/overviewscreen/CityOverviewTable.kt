@@ -126,8 +126,8 @@ class CityOverviewTab(
             "Population" -> city2.population.population - city1.population.population
             WLTK -> city2.isWeLoveTheKingDayActive().compareTo(city1.isWeLoveTheKingDayActive())
             GARRISON -> collator.compare(
-                    city2.getCenterTile().militaryUnit?.name?.tr() ?: "",
-                    city1.getCenterTile().militaryUnit?.name?.tr() ?: "",
+                    city2.getGarrison()?.name?.tr() ?: "",
+                    city1.getGarrison()?.name?.tr() ?: "",
                 )
             else -> {
                 val stat = Stat.safeValueOf(persistableData.sortedBy)!!
@@ -236,7 +236,7 @@ class CityOverviewTab(
                 else -> cityInfoTableDetails.add()
             }
 
-            val garrisonUnit = city.getCenterTile().militaryUnit
+            val garrisonUnit = city.getGarrison()
             if (garrisonUnit == null) {
                 cityInfoTableDetails.add()
             } else {
@@ -270,7 +270,7 @@ class CityOverviewTab(
             else cityInfoTableTotal.add(viewingPlayer.cities.sumOf { it.getStat(stat) }.toCenteredLabel())
         }
         cityInfoTableTotal.add(viewingPlayer.cities.count { it.isWeLoveTheKingDayActive() }.toCenteredLabel())
-        cityInfoTableTotal.add(viewingPlayer.cities.count { it.getCenterTile().militaryUnit != null }.toCenteredLabel())
+        cityInfoTableTotal.add(viewingPlayer.cities.count { it.isGarrisoned() }.toCenteredLabel())
         cityInfoTableTotal.pack()
     }
 }
