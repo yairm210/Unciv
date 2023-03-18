@@ -94,6 +94,16 @@ class Api(val baseUrl: String) {
     val friend = FriendApi(client, authCookieHelper, logger)
 
     /**
+     * API for game management
+     */
+    val games = GameApi(client, authCookieHelper, logger)
+
+    /**
+     * API for invite management
+     */
+    val invites = InviteApi(client, authCookieHelper, logger)
+
+    /**
      * API for lobby management
      */
     val lobby = LobbyApi(client, authCookieHelper, logger)

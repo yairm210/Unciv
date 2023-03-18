@@ -404,6 +404,146 @@ class FriendApi(private val client: HttpClient, private val authCookieHelper: Au
 }
 
 /**
+ * API wrapper for game handling (do not use directly; use the Api class instead)
+ */
+class GameApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper, private val logger: Logger) {
+
+    /**
+     * Retrieves an overview of all open games of a player
+     *
+     * The response does not contain any full game state, but rather a
+     * shortened game state identified by its ID and state identifier.
+     * If the state ([GameOverviewResponse.gameDataID]) of a known game
+     * differs from the last known identifier, the server has a newer
+     * state of the game. The [GameOverviewResponse.lastActivity] field
+     * is a convenience attribute and shouldn't be used for update checks.
+     */
+    suspend fun list(): List<GameOverviewResponse> {
+        val response = client.get("/api/v2/games") {
+            authCookieHelper.add(this)
+        }
+        if (response.status.isSuccess()) {
+            return response.body()
+        } else {
+            val err: ApiErrorResponse = response.body()
+            throw err
+        }
+    }
+
+    /**
+     * Retrieves a single game which is currently open (actively played)
+     *
+     * If the game has been completed or aborted, it will
+     * respond with a GameNotFound in [ApiErrorResponse].
+     */
+    suspend fun get(gameID: Long): GameStateResponse {
+        val response = client.get("/api/v2/games/$gameID") {
+            authCookieHelper.add(this)
+        }
+        if (response.status.isSuccess()) {
+            return response.body()
+        } else {
+            val err: ApiErrorResponse = response.body()
+            throw err
+        }
+    }
+
+    /**
+     * Upload a new game state for an existing game
+     *
+     * If the game can't be updated (maybe it has been already completed
+     * or aborted), it will respond with a GameNotFound in [ApiErrorResponse].
+     * Use the [gameID] retrieved from the server in a previous API call.
+     *
+     * On success, returns the new game data ID that can be used to verify
+     * that the client and server use the same state (prevents re-querying).
+     */
+    suspend fun upload(gameID: Long, gameData: String): Long {
+        return upload(GameUploadRequest(gameData, gameID))
+    }
+
+    /**
+     * Upload a new game state for an existing game
+     *
+     * If the game can't be updated (maybe it has been already completed
+     * or aborted), it will respond with a GameNotFound in [ApiErrorResponse].
+     *
+     * On success, returns the new game data ID that can be used to verify
+     * that the client and server use the same state (prevents re-querying).
+     */
+    suspend fun upload(r: GameUploadRequest): Long {
+        val response = client.put("/api/v2/games") {
+            contentType(ContentType.Application.Json)
+            setBody(r)
+            authCookieHelper.add(this)
+        }
+        if (response.status.isSuccess()) {
+            val responseBody: GameUploadResponse = response.body()
+            logger.info("The game with ID ${r.gameID} has been uploaded, the new data ID is ${responseBody.gameDataID}")
+            return responseBody.gameDataID
+        } else {
+            val err: ApiErrorResponse = response.body()
+            throw err
+        }
+    }
+
+}
+
+/**
+ * API wrapper for invite handling (do not use directly; use the Api class instead)
+ */
+class InviteApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper, private val logger: Logger) {
+
+    /**
+     * Retrieve all invites for the executing user
+     */
+    suspend fun list(): List<GetInvite> {
+        val response = client.get("/api/v2/invites") {
+            authCookieHelper.add(this)
+        }
+        if (response.status.isSuccess()) {
+            val responseBody: GetInvitesResponse = response.body()
+            return responseBody.invites
+        } else {
+            val err: ApiErrorResponse = response.body()
+            throw err
+        }
+    }
+
+    /**
+     * Invite a friend to a lobby
+     *
+     * The executing user must be in the specified open lobby.
+     * The invited friend must not be in a friend request state.
+     */
+    suspend fun new(friend: UUID, lobbyID: Long): Boolean {
+        return new(CreateInviteRequest(friend, lobbyID))
+    }
+
+    /**
+     * Invite a friend to a lobby
+     *
+     * The executing user must be in the specified open lobby.
+     * The invited friend must not be in a friend request state.
+     */
+    suspend fun new(r: CreateInviteRequest): Boolean {
+        val response = client.post("/api/v2/invites") {
+            contentType(ContentType.Application.Json)
+            setBody(r)
+            authCookieHelper.add(this)
+        }
+        if (response.status.isSuccess()) {
+            logger.info("The friend ${r.friend} has been invited to lobby ${r.lobbyID}")
+            return true
+        } else {
+            val err: ApiErrorResponse = response.body()
+            throw err
+        }
+    }
+
+}
+
+/**
  * API wrapper for lobby handling (do not use directly; use the Api class instead)
  */
 class LobbyApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper, private val logger: Logger) {

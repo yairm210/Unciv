@@ -132,6 +132,65 @@ data class FriendRequestResponse(
 )
 
 /**
+ * A shortened game state identified by its ID and state identifier
+ *
+ * If the state ([gameDataID]) of a known game differs from the last known
+ * identifier, the server has a newer state of the game. The [lastActivity]
+ * field is a convenience attribute and shouldn't be used for update checks.
+ */
+@Serializable
+data class GameOverviewResponse(
+    @SerialName("chat_room_id")
+    val chatRoomID: Long,
+    @SerialName("game_data_id")
+    val gameDataID: Long,
+    @SerialName("game_id")
+    val gameID: Long,
+    @SerialName("last_activity")
+    @Serializable(with = InstantSerializer::class)
+    val lastActivity: Instant,
+    @SerialName("last_player")
+    val lastPlayer: AccountResponse,
+    @SerialName("max_players")
+    val maxPlayers: Int,
+    val name: String
+)
+
+/**
+ * A single game state identified by its ID and state identifier; see [gameData]
+ *
+ * If the state ([gameDataID]) of a known game differs from the last known
+ * identifier, the server has a newer state of the game. The [lastActivity]
+ * field is a convenience attribute and shouldn't be used for update checks.
+ */
+@Serializable
+data class GameStateResponse(
+    @SerialName("chat_room_id")
+    val chatRoomID: Long,
+    @SerialName("game_data")
+    val gameData: String,
+    @SerialName("game_data_id")
+    val gameDataID: Long,
+    @SerialName("last_activity")
+    @Serializable(with = InstantSerializer::class)
+    val lastActivity: Instant,
+    @SerialName("last_player")
+    val lastPlayer: AccountResponse,
+    @SerialName("max_players")
+    val maxPlayers: Int,
+    val name: String
+)
+
+/**
+ * The response a user receives after uploading a new game state successfully
+ */
+@Serializable
+data class GameUploadResponse(
+    @SerialName("game_data_id")
+    val gameDataID: Long
+)
+
+/**
  * All chat rooms your user has access to
  */
 @Serializable
@@ -164,6 +223,36 @@ data class GetFriendResponse(
     val friends: List<FriendResponse>,
     @SerialName("friend_requests")
     val friendRequests: List<FriendRequestResponse>
+)
+
+/**
+ * An overview of games a player participates in
+ */
+@Serializable
+data class GetGameOverviewResponse(
+    val games: List<GameOverviewResponse>
+)
+
+/**
+ * A single invite
+ */
+@Serializable
+data class GetInvite(
+    @SerialName("created_at")
+    @Serializable(with = InstantSerializer::class)
+    val createdAt: Instant,
+    val from: AccountResponse,
+    val id: Long,
+    @SerialName("lobby_id")
+    val lobbyID: Long
+)
+
+/**
+ * The invites that an account has received
+ */
+@Serializable
+data class GetInvitesResponse(
+    val invites: List<GetInvite>
 )
 
 /**

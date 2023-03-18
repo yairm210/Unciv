@@ -29,9 +29,20 @@ data class CreateFriendRequest(
 )
 
 /**
+ * The request to invite a friend into a lobby
+ */
+@Serializable
+data class CreateInviteRequest(
+    @Serializable(with = UUIDSerializer::class)
+    val friend: UUID,
+    @SerialName("lobby_id")
+    val lobbyID: Long
+)
+
+/**
  * The parameters to create a lobby
  *
- * The parameter ``max_players`` must be greater or equals 2.
+ * The parameter [maxPlayers] must be greater or equals 2.
  */
 @Serializable
 data class CreateLobbyRequest(
@@ -39,6 +50,19 @@ data class CreateLobbyRequest(
     val password: String?,
     @SerialName("max_players")
     val maxPlayers: Int
+)
+
+/**
+ * The request a user sends to the server to upload a new game state (non-WebSocket API)
+ *
+ * The [gameID] was received by the server in a previous get or create API call.
+ */
+@Serializable
+data class GameUploadRequest(
+    @SerialName("game_data")
+    val gameData: String,
+    @SerialName("game_id")
+    val gameID: Long
 )
 
 /**
@@ -61,7 +85,7 @@ data class LookupAccountUsernameRequest(
 /**
  * The set password request data
  *
- * The parameter ``new_password`` must not be empty.
+ * The parameter [newPassword] must not be empty.
  */
 @Serializable
 data class SetPasswordRequest(
