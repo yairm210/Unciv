@@ -142,10 +142,6 @@ object BackwardCompatibility {
     /** Move max XP from barbarians to new home */
     @Suppress("DEPRECATION")
     fun ModOptions.updateDeprecations() {
-        if (maxXPfromBarbarians != 30) {
-            constants.maxXPfromBarbarians = maxXPfromBarbarians
-            maxXPfromBarbarians = 30
-        }
     }
 
 
@@ -173,14 +169,6 @@ object BackwardCompatibility {
             }
         }
         return false
-    }
-
-    @Suppress("DEPRECATION")
-    fun GameInfo.convertOldGameSpeed() {
-        if (gameParameters.gameSpeed != "" && gameParameters.gameSpeed in ruleset.speeds.keys) {
-            gameParameters.speed = gameParameters.gameSpeed
-            gameParameters.gameSpeed = ""
-        }
     }
 
     fun GameInfo.migrateToTileHistory() {

@@ -15,8 +15,8 @@ import com.unciv.models.stats.Stat
 import com.unciv.ui.components.extensions.filterAndLogic
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import kotlin.math.pow
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
@@ -293,8 +293,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             "non-air" -> !movesLikeAirUnits()
 
             "Nuclear Weapon" -> isNuclearWeapon()
-            // "Great" should be deprecated, replaced by "Great Person".
-            "Great Person", "Great" -> isGreatPerson()
+            "Great Person" -> isGreatPerson()
             "Religious" -> hasUnique(UniqueType.ReligiousUnit)
             else -> {
                 if (getType().matchesFilter(filter)) return true

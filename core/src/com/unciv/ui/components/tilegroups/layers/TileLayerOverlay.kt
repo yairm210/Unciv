@@ -3,10 +3,9 @@ package com.unciv.ui.components.tilegroups.layers
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.tilegroups.TileGroup
+import com.unciv.ui.images.ImageGetter
 
 class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
 
@@ -16,6 +15,7 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
     private val highlight = ImageGetter.getImage(strings().highlight).setHexagonSize() // for blue and red circles/emphasis on the tile
     private val crosshair = ImageGetter.getImage(strings().crosshair).setHexagonSize() // for when a unit is targeted
     private val fog = ImageGetter.getImage(strings().crosshatchHexagon ).setHexagonSize()
+    private val unexplored = ImageGetter.getImage(strings().unexploredTile ).setHexagonSize()
 
     init {
 
@@ -24,6 +24,8 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         fog.isVisible = false
         fog.color = Color.WHITE.cpy().apply { a = 0.2f }
 
+        if (ImageGetter.imageExists(strings().unexploredTile))
+            addActor(unexplored)
         addActor(highlight)
         addActor(fog)
         addActor(crosshair)
@@ -64,13 +66,13 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
     }
 
     override fun doUpdate(viewingCiv: Civilization?) {
-
         val isViewable = viewingCiv == null || isViewable(viewingCiv)
         fog.isVisible = !isViewable && !tileGroup.isForceVisible
 
         if (viewingCiv == null)
             return
 
+        unexplored.isVisible = !viewingCiv.hasExplored(tile())
         if (tile().getShownImprovement(viewingCiv) == Constants.barbarianEncampment
                 && tile().isExplored(viewingCiv))
             showHighlight(Color.RED)

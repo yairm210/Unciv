@@ -27,6 +27,7 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, unitS
     val hexagon: String by lazy { orFallback {tileSetLocation + "Hexagon"} }
     val hexagonList by lazy { listOf(hexagon) }
     val crosshatchHexagon by lazy { orFallback { tileSetLocation + "CrosshatchHexagon" } }
+    val unexploredTile by lazy { orFallback { tileSetLocation + "UnexploredTile" } }
     val crosshair by lazy { orFallback { getString(tileSetLocation, "Crosshair") } }
     val highlight by lazy { orFallback { getString(tileSetLocation, "Highlight") } }
     val roadsMap = RoadStatus.values()

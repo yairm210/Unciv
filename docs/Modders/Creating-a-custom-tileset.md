@@ -100,6 +100,17 @@ The ruleVariants are the most powerful part of the tileset config. With this, yo
 
 An example is given in the code above. For the tile "Grassland+Jungle+Dyes+Trading post" we then use the images "Grassland", "JungleForGrasslandBack", "Dyes+Trading post" and "JungleForGrasslandFront" in that order.
 
+## Fog and unexplored tiles
+
+Unciv distinguishes between "unexplored" tiles, which are tiles the Civ has never seen,
+and "not visible" tiles, which are those that were seen once but now are not.
+
+Not visible tiles are grayed out by design, and on top of that have the `CrosshatchHexagon.png` image applied to them.
+
+Unexplored tiles display the `UnexploredTile.png` image, on top of which `CrosshatchHexagon.png` is applied.
+
+You can set the CrosshatchHexagon to be functionally invisible by replacing it with a 1px by 1px invisible image.
+
 ## Unit images
 
 Unit images can be changed according to civ-specific styles (if a mod specifies a "style" variable for each civilization) and according to the owning civ's current era. Unciv attempts to load the unit images in the following order (where unitName is the unit name given in Units.json, styleName is optionally specified in Nations.json, and eraName is the era name given in Eras.json (including " era")).

@@ -59,9 +59,6 @@ class ModOptions : IHasUniques {
     var modSize = 0
     var topics = mutableListOf<String>()
 
-    @Deprecated("As of 3.18.15")
-    var maxXPfromBarbarians = 30
-
     override var uniques = ArrayList<String>()
 
     // If these two are delegated with "by lazy", the mod download process crashes and burns

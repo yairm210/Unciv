@@ -235,19 +235,6 @@ enum class UniqueParameterType(
             parameterText != "All" && getErrorSeverity(parameterText, ruleset) == null
     },
 
-        /** [UniqueType.PercentProductionConstructions], [UniqueType.PercentProductionConstructionsCities] */
-        @Deprecated("as of 3.17.10 - removed 3.18.5")
-        ConstructionFilter("constructionFilter", "Spaceship Part") {
-            override fun getErrorSeverity(
-                parameterText: String,
-                ruleset: Ruleset
-            ): UniqueType.UniqueComplianceErrorSeverity? {
-                if (BuildingFilter.getErrorSeverity(parameterText, ruleset) == null) return null
-                if (BaseUnitFilter.getErrorSeverity(parameterText, ruleset) == null) return null
-                return UniqueType.UniqueComplianceErrorSeverity.WarningOnly
-            }
-        },
-
     /** Implemented by [PopulationManager.getPopulationFilterAmount][com.unciv.logic.city.CityPopulationManager.getPopulationFilterAmount] */
     PopulationFilter("populationFilter", "Followers of this Religion", null, "Population Filters") {
         private val knownValues = setOf("Population", "Specialists", "Unemployed", "Followers of the Majority Religion", "Followers of this Religion")

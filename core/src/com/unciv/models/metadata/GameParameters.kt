@@ -15,8 +15,6 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var difficulty = "Prince"
     var speed = Speed.DEFAULT
 
-    @Deprecated("Since 4.1.11")
-    var gameSpeed = ""
     var randomNumberOfPlayers = false
     var minNumberOfPlayers = 3
     var maxNumberOfPlayers = 3

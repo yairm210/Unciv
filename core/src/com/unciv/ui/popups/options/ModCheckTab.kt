@@ -13,10 +13,6 @@ import com.unciv.models.ruleset.RulesetValidator
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.newgamescreen.TranslatedSelectBox
-import com.unciv.ui.popups.ToastPopup
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.extensions.onChange
@@ -24,6 +20,10 @@ import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.newgamescreen.TranslatedSelectBox
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
@@ -143,6 +143,7 @@ class ModCheckTab(
                                     .joinToString("\n") { line -> line.text }
                             }).row()
                     }
+                    expanderTab.header.left()
 
                     val loadingLabel = modCheckResultTable.children.last()
                     modCheckResultTable.removeActor(loadingLabel)

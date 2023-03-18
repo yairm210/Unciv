@@ -104,6 +104,7 @@ class BasicTests {
     fun uniqueTypesHaveNoUnknownParameters() {
         var noUnknownParameters = true
         for (uniqueType in UniqueType.values()) {
+            if (uniqueType.getDeprecationAnnotation()!=null) continue
             for (entry in uniqueType.parameterTypeMap.withIndex()) {
                 for (paramType in entry.value) {
                     if (paramType == UniqueParameterType.Unknown) {
