@@ -173,6 +173,7 @@ class WorldScreen(
                 }
 
         mapHolder.isAutoScrollEnabled = Gdx.app.type == Application.ApplicationType.Desktop && game.settings.mapAutoScroll
+        mapHolder.mapPanningSpeed = game.settings.mapPanningSpeed
 
         // Don't select unit and change selectedCiv when centering as spectator
         if (viewingCiv.isSpectator())
