@@ -45,6 +45,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
+import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.screens.pickerscreens.DiplomaticVoteResultScreen
 import com.unciv.ui.screens.pickerscreens.GreatPersonPickerScreen
@@ -219,24 +220,28 @@ class WorldScreen(
         super.dispose()
     }
 
+    fun openEmpireOverview(category: EmpireOverviewCategories? = null) {
+        game.pushScreen(EmpireOverviewScreen(selectedCiv, category))
+    }
+
     private fun addKeyboardPresses() {
         // Space and N are assigned in NextTurnButton constructor
         globalShortcuts.add(KeyboardBinding.Civilopedia) { game.pushScreen(CivilopediaScreen(gameInfo.ruleset)) }
-        globalShortcuts.add(KeyboardBinding.EmpireOverview) { game.pushScreen(EmpireOverviewScreen(selectedCiv)) }     // Empire overview last used page
+        globalShortcuts.add(KeyboardBinding.EmpireOverview) { openEmpireOverview() }     // Empire overview last used page
         /*
          * These try to be faithful to default Civ5 key bindings as found in several places online
          * Some are a little arbitrary, e.g. Economic info, Military info
          * Some are very much so as Unciv *is* Strategic View and the Notification log is always visible
          */
-        globalShortcuts.add(Input.Keys.F2) { game.pushScreen(EmpireOverviewScreen(selectedCiv, "Trades")) }    // Economic info
-        globalShortcuts.add(Input.Keys.F3) { game.pushScreen(EmpireOverviewScreen(selectedCiv, "Units")) }    // Military info
-        globalShortcuts.add(Input.Keys.F4) { game.pushScreen(EmpireOverviewScreen(selectedCiv, "Politics")) }    // Diplomacy info
+        globalShortcuts.add(Input.Keys.F2) { openEmpireOverview(EmpireOverviewCategories.Trades) }    // Economic info
+        globalShortcuts.add(Input.Keys.F3) { openEmpireOverview(EmpireOverviewCategories.Units) }    // Military info
+        globalShortcuts.add(Input.Keys.F4) { openEmpireOverview(EmpireOverviewCategories.Politics) }    // Diplomacy info
         globalShortcuts.add(Input.Keys.F5) { game.pushScreen(PolicyPickerScreen(selectedCiv, canChangeState)) }    // Social Policies Screen
         globalShortcuts.add(Input.Keys.F6) { game.pushScreen(TechPickerScreen(viewingCiv)) }    // Tech Screen
-        globalShortcuts.add(Input.Keys.F7) { game.pushScreen(EmpireOverviewScreen(selectedCiv, "Cities")) }    // originally Notification Log
+        globalShortcuts.add(Input.Keys.F7) { openEmpireOverview(EmpireOverviewCategories.Notifications) }    // Notification Log
         globalShortcuts.add(Input.Keys.F8) { game.pushScreen(VictoryScreen(this)) }    // Victory Progress
-        globalShortcuts.add(Input.Keys.F9) { game.pushScreen(EmpireOverviewScreen(selectedCiv, "Stats")) }    // Demographics
-        globalShortcuts.add(Input.Keys.F10) { game.pushScreen(EmpireOverviewScreen(selectedCiv, "Resources")) }    // originally Strategic View
+        globalShortcuts.add(Input.Keys.F9) { openEmpireOverview(EmpireOverviewCategories.Stats) }    // Demographics
+        globalShortcuts.add(Input.Keys.F10) { openEmpireOverview(EmpireOverviewCategories.Resources) }    // originally Strategic View
         globalShortcuts.add(Input.Keys.F11) { QuickSave.save(gameInfo, this) }    // Quick Save
         globalShortcuts.add(Input.Keys.F12) { QuickSave.load(this) }    // Quick Load
         globalShortcuts.add(Input.Keys.HOME) {    // Capital City View
@@ -561,10 +566,10 @@ class WorldScreen(
     }
 
     private fun updateSelectedCiv() {
-        when {
-            bottomUnitTable.selectedUnit != null -> selectedCiv = bottomUnitTable.selectedUnit!!.civ
-            bottomUnitTable.selectedCity != null -> selectedCiv = bottomUnitTable.selectedCity!!.civ
-            else -> selectedCiv = viewingCiv
+        selectedCiv = when {
+            bottomUnitTable.selectedUnit != null -> bottomUnitTable.selectedUnit!!.civ
+            bottomUnitTable.selectedCity != null -> bottomUnitTable.selectedCity!!.civ
+            else -> viewingCiv
         }
     }
 
