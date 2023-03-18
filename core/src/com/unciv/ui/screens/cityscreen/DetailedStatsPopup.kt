@@ -1,7 +1,6 @@
 package com.unciv.ui.screens.cityscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -9,25 +8,26 @@ import com.unciv.logic.city.StatTreeNode
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
-import com.unciv.ui.images.IconCircleGroup
-import com.unciv.ui.popups.Popup
 import com.unciv.ui.components.AutoScrollPane
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.extensions.packIfNeeded
+import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.images.IconCircleGroup
+import com.unciv.ui.popups.Popup
+import com.unciv.ui.screens.basescreen.BaseScreen
 import java.text.DecimalFormat
+import kotlin.math.max
 
-class DetailedStatsPopup(val cityScreen: CityScreen, stageToShowOn: Stage) : Popup(
-    stageToShowOn = stageToShowOn,
-    scrollable = false) {
-
-    constructor(screen: CityScreen) : this(screen, screen.stage)
-
+class DetailedStatsPopup(
+    private val cityScreen: CityScreen
+) : Popup(stageToShowOn = cityScreen.stage, scrollable = false) {
+    private val headerTable = Table()
     private val totalTable = Table()
 
     private var sourceHighlighted: String? = null
@@ -38,10 +38,14 @@ class DetailedStatsPopup(val cityScreen: CityScreen, stageToShowOn: Stage) : Pop
     private val colorSelector: Color = Color.GREEN.darken(0.5f)
 
     init {
+        headerTable.defaults().pad(3f, 0f)
+        add(headerTable).padBottom(0f).row()
+
+        totalTable.defaults().pad(3f, 0f)
 
         val scrollPane = AutoScrollPane(totalTable)
         scrollPane.setOverscroll(false, false)
-        val scrollPaneCell = add(scrollPane)
+        val scrollPaneCell = add(scrollPane).padTop(0f)
         scrollPaneCell.maxHeight(cityScreen.stage.height *3 / 4)
 
         row()
@@ -50,7 +54,7 @@ class DetailedStatsPopup(val cityScreen: CityScreen, stageToShowOn: Stage) : Pop
     }
 
     private fun update() {
-
+        headerTable.clear()
         totalTable.clear()
 
         val cityStats = cityScreen.city.cityStats
@@ -61,12 +65,13 @@ class DetailedStatsPopup(val cityScreen: CityScreen, stageToShowOn: Stage) : Pop
             !showFaith -> Stat.values().filter { it != Stat.Faith }
             else -> Stat.values().toList()
         }
+        val columnCount = stats.size + 1
+        val statColMinWidth = if (onlyWithStat != null) 150f else 110f
 
-        totalTable.defaults().pad(3f).padLeft(0f).padRight(0f)
-
-        totalTable.add(getToggleButton(isDetailed).onClick {
+        headerTable.add(getToggleButton(isDetailed).onClick {
             isDetailed = !isDetailed
-            update() }).minWidth(150f).grow()
+            update()
+        }).minWidth(150f).grow()
 
         for (stat in stats) {
             val label = stat.name.toLabel()
@@ -74,26 +79,26 @@ class DetailedStatsPopup(val cityScreen: CityScreen, stageToShowOn: Stage) : Pop
                 onlyWithStat = if (onlyWithStat == null) stat else null
                 update()
             }
-            totalTable.add(wrapInTable(label, if (onlyWithStat == stat) colorSelector else null))
-                .minWidth(if (onlyWithStat == stat) 150f else 110f).grow()
+            headerTable.add(wrapInTable(label, if (onlyWithStat == stat) colorSelector else null))
+                .minWidth(statColMinWidth).grow()
         }
-        totalTable.row()
+        headerTable.row()
+        headerTable.addSeparator().padBottom(2f)
 
-        totalTable.addSeparator().padBottom(2f)
         totalTable.add("Base values".toLabel().apply { setAlignment(Align.center) })
-            .colspan(totalTable.columns).padLeft(0f).padRight(0f).growX().row()
-        totalTable.addSeparator().padTop(2f)
+            .colspan(columnCount).growX().row()
+        totalTable.addSeparator(colSpan = columnCount).padTop(2f)
         traverseTree(totalTable, stats, cityStats.baseStatTree, mergeHappiness = true, percentage = false)
 
         totalTable.addSeparator().padBottom(2f)
         totalTable.add("Bonuses".toLabel().apply { setAlignment(Align.center) })
-            .colspan(totalTable.columns).padLeft(0f).padRight(0f).growX().row()
+            .colspan(columnCount).growX().row()
         totalTable.addSeparator().padTop(2f)
         traverseTree(totalTable, stats, cityStats.statPercentBonusTree, percentage = true)
 
         totalTable.addSeparator().padBottom(2f)
         totalTable.add("Final".toLabel().apply { setAlignment(Align.center) })
-            .colspan(totalTable.columns).padLeft(0f).padRight(0f).growX().row()
+            .colspan(columnCount).growX().row()
         totalTable.addSeparator().padTop(2f)
 
         val final = LinkedHashMap<Stat, Float>()
@@ -101,8 +106,7 @@ class DetailedStatsPopup(val cityScreen: CityScreen, stageToShowOn: Stage) : Pop
 
         for ((key, value) in cityScreen.city.cityStats.happinessList) {
             if (!map.containsKey(key)) {
-                map[key] = Stats()
-                map[key]!![Stat.Happiness] = value
+                map[key] = Stats(happiness = value)
             } else if (map[key]!![Stat.Happiness] == 0f) {
                 map[key]!![Stat.Happiness] = value
             }
@@ -110,7 +114,7 @@ class DetailedStatsPopup(val cityScreen: CityScreen, stageToShowOn: Stage) : Pop
 
         for ((source, finalStats) in map) {
 
-            if (finalStats.all { it.value == 0f })
+            if (finalStats.isEmpty())
                 continue
 
             if (onlyWithStat != null && finalStats[onlyWithStat!!] == 0f)
@@ -124,11 +128,7 @@ class DetailedStatsPopup(val cityScreen: CityScreen, stageToShowOn: Stage) : Pop
                 }
             }
 
-            var color: Color? = null
-
-            if (sourceHighlighted == source)
-                color = colorSelector
-
+            val color = colorSelector.takeIf { sourceHighlighted == source }
             totalTable.add(wrapInTable(label, color, Align.left)).grow()
 
             for (stat in stats) {
@@ -152,9 +152,19 @@ class DetailedStatsPopup(val cityScreen: CityScreen, stageToShowOn: Stage) : Pop
 
         totalTable.add(wrapInTable("Total".toLabel(), colorTotal)).grow()
         for (stat in stats) {
-            totalTable.add(wrapInTable(final[stat]?.toOneDecimalLabel(), colorTotal)).grow()
+            totalTable.add(wrapInTable(final[stat]?.toOneDecimalLabel(), colorTotal))
+                .minWidth(statColMinWidth).grow()
         }
         totalTable.row()
+
+        // Mini version of EmpireOverviewTab.equalizeColumns - the number columns work thanks to statColMinWidth
+        headerTable.packIfNeeded()
+        totalTable.packIfNeeded()
+        val firstColumnWidth = max(totalTable.getColumnWidth(0), headerTable.getColumnWidth(0))
+        headerTable.cells.first().minWidth(firstColumnWidth)
+        totalTable.cells.first().minWidth(firstColumnWidth)
+        headerTable.invalidate()
+        totalTable.invalidate()
     }
 
     private fun getToggleButton(showDetails: Boolean): IconCircleGroup {
@@ -265,9 +275,8 @@ class DetailedStatsPopup(val cityScreen: CityScreen, stageToShowOn: Stage) : Pop
 
     companion object {
         private fun Float.toPercentLabel() =
-                "${if (this>0f) "+" else ""}${DecimalFormat("0.#").format(this)}%".toLabel()
+                "${if (this > 0f) "+" else ""}${DecimalFormat("0.#").format(this)}%".toLabel()
         private fun Float.toOneDecimalLabel() =
                 DecimalFormat("0.#").format(this).toLabel()
     }
 }
-
