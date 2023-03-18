@@ -137,6 +137,8 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen(), RecreateOnResize {
         for (oldPanningListener in stage.root.listeners.filterIsInstance<KeyboardPanningListener>())
             stage.removeListener(oldPanningListener)  // otherwise they accumulate
         stage.addListener(KeyboardPanningListener(result, allowWASD = false))
+        if (Gdx.app.type == Application.ApplicationType.Desktop)
+            result.isAutoScrollEnabled = UncivGame.Current.settings.mapAutoScroll
 
         stage.root.addActorAt(0, result)
         stage.scrollFocus = result
