@@ -237,6 +237,9 @@ class Civilization : IsPartOfGameInfoSerialization {
     @Transient
     var hasLongCountDisplayUnique = false
 
+    /** Records for each turn (key of outer map) what the score (value of inner map) was for each RankingType. */
+    var statsHistory = HashMap<Int, Map<RankingType, Int>>()
+
     constructor()
 
     constructor(civName: String) {
@@ -285,6 +288,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.totalFaithForContests = totalFaithForContests
         toReturn.attacksSinceTurnStart = attacksSinceTurnStart.copy()
         toReturn.hasMovedAutomatedUnits = hasMovedAutomatedUnits
+        toReturn.statsHistory = HashMap(statsHistory)
         return toReturn
     }
 
