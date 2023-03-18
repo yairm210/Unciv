@@ -22,9 +22,7 @@ import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.components.AutoScrollPane
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.KeyCharAndCode
-import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.keyShortcuts
@@ -33,21 +31,24 @@ import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
-import com.unciv.ui.screens.multiplayerscreens.MultiplayerScreen
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.popups.popups
-import com.unciv.ui.screens.savescreens.LoadGameScreen
-import com.unciv.ui.screens.savescreens.QuickSave
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
+import com.unciv.ui.screens.mainmenuscreen.EasterEggRulesets.modifyForEasterEgg
+import com.unciv.ui.screens.mapeditorscreen.EditorMapHolder
+import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
+import com.unciv.ui.screens.multiplayerscreens.MultiplayerScreen
 import com.unciv.ui.screens.newgamescreen.NewGameScreen
 import com.unciv.ui.screens.pickerscreens.ModManagementScreen
-import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMenuPopup
-import com.unciv.ui.screens.mainmenuscreen.EasterEggRulesets.modifyForEasterEgg
+import com.unciv.ui.screens.savescreens.LoadGameScreen
+import com.unciv.ui.screens.savescreens.QuickSave
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMenuPopup
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import kotlin.math.min
@@ -132,7 +133,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
 
             launchOnGLThread { // for GL context
                 ImageGetter.setNewRuleset(mapRuleset)
-                val mapHolder = com.unciv.ui.screens.mapeditorscreen.EditorMapHolder(
+                val mapHolder = EditorMapHolder(
                     this@MainMenuScreen,
                     newMap
                 ) {}
