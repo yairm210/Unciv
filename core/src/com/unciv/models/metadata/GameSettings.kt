@@ -10,6 +10,7 @@ import com.unciv.models.UncivSound
 import com.unciv.ui.components.FontFamilyData
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.KeyboardBindings
+import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
 import com.unciv.utils.ScreenOrientation
 import java.text.Collator
 import java.time.Duration
@@ -86,7 +87,7 @@ class GameSettings {
 
     var enableEspionageOption = false
 
-    var lastOverviewPage: String = "Cities"
+    var lastOverviewPage = EmpireOverviewCategories.Cities  // serializes same as the String we had before
 
     /** Orientation for mobile platforms */
     var displayOrientation = ScreenOrientation.Landscape
