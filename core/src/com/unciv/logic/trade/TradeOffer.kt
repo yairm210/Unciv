@@ -41,7 +41,7 @@ data class TradeOffer(val name: String, val type: TradeType, var amount: Int = 1
             TradeType.City -> {
                 val city =
                         UncivGame.Current.gameInfo!!.getCities().firstOrNull { it.id == name }
-                if (city != null) city.name.tr() + " (" + city.population.population + ")" else "Non-existent city"
+                city?.run { "[${name}] ([${population.population}])" } ?: "Non-existent city"
             }
             else -> name
         }.tr()
