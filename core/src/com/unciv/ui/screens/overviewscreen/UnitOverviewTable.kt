@@ -191,25 +191,30 @@ class UnitOverviewTab(
             }
             add(button).fillX()
 
-            // Columns: action, strength, ranged, moves
+            // Column: edit-name
             val editIcon = ImageGetter.getImage("OtherIcons/Pencil").apply { this.color = Color.WHITE }.surroundWithCircle(30f, true, Color.valueOf("000c31"))
             editIcon.onClick {
                 UnitRenamePopup(
                     screen = overviewScreen,
                     unit = unit,
                     actionOnClose = {
-                        overviewScreen.game.replaceCurrentScreen(EmpireOverviewScreen(viewingPlayer, "", "")) })
+                        overviewScreen.game.replaceCurrentScreen(
+                            EmpireOverviewScreen(viewingPlayer, selection = getUnitIdentifier(unit))
+                        )
+                    })
             }
             add(editIcon)
 
+            // Column: action
             fun getActionLabel(unit: MapUnit) = when {
                 unit.action == null -> ""
                 unit.isFortified() -> UnitActionType.Fortify.value
                 unit.isMoving() -> "Moving"
                 else -> unit.action!!
             }
-
             if (unit.action == null) add() else add(getActionLabel(unit).toLabel())
+
+            // Columns: strength, ranged
             if (baseUnit.strength > 0) add(baseUnit.strength.toLabel()) else add()
             if (baseUnit.rangedStrength > 0) add(baseUnit.rangedStrength.toLabel()) else add()
             add(unit.getMovementString().toLabel())
