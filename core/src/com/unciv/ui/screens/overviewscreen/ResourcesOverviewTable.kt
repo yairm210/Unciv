@@ -18,6 +18,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
+import com.unciv.ui.components.extensions.equalizeColumns
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.surroundWithCircle
