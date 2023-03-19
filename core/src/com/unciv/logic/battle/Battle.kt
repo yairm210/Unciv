@@ -191,6 +191,12 @@ object Battle {
         reduceAttackerMovementPointsAndAttacks(attacker, defender)
 
         if (!isAlreadyDefeatedCity) postBattleAddXp(attacker, defender)
+
+        if (attacker is CityCombatant){
+            val cityCanBombardNotification = attacker.getCivInfo().notifications
+                .firstOrNull { it.text == "Your city [${attacker.getName()}] can bombard the enemy!" }
+            attacker.getCivInfo().notifications.remove(cityCanBombardNotification)
+        }
     }
 
     private fun triggerDefeatUniques(ourUnit: MapUnitCombatant, enemy: ICombatant, attackedTile: Tile){
