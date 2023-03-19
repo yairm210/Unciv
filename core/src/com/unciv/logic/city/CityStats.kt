@@ -1,7 +1,6 @@
 package com.unciv.logic.city
 
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
@@ -475,7 +474,8 @@ class CityStats(val city: City) {
     }
 
     fun update(currentConstruction: IConstruction = city.cityConstructions.getCurrentConstruction(),
-               updateTileStats:Boolean = true) {
+               updateTileStats:Boolean = true,
+                updateCivStats:Boolean = true) {
         if (updateTileStats) updateTileStats()
 
         // We need to compute Tile yields before happiness
@@ -491,7 +491,7 @@ class CityStats(val city: City) {
         for (stat in finalStatList.values) newCurrentCityStats.add(stat)
         currentCityStats = newCurrentCityStats
 
-        city.civ.updateStatsForNextTurn()
+        if (updateCivStats) city.civ.updateStatsForNextTurn()
     }
 
     private fun updateFinalStatList(currentConstruction: IConstruction) {

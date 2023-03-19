@@ -43,6 +43,7 @@ class CityFounder {
         city.expansion.reset()
 
         city.tryUpdateRoadStatus()
+        civInfo.cache.updateCitiesConnectedToCapital() // Carthage cities can connect immediately
 
         val tile = city.getCenterTile()
         for (terrainFeature in tile.terrainFeatures.filter {
@@ -89,6 +90,7 @@ class CityFounder {
             StateForConditionals(civInfo, city)
         ))
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, city, triggerNotificationText = "due to founding a city")
+
 
         return city
     }

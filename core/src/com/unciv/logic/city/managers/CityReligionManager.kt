@@ -146,7 +146,9 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
             if (checkForReligionAdoption) getMajorityReligionName()
             else null
 
+        val previousFollowers = followers.clone()
         followers.clear()
+
         if (city.population.population <= 0) return
 
         val remainders = HashMap<String, Float>()
@@ -174,6 +176,9 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         }
 
         followers.remove(Constants.noReligionName)
+
+        if (followers != previousFollowers)
+            city.cityStats.update()
 
         if (checkForReligionAdoption) {
             val newMajorityReligion = getMajorityReligionName()
