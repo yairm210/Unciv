@@ -147,6 +147,19 @@ private fun addMultiplayerServerOptions(
     multiplayerServerTextField.programmaticChangeEvents = true
     val serverIpTable = Table()
 
+    // TODO: This is a quick workaround to allow setting the username and should be extended and improved
+    val multiplayerUsernameTextField = UncivTextField.create("Multiplayer username")
+    multiplayerUsernameTextField.text = settings.multiplayer.userName
+    multiplayerUsernameTextField.setTextFieldFilter { _, c -> c !in " \r\n\t\\" }
+    serverIpTable.add("Multiplayer username".toLabel()).colspan(2).row()
+    serverIpTable.add(multiplayerUsernameTextField)
+        .minWidth(optionsPopup.stageToShowOn.width / 2)
+        .colspan(2).growX().padBottom(8f).row()
+    serverIpTable.add("Save username".toTextButton().onClick {
+        settings.multiplayer.userName = multiplayerUsernameTextField.text
+        settings.save()
+    }).colspan(2).padBottom(8f).row()
+
     serverIpTable.add("Server address".toLabel().onClick {
         multiplayerServerTextField.text = Gdx.app.clipboard.contents
         }).colspan(2).row()
