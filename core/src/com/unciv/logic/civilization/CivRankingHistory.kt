@@ -4,7 +4,6 @@ import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.ui.screens.victoryscreen.RankingType
-import java.util.HashMap
 
 /** Records for each turn (key of outer map) what the score (value of inner map) was for each RankingType. */
 open class CivRankingHistory : HashMap<Int, Map<RankingType, Int>>(),
@@ -26,7 +25,7 @@ open class CivRankingHistory : HashMap<Int, Map<RankingType, Int>>(),
     }
 
     /** Custom Json formatter for a [CivRankingHistory].
-     *  Output looks like this: `history:{0:{S:50,G:120,...},1:{S:55,G:80,...}}`
+     *  Output looks like this: `statsHistory:{0:{S:50,G:120,...},1:{S:55,G:80,...}}`
      */
     class Serializer : Json.Serializer<CivRankingHistory> {
         override fun write(json: Json, `object`: CivRankingHistory, knownType: Class<*>?) {
@@ -48,11 +47,8 @@ open class CivRankingHistory : HashMap<Int, Map<RankingType, Int>>(),
                         val rankings = mutableMapOf<RankingType, Int>()
                         for (rankingEntry in entry) {
                             val rankingType = RankingType.fromIdForSerialization(rankingEntry.name)
-                            val score = rankingEntry.asInt()
                             // Silently drop unknown ranking types.
-                            if (rankingType != null) {
-                                rankings[rankingType] = score
-                            }
+                            rankings[rankingType ?: continue] = rankingEntry.asInt()
                         }
                         this[turn] = rankings
                     }

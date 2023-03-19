@@ -26,6 +26,10 @@ class TurnManager(val civInfo: Civilization) {
 
 
     fun startTurn() {
+        if (civInfo.isMajorCiv() && civInfo.isAlive()) {
+            civInfo.statsHistory.recordRankingStats(civInfo)
+        }
+
         civInfo.civConstructions.startTurn()
         civInfo.attacksSinceTurnStart.clear()
         civInfo.updateStatsForNextTurn() // for things that change when turn passes e.g. golden age, city state influence
@@ -216,10 +220,6 @@ class TurnManager(val civInfo: Civilization) {
             notificationsLog.add(notificationsThisTurn)
 
         civInfo.notifications.clear()
-
-        if (civInfo.isMajorCiv() && civInfo.isAlive()) {
-            civInfo.statsHistory.recordRankingStats(civInfo)
-        }
 
         civInfo.updateStatsForNextTurn()
 
