@@ -288,7 +288,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             city.getRuleset().buildings[it]
                     ?: throw java.lang.Exception("Building $it is not found!")
         })
-        updateUniques()
+        updateUniques(true)
     }
 
     fun addProductionPoints(productionToAdd: Int) {
@@ -458,11 +458,11 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         updateUniques()
     }
 
-    fun updateUniques() {
+    fun updateUniques(onLoadGame:Boolean = false) {
         builtBuildingUniqueMap.clear()
         for (building in getBuiltBuildings())
             builtBuildingUniqueMap.addUniques(building.uniqueObjects)
-        city.cityStats.update()
+        if (!onLoadGame) city.cityStats.update()
     }
 
     fun addFreeBuildings() {

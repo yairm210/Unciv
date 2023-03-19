@@ -177,14 +177,14 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
 
         followers.remove(Constants.noReligionName)
 
-        if (followers != previousFollowers)
-            city.cityStats.update()
 
         if (checkForReligionAdoption) {
             val newMajorityReligion = getMajorityReligionName()
             if (oldMajorityReligion != newMajorityReligion && newMajorityReligion != null) {
                 triggerReligionAdoption(newMajorityReligion)
             }
+            if (followers != previousFollowers)
+                city.cityStats.update()
         }
     }
 
