@@ -29,12 +29,15 @@ object GameStarter {
     private const val consoleTimings = false
     private lateinit var gameSetupInfo: GameSetupInfo
 
-    fun startNewGame(gameSetupInfo: GameSetupInfo): GameInfo {
+    fun startNewGame(gameSetupInfo: GameSetupInfo, customGameId: String? = null): GameInfo {
         this.gameSetupInfo = gameSetupInfo
         if (consoleTimings)
             debug("\nGameStarter run with parameters %s, map %s", gameSetupInfo.gameParameters, gameSetupInfo.mapParameters)
 
         val gameInfo = GameInfo()
+        if (customGameId != null) {
+            gameInfo.gameId = customGameId
+        }
         lateinit var tileMap: TileMap
 
         // In the case where we used to have an extension mod, and now we don't, we cannot "unselect" it in the UI.

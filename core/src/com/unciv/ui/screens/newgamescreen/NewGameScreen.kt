@@ -283,9 +283,12 @@ class NewGameScreen(
             popup.open()
         }
 
-        val newGame:GameInfo
+        // TODO: Introduce proper lobby handling, this is a temporary solution
+        val gameId = UncivGame.Current.onlineMultiplayer.allocateGameId()
+
+        val newGame: GameInfo
         try {
-            newGame = GameStarter.startNewGame(gameSetupInfo)
+            newGame = GameStarter.startNewGame(gameSetupInfo, gameId)
         } catch (exception: Exception) {
             exception.printStackTrace()
             launchOnGLThread {

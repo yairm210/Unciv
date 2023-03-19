@@ -171,6 +171,21 @@ class OnlineMultiplayer {
     }
 
     /**
+     * Allocate a new game ID on the server and return it
+     *
+     * IMPORTANT: This is a temporary solution until proper handling of lobbies is implemented.
+     * When this is done, this function should be changed to something like `startLobby`.
+     */
+    fun allocateGameId(): String? {
+        // TODO: Make backward-compatible by ignoring remote backends which can't create game IDs
+        runBlocking {
+            // TODO: Implement the server endpoint for the function api.lobby.create()
+            return@runBlocking UUID.randomUUID().toString()
+        }
+        return null
+    }
+
+    /**
      * Handle a newly established WebSocket connection
      */
     private suspend fun handleWS(session: ClientWebSocketSession) {

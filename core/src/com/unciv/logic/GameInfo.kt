@@ -72,7 +72,7 @@ data class VictoryData(val winningCiv: String, val victoryType: String, val vict
     constructor(): this("","",0)
 }
 
-class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion {
+class GameInfo (private val overwriteGameId: UUID? = null) : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion {
     companion object {
         /** The current compatibility version of [GameInfo]. This number is incremented whenever changes are made to the save file structure that guarantee that
          * previous versions of the game will not be able to load or play a game normally. */
@@ -97,7 +97,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var oneMoreTurnMode = false
     var currentPlayer = ""
     var currentTurnStartTime = 0L
-    var gameId = UUID.randomUUID().toString() // random string
+    var gameId = if (overwriteGameId != null) overwriteGameId.toString() else UUID.randomUUID().toString() // otherwise random UUID string
 
     var victoryData:VictoryData? = null
 
