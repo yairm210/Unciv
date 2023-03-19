@@ -5,6 +5,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.files.UncivFiles
+import java.io.FileNotFoundException
 
 /**
  * Allows access to games stored on a server for multiplayer purposes.
@@ -46,7 +47,7 @@ class OnlineMultiplayerFiles(
      */
     suspend fun tryUploadGame(gameInfo: GameInfo, withPreview: Boolean) {
         val zippedGameInfo = UncivFiles.gameInfoToPrettyString(gameInfo, useZip = true)
-        fileStorage().saveFileData(gameInfo.gameId, zippedGameInfo)
+        fileStorage().saveGameData(gameInfo.gameId, zippedGameInfo)
 
         // We upload the preview after the game because otherwise the following race condition will happen:
         // Current player ends turn -> Uploads Game Preview
@@ -72,7 +73,7 @@ class OnlineMultiplayerFiles(
      */
     suspend fun tryUploadGamePreview(gameInfo: GameInfoPreview) {
         val zippedGameInfo = UncivFiles.gameInfoToString(gameInfo)
-        fileStorage().saveFileData("${gameInfo.gameId}_Preview", zippedGameInfo)
+        fileStorage().savePreviewData(gameInfo.gameId, zippedGameInfo)
     }
 
     /**
@@ -80,7 +81,7 @@ class OnlineMultiplayerFiles(
      * @throws FileNotFoundException if the file can't be found
      */
     suspend fun tryDownloadGame(gameId: String): GameInfo {
-        val zippedGameInfo = fileStorage().loadFileData(gameId)
+        val zippedGameInfo = fileStorage().loadGameData(gameId)
         return UncivFiles.gameInfoFromString(zippedGameInfo)
     }
 
@@ -89,7 +90,7 @@ class OnlineMultiplayerFiles(
      * @throws FileNotFoundException if the file can't be found
      */
     suspend fun tryDownloadGamePreview(gameId: String): GameInfoPreview {
-        val zippedGameInfo = fileStorage().loadFileData("${gameId}_Preview")
+        val zippedGameInfo = fileStorage().loadPreviewData(gameId)
         return UncivFiles.gameInfoPreviewFromString(zippedGameInfo)
     }
 }

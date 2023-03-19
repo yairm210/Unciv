@@ -75,7 +75,7 @@ class OnlineMultiplayer {
         if (password == null) {
             password = "SomePasswordForThoseFolksWhoDoNotHaveAnyStrongPasswordYet!" // TODO: Obviously, replace this password
         }
-        var username = UncivGame.Current.settings.multiplayer.username
+        var username = UncivGame.Current.settings.multiplayer.userName
         // TODO: Since the username is currently never used and therefore unset, update the username below and re-compile!
         if (username == "") {
             username = "MyValidUsername"
