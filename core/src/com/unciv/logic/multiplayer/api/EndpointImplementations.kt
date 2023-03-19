@@ -184,6 +184,19 @@ class AccountsApi(private val client: HttpClient, private val authCookieHelper: 
 class AuthApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper, private val logger: Logger) {
 
     /**
+     * Try logging in with username and password for testing purposes, don't set the session cookie
+     *
+     * This method won't raise *any* exception, just return the boolean value if login worked.
+     */
+    suspend fun loginOnly(username: String, password: String): Boolean {
+        val response = client.post("/api/v2/auth/login") {
+            contentType(ContentType.Application.Json)
+            setBody(LoginRequest(username, password))
+        }
+        return response.status.isSuccess()
+    }
+
+    /**
      * Try logging in with username and password
      *
      * This method will also implicitly set a cookie in the in-memory cookie storage to authenticate further API calls
@@ -436,8 +449,8 @@ class GameApi(private val client: HttpClient, private val authCookieHelper: Auth
      * If the game has been completed or aborted, it will
      * respond with a GameNotFound in [ApiErrorResponse].
      */
-    suspend fun get(gameID: Long): GameStateResponse {
-        val response = client.get("/api/v2/games/$gameID") {
+    suspend fun get(gameUUID: UUID): GameStateResponse {
+        val response = client.get("/api/v2/games/$gameUUID") {
             authCookieHelper.add(this)
         }
         if (response.status.isSuccess()) {
@@ -453,13 +466,13 @@ class GameApi(private val client: HttpClient, private val authCookieHelper: Auth
      *
      * If the game can't be updated (maybe it has been already completed
      * or aborted), it will respond with a GameNotFound in [ApiErrorResponse].
-     * Use the [gameID] retrieved from the server in a previous API call.
+     * Use the [gameUUID] retrieved from the server in a previous API call.
      *
      * On success, returns the new game data ID that can be used to verify
      * that the client and server use the same state (prevents re-querying).
      */
-    suspend fun upload(gameID: Long, gameData: String): Long {
-        return upload(GameUploadRequest(gameData, gameID))
+    suspend fun upload(gameUUID: UUID, gameData: String): Long {
+        return upload(GameUploadRequest(gameData, gameUUID))
     }
 
     /**
@@ -479,7 +492,7 @@ class GameApi(private val client: HttpClient, private val authCookieHelper: Auth
         }
         if (response.status.isSuccess()) {
             val responseBody: GameUploadResponse = response.body()
-            logger.info("The game with ID ${r.gameID} has been uploaded, the new data ID is ${responseBody.gameDataID}")
+            logger.info("The game with ID ${r.gameUUID} has been uploaded, the new data ID is ${responseBody.gameDataID}")
             return responseBody.gameDataID
         } else {
             val err: ApiErrorResponse = response.body()

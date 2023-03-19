@@ -144,8 +144,9 @@ data class GameOverviewResponse(
     val chatRoomID: Long,
     @SerialName("game_data_id")
     val gameDataID: Long,
-    @SerialName("game_id")
-    val gameID: Long,
+    @SerialName("game_uuid")
+    @Serializable(with = UUIDSerializer::class)
+    val gameUUID: UUID,
     @SerialName("last_activity")
     @Serializable(with = InstantSerializer::class)
     val lastActivity: Instant,

@@ -55,14 +55,15 @@ data class CreateLobbyRequest(
 /**
  * The request a user sends to the server to upload a new game state (non-WebSocket API)
  *
- * The [gameID] was received by the server in a previous get or create API call.
+ * The [gameUUID] was received by the server in a previous get or create API call.
  */
 @Serializable
 data class GameUploadRequest(
     @SerialName("game_data")
     val gameData: String,
-    @SerialName("game_id")
-    val gameID: Long
+    @SerialName("game_uuid")
+    @Serializable(with = UUIDSerializer::class)
+    val gameUUID: UUID
 )
 
 /**
