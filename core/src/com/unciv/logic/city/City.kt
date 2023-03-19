@@ -10,6 +10,7 @@ import com.unciv.logic.city.managers.CityReligionManager
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
@@ -152,6 +153,12 @@ class City : IsPartOfGameInfoSerialization {
         val mediumTypes = civ.cache.citiesConnectedToCapitalToMediums[this] ?: return false
         return connectionTypePredicate(mediumTypes)
     }
+
+    fun isGarrisoned() = getGarrison() != null
+    fun getGarrison(): MapUnit? =
+            getCenterTile().militaryUnit?.takeIf {
+                it.civ == this.civ && it.canGarrison()
+            }
 
     fun hasFlag(flag: CityFlags) = flagsCountdown.containsKey(flag.name)
     fun getFlag(flag: CityFlags) = flagsCountdown[flag.name]!!
@@ -512,7 +519,7 @@ class City : IsPartOfGameInfoSerialization {
             "in all cities with a world wonder" -> cityConstructions.getBuiltBuildings()
                 .any { it.isWonder }
             "in all cities connected to capital" -> isConnectedToCapital()
-            "in all cities with a garrison" -> getCenterTile().militaryUnit != null
+            "in all cities with a garrison" -> isGarrisoned()
             "in all cities in which the majority religion is a major religion" ->
                 religion.getMajorityReligionName() != null
                 && religion.getMajorityReligion()!!.isMajorReligion()

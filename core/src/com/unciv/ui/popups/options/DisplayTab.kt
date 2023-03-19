@@ -114,7 +114,6 @@ private fun addMinimapSizeSlider(table: Table, settings: GameSettings, selectBox
             settings.showMinimap = true
             settings.minimapSize = size
         }
-        settings.save()
         val worldScreen = GUI.getWorldScreenIfActive()
         if (worldScreen != null)
             GUI.setUpdateWorldOnNextRender()
@@ -131,7 +130,6 @@ private fun addUnitIconAlphaSlider(table: Table, settings: GameSettings, selectB
         0f, 1f, 0.1f, initial = settings.unitIconOpacity, getTipText = getTipText
     ) {
         settings.unitIconOpacity = it
-        settings.save()
 
         val worldScreen = UncivGame.Current.getWorldScreenIfActive()
         if (worldScreen != null)
@@ -246,7 +244,6 @@ private fun addResetTutorials(table: Table, settings: GameSettings) {
             ) {
                 settings.tutorialsShown.clear()
                 settings.tutorialTasksCompleted.clear()
-                settings.save()
                 resetTutorialsButton.setText("Done!".tr())
                 resetTutorialsButton.clearListeners()
             }.open(true)

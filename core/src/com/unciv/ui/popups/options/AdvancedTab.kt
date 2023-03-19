@@ -116,7 +116,6 @@ private fun addAutosaveTurnsSelectBox(table: Table, settings: GameSettings) {
 
     autosaveTurnsSelectBox.onChange {
         settings.turnsBetweenAutosaves = autosaveTurnsSelectBox.selected
-        settings.save()
     }
 }
 
@@ -207,7 +206,6 @@ private fun addFontSizeMultiplier(
         initial = settings.fontSizeMultiplier
     ) {
         settings.fontSizeMultiplier = it
-        settings.save()
     }
     fontSizeSlider.onChange {
         if (!fontSizeSlider.isDragging)
@@ -223,7 +221,6 @@ private fun addMaxZoomSlider(table: Table, settings: GameSettings) {
         initial = settings.maxWorldZoomOut
     ) {
         settings.maxWorldZoomOut = it
-        settings.save()
         if (GUI.isWorldLoaded())
             GUI.getMap().reloadMaxZoom()
     }
@@ -333,7 +330,6 @@ private fun addSetUserId(table: Table, settings: GameSettings) {
                     "Take user ID from clipboard"
                 ) {
                     settings.multiplayer.userId = clipboardContents
-                    settings.save()
                     idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!".tr())
                 }.open(true)
                 idSetLabel.isVisible = true

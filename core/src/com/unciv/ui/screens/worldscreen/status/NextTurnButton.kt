@@ -5,8 +5,6 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.KeyCharAndCode
-import com.unciv.ui.components.KeyShortcutDispatcher.KeyShortcut
 import com.unciv.ui.components.KeyboardBinding
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
@@ -38,7 +36,7 @@ class NextTurnButton : IconTextButton("", null, 30) {
         keyShortcuts.add(KeyboardBinding.NextTurn)
         keyShortcuts.add(KeyboardBinding.NextTurnAlternate)
         // Let unit actions override this for command "Wait".
-        keyShortcuts.add(KeyShortcut(KeyCharAndCode('z'), -100))
+        keyShortcuts.add(KeyboardBinding.Wait, -99)
     }
 
     fun update(worldScreen: WorldScreen) {

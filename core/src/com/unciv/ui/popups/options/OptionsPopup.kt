@@ -118,6 +118,7 @@ class OptionsPopup(
             screen.game.musicController.onChange(null)
             center(screen.stage)
             keyBindingsTab?.save()
+            settings.save()
             onClose()
         }.padBottom(10f)
 
@@ -139,7 +140,6 @@ class OptionsPopup(
     /** Reload this Popup after major changes (resolution, tileset, language, font) */
     private fun reloadWorldAndOptions() {
         Concurrency.run("Reload from options") {
-            settings.save()
             withGLContext {
                 // We have to run setSkin before the screen is rebuild else changing skins
                 // would only load the new SkinConfig after the next rebuild
@@ -162,7 +162,6 @@ class OptionsPopup(
     fun addCheckbox(table: Table, text: String, initialState: Boolean, updateWorld: Boolean = false, newRow: Boolean = true, action: ((Boolean) -> Unit)) {
         val checkbox = text.toCheckBox(initialState) {
             action(it)
-            settings.save()
             val worldScreen = GUI.getWorldScreenIfActive()
             if (updateWorld && worldScreen != null) worldScreen.shouldUpdate = true
         }

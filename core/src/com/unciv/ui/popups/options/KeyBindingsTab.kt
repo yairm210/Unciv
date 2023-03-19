@@ -36,6 +36,7 @@ class KeyBindingsTab(
         defaults().pad(5f)
 
         for (binding in KeyboardBinding.values()) {
+            if (binding.hidden) continue
             keyFields[binding] = KeyCapturingButton(binding.defaultKey)
         }
     }
@@ -45,6 +46,7 @@ class KeyBindingsTab(
         add(disclaimer).colspan(2).center().row()
 
         for (binding in KeyboardBinding.values()) {
+            if (binding.hidden) continue
             add(binding.label.toLabel())
             add(keyFields[binding]).row()
             keyFields[binding]!!.current = keyBindings[binding]
@@ -53,6 +55,7 @@ class KeyBindingsTab(
 
     fun save () {
         for (binding in KeyboardBinding.values()) {
+            if (binding.hidden) continue
             keyBindings[binding] = keyFields[binding]!!.current
         }
     }
