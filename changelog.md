@@ -1,14 +1,13 @@
 ## 4.5.10
 
-Tilesets: Separated unexplored tiles from not visible tiles
+Tilesets: Separated *unexplored* tiles from *not visible* tiles
 
-Add city size (population) to TradeOffer.kt  - By WhoIsJohannes
+Add city size (population) to TradeOffer.kt - By WhoIsJohannes
 
 By SomeTroglodyte:
-- City detailed stats popup - fixed header 
-- WASD listener out of WorldScreen and add to map editor 
-- EmpireOverviewCategories rework 
-- Fix Garrison bonus logic 
+- Fixed header in city detailed stats popup
+- Map editor explorable with arrow keys
+- Fix Garrison bonus logic
 
 Save settings when closing the options popup  - By Gualdimar
 
