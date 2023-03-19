@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.cityscreen
 
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -13,6 +14,8 @@ import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.darken
+import com.unciv.ui.components.extensions.keyShortcuts
+import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.pad
@@ -52,7 +55,7 @@ class DetailedStatsPopup(
         scrollPaneCell.maxHeight(cityScreen.stage.height *3 / 4)
 
         row()
-        addCloseButton("Cancel", KeyCharAndCode('n'))
+        addCloseButton(additionalKey = KeyCharAndCode.SPACE)
         update()
     }
 
@@ -71,10 +74,7 @@ class DetailedStatsPopup(
         val columnCount = stats.size + 1
         val statColMinWidth = if (onlyWithStat != null) 150f else 110f
 
-        headerTable.add(getToggleButton(isDetailed).onClick {
-            isDetailed = !isDetailed
-            update()
-        }).minWidth(150f).grow()
+        headerTable.add(getToggleButton(isDetailed)).minWidth(150f).grow()
 
         for (stat in stats) {
             val label = stat.name.toLabel()
@@ -173,9 +173,18 @@ class DetailedStatsPopup(
     private fun getToggleButton(showDetails: Boolean): IconCircleGroup {
         val label = (if (showDetails) "-" else "+").toLabel()
         label.setAlignment(Align.center)
-        return label
+        val button = label
             .surroundWithCircle(25f, color = BaseScreen.skinStrings.skinConfig.baseColor)
             .surroundWithCircle(27f, false)
+        button.keyShortcuts.run {
+            add(Input.Keys.PLUS)
+            add(Input.Keys.NUMPAD_ADD)
+        }
+        button.onActivation {
+            isDetailed = !isDetailed
+            update()
+        }
+        return button
     }
 
     private fun traverseTree(
