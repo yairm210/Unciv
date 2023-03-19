@@ -1,5 +1,7 @@
 package com.unciv.ui.screens.mapeditorscreen
 
+import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorEditTab
 import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorGenerateTab
@@ -8,8 +10,6 @@ import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorModsTab
 import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorOptionsTab
 import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorSaveTab
 import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorViewTab
-import com.unciv.ui.components.KeyCharAndCode
-import com.unciv.ui.components.TabbedPager
 
 class MapEditorMainTabs(
     editorScreen: MapEditorScreen
@@ -53,5 +53,7 @@ class MapEditorMainTabs(
             ImageGetter.getImage("OtherIcons/Settings"), 25f,
             shortcutKey = KeyCharAndCode.ctrl('o'))
         selectPage(0)
+
+        headerScroll.fadeScrollBars = false
     }
 }
