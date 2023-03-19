@@ -18,7 +18,6 @@ import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unique.endTurn
 import com.unciv.ui.components.MayaCalendar
-import com.unciv.ui.screens.victoryscreen.RankingType
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
@@ -219,8 +218,7 @@ class TurnManager(val civInfo: Civilization) {
         civInfo.notifications.clear()
 
         if (civInfo.isMajorCiv() && civInfo.isAlive()) {
-            civInfo.statsHistory[civInfo.gameInfo.turns] =
-                    RankingType.values().associateWith { civInfo.getStatForRanking(it) }
+            civInfo.statsHistory.recordRankingStats(civInfo)
         }
 
         civInfo.updateStatsForNextTurn()
