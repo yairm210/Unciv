@@ -61,7 +61,6 @@ open class SettingsSelect<T : Any>(
             val newValue = selectBox.selected.value
             settingsProperty.set(newValue)
             sendChangeEvent(newValue)
-            settings.save()
         }
 
         return selectBox
