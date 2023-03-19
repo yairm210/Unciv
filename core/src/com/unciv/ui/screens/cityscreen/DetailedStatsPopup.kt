@@ -37,6 +37,9 @@ class DetailedStatsPopup(
     private val colorTotal: Color = Color.BLUE.brighten(0.5f)
     private val colorSelector: Color = Color.GREEN.darken(0.5f)
 
+    private val percentFormatter = DecimalFormat("0.#%").apply { positivePrefix = "+"; multiplier = 1 }
+    private val decimalFormatter = DecimalFormat("0.#")
+
     init {
         headerTable.defaults().pad(3f, 0f)
         add(headerTable).padBottom(0f).row()
@@ -273,10 +276,6 @@ class DetailedStatsPopup(
         return tbl
     }
 
-    companion object {
-        private fun Float.toPercentLabel() =
-                "${if (this > 0f) "+" else ""}${DecimalFormat("0.#").format(this)}%".toLabel()
-        private fun Float.toOneDecimalLabel() =
-                DecimalFormat("0.#").format(this).toLabel()
-    }
+    private fun Float.toPercentLabel() = percentFormatter.format(this).toLabel()
+    private fun Float.toOneDecimalLabel() = decimalFormatter.format(this).toLabel()
 }
