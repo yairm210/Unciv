@@ -1,9 +1,7 @@
-package com.unciv.ui.screens.overviewscreen
+package com.unciv.ui.components
 
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.unciv.logic.GameInfo
-
 
 /**
  * This defines all behaviour of a sortable Grid per column through overridable parts:
@@ -44,7 +42,7 @@ interface ISortableGridContentProvider<IT, ST> {
     fun getComparator(): Comparator<IT>
 
     /** Factory for the header cell [Actor] */
-    fun getHeaderIcon(): Actor?
+    fun getHeaderIcon(iconSize: Float): Actor?
 
     /** A getter for the numeric value to display in a cell */
     fun getEntryValue(item: IT): Int
@@ -53,7 +51,7 @@ interface ISortableGridContentProvider<IT, ST> {
      * - By default displays the (numeric) result of [getEntryValue].
      * - [parentScreen] can be used to define `onClick` actions.
      */
-    fun getEntryActor(item: IT, parentScreen: ST): Actor?
+    fun getEntryActor(item: IT, iconSize: Float, parentScreen: ST): Actor?
 
     /** Factory for totals cell [Actor]
      * - By default displays the sum over [getEntryValue].

@@ -1,11 +1,8 @@
 package com.unciv.ui.screens.overviewscreen
 
-import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
-import com.unciv.ui.components.extensions.addSeparator
-import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.SortableGrid
+import com.unciv.ui.components.extensions.equalizeColumns
 
 
 class CityOverviewTab(
@@ -22,30 +19,27 @@ class CityOverviewTab(
 
     override val persistableData = (persistedData as? CityTabPersistableData) ?: CityTabPersistableData()
 
-    companion object {
-        const val iconSize = 50f  //if you set this too low, there is a chance that the tables will be misaligned
-        const val paddingVert = 5f      // vertical padding
-        const val paddingHorz = 8f      // horizontal padding
-    }
-
     private val grid = SortableGrid(
-        iterator = CityOverviewTabColumn.values().iterator(),
+        columns = CityOverviewTabColumn.values().asIterable(),
         data = viewingPlayer.cities,
         parentScreen = overviewScreen,
         sortState = persistableData,
-        iconSize, paddingVert, paddingHorz,
-        separateHeader = true
+        iconSize = 50f,  //if you set this too low, there is a chance that the tables will be misaligned
+        paddingVert = 5f,
+        paddingHorz = 8f,
+        separateHeader = false
     ) {
         header, details, totals ->
+        this.name
         equalizeColumns(details, header, totals)
-        layout()
+        this.layout()
     }
 
-    override fun getFixedContent() = Table().apply {
-        add("Cities".toLabel(fontSize = Constants.headingFontSize)).padTop(10f).row()
-        add(grid.getHeader()).padBottom(paddingVert).row()
-        addSeparator(Color.GRAY)
-    }
+//     override fun getFixedContent() = Table().apply {
+//         add("Cities".toLabel(fontSize = Constants.headingFontSize)).padTop(10f).row()
+//         add(grid.getHeader()).padBottom(paddingVert).row()
+//         addSeparator(Color.GRAY)
+//     }
 
     init {
         add(grid)
