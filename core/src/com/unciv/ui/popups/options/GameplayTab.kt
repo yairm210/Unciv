@@ -61,7 +61,6 @@ private fun addNotificationLogMaxTurnsSlider(
     ) {
         val turns = it.toInt()
         settings.notificationsLogMaxTurns = turns
-        settings.save()
     }
     table.add(minimapSlider).minWidth(selectBoxMinWidth).pad(10f).row()
 }
