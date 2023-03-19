@@ -10,7 +10,7 @@ object UncivServerFileStorage : FileStorage {
     var serverUrl: String = ""
     var timeout: Int = 30000
 
-    override fun saveFileData(fileName: String, data: String) {
+    override suspend fun saveFileData(fileName: String, data: String) {
         SimpleHttp.sendRequest(Net.HttpMethods.PUT, fileUrl(fileName), content=data, timeout=timeout, header=authHeader) {
                 success, result, code ->
             if (!success) {
@@ -23,7 +23,7 @@ object UncivServerFileStorage : FileStorage {
         }
     }
 
-    override fun loadFileData(fileName: String): String {
+    override suspend fun loadFileData(fileName: String): String {
         var fileData = ""
         SimpleHttp.sendGetRequest(fileUrl(fileName), timeout=timeout, header=authHeader) {
                 success, result, code ->
@@ -40,11 +40,11 @@ object UncivServerFileStorage : FileStorage {
         return fileData
     }
 
-    override fun getFileMetaData(fileName: String): FileMetaData {
+    override suspend fun getFileMetaData(fileName: String): FileMetaData {
         TODO("Not yet implemented")
     }
 
-    override fun deleteFile(fileName: String) {
+    override suspend fun deleteFile(fileName: String) {
         SimpleHttp.sendRequest(Net.HttpMethods.DELETE, fileUrl(fileName), content="", timeout=timeout, header=authHeader) {
                 success, result, code ->
             if (!success) {
@@ -56,7 +56,7 @@ object UncivServerFileStorage : FileStorage {
         }
     }
 
-    override fun authenticate(userId: String, password: String): Boolean {
+    override suspend fun authenticate(userId: String, password: String): Boolean {
         var authenticated = false
         val preEncodedAuthValue = "$userId:$password"
         authHeader = mapOf("Authorization" to "Basic ${Base64Coder.encodeString(preEncodedAuthValue)}")
@@ -76,7 +76,7 @@ object UncivServerFileStorage : FileStorage {
         return authenticated
     }
 
-    override fun setPassword(newPassword: String): Boolean {
+    override suspend fun setPassword(newPassword: String): Boolean {
         if (authHeader == null)
             return false
 

@@ -7,6 +7,7 @@ import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.screens.basescreen.BaseScreen
+import kotlinx.coroutines.runBlocking
 
 class AuthPopup(stage: Stage, authSuccessful: ((Boolean) -> Unit)? = null)
     : Popup(stage) {
@@ -20,7 +21,7 @@ class AuthPopup(stage: Stage, authSuccessful: ((Boolean) -> Unit)? = null)
 
         button.onClick {
             try {
-                UncivGame.Current.onlineMultiplayer.authenticate(passwordField.text)
+                runBlocking { UncivGame.Current.onlineMultiplayer.authenticate(passwordField.text) }
                 authSuccessful?.invoke(true)
                 close()
             } catch (ex: Exception) {

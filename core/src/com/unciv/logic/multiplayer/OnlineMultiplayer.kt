@@ -495,11 +495,10 @@ class OnlineMultiplayer {
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      * @throws MultiplayerAuthException if the authentication failed
      */
-    fun authenticate(password: String?): Boolean {
+    suspend fun authenticate(password: String?): Boolean {
         if (featureSet.authVersion == 0) {
             return true
         }
-
 
         val settings = UncivGame.Current.settings.multiplayer
 
@@ -518,7 +517,7 @@ class OnlineMultiplayer {
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      * @throws MultiplayerAuthException if the authentication failed
      */
-    fun setPassword(password: String): Boolean {
+    suspend fun setPassword(password: String): Boolean {
         if (
                 featureSet.authVersion > 0 &&
                 multiplayerFiles.fileStorage().setPassword(newPassword = password)

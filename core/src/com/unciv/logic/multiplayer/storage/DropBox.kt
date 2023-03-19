@@ -71,7 +71,7 @@ object DropBox: FileStorage {
     // This is the location in Dropbox only
     private fun getLocalGameLocation(fileName: String) = "/MultiplayerGames/$fileName"
 
-    override fun deleteFile(fileName: String){
+    override suspend fun deleteFile(fileName: String){
         dropboxApi(
             url="https://api.dropboxapi.com/2/files/delete_v2",
             data="{\"path\":\"${getLocalGameLocation(fileName)}\"}",
@@ -79,7 +79,7 @@ object DropBox: FileStorage {
         )
     }
 
-    override fun getFileMetaData(fileName: String): FileMetaData {
+    override suspend fun getFileMetaData(fileName: String): FileMetaData {
         val stream = dropboxApi(
             url="https://api.dropboxapi.com/2/files/get_metadata",
             data="{\"path\":\"${getLocalGameLocation(fileName)}\"}",
@@ -89,7 +89,7 @@ object DropBox: FileStorage {
         return json().fromJson(MetaData::class.java, reader.readText())
     }
 
-    override fun saveFileData(fileName: String, data: String) {
+    override suspend fun saveFileData(fileName: String, data: String) {
         dropboxApi(
             url="https://content.dropboxapi.com/2/files/upload",
             data=data,
@@ -98,16 +98,16 @@ object DropBox: FileStorage {
         )!!
     }
 
-    override fun loadFileData(fileName: String): String {
+    override suspend fun loadFileData(fileName: String): String {
         val inputStream = downloadFile(getLocalGameLocation(fileName))
         return BufferedReader(InputStreamReader(inputStream)).readText()
     }
 
-    override fun authenticate(userId: String, password: String): Boolean {
+    override suspend fun authenticate(userId: String, password: String): Boolean {
         throw NotImplementedError()
     }
 
-    override fun setPassword(newPassword: String): Boolean {
+    override suspend fun setPassword(newPassword: String): Boolean {
         throw NotImplementedError()
     }
 
