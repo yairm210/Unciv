@@ -39,7 +39,7 @@ class OptionsPopup(
 
     private var keyBindingsTab: KeyBindingsTab? = null
     /** Enable the still experimental Keyboard Bindings page in OptionsPopup */
-    var enableKeyBindingsTab: Boolean = true
+    var enableKeyBindingsTab: Boolean = false
 
     //endregion
 
