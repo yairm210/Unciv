@@ -227,49 +227,54 @@ class WorldScreen(
         /*
          * These try to be faithful to default Civ5 key bindings as found in several places online
          * Some are a little arbitrary, e.g. Economic info, Military info
-         * Some are very much so as Unciv *is* Strategic View and the Notification log is always visible
+         * Some are very much so as Unciv *is* Strategic View
          */
-        globalShortcuts.add(Input.Keys.F2) { openEmpireOverview(EmpireOverviewCategories.Trades) }    // Economic info
-        globalShortcuts.add(Input.Keys.F3) { openEmpireOverview(EmpireOverviewCategories.Units) }    // Military info
-        globalShortcuts.add(Input.Keys.F4) { openEmpireOverview(EmpireOverviewCategories.Politics) }    // Diplomacy info
-        globalShortcuts.add(Input.Keys.F5) { game.pushScreen(PolicyPickerScreen(selectedCiv, canChangeState)) }    // Social Policies Screen
-        globalShortcuts.add(Input.Keys.F6) { game.pushScreen(TechPickerScreen(viewingCiv)) }    // Tech Screen
-        globalShortcuts.add(Input.Keys.F7) { openEmpireOverview(EmpireOverviewCategories.Notifications) }    // Notification Log
-        globalShortcuts.add(Input.Keys.F8) { game.pushScreen(VictoryScreen(this)) }    // Victory Progress
-        globalShortcuts.add(Input.Keys.F9) { openEmpireOverview(EmpireOverviewCategories.Stats) }    // Demographics
-        globalShortcuts.add(Input.Keys.F10) { openEmpireOverview(EmpireOverviewCategories.Resources) }    // originally Strategic View
-        globalShortcuts.add(Input.Keys.F11) { QuickSave.save(gameInfo, this) }    // Quick Save
-        globalShortcuts.add(Input.Keys.F12) { QuickSave.load(this) }    // Quick Load
-        globalShortcuts.add(Input.Keys.HOME) {    // Capital City View
+        globalShortcuts.add(KeyboardBinding.EmpireOverviewTrades) { openEmpireOverview(EmpireOverviewCategories.Trades) }    // Economic info
+        globalShortcuts.add(KeyboardBinding.EmpireOverviewUnits) { openEmpireOverview(EmpireOverviewCategories.Units) }    // Military info
+        globalShortcuts.add(KeyboardBinding.EmpireOverviewPolitics) { openEmpireOverview(EmpireOverviewCategories.Politics) }    // Diplomacy info
+        globalShortcuts.add(KeyboardBinding.SocialPolicies) { game.pushScreen(PolicyPickerScreen(selectedCiv, canChangeState)) }    // Social Policies Screen
+        globalShortcuts.add(KeyboardBinding.TechnologyTree) { game.pushScreen(TechPickerScreen(viewingCiv)) }    // Tech Screen
+        globalShortcuts.add(KeyboardBinding.EmpireOverviewNotifications) { openEmpireOverview(EmpireOverviewCategories.Notifications) }    // Notification Log
+        globalShortcuts.add(KeyboardBinding.VictoryScreen) { game.pushScreen(VictoryScreen(this)) }    // Victory Progress
+        globalShortcuts.add(KeyboardBinding.EmpireOverviewStats) { openEmpireOverview(EmpireOverviewCategories.Stats) }    // Demographics
+        globalShortcuts.add(KeyboardBinding.EmpireOverviewResources) { openEmpireOverview(EmpireOverviewCategories.Resources) }    // originally Strategic View
+        globalShortcuts.add(KeyboardBinding.QuickSave) { QuickSave.save(gameInfo, this) }    // Quick Save
+        globalShortcuts.add(KeyboardBinding.QuickLoad) { QuickSave.load(this) }    // Quick Load
+        globalShortcuts.add(KeyboardBinding.ViewCapitalCity) {    // Capital City View
             val capital = gameInfo.getCurrentPlayerCivilization().getCapital()
             if (capital != null && !mapHolder.setCenterPosition(capital.location))
                 game.pushScreen(CityScreen(capital))
         }
-        globalShortcuts.add(KeyCharAndCode.ctrl('O')) { // Game Options
+        globalShortcuts.add(KeyboardBinding.Options) { // Game Options
             this.openOptionsPopup(onClose = {
                 nextTurnButton.update(this)
             })
         }
-        globalShortcuts.add(KeyCharAndCode.ctrl('S')) { game.pushScreen(SaveGameScreen(gameInfo)) }    //   Save
-        globalShortcuts.add(KeyCharAndCode.ctrl('L')) { game.pushScreen(LoadGameScreen()) }    //   Load
-        globalShortcuts.add(KeyCharAndCode.ctrl('Q')) { game.popScreen() }    //   WorldScreen is the last screen, so this quits
+        globalShortcuts.add(KeyboardBinding.SaveGame) { game.pushScreen(SaveGameScreen(gameInfo)) }    //   Save
+        globalShortcuts.add(KeyboardBinding.LoadGame) { game.pushScreen(LoadGameScreen()) }    //   Load
+        globalShortcuts.add(KeyboardBinding.QuitGame) { game.popScreen() }    //   WorldScreen is the last screen, so this quits
         globalShortcuts.add(Input.Keys.NUMPAD_ADD) { this.mapHolder.zoomIn() }    //   '+' Zoom
         globalShortcuts.add(Input.Keys.NUMPAD_SUBTRACT) { this.mapHolder.zoomOut() }    //   '-' Zoom
+        globalShortcuts.add(KeyboardBinding.ToggleUI) { toggleUI() }
+        globalShortcuts.add(KeyboardBinding.ToggleResourceDisplay) { minimapWrapper.resourceImageButton.toggle() }
+        globalShortcuts.add(KeyboardBinding.ToggleYieldDisplay) { minimapWrapper.yieldImageButton.toggle() }
+        globalShortcuts.add(KeyboardBinding.ToggleWorkedTilesDisplay) { minimapWrapper.populationImageButton.toggle() }
+        globalShortcuts.add(KeyboardBinding.ToggleMovementDisplay) { minimapWrapper.movementsImageButton.toggle() }
+    }
 
-        globalShortcuts.add(KeyCharAndCode.ctrl('U')){
-            uiEnabled = !uiEnabled
-            topBar.isVisible = uiEnabled
-            statusButtons.isVisible = uiEnabled
-            techPolicyAndDiplomacy.isVisible = uiEnabled
-            tutorialTaskTable.isVisible = uiEnabled
-            bottomTileInfoTable.isVisible = uiEnabled
-            unitActionsTable.isVisible = uiEnabled
-            notificationsScroll.isVisible = uiEnabled
-            minimapWrapper.isVisible = uiEnabled
-            bottomUnitTable.isVisible = uiEnabled
-            if (uiEnabled) battleTable.update() else battleTable.isVisible = false
-            fogOfWarButton.isVisible = uiEnabled && viewingCiv.isSpectator()
-        }
+    private fun toggleUI() {
+        uiEnabled = !uiEnabled
+        topBar.isVisible = uiEnabled
+        statusButtons.isVisible = uiEnabled
+        techPolicyAndDiplomacy.isVisible = uiEnabled
+        tutorialTaskTable.isVisible = uiEnabled
+        bottomTileInfoTable.isVisible = uiEnabled
+        unitActionsTable.isVisible = uiEnabled
+        notificationsScroll.isVisible = uiEnabled
+        minimapWrapper.isVisible = uiEnabled
+        bottomUnitTable.isVisible = uiEnabled
+        if (uiEnabled) battleTable.update() else battleTable.isVisible = false
+        fogOfWarButton.isVisible = uiEnabled && viewingCiv.isSpectator()
     }
 
     private fun addKeyboardListener() {
