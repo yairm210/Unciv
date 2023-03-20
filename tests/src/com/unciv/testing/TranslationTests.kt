@@ -7,6 +7,7 @@ import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.stats.Stats
 import com.unciv.models.translations.*
 import com.unciv.utils.debug
 import org.junit.Assert
@@ -280,6 +281,14 @@ class TranslationTests {
         // Reminder: "The brother of [[my [best friend]] and [[America]'s greatest [Dad]]]"
         Assert.assertEquals("The sibling of mine own closest ally and indeed the greatest Father in The old British colonies",
             superNestedString.tr())
+    }
+
+    @Test
+    fun isStatsRecognizesStatsIncludingStatCharacter(){
+        UncivGame.Current = UncivGame()
+        UncivGame.Current.settings = GameSettings()
+
+        Assert.assertTrue(Stats.isStats(Stats(1f,2f,3f).toStringForNotifications()))
     }
 
 

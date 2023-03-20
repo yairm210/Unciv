@@ -98,7 +98,7 @@ class TileStatFunctions(val tile: Tile) {
                     stats.add(terrain)
             }
         }
-        return stats!!
+        return stats ?: Stats.ZERO // For tests
     }
 
     // Only gets the tile percentage bonus, not the improvement percentage bonus

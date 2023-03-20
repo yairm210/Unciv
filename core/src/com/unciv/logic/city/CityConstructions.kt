@@ -22,11 +22,11 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.withItem
 import com.unciv.ui.components.extensions.withoutItem
+import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import kotlin.math.ceil
 import kotlin.math.roundToInt
@@ -288,7 +288,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             city.getRuleset().buildings[it]
                     ?: throw java.lang.Exception("Building $it is not found!")
         })
-        updateUniques()
+        updateUniques(true)
     }
 
     fun addProductionPoints(productionToAdd: Int) {
@@ -458,10 +458,11 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         updateUniques()
     }
 
-    fun updateUniques() {
+    fun updateUniques(onLoadGame:Boolean = false) {
         builtBuildingUniqueMap.clear()
         for (building in getBuiltBuildings())
             builtBuildingUniqueMap.addUniques(building.uniqueObjects)
+        if (!onLoadGame) city.cityStats.update()
     }
 
     fun addFreeBuildings() {

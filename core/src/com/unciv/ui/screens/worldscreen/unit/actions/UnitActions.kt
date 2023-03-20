@@ -133,6 +133,7 @@ object UnitActions {
                 else "Do you really want to disband this unit?".tr()
                 ConfirmPopup(worldScreen, disbandText, "Disband unit") {
                     unit.disband()
+                    unit.civ.updateStatsForNextTurn() // less upkeep!
                     GUI.setUpdateWorldOnNextRender()
                     if (GUI.getSettings().autoUnitCycle)
                         worldScreen.switchToNextUnit()

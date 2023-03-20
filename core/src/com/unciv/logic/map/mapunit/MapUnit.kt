@@ -42,7 +42,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     lateinit var currentTile: Tile
 
     @Transient
-    val movement = UnitMovementAlgorithms(this)
+    val movement = UnitMovement(this)
 
     @Transient
     val upgrade = UnitUpgradeManager(this)

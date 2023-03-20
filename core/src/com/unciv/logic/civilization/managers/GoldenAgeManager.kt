@@ -45,6 +45,7 @@ class GoldenAgeManager : IsPartOfGameInfoSerialization {
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnteringGoldenAge))
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+        civInfo.updateStatsForNextTurn()
     }
 
     fun endTurn(happiness: Int) {
