@@ -16,17 +16,19 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 /**
  * A generic sortable grid Widget
  *
+ * Note this only remembers one sort criterion. Sorts like compareBy(type).thenBy(name) aren't supported.
+ *
  * @param IT Type of the data objects that provide info per row
- * @param ST Type for [parentScreen], Anything allowed, specific meaning defined only by ISortableGridContentProvider subclass
+ * @param ACT Type for [actionContext], Anything allowed, specific meaning defined only by ISortableGridContentProvider subclass
  * @param CT Type of the columns
  */
-class SortableGrid<IT, ST, CT: ISortableGridContentProvider<IT, ST>> (
+class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
     /** Provides the columns to render as [ISortableGridContentProvider] instances */
     private val columns: Iterable<CT>,
     /** Provides the actual "data" as in one object per row that can then be passed to [ISortableGridContentProvider] methods to fetch cell content */
     private val data: Iterable<IT>,
     /** Passed to [ISortableGridContentProvider.getEntryActor] where it can be used to define `onClick` actions. */
-    private val parentScreen: ST,
+    private val actionContext: ACT,
     /** Sorting state will be kept here - provide your own e.g. if you want to persist it */
     private val sortState: ISortState<CT> = SortState(columns.first()),
     /** Size for header icons - if you set this too low, there is a chance that the tables will be misaligned */
@@ -40,20 +42,31 @@ class SortableGrid<IT, ST, CT: ISortableGridContentProvider<IT, ST>> (
     /** Called after every update - during init and re-sort */
     private val updateCallback: ((header: Table, details: Table, totals: Table) -> Unit)? = null
 ) : Table(BaseScreen.skin) {
+    /** The direction a column may be sorted in */
+    enum class SortDirection { None, Ascending, Descending }
 
+    /** Defines what is needed to remember the sorting state of the grid. */
+    // Abstract to allow easier implementation outside this class
+    // Note this does not automatically enforce this CT to be te same as SortableGrid's CT - not here.
+    // The _client_ will get the compilation errors when passing a custom SortState with a mismatch in CT.
     interface ISortState<CT> {
+        /** Stores the column this grid is currently sorted by */
         var sortedBy: CT
-        var descending: Boolean
+        /** Stores the direction column [sortedBy] is sorted in */
+        var direction: SortDirection
     }
-    class SortState<CT>(default: CT) : ISortState<CT> {
+
+    /** Default implementation used as default for the [sortState] parameter
+     *  - unused if the client provides that parameter */
+    private class SortState<CT>(default: CT) : ISortState<CT> {
         override var sortedBy: CT = default
-        override var descending: Boolean = false
+        override var direction: SortDirection = SortDirection.None
     }
 
     /** Provides the header row separately if and only if [separateHeader] is true,
      * e.g. to allow scrolling the content but leave the header fixed
      * (which will need some column width equalization method).
-     * @see com.unciv.ui.screens.overviewscreen.EmpireOverviewTab.equalizeColumns
+     * @see com.unciv.ui.components.extensions.equalizeColumns
      */
     fun getHeader(): Table {
         if (!separateHeader)
@@ -111,7 +124,8 @@ class SortableGrid<IT, ST, CT: ISortableGridContentProvider<IT, ST>> (
 
     fun updateHeader() {
         for (column in columns) {
-            headerIcons[column]?.setSortState(sortState.descending.takeIf { column == sortState.sortedBy })
+            val sortDirection = if (sortState.sortedBy == column) sortState.direction else SortDirection.None
+            headerIcons[column]?.setSortState(sortDirection)
         }
     }
 
@@ -121,13 +135,13 @@ class SortableGrid<IT, ST, CT: ISortableGridContentProvider<IT, ST>> (
 
         val sorter = sortState.sortedBy.getComparator()
         var sortedData = data.sortedWith(sorter)
-        if (sortState.descending)
+        if (sortState.direction == SortDirection.Descending)
             sortedData = sortedData.reversed()
 
         val cellsToEqualize = mutableListOf<Cell<Actor>>()
         for (item in sortedData) {
             for (column in columns) {
-                val actor = column.getEntryActor(item, iconSize, parentScreen)
+                val actor = column.getEntryActor(item, iconSize, actionContext)
                 if (actor == null) {
                     details.add()
                     continue
@@ -155,12 +169,22 @@ class SortableGrid<IT, ST, CT: ISortableGridContentProvider<IT, ST>> (
     }
 
     private fun toggleSort(sortBy: CT) {
-        if (sortBy == sortState.sortedBy) {
-            sortState.descending = !sortState.descending
-        } else {
-            sortState.sortedBy = sortBy
-            sortState.descending = sortBy.defaultDescending
+        // Could be a SortDirection method, but it's single use here
+        fun SortDirection.inverted() = when(this) {
+            SortDirection.Ascending -> SortDirection.Descending
+            SortDirection.Descending -> SortDirection.Ascending
+            else -> SortDirection.None
         }
+
+        sortState.run {
+            if (sortedBy == sortBy) {
+                direction = direction.inverted()
+            } else {
+                sortedBy = sortBy
+                direction = if (sortBy.defaultDescending) SortDirection.Descending else SortDirection.Ascending
+            }
+        }
+
         // Rebuild header content to show sort state
         updateHeader()
         // Sort the table: clear and fill with sorted data
@@ -179,7 +203,7 @@ class SortableGrid<IT, ST, CT: ISortableGridContentProvider<IT, ST>> (
     /** Wrap icon and sort symbol for a header cell */
     inner class HeaderGroup(column: CT) : Group() {
         private val icon = column.getHeaderIcon(iconSize)
-        private var sortShown: Boolean? = null
+        private var sortShown: SortDirection = SortDirection.None
 
         init {
             this.isTransform = false
@@ -197,13 +221,13 @@ class SortableGrid<IT, ST, CT: ISortableGridContentProvider<IT, ST>> (
 
         /** Show or remove the sort symbol.
          * @param showSort null removes the symbol, `false` shows an up arrow, `true` a down arrow */
-        fun setSortState(showSort: Boolean?) {
+        fun setSortState(showSort: SortDirection) {
             if (showSort == sortShown) return
             for (symbol in sortSymbols.values)
                 symbol.remove()
             sortShown = showSort
-            if (showSort == null) return
-            val sortSymbol = sortSymbols[showSort]!!
+            if (showSort == SortDirection.None) return
+            val sortSymbol = sortSymbols[showSort == SortDirection.Descending]!!
             sortSymbol.setOrigin(Align.bottomRight)
             sortSymbol.setPosition(iconSize - 2f, 0f)
             this.addActor(sortSymbol)

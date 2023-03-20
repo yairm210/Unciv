@@ -1,6 +1,7 @@
 package com.unciv.ui.components
 
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.unciv.logic.GameInfo
 
 /**
@@ -12,9 +13,9 @@ import com.unciv.logic.GameInfo
  * - [getEntryValue] or [getEntryActor] define what the cells display
  * - [getEntryValue] or [getTotalsActor] define what the totals row displays
  * @param IT The item type - what defines the row
- * @param ST The parent Screen Type - passed to [getEntryActor] for potential OnClick calls
+ * @param ACT Action context type - The Type of any object you need passed to [getEntryActor] for potential OnClick calls
  */
-interface ISortableGridContentProvider<IT, ST> {
+interface ISortableGridContentProvider<IT, ACT> {
     /** tooltip for the column header, defaults to enum name, will be auto-translated */
     val headerTip: String
 
@@ -30,7 +31,8 @@ interface ISortableGridContentProvider<IT, ST> {
     /** When overridden `true`, the entry cells of this column will be equalized to their max height */
     val equalizeHeight: Boolean
 
-    /** When `true` the column will be sorted descending initially - relevant for visual representation too */
+    /** When `true` the column will be sorted descending when the user switches sort to it. */
+    // Relevant for visuals (simply inverting the comparator would leave the displayed arrow not matching)
     val defaultDescending: Boolean
 
     /** @return whether the column should be rendered */
@@ -49,9 +51,9 @@ interface ISortableGridContentProvider<IT, ST> {
 
     /** Factory for entry cell [Actor]
      * - By default displays the (numeric) result of [getEntryValue].
-     * - [parentScreen] can be used to define `onClick` actions.
+     * - [actionContext] can be used to define `onClick` actions.
      */
-    fun getEntryActor(item: IT, iconSize: Float, parentScreen: ST): Actor?
+    fun getEntryActor(item: IT, iconSize: Float, actionContext: ACT): Actor?
 
     /** Factory for totals cell [Actor]
      * - By default displays the sum over [getEntryValue].

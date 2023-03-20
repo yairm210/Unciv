@@ -39,10 +39,10 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
                 ImageGetter.getUnitIcon("Settler")
                 .surroundWithCircle(iconSize)
         override fun getEntryValue(item: City) = 0  // make sure that `stat!!` in the super isn't used
-        override fun getEntryActor(item: City, iconSize: Float, parentScreen: EmpireOverviewScreen) =
+        override fun getEntryActor(item: City, iconSize: Float, actionContext: EmpireOverviewScreen) =
                 item.name.toTextButton()
                 .onClick {
-                    parentScreen.game.pushScreen(CityScreen(item))
+                    actionContext.game.pushScreen(CityScreen(item))
                 }
         override fun getTotalsActor(items: Iterable<City>) =
                 "Total".toLabel()
@@ -52,7 +52,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override fun getHeaderIcon(iconSize: Float) = null
         override fun getEntryValue(item: City) =
                 item.cityConstructions.run { turnsToConstruction(currentConstructionFromQueue) }
-        override fun getEntryActor(item: City, iconSize: Float, parentScreen: EmpireOverviewScreen): Actor? {
+        override fun getEntryActor(item: City, iconSize: Float, actionContext: EmpireOverviewScreen): Actor? {
             val construction = item.cityConstructions.currentConstructionFromQueue
             if (construction.isEmpty()) return null
             return ImageGetter.getConstructionPortrait(construction, iconSize * 0.8f)
@@ -75,7 +75,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override fun getHeaderIcon(iconSize: Float) =
                 getCircledIcon("OtherIcons/Settings", iconSize)
         override fun getEntryValue(item: City) = 0
-        override fun getEntryActor(item: City, iconSize: Float, parentScreen: EmpireOverviewScreen) =
+        override fun getEntryActor(item: City, iconSize: Float, actionContext: EmpireOverviewScreen) =
             item.cityConstructions.getCityProductionTextForCityButton().toLabel()
         override fun getTotalsActor(items: Iterable<City>) = null
     },
@@ -110,7 +110,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
                 getCircledIcon("OtherIcons/WLTK 2", iconSize, Color.TAN)
         override fun getEntryValue(item: City) =
                 if (item.isWeLoveTheKingDayActive()) 1 else 0
-        override fun getEntryActor(item: City, iconSize: Float, parentScreen: EmpireOverviewScreen) = when {
+        override fun getEntryActor(item: City, iconSize: Float, actionContext: EmpireOverviewScreen) = when {
             item.isWeLoveTheKingDayActive() -> {
                 ImageGetter.getImage("OtherIcons/WLTK 1")
                     .surroundWithCircle(iconSize, color = Color.CLEAR)
@@ -141,13 +141,13 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
                 getCircledIcon("OtherIcons/Shield", iconSize)
         override fun getEntryValue(item: City) =
                 if (item.getCenterTile().militaryUnit != null) 1 else 0
-        override fun getEntryActor(item: City, iconSize: Float, parentScreen: EmpireOverviewScreen): Actor? {
+        override fun getEntryActor(item: City, iconSize: Float, actionContext: EmpireOverviewScreen): Actor? {
             val unit = item.getCenterTile().militaryUnit ?: return null
             val unitName = unit.displayName()
             val unitIcon = ImageGetter.getConstructionPortrait(unit.baseUnit.getIconName(), iconSize * 0.7f)
             unitIcon.addTooltip(unitName, 18f, tipAlign = Align.topLeft)
             unitIcon.onClick {
-                parentScreen.select(EmpireOverviewCategories.Units, UnitOverviewTab.getUnitIdentifier(unit) )
+                actionContext.select(EmpireOverviewCategories.Units, UnitOverviewTab.getUnitIdentifier(unit) )
             }
             return unitIcon
         }
@@ -197,9 +197,9 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
 
     /** Factory for entry cell [Actor]
      * - By default displays the (numeric) result of [getEntryValue].
-     * - [parentScreen] can be used to define `onClick` actions.
+     * - [actionContext] will be the parent screen used to define `onClick` actions.
      */
-    override fun getEntryActor(item: City, iconSize: Float, parentScreen: EmpireOverviewScreen): Actor? =
+    override fun getEntryActor(item: City, iconSize: Float, actionContext: EmpireOverviewScreen): Actor? =
             getEntryValue(item).toCenteredLabel()
 
     //endregion
