@@ -164,7 +164,6 @@ private fun addMultiplayerServerOptions(
         } else {
             settings.multiplayer.server = multiplayerServerTextField.text
         }
-        settings.save()
     }
 
     serverIpTable.add(multiplayerServerTextField)
@@ -174,7 +173,6 @@ private fun addMultiplayerServerOptions(
     serverIpTable.add("Reset to Dropbox".toTextButton().onClick {
         multiplayerServerTextField.text = Constants.dropboxMultiplayerServer
         for (refreshSelect in toUpdate) refreshSelect.update(false)
-        settings.save()
     })
 
     serverIpTable.add(connectionToServerButton.onClick {

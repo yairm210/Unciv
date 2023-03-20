@@ -20,7 +20,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(GdxTestRunner::class)
-class UnitMovementAlgorithmsTests {
+class UnitMovementTests {
 
     private var tile = Tile()
     private var civInfo = Civilization()
@@ -415,7 +415,7 @@ class UnitMovementAlgorithmsTests {
         newTiles[3].setTransients()
         // create our city
         City().apply {
-            this.civ = this@UnitMovementAlgorithmsTests.civInfo
+            this.civ = this@UnitMovementTests.civInfo
             location = newTiles.last().position.cpy()
             tiles.add(location)
             tiles.add(newTiles[5].position)

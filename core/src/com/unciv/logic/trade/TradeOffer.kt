@@ -38,7 +38,11 @@ data class TradeOffer(val name: String, val type: TradeType, var amount: Int = 1
         var offerText = when(type){
             TradeType.WarDeclaration -> "Declare war on [$name]"
             TradeType.Introduction -> "Introduction to [$name]"
-            TradeType.City -> UncivGame.Current.gameInfo!!.getCities().firstOrNull{ it.id == name }?.name ?: "Non-existent city"
+            TradeType.City -> {
+                val city =
+                        UncivGame.Current.gameInfo!!.getCities().firstOrNull { it.id == name }
+                city?.run { "{$name} (${population.population})" } ?: "Non-existent city"
+            }
             else -> name
         }.tr()
 

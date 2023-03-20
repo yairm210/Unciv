@@ -10,7 +10,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.models.ruleset.unique.UniqueType
 
-class UnitMovementAlgorithms(val unit: MapUnit) {
+class UnitMovement(val unit: MapUnit) {
 
     private val pathfindingCache = PathfindingCache(unit)
 
@@ -815,11 +815,11 @@ class UnitMovementAlgorithms(val unit: MapUnit) {
 }
 
 /**
- * Cache for the results of [UnitMovementAlgorithms.getDistanceToTiles] accounting for zone of control.
- * [UnitMovementAlgorithms.getDistanceToTiles] is called in numerous places for AI pathfinding so
+ * Cache for the results of [UnitMovement.getDistanceToTiles] accounting for zone of control.
+ * [UnitMovement.getDistanceToTiles] is called in numerous places for AI pathfinding so
  * being able to skip redundant calculations helps out over a long game (especially with high level
- * AI or a big map). Same thing with [UnitMovementAlgorithms.getShortestPath] which is called in
- * [UnitMovementAlgorithms.canReach] and in [UnitMovementAlgorithms.headTowards]. Often, the AI will
+ * AI or a big map). Same thing with [UnitMovement.getShortestPath] which is called in
+ * [UnitMovement.canReach] and in [UnitMovement.headTowards]. Often, the AI will
  * see if it can reach a tile using canReach then if it can, it will headTowards it. We can cache
  * the result since otherwise this is a redundant calculation that will find the same path.
  */
@@ -875,7 +875,7 @@ class PathfindingCache(private val unit: MapUnit) {
     }
 }
 
-class PathsToTilesWithinTurn : LinkedHashMap<Tile, UnitMovementAlgorithms.ParentTileAndTotalDistance>() {
+class PathsToTilesWithinTurn : LinkedHashMap<Tile, UnitMovement.ParentTileAndTotalDistance>() {
     fun getPathToTile(tile: Tile): List<Tile> {
         if (!containsKey(tile))
             throw Exception("Can't reach this tile!")

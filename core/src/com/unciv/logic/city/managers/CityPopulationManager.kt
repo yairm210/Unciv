@@ -253,6 +253,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
             }
         }
 
+        city.cityStats.update()
     }
 
     fun getMaxSpecialists(): Counter<String> {

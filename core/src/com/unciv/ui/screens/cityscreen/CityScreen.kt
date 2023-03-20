@@ -59,15 +59,15 @@ class CityScreen(
     // Clockwise from the top-left
 
     /** Displays current production, production queue and available productions list
-     *  Not a widget, but manages two: construction queue, info toggle button, buy buttons
-     *  in a Table holder on upper LEFT, and available constructions in a ScrollPane lower LEFT.
+     *  Not a widget, but manages two: construction queue + buy buttons
+     *  in a Table holder on TOP LEFT, and available constructions in a ScrollPane BOTTOM LEFT.
      */
     private var constructionsTable = CityConstructionsTable(this)
 
     /** Displays raze city button - sits on TOP CENTER */
     private var razeCityButtonHolder = Table()
 
-    /** Displays city stats info */
+    /** Displays city stats, population management, religion, built buildings info - TOP RIGHT */
     private var cityStatsTable = CityStatsTable(this)
 
     /** Displays tile info, alternate with selectedConstructionTable - sits on BOTTOM RIGHT */

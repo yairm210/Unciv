@@ -59,7 +59,7 @@ private class ConstructionButtonDTO(
 
 /**
  * Manager to hold and coordinate two widgets for the city screen left side:
- * - Construction queue with switch to [ConstructionInfoTable] button and the enqueue / buy buttons.
+ * - Construction queue with the enqueue / buy buttons.
  *   The queue is scrollable, limited to one third of the stage height.
  * - Available constructions display, scrolling, grouped with expanders and therefore of dynamic height.
  */

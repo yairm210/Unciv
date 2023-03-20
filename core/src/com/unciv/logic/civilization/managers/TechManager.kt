@@ -271,10 +271,11 @@ class TechManager : IsPartOfGameInfoSerialization {
 
         updateTransientBooleans()
         for (city in civInfo.cities) {
+            city.cityStats.update()
             city.updateCitizens = true
         }
 
-        if(!civInfo.isSpectator())
+        if (!civInfo.isSpectator())
             civInfo.addNotification("Research of [$techName] has completed!", TechAction(techName),
                 NotificationCategory.General,
                 NotificationIcon.Science, techName)
@@ -392,7 +393,7 @@ class TechManager : IsPartOfGameInfoSerialization {
             for (policyBranch in getRuleset().policyBranches.values.filter {
                 it.era == currentEra.name && civInfo.policies.isAdoptable(it)
             }) {
-                if(!civInfo.isSpectator())
+                if (!civInfo.isSpectator())
                     civInfo.addNotification(
                         "[${policyBranch.name}] policy branch unlocked!",
                         NotificationCategory.General,
