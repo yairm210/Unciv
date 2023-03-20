@@ -1,5 +1,6 @@
 package com.unciv.ui.components
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -60,10 +61,11 @@ class KeyCapturingButton(
     }
 
     /** Gets/sets the currently assigned [KeyCharAndCode] */
-    var current
-        get() = currentField
-        set(value) = update(value)
-    private var currentField: KeyCharAndCode = KeyCharAndCode.UNKNOWN
+    var current = KeyCharAndCode.UNKNOWN
+        set(value) {
+            field = value
+            updateLabel()
+        }
 
     private var savedFocus: Actor? = null
     private val normalStyle: ImageTextButtonStyle
@@ -80,23 +82,24 @@ class KeyCapturingButton(
         addListener(ButtonListener(this))
     }
 
-    private fun update(key: KeyCharAndCode) {
-        if (key == currentField) return
-        currentField = key
-        label.setText(if (key == KeyCharAndCode.UNKNOWN) "" else key.toString())
-        style = if (currentField == default) defaultStyle else normalStyle
+    private fun updateLabel() {
+        label.setText(if (current == KeyCharAndCode.UNKNOWN) "" else current.toString())
+        style = if (current == default) defaultStyle else normalStyle
     }
     private fun handleKey(code: Int, control: Boolean) {
-        update(if (control) KeyCharAndCode.ctrlFromCode(code) else KeyCharAndCode(code))
-        onKeyHit?.invoke(currentField)
+        current = if (control) KeyCharAndCode.ctrlFromCode(code) else KeyCharAndCode(code)
+        onKeyHit?.invoke(current)
     }
     private fun resetKey() {
         current = default
+        onKeyHit?.invoke(current)
     }
 
     // Instead of storing a button reference one could use `(event?.listenerActor as? KeyCapturingButton)?.`
     private class ButtonListener(private val myButton: KeyCapturingButton) : ClickListener() {
-        private var controlDown = false
+        private fun controlDown() =
+                Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) ||
+                Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)
 
         override fun enter(event: InputEvent?, x: Float, y: Float, pointer: Int, fromActor: Actor?) {
             if (myButton.stage == null) return
@@ -112,18 +115,8 @@ class KeyCapturingButton(
 
         override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
             if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.UNKNOWN) return false
-            if (keycode == Input.Keys.CONTROL_LEFT || keycode == Input.Keys.CONTROL_RIGHT) {
-                controlDown = true
-            } else {
-                myButton.handleKey(keycode, controlDown)
-            }
-            return true
-        }
-
-        override fun keyUp(event: InputEvent?, keycode: Int): Boolean {
-            if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.UNKNOWN) return false
-            if (keycode == Input.Keys.CONTROL_LEFT || keycode == Input.Keys.CONTROL_RIGHT)
-                controlDown = false
+            if (keycode == Input.Keys.CONTROL_LEFT || keycode == Input.Keys.CONTROL_RIGHT) return false
+            myButton.handleKey(keycode, controlDown())
             return true
         }
 
