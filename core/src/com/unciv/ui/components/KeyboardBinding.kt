@@ -12,7 +12,7 @@ enum class KeyboardBinding(
     label: String? = null,
     key: KeyCharAndCode? = null
 ) {
-    // Used by [KeyShortcutDispatcher.KeyShortcut] to mark an old-style shortcut with a hardcoded key
+    /** Used by [KeyShortcutDispatcher.KeyShortcut] to mark an old-style shortcut with a hardcoded key */
     None(Category.None, KeyCharAndCode.UNKNOWN),
 
     // Worldscreen
@@ -55,8 +55,8 @@ enum class KeyboardBinding(
     SpreadReligion(Category.UnitActions, 'g'),
     RemoveHeresy(Category.UnitActions, 'h'),
     EnhanceReligion(Category.UnitActions,"Enhance a Religion", 'g'),
-    DisbandUnit(Category.UnitActions,"Disband unit", Input.Keys.FORWARD_DEL),
-    GiftUnit(Category.UnitActions,"Gift unit", null),
+    DisbandUnit(Category.UnitActions,"Disband unit", KeyCharAndCode.DEL),
+    GiftUnit(Category.UnitActions,"Gift unit", KeyCharAndCode.UNKNOWN),
     Wait(Category.UnitActions, 'z'),
     ShowAdditionalActions(Category.UnitActions,"Show more", Input.Keys.PAGE_DOWN),
     HideAdditionalActions(Category.UnitActions,"Back", Input.Keys.PAGE_UP),
