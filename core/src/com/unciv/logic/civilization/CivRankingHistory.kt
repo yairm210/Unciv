@@ -47,8 +47,8 @@ open class CivRankingHistory : HashMap<Int, Map<RankingType, Int>>(),
                         val rankings = mutableMapOf<RankingType, Int>()
                         for (rankingEntry in entry) {
                             val rankingType = RankingType.fromIdForSerialization(rankingEntry.name)
-                            // Silently drop unknown ranking types.
-                            rankings[rankingType ?: continue] = rankingEntry.asInt()
+                                ?: continue  // Silently drop unknown ranking types.
+                            rankings[rankingType] = rankingEntry.asInt()
                         }
                         this[turn] = rankings
                     }
