@@ -30,6 +30,7 @@ To create a config for your tileset you just need to create a new .json file und
 This is an example of such a config file that will be explain below:
 
 ```json
+{
     "useColorAsBaseTerrain": "false",
     "useSummaryImages": "true",
     "unexploredTileColor": {"r":1,"g":1,"b":1,"a":1},
@@ -39,11 +40,12 @@ This is an example of such a config file that will be explain below:
     "tileScales": {
         "City center":1.2,
         "Citadel":1.5
-    }
+    },
     "ruleVariants": {
         "Grassland+Forest": ["Grassland","ForestForGrassland"],
         "Grassland+Jungle+Dyes+Trading post": ["Grassland","JungleForGrasslandBack","Dyes+Trading post","JungleForGrasslandFront"]
     }
+}
 ```
 
 ### useColorAsBaseTerrain

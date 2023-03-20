@@ -364,7 +364,10 @@ class Civilization : IsPartOfGameInfoSerialization {
     val cache = CivInfoTransientCache(this)
 
     fun updateStatsForNextTurn() {
+        val previousHappiness = stats.happiness
         stats.happiness = stats.getHappinessBreakdown().values.sum().roundToInt()
+        if (stats.happiness != previousHappiness)
+            for (city in cities) city.cityStats.update(updateCivStats = false)
         stats.statsForNextTurn = stats.getStatMapForNextTurn().values.reduce { a, b -> a + b }
     }
 

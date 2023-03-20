@@ -28,14 +28,13 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
     private val playerCivInfo = worldScreen.viewingCiv
     private val enabledVictoryTypes = gameInfo.gameParameters.victoryTypes
 
+    private val headerTable = Table()
     private val contentsTable = Table()
 
     private var replayTimer : Timer.Task? = null
 
     init {
         val difficultyLabel = ("{Difficulty}: {${gameInfo.difficulty}}").toLabel()
-        difficultyLabel.setPosition(10f, stage.height - 10, Align.topLeft)
-        stage.addActor(difficultyLabel)
 
         val tabsTable = Table().apply { defaults().pad(10f) }
         val setMyVictoryButton = "Our status".toTextButton().onClick { setOurVictoryTable() }
@@ -81,11 +80,29 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
             tabsTable.add(replayButton)
         }
 
-        topTable.add(tabsTable)
-        topTable.addSeparator()
+        val headerTableRightCell = Table()
+        val gameSpeedLabel = "{Game Speed}: {${gameInfo.gameParameters.speed}}".toLabel()
+        headerTableRightCell.add(gameSpeedLabel).row()
+        if(enabledVictoryTypes.contains("Time")) {
+            val maxTurnsLabel = "{Max Turns}: ${gameInfo.gameParameters.maxTurns}".toLabel()
+            headerTableRightCell.add(maxTurnsLabel).padTop(5f)
+        }
+
+        val leftCell = headerTable.add(difficultyLabel).padLeft(10f).left()
+        headerTable.add(tabsTable).expandX().center()
+        val rightCell = headerTable.add(headerTableRightCell).padRight(10f).right()
+        headerTable.addSeparator()
+        headerTable.pack()
+        // Make the outer cells the same so that the middle one is properly centered
+        if(leftCell.actorWidth > rightCell.actorWidth) rightCell.width(leftCell.actorWidth)
+        else leftCell.width(rightCell.actorWidth)
+
+        pickerPane.clearChildren()
+        pickerPane.add(headerTable).growX().row()
+        pickerPane.add(splitPane).expand().fill()
+
         topTable.add(contentsTable)
     }
-
 
     private fun wonOrLost(description: String, victoryType: String?, hasWon: Boolean) {
         val endGameMessage =

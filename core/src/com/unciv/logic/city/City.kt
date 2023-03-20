@@ -375,8 +375,8 @@ class City : IsPartOfGameInfoSerialization {
         expansion.city = this
         expansion.setTransients()
         cityConstructions.city = this
-        cityConstructions.setTransients()
         religion.setTransients(this)
+        cityConstructions.setTransients()
         espionage.setTransients(this)
     }
 

@@ -12,7 +12,7 @@ enum class ScreenWindowType {
     Fullscreen
 }
 
-
+// TODO convert to Enum
 class DesktopScreenMode(
     private val modeId: Int,
     val windowType: ScreenWindowType) : ScreenMode {

@@ -3,6 +3,7 @@ package com.unciv.ui.screens.cityscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.city.managers.CityReligionManager
 import com.unciv.models.Religion
@@ -84,7 +85,7 @@ class CityReligionInfoTable(
         if (religion == null) return icon
         icon.onClick {
             val newScreen = if (religion == iconName) {
-                EmpireOverviewScreen(civInfo, EmpireOverviewCategories.Religion, religion)
+                EmpireOverviewScreen(GUI.getViewingPlayer(), EmpireOverviewCategories.Religion, religion)
             } else {
                 CivilopediaScreen(gameInfo.ruleset, CivilopediaCategories.Belief, religion)
             }

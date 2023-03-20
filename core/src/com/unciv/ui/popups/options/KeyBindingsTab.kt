@@ -39,6 +39,7 @@ class KeyBindingsTab(
         defaults().pad(5f)
 
         for (binding in KeyboardBinding.values()) {
+            if (binding.hidden) continue
             keyFields[binding] = KeyboardBindingWidget(binding)
         }
     }
@@ -48,6 +49,7 @@ class KeyBindingsTab(
         add(disclaimer).colspan(2).center().row()
 
         for (binding in KeyboardBinding.values()) {
+            if (binding.hidden) continue
             add(binding.label.toLabel())
             add(keyFields[binding]).row()
             keyFields[binding]!!.update(keyBindings)
@@ -56,6 +58,7 @@ class KeyBindingsTab(
 
     fun save () {
         for (binding in KeyboardBinding.values()) {
+            if (binding.hidden) continue
             keyBindings.put(binding, keyFields[binding]!!.text)
         }
     }
