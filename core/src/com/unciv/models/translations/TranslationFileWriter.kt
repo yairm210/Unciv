@@ -120,6 +120,9 @@ object TranslationFileWriter {
                 linesToTranslate += "${diplomaticModifier.text} = "
 
             linesToTranslate += "\n\n#################### Lines from key bindings #######################\n"
+            for (category in KeyboardBinding.Category.values()) {
+                linesToTranslate += "${category.label} = "
+            }
             for (binding in KeyboardBinding.values()) {
                 linesToTranslate += "${binding.label} = "
             }
