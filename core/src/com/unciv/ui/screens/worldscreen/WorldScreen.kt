@@ -504,11 +504,11 @@ class WorldScreen(
     }
 
     private fun updateSelectedCiv() {
-            selectedCiv = when {
-                bottomUnitTable.selectedUnit != null -> bottomUnitTable.selectedUnit!!.civ
-                bottomUnitTable.selectedCity != null -> bottomUnitTable.selectedCity!!.civ
-                else -> viewingCiv
-            }
+        selectedCiv = when {
+            bottomUnitTable.selectedUnit != null -> bottomUnitTable.selectedUnit!!.civ
+            bottomUnitTable.selectedCity != null -> bottomUnitTable.selectedCity!!.civ
+            else -> viewingCiv
+        }
     }
 
     private fun createFogOfWarButton(): TextButton {
