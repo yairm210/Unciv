@@ -35,6 +35,7 @@ class KeyBindingsTab(
     }
 
     init {
+        top()
         pad(10f)
         defaults().pad(5f)
 
