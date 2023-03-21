@@ -376,12 +376,12 @@ object Battle {
         if (attacker is MapUnitCombatant)
             for (unique in attacker.unit.getTriggeredUniques(UniqueType.TriggerUponLosingHealth))
                 if (unique.conditionals.any { it.params[0].toInt() <= defenderDamageDealt })
-                    UniqueTriggerActivation.triggerUnitwideUnique(unique, attacker.unit, "due to losing [$defenderDamageDealt] HP")
+                    UniqueTriggerActivation.triggerUnitwideUnique(unique, attacker.unit, triggerNotificationText = "due to losing [$defenderDamageDealt] HP")
 
         if (defender is MapUnitCombatant)
             for (unique in defender.unit.getTriggeredUniques(UniqueType.TriggerUponLosingHealth))
                 if (unique.conditionals.any { it.params[0].toInt() <= attackerDamageDealt })
-                    UniqueTriggerActivation.triggerUnitwideUnique(unique, defender.unit, "due to losing [$attackerDamageDealt] HP")
+                    UniqueTriggerActivation.triggerUnitwideUnique(unique, defender.unit, triggerNotificationText = "due to losing [$attackerDamageDealt] HP")
 
         plunderFromDamage(attacker, defender, attackerDamageDealt)
         return DamageDealt(attackerDamageDealt, defenderDamageDealt)
