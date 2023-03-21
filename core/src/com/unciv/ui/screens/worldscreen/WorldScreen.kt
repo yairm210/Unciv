@@ -323,15 +323,17 @@ class WorldScreen(
         if(uiEnabled){
             displayTutorialsOnUpdate()
 
+            bottomUnitTable.update()
+
             updateSelectedCiv()
 
             if (fogOfWar) minimapWrapper.update(selectedCiv)
             else minimapWrapper.update(viewingCiv)
 
-            bottomUnitTable.update()
             bottomTileInfoTable.updateTileTable(mapHolder.selectedTile)
             bottomTileInfoTable.x = stage.width - bottomTileInfoTable.width
             bottomTileInfoTable.y = if (game.settings.showMinimap) minimapWrapper.height else 0f
+
             battleTable.update()
 
             displayTutorialTaskOnUpdate()
@@ -502,11 +504,11 @@ class WorldScreen(
     }
 
     private fun updateSelectedCiv() {
-        selectedCiv = when {
-            bottomUnitTable.selectedUnit != null -> bottomUnitTable.selectedUnit!!.civ
-            bottomUnitTable.selectedCity != null -> bottomUnitTable.selectedCity!!.civ
-            else -> viewingCiv
-        }
+            selectedCiv = when {
+                bottomUnitTable.selectedUnit != null -> bottomUnitTable.selectedUnit!!.civ
+                bottomUnitTable.selectedCity != null -> bottomUnitTable.selectedCity!!.civ
+                else -> viewingCiv
+            }
     }
 
     private fun createFogOfWarButton(): TextButton {
