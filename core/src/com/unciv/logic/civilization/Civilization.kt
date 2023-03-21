@@ -237,6 +237,8 @@ class Civilization : IsPartOfGameInfoSerialization {
     @Transient
     var hasLongCountDisplayUnique = false
 
+    var statsHistory = CivRankingHistory()
+
     constructor()
 
     constructor(civName: String) {
@@ -285,6 +287,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.totalFaithForContests = totalFaithForContests
         toReturn.attacksSinceTurnStart = attacksSinceTurnStart.copy()
         toReturn.hasMovedAutomatedUnits = hasMovedAutomatedUnits
+        toReturn.statsHistory = statsHistory.clone()
         return toReturn
     }
 
