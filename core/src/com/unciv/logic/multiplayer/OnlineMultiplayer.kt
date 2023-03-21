@@ -15,6 +15,8 @@ import com.unciv.logic.multiplayer.api.ApiStatusCode
 import com.unciv.logic.multiplayer.api.WebSocketMessage
 import com.unciv.logic.multiplayer.api.WebSocketMessageSerializer
 import com.unciv.logic.multiplayer.api.WebSocketMessageType
+import com.unciv.logic.multiplayer.storage.ApiV2FileStorageEmulator
+import com.unciv.logic.multiplayer.storage.ApiV2FileStorageWrapper
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
@@ -80,9 +82,17 @@ class OnlineMultiplayer {
         if (username == "") {
             username = "MyValidUsername"
         }
+        ApiV2FileStorageWrapper.api = api
+
         runBlocking {
             coroutineScope {
                 Concurrency.runOnNonDaemonThreadPool {
+                    if (!api.isServerCompatible()) {
+                        logger.warning("Server API at ${UncivGame.Current.settings.multiplayer.server} is not APIv2-compatible")
+                        return@runOnNonDaemonThreadPool
+                    }
+                    ApiV2FileStorageWrapper.storage = ApiV2FileStorageEmulator(api)
+
                     if (!api.auth.login(username, password)) {
                         logger.warning("Login failed. Trying to create account for $username")
                         try {
@@ -490,6 +500,20 @@ class OnlineMultiplayer {
      * @return true if the server is alive, false otherwise
      */
     fun checkServerStatus(): Boolean {
+        if (api.getCompatibilityCheck() == null) {
+            runBlocking {
+                api.isServerCompatible()
+            }
+            if (api.getCompatibilityCheck()!!) {
+                return true  // if the compatibility check succeeded, the server is obviously running
+            }
+        } else if (api.getCompatibilityCheck()!!) {
+            runBlocking {
+                api.version()
+            }
+            return true  // no exception means the server responded with the excepted answer type
+        }
+
         var statusOk = false
         SimpleHttp.sendGetRequest("${UncivGame.Current.settings.multiplayer.server}/isalive") { success, result, _ ->
             statusOk = success

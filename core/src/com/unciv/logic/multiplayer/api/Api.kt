@@ -61,6 +61,10 @@ class Api(val baseUrl: String) {
         }
     }
 
+    // Cache the result of the last server API compatibility check
+    private var compatibilityCheck: Boolean? = null
+
+    // Helper that replaces library cookie storages to fix cookie serialization problems
     private val authCookieHelper = AuthCookieHelper()
 
     // Queue to keep references to all opened WebSocket handler jobs
@@ -179,6 +183,63 @@ class Api(val baseUrl: String) {
      */
     suspend fun version(): VersionResponse {
         return client.get("/api/version").body()
+    }
+
+    /**
+     * Determine if the remote server is compatible with this API implementation
+     *
+     * This currently only checks the endpoints /api/version and /api/v2/ws.
+     * If the first returns a valid [VersionResponse] and the second a valid
+     * [ApiErrorResponse] for being not authenticated, then the server API
+     * is most likely compatible. Otherwise, if 404 errors or other unexpected
+     * responses are retrieved in both cases, the API is surely incompatible.
+     *
+     * This method won't raise any exception other than network-related.
+     * It should be used to verify server URLs to determine the further handling.
+     */
+    suspend fun isServerCompatible(): Boolean {
+        val versionInfo = try {
+            val r = client.get("/api/version")
+            if (!r.status.isSuccess()) {
+                false
+            } else {
+                val b: VersionResponse = r.body()
+                b.version == 2
+            }
+        } catch (e: ApiErrorResponse) {
+            logger.warning("Existing endpoint '/api/version' from '$baseUrl' returned: $e")
+            false
+        } catch (e: IllegalArgumentException) {
+            false
+        }
+
+        if (!versionInfo) {
+            compatibilityCheck = false
+            return false
+        }
+
+        val websocketSupport = try {
+            val r = client.get("/api/v2/ws")
+            if (r.status.isSuccess()) {
+                logger.severe("Websocket endpoint from '$baseUrl' accepted unauthenticated request")
+                false
+            } else {
+                val b: ApiErrorResponse = r.body()
+                b.statusCode == ApiStatusCode.Unauthenticated
+            }
+        } catch (e: IllegalArgumentException) {
+            false
+        }
+
+        compatibilityCheck = websocketSupport
+        return websocketSupport
+    }
+
+    /**
+     * Getter for [compatibilityCheck]
+     */
+    fun getCompatibilityCheck(): Boolean? {
+        return compatibilityCheck
     }
 
 }
