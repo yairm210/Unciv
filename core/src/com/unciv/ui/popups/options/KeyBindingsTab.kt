@@ -21,7 +21,7 @@ class KeyBindingsTab(
     private val labelWidth: Float
 ) : Table(BaseScreen.skin), TabbedPager.IPageExtensions {
     private val keyBindings = optionsPopup.settings.keyBindings
-    private val groupedWidgets: LinkedHashMap<KeyboardBinding.Category, LinkedHashMap<KeyboardBinding, KeyboardBindingWidget>>
+    private val groupedWidgets: LinkedHashMap<KeyboardBinding.Category, LinkedHashMap<KeyboardBinding, KeyCapturingButton>>
     private val disclaimer = MarkupRenderer.render(listOf(
         FormattedLine("This is a work in progress.", color = "#b22222", centered = true),  // FIREBRICK
         FormattedLine(),
@@ -46,7 +46,7 @@ class KeyBindingsTab(
                 .map { (category, bindings) ->
                     category to bindings.asSequence()
                         .sortedWith(compareBy(collator) { it.label.tr() })
-                        .map { it to KeyboardBindingWidget(it) }  // associate would materialize a map
+                        .map { it to KeyCapturingButton(it.defaultKey) }  // associate would materialize a map
                         .toMap(LinkedHashMap())
                 }
                 .sortedBy { it.first.name.tr() }
@@ -63,7 +63,7 @@ class KeyBindingsTab(
 
     private fun getCategoryWidget(
         category: KeyboardBinding.Category,
-        bindings: LinkedHashMap<KeyboardBinding, KeyboardBindingWidget>
+        bindings: LinkedHashMap<KeyboardBinding, KeyCapturingButton>
     ) = ExpanderTab(
         category.label,
         startsOutOpened = false,
@@ -76,13 +76,13 @@ class KeyBindingsTab(
         for ((binding, widget) in bindings) {
             it.add(binding.label.toLabel()).padRight(10f).minWidth(labelWidth / 2)
             it.add(widget).row()
-            widget.update(keyBindings)
+            widget.current = keyBindings[binding]
         }
     }
 
     fun save () {
         for ((binding, widget) in groupedWidgets.asSequence().flatMap { it.value.entries }) {
-            keyBindings.put(binding, widget.text)
+            keyBindings[binding] = widget.current
         }
     }
 
