@@ -7,7 +7,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.mapunit.UnitMovementAlgorithms
+import com.unciv.logic.map.mapunit.UnitMovement
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -129,7 +129,7 @@ class DiplomacyFunctions(val civInfo:Civilization){
      * considering only civ-wide filters.
      * Use [Tile.canCivPassThrough] to check whether units of a civilization can pass through
      * a specific tile, considering only civ-wide filters.
-     * Use [UnitMovementAlgorithms.canPassThrough] to check whether a specific unit can pass through
+     * Use [UnitMovement.canPassThrough] to check whether a specific unit can pass through
      * a specific tile.
      */
     fun canPassThroughTiles(otherCiv: Civilization): Boolean {

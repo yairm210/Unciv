@@ -291,7 +291,8 @@ object TranslationActiveModsCache {
  *                  defaults to the input string if no translation is available,
  *                  but with placeholder or sentence brackets removed.
  */
-fun String.tr(language:String = UncivGame.Current.settings.language): String {
+fun String.tr(): String {
+    val language:String = UncivGame.Current.settings.language
     if (contains('<') && contains('>')) { // Conditionals!
         /**
          * So conditionals can contain placeholders, such as <vs [unitFilter] units>, which themselves

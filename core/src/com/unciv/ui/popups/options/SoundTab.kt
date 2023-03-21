@@ -90,7 +90,6 @@ private fun addSoundEffectsVolumeSlider(table: Table, settings: GameSettings) {
         getTipText = UncivSlider::formatPercent
     ) {
         settings.soundEffectsVolume = it
-        settings.save()
     }
     table.add(soundEffectsVolumeSlider).pad(5f).row()
 }
@@ -104,7 +103,6 @@ private fun addCitySoundsVolumeSlider(table: Table, settings: GameSettings) {
         getTipText = UncivSlider::formatPercent
     ) {
         settings.citySoundsVolume = it
-        settings.save()
     }
     table.add(citySoundVolumeSlider).pad(5f).row()
 }
@@ -119,7 +117,6 @@ fun addMusicVolumeSlider(table: Table, settings: GameSettings, music: MusicContr
         getTipText = UncivSlider::formatPercent
     ) {
         settings.musicVolume = it
-        settings.save()
 
         music.setVolume(it)
         if (!music.isPlaying())

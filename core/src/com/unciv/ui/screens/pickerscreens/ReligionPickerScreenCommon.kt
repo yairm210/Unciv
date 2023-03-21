@@ -25,7 +25,7 @@ import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 
 abstract class ReligionPickerScreenCommon(
-    private val choosingCiv: Civilization,
+    protected val choosingCiv: Civilization,
     disableScroll: Boolean = false
 ) : PickerScreen(disableScroll) {
 

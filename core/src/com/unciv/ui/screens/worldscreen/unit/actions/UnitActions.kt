@@ -133,6 +133,7 @@ object UnitActions {
                 else "Do you really want to disband this unit?".tr()
                 ConfirmPopup(worldScreen, disbandText, "Disband unit") {
                     unit.disband()
+                    unit.civ.updateStatsForNextTurn() // less upkeep!
                     GUI.setUpdateWorldOnNextRender()
                     if (GUI.getSettings().autoUnitCycle)
                         worldScreen.switchToNextUnit()
@@ -378,7 +379,6 @@ object UnitActions {
         actionList: ArrayList<UnitAction>,
         tile: Tile) {
         if (!unit.cache.hasUniqueToBuildImprovements) return
-        if (unit.isEmbarked()) return
 
         val couldConstruct = unit.currentMovement > 0
             && !tile.isCityCenter()
@@ -478,16 +478,18 @@ object UnitActions {
         val civResources = unit.civ.getCivResourcesByName()
 
         for (unique in uniquesToCheck) {
+            // Skip actions with a "[amount] extra times" conditional - these are treated in addTriggerUniqueActions instead
             if (unique.conditionals.any { it.type == UniqueType.UnitActionExtraLimitedTimes }) continue
 
             val improvementName = unique.params[0]
             val improvement = tile.ruleset.tileImprovements[improvementName]
                 ?: continue
-            if (usagesLeft(unit, unique)==0) continue
+            if (usagesLeft(unit, unique) == 0) continue
 
             val resourcesAvailable = improvement.uniqueObjects.none {
-                it.isOfType(UniqueType.ConsumesResources) &&
-                        (civResources[unique.params[1]] ?: 0) < unique.params[0].toInt()
+                improvementUnique ->
+                improvementUnique.isOfType(UniqueType.ConsumesResources) &&
+                        (civResources[improvementUnique.params[1]] ?: 0) < improvementUnique.params[0].toInt()
             }
 
             finalActions += UnitAction(UnitActionType.Create,

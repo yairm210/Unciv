@@ -16,8 +16,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.ui.images.IconTextButton
-import com.unciv.ui.popups.Popup
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.darken
@@ -26,6 +24,8 @@ import com.unciv.ui.components.extensions.keyShortcuts
 import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.pad
+import com.unciv.ui.images.IconTextButton
+import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 
 //TODO If keys are assigned, the widget is in a popup not filling stage width, and a button is
@@ -80,7 +80,7 @@ open class TabbedPager(
         private set
 
     private val header = Table(BaseScreen.skin)
-    private val headerScroll = LinkedScrollPane(horizontalOnly = true, header)
+    protected val headerScroll = LinkedScrollPane(horizontalOnly = true, header)
     protected var headerHeight = 0f
 
     private val fixedContentScroll = LinkedScrollPane(horizontalOnly = true)
@@ -188,7 +188,7 @@ open class TabbedPager(
         }
     }
 
-    private class LinkedScrollPane(
+    class LinkedScrollPane(
         horizontalOnly: Boolean,
         widget: Actor? = null,
         linkTo: LinkedScrollPane? = null

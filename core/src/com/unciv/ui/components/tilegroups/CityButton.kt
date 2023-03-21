@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.city.INonPerpetualConstruction
@@ -595,7 +594,9 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
             add(CityReligionInfoTable(city.religion, true)).colspan(3).row()
             addOKButton("Diplomacy") { openDiplomacy() }
             add().expandX()
-            addCloseButton()
+            addCloseButton() {
+                GUI.getWorldScreen().run { nextTurnButton.update(this@run) }
+            }
         }
         popup.open()
     }

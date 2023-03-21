@@ -30,6 +30,7 @@ import com.unciv.ui.popups.popups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
+import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
@@ -45,7 +46,7 @@ import kotlin.math.roundToInt
  */
 //region Fields
 class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
-
+    //TODO shouldn't most onClick be addActivationAction instead?
     private val turnsLabel = "Turns: 0/400".toLabel()
     private val goldLabel = "0".toLabel(colorFromRGB(225, 217, 71))
     private val scienceLabel = "0".toLabel(colorFromRGB(78, 140, 151))
@@ -104,23 +105,23 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
                 if (!isLast) padRight(20f)
             }
         }
-        fun addStat(label: Label, icon: String, overviewPage: String, isLast: Boolean = false) =
+        fun addStat(label: Label, icon: String, overviewPage: EmpireOverviewCategories, isLast: Boolean = false) =
             addStat(label, icon, isLast) { EmpireOverviewScreen(worldScreen.selectedCiv, overviewPage) }
 
-        addStat(goldLabel, "Gold", "Stats")
+        addStat(goldLabel, "Gold", EmpireOverviewCategories.Stats)
         addStat(scienceLabel, "Science") { TechPickerScreen(worldScreen.selectedCiv) }
 
         statsTable.add(happinessImage).padBottom(6f).size(20f)
         statsTable.add(happinessLabel).padRight(20f)
         val invokeResourcesPage = {
-            worldScreen.game.pushScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Resources"))
+            worldScreen.openEmpireOverview(EmpireOverviewCategories.Resources)
         }
         happinessImage.onClick(invokeResourcesPage)
         happinessLabel.onClick(invokeResourcesPage)
 
         addStat(cultureLabel, "Culture") { PolicyPickerScreen(worldScreen.selectedCiv, worldScreen.canChangeState) }
         if (worldScreen.gameInfo.isReligionEnabled()) {
-            addStat(faithLabel, "Faith", "Religion", isLast = true)
+            addStat(faithLabel, "Faith", EmpireOverviewCategories.Religion, isLast = true)
         } else {
             statsTable.add("Religion: Off".toLabel())
         }
@@ -145,7 +146,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
             }
         }
         resourcesWrapper.onClick {
-            worldScreen.game.pushScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Resources"))
+            worldScreen.openEmpireOverview(EmpireOverviewCategories.Resources)
         }
 
         val strategicResources = worldScreen.gameInfo.ruleset.tileResources.values
@@ -174,12 +175,12 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
         init {
             unitSupplyImage.onClick {
-                worldScreen.game.pushScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Units"))
+                worldScreen.openEmpireOverview(EmpireOverviewCategories.Units)
             }
 
             val overviewButton = "Overview".toTextButton()
             overviewButton.addTooltip('e')
-            overviewButton.onClick { worldScreen.game.pushScreen(EmpireOverviewScreen(worldScreen.selectedCiv)) }
+            overviewButton.onClick { worldScreen.openEmpireOverview() }
 
             unitSupplyCell = add()
             add(overviewButton).pad(10f)
@@ -225,7 +226,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
             }
 
             selectedCivIconHolder.onClick {
-                worldScreen.game.pushScreen(EmpireOverviewScreen(worldScreen.selectedCiv))
+                worldScreen.openEmpireOverview()
             }
 
             add(menuButton).size(50f).padRight(0f)

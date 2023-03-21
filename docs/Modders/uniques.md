@@ -881,7 +881,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech
 
 ??? example  "Only available"
-	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement, Ruins
+	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins
 
 ??? example  "Cannot be hurried"
 	Applicable to: Tech, Building

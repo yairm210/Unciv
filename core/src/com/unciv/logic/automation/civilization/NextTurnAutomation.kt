@@ -601,13 +601,13 @@ object NextTurnAutomation {
     }
 
     private fun chooseBeliefOfType(civInfo: Civilization, beliefType: BeliefType, additionalBeliefsToExclude: HashSet<Belief> = hashSetOf()): Belief? {
-        return civInfo.gameInfo.ruleset.beliefs
+        return civInfo.gameInfo.ruleset.beliefs.values
             .filter {
-                (it.value.type == beliefType || beliefType == BeliefType.Any)
-                && !additionalBeliefsToExclude.contains(it.value)
-                && civInfo.religionManager.getReligionWithBelief(it.value) == null
+                (it.type == beliefType || beliefType == BeliefType.Any)
+                && !additionalBeliefsToExclude.contains(it)
+                && civInfo.religionManager.getReligionWithBelief(it) == null
+                && it.getMatchingUniques(UniqueType.OnlyAvailableWhen).none { !it.conditionalsApply(civInfo) }
             }
-            .map { it.value }
             .maxByOrNull { ReligionAutomation.rateBelief(civInfo, it) }
     }
 

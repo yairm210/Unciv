@@ -237,6 +237,8 @@ class Civilization : IsPartOfGameInfoSerialization {
     @Transient
     var hasLongCountDisplayUnique = false
 
+    var statsHistory = CivRankingHistory()
+
     constructor()
 
     constructor(civName: String) {
@@ -285,6 +287,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.totalFaithForContests = totalFaithForContests
         toReturn.attacksSinceTurnStart = attacksSinceTurnStart.copy()
         toReturn.hasMovedAutomatedUnits = hasMovedAutomatedUnits
+        toReturn.statsHistory = statsHistory.clone()
         return toReturn
     }
 
@@ -364,7 +367,10 @@ class Civilization : IsPartOfGameInfoSerialization {
     val cache = CivInfoTransientCache(this)
 
     fun updateStatsForNextTurn() {
+        val previousHappiness = stats.happiness
         stats.happiness = stats.getHappinessBreakdown().values.sum().roundToInt()
+        if (stats.happiness != previousHappiness)
+            for (city in cities) city.cityStats.update(updateCivStats = false)
         stats.statsForNextTurn = stats.getStatMapForNextTurn().values.reduce { a, b -> a + b }
     }
 

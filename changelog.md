@@ -1,3 +1,37 @@
+## 4.5.11
+
+Fixed 'upon gaining unit' trigger activating for all units
+
+modding: 'Only available when' applies to beliefs
+
+Better promotion positioning in unit overview
+
+Stat updates propagate where they didn't before
+
+Hide bombard notification after bombarding
+
+By SomeTroglodyte:
+- Desktop starting size fix
+- Fix stats reward for GP consumption escalation
+- Fix Great Person Create Improvement w/ Resource
+
+By Gualdimar:
+- Victory screen fixed button position
+- Fixed foreign city religion table exploit
+
+## 4.5.10
+
+Tilesets: Separated *unexplored* tiles from *not visible* tiles
+
+Add city size (population) to TradeOffer.kt - By WhoIsJohannes
+
+By SomeTroglodyte:
+- Fixed header in city detailed stats popup
+- Map editor explorable with arrow keys
+- Fix Garrison bonus logic
+
+Save settings when closing the options popup  - By Gualdimar
+
 ## 4.5.9
 
 UI: Mod checker tab aligns mods

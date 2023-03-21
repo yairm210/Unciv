@@ -4,10 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.components.KeyCapturingButton
-import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.KeyboardBinding
-import com.unciv.ui.components.KeyboardBindings
-import com.unciv.ui.components.KeysSelectBox
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -21,7 +18,7 @@ class KeyBindingsTab(
     labelWidth: Float
 ) : Table(BaseScreen.skin), TabbedPager.IPageExtensions {
     private val keyBindings = optionsPopup.settings.keyBindings
-    private val keyFields = HashMap<KeyboardBinding, KeyboardBindingWidget>(KeyboardBinding.values().size)
+    private val keyFields = HashMap<KeyboardBinding, KeyCapturingButton>(KeyboardBinding.values().size)
     private val disclaimer = MarkupRenderer.render(listOf(
         FormattedLine("This is a work in progress.", color = "#b22222", centered = true),  // FIREBRICK
         FormattedLine(),
@@ -39,7 +36,8 @@ class KeyBindingsTab(
         defaults().pad(5f)
 
         for (binding in KeyboardBinding.values()) {
-            keyFields[binding] = KeyboardBindingWidget(binding)
+            if (binding.hidden) continue
+            keyFields[binding] = KeyCapturingButton(binding.defaultKey)
         }
     }
 
@@ -48,15 +46,17 @@ class KeyBindingsTab(
         add(disclaimer).colspan(2).center().row()
 
         for (binding in KeyboardBinding.values()) {
+            if (binding.hidden) continue
             add(binding.label.toLabel())
             add(keyFields[binding]).row()
-            keyFields[binding]!!.update(keyBindings)
+            keyFields[binding]!!.current = keyBindings[binding]
         }
     }
 
     fun save () {
         for (binding in KeyboardBinding.values()) {
-            keyBindings.put(binding, keyFields[binding]!!.text)
+            if (binding.hidden) continue
+            keyBindings[binding] = keyFields[binding]!!.current
         }
     }
 
@@ -65,58 +65,5 @@ class KeyBindingsTab(
     }
     override fun deactivated(index: Int, caption: String, pager: TabbedPager) {
         save()
-    }
-
-    class KeyboardBindingWidget(
-        /** The specific binding to edit */
-        private val binding: KeyboardBinding
-    ) : Table(BaseScreen.skin) {
-        private val selectBox = KeysSelectBox(binding.defaultKey.toString()) {
-            validateSelection()
-        }
-
-        private val button = KeyCapturingButton { code, control ->
-            selectBox.hideScrollPane()
-            boundKey = if (control)
-                KeyCharAndCode.ctrlFromCode(code)
-                else KeyCharAndCode(code)
-            resetSelection()
-        }
-
-        private var boundKey: KeyCharAndCode = binding.defaultKey
-
-        init {
-            pad(0f)
-            defaults().pad(0f)
-            add(selectBox)
-            add(button).size(36f).padLeft(2f)
-        }
-
-        /** Get the (untranslated) key name selected by the Widget */
-        // we let the KeysSelectBox handle undesired mappings
-        val text: String
-            get() = selectBox.selected.name
-
-        /** Update control to show current binding */
-        fun update(keyBindings: KeyboardBindings) {
-            boundKey = keyBindings[binding]
-            resetSelection()
-        }
-
-        /** Set boundKey from selectBox */
-        private fun validateSelection() {
-            val value = text
-            val parsedKey = KeyCharAndCode.parse(value)
-            if (parsedKey == KeyCharAndCode.UNKNOWN) {
-                resetSelection()
-            } else {
-                boundKey = parsedKey
-            }
-        }
-
-        /** Set selectBox from boundKey */
-        private fun resetSelection() {
-            selectBox.setSelected(boundKey.toString())
-        }
     }
 }

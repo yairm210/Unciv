@@ -15,11 +15,6 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.images.IconTextButton
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
-import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.TabbedPager
@@ -32,8 +27,14 @@ import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toPrettyString
+import com.unciv.ui.images.IconTextButton
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
+import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.abs
+import kotlin.math.ceil
 
 /**
  * Supplies the Unit sub-table for the Empire Overview
@@ -191,25 +192,30 @@ class UnitOverviewTab(
             }
             add(button).fillX()
 
-            // Columns: action, strength, ranged, moves
+            // Column: edit-name
             val editIcon = ImageGetter.getImage("OtherIcons/Pencil").apply { this.color = Color.WHITE }.surroundWithCircle(30f, true, Color.valueOf("000c31"))
             editIcon.onClick {
                 UnitRenamePopup(
                     screen = overviewScreen,
                     unit = unit,
                     actionOnClose = {
-                        overviewScreen.game.replaceCurrentScreen(EmpireOverviewScreen(viewingPlayer, "", "")) })
+                        overviewScreen.game.replaceCurrentScreen(
+                            EmpireOverviewScreen(viewingPlayer, selection = getUnitIdentifier(unit))
+                        )
+                    })
             }
             add(editIcon)
 
+            // Column: action
             fun getActionLabel(unit: MapUnit) = when {
                 unit.action == null -> ""
                 unit.isFortified() -> UnitActionType.Fortify.value
                 unit.isMoving() -> "Moving"
                 else -> unit.action!!
             }
-
             if (unit.action == null) add() else add(getActionLabel(unit).toLabel())
+
+            // Columns: strength, ranged
             if (baseUnit.strength > 0) add(baseUnit.strength.toLabel()) else add()
             if (baseUnit.rangedStrength > 0) add(baseUnit.rangedStrength.toLabel()) else add()
             add(unit.getMovementString().toLabel())
@@ -227,8 +233,18 @@ class UnitOverviewTab(
             // Promotions column
             val promotionsTable = Table()
             // getPromotions goes by json order on demand, so this is same sorting as on picker
-            for (promotion in unit.promotions.getPromotions(true))
-                promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name))
+            val promotions = unit.promotions.getPromotions(true)
+            if (promotions.any()) {
+                val numberOfLines = ceil(promotions.count() / 8f).toInt()
+                val promotionsPerLine = promotions.count() / numberOfLines
+                var promotionsThisLine = 0
+                for (promotion in promotions) {
+                    promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name))
+                    promotionsThisLine++
+                    if (promotionsThisLine == promotionsPerLine && numberOfLines>1) promotionsTable.row()
+                }
+            }
+
             if (unit.promotions.canBePromoted())
                 promotionsTable.add(
                     ImageGetter.getImage("OtherIcons/Star").apply {

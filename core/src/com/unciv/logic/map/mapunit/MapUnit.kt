@@ -42,7 +42,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     lateinit var currentTile: Tile
 
     @Transient
-    val movement = UnitMovementAlgorithms(this)
+    val movement = UnitMovement(this)
 
     @Transient
     val upgrade = UnitUpgradeManager(this)
@@ -566,11 +566,11 @@ class MapUnit : IsPartOfGameInfoSerialization {
         for (unique in civ.getMatchingUniques(UniqueType.ProvidesGoldWheneverGreatPersonExpended)) {
             gainedStats.gold += (100 * civ.gameInfo.speed.goldCostModifier).toInt()
         }
+        val speedModifiers = civ.gameInfo.speed.statCostModifiers
         for (unique in civ.getMatchingUniques(UniqueType.ProvidesStatsWheneverGreatPersonExpended)) {
-            val uniqueStats = unique.stats
-            val speedModifiers = civ.gameInfo.speed.statCostModifiers
-            for (stat in uniqueStats) {
-                uniqueStats[stat.key] = stat.value * speedModifiers[stat.key]!!
+            val uniqueStats = unique.stats.clone()
+            for ((stat, value) in uniqueStats) {
+                uniqueStats[stat] = value * speedModifiers[stat]!!
             }
             gainedStats.add(uniqueStats)
         }

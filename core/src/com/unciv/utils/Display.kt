@@ -15,6 +15,7 @@ enum class ScreenOrientation(val description: String)  {
 
 interface ScreenMode {
     fun getId(): Int
+    fun hasUserSelectableSize(): Boolean = false
 }
 
 interface PlatformDisplay {
@@ -27,6 +28,8 @@ interface PlatformDisplay {
 
     fun hasOrientation(): Boolean { return false }
     fun setOrientation(orientation: ScreenOrientation) {}
+
+    fun hasUserSelectableSize(id: Int): Boolean = false
 }
 
 object Display {
@@ -42,4 +45,5 @@ object Display {
     fun getScreenModes(): Map<Int, ScreenMode> { return platform.getScreenModes() }
     fun setScreenMode(id: Int, settings: GameSettings) { platform.setScreenMode(id, settings) }
 
+    fun hasUserSelectableSize(id: Int) = platform.hasUserSelectableSize(id)
 }
