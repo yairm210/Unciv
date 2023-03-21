@@ -6,31 +6,18 @@ modding: 'Only available when' applies to beliefs
 
 Better promotion positioning in unit overview
 
-Fixed loading games
+Stat updates propagate where they didn't before
 
-Resolved  - stats for notifications string'd without special characters
-
-UnitMovementAlgorithms -> UnitMovement and modernized city connections tests
-
-Resolved  - stat updates propagate where they didn't before
-
-Resolved  - Map editor tabs look scrollable
-
-Resolved  - hide bombard notification after executing bombardment
+Hide bombard notification after bombarding
 
 By SomeTroglodyte:
-- Desktop starting size fix 
-- Fix stats reward for GP consumption escalation - hopefully 
-- Key binding simpler widget 
-- Fix Great Person Create Improvement requiring Resource 
-- Fix closing Foreign City Info Popup leaves Next Turn button inactive 
-
-Silently log ranking stats for each major civ every turn  - By WhoIsJohannes
+- Desktop starting size fix
+- Fix stats reward for GP consumption escalation
+- Fix Great Person Create Improvement w/ Resource
 
 By Gualdimar:
-- Fixed selected civ update 
-- Victory screen fixed button position 
-- Fixed exploit in the foreign city religion info table 
+- Victory screen fixed button position
+- Fixed foreign city religion table exploit
 
 ## 4.5.10
 

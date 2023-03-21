@@ -379,7 +379,6 @@ object UnitActions {
         actionList: ArrayList<UnitAction>,
         tile: Tile) {
         if (!unit.cache.hasUniqueToBuildImprovements) return
-        if (unit.isEmbarked()) return
 
         val couldConstruct = unit.currentMovement > 0
             && !tile.isCityCenter()
