@@ -1,3 +1,37 @@
+## 4.5.11
+
+Fixed 'upon gaining unit' trigger activating for all units
+
+modding: 'Only available when' applies to beliefs
+
+Better promotion positioning in unit overview
+
+Fixed loading games
+
+Resolved  - stats for notifications string'd without special characters
+
+UnitMovementAlgorithms -> UnitMovement and modernized city connections tests
+
+Resolved  - stat updates propagate where they didn't before
+
+Resolved  - Map editor tabs look scrollable
+
+Resolved  - hide bombard notification after executing bombardment
+
+By SomeTroglodyte:
+- Desktop starting size fix 
+- Fix stats reward for GP consumption escalation - hopefully 
+- Key binding simpler widget 
+- Fix Great Person Create Improvement requiring Resource 
+- Fix closing Foreign City Info Popup leaves Next Turn button inactive 
+
+Silently log ranking stats for each major civ every turn  - By WhoIsJohannes
+
+By Gualdimar:
+- Fixed selected civ update 
+- Victory screen fixed button position 
+- Fixed exploit in the foreign city religion info table 
+
 ## 4.5.10
 
 Tilesets: Separated *unexplored* tiles from *not visible* tiles
