@@ -72,7 +72,8 @@ class UnitManager(val civInfo:Civilization) {
 
         if (unit != null)
             for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponGainingUnit))
-                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+                if (unit.matchesFilter(unique.params[0]))
+                    UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
         return unit
     }
     fun getCivUnitsSize(): Int = unitList.size
