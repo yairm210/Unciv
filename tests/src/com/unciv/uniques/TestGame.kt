@@ -51,7 +51,7 @@ class TestGame {
         gameInfo.ruleset = ruleset
         gameInfo.difficultyObject = ruleset.difficulties["Prince"]!!
         gameInfo.speed = ruleset.speeds[Speed.DEFAULTFORSIMULATION]!!
-        gameInfo.currentPlayerCiv = Civilization()
+        gameInfo.currentPlayerCiv = Civilization()  // Will be uninitialized, do not build on for tests
 
         // Create a tilemap, needed for city centers
         gameInfo.tileMap = TileMap(1, ruleset, false)
