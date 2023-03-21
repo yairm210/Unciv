@@ -56,27 +56,44 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         }
     }
 
-    private var yieldsInitialized = false
-    private var yields = YieldGroup().apply { isVisible = false }
+    private val yields = YieldGroup().apply {
+        // Unlike resource or improvement this is created and added only once,
+        // It's the contents that get updated
+        isVisible = false
+        setOrigin(Align.center)
+        setScale(0.7f)
+        centerX(tileGroup)
+        y = tileGroup.height*0.25f - height/2
+        // Adding YieldGroup to miscLayerGroup
+        this@TileLayerMisc.addActor(this)
+    }
 
     /** Array list of all arrows to draw from this tile on the next update. */
     private val arrowsToDraw = ArrayList<MapArrow>()
     private val arrows = HashMap<Tile, ArrayList<Actor>>()
 
     private var hexOutlineIcon: Actor? = null
+
     private var resourceName: String? = null
     private var resourceIcon: Actor? = null
+
     private var workedIcon: Actor? = null
+
+    private var improvementName: String? = null
     var improvementIcon: Actor? = null
+        private set  // Getter public for BattleTable to display as City Combatant
 
     private val startingLocationIcons = mutableListOf<Actor>()
 
-    private fun updateArrows() {
+    private fun clearArrows() {
         for (actorList in arrows.values)
             for (actor in actorList)
                 actor.remove()
         arrows.clear()
+    }
 
+    private fun updateArrows() {
+        clearArrows()
         val tileScale = 50f * 0.8f // See notes in updateRoadImages.
 
         for (arrowToAdd in arrowsToDraw) {
@@ -111,53 +128,58 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         }
     }
 
-    private fun updateImprovementIcon(viewingCiv: Civilization?, showResourcesAndImprovements: Boolean) {
+    private fun updateImprovementIcon(viewingCiv: Civilization?, show: Boolean) {
+        // If improvement has changed, force new icon next time it is needed
+        val improvementToShow = tile().getShownImprovement(viewingCiv)
+        if (improvementName != improvementToShow && improvementIcon != null) {
+            improvementName = improvementToShow
+            improvementIcon?.remove()
+            improvementIcon = null
+        }
 
-        improvementIcon?.remove()
-        improvementIcon = null
+        // Get new icon when needed
+        if (improvementName != null && show && improvementIcon == null) {
+            val icon = ImageGetter.getImprovementPortrait(improvementName!!, dim = false)
+            icon.center(tileGroup)
+            icon.x -= 22 // left
+            icon.y -= 12 // bottom
+            addActor(icon)
+            improvementIcon = icon
+        }
 
-        val shownImprovement = tile().getShownImprovement(viewingCiv)
-        if (shownImprovement == null || !showResourcesAndImprovements)
-            return
-
-        val icon = ImageGetter.getImprovementPortrait(shownImprovement, dim = false)
-        addActor(icon)
-
-        icon.center(tileGroup)
-        icon.x -= 22 // left
-        icon.y -= 12 // bottom
-
-        improvementIcon = icon
+        improvementIcon?.isVisible = show
     }
 
-    private fun updateResourceIcon(viewingCiv: Civilization?, isVisible: Boolean) {
+    private fun updateResourceIcon(viewingCiv: Civilization?, show: Boolean) {
+        // This could change on any turn, since resources need certain techs to reveal them
+        val effectiveVisible = when {
+            tileGroup.isForceVisible -> show
+            show && viewingCiv == null -> true
+            show && tile().hasViewableResource(viewingCiv!!) -> true
+            else -> false
+        }
 
-        // If resource has changed (e.g. tech researched) - add new icon
+        // If resource has changed (e.g. tech researched) - force new icon next time it's needed
         if (resourceName != tile().resource) {
             resourceName = tile().resource
             resourceIcon?.remove()
-            if (resourceName == null)
-                resourceIcon = null
-            else {
-                val newResourceIcon = ImageGetter.getResourcePortrait(resourceName!!, 20f,  tile().resourceAmount)
-                newResourceIcon.center(tileGroup)
-                newResourceIcon.x -= 22 // left
-                newResourceIcon.y += 10 // top
-                addActor(newResourceIcon)
-                resourceIcon = newResourceIcon
-            }
+            resourceIcon = null
         }
 
-        // This could happen on any turn, since resources need certain techs to reveal them
-        resourceIcon?.isVisible = when {
-            tileGroup.isForceVisible -> isVisible
-            isVisible && viewingCiv == null -> true
-            isVisible && tile().hasViewableResource(viewingCiv!!) -> true
-            else -> false
+        // Get a fresh Icon if and only if necessary
+        if (resourceName != null && effectiveVisible && resourceIcon == null) {
+            val icon = ImageGetter.getResourcePortrait(resourceName!!, 20f,  tile().resourceAmount)
+            icon.center(tileGroup)
+            icon.x -= 22 // left
+            icon.y += 10 // top
+            addActor(icon)
+            resourceIcon = icon
         }
+
+        resourceIcon?.isVisible = effectiveVisible
     }
 
-    private fun updateStartingLocationIcon(isVisible: Boolean) {
+    private fun updateStartingLocationIcon(show: Boolean) {
         // The starting location icons are visible in map editor only, but this method is abused for the
         // "Show coordinates on tiles" debug option as well. Calling code made sure this is only called
         // with isVisible=false for reset, or for non-WorldMap TileGroups, or with the debug option set.
@@ -167,7 +189,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
 
         startingLocationIcons.forEach { it.remove() }
         startingLocationIcons.clear()
-        if (!isVisible || tileGroup.isForMapEditorIcon)
+        if (!show || tileGroup.isForMapEditorIcon)
             return
 
         if (DebugUtils.SHOW_TILE_COORDS) {
@@ -239,32 +261,21 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
     }
 
     // JN updating display of tile yields
-    private fun updateYieldIcon(viewingCiv: Civilization?, showTileYields: Boolean) {
-
-        if (viewingCiv == null)
-            return
+    private fun updateYieldIcon(viewingCiv: Civilization?, show: Boolean) {
+        val effectiveVisible = show &&
+                !tileGroup.isForMapEditorIcon &&  // don't have a map to calc yields
+                !(viewingCiv == null && tileGroup.isForceVisible) // main menu background
 
         // Hiding yield icons (in order to update)
-        if (yieldsInitialized)
-            yields.isVisible = false
-
-
-        if (showTileYields) {
-            // Setting up YieldGroup Icon
+        yields.isVisible = false
+        if (effectiveVisible) {
+            // Update YieldGroup Icon
             if (tileGroup is CityTileGroup)
                 yields.setStats(tile().stats.getTileStats(tileGroup.city, viewingCiv))
             else
                 yields.setStats(tile().stats.getTileStats(viewingCiv))
-            yields.setOrigin(Align.center)
-            yields.setScale(0.7f)
             yields.toFront()
-            yields.centerX(tileGroup)
-            yields.y = tileGroup.height*0.25f - yields.height/2
             yields.isVisible = true
-            yieldsInitialized = true
-
-            // Adding YieldGroup to miscLayerGroup
-            addActor(yields)
         }
     }
 
@@ -336,7 +347,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
     override fun determineVisibility() {
         isVisible = yields.isVisible
                 || resourceIcon?.isVisible == true
-                || improvementIcon != null
+                || improvementIcon?.isVisible == true
                 || workedIcon != null
                 || hexOutlineIcon != null
                 || arrows.isNotEmpty()
@@ -345,8 +356,10 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
 
     fun reset() {
         updateImprovementIcon(null, false)
+        updateYieldIcon(null, false)
         updateResourceIcon(null, false)
         updateStartingLocationIcon(false)
+        clearArrows()
     }
 
 }
