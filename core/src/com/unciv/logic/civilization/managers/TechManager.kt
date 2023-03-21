@@ -90,6 +90,8 @@ class TechManager : IsPartOfGameInfoSerialization {
 
     fun getNumberOfTechsResearched(): Int = techsResearched.size
 
+    fun getOverflowScience(): Int = overflowScience
+
     private fun getRuleset() = civInfo.gameInfo.ruleset
 
     fun costOfTech(techName: String): Int {
@@ -131,9 +133,12 @@ class TechManager : IsPartOfGameInfoSerialization {
 
     fun remainingScienceToTech(techName: String) = costOfTech(techName) - researchOfTech(techName)
 
-    fun turnsToTech(techName: String) = when {
-        civInfo.stats.statsForNextTurn.science <= 0f -> "∞"
-        else -> max(1, ceil(remainingScienceToTech(techName).toDouble() / civInfo.stats.statsForNextTurn.science).toInt()).toString()
+    fun turnsToTech(techName: String): String {
+        val spareScience = if (canBeResearched(techName)) overflowScience else 0
+        return when {
+            civInfo.stats.statsForNextTurn.science <= 0f -> "∞"
+            else -> max(1, ceil((remainingScienceToTech(techName).toDouble() - spareScience) / civInfo.stats.statsForNextTurn.science).toInt()).toString()
+        }
     }
 
     fun isResearched(techName: String): Boolean = techsResearched.contains(techName)
