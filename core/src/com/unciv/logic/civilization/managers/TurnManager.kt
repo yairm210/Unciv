@@ -30,6 +30,9 @@ class TurnManager(val civInfo: Civilization) {
             civInfo.statsHistory.recordRankingStats(civInfo)
         }
 
+        if (civInfo.cities.isNotEmpty() && civInfo.gameInfo.ruleset.technologies.isNotEmpty())
+            civInfo.tech.checkTech(civInfo.tech.currentTechnologyName())
+
         civInfo.civConstructions.startTurn()
         civInfo.attacksSinceTurnStart.clear()
         civInfo.updateStatsForNextTurn() // for things that change when turn passes e.g. golden age, city state influence
