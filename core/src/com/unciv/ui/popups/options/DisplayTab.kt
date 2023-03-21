@@ -149,6 +149,7 @@ private fun addScreenModeSelectBox(table: Table, settings: GameSettings, selectB
     selectBox.items = Array(modes.values.toTypedArray())
     selectBox.selected = current
     selectBox.onChange {
+        settings.refreshWindowSize()
         val mode = selectBox.selected
         settings.screenMode = mode.getId()
         Display.setScreenMode(mode.getId(), settings)

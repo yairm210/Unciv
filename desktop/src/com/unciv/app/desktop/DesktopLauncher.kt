@@ -47,7 +47,6 @@ internal object DesktopLauncher {
         config.setWindowIcon("ExtraImages/Icon.png")
         config.setTitle("Unciv")
         config.setHdpiMode(HdpiMode.Logical)
-        config.setMaximized(true)
         config.setWindowSizeLimits(120, 80, -1, -1)
 
         // We don't need the initial Audio created in Lwjgl3Application, HardenGdxAudio will replace it anyway.
@@ -66,6 +65,10 @@ internal object DesktopLauncher {
             )
             FileHandle(SETTINGS_FILE_NAME).writeString(json().toJson(settings), false) // so when we later open the game we get fullscreen
         }
+        // Kludge! This is a workaround - the matching call in DesktopDisplay doesn't "take" quite permanently,
+        // the window might revert to the "config" values when the user moves the window - worse if they
+        // minimize/restore. And the config default is 640x480 unless we set something here.
+        config.setWindowedMode(settings.windowState.width, settings.windowState.height)
 
         if (!isRunFromJAR) {
             UniqueDocsWriter().write()
