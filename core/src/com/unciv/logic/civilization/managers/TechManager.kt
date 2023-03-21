@@ -218,8 +218,12 @@ class TechManager : IsPartOfGameInfoSerialization {
         var finalScienceToAdd = scienceForNewTurn
 
         if (scienceFromResearchAgreements != 0) {
-            finalScienceToAdd += scienceFromResearchAgreements()
+            val scienceBoost = scienceFromResearchAgreements()
+            finalScienceToAdd += scienceBoost
             scienceFromResearchAgreements = 0
+            civInfo.addNotification("We gained [$scienceBoost] Science from Research Agreement",
+                NotificationCategory.General,
+                NotificationIcon.Science)
         }
         if (overflowScience != 0) { // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/
             val techsResearchedKnownCivs = civInfo.getKnownCivs()
