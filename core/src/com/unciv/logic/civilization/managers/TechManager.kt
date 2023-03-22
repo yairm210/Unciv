@@ -131,13 +131,17 @@ class TechManager : IsPartOfGameInfoSerialization {
     fun researchOfTech(TechName: String?) = techsInProgress[TechName] ?: 0
     // Was once duplicated as fun scienceSpentOnTech(tech: String): Int
 
-    fun remainingScienceToTech(techName: String) = costOfTech(techName) - researchOfTech(techName)
+    fun remainingScienceToTech(techName: String): Int {
+        val spareScience = if (canBeResearched(techName)) overflowScience else 0
+        return costOfTech(techName) - researchOfTech(techName) - spareScience
+    }
 
     fun turnsToTech(techName: String): String {
-        val spareScience = if (canBeResearched(techName)) overflowScience else 0
+        val remainingCost = remainingScienceToTech(techName).toDouble()
         return when {
+            remainingCost <= 0f -> "1"
             civInfo.stats.statsForNextTurn.science <= 0f -> "∞"
-            else -> max(1, ceil((remainingScienceToTech(techName).toDouble() - spareScience) / civInfo.stats.statsForNextTurn.science).toInt()).toString()
+            else -> max(1, ceil(remainingCost / civInfo.stats.statsForNextTurn.science).toInt()).toString()
         }
     }
 
