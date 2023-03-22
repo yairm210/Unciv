@@ -115,7 +115,7 @@ class TechPickerScreen(
         }
         else civTech.techsToResearch = tempTechsToResearch
 
-        civTech.checkResearchProgress()
+        civTech.updateResearchProgress()
 
         game.settings.addCompletedTutorialTask("Pick technology")
 
