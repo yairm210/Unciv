@@ -11,6 +11,7 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.apiv2.Api
 import com.unciv.logic.multiplayer.apiv2.ApiErrorResponse
+import com.unciv.logic.multiplayer.apiv2.ApiException
 import com.unciv.logic.multiplayer.apiv2.ApiStatusCode
 import com.unciv.logic.multiplayer.apiv2.WebSocketMessage
 import com.unciv.logic.multiplayer.apiv2.WebSocketMessageSerializer
@@ -80,7 +81,7 @@ class OnlineMultiplayer {
     val serverFeatureSet: ServerFeatureSet get() = featureSet
 
     // Server API auto-detection happens in a coroutine triggered in the constructor
-    private lateinit var apiVersion: ApiVersion
+    lateinit var apiVersion: ApiVersion
 
     init {
         // Run the server auto-detection in a coroutine, only afterwards this class can be considered initialized
@@ -114,9 +115,9 @@ class OnlineMultiplayer {
                         logger.warning("Login failed. Trying to create account for $username")
                         try {
                             api.accounts.register(username, username, password)
-                        } catch (e: ApiErrorResponse) {
+                        } catch (e: ApiException) {
                             // TODO: Improve exception handling
-                            if (e.statusCode == ApiStatusCode.InvalidUsername || e.statusCode == ApiStatusCode.InvalidDisplayName || e.statusCode == ApiStatusCode.InvalidPassword) {
+                            if (e.error.statusCode == ApiStatusCode.InvalidUsername || e.error.statusCode == ApiStatusCode.InvalidDisplayName || e.error.statusCode == ApiStatusCode.InvalidPassword) {
                                 logger.warning("Invalid credentials: $e")
                             }
                             throw e

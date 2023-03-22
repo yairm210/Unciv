@@ -1,6 +1,8 @@
 package com.unciv.logic.multiplayer.storage
 
+import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.apiv2.Api
+import com.unciv.utils.Log
 import java.util.*
 
 /**
@@ -15,7 +17,7 @@ class ApiV2FileStorageEmulator(private val api: Api): FileStorage {
 
     override suspend fun savePreviewData(gameId: String, data: String) {
         // Not implemented for this API
-        throw NotImplementedError("Outdated API")
+        Log.debug("Call to deprecated API 'savePreviewData'")
     }
 
     override suspend fun loadGameData(gameId: String): String {
@@ -25,7 +27,9 @@ class ApiV2FileStorageEmulator(private val api: Api): FileStorage {
 
     override suspend fun loadPreviewData(gameId: String): String {
         // Not implemented for this API
-        throw NotImplementedError("Outdated API")
+        Log.debug("Call to deprecated API 'loadPreviewData'")
+        // TODO: This could be improved, since this consumes more resources than necessary
+        return UncivFiles.gameInfoToString(UncivFiles.gameInfoFromString(loadGameData(gameId)).asPreview())
     }
 
     override suspend fun getFileMetaData(fileName: String): FileMetaData {
@@ -38,7 +42,8 @@ class ApiV2FileStorageEmulator(private val api: Api): FileStorage {
 
     override suspend fun deletePreviewData(gameId: String) {
         // Not implemented for this API
-        throw NotImplementedError("Outdated API")
+        Log.debug("Call to deprecated API 'deletedPreviewData'")
+        deleteGameData(gameId)
     }
 
     override suspend fun authenticate(userId: String, password: String): Boolean {
@@ -47,7 +52,8 @@ class ApiV2FileStorageEmulator(private val api: Api): FileStorage {
 
     override suspend fun setPassword(newPassword: String): Boolean {
         api.accounts.setPassword("", newPassword)
-        TODO("Not yet implemented")
+        // TODO: Not yet implemented
+        return false
     }
 
 }

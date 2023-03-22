@@ -28,11 +28,17 @@ data class AccountResponse(
  */
 @Serializable
 data class ApiErrorResponse(
-    override val message: String,
+    val message: String,
     @SerialName("status_code")
     @Serializable(with = ApiStatusCodeSerializer::class)
     val statusCode: ApiStatusCode
-) : Throwable()
+) {
+
+    /**
+     * Convert the [ApiErrorResponse] to a [ApiException] for throwing and showing to users
+     */
+    fun to() = ApiException(this)
+}
 
 /**
  * API status code enum for mapping integer codes to names

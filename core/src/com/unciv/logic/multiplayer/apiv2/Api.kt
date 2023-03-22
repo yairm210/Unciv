@@ -5,6 +5,7 @@
 package com.unciv.logic.multiplayer.apiv2
 
 import com.unciv.UncivGame
+import com.unciv.logic.UncivShowableException
 import com.unciv.utils.concurrency.Concurrency
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -206,9 +207,6 @@ class Api(val baseUrl: String) {
                 val b: VersionResponse = r.body()
                 b.version == 2
             }
-        } catch (e: ApiErrorResponse) {
-            logger.warning("Existing endpoint '/api/version' from '$baseUrl' returned: $e")
-            false
         } catch (e: IllegalArgumentException) {
             false
         } catch (e: Throwable) {
@@ -248,4 +246,17 @@ class Api(val baseUrl: String) {
         return compatibilityCheck
     }
 
+}
+
+/**
+ * APIv2 exception class that is compatible with [UncivShowableException]
+ */
+class ApiException(val error: ApiErrorResponse) : UncivShowableException(lookupErrorMessage(error.statusCode))
+
+/**
+ * Convert an API status code to a string that can be translated and shown to users
+ */
+private fun lookupErrorMessage(statusCode: ApiStatusCode): String {
+    // TODO: Implement translations
+    return statusCode.name
 }
