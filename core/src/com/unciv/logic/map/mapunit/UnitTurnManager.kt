@@ -66,11 +66,7 @@ class UnitTurnManager(val unit: MapUnit) {
 
 
     private fun healUnit() {
-        if (unit.isEmbarked()) return // embarked units can't heal
-        if (unit.health >= 100) return // No need to heal if at max health
-        if (unit.hasUnique(UniqueType.HealOnlyByPillaging, checkCivInfoUniques = true)) return
-
-        val amountToHealBy = unit.rankTileForHealing(unit.getTile())
+        val amountToHealBy = unit.getHealAmountForCurrentTile()
         if (amountToHealBy == 0) return
 
         unit.healBy(amountToHealBy)
