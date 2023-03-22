@@ -30,7 +30,7 @@ class AccountsApi(private val client: HttpClient, private val authCookieHelper: 
             return response.body()
         } else {
             val err: ApiErrorResponse = response.body()
-            throw err
+            throw err.to()
         }
     }
 
@@ -45,7 +45,7 @@ class AccountsApi(private val client: HttpClient, private val authCookieHelper: 
             return response.body()
         } else {
             val err: ApiErrorResponse = response.body()
-            throw err
+            throw err.to()
         }
     }
 
@@ -77,7 +77,7 @@ class AccountsApi(private val client: HttpClient, private val authCookieHelper: 
             return response.body()
         } else {
             val err: ApiErrorResponse = response.body()
-            throw err
+            throw err.to()
         }
     }
 
@@ -105,7 +105,7 @@ class AccountsApi(private val client: HttpClient, private val authCookieHelper: 
             return true
         } else {
             val err: ApiErrorResponse = response.body()
-            throw err
+            throw err.to()
         }
     }
 
@@ -122,7 +122,7 @@ class AccountsApi(private val client: HttpClient, private val authCookieHelper: 
             return true
         } else {
             val err: ApiErrorResponse = response.body()
-            throw err
+            throw err.to()
         }
     }
 
@@ -147,7 +147,7 @@ class AccountsApi(private val client: HttpClient, private val authCookieHelper: 
             return true
         } else {
             val err: ApiErrorResponse = response.body()
-            throw err
+            throw err.to()
         }
     }
 
@@ -172,7 +172,7 @@ class AccountsApi(private val client: HttpClient, private val authCookieHelper: 
             return true
         } else {
             val err: ApiErrorResponse = response.body()
-            throw err
+            throw err.to()
         }
     }
 
@@ -227,7 +227,7 @@ class AuthApi(private val client: HttpClient, private val authCookieHelper: Auth
             if (err.statusCode == ApiStatusCode.LoginFailed) {
                 return false
             }
-            throw err
+            throw err.to()
         }
     }
 
@@ -244,7 +244,7 @@ class AuthApi(private val client: HttpClient, private val authCookieHelper: Auth
             return true
         } else {
             val err: ApiErrorResponse = response.body()
-            throw err
+            throw err.to()
         }
     }
 
@@ -268,7 +268,7 @@ class ChatApi(private val client: HttpClient, private val authCookieHelper: Auth
             return response.body()
         } else {
             val err: ApiErrorResponse = response.body()
-            throw err
+            throw err.to()
         }
     }
 
@@ -285,7 +285,7 @@ class ChatApi(private val client: HttpClient, private val authCookieHelper: Auth
             return response.body()
         } else {
             val err: ApiErrorResponse = response.body()
-            throw err
+            throw err.to()
         }
     }
 
@@ -308,7 +308,7 @@ class FriendApi(private val client: HttpClient, private val authCookieHelper: Au
             return responseBody.friends
         } else {
             val err: ApiErrorResponse = response.body()
-            throw err
+            throw err.to()
         }
     }
 
@@ -328,7 +328,7 @@ class FriendApi(private val client: HttpClient, private val authCookieHelper: Au
             return responseBody.friendRequests
         } else {
             val err: ApiErrorResponse = response.body()
-            throw err
+            throw err.to()
         }
     }
 
@@ -375,7 +375,7 @@ class FriendApi(private val client: HttpClient, private val authCookieHelper: Au
             return true
         } else {
             val err: ApiErrorResponse = response.body()
-            throw err
+            throw err.to()
         }
     }
 
@@ -391,7 +391,7 @@ class FriendApi(private val client: HttpClient, private val authCookieHelper: Au
             return true
         } else {
             val err: ApiErrorResponse = response.body()
-            throw err
+            throw err.to()
         }
     }
 
@@ -410,7 +410,7 @@ class FriendApi(private val client: HttpClient, private val authCookieHelper: Au
             return true
         } else {
             val err: ApiErrorResponse = response.body()
-            throw err
+            throw err.to()
         }
     }
 
@@ -439,7 +439,7 @@ class GameApi(private val client: HttpClient, private val authCookieHelper: Auth
             return response.body()
         } else {
             val err: ApiErrorResponse = response.body()
-            throw err
+            throw err.to()
         }
     }
 
@@ -457,7 +457,7 @@ class GameApi(private val client: HttpClient, private val authCookieHelper: Auth
             return response.body()
         } else {
             val err: ApiErrorResponse = response.body()
-            throw err
+            throw err.to()
         }
     }
 
@@ -496,7 +496,7 @@ class GameApi(private val client: HttpClient, private val authCookieHelper: Auth
             return responseBody.gameDataID
         } else {
             val err: ApiErrorResponse = response.body()
-            throw err
+            throw err.to()
         }
     }
 
@@ -519,7 +519,7 @@ class InviteApi(private val client: HttpClient, private val authCookieHelper: Au
             return responseBody.invites
         } else {
             val err: ApiErrorResponse = response.body()
-            throw err
+            throw err.to()
         }
     }
 
@@ -550,7 +550,7 @@ class InviteApi(private val client: HttpClient, private val authCookieHelper: Au
             return true
         } else {
             val err: ApiErrorResponse = response.body()
-            throw err
+            throw err.to()
         }
     }
 
@@ -575,7 +575,7 @@ class LobbyApi(private val client: HttpClient, private val authCookieHelper: Aut
             return responseBody.lobbies
         } else {
             val err: ApiErrorResponse = response.body()
-            throw err
+            throw err.to()
         }
     }
 
@@ -628,7 +628,7 @@ class LobbyApi(private val client: HttpClient, private val authCookieHelper: Aut
             return responseBody.lobbyID
         } else {
             val err: ApiErrorResponse = response.body()
-            throw err
+            throw err.to()
         }
     }
 
