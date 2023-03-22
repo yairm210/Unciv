@@ -65,7 +65,7 @@ class OnlineMultiplayer {
 
     // Updating the multiplayer server URL in the Api is out of scope, just drop this class and create a new one
     private val baseUrl = UncivGame.Current.settings.multiplayer.server
-    private val api = Api(baseUrl)
+    val api = Api(baseUrl)
 
     private val files = UncivGame.Current.files
     val multiplayerFiles = OnlineMultiplayerFiles()
