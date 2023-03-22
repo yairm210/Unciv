@@ -115,6 +115,8 @@ class TechPickerScreen(
         }
         else civTech.techsToResearch = tempTechsToResearch
 
+        civTech.checkResearchProgress()
+
         game.settings.addCompletedTutorialTask("Pick technology")
 
         game.popScreen()
@@ -424,7 +426,7 @@ class TechPickerScreen(
     }
 
     private fun getTechProgressLabel(techs: List<String>): String {
-        val progress = techs.sumOf { tech -> civTech.researchOfTech(tech) } + civTech.getOverflowScience()
+        val progress = techs.sumOf { tech -> civTech.researchOfTech(tech) } + civTech.getOverflowScience(techs.first())
         val techCost = techs.sumOf { tech -> civInfo.tech.costOfTech(tech) }
         return "(${progress}/${techCost})"
     }

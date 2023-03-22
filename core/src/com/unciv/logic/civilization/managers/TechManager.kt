@@ -90,7 +90,13 @@ class TechManager : IsPartOfGameInfoSerialization {
 
     fun getNumberOfTechsResearched(): Int = techsResearched.size
 
-    fun getOverflowScience(): Int = overflowScience
+    fun getOverflowScience(techName: String): Int {
+        if (overflowScience == 0) return 0
+        val techsResearchedKnownCivs = civInfo.getKnownCivs()
+            .count { it.isMajorCiv() && it.tech.isResearched(techName) }
+        val undefeatedCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() && !it.isDefeated() }
+        return ((1 + techsResearchedKnownCivs / undefeatedCivs.toFloat() * 0.3f) * overflowScience).toInt()
+    }
 
     private fun getRuleset() = civInfo.gameInfo.ruleset
 
@@ -132,14 +138,14 @@ class TechManager : IsPartOfGameInfoSerialization {
     // Was once duplicated as fun scienceSpentOnTech(tech: String): Int
 
     fun remainingScienceToTech(techName: String): Int {
-        val spareScience = if (canBeResearched(techName)) overflowScience else 0
+        val spareScience = if (canBeResearched(techName)) getOverflowScience(techName) else 0
         return costOfTech(techName) - researchOfTech(techName) - spareScience
     }
 
     fun turnsToTech(techName: String): String {
         val remainingCost = remainingScienceToTech(techName).toDouble()
         return when {
-            remainingCost <= 0f -> "1"
+            remainingCost <= 0f -> "0"
             civInfo.stats.statsForNextTurn.science <= 0f -> "∞"
             else -> max(1, ceil(remainingCost / civInfo.stats.statsForNextTurn.science).toInt()).toString()
         }
@@ -230,11 +236,7 @@ class TechManager : IsPartOfGameInfoSerialization {
                 NotificationIcon.Science)
         }
         if (overflowScience != 0) { // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/
-            val techsResearchedKnownCivs = civInfo.getKnownCivs()
-                    .count { it.isMajorCiv() && it.tech.isResearched(currentTechnologyName()!!) }
-            val undefeatedCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() && !it.isDefeated() }
-            val finalScienceFromOverflow = ((1 + techsResearchedKnownCivs / undefeatedCivs.toFloat() * 0.3f) * overflowScience).toInt()
-            finalScienceToAdd += finalScienceFromOverflow
+            finalScienceToAdd += getOverflowScience(currentTechnologyName()!!)
             overflowScience = 0
         }
 
@@ -252,6 +254,20 @@ class TechManager : IsPartOfGameInfoSerialization {
         val extraScienceLeftOver = techsInProgress[currentTechnology]!! - costOfTech(currentTechnology)
         overflowScience += limitOverflowScience(extraScienceLeftOver)
         addTechnology(currentTechnology)
+    }
+
+    /**
+     * Checks whether the research on the current technology can be completed
+     * and, if so, completes the research.
+     */
+    fun checkResearchProgress() {
+        val currentTechnology = currentTechnologyName() ?: return
+        val realOverflow = getOverflowScience(currentTechnology)
+        val scienceSpent = researchOfTech(currentTechnology) + realOverflow
+        if (scienceSpent >= costOfTech(currentTechnology)) {
+            overflowScience = 0
+            addScience(realOverflow)
+        }
     }
 
     fun getFreeTechnology(techName: String) {
@@ -314,6 +330,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         }
 
         moveToNewEra()
+        checkResearchProgress()
     }
 
     private fun obsoleteOldUnits(techName: String) {

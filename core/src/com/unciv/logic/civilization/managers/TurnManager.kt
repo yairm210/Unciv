@@ -31,7 +31,7 @@ class TurnManager(val civInfo: Civilization) {
         }
 
         if (civInfo.cities.isNotEmpty() && civInfo.gameInfo.ruleset.technologies.isNotEmpty())
-            civInfo.tech.addScience(0)
+            civInfo.tech.checkResearchProgress()
 
         civInfo.civConstructions.startTurn()
         civInfo.attacksSinceTurnStart.clear()
