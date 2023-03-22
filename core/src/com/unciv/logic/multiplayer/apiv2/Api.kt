@@ -2,7 +2,7 @@
  * TODO: Comment this file
  */
 
-package com.unciv.logic.multiplayer.api
+package com.unciv.logic.multiplayer.apiv2
 
 import com.unciv.UncivGame
 import com.unciv.utils.concurrency.Concurrency

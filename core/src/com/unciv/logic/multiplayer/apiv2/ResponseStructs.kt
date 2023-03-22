@@ -2,7 +2,7 @@
  * Collection of API response structs in a single file for simplicity
  */
 
-package com.unciv.logic.multiplayer.api
+package com.unciv.logic.multiplayer.apiv2
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

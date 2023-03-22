@@ -1,4 +1,4 @@
-package com.unciv.logic.multiplayer.api
+package com.unciv.logic.multiplayer.apiv2
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind

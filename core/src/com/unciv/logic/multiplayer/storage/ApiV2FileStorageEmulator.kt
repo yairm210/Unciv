@@ -1,6 +1,6 @@
 package com.unciv.logic.multiplayer.storage
 
-import com.unciv.logic.multiplayer.api.Api
+import com.unciv.logic.multiplayer.apiv2.Api
 import java.util.*
 
 /**

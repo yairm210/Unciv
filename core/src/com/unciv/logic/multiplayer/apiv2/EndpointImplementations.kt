@@ -4,7 +4,7 @@
  * Those classes are not meant to be used directly. Take a look at the Api class for common usage.
  */
 
-package com.unciv.logic.multiplayer.api
+package com.unciv.logic.multiplayer.apiv2
 
 import java.util.logging.Logger
 import io.ktor.client.*

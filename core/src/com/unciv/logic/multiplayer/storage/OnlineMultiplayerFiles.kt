@@ -15,7 +15,7 @@ import java.io.FileNotFoundException
  *
  * For low-level access only, use [UncivGame.onlineMultiplayer] on [UncivGame.Current] if you're looking to load/save a game.
  *
- * @param fileStorageIdentifier must be given if UncivGame.Current might not be initialized
+ * @param fileStorageIdentifier is a server base URL and must be given if UncivGame.Current might not be initialized
  * @see FileStorage
  * @see UncivGame.Current.settings.multiplayerServer
  */

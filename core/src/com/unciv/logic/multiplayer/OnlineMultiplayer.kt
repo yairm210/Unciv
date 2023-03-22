@@ -9,12 +9,12 @@ import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.event.EventBus
-import com.unciv.logic.multiplayer.api.Api
-import com.unciv.logic.multiplayer.api.ApiErrorResponse
-import com.unciv.logic.multiplayer.api.ApiStatusCode
-import com.unciv.logic.multiplayer.api.WebSocketMessage
-import com.unciv.logic.multiplayer.api.WebSocketMessageSerializer
-import com.unciv.logic.multiplayer.api.WebSocketMessageType
+import com.unciv.logic.multiplayer.apiv2.Api
+import com.unciv.logic.multiplayer.apiv2.ApiErrorResponse
+import com.unciv.logic.multiplayer.apiv2.ApiStatusCode
+import com.unciv.logic.multiplayer.apiv2.WebSocketMessage
+import com.unciv.logic.multiplayer.apiv2.WebSocketMessageSerializer
+import com.unciv.logic.multiplayer.apiv2.WebSocketMessageType
 import com.unciv.logic.multiplayer.storage.ApiV2FileStorageEmulator
 import com.unciv.logic.multiplayer.storage.ApiV2FileStorageWrapper
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
@@ -56,6 +56,10 @@ private val FILE_UPDATE_THROTTLE_PERIOD = Duration.ofSeconds(60)
 class OnlineMultiplayer {
     private val logger = java.util.logging.Logger.getLogger(this::class.qualifiedName)
 
+    // Updating the multiplayer server URL in the Api is out of scope, just drop this class and create a new one
+    private val baseUrl = UncivGame.Current.settings.multiplayer.server
+    private val api = Api(baseUrl)
+
     private val files = UncivGame.Current.files
     private val multiplayerFiles = OnlineMultiplayerFiles()
     private var featureSet = ServerFeatureSet(apiVersion = 2)
@@ -69,9 +73,15 @@ class OnlineMultiplayer {
     val games: Set<OnlineMultiplayerGame> get() = savedGames.values.toSet()
     val serverFeatureSet: ServerFeatureSet get() = featureSet
 
-    private val api = Api(UncivGame.Current.settings.multiplayer.server)
+    // Server API auto-detection happens in a coroutine triggered in the constructor
+    private lateinit var apiVersion: ApiVersion
 
     init {
+        // Run the server auto-detection in a coroutine, only afterwards this class can be considered initialized
+        Concurrency.run {
+            apiVersion = determineServerAPI()
+        }
+
         logger.level = Level.FINER  // for debugging
         var password = UncivGame.Current.settings.multiplayer.passwords[UncivGame.Current.settings.multiplayer.server]
         if (password == null) {
@@ -113,6 +123,21 @@ class OnlineMultiplayer {
     }
 
     private var sendChannel: SendChannel<Frame>? = null
+
+    /**
+     * Determine the server API version of the remote server
+     *
+     * Check precedence: [ApiVersion.APIv0] > [ApiVersion.APIv2] > [ApiVersion.APIv1]
+     */
+    private suspend fun determineServerAPI(): ApiVersion {
+        return if (usesDropbox()) {
+            ApiVersion.APIv0
+        } else if (api.isServerCompatible()) {
+            ApiVersion.APIv2
+        } else {
+            ApiVersion.APIv1
+        }
+    }
 
     /**
      * Send text as a [FrameType.TEXT] frame to the remote side (fire & forget)
