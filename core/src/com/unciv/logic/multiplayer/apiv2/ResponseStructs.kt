@@ -281,6 +281,8 @@ data class LobbyResponse(
     val maxPlayers: Int,
     @SerialName("current_players")
     val currentPlayers: Int,
+    @SerialName("chat_room_id")
+    val chatRoomID: Long,
     @SerialName("created_at")
     @Serializable(with = InstantSerializer::class)
     val createdAt: Instant,

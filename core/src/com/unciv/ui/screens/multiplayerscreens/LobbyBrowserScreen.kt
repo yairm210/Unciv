@@ -10,6 +10,7 @@ import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
@@ -27,6 +28,7 @@ class LobbyBrowserScreen : PickerScreen() {
     private val updateListButton = "Update".toTextButton()
 
     private val noLobbies = "Sorry, no open lobbies at the moment!"
+    private val noLobbySelected = "Select a lobby to show details"
 
     init {
         setDefaultCloseAction()
@@ -50,11 +52,9 @@ class LobbyBrowserScreen : PickerScreen() {
             }
         }
 
+        // The functionality of joining a lobby will be added on-demand in [refreshLobbyList]
         rightSideButton.setText("Join lobby")
         rightSideButton.disable()
-        rightSideButton.onClick {
-            println("TODO")  // TODO: Join lobby
-        }
 
         val tab = Table()
         val helpButton = "Help".toTextButton()
@@ -77,7 +77,21 @@ class LobbyBrowserScreen : PickerScreen() {
 
         rightSideTable.defaults().fillX()
         rightSideTable.defaults().pad(20.0f)
-        rightSideTable.add("Lobby details".toLabel()).padBottom(10f).row()
+        rightSideTable.add(noLobbySelected.toLabel()).padBottom(10f).row()
+    }
+
+    /**
+     * Update the right side table with details about a specific lobby
+     */
+    private fun updateRightSideTable(selectedLobby: LobbyResponse) {
+        rightSideTable.clear()
+        // TODO: This texts need translation
+        rightSideTable.add("${selectedLobby.name} (${selectedLobby.currentPlayers}/${selectedLobby.maxPlayers} players)".toLabel()).padBottom(10f).row()
+        if (selectedLobby.hasPassword) {
+            rightSideTable.add("This lobby requires a password to join.".toLabel()).row()
+        }
+        rightSideTable.add("Created: ${selectedLobby.createdAt}.".toLabel()).row()
+        rightSideTable.add("Owner: ${selectedLobby.owner.displayName}".toLabel()).row()
     }
 
     /**
@@ -92,14 +106,16 @@ class LobbyBrowserScreen : PickerScreen() {
         }
 
         lobbies.sortedBy { it.createdAt }
-        for (lobby in lobbies) {
+        for (lobby in lobbies.reversed()) {
+            // TODO: The button may be styled with icons and the texts may be translated
             val btn = "${lobby.name} (${lobby.currentPlayers}/${lobby.maxPlayers} players) ${if (lobby.hasPassword) " LOCKED" else ""}".toTextButton()
             btn.onClick {
-                println("Button on ${lobby.name}")  // TODO: Select this lobby and handle extra details
-                rightSideButton.enable()
+                updateRightSideTable(lobby)
+                // TODO: Un-selecting a lobby is not implemented yet
                 rightSideButton.onClick {
-                    println("Join lobby ${lobby.name}")
+                    Log.debug("Joining lobby '${lobby.name}' (ID ${lobby.id})")
                 }
+                rightSideButton.enable()
             }
             leftSideTable.add(btn).row()
         }
