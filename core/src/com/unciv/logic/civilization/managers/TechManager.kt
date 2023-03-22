@@ -240,12 +240,7 @@ class TechManager : IsPartOfGameInfoSerialization {
     fun addScience(scienceGet: Int) {
         val currentTechnology = currentTechnologyName() ?: return
         techsInProgress[currentTechnology] = researchOfTech(currentTechnology) + scienceGet
-
-        checkTech(currentTechnology)
-    }
-
-    fun checkTech(currentTechnology: String?) {
-        if (currentTechnology == null || techsInProgress[currentTechnology]!! < costOfTech(currentTechnology))
+        if (techsInProgress[currentTechnology]!! < costOfTech(currentTechnology))
             return
 
         // We finished it!
