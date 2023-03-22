@@ -211,6 +211,9 @@ class Api(val baseUrl: String) {
             false
         } catch (e: IllegalArgumentException) {
             false
+        } catch (e: Throwable) {
+            logger.warning("Unexpected exception calling '$baseUrl': $e")
+            false
         }
 
         if (!versionInfo) {
@@ -228,6 +231,9 @@ class Api(val baseUrl: String) {
                 b.statusCode == ApiStatusCode.Unauthenticated
             }
         } catch (e: IllegalArgumentException) {
+            false
+        } catch (e: Throwable) {
+            logger.warning("Unexpected exception calling '$baseUrl': $e")
             false
         }
 

@@ -19,6 +19,7 @@ import androidx.work.*
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.DefaultAndroidFiles
+import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
@@ -299,7 +300,8 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
                 try {
                     Log.d(LOG_TAG, "doWork download $gameId")
-                    val gamePreview = OnlineMultiplayerFiles(fileStorage, mapOf("Authorization" to authHeader)).tryDownloadGamePreview(gameId)
+                    val gamePreview = UncivGame.Current.onlineMultiplayer.multiplayerFiles.tryDownloadGamePreview(gameId)
+                    //val gamePreview = OnlineMultiplayerFiles(fileStorage, mapOf("Authorization" to authHeader)).tryDownloadGamePreview(gameId)
                     Log.d(LOG_TAG, "doWork download $gameId done")
                     val currentTurnPlayer = gamePreview.getCivilization(gamePreview.currentPlayer)
 

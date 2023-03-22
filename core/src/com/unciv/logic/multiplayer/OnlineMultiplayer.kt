@@ -24,16 +24,19 @@ import com.unciv.logic.multiplayer.storage.OnlineMultiplayerFiles
 import com.unciv.logic.multiplayer.storage.SimpleHttp
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.Dispatcher
 import com.unciv.utils.concurrency.launchOnThreadPool
 import com.unciv.utils.concurrency.withGLContext
 import com.unciv.utils.debug
 import io.ktor.client.plugins.websocket.*
 import io.ktor.websocket.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import java.time.Duration
@@ -49,11 +52,14 @@ import java.util.logging.Level
 private val FILE_UPDATE_THROTTLE_PERIOD = Duration.ofSeconds(60)
 
 /**
- * Provides multiplayer functionality to the rest of the game using the v2 API.
+ * Provides multiplayer functionality to the rest of the game
+ *
+ * The other parts of the game should not use any other classes from the multiplayer package.
  *
  * See the file of [com.unciv.logic.multiplayer.MultiplayerGameAdded] for all available [EventBus] events.
  */
 class OnlineMultiplayer {
+    private val settings = UncivGame.Current.settings
     private val logger = java.util.logging.Logger.getLogger(this::class.qualifiedName)
 
     // Updating the multiplayer server URL in the Api is out of scope, just drop this class and create a new one
@@ -61,8 +67,8 @@ class OnlineMultiplayer {
     private val api = Api(baseUrl)
 
     private val files = UncivGame.Current.files
-    private val multiplayerFiles = OnlineMultiplayerFiles()
-    private var featureSet = ServerFeatureSet(apiVersion = 2)
+    val multiplayerFiles = OnlineMultiplayerFiles()
+    private lateinit var featureSet: ServerFeatureSet
 
     private val savedGames: MutableMap<FileHandle, OnlineMultiplayerGame> = Collections.synchronizedMap(mutableMapOf())
 
@@ -80,6 +86,7 @@ class OnlineMultiplayer {
         // Run the server auto-detection in a coroutine, only afterwards this class can be considered initialized
         Concurrency.run {
             apiVersion = determineServerAPI()
+            startPollChecker()
         }
 
         logger.level = Level.FINER  // for debugging
@@ -142,7 +149,7 @@ class OnlineMultiplayer {
     /**
      * Send text as a [FrameType.TEXT] frame to the remote side (fire & forget)
      *
-     * Returns [Unit] if no exception is thrown, otherwise the exception is thrown
+     * Returns [Unit] if no exception is thrown
      */
     internal suspend fun sendText(text: String): Unit {
         if (sendChannel == null) {
@@ -305,7 +312,6 @@ class OnlineMultiplayer {
             addGame(saveFile)
         }
     }
-
 
     /**
      * Fires [MultiplayerGameAdded]
@@ -524,7 +530,7 @@ class OnlineMultiplayer {
      * Checks if the server is alive and sets the [serverFeatureSet] accordingly.
      * @return true if the server is alive, false otherwise
      */
-    fun checkServerStatus(): Boolean {
+    suspend fun checkServerStatus(): Boolean {
         if (api.getCompatibilityCheck() == null) {
             runBlocking {
                 api.isServerCompatible()
@@ -547,7 +553,7 @@ class OnlineMultiplayer {
                     json().fromJson(ServerFeatureSet::class.java, result)
                 } catch (ex: Exception) {
                     Log.error("${UncivGame.Current.settings.multiplayer.server} does not support server feature set")
-                    ServerFeatureSet(apiVersion = 0)
+                    ServerFeatureSet()
                 }
             }
         }
@@ -599,6 +605,30 @@ class OnlineMultiplayer {
      */
     private fun hasNewerGameState(preview1: GameInfoPreview, preview2: GameInfoPreview): Boolean {
         return preview1.turns > preview2.turns
+    }
+
+    /**
+     * Start a background runner that periodically checks for new game updates ([ApiVersion.APIv0] and [ApiVersion.APIv1] only)
+     */
+    private fun startPollChecker() {
+        if (apiVersion in listOf(ApiVersion.APIv0, ApiVersion.APIv1)) {
+            logger.info("Starting poll service for remote games ...")
+            flow<Unit> {
+                while (true) {
+                    delay(500)
+
+                    val currentGame = getCurrentGame()
+                    val multiplayerSettings = UncivGame.Current.settings.multiplayer
+                    val preview = currentGame?.preview
+                    if (currentGame != null && (OldOnlineMultiplayer.usesCustomServer() || preview == null || !preview.isUsersTurn())) {
+                        throttle(lastCurGameRefresh, multiplayerSettings.currentGameRefreshDelay, {}) { currentGame.requestUpdate() }
+                    }
+
+                    val doNotUpdate = if (currentGame == null) listOf() else listOf(currentGame)
+                    throttle(lastAllGamesRefresh, multiplayerSettings.allGameRefreshDelay, {}) { requestUpdate(doNotUpdate = doNotUpdate) }
+                }
+            }.launchIn(CoroutineScope(Dispatcher.DAEMON))
+        }
     }
 
     companion object {
