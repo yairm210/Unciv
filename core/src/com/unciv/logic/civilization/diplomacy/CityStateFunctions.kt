@@ -222,7 +222,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         var newAllyName: String? = null
         if (!civInfo.isCityState()) return
         val maxInfluence = civInfo.diplomacy
-            .filter { !it.value.otherCiv().isCityState() && !it.value.otherCiv().isDefeated() }
+            .filter { it.value.otherCiv().isMajorCiv() && !it.value.otherCiv().isDefeated() }
             .maxByOrNull { it.value.getInfluence() }
         if (maxInfluence != null && maxInfluence.value.getInfluence() >= 60) {
             newAllyName = maxInfluence.key

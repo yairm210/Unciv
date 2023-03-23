@@ -298,12 +298,12 @@ class GameOptionsTable(
             return null
 
         add("{Max Turns}:".toLabel()).left().expandX()
-        val slider = UncivSlider(250f, 1500f, 50f, initial = gameParameters.maxTurns.toFloat()) {
+        val slider = UncivSlider(100f, 1500f, 5f, initial = gameParameters.maxTurns.toFloat()) {
             gameParameters.maxTurns = it.toInt()
         }
         slider.isDisabled = locked
-        val snapValues = floatArrayOf(250f,300f,350f,400f,450f,500f,550f,600f,650f,700f,750f,800f,900f,1000f,1250f,1500f)
-        slider.setSnapToValues(snapValues, 250f)
+        val snapValues = floatArrayOf(100f,150f,200f,250f,300f,350f,400f,450f,500f,550f,600f,650f,700f,750f,800f,900f,1000f,1250f,1500f)
+        slider.setSnapToValues(snapValues, 125f)
         return slider
     }
 

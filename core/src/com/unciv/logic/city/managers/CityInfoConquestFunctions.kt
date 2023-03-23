@@ -275,7 +275,7 @@ class CityInfoConquestFunctions(val city: City){
             //  civs so the capitalCityIndicator recognizes the unique buildings of the conquered civ
             if (oldCiv.getCapital() == this)  oldCiv.moveCapitalToNextLargest()
 
-            civ.cities = civ.cities.toMutableList().apply { remove(city) }
+            oldCiv.cities = oldCiv.cities.toMutableList().apply { remove(city) }
             newCivInfo.cities = newCivInfo.cities.toMutableList().apply { add(city) }
             civ = newCivInfo
             hasJustBeenConquered = false

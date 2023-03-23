@@ -19,6 +19,9 @@ class StatusButtons(
     init {
         space(10f)
         right()
+        wrapReverse()
+        wrapSpace(10f)
+        rowRight()
         if (multiplayerStatusButton != null) {
             addActor(multiplayerStatusButton)
         }

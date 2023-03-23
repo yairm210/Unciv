@@ -505,7 +505,7 @@ class Civilization : IsPartOfGameInfoSerialization {
      */
     fun isDefeated() = when {
         isBarbarian() || isSpectator() -> false     // Barbarians and voyeurs can't lose
-        hasEverOwnedOriginalCapital == true -> cities.isEmpty()
+        hasEverOwnedOriginalCapital -> cities.isEmpty()
         else -> units.getCivUnits().none()
     }
 
@@ -772,15 +772,17 @@ class Civilization : IsPartOfGameInfoSerialization {
      * Removes current capital then moves capital to argument city if not null
      */
     fun moveCapitalTo(city: City?) {
-        if (cities.isNotEmpty() && getCapital() != null) {
-            val oldCapital = getCapital()!!
-            oldCapital.cityConstructions.removeBuilding(oldCapital.capitalCityIndicator())
-        }
 
-        if (city == null) return // can't move a non-existent city but we can always remove our old capital
-        // move new capital
-        city.cityConstructions.addBuilding(city.capitalCityIndicator())
-        city.isBeingRazed = false // stop razing the new capital if it was being razed
+        val oldCapital = getCapital()
+
+        // Add new capital first so the civ doesn't get stuck in a state where it has cities but no capital
+        if (city != null) {
+            // move new capital
+            city.cityConstructions.addBuilding(city.capitalCityIndicator())
+            city.isBeingRazed = false // stop razing the new capital if it was being razed
+        }
+        if (oldCapital != null)
+            oldCapital.cityConstructions.removeBuilding(oldCapital.capitalCityIndicator())
     }
 
     fun moveCapitalToNextLargest() {

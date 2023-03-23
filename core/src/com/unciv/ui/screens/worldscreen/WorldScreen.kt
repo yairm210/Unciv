@@ -173,6 +173,7 @@ class WorldScreen(
                 }
 
         mapHolder.isAutoScrollEnabled = Gdx.app.type == Application.ApplicationType.Desktop && game.settings.mapAutoScroll
+        mapHolder.mapPanningSpeed = game.settings.mapPanningSpeed
 
         // Don't select unit and change selectedCiv when centering as spectator
         if (viewingCiv.isSpectator())
@@ -634,7 +635,14 @@ class WorldScreen(
 
         updateMultiplayerStatusButton()
 
+        statusButtons.wrap(false)
         statusButtons.pack()
+        val maxWidth = stage.width - techPolicyAndDiplomacy.width - 25f
+        if(statusButtons.width > maxWidth) {
+            statusButtons.width = maxWidth
+            statusButtons.wrap()
+            statusButtons.pack()
+        }
         statusButtons.setPosition(stage.width - statusButtons.width - 10f, topBar.y - statusButtons.height - 10f)
     }
 

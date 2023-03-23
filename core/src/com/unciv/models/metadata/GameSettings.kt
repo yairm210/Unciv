@@ -31,7 +31,11 @@ enum class ScreenSize(val virtualWidth:Float, val virtualHeight:Float){
 
 class GameSettings {
 
+    /** Allows panning the map by moving the pointer to the screen edges */
     var mapAutoScroll: Boolean = false
+    /** How fast the map pans using keyboard or with [mapAutoScroll] and mouse */
+    var mapPanningSpeed: Float = 6f
+
     var showWorkedTiles: Boolean = false
     var showResourcesAndImprovements: Boolean = true
     var showTileYields: Boolean = false
