@@ -62,8 +62,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         isVisible = false
         setOrigin(Align.center)
         setScale(0.7f)
-        centerX(tileGroup)
-        y = tileGroup.height*0.25f - height/2
+        y = tileGroup.height * 0.25f - height / 2
         // Adding YieldGroup to miscLayerGroup
         this@TileLayerMisc.addActor(this)
     }
@@ -131,7 +130,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
     private fun updateImprovementIcon(viewingCiv: Civilization?, show: Boolean) {
         // If improvement has changed, force new icon next time it is needed
         val improvementToShow = tile().getShownImprovement(viewingCiv)
-        if (improvementName != improvementToShow && improvementIcon != null) {
+        if (improvementName != improvementToShow) {
             improvementName = improvementToShow
             improvementIcon?.remove()
             improvementIcon = null
@@ -268,14 +267,15 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
 
         // Hiding yield icons (in order to update)
         yields.isVisible = false
-        if (effectiveVisible) {
+        if (effectiveVisible) yields.run {
             // Update YieldGroup Icon
             if (tileGroup is CityTileGroup)
-                yields.setStats(tile().stats.getTileStats(tileGroup.city, viewingCiv))
+                setStats(tile().stats.getTileStats(tileGroup.city, viewingCiv))
             else
-                yields.setStats(tile().stats.getTileStats(viewingCiv))
-            yields.toFront()
-            yields.isVisible = true
+                setStats(tile().stats.getTileStats(viewingCiv))
+            toFront()
+            centerX(tileGroup)
+            isVisible = true
         }
     }
 
