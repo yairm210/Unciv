@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.mapeditorscreen
 
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.unciv.UncivGame
@@ -136,7 +137,10 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen(), RecreateOnResize {
         }
         for (oldPanningListener in stage.root.listeners.filterIsInstance<KeyboardPanningListener>())
             stage.removeListener(oldPanningListener)  // otherwise they accumulate
+        result.mapPanningSpeed = UncivGame.Current.settings.mapPanningSpeed
         stage.addListener(KeyboardPanningListener(result, allowWASD = false))
+        if (Gdx.app.type == Application.ApplicationType.Desktop)
+            result.isAutoScrollEnabled = UncivGame.Current.settings.mapAutoScroll
 
         stage.root.addActorAt(0, result)
         stage.scrollFocus = result

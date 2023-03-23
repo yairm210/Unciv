@@ -10,11 +10,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
 
 class KeyboardPanningListener(
     private val mapHolder: ZoomableScrollPane,
-    allowWASD: Boolean,
+    allowWASD: Boolean
 ) : InputListener() {
+    companion object {
+        /** The delay between panning steps */
+        const val deltaTime = 0.01f
+    }
+
     private val pressedKeys = mutableSetOf<Int>()
     private var infiniteAction: RepeatAction? = null
-    private val amountToMove = 6 / mapHolder.scaleX
     private val allowedKeys =
             setOf(Input.Keys.UP, Input.Keys.DOWN, Input.Keys.LEFT, Input.Keys.RIGHT) + (
                 if (allowWASD) setOf(Input.Keys.W, Input.Keys.S, Input.Keys.A, Input.Keys.D)
@@ -45,7 +49,7 @@ class KeyboardPanningListener(
         // create a copy of the action, because removeAction() will destroy this instance
         infiniteAction = Actions.forever(
             Actions.delay(
-                0.01f,
+                deltaTime,
                 Actions.run { whileKeyPressedLoop() })
         )
         mapHolder.addAction(infiniteAction)
@@ -61,14 +65,16 @@ class KeyboardPanningListener(
     }
 
     private fun whileKeyPressedLoop() {
+        var deltaX = 0f
+        var deltaY = 0f
         for (keycode in pressedKeys) {
             when (keycode) {
-                Input.Keys.W, Input.Keys.UP -> mapHolder.scrollY = mapHolder.restrictY(-amountToMove)
-                Input.Keys.S, Input.Keys.DOWN -> mapHolder.scrollY = mapHolder.restrictY(amountToMove)
-                Input.Keys.A, Input.Keys.LEFT -> mapHolder.scrollX = mapHolder.restrictX(amountToMove)
-                Input.Keys.D, Input.Keys.RIGHT -> mapHolder.scrollX = mapHolder.restrictX(-amountToMove)
+                Input.Keys.W, Input.Keys.UP -> deltaY -= 1f
+                Input.Keys.S, Input.Keys.DOWN -> deltaY += 1f
+                Input.Keys.A, Input.Keys.LEFT -> deltaX += 1f
+                Input.Keys.D, Input.Keys.RIGHT -> deltaX -= 1f
             }
         }
-        mapHolder.updateVisualScroll()
+        mapHolder.doKeyOrMousePanning(deltaX, deltaY)
     }
 }
