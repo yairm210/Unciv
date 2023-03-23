@@ -1,0 +1,20 @@
+
+
+Resolved  - Spectator startTurn and endTurn do nothing
+
+4.5.11-patch1
+
+Resolved  #8985 - Solved capital conquest crash
+
+Resolved  - triggered notification text for unit triggers sent correctly
+
+By SomeTroglodyte:
+- Linting and a little hardening of the UI-Skins code 
+- "Sleep until healed" knows when you can't 
+- Tiny tweak to Max Turns slider 
+
+By Gualdimar:
+- Wrappable multiplayer button 
+- Improvements in science display 
+
+AbsoluteUnits - Landsknecht, Knight_v2, Missionary (post-Industrial)  - By letstalkaboutdune
