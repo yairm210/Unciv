@@ -26,9 +26,14 @@ class TurnManager(val civInfo: Civilization) {
 
 
     fun startTurn() {
+        if (civInfo.isSpectator()) return
+
         if (civInfo.isMajorCiv() && civInfo.isAlive()) {
             civInfo.statsHistory.recordRankingStats(civInfo)
         }
+
+        if (civInfo.cities.isNotEmpty() && civInfo.gameInfo.ruleset.technologies.isNotEmpty())
+            civInfo.tech.updateResearchProgress()
 
         civInfo.civConstructions.startTurn()
         civInfo.attacksSinceTurnStart.clear()
@@ -208,6 +213,8 @@ class TurnManager(val civInfo: Civilization) {
 
 
     fun endTurn() {
+        if (civInfo.isSpectator()) return
+
         val notificationsLog = civInfo.notificationsLog
         val notificationsThisTurn = Civilization.NotificationsLog(civInfo.gameInfo.turns)
         notificationsThisTurn.notifications.addAll(civInfo.notifications)

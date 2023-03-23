@@ -1,3 +1,19 @@
+## 4.5.12
+
+Spectators no longer affect games they are in
+
+Triggered notification text for unit triggers sent correctly
+
+By SomeTroglodyte:
+- "Sleep until healed" knows when you can't
+- Tiny tweak to Max Turns slider
+
+By Gualdimar:
+- Better multiplayer button location in portrait mode
+- Improvements in science display
+
+AbsoluteUnits - Landsknecht, Knight_v2, Missionary (post-Industrial)  - By letstalkaboutdune
+
 ## 4.5.11
 
 Fixed 'upon gaining unit' trigger activating for all units
