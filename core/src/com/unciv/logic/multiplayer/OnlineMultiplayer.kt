@@ -52,6 +52,8 @@ import java.util.logging.Level
  */
 private val FILE_UPDATE_THROTTLE_PERIOD = Duration.ofSeconds(60)
 
+private val SESSION_TIMEOUT = Duration.ofSeconds(15 * 60)
+
 /**
  * Provides multiplayer functionality to the rest of the game
  *
@@ -64,7 +66,7 @@ class OnlineMultiplayer {
     private val logger = java.util.logging.Logger.getLogger(this::class.qualifiedName)
 
     // Updating the multiplayer server URL in the Api is out of scope, just drop this class and create a new one
-    private val baseUrl = UncivGame.Current.settings.multiplayer.server
+    val baseUrl = UncivGame.Current.settings.multiplayer.server
     val api = Api(baseUrl)
 
     private val files = UncivGame.Current.files
@@ -80,6 +82,12 @@ class OnlineMultiplayer {
     val games: Set<OnlineMultiplayerGame> get() = savedGames.values.toSet()
     val serverFeatureSet: ServerFeatureSet get() = featureSet
 
+    private var lastSuccessfulAuthentication: AtomicReference<Instant?> = AtomicReference()
+
+    // Channel to send frames via WebSocket to the server, may be null
+    // for unsupported servers or unauthenticated/uninitialized clients
+    private var sendChannel: SendChannel<Frame>? = null
+
     // Server API auto-detection happens in a coroutine triggered in the constructor
     lateinit var apiVersion: ApiVersion
 
@@ -87,20 +95,23 @@ class OnlineMultiplayer {
         // Run the server auto-detection in a coroutine, only afterwards this class can be considered initialized
         Concurrency.run {
             apiVersion = determineServerAPI()
+            checkServerStatus()
             startPollChecker()
+            isAliveAPIv1()  // this is called for any API version since it sets the featureSet implicitly
+            if (apiVersion == ApiVersion.APIv2) {
+                // Trying to log in with the stored credentials at this step decreases latency later
+                if (hasAuthentication()) {
+                    if (!api.auth.login(UncivGame.Current.settings.multiplayer.userName, UncivGame.Current.settings.multiplayer.passwords[UncivGame.Current.settings.multiplayer.server]!!)) {
+                        logger.warning("Login failed using stored credentials")
+                    } else {
+                        lastSuccessfulAuthentication.set(Instant.now())
+                        api.websocket(::handleWS)
+                    }
+                }
+                ApiV2FileStorageWrapper.storage = ApiV2FileStorageEmulator(api)
+                ApiV2FileStorageWrapper.api = api
+            }
         }
-
-        logger.level = Level.FINER  // for debugging
-        var password = UncivGame.Current.settings.multiplayer.passwords[UncivGame.Current.settings.multiplayer.server]
-        if (password == null) {
-            password = "SomePasswordForThoseFolksWhoDoNotHaveAnyStrongPasswordYet!" // TODO: Obviously, replace this password
-        }
-        var username = UncivGame.Current.settings.multiplayer.userName
-        // TODO: Since the username is currently never used and therefore unset, update the username below and re-compile!
-        if (username == "") {
-            username = "MyValidUsername"
-        }
-        ApiV2FileStorageWrapper.api = api
 
         runBlocking {
             coroutineScope {
@@ -110,27 +121,35 @@ class OnlineMultiplayer {
                         return@runOnNonDaemonThreadPool
                     }
                     ApiV2FileStorageWrapper.storage = ApiV2FileStorageEmulator(api)
-
-                    if (!api.auth.login(username, password)) {
-                        logger.warning("Login failed. Trying to create account for $username")
-                        try {
-                            api.accounts.register(username, username, password)
-                        } catch (e: ApiException) {
-                            // TODO: Improve exception handling
-                            if (e.error.statusCode == ApiStatusCode.InvalidUsername || e.error.statusCode == ApiStatusCode.InvalidDisplayName || e.error.statusCode == ApiStatusCode.InvalidPassword) {
-                                logger.warning("Invalid credentials: $e")
-                            }
-                            throw e
-                        }
-                        api.auth.login(username, password)
-                    }
-                    api.websocket(::handleWS)
                 }
             }
         }
     }
 
-    private var sendChannel: SendChannel<Frame>? = null
+    /**
+     * Determine whether the object has been initialized.
+     */
+    fun isInitialized(): Boolean {
+        return (this::featureSet.isInitialized) && (this::apiVersion.isInitialized)
+    }
+
+    /**
+     * Actively sleeping loop that awaits [isInitialized].
+     */
+    suspend fun awaitInitialized() {
+        while (!isInitialized()) {
+            delay(1)
+        }
+    }
+
+    /**
+     * Determine if the user is authenticated by comparing timestamps (APIv2 only)
+     *
+     * This method is not reliable. The server might have configured another session timeout.
+     */
+    fun isAuthenticated(): Boolean {
+        return (lastSuccessfulAuthentication.get() != null && (lastSuccessfulAuthentication.get()!! + SESSION_TIMEOUT) > Instant.now())
+    }
 
     /**
      * Determine the server API version of the remote server
@@ -533,19 +552,31 @@ class OnlineMultiplayer {
      */
     suspend fun checkServerStatus(): Boolean {
         if (api.getCompatibilityCheck() == null) {
-            runBlocking {
-                api.isServerCompatible()
-            }
+            api.isServerCompatible()
             if (api.getCompatibilityCheck()!!) {
                 return true  // if the compatibility check succeeded, the server is obviously running
             }
         } else if (api.getCompatibilityCheck()!!) {
-            runBlocking {
+            try {
                 api.version()
+            } catch (e: Throwable) {  // the only expected exception type is network-related (e.g. timeout or unreachable)
+                Log.error("Suppressed error in 'checkServerStatus': $e")
+                return false
             }
             return true  // no exception means the server responded with the excepted answer type
         }
 
+        return isAliveAPIv1()
+    }
+
+    /**
+     * Check if the server is reachable by getting the /isalive endpoint
+     *
+     * This will also update/set the [featureSet] implicitly.
+     *
+     * Only use this method for APIv1 servers. This method doesn't check the API version, though.
+     */
+    private fun isAliveAPIv1(): Boolean {
         var statusOk = false
         SimpleHttp.sendGetRequest("${UncivGame.Current.settings.multiplayer.server}/isalive") { success, result, _ ->
             statusOk = success
@@ -579,6 +610,38 @@ class OnlineMultiplayer {
         )
         if (password != null && success) {
             settings.passwords[settings.server] = password
+        }
+        return success
+    }
+
+    /**
+     * Determine if there are any known credentials for the current server (the credentials might be invalid!)
+     */
+    fun hasAuthentication(): Boolean {
+        val settings = UncivGame.Current.settings.multiplayer
+        return settings.passwords.containsKey(settings.server)
+    }
+
+    /**
+     * Refresh the currently used session by logging in with username and password stored in the game settings
+     *
+     * Any errors are suppressed. Differentiating invalid logins from network issues is therefore impossible.
+     */
+    suspend fun refreshSession(): Boolean {
+        if (!hasAuthentication()) {
+            return false
+        }
+        val success = try {
+            api.auth.login(
+                UncivGame.Current.settings.multiplayer.userName,
+                UncivGame.Current.settings.multiplayer.passwords[UncivGame.Current.settings.multiplayer.server]!!
+            )
+        } catch (e: Throwable) {
+            Log.error("Suppressed error in 'refreshSession': $e")
+            false
+        }
+        if (success) {
+            lastSuccessfulAuthentication.set(Instant.now())
         }
         return success
     }
