@@ -505,7 +505,7 @@ class Civilization : IsPartOfGameInfoSerialization {
      */
     fun isDefeated() = when {
         isBarbarian() || isSpectator() -> false     // Barbarians and voyeurs can't lose
-        hasEverOwnedOriginalCapital == true -> cities.isEmpty()
+        hasEverOwnedOriginalCapital -> cities.isEmpty()
         else -> units.getCivUnits().none()
     }
 

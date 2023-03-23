@@ -28,7 +28,7 @@ class EditorMapHolder(
     internal val tileMap: TileMap,
     private val onTileClick: (Tile) -> Unit
 ): ZoomableScrollPane(20f, 20f) {
-    val editorScreen = parentScreen as? com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
+    val editorScreen = parentScreen as? MapEditorScreen
 
     val tileGroups = HashMap<Tile, TileGroup>()
     private lateinit var tileGroupMap: TileGroupMap<TileGroup>
@@ -47,7 +47,7 @@ class EditorMapHolder(
         reloadMaxZoom()
     }
 
-    internal fun addTiles(stage: Stage) {
+    private fun addTiles(stage: Stage) {
 
         val tileSetStrings = TileSetStrings()
         val daTileGroups = tileMap.values.map { TileGroup(it, tileSetStrings) }
@@ -108,7 +108,7 @@ class EditorMapHolder(
     }
 
     /**
-     * Copy-pasted from [com.unciv.ui.worldscreen.WorldMapHolder.setCenterPosition]
+     * Copy-pasted from [com.unciv.ui.screens.worldscreen.WorldMapHolder.setCenterPosition]
      * TODO remove code duplication
      */
     fun setCenterPosition(vector: Vector2, blink: Boolean = false) {
