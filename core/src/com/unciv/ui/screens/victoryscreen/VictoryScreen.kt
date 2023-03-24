@@ -1,9 +1,8 @@
 package com.unciv.ui.screens.victoryscreen
 
-import com.badlogic.gdx.graphics.Color
+import LineChart
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Timer
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -11,13 +10,13 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.CivGroup
 import com.unciv.ui.components.YearTextUtil
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.newgamescreen.NewGameScreen
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
@@ -197,12 +196,12 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
         for (civ in majorCivs.filter { !it.isDefeated() }.sortedByDescending { it.victoryManager.amountMilestonesCompleted(victory) }) {
             val buttonText = civ.victoryManager.getNextMilestone(victory)?.getVictoryScreenButtonHeaderText(false, civ) ?: "Done!"
-            victoryColumn.add(getCivGroup(civ, "\n" + buttonText.tr(), playerCivInfo)).fillX().row()
+            victoryColumn.add(CivGroup(civ, "\n" + buttonText.tr(), playerCivInfo)).fillX().row()
         }
 
         for (civ in majorCivs.filter { it.isDefeated() }.sortedByDescending { it.victoryManager.amountMilestonesCompleted(victory) }) {
             val buttonText = civ.victoryManager.getNextMilestone(victory)?.getVictoryScreenButtonHeaderText(false, civ) ?: "Done!"
-            victoryColumn.add(getCivGroup(civ, "\n" + buttonText.tr(), playerCivInfo)).fillX().row()
+            victoryColumn.add(CivGroup(civ, "\n" + buttonText.tr(), playerCivInfo)).fillX().row()
         }
 
         return victoryColumn
@@ -213,7 +212,40 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         resetContent()
 
         if (UncivGame.Current.settings.useDemographics) contentsTable.add(buildDemographicsTable(majorCivs))
-        else contentsTable.add(buildRankingsTable(majorCivs))
+        else {
+            val rankingTypeButtons = Table().apply { defaults().pad(10f) }
+            val lineChartHolder = Table()
+            for (rankingType in RankingType.values()) {
+                rankingTypeButtons.add(rankingType.name.toTextButton().onClick {
+                    lineChartHolder.clear()
+                    lineChartHolder.add(LineChart(
+                        getLineChartData(majorCivs, rankingType),
+                        gameInfo.currentPlayerCiv,
+                        600f,
+                        300f
+                    ))
+                })
+            }
+            contentsTable.add(rankingTypeButtons).row()
+            contentsTable.add(lineChartHolder)
+        }
+    }
+
+    fun getLineChartData(
+        civilizations: List<Civilization>,
+        rankingType: RankingType
+    ): Map<Int, Map<Civilization, Int>> {
+        val lineChartData = mutableMapOf<Int, MutableMap<Civilization, Int>>()
+        civilizations.forEach {
+            val statsHistory = it.statsHistory
+            statsHistory.forEach { (turn, rankingData) ->
+                val value = rankingData[rankingType]
+                if (value != null) {
+                    lineChartData.getOrPut(turn) { mutableMapOf() }[it] = value
+                }
+            }
+        }
+        return lineChartData
     }
 
     private fun setReplayTable() {
@@ -264,7 +296,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
                 val aliveMajorCivsSorted = majorCivs.filter{ it.isAlive() }.sortedByDescending { it.getStatForRanking(category) }
 
                 fun addRankCivGroup(civ: Civilization) { // local function for reuse of getting and formatting civ stats
-                    demographicsTable.add(getCivGroup(civ, ": " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX()
+                    demographicsTable.add(CivGroup(civ, ": " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX()
                 }
 
                 @Suppress("NON_EXHAUSTIVE_WHEN") // RankLabels.Demographic treated above
@@ -298,62 +330,6 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
             headers.addSeparator()
             demographicsTable.add(headers)
         }
-    }
-
-    private fun buildRankingsTable(majorCivs: List<Civilization>): Table {
-        val rankingsTable = Table().apply { defaults().pad(5f) }
-
-        for (category in RankingType.values()) {
-            val column = Table().apply { defaults().pad(5f) }
-            val textAndIcon = Table().apply { defaults() }
-            val columnImage = category.getImage()
-            if (columnImage != null) textAndIcon.add(columnImage).size(Constants.defaultFontSize.toFloat() * 0.75f).padRight(2f).padTop(-2f)
-            textAndIcon.add(category.name.replace('_' , ' ').toLabel()).row()
-            column.add(textAndIcon)
-            column.addSeparator()
-
-            for (civ in majorCivs.sortedByDescending { it.getStatForRanking(category) }) {
-                column.add(getCivGroup(civ, ": " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX().row()
-            }
-
-            rankingsTable.add(column)
-        }
-
-        return rankingsTable
-    }
-
-    private fun getCivGroup(civ: Civilization, afterCivNameText: String, currentPlayer: Civilization): Table {
-        val civGroup = Table()
-
-        var labelText = "{${civ.civName.tr()}}{${afterCivNameText.tr()}}"
-        var labelColor = Color.WHITE
-        val backgroundColor: Color
-
-        if (civ.isDefeated()) {
-            civGroup.add(ImageGetter.getImage("OtherIcons/DisbandUnit")).size(30f)
-            backgroundColor = Color.LIGHT_GRAY
-            labelColor = Color.BLACK
-        } else if (currentPlayer == civ // || game.viewEntireMapForDebug
-            || currentPlayer.knows(civ)
-            || currentPlayer.isDefeated()
-            || currentPlayer.victoryManager.hasWon()
-        ) {
-            civGroup.add(ImageGetter.getNationPortrait(civ.nation, 30f))
-            backgroundColor = civ.nation.getOuterColor()
-            labelColor = civ.nation.getInnerColor()
-        } else {
-            civGroup.add(ImageGetter.getRandomNationPortrait(30f))
-            backgroundColor = Color.DARK_GRAY
-            labelText = Constants.unknownNationName
-        }
-
-        civGroup.background = skinStrings.getUiBackground("VictoryScreen/CivGroup", skinStrings.roundedEdgeRectangleShape, backgroundColor)
-        val label = labelText.toLabel(labelColor)
-        label.setAlignment(Align.center)
-
-        civGroup.add(label).padLeft(10f)
-        civGroup.pack()
-        return civGroup
     }
 
     private fun resetContent() {
