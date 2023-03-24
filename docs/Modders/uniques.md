@@ -856,6 +856,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Will not be chosen for new games"
 	Applicable to: Nation
 
+??? example  "Cannot annex cities"
+	Applicable to: Nation
+
 ??? example  "Starts with [tech]"
 	Example: "Starts with [Agriculture]"
 

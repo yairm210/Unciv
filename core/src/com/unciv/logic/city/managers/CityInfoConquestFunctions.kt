@@ -78,10 +78,10 @@ class CityInfoConquestFunctions(val city: City){
                 // Check if we exceed MaxNumberBuildable for any buildings
                 for (unique in building.getMatchingUniques(UniqueType.MaxNumberBuildable)) {
                     if (civ.cities
-                        .count {
-                            it.cityConstructions.containsBuildingOrEquivalent(building.name)
-                            || it.cityConstructions.isBeingConstructedOrEnqueued(building.name)
-                        } >= unique.params[0].toInt()
+                                .count {
+                                    it.cityConstructions.containsBuildingOrEquivalent(building.name)
+                                            || it.cityConstructions.isBeingConstructedOrEnqueued(building.name)
+                                } >= unique.params[0].toInt()
                     ) {
                         // For now, just destroy in new city. Even if constructing in own cities
                         city.cityConstructions.removeBuilding(building.name)
@@ -173,15 +173,15 @@ class CityInfoConquestFunctions(val city: City){
             conqueringCiv.diplomacyFunctions.makeCivilizationsMeet(oldCiv)
 
         oldCiv.getDiplomacyManager(conqueringCiv)
-                .addModifier(DiplomaticModifiers.CapturedOurCities, -aggroGenerated)
+            .addModifier(DiplomaticModifiers.CapturedOurCities, -aggroGenerated)
 
         for (thirdPartyCiv in conqueringCiv.getKnownCivs().filter { it.isMajorCiv() }) {
             val aggroGeneratedForOtherCivs = (aggroGenerated / 10).roundToInt().toFloat()
             if (thirdPartyCiv.isAtWarWith(oldCiv)) // You annoyed our enemy?
                 thirdPartyCiv.getDiplomacyManager(conqueringCiv)
-                        .addModifier(DiplomaticModifiers.SharedEnemy, aggroGeneratedForOtherCivs) // Cool, keep at at! =D
+                    .addModifier(DiplomaticModifiers.SharedEnemy, aggroGeneratedForOtherCivs) // Cool, keep at at! =D
             else thirdPartyCiv.getDiplomacyManager(conqueringCiv)
-                    .addModifier(DiplomaticModifiers.WarMongerer, -aggroGeneratedForOtherCivs) // Uncool bro.
+                .addModifier(DiplomaticModifiers.WarMongerer, -aggroGeneratedForOtherCivs) // Uncool bro.
         }
     }
 
@@ -246,7 +246,7 @@ class CityInfoConquestFunctions(val city: City){
 
         if (foundingCiv.isMajorCiv()) {
             foundingCiv.getDiplomacyManager(conqueringCiv)
-                    .addModifier(DiplomaticModifiers.CapturedOurCities, respectForLiberatingOurCity)
+                .addModifier(DiplomaticModifiers.CapturedOurCities, respectForLiberatingOurCity)
         } else {
             //Liberating a city state gives a large amount of influence, and peace
             foundingCiv.getDiplomacyManager(conqueringCiv).setInfluence(90f)
@@ -261,7 +261,7 @@ class CityInfoConquestFunctions(val city: City){
         val otherCivsRespectForLiberating = (respectForLiberatingOurCity / 10).roundToInt().toFloat()
         for (thirdPartyCiv in conqueringCiv.getKnownCivs().filter { it.isMajorCiv() && it != conqueredCiv }) {
             thirdPartyCiv.getDiplomacyManager(conqueringCiv)
-                    .addModifier(DiplomaticModifiers.LiberatedCity, otherCivsRespectForLiberating) // Cool, keep at at! =D
+                .addModifier(DiplomaticModifiers.LiberatedCity, otherCivsRespectForLiberating) // Cool, keep at at! =D
         }
     }
 
@@ -319,6 +319,13 @@ class CityInfoConquestFunctions(val city: City){
 
             tryUpdateRoadStatus()
             cityStats.update()
+
+            if (newCivInfo.getMatchingUniques(UniqueType.CannotAnnex).any()) {
+                isPuppet = true
+                cityConstructions.currentConstructionIsUserSet = false
+                cityConstructions.constructionQueue.clear()
+                cityConstructions.chooseNextConstruction()
+            }
 
             // Update proximity rankings
             civ.updateProximity(oldCiv,

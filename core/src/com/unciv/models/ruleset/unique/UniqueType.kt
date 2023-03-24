@@ -261,6 +261,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     GoldenAgeLength("[relativeAmount]% Golden Age length", UniqueTarget.Global),
 
     StrengthForCities("[relativeAmount]% Strength for cities", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    CannotAnnex("Cannot annex cities",UniqueTarget.Nation),
 
     UnitStartingExperience("New [baseUnitFilter] units start with [amount] Experience [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     UnitStartingPromotions("All newly-trained [baseUnitFilter] units [cityFilter] receive the [promotion] promotion", UniqueTarget.Global, UniqueTarget.FollowerBelief),

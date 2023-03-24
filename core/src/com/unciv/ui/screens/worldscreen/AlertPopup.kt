@@ -14,6 +14,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
@@ -92,13 +93,13 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)
                 val nation = civInfo.nation
                 addLeaderName(civInfo)
+                music.chooseTrack(civInfo.civName, MusicMood.themeOrPeace, MusicTrackChooserFlags.setSpecific) // If we meet them in war, the war pop-up will play the war music
                 if (civInfo.isCityState()) {
                     addGoodSizedLabel("We have encountered the City-State of [${nation.name}]!").row()
                     add(getCloseButton("Excellent!"))
                 } else {
                     addGoodSizedLabel(nation.introduction).row()
                     add(getCloseButton("A pleasure to meet you."))
-                    music.chooseTrack(civInfo.civName, MusicMood.themeOrPeace, MusicTrackChooserFlags.setSpecific)
                 }
             }
             AlertType.CityConquered -> {
@@ -125,27 +126,45 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                         close()
                     }
                 } else {
-                    addAnnexOption {
-                        city.puppetCity(conqueringCiv)
-                        city.annexCity()
-                        worldScreen.shouldUpdate = true
-                        close()
-                    }
-                    addSeparator()
+                    if (!conqueringCiv.getMatchingUniques(UniqueType.CannotAnnex).any()) {
+                        addAnnexOption {
+                            city.puppetCity(conqueringCiv)
+                            city.annexCity()
+                            worldScreen.shouldUpdate = true
+                            close()
+                        }
+                        addSeparator()
 
-                    addPuppetOption {
-                        city.puppetCity(conqueringCiv)
-                        worldScreen.shouldUpdate = true
-                        close()
-                    }
-                    addSeparator()
+                        //I quite like the order of Annex, Puppet, Raze - Having the puppet option only outside of the if would ruin that order
+                        addPuppetOption(conqueringCiv) {
+                            city.puppetCity(conqueringCiv)
+                            worldScreen.shouldUpdate = true
+                            close()
+                        }
+                        addSeparator()
 
-                    addRazeOption(canRaze = { city.canBeDestroyed(justCaptured = true) } ) {
-                        city.puppetCity(conqueringCiv)
-                        city.annexCity()
-                        city.isBeingRazed = true
-                        worldScreen.shouldUpdate = true
-                        close()
+                        addRazeOption(canRaze = { city.canBeDestroyed(justCaptured = true) }, conqueringCiv = conqueringCiv ) {
+                            city.puppetCity(conqueringCiv)
+                            city.annexCity()
+                            city.isBeingRazed = true
+                            worldScreen.shouldUpdate = true
+                            close()
+                        }
+                    } else {
+                        addPuppetOption(conqueringCiv) {
+                            city.puppetCity(conqueringCiv)
+                            worldScreen.shouldUpdate = true
+                            close()
+                        }
+                        addSeparator()
+
+                        //Civ5 Venice can raze (non-holy and non-capital) cities but this does not annex them
+                        addRazeOption(canRaze = { city.canBeDestroyed(justCaptured = true) }, conqueringCiv = conqueringCiv) {
+                            city.puppetCity(conqueringCiv)
+                            city.isBeingRazed = true
+                            worldScreen.shouldUpdate = true
+                            close()
+                        }
                     }
                 }
             }
@@ -155,11 +174,11 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 val conqueringCiv = worldScreen.gameInfo.getCurrentPlayerCivilization()
 
                 if (!conqueringCiv.isAtWarWith(worldScreen.gameInfo.getCivilization(city.foundingCiv))) {
-                        addLiberateOption(city.foundingCiv) {
-                            city.liberateCity(conqueringCiv)
-                            worldScreen.shouldUpdate = true
-                            close()
-                        }
+                    addLiberateOption(city.foundingCiv) {
+                        city.liberateCity(conqueringCiv)
+                        worldScreen.shouldUpdate = true
+                        close()
+                    }
                     addSeparator()
                 }
                 add(getCloseButton("Keep it")).row()
@@ -216,7 +235,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 val centerTable = Table()
                 centerTable.add(wonder.quote.toLabel().apply { wrap = true }).width(worldScreen.stage.width / 3).pad(10f)
                 centerTable.add(wonder.getShortDescription()
-                        .toLabel().apply { wrap = true }).width(worldScreen.stage.width / 3).pad(10f)
+                    .toLabel().apply { wrap = true }).width(worldScreen.stage.width / 3).pad(10f)
                 add(centerTable).row()
                 add(getCloseButton(Constants.close))
                 UncivGame.Current.musicController.chooseTrack(wonder.name, MusicMood.Wonder, MusicTrackChooserFlags.setSpecific)
@@ -278,7 +297,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                     }
                     addSeparator()
 
-                    addPuppetOption {
+                    addPuppetOption(conqueringCiv =  marryingCiv) {
                         city.isPuppet = true
                         city.cityStats.update()
                         worldScreen.shouldUpdate = true
@@ -347,7 +366,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             val unitName = capturedUnit.baseUnit.name
             capturedUnit.destroy()
             val closestCity =
-                originalOwner.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
+                    originalOwner.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
             if (closestCity != null) {
                 // Attempt to place the unit near their nearest city
                 originalOwner.units.placeUnitNearTile(closestCity.location, unitName)
@@ -390,7 +409,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
         addGoodSizedLabel("Their citizens generate 2x the unhappiness, unless you build a courthouse.").row()
     }
 
-    private fun addPuppetOption(puppetAction: () -> Unit) {
+    private fun addPuppetOption(conqueringCiv: Civilization, puppetAction: () -> Unit) {
         val button = "Puppet".toTextButton()
         button.onActivation { puppetAction() }
         button.keyShortcuts.add('p')
@@ -398,7 +417,9 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
         addGoodSizedLabel("Puppeted cities do not increase your tech or policy cost.").row()
         addGoodSizedLabel("You have no control over the the production of puppeted cities.").row()
         addGoodSizedLabel("Puppeted cities also generate 25% less Gold and Science.").row()
-        addGoodSizedLabel("A puppeted city can be annexed at any time.").row()
+        if (!conqueringCiv.getMatchingUniques(UniqueType.CannotAnnex).any()) {
+            addGoodSizedLabel("A puppeted city can be annexed at any time.").row()
+        }
     }
 
     private fun addLiberateOption(foundingCiv: String, liberateAction: () -> Unit) {
@@ -409,7 +430,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
         addGoodSizedLabel("Liberating a city returns it to its original owner, giving you a massive relationship boost with them!")
     }
 
-    private fun addRazeOption(canRaze: () -> Boolean, razeAction: () -> Unit) {
+    private fun addRazeOption(canRaze: () -> Boolean, conqueringCiv: Civilization, razeAction: () -> Unit) {
         val button = "Raze".toTextButton()
         button.apply {
             if (!canRaze()) disable()
@@ -420,7 +441,13 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
         }
         add(button).row()
         if (canRaze()) {
-            addGoodSizedLabel("Razing the city annexes it, and starts burning the city to the ground.").row()
+            if (conqueringCiv.getMatchingUniques(UniqueType.CannotAnnex).any()) {
+                println("Puppet")
+                addGoodSizedLabel("Razing the city will puppet it, and starts burning the city to the ground.").row()
+            } else {
+                println("Annex")
+                addGoodSizedLabel("Razing the city annexes it, and starts burning the city to the ground.").row()
+            }
             addGoodSizedLabel("The population will gradually dwindle until the city is destroyed.").row()
         } else {
             addGoodSizedLabel("Original capitals and holy cities cannot be razed.").row()

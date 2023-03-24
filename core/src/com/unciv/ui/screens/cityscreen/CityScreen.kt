@@ -250,16 +250,17 @@ class CityScreen(
 
     private fun updateAnnexAndRazeCityButton() {
         razeCityButtonHolder.clear()
+        val civ = city.civ
 
         fun addWltkIcon(name: String, apply: Image.()->Unit = {}) =
-            razeCityButtonHolder.add(ImageGetter.getImage(name).apply(apply)).size(wltkIconSize)
+                razeCityButtonHolder.add(ImageGetter.getImage(name).apply(apply)).size(wltkIconSize)
 
         if (city.isWeLoveTheKingDayActive()) {
             addWltkIcon("OtherIcons/WLTK LR") { color = Color.GOLD }
             addWltkIcon("OtherIcons/WLTK 1") { color = Color.FIREBRICK }.padRight(10f)
         }
 
-        if (city.isPuppet) {
+        if (city.isPuppet && !civ.getMatchingUniques(UniqueType.CannotAnnex).any()) {
             val annexCityButton = "Annex city".toTextButton()
             annexCityButton.labelCell.pad(10f)
             annexCityButton.onClick {
@@ -295,7 +296,7 @@ class CityScreen(
 
         razeCityButtonHolder.pack()
         val centerX = if (!isPortrait()) stage.width / 2
-            else constructionsTable.getUpperWidth().let { it + (stage.width - cityStatsTable.width - it) / 2 }
+        else constructionsTable.getUpperWidth().let { it + (stage.width - cityStatsTable.width - it) / 2 }
         razeCityButtonHolder.setPosition(centerX, stage.height - 20f, Align.top)
         stage.addActor(razeCityButtonHolder)
     }
@@ -305,8 +306,8 @@ class CityScreen(
 
         val tileSetStrings = TileSetStrings()
         val cityTileGroups = cityInfo.getCenterTile().getTilesInDistance(5)
-                .filter { cityInfo.civ.hasExplored(it) }
-                .map { CityTileGroup(cityInfo, it, tileSetStrings) }
+            .filter { cityInfo.civ.hasExplored(it) }
+            .map { CityTileGroup(cityInfo, it, tileSetStrings) }
 
         for (tileGroup in cityTileGroups) {
             tileGroup.onClick { tileGroupOnClick(tileGroup, cityInfo) }
@@ -412,7 +413,7 @@ class CityScreen(
         if (newConstruction is Building && newConstruction.hasCreateOneImprovementUnique()) {
             val improvement = newConstruction.getImprovementToCreate(city.getRuleset())
             selectedQueueEntryTargetTile = if (improvement == null) null
-                else city.cityConstructions.getTileForImprovement(improvement.name)
+            else city.cityConstructions.getTileForImprovement(improvement.name)
         } else {
             selectedQueueEntryTargetTile = null
             pickTileData = null
