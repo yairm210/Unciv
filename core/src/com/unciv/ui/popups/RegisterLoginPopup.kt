@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.ApiVersion
 import com.unciv.logic.multiplayer.apiv2.ApiException
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toTextButton
@@ -53,8 +54,7 @@ class RegisterLoginPopup(private val stage: Stage, authSuccessful: ((Boolean) ->
                         launchOnGLThread {
                             popup.close()
                             close()
-                            // TODO: This popups doesn't work, the RegisterLoginPopup just closes
-                            InfoPopup(stage, "Failed to login with existing account:\n${e.localizedMessage}") {
+                            InfoPopup(stage, "Failed to login with existing account".tr() + ":\n${e.localizedMessage}") {
                                 authSuccessful?.invoke(false)
                             }
                         }
@@ -69,10 +69,13 @@ class RegisterLoginPopup(private val stage: Stage, authSuccessful: ((Boolean) ->
                         UncivGame.Current.onlineMultiplayer.api.accounts.register(
                             usernameField.text, usernameField.text, passwordField.text
                         )
+                        UncivGame.Current.onlineMultiplayer.api.auth.login(
+                            usernameField.text, passwordField.text
+                        )
                         launchOnGLThread {
                             popup.close()
                             close()
-                            InfoPopup(stage, "Successfully registered new account") {
+                            InfoPopup(stage, "Successfully registered new account".tr()) {
                                 authSuccessful?.invoke(true)
                             }
                         }
@@ -80,7 +83,7 @@ class RegisterLoginPopup(private val stage: Stage, authSuccessful: ((Boolean) ->
                         launchOnGLThread {
                             popup.close()
                             close()
-                            InfoPopup(stage, "Failed to register new account:\n${e.localizedMessage}") {
+                            InfoPopup(stage, "Failed to register new account".tr() + ":\n${e.localizedMessage}") {
                                 authSuccessful?.invoke(false)
                             }
                         }

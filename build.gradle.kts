@@ -80,6 +80,9 @@ project(":desktop") {
 
         // Logging for easier desktop development
         "implementation"("ch.qos.logback:logback-classic:1.2.5")
+
+        // Logging support for I/O operations
+        "implementation"("io.ktor:ktor-client-logging:$ktorVersion")
     }
 }
 
@@ -146,8 +149,6 @@ project(":core") {
         "implementation"("io.ktor:ktor-client-websockets:$ktorVersion")
         // Gzip transport encoding
         "implementation"("io.ktor:ktor-client-encoding:$ktorVersion")
-        // Logging support
-        "implementation"("io.ktor:ktor-client-logging:$ktorVersion")
         // Content negotiation
         "implementation"("io.ktor:ktor-client-content-negotiation:$ktorVersion")
         // JSON serialization and de-serialization
