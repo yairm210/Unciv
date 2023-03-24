@@ -4,27 +4,33 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.MultiplayerGameDeleted
 import com.unciv.logic.multiplayer.OnlineMultiplayerGame
+import com.unciv.logic.multiplayer.apiv2.AccountResponse
 import com.unciv.logic.multiplayer.apiv2.ApiException
 import com.unciv.logic.multiplayer.apiv2.GameOverviewResponse
+import com.unciv.logic.multiplayer.apiv2.OnlineAccountResponse
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.pickerscreens.PickerScreen
-import com.unciv.ui.popups.Popup
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.popups.InfoPopup
+import com.unciv.ui.popups.Popup
+import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
+import java.time.Instant
+import java.util.*
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
 
 class MultiplayerScreenV2 : PickerScreen() {
     private var selectedGame: Pair<String, OnlineMultiplayerGame>? = null // pair of game UUID to file handle
     private var cachedGames: Map<String, GameOverviewResponse> = mutableMapOf()
+    private var cachedFriendResponse: Triple<List<OnlineAccountResponse>, List<AccountResponse>, List<AccountResponse>>? = null
 
     private val leftSideTable = Table() // list friend requests, then online friends, then offline friends, see recreateLeftSideTable()
-    private val rightSideTable = Table() // this should be used for game details and buttons ™ // GameList(::selectGame)
+    private val rightSideTable = Table() // list open games to re-join quickly
 
     private val updateFriendListButton = "Update friend list".toTextButton()
     private val requestFriendshipButton = "Request friendship".toTextButton()
@@ -37,6 +43,9 @@ class MultiplayerScreenV2 : PickerScreen() {
     init {
         lobbyBrowserButton.onClick {
             game.pushScreen(LobbyBrowserScreen())
+        }
+        requestFriendshipButton.onClick {
+            ToastPopup("Friend requests are not implemented yet", stage)
         }
         updateFriendListButton.onClick {
             Concurrency.run {
@@ -61,6 +70,7 @@ class MultiplayerScreenV2 : PickerScreen() {
         rightSideButton.setText("Join game".tr())
         rightSideButton.onClick {
             if (selectedGame != null) {
+                Log.debug("Loading multiplayer game ${selectedGame!!.first}")
                 MultiplayerHelpers.loadMultiplayerGame(this, selectedGame!!.second)
             }
         }
@@ -75,13 +85,25 @@ class MultiplayerScreenV2 : PickerScreen() {
         Concurrency.run {
             reloadGameList()
         }
+        Concurrency.run {
+            reloadFriendList()
+        }
     }
 
     /**
      * Reload the list of friends and friend requests from the server
      */
     private suspend fun reloadFriendList() {
-        reloadFriendList()
+        try {
+            cachedFriendResponse = game.onlineMultiplayer.getFriends()
+            Concurrency.runOnGLThread {
+                recreateLeftSideTable()
+            }
+        } catch (e: ApiException) {
+            Concurrency.runOnGLThread {
+                InfoPopup(stage, e.localizedMessage)
+            }
+        }
     }
 
     /**
@@ -111,19 +133,48 @@ class MultiplayerScreenV2 : PickerScreen() {
     // TODO: This method is a stub at the moment and needs expansion
     private fun recreateLeftSideTable() {
         leftSideTable.clear()
-        leftSideTable.add("Friends".toLabel()).colspan(2).row()
-
         leftSideTable.defaults().uniformX()
         leftSideTable.defaults().fillX()
         leftSideTable.defaults().pad(10.0f)
 
-        leftSideTable.add("label A".toLabel()).colspan(2).row()
-        leftSideTable.add("label B".toLabel()).colspan(2).row()
-        leftSideTable.add("label C".toLabel()).colspan(2).row()
-        leftSideTable.add("label D".toLabel()).colspan(2).row()
+        if (cachedFriendResponse == null) {
+            leftSideTable.add("You have no friends yet :/".toLabel()).colspan(2).row()
+        } else {
+            var anything = false
+            if (cachedFriendResponse!!.second.isNotEmpty()) {
+                anything = true
+                leftSideTable.add("Friend requests".toLabel()).colspan(2).row()
+                cachedFriendResponse?.second!!.sortedBy {
+                    it.displayName
+                }.forEach { // incoming friend requests
+                    leftSideTable.add("${it.displayName} wants to be your friend".toLabel())
+                    val btn = "Options".toTextButton()
+                    btn.onClick {
+                        ToastPopup("Options are not implemented yet", stage)
+                    }
+                    leftSideTable.add(btn)
+                }
+            }
 
-        for (y in 0..24) {
-            leftSideTable.add("Friend $y ${if (y % 2 == 0) "ONLINE" else "OFFLINE"}".toLabel()).row()
+            if (cachedFriendResponse!!.first.isNotEmpty()) {
+                anything = true
+                cachedFriendResponse?.first!!.sortedBy {
+                    it.displayName
+                }.sortedBy {
+                    if (it.online) 0 else 1
+                }.forEach {// alphabetically sorted friends
+                    leftSideTable.add("${it.displayName} (${if (it.online) "online" else "offline"})".toLabel())
+                    val btn = "Options".toTextButton()
+                    btn.onClick {
+                        ToastPopup("Options are not implemented yet", stage)
+                    }
+                    leftSideTable.add(btn)
+                }
+            }
+
+            if (!anything) {
+                leftSideTable.add("You have no friends yet :/".toLabel()).colspan(2).row()
+            }
         }
 
         leftSideTable.add(updateFriendListButton)
@@ -133,6 +184,7 @@ class MultiplayerScreenV2 : PickerScreen() {
     /**
      * Recreate a list of all games stored on the server
      */
+    // TODO: This method is a stub at the moment and needs expansion
     private fun recreateRightSideTable() {
         rightSideTable.clear()
         rightSideTable.add("Games".toLabel()).row()
@@ -141,12 +193,8 @@ class MultiplayerScreenV2 : PickerScreen() {
         rightSideTable.defaults().fillX()
         rightSideTable.defaults().pad(10.0f)
 
-        for (y in 0..24) {
-            rightSideTable.add("Game $y ${if (y % 2 == 0) "ONLINE" else "OFFLINE"}".toLabel()).row()
-        }
-
         cachedGames.forEach {
-            val btn = "Game ${it.key}".toTextButton()
+            val btn = "Game '${it.value.name}'".toTextButton()
             btn.onClick {
                 selectGame(it.key)
             }
