@@ -17,6 +17,7 @@ import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.mapgenerator.MapGenerator
+import com.unciv.logic.multiplayer.ApiVersion
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Ruleset
@@ -33,6 +34,7 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
+import com.unciv.ui.popups.RegisterLoginPopup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.popups.hasOpenPopups
@@ -44,6 +46,7 @@ import com.unciv.ui.screens.mainmenuscreen.EasterEggRulesets.modifyForEasterEgg
 import com.unciv.ui.screens.mapeditorscreen.EditorMapHolder
 import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
 import com.unciv.ui.screens.multiplayerscreens.MultiplayerScreen
+import com.unciv.ui.screens.multiplayerscreens.MultiplayerScreenV2
 import com.unciv.ui.screens.newgamescreen.NewGameScreen
 import com.unciv.ui.screens.pickerscreens.ModManagementScreen
 import com.unciv.ui.screens.savescreens.LoadGameScreen
@@ -51,6 +54,7 @@ import com.unciv.ui.screens.savescreens.QuickSave
 import com.unciv.ui.screens.worldscreen.BackgroundActor
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMenuPopup
+import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import kotlinx.coroutines.Job
@@ -148,8 +152,23 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             column1.add(loadGameTable).row()
         }
 
-        val multiplayerTable = getMenuButton("Multiplayer", "OtherIcons/Multiplayer", 'm')
-            { game.pushScreen(MultiplayerScreen()) }
+        val multiplayerTable = getMenuButton("Multiplayer", "OtherIcons/Multiplayer", 'm') {
+            // Awaiting an initialized multiplayer instance here makes later usage in the multiplayer screen easier
+            val popup = Popup(stage)
+            popup.addGoodSizedLabel("Loading...")
+            if (!game.onlineMultiplayer.isInitialized()) {
+                popup.open()
+                Concurrency.runOnNonDaemonThreadPool {
+                    game.onlineMultiplayer.awaitInitialized()
+                    Concurrency.runOnGLThread {
+                        popup.close()
+                        openMultiplayerMenu()
+                    }
+                }
+            } else {
+                openMultiplayerMenu()
+            }
+        }
         column2.add(multiplayerTable).row()
 
         val mapEditorScreenTable = getMenuButton("Map editor", "OtherIcons/MapEditor", 'e')
@@ -264,6 +283,48 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         backgroundMapGenerationJob = null
         if (currentJob.isCancelled) return
         currentJob.cancel()
+    }
+
+    /**
+     * Helper to open the multiplayer menu table
+     */
+    private fun openMultiplayerMenu() {
+        // The API version of the currently selected game server decides which screen will be shown
+        if (game.onlineMultiplayer.apiVersion == ApiVersion.APIv2) {
+            if (!game.onlineMultiplayer.hasAuthentication()) {
+                Log.debug("Opening the register popup since no auth credentials were found for the server %s", game.onlineMultiplayer.baseUrl)
+                RegisterLoginPopup(this.stage) {
+                    Log.debug("Register popup success state: %s", it)
+                    if (it) {
+                        game.pushScreen(MultiplayerScreenV2())
+                    }
+                }.open()
+            } else {
+                // Authentication is handled before the multiplayer screen is shown
+                val popup = Popup(stage)
+                popup.addGoodSizedLabel("Loading...")
+                if (!game.onlineMultiplayer.isAuthenticated()) {
+                    popup.open()
+                    Concurrency.run {
+                        if (game.onlineMultiplayer.refreshSession()) {
+                            Concurrency.runOnGLThread {
+                                popup.close()
+                                game.pushScreen(MultiplayerScreenV2())
+                            }
+                        } else {
+                            Concurrency.runOnGLThread {
+                                popup.close()
+                                ToastPopup("Please login again.", this@MainMenuScreen).isVisible = true
+                            }
+                        }
+                    }
+                } else {
+                    game.pushScreen(MultiplayerScreenV2())
+                }
+            }
+        } else {
+            game.pushScreen(MultiplayerScreen())
+        }
     }
 
     private fun resumeGame() {
