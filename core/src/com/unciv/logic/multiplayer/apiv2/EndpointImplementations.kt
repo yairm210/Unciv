@@ -224,9 +224,6 @@ class AuthApi(private val client: HttpClient, private val authCookieHelper: Auth
             return true
         } else {
             val err: ApiErrorResponse = response.body()
-            if (err.statusCode == ApiStatusCode.LoginFailed) {
-                return false
-            }
             throw err.to()
         }
     }
@@ -297,19 +294,26 @@ class ChatApi(private val client: HttpClient, private val authCookieHelper: Auth
 class FriendApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper, private val logger: Logger) {
 
     /**
-     * Retrieve a list of your established friendships
+     * Retrieve a pair of the list of your established friendships and the list of your open friendship requests (incoming and outgoing)
      */
-    suspend fun list(): List<FriendResponse> {
+    suspend fun listAll(): Pair<List<FriendResponse>, List<FriendRequestResponse>> {
         val response = client.get("/api/v2/friends") {
             authCookieHelper.add(this)
         }
         if (response.status.isSuccess()) {
             val responseBody: GetFriendResponse = response.body()
-            return responseBody.friends
+            return Pair(responseBody.friends, responseBody.friendRequests)
         } else {
             val err: ApiErrorResponse = response.body()
             throw err.to()
         }
+    }
+
+    /**
+     * Retrieve a list of your established friendships
+     */
+    suspend fun listFriends(): List<FriendResponse> {
+        return listAll().first
     }
 
     /**
@@ -320,16 +324,7 @@ class FriendApi(private val client: HttpClient, private val authCookieHelper: Au
      * In the other case, if your username is in ``to``, you have received a friend request.
      */
     suspend fun listRequests(): List<FriendRequestResponse> {
-        val response = client.get("/api/v2/friends") {
-            authCookieHelper.add(this)
-        }
-        if (response.status.isSuccess()) {
-            val responseBody: GetFriendResponse = response.body()
-            return responseBody.friendRequests
-        } else {
-            val err: ApiErrorResponse = response.body()
-            throw err.to()
-        }
+        return listAll().second
     }
 
     /**
@@ -436,7 +431,8 @@ class GameApi(private val client: HttpClient, private val authCookieHelper: Auth
             authCookieHelper.add(this)
         }
         if (response.status.isSuccess()) {
-            return response.body()
+            val body: GetGameOverviewResponse = response.body()
+            return body.games
         } else {
             val err: ApiErrorResponse = response.body()
             throw err.to()

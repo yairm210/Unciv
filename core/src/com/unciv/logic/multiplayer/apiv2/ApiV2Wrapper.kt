@@ -6,13 +6,13 @@ package com.unciv.logic.multiplayer.apiv2
 
 import com.unciv.UncivGame
 import com.unciv.logic.UncivShowableException
+import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.plugins.logging.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.http.*
@@ -36,17 +36,16 @@ internal const val LOBBY_MAX_PLAYERS = 34
  * WebSocket connection, but rather only the pure HTTP-based API.
  * Almost any method may throw certain OS or network errors as well as the
  * [ApiErrorResponse] for invalid requests (4xx) or server failures (5xx).
+ *
+ * This class should be considered implementation detail, since it just
+ * abstracts HTTP endpoint names from other modules in this package.
  */
-class Api(val baseUrl: String) {
+class ApiV2Wrapper(private val baseUrl: String) {
     private val logger = java.util.logging.Logger.getLogger(this::class.qualifiedName)
 
     // HTTP client to handle the server connections, logging, content parsing and cookies
     private val client = HttpClient(CIO) {
         // Do not add install(HttpCookies) because it will break Cookie handling
-        install(Logging) {
-            logger = Logger.DEFAULT
-            level = LogLevel.ALL
-        }
         install(ContentNegotiation) {
             json(Json {
                 prettyPrint = true
@@ -54,7 +53,7 @@ class Api(val baseUrl: String) {
             })
         }
         install(WebSockets) {
-            pingInterval = 15_000
+            pingInterval = 90_000
             contentConverter = KotlinxWebsocketSerializationConverter(Json)
         }
         defaultRequest {
@@ -74,14 +73,23 @@ class Api(val baseUrl: String) {
     init {
         client.plugin(HttpSend).intercept { request ->
             request.userAgent("Unciv/${UncivGame.VERSION.toNiceString()}-GNU-Terry-Pratchett")
-            execute(request)
+            val clientCall = execute(request)
+            Log.debug(
+                "'%s %s%s': %s (%d ms)",
+                request.method.value,
+                if (baseUrl.endsWith("/")) baseUrl.subSequence(0, baseUrl.length - 2) else baseUrl,
+                request.url.encodedPath,
+                clientCall.response.status,
+                clientCall.response.responseTime.timestamp - clientCall.response.requestTime.timestamp
+            )
+            clientCall
         }
     }
 
     /**
      * API for account management
      */
-    val accounts = AccountsApi(client, authCookieHelper, logger)
+    val account = AccountsApi(client, authCookieHelper, logger)
 
     /**
      * API for authentication management
@@ -101,12 +109,12 @@ class Api(val baseUrl: String) {
     /**
      * API for game management
      */
-    val games = GameApi(client, authCookieHelper, logger)
+    val game = GameApi(client, authCookieHelper, logger)
 
     /**
      * API for invite management
      */
-    val invites = InviteApi(client, authCookieHelper, logger)
+    val invite = InviteApi(client, authCookieHelper, logger)
 
     /**
      * API for lobby management
