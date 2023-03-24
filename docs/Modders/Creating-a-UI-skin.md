@@ -94,6 +94,11 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | TechPickerScreen/ | Background | null | |
 | TechPickerScreen/ | Background | null | |
 | TechPickerScreen/ | BottomTable | null | |
+| TechPickerScreen/ | CurrentTechColor | 72, 147, 175 | |
+| TechPickerScreen/ | QueuedTechColor | 7*2, 46*2, 43*2 | |
+| TechPickerScreen/ | ResearchableTechColor | 28, 170, 0 | |
+| TechPickerScreen/ | ResearchedFutureTechColor | 127, 50, 0 | |
+| TechPickerScreen/ | ResearchedTechColor | 255, 215, 0 | |
 | TechPickerScreen/ | TechButtonIconsOutline | roundedEdgeRectangleSmall | |
 | VictoryScreen/ | CivGroup | roundedEdgeRectangle | |
 | WorldScreen/ | AirUnitTable | null | |
