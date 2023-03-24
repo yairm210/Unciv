@@ -3,16 +3,10 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
-import com.badlogic.gdx.utils.Align
-import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
-import com.unciv.models.translations.tr
+import com.unciv.ui.components.CivGroup
 import com.unciv.ui.components.Fonts
-import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.basescreen.BaseScreen
 import kotlin.math.ceil
 import kotlin.math.log10
 import kotlin.math.pow
@@ -25,6 +19,8 @@ class LineChart(
     private val chartWidth: Float,
     private val chartHeight: Float
 ) : WidgetGroup() {
+
+    private val shapeRenderer = ShapeRenderer()
 
     private val axisLineWidth = 2f
     private val axisColor = Color.WHITE
@@ -89,7 +85,7 @@ class LineChart(
         var yPosOfNextCiv = chartHeight
         val lastTurnDataPoints = getLastTurnDataPoints()
         val civGroups = lastTurnDataPoints.toList().sortedByDescending { (_, v) -> v.y }.map {
-            getCivGroup(it.first, " - ${it.second.y}", currentPlayerCiv)
+            CivGroup(it.first, " - ${it.second.y}", currentPlayerCiv)
         }
         val largestCivGroupWidth = civGroups.maxOf { it.width }
         civGroups.forEach {
@@ -231,48 +227,6 @@ class LineChart(
         return lastDataPoints
     }
 
-    private fun getCivGroup(
-        civ: Civilization,
-        afterCivNameText: String,
-        currentPlayer: Civilization
-    ): Table {
-        val civGroup = Table()
-
-        var labelText = "{${civ.civName.tr()}}{${afterCivNameText.tr()}}"
-        var labelColor = Color.WHITE
-        val backgroundColor: Color
-
-        if (civ.isDefeated()) {
-            civGroup.add(ImageGetter.getImage("OtherIcons/DisbandUnit")).size(30f)
-            backgroundColor = Color.LIGHT_GRAY
-            labelColor = Color.BLACK
-        } else if (currentPlayer == civ // || game.viewEntireMapForDebug
-                || currentPlayer.knows(civ)
-                || currentPlayer.isDefeated()
-                || currentPlayer.victoryManager.hasWon()
-        ) {
-            civGroup.add(ImageGetter.getNationPortrait(civ.nation, 30f))
-            backgroundColor = civ.nation.getOuterColor()
-            labelColor = civ.nation.getInnerColor()
-        } else {
-            civGroup.add(ImageGetter.getRandomNationPortrait(30f))
-            backgroundColor = Color.DARK_GRAY
-            labelText = Constants.unknownNationName
-        }
-
-        civGroup.background = BaseScreen.skinStrings.getUiBackground(
-            "VictoryScreen/CivGroup",
-            BaseScreen.skinStrings.roundedEdgeRectangleShape,
-            backgroundColor
-        )
-        val label = labelText.toLabel(labelColor)
-        label.setAlignment(Align.center)
-
-        civGroup.add(label).padLeft(10f)
-        civGroup.pack()
-        return civGroup
-    }
-
     private fun drawLine(
         batch: Batch,
         x1: Float,
@@ -282,7 +236,6 @@ class LineChart(
         color: Color,
         width: Float
     ) {
-        val shapeRenderer = ShapeRenderer()
         shapeRenderer.projectionMatrix = batch.projectionMatrix
         shapeRenderer.transformMatrix = batch.transformMatrix
         batch.end()
