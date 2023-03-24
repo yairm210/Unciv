@@ -9,10 +9,12 @@ import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.event.EventBus
+import com.unciv.logic.multiplayer.apiv2.AccountResponse
 import com.unciv.logic.multiplayer.apiv2.Api
 import com.unciv.logic.multiplayer.apiv2.ApiErrorResponse
 import com.unciv.logic.multiplayer.apiv2.ApiException
 import com.unciv.logic.multiplayer.apiv2.ApiStatusCode
+import com.unciv.logic.multiplayer.apiv2.OnlineAccountResponse
 import com.unciv.logic.multiplayer.apiv2.WebSocketMessage
 import com.unciv.logic.multiplayer.apiv2.WebSocketMessageSerializer
 import com.unciv.logic.multiplayer.apiv2.WebSocketMessageType
@@ -431,6 +433,20 @@ class OnlineMultiplayer {
         multiplayerFiles.tryUploadGame(gameInfo, withPreview = true)
         game.doManualUpdate(newPreview)
         return true
+    }
+
+    /**
+     * Load all friends and friend requests (split by incoming and outgoing) of the currently logged-in user
+     */
+    suspend fun getFriends(): Triple<List<OnlineAccountResponse>, List<AccountResponse>, List<AccountResponse>> {
+        val (friends, requests) = api.friend.listAll()
+        // TODO: The user's UUID should be cached, when this class is extended to a game manager class
+        val myUUID = api.accounts.get().uuid
+        return Triple(
+            friends.map { it.to },
+            requests.filter { it.to.uuid == myUUID }.map{ it.from },
+            requests.filter { it.from.uuid == myUUID }.map { it.to }
+        )
     }
 
     /**

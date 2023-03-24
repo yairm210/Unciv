@@ -122,6 +122,8 @@ data class CreateLobbyResponse(
  */
 @Serializable
 data class FriendResponse(
+    @SerialName("chat_id")
+    val chatID: Long,
     val id: Long,
     val from: AccountResponse,
     val to: OnlineAccountResponse

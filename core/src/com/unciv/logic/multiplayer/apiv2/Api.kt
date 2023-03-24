@@ -45,7 +45,7 @@ class Api(val baseUrl: String) {
         // Do not add install(HttpCookies) because it will break Cookie handling
         install(Logging) {
             logger = Logger.DEFAULT
-            level = LogLevel.ALL
+            level = LogLevel.INFO
         }
         install(ContentNegotiation) {
             json(Json {
