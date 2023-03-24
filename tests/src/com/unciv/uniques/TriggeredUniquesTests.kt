@@ -39,6 +39,9 @@ class TriggeredUniquesTests {
     @Test
     fun testConditionalTimedUniqueExpires() {
         civInfo.policies.adopt(policy, true)
+        // For endTurn to do the part we need, the civ must be alive - have a city or unit,
+        // and right now that attacker is not in the civ's unit list
+        civInfo.units.addUnit(attacker.unit, false)
         TurnManager(civInfo).endTurn()
         val modifiers = BattleDamage.getAttackModifiers(attacker, defender)
         Assert.assertTrue("Timed Strength should no longer work after endTurn", modifiers.sumValues() == 0)

@@ -414,6 +414,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return getMatchingUniques(UniqueType.HealAdjacentUnits).sumOf { it.params[0].toInt() }
     }
 
+    fun getHealAmountForCurrentTile() = when {
+        isEmbarked() -> 0 // embarked units can't heal
+        health >= 100 -> 0 // No need to heal if at max health
+        hasUnique(UniqueType.HealOnlyByPillaging, checkCivInfoUniques = true) -> 0
+        else -> rankTileForHealing(getTile())
+    }
+    fun canHealInCurrentTile() = getHealAmountForCurrentTile() > 0
+
     // Only military land units can truly "garrison"
     fun canGarrison() = isMilitary() && baseUnit.isLandUnit()
 

@@ -601,7 +601,7 @@ object UnitActions {
         if (isDamaged && !showingAdditionalActions) {
             actionList += UnitAction(UnitActionType.SleepUntilHealed,
                 action = { unit.action = UnitActionType.SleepUntilHealed.value }
-                    .takeIf { !unit.isSleepingUntilHealed() }
+                    .takeIf { !unit.isSleepingUntilHealed() && unit.canHealInCurrentTile() }
             )
         } else if (isDamaged || !showingAdditionalActions) {
             actionList += UnitAction(UnitActionType.Sleep,
