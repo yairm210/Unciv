@@ -71,6 +71,13 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> =
             BaseUnitDescriptions.getCivilopediaTextLines(this, ruleset)
 
+    /** Lists differences e.g. for help on an upgrade, untranslated.
+     *  @throws UninitializedPropertyAccessException if called before [GameInfo.setTransients] has run
+     */
+    fun getDifferencesTo(betterUnit: BaseUnit): Sequence<String> =
+            BaseUnitDescriptions.getDifferences(ruleset, this, betterUnit)
+                .map { it.first }
+
     fun getMapUnit(civInfo: Civilization): MapUnit {
         val unit = MapUnit()
         unit.name = name
