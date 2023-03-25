@@ -36,8 +36,11 @@ internal const val LOBBY_MAX_PLAYERS = 34
  * WebSocket connection, but rather only the pure HTTP-based API.
  * Almost any method may throw certain OS or network errors as well as the
  * [ApiErrorResponse] for invalid requests (4xx) or server failures (5xx).
+ *
+ * This class should be considered implementation detail, since it just
+ * abstracts HTTP endpoint names from other modules in this package.
  */
-class Api(val baseUrl: String) {
+class ApiV2Wrapper(private val baseUrl: String) {
     private val logger = java.util.logging.Logger.getLogger(this::class.qualifiedName)
 
     // HTTP client to handle the server connections, logging, content parsing and cookies

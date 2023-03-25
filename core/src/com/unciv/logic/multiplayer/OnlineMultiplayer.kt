@@ -10,7 +10,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.apiv2.AccountResponse
-import com.unciv.logic.multiplayer.apiv2.Api
+import com.unciv.logic.multiplayer.apiv2.ApiV2Wrapper
 import com.unciv.logic.multiplayer.apiv2.ApiErrorResponse
 import com.unciv.logic.multiplayer.apiv2.ApiException
 import com.unciv.logic.multiplayer.apiv2.ApiStatusCode
@@ -69,7 +69,7 @@ class OnlineMultiplayer {
 
     // Updating the multiplayer server URL in the Api is out of scope, just drop this class and create a new one
     val baseUrl = UncivGame.Current.settings.multiplayer.server
-    val api = Api(baseUrl)
+    val api = ApiV2Wrapper(baseUrl)
 
     private val files = UncivGame.Current.files
     val multiplayerFiles = OnlineMultiplayerFiles()
@@ -93,6 +93,8 @@ class OnlineMultiplayer {
     // Server API auto-detection happens in a coroutine triggered in the constructor
     lateinit var apiVersion: ApiVersion
 
+    lateinit var user: AccountResponse
+
     init {
         // Run the server auto-detection in a coroutine, only afterwards this class can be considered initialized
         Concurrency.run {
@@ -108,6 +110,7 @@ class OnlineMultiplayer {
                     } else {
                         lastSuccessfulAuthentication.set(Instant.now())
                         api.websocket(::handleWS)
+                        user = api.accounts.get()
                     }
                 }
                 ApiV2FileStorageWrapper.storage = ApiV2FileStorageEmulator(api)

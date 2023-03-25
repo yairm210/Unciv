@@ -211,6 +211,9 @@ class MultiplayerScreenV2 : PickerScreen() {
         return mainTable
     }
 
+    /**
+     * Construct a help button
+     */
     private fun setupHelpButton() {
         val tab = Table()
         val helpButton = "Help".toTextButton()
