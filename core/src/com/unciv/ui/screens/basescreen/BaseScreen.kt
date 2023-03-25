@@ -97,7 +97,14 @@ abstract class BaseScreen : Screen {
 
     override fun hide() {}
 
+    /**
+     * Called when this screen should release all resources.
+     *
+     * This is _not_ called automatically by Gdx, but by the [screenStack][UncivGame.screenStack]
+     * functions in [UncivGame], e.g. [replaceCurrentScreen][UncivGame.replaceCurrentScreen].
+     */
     override fun dispose() {
+        // FYI - This is a method of Gdx [Screen], not of Gdx [Disposable], but the one below _is_.
         stage.dispose()
     }
 
