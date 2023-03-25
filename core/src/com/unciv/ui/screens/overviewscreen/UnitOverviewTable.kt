@@ -34,7 +34,6 @@ import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.abs
-import kotlin.math.ceil
 
 /**
  * Supplies the Unit sub-table for the Empire Overview
@@ -234,30 +233,32 @@ class UnitOverviewTab(
             val promotionsTable = Table()
             // getPromotions goes by json order on demand, so this is same sorting as on picker
             val promotions = unit.promotions.getPromotions(true)
-            if (promotions.any()) {
-                val numberOfLines = ceil(promotions.count() / 8f).toInt()
-                val promotionsPerLine = promotions.count() / numberOfLines
-                var promotionsThisLine = 0
-                for (promotion in promotions) {
-                    promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name))
-                    promotionsThisLine++
-                    if (promotionsThisLine == promotionsPerLine && numberOfLines>1) promotionsTable.row()
+            val canBePromoted = unit.promotions.canBePromoted()
+            val effectiveCount = promotions.count() + (if (canBePromoted) 1 else 0)
+            if (effectiveCount > 0) {
+                val numberOfLines = (effectiveCount - 1) / 8 + 1
+                val promotionsPerLine = (effectiveCount - 1) / numberOfLines + 1
+                for (row in promotions.chunked(promotionsPerLine)) {
+                    if (promotionsTable.hasChildren()) promotionsTable.row()
+                    for (promotion in row)
+                        promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name))
                 }
             }
 
-            if (unit.promotions.canBePromoted())
+            if (canBePromoted) {
+                val canPromoteNow = unit.currentMovement > 0 && unit.attacksThisTurn == 0 &&
+                        GUI.isAllowedChangeState()
                 promotionsTable.add(
                     ImageGetter.getImage("OtherIcons/Star").apply {
-                        color = if (GUI.isAllowedChangeState() && unit.currentMovement > 0f && unit.attacksThisTurn == 0)
-                                Color.GOLDENROD
-                            else Color.GOLDENROD.darken(0.25f)
+                        color = if (canPromoteNow) Color.GOLDENROD
+                        else Color.GOLDENROD.darken(0.25f)
                     }
                 ).size(24f).padLeft(8f)
-            promotionsTable.onClick {
-                if (unit.promotions.canBePromoted() || unit.promotions.promotions.isNotEmpty()) {
+            }
+            if (effectiveCount > 0)
+                promotionsTable.onClick {
                     game.pushScreen(PromotionPickerScreen(unit))
                 }
-            }
             add(promotionsTable)
 
             // Upgrade column
