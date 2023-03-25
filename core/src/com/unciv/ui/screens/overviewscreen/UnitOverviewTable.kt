@@ -162,7 +162,7 @@ class UnitOverviewTab(
         add("Closest city".toLabel())
         add("Promotions".toLabel())
         add("Upgrade".toLabel())
-        add("Health".toLabel())
+        add("Force".toLabel())
         addSeparator().padBottom(0f)
         return this
     }
@@ -274,8 +274,8 @@ class UnitOverviewTab(
                 add(upgradeIcon).size(28f)
             } else add()
 
-            // Numeric health column - there's already a health bar on the button, but...?
-            if (unit.health < 100) add(unit.health.toLabel()) else add()
+            val force = unit.getForceEvaluation()
+            if (force == 0) add() else add(force.toLabel())
             row()
         }
         return this
