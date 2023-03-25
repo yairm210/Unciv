@@ -207,7 +207,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
                 shape = MapShape.rectangular
                 mapSize = MapSizeNew(MapSize.Small)
                 type = MapType.pangaea
-                temperatureExtremeness = 1f
+                temperatureExtremeness = 0.7f
                 waterThreshold = -0.1f // mainly land, gets about 30% water
                 modifyForEasterEgg()
             })

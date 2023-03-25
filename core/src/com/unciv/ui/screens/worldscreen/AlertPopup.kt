@@ -92,13 +92,13 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)
                 val nation = civInfo.nation
                 addLeaderName(civInfo)
+                music.chooseTrack(civInfo.civName, MusicMood.themeOrPeace, MusicTrackChooserFlags.setSpecific)
                 if (civInfo.isCityState()) {
                     addGoodSizedLabel("We have encountered the City-State of [${nation.name}]!").row()
                     add(getCloseButton("Excellent!"))
                 } else {
                     addGoodSizedLabel(nation.introduction).row()
                     add(getCloseButton("A pleasure to meet you."))
-                    music.chooseTrack(civInfo.civName, MusicMood.themeOrPeace, MusicTrackChooserFlags.setSpecific)
                 }
             }
             AlertType.CityConquered -> {
