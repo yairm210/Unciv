@@ -13,6 +13,8 @@ import kotlin.math.pow
 
 private data class DataPoint(val x: Int, val y: Int, val civ: Civilization)
 
+// TODO: There seems to be a problem with values smaller 10 (see culture)
+// TODO: Do negative values work for happiness?
 class LineChart(
     data: Map<Int, Map<Civilization, Int>>,
     private val currentPlayerCiv: Civilization,
