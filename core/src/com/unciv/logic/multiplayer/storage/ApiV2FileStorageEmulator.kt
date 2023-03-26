@@ -12,7 +12,7 @@ class ApiV2FileStorageEmulator(private val api: ApiV2Wrapper): FileStorage {
 
     override suspend fun saveGameData(gameId: String, data: String) {
         val uuid = UUID.fromString(gameId.lowercase())
-        api.games.upload(uuid, data)
+        api.game.upload(uuid, data)
     }
 
     override suspend fun savePreviewData(gameId: String, data: String) {
@@ -22,7 +22,7 @@ class ApiV2FileStorageEmulator(private val api: ApiV2Wrapper): FileStorage {
 
     override suspend fun loadGameData(gameId: String): String {
         val uuid = UUID.fromString(gameId.lowercase())
-        return api.games.get(uuid).gameData
+        return api.game.get(uuid).gameData
     }
 
     override suspend fun loadPreviewData(gameId: String): String {
@@ -51,7 +51,7 @@ class ApiV2FileStorageEmulator(private val api: ApiV2Wrapper): FileStorage {
     }
 
     override suspend fun setPassword(newPassword: String): Boolean {
-        api.accounts.setPassword("", newPassword)
+        api.account.setPassword("", newPassword)
         // TODO: Not yet implemented
         return false
     }

@@ -49,7 +49,7 @@ class ChatRoomScreen(private val chatRoomID: Long) : PickerScreen() {
 
         Concurrency.run {
             // TODO: Remove this workaround fix by implementing a serious API handler
-            game.onlineMultiplayer.user = game.onlineMultiplayer.api.accounts.get()
+            game.onlineMultiplayer.user = game.onlineMultiplayer.api.account.get()
             updateMessages()
         }
     }

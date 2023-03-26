@@ -46,7 +46,6 @@ import java.time.Duration
 import java.time.Instant
 import java.util.*
 import java.util.concurrent.atomic.AtomicReference
-import java.util.logging.Level
 
 /**
  * How often files can be checked for new multiplayer games (could be that the user modified their file system directly). More checks within this time period
@@ -110,7 +109,7 @@ class OnlineMultiplayer {
                     } else {
                         lastSuccessfulAuthentication.set(Instant.now())
                         api.websocket(::handleWS)
-                        user = api.accounts.get()
+                        user = api.account.get()
                     }
                 }
                 ApiV2FileStorageWrapper.storage = ApiV2FileStorageEmulator(api)
@@ -444,7 +443,7 @@ class OnlineMultiplayer {
     suspend fun getFriends(): Triple<List<OnlineAccountResponse>, List<AccountResponse>, List<AccountResponse>> {
         val (friends, requests) = api.friend.listAll()
         // TODO: The user's UUID should be cached, when this class is extended to a game manager class
-        val myUUID = api.accounts.get().uuid
+        val myUUID = api.account.get().uuid
         return Triple(
             friends.map { it.to },
             requests.filter { it.to.uuid == myUUID }.map{ it.from },

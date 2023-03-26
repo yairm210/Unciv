@@ -69,7 +69,7 @@ class RegisterLoginPopup(private val stage: Stage, authSuccessful: ((Boolean) ->
                 val popup = createPopup(force = true)
                 Concurrency.run {
                     try {
-                        UncivGame.Current.onlineMultiplayer.api.accounts.register(
+                        UncivGame.Current.onlineMultiplayer.api.account.register(
                             usernameField.text, usernameField.text, passwordField.text
                         )
                         UncivGame.Current.onlineMultiplayer.api.auth.login(
