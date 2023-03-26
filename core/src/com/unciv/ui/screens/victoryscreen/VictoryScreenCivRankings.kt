@@ -44,17 +44,12 @@ class VictoryScreenCivRankings(
         civilizations: List<Civilization>,
         rankingType: RankingType
     ): Map<Int, Map<Civilization, Int>> {
-        val lineChartData = mutableMapOf<Int, MutableMap<Civilization, Int>>()
-        civilizations.forEach {
-            val statsHistory = it.statsHistory
-            statsHistory.forEach { (turn, rankingData) ->
-                val value = rankingData[rankingType]
-                if (value != null) {
-                    lineChartData.getOrPut(turn) { mutableMapOf() }[it] = value
-                }
-            }
-        }
-        return lineChartData
+        return civilizations.flatMap { civ ->
+            civ.statsHistory
+                .filterValues { it.containsKey(rankingType) }
+                .map { (turn, data) -> Pair(turn, Pair(civ, data.getValue(rankingType))) }
+        }.groupBy({ it.first }, { it.second })
+            .mapValues { group -> group.value.toMap() }
     }
 
     enum class RankLabels { Rank, Value, Best, Average, Worst}

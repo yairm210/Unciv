@@ -256,4 +256,20 @@ class LineChart(
 
         batch.begin()
     }
+
+    override fun getMinWidth(): Float {
+        return chartWidth
+    }
+
+    override fun getMinHeight(): Float {
+        return chartHeight
+    }
+
+    override fun getPrefWidth(): Float {
+        return chartWidth
+    }
+
+    override fun getPrefHeight(): Float {
+        return chartHeight
+    }
 }
