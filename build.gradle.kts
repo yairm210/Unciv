@@ -77,9 +77,6 @@ project(":desktop") {
 
         "implementation"("net.java.dev.jna:jna:5.11.0")
         "implementation"("net.java.dev.jna:jna-platform:5.11.0")
-
-        // Logging for easier desktop development
-        "implementation"("ch.qos.logback:logback-classic:1.2.5")
     }
 }
 
