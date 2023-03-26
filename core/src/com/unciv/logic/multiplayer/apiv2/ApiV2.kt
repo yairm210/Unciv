@@ -1,12 +1,9 @@
 package com.unciv.logic.multiplayer.apiv2
 
-import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.storage.ApiV2FileStorageEmulator
 import com.unciv.logic.multiplayer.ApiVersion
-import com.unciv.logic.multiplayer.MultiplayerGameAdded
 import com.unciv.logic.multiplayer.storage.ApiV2FileStorageWrapper
 import com.unciv.utils.Log
-import com.unciv.utils.concurrency.withGLContext
 import io.ktor.client.call.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
@@ -35,7 +32,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
     private var sendChannel: SendChannel<Frame>? = null
 
     /** Info whether this class is fully initialized and ready to use */
-    private var isInitialized = false
+    private var initialized = false
 
     /** Credentials used during the last successful login */
     private var lastSuccessfulCredentials: Pair<String, String>? = null
@@ -44,12 +41,12 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
     private var lastSuccessfulAuthentication: AtomicReference<Instant?> = AtomicReference()
 
     /** User identification on the server */
-    private var user: AccountResponse? = null
+    var user: AccountResponse? = null
 
     /**
      * Initialize this class (performing actual networking connectivity)
      *
-     * It's recommended to set the credentials correctly
+     * It's recommended to set the credentials correctly in the first run, if possible.
      */
     suspend fun initialize(credentials: Pair<String, String>? = null) {
         if (compatibilityCheck == null) {
@@ -61,7 +58,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
 
         if (credentials != null) {
             if (!auth.login(credentials.first, credentials.second)) {
-                Log.debug("Login failed using stored credentials")
+                Log.debug("Login failed using provided credentials (username '${credentials.first}')")
             } else {
                 lastSuccessfulAuthentication.set(Instant.now())
                 lastSuccessfulCredentials = credentials
@@ -71,7 +68,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
         }
         ApiV2FileStorageWrapper.storage = ApiV2FileStorageEmulator(this)
         ApiV2FileStorageWrapper.api = this
-        isInitialized = true
+        initialized = true
     }
 
     // ---------------- SIMPLE GETTER ----------------
@@ -83,6 +80,13 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
      */
     fun isAuthenticated(): Boolean {
         return (lastSuccessfulAuthentication.get() != null && (lastSuccessfulAuthentication.get()!! + DEFAULT_SESSION_TIMEOUT) > Instant.now())
+    }
+
+    /**
+     * Determine if this class has been fully initialized
+     */
+    fun isInitialized(): Boolean {
+        return initialized
     }
 
     // ---------------- COMPATIBILITY FUNCTIONALITY ----------------
@@ -149,33 +153,6 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
     // ---------------- WEBSOCKET FUNCTIONALITY ----------------
 
     /**
-     * Handle existing WebSocket connections
-     *
-     * This method should be dispatched to a daemon thread pool executor.
-     */
-    private suspend fun handleWebSocketSession(session: ClientWebSocketSession) {
-        try {
-            val incomingMessage = session.incoming.receive()
-
-            Log.debug("Incoming WebSocket message: $incomingMessage")
-            if (incomingMessage.frameType == FrameType.PING) {
-                session.send(
-                    Frame.byType(
-                        false,
-                        FrameType.PONG,
-                        byteArrayOf(),
-                        rsv1 = true,
-                        rsv2 = true,
-                        rsv3 = true
-                    )
-                )
-            }
-        } catch (e: ClosedReceiveChannelException) {
-            Log.debug("The WebSocket channel was unexpectedly closed: $e")
-        }
-    }
-
-    /**
      * Send text as a [FrameType.TEXT] frame to the remote side (fire & forget)
      *
      * Returns [Unit] if no exception is thrown
@@ -224,10 +201,16 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
                 Log.debug("Received FinishedTurn message from WebSocket connection")
             }
             WebSocketMessageType.UpdateGameData -> {
-                // TODO: The body of this message contains a whole game state, so we need to unpack and use it here
+                // TODO
+                /*
+                @Suppress("CAST_NEVER_SUCCEEDS")
+                val gameInfo = UncivFiles.gameInfoFromString((msg as UpdateGameData).gameData)
+                Log.debug("Saving new game info for name '${gameInfo.gameId}'")
+                UncivGame.Current.files.saveGame(gameInfo, gameInfo.gameId)
                 withGLContext {
-                    EventBus.send(MultiplayerGameAdded(game.name))
+                    EventBus.send(MultiplayerGameUpdated(gameInfo.gameId, gameInfo.asPreview()))
                 }
+                 */
             }
             WebSocketMessageType.ClientDisconnected -> {
                 Log.debug("Received ClientDisconnected message from WebSocket connection")

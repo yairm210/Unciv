@@ -18,11 +18,8 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.*
 import io.ktor.serialization.kotlinx.json.*
-import io.ktor.websocket.*
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -44,7 +41,7 @@ internal const val LOBBY_MAX_PLAYERS = 34
 open class ApiV2Wrapper(private val baseUrl: String) {
 
     // HTTP client to handle the server connections, logging, content parsing and cookies
-    private val client = HttpClient(CIO) {
+    internal val client = HttpClient(CIO) {
         // Do not add install(HttpCookies) because it will break Cookie handling
         install(ContentNegotiation) {
             json(Json {
@@ -60,9 +57,6 @@ open class ApiV2Wrapper(private val baseUrl: String) {
             url(baseUrl)
         }
     }
-
-    // Cache the result of the last server API compatibility check
-    private var compatibilityCheck: Boolean? = null
 
     // Helper that replaces library cookie storages to fix cookie serialization problems
     private val authCookieHelper = AuthCookieHelper()
@@ -122,33 +116,6 @@ open class ApiV2Wrapper(private val baseUrl: String) {
     internal val lobby = LobbyApi(client, authCookieHelper)
 
     /**
-     * Handle existing WebSocket connections
-     *
-     * This method should be dispatched to a daemon thread pool executor.
-     */
-    private suspend fun handleWebSocketSession(session: ClientWebSocketSession) {
-        try {
-            val incomingMessage = session.incoming.receive()
-
-            Log.debug("Incoming WebSocket message: $incomingMessage")
-            if (incomingMessage.frameType == FrameType.PING) {
-                session.send(
-                    Frame.byType(
-                        false,
-                        FrameType.PONG,
-                        byteArrayOf(),
-                        rsv1 = true,
-                        rsv2 = true,
-                        rsv3 = true
-                    )
-                )
-            }
-        } catch (e: ClosedReceiveChannelException) {
-            Log.error("The WebSocket channel was unexpectedly closed: $e")
-        }
-    }
-
-    /**
      * Start a new WebSocket connection
      *
      * The parameter [handler] is a coroutine that will be fed the established
@@ -156,7 +123,7 @@ open class ApiV2Wrapper(private val baseUrl: String) {
      * method does instantly return, detaching the creation of the WebSocket.
      * The [handler] coroutine might not get called, if opening the WS fails.
      */
-    suspend fun websocket(handler: suspend (ClientWebSocketSession) -> Unit): Boolean {
+    internal suspend fun websocket(handler: suspend (ClientWebSocketSession) -> Unit): Boolean {
         Log.debug("Starting a new WebSocket connection ...")
 
         coroutineScope {
@@ -171,9 +138,7 @@ open class ApiV2Wrapper(private val baseUrl: String) {
                     }
                 }
                 val job = Concurrency.runOnNonDaemonThreadPool {
-                    launch {
-                        handler(session)
-                    }
+                    handler(session)
                 }
                 websocketJobs.add(job)
                 Log.debug("A new WebSocket has been created, running in job $job")
@@ -189,68 +154,8 @@ open class ApiV2Wrapper(private val baseUrl: String) {
     /**
      * Retrieve the currently available API version of the connected server
      */
-    suspend fun version(): VersionResponse {
+    internal suspend fun version(): VersionResponse {
         return client.get("/api/version").body()
-    }
-
-    /**
-     * Determine if the remote server is compatible with this API implementation
-     *
-     * This currently only checks the endpoints /api/version and /api/v2/ws.
-     * If the first returns a valid [VersionResponse] and the second a valid
-     * [ApiErrorResponse] for being not authenticated, then the server API
-     * is most likely compatible. Otherwise, if 404 errors or other unexpected
-     * responses are retrieved in both cases, the API is surely incompatible.
-     *
-     * This method won't raise any exception other than network-related.
-     * It should be used to verify server URLs to determine the further handling.
-     */
-    suspend fun isServerCompatible(): Boolean {
-        val versionInfo = try {
-            val r = client.get("/api/version")
-            if (!r.status.isSuccess()) {
-                false
-            } else {
-                val b: VersionResponse = r.body()
-                b.version == 2
-            }
-        } catch (e: IllegalArgumentException) {
-            false
-        } catch (e: Throwable) {
-            Log.error("Unexpected exception calling version endpoint for '$baseUrl': $e")
-            false
-        }
-
-        if (!versionInfo) {
-            compatibilityCheck = false
-            return false
-        }
-
-        val websocketSupport = try {
-            val r = client.get("/api/v2/ws")
-            if (r.status.isSuccess()) {
-                Log.error("Websocket endpoint from '$baseUrl' accepted unauthenticated request")
-                false
-            } else {
-                val b: ApiErrorResponse = r.body()
-                b.statusCode == ApiStatusCode.Unauthenticated
-            }
-        } catch (e: IllegalArgumentException) {
-            false
-        } catch (e: Throwable) {
-            Log.error("Unexpected exception calling WebSocket endpoint for '$baseUrl': $e")
-            false
-        }
-
-        compatibilityCheck = websocketSupport
-        return websocketSupport
-    }
-
-    /**
-     * Getter for [compatibilityCheck]
-     */
-    fun getCompatibilityCheck(): Boolean? {
-        return compatibilityCheck
     }
 
 }
