@@ -12,7 +12,7 @@ Base tile icons for the "Fantasy Hex" tileset belong to CuddlyClover @ https://c
 
 Tile improvements and units, as well as the terrains and improvements for HexaRealm tileset, are made by The Bucketeer / @GeneralWadaling and are licenced under Creative Commons 3.0
 
-Units for the AbsoluteUnits unitset are made by [letstalkaboutdune](https://github.com/letstalkaboutdune)
+Units for the [AbsoluteUnits unitset](https://github.com/letstalkaboutdune/AbsoluteUnits) are made by [letstalkaboutdune](https://github.com/letstalkaboutdune) and are licensed under Creative Commons Attribution 4.0 International
 
 Promotional trailer for Steam and other storefronts made by [letstalkaboutdune](https://github.com/letstalkaboutdune)
 

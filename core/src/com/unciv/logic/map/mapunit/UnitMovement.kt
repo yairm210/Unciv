@@ -237,6 +237,7 @@ class UnitMovement(val unit: MapUnit) {
         val newTilesToCheck = ArrayList<Tile>()
         var considerZoneOfControl = true // only for first distance!
         val visitedTiles: HashSet<Tile> = hashSetOf(currentTile)
+        val civilization = unit.civ
 
         while (true) {
             if (distance == 2) { // only set this once after distance > 1
@@ -260,6 +261,9 @@ class UnitMovement(val unit: MapUnit) {
                 for (reachableTile in distanceToTilesThisTurn.keys) {
                     // Avoid damaging terrain on first pass
                     if (avoidDamagingTerrain && unit.getDamageFromTerrain(reachableTile) > 0)
+                        continue
+                    // Avoid Enemy Territory if Civilian and Automated. For multi-turn pathing
+                    if (unit.isCivilian() && unit.isAutomated() && reachableTile.isEnemyTerritory(civilization))
                         continue
                     if (reachableTile == destination) {
                         val path = mutableListOf(destination)
