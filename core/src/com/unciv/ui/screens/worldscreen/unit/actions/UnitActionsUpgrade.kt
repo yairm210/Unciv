@@ -3,11 +3,11 @@ package com.unciv.ui.screens.worldscreen.unit.actions
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.Counter
 import com.unciv.models.UnitAction
-import com.unciv.models.UnitActionType
+import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 
-object UnitActionsUpgrade{
+object UnitActionsUpgrade {
 
     internal fun addUnitUpgradeAction(
         unit: MapUnit,
@@ -58,12 +58,16 @@ object UnitActionsUpgrade{
             "Upgrade to [${upgradedUnit.name}] ([$goldCostOfUpgrade] gold)"
         else "Upgrade to [${upgradedUnit.name}]\n([$goldCostOfUpgrade] gold, [$newResourceRequirementsString])"
 
-        return UnitAction(
-            UnitActionType.Upgrade,
+        return UpgradeUnitAction(
             title = title,
+            unitToUpgradeTo = upgradedUnit,
             action = {
                 unit.destroy(destroyTransportedUnit = false)
                 val newUnit = civInfo.units.placeUnitNearTile(unitTile.position, upgradedUnit.name)
+
+                /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
+                 * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
+                 */
 
                 /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
                  * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.

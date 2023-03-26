@@ -3,6 +3,7 @@ package com.unciv.models
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.unciv.Constants
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.KeyCharAndCode
@@ -11,9 +12,9 @@ import com.unciv.ui.images.ImageGetter
 
 /** Unit Actions - class - carries dynamic data and actual execution.
  * Static properties are in [UnitActionType].
- * Note this is for the buttons offering actions, not the ongoing action stored with a [MapUnit][com.unciv.logic.map.MapUnit]
+ * Note this is for the buttons offering actions, not the ongoing action stored with a [MapUnit][com.unciv.logic.map.mapunit.MapUnit]
  */
-data class UnitAction(
+open class UnitAction(
     val type: UnitActionType,
     val title: String = type.value,
     val isCurrentAction: Boolean = false,
@@ -38,7 +39,41 @@ data class UnitAction(
             else -> ImageGetter.getUnitActionPortrait("Star")
         }
     }
+
+    //TODO remove once sure they're unused
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is UnitAction) return false
+
+        if (type != other.type) return false
+        if (isCurrentAction != other.isCurrentAction) return false
+        if (action != other.action) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = type.hashCode()
+        result = 31 * result + isCurrentAction.hashCode()
+        result = 31 * result + (action?.hashCode() ?: 0)
+        return result
+    }
+
+    override fun toString(): String {
+        return "UnitAction(title='$title', isCurrentAction=$isCurrentAction)"
+    }
 }
+
+/** Specialized [UnitAction] for upgrades
+ *
+ *  Transports [unitToUpgradeTo] from [creation][com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade.getUpgradeAction]
+ *  to [UI][com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsTable.update]
+ */
+class UpgradeUnitAction(
+    title: String,
+    val unitToUpgradeTo: BaseUnit,
+    action: (() -> Unit)?
+) : UnitAction(UnitActionType.Upgrade, title, action = action)
 
 /** Unit Actions - generic enum with static properties
  *

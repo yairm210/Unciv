@@ -5,10 +5,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.Container
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
@@ -17,13 +14,11 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
-import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.UncivTooltip
-import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.UnitGroup
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.brighten
@@ -38,9 +33,6 @@ import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
-import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
@@ -287,24 +279,9 @@ class UnitOverviewTab(
 //                 val tipTexts = (listOfNotNull(unitAction?.title?.replace('\n',' ')).asSequence()
 //                         + unit.baseUnit.getDifferencesTo(unitToUpgradeTo))
 //                 upgradeIcon.addTooltip(tipTexts.joinToString("\n") { it.tr() }, size = 16f, tipAlign = Align.bottom)
-                val ruleset = unitToUpgradeTo.ruleset
-                val info = sequence {
-                    if (unitAction != null) {
-                        yield(FormattedLine(unitAction.title, color = "#FDA", icon = unitToUpgradeTo.makeLink(), header = 5))
-                    }
-                    yieldAll(
-                        BaseUnitDescriptions.getDifferences(ruleset, unit.baseUnit, unitToUpgradeTo)
-                            .map { FormattedLine(it.first, icon = it.second ?: "") }
-                    )
-                }.toList()
-                val infoTable = MarkupRenderer.render(info, 400f)
-                infoTable.background = BaseScreen.skinStrings.getUiBackground("General/Tooltip", BaseScreen.skinStrings.roundedEdgeRectangleShape, Color.DARK_GRAY)
-                val scalingWrapper = ScrollPane(infoTable).apply {
-                    touchable = Touchable.disabled
-                    setScale(0.667f)
-                }
-                val toolTip = UncivTooltip(upgradeIcon, scalingWrapper
-                    , offset = Vector2(0f, scalingWrapper.packIfNeeded().height * 0.333f) // scaling fails to express size in parent coordinates
+                val tipActor = BaseUnitDescriptions.getUpgradeTooltipActor(unitAction, unit.baseUnit, unitToUpgradeTo)
+                val toolTip = UncivTooltip(upgradeIcon, tipActor
+                    , offset = Vector2(0f, tipActor.packIfNeeded().height * 0.333f) // scaling fails to express size in parent coordinates
                     , tipAlign = Align.topLeft, targetAlign = Align.topLeft)
                 upgradeIcon.addListener(toolTip)
                 add(upgradeIcon).size(28f)

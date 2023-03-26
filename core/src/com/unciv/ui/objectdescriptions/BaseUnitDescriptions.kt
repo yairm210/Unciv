@@ -1,6 +1,11 @@
 package com.unciv.ui.objectdescriptions
 
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.unciv.logic.city.City
+import com.unciv.models.UnitAction
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueFlag
@@ -14,6 +19,8 @@ import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.getConsumesAmountString
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 import kotlin.math.pow
 
 object BaseUnitDescriptions {
@@ -277,6 +284,29 @@ object BaseUnitDescriptions {
             val effects = ruleset.unitPromotions[promotion]!!.uniques
                 .joinToString(",") { "{$it}" }  // {} for individual translations, default separator would have extra blank
             yield("$promotion ($effects)" to "Promotion/$promotion")
+        }
+    }
+
+    /** Prepares a WidgetGroup for display as tooltip to an upgrade
+     *  Specialized to the WorldScreen UnitAction button and Unit Overview upgrade icon -
+     *  in both cases the [unitAction] and [unitToUpgradeTo] have already been evaluated.
+     */
+    fun getUpgradeTooltipActor(unitAction: UnitAction?, unitUpgrading: BaseUnit, unitToUpgradeTo: BaseUnit): WidgetGroup {
+        val ruleset = unitToUpgradeTo.ruleset
+        val info = sequence {
+            if (unitAction != null) {
+                yield(FormattedLine(unitAction.title, color = "#FDA", icon = unitToUpgradeTo.makeLink(), header = 5))
+            }
+            yieldAll(
+                getDifferences(ruleset, unitUpgrading, unitToUpgradeTo)
+                    .map { FormattedLine(it.first, icon = it.second ?: "") }
+            )
+        }.toList()
+        val infoTable = MarkupRenderer.render(info, 400f)
+        infoTable.background = BaseScreen.skinStrings.getUiBackground("General/Tooltip", BaseScreen.skinStrings.roundedEdgeRectangleShape, Color.DARK_GRAY)
+        return ScrollPane(infoTable).apply {
+            touchable = Touchable.disabled
+            setScale(0.667f)
         }
     }
 }
