@@ -1,3 +1,30 @@
+## 4.5.13
+
+GPT calculation fixed 2
+
+GPT calculation fixed
+
+Gold per turn is worth less the more turns 'in the future' we're talking about
+
+Returned Perlin map type
+
+By SomeTroglodyte:
+- Prevent duplicate lines from UiElementDocsWriter 
+- Fix MiscLayer not respecting fog of war for spectator 
+- TechPickerScreen colors - skinnable and prettier Future Tech 
+- VictoryScreen code reorg 
+- Omit irrelevant warnings from startup console log 
+- Map scroll speed 
+- More Spectator/Barbarians fixes related to income 
+
+By itanasi:
+- Automated Civilians don't multi-turn path through Enemy Territory 
+- More variety in Main Menu map 
+
+City-state music plays when first meeting them  - By Skekdog
+
+Add AbsoluteUnits license info  - By letstalkaboutdune
+
 ## 4.5.12
 
 Spectators no longer affect games they are in
