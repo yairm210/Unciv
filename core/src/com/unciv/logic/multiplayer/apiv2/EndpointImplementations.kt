@@ -6,7 +6,7 @@
 
 package com.unciv.logic.multiplayer.apiv2
 
-import java.util.logging.Logger
+import com.unciv.utils.Log
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.cookies.*
@@ -17,7 +17,7 @@ import java.util.*
 /**
  * API wrapper for account handling (do not use directly; use the Api class instead)
  */
-class AccountsApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper, private val logger: Logger) {
+class AccountsApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper) {
 
     /**
      * Retrieve information about the currently logged in user
@@ -117,7 +117,7 @@ class AccountsApi(private val client: HttpClient, private val authCookieHelper: 
             authCookieHelper.add(this)
         }
         if (response.status.isSuccess()) {
-            logger.info("The current user has been deleted")
+            Log.debug("The current user has been deleted")
             authCookieHelper.unset()
             return true
         } else {
@@ -143,7 +143,7 @@ class AccountsApi(private val client: HttpClient, private val authCookieHelper: 
             authCookieHelper.add(this)
         }
         if (response.status.isSuccess()) {
-            logger.info("Password has been changed successfully")
+            Log.debug("User's password has been changed successfully")
             return true
         } else {
             val err: ApiErrorResponse = response.body()
@@ -168,7 +168,7 @@ class AccountsApi(private val client: HttpClient, private val authCookieHelper: 
             authCookieHelper.add(this)
         }
         if (response.status.isSuccess()) {
-            logger.info("A new account for username ${r.username} has been created")
+            Log.debug("A new account for username ${r.username} has been created")
             return true
         } else {
             val err: ApiErrorResponse = response.body()
@@ -181,7 +181,7 @@ class AccountsApi(private val client: HttpClient, private val authCookieHelper: 
 /**
  * API wrapper for authentication handling (do not use directly; use the Api class instead)
  */
-class AuthApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper, private val logger: Logger) {
+class AuthApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper) {
 
     /**
      * Try logging in with username and password for testing purposes, don't set the session cookie
@@ -217,7 +217,7 @@ class AuthApi(private val client: HttpClient, private val authCookieHelper: Auth
         }
         if (response.status.isSuccess()) {
             val authCookie = response.setCookie()["id"]
-            logger.info("Received new session cookie: $authCookie")
+            Log.debug("Received new session cookie: $authCookie")
             if (authCookie != null) {
                 authCookieHelper.set(authCookie.value)
             }
@@ -236,7 +236,7 @@ class AuthApi(private val client: HttpClient, private val authCookieHelper: Auth
     suspend fun logout(): Boolean {
         val response = client.post("/api/v2/auth/logout")
         if (response.status.isSuccess()) {
-            logger.info("Logged out successfully (dropping session cookie...)")
+            Log.debug("Logged out successfully (dropping session cookie...)")
             authCookieHelper.unset()
             return true
         } else {
@@ -250,7 +250,7 @@ class AuthApi(private val client: HttpClient, private val authCookieHelper: Auth
 /**
  * API wrapper for chat room handling (do not use directly; use the Api class instead)
  */
-class ChatApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper, private val logger: Logger) {
+class ChatApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper) {
 
     /**
      * Retrieve all messages a user has access to
@@ -291,7 +291,7 @@ class ChatApi(private val client: HttpClient, private val authCookieHelper: Auth
 /**
  * API wrapper for friend handling (do not use directly; use the Api class instead)
  */
-class FriendApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper, private val logger: Logger) {
+class FriendApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper) {
 
     /**
      * Retrieve a pair of the list of your established friendships and the list of your open friendship requests (incoming and outgoing)
@@ -328,28 +328,6 @@ class FriendApi(private val client: HttpClient, private val authCookieHelper: Au
     }
 
     /**
-     * Retrieve a list of your open incoming friendship requests
-     *
-     * The argument [myUUID] should be filled with the username of the currently logged in user.
-     */
-    suspend fun listIncomingRequests(myUUID: UUID): List<FriendRequestResponse> {
-        return listRequests().filter {
-            it.to.uuid == myUUID
-        }
-    }
-
-    /**
-     * Retrieve a list of your open outgoing friendship requests
-     *
-     * The argument [myUUID] should be filled with the username of the currently logged in user.
-     */
-    suspend fun listOutgoingRequests(myUUID: UUID): List<FriendRequestResponse> {
-        return listRequests().filter {
-            it.from.uuid == myUUID
-        }
-    }
-
-    /**
      * Request friendship with another user
      */
     suspend fun request(other: UUID): Boolean {
@@ -366,7 +344,6 @@ class FriendApi(private val client: HttpClient, private val authCookieHelper: Au
             authCookieHelper.add(this)
         }
         if (response.status.isSuccess()) {
-            logger.info("You have requested friendship with user ${r.uuid}")
             return true
         } else {
             val err: ApiErrorResponse = response.body()
@@ -382,7 +359,7 @@ class FriendApi(private val client: HttpClient, private val authCookieHelper: Au
             authCookieHelper.add(this)
         }
         if (response.status.isSuccess()) {
-            logger.info("You have successfully accepted friendship request ID $friendRequestID")
+            Log.debug("Successfully accepted friendship request ID $friendRequestID")
             return true
         } else {
             val err: ApiErrorResponse = response.body()
@@ -401,7 +378,7 @@ class FriendApi(private val client: HttpClient, private val authCookieHelper: Au
             authCookieHelper.add(this)
         }
         if (response.status.isSuccess()) {
-            logger.info("You have successfully dropped friendship ID $friendID")
+            Log.debug("Successfully rejected/dropped friendship ID $friendID")
             return true
         } else {
             val err: ApiErrorResponse = response.body()
@@ -414,7 +391,7 @@ class FriendApi(private val client: HttpClient, private val authCookieHelper: Au
 /**
  * API wrapper for game handling (do not use directly; use the Api class instead)
  */
-class GameApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper, private val logger: Logger) {
+class GameApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper) {
 
     /**
      * Retrieves an overview of all open games of a player
@@ -488,7 +465,7 @@ class GameApi(private val client: HttpClient, private val authCookieHelper: Auth
         }
         if (response.status.isSuccess()) {
             val responseBody: GameUploadResponse = response.body()
-            logger.info("The game with ID ${r.gameUUID} has been uploaded, the new data ID is ${responseBody.gameDataID}")
+            Log.debug("The game with ID ${r.gameUUID} has been uploaded, the new data ID is ${responseBody.gameDataID}")
             return responseBody.gameDataID
         } else {
             val err: ApiErrorResponse = response.body()
@@ -501,7 +478,7 @@ class GameApi(private val client: HttpClient, private val authCookieHelper: Auth
 /**
  * API wrapper for invite handling (do not use directly; use the Api class instead)
  */
-class InviteApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper, private val logger: Logger) {
+class InviteApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper) {
 
     /**
      * Retrieve all invites for the executing user
@@ -542,7 +519,7 @@ class InviteApi(private val client: HttpClient, private val authCookieHelper: Au
             authCookieHelper.add(this)
         }
         if (response.status.isSuccess()) {
-            logger.info("The friend ${r.friend} has been invited to lobby ${r.lobbyID}")
+            Log.debug("The friend ${r.friend} has been invited to lobby ${r.lobbyID}")
             return true
         } else {
             val err: ApiErrorResponse = response.body()
@@ -555,7 +532,7 @@ class InviteApi(private val client: HttpClient, private val authCookieHelper: Au
 /**
  * API wrapper for lobby handling (do not use directly; use the Api class instead)
  */
-class LobbyApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper, private val logger: Logger) {
+class LobbyApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper) {
 
     /**
      * Retrieves all open lobbies
@@ -579,18 +556,9 @@ class LobbyApi(private val client: HttpClient, private val authCookieHelper: Aut
      * Create a new lobby and return the new lobby ID
      *
      * If you are already in another lobby, an error is returned.
-     */
-    suspend fun open(name: String): Long {
-        return open(CreateLobbyRequest(name, null, LOBBY_MAX_PLAYERS))
-    }
-
-    /**
-     * Create a new lobby and return the new lobby ID
-     *
-     * If you are already in another lobby, an error is returned.
      * ``max_players`` must be between 2 and 34 (inclusive).
      */
-    suspend fun open(name: String, maxPlayers: Int): Long {
+    suspend fun open(name: String, maxPlayers: Int = LOBBY_MAX_PLAYERS): Long {
         return open(CreateLobbyRequest(name, null, maxPlayers))
     }
 
@@ -601,7 +569,7 @@ class LobbyApi(private val client: HttpClient, private val authCookieHelper: Aut
      * ``max_players`` must be between 2 and 34 (inclusive).
      * If password is an empty string, an error is returned.
      */
-    suspend fun open(name: String, password: String?, maxPlayers: Int): Long {
+    suspend fun open(name: String, password: String?, maxPlayers: Int = LOBBY_MAX_PLAYERS): Long {
         return open(CreateLobbyRequest(name, password, maxPlayers))
     }
 
@@ -620,7 +588,6 @@ class LobbyApi(private val client: HttpClient, private val authCookieHelper: Aut
         }
         if (response.status.isSuccess()) {
             val responseBody: CreateLobbyResponse = response.body()
-            logger.info("A new lobby with ID ${responseBody.lobbyID} has been created")
             return responseBody.lobbyID
         } else {
             val err: ApiErrorResponse = response.body()

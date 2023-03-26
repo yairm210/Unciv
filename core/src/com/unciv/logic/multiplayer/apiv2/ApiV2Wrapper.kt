@@ -32,16 +32,16 @@ internal const val LOBBY_MAX_PLAYERS = 34
 /**
  * API wrapper around the newly implemented REST API for multiplayer game handling
  *
- * Note that this does not include the handling of messages via the
+ * Note that this class does not include the handling of messages via the
  * WebSocket connection, but rather only the pure HTTP-based API.
  * Almost any method may throw certain OS or network errors as well as the
  * [ApiErrorResponse] for invalid requests (4xx) or server failures (5xx).
  *
  * This class should be considered implementation detail, since it just
  * abstracts HTTP endpoint names from other modules in this package.
+ * Use the [ApiV2] class for public methods to interact with the server.
  */
-class ApiV2Wrapper(private val baseUrl: String) {
-    private val logger = java.util.logging.Logger.getLogger(this::class.qualifiedName)
+open class ApiV2Wrapper(private val baseUrl: String) {
 
     // HTTP client to handle the server connections, logging, content parsing and cookies
     private val client = HttpClient(CIO) {
@@ -89,50 +89,49 @@ class ApiV2Wrapper(private val baseUrl: String) {
     /**
      * API for account management
      */
-    val account = AccountsApi(client, authCookieHelper, logger)
+    internal val account = AccountsApi(client, authCookieHelper)
 
     /**
      * API for authentication management
      */
-    val auth = AuthApi(client, authCookieHelper, logger)
+    internal val auth = AuthApi(client, authCookieHelper)
 
     /**
      * API for chat management
      */
-    val chat = ChatApi(client, authCookieHelper, logger)
+    internal val chat = ChatApi(client, authCookieHelper)
 
     /**
      * API for friendship management
      */
-    val friend = FriendApi(client, authCookieHelper, logger)
+    internal val friend = FriendApi(client, authCookieHelper)
 
     /**
      * API for game management
      */
-    val game = GameApi(client, authCookieHelper, logger)
+    internal val game = GameApi(client, authCookieHelper)
 
     /**
      * API for invite management
      */
-    val invite = InviteApi(client, authCookieHelper, logger)
+    internal val invite = InviteApi(client, authCookieHelper)
 
     /**
      * API for lobby management
      */
-    val lobby = LobbyApi(client, authCookieHelper, logger)
+    internal val lobby = LobbyApi(client, authCookieHelper)
 
     /**
      * Handle existing WebSocket connections
      *
-     * This method should be dispatched to a non-daemon thread pool executor.
+     * This method should be dispatched to a daemon thread pool executor.
      */
     private suspend fun handleWebSocketSession(session: ClientWebSocketSession) {
         try {
             val incomingMessage = session.incoming.receive()
 
-            logger.info("Incoming message: $incomingMessage")
+            Log.debug("Incoming WebSocket message: $incomingMessage")
             if (incomingMessage.frameType == FrameType.PING) {
-                logger.info("Received PING frame")
                 session.send(
                     Frame.byType(
                         false,
@@ -145,7 +144,7 @@ class ApiV2Wrapper(private val baseUrl: String) {
                 )
             }
         } catch (e: ClosedReceiveChannelException) {
-            logger.severe("The channel was closed: $e")
+            Log.error("The WebSocket channel was unexpectedly closed: $e")
         }
     }
 
@@ -158,7 +157,7 @@ class ApiV2Wrapper(private val baseUrl: String) {
      * The [handler] coroutine might not get called, if opening the WS fails.
      */
     suspend fun websocket(handler: suspend (ClientWebSocketSession) -> Unit): Boolean {
-        logger.info("Starting a new WebSocket connection ...")
+        Log.debug("Starting a new WebSocket connection ...")
 
         coroutineScope {
             try {
@@ -177,9 +176,9 @@ class ApiV2Wrapper(private val baseUrl: String) {
                     }
                 }
                 websocketJobs.add(job)
-                logger.info("A new WebSocket has been created, running in job $job")
+                Log.debug("A new WebSocket has been created, running in job $job")
             } catch (e: SerializationException) {
-                logger.warning("Failed to create a WebSocket: $e")
+                Log.debug("Failed to create a WebSocket: $e")
                 return@coroutineScope false
             }
         }
@@ -218,7 +217,7 @@ class ApiV2Wrapper(private val baseUrl: String) {
         } catch (e: IllegalArgumentException) {
             false
         } catch (e: Throwable) {
-            logger.warning("Unexpected exception calling '$baseUrl': $e")
+            Log.error("Unexpected exception calling version endpoint for '$baseUrl': $e")
             false
         }
 
@@ -230,7 +229,7 @@ class ApiV2Wrapper(private val baseUrl: String) {
         val websocketSupport = try {
             val r = client.get("/api/v2/ws")
             if (r.status.isSuccess()) {
-                logger.severe("Websocket endpoint from '$baseUrl' accepted unauthenticated request")
+                Log.error("Websocket endpoint from '$baseUrl' accepted unauthenticated request")
                 false
             } else {
                 val b: ApiErrorResponse = r.body()
@@ -239,7 +238,7 @@ class ApiV2Wrapper(private val baseUrl: String) {
         } catch (e: IllegalArgumentException) {
             false
         } catch (e: Throwable) {
-            logger.warning("Unexpected exception calling '$baseUrl': $e")
+            Log.error("Unexpected exception calling WebSocket endpoint for '$baseUrl': $e")
             false
         }
 
