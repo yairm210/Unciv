@@ -9,7 +9,6 @@ import com.unciv.ui.components.CivGroup
 import com.unciv.ui.components.Fonts
 import kotlin.math.ceil
 import kotlin.math.log10
-import kotlin.math.min
 import kotlin.math.pow
 
 private data class DataPoint(val x: Int, val y: Int, val civ: Civilization)
@@ -212,8 +211,8 @@ class LineChart(
                 val prevPoint = points[i - 1]
                 val currPoint = points[i]
                 // See TODO at the top of the file. We currently don't support negative values.
-                if (prevPoint.y <= 0) continue
-                if (currPoint.y <= 0) continue
+                if (prevPoint.y < 0) continue
+                if (currPoint.y < 0) continue
                 drawLine(
                     batch,
                     linesMinX + prevPoint.x * scaleX, linesMinY + prevPoint.y * scaleY,
