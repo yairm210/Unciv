@@ -14,6 +14,8 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
+import com.unciv.models.UpgradeUnitAction
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.Fonts
@@ -264,22 +266,19 @@ class UnitOverviewTab(
             add(promotionsTable)
 
             // Upgrade column
-            if (unit.upgrade.canUpgrade(ignoreResources = true)) {
-                val unitAction = UnitActionsUpgrade.getUpgradeAction(unit)
-                val enable = unitAction?.action != null && viewingPlayer.isCurrentPlayer() &&
+            val unitAction = UnitActionsUpgrade.getUpgradeActionAnywhere(unit)
+            if (unitAction != null) {
+                val enable = unitAction.action != null && viewingPlayer.isCurrentPlayer() &&
                     GUI.isAllowedChangeState()
-                val unitToUpgradeTo = unit.upgrade.getUnitToUpgradeTo()
+                val unitToUpgradeTo = (unitAction as UpgradeUnitAction).unitToUpgradeTo
                 val upgradeIcon = ImageGetter.getUnitIcon(unitToUpgradeTo.name,
                     if (enable) Color.GREEN else Color.GREEN.darken(0.5f))
                 if (enable) upgradeIcon.onClick {
-                    SoundPlayer.play(unitAction!!.uncivSound)
+                    SoundPlayer.play(unitAction.uncivSound)
                     unitAction.action!!()
                     unitListTable.updateUnitListTable()
                 }
-//                 val tipTexts = (listOfNotNull(unitAction?.title?.replace('\n',' ')).asSequence()
-//                         + unit.baseUnit.getDifferencesTo(unitToUpgradeTo))
-//                 upgradeIcon.addTooltip(tipTexts.joinToString("\n") { it.tr() }, size = 16f, tipAlign = Align.bottom)
-                val tipActor = BaseUnitDescriptions.getUpgradeTooltipActor(unitAction, unit.baseUnit, unitToUpgradeTo)
+                val tipActor = BaseUnitDescriptions.getUpgradeTooltipActor(unitAction.title, unit.baseUnit, unitToUpgradeTo)
                 val toolTip = UncivTooltip(upgradeIcon, tipActor
                     , offset = Vector2(0f, tipActor.packIfNeeded().height * 0.333f) // scaling fails to express size in parent coordinates
                     , tipAlign = Align.topLeft, targetAlign = Align.topLeft)

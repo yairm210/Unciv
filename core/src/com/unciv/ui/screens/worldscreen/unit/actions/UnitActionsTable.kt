@@ -31,7 +31,8 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         for (unitAction in UnitActions.getUnitActions(unit)) {
             val button = getUnitActionButton(unit, unitAction)
             if (unitAction is UpgradeUnitAction) {
-                val tipActor = BaseUnitDescriptions.getUpgradeTooltipActor(unitAction, unit.baseUnit, unitAction.unitToUpgradeTo)
+                val tipTitle = "⟦RED⟧${unitAction.type.key}⟦⟧: {Upgrade}"
+                val tipActor = BaseUnitDescriptions.getUpgradeTooltipActor(tipTitle, unit.baseUnit, unitAction.unitToUpgradeTo)
                 button.addListener(UncivTooltip(button, tipActor
                     , offset = Vector2(0f, tipActor.packIfNeeded().height * 0.333f) // scaling fails to express size in parent coordinates
                     , tipAlign = Align.topLeft, targetAlign = Align.topRight))
@@ -53,7 +54,8 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         if (unitAction.type == UnitActionType.Promote && unitAction.action != null)
             actionButton.color = Color.GREEN.cpy().lerp(Color.WHITE, 0.5f)
 
-        actionButton.addTooltip(key)
+        if (unitAction !is UpgradeUnitAction)  // Does its own toolTip
+            actionButton.addTooltip(key)
         actionButton.pack()
         if (unitAction.action == null) {
             actionButton.disable()

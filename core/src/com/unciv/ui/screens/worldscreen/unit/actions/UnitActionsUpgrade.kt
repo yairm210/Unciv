@@ -21,13 +21,14 @@ object UnitActionsUpgrade {
     private fun getUpgradeAction(
         unit: MapUnit,
         isFree: Boolean,
-        isSpecial: Boolean
+        isSpecial: Boolean,
+        isAnywhere: Boolean
     ): UnitAction? {
         val specialUpgradesTo = unit.baseUnit().getMatchingUniques(UniqueType.RuinsUpgrade).map { it.params[0] }.firstOrNull()
         if (unit.baseUnit().upgradesTo == null && specialUpgradesTo == null) return null // can't upgrade to anything
         val unitTile = unit.getTile()
         val civInfo = unit.civ
-        if (!isFree && unitTile.getOwner() != civInfo) return null
+        if (!isAnywhere && unitTile.getOwner() != civInfo) return null
 
         val upgradesTo = unit.baseUnit().upgradesTo
         val upgradedUnit = when {
@@ -84,6 +85,7 @@ object UnitActionsUpgrade {
                 isFree || (
                         unit.civ.gold >= goldCostOfUpgrade
                                 && unit.currentMovement > 0
+                                && unitTile.getOwner() == civInfo
                                 && !unit.isEmbarked()
                                 && unit.upgrade.canUpgrade(unitToUpgradeTo = upgradedUnit)
                         )
@@ -92,10 +94,11 @@ object UnitActionsUpgrade {
     }
 
     fun getUpgradeAction(unit: MapUnit) =
-            getUpgradeAction(unit, isFree = false, isSpecial = false)
+            getUpgradeAction(unit, isFree = false, isSpecial = false, isAnywhere = false)
     fun getFreeUpgradeAction(unit: MapUnit) =
-            getUpgradeAction(unit,  isFree = true, isSpecial = false)
+            getUpgradeAction(unit, isFree = true, isSpecial = false, isAnywhere = true)
     fun getAncientRuinsUpgradeAction(unit: MapUnit) =
-            getUpgradeAction(unit,  isFree = true, isSpecial = true)
-
+            getUpgradeAction(unit, isFree = true, isSpecial = true, isAnywhere = true)
+    fun getUpgradeActionAnywhere(unit: MapUnit) =
+            getUpgradeAction(unit, isFree = false, isSpecial = false, isAnywhere = true)
 }

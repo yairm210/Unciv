@@ -283,7 +283,7 @@ object BaseUnitDescriptions {
         for (promotion in betterUnit.promotions.filter { it !in originalUnit.promotions }) {
             val effects = ruleset.unitPromotions[promotion]!!.uniques
                 .joinToString(",") { "{$it}" }  // {} for individual translations, default separator would have extra blank
-            yield("$promotion ($effects)" to "Promotion/$promotion")
+            yield("{$promotion} ($effects)" to "Promotion/$promotion")
         }
     }
 
@@ -291,17 +291,20 @@ object BaseUnitDescriptions {
      *  Specialized to the WorldScreen UnitAction button and Unit Overview upgrade icon -
      *  in both cases the [unitAction] and [unitToUpgradeTo] have already been evaluated.
      */
-    fun getUpgradeTooltipActor(unitAction: UnitAction?, unitUpgrading: BaseUnit, unitToUpgradeTo: BaseUnit): WidgetGroup {
+    fun getUpgradeTooltipActor(title: String, unitUpgrading: BaseUnit, unitToUpgradeTo: BaseUnit): WidgetGroup {
+        val topLine = sequence {
+            yield(FormattedLine(title, color = "#FDA", icon = unitToUpgradeTo.makeLink(), header = 5))
+        }
+        return getUpgradeTooltipActor(topLine, unitUpgrading, unitToUpgradeTo)
+    }
+
+    private fun getUpgradeTooltipActor(topLines: Sequence<FormattedLine>, unitUpgrading: BaseUnit, unitToUpgradeTo: BaseUnit): WidgetGroup {
         val ruleset = unitToUpgradeTo.ruleset
-        val info = sequence {
-            if (unitAction != null) {
-                yield(FormattedLine(unitAction.title, color = "#FDA", icon = unitToUpgradeTo.makeLink(), header = 5))
-            }
-            yieldAll(
+        val info = (
+                topLines +
                 getDifferences(ruleset, unitUpgrading, unitToUpgradeTo)
                     .map { FormattedLine(it.first, icon = it.second ?: "") }
-            )
-        }.toList()
+            ).toList()
         val infoTable = MarkupRenderer.render(info, 400f)
         infoTable.background = BaseScreen.skinStrings.getUiBackground("General/Tooltip", BaseScreen.skinStrings.roundedEdgeRectangleShape, Color.DARK_GRAY)
         return ScrollPane(infoTable).apply {
