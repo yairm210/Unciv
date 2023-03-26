@@ -1,11 +1,7 @@
 package com.unciv.ui.screens.victoryscreen
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.utils.Align
-import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.Civilization
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.translations.tr
@@ -14,8 +10,6 @@ import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.newgamescreen.NewGameScreen
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
@@ -162,40 +156,5 @@ class VictoryScreen(private val worldScreen: WorldScreen) : PickerScreen() {
     open class VictoryScreenTab(worldScreen: WorldScreen) : Table(skin) {
         protected val gameInfo = worldScreen.gameInfo
         protected val playerCivInfo = worldScreen.viewingCiv
-
-        // Common "service" for VictoryScreenGlobalVictory and VictoryScreenCivRankings
-        protected fun getCivGroup(civ: Civilization, afterCivNameText: String, currentPlayer: Civilization): Table {
-            val civGroup = Table()
-
-            var labelText = "{${civ.civName.tr()}}{${afterCivNameText.tr()}}"
-            var labelColor = Color.WHITE
-            val backgroundColor: Color
-
-            if (civ.isDefeated()) {
-                civGroup.add(ImageGetter.getImage("OtherIcons/DisbandUnit")).size(30f)
-                backgroundColor = Color.LIGHT_GRAY
-                labelColor = Color.BLACK
-            } else if (currentPlayer == civ // || game.viewEntireMapForDebug
-                    || currentPlayer.knows(civ)
-                    || currentPlayer.isDefeated()
-                    || currentPlayer.victoryManager.hasWon()
-            ) {
-                civGroup.add(ImageGetter.getNationPortrait(civ.nation, 30f))
-                backgroundColor = civ.nation.getOuterColor()
-                labelColor = civ.nation.getInnerColor()
-            } else {
-                civGroup.add(ImageGetter.getRandomNationPortrait(30f))
-                backgroundColor = Color.DARK_GRAY
-                labelText = Constants.unknownNationName
-            }
-
-            civGroup.background = skinStrings.getUiBackground("VictoryScreen/CivGroup", skinStrings.roundedEdgeRectangleShape, backgroundColor)
-            val label = labelText.toLabel(labelColor)
-            label.setAlignment(Align.center)
-
-            civGroup.add(label).padLeft(10f)
-            civGroup.pack()
-            return civGroup
-        }
     }
 }

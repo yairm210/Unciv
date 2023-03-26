@@ -1,11 +1,15 @@
 package com.unciv.ui.screens.victoryscreen
 
+import LineChart
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
+import com.unciv.ui.components.CivGroup
 import com.unciv.ui.components.extensions.addSeparator
+import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 class VictoryScreenCivRankings(
@@ -17,7 +21,40 @@ class VictoryScreenCivRankings(
 
         val majorCivs = gameInfo.civilizations.filter { it.isMajorCiv() }
         if (UncivGame.Current.settings.useDemographics) buildDemographicsTable(majorCivs)
-        else buildRankingsTable(majorCivs)
+        else {
+            val rankingTypeButtons = Table().apply { defaults().pad(10f) }
+            val lineChartHolder = Table()
+            for (rankingType in RankingType.values()) {
+                rankingTypeButtons.add(rankingType.name.toTextButton().onClick {
+                    lineChartHolder.clear()
+                    lineChartHolder.add(LineChart(
+                        getLineChartData(majorCivs, rankingType),
+                        gameInfo.currentPlayerCiv,
+                        600f,
+                        300f
+                    ))
+                })
+            }
+            add(rankingTypeButtons).row()
+            add(lineChartHolder)
+        }
+    }
+
+    fun getLineChartData(
+        civilizations: List<Civilization>,
+        rankingType: RankingType
+    ): Map<Int, Map<Civilization, Int>> {
+        val lineChartData = mutableMapOf<Int, MutableMap<Civilization, Int>>()
+        civilizations.forEach {
+            val statsHistory = it.statsHistory
+            statsHistory.forEach { (turn, rankingData) ->
+                val value = rankingData[rankingType]
+                if (value != null) {
+                    lineChartData.getOrPut(turn) { mutableMapOf() }[it] = value
+                }
+            }
+        }
+        return lineChartData
     }
 
     enum class RankLabels { Rank, Value, Best, Average, Worst}
@@ -32,7 +69,7 @@ class VictoryScreenCivRankings(
                 val aliveMajorCivsSorted = majorCivs.filter{ it.isAlive() }.sortedByDescending { it.getStatForRanking(category) }
 
                 fun addRankCivGroup(civ: Civilization) { // local function for reuse of getting and formatting civ stats
-                    add(getCivGroup(civ, ": " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX()
+                    add(CivGroup(civ, ": " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX()
                 }
 
                 @Suppress("NON_EXHAUSTIVE_WHEN") // RankLabels.Demographic treated above
@@ -77,7 +114,7 @@ class VictoryScreenCivRankings(
             column.addSeparator()
 
             for (civ in majorCivs.sortedByDescending { it.getStatForRanking(category) }) {
-                column.add(getCivGroup(civ, ": " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX().row()
+                column.add(CivGroup(civ, ": " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX().row()
             }
 
             add(column)

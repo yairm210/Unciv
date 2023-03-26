@@ -13,7 +13,6 @@ import kotlin.math.pow
 
 private data class DataPoint(val x: Int, val y: Int, val civ: Civilization)
 
-// TODO: There seems to be a problem with values smaller 10 (see culture)
 // TODO: Do negative values work for happiness?
 class LineChart(
     data: Map<Int, Map<Civilization, Int>>,
@@ -66,7 +65,7 @@ class LineChart(
                 ceil(maxValue.toDouble() / oneWithZeros).toInt() * oneWithZeros.toInt()
             }
         }
-        val stepSize = maxLabelValue / maxLabels
+        val stepSize = ceil(maxLabelValue.toFloat() / maxLabels).toInt()
         // `maxLabels + 1` because we want to end at `maxLabels * stepSize`.
         return (0 until maxLabels + 1).map { (it * stepSize) }
     }
