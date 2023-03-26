@@ -9,11 +9,17 @@ import com.unciv.ui.components.CivGroup
 import com.unciv.ui.components.Fonts
 import kotlin.math.ceil
 import kotlin.math.log10
+import kotlin.math.min
 import kotlin.math.pow
 
 private data class DataPoint(val x: Int, val y: Int, val civ: Civilization)
 
-// TODO: Do negative values work for happiness?
+// TODO: This currently does not support negative values (e.g. for happiness or gold). Adding this
+//  seems like a major hassle. The question would be if you'd still want the x axis to be on the
+//  bottom, or whether it should move up somewhere to the middle. What if all values are negative?
+//  Should it then go to the top? And where do the labels of the x-axis go anyways? Or would we just
+//  want a non-zero based y-axis (yikes). Also computing the labels for the y axis, so that they are
+//  "nice" (whatever that menas) would be quite challenging.
 class LineChart(
     data: Map<Int, Map<Civilization, Int>>,
     private val currentPlayerCiv: Civilization,
@@ -205,6 +211,9 @@ class LineChart(
             for (i in 1 until points.size) {
                 val prevPoint = points[i - 1]
                 val currPoint = points[i]
+                // See TODO at the top of the file. We currently don't support negative values.
+                if (prevPoint.y <= 0) continue
+                if (currPoint.y <= 0) continue
                 drawLine(
                     batch,
                     linesMinX + prevPoint.x * scaleX, linesMinY + prevPoint.y * scaleY,
