@@ -51,7 +51,7 @@ class UiElementDocsWriter {
             yield(startMarker)
             yield("| Directory | Name | Default shape | Image |")
             yield("|---|:---:|:---:|---|")
-            yieldAll(elements.asSequence().sorted())    // FileTreeWalk guarantees no specific order as it uses File.listFiles
+            yieldAll(elements.asSequence().sorted().distinct())    // FileTreeWalk guarantees no specific order as it uses File.listFiles
             yield(endMarker)
             yieldAll(originalLines.subList(endIndex + 1, originalLines.size))
         }
