@@ -49,7 +49,7 @@ class ChatRoomScreen(private val chatRoomID: Long) : PickerScreen() {
 
         Concurrency.run {
             // TODO: Remove this workaround fix by implementing a serious API handler
-            game.onlineMultiplayer.user = game.onlineMultiplayer.api.account.get()
+            game.onlineMultiplayer.api.user = game.onlineMultiplayer.api.account.get()
             updateMessages()
         }
     }
@@ -100,7 +100,7 @@ class ChatRoomScreen(private val chatRoomID: Long) : PickerScreen() {
 
             val label = "${it.sender.displayName} [${it.sender.username}] (${it.createdAt}):\n${msgList.joinToString("\n")}".toLabel()
             // TODO: Maybe add a border around each label to differentiate between messages visually clearer
-            if (it.sender.uuid == game.onlineMultiplayer.user.uuid) {
+            if (it.sender.uuid == game.onlineMultiplayer.api.user!!.uuid) {
                 messageTable.add(label).maxWidth(label.width).prefWidth(label.width).right().row()
             } else {
                 messageTable.add(label).maxWidth(label.width).prefWidth(label.width).left().row()

@@ -5,7 +5,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.files.UncivFiles
-import com.unciv.utils.Log
+import com.unciv.logic.multiplayer.ApiVersion
 import kotlinx.coroutines.runBlocking
 import java.io.FileNotFoundException
 
@@ -36,17 +36,13 @@ class OnlineMultiplayerFiles(
         return if (identifier == Constants.dropboxMultiplayerServer) {
             DropBox
         } else {
-            if (ApiV2FileStorageWrapper.api != null) {
-                if (ApiV2FileStorageWrapper.api!!.getCompatibilityCheck() == null) {
-                    runBlocking {
-                        ApiV2FileStorageWrapper.api!!.isServerCompatible()
-                    }
-                }
-                if (ApiV2FileStorageWrapper.api!!.getCompatibilityCheck()!!) {
+            runBlocking { UncivGame.Current.onlineMultiplayer.awaitInitialized() }
+            if (UncivGame.Current.onlineMultiplayer.apiVersion == ApiVersion.APIv2) {
+                if (UncivGame.Current.onlineMultiplayer.api.isAuthenticated()) {
                     return ApiV2FileStorageWrapper.storage!!
+                } else {
+                    throw MultiplayerAuthException(null)
                 }
-            } else {
-                Log.error("API v2 file storage wrapper was null, it may be uninitialized due to race condition")
             }
             UncivServerFileStorage.apply {
                 serverUrl = identifier!!

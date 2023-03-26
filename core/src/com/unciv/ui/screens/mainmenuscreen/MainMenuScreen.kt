@@ -303,10 +303,10 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
                 // Authentication is handled before the multiplayer screen is shown
                 val popup = Popup(stage)
                 popup.addGoodSizedLabel("Loading...")
-                if (!game.onlineMultiplayer.isAuthenticated()) {
+                if (!game.onlineMultiplayer.api.isAuthenticated()) {
                     popup.open()
                     Concurrency.run {
-                        if (game.onlineMultiplayer.refreshSession()) {
+                        if (game.onlineMultiplayer.api.refreshSession()) {
                             Concurrency.runOnGLThread {
                                 popup.close()
                                 game.pushScreen(MultiplayerScreenV2())

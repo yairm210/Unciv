@@ -178,7 +178,9 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
         onlineMultiplayer = OnlineMultiplayer()
 
-        Concurrency.run {
+        Concurrency.runOnNonDaemonThreadPool {
+            onlineMultiplayer.initialize()  // actually produces first network traffic
+
             // Check if the server is available in case the feature set has changed
             try {
                 onlineMultiplayer.checkServerStatus()

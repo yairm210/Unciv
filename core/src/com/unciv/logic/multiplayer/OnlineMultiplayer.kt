@@ -6,18 +6,13 @@ import com.unciv.UncivGame
 import com.unciv.json.json
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
+import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.apiv2.AccountResponse
-import com.unciv.logic.multiplayer.apiv2.ApiV2Wrapper
-import com.unciv.logic.multiplayer.apiv2.ApiErrorResponse
-import com.unciv.logic.multiplayer.apiv2.ApiException
-import com.unciv.logic.multiplayer.apiv2.ApiStatusCode
+import com.unciv.logic.multiplayer.apiv2.ApiV2
 import com.unciv.logic.multiplayer.apiv2.OnlineAccountResponse
-import com.unciv.logic.multiplayer.apiv2.WebSocketMessage
-import com.unciv.logic.multiplayer.apiv2.WebSocketMessageSerializer
-import com.unciv.logic.multiplayer.apiv2.WebSocketMessageType
 import com.unciv.logic.multiplayer.storage.ApiV2FileStorageEmulator
 import com.unciv.logic.multiplayer.storage.ApiV2FileStorageWrapper
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
@@ -34,14 +29,11 @@ import com.unciv.utils.debug
 import io.ktor.client.plugins.websocket.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.channels.ClosedReceiveChannelException
-import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.Json
 import java.time.Duration
 import java.time.Instant
 import java.util.*
@@ -53,22 +45,29 @@ import java.util.concurrent.atomic.AtomicReference
  */
 private val FILE_UPDATE_THROTTLE_PERIOD = Duration.ofSeconds(60)
 
-private val SESSION_TIMEOUT = Duration.ofSeconds(15 * 60)
-
 /**
  * Provides multiplayer functionality to the rest of the game
  *
- * The other parts of the game should not use any other classes from the multiplayer package.
+ * You need to call [initialize] as soon as possible, to bootstrap API detection
+ * and first network connectivity. A later version may enforce that no network
+ * traffic is generated before [initialize] gets called.
  *
  * See the file of [com.unciv.logic.multiplayer.MultiplayerGameAdded] for all available [EventBus] events.
  */
 class OnlineMultiplayer {
-    private val settings = UncivGame.Current.settings
-    private val logger = java.util.logging.Logger.getLogger(this::class.qualifiedName)
+    private val settings
+        get() = UncivGame.Current.settings
 
     // Updating the multiplayer server URL in the Api is out of scope, just drop this class and create a new one
     val baseUrl = UncivGame.Current.settings.multiplayer.server
-    val api = ApiV2Wrapper(baseUrl)
+    private val apiImpl = ApiV2(baseUrl)
+    val api: ApiV2
+        get() {
+            if (runBlocking { apiImpl.isCompatible() }) {
+                return apiImpl
+            }
+            throw UncivShowableException("Unsupported server API")
+        }
 
     private val files = UncivGame.Current.files
     val multiplayerFiles = OnlineMultiplayerFiles()
@@ -83,76 +82,43 @@ class OnlineMultiplayer {
     val games: Set<OnlineMultiplayerGame> get() = savedGames.values.toSet()
     val serverFeatureSet: ServerFeatureSet get() = featureSet
 
-    private var lastSuccessfulAuthentication: AtomicReference<Instant?> = AtomicReference()
-
-    // Channel to send frames via WebSocket to the server, may be null
-    // for unsupported servers or unauthenticated/uninitialized clients
-    private var sendChannel: SendChannel<Frame>? = null
-
-    // Server API auto-detection happens in a coroutine triggered in the constructor
+    /** Server API auto-detection happens in the coroutine [initialize] */
     lateinit var apiVersion: ApiVersion
 
-    lateinit var user: AccountResponse
-
-    init {
-        // Run the server auto-detection in a coroutine, only afterwards this class can be considered initialized
-        Concurrency.run {
-            apiVersion = determineServerAPI()
-            checkServerStatus()
-            startPollChecker()
-            isAliveAPIv1()  // this is called for any API version since it sets the featureSet implicitly
-            if (apiVersion == ApiVersion.APIv2) {
-                // Trying to log in with the stored credentials at this step decreases latency later
-                if (hasAuthentication()) {
-                    if (!api.auth.login(UncivGame.Current.settings.multiplayer.userName, UncivGame.Current.settings.multiplayer.passwords[UncivGame.Current.settings.multiplayer.server]!!)) {
-                        logger.warning("Login failed using stored credentials")
-                    } else {
-                        lastSuccessfulAuthentication.set(Instant.now())
-                        api.websocket(::handleWS)
-                        user = api.account.get()
-                    }
-                }
-                ApiV2FileStorageWrapper.storage = ApiV2FileStorageEmulator(api)
-                ApiV2FileStorageWrapper.api = api
-            }
-        }
-
-        runBlocking {
-            coroutineScope {
-                Concurrency.runOnNonDaemonThreadPool {
-                    if (!api.isServerCompatible()) {
-                        logger.warning("Server API at ${UncivGame.Current.settings.multiplayer.server} is not APIv2-compatible")
-                        return@runOnNonDaemonThreadPool
-                    }
-                    ApiV2FileStorageWrapper.storage = ApiV2FileStorageEmulator(api)
-                }
+    /**
+     * Initialize this instance and detect the API version of the server automatically
+     *
+     * This should be called as early as possible to configure other depending attributes.
+     */
+    suspend fun initialize() {
+        apiVersion = determineServerAPI()
+        Log.debug("Server at '$baseUrl' detected API version: $apiVersion")
+        checkServerStatus()
+        startPollChecker()
+        isAliveAPIv1()  // this is called for any API version since it sets the featureSet implicitly
+        if (apiVersion == ApiVersion.APIv2) {
+            if (hasAuthentication()) {
+                apiImpl.initialize(Pair(settings.multiplayer.userName, settings.multiplayer.passwords[baseUrl]?:""))
+            } else {
+                apiImpl.initialize()
             }
         }
     }
 
     /**
-     * Determine whether the object has been initialized.
+     * Determine whether the object has been initialized
      */
     fun isInitialized(): Boolean {
-        return (this::featureSet.isInitialized) && (this::apiVersion.isInitialized)
+        return (this::featureSet.isInitialized) && (this::apiVersion.isInitialized) && (apiVersion != ApiVersion.APIv2 || apiImpl.isInitialized())
     }
 
     /**
-     * Actively sleeping loop that awaits [isInitialized].
+     * Actively sleeping loop that awaits [isInitialized]
      */
     suspend fun awaitInitialized() {
         while (!isInitialized()) {
             delay(1)
         }
-    }
-
-    /**
-     * Determine if the user is authenticated by comparing timestamps (APIv2 only)
-     *
-     * This method is not reliable. The server might have configured another session timeout.
-     */
-    fun isAuthenticated(): Boolean {
-        return (lastSuccessfulAuthentication.get() != null && (lastSuccessfulAuthentication.get()!! + SESSION_TIMEOUT) > Instant.now())
     }
 
     /**
@@ -163,76 +129,10 @@ class OnlineMultiplayer {
     private suspend fun determineServerAPI(): ApiVersion {
         return if (usesDropbox()) {
             ApiVersion.APIv0
-        } else if (api.isServerCompatible()) {
+        } else if (apiImpl.isCompatible()) {
             ApiVersion.APIv2
         } else {
             ApiVersion.APIv1
-        }
-    }
-
-    /**
-     * Send text as a [FrameType.TEXT] frame to the remote side (fire & forget)
-     *
-     * Returns [Unit] if no exception is thrown
-     */
-    internal suspend fun sendText(text: String): Unit {
-        if (sendChannel == null) {
-            return
-        }
-        try {
-            sendChannel!!.send(Frame.Text(text))
-        } catch (e: Throwable) {
-            logger.warning(e.localizedMessage)
-            logger.warning(e.stackTraceToString())
-            throw e
-        }
-    }
-
-    /**
-     * Send text as a [FrameType.TEXT] frame to the remote side (fire & forget)
-     *
-     * Returns true on success, false otherwise. Any error is suppressed!
-     */
-    internal suspend fun sendTextSuppressed(text: String): Boolean {
-        if (sendChannel == null) {
-            return false
-        }
-        try {
-            sendChannel!!.send(Frame.Text(text))
-        } catch (e: Throwable) {
-            logger.severe(e.localizedMessage)
-            logger.severe(e.stackTraceToString())
-        }
-        return true
-    }
-
-    /**
-     * Handle incoming WebSocket messages
-     */
-    private fun handleIncomingWSMessage(msg: WebSocketMessage) {
-        when (msg.type) {
-            WebSocketMessageType.InvalidMessage -> {
-                logger.warning("Received invalid message from WebSocket connection")
-            }
-            WebSocketMessageType.FinishedTurn -> {
-                // This message type is not meant to be received from the server
-                logger.warning("Received FinishedTurn message from WebSocket connection")
-            }
-            WebSocketMessageType.UpdateGameData -> {
-                // TODO: The body of this message contains a whole game state, so we need to unpack and use it here
-            }
-            WebSocketMessageType.ClientDisconnected -> {
-                logger.info("Received ClientDisconnected message from WebSocket connection")
-                // TODO: Implement client connectivity handling
-            }
-            WebSocketMessageType.ClientReconnected -> {
-                logger.info("Received ClientReconnected message from WebSocket connection")
-                // TODO: Implement client connectivity handling
-            }
-            WebSocketMessageType.IncomingChatMessage -> {
-                logger.info("Received IncomingChatMessage message from WebSocket connection")
-                // TODO: Implement chat message handling
-            }
         }
     }
 
@@ -251,48 +151,6 @@ class OnlineMultiplayer {
         return null
     }
 
-    /**
-     * Handle a newly established WebSocket connection
-     */
-    private suspend fun handleWS(session: ClientWebSocketSession) {
-        sendChannel?.close()
-        sendChannel = session.outgoing
-
-        try {
-            while (true) {
-                val incomingFrame = session.incoming.receive()
-                when (incomingFrame.frameType) {
-                    FrameType.CLOSE, FrameType.PING, FrameType.PONG -> {
-                        // This handler won't handle control frames
-                        logger.info("Received CLOSE, PING or PONG as message")
-                    }
-                    FrameType.BINARY -> {
-                        logger.warning("Received binary packet which can't be parsed at the moment")
-                    }
-                    FrameType.TEXT -> {
-                        try {
-                            logger.fine("Incoming text message: $incomingFrame")
-                            val text = (incomingFrame as Frame.Text).readText()
-                            logger.fine("Message text: $text")
-                            val msg = Json.decodeFromString(WebSocketMessageSerializer(), text)
-                            logger.fine("Message type: ${msg::class.java.canonicalName}")
-                            logger.fine("Deserialized: $msg")
-                            handleIncomingWSMessage(msg)
-                        } catch (e: Throwable) {
-                            logger.severe(e.localizedMessage)
-                            logger.severe(e.stackTraceToString())
-                        }
-                    }
-                }
-            }
-        } catch (e: ClosedReceiveChannelException) {
-            logger.warning("The WebSocket channel was closed: $e")
-        } catch (e: Throwable) {
-            logger.severe(e.localizedMessage)
-            logger.severe(e.stackTraceToString())
-            throw e
-        }
-    }
 
     private fun getCurrentGame(): OnlineMultiplayerGame? {
         val gameInfo = UncivGame.Current.gameInfo
@@ -343,7 +201,6 @@ class OnlineMultiplayer {
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      */
     suspend fun createGame(newGame: GameInfo) {
-        logger.info("Creating game")
         multiplayerFiles.tryUploadGame(newGame, withPreview = true)
         addGame(newGame)
     }
@@ -441,9 +298,9 @@ class OnlineMultiplayer {
      * Load all friends and friend requests (split by incoming and outgoing) of the currently logged-in user
      */
     suspend fun getFriends(): Triple<List<OnlineAccountResponse>, List<AccountResponse>, List<AccountResponse>> {
-        val (friends, requests) = api.friend.listAll()
+        val (friends, requests) = apiImpl.friend.listAll()
         // TODO: The user's UUID should be cached, when this class is extended to a game manager class
-        val myUUID = api.account.get().uuid
+        val myUUID = apiImpl.account.get().uuid
         return Triple(
             friends.map { it.to },
             requests.filter { it.to.uuid == myUUID }.map{ it.from },
@@ -569,19 +426,14 @@ class OnlineMultiplayer {
      * @return true if the server is alive, false otherwise
      */
     suspend fun checkServerStatus(): Boolean {
-        if (api.getCompatibilityCheck() == null) {
-            api.isServerCompatible()
-            if (api.getCompatibilityCheck()!!) {
-                return true  // if the compatibility check succeeded, the server is obviously running
-            }
-        } else if (api.getCompatibilityCheck()!!) {
+        if (apiImpl.isCompatible()) {
             try {
-                api.version()
-            } catch (e: Throwable) {  // the only expected exception type is network-related (e.g. timeout or unreachable)
-                Log.error("Suppressed error in 'checkServerStatus': $e")
+                apiImpl.version()
+            } catch (e: Throwable) {
+                Log.error("Unexpected error during server status query: ${e.localizedMessage}")
                 return false
             }
-            return true  // no exception means the server responded with the excepted answer type
+            return true
         }
 
         return isAliveAPIv1()
@@ -593,6 +445,8 @@ class OnlineMultiplayer {
      * This will also update/set the [featureSet] implicitly.
      *
      * Only use this method for APIv1 servers. This method doesn't check the API version, though.
+     *
+     * This is a blocking method.
      */
     private fun isAliveAPIv1(): Boolean {
         var statusOk = false
@@ -620,14 +474,12 @@ class OnlineMultiplayer {
             return true
         }
 
-        val settings = UncivGame.Current.settings.multiplayer
-
         val success = multiplayerFiles.fileStorage().authenticate(
-            userId=settings.userId,
-            password=password ?: settings.passwords[settings.server] ?: ""
+            userId=settings.multiplayer.userId,
+            password=password ?: settings.multiplayer.passwords[settings.multiplayer.server] ?: ""
         )
         if (password != null && success) {
-            settings.passwords[settings.server] = password
+            settings.multiplayer.passwords[settings.multiplayer.server] = password
         }
         return success
     }
@@ -638,30 +490,6 @@ class OnlineMultiplayer {
     fun hasAuthentication(): Boolean {
         val settings = UncivGame.Current.settings.multiplayer
         return settings.passwords.containsKey(settings.server)
-    }
-
-    /**
-     * Refresh the currently used session by logging in with username and password stored in the game settings
-     *
-     * Any errors are suppressed. Differentiating invalid logins from network issues is therefore impossible.
-     */
-    suspend fun refreshSession(): Boolean {
-        if (!hasAuthentication()) {
-            return false
-        }
-        val success = try {
-            api.auth.login(
-                UncivGame.Current.settings.multiplayer.userName,
-                UncivGame.Current.settings.multiplayer.passwords[UncivGame.Current.settings.multiplayer.server]!!
-            )
-        } catch (e: Throwable) {
-            Log.error("Suppressed error in 'refreshSession': $e")
-            false
-        }
-        if (success) {
-            lastSuccessfulAuthentication.set(Instant.now())
-        }
-        return success
     }
 
     /**
@@ -694,7 +522,7 @@ class OnlineMultiplayer {
      */
     private fun startPollChecker() {
         if (apiVersion in listOf(ApiVersion.APIv0, ApiVersion.APIv1)) {
-            logger.info("Starting poll service for remote games ...")
+            Log.debug("Starting poll service for remote games ...")
             flow<Unit> {
                 while (true) {
                     delay(500)
