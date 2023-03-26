@@ -39,7 +39,6 @@ import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
 import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMenuPopup
-import com.unciv.utils.Log
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.roundToInt

@@ -6,7 +6,9 @@ import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.ApiVersion
 import com.unciv.logic.multiplayer.apiv2.ApiException
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.UncivTextField
+import com.unciv.ui.components.extensions.keyShortcuts
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -36,6 +38,7 @@ class RegisterLoginPopup(private val stage: Stage, authSuccessful: ((Boolean) ->
             val passwordField = UncivTextField.create("Password")
 
             val loginButton = "Login existing".toTextButton()
+            loginButton.keyShortcuts.add(KeyCharAndCode.RETURN)
             val registerButton = "Register new".toTextButton()
 
             loginButton.onClick {
@@ -91,12 +94,12 @@ class RegisterLoginPopup(private val stage: Stage, authSuccessful: ((Boolean) ->
                 }
             }
 
-            addGoodSizedLabel("It looks like you are playing for the first time on ${multiplayer.baseUrl} with this device. Please login if you have played on this server, otherwise you can register a new account as well.").colspan(2).row()
-            add(usernameField).colspan(2).growX().pad(16f, 0f, 16f, 0f).row()
-            add(passwordField).colspan(2).growX().pad(16f, 0f, 16f, 0f).row()
+            addGoodSizedLabel("It looks like you are playing for the first time on ${multiplayer.baseUrl} with this device. Please login if you have played on this server, otherwise you can register a new account as well.").colspan(3).row()
+            add(usernameField).colspan(3).growX().pad(16f, 0f, 16f, 0f).row()
+            add(passwordField).colspan(3).growX().pad(16f, 0f, 16f, 0f).row()
             addCloseButton(style=negativeButtonStyle) { authSuccessful?.invoke(false) }.growX().padRight(8f)
-            add(loginButton).growX().padLeft(8f)
             add(registerButton).growX().padLeft(8f)
+            add(loginButton).growX().padLeft(8f)
         }
     }
 

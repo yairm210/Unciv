@@ -278,4 +278,3 @@ class MultiplayerScreenV2 : PickerScreen() {
         return "${cachedGame.name}\nGame ID: ${cachedGame.gameUUID}\nData version: ${cachedGame.gameDataID}\nLast activity: ${cachedGame.lastActivity}\nLast player: ${cachedGame.lastPlayer.displayName}\n$details"
     }
 }
-
