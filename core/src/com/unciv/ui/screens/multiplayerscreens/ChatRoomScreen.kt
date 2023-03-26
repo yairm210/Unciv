@@ -1,21 +1,26 @@
 package com.unciv.ui.screens.multiplayerscreens
 
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.apiv2.AccountResponse
 import com.unciv.logic.multiplayer.apiv2.ChatMessage
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.popups.AskTextPopup
 import com.unciv.ui.popups.Popup
+import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import kotlinx.coroutines.delay
 import java.time.Instant
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.math.max
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
 
 class ChatRoomScreen(private val chatRoomID: Long) : PickerScreen() {
@@ -30,17 +35,21 @@ class ChatRoomScreen(private val chatRoomID: Long) : PickerScreen() {
         scrollPane.setScrollingDisabled(false, true)
         topTable.add(ScrollPane(messageTable).apply { setScrollingDisabled(true, false) }).center()
 
-        setupHelpButton()
+        setupTopButtons()
         recreateMessageTable(listOf())
 
         rightSideButton.setText("New message".tr())
+        rightSideButton.enable()
         rightSideButton.onClick {
-            AskTextPopup(this, "Your new message", maxLength = 1024, actionOnOk = {
+            val ask = AskTextPopup(this, "Your new message", maxLength = 1024, actionOnOk = {
                 Log.debug("Sending '$it' to room $chatRoomID")  // TODO: Implement this
             })
+            ask.open()
         }
 
         Concurrency.run {
+            // TODO: Remove this workaround fix by implementing a serious API handler
+            game.onlineMultiplayer.user = game.onlineMultiplayer.api.accounts.get()
             updateMessages()
         }
     }
@@ -65,26 +74,53 @@ class ChatRoomScreen(private val chatRoomID: Long) : PickerScreen() {
             return
         }
 
+        messageTable.add().minWidth(0.96f * stage.width).expandX().fillX().row()  // empty cell to make the table span the whole X screen
         messageTable.add("Messages".toLabel()).center().row()
         messageTable.defaults().uniformX()
-        messageTable.defaults().fillX()
         messageTable.defaults().pad(10.0f)
 
         messages.forEach {
-            val text = "${it.sender.displayName} (${it.createdAt}):\n${it.message}"
+            // This block splits the message by spaces to make it fit on the screen.
+            // It might be inefficient but at least it works reliably for any amount of text.
+            val msgList = ArrayList<String>()
+            var currentLine = ""
+            for (word in it.message.split(" ")) {
+                currentLine = if (Label("$currentLine $word", skin).width < 0.7f * stage.width) {
+                    if (currentLine == "") {
+                        word
+                    } else {
+                        "$currentLine $word"
+                    }
+                } else {
+                    msgList.add(currentLine)
+                    word
+                }
+            }
+            msgList.add(currentLine)
+
+            val label = "${it.sender.displayName} [${it.sender.username}] (${it.createdAt}):\n${msgList.joinToString("\n")}".toLabel()
+            // TODO: Maybe add a border around each label to differentiate between messages visually clearer
             if (it.sender.uuid == game.onlineMultiplayer.user.uuid) {
-                messageTable.add(text.toLabel()).right().row()
+                messageTable.add(label).maxWidth(label.width).prefWidth(label.width).right().row()
             } else {
-                messageTable.add(text.toLabel()).left().row()
+                messageTable.add(label).maxWidth(label.width).prefWidth(label.width).left().row()
             }
         }
     }
 
     /**
-     * Construct a help button
+     * Construct two buttons for chat members and help
      */
-    private fun setupHelpButton() {
+    private fun setupTopButtons() {
+        val padding = 8.0f
         val tab = Table()
+        val membersButton = "Chat members".toTextButton()
+        membersButton.onClick {
+            ToastPopup("Chat member list is not implemented yet.", stage)  // TODO
+        }
+        membersButton.padRight(padding)
+        tab.add(membersButton)
+
         val helpButton = "Help".toTextButton()
         helpButton.onClick {
             val helpPopup = Popup(this)
@@ -93,7 +129,7 @@ class ChatRoomScreen(private val chatRoomID: Long) : PickerScreen() {
             helpPopup.open()
         }
         tab.add(helpButton)
-        tab.x = (stage.width - helpButton.width)
+        tab.x = (stage.width - helpButton.width - membersButton.width)
         tab.y = (stage.height - helpButton.height)
         stage.addActor(tab)
     }
