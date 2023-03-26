@@ -54,9 +54,6 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | CityScreen/ConstructionInfoTable/ | SelectedConstructionTable | null | |
 | CivilopediaScreen/ | EntryButton | null | |
 | General/ | Border | null | |
-| General/ | Border | null | |
-| General/ | Border | null | |
-| General/ | Border | null | |
 | General/ | ExpanderTab | null | |
 | General/ | HealthBar | null | |
 | General/ | KeyCapturingButton | null | |
@@ -92,7 +89,6 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | OverviewScreen/UnitOverviewTab/ | UnitSupplyTable | null | |
 | PlayerReadyScreen/ | Background | null | |
 | TechPickerScreen/ | Background | null | |
-| TechPickerScreen/ | Background | null | |
 | TechPickerScreen/ | BottomTable | null | |
 | TechPickerScreen/ | CurrentTechColor | 72, 147, 175 | |
 | TechPickerScreen/ | QueuedTechColor | 7*2, 46*2, 43*2 | |
@@ -107,7 +103,6 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | WorldScreen/ | PickTechButton | roundedEdgeRectangle | |
 | WorldScreen/ | TileInfoTable | null | |
 | WorldScreen/ | TutorialTaskTable | null | |
-| WorldScreen/ | UnitTable | roundedEdgeRectangleMid | |
 | WorldScreen/ | UnitTable | roundedEdgeRectangleMid | |
 | WorldScreen/CityButton/ | InfluenceBar | null | |
 | WorldScreen/Minimap/ | Background | null | |
