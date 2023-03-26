@@ -271,12 +271,14 @@ class UnitOverviewTab(
                 val enable = unitAction.action != null && viewingPlayer.isCurrentPlayer() &&
                     GUI.isAllowedChangeState()
                 val unitToUpgradeTo = (unitAction as UpgradeUnitAction).unitToUpgradeTo
+                val selectKey = getUnitIdentifier(unit, unitToUpgradeTo)
                 val upgradeIcon = ImageGetter.getUnitIcon(unitToUpgradeTo.name,
                     if (enable) Color.GREEN else Color.GREEN.darken(0.5f))
                 if (enable) upgradeIcon.onClick {
                     SoundPlayer.play(unitAction.uncivSound)
                     unitAction.action!!()
                     unitListTable.updateUnitListTable()
+                    select(selectKey)
                 }
                 val tipActor = BaseUnitDescriptions.getUpgradeTooltipActor(unitAction.title, unit.baseUnit, unitToUpgradeTo)
                 val toolTip = UncivTooltip(upgradeIcon, tipActor
@@ -294,7 +296,10 @@ class UnitOverviewTab(
     }
 
     companion object {
-        fun getUnitIdentifier(unit: MapUnit) = unit.run { "$name@${getTile().position.toPrettyString()}" }
+        fun getUnitIdentifier(unit: MapUnit, unitToUpgradeTo: BaseUnit? = null): String {
+            val name = unitToUpgradeTo?.name ?: unit.name
+            return "$name@${unit.getTile().position.toPrettyString()}"
+        }
     }
 
     override fun select(selection: String): Float? {
