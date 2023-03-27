@@ -3,10 +3,12 @@ package com.unciv.app.desktop
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.translations.tr
 import com.unciv.utils.PlatformDisplay
 import com.unciv.utils.ScreenMode
+import java.awt.GraphicsEnvironment
 
 
 enum class DesktopScreenMode : ScreenMode {
@@ -14,7 +16,9 @@ enum class DesktopScreenMode : ScreenMode {
     Windowed {
         override fun activate(settings: GameSettings) {
             Gdx.graphics.setUndecorated(false)
-            setWindowedMode(settings)
+            val isFillingDesktop = setWindowedMode(settings)
+            if (isFillingDesktop)
+                getWindow()?.maximizeWindow()
         }
 
         override fun hasUserSelectableSize() = true
@@ -27,6 +31,7 @@ enum class DesktopScreenMode : ScreenMode {
     },
     Borderless {
         override fun activate(settings: GameSettings) {
+            getWindow()?.restoreWindow()
             Gdx.graphics.setUndecorated(true)
             setWindowedMode(settings)
         }
@@ -40,19 +45,37 @@ enum class DesktopScreenMode : ScreenMode {
 
     abstract fun activate(settings: GameSettings)
 
-    protected fun setWindowedMode(settings: GameSettings) {
-        val width = settings.windowState.width.coerceAtLeast(120)
-        val height = settings.windowState.height.coerceAtLeast(80)
+    /** @return `true` if window fills entire desktop */
+    protected fun setWindowedMode(settings: GameSettings): Boolean {
+        // Calling AWT after Gdx is fully initialized seems icky, but seems to have no side effects
+        // Found no equivalent in Gdx - available _desktop_ surface without taskbars etc
+        val graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment()
+        val maximumWindowBounds = graphicsEnvironment.maximumWindowBounds
+
+        // Make sure an inappropriate saved size doesn't make the window unusable
+        val width = settings.windowState.width.coerceIn(120, maximumWindowBounds.width)
+        val height = settings.windowState.height.coerceIn(80, maximumWindowBounds.height)
+
         // Kludge - see also DesktopLauncher - without, moving the window might revert to the size stored in config
         (Lwjgl3Application::class.java).getDeclaredField("config").run {
             isAccessible = true
             get(Gdx.app) as Lwjgl3ApplicationConfiguration
         }.setWindowedMode(width, height)
+
         Gdx.graphics.setWindowedMode(width, height)
+
+        // Another kludge, prevents visual glitches and crashing cinnamon on Linux Mint
+        getWindow()?.run {
+            setPosition(positionX, positionY)
+        }
+
+        return width == maximumWindowBounds.width && height == maximumWindowBounds.height
     }
 
     companion object {
         operator fun get(id: Int) = values()[id]
+
+        private fun getWindow() = (Gdx.graphics as? Lwjgl3Graphics)?.window
     }
 }
 
