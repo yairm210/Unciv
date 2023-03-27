@@ -1,14 +1,14 @@
 package com.unciv.logic.multiplayer.storage
 
 import com.unciv.logic.files.UncivFiles
-import com.unciv.logic.multiplayer.apiv2.ApiV2Wrapper
+import com.unciv.logic.multiplayer.apiv2.ApiV2
 import com.unciv.utils.Log
 import java.util.*
 
 /**
  * Transition helper that emulates file storage behavior using the API v2
  */
-class ApiV2FileStorageEmulator(private val api: ApiV2Wrapper): FileStorage {
+class ApiV2FileStorageEmulator(private val api: ApiV2): FileStorage {
 
     override suspend fun saveGameData(gameId: String, data: String) {
         val uuid = UUID.fromString(gameId.lowercase())
@@ -66,6 +66,6 @@ class ApiV2FileStorageEmulator(private val api: ApiV2Wrapper): FileStorage {
  * This object keeps references which are populated during program startup at runtime.
  */
 object ApiV2FileStorageWrapper {
-    var api: ApiV2Wrapper? = null
+    var api: ApiV2? = null
     var storage: ApiV2FileStorageEmulator? = null
 }

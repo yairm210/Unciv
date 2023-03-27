@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.multiplayer.ApiVersion
+import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.UniqueType
@@ -33,12 +34,15 @@ import com.unciv.ui.popups.popups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
+import com.unciv.ui.screens.multiplayerscreens.ChatRoomScreen
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
 import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMenuPopup
+import com.unciv.utils.Log
+import com.unciv.utils.concurrency.Concurrency
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -175,11 +179,22 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private class OpenGameChatTable(worldScreen: WorldScreen) : Table(BaseScreen.skin) {
         init {
             // The chat feature will only be enabled if the multiplayer server has support for it
-            if (worldScreen.game.onlineMultiplayer.apiVersion == ApiVersion.APIv2) {
+            if (worldScreen.gameInfo.gameParameters.isOnlineMultiplayer && worldScreen.game.onlineMultiplayer.apiVersion == ApiVersion.APIv2) {
                 val openChatButton = "Chat".toTextButton()
                 openChatButton.onClick {
-                    // TODO: Implement this
-                    ToastPopup("In-game chat has not been implemented yet.", worldScreen.stage)
+                    Concurrency.run {
+                        try {
+                            val details = worldScreen.game.onlineMultiplayer.api.getGameDetails(worldScreen.gameInfo.gameId)
+                            Concurrency.runOnGLThread {
+                                worldScreen.game.pushScreen(ChatRoomScreen(details.chatRoomId))
+                            }
+                        } catch (e: MultiplayerFileNotFoundException) {
+                            Concurrency.runOnGLThread {
+                                Log.error("No game details associated with game '%s' found", worldScreen.gameInfo.gameId)
+                                ToastPopup("No chat associated with this game found.", worldScreen.stage)
+                            }
+                        }
+                    }
                 }
                 add(openChatButton).pad(10f)
                 pack()

@@ -41,6 +41,9 @@ class OnlineMultiplayerFiles(
                 if (UncivGame.Current.onlineMultiplayer.api.isAuthenticated()) {
                     return ApiV2FileStorageWrapper.storage!!
                 } else {
+                    if (runBlocking { ApiV2FileStorageWrapper.api!!.refreshSession() }) {
+                        return ApiV2FileStorageWrapper.storage!!
+                    }
                     throw MultiplayerAuthException(null)
                 }
             }
