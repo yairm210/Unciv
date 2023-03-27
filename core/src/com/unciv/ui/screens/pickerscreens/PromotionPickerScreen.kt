@@ -62,7 +62,7 @@ class PromotionNode(val promotion: Promotion) {
     }
 
     class CustomComparator(
-        val baseNode: PromotionNode
+        private val baseNode: PromotionNode
     ) : Comparator<PromotionNode> {
         override fun compare(a: PromotionNode, b: PromotionNode): Int {
             val baseName = baseNode.baseName
@@ -78,15 +78,15 @@ class PromotionNode(val promotion: Promotion) {
 
 }
 
-class PromotionButton(
+private class PromotionButton(
     val node: PromotionNode,
     val isPickable: Boolean = true,
     val isPromoted: Boolean = false
-
 ) : BorderedTable(
     path="PromotionScreen/PromotionButton",
     defaultBgShape = BaseScreen.skinStrings.roundedEdgeRectangleMidShape,
-    defaultBgBorder = BaseScreen.skinStrings.roundedEdgeRectangleMidBorderShape) {
+    defaultBgBorder = BaseScreen.skinStrings.roundedEdgeRectangleMidBorderShape
+) {
 
     var isSelected = false
     val label = node.promotion.name.toLabel().apply {
@@ -132,11 +132,11 @@ class PromotionButton(
 class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResize {
 
     companion object Colors {
-        val Default:Color = Color.BLACK
-        val Selected:Color = colorFromRGB(72, 147, 175)
-        val Promoted:Color = colorFromRGB(255, 215, 0).darken(0.2f)
-        val Pickable:Color = colorFromRGB(28, 80, 0)
-        val Prerequisite:Color = colorFromRGB(14, 92, 86)
+        val Default: Color = Color.BLACK
+        val Selected: Color = colorFromRGB(72, 147, 175)
+        val Promoted: Color = colorFromRGB(255, 215, 0).darken(0.2f)
+        val Pickable: Color = colorFromRGB(28, 80, 0)
+        val Prerequisite: Color = colorFromRGB(14, 92, 86)
     }
 
     private val promotionsTable = Table()
@@ -250,10 +250,8 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
             // Choose best predecessor - the one with less depth
             var best: PromotionNode? = null
             for (predecessor in node.predecessors) {
-                if (best == null)
+                if (best == null || predecessor.maxDepth < best.maxDepth)
                     best = predecessor
-                else
-                    best = if (predecessor.maxDepth < best.maxDepth) predecessor else best
             }
 
             // Remove everything else, leave only best
