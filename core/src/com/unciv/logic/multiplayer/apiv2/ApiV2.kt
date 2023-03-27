@@ -3,7 +3,9 @@ package com.unciv.logic.multiplayer.apiv2
 import com.unciv.logic.multiplayer.storage.ApiV2FileStorageEmulator
 import com.unciv.logic.multiplayer.ApiVersion
 import com.unciv.logic.multiplayer.storage.ApiV2FileStorageWrapper
+import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
 import com.unciv.utils.Log
+import com.unciv.utils.concurrency.Concurrency
 import io.ktor.client.call.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
@@ -14,10 +16,14 @@ import kotlinx.coroutines.channels.SendChannel
 import kotlinx.serialization.json.Json
 import java.time.Duration
 import java.time.Instant
+import java.util.*
 import java.util.concurrent.atomic.AtomicReference
 
 /** Default session timeout expected from multiplayer servers (unreliable) */
 private val DEFAULT_SESSION_TIMEOUT = Duration.ofSeconds(15 * 60)
+
+/** Default cache expiry timeout to indicate that certain data needs to be re-fetched */
+private val DEFAULT_CACHE_EXPIRY = Duration.ofSeconds(30 * 60)
 
 /**
  * Main class to interact with multiplayer servers implementing [ApiVersion.ApiV2]
@@ -40,7 +46,10 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
     /** Timestamp of the last successful login */
     private var lastSuccessfulAuthentication: AtomicReference<Instant?> = AtomicReference()
 
-    /** User identification on the server */
+    /** Cache for the game details to make certain lookups faster */
+    private val gameDetails: MutableMap<UUID, TimedGameDetails> = mutableMapOf()
+
+    /** User identification on the server, may be null if unset or not logged in */
     var user: AccountResponse? = null
 
     /**
@@ -63,6 +72,9 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
                 lastSuccessfulAuthentication.set(Instant.now())
                 lastSuccessfulCredentials = credentials
                 user = account.get()
+                Concurrency.run {
+                    refreshGameDetails()
+                }
                 websocket(::handleWebSocket)
             }
         }
@@ -148,6 +160,46 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
 
         compatibilityCheck = websocketSupport
         return websocketSupport
+    }
+
+    // ---------------- GAME-RELATED FUNCTIONALITY ----------------
+
+    /**
+     * Fetch server's details about a game based on its game ID
+     *
+     * @throws MultiplayerFileNotFoundException: if the gameId can't be resolved on the server
+     */
+    suspend fun getGameDetails(gameId: UUID): GameDetails {
+        val result = gameDetails[gameId]
+        if (result != null && result.refreshed + DEFAULT_CACHE_EXPIRY > Instant.now()) {
+            return result.to()
+        }
+        refreshGameDetails()
+        return gameDetails[gameId]?.to() ?: throw MultiplayerFileNotFoundException(null)
+    }
+
+    /**
+     * Fetch server's details about a game based on its game ID
+     *
+     * @throws MultiplayerFileNotFoundException: if the gameId can't be resolved on the server
+     */
+    suspend fun getGameDetails(gameId: String): GameDetails {
+        return getGameDetails(UUID.fromString(gameId))
+    }
+
+    /**
+     * Refresh the cache of known multiplayer games, [gameDetails]
+     */
+    private suspend fun refreshGameDetails() {
+        val currentGames = game.list()
+        for (entry in gameDetails.keys) {
+            if (entry !in currentGames.map { it.gameUUID }) {
+                gameDetails.remove(entry)
+            }
+        }
+        for (g in currentGames) {
+            gameDetails[g.gameUUID] = TimedGameDetails(Instant.now(), g.gameUUID, g.chatRoomID, g.gameDataID, g.name)
+        }
     }
 
     // ---------------- WEBSOCKET FUNCTIONALITY ----------------
@@ -292,4 +344,19 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
         return success
     }
 
+}
+
+/**
+ * Small struct to store the most relevant details about a game, useful for caching
+ *
+ * Note that those values may become invalid (especially the [dataId]), so use it only for
+ * caching for short durations. The [chatRoomId] may be valid longer (up to the game's lifetime).
+ */
+data class GameDetails(val gameId: UUID, val chatRoomId: Long, val dataId: Long, val name: String)
+
+/**
+ * Holding the same values as [GameDetails], but with an instant determining the last refresh
+ */
+private data class TimedGameDetails(val refreshed: Instant, val gameId: UUID, val chatRoomId: Long, val dataId: Long, val name: String) {
+    fun to() = GameDetails(gameId, chatRoomId, dataId, name)
 }
