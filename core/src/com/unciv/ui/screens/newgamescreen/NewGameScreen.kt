@@ -37,7 +37,7 @@ import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
-import com.unciv.ui.screens.pickerscreens.PickerScreen
+import com.unciv.ui.screens.pickerscreens.HorizontalPickerScreen
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
@@ -48,7 +48,7 @@ import com.unciv.ui.components.AutoScrollPane as ScrollPane
 
 class NewGameScreen(
     _gameSetupInfo: GameSetupInfo? = null
-): IPreviousScreen, PickerScreen(), RecreateOnResize {
+): IPreviousScreen, HorizontalPickerScreen() /* to get more space */, RecreateOnResize {
 
     override val gameSetupInfo = _gameSetupInfo ?: GameSetupInfo.fromSettings()
     override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters) // needs to be set because the GameOptionsTable etc. depend on this

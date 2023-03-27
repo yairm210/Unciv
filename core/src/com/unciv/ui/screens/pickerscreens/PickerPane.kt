@@ -2,12 +2,12 @@ package com.unciv.ui.screens.pickerscreens
 
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.Constants
 import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.components.AutoScrollPane
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -19,13 +19,14 @@ import com.unciv.ui.components.extensions.toTextButton
 
 class PickerPane(
     disableScroll: Boolean = false,
+    horizontally: Boolean = false,  // use a horizontal group instead of a vertical group for layout
 ) : Table() {
     /** The close button on the lower left of [bottomTable], see [setDefaultCloseAction] */
     val closeButton = Constants.close.toTextButton()
     /** A scrollable wrapped Label you can use to show descriptions in the [bottomTable], starts empty */
     val descriptionLabel = "".toLabel()
-    /** A wrapper containing [rightSideButton]. You can add buttons, they will be arranged vertically */
-    val rightSideGroup = VerticalGroup()
+    /** A wrapper containing [rightSideButton]. You can add buttons, they will be arranged vertically if not set otherwise */
+    val rightSideGroup = if (horizontally) HorizontalGroup() else VerticalGroup()
     /** A button on the lower right of [bottomTable] you can use for a "OK"-type action, starts disabled */
     val rightSideButton = "".toTextButton()
 
