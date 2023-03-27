@@ -29,6 +29,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
+import com.unciv.ui.components.ColorMarkupLabel
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
@@ -266,12 +267,12 @@ class DiplomacyScreen(
         }
 
         val friendBonusLabelColor = if (relationLevel == RelationshipLevel.Friend) Color.GREEN else Color.GRAY
-        val friendBonusLabel = friendBonusText.toLabel(friendBonusLabelColor)
+        val friendBonusLabel = ColorMarkupLabel(friendBonusText, friendBonusLabelColor)
             .apply { setAlignment(Align.center) }
         diplomacyTable.add(friendBonusLabel).row()
 
         val allyBonusLabelColor = if (relationLevel == RelationshipLevel.Ally) Color.GREEN else Color.GRAY
-        val allyBonusLabel = allyBonusText.toLabel(allyBonusLabelColor)
+        val allyBonusLabel = ColorMarkupLabel(allyBonusText, allyBonusLabelColor)
             .apply { setAlignment(Align.center) }
         diplomacyTable.add(allyBonusLabel).row()
 

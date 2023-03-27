@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.ui.components.ColorMarkupLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.WrappableLabel
@@ -81,7 +82,7 @@ class NotificationsScroll(
                     add(ImageGetter.getWhiteDot()).minHeight(2f).width(worldScreen.stage.width/8)
                     add(Table().apply {
                         background = backgroundDrawable
-                        add(category.name.toLabel(fontSize = 30, fontColor = Color.BLACK))
+                        add(ColorMarkupLabel(category.name, Color.BLACK, fontSize = 30))
                     }).pad(3f)
                     add(ImageGetter.getWhiteDot()).minHeight(2f).width(worldScreen.stage.width/8)
                 }).row()
