@@ -450,16 +450,21 @@ class OnlineMultiplayer {
      */
     private fun isAliveAPIv1(): Boolean {
         var statusOk = false
-        SimpleHttp.sendGetRequest("${UncivGame.Current.settings.multiplayer.server}/isalive") { success, result, _ ->
-            statusOk = success
-            if (result.isNotEmpty()) {
-                featureSet = try {
-                    json().fromJson(ServerFeatureSet::class.java, result)
-                } catch (ex: Exception) {
-                    Log.error("${UncivGame.Current.settings.multiplayer.server} does not support server feature set")
-                    ServerFeatureSet()
+        try {
+            SimpleHttp.sendGetRequest("${UncivGame.Current.settings.multiplayer.server}/isalive") { success, result, _ ->
+                statusOk = success
+                if (result.isNotEmpty()) {
+                    featureSet = try {
+                        json().fromJson(ServerFeatureSet::class.java, result)
+                    } catch (ex: Exception) {
+                        Log.error("${UncivGame.Current.settings.multiplayer.server} does not support server feature set")
+                        ServerFeatureSet()
+                    }
                 }
             }
+        } catch (e: Throwable) {
+            Log.error("Error while checking server '$baseUrl' isAlive for $apiVersion: $e")
+            statusOk = false
         }
         return statusOk
     }
