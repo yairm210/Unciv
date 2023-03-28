@@ -45,7 +45,8 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.victoryscreen.RankingType
-import java.util.*
+import java.util.SortedMap
+import java.util.TreeMap
 import kotlin.math.min
 
 object NextTurnAutomation {
@@ -399,7 +400,7 @@ object NextTurnAutomation {
         // considered where whether enemy cities / settlers are close etc., but I think this is a
         // good approximation.
         if (civInfo.gold > 500) {
-            var maxGoldToSpend = civInfo.gold.coerceAtLeast(0) * 0.3
+            var maxGoldToSpend = (civInfo.gold * 0.3).toInt()
             for (city in civInfo.cities) {
                 val newTileToOwn = city.expansion.chooseNewTileToOwn()
                 if (newTileToOwn != null) {
