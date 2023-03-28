@@ -11,8 +11,123 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.cookies.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
+import kotlinx.coroutines.delay
+import java.io.IOException
 import java.util.*
+
+/**
+ * List of HTTP status codes which are considered to [ApiErrorResponse]s by the specification
+ */
+internal val ERROR_CODES = listOf(HttpStatusCode.BadRequest, HttpStatusCode.InternalServerError)
+
+/**
+ * List of API status codes that should be re-executed after session refresh, if possible
+ */
+private val RETRY_CODES = listOf(ApiStatusCode.Unauthenticated)
+
+/**
+ * Perform a HTTP request via [method] to [endpoint]
+ *
+ * Use [refine] to change the [HttpRequestBuilder] after it has been prepared with the method
+ * and path. Do not edit the cookie header or the request URL, since they might be overwritten.
+ * This function retries failed requests after executing coroutine [onRetry], if it
+ * is set and the request failed due to network or defined API errors, see [RETRY_CODES].
+ * Therefore, to enable plain re-trying without anything else, set [onRetry] to (() -> Unit).
+ * If [suppress] is set, it will return null instead of throwing any exceptions.
+ *
+ * @throws ApiException: thrown for defined and recognized API problems
+ * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
+ */
+private suspend fun request(
+    method: HttpMethod,
+    endpoint: String,
+    client: HttpClient,
+    authHelper: AuthHelper,
+    refine: ((HttpRequestBuilder) -> Unit)? = null,
+    suppress: Boolean = false,
+    onRetry: (/* suspending block */ () -> Unit)? = null
+): HttpResponse? {
+    val builder = HttpRequestBuilder()
+    builder.method = method
+    if (refine != null) {
+        refine(builder)
+    }
+    builder.url { path(endpoint) }
+    authHelper.add(builder)
+
+    // Perform the request, but handle network issues gracefully according to the specified exceptions
+    val response = try {
+        client.request(builder)
+    } catch (e: IOException) {
+        return if (onRetry != null) {
+            Log.debug("Retrying after network error %s: %s (cause: %s)", e, e.message, e.cause)
+            onRetry()
+            request(method, endpoint, client, authHelper,
+                refine = refine,
+                suppress = suppress,
+                onRetry = null
+            )
+        } else if (suppress) {
+            Log.debug("Suppressed network error %s: %s (cause: %s)", e, e.message, e.cause)
+            null
+        } else {
+            Log.debug("Throwing network error %s: %s (cause: %s)", e, e.message, e.cause)
+            throw UncivNetworkException(e)
+        }
+    }
+
+    // For HTTP errors defined in the API, throwing an ApiException would be the correct handling.
+    // Therefore, try to de-serialize the response as ApiErrorResponse first. If it happens to be
+    // an authentication failure, the request could be retried as well. Otherwise, throw the error.
+    if (response.status in ERROR_CODES) {
+        try {
+            val error: ApiErrorResponse = response.body()
+            // Now the API response can be checked for retry-able failures
+            if (error.statusCode in RETRY_CODES && onRetry != null) {
+                onRetry()
+                return request(method, endpoint, client, authHelper,
+                    refine = refine,
+                    suppress = suppress,
+                    onRetry = null
+                )
+            }
+            if (suppress) {
+                Log.debug("Suppressing %s for call to '%s'", error, response.request.url)
+                return null
+            }
+            throw error.to()
+        } catch (e: IllegalArgumentException) {  // de-serialization failed
+            Log.error("Invalid body for '%s %s' -> %s: %s: '%s'", method, response.request.url, response.status, e.message, response.bodyAsText())
+            return if (onRetry != null) {
+                onRetry()
+                request(method, endpoint, client, authHelper,
+                    refine = refine,
+                    suppress = suppress,
+                    onRetry = null
+                )
+            } else if (suppress) {
+                Log.debug("Suppressed invalid API error response %s: %s (cause: %s)", e, e.message, e.cause)
+                null
+            } else {
+                Log.debug("Throwing network error instead of API error due to serialization failure %s: %s (cause: %s)", e, e.message, e.cause)
+                throw UncivNetworkException(e)
+            }
+        }
+    } else if (response.status.isSuccess()) {
+        return response
+    } else {
+        // Here, the server returned a non-success code which is not recognized,
+        // therefore it is considered a network error (even if was something like 404)
+        if (suppress) {
+            Log.debug("Suppressed unknown HTTP status code %s for '%s %s'", response.status, method, response.request.url)
+            return null
+        }
+        // If the server does not conform to the API, re-trying requests is useless
+        throw UncivNetworkException(IllegalArgumentException(response.status.toString()))
+    }
+}
 
 /**
  * API wrapper for account handling (do not use directly; use the Api class instead)
