@@ -5,13 +5,16 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.UncivGame
+import com.unciv.logic.multiplayer.ApiVersion
 import com.unciv.logic.multiplayer.OnlineMultiplayer
+import com.unciv.logic.multiplayer.apiv2.ApiException
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.models.UncivSound
 import com.unciv.models.metadata.GameSetting
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.brighten
@@ -153,12 +156,12 @@ private fun addMultiplayerServerOptions(
     multiplayerUsernameTextField.setTextFieldFilter { _, c -> c !in " \r\n\t\\" }
     serverIpTable.add("Multiplayer username".toLabel()).colspan(2).row()
     serverIpTable.add(multiplayerUsernameTextField)
-        .minWidth(optionsPopup.stageToShowOn.width / 2)
-        .colspan(2).growX().padBottom(8f).row()
+        .minWidth(optionsPopup.stageToShowOn.width / 2.5f)
+        .growX().padBottom(8f)
     serverIpTable.add("Save username".toTextButton().onClick {
         settings.multiplayer.userName = multiplayerUsernameTextField.text
         settings.save()
-    }).colspan(2).padBottom(8f).row()
+    }).padBottom(8f).row()
 
     serverIpTable.add("Server address".toLabel().onClick {
         multiplayerServerTextField.text = Gdx.app.clipboard.contents
@@ -228,6 +231,30 @@ private fun addMultiplayerServerOptions(
         }
 
         serverIpTable.add(passwordStatusTable).colspan(2).row()
+    }
+
+    if (UncivGame.Current.onlineMultiplayer.apiVersion == ApiVersion.APIv2 && UncivGame.Current.onlineMultiplayer.hasAuthentication()) {
+        val logoutButton = "Logout".toTextButton()
+        serverIpTable.add(logoutButton.onClick {
+            // Setting the button text as user response isn't the most beautiful way, but the easiest
+            logoutButton.setText("Loading...".tr())
+            settings.multiplayer.passwords.remove(settings.multiplayer.server)
+            settings.save()
+            Concurrency.run {
+                try {
+                    UncivGame.Current.onlineMultiplayer.api.auth.logout()
+                    Concurrency.runOnGLThread {
+                        // Since logging out is not possible anyways afterwards, just disable the button action
+                        logoutButton.setText("Logout successfully".tr())
+                        logoutButton.onClick {  }
+                    }
+                } catch (e: ApiException) {
+                    Concurrency.runOnGLThread {
+                        logoutButton.setText(e.localizedMessage)
+                    }
+                }
+            }
+        }).colspan(2).padBottom(8f).row()
     }
 
     tab.add(serverIpTable).colspan(2).fillX().row()
