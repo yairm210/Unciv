@@ -572,7 +572,9 @@ class RulesetErrorList : ArrayList<RulesetError>() {
     fun isWarnUser() = getFinalSeverity() >= RulesetErrorSeverity.Warning
 
     fun getErrorText(unfiltered: Boolean = false) =
-            filter { unfiltered || it.errorSeverityToReport != RulesetErrorSeverity.WarningOptionsOnly }
+            getErrorText { unfiltered || it.errorSeverityToReport != RulesetErrorSeverity.WarningOptionsOnly }
+    fun getErrorText(filter: (RulesetError)->Boolean) =
+            filter(filter)
                 .sortedByDescending { it.errorSeverityToReport }
                 .joinToString("\n") { it.errorSeverityToReport.name + ": " + it.text }
 }

@@ -1,3 +1,22 @@
+## 4.5.13
+
+Gold per turn is evaluated less the more turns 'in the future' it will be payed
+
+Returned Perlin map type
+
+By SomeTroglodyte:
+- Map scroll speed
+- Fix MiscLayer not respecting fog of war for spectator
+- More Spectator/Barbarians fixes related to income
+
+By itanasi:
+- Automated Civilians don't multi-turn path through Enemy Territory
+- More variety in Main Menu map
+
+City-state music plays when first meeting them - By Skekdog
+
+Add AbsoluteUnits license info - By letstalkaboutdune
+
 ## 4.5.12
 
 Spectators no longer affect games they are in

@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.victoryscreen.RankingType
 import kotlin.math.min
+import kotlin.math.pow
 import kotlin.math.sqrt
 
 class TradeEvaluation {
@@ -80,7 +81,8 @@ class TradeEvaluation {
     fun evaluateBuyCost(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization): Int {
         when (offer.type) {
             TradeType.Gold -> return offer.amount
-            TradeType.Gold_Per_Turn -> return offer.amount * offer.duration
+            // GPT loses 1% of value for each 'future' turn, meaning: gold now is more valuable than gold in the future
+            TradeType.Gold_Per_Turn -> return (1..offer.duration).sumOf { offer.amount * 0.99.pow(it) }.toInt()
             TradeType.Treaty -> {
                 return when (offer.name) {
                     // Since it will be evaluated twice, once when they evaluate our offer and once when they evaluate theirs
