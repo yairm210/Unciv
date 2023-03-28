@@ -13,7 +13,6 @@ import io.ktor.client.plugins.cookies.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import kotlinx.coroutines.delay
 import java.io.IOException
 import java.util.*
 
@@ -32,10 +31,12 @@ private val RETRY_CODES = listOf(ApiStatusCode.Unauthenticated)
  *
  * Use [refine] to change the [HttpRequestBuilder] after it has been prepared with the method
  * and path. Do not edit the cookie header or the request URL, since they might be overwritten.
- * This function retries failed requests after executing coroutine [onRetry], if it
- * is set and the request failed due to network or defined API errors, see [RETRY_CODES].
- * Therefore, to enable plain re-trying without anything else, set [onRetry] to (() -> Unit).
  * If [suppress] is set, it will return null instead of throwing any exceptions.
+ * This function retries failed requests after executing coroutine [retry] which will be passed
+ * the same arguments as the [request] coroutine, if it is set and the request failed due to
+ * network or defined API errors, see [RETRY_CODES]. It should return a [Boolean] which determines
+ * if the original request should be retried after finishing [retry]. For example, to silently
+ * repeat a request on such failure, use such coroutine: suspend { true }
  *
  * @throws ApiException: thrown for defined and recognized API problems
  * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
@@ -47,7 +48,7 @@ private suspend fun request(
     authHelper: AuthHelper,
     refine: ((HttpRequestBuilder) -> Unit)? = null,
     suppress: Boolean = false,
-    onRetry: (/* suspending block */ () -> Unit)? = null
+    retry: (suspend () -> Boolean)? = null
 ): HttpResponse? {
     val builder = HttpRequestBuilder()
     builder.method = method
@@ -61,13 +62,18 @@ private suspend fun request(
     val response = try {
         client.request(builder)
     } catch (e: IOException) {
-        return if (onRetry != null) {
+        val shouldRetry = if (retry != null) {
+            Log.debug("Calling retry coroutine %s for network error %s in '%s %s'", retry, e, method, endpoint)
+            retry()
+        } else {
+            false
+        }
+        return if (shouldRetry) {
             Log.debug("Retrying after network error %s: %s (cause: %s)", e, e.message, e.cause)
-            onRetry()
             request(method, endpoint, client, authHelper,
                 refine = refine,
                 suppress = suppress,
-                onRetry = null
+                retry = null
             )
         } else if (suppress) {
             Log.debug("Suppressed network error %s: %s (cause: %s)", e, e.message, e.cause)
@@ -85,13 +91,15 @@ private suspend fun request(
         try {
             val error: ApiErrorResponse = response.body()
             // Now the API response can be checked for retry-able failures
-            if (error.statusCode in RETRY_CODES && onRetry != null) {
-                onRetry()
-                return request(method, endpoint, client, authHelper,
-                    refine = refine,
-                    suppress = suppress,
-                    onRetry = null
-                )
+            if (error.statusCode in RETRY_CODES && retry != null) {
+                Log.debug("Calling retry coroutine %s for API response error %s in '%s %s'", retry, error, method, endpoint)
+                if (retry()) {
+                    return request(method, endpoint, client, authHelper,
+                        refine = refine,
+                        suppress = suppress,
+                        retry = null
+                    )
+                }
             }
             if (suppress) {
                 Log.debug("Suppressing %s for call to '%s'", error, response.request.url)
@@ -100,12 +108,17 @@ private suspend fun request(
             throw error.to()
         } catch (e: IllegalArgumentException) {  // de-serialization failed
             Log.error("Invalid body for '%s %s' -> %s: %s: '%s'", method, response.request.url, response.status, e.message, response.bodyAsText())
-            return if (onRetry != null) {
-                onRetry()
+            val shouldRetry = if (retry != null) {
+                Log.debug("Calling retry coroutine %s for serialization error %s in '%s %s'", retry, e, method, endpoint)
+                retry()
+            } else {
+                false
+            }
+            return if (shouldRetry) {
                 request(method, endpoint, client, authHelper,
                     refine = refine,
                     suppress = suppress,
-                    onRetry = null
+                    retry = null
                 )
             } else if (suppress) {
                 Log.debug("Suppressed invalid API error response %s: %s (cause: %s)", e, e.message, e.cause)
@@ -126,6 +139,39 @@ private suspend fun request(
         }
         // If the server does not conform to the API, re-trying requests is useless
         throw UncivNetworkException(IllegalArgumentException(response.status.toString()))
+    }
+}
+
+/**
+ * Get the default retry mechanism which tries to refresh the current session, if credentials are available
+ */
+private fun getDefaultRetry(client: HttpClient, authHelper: AuthHelper): (suspend () -> Boolean) {
+    val lastCredentials = authHelper.lastSuccessfulCredentials.get()
+    if (lastCredentials != null) {
+        return suspend {
+            val response = request(HttpMethod.Post, "/api/v2/auth/login", client, authHelper, suppress = true, retry = null, refine = {b ->
+                b.contentType(ContentType.Application.Json)
+                b.setBody(LoginRequest(lastCredentials.first, lastCredentials.second))
+            })
+            if (response != null && response.status.isSuccess()) {
+                val authCookie = response.setCookie()[SESSION_COOKIE_NAME]
+                Log.debug("Received new session cookie in retry handler: $authCookie")
+                if (authCookie != null) {
+                    authHelper.setCookie(
+                        authCookie.value,
+                        authCookie.maxAge,
+                        Pair(lastCredentials.first, lastCredentials.second)
+                    )
+                    true
+                } else {
+                    false
+                }
+            } else {
+                false
+            }
+        }
+    } else {
+        return suspend { false }
     }
 }
 
