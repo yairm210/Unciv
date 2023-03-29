@@ -69,7 +69,6 @@ internal class WebSocketMessageSerializer : JsonContentPolymorphicSerializer<Web
             // This mapping of the enum enforces to specify all serializer types at compile time
             when (WebSocketMessageType.getByValue(element.jsonObject["type"]!!.jsonPrimitive.content)) {
                 WebSocketMessageType.InvalidMessage -> InvalidMessage.serializer()
-                WebSocketMessageType.FinishedTurn -> FinishedTurnMessage.serializer()
                 WebSocketMessageType.UpdateGameData -> UpdateGameDataMessage.serializer()
                 WebSocketMessageType.ClientDisconnected -> ClientDisconnectedMessage.serializer()
                 WebSocketMessageType.ClientReconnected -> ClientReconnectedMessage.serializer()

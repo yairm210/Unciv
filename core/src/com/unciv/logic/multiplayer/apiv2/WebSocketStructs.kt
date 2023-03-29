@@ -5,16 +5,6 @@ import kotlinx.serialization.Serializable
 import java.util.*
 
 /**
- * Upload a new game state from a client after finishing a turn
- */
-@Serializable
-data class FinishedTurn(
-    @SerialName("gameId")
-    val gameID: Long,
-    val gameData: String,  // base64-encoded, gzipped game state
-)
-
-/**
  * An update of the game data
  *
  * This variant is sent from the server to all accounts that are in the game.
@@ -22,10 +12,10 @@ data class FinishedTurn(
 @Serializable
 data class UpdateGameData(
     @SerialName("gameId")
-    val gameID: Long,
+    @Serializable(with = UUIDSerializer::class)
+    val gameUUID: UUID,
     val gameData: String,  // base64-encoded, gzipped game state
-    /** A unique counter that is incremented every time a [FinishedTurn]
-     *  is received from the same `game_id`. */
+    /** A counter that is incremented every time a new game states has been uploaded for the same [gameUUID] via HTTP API. */
     @SerialName("gameDataId")
     val gameDataID: Long
 )
@@ -78,15 +68,6 @@ data class InvalidMessage(
 ) : WebSocketMessage
 
 /**
- * Message to upload the game state after finishing the turn
- */
-@Serializable
-data class FinishedTurnMessage (
-    override val type: WebSocketMessageType,
-    val content: FinishedTurn
-) : WebSocketMessage
-
-/**
  * Message to publish the new game state from the server to all clients
  */
 @Serializable
@@ -128,7 +109,6 @@ data class IncomingChatMessageMessage (
 @Serializable(with = WebSocketMessageTypeSerializer::class)
 enum class WebSocketMessageType(val type: String) {
     InvalidMessage("invalidMessage"),
-    FinishedTurn("finishedTurn"),
     UpdateGameData("updateGameData"),
     ClientDisconnected("clientDisconnected"),
     ClientReconnected("clientReconnected"),

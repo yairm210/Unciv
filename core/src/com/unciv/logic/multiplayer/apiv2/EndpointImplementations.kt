@@ -663,8 +663,8 @@ class InviteApi(private val client: HttpClient, private val authCookieHelper: Au
      * The executing user must be in the specified open lobby.
      * The invited friend must not be in a friend request state.
      */
-    suspend fun new(friend: UUID, lobbyID: Long): Boolean {
-        return new(CreateInviteRequest(friend, lobbyID))
+    suspend fun new(friend: UUID, lobbyUUID: UUID): Boolean {
+        return new(CreateInviteRequest(friend, lobbyUUID))
     }
 
     /**
@@ -680,7 +680,7 @@ class InviteApi(private val client: HttpClient, private val authCookieHelper: Au
             authCookieHelper.add(this)
         }
         if (response.status.isSuccess()) {
-            Log.debug("The friend ${r.friend} has been invited to lobby ${r.lobbyID}")
+            Log.debug("The friend ${r.friendUUID} has been invited to lobby ${r.lobbyUUID}")
             return true
         } else {
             val err: ApiErrorResponse = response.body()
@@ -719,7 +719,7 @@ class LobbyApi(private val client: HttpClient, private val authCookieHelper: Aut
      * If you are already in another lobby, an error is returned.
      * ``max_players`` must be between 2 and 34 (inclusive).
      */
-    suspend fun open(name: String, maxPlayers: Int = LOBBY_MAX_PLAYERS): Long {
+    suspend fun open(name: String, maxPlayers: Int = DEFAULT_LOBBY_MAX_PLAYERS): UUID {
         return open(CreateLobbyRequest(name, null, maxPlayers))
     }
 
@@ -730,7 +730,7 @@ class LobbyApi(private val client: HttpClient, private val authCookieHelper: Aut
      * ``max_players`` must be between 2 and 34 (inclusive).
      * If password is an empty string, an error is returned.
      */
-    suspend fun open(name: String, password: String?, maxPlayers: Int = LOBBY_MAX_PLAYERS): Long {
+    suspend fun open(name: String, password: String?, maxPlayers: Int = DEFAULT_LOBBY_MAX_PLAYERS): UUID {
         return open(CreateLobbyRequest(name, password, maxPlayers))
     }
 
@@ -741,7 +741,7 @@ class LobbyApi(private val client: HttpClient, private val authCookieHelper: Aut
      * ``max_players`` must be between 2 and 34 (inclusive).
      * If password is an empty string, an error is returned.
      */
-    suspend fun open(r: CreateLobbyRequest): Long {
+    suspend fun open(r: CreateLobbyRequest): UUID {
         val response = client.post("/api/v2/lobbies") {
             contentType(ContentType.Application.Json)
             setBody(r)
@@ -749,7 +749,7 @@ class LobbyApi(private val client: HttpClient, private val authCookieHelper: Aut
         }
         if (response.status.isSuccess()) {
             val responseBody: CreateLobbyResponse = response.body()
-            return responseBody.lobbyID
+            return responseBody.lobbyUUID
         } else {
             val err: ApiErrorResponse = response.body()
             throw err.to()

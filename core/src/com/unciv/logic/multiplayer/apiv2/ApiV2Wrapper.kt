@@ -24,7 +24,8 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import java.util.concurrent.ConcurrentLinkedQueue
 
-internal const val LOBBY_MAX_PLAYERS = 34
+/** Default value for max number of players in a lobby if no other value is set */
+internal const val DEFAULT_LOBBY_MAX_PLAYERS = 32
 
 /**
  * API wrapper around the newly implemented REST API for multiplayer game handling

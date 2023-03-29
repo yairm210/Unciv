@@ -33,10 +33,12 @@ data class CreateFriendRequest(
  */
 @Serializable
 data class CreateInviteRequest(
+    @SerialName("friend_uuid")
     @Serializable(with = UUIDSerializer::class)
-    val friend: UUID,
-    @SerialName("lobby_id")
-    val lobbyID: Long
+    val friendUUID: UUID,
+    @SerialName("lobby_uuid")
+    @Serializable(with = UUIDSerializer::class)
+    val lobbyUUID: UUID
 )
 
 /**
