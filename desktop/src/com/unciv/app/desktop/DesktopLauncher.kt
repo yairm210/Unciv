@@ -13,6 +13,7 @@ import com.unciv.ui.components.Fonts
 import com.unciv.utils.Display
 import com.unciv.utils.Log
 import java.awt.GraphicsEnvironment
+import kotlin.math.max
 
 internal object DesktopLauncher {
 
@@ -68,7 +69,7 @@ internal object DesktopLauncher {
         // Kludge! This is a workaround - the matching call in DesktopDisplay doesn't "take" quite permanently,
         // the window might revert to the "config" values when the user moves the window - worse if they
         // minimize/restore. And the config default is 640x480 unless we set something here.
-        config.setWindowedMode(settings.windowState.width, settings.windowState.height)
+        config.setWindowedMode(max(settings.windowState.width, 100), max(settings.windowState.height,100))
 
         if (!isRunFromJAR) {
             UniqueDocsWriter().write()
