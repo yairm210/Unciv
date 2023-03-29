@@ -1,7 +1,3 @@
-/**
- * TODO: Comment this file
- */
-
 package com.unciv.logic.multiplayer.apiv2
 
 import com.unciv.UncivGame
@@ -59,8 +55,9 @@ open class ApiV2Wrapper(private val baseUrl: String) {
         }
     }
 
-    // Helper that replaces library cookie storages to fix cookie serialization problems
-    private val authCookieHelper = AuthCookieHelper()
+    /** Helper that replaces library cookie storages to fix cookie serialization problems and keeps
+     * track of user-supplied credentials to be able to refresh expired sessions on the fly */
+    private val authHelper = AuthHelper()
 
     // Queue to keep references to all opened WebSocket handler jobs
     private var websocketJobs = ConcurrentLinkedQueue<Job>()
@@ -84,37 +81,37 @@ open class ApiV2Wrapper(private val baseUrl: String) {
     /**
      * API for account management
      */
-    internal val account = AccountsApi(client, authCookieHelper)
+    internal val account = AccountsApi(client, authHelper)
 
     /**
      * API for authentication management
      */
-    internal val auth = AuthApi(client, authCookieHelper)
+    internal val auth = AuthApi(client, authHelper)
 
     /**
      * API for chat management
      */
-    internal val chat = ChatApi(client, authCookieHelper)
+    internal val chat = ChatApi(client, authHelper)
 
     /**
      * API for friendship management
      */
-    internal val friend = FriendApi(client, authCookieHelper)
+    internal val friend = FriendApi(client, authHelper)
 
     /**
      * API for game management
      */
-    internal val game = GameApi(client, authCookieHelper)
+    internal val game = GameApi(client, authHelper)
 
     /**
      * API for invite management
      */
-    internal val invite = InviteApi(client, authCookieHelper)
+    internal val invite = InviteApi(client, authHelper)
 
     /**
      * API for lobby management
      */
-    internal val lobby = LobbyApi(client, authCookieHelper)
+    internal val lobby = LobbyApi(client, authHelper)
 
     /**
      * Start a new WebSocket connection
@@ -131,7 +128,7 @@ open class ApiV2Wrapper(private val baseUrl: String) {
             try {
                 val session = client.webSocketSession {
                     method = HttpMethod.Get
-                    authCookieHelper.add(this)
+                    authHelper.add(this)
                     url {
                         takeFrom(baseUrl)
                         protocol = URLProtocol.WS  // TODO: Verify that secure WebSockets (WSS) work as well
