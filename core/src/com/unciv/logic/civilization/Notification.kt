@@ -49,6 +49,11 @@ enum class NotificationCategory{
     War,
     Religion,
     Cities
+    ;
+    companion object {
+        fun safeValueOf(name: String): NotificationCategory? =
+                values().firstOrNull { it.name == name }
+    }
 }
 
 /**
