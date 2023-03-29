@@ -412,7 +412,7 @@ object UnitActions {
     }
 
     private fun addRepairAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        if (unit.currentTile.ruleset.tileImprovements[Constants.repair] == null) return
+        if (!unit.currentTile.ruleset.tileImprovements.containsKey(Constants.repair)) return
         if (!unit.cache.hasUniqueToBuildImprovements) return
         if (unit.isEmbarked()) return
         val tile = unit.getTile()
