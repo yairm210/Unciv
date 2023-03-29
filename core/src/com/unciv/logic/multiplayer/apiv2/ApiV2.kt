@@ -167,7 +167,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
     /**
      * Fetch server's details about a game based on its game ID
      *
-     * @throws MultiplayerFileNotFoundException: if the gameId can't be resolved on the server
+     * @throws MultiplayerFileNotFoundException: if the [gameId] can't be resolved on the server
      */
     suspend fun getGameDetails(gameId: UUID): GameDetails {
         val result = gameDetails[gameId]
@@ -181,7 +181,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
     /**
      * Fetch server's details about a game based on its game ID
      *
-     * @throws MultiplayerFileNotFoundException: if the gameId can't be resolved on the server
+     * @throws MultiplayerFileNotFoundException: if the [gameId] can't be resolved on the server
      */
     suspend fun getGameDetails(gameId: String): GameDetails {
         return getGameDetails(UUID.fromString(gameId))
@@ -191,14 +191,14 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
      * Refresh the cache of known multiplayer games, [gameDetails]
      */
     private suspend fun refreshGameDetails() {
-        val currentGames = game.list()
+        val currentGames = game.list()!!
         for (entry in gameDetails.keys) {
             if (entry !in currentGames.map { it.gameUUID }) {
                 gameDetails.remove(entry)
             }
         }
         for (g in currentGames) {
-            gameDetails[g.gameUUID] = TimedGameDetails(Instant.now(), g.gameUUID, g.chatRoomID, g.gameDataID, g.name)
+            gameDetails[g.gameUUID] = TimedGameDetails(Instant.now(), g.gameUUID, g.chatRoomUUID, g.gameDataID, g.name)
         }
     }
 
@@ -248,10 +248,6 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
             WebSocketMessageType.InvalidMessage -> {
                 Log.debug("Received invalid message from WebSocket connection")
             }
-            WebSocketMessageType.FinishedTurn -> {
-                // This message type is not meant to be received from the server
-                Log.debug("Received FinishedTurn message from WebSocket connection")
-            }
             WebSocketMessageType.UpdateGameData -> {
                 // TODO
                 /*
@@ -275,6 +271,14 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
             WebSocketMessageType.IncomingChatMessage -> {
                 Log.debug("Received IncomingChatMessage message from WebSocket connection")
                 // TODO: Implement chat message handling
+            }
+            WebSocketMessageType.IncomingInvite -> {
+                Log.debug("Received IncomingInvite message from WebSocket connection")
+                // TODO: Implement invite handling
+            }
+            WebSocketMessageType.GameStarted -> {
+                Log.debug("Received GameStarted message from WebSocket connection")
+                // TODO: Implement game start handling
             }
         }
     }
@@ -349,14 +353,14 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
 /**
  * Small struct to store the most relevant details about a game, useful for caching
  *
- * Note that those values may become invalid (especially the [dataId]), so use it only for
- * caching for short durations. The [chatRoomId] may be valid longer (up to the game's lifetime).
+ * Note that those values may become invalid (especially the [dataID]), so use it only for
+ * caching for short durations. The [chatRoomUUID] may be valid longer (up to the game's lifetime).
  */
-data class GameDetails(val gameId: UUID, val chatRoomId: Long, val dataId: Long, val name: String)
+data class GameDetails(val gameUUID: UUID, val chatRoomUUID: UUID, val dataID: Long, val name: String)
 
 /**
  * Holding the same values as [GameDetails], but with an instant determining the last refresh
  */
-private data class TimedGameDetails(val refreshed: Instant, val gameId: UUID, val chatRoomId: Long, val dataId: Long, val name: String) {
-    fun to() = GameDetails(gameId, chatRoomId, dataId, name)
+private data class TimedGameDetails(val refreshed: Instant, val gameUUID: UUID, val chatRoomUUID: UUID, val dataID: Long, val name: String) {
+    fun to() = GameDetails(gameUUID, chatRoomUUID, dataID, name)
 }

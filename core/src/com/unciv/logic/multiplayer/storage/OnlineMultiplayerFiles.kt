@@ -6,7 +6,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.ApiVersion
-import kotlinx.coroutines.runBlocking
+import com.unciv.utils.Log
 import java.io.FileNotFoundException
 
 /**
@@ -36,16 +36,15 @@ class OnlineMultiplayerFiles(
         return if (identifier == Constants.dropboxMultiplayerServer) {
             DropBox
         } else {
-            runBlocking { UncivGame.Current.onlineMultiplayer.awaitInitialized() }
+            if (!UncivGame.Current.onlineMultiplayer.isInitialized()) {
+                Log.debug("Uninitialized online multiplayer instance might result in errors later")
+            }
             if (UncivGame.Current.onlineMultiplayer.apiVersion == ApiVersion.APIv2) {
-                if (UncivGame.Current.onlineMultiplayer.api.isAuthenticated()) {
-                    return ApiV2FileStorageWrapper.storage!!
-                } else {
-                    if (runBlocking { ApiV2FileStorageWrapper.api!!.refreshSession() }) {
-                        return ApiV2FileStorageWrapper.storage!!
-                    }
-                    throw MultiplayerAuthException(null)
+                if (!UncivGame.Current.onlineMultiplayer.hasAuthentication() && !UncivGame.Current.onlineMultiplayer.api.isAuthenticated()) {
+                    Log.error("User credentials not available, further execution may result in errors!")
                 }
+                return ApiV2FileStorageWrapper.storage!!
+
             }
             UncivServerFileStorage.apply {
                 serverUrl = identifier!!

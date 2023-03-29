@@ -1,13 +1,14 @@
 package com.unciv.ui.screens.multiplayerscreens
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.logic.UncivShowableException
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.MultiplayerGameDeleted
 import com.unciv.logic.multiplayer.OnlineMultiplayerGame
 import com.unciv.logic.multiplayer.apiv2.AccountResponse
 import com.unciv.logic.multiplayer.apiv2.ApiException
+import com.unciv.logic.multiplayer.apiv2.FriendResponse
 import com.unciv.logic.multiplayer.apiv2.GameOverviewResponse
-import com.unciv.logic.multiplayer.apiv2.OnlineAccountResponse
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
@@ -20,14 +21,12 @@ import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
-import java.time.Instant
-import java.util.*
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
 
 class MultiplayerScreenV2 : PickerScreen() {
     private var selectedGame: Pair<String, OnlineMultiplayerGame>? = null // pair of game UUID to file handle
     private var cachedGames: Map<String, GameOverviewResponse> = mutableMapOf()
-    private var cachedFriendResponse: Triple<List<OnlineAccountResponse>, List<AccountResponse>, List<AccountResponse>>? = null
+    private var cachedFriendResponse: Triple<List<FriendResponse>, List<AccountResponse>, List<AccountResponse>>? = null
 
     private val leftSideTable = Table() // list friend requests, then online friends, then offline friends, see recreateLeftSideTable()
     private val rightSideTable = Table() // list open games to re-join quickly
@@ -95,11 +94,17 @@ class MultiplayerScreenV2 : PickerScreen() {
      */
     private suspend fun reloadFriendList() {
         try {
-            cachedFriendResponse = game.onlineMultiplayer.getFriends()
+            val (friends, requests) = game.onlineMultiplayer.api.friend.list()!!
+            val myUUID = game.onlineMultiplayer.api.account.get()!!.uuid
+            cachedFriendResponse = Triple(
+                friends,
+                requests.filter { it.to.uuid == myUUID }.map{ it.from },
+                requests.filter { it.from.uuid == myUUID }.map { it.to }
+            )
             Concurrency.runOnGLThread {
                 recreateLeftSideTable()
             }
-        } catch (e: ApiException) {
+        } catch (e: UncivShowableException) {
             Concurrency.runOnGLThread {
                 InfoPopup(stage, e.localizedMessage)
             }
@@ -112,7 +117,7 @@ class MultiplayerScreenV2 : PickerScreen() {
     private suspend fun reloadGameList() {
         try {
             // Map of game UUID to game overview
-            val newCachedGames = game.onlineMultiplayer.api.games.list().associateBy({ it.gameUUID.toString() }, { it })
+            val newCachedGames = game.onlineMultiplayer.api.game.list()!!.associateBy({ it.gameUUID.toString() }, { it })
             Concurrency.runOnGLThread {
                 if (selectedGame != null && !newCachedGames.containsKey(selectedGame!!.first)) {
                     unselectGame()
@@ -150,6 +155,7 @@ class MultiplayerScreenV2 : PickerScreen() {
                     leftSideTable.add("${it.displayName} wants to be your friend".toLabel())
                     val btn = "Options".toTextButton()
                     btn.onClick {
+                        // TODO: Implement friend request options
                         ToastPopup("Options are not implemented yet", stage)
                     }
                     leftSideTable.add(btn)
@@ -158,14 +164,16 @@ class MultiplayerScreenV2 : PickerScreen() {
 
             if (cachedFriendResponse!!.first.isNotEmpty()) {
                 anything = true
+                // TODO: Verify that this sorting is stable, i.e. the first section is online, then sorted alphabetically
                 cachedFriendResponse?.first!!.sortedBy {
-                    it.displayName
+                    it.friend.username
                 }.sortedBy {
-                    if (it.online) 0 else 1
+                    if (it.friend.online) 0 else 1
                 }.forEach {// alphabetically sorted friends
-                    leftSideTable.add("${it.displayName} (${if (it.online) "online" else "offline"})".toLabel())
+                    leftSideTable.add("${it.friend.displayName} (${if (it.friend.online) "online" else "offline"})".toLabel())
                     val btn = "Options".toTextButton()
                     btn.onClick {
+                        // TODO: Implement friend options
                         ToastPopup("Options are not implemented yet", stage)
                     }
                     leftSideTable.add(btn)
