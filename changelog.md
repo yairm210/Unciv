@@ -1,3 +1,18 @@
+## 4.5.14
+
+Resolved  - Mods that remove 'repair' improvement no longer cause crashes down the line
+
+Resolved  - Archipelago creates water again
+
+By SomeTroglodyte:
+- Fix TileSet mods can lock user out 
+- Fix obsoleted units replace in construction queues for Nation-unique upgrades 
+- Fix exploit allowing promotion with 0 movement 
+- Fix notifications for pillage loot 
+- A renamed unit shows that new name in can promote notifications 
+
+AbsoluteUnits - Hwach'a, Camel Archer  - By letstalkaboutdune
+
 ## 4.5.13
 
 Gold per turn is evaluated less the more turns 'in the future' it will be payed
