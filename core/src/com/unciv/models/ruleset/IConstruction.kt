@@ -26,6 +26,8 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     fun getProductionCost(civInfo: Civilization): Int
     fun getStatBuyCost(city: City, stat: Stat): Int?
     fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason>
+
+    /** Returns whether was successful - can fail for units if we can't place them */
     fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat? = null): Boolean  // Yes I'm hilarious.
 
     /** Only checks if it has the unique to be bought with this stat, not whether it is purchasable at all */
