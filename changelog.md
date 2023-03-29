@@ -1,15 +1,15 @@
 ## 4.5.14
 
-Resolved  - Mods that remove 'repair' improvement no longer cause crashes down the line
+Mods that remove 'repair' improvement no longer cause crashes down the line
 
-Resolved  - Archipelago creates water again
+Archipelago creates water again
 
 By SomeTroglodyte:
-- Fix TileSet mods can lock user out 
-- Fix obsoleted units replace in construction queues for Nation-unique upgrades 
-- Fix exploit allowing promotion with 0 movement 
-- Fix notifications for pillage loot 
-- A renamed unit shows that new name in can promote notifications 
+- TileSet mods can no longer lock user out
+- Obsoleted units replaced in construction queues by Nation-unique upgrades
+- Fix exploit allowing promotion with 0 movement
+- Fix notifications for pillage loot
+- A renamed unit shows that new name in can promote notifications
 
 AbsoluteUnits - Hwach'a, Camel Archer  - By letstalkaboutdune
 
