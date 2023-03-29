@@ -27,6 +27,11 @@ internal val ERROR_CODES = listOf(HttpStatusCode.BadRequest, HttpStatusCode.Inte
 private val RETRY_CODES = listOf(ApiStatusCode.Unauthenticated)
 
 /**
+ * Default value for randomly generated passwords
+ */
+private const val DEFAULT_RANDOM_PASSWORD_LENGTH = 32
+
+/**
  * Perform a HTTP request via [method] to [endpoint]
  *
  * Use [refine] to change the [HttpRequestBuilder] after it has been prepared with the method
@@ -178,162 +183,191 @@ private fun getDefaultRetry(client: HttpClient, authHelper: AuthHelper): (suspen
 /**
  * API wrapper for account handling (do not use directly; use the Api class instead)
  */
-class AccountsApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper) {
+class AccountsApi(private val client: HttpClient, private val authHelper: AuthHelper) {
 
     /**
      * Retrieve information about the currently logged in user
+     *
+     * Use [suppress] to forbid throwing *any* errors (returns null, otherwise [AccountResponse] or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    suspend fun get(): AccountResponse {
-        val response = client.get("/api/v2/accounts/me") {
-            authCookieHelper.add(this)
-        }
-        if (response.status.isSuccess()) {
-            return response.body()
-        } else {
-            val err: ApiErrorResponse = response.body()
-            throw err.to()
-        }
+    suspend fun get(suppress: Boolean = false): AccountResponse? {
+        return request(
+            HttpMethod.Get, "/api/v2/accounts/me",
+            client, authHelper,
+            suppress = suppress,
+            retry = getDefaultRetry(client, authHelper)
+        )?.body()
     }
 
     /**
-     * Retrieve details for an account by its UUID (always preferred to using usernames)
+     * Retrieve details for an account by its [uuid] (always preferred to using usernames)
+     *
+     * Use [suppress] to forbid throwing *any* errors (returns null, otherwise [AccountResponse] or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    suspend fun lookup(uuid: UUID): AccountResponse {
-        val response = client.get("/api/v2/accounts/$uuid") {
-            authCookieHelper.add(this)
-        }
-        if (response.status.isSuccess()) {
-            return response.body()
-        } else {
-            val err: ApiErrorResponse = response.body()
-            throw err.to()
-        }
+    suspend fun lookup(uuid: UUID, suppress: Boolean = false): AccountResponse? {
+        return request(
+            HttpMethod.Get, "/api/v2/accounts/$uuid",
+            client, authHelper,
+            suppress = suppress,
+            retry = getDefaultRetry(client, authHelper)
+        )?.body()
     }
 
     /**
-     * Retrieve details for an account by its username
+     * Retrieve details for an account by its [username]
      *
      * Important note: Usernames can be changed, so don't assume they can be
      * cached to do lookups for their display names or UUIDs later. Always convert usernames
      * to UUIDs when handling any user interactions (e.g., inviting, sending messages, ...).
+     *
+     * Use [suppress] to forbid throwing *any* errors (returns null, otherwise [AccountResponse] or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    suspend fun lookup(username: String): AccountResponse {
-        return lookup(LookupAccountUsernameRequest(username))
+    suspend fun lookup(username: String, suppress: Boolean = false): AccountResponse? {
+        return request(
+            HttpMethod.Post, "/api/v2/accounts/lookup",
+            client, authHelper,
+            suppress = suppress,
+            retry = getDefaultRetry(client, authHelper),
+            refine = { b ->
+                b.contentType(ContentType.Application.Json)
+                b.setBody(LookupAccountUsernameRequest(username))
+            }
+        )?.body()
     }
 
     /**
-     * Retrieve details for an account by its username
+     * Set the [username] of the currently logged-in user
      *
-     * Important note: Usernames can be changed, so don't assume they can be
-     * cached to do lookups for their display names or UUIDs later. Always convert usernames
-     * to UUIDs when handling any user interactions (e.g., inviting, sending messages, ...).
+     * Use [suppress] to forbid throwing *any* errors (returns false, otherwise true or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    suspend fun lookup(r: LookupAccountUsernameRequest): AccountResponse {
-        val response = client.post("/api/v2/accounts/lookup") {
-            contentType(ContentType.Application.Json)
-            setBody(r)
-            authCookieHelper.add(this)
-        }
-        if (response.status.isSuccess()) {
-            return response.body()
-        } else {
-            val err: ApiErrorResponse = response.body()
-            throw err.to()
-        }
+    suspend fun setUsername(username: String, suppress: Boolean = false): Boolean {
+        return update(UpdateAccountRequest(username, null), suppress)
+    }
+
+    /**
+     * Set the [displayName] of the currently logged-in user
+     *
+     * Use [suppress] to forbid throwing *any* errors (returns false, otherwise true or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
+     */
+    suspend fun setDisplayName(displayName: String, suppress: Boolean = false): Boolean {
+        return update(UpdateAccountRequest(null, displayName), suppress)
     }
 
     /**
      * Update the currently logged in user information
      *
-     * At least one value must be set to a non-null value.
-     */
-    suspend fun update(username: String?, displayName: String?): Boolean {
-        return update(UpdateAccountRequest(username, displayName))
-    }
-
-    /**
-     * Update the currently logged in user information
+     * Use [suppress] to forbid throwing *any* errors (returns false, otherwise true or an error).
      *
-     * At least one value must be set to a non-null value.
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    suspend fun update(r: UpdateAccountRequest): Boolean {
-        val response = client.put("/api/v2/accounts/me") {
-            contentType(ContentType.Application.Json)
-            setBody(r)
-            authCookieHelper.add(this)
-        }
-        if (response.status.isSuccess()) {
-            return true
-        } else {
-            val err: ApiErrorResponse = response.body()
-            throw err.to()
-        }
+    private suspend fun update(r: UpdateAccountRequest, suppress: Boolean): Boolean {
+        val response = request(
+            HttpMethod.Put, "/api/v2/accounts/me",
+            client, authHelper,
+            suppress = suppress,
+            retry = getDefaultRetry(client, authHelper),
+            refine = { b ->
+                b.contentType(ContentType.Application.Json)
+                b.setBody(r)
+            }
+        )
+        return response?.status?.isSuccess() == true
     }
 
     /**
-     * Deletes the currently logged-in account
+     * Deletes the currently logged-in account (irreversible operation!)
+     *
+     * Use [suppress] to forbid throwing *any* errors (returns false, otherwise true or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    suspend fun delete(): Boolean {
-        val response = client.delete("/api/v2/accounts/me") {
-            authCookieHelper.add(this)
-        }
-        if (response.status.isSuccess()) {
-            Log.debug("The current user has been deleted")
-            authCookieHelper.unset()
-            return true
-        } else {
-            val err: ApiErrorResponse = response.body()
-            throw err.to()
-        }
+    suspend fun delete(suppress: Boolean = false): Boolean {
+        val response = request(
+            HttpMethod.Delete, "/api/v2/accounts/me",
+            client, authHelper,
+            suppress = suppress,
+            retry = getDefaultRetry(client, authHelper)
+        )
+        return response?.status?.isSuccess() == true
     }
 
     /**
-     * Set a new password for the currently logged-in account, provided the old password was accepted as valid
+     * Set [newPassword] for the currently logged-in account, provided the [oldPassword] was accepted as valid
+     *
+     * If not given, the [oldPassword] will be used from the login session cache, if available.
+     * However, if the [oldPassword] can't be determined, it will likely yield in a [ApiStatusCode.InvalidPassword].
+     * Use [suppress] to forbid throwing *any* errors (returns false, otherwise true or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    suspend fun setPassword(oldPassword: String, newPassword: String): Boolean {
-        return setPassword(SetPasswordRequest(oldPassword, newPassword))
-    }
-
-    /**
-     * Set a new password for the currently logged-in account, provided the old password was accepted as valid
-     */
-    suspend fun setPassword(r: SetPasswordRequest): Boolean {
-        val response = client.post("/api/v2/accounts/setPassword") {
-            contentType(ContentType.Application.Json)
-            setBody(r)
-            authCookieHelper.add(this)
+    suspend fun setPassword(newPassword: String, oldPassword: String? = null, suppress: Boolean = false): Boolean {
+        var oldLocalPassword = oldPassword
+        val lastKnownPassword = authHelper.lastSuccessfulCredentials.get()?.second
+        if (oldLocalPassword == null && lastKnownPassword != null) {
+            oldLocalPassword = lastKnownPassword
         }
-        if (response.status.isSuccess()) {
+        if (oldLocalPassword == null) {
+            oldLocalPassword = "" // empty passwords will yield InvalidPassword, so this is fine here
+        }
+        val response = request(
+            HttpMethod.Post, "/api/v2/accounts/setPassword",
+            client, authHelper,
+            suppress = suppress,
+            retry = getDefaultRetry(client, authHelper),
+            refine = { b ->
+                b.contentType(ContentType.Application.Json)
+                b.setBody(SetPasswordRequest(oldLocalPassword, newPassword))
+            }
+        )
+        return if (response?.status?.isSuccess() == true) {
             Log.debug("User's password has been changed successfully")
-            return true
+            true
         } else {
-            val err: ApiErrorResponse = response.body()
-            throw err.to()
+            false
         }
     }
 
     /**
      * Register a new user account
+     *
+     * Use [suppress] to forbid throwing *any* errors (returns false, otherwise true or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    suspend fun register(username: String, displayName: String, password: String): Boolean {
-        return register(AccountRegistrationRequest(username, displayName, password))
-    }
-
-    /**
-     * Register a new user account
-     */
-    suspend fun register(r: AccountRegistrationRequest): Boolean {
-        val response = client.post("/api/v2/accounts/register") {
-            contentType(ContentType.Application.Json)
-            setBody(r)
-            authCookieHelper.add(this)
-        }
-        if (response.status.isSuccess()) {
-            Log.debug("A new account for username ${r.username} has been created")
-            return true
+    suspend fun register(username: String, displayName: String, password: String, suppress: Boolean = false): Boolean {
+        val response = request(
+            HttpMethod.Post, "/api/v2/accounts/register",
+            client, authHelper,
+            suppress = suppress,
+            refine = { b ->
+                b.contentType(ContentType.Application.Json)
+                b.setBody(AccountRegistrationRequest(username, displayName, password))
+            }
+        )
+        return if (response?.status?.isSuccess() == true) {
+            Log.debug("A new account for username '%s' has been created", username)
+            true
         } else {
-            val err: ApiErrorResponse = response.body()
-            throw err.to()
+            false
         }
     }
 
@@ -342,67 +376,98 @@ class AccountsApi(private val client: HttpClient, private val authCookieHelper: 
 /**
  * API wrapper for authentication handling (do not use directly; use the Api class instead)
  */
-class AuthApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper) {
+class AuthApi(private val client: HttpClient, private val authHelper: AuthHelper) {
 
     /**
-     * Try logging in with username and password for testing purposes, don't set the session cookie
+     * Try logging in with [username] and [password] for testing purposes, don't set the session cookie
      *
      * This method won't raise *any* exception, just return the boolean value if login worked.
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
     suspend fun loginOnly(username: String, password: String): Boolean {
-        val response = client.post("/api/v2/auth/login") {
-            contentType(ContentType.Application.Json)
-            setBody(LoginRequest(username, password))
-        }
-        return response.status.isSuccess()
+        val response = request(
+            HttpMethod.Post, "/api/v2/auth/login",
+            client, authHelper,
+            suppress = true,
+            refine = { b ->
+                b.contentType(ContentType.Application.Json)
+                b.setBody(LoginRequest(username, password))
+            }
+        )
+        return response?.status?.isSuccess() == true
     }
 
     /**
-     * Try logging in with username and password
+     * Try logging in with [username] and [password] to get a new session
      *
-     * This method will also implicitly set a cookie in the in-memory cookie storage to authenticate further API calls
-     */
-    suspend fun login(username: String, password: String): Boolean {
-        return login(LoginRequest(username, password))
-    }
-
-    /**
-     * Try logging in with username and password
+     * This method will also implicitly set a cookie in the in-memory cookie storage to authenticate
+     * further API calls and cache the username and password to refresh expired sessions.
+     * Use [suppress] to forbid throwing *any* errors (returns false, otherwise true or an error).
      *
-     * This method will also implicitly set a cookie in the in-memory cookie storage to authenticate further API calls
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    suspend fun login(r: LoginRequest): Boolean {
-        val response = client.post("/api/v2/auth/login") {
-            contentType(ContentType.Application.Json)
-            setBody(r)
-        }
-        if (response.status.isSuccess()) {
-            val authCookie = response.setCookie()["id"]
+    suspend fun login(username: String, password: String, suppress: Boolean = false): Boolean {
+        val response = request(
+            HttpMethod.Post, "/api/v2/auth/login",
+            client, authHelper,
+            suppress = suppress,
+            refine = { b ->
+                b.contentType(ContentType.Application.Json)
+                b.setBody(LoginRequest(username, password))
+            },
+            retry = { Log.error("Failed to login. See previous debug logs for details."); false }
+        )
+        return if (response?.status?.isSuccess() == true) {
+            val authCookie = response.setCookie()[SESSION_COOKIE_NAME]
             Log.debug("Received new session cookie: $authCookie")
             if (authCookie != null) {
-                authCookieHelper.set(authCookie.value)
+                authHelper.setCookie(
+                    authCookie.value,
+                    authCookie.maxAge,
+                    Pair(username, password)
+                )
+            } else {
+                Log.error("No recognized, valid session cookie found in login response!")
             }
-            return true
+            true
         } else {
-            val err: ApiErrorResponse = response.body()
-            throw err.to()
+            false
         }
     }
 
     /**
      * Logs out the currently logged in user
      *
-     * This method will also clear the cookie on success only to avoid further authenticated API calls
+     * This method will also clear the cookie and credentials to avoid further authenticated API calls.
+     * Use [suppress] to forbid throwing *any* errors (returns false, otherwise true or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    suspend fun logout(): Boolean {
-        val response = client.post("/api/v2/auth/logout")
-        if (response.status.isSuccess()) {
-            Log.debug("Logged out successfully (dropping session cookie...)")
-            authCookieHelper.unset()
-            return true
+    suspend fun logout(suppress: Boolean = true): Boolean {
+        val response = try {
+            request(
+                HttpMethod.Get, "/api/v2/auth/logout",
+                client, authHelper,
+                suppress = suppress,
+                retry = getDefaultRetry(client, authHelper)
+            )
+        } catch (e: Throwable) {
+            authHelper.unset()
+            Log.debug("Logout failed due to %s (%s), dropped session anyways", e, e.message)
+            return false
+        }
+        return if (response?.status?.isSuccess() == true) {
+            authHelper.unset()
+            Log.debug("Logged out successfully, dropped session")
+            true
         } else {
-            val err: ApiErrorResponse = response.body()
-            throw err.to()
+            authHelper.unset()
+            Log.debug("Logout failed for some reason, dropped session anyways")
+            false
         }
     }
 
@@ -411,40 +476,51 @@ class AuthApi(private val client: HttpClient, private val authCookieHelper: Auth
 /**
  * API wrapper for chat room handling (do not use directly; use the Api class instead)
  */
-class ChatApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper) {
+class ChatApi(private val client: HttpClient, private val authHelper: AuthHelper) {
 
     /**
-     * Retrieve all messages a user has access to
+     * Retrieve all chats a user has access to
      *
-     * In the response, you will find different categories, currently friend rooms and lobby rooms.
+     * In the response, you will find different room types / room categories.
+     * Use [suppress] to forbid throwing *any* errors (returns null, otherwise [GetAllChatsResponse] or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    suspend fun list(): GetAllChatsResponse {
-        val response = client.get("/api/v2/chats") {
-            authCookieHelper.add(this)
+    suspend fun list(suppress: Boolean = false): GetAllChatsResponse? {
+        val response = request(
+            HttpMethod.Get, "/api/v2/chats",
+            client, authHelper,
+            suppress = suppress,
+            retry = getDefaultRetry(client, authHelper)
+        )
+        if (response != null) {
+            val body: GetAllChatsResponseImpl = response.body()
+            return body.to()
         }
-        if (response.status.isSuccess()) {
-            return response.body()
-        } else {
-            val err: ApiErrorResponse = response.body()
-            throw err.to()
-        }
+        return null
     }
 
     /**
-     * Retrieve the messages of a chatroom
+     * Retrieve the messages of a chatroom identified by [roomUUID]
      *
-     * [GetChatResponse.members] holds information about all members that are currently in the chat room (including yourself)
+     * The [ChatMessage]s should be sorted by their timestamps, [ChatMessage.createdAt].
+     * The [ChatMessage.uuid] should be used to uniquely identify chat messages. This is
+     * needed as new messages may be delivered via WebSocket as well. [GetChatResponse.members]
+     * holds information about all members that are currently in the chat room (including yourself).
+     *
+     * Use [suppress] to forbid throwing *any* errors (returns null, otherwise [GetChatResponse] or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    suspend fun get(roomID: Long): GetChatResponse {
-        val response = client.get("/api/v2/chats/$roomID") {
-            authCookieHelper.add(this)
-        }
-        if (response.status.isSuccess()) {
-            return response.body()
-        } else {
-            val err: ApiErrorResponse = response.body()
-            throw err.to()
-        }
+    suspend fun get(roomUUID: UUID, suppress: Boolean = false): GetChatResponse? {
+        return request(
+            HttpMethod.Get, "/api/v2/chats/$roomUUID",
+            client, authHelper,
+            suppress = suppress,
+            retry = getDefaultRetry(client, authHelper)
+        )?.body()
     }
 
 }
@@ -452,99 +528,112 @@ class ChatApi(private val client: HttpClient, private val authCookieHelper: Auth
 /**
  * API wrapper for friend handling (do not use directly; use the Api class instead)
  */
-class FriendApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper) {
+class FriendApi(private val client: HttpClient, private val authHelper: AuthHelper) {
 
     /**
      * Retrieve a pair of the list of your established friendships and the list of your open friendship requests (incoming and outgoing)
+     *
+     * Use [suppress] to forbid throwing *any* errors (returns null, otherwise a pair of lists or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    suspend fun listAll(): Pair<List<FriendResponse>, List<FriendRequestResponse>> {
-        val response = client.get("/api/v2/friends") {
-            authCookieHelper.add(this)
-        }
-        if (response.status.isSuccess()) {
-            val responseBody: GetFriendResponse = response.body()
-            return Pair(responseBody.friends, responseBody.friendRequests)
-        } else {
-            val err: ApiErrorResponse = response.body()
-            throw err.to()
-        }
+    suspend fun list(suppress: Boolean = false): Pair<List<FriendResponse>, List<FriendRequestResponse>>? {
+        val body: GetFriendResponse? = request(
+            HttpMethod.Get, "/api/v2/friends",
+            client, authHelper,
+            suppress = suppress,
+            retry = getDefaultRetry(client, authHelper)
+        )?.body()
+        return if (body != null) Pair(body.friends, body.friendRequests) else null
     }
 
     /**
      * Retrieve a list of your established friendships
+     *
+     * Use [suppress] to forbid throwing *any* errors (returns null, otherwise a list of [FriendResponse] or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    suspend fun listFriends(): List<FriendResponse> {
-        return listAll().first
+    suspend fun listFriends(suppress: Boolean = false): List<FriendResponse>? {
+        return list(suppress = suppress)?.first
     }
 
     /**
      * Retrieve a list of your open friendship requests (incoming and outgoing)
      *
-     * If you have a request with ``from`` equal to your username, it means you
-     * have requested a friendship, but the destination hasn't accepted yet.
-     * In the other case, if your username is in ``to``, you have received a friend request.
+     * If you have a request with [FriendRequestResponse.from] equal to your username, it means
+     * you have requested a friendship, but the destination hasn't accepted yet. In the other
+     * case, if your username is in [FriendRequestResponse.to], you have received a friend request.
+     *
+     * Use [suppress] to forbid throwing *any* errors (returns null, otherwise a list of [FriendRequestResponse] or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    suspend fun listRequests(): List<FriendRequestResponse> {
-        return listAll().second
+    suspend fun listRequests(suppress: Boolean = false): List<FriendRequestResponse>? {
+        return list(suppress = suppress)?.second
     }
 
     /**
      * Request friendship with another user
+     *
+     * Use [suppress] to forbid throwing *any* errors (returns false, otherwise true or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    suspend fun request(other: UUID): Boolean {
-        return request(CreateFriendRequest(other))
+    suspend fun request(other: UUID, suppress: Boolean = false): Boolean {
+        val response = request(
+            HttpMethod.Post, "/api/v2/friends",
+            client, authHelper,
+            suppress = suppress,
+            refine = { b ->
+                b.contentType(ContentType.Application.Json)
+                b.setBody(CreateFriendRequest(other))
+            },
+            retry = getDefaultRetry(client, authHelper)
+        )
+        return response?.status?.isSuccess() == true
     }
 
     /**
-     * Request friendship with another user
+     * Accept a friend request identified by [friendRequestUUID]
+     *
+     * Use [suppress] to forbid throwing *any* errors (returns false, otherwise true or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    suspend fun request(r: CreateFriendRequest): Boolean {
-        val response = client.post("/api/v2/friends") {
-            contentType(ContentType.Application.Json)
-            setBody(r)
-            authCookieHelper.add(this)
-        }
-        if (response.status.isSuccess()) {
-            return true
-        } else {
-            val err: ApiErrorResponse = response.body()
-            throw err.to()
-        }
-    }
-
-    /**
-     * Accept a friend request
-     */
-    suspend fun accept(friendRequestID: Long): Boolean {
-        val response = client.delete("/api/v2/friends/$friendRequestID") {
-            authCookieHelper.add(this)
-        }
-        if (response.status.isSuccess()) {
-            Log.debug("Successfully accepted friendship request ID $friendRequestID")
-            return true
-        } else {
-            val err: ApiErrorResponse = response.body()
-            throw err.to()
-        }
+    suspend fun accept(friendRequestUUID: UUID, suppress: Boolean = false): Boolean {
+        val response = request(
+            HttpMethod.Put, "/api/v2/friends/$friendRequestUUID",
+            client, authHelper,
+            suppress = suppress,
+            retry = getDefaultRetry(client, authHelper)
+        )
+        return response?.status?.isSuccess() == true
     }
 
     /**
      * Don't want your friends anymore? Just delete them!
      *
-     * This function accepts both friend IDs and friendship request IDs,
-     * since they are the same thing in the server's database anyways.
+     * This function accepts both friend UUIDs and friendship request UUIDs.
+     *
+     * Use [suppress] to forbid throwing *any* errors (returns false, otherwise true or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    suspend fun delete(friendID: Long): Boolean {
-        val response = client.delete("/api/v2/friends/$friendID") {
-            authCookieHelper.add(this)
-        }
-        if (response.status.isSuccess()) {
-            Log.debug("Successfully rejected/dropped friendship ID $friendID")
-            return true
-        } else {
-            val err: ApiErrorResponse = response.body()
-            throw err.to()
-        }
+    suspend fun delete(friendUUID: UUID, suppress: Boolean = false): Boolean {
+        val response = request(
+            HttpMethod.Delete, "/api/v2/friends/$friendUUID",
+            client, authHelper,
+            suppress = suppress,
+            retry = getDefaultRetry(client, authHelper)
+        )
+        return response?.status?.isSuccess() == true
     }
 
 }
@@ -552,7 +641,7 @@ class FriendApi(private val client: HttpClient, private val authCookieHelper: Au
 /**
  * API wrapper for game handling (do not use directly; use the Api class instead)
  */
-class GameApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper) {
+class GameApi(private val client: HttpClient, private val authHelper: AuthHelper) {
 
     /**
      * Retrieves an overview of all open games of a player
@@ -563,40 +652,43 @@ class GameApi(private val client: HttpClient, private val authCookieHelper: Auth
      * differs from the last known identifier, the server has a newer
      * state of the game. The [GameOverviewResponse.lastActivity] field
      * is a convenience attribute and shouldn't be used for update checks.
-     */
-    suspend fun list(): List<GameOverviewResponse> {
-        val response = client.get("/api/v2/games") {
-            authCookieHelper.add(this)
-        }
-        if (response.status.isSuccess()) {
-            val body: GetGameOverviewResponse = response.body()
-            return body.games
-        } else {
-            val err: ApiErrorResponse = response.body()
-            throw err.to()
-        }
-    }
-
-    /**
-     * Retrieves a single game which is currently open (actively played)
      *
-     * If the game has been completed or aborted, it will
-     * respond with a GameNotFound in [ApiErrorResponse].
+     * Use [suppress] to forbid throwing *any* errors (returns null, otherwise list of [GameOverviewResponse] or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    suspend fun get(gameUUID: UUID): GameStateResponse {
-        val response = client.get("/api/v2/games/$gameUUID") {
-            authCookieHelper.add(this)
-        }
-        if (response.status.isSuccess()) {
-            return response.body()
-        } else {
-            val err: ApiErrorResponse = response.body()
-            throw err.to()
-        }
+    suspend fun list(suppress: Boolean = false): List<GameOverviewResponse>? {
+        val body: GetGameOverviewResponse? = request(
+            HttpMethod.Get, "/api/v2/games",
+            client, authHelper,
+            suppress = suppress,
+            retry = getDefaultRetry(client, authHelper)
+        )?.body()
+        return body?.games
     }
 
     /**
-     * Upload a new game state for an existing game
+     * Retrieves a single game identified by [gameUUID] which is currently open (actively played)
+     *
+     *
+     * Other than [list], this method's return value contains a full game state (on success).
+     * Use [suppress] to forbid throwing *any* errors (returns null, otherwise [GameStateResponse] or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
+     */
+    suspend fun get(gameUUID: UUID, suppress: Boolean = false): GameStateResponse? {
+        return request(
+            HttpMethod.Get, "/api/v2/games/$gameUUID",
+            client, authHelper,
+            suppress = suppress,
+            retry = getDefaultRetry(client, authHelper)
+        )?.body()
+    }
+
+    /**
+     * Upload a new game state for an existing game identified by [gameUUID]
      *
      * If the game can't be updated (maybe it has been already completed
      * or aborted), it will respond with a GameNotFound in [ApiErrorResponse].
@@ -604,34 +696,27 @@ class GameApi(private val client: HttpClient, private val authCookieHelper: Auth
      *
      * On success, returns the new game data ID that can be used to verify
      * that the client and server use the same state (prevents re-querying).
-     */
-    suspend fun upload(gameUUID: UUID, gameData: String): Long {
-        return upload(GameUploadRequest(gameData, gameUUID))
-    }
-
-    /**
-     * Upload a new game state for an existing game
      *
-     * If the game can't be updated (maybe it has been already completed
-     * or aborted), it will respond with a GameNotFound in [ApiErrorResponse].
+     * Use [suppress] to forbid throwing *any* errors (returns null, otherwise [Long] or an error).
      *
-     * On success, returns the new game data ID that can be used to verify
-     * that the client and server use the same state (prevents re-querying).
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    suspend fun upload(r: GameUploadRequest): Long {
-        val response = client.put("/api/v2/games") {
-            contentType(ContentType.Application.Json)
-            setBody(r)
-            authCookieHelper.add(this)
+    suspend fun upload(gameUUID: UUID, gameData: String, suppress: Boolean = false): Long? {
+        val body: GameUploadResponse? = request(
+            HttpMethod.Put, "/api/v2/games/$gameUUID",
+            client, authHelper,
+            suppress = suppress,
+            refine = { b ->
+                b.contentType(ContentType.Application.Json)
+                b.setBody(GameUploadRequest(gameData))
+            },
+            retry = getDefaultRetry(client, authHelper)
+        )?.body()
+        if (body != null) {
+            Log.debug("The game with UUID $gameUUID has been uploaded, the new data ID is ${body.gameDataID}")
         }
-        if (response.status.isSuccess()) {
-            val responseBody: GameUploadResponse = response.body()
-            Log.debug("The game with ID ${r.gameUUID} has been uploaded, the new data ID is ${responseBody.gameDataID}")
-            return responseBody.gameDataID
-        } else {
-            val err: ApiErrorResponse = response.body()
-            throw err.to()
-        }
+        return body?.gameDataID
     }
 
 }
@@ -639,53 +724,49 @@ class GameApi(private val client: HttpClient, private val authCookieHelper: Auth
 /**
  * API wrapper for invite handling (do not use directly; use the Api class instead)
  */
-class InviteApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper) {
+class InviteApi(private val client: HttpClient, private val authHelper: AuthHelper) {
 
     /**
      * Retrieve all invites for the executing user
+     *
+     * Use [suppress] to forbid throwing *any* errors (returns null, otherwise list of [GetInvite] or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    suspend fun list(): List<GetInvite> {
-        val response = client.get("/api/v2/invites") {
-            authCookieHelper.add(this)
-        }
-        if (response.status.isSuccess()) {
-            val responseBody: GetInvitesResponse = response.body()
-            return responseBody.invites
-        } else {
-            val err: ApiErrorResponse = response.body()
-            throw err.to()
-        }
+    suspend fun list(suppress: Boolean = false): List<GetInvite>? {
+        val body: GetInvitesResponse? = request(
+            HttpMethod.Get, "/api/v2/invites",
+            client, authHelper,
+            suppress = suppress,
+            retry = getDefaultRetry(client, authHelper)
+        )?.body()
+        return body?.invites
     }
 
     /**
      * Invite a friend to a lobby
      *
-     * The executing user must be in the specified open lobby.
-     * The invited friend must not be in a friend request state.
-     */
-    suspend fun new(friend: UUID, lobbyID: Long): Boolean {
-        return new(CreateInviteRequest(friend, lobbyID))
-    }
-
-    /**
-     * Invite a friend to a lobby
+     * The executing user must be in the specified open lobby. The invited
+     * friend (identified by its [friendUUID]) must not be in a friend request state.
      *
-     * The executing user must be in the specified open lobby.
-     * The invited friend must not be in a friend request state.
+     * Use [suppress] to forbid throwing *any* errors (returns false, otherwise true or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    suspend fun new(r: CreateInviteRequest): Boolean {
-        val response = client.post("/api/v2/invites") {
-            contentType(ContentType.Application.Json)
-            setBody(r)
-            authCookieHelper.add(this)
-        }
-        if (response.status.isSuccess()) {
-            Log.debug("The friend ${r.friend} has been invited to lobby ${r.lobbyID}")
-            return true
-        } else {
-            val err: ApiErrorResponse = response.body()
-            throw err.to()
-        }
+    suspend fun new(friendUUID: UUID, lobbyUUID: UUID, suppress: Boolean = false): Boolean {
+        val response = request(
+            HttpMethod.Post, "/api/v2/friends",
+            client, authHelper,
+            suppress = suppress,
+            refine = { b ->
+                b.contentType(ContentType.Application.Json)
+                b.setBody(CreateInviteRequest(friendUUID, lobbyUUID))
+            },
+            retry = getDefaultRetry(client, authHelper)
+        )
+        return response?.status?.isSuccess() == true
     }
 
 }
@@ -693,67 +774,78 @@ class InviteApi(private val client: HttpClient, private val authCookieHelper: Au
 /**
  * API wrapper for lobby handling (do not use directly; use the Api class instead)
  */
-class LobbyApi(private val client: HttpClient, private val authCookieHelper: AuthCookieHelper) {
+class LobbyApi(private val client: HttpClient, private val authHelper: AuthHelper) {
 
     /**
      * Retrieves all open lobbies
      *
-     * If hasPassword is true, the lobby is secured by a user-set password
+     * If [LobbyResponse.hasPassword] is true, the lobby is secured by a user-set password.
+     *
+     * Use [suppress] to forbid throwing *any* errors (returns null, otherwise list of [LobbyResponse] or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    suspend fun list(): List<LobbyResponse> {
-        val response = client.get("/api/v2/lobbies") {
-            authCookieHelper.add(this)
-        }
-        if (response.status.isSuccess()) {
-            val responseBody: GetLobbiesResponse = response.body()
-            return responseBody.lobbies
-        } else {
-            val err: ApiErrorResponse = response.body()
-            throw err.to()
-        }
+    suspend fun list(suppress: Boolean = false): List<LobbyResponse>? {
+        val body: GetLobbiesResponse? = request(
+            HttpMethod.Get, "/api/v2/lobbies",
+            client, authHelper,
+            suppress = suppress,
+            retry = getDefaultRetry(client, authHelper)
+        )?.body()
+        return body?.lobbies
     }
 
     /**
-     * Create a new lobby and return the new lobby ID
+     * Create a new lobby and return the new lobby with some extra info as [CreateLobbyResponse]
      *
-     * If you are already in another lobby, an error is returned.
-     * ``max_players`` must be between 2 and 34 (inclusive).
+     * You can't be in more than one lobby at the same time. If [password] is set, the lobby
+     * will be considered closed. Users need the specified [password] to be able to join the
+     * lobby on their own behalf. Invites to the lobby are always possible as lobby creator.
+     *
+     * Use [suppress] to forbid throwing *any* errors (returns null, otherwise [CreateLobbyResponse] or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    suspend fun open(name: String, maxPlayers: Int = LOBBY_MAX_PLAYERS): Long {
-        return open(CreateLobbyRequest(name, null, maxPlayers))
+    suspend fun open(name: String, password: String? = null, maxPlayers: Int = DEFAULT_LOBBY_MAX_PLAYERS, suppress: Boolean = false): CreateLobbyResponse? {
+        return open(CreateLobbyRequest(name, password, maxPlayers), suppress)
     }
 
     /**
-     * Create a new lobby and return the new lobby ID
+     * Create a new private lobby and return the new lobby with some extra info as [CreateLobbyResponse]
      *
-     * If you are already in another lobby, an error is returned.
-     * ``max_players`` must be between 2 and 34 (inclusive).
-     * If password is an empty string, an error is returned.
+     * You can't be in more than one lobby at the same time. *Important*:
+     * This lobby will be created with a random password which will *not* be stored.
+     * Other users can't join without invitation to this lobby, afterwards.
+     *
+     * Use [suppress] to forbid throwing *any* errors (returns null, otherwise [CreateLobbyResponse] or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    suspend fun open(name: String, password: String?, maxPlayers: Int = LOBBY_MAX_PLAYERS): Long {
-        return open(CreateLobbyRequest(name, password, maxPlayers))
+    suspend fun openPrivate(name: String, maxPlayers: Int = DEFAULT_LOBBY_MAX_PLAYERS, suppress: Boolean = false): CreateLobbyResponse? {
+        val charset = ('a'..'z') + ('A'..'Z') + ('0'..'9')
+        val password = (1..DEFAULT_RANDOM_PASSWORD_LENGTH)
+            .map { charset.random() }
+            .joinToString("")
+        return open(CreateLobbyRequest(name, password, maxPlayers), suppress)
     }
 
     /**
-     * Create a new lobby and return the new lobby ID
-     *
-     * If you are already in another lobby, an error is returned.
-     * ``max_players`` must be between 2 and 34 (inclusive).
-     * If password is an empty string, an error is returned.
+     * Endpoint implementation to create a new lobby
      */
-    suspend fun open(r: CreateLobbyRequest): Long {
-        val response = client.post("/api/v2/lobbies") {
-            contentType(ContentType.Application.Json)
-            setBody(r)
-            authCookieHelper.add(this)
-        }
-        if (response.status.isSuccess()) {
-            val responseBody: CreateLobbyResponse = response.body()
-            return responseBody.lobbyID
-        } else {
-            val err: ApiErrorResponse = response.body()
-            throw err.to()
-        }
+    private suspend fun open(req: CreateLobbyRequest, suppress: Boolean): CreateLobbyResponse? {
+        return request(
+            HttpMethod.Post, "/api/v2/lobbies",
+            client, authHelper,
+            suppress = suppress,
+            refine = { b ->
+                b.contentType(ContentType.Application.Json)
+                b.setBody(req)
+            },
+            retry = getDefaultRetry(client, authHelper)
+        )?.body()
     }
 
 }

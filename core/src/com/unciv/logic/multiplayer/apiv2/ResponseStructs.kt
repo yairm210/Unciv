@@ -7,7 +7,7 @@ package com.unciv.logic.multiplayer.apiv2
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.time.Instant
-import java.util.UUID
+import java.util.*
 
 /**
  * The account data
@@ -63,10 +63,13 @@ enum class ApiStatusCode(val value: Int) {
     InvalidDisplayName(1010),
     FriendshipAlreadyRequested(1011),
     AlreadyFriends(1012),
-    InvalidId(1013),
-    MissingPrivileges(1014),
-    InvalidMaxPlayersCount(1017),
-    AlreadyInALobby(1018),
+    MissingPrivileges(1013),
+    InvalidMaxPlayersCount(1014),
+    AlreadyInALobby(1015),
+    InvalidUuid(1016),
+    InvalidLobbyUuid(1017),
+    InvalidFriendUuid(1018),
+    GameNotFound(1019),
 
     InternalServerError(2000),
     DatabaseError(2001),
@@ -96,11 +99,12 @@ data class ChatMember(
 /**
  * The message of a chatroom
  *
- * The parameter [id] should be used to uniquely identify a message.
+ * The parameter [uuid] should be used to uniquely identify a message.
  */
 @Serializable
 data class ChatMessage(
-    val id: Long,
+    @Serializable(with = UUIDSerializer::class)
+    val uuid: UUID,
     val sender: AccountResponse,
     val message: String,
     @SerialName("created_at")
@@ -109,32 +113,40 @@ data class ChatMessage(
 )
 
 /**
- * The response of a create lobby request, which contains the [lobbyID] of the created lobby
+ * The response of a create lobby request, which contains the [lobbyUUID] and [lobbyChatRoomUUID]
  */
 @Serializable
 data class CreateLobbyResponse(
-    @SerialName("lobby_id")
-    val lobbyID: Long
+    @SerialName("lobby_uuid")
+    @Serializable(with = UUIDSerializer::class)
+    val lobbyUUID: UUID,
+    @SerialName("lobby_chat_room_uuid")
+    @Serializable(with = UUIDSerializer::class)
+    val lobbyChatRoomUUID: UUID
 )
 
 /**
- * A single friend
+ * A single friend (the relationship is identified by the [uuid])
  */
 @Serializable
 data class FriendResponse(
-    @SerialName("chat_id")
-    val chatID: Long,
-    val id: Long,
-    val from: AccountResponse,
-    val to: OnlineAccountResponse
+    @Serializable(with = UUIDSerializer::class)
+    val uuid: UUID,
+    @SerialName("chat_uuid")
+    @Serializable(with = UUIDSerializer::class)
+    val chatUUID: UUID,
+    val friend: OnlineAccountResponse
 )
 
 /**
  * A single friend request
+ *
+ * Use [from] and [to] comparing with "myself" to determine if it's incoming or outgoing.
  */
 @Serializable
 data class FriendRequestResponse(
-    val id: Long,
+    @Serializable(with = UUIDSerializer::class)
+    val uuid: UUID,
     val from: AccountResponse,
     val to: AccountResponse
 )
@@ -149,7 +161,8 @@ data class FriendRequestResponse(
 @Serializable
 data class GameOverviewResponse(
     @SerialName("chat_room_id")
-    val chatRoomID: Long,
+    @Serializable(with = UUIDSerializer::class)
+    val chatRoomUUID: UUID,
     @SerialName("game_data_id")
     val gameDataID: Long,
     @SerialName("game_uuid")
@@ -174,8 +187,9 @@ data class GameOverviewResponse(
  */
 @Serializable
 data class GameStateResponse(
-    @SerialName("chat_room_id")
-    val chatRoomID: Long,
+    @SerialName("chat_room_uuid")
+    @Serializable(with = UUIDSerializer::class)
+    val chatRoomUUID: UUID,
     @SerialName("game_data")
     val gameData: String,
     @SerialName("game_data_id")
@@ -200,14 +214,31 @@ data class GameUploadResponse(
 )
 
 /**
- * All chat rooms your user has access to
+ * Internal wrapper around [GetAllChatsResponse] that prevents serialization issues of lists of [UUID]s
  */
 @Serializable
-data class GetAllChatsResponse(
+internal class GetAllChatsResponseImpl(
     @SerialName("friend_chat_rooms")
-    val friendChatRooms: List<Long>,
+    val friendChatRooms: List<String>,
+    @SerialName("game_chat_rooms")
+    val gameChatRooms: List<String>,
     @SerialName("lobby_chat_rooms")
-    val lobbyChatRooms: List<Long>
+    val lobbyChatRooms: List<String>
+) {
+    internal fun to() = GetAllChatsResponse(
+        friendChatRooms.map { UUID.fromString(it) },
+        gameChatRooms.map { UUID.fromString(it) },
+        lobbyChatRooms.map { UUID.fromString(it) }
+    )
+}
+
+/**
+ * All chat rooms your user has access to
+ */
+data class GetAllChatsResponse(
+    val friendChatRooms: List<UUID>,
+    val gameChatRooms: List<UUID>,
+    val lobbyChatRooms: List<UUID>
 )
 
 /**
@@ -251,9 +282,11 @@ data class GetInvite(
     @Serializable(with = InstantSerializer::class)
     val createdAt: Instant,
     val from: AccountResponse,
-    val id: Long,
-    @SerialName("lobby_id")
-    val lobbyID: Long
+    @Serializable(with = UUIDSerializer::class)
+    val uuid: UUID,
+    @SerialName("lobby_uuid")
+    @Serializable(with = UUIDSerializer::class)
+    val lobbyUUID: UUID
 )
 
 /**
@@ -277,14 +310,16 @@ data class GetLobbiesResponse(
  */
 @Serializable
 data class LobbyResponse(
-    val id: Long,
+    @Serializable(with = UUIDSerializer::class)
+    val uuid: UUID,
     val name: String,
     @SerialName("max_players")
     val maxPlayers: Int,
     @SerialName("current_players")
     val currentPlayers: Int,
-    @SerialName("chat_room_id")
-    val chatRoomID: Long,
+    @SerialName("chat_room_uuid")
+    @Serializable(with = UUIDSerializer::class)
+    val chatRoomUUID: UUID,
     @SerialName("created_at")
     @Serializable(with = InstantSerializer::class)
     val createdAt: Instant,

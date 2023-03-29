@@ -5,16 +5,6 @@ import kotlinx.serialization.Serializable
 import java.util.*
 
 /**
- * Upload a new game state from a client after finishing a turn
- */
-@Serializable
-data class FinishedTurn(
-    @SerialName("gameId")
-    val gameID: Long,
-    val gameData: String,  // base64-encoded, gzipped game state
-)
-
-/**
  * An update of the game data
  *
  * This variant is sent from the server to all accounts that are in the game.
@@ -22,10 +12,10 @@ data class FinishedTurn(
 @Serializable
 data class UpdateGameData(
     @SerialName("gameId")
-    val gameID: Long,
+    @Serializable(with = UUIDSerializer::class)
+    val gameUUID: UUID,
     val gameData: String,  // base64-encoded, gzipped game state
-    /** A unique counter that is incremented every time a [FinishedTurn]
-     *  is received from the same `game_id`. */
+    /** A counter that is incremented every time a new game states has been uploaded for the same [gameUUID] via HTTP API. */
     @SerialName("gameDataId")
     val gameDataID: Long
 )
@@ -35,8 +25,9 @@ data class UpdateGameData(
  */
 @Serializable
 data class ClientDisconnected(
-    @SerialName("gameId")
-    val gameID: Long,
+    @SerialName("gameUuid")
+    @Serializable(with = UUIDSerializer::class)
+    val gameUUID: UUID,
     @Serializable(with = UUIDSerializer::class)
     val uuid: UUID  // client identifier
 )
@@ -46,8 +37,9 @@ data class ClientDisconnected(
  */
 @Serializable
 data class ClientReconnected(
-    @SerialName("gameId")
-    val gameID: Long,
+    @SerialName("gameUuid")
+    @Serializable(with = UUIDSerializer::class)
+    val gameUUID: UUID,
     @Serializable(with = UUIDSerializer::class)
     val uuid: UUID  // client identifier
 )
@@ -57,9 +49,43 @@ data class ClientReconnected(
  */
 @Serializable
 data class IncomingChatMessage(
-    @SerialName("chatId")
-    val chatID: Long,
+    @SerialName("chatUuid")
+    @Serializable(with = UUIDSerializer::class)
+    val chatUUID: UUID,
     val message: ChatMessage
+)
+
+/**
+ * An invite to a lobby is sent to the client
+ */
+@Serializable
+data class IncomingInvite(
+    @SerialName("inviteUuid")
+    @Serializable(with = UUIDSerializer::class)
+    val inviteUUID: UUID,
+    val from: AccountResponse,
+    @SerialName("lobbyUuid")
+    @Serializable(with = UUIDSerializer::class)
+    val lobbyUUID: UUID
+)
+
+/**
+ * The notification for the clients that a new game has started
+ */
+@Serializable
+data class GameStarted(
+    @SerialName("gameUuid")
+    @Serializable(with = UUIDSerializer::class)
+    val gameUUID: UUID,
+    @SerialName("gameChatUuid")
+    @Serializable(with = UUIDSerializer::class)
+    val gameChatUUID: UUID,
+    @SerialName("lobbyUuid")
+    @Serializable(with = UUIDSerializer::class)
+    val lobbyUUID: UUID,
+    @SerialName("lobbyChatUuid")
+    @Serializable(with = UUIDSerializer::class)
+    val lobbyChatUUID: UUID,
 )
 
 /**
@@ -75,15 +101,6 @@ interface WebSocketMessage {
 @Serializable
 data class InvalidMessage(
     override val type: WebSocketMessageType,
-) : WebSocketMessage
-
-/**
- * Message to upload the game state after finishing the turn
- */
-@Serializable
-data class FinishedTurnMessage (
-    override val type: WebSocketMessageType,
-    val content: FinishedTurn
 ) : WebSocketMessage
 
 /**
@@ -123,16 +140,35 @@ data class IncomingChatMessageMessage (
 ) : WebSocketMessage
 
 /**
+ * Message to indicate that a client gets invited to a lobby
+ */
+@Serializable
+data class IncomingInviteMessage (
+    override val type: WebSocketMessageType,
+    val content: IncomingInvite
+) : WebSocketMessage
+
+/**
+ * Message to indicate that a game started
+ */
+@Serializable
+data class GameStartedMessage (
+    override val type: WebSocketMessageType,
+    val content: GameStarted
+) : WebSocketMessage
+
+/**
  * Type enum of all known WebSocket messages
  */
 @Serializable(with = WebSocketMessageTypeSerializer::class)
 enum class WebSocketMessageType(val type: String) {
     InvalidMessage("invalidMessage"),
-    FinishedTurn("finishedTurn"),
     UpdateGameData("updateGameData"),
     ClientDisconnected("clientDisconnected"),
     ClientReconnected("clientReconnected"),
-    IncomingChatMessage("incomingChatMessage");
+    IncomingChatMessage("incomingChatMessage"),
+    IncomingInvite("incomingInvite"),
+    GameStarted("gameStarted");
 
     companion object {
         private val VALUES = values()
