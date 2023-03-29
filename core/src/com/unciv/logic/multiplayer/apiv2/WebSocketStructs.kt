@@ -25,8 +25,9 @@ data class UpdateGameData(
  */
 @Serializable
 data class ClientDisconnected(
-    @SerialName("gameId")
-    val gameID: Long,
+    @SerialName("gameUuid")
+    @Serializable(with = UUIDSerializer::class)
+    val gameUUID: UUID,
     @Serializable(with = UUIDSerializer::class)
     val uuid: UUID  // client identifier
 )
@@ -36,8 +37,9 @@ data class ClientDisconnected(
  */
 @Serializable
 data class ClientReconnected(
-    @SerialName("gameId")
-    val gameID: Long,
+    @SerialName("gameUuid")
+    @Serializable(with = UUIDSerializer::class)
+    val gameUUID: UUID,
     @Serializable(with = UUIDSerializer::class)
     val uuid: UUID  // client identifier
 )
@@ -47,9 +49,43 @@ data class ClientReconnected(
  */
 @Serializable
 data class IncomingChatMessage(
-    @SerialName("chatId")
-    val chatID: Long,
+    @SerialName("chatUuid")
+    @Serializable(with = UUIDSerializer::class)
+    val chatUUID: UUID,
     val message: ChatMessage
+)
+
+/**
+ * An invite to a lobby is sent to the client
+ */
+@Serializable
+data class IncomingInvite(
+    @SerialName("inviteUuid")
+    @Serializable(with = UUIDSerializer::class)
+    val inviteUUID: UUID,
+    val from: AccountResponse,
+    @SerialName("lobbyUuid")
+    @Serializable(with = UUIDSerializer::class)
+    val lobbyUUID: UUID
+)
+
+/**
+ * The notification for the clients that a new game has started
+ */
+@Serializable
+data class GameStarted(
+    @SerialName("gameUuid")
+    @Serializable(with = UUIDSerializer::class)
+    val gameUUID: UUID,
+    @SerialName("gameChatUuid")
+    @Serializable(with = UUIDSerializer::class)
+    val gameChatUUID: UUID,
+    @SerialName("lobbyUuid")
+    @Serializable(with = UUIDSerializer::class)
+    val lobbyUUID: UUID,
+    @SerialName("lobbyChatUuid")
+    @Serializable(with = UUIDSerializer::class)
+    val lobbyChatUUID: UUID,
 )
 
 /**
@@ -104,6 +140,24 @@ data class IncomingChatMessageMessage (
 ) : WebSocketMessage
 
 /**
+ * Message to indicate that a client gets invited to a lobby
+ */
+@Serializable
+data class IncomingInviteMessage (
+    override val type: WebSocketMessageType,
+    val content: IncomingInvite
+) : WebSocketMessage
+
+/**
+ * Message to indicate that a game started
+ */
+@Serializable
+data class GameStartedMessage (
+    override val type: WebSocketMessageType,
+    val content: GameStarted
+) : WebSocketMessage
+
+/**
  * Type enum of all known WebSocket messages
  */
 @Serializable(with = WebSocketMessageTypeSerializer::class)
@@ -112,7 +166,9 @@ enum class WebSocketMessageType(val type: String) {
     UpdateGameData("updateGameData"),
     ClientDisconnected("clientDisconnected"),
     ClientReconnected("clientReconnected"),
-    IncomingChatMessage("incomingChatMessage");
+    IncomingChatMessage("incomingChatMessage"),
+    IncomingInvite("incomingInvite"),
+    GameStarted("gameStarted");
 
     companion object {
         private val VALUES = values()

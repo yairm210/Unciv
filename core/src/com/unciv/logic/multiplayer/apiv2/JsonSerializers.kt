@@ -73,6 +73,8 @@ internal class WebSocketMessageSerializer : JsonContentPolymorphicSerializer<Web
                 WebSocketMessageType.ClientDisconnected -> ClientDisconnectedMessage.serializer()
                 WebSocketMessageType.ClientReconnected -> ClientReconnectedMessage.serializer()
                 WebSocketMessageType.IncomingChatMessage -> IncomingChatMessageMessage.serializer()
+                WebSocketMessageType.IncomingInvite -> IncomingInviteMessage.serializer()
+                WebSocketMessageType.GameStarted -> GameStartedMessage.serializer()
             }
         }
     }
