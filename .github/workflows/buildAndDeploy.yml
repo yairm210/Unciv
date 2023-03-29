@@ -22,10 +22,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Get release tag
-        id: tag
-        uses: dawidd6/action-get-tag@v1
-
       - name: Read release.md and use it as a body of new release. This will fail for patch releases, since they have no readme.
         continue-on-error: true
         id: read_release
