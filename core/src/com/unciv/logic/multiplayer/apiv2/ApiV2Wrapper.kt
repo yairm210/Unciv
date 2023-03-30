@@ -46,6 +46,10 @@ open class ApiV2Wrapper(private val baseUrl: String) {
                 isLenient = true
             })
         }
+        install(HttpTimeout) {
+            requestTimeoutMillis = 5000
+            connectTimeoutMillis = 3000
+        }
         install(WebSockets) {
             pingInterval = 90_000
             contentConverter = KotlinxWebsocketSerializationConverter(Json)

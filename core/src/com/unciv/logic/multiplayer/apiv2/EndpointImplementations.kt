@@ -13,6 +13,7 @@ import io.ktor.client.plugins.cookies.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.util.network.*
 import java.io.IOException
 import java.util.*
 
@@ -66,26 +67,33 @@ private suspend fun request(
     // Perform the request, but handle network issues gracefully according to the specified exceptions
     val response = try {
         client.request(builder)
-    } catch (e: IOException) {
-        val shouldRetry = if (retry != null) {
-            Log.debug("Calling retry coroutine %s for network error %s in '%s %s'", retry, e, method, endpoint)
-            retry()
-        } else {
-            false
-        }
-        return if (shouldRetry) {
-            Log.debug("Retrying after network error %s: %s (cause: %s)", e, e.message, e.cause)
-            request(method, endpoint, client, authHelper,
-                refine = refine,
-                suppress = suppress,
-                retry = null
-            )
-        } else if (suppress) {
-            Log.debug("Suppressed network error %s: %s (cause: %s)", e, e.message, e.cause)
-            null
-        } else {
-            Log.debug("Throwing network error %s: %s (cause: %s)", e, e.message, e.cause)
-            throw UncivNetworkException(e)
+    } catch (e: Throwable) {
+        when (e) {
+            // This workaround allows to catch multiple exception types at the same time
+            // See https://youtrack.jetbrains.com/issue/KT-7128 if you want this feature in Kotlin :)
+            is IOException, is UnresolvedAddressException -> {
+                val shouldRetry = if (retry != null) {
+                    Log.debug("Calling retry coroutine %s for network error %s in '%s %s'", retry, e, method, endpoint)
+                    retry()
+                } else {
+                    false
+                }
+                return if (shouldRetry) {
+                    Log.debug("Retrying after network error %s: %s (cause: %s)", e, e.message, e.cause)
+                    request(method, endpoint, client, authHelper,
+                        refine = refine,
+                        suppress = suppress,
+                        retry = null
+                    )
+                } else if (suppress) {
+                    Log.debug("Suppressed network error %s: %s (cause: %s)", e, e.message, e.cause)
+                    null
+                } else {
+                    Log.debug("Throwing network error %s: %s (cause: %s)", e, e.message, e.cause)
+                    throw UncivNetworkException(e)
+                }
+            }
+            else -> throw e
         }
     }
 

@@ -10,11 +10,7 @@ import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.event.EventBus
-import com.unciv.logic.multiplayer.apiv2.AccountResponse
 import com.unciv.logic.multiplayer.apiv2.ApiV2
-import com.unciv.logic.multiplayer.apiv2.OnlineAccountResponse
-import com.unciv.logic.multiplayer.storage.ApiV2FileStorageEmulator
-import com.unciv.logic.multiplayer.storage.ApiV2FileStorageWrapper
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
@@ -26,8 +22,6 @@ import com.unciv.utils.concurrency.Dispatcher
 import com.unciv.utils.concurrency.launchOnThreadPool
 import com.unciv.utils.concurrency.withGLContext
 import com.unciv.utils.debug
-import io.ktor.client.plugins.websocket.*
-import io.ktor.websocket.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -95,7 +89,8 @@ class OnlineMultiplayer {
         Log.debug("Server at '$baseUrl' detected API version: $apiVersion")
         checkServerStatus()
         startPollChecker()
-        isAliveAPIv1()  // this is called for any API version since it sets the featureSet implicitly
+        featureSet = ServerFeatureSet()  // setting this here to fix problems for non-network games
+        isAliveAPIv1()  // this is called for any API version since it updates the featureSet implicitly
         if (apiVersion == ApiVersion.APIv2) {
             if (hasAuthentication()) {
                 apiImpl.initialize(Pair(settings.multiplayer.userName, settings.multiplayer.passwords[baseUrl]?:""))
@@ -292,20 +287,6 @@ class OnlineMultiplayer {
         multiplayerFiles.tryUploadGame(gameInfo, withPreview = true)
         game.doManualUpdate(newPreview)
         return true
-    }
-
-    /**
-     * Load all friends and friend requests (split by incoming and outgoing) of the currently logged-in user
-     */
-    suspend fun getFriends(): Triple<List<OnlineAccountResponse>, List<AccountResponse>, List<AccountResponse>> {
-        val (friends, requests) = apiImpl.friend.listAll()
-        // TODO: The user's UUID should be cached, when this class is extended to a game manager class
-        val myUUID = apiImpl.account.get().uuid
-        return Triple(
-            friends.map { it.to },
-            requests.filter { it.to.uuid == myUUID }.map{ it.from },
-            requests.filter { it.from.uuid == myUUID }.map { it.to }
-        )
     }
 
     /**

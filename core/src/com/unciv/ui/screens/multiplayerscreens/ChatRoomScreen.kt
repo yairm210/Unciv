@@ -23,7 +23,7 @@ import kotlin.collections.ArrayList
 import kotlin.math.max
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
 
-class ChatRoomScreen(private val chatRoomID: Long) : PickerScreen() {
+class ChatRoomScreen(private val chatRoomUUID: UUID) : PickerScreen() {
 
     private val messageTable = Table()
 
@@ -42,7 +42,7 @@ class ChatRoomScreen(private val chatRoomID: Long) : PickerScreen() {
         rightSideButton.enable()
         rightSideButton.onClick {
             val ask = AskTextPopup(this, "Your new message", maxLength = 1024, actionOnOk = {
-                Log.debug("Sending '$it' to room $chatRoomID")  // TODO: Implement this
+                Log.debug("Sending '$it' to room $chatRoomUUID")  // TODO: Implement this
             })
             ask.open()
         }

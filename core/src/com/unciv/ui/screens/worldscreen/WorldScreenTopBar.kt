@@ -186,7 +186,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
                         try {
                             val details = worldScreen.game.onlineMultiplayer.api.getGameDetails(worldScreen.gameInfo.gameId)
                             Concurrency.runOnGLThread {
-                                worldScreen.game.pushScreen(ChatRoomScreen(details.chatRoomId))
+                                worldScreen.game.pushScreen(ChatRoomScreen(details.chatRoomUUID))
                             }
                         } catch (e: MultiplayerFileNotFoundException) {
                             Concurrency.runOnGLThread {
