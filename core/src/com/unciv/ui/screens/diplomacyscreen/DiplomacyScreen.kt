@@ -256,7 +256,7 @@ class DiplomacyScreen(
         val allyBonusObjects = viewingCiv.cityStateFunctions.getCityStateBonuses(otherCiv.cityStateType, RelationshipLevel.Ally)
         allyBonusText += allyBonusObjects.joinToString(separator = "\n") { it.text.tr() }
 
-        val relationLevel = otherCivDiplomacyManager.relationshipLevel()
+        val relationLevel = otherCivDiplomacyManager.relationshipIgnoreAfraid()
         if (relationLevel >= RelationshipLevel.Friend) {
             // RelationshipChange = Ally -> Friend or Friend -> Favorable
             val turnsToRelationshipChange = otherCivDiplomacyManager.getTurnsToRelationshipChange()
@@ -637,7 +637,7 @@ class DiplomacyScreen(
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
 
-        val helloText = if (otherCivDiplomacyManager.relationshipLevel() <= RelationshipLevel.Enemy)
+        val helloText = if (otherCivDiplomacyManager.isRelationshipLevelLE(RelationshipLevel.Enemy))
             otherCiv.nation.hateHello
         else otherCiv.nation.neutralHello
         val leaderIntroTable = LeaderIntroTable(otherCiv, helloText)

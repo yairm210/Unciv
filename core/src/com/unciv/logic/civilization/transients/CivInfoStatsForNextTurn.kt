@@ -171,9 +171,8 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
         //City-States bonuses
         for (otherCiv in civInfo.getKnownCivs()) {
             if (!otherCiv.isCityState()) continue
-            if (otherCiv.getDiplomacyManager(civInfo.civName)
-                        .relationshipLevel() != RelationshipLevel.Ally
-            ) continue
+            if (!otherCiv.getDiplomacyManager(civInfo.civName).isRelationshipLevelEQ(RelationshipLevel.Ally))
+                continue
             for (unique in civInfo.getMatchingUniques(UniqueType.CityStateStatPercent)) {
                 statMap.add(
                     Constants.cityStates,
