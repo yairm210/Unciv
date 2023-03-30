@@ -883,11 +883,10 @@ open class Tile : IsPartOfGameInfoSerialization {
                 removeRoad()
         } else {
             // otherwise use pillage/repair systems
-            if (canPillageTileImprovement()) {
+            if (canPillageTileImprovement())
                 improvementIsPillaged = true
-            } else {
+            else
                 roadIsPillaged = true
-            }
         }
     }
 

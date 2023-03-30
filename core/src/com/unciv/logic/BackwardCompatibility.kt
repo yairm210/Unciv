@@ -1,10 +1,12 @@
 package com.unciv.logic
 
+import com.unciv.Constants
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.managers.TechManager
+import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.Ruleset
 
@@ -34,6 +36,20 @@ object BackwardCompatibility {
                         unit.promotions.promotions.remove(promotion)
             }
         }
+
+        // Mod decided you can't repair things anymore - get rid of old pillaged improvements
+        if (!ruleset.tileImprovements.containsKey(Constants.repair))
+            for (tile in tileMap.values) {
+                if (tile.roadIsPillaged) {
+                    tile.roadStatus = RoadStatus.None
+                    tile.roadIsPillaged = false
+                }
+                if (tile.improvementIsPillaged){
+                    tile.improvement = null
+                    tile.improvementIsPillaged = false
+                }
+            }
+
 
         for (city in civilizations.asSequence().flatMap { it.cities.asSequence() }) {
 

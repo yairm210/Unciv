@@ -98,6 +98,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
 
     private fun createArchipelago(tileMap: TileMap) {
         val elevationSeed = randomness.RNG.nextInt().toDouble()
+        waterThreshold += 0.25
         for (tile in tileMap.values) {
             val elevation = getRidgedPerlinNoise(tile, elevationSeed)
             spawnLandOrWater(tile, elevation)

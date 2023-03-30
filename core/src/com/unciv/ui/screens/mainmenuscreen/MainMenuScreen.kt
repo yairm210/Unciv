@@ -21,6 +21,7 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.components.AutoScrollPane
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
@@ -110,7 +111,12 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         // If we were in a mod, some of the resource images for the background map we're creating
         // will not exist unless we reset the ruleset and images
         ImageGetter.ruleset = RulesetCache.getVanillaRuleset()
-        startBackgroundMapGeneration()
+
+        // This is an extreme safeguard - should an invalid settings.tileSet ever make it past the
+        // guard in UncivGame.create, simply omit the background so the user can at least get to options
+        // (let him crash when loading a game but avoid locking him out entirely)
+        if (game.settings.tileSet in TileSetCache)
+            startBackgroundMapGeneration()
 
         val column1 = Table().apply { defaults().pad(10f).fillX() }
         val column2 = if (singleColumn) column1 else Table().apply { defaults().pad(10f).fillX() }
