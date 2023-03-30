@@ -165,7 +165,7 @@ private fun addMultiplayerServerOptions(
 
     serverIpTable.add("Server address".toLabel().onClick {
         multiplayerServerTextField.text = Gdx.app.clipboard.contents
-        }).colspan(2).row()
+    }).colspan(2).row()
     multiplayerServerTextField.onChange {
         val isCustomServer = OnlineMultiplayer.usesCustomServer()
         connectionToServerButton.isEnabled = isCustomServer

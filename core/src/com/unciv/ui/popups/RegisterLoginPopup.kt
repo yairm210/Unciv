@@ -49,6 +49,10 @@ class RegisterLoginPopup(private val stage: Stage, authSuccessful: ((Boolean) ->
                             usernameField.text, passwordField.text
                         )
                         launchOnGLThread {
+                            Log.debug("Updating username and password after successfully authenticating")
+                            UncivGame.Current.settings.multiplayer.userName = usernameField.text
+                            UncivGame.Current.settings.multiplayer.passwords[UncivGame.Current.onlineMultiplayer.baseUrl] = passwordField.text
+                            UncivGame.Current.settings.save()
                             popup.close()
                             close()
                             authSuccessful?.invoke(success)
@@ -76,6 +80,10 @@ class RegisterLoginPopup(private val stage: Stage, authSuccessful: ((Boolean) ->
                             usernameField.text, passwordField.text
                         )
                         launchOnGLThread {
+                            Log.debug("Updating username and password after successfully authenticating")
+                            UncivGame.Current.settings.multiplayer.userName = usernameField.text
+                            UncivGame.Current.settings.multiplayer.passwords[UncivGame.Current.onlineMultiplayer.baseUrl] = passwordField.text
+                            UncivGame.Current.settings.save()
                             popup.close()
                             close()
                             InfoPopup(stage, "Successfully registered new account".tr()) {
