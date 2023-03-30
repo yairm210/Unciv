@@ -258,7 +258,7 @@ object NextTurnAutomation {
             if (popupAlert.type == AlertType.DeclarationOfFriendship) {
                 val requestingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
                 val diploManager = civInfo.getDiplomacyManager(requestingCiv)
-                if (diploManager.relationshipLevel() > RelationshipLevel.Neutral
+                if (diploManager.isRelationshipLevelGT(RelationshipLevel.Neutral)
                         && !diploManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.Denunciation)) {
                     diploManager.signDeclarationOfFriendship()
                     requestingCiv.addNotification("We have signed a Declaration of Friendship with [${civInfo.civName}]!", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
@@ -377,23 +377,21 @@ object NextTurnAutomation {
     }
 
     private fun protectCityStates(civInfo: Civilization) {
-        for (state in civInfo.getKnownCivs().filter{!it.isDefeated() && it.isCityState()}) {
+        for (state in civInfo.getKnownCivs().filter { !it.isDefeated() && it.isCityState() }) {
             val diplomacyManager = state.getDiplomacyManager(civInfo.civName)
-            if(diplomacyManager.relationshipLevel() >= RelationshipLevel.Friend
-                && state.cityStateFunctions.otherCivCanPledgeProtection(civInfo))
-            {
+            val isAtLeastFriend = diplomacyManager.isRelationshipLevelGE(RelationshipLevel.Friend)
+            if (isAtLeastFriend && state.cityStateFunctions.otherCivCanPledgeProtection(civInfo)) {
                 state.cityStateFunctions.addProtectorCiv(civInfo)
-            } else if (diplomacyManager.relationshipLevel() < RelationshipLevel.Friend
-                && state.cityStateFunctions.otherCivCanWithdrawProtection(civInfo)) {
+            } else if (!isAtLeastFriend && state.cityStateFunctions.otherCivCanWithdrawProtection(civInfo)) {
                 state.cityStateFunctions.removeProtectorCiv(civInfo)
             }
         }
     }
 
     private fun bullyCityStates(civInfo: Civilization) {
-        for (state in civInfo.getKnownCivs().filter{!it.isDefeated() && it.isCityState()}) {
+        for (state in civInfo.getKnownCivs().filter { !it.isDefeated() && it.isCityState() }) {
             val diplomacyManager = state.getDiplomacyManager(civInfo.civName)
-            if(diplomacyManager.relationshipLevel() < RelationshipLevel.Friend
+            if (diplomacyManager.isRelationshipLevelLT(RelationshipLevel.Friend)
                     && diplomacyManager.diplomaticStatus == DiplomaticStatus.Peace
                     && valueCityStateAlliance(civInfo, state) <= 0
                     && state.cityStateFunctions.getTributeWillingness(civInfo) >= 0) {
@@ -652,8 +650,8 @@ object NextTurnAutomation {
                     && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedLuxExchange)
         }) {
 
-            val relationshipLevel = civInfo.getDiplomacyManager(otherCiv).relationshipLevel()
-            if (relationshipLevel <= RelationshipLevel.Enemy || otherCiv.tradeRequests.any { it.requestingCiv == civInfo.civName })
+            val isEnemy = civInfo.getDiplomacyManager(otherCiv).isRelationshipLevelLE(RelationshipLevel.Enemy)
+            if (isEnemy || otherCiv.tradeRequests.any { it.requestingCiv == civInfo.civName })
                 continue
 
             val trades = potentialLuxuryTrades(civInfo, otherCiv)
@@ -670,7 +668,7 @@ object NextTurnAutomation {
                 .asSequence()
                 .filter {
                     it.isMajorCiv() && !it.isAtWarWith(civInfo)
-                            && it.getDiplomacyManager(civInfo).relationshipLevel() > RelationshipLevel.Neutral
+                            && it.getDiplomacyManager(civInfo).isRelationshipLevelGT(RelationshipLevel.Neutral)
                             && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclarationOfFriendship)
                             && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.Denunciation)
                 }
@@ -804,7 +802,7 @@ object NextTurnAutomation {
         if (diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship))
             modifierMap["Declaration of Friendship"] = -10
 
-        val relationshipModifier = when (diplomacyManager.relationshipLevel()) {
+        val relationshipModifier = when (diplomacyManager.relationshipIgnoreAfraid()) {
             RelationshipLevel.Unforgivable -> 10
             RelationshipLevel.Enemy -> 5
             RelationshipLevel.Ally -> -5 // this is so that ally + DoF is not too unbalanced -
