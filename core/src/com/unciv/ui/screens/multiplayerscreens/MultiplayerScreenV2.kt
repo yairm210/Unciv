@@ -10,6 +10,8 @@ import com.unciv.logic.multiplayer.apiv2.ApiException
 import com.unciv.logic.multiplayer.apiv2.FriendResponse
 import com.unciv.logic.multiplayer.apiv2.GameOverviewResponse
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.extensions.addSeparator
+import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.onClick
@@ -143,12 +145,12 @@ class MultiplayerScreenV2 : PickerScreen() {
         leftSideTable.defaults().pad(10.0f)
 
         if (cachedFriendResponse == null) {
-            leftSideTable.add("You have no friends yet :/".toLabel()).colspan(2).row()
+            leftSideTable.add("You have no friends yet :/".toLabel()).colspan(2).center().row()
         } else {
             var anything = false
             if (cachedFriendResponse!!.second.isNotEmpty()) {
                 anything = true
-                leftSideTable.add("Friend requests".toLabel()).colspan(2).row()
+                leftSideTable.add("Friend requests".toLabel()).colspan(2).center().row()
                 cachedFriendResponse?.second!!.sortedBy {
                     it.displayName
                 }.forEach { // incoming friend requests
@@ -158,12 +160,16 @@ class MultiplayerScreenV2 : PickerScreen() {
                         // TODO: Implement friend request options
                         ToastPopup("Options are not implemented yet", stage)
                     }
-                    leftSideTable.add(btn)
+                    leftSideTable.add(btn).row()
                 }
             }
 
             if (cachedFriendResponse!!.first.isNotEmpty()) {
+                if (anything) {
+                    leftSideTable.addSeparator(skinStrings.skinConfig.baseColor.brighten(0.1f))
+                }
                 anything = true
+                leftSideTable.add("Friends".toLabel()).colspan(2).center().row()
                 // TODO: Verify that this sorting is stable, i.e. the first section is online, then sorted alphabetically
                 cachedFriendResponse?.first!!.sortedBy {
                     it.friend.username
@@ -176,15 +182,16 @@ class MultiplayerScreenV2 : PickerScreen() {
                         // TODO: Implement friend options
                         ToastPopup("Options are not implemented yet", stage)
                     }
-                    leftSideTable.add(btn)
+                    leftSideTable.add(btn).row()
                 }
             }
 
             if (!anything) {
-                leftSideTable.add("You have no friends yet :/".toLabel()).colspan(2).row()
+                leftSideTable.add("You have no friends yet :/".toLabel()).colspan(2).center().row()
             }
         }
 
+        leftSideTable.addSeparator(skinStrings.skinConfig.baseColor.brighten(0.1f))
         leftSideTable.add(updateFriendListButton)
         leftSideTable.add(requestFriendshipButton).row()
     }

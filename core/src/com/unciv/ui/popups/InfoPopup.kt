@@ -2,7 +2,10 @@ package com.unciv.ui.popups
 
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.Align
+import com.unciv.UncivGame
+import com.unciv.logic.UncivShowableException
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.utils.concurrency.Concurrency
 
 /** Variant of [Popup] with one label and a cancel button
  * @param stageToShowOn Parent [Stage], see [Popup.stageToShowOn]
@@ -25,4 +28,21 @@ open class InfoPopup(
         open()
     }
 
+    companion object {
+
+        /**
+         * Wrap the execution of a coroutine to display an [InfoPopup] when a [UncivShowableException] occurs
+         */
+        suspend fun <T> wrap(stage: Stage, function: suspend () -> T): T? {
+            try {
+                return function()
+            } catch (e: UncivShowableException) {
+                Concurrency.runOnGLThread {
+                    InfoPopup(stage, e.localizedMessage)
+                }
+            }
+            return null
+        }
+
+    }
 }

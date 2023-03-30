@@ -295,6 +295,8 @@ private fun addTurnCheckerOptions(
 private fun successfullyConnectedToServer(action: (Boolean, Boolean) -> Unit) {
     Concurrency.run("TestIsAlive") {
         try {
+            // TODO: Detecting API version changes doesn't work without game restart yet,
+            //  therefore this server check will almost certainly fail when the server changes
             val connectionSuccess = UncivGame.Current.onlineMultiplayer.checkServerStatus()
             var authSuccess = false
             if (connectionSuccess) {

@@ -44,6 +44,7 @@ class ChatRoomScreen(private val chatRoomUUID: UUID) : PickerScreen() {
             val ask = AskTextPopup(this, "Your new message", maxLength = 1024, actionOnOk = {
                 Log.debug("Sending '$it' to room $chatRoomUUID")  // TODO: Implement this
             })
+            ask.width = max(ask.width, stage.width / 1.5f)
             ask.open()
         }
 

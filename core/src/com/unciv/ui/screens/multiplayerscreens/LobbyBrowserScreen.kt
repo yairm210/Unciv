@@ -2,6 +2,7 @@ package com.unciv.ui.screens.multiplayerscreens
 
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.UncivGame
+import com.unciv.logic.UncivShowableException
 import com.unciv.logic.multiplayer.apiv2.LobbyResponse
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.popups.Popup
@@ -10,9 +11,9 @@ import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.popups.InfoPopup
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
 
 /**
@@ -37,19 +38,9 @@ class LobbyBrowserScreen : PickerScreen() {
         leftSideTable.add(noLobbies.toLabel()).row()
         leftSideTable.add(updateListButton).padTop(30f).row()
 
-        Concurrency.run("Update lobby list") {
-            val listOfOpenLobbies = UncivGame.Current.onlineMultiplayer.api.lobby.list()
-            launchOnGLThread {
-                refreshLobbyList(listOfOpenLobbies)
-            }
-        }
+        triggerUpdateLobbyList()
         updateListButton.onClick {
-            Concurrency.run("Update lobby list") {
-                val listOfOpenLobbies = UncivGame.Current.onlineMultiplayer.api.lobby.list()
-                launchOnGLThread {
-                    refreshLobbyList(listOfOpenLobbies)
-                }
-            }
+            triggerUpdateLobbyList()
         }
 
         // The functionality of joining a lobby will be added on-demand in [refreshLobbyList]
@@ -78,6 +69,22 @@ class LobbyBrowserScreen : PickerScreen() {
         rightSideTable.defaults().fillX()
         rightSideTable.defaults().pad(20.0f)
         rightSideTable.add(noLobbySelected.toLabel()).padBottom(10f).row()
+    }
+
+    /**
+     * Detach updating the list of lobbies in another coroutine
+     */
+    private fun triggerUpdateLobbyList() {
+        Concurrency.run("Update lobby list") {
+            val listOfOpenLobbies = InfoPopup.wrap(stage) {
+                UncivGame.Current.onlineMultiplayer.api.lobby.list()!!
+            }
+            if (listOfOpenLobbies != null) {
+                Concurrency.runOnGLThread {
+                    refreshLobbyList(listOfOpenLobbies)
+                }
+            }
+        }
     }
 
     /**
@@ -113,7 +120,7 @@ class LobbyBrowserScreen : PickerScreen() {
                 updateRightSideTable(lobby)
                 // TODO: Un-selecting a lobby is not implemented yet
                 rightSideButton.onClick {
-                    Log.debug("Joining lobby '${lobby.name}' (ID ${lobby.id})")
+                    Log.debug("Joining lobby '${lobby.name}' (UUID ${lobby.uuid})")
                 }
                 rightSideButton.enable()
             }
