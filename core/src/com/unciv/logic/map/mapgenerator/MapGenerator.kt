@@ -21,6 +21,8 @@ import com.unciv.ui.screens.mapeditorscreen.MapGeneratorSteps
 import com.unciv.ui.screens.mapeditorscreen.TileInfoNormalizer
 import com.unciv.utils.Log
 import com.unciv.utils.debug
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.isActive
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.pow
@@ -31,7 +33,8 @@ import kotlin.math.ulp
 import kotlin.random.Random
 
 
-class MapGenerator(val ruleset: Ruleset) {
+class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineScope? = null) {
+
     companion object {
         private const val consoleTimings = false
     }
@@ -202,6 +205,7 @@ class MapGenerator(val ruleset: Ruleset) {
 
 
     private fun runAndMeasure(text: String, action: ()->Unit) {
+        if (coroutineScope?.isActive == false) return
         if (!consoleTimings) return action()
         val startNanos = System.nanoTime()
         action()
