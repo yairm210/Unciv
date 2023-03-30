@@ -23,7 +23,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 
 class MapFileSelectTable(
-    private val newGameScreen: NewGameScreen,
+    private val newGameScreen: MapOptionsInterface,
     private val mapParameters: MapParameters
 ) : Table() {
 
@@ -98,7 +98,7 @@ class MapFileSelectTable(
             MapSaver.loadMapParameters(mapFile)
         } catch (ex:Exception){
             ex.printStackTrace()
-            Popup(newGameScreen).apply {
+            Popup(stage).apply {
                 addGoodSizedLabel("Could not load map!").row()
                 if (ex is UncivShowableException)
                     addGoodSizedLabel(ex.message).row()

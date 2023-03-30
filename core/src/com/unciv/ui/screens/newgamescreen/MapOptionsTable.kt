@@ -6,7 +6,7 @@ import com.unciv.ui.components.extensions.onChange
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.screens.basescreen.BaseScreen
 
-class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
+class MapOptionsTable(private val newGameScreen: MapOptionsInterface): Table() {
 
     private val mapParameters = newGameScreen.gameSetupInfo.mapParameters
     private var mapTypeSpecificTable = Table()

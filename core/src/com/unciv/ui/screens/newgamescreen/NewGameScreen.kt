@@ -48,7 +48,7 @@ import com.unciv.ui.components.AutoScrollPane as ScrollPane
 
 class NewGameScreen(
     _gameSetupInfo: GameSetupInfo? = null
-): IPreviousScreen, HorizontalPickerScreen() /* to get more space */, RecreateOnResize {
+): MapOptionsInterface, HorizontalPickerScreen() /* to get more space */, RecreateOnResize {
 
     override val gameSetupInfo = _gameSetupInfo ?: GameSetupInfo.fromSettings()
     override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters) // needs to be set because the GameOptionsTable etc. depend on this
@@ -216,7 +216,7 @@ class NewGameScreen(
 
     /** Subtables may need an upper limit to their width - they can ask this function. */
     // In sync with isPortrait in init, here so UI details need not know about 3-column vs 1-column layout
-    internal fun getColumnWidth() = stage.width / (if (isNarrowerThan4to3()) 1 else 3)
+    override fun getColumnWidth() = stage.width / (if (isNarrowerThan4to3()) 1 else 3)
 
     private fun initLandscape() {
         scrollPane.setScrollingDisabled(true,true)
@@ -342,24 +342,24 @@ class NewGameScreen(
         }
     }
 
-    fun updateRuleset() {
+    override fun updateRuleset() {
         ruleset.clear()
         ruleset.add(RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters))
         ImageGetter.setNewRuleset(ruleset)
         game.musicController.setModList(gameSetupInfo.gameParameters.getModsAndBaseRuleset())
     }
 
-    fun lockTables() {
+    override fun lockTables() {
         playerPickerTable.locked = true
         newGameOptionsTable.locked = true
     }
 
-    fun unlockTables() {
+    override fun unlockTables() {
         playerPickerTable.locked = false
         newGameOptionsTable.locked = false
     }
 
-    fun updateTables() {
+    override fun updateTables() {
         playerPickerTable.gameParameters = gameSetupInfo.gameParameters
         playerPickerTable.update()
         newGameOptionsTable.gameParameters = gameSetupInfo.gameParameters

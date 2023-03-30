@@ -20,12 +20,12 @@ import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
-import com.unciv.ui.screens.pickerscreens.PickerScreen
+import com.unciv.ui.screens.pickerscreens.HorizontalPickerScreen
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
 
-class MultiplayerScreenV2 : PickerScreen() {
+class MultiplayerScreenV2 : HorizontalPickerScreen() {
     private var selectedGame: Pair<String, OnlineMultiplayerGame>? = null // pair of game UUID to file handle
     private var cachedGames: Map<String, GameOverviewResponse> = mutableMapOf()
     private var cachedFriendResponse: Triple<List<FriendResponse>, List<AccountResponse>, List<AccountResponse>>? = null
