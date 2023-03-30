@@ -68,7 +68,10 @@ internal object DesktopLauncher {
         // Kludge! This is a workaround - the matching call in DesktopDisplay doesn't "take" quite permanently,
         // the window might revert to the "config" values when the user moves the window - worse if they
         // minimize/restore. And the config default is 640x480 unless we set something here.
-        config.setWindowedMode(settings.windowState.width, settings.windowState.height)
+        config.setWindowedMode(
+            settings.windowState.width.coerceAtLeast(120),
+            settings.windowState.height.coerceAtLeast(80)
+        )
 
         if (!isRunFromJAR) {
             UniqueDocsWriter().write()
