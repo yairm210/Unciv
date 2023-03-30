@@ -249,4 +249,13 @@ object Fonts {
     const val greatMerchant = '⚖'      // U+2696 'scale'
     const val greatScientist = '⚛'      // U+269B 'atom'
     const val death = '☠' // U+2620 'skull and crossbones'
+
+    val allSymbols = arrayOf<Char>(
+        turn,
+        strength, rangedStrength, range, movement,
+        production, gold, food, science, culture, happiness, faith,
+        greatArtist, greatEngineer, greatGeneral, greatMerchant, greatScientist,
+        death,
+        *MayaCalendar.allSymbols
+    )
 }
