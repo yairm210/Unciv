@@ -60,6 +60,11 @@ class VictoryScreen(
             override fun getContent(worldScreen: WorldScreen) = VictoryScreenCivRankings(worldScreen)
             override fun isHidden(playerCiv: Civilization) = UncivGame.Current.settings.useDemographics
         },
+        Charts('C', "OtherIcons/Charts") {
+            override fun getContent(worldScreen: WorldScreen) = VictoryScreenCharts(worldScreen)
+            override fun isHidden(playerCiv: Civilization) =
+                !playerCiv.isSpectator() && playerCiv.statsHistory.size < 2
+        },
         Replay('P', "OtherIcons/Load", allowAsSecret = true) {
             override fun getContent(worldScreen: WorldScreen) = VictoryScreenReplay(worldScreen)
             override fun isHidden(playerCiv: Civilization) =
