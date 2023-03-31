@@ -4,6 +4,7 @@ import com.badlogic.gdx.Files
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.JsonReader
+import com.badlogic.gdx.utils.JsonWriter
 import com.badlogic.gdx.utils.SerializationException
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
@@ -365,7 +366,7 @@ class UncivFiles(
          * Returns pretty-printed (= manually readable) serialization of [game], optionally gzipped
          */
         fun gameInfoToPrettyString(game: GameInfo, useZip: Boolean = false): String {
-            val prettyJson = json().prettyPrint(game)
+            val prettyJson = json().apply { setOutputType(JsonWriter.OutputType.json) }.prettyPrint(game)
             return if (useZip) Gzip.zip(prettyJson) else prettyJson
         }
 
