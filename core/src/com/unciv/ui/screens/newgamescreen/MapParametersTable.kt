@@ -13,7 +13,6 @@ import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.mapgenerator.MapGenerationRandomness
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.UncivTextField
@@ -23,6 +22,7 @@ import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.screens.basescreen.BaseScreen
 
 /** Table for editing [mapParameters]
  *
@@ -132,6 +132,7 @@ class MapParametersTable(
             MapType.fourCorners,
             MapType.archipelago,
             MapType.innerSea,
+            MapType.perlin,
             if (forMapEditor && mapGeneratedMainType != MapGeneratedMainType.randomGenerated) MapType.empty else null
         )
 

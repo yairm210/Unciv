@@ -559,7 +559,7 @@ object Battle {
         }
 
         if (!thisCombatant.isDefeated() && thisCombatant.unit.promotions.canBePromoted())
-            thisCombatant.getCivInfo().addNotification("[${thisCombatant.unit.name}] can be promoted!",thisCombatant.getTile().position, NotificationCategory.Units, thisCombatant.unit.name)
+            thisCombatant.getCivInfo().addNotification("[${thisCombatant.unit.displayName()}] can be promoted!",thisCombatant.getTile().position, NotificationCategory.Units, thisCombatant.unit.name)
     }
 
     private fun conquerCity(city: City, attacker: MapUnitCombatant) {

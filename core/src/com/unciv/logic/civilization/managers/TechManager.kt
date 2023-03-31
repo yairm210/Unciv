@@ -334,70 +334,53 @@ class TechManager : IsPartOfGameInfoSerialization {
     }
 
     private fun obsoleteOldUnits(techName: String) {
-        val obsoleteUnits =
-                getRuleset().units.values.filter { it.obsoleteTech == techName }.map { it.name }
-        val unitUpgrades = HashMap<String, HashSet<City>>()
-        for (city in civInfo.cities) {
-            // Do not use replaceAll - that's a Java 8 feature and will fail on older phones!
-            val oldQueue =
-                    city.cityConstructions.constructionQueue.toList()  // copy, since we're changing the queue
-            city.cityConstructions.constructionQueue.clear()
-            for (constructionName in oldQueue) {
-                if (constructionName in obsoleteUnits) {
-                    if (constructionName !in unitUpgrades.keys) {
-                        unitUpgrades[constructionName] = hashSetOf()
-                    }
-                    unitUpgrades[constructionName]?.add(city)
-                    val construction = city.cityConstructions.getConstruction(constructionName)
-                    if (construction is BaseUnit && construction.upgradesTo != null) {
-                        city.cityConstructions.constructionQueue.add(construction.upgradesTo!!)
-                    }
-                } else city.cityConstructions.constructionQueue.add(constructionName)
-            }
+        // First build a map with obsoleted units to their (nation-specific) upgrade
+        val ruleset = getRuleset()
+        fun BaseUnit.getEquivalentUpgradeOrNull(): BaseUnit? {
+            if (upgradesTo !in ruleset.units) return null  // also excludes upgradesTo==null
+            return civInfo.getEquivalentUnit(upgradesTo!!)
         }
+        val obsoleteUnits = getRuleset().units.asSequence()
+            .filter { it.value.obsoleteTech == techName }
+            .map { it.key to it.value.getEquivalentUpgradeOrNull() }
+            .toMap()
+        if (obsoleteUnits.isEmpty()) return
+
+        // Apply each to all cities - and remember which cities had which obsoleted unit
+        //  in their construction queues in this Map<String, MutableSet<City>>:
+        val unitUpgrades = obsoleteUnits.keys.associateWith { mutableSetOf<City>() }
+        fun transformConstruction(old: String, city: City): String? {
+            val entry = unitUpgrades[old] ?: return old  // Entry OK, not obsolete
+            entry.add(city)  // Remember city has updated its queue
+            return obsoleteUnits[old]?.name  // Replacement, or pass through null to remove from queue
+        }
+        for (city in civInfo.cities) {
+            // Replace queue - the sequence iteration and finalization happens before the result
+            // is reassigned, therefore no concurrent modification worries
+            city.cityConstructions.constructionQueue =
+                city.cityConstructions.constructionQueue
+                .asSequence()
+                .mapNotNull { transformConstruction(it, city) }
+                .toMutableList()
+        }
+
+        // As long as TurnManager does cities after tech, we don't need to clean up
+        // inProgressConstructions - CityConstructions.validateInProgressConstructions does it.
 
         // Add notifications for obsolete units/constructions
         for ((unit, cities) in unitUpgrades) {
-            val construction = cities.first().cityConstructions.getConstruction(unit)
-            if (cities.size == 1) {
-                val city = cities.first()
-                if (construction is BaseUnit && construction.upgradesTo != null) {
-                    val text =
-                            "[${city.name}] changed production from [$unit] to [${construction.upgradesTo!!}]"
-                    civInfo.addNotification(
-                        text, city.location,
-                        NotificationCategory.Production, unit,
-                        NotificationIcon.Construction, construction.upgradesTo!!
-                    )
-                } else {
-                    val text =
-                            "[$unit] has become obsolete and was removed from the queue in [${city.name}]!"
-                    civInfo.addNotification(
-                        text, city.location,
-                        NotificationCategory.Production,
-                        NotificationIcon.Construction
-                    )
-                }
-            } else {
-                val locationAction = LocationAction(cities.asSequence().map { it.location })
-                if (construction is BaseUnit && construction.upgradesTo != null) {
-                    val text =
-                            "[${cities.size}] cities changed production from [$unit] to [${construction.upgradesTo!!}]"
-                    civInfo.addNotification(
-                        text, locationAction,
-                        NotificationCategory.Production, unit,
-                        NotificationIcon.Construction, construction.upgradesTo!!
-                    )
-                } else {
-                    val text =
-                            "[$unit] has become obsolete and was removed from the queue in [${cities.size}] cities!"
-                    civInfo.addNotification(
-                        text, locationAction,
-                        NotificationCategory.Production,
-                        NotificationIcon.Construction
-                    )
-                }
-            }
+            if (cities.isEmpty()) continue
+            val locationAction = LocationAction(cities.mapTo(ArrayList(cities.size)) { it.location })
+            val cityText = if (cities.size == 1) "[${cities.first().name}]"
+                else "[${cities.size}] cities"
+            val newUnit = obsoleteUnits[unit]?.name
+            val text = if (newUnit == null)
+                "[$unit] has become obsolete and was removed from the queue in $cityText!"
+                else "$cityText changed production from [$unit] to [$newUnit]"
+            val icons = if (newUnit == null)
+                arrayOf(NotificationIcon.Construction)
+                else arrayOf(unit, NotificationIcon.Construction, newUnit)
+            civInfo.addNotification(text, locationAction, NotificationCategory.Production, *icons)
         }
     }
 

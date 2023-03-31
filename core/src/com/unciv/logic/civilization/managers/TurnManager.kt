@@ -245,15 +245,15 @@ class TurnManager(val civInfo: Civilization) {
 
         // disband units until there are none left OR the gold values are normal
         if (!civInfo.isBarbarian() && civInfo.gold <= -200 && nextTurnStats.gold.toInt() < 0) {
-            val militaryUnits = civInfo.units.getCivUnits().filter { it.isMilitary() }
             do {
+                val militaryUnits = civInfo.units.getCivUnits().filter { it.isMilitary() }  // New sequence as disband replaces unitList
                 val unitToDisband = militaryUnits.minByOrNull { it.baseUnit.cost }
                     // or .firstOrNull()?
                     ?: break
                 unitToDisband.disband()
                 val unitName = unitToDisband.shortDisplayName()
                 civInfo.addNotification("Cannot provide unit upkeep for $unitName - unit has been disbanded!", NotificationCategory.Units, unitName, NotificationIcon.Death)
-                civInfo.updateStatsForNextTurn()  // recalculate unit upkeep
+                // No need to recalculate unit upkeep, disband did that in UnitManager.removeUnit
                 nextTurnStats = civInfo.stats.statsForNextTurn
             } while (civInfo.gold <= -200 && nextTurnStats.gold.toInt() < 0)
         }

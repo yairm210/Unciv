@@ -11,6 +11,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.UnitType
@@ -182,6 +183,14 @@ class CivilopediaScreen(
             it.color = if (it.name == entry.name) Color.BLUE else Color.WHITE
         }
     }
+    private fun selectDefaultEntry() {
+        val name = ruleset.mods.asSequence()
+                .filter { RulesetCache[it]?.modOptions?.isBaseRuleset == true }
+                .plus("Civilopedia")
+                .firstOrNull { it in entryIndex.keys }
+                ?: return
+        selectEntry(name , noScrollAnimation = true)
+    }
 
     init {
         val imageSize = 50f
@@ -287,6 +296,9 @@ class CivilopediaScreen(
 
         if (link.isEmpty() || '/' !in link)
             selectCategory(category)
+        // show a default entry when opened without a target
+        if (link.isEmpty() && category == CivilopediaCategories.Tutorial)
+            selectDefaultEntry()
         if (link.isNotEmpty())
             if ('/' in link)
                 selectLink(link)
