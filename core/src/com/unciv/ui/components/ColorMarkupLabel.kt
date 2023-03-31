@@ -3,6 +3,7 @@
 package com.unciv.ui.components
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.unciv.Constants
 import com.unciv.models.translations.tr
@@ -33,8 +34,6 @@ class ColorMarkupLabel private constructor(
                 fontSize: Int = Constants.defaultFontSize)
         : this (fontSize, prepareText(text, textColor, symbolColor))
 
-    private val originalMarkupEnabled: Boolean
-
     init {
         if (fontSize != Constants.defaultFontSize) {
             val labelStyle = LabelStyle(style) // clone otherwise all default-styled Labels affected
@@ -42,12 +41,19 @@ class ColorMarkupLabel private constructor(
             style.font = Fonts.font
             setFontScale(fontSize / Fonts.ORIGINAL_FONT_SIZE)
         }
-        originalMarkupEnabled = style.font.data.markupEnabled
     }
 
     override fun layout() {
+        val originalMarkupEnabled = style.font.data.markupEnabled
         style.font.data.markupEnabled = true
         super.layout()
+        style.font.data.markupEnabled = originalMarkupEnabled
+    }
+
+    override fun computePrefSize(layout: GlyphLayout?) {
+        val originalMarkupEnabled = style.font.data.markupEnabled
+        style.font.data.markupEnabled = true
+        super.computePrefSize(layout)
         style.font.data.markupEnabled = originalMarkupEnabled
     }
 
