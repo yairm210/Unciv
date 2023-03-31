@@ -45,8 +45,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.victoryscreen.RankingType
-import java.util.SortedMap
-import java.util.TreeMap
+import java.util.*
 import kotlin.math.min
 
 object NextTurnAutomation {
@@ -391,26 +390,6 @@ object NextTurnAutomation {
                     cityWithLeastCostToBuy.expansion.relinquishOwnership(tileThatNeedsBuying)
                 }
                 civInfo.addGold(goldSpent)
-            }
-        }
-
-        // After highly desirable tiles, just buy the next tile the city expansion would go to if
-        // it doesn't consume too much of the total wealth. One could make this a lot more complex,
-        // but this is also taking cycles on the automation, so it might not be worth it. Things I
-        // considered where whether enemy cities / settlers are close etc., but I think this is a
-        // good approximation.
-        if (civInfo.gold > 500) {
-            var maxGoldToSpend = (civInfo.gold * 0.3).toInt()
-            for (city in civInfo.cities) {
-                val newTileToOwn = city.expansion.chooseNewTileToOwn()
-                if (newTileToOwn != null) {
-                    val costOfNewTileToOwn = city.expansion.getGoldCostOfTile(newTileToOwn)
-                    if (costOfNewTileToOwn > maxGoldToSpend) {
-                        break
-                    }
-                    city.expansion.buyTile(newTileToOwn)
-                    maxGoldToSpend -= costOfNewTileToOwn
-                }
             }
         }
     }

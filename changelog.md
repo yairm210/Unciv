@@ -6,18 +6,13 @@ Constructed units that can't be placed are put on hold till the next turn
 
 Solve 'desktop tries to create window of size 0/0' bug
 
-Remove old tag function
-
-get tag from github actions, the 2022 way
+Make AI buy city tiles.  - By WhoIsJohannes
 
 By SomeTroglodyte:
-- Civilopedia Welcome, moddable 
-- Fix ColorMarkupLabel prefSize 
-- Untinted embedded symbols - Notifications and Citystate diplomacy 
-- Fix disbanding units a civ cannot afford 
-- Main menu cancels background map creation when obsolete 
-
-Make AI buy city tiles.  - By WhoIsJohannes
+- Untinted stat symbols in tinted text
+- Moddable Civilopedia Welcome
+- Fix disbanding units a civ cannot afford
+- Main menu cancels background map creation when obsolete
 
 ## 4.5.14
 
