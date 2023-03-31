@@ -303,7 +303,7 @@ class PlayerPickerTable(
      * @param player current player
      */
     private fun popupNationPicker(player: Player, noRandom: Boolean) {
-        NationPickerPopup(this, player, noRandom).open()
+        NationPickerPopup(player, civBlocksWidth, { update() }, previousScreen as BaseScreen, previousScreen, noRandom, getAvailablePlayerCivs(player.chosenCiv)).open()
         update()
     }
 
@@ -380,11 +380,18 @@ class FriendSelectionPopup(
 
 }
 
-private class NationPickerPopup(
-    private val playerPicker: PlayerPickerTable,
+/**
+ * Popup that lets the user choose a nation for a player (human or AI)
+ */
+class NationPickerPopup(
     private val player: Player,
-    noRandom: Boolean
-) : Popup(playerPicker.previousScreen as BaseScreen) {
+    private val civBlocksWidth: Float,
+    private val update: () -> Unit,
+    baseScreen: BaseScreen,
+    previousScreen: IPreviousScreen,
+    noRandom: Boolean,
+    availablePlayerCivs: Sequence<Nation>
+) : Popup(baseScreen) {
     companion object {
         // These are used for the Close/OK buttons in the lower left/right corners:
         const val buttonsCircleSize = 70f
@@ -393,12 +400,10 @@ private class NationPickerPopup(
         val buttonsBackColor: Color = Color.BLACK.cpy().apply { a = 0.67f }
     }
 
-    private val previousScreen = playerPicker.previousScreen
     private val ruleset = previousScreen.ruleset
     // This Popup's body has two halves of same size, either side by side or arranged vertically
     // depending on screen proportions - determine height for one of those
     private val partHeight = stageToShowOn.height * (if (stageToShowOn.isNarrowerThan4to3()) 0.45f else 0.8f)
-    private val civBlocksWidth = playerPicker.civBlocksWidth
     private val nationListTable = Table()
     private val nationListScroll = ScrollPane(nationListTable)
     private val nationDetailsTable = Table()
@@ -423,8 +428,7 @@ private class NationPickerPopup(
             val spectator = previousScreen.ruleset.nations[Constants.spectator]
             if (spectator != null && player.playerType != PlayerType.AI)  // only humans can spectate, sorry robots
                 yield(spectator)
-        } + playerPicker.getAvailablePlayerCivs(player.chosenCiv)
-            .sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.name.tr() })
+        } + availablePlayerCivs.sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.name.tr() })
         val nations = nationSequence.toCollection(ArrayList<Nation>(previousScreen.ruleset.nations.size))
 
         var nationListScrollY = 0f
@@ -488,6 +492,6 @@ private class NationPickerPopup(
 
         player.chosenCiv = selectedNation!!.name
         close()
-        playerPicker.update()
+        update()
     }
 }
