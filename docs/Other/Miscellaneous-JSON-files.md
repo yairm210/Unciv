@@ -198,6 +198,22 @@ The formula for the gold cost of a unit upgrade is (rounded down to a multiple o
         ) ^ `exponent`
 With `civModifier` being the multiplicative aggregate of ["\[relativeAmount\]% Gold cost of upgrading"](../Modders/uniques.md#global-uniques) uniques that apply.
 
+## Tutorials.json
+
+[link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Tutorials.json)
+
+**Note a Base Ruleset mod can define a "welcome page" here by adding a "Tutorial" with a name equal to the name of the mod!**
+As an exception to the general rule, this file in a Base Ruleset mod will not _replace_ the default, but add to it like extension mods do.
+Also, place it under `<mod>/jsons/` normally even if the original is found one level above the vanilla jsons.
+
+| Attribute       | Type         | Optional | Notes                                                    |
+|-----------------|--------------| -------- |----------------------------------------------------------|
+| name            | String       | Required | Entry name                                               |
+| civilopediaText | List         | Optional | [see here](Miscellaneous-JSON-files.md#civilopedia-text) |
+| steps           | List(String) | Optional | Plain text                                               |
+
+If an entry contains both `steps`and `civilopediaText` attributes, the `civilopediaText` is shown first.
+
 
 ## VictoryTypes.json
 

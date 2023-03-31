@@ -1,9 +1,8 @@
 package com.unciv.testing
 
-import com.unciv.json.fromJsonFile
-import com.unciv.json.json
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.ruleset.Tutorial
+import com.unciv.ui.tutorials.TutorialController
 import org.junit.Assert.fail
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -15,8 +14,7 @@ class TutorialTranslationTests {
 
     init {
          try {
-             tutorials = json().fromJsonFile(Array<Tutorial>::class.java, "jsons/Tutorials.json")
-                 .associateByTo(linkedMapOf()) { it.name }
+             tutorials = TutorialController.loadTutorialsFromJson(includeMods = false)
          } catch (ex: Throwable) {
              exception = ex
          }
