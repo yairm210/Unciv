@@ -45,6 +45,8 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.victoryscreen.RankingType
+import java.util.SortedMap
+import java.util.TreeMap
 import kotlin.math.min
 
 object NextTurnAutomation {
@@ -296,7 +298,6 @@ object NextTurnAutomation {
                 val diploManager = cityState.getDiplomacyManager(civInfo)
                 if (diploManager.getInfluence() < 40) { // we want to gain influence with them
                     tryGainInfluence(civInfo, cityState)
-                    return
                 }
             }
         }
@@ -308,7 +309,6 @@ object NextTurnAutomation {
                     potentialAllies.maxByOrNull { valueCityStateAlliance(civInfo, it) }!!
                 if (cityState.getAllyCiv() != civInfo.civName && valueCityStateAlliance(civInfo, cityState) > 0) {
                     tryGainInfluence(civInfo, cityState)
-                    return
                 }
             }
         }
@@ -319,6 +319,98 @@ object NextTurnAutomation {
             if ((construction as INonPerpetualConstruction).canBePurchasedWithStat(city, Stat.Gold)
                     && city.civ.gold / 3 >= construction.getStatBuyCost(city, Stat.Gold)!!) {
                 city.cityConstructions.purchaseConstruction(construction.name, 0, true)
+            }
+        }
+
+        maybeBuyCityTiles(civInfo)
+    }
+
+    private fun maybeBuyCityTiles(civInfo: Civilization) {
+        if (civInfo.gold <= 0)
+            return
+
+        val highlyDesirableTiles: SortedMap<Tile, MutableSet<City>> = TreeMap(
+            compareByDescending<Tile?> { it?.naturalWonder != null }
+                .thenByDescending { it?.resource != null && it.tileResource.resourceType == ResourceType.Luxury }
+                .thenByDescending { it?.resource != null && it.tileResource.resourceType == ResourceType.Strategic }
+                // This is necessary, so that the map keeps Tiles with the same resource as two
+                // separate entries.
+                .thenBy { it.hashCode() }
+        )
+        for (city in civInfo.cities.filter { !it.isPuppet && !it.isBeingRazed }) {
+            val highlyDesirableTilesInCity = city.tilesInRange.filter {
+                val hasNaturalWonder = it.naturalWonder != null
+                val hasLuxuryCivDoesntOwn =
+                        it.hasViewableResource(civInfo) &&
+                                it.tileResource.resourceType == ResourceType.Luxury &&
+                                !civInfo.hasResource(it.resource!!)
+                val hasResourceCivHasNoneOrLittle =
+                        (it.hasViewableResource(civInfo)
+                                && it.tileResource.resourceType == ResourceType.Strategic &&
+                                (civInfo.getCivResourcesByName()[it.resource!!] ?: 0) <= 3)
+                it.isVisible(civInfo) && it.getOwner() == null &&
+                        (hasNaturalWonder || hasLuxuryCivDoesntOwn || hasResourceCivHasNoneOrLittle)
+            }
+            for (highlyDesirableTileInCity in highlyDesirableTilesInCity) {
+                highlyDesirableTiles.getOrPut(highlyDesirableTileInCity) { mutableSetOf() }
+                    .add(city)
+            }
+        }
+
+        // Always try to buy highly desirable tiles if it can be afforded.
+        for (highlyDesirableTile in highlyDesirableTiles) {
+            val cityWithLeastCostToBuy = highlyDesirableTile.value.minBy {
+                it.getCenterTile().aerialDistanceTo(highlyDesirableTile.key)
+            }
+            val bfs = BFS(cityWithLeastCostToBuy.getCenterTile()) {
+                it.getOwner() == null || it.getOwner() == civInfo
+            }
+            bfs.stepUntilDestination(highlyDesirableTile.key)
+            val tilesThatNeedBuying =
+                    bfs.getPathTo(highlyDesirableTile.key).filter { it.getOwner() != civInfo }
+
+            // We're trying to acquire everything and revert if it fails, because of the difficult
+            // way how tile acquisition cost is calculated. Everytime you buy a tile, the next one
+            // gets more expensive and by how much depends on other things such as game speed. To
+            // not introduce hidden dependencies on that and duplicate that logic here to calculate
+            // the price of the whole path, this is probably simpler.
+            var ranOutOfMoney = false
+            var goldSpent = 0
+            for (tileThatNeedsBuying in tilesThatNeedBuying) {
+                val goldCostOfTile =
+                        cityWithLeastCostToBuy.expansion.getGoldCostOfTile(tileThatNeedsBuying)
+                if (civInfo.gold >= goldCostOfTile) {
+                    cityWithLeastCostToBuy.expansion.buyTile(tileThatNeedsBuying)
+                    goldSpent += goldCostOfTile
+                } else {
+                    ranOutOfMoney = true
+                }
+            }
+            if (ranOutOfMoney) {
+                for (tileThatNeedsBuying in tilesThatNeedBuying) {
+                    cityWithLeastCostToBuy.expansion.relinquishOwnership(tileThatNeedsBuying)
+                }
+                civInfo.addGold(goldSpent)
+            }
+        }
+
+        // After highly desirable tiles, just buy the next tile the city expansion would go to if
+        // it doesn't consume too much of the total wealth. One could make this a lot more complex,
+        // but this is also taking cycles on the automation, so it might not be worth it. Things I
+        // considered where whether enemy cities / settlers are close etc., but I think this is a
+        // good approximation.
+        if (civInfo.gold > 500) {
+            var maxGoldToSpend = (civInfo.gold * 0.3).toInt()
+            for (city in civInfo.cities) {
+                val newTileToOwn = city.expansion.chooseNewTileToOwn()
+                if (newTileToOwn != null) {
+                    val costOfNewTileToOwn = city.expansion.getGoldCostOfTile(newTileToOwn)
+                    if (costOfNewTileToOwn > maxGoldToSpend) {
+                        break
+                    }
+                    city.expansion.buyTile(newTileToOwn)
+                    maxGoldToSpend -= costOfNewTileToOwn
+                }
             }
         }
     }
