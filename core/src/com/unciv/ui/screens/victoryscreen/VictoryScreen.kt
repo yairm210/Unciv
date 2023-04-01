@@ -71,7 +71,7 @@ class VictoryScreen(worldScreen: WorldScreen) : PickerScreen() {
     init {
         //**************** Set up the tabs ****************
         splitPane.setFirstWidget(tabs)
-        val iconSize = Constants.defaultFontSize.toFloat()
+        val iconSize = Constants.headingFontSize.toFloat()
 
         for (tab in VictoryTabs.values()) {
             val tabHidden = tab.isHidden(playerCiv)
