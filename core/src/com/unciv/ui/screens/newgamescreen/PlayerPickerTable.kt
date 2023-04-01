@@ -303,7 +303,14 @@ class PlayerPickerTable(
      * @param player current player
      */
     private fun popupNationPicker(player: Player, noRandom: Boolean) {
-        NationPickerPopup(player, civBlocksWidth, { update() }, previousScreen as BaseScreen, previousScreen, noRandom, getAvailablePlayerCivs(player.chosenCiv)).open()
+        NationPickerPopup(
+            player,
+            civBlocksWidth,
+            previousScreen as BaseScreen,
+            previousScreen,
+            noRandom,
+            getAvailablePlayerCivs(player.chosenCiv)
+        ) { update() }.open()
         update()
     }
 
@@ -386,11 +393,11 @@ class FriendSelectionPopup(
 class NationPickerPopup(
     private val player: Player,
     private val civBlocksWidth: Float,
-    private val update: () -> Unit,
     baseScreen: BaseScreen,
     previousScreen: IPreviousScreen,
     noRandom: Boolean,
-    availablePlayerCivs: Sequence<Nation>
+    availablePlayerCivs: Sequence<Nation>,
+    private val update: () -> Unit
 ) : Popup(baseScreen) {
     companion object {
         // These are used for the Close/OK buttons in the lower left/right corners:

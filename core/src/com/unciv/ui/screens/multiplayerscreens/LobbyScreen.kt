@@ -58,7 +58,6 @@ class LobbyScreen(private val lobbyUUID: UUID, private val lobbyChatUUID: UUID, 
 
     private val lobbyName: String = "My new lobby"  // TODO: Get name by looking up the UUID
     private val chatMessages: MutableList<ChatMessage> = mutableListOf()
-    private val players: MutableList<Player> = mutableListOf()
 
     private val screenTitle = "Lobby: $lobbyName".toLabel(fontSize = Constants.headingFontSize)
     private val lobbyPlayerList = LobbyPlayerList(lobbyUUID, mutableListOf(), this) { update() }
@@ -82,7 +81,12 @@ class LobbyScreen(private val lobbyUUID: UUID, private val lobbyChatUUID: UUID, 
             ToastPopup("The invitation feature has not been implemented yet.", stage)
         }
         menuButtonStartGame.onActivation {
-            ToastPopup("The start game feature has not been implemented yet.", stage)
+            val lobbyStartResponse = InfoPopup.load(stage) {
+                game.onlineMultiplayer.api.lobby.startGame(lobbyUUID)
+            }
+            if (lobbyStartResponse != null) {
+                ToastPopup("The start game feature has not been implemented yet.", stage)
+            }
         }
 
         bottomButtonLeave.keyShortcuts.add(KeyCharAndCode.ESC)
@@ -143,8 +147,9 @@ class LobbyScreen(private val lobbyUUID: UUID, private val lobbyChatUUID: UUID, 
         table.addSeparator(skinStrings.skinConfig.baseColor.brighten(0.1f), height = 0.5f).width(stage.width * 0.85f).padBottom(15f).row()
         table.row().expandX().expandY()
         table.add(playerScroll).fillX().expandY().prefWidth(stage.width * 0.6f).padLeft(5f)
-        table.add(optionsTable).prefWidth(0f)
-        // TODO: A vertical horizontal bar like a left border for the chat screen
+        // TODO: The options table is way to big, reduce its width somehow
+        table.add(optionsTable).prefWidth(stage.width * 0.1f).padLeft(0f).padRight(0f)
+        // TODO: Add vertical horizontal bar like a left border for the chat screen
         // table.addSeparatorVertical(skinStrings.skinConfig.baseColor.brighten(0.1f), width = 0.5f).height(0.5f * stage.height).width(0.1f).pad(0f).space(0f)
         table.add(chatScroll).fillX().expandY().prefWidth(stage.width * 0.5f).padRight(5f)
         table.addSeparator(skinStrings.skinConfig.baseColor.brighten(0.1f), height = 0.5f).width(stage.width * 0.85f).padTop(15f).row()

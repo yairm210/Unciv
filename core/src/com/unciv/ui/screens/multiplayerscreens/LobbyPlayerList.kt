@@ -24,10 +24,20 @@ import java.util.*
  */
 class LobbyPlayerList(
     private val lobbyUUID: UUID,
-    internal val players: MutableList<LobbyPlayer> = mutableListOf(),
+    private val mutablePlayers: MutableList<LobbyPlayer> = mutableListOf(),
     private val base: IPreviousScreen,
     private val update: () -> Unit
 ) : Table() {
+    internal val players: List<LobbyPlayer> = mutablePlayers
+
+    private val addBotButton = "+".toLabel(Color.LIGHT_GRAY, 30)
+        .apply { this.setAlignment(Align.center) }
+        .surroundWithCircle(50f, color = Color.GRAY)
+        .onClick {
+            mutablePlayers.add(LobbyPlayer(null, Constants.random))
+            recreate()
+        }
+
     init {
         defaults().expandX()
         recreate()
@@ -41,11 +51,12 @@ class LobbyPlayerList(
         if (players.isEmpty()) {
             val label = "No players here yet".toLabel()
             label.setAlignment(Align.center)
-            add(label).fillX().fillY().center()
+            add(label).fillX().fillY().center().padBottom(15f).row()
+            add(addBotButton)
             return
         }
 
-        for (i in 0 until players.size) {
+        for (i in players.indices) {
             row()
             val movements = VerticalGroup()
             movements.space(5f)
@@ -54,7 +65,7 @@ class LobbyPlayerList(
             add(movements)
 
             val player = players[i]
-            add(getNationTable(player.to()))
+            add(getNationTable(player))
             if (player.isAI) {
                 add("AI".toLabel())
             } else {
@@ -63,7 +74,14 @@ class LobbyPlayerList(
 
             val kickButton = "❌".toLabel(Color.SCARLET, Constants.headingFontSize).apply { this.setAlignment(Align.center) }
             // kickButton.surroundWithCircle(Constants.headingFontSize.toFloat(), color = color)
-            kickButton.onClick { ToastPopup("Kicking players has not been implemented yet", stage) }
+            kickButton.onClick {
+                if (!player.isAI) {
+                    ToastPopup("Kicking human players has not been implemented yet.", stage)  // TODO: Implement this
+                }
+                val success = mutablePlayers.remove(player)
+                Log.debug("Removing player %s [%s]: %s", player.account, i, if (success) "success" else "failure")
+                recreate()
+            }
             add(kickButton)
 
             if (i < players.size - 1) {
@@ -73,19 +91,13 @@ class LobbyPlayerList(
         }
 
         row()
-        val addPlayerButton = "+".toLabel(Color.LIGHT_GRAY, 30)
-            .apply { this.setAlignment(Align.center) }
-            .surroundWithCircle(50f, color = Color.GRAY)
-            .onClick {
-                ToastPopup("Adding AI players has not been implemented yet", stage)
-            }
-        add(addPlayerButton).colspan(columns).fillX().center()
+        add(addBotButton).colspan(columns).fillX().center()
     }
 
     /**
-     * Create clickable icon and nation name for some [Player], where clicking creates [NationPickerPopup]
+     * Create clickable icon and nation name for some [LobbyPlayer], where clicking creates [NationPickerPopup]
      */
-    private fun getNationTable(player: Player): Table {
+    private fun getNationTable(player: LobbyPlayer): Table {
         val nationTable = Table()
         val nationImage =
             if (player.chosenCiv == Constants.random)
@@ -96,10 +108,14 @@ class LobbyPlayerList(
         nationTable.touchable = Touchable.enabled
         val availableCivilisations = base.ruleset.nations.values.asSequence()
             .filter { it.isMajorCiv() }
-            .filter { it.name == player.chosenCiv || base.gameSetupInfo.gameParameters.players.none { player -> player.chosenCiv == it.name } }
+            .filter { it.name == player.chosenCiv || players.none { player -> player.chosenCiv == it.name } }
         nationTable.onClick {
-            NationPickerPopup(player, 0.45f * stage.width, { update() }, base as BaseScreen, base, false, availableCivilisations).open()
-            update()
+            val p = player.to()
+            NationPickerPopup(p, 0.45f * stage.width, base as BaseScreen, base, false, availableCivilisations) {
+                player.chosenCiv = p.chosenCiv
+                recreate()
+                update()
+            }.open()
         }
         return nationTable
     }
