@@ -671,7 +671,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [Sleep](https://thenounproject.com/search/?q=sleep&i=1760085) By Saeful Muslim
 - [Clockwise](https://thenounproject.com/icon/clockwise-184528/) By Universal Icons (Louis Dawson) for "Wait" icon. The original work has been slightly modified.
 - [Banner](https://thenounproject.com/term/banner/866282/) By Emir Palavan for embarked units
-- [Arrow](https://thenounproject.com/term/arrow/18123/) By uzeir syarief for moving between idle units
+- [Arrow](https://thenounproject.com/icon/arrow-2032227/) By uzeir syarief for moving between idle units, expanders, etc.
 - [Replace](https://thenounproject.com/search/?q=replace&i=17858) By Mike Rowe for switching tiles between cities
 - [Resistance](https://thenounproject.com/term/revolution/1315305/) By HeadsOfBirds
 - [Viking Hat](https://thenounproject.com/search/?q=pillage&i=185405) By my name is mud for pillaging improvements
