@@ -29,8 +29,8 @@ import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.onChange
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.pad
-import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toCheckBox
+import com.unciv.ui.components.extensions.toImageButton
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 
@@ -547,16 +547,8 @@ private class RandomNationPickerPopup(
         }
     }
 
-    private fun String.toImageButton(overColor: Color): Group {
-        val style = ImageButton.ImageButtonStyle()
-        val image = ImageGetter.getDrawable(this)
-        style.imageUp = image
-        style.imageOver = image.tint(overColor)
-        val button = ImageButton(style)
-        button.setSize(buttonsIconSize, buttonsIconSize)
-
-        return button.surroundWithCircle(buttonsCircleSize, false, buttonsBackColor)
-    }
+    private fun String.toImageButton(overColor: Color) =
+            toImageButton(buttonsIconSize, buttonsCircleSize, buttonsBackColor, overColor)
 
     private fun addNationToPool(nation: Nation) {
         availableNations.remove(nation.name)
