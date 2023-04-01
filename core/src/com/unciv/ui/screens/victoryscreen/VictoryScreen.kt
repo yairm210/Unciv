@@ -16,6 +16,12 @@ import com.unciv.ui.screens.newgamescreen.NewGameScreen
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
+//TODO someoneHasWon should look at gameInfo.victoryData
+//TODO debug access to replay
+//TODO more linting -enabledVictories, global: sort once ...
+//TODO replay slider
+//TODO keys
+
 class VictoryScreen(worldScreen: WorldScreen) : PickerScreen() {
 
     private val gameInfo = worldScreen.gameInfo
@@ -45,7 +51,6 @@ class VictoryScreen(worldScreen: WorldScreen) : PickerScreen() {
         //**************** Set up bottom area - buttons and description label ****************
         rightSideButton.isVisible = false
 
-        //TODO the following should look at gameInfo.victoryData
         var someoneHasWon = false
 
         val playerVictoryType = playerCiv.victoryManager.getVictoryTypeAchieved()

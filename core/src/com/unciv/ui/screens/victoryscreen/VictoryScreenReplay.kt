@@ -16,11 +16,11 @@ class VictoryScreenReplay(
     private var replayTimer : Timer.Task? = null
     private val yearLabel = "".toLabel()
     private val replayMap = ReplayMap(gameInfo.tileMap)
+    private val header = Table()
 
     init {
-        defaults().pad(10f)
-        add(yearLabel).row()
-        add(replayMap).row()
+        header.add(yearLabel).pad(10f)
+        add(replayMap).pad(10f)
     }
 
     private fun restartTimer() {
@@ -64,4 +64,6 @@ class VictoryScreenReplay(
     override fun deactivated(index: Int, caption: String, pager: TabbedPager) {
         resetTimer()
     }
+
+    override fun getFixedContent() = header
 }
