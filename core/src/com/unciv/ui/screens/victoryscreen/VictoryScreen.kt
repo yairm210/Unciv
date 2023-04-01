@@ -2,25 +2,29 @@ package com.unciv.ui.screens.victoryscreen
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.extensions.areSecretKeysPressed
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.newgamescreen.NewGameScreen
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 //TODO someoneHasWon should look at gameInfo.victoryData
 //TODO replay slider
-//TODO keys
+//TODO icons for victory types
 
 class VictoryScreen(worldScreen: WorldScreen) : PickerScreen() {
 
@@ -32,20 +36,56 @@ class VictoryScreen(worldScreen: WorldScreen) : PickerScreen() {
         constructor(civ: Civilization, category: RankingType) : this(civ, civ.getStatForRanking(category))
     }
 
+    private enum class VictoryTabs(
+        val key: Char,
+        val iconName: String = "",
+        val caption: String? = null,
+        val align: Int = Align.topLeft,
+        val syncScroll: Boolean = true,
+        val allowAsSecret: Boolean = false
+    ) {
+        OurStatus('O', "StatIcons/Specialist", caption = "Our status") {
+            override fun getContent(worldScreen: WorldScreen) = VictoryScreenOurVictory(worldScreen)
+            override fun isHidden(playerCiv: Civilization) = playerCiv.isSpectator()
+        },
+        Global('G', "OtherIcons/Nations", caption = "Global status") {
+            override fun getContent(worldScreen: WorldScreen) = VictoryScreenGlobalVictory(worldScreen)
+        },
+        Demographics('D', "CityStateIcons/Cultured", allowAsSecret = true) {
+            override fun getContent(worldScreen: WorldScreen) = VictoryScreenDemographics(worldScreen)
+            override fun isHidden(playerCiv: Civilization) = !UncivGame.Current.settings.useDemographics
+        },
+        Rankings('R', "CityStateIcons/Cultured", allowAsSecret = true) {
+            override fun getContent(worldScreen: WorldScreen) = VictoryScreenCivRankings(worldScreen)
+            override fun isHidden(playerCiv: Civilization) = UncivGame.Current.settings.useDemographics
+        },
+        Replay('P', "OtherIcons/Load", align = Align.top, syncScroll = false, allowAsSecret = true) {
+            override fun getContent(worldScreen: WorldScreen) = VictoryScreenReplay(worldScreen)
+            override fun isHidden(playerCiv: Civilization) =
+                !playerCiv.isSpectator() && playerCiv.gameInfo.victoryData == null && playerCiv.isAlive()
+        };
+        abstract fun getContent(worldScreen: WorldScreen): Table
+        open fun isHidden(playerCiv: Civilization) = false
+    }
+
     init {
         //**************** Set up the tabs ****************
         splitPane.setFirstWidget(tabs)
+        val iconSize = Constants.defaultFontSize.toFloat()
 
-        if (!playerCiv.isSpectator())
-            tabs.addPage("Our status", VictoryScreenOurVictory(worldScreen), scrollAlign = Align.topLeft)
-        tabs.addPage("Global status", VictoryScreenGlobalVictory(worldScreen), scrollAlign = Align.topLeft)
-        if (UncivGame.Current.settings.useDemographics)
-            tabs.addPage("Demographics", VictoryScreenDemographics(worldScreen), scrollAlign = Align.topLeft)
-        else
-            tabs.addPage("Rankings", VictoryScreenCivRankings(worldScreen), scrollAlign = Align.topLeft)
-        val showReplay = playerCiv.isSpectator() || gameInfo.victoryData != null || playerCiv.isDefeated()
-        if (showReplay || Gdx.input.areSecretKeysPressed())
-            tabs.addPage("Replay", VictoryScreenReplay(worldScreen), syncScroll = false, secret = !showReplay)
+        for (tab in VictoryTabs.values()) {
+            val tabHidden = tab.isHidden(playerCiv)
+            if (tabHidden && !(tab.allowAsSecret && Gdx.input.areSecretKeysPressed())) continue
+            val icon = if (tab.iconName.isEmpty()) null else ImageGetter.getImage(tab.iconName)
+            tabs.addPage(
+                tab.caption ?: tab.name,
+                tab.getContent(worldScreen),
+                icon, iconSize,
+                scrollAlign = tab.align, syncScroll = tab.syncScroll,
+                shortcutKey = KeyCharAndCode(tab.key),
+                secret = tabHidden && tab.allowAsSecret
+            )
+        }
         tabs.selectPage(0)
 
         //**************** Set up bottom area - buttons and description label ****************
