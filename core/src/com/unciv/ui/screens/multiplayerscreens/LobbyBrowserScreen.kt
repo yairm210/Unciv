@@ -2,9 +2,8 @@ package com.unciv.ui.screens.multiplayerscreens
 
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.UncivGame
-import com.unciv.logic.UncivShowableException
 import com.unciv.logic.multiplayer.apiv2.LobbyResponse
-import com.unciv.ui.screens.pickerscreens.PickerScreen
+import com.unciv.ui.components.RefreshButton
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
@@ -12,6 +11,8 @@ import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.popups.InfoPopup
+import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
@@ -26,7 +27,7 @@ class LobbyBrowserScreen : PickerScreen() {
     private val leftSideTable = Table() // use to list all lobbies in a scrollable way
     private val rightSideTable = Table() // use for details about a lobby
 
-    private val updateListButton = "Update".toTextButton()
+    private val updateListButton = RefreshButton()
 
     private val noLobbies = "Sorry, no open lobbies at the moment!"
     private val noLobbySelected = "Select a lobby to show details"

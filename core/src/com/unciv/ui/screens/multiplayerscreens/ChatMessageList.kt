@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.multiplayerscreens
 
-import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -28,7 +27,7 @@ import java.util.*
  */
 class ChatMessageList(private val chatRoomUUID: UUID): Table() {
     init {
-        pad(10f).defaults().expandX().space(4f)
+        defaults().expandX().space(5f)
         recreate(listOf<ChatMessage>())
     }
 
@@ -58,7 +57,7 @@ class ChatMessageList(private val chatRoomUUID: UUID): Table() {
         if (messages.isEmpty()) {
             val label = "No messages here yet".toLabel()
             label.setAlignment(Align.center)
-            addActor(Container(label).pad(5f).center().fillY())
+            add(label).fillX().fillY().center()
             return
         }
 

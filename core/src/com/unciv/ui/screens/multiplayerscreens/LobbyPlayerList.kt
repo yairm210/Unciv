@@ -60,7 +60,6 @@ class LobbyPlayerList(
             } else {
                 add(player.account!!.username.toLabel())
             }
-            add(player.chosenCiv.toLabel())
 
             val kickButton = "❌".toLabel(Color.SCARLET, Constants.headingFontSize).apply { this.setAlignment(Align.center) }
             // kickButton.surroundWithCircle(Constants.headingFontSize.toFloat(), color = color)

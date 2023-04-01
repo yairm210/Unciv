@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.logic.multiplayer.apiv2.AccountResponse
 import com.unciv.logic.multiplayer.apiv2.ChatMessage
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.metadata.Player
@@ -15,7 +16,6 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.components.AutoScrollPane
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.extensions.addSeparator
-import com.unciv.ui.components.extensions.addSeparatorVertical
 import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.keyShortcuts
 import com.unciv.ui.components.extensions.onActivation
@@ -59,9 +59,11 @@ class LobbyScreen(private val lobbyUUID: UUID, private val lobbyChatUUID: UUID, 
     private val players: MutableList<Player> = mutableListOf()
 
     private val screenTitle = "Lobby: $lobbyName".toLabel(fontSize = Constants.headingFontSize)
+    private val lobbyPlayerList = LobbyPlayerList(lobbyUUID, mutableListOf(), this) { update() }
     private val chatMessageList = ChatMessageList(lobbyChatUUID)
     private val menuButtonGameOptions = "Game options".toTextButton()
     private val menuButtonMapOptions = "Map options".toTextButton()
+    private val menuButtonInvite = "Invite player".toTextButton()
     private val menuButtonStartGame = "Start game".toTextButton()
     private val bottomButtonLeave = "Leave".toTextButton()
     private val bottomButtonSocial = "Social".toTextButton()
@@ -73,6 +75,9 @@ class LobbyScreen(private val lobbyUUID: UUID, private val lobbyChatUUID: UUID, 
         }
         menuButtonMapOptions.onClick {
             WrapPopup(stage, mapOptionsTable)
+        }
+        menuButtonInvite.onClick {
+            ToastPopup("The invitation feature has not been implemented yet.", stage)
         }
         menuButtonStartGame.onActivation {
             ToastPopup("The start game feature has not been implemented yet.", stage)
@@ -108,16 +113,17 @@ class LobbyScreen(private val lobbyUUID: UUID, private val lobbyChatUUID: UUID, 
         stage.addActor(table)
 
         val players = VerticalGroup()
-        val playerScroll = AutoScrollPane(players)
+        val playerScroll = AutoScrollPane(lobbyPlayerList, skin)
         playerScroll.setScrollingDisabled(true, false)
 
-        val optionsTable = VerticalGroup().apply {
+        val optionsTable = Table().apply {
             align(Align.center)
-            space(10f)
         }
-        optionsTable.addActor(menuButtonGameOptions)
-        optionsTable.addActor(menuButtonMapOptions)
-        optionsTable.addActor(menuButtonStartGame)
+        optionsTable.add(menuButtonGameOptions).row()
+        optionsTable.add(menuButtonMapOptions).padTop(10f).row()
+        optionsTable.addSeparator(skinStrings.skinConfig.baseColor.brighten(0.1f), height = 0.5f).padTop(25f).padBottom(25f).row()
+        optionsTable.add(menuButtonInvite).padBottom(10f).row()
+        optionsTable.add(menuButtonStartGame).row()
 
         val chatScroll = AutoScrollPane(chatMessageList, skin)
         chatScroll.setScrollingDisabled(true, false)
@@ -131,17 +137,17 @@ class LobbyScreen(private val lobbyUUID: UUID, private val lobbyChatUUID: UUID, 
 
         // Construct the table which makes up the whole lobby screen
         table.row()
-        table.add(Container(screenTitle).pad(10f)).colspan(4).fillX()
+        table.add(Container(screenTitle).pad(10f)).colspan(3).fillX()
+        table.addSeparator(skinStrings.skinConfig.baseColor.brighten(0.1f), height = 0.5f).width(stage.width * 0.85f).padBottom(15f).row()
         table.row().expandX().expandY()
-        table.add(playerScroll).fillX().expandY().prefWidth(stage.width * 0.475f).padLeft(5f)
-        table.add(optionsTable).prefWidth(0.05f * stage.width)
-        table.addSeparatorVertical(skinStrings.skinConfig.baseColor.brighten(0.1f), width = 0.5f).height(0.5f * stage.height)
-        table.add(chatScroll).fillX().expandY().prefWidth(stage.width * 0.475f).padRight(5f)
-        table.addSeparator(skinStrings.skinConfig.baseColor.brighten(0.1f), height = 0.5f).width(stage.width * 0.85f).padTop(10f).row()
+        table.add(playerScroll).fillX().expandY().prefWidth(stage.width * 0.6f).padLeft(5f)
+        table.add(optionsTable).prefWidth(0f)
+        // TODO: A vertical horizontal bar like a left border for the chat screen
+        // table.addSeparatorVertical(skinStrings.skinConfig.baseColor.brighten(0.1f), width = 0.5f).height(0.5f * stage.height).width(0.1f).pad(0f).space(0f)
+        table.add(chatScroll).fillX().expandY().prefWidth(stage.width * 0.5f).padRight(5f)
+        table.addSeparator(skinStrings.skinConfig.baseColor.brighten(0.1f), height = 0.5f).width(stage.width * 0.85f).padTop(15f).row()
         table.row().bottom().fillX().maxHeight(stage.height / 8)
-        table.add(menuBar).colspan(4).fillX()
-        table.pack()
-        table.invalidate()
+        table.add(menuBar).colspan(3).fillX()
         return this
     }
 
@@ -158,6 +164,10 @@ class LobbyScreen(private val lobbyUUID: UUID, private val lobbyChatUUID: UUID, 
     }
 
     override fun updateRuleset() {
+        Log.error("Not yet implemented")
+    }
+
+    private fun update() {
         Log.error("Not yet implemented")
     }
 
