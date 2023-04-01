@@ -19,7 +19,6 @@ import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 //TODO someoneHasWon should look at gameInfo.victoryData
-//TODO more linting -enabledVictories, global: sort once ...
 //TODO replay slider
 //TODO keys
 

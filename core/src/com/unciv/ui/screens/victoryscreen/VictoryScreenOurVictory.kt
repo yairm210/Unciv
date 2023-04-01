@@ -2,6 +2,7 @@ package com.unciv.ui.screens.victoryscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Victory
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.extensions.addSeparator
@@ -12,44 +13,39 @@ import com.unciv.ui.screens.worldscreen.WorldScreen
 class VictoryScreenOurVictory(
     worldScreen: WorldScreen
 ) : Table(BaseScreen.skin), TabbedPager.IPageExtensions {
-    private val gameInfo = worldScreen.gameInfo
-    private val playerCiv = worldScreen.viewingCiv
     private val header = Table()
 
     init {
+        val gameInfo = worldScreen.gameInfo
         val victoriesToShow = gameInfo.getEnabledVictories()
 
-        for (victory in victoriesToShow) {
-            header.add("[${victory.key}] Victory".toLabel()).pad(10f)
-        }
-        header.addSeparator(Color.GRAY)
-
         defaults().pad(10f)
-        for (victory in victoriesToShow) {
-            add(getOurVictoryColumn(victory.key))
+        for ((victoryName, victory) in victoriesToShow) {
+            header.add("[$victoryName] Victory".toLabel()).pad(10f)
+            add(getColumn(victory, worldScreen.viewingCiv))
         }
-        row()
 
-        for (victory in victoriesToShow) {
-            add(victory.value.victoryScreenHeader.toLabel())
+        row()
+        for (victory in victoriesToShow.values) {
+            add(victory.victoryScreenHeader.toLabel())
         }
+
+        header.addSeparator(Color.GRAY)
     }
 
-    private fun getOurVictoryColumn(victory: String): Table {
-        val victoryObject = gameInfo.ruleset.victories[victory]!!
+    private fun getColumn(victory: Victory, playerCiv: Civilization): Table {
         val table = Table()
         table.defaults().space(10f)
         var firstIncomplete = true
-        for (milestone in victoryObject.milestoneObjects) {
-            val completionStatus =
-                    when {
-                        milestone.hasBeenCompletedBy(playerCiv) -> Victory.CompletionStatus.Completed
-                        firstIncomplete -> {
-                            firstIncomplete = false
-                            Victory.CompletionStatus.Partially
-                        }
-                        else -> Victory.CompletionStatus.Incomplete
-                    }
+        for (milestone in victory.milestoneObjects) {
+            val completionStatus = when {
+                milestone.hasBeenCompletedBy(playerCiv) -> Victory.CompletionStatus.Completed
+                firstIncomplete -> {
+                    firstIncomplete = false
+                    Victory.CompletionStatus.Partially
+                }
+                else -> Victory.CompletionStatus.Incomplete
+            }
             for (button in milestone.getVictoryScreenButtons(completionStatus, playerCiv)) {
                 table.add(button).row()
             }
