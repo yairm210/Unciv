@@ -24,25 +24,14 @@ import com.unciv.ui.components.AutoScrollPane as ScrollPane
  * A lobby might be password-protected (=private), in that case a pop-up should ask for the password.
  */
 class LobbyBrowserScreen : PickerScreen() {
-    private val leftSideTable = Table() // use to list all lobbies in a scrollable way
+    private val lobbyBrowserTable = LobbyBrowserTable(this)
     private val rightSideTable = Table() // use for details about a lobby
 
-    private val updateListButton = RefreshButton()
-
-    private val noLobbies = "Sorry, no open lobbies at the moment!"
+    private val newLobbyButton = "Open lobby".toTextButton()
     private val noLobbySelected = "Select a lobby to show details"
 
     init {
         setDefaultCloseAction()
-
-        // This will be updated concurrently, but it shows some text to fix the layout
-        leftSideTable.add(noLobbies.toLabel()).row()
-        leftSideTable.add(updateListButton).padTop(30f).row()
-
-        triggerUpdateLobbyList()
-        updateListButton.onClick {
-            triggerUpdateLobbyList()
-        }
 
         // The functionality of joining a lobby will be added on-demand in [refreshLobbyList]
         rightSideButton.setText("Join lobby")
@@ -62,7 +51,7 @@ class LobbyBrowserScreen : PickerScreen() {
         stage.addActor(tab)
 
         val mainTable = Table()
-        mainTable.add(ScrollPane(leftSideTable).apply { setScrollingDisabled(true, false) }).height(stage.height * 2 / 3)
+        mainTable.add(ScrollPane(lobbyBrowserTable).apply { setScrollingDisabled(true, false) }).height(stage.height * 2 / 3)
         mainTable.add(rightSideTable)
         topTable.add(mainTable).row()
         scrollPane.setScrollingDisabled(false, true)
@@ -70,22 +59,6 @@ class LobbyBrowserScreen : PickerScreen() {
         rightSideTable.defaults().fillX()
         rightSideTable.defaults().pad(20.0f)
         rightSideTable.add(noLobbySelected.toLabel()).padBottom(10f).row()
-    }
-
-    /**
-     * Detach updating the list of lobbies in another coroutine
-     */
-    private fun triggerUpdateLobbyList() {
-        Concurrency.run("Update lobby list") {
-            val listOfOpenLobbies = InfoPopup.wrap(stage) {
-                UncivGame.Current.onlineMultiplayer.api.lobby.list()!!
-            }
-            if (listOfOpenLobbies != null) {
-                Concurrency.runOnGLThread {
-                    refreshLobbyList(listOfOpenLobbies)
-                }
-            }
-        }
     }
 
     /**
@@ -100,33 +73,5 @@ class LobbyBrowserScreen : PickerScreen() {
         }
         rightSideTable.add("Created: ${selectedLobby.createdAt}.".toLabel()).row()
         rightSideTable.add("Owner: ${selectedLobby.owner.displayName}".toLabel()).row()
-    }
-
-    /**
-     * Refresh the list of lobbies (called after finishing the coroutine of the update button)
-     */
-    private fun refreshLobbyList(lobbies: List<LobbyResponse>) {
-        leftSideTable.clear()
-        if (lobbies.isEmpty()) {
-            leftSideTable.add(noLobbies.toLabel()).row()
-            leftSideTable.add(updateListButton).padTop(30f).row()
-            return
-        }
-
-        lobbies.sortedBy { it.createdAt }
-        for (lobby in lobbies.reversed()) {
-            // TODO: The button may be styled with icons and the texts may be translated
-            val btn = "${lobby.name} (${lobby.currentPlayers}/${lobby.maxPlayers} players) ${if (lobby.hasPassword) " LOCKED" else ""}".toTextButton()
-            btn.onClick {
-                updateRightSideTable(lobby)
-                // TODO: Un-selecting a lobby is not implemented yet
-                rightSideButton.onClick {
-                    Log.debug("Joining lobby '${lobby.name}' (UUID ${lobby.uuid})")
-                }
-                rightSideButton.enable()
-            }
-            leftSideTable.add(btn).row()
-        }
-        leftSideTable.add(updateListButton).padTop(30f).row()
     }
 }

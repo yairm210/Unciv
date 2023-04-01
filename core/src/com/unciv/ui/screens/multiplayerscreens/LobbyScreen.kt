@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.multiplayer.apiv2.AccountResponse
 import com.unciv.logic.multiplayer.apiv2.ChatMessage
+import com.unciv.logic.multiplayer.apiv2.LobbyResponse
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
@@ -46,6 +47,7 @@ import java.util.*
 class LobbyScreen(private val lobbyUUID: UUID, private val lobbyChatUUID: UUID, override val gameSetupInfo: GameSetupInfo): BaseScreen(), MapOptionsInterface {
 
     constructor(lobbyUUID: UUID, lobbyChatUUID: UUID) : this(lobbyUUID, lobbyChatUUID, GameSetupInfo.fromSettings())
+    constructor(lobby: LobbyResponse): this(lobby.uuid, lobby.chatRoomUUID)
 
     override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters)
 
