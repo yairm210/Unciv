@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.victoryscreen
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.badlogic.gdx.utils.Align
@@ -9,6 +10,7 @@ import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.TabbedPager
+import com.unciv.ui.components.extensions.areSecretKeysPressed
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
@@ -17,7 +19,6 @@ import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 //TODO someoneHasWon should look at gameInfo.victoryData
-//TODO debug access to replay
 //TODO more linting -enabledVictories, global: sort once ...
 //TODO replay slider
 //TODO keys
@@ -44,8 +45,8 @@ class VictoryScreen(worldScreen: WorldScreen) : PickerScreen() {
         else
             tabs.addPage("Rankings", VictoryScreenCivRankings(worldScreen), scrollAlign = Align.topLeft)
         val showReplay = playerCiv.isSpectator() || gameInfo.victoryData != null || playerCiv.isDefeated()
-        if (showReplay)
-            tabs.addPage("Replay", VictoryScreenReplay(worldScreen), syncScroll = false)
+        if (showReplay || Gdx.input.areSecretKeysPressed())
+            tabs.addPage("Replay", VictoryScreenReplay(worldScreen), syncScroll = false, secret = !showReplay)
         tabs.selectPage(0)
 
         //**************** Set up bottom area - buttons and description label ****************
@@ -115,6 +116,11 @@ class VictoryScreen(worldScreen: WorldScreen) : PickerScreen() {
             gameInfo.oneMoreTurnMode = true
             game.popScreen()
         }
+    }
+
+    override fun show() {
+        super.show()
+        tabs.askForPassword(secretHashCode = 2747985)
     }
 
     override fun dispose() {
