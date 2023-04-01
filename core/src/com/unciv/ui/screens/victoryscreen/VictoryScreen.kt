@@ -1,55 +1,48 @@
 package com.unciv.ui.screens.victoryscreen
 
-import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
+import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.extensions.addSeparator
+import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.screens.newgamescreen.NewGameScreen
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
-class VictoryScreen(private val worldScreen: WorldScreen) : PickerScreen() {
+class VictoryScreen(worldScreen: WorldScreen) : PickerScreen() {
 
     private val gameInfo = worldScreen.gameInfo
     private val playerCiv = worldScreen.viewingCiv
-
-    private val headerTable = Table()
-    private val contentsTable = Table()
-
-    private var replayTab: VictoryScreenReplay? = null
+    private val tabs = TabbedPager(separatorColor = Color.WHITE, shorcutScreen = this)
 
     internal class CivWithStat(val civ: Civilization, val value: Int) {
         constructor(civ: Civilization, category: RankingType) : this(civ, civ.getStatForRanking(category))
     }
 
     init {
-        val difficultyLabel = ("{Difficulty}: {${gameInfo.difficulty}}").toLabel()
+        //**************** Set up the tabs ****************
+        splitPane.setFirstWidget(tabs)
 
-        val tabsTable = Table().apply { defaults().pad(10f) }
-
-        val setMyVictoryButton = "Our status".toTextButton().onClick { setOurVictoryTable() }
-        if (!playerCiv.isSpectator()) tabsTable.add(setMyVictoryButton)
-
-        val setGlobalVictoryButton = "Global status".toTextButton().onClick { setGlobalVictoryTable() }
-        tabsTable.add(setGlobalVictoryButton)
-
-        val setCivRankingsButton = if (UncivGame.Current.settings.useDemographics)
-            "Demographics".toTextButton().onClick { setCivRankingsTable() }
-            else "Rankings".toTextButton().onClick { setDemographicsTable() }
-        tabsTable.add(setCivRankingsButton)
-
-        if (playerCiv.isSpectator())
-            setGlobalVictoryTable()
+        if (!playerCiv.isSpectator())
+            tabs.addPage("Our status", VictoryScreenOurVictory(worldScreen), scrollAlign = Align.topLeft)
+        tabs.addPage("Global status", VictoryScreenGlobalVictory(worldScreen), scrollAlign = Align.topLeft)
+        if (UncivGame.Current.settings.useDemographics)
+            tabs.addPage("Demographics", VictoryScreenDemographics(worldScreen), scrollAlign = Align.topLeft)
         else
-            setOurVictoryTable()
+            tabs.addPage("Rankings", VictoryScreenCivRankings(worldScreen), scrollAlign = Align.topLeft)
+        val showReplay = playerCiv.isSpectator() || gameInfo.victoryData != null || playerCiv.isDefeated()
+        if (showReplay)
+            tabs.addPage("Replay", VictoryScreenReplay(worldScreen), syncScroll = false)
+        tabs.selectPage(0)
 
+        //**************** Set up bottom area - buttons and description label ****************
         rightSideButton.isVisible = false
 
         //TODO the following should look at gameInfo.victoryData
@@ -74,34 +67,23 @@ class VictoryScreen(private val worldScreen: WorldScreen) : PickerScreen() {
             setDefaultCloseAction()
         }
 
-        if (playerCiv.isSpectator() || someoneHasWon || playerCiv.isDefeated()) {
-            val replayLabel = "Replay"
-            val replayButton = replayLabel.toTextButton().onClick { setReplayTable() }
-            tabsTable.add(replayButton)
+        //**************** Set up floating info panels ****************
+        tabs.pack()
+        val panelY = stage.height - tabs.getRowHeight(0) * 0.5f
+        val topRightPanel = VerticalGroup().apply {
+            space(5f)
+            align(Align.right)
+            addActor("{Game Speed}: {${gameInfo.gameParameters.speed}}".toLabel())
+            if ("Time" in gameInfo.gameParameters.victoryTypes)
+                addActor("{Max Turns}: ${gameInfo.gameParameters.maxTurns}".toLabel())
+            pack()
         }
+        stage.addActor(topRightPanel)
+        topRightPanel.setPosition(stage.width - 10f, panelY, Align.right)
 
-        val headerTableRightCell = Table()
-        val gameSpeedLabel = "{Game Speed}: {${gameInfo.gameParameters.speed}}".toLabel()
-        headerTableRightCell.add(gameSpeedLabel).row()
-        if (gameInfo.gameParameters.victoryTypes.contains("Time")) {
-            val maxTurnsLabel = "{Max Turns}: ${gameInfo.gameParameters.maxTurns}".toLabel()
-            headerTableRightCell.add(maxTurnsLabel).padTop(5f)
-        }
-
-        val leftCell = headerTable.add(difficultyLabel).padLeft(10f).left()
-        headerTable.add(tabsTable).expandX().center()
-        val rightCell = headerTable.add(headerTableRightCell).padRight(10f).right()
-        headerTable.addSeparator()
-        headerTable.pack()
-        // Make the outer cells the same so that the middle one is properly centered
-        if (leftCell.actorWidth > rightCell.actorWidth) rightCell.width(leftCell.actorWidth)
-        else leftCell.width(rightCell.actorWidth)
-
-        pickerPane.clearChildren()
-        pickerPane.add(headerTable).growX().row()
-        pickerPane.add(splitPane).expand().fill()
-
-        topTable.add(contentsTable)
+        val difficultyLabel = "{Difficulty}: {${gameInfo.difficulty}}".toLabel()
+        stage.addActor(difficultyLabel)
+        difficultyLabel.setPosition(10f, panelY, Align.left)
     }
 
     private fun wonOrLost(description: String, victoryType: String?, hasWon: Boolean) {
@@ -130,36 +112,8 @@ class VictoryScreen(private val worldScreen: WorldScreen) : PickerScreen() {
         }
     }
 
-    private fun setOurVictoryTable() {
-        resetContent(VictoryScreenOurVictory(worldScreen))
-    }
-
-    private fun setGlobalVictoryTable() {
-        resetContent(VictoryScreenGlobalVictory(worldScreen))
-    }
-
-    private fun setCivRankingsTable() {
-        resetContent(VictoryScreenCivRankings(worldScreen))
-    }
-
-    private fun setDemographicsTable() {
-        resetContent(VictoryScreenDemographics(worldScreen))
-    }
-
-    private fun setReplayTable() {
-        if (replayTab == null) replayTab = VictoryScreenReplay(worldScreen)
-        resetContent(replayTab!!)
-        replayTab!!.restartTimer()
-    }
-
-    private fun resetContent(newContent: Table) {
-        replayTab?.resetTimer()
-        contentsTable.clear()
-        contentsTable.add(newContent)
-    }
-
     override fun dispose() {
         super.dispose()
-        replayTab?.resetTimer()
+        tabs.selectPage(-1)  // Tells Replay page to stop its timer
     }
 }

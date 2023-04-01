@@ -2,6 +2,7 @@ package com.unciv.ui.screens.victoryscreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Timer
+import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.YearTextUtil
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -9,7 +10,7 @@ import com.unciv.ui.screens.worldscreen.WorldScreen
 
 class VictoryScreenReplay(
     worldScreen: WorldScreen
-) : Table(BaseScreen.skin) {
+) : Table(BaseScreen.skin), TabbedPager.IPageExtensions {
     private val gameInfo = worldScreen.gameInfo
 
     private var replayTimer : Timer.Task? = null
@@ -18,14 +19,11 @@ class VictoryScreenReplay(
 
     init {
         defaults().pad(10f)
-
         add(yearLabel).row()
         add(replayMap).row()
-
-        // restartTimer() - done later!
     }
 
-    internal fun restartTimer() {
+    private fun restartTimer() {
         replayTimer?.cancel()
         val firstTurn = gameInfo.historyStartTurn
         val finalTurn = gameInfo.turns
@@ -43,7 +41,7 @@ class VictoryScreenReplay(
         )
     }
 
-    internal fun resetTimer() {
+    private fun resetTimer() {
         replayTimer?.cancel()
         replayTimer = null
     }
@@ -57,5 +55,13 @@ class VictoryScreenReplay(
             )
         )
         replayMap.update(turn)
+    }
+
+    override fun activated(index: Int, caption: String, pager: TabbedPager) {
+        restartTimer()
+    }
+
+    override fun deactivated(index: Int, caption: String, pager: TabbedPager) {
+        resetTimer()
     }
 }
