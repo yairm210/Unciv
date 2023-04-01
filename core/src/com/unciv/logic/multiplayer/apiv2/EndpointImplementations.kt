@@ -437,10 +437,11 @@ class AuthApi(private val client: HttpClient, private val authHelper: AuthHelper
                     authCookie.maxAge,
                     Pair(username, password)
                 )
+                true
             } else {
                 Log.error("No recognized, valid session cookie found in login response!")
+                false
             }
-            true
         } else {
             false
         }
@@ -852,6 +853,29 @@ class LobbyApi(private val client: HttpClient, private val authHelper: AuthHelpe
                 b.contentType(ContentType.Application.Json)
                 b.setBody(req)
             },
+            retry = getDefaultRetry(client, authHelper)
+        )?.body()
+    }
+
+    /**
+     * Start a game from an existing lobby
+     *
+     * The executing user must be the owner of the lobby. The lobby is deleted in the
+     * process, a new chatroom is created and all messages from the lobby chatroom are
+     * attached to the game chatroom. This will invoke a [GameStartedMessage] that is sent
+     * to all members of the lobby to inform them which lobby was started. It also contains
+     * the the new and old chatroom [UUID]s to make mapping for the clients easier. Afterwards,
+     * the lobby owner must use the [GameApi.upload] to upload the initial game state.
+     *
+     * Note: This behaviour is subject to change. The server should be set the order in
+     * which players are allowed to make their turns. This allows the server to detect
+     * malicious players trying to update the game state before its their turn.
+     */
+    suspend fun startGame(lobbyUUID: UUID, suppress: Boolean = false): StartGameResponse? {
+        return request(
+            HttpMethod.Post, "/api/v2/lobbies/$lobbyUUID/start",
+            client, authHelper,
+            suppress = suppress,
             retry = getDefaultRetry(client, authHelper)
         )?.body()
     }

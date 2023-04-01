@@ -344,6 +344,19 @@ data class OnlineAccountResponse(
 )
 
 /**
+ * The response when starting a game
+ */
+@Serializable
+data class StartGameResponse(
+    @SerialName("game_chat_uuid")
+    @Serializable(with = UUIDSerializer::class)
+    val gameChatUUID: UUID,
+    @SerialName("game_uuid")
+    @Serializable(with = UUIDSerializer::class)
+    val gameUUID: UUID
+)
+
+/**
  * The version data for clients
  */
 @Serializable
