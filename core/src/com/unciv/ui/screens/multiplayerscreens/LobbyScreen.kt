@@ -10,19 +10,23 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.multiplayer.apiv2.AccountResponse
 import com.unciv.logic.multiplayer.apiv2.ChatMessage
+import com.unciv.logic.multiplayer.apiv2.CreateLobbyResponse
 import com.unciv.logic.multiplayer.apiv2.LobbyResponse
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.components.AutoScrollPane
 import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.MultiplayerButton
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.keyShortcuts
 import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -31,6 +35,8 @@ import com.unciv.ui.screens.newgamescreen.MapOptionsInterface
 import com.unciv.ui.screens.newgamescreen.MapOptionsTable
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.Log
+import com.unciv.utils.concurrency.Concurrency
+import kotlinx.coroutines.delay
 import java.util.*
 
 
@@ -47,6 +53,7 @@ import java.util.*
 class LobbyScreen(private val lobbyUUID: UUID, private val lobbyChatUUID: UUID, override val gameSetupInfo: GameSetupInfo): BaseScreen(), MapOptionsInterface {
 
     constructor(lobbyUUID: UUID, lobbyChatUUID: UUID) : this(lobbyUUID, lobbyChatUUID, GameSetupInfo.fromSettings())
+    constructor(newLobby: CreateLobbyResponse): this(newLobby.lobbyUUID, newLobby.lobbyChatRoomUUID)
     constructor(lobby: LobbyResponse): this(lobby.uuid, lobby.chatRoomUUID)
 
     override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters)
