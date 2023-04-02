@@ -25,7 +25,7 @@ class VictoryScreenCivRankings(
             if (columnImage != null)
                 textAndIcon.add(columnImage).size(Constants.defaultFontSize.toFloat() * 0.75f)
                     .padRight(2f).padTop(-2f)
-            textAndIcon.add(category.name.replace('_' , ' ').toLabel()).row()
+            textAndIcon.add(category.label.toLabel()).row()
             header.add(textAndIcon).pad(10f)
 
             val column = Table().apply { defaults().space(10f) }
