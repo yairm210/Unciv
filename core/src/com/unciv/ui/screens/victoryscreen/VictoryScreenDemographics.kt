@@ -61,7 +61,7 @@ class VictoryScreenDemographics(
                 textAndIcon.add(columnImage).center()
                     .size(Constants.defaultFontSize.toFloat() * 0.75f)
                     .padRight(2f).padTop(-2f)
-            textAndIcon.add(category.name.replace('_', ' ').toLabel()).row()
+            textAndIcon.add(category.label.toLabel()).row()
             headers.add(textAndIcon)
             headers.addSeparator()
             add(headers)

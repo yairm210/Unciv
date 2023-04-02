@@ -69,70 +69,70 @@ EmojiIcons/Food
   index: -1
 EmojiIcons/Gold
   rotate: false
-  xy: 436, 186
+  xy: 436, 128
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Great Artist
   rotate: false
-  xy: 436, 128
+  xy: 436, 70
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Great Engineer
   rotate: false
-  xy: 436, 70
+  xy: 436, 12
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Great General
   rotate: false
-  xy: 436, 12
+  xy: 494, 534
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Great Merchant
   rotate: false
-  xy: 494, 534
+  xy: 494, 476
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Great Scientist
   rotate: false
-  xy: 494, 476
+  xy: 494, 418
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Happiness
   rotate: false
-  xy: 494, 418
+  xy: 494, 360
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Production
   rotate: false
-  xy: 494, 70
+  xy: 527, 607
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Science
   rotate: false
-  xy: 552, 549
+  xy: 552, 433
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Turn
   rotate: false
-  xy: 552, 433
+  xy: 552, 317
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -627,6 +627,13 @@ OtherIcons/Fire
   orig: 115, 115
   offset: 0, 0
   index: -1
+OtherIcons/ForwardArrow
+  rotate: false
+  xy: 436, 186
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
 OtherIcons/Hexagon
   rotate: false
   xy: 4, 1791
@@ -643,7 +650,7 @@ OtherIcons/HexagonOutline
   index: -1
 OtherIcons/Improvements
   rotate: false
-  xy: 494, 360
+  xy: 494, 302
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -657,7 +664,7 @@ OtherIcons/Keyboard
   index: -1
 OtherIcons/Link
   rotate: false
-  xy: 494, 244
+  xy: 494, 186
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -692,7 +699,7 @@ NotificationIcons/Working
   index: -1
 OtherIcons/LockSmall
   rotate: false
-  xy: 494, 186
+  xy: 494, 128
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -734,7 +741,7 @@ OtherIcons/NationSwap
   index: -1
 OtherIcons/Nations
   rotate: false
-  xy: 494, 128
+  xy: 494, 70
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -758,6 +765,13 @@ OtherIcons/Options
   xy: 1831, 1607
   size: 100, 100
   orig: 100, 100
+  offset: 0, 0
+  index: -1
+OtherIcons/Pause
+  rotate: false
+  xy: 494, 12
+  size: 50, 50
+  orig: 50, 50
   offset: 0, 0
   index: -1
 OtherIcons/Pencil
@@ -1266,7 +1280,7 @@ StatIcons/Happiness
   index: -1
 StatIcons/InterceptRange
   rotate: false
-  xy: 494, 302
+  xy: 494, 244
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1294,14 +1308,14 @@ TileIcons/Worked
   index: -1
 StatIcons/Range
   rotate: false
-  xy: 494, 12
+  xy: 552, 549
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 StatIcons/RangedStrength
   rotate: false
-  xy: 527, 607
+  xy: 552, 491
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1329,7 +1343,7 @@ StatIcons/Specialist
   index: -1
 StatIcons/Strength
   rotate: false
-  xy: 552, 491
+  xy: 552, 375
   size: 50, 50
   orig: 50, 50
   offset: 0, 0

@@ -2,9 +2,7 @@ package com.unciv.ui.screens.newgamescreen
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
@@ -24,10 +22,11 @@ import com.unciv.ui.screens.multiplayerscreens.FriendPickerList
 import com.unciv.ui.screens.pickerscreens.PickerPane
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.popups.Popup
-import com.unciv.ui.components.*
+import com.unciv.ui.components.UncivTextField
+import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.extensions.*
 import com.unciv.ui.screens.basescreen.BaseScreen
-import java.util.*
+import java.util.UUID
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
 
 /**
@@ -414,16 +413,8 @@ private class NationPickerPopup(
         nationDetailsTable.onClick { returnSelected() }
     }
 
-    private fun String.toImageButton(overColor: Color): Group {
-        val style = ImageButton.ImageButtonStyle()
-        val image = ImageGetter.getDrawable(this)
-        style.imageUp = image
-        style.imageOver = image.tint(overColor)
-        val button = ImageButton(style)
-        button.setSize(buttonsIconSize, buttonsIconSize)
-
-        return button.surroundWithCircle(buttonsCircleSize, false, buttonsBackColor)
-    }
+    private fun String.toImageButton(overColor: Color) =
+            toImageButton(buttonsIconSize, buttonsCircleSize, buttonsBackColor, overColor)
 
     private fun setNationDetails(nation: Nation) {
         nationDetailsTable.clearChildren()  // .clear() also clears listeners!
