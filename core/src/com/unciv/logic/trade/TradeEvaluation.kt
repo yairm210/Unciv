@@ -255,12 +255,10 @@ class TradeEvaluation {
                 val city = civInfo.cities.firstOrNull { it.id == offer.name }
                     ?: throw Exception("Got an offer to sell city id " + offer.name + " which does't seem to exist for this civ!")
 
-                // TODO: Is this a bug? Currently it means cities that are further away from the
-                //  capital are valued more. I would expect the opposite to be true.
-                val distanceCost = distanceCityTradeModifier(civInfo, city)
+                val distanceBonus = distanceCityTradeModifier(civInfo, city)
                 val stats = city.cityStats.currentCityStats
                 val sumOfStats =
-                    stats.culture + stats.gold + stats.science + stats.production + stats.happiness + stats.food - distanceCost
+                    stats.culture + stats.gold + stats.science + stats.production + stats.happiness + stats.food + distanceBonus
                 return min(sumOfStats.toInt() * 100, 1000)
             }
             TradeType.Agreement -> {
@@ -278,11 +276,15 @@ class TradeEvaluation {
         }
     }
 
+    /** This code returns a positive value if the city is significantly far away from the capital
+     * and given how this method is used this ends up making such cities more expensive. That's how
+     * I found it. I'm not sure it makes sense. One might also find arguments why cities closer to
+     * the capital are more expensive. */
     private fun distanceCityTradeModifier(civInfo: Civilization, city: City): Int{
         val distanceToCapital = civInfo.getCapital()!!.getCenterTile().aerialDistanceTo(city.getCenterTile())
 
         if (distanceToCapital < 500) return 0
-        return (500 - distanceToCapital) * civInfo.getEraNumber()
+        return (distanceToCapital - 500) * civInfo.getEraNumber()
     }
 
     fun evaluatePeaceCostForThem(ourCivilization: Civilization, otherCivilization: Civilization): Int {
