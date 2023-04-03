@@ -962,15 +962,21 @@ object NextTurnAutomation {
     }
 
     private fun automateCities(civInfo: Civilization) {
+        val ownMilitaryStrength = civInfo.getStatForRanking(RankingType.Force)
+        val sumOfEnemiesMilitaryStrength = civInfo.gameInfo.civilizations.filter { it != civInfo }
+            .filter { civInfo.isAtWarWith(it) }.sumOf { it.getStatForRanking(RankingType.Force) }
+        val civHasSignificantlyWeakerMilitaryThanEnemies =
+                ownMilitaryStrength < sumOfEnemiesMilitaryStrength * 0.66f
         for (city in civInfo.cities) {
             if (city.isPuppet && city.population.population > 9
-                    && !city.isInResistance()) {
+                    && !city.isInResistance()
+            ) {
                 city.annexCity()
             }
 
             city.reassignAllPopulation()
 
-            if (city.health < city.getMaxHealth()) {
+            if (city.health < city.getMaxHealth() || civHasSignificantlyWeakerMilitaryThanEnemies) {
                 Automation.tryTrainMilitaryUnit(city) // need defenses if city is under attack
                 if (city.cityConstructions.constructionQueue.isNotEmpty())
                     continue // found a unit to build so move on
