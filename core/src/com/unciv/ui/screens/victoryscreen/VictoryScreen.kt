@@ -26,7 +26,6 @@ import com.unciv.ui.screens.worldscreen.WorldScreen
 
 //TODO someoneHasWon should look at gameInfo.victoryData
 //TODO replay slider
-//TODO icons for victory types
 
 class VictoryScreen(
     private val worldScreen: WorldScreen,
