@@ -138,7 +138,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         civInfo.viewableInvisibleUnitsTiles = newViewableInvisibleTiles
     }
 
-    private var ourTilesAndNeighboringTiles: Set<Tile> = HashSet()
+    var ourTilesAndNeighboringTiles: Set<Tile> = HashSet()
 
     /** Our tiles update pretty infrequently - most 'viewable tile' changes are due to unit movements,
      * which means we can store this separately and use it 'as is' so we don't need to find the neighboring tiles every time

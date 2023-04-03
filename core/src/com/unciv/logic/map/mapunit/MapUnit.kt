@@ -307,7 +307,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
 
         // Set equality automatically determines if anything changed - https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-abstract-set/equals.html
-        if (updateCivViewableTiles && oldViewableTiles != viewableTiles)
+        if (updateCivViewableTiles && oldViewableTiles != viewableTiles
+                // Don't bother updating if all previous and current viewable tiles are within our borders
+                && (oldViewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles }
+                        || viewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles }))
             civ.cache.updateViewableTiles(explorerPosition)
     }
 
