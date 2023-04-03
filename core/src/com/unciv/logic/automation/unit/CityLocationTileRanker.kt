@@ -7,12 +7,10 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
-import kotlin.math.max
-import kotlin.math.min
 
 class CityLocationTileRanker {
     companion object {
-        fun getBestTilesToFoundCity(unit: MapUnit): List<Pair<Tile, Float>> {
+        fun getBestTilesToFoundCity(unit: MapUnit): Sequence<Pair<Tile, Float>> {
             val modConstants = unit.civ.gameInfo.ruleset.modOptions.constants
             val tilesNearCities = sequence {
                 for (city in unit.civ.gameInfo.getCities()) {
@@ -24,7 +22,7 @@ class CityLocationTileRanker {
                     ) {
                         yieldAll(
                             center.getTilesInDistance(6)
-                                .filter { it.isExplored(unit.civ) || unit.civ.isAI() })
+                                .filter { isKnownLocation(it, unit.civ) })
                         continue
                     }
                     yieldAll(
@@ -45,9 +43,9 @@ class CityLocationTileRanker {
 
             val distanceFromHome = if (unit.civ.cities.isEmpty()) 0
             else unit.civ.cities.minOf { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
-            val range = max(
+            val range = (8 - distanceFromHome).coerceIn(
                 1,
-                min(5, 8 - distanceFromHome)
+                5
             ) // Restrict vision when far from home to avoid death marches
 
             val possibleCityLocations = unit.getTile().getTilesInDistance(range)
@@ -57,7 +55,7 @@ class CityLocationTileRanker {
                     it.isLand && !it.isImpassible() && (tileOwner == null || tileOwner == unit.civ) // don't allow settler to settle inside other civ's territory
                             && (unit.currentTile == it || unit.movement.canMoveTo(it))
                             && it !in tilesNearCities
-                }.toList()
+                }
 
             val luxuryResourcesInCivArea = getLuxuryResourcesInCivArea(unit.civ)
 
@@ -76,6 +74,12 @@ class CityLocationTileRanker {
                 .sortedByDescending { it.second }
         }
 
+        private fun isKnownLocation(
+            tile: Tile,
+            civ: Civilization
+        ) = tile.isExplored(civ)
+                || civ.isAI() // The AI is allowed to cheat and act like it knows the whole map.
+
         fun rankTileAsCityCenter(tile: Tile, civ: Civilization): Float {
             val nearbyTileRankings = getNearbyTileRankings(tile, civ)
             val luxuryResourcesInCivArea = getLuxuryResourcesInCivArea(civ)
@@ -92,7 +96,7 @@ class CityLocationTileRanker {
             civ: Civilization
         ): Map<Tile, Float> {
             return tile.getTilesInDistance(7)
-                .filter { it.isExplored(civ) || civ.isAI() }
+                .filter { isKnownLocation(it, civ) }
                 .associateBy({ it }, { Automation.rankTile(it, civ) })
         }
 
@@ -109,17 +113,17 @@ class CityLocationTileRanker {
             civ: Civilization
         ): Float {
             val bestTilesFromOuterLayer = tile.getTilesAtDistance(2)
-                .filter { it.isExplored(civ) || civ.isAI() }
+                .filter { isKnownLocation(it, civ) }
                 .sortedByDescending { nearbyTileRankings[it] }.take(2)
             val top5Tiles =
-                    (tile.neighbors.filter { it.isExplored(civ) || civ.isAI() } + bestTilesFromOuterLayer)
+                    (tile.neighbors.filter { isKnownLocation(it, civ) } + bestTilesFromOuterLayer)
                         .sortedByDescending { nearbyTileRankings[it] }
                         .take(5)
             var rank = top5Tiles.map { nearbyTileRankings.getValue(it) }.sum()
             if (tile.isCoastalTile()) rank += 5
 
             val luxuryResourcesInCityArea =
-                    tile.getTilesAtDistance(2).filter { it.isExplored(civ) || civ.isAI() }
+                    tile.getTilesAtDistance(2).filter { isKnownLocation(it, civ) }
                         .filter { it.resource != null }
                         .map { it.tileResource }.filter { it.resourceType == ResourceType.Luxury }
                         .distinct()
