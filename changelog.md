@@ -1,28 +1,9 @@
 ## 4.5.16
 
- - rankStatsForCityWork also uses local unique cache
-
- - getKnownCivs returns sequence
-
-Fixed tests
-
-performance: Don't update visible tiles if we've moved within our border
-
-performance: Cache uniques for calculating specialist stats
-
-Performance: Removed map lookup for getLastTerrain
-
-Performance: Removed map lookup every time we want to get a unit's type
-
-Performance: nation type booleans are all lazy vals, to avoid unnecessary string comparisons
-
-Performance: Save civ tiles and neighbors in cache to update visible tiles faster
-
-Performance: Use unique cache for tile percentage stats and auto-assigning population to tiles
+Many many performance improvements!
 
 By SomeTroglodyte:
-- Declare Era.citySound not TranslationFileWriter-worthy 
-- Music player controls 
+- Music player controls
 
 ## 4.5.15
 
