@@ -189,7 +189,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     val type: UnitType
-        get() = baseUnit.getType()
+        get() = baseUnit.type
 
     fun baseUnit(): BaseUnit = baseUnit
     fun getMovementString(): String =
