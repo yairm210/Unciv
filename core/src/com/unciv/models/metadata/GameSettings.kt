@@ -40,6 +40,7 @@ class GameSettings {
     var showResourcesAndImprovements: Boolean = true
     var showTileYields: Boolean = false
     var showUnitMovements: Boolean = false
+    var showSettlersSuggestedCityLocations: Boolean = true
 
     var checkForDueUnits: Boolean = true
     var autoUnitCycle: Boolean = true

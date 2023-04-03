@@ -19,6 +19,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.unit.AttackableTile
 import com.unciv.logic.automation.unit.BattleHelper
+import com.unciv.logic.automation.unit.CityLocationTileRanker
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
@@ -691,6 +692,15 @@ class WorldMapHolder(
                         0.5f
                     else 1f
                 )
+            }
+        }
+
+        // Highlight best tiles for city founding
+        if (UncivGame.Current.gameInfo!!.turns > 0 && unit.hasUnique(UniqueType.FoundCity)
+                && UncivGame.Current.settings.showSettlersSuggestedCityLocations) {
+            CityLocationTileRanker.getBestTilesToFoundCity(unit).map { it.first }
+                .filter { it.isExplored(unit.civ) }.take(3).forEach {
+                tileGroups[it]!!.layerOverlay.showGoodCityLocationIndicator()
             }
         }
     }

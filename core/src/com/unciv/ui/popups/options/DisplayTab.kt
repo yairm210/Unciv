@@ -49,6 +49,7 @@ fun displayTab(
     }
 
     optionsPopup.addCheckbox(this, "Show unit movement arrows", settings.showUnitMovements, true) { settings.showUnitMovements = it }
+    optionsPopup.addCheckbox(this, "Show suggested city locations for units that can found cities", settings.showSettlersSuggestedCityLocations, true) { settings.showSettlersSuggestedCityLocations = it }
     optionsPopup.addCheckbox(this, "Show tile yields", settings.showTileYields, true) { settings.showTileYields = it } // JN
     optionsPopup.addCheckbox(this, "Show worked tiles", settings.showWorkedTiles, true) { settings.showWorkedTiles = it }
     optionsPopup.addCheckbox(this, "Show resources and improvements", settings.showResourcesAndImprovements, true) { settings.showResourcesAndImprovements = it }

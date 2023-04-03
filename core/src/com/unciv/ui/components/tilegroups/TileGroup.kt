@@ -88,6 +88,7 @@ open class TileGroup(
         layerMisc.removeHexOutline()
         layerOverlay.hideHighlight()
         layerOverlay.hideCrosshair()
+        layerOverlay.hideGoodCityLocationIndicator()
 
         val layers = listOf(
             layerTerrain, layerFeatures, layerBorders, layerMisc,
