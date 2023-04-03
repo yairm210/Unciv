@@ -15,6 +15,7 @@ import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.screens.victoryscreen.RankingType
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
@@ -262,14 +263,58 @@ object UnitAutomation {
         if (unit.hasUnique(UniqueType.PreventSpreadingReligion) || unit.canDoLimitedAction(Constants.removeHeresy))
             return SpecificUnitAutomation.automateInquisitor(unit)
 
+        // Great scientist -> Hurry research if behind on research
+        val ownSciences = unit.civ.getStatForRanking(RankingType.Technologies)
+        val mostSciences = unit.civ.gameInfo.civilizations.filter { it != unit.civ }
+            .maxOf { it.getStatForRanking(RankingType.Technologies) }
+        val isBehindOnResearch = mostSciences - ownSciences >= 5
+        if (isBehindOnResearch && unit.hasUnique(UniqueType.CanHurryResearch)) {
+            UnitActions.activateSideEffects(unit, unit.getMatchingUniques(UniqueType.CanHurryResearch).first())
+            return
+        }
+
+        // Great merchant -> Conduct trade mission if poor
+        // TODO: This could be more complex to walk to the city state that is most beneficial to
+        //  also have more influence.
+        if (unit.civ.gold < 200 && unit.hasUnique(UniqueType.CanTradeWithCityStateForGoldAndInfluence)) {
+            val tradeMissionCanBeConductedEventually = SpecificUnitAutomation.conductTradeMission(unit)
+            if (!tradeMissionCanBeConductedEventually)
+                tryStartGoldenAge(unit)
+        }
+
+        // This has to come after the individual abilities for the great people that can also place
+        // instant improvements (e.g. great scientist).
         if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit)
-                || unit.hasUnique(UniqueType.ConstructImprovementInstantly))
-        // catch great prophet for civs who can't found/enhance/spread religion
-            return SpecificUnitAutomation.automateImprovementPlacer(unit) // includes great people plus moddable units
+                || unit.hasUnique(UniqueType.ConstructImprovementInstantly)
+        ) {
+            // catch great prophet for civs who can't found/enhance/spread religion
+            // includes great people plus moddable units
+            val improvementCanBePlacedEventually =
+                    SpecificUnitAutomation.automateImprovementPlacer(unit)
+            if (!improvementCanBePlacedEventually)
+                tryStartGoldenAge(unit)
+        }
+
+        // TODO: The AI tends to have a lot of great generals. Maybe there should be a cutoff
+        //  (depending on number of cities) and after that they should just be used to start golden
+        //  ages?
 
         // ToDo: automation of great people skills (may speed up construction, provides a science boost, etc.)
 
         return // The AI doesn't know how to handle unknown civilian units
+    }
+
+    private fun tryStartGoldenAge(unit: MapUnit) {
+        val unitCanStartGoldenAge =
+                unit.hasUnique(UniqueType.OneTimeEnterGoldenAge) || unit.hasUnique(UniqueType.OneTimeEnterGoldenAgeTurns)
+        if (unitCanStartGoldenAge) {
+            UnitActions.activateSideEffects(
+                unit,
+                unit.getMatchingUniques(UniqueType.OneTimeEnterGoldenAge)
+                    .plus(unit.getMatchingUniques(UniqueType.OneTimeEnterGoldenAgeTurns))
+                    .first()
+            )
+        }
     }
 
     /** @return true only if the unit has 0 movement left */

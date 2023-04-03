@@ -247,13 +247,15 @@ object SpecificUnitAutomation {
             foundCityAction.action.invoke()
     }
 
-    fun automateImprovementPlacer(unit: MapUnit) {
+    /** @return whether there was any progress in placing the improvement. A return value of `false`
+     * can be interpreted as: the unit doesn't know where to place the improvement or is stuck. */
+    fun automateImprovementPlacer(unit: MapUnit) : Boolean {
         val improvementBuildingUniques = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit) +
                 unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)
 
         val improvementName = improvementBuildingUniques.first().params[0]
         val improvement = unit.civ.gameInfo.ruleset.tileImprovements[improvementName]
-            ?: return
+            ?: return false
         val relatedStat = improvement.maxByOrNull { it.value }?.key ?: Stat.Culture
 
         val citiesByStatBoost = unit.civ.cities.sortedByDescending {
@@ -273,9 +275,9 @@ object SpecificUnitAutomation {
 
             if (pathToCity.isEmpty()) continue
             if (pathToCity.size > 2 && unit.getTile().getCity() != city) {
-                if (unit.getTile().militaryUnit == null) return // Don't move until you're accompanied by a military unit
+                if (unit.getTile().militaryUnit == null) return true // Don't move until you're accompanied by a military unit
                 unit.movement.headTowards(city.getCenterTile())
-                return
+                return true
             }
 
             // if we got here, we're pretty close, start looking!
@@ -288,14 +290,46 @@ object SpecificUnitAutomation {
                 .firstOrNull { unit.movement.canReach(it) }
                 ?: continue // to another city
 
+            val unitTileBeforeMovement = unit.currentTile
             unit.movement.headTowards(chosenTile)
-            if (unit.currentTile == chosenTile)
+            if (unit.currentTile == chosenTile) {
                 if (unit.currentTile.isPillaged())
                     UnitActions.getRepairAction(unit).invoke()
                 else
-                    UnitActions.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
-            return
+                    UnitActions.getImprovementConstructionActions(unit, unit.currentTile)
+                        .firstOrNull()?.action?.invoke()
+                return true
+            }
+            if (unitTileBeforeMovement == unit.currentTile) {
+                return false
+            }
+            return true
         }
+        // No city needs this improvement.
+        return false
+    }
+
+    /** @return whether there was any progress in conducting the trade mission. A return value of
+     * `false` can be interpreted as: the unit doesn't know where to go or there are no city
+     * states. */
+    fun conductTradeMission(unit: MapUnit): Boolean {
+        val closestCityState =
+                unit.civ.gameInfo.civilizations.filter { it.isCityState() && it.cities.isNotEmpty() }
+                    .minByOrNull { unit.currentTile.aerialDistanceTo(it.cities[0].getCenterTile()) }
+                    ?: return false
+        val unitTileBeforeMovement = unit.currentTile
+        unit.movement.headTowards(closestCityState.cities[0].getCenterTile())
+        if (closestCityState.cities[0].getTiles().contains(unit.currentTile)) {
+            UnitActions.activateSideEffects(
+                unit,
+                unit.getMatchingUniques(UniqueType.CanTradeWithCityStateForGoldAndInfluence).first()
+            )
+            return true
+        }
+        if (unitTileBeforeMovement == unit.currentTile) {
+            return false
+        }
+        return true
     }
 
     fun automateAddInCapital(unit: MapUnit) {
