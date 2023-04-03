@@ -35,7 +35,7 @@ class VictoryScreen(
 
     private val gameInfo = worldScreen.gameInfo
     private val playerCiv = worldScreen.viewingCiv
-    private val tabs = TabbedPager(separatorColor = Color.WHITE, shorcutScreen = this)
+    private val tabs = TabbedPager(separatorColor = Color.WHITE, shortcutScreen = this)
 
     internal class CivWithStat(val civ: Civilization, val value: Int) {
         constructor(civ: Civilization, category: RankingType) : this(civ, civ.getStatForRanking(category))
@@ -119,8 +119,9 @@ class VictoryScreen(
         }
 
         //**************** Set up floating info panels ****************
+        // When horizontal screen space is scarce so they would overlap, insert
+        // them into the scrolling portion of the TabbedPager header instead
         tabs.pack()
-        val panelY = stage.height - tabs.getRowHeight(0) * 0.5f
         val topRightPanel = VerticalGroup().apply {
             space(5f)
             align(Align.right)
@@ -129,12 +130,19 @@ class VictoryScreen(
                 addActor("{Max Turns}: ${gameInfo.gameParameters.maxTurns}".toLabel())
             pack()
         }
-        stage.addActor(topRightPanel)
-        topRightPanel.setPosition(stage.width - 10f, panelY, Align.right)
-
         val difficultyLabel = "{Difficulty}: {${gameInfo.difficulty}}".toLabel()
-        stage.addActor(difficultyLabel)
-        difficultyLabel.setPosition(10f, panelY, Align.left)
+        val neededSpace = topRightPanel.width.coerceAtLeast(difficultyLabel.width) * 2 + tabs.getHeaderPrefWidth()
+        if (neededSpace > stage.width) {
+            tabs.decorateHeader(difficultyLabel, true)
+            tabs.decorateHeader(topRightPanel, false)
+            tabs.headerScroll.fadeScrollBars = false
+        } else {
+            val panelY = stage.height - tabs.getRowHeight(0) * 0.5f
+            stage.addActor(topRightPanel)
+            topRightPanel.setPosition(stage.width - 10f, panelY, Align.right)
+            stage.addActor(difficultyLabel)
+            difficultyLabel.setPosition(10f, panelY, Align.left)
+        }
     }
 
     private fun wonOrLost(description: String, victoryType: String?, hasWon: Boolean) {
