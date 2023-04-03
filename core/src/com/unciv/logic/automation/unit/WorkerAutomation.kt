@@ -387,7 +387,7 @@ class WorkerAutomation(
             .filter { it.second > 0f }
             .maxByOrNull { it.second }?.first
 
-        val lastTerrain = tile.getLastTerrain()
+        val lastTerrain = tile.lastTerrain
 
         fun isUnbuildableAndRemovable(terrain: Terrain): Boolean = terrain.unbuildable
                 && ruleSet.tileImprovements.containsKey(Constants.remove + terrain.name)

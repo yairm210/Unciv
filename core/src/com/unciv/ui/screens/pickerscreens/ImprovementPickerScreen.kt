@@ -79,8 +79,8 @@ class ImprovementPickerScreen(
         // clone tileInfo without "top" feature if it could be removed
         // Keep this copy around for speed
         val tileWithoutLastTerrain: Tile = tile.clone()
-        if (Constants.remove + tileWithoutLastTerrain.getLastTerrain().name in ruleSet.tileImprovements) {
-            tileWithoutLastTerrain.removeTerrainFeature(tileWithoutLastTerrain.getLastTerrain().name)
+        if (Constants.remove + tileWithoutLastTerrain.lastTerrain.name in ruleSet.tileImprovements) {
+            tileWithoutLastTerrain.removeTerrainFeature(tileWithoutLastTerrain.lastTerrain.name)
         }
 
         val cityUniqueCache = LocalUniqueCache()
@@ -133,7 +133,7 @@ class ImprovementPickerScreen(
             val proposedSolutions = mutableListOf<String>()
 
             if (suggestRemoval)
-                proposedSolutions.add("${Constants.remove}[${tile.getLastTerrain().name}] first")
+                proposedSolutions.add("${Constants.remove}[${tile.lastTerrain.name}] first")
             if (ImprovementBuildingProblem.MissingTech in unbuildableBecause)
                 proposedSolutions.add("Research [${improvement.techRequired}] first")
             if (ImprovementBuildingProblem.NotJustOutsideBorders in unbuildableBecause)

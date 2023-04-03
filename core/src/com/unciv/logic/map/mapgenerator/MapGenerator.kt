@@ -220,7 +220,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
                     .firstOrNull { tile.isAdjacentTo(it.params[1]) }
                     ?: continue
             val terrain = ruleset.terrains[conversionUnique.params[0]] ?: continue
-            if (!terrain.occursOn.contains(tile.getLastTerrain().name)) continue
+            if (!terrain.occursOn.contains(tile.lastTerrain.name)) continue
 
             if (terrain.type == TerrainType.TerrainFeature)
                 tile.addTerrainFeature(terrain.name)
@@ -316,7 +316,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             val suitableTiles = candidateTiles
                     .filterNot { it.baseTerrain == Constants.snow && it.isHill() }
                     .filter { it.resource == null
-                            && resource.terrainsCanBeFoundOn.contains(it.getLastTerrain().name) }
+                            && resource.terrainsCanBeFoundOn.contains(it.lastTerrain.name) }
 
             val locations = randomness.chooseSpreadOutLocations(resourcesPerType, suitableTiles, mapRadius)
 
@@ -335,7 +335,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         val suitableTiles = tileMap.values
                 .filterNot { it.baseTerrain == Constants.snow && it.isHill() }
                 .filter { it.resource == null && it.neighbors.none { neighbor -> neighbor.isNaturalWonder() }
-                        && resourcesOfType.any { r -> r.terrainsCanBeFoundOn.contains(it.getLastTerrain().name) } }
+                        && resourcesOfType.any { r -> r.terrainsCanBeFoundOn.contains(it.lastTerrain.name) } }
         val numberOfResources = tileMap.values.count { it.isLand && !it.isImpassible() } *
                 tileMap.mapParameters.resourceRichness
         val locations = randomness.chooseSpreadOutLocations(numberOfResources.toInt(), suitableTiles, mapRadius)
@@ -344,7 +344,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
         for (tile in locations) {
             val possibleResources = resourcesOfType
-                    .filter { it.terrainsCanBeFoundOn.contains(tile.getLastTerrain().name) }
+                    .filter { it.terrainsCanBeFoundOn.contains(tile.lastTerrain.name) }
             if (possibleResources.isEmpty()) continue
             val resourceWithLeastAssignments = possibleResources.minByOrNull { resourceToNumber[it.name]!! }!!
             resourceToNumber.add(resourceWithLeastAssignments.name, 1)
@@ -635,13 +635,13 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         val candidateTerrains = vegetationTerrains.flatMap{ it.occursOn }
         // Checking it.baseTerrain in candidateTerrains to make sure forest does not spawn on desert hill
         for (tile in tileMap.values.asSequence().filter { it.baseTerrain in candidateTerrains
-                && it.getLastTerrain().name in candidateTerrains }) {
+                && it.lastTerrain.name in candidateTerrains }) {
 
             val vegetation = (randomness.getPerlinNoise(tile, vegetationSeed, scale = 3.0, nOctaves = 1) + 1.0) / 2.0
 
             if (vegetation <= tileMap.mapParameters.vegetationRichness) {
                 val possibleVegetation = vegetationTerrains.filter { vegetationTerrain ->
-                    vegetationTerrain.occursOn.contains(tile.getLastTerrain().name)
+                    vegetationTerrain.occursOn.contains(tile.lastTerrain.name)
                             && vegetationTerrain.getMatchingUniques(UniqueType.TileGenerationConditions).none {
                             tile.temperature!! < it.params[0].toDouble() || tile.temperature!! > it.params[1].toDouble()
                                     || tile.humidity!! < it.params[2].toDouble() || tile.humidity!! > it.params[3].toDouble()
@@ -714,7 +714,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             val candidates = iceEquivalents
                 .filter {
                     it.matches(temperature, 1.0) &&
-                    tile.getLastTerrain().name in it.terrain.occursOn
+                    tile.lastTerrain.name in it.terrain.occursOn
                 }.map { it.terrain.name }
             when (candidates.size) {
                 1 -> tile.addTerrainFeature(candidates.first())

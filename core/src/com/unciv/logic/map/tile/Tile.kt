@@ -97,6 +97,11 @@ open class Tile : IsPartOfGameInfoSerialization {
         private set
 
     @Transient
+            /** Saves a sequence of a list */
+    lateinit var lastTerrain: Terrain
+        private set
+
+    @Transient
     var terrainUniqueMap = UniqueMap()
         private set
 
@@ -205,13 +210,6 @@ open class Tile : IsPartOfGameInfoSerialization {
 
     fun getCity(): City? = owningCity
 
-    fun getLastTerrain(): Terrain = when {
-        terrainFeatures.isNotEmpty() -> ruleset.terrains[terrainFeatures.last()]
-                ?: getBaseTerrain()  // defense against rare edge cases involving baseTerrain Hill deprecation
-        naturalWonder != null -> getNaturalWonder()
-        else -> getBaseTerrain()
-    }
-
     @Transient
     private var tileResourceCache: TileResource? = null
     val tileResource: TileResource
@@ -257,7 +255,7 @@ open class Tile : IsPartOfGameInfoSerialization {
 
     fun isCityCenter(): Boolean = isCityCenterInternal
     fun isNaturalWonder(): Boolean = naturalWonder != null
-    fun isImpassible() = getLastTerrain().impassable
+    fun isImpassible() = lastTerrain.impassable
 
     fun getTileImprovement(): TileImprovement? = if (improvement == null) null else ruleset.tileImprovements[improvement!!]
     fun getUnpillagedTileImprovement(): TileImprovement? = if (getUnpillagedImprovement() == null) null else ruleset.tileImprovements[improvement!!]
@@ -826,6 +824,13 @@ open class Tile : IsPartOfGameInfoSerialization {
         val newUniqueMap = UniqueMap()
         for (terrain in allTerrains)
             newUniqueMap.addUniques(terrain.uniqueObjects)
+
+        lastTerrain = when {
+            terrainFeatures.isNotEmpty() -> ruleset.terrains[terrainFeatures.last()]
+                ?: getBaseTerrain()  // defense against rare edge cases involving baseTerrain Hill deprecation
+            naturalWonder != null -> getNaturalWonder()
+            else -> getBaseTerrain()
+        }
         terrainUniqueMap = newUniqueMap
     }
 
