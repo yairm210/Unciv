@@ -12,7 +12,8 @@ import kotlin.math.min
 
 class CityLocationTileRanker {
     companion object {
-        fun getBestTilesToFoundCity(unit: MapUnit): List<Pair<Tile, Float>> {
+        /** @param cheat Whether the logic may look at tiles that are not explored yet. */
+        fun getBestTilesToFoundCity(unit: MapUnit, cheat: Boolean): List<Pair<Tile, Float>> {
             val modConstants = unit.civ.gameInfo.ruleset.modOptions.constants
             val tilesNearCities = sequence {
                 for (city in unit.civ.gameInfo.getCities()) {
@@ -22,20 +23,26 @@ class CityLocationTileRanker {
                             city.civ.getDiplomacyManager(unit.civ)
                                 .hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)
                     ) {
-                        yieldAll(center.getTilesInDistance(6))
+                        yieldAll(
+                            center.getTilesInDistance(6)
+                                .filter { it.isExplored(unit.civ) || cheat })
                         continue
                     }
-                    yieldAll(center.getTilesInDistance(modConstants.minimalCityDistance)
-                        .filter { it.getContinent() == center.getContinent() }
+                    yieldAll(
+                        center.getTilesInDistance(modConstants.minimalCityDistance)
+                            .filter { it.isExplored(unit.civ) || cheat }
+                            .filter { it.getContinent() == center.getContinent() }
                     )
-                    yieldAll(center.getTilesInDistance(modConstants.minimalCityDistanceOnDifferentContinents)
-                        .filter { it.getContinent() != center.getContinent() }
+                    yieldAll(
+                        center.getTilesInDistance(modConstants.minimalCityDistanceOnDifferentContinents)
+                            .filter { it.isExplored(unit.civ) || cheat }
+                            .filter { it.getContinent() != center.getContinent() }
                     )
                 }
             }.toSet()
 
             // This is to improve performance - instead of ranking each tile in the area up to 19 times, do it once.
-            val nearbyTileRankings = getNearbyTileRankings(unit.getTile(), unit.civ)
+            val nearbyTileRankings = getNearbyTileRankings(unit.getTile(), unit.civ, cheat)
 
             val distanceFromHome = if (unit.civ.cities.isEmpty()) 0
             else unit.civ.cities.minOf { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
@@ -45,6 +52,7 @@ class CityLocationTileRanker {
             ) // Restrict vision when far from home to avoid death marches
 
             val possibleCityLocations = unit.getTile().getTilesInDistance(range)
+                .filter { it.isExplored(unit.civ) || cheat }
                 .filter {
                     val tileOwner = it.getOwner()
                     it.isLand && !it.isImpassible() && (tileOwner == null || tileOwner == unit.civ) // don't allow settler to settle inside other civ's territory
@@ -61,21 +69,34 @@ class CityLocationTileRanker {
                         rankTileAsCityCenterWithCachedValues(
                             it,
                             nearbyTileRankings,
-                            luxuryResourcesInCivArea
-                        )
+                            luxuryResourcesInCivArea,
+                            unit.civ,
+                            cheat
+                        ),
                     )
                 }
                 .sortedByDescending { it.second }
         }
 
-        fun rankTileAsCityCenter(tile: Tile, civ: Civilization): Float {
-            val nearbyTileRankings = getNearbyTileRankings(tile, civ)
+        fun rankTileAsCityCenter(tile: Tile, civ: Civilization, cheat: Boolean): Float {
+            val nearbyTileRankings = getNearbyTileRankings(tile, civ, cheat)
             val luxuryResourcesInCivArea = getLuxuryResourcesInCivArea(civ)
-            return rankTileAsCityCenterWithCachedValues(tile, nearbyTileRankings, luxuryResourcesInCivArea)
+            return rankTileAsCityCenterWithCachedValues(
+                tile,
+                nearbyTileRankings,
+                luxuryResourcesInCivArea,
+                civ,
+                cheat
+            )
         }
 
-        private fun getNearbyTileRankings(tile: Tile, civ: Civilization): Map<Tile, Float> {
+        private fun getNearbyTileRankings(
+            tile: Tile,
+            civ: Civilization,
+            cheat: Boolean
+        ): Map<Tile, Float> {
             return tile.getTilesInDistance(7)
+                .filter { it.isExplored(civ) || cheat }
                 .associateBy({ it }, { Automation.rankTile(it, civ) })
         }
 
@@ -88,18 +109,22 @@ class CityLocationTileRanker {
 
         private fun rankTileAsCityCenterWithCachedValues(
             tile: Tile, nearbyTileRankings: Map<Tile, Float>,
-            luxuryResourcesInCivArea: Sequence<TileResource>
+            luxuryResourcesInCivArea: Sequence<TileResource>,
+            civ: Civilization, cheat: Boolean
         ): Float {
             val bestTilesFromOuterLayer = tile.getTilesAtDistance(2)
+                .filter { it.isExplored(civ) || cheat }
                 .sortedByDescending { nearbyTileRankings[it] }.take(2)
-            val top5Tiles = (tile.neighbors + bestTilesFromOuterLayer)
-                .sortedByDescending { nearbyTileRankings[it] }
-                .take(5)
+            val top5Tiles =
+                    (tile.neighbors.filter { it.isExplored(civ) || cheat } + bestTilesFromOuterLayer)
+                        .sortedByDescending { nearbyTileRankings[it] }
+                        .take(5)
             var rank = top5Tiles.map { nearbyTileRankings.getValue(it) }.sum()
             if (tile.isCoastalTile()) rank += 5
 
             val luxuryResourcesInCityArea =
-                    tile.getTilesAtDistance(2).filter { it.resource != null }
+                    tile.getTilesAtDistance(2).filter { it.isExplored(civ) || cheat }
+                        .filter { it.resource != null }
                         .map { it.tileResource }.filter { it.resourceType == ResourceType.Luxury }
                         .distinct()
             val luxuryResourcesAlreadyInCivArea =
