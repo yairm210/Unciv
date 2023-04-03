@@ -34,7 +34,7 @@ import org.junit.runner.RunWith
 class CapitalConnectionsFinderTests {
 
     private var gameInfo = GameInfo()
-    private val testCivilizationNames = arrayListOf("America", "Germany", "Greece")
+    private val testCivilizationNames = arrayListOf("America", "Germany", "Greece","Hanoi", "Genoa")
     private var rules = Ruleset()
 
     private fun ourCiv() = gameInfo.civilizations.first()
@@ -195,16 +195,16 @@ class CapitalConnectionsFinderTests {
             createCity(ourCiv(), Vector2(0f, -4f), "Not connected"),
             createCity(ourCiv(), Vector2(0f, 4f), "Connected"))
 
-        val openCiv = gameInfo.getCivilization("Germany")
-        openCiv.nation.cityStateType = "Cultured"
+        val openCiv = gameInfo.getCivilization("Hanoi")
+//         openCiv.nation.cityStateType = "Cultured"
         openCiv.cities = listOf( createCity(openCiv, Vector2(0f, 2f), "Berlin", true))
-        ourCiv().diplomacy["Germany"] = DiplomacyManager(ourCiv(), "Germany")
+        ourCiv().diplomacy["Hanoi"] = DiplomacyManager(ourCiv(), "Hanoi")
             .apply { diplomaticStatus = DiplomaticStatus.Peace }
 
-        val closedCiv = gameInfo.getCivilization("Greece")
+        val closedCiv = gameInfo.getCivilization("Genoa")
         closedCiv.nation.cityStateType = "Cultured"
         closedCiv.cities = listOf( createCity(closedCiv, Vector2(0f, -2f), "Athens", true))
-        ourCiv().diplomacy["Greece"] = DiplomacyManager(ourCiv(), "Greece")
+        ourCiv().diplomacy["Genoa"] = DiplomacyManager(ourCiv(), "Genoa")
             .apply { diplomaticStatus = DiplomaticStatus.War }
 
 
