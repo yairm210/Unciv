@@ -50,7 +50,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
             MapType.threeContinents -> createThreeContinents(tileMap)
             MapType.fourCorners -> createFourCorners(tileMap)
             MapType.archipelago -> createArchipelago(tileMap)
-            MapType.default -> createPerlin(tileMap)
+            MapType.perlin -> createPerlin(tileMap)
         }
 
         if (tileMap.mapParameters.shape === MapShape.flatEarth) {
@@ -319,7 +319,7 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
                                      nOctaves: Int = 10,
                                      persistence: Double = 0.5,
                                      lacunarity: Double = 2.0,
-                                     scale: Double = 15.0): Double {
+                                     scale: Double = 10.0): Double {
         val worldCoords = HexMath.hex2WorldCoords(tile.position)
         return Perlin.ridgedNoise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed, nOctaves, persistence, lacunarity, scale)
     }

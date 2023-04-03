@@ -178,14 +178,14 @@ class CityStats(val city: City) {
         return !city.containsBuildingUnique(UniqueType.RemoveAnnexUnhappiness)
     }
 
-    fun getStatsOfSpecialist(specialistName: String): Stats {
+    fun getStatsOfSpecialist(specialistName: String, localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats {
         val specialist = city.getRuleset().specialists[specialistName]
             ?: return Stats()
         val stats = specialist.cloneStats()
-        for (unique in city.getMatchingUniques(UniqueType.StatsFromSpecialist))
+        for (unique in localUniqueCache.get(UniqueType.StatsFromSpecialist.name, city.getMatchingUniques(UniqueType.StatsFromSpecialist)))
             if (city.matchesFilter(unique.params[1]))
                 stats.add(unique.stats)
-        for (unique in city.civ.getMatchingUniques(UniqueType.StatsFromObject))
+        for (unique in localUniqueCache.get(UniqueType.StatsFromObject.name, city.civ.getMatchingUniques(UniqueType.StatsFromObject)))
             if (unique.params[1] == specialistName)
                 stats.add(unique.stats)
         return stats
@@ -193,8 +193,9 @@ class CityStats(val city: City) {
 
     private fun getStatsFromSpecialists(specialists: Counter<String>): Stats {
         val stats = Stats()
+        val localUniqueCache = LocalUniqueCache()
         for (entry in specialists.filter { it.value > 0 })
-            stats.add(getStatsOfSpecialist(entry.key) * entry.value)
+            stats.add(getStatsOfSpecialist(entry.key, localUniqueCache) * entry.value)
         return stats
     }
 

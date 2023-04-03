@@ -9,15 +9,15 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showReligionInCivilopedia
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.colorFromRGB
+import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showReligionInCivilopedia
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import kotlin.math.pow
 
  class Nation : RulesetObject() {
     var leaderName = ""
-    fun getLeaderDisplayName() = if (isCityState()) name
+    fun getLeaderDisplayName() = if (isCityState) name
     else "[$leaderName] of [$name]"
 
     val style = ""
@@ -61,10 +61,10 @@ import kotlin.math.pow
 
     fun getInnerColor(): Color = innerColorObject
 
-    fun isCityState() = cityStateType != null
-    fun isMajorCiv() = !isBarbarian() && !isCityState() && !isSpectator()
-    fun isBarbarian() = name == Constants.barbarians
-    fun isSpectator() = name == Constants.spectator
+    val isCityState by lazy { cityStateType != null }
+    val isMajorCiv by lazy { !isBarbarian && !isCityState && !isSpectator }
+    val isBarbarian by lazy { name == Constants.barbarians }
+    val isSpectator by lazy { name == Constants.spectator }
 
     // This is its own transient because we'll need to check this for every tile-to-tile movement which is harsh
     @Transient
@@ -89,13 +89,13 @@ import kotlin.math.pow
 
     override fun makeLink() = "Nation/$name"
     override fun getSortGroup(ruleset: Ruleset) = when {
-        isCityState() -> 1
-        isBarbarian() -> 9
+        isCityState -> 1
+        isBarbarian -> 9
         else -> 0
     }
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
-        if (isCityState()) return getCityStateInfo(ruleset)
+        if (isCityState) return getCityStateInfo(ruleset)
 
         val textList = ArrayList<FormattedLine>()
 
@@ -300,8 +300,8 @@ import kotlin.math.pow
          return when (filter) {
              "All" -> true
              name -> true
-             "Major" -> isMajorCiv()
-             "CityState" -> isCityState()
+             "Major" -> isMajorCiv
+             "CityState" -> isCityState
              else -> uniques.contains(filter)
          }
      }
