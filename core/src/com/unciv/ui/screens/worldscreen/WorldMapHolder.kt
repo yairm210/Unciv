@@ -696,12 +696,13 @@ class WorldMapHolder(
         }
 
         // Highlight best tiles for city founding
-        if (UncivGame.Current.gameInfo!!.turns > 0 && unit.hasUnique(UniqueType.FoundCity)
-                && UncivGame.Current.settings.showSettlersSuggestedCityLocations) {
-            CityLocationTileRanker.getBestTilesToFoundCity(unit, false).map { it.first }
+        if (unit.hasUnique(UniqueType.FoundCity)
+                && UncivGame.Current.settings.showSettlersSuggestedCityLocations
+        ) {
+            CityLocationTileRanker.getBestTilesToFoundCity(unit).map { it.first }
                 .filter { it.isExplored(unit.civ) }.take(3).forEach {
-                tileGroups[it]!!.layerOverlay.showGoodCityLocationIndicator()
-            }
+                    tileGroups[it]!!.layerOverlay.showGoodCityLocationIndicator()
+                }
         }
     }
 
