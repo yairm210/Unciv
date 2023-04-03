@@ -1124,7 +1124,7 @@ class MapRegions (val ruleset: Ruleset){
         // Second place one (1) luxury at minor civ start locations
         // Check only ones that got a start location
         for (startLocation in tileMap.startingLocationsByNation
-                .filterKeys { ruleset.nations[it]!!.isCityState() }.map { it.value.first() }) {
+                .filterKeys { ruleset.nations[it]!!.isCityState }.map { it.value.first() }) {
             val region = regions.firstOrNull { startLocation in it.tiles }
             val tilesToCheck = startLocation.getTilesInDistanceRange(1..2)
             // 75% probability that we first attempt to place a "city state" luxury, then a random or regional one
@@ -1315,7 +1315,7 @@ class MapRegions (val ruleset: Ruleset){
 
         if (modernOptions.any())
             for (cityStateLocation in tileMap.startingLocationsByNation
-                    .filterKeys { ruleset.nations[it]!!.isCityState() }.values.map { it.first() }) {
+                    .filterKeys { ruleset.nations[it]!!.isCityState }.values.map { it.first() }) {
                 val resourceToPlace = modernOptions.random()
                 totalPlaced[resourceToPlace] =
                         totalPlaced[resourceToPlace]!! + tryAddingResourceToTiles(resourceToPlace, 1, cityStateLocation.getTilesInDistanceRange(1..3))

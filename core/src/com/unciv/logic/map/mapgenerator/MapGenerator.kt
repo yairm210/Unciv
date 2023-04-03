@@ -144,17 +144,17 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         if (civilizations.isNotEmpty()) {
             val regions = MapRegions(ruleset)
             runAndMeasure("generateRegions") {
-                regions.generateRegions(map, civilizations.count { ruleset.nations[it.civName]!!.isMajorCiv() })
+                regions.generateRegions(map, civilizations.count { ruleset.nations[it.civName]!!.isMajorCiv })
             }
             runAndMeasure("assignRegions") {
-                regions.assignRegions(map, civilizations.filter { ruleset.nations[it.civName]!!.isMajorCiv() }, gameParameters)
+                regions.assignRegions(map, civilizations.filter { ruleset.nations[it.civName]!!.isMajorCiv }, gameParameters)
             }
             // Natural wonders need to go before most resources since there is a minimum distance
             runAndMeasure("NaturalWonderGenerator") {
                 NaturalWonderGenerator(ruleset, randomness).spawnNaturalWonders(map)
             }
             runAndMeasure("placeResourcesAndMinorCivs") {
-                regions.placeResourcesAndMinorCivs(map, civilizations.filter { ruleset.nations[it.civName]!!.isCityState() })
+                regions.placeResourcesAndMinorCivs(map, civilizations.filter { ruleset.nations[it.civName]!!.isCityState })
             }
         } else {
             runAndMeasure("NaturalWonderGenerator") {
