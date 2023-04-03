@@ -199,9 +199,11 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         }
     }
 
+    @delegate:Transient
+    val civMap by lazy { civilizations.associateBy { it.civName } }
     /** Get a civ by name
      *  @throws NoSuchElementException if no civ of that name is in the game (alive or dead)! */
-    fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
+    fun getCivilization(civName: String) = civMap.getValue(civName)
     fun getCurrentPlayerCivilization() = currentPlayerCiv
     fun getCivilizationsAsPreviews() = civilizations.map { it.asPreview() }.toMutableList()
     /** Get barbarian civ

@@ -489,7 +489,7 @@ class WorkerAutomation(
         val enemyCivs = civInfo.getKnownCivs()
             .filterNot { it == civInfo || it.cities.isEmpty() || !civInfo.getDiplomacyManager(it).canAttack() }
         // no potential enemies
-        if (enemyCivs.isEmpty()) return false
+        if (enemyCivs.none()) return false
 
         val threatMapping: (Civilization) -> Int = {
             // the war is already a good nudge to build forts
@@ -507,7 +507,7 @@ class WorkerAutomation(
             civInfo,
             it) <= threatMapping(it) }
         // no threat, let's not build fort
-        if (enemyCivsIsCloseEnough.isEmpty()) return false
+        if (enemyCivsIsCloseEnough.none()) return false
 
         // make list of enemy cities as sources of threat
         val enemyCities = mutableListOf<Tile>()

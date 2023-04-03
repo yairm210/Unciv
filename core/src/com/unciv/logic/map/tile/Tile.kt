@@ -97,7 +97,6 @@ open class Tile : IsPartOfGameInfoSerialization {
         private set
 
     @Transient
-            /** Saves a sequence of a list */
     lateinit var lastTerrain: Terrain
         private set
 

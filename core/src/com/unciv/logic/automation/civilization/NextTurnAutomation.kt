@@ -303,7 +303,7 @@ object NextTurnAutomation {
 
         if (!civInfo.isCityState()) {
             val potentialAllies = civInfo.getKnownCivs().filter { it.isCityState() }
-            if (potentialAllies.isNotEmpty()) {
+            if (potentialAllies.any()) {
                 val cityState =
                     potentialAllies.maxByOrNull { valueCityStateAlliance(civInfo, it) }!!
                 if (cityState.getAllyCiv() != civInfo.civName && valueCityStateAlliance(civInfo, cityState) > 0) {
@@ -793,7 +793,7 @@ object NextTurnAutomation {
         // If the AI declares war on a civ without knowing the location of any cities, it'll just keep amassing an army and not sending it anywhere,
         //   and end up at a massive disadvantage
 
-        if (enemyCivs.isEmpty()) return
+        if (enemyCivs.none()) return
 
         val civWithBestMotivationToAttack = enemyCivs
                 .map { Pair(it, motivationToAttack(civInfo, it)) }
@@ -1014,7 +1014,7 @@ object NextTurnAutomation {
                 }
 
             if (highestOpinion == null) null
-            else knownMajorCivs.filter { civInfo.getDiplomacyManager(it).opinionOfOtherCiv() == highestOpinion}.random().civName
+            else knownMajorCivs.filter { civInfo.getDiplomacyManager(it).opinionOfOtherCiv() == highestOpinion}.toList().random().civName
 
         } else {
             civInfo.getAllyCiv()
