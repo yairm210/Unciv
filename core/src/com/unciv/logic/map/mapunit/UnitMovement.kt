@@ -68,7 +68,7 @@ class UnitMovement(val unit: MapUnit) {
         if (unit.cache.ignoresTerrainCost) return 1f + extraCost
         if (areConnectedByRiver) return 100f  // Rivers take the entire turn to cross
 
-        val terrainCost = to.getLastTerrain().movementCost.toFloat()
+        val terrainCost = to.lastTerrain.movementCost.toFloat()
 
         if (unit.cache.noTerrainMovementUniques)
             return terrainCost + extraCost
@@ -704,7 +704,7 @@ class UnitMovement(val unit: MapUnit) {
             // helicopters can pass through impassable tiles like mountains
             if (!unit.cache.canPassThroughImpassableTiles && !(unit.cache.canEnterIceTiles && tile.terrainFeatures.contains(Constants.ice))
                 // carthage-like uniques sometimes allow passage through impassible tiles
-                && !(unit.civ.passThroughImpassableUnlocked && unit.civ.passableImpassables.contains(tile.getLastTerrain().name)))
+                && !(unit.civ.passThroughImpassableUnlocked && unit.civ.passableImpassables.contains(tile.lastTerrain.name)))
                 return false
         }
         if (tile.isLand

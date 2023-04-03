@@ -12,21 +12,21 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.Player
-import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
+import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.UncivTextField
+import com.unciv.ui.components.extensions.*
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.Popup
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.multiplayerscreens.FriendPickerList
 import com.unciv.ui.screens.pickerscreens.PickerPane
 import com.unciv.ui.screens.pickerscreens.PickerScreen
-import com.unciv.ui.popups.Popup
-import com.unciv.ui.components.UncivTextField
-import com.unciv.ui.components.KeyCharAndCode
-import com.unciv.ui.components.extensions.*
-import com.unciv.ui.screens.basescreen.BaseScreen
-import java.util.UUID
+import java.util.*
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
 
 /**
@@ -82,7 +82,7 @@ class PlayerPickerTable(
         for (player in gameParameters.players) {
             playerListTable.add(getPlayerTable(player)).width(civBlocksWidth).padBottom(20f).row()
         }
-        if (!locked && gameParameters.players.size < gameBasics.nations.values.count { it.isMajorCiv() }) {
+        if (!locked && gameParameters.players.size < gameBasics.nations.values.count { it.isMajorCiv }) {
             val addPlayerButton = "+".toLabel(Color.BLACK, 30)
                 .apply { this.setAlignment(Align.center) }
                 .surroundWithCircle(50f)
@@ -110,7 +110,7 @@ class PlayerPickerTable(
      */
     private fun reassignRemovedModReferences() {
         for (player in gameParameters.players) {
-            if (!previousScreen.ruleset.nations.containsKey(player.chosenCiv) || previousScreen.ruleset.nations[player.chosenCiv]!!.isCityState())
+            if (!previousScreen.ruleset.nations.containsKey(player.chosenCiv) || previousScreen.ruleset.nations[player.chosenCiv]!!.isCityState)
                 player.chosenCiv = Constants.random
         }
     }
@@ -263,7 +263,7 @@ class PlayerPickerTable(
      */
     internal fun getAvailablePlayerCivs(dontSkipNation: String? = null) =
         previousScreen.ruleset.nations.values.asSequence()
-            .filter { it.isMajorCiv() }
+            .filter { it.isMajorCiv }
             .filter { it.name == dontSkipNation || gameParameters.players.none { player -> player.chosenCiv == it.name } }
 
     /**
@@ -375,7 +375,7 @@ private class NationPickerPopup(
         var currentY = 0f
         for (nation in nations) {
             // only humans can spectate, sorry robots
-            if (player.playerType == PlayerType.AI && nation.isSpectator())
+            if (player.playerType == PlayerType.AI && nation.isSpectator)
                 continue
             if (player.chosenCiv == nation.name)
                 nationListScrollY = currentY

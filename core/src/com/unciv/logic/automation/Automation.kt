@@ -21,14 +21,14 @@ import com.unciv.ui.screens.victoryscreen.RankingType
 
 object Automation {
 
-    fun rankTileForCityWork(tile: Tile, city: City, cityStats: Stats): Float {
-        val stats = tile.stats.getTileStats(city, city.civ)
-        return rankStatsForCityWork(stats, city, cityStats)
+    fun rankTileForCityWork(tile: Tile, city: City, cityStats: Stats, localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Float {
+        val stats = tile.stats.getTileStats(city, city.civ, localUniqueCache)
+        return rankStatsForCityWork(stats, city, cityStats, false, localUniqueCache)
     }
 
-    fun rankSpecialist(specialist: String, city: City, cityStats: Stats): Float {
-        val stats = city.cityStats.getStatsOfSpecialist(specialist)
-        var rank = rankStatsForCityWork(stats, city, cityStats, true)
+    fun rankSpecialist(specialist: String, city: City, cityStats: Stats, localUniqueCache: LocalUniqueCache): Float {
+        val stats = city.cityStats.getStatsOfSpecialist(specialist, localUniqueCache)
+        var rank = rankStatsForCityWork(stats, city, cityStats, true, localUniqueCache)
         // derive GPP score
         var gpp = 0f
         if (city.getRuleset().specialists.containsKey(specialist)) { // To solve problems in total remake mods
@@ -40,17 +40,19 @@ object Automation {
         return rank
     }
 
-    private fun rankStatsForCityWork(stats: Stats, city: City, cityStats: Stats, specialist: Boolean = false): Float {
+    private fun rankStatsForCityWork(stats: Stats, city: City, cityStats: Stats, specialist: Boolean, localUniqueCache: LocalUniqueCache): Float {
         val cityAIFocus = city.cityAIFocus
         val yieldStats = stats.clone()
 
         if (specialist) {
             // If you have the Food Bonus, count as 1 extra food production (base is 2food)
-            for (unique in city.getMatchingUniques(UniqueType.FoodConsumptionBySpecialists))
+            for (unique in localUniqueCache.get(UniqueType.FoodConsumptionBySpecialists.name,
+                    city.getMatchingUniques(UniqueType.FoodConsumptionBySpecialists)))
                 if (city.matchesFilter(unique.params[1]))
                     yieldStats.food -= (unique.params[0].toFloat() / 100f) * 2f // base 2 food per Pop
             // Specialist Happiness Percentage Change 0f-1f
-            for (unique in city.getMatchingUniques(UniqueType.UnhappinessFromPopulationTypePercentageChange))
+            for (unique in localUniqueCache.get(UniqueType.UnhappinessFromPopulationTypePercentageChange.name,
+                    city.getMatchingUniques(UniqueType.UnhappinessFromPopulationTypePercentageChange)))
                 if (city.matchesFilter(unique.params[2]) && unique.params[1] == "Specialists")
                     yieldStats.happiness -= (unique.params[0].toFloat() / 100f)  // relative val is negative, make positive
             if (city.civ.getHappiness() < 0) yieldStats.happiness *= 2  // double weight for unhappy civilization
@@ -337,10 +339,11 @@ object Automation {
 
     /** Support [UniqueType.CreatesOneImprovement] unique - find best tile for placement automation */
     fun getTileForConstructionImprovement(city: City, improvement: TileImprovement): Tile? {
+        val localUniqueCache = LocalUniqueCache()
         return city.getTiles().filter {
             it.improvementFunctions.canBuildImprovement(improvement, city.civ)
         }.maxByOrNull {
-            rankTileForCityWork(it, city, city.cityStats.currentCityStats)
+            rankTileForCityWork(it, city, city.cityStats.currentCityStats, localUniqueCache)
         }
     }
 

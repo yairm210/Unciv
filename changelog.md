@@ -1,3 +1,10 @@
+## 4.5.16
+
+Many many performance improvements!
+
+By SomeTroglodyte:
+- Music player controls
+
 ## 4.5.15
 
 Automated units don't try and conquer the same city twice

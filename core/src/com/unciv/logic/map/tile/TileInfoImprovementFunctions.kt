@@ -77,7 +77,7 @@ class TileInfoImprovementFunctions(val tile: Tile) {
         fun TileImprovement.canBeBuildOnThisUnbuildableTerrain(
             knownFeatureRemovals: List<TileImprovement>? = null,
         ): Boolean {
-            val topTerrain = tile.getLastTerrain()
+            val topTerrain = tile.lastTerrain
             // We can build if we are specifically allowed to build on this terrain
             if (isAllowedOnFeature(topTerrain.name)) return true
 
@@ -115,7 +115,7 @@ class TileInfoImprovementFunctions(val tile: Tile) {
             tile.improvement != null && tile.getTileImprovement()!!.hasUnique(UniqueType.Irremovable, stateForConditionals) -> false
 
             // Can't build if this terrain is unbuildable, except when we are specifically allowed to
-            tile.getLastTerrain().unbuildable && !improvement.canBeBuildOnThisUnbuildableTerrain(knownFeatureRemovals) -> false
+            tile.lastTerrain.unbuildable && !improvement.canBeBuildOnThisUnbuildableTerrain(knownFeatureRemovals) -> false
 
             // Can't build if any terrain specifically prevents building this improvement
             tile.getTerrainMatchingUniques(UniqueType.RestrictedBuildableImprovements, stateForConditionals).any {
@@ -146,7 +146,7 @@ class TileInfoImprovementFunctions(val tile: Tile) {
             // At this point we know this is a normal improvement and that there is no reason not to allow it to be built.
 
             // Lastly we check if the improvement may be built on this terrain or resource
-            improvement.canBeBuiltOn(tile.getLastTerrain().name) -> true
+            improvement.canBeBuiltOn(tile.lastTerrain.name) -> true
             tile.isLand && improvement.canBeBuiltOn("Land") -> true
             tile.isWater && improvement.canBeBuiltOn("Water") -> true
             // DO NOT reverse this &&. isAdjacentToFreshwater() is a lazy which calls a function, and reversing it breaks the tests.

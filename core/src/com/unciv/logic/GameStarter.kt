@@ -229,7 +229,7 @@ object GameStarter {
             availableCivNames.addAll(gameSetupInfo.gameParameters.randomNationsPool.shuffled())
         } else
             // CityState or Spectator civs are not available for Random pick
-            availableCivNames.addAll(ruleset.nations.filter { it.value.isMajorCiv() }.keys.shuffled())
+            availableCivNames.addAll(ruleset.nations.filter { it.value.isMajorCiv }.keys.shuffled())
 
         availableCivNames.removeAll(newGameParameters.players.map { it.chosenCiv }.toSet())
 
@@ -294,7 +294,7 @@ object GameStarter {
         //   and then all the other City-States in a random order! Because the sortedBy function is stable!
         availableCityStatesNames.addAll( ruleset.nations
             .filter {
-                it.value.isCityState() &&
+                it.value.isCityState &&
                 !it.value.hasUnique(UniqueType.CityStateDeprecated)
             }.keys
             .shuffled()

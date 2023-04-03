@@ -182,7 +182,7 @@ class CityFounder {
         // names are taken from the rest of the major nations in the rule set
         val absentMajorNations: Sequence<Nation> =
                 foundingCiv.gameInfo.ruleset.nations.values.asSequence().filter { nation ->
-                    nation.isMajorCiv() && nation !in aliveMajorNations
+                    nation.isMajorCiv && nation !in aliveMajorNations
                 }
         newCityNames =
                 absentMajorNations.flatMap { nation ->

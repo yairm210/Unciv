@@ -310,7 +310,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getProximity(civName: String) = proximity[civName] ?: Proximity.None
 
     /** Returns only undefeated civs, aka the ones we care about */
-    fun getKnownCivs() = diplomacy.values.map { it.otherCiv() }.filter { !it.isDefeated() }
+    fun getKnownCivs() = diplomacy.values.asSequence().map { it.otherCiv() }.filter { !it.isDefeated() }
     fun knows(otherCivName: String) = diplomacy.containsKey(otherCivName)
     fun knows(otherCiv: Civilization) = knows(otherCiv.civName)
 
@@ -320,11 +320,11 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun isOneCityChallenger() = playerType == PlayerType.Human && gameInfo.gameParameters.oneCityChallenge
 
     fun isCurrentPlayer() = gameInfo.currentPlayerCiv == this
-    fun isMajorCiv() = nation.isMajorCiv()
-    fun isMinorCiv() = nation.isCityState() || nation.isBarbarian()
-    fun isCityState(): Boolean = nation.isCityState()
-    fun isBarbarian() = nation.isBarbarian()
-    fun isSpectator() = nation.isSpectator()
+    fun isMajorCiv() = nation.isMajorCiv
+    fun isMinorCiv() = nation.isCityState || nation.isBarbarian
+    fun isCityState(): Boolean = nation.isCityState
+    fun isBarbarian() = nation.isBarbarian
+    fun isSpectator() = nation.isSpectator
     fun isAlive(): Boolean = !isDefeated()
 
     @delegate:Transient
