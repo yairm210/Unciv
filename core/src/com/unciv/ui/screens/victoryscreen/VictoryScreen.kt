@@ -18,6 +18,8 @@ import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.newgamescreen.NewGameScreen
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
@@ -26,7 +28,10 @@ import com.unciv.ui.screens.worldscreen.WorldScreen
 //TODO replay slider
 //TODO icons for victory types
 
-class VictoryScreen(worldScreen: WorldScreen) : PickerScreen() {
+class VictoryScreen(
+    private val worldScreen: WorldScreen,
+    pageNumber: Int = 0
+) : PickerScreen(), RecreateOnResize {
 
     private val gameInfo = worldScreen.gameInfo
     private val playerCiv = worldScreen.viewingCiv
@@ -75,7 +80,8 @@ class VictoryScreen(worldScreen: WorldScreen) : PickerScreen() {
 
         for (tab in VictoryTabs.values()) {
             val tabHidden = tab.isHidden(playerCiv)
-            if (tabHidden && !(tab.allowAsSecret && Gdx.input.areSecretKeysPressed())) continue
+            if (tabHidden && !(tab.allowAsSecret && Gdx.input.areSecretKeysPressed()))
+                continue
             val icon = if (tab.iconName.isEmpty()) null else ImageGetter.getImage(tab.iconName)
             tabs.addPage(
                 tab.caption ?: tab.name,
@@ -86,7 +92,7 @@ class VictoryScreen(worldScreen: WorldScreen) : PickerScreen() {
                 secret = tabHidden && tab.allowAsSecret
             )
         }
-        tabs.selectPage(0)
+        tabs.selectPage(pageNumber)
 
         //**************** Set up bottom area - buttons and description label ****************
         rightSideButton.isVisible = false
@@ -163,7 +169,9 @@ class VictoryScreen(worldScreen: WorldScreen) : PickerScreen() {
     }
 
     override fun dispose() {
-        super.dispose()
         tabs.selectPage(-1)  // Tells Replay page to stop its timer
+        super.dispose()
     }
+
+    override fun recreate(): BaseScreen = VictoryScreen(worldScreen, tabs.activePage)
 }
