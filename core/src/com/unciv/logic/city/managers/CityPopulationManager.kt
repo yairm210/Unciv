@@ -168,11 +168,11 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
             val bestJob: String? = if (city.manualSpecialists) null else getMaxSpecialists()
                     .filter { specialistAllocations[it.key]!! < it.value }
                     .map { it.key }
-                    .maxByOrNull { Automation.rankSpecialist(it, city, cityStats) }
+                    .maxByOrNull { Automation.rankSpecialist(it, city, cityStats, localUniqueCache) }
 
             var valueBestSpecialist = 0f
             if (bestJob != null) {
-                valueBestSpecialist = Automation.rankSpecialist(bestJob, city, cityStats)
+                valueBestSpecialist = Automation.rankSpecialist(bestJob, city, cityStats, localUniqueCache)
             }
 
             //assign population
@@ -208,7 +208,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
             if (amount > maxSpecialists[specialistName]!!)
                 specialistAllocations[specialistName] = maxSpecialists[specialistName]!!
 
-
+        val localUniqueCache = LocalUniqueCache()
 
         while (getFreePopulation() < 0) {
             //evaluate tiles
@@ -217,19 +217,19 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
                 city.workedTiles.asSequence()
                         .map { city.tileMap[it] }
                         .minByOrNull {
-                            Automation.rankTileForCityWork(it, city, city.cityStats.currentCityStats)
+                            Automation.rankTileForCityWork(it, city, city.cityStats.currentCityStats, localUniqueCache)
                             +(if (it.isLocked()) 10 else 0)
                         }!!
             }
             val valueWorstTile = if (worstWorkedTile == null) 0f
-            else Automation.rankTileForCityWork(worstWorkedTile, city, city.cityStats.currentCityStats)
+            else Automation.rankTileForCityWork(worstWorkedTile, city, city.cityStats.currentCityStats, localUniqueCache)
 
             //evaluate specialists
             val worstAutoJob: String? = if (city.manualSpecialists) null else specialistAllocations.keys
-                    .minByOrNull { Automation.rankSpecialist(it, city, city.cityStats.currentCityStats) }
+                    .minByOrNull { Automation.rankSpecialist(it, city, city.cityStats.currentCityStats, localUniqueCache) }
             var valueWorstSpecialist = 0f
             if (worstAutoJob != null)
-                valueWorstSpecialist = Automation.rankSpecialist(worstAutoJob, city, city.cityStats.currentCityStats)
+                valueWorstSpecialist = Automation.rankSpecialist(worstAutoJob, city, city.cityStats.currentCityStats, localUniqueCache)
 
 
             // un-assign population
@@ -249,7 +249,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
                     //  and population goes below the number of specialists, e.g. city is razing.
                     // Let's give a chance to do the work automatically at least.
                     val worstJob = specialistAllocations.keys.minByOrNull {
-                        Automation.rankSpecialist(it, city, city.cityStats.currentCityStats) }
+                        Automation.rankSpecialist(it, city, city.cityStats.currentCityStats, localUniqueCache) }
                         ?: break // sorry, we can do nothing about that
                     specialistAllocations.add(worstJob, -1)
                 }

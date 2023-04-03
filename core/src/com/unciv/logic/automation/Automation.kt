@@ -26,8 +26,8 @@ object Automation {
         return rankStatsForCityWork(stats, city, cityStats)
     }
 
-    fun rankSpecialist(specialist: String, city: City, cityStats: Stats): Float {
-        val stats = city.cityStats.getStatsOfSpecialist(specialist)
+    fun rankSpecialist(specialist: String, city: City, cityStats: Stats, localUniqueCache: LocalUniqueCache): Float {
+        val stats = city.cityStats.getStatsOfSpecialist(specialist, localUniqueCache)
         var rank = rankStatsForCityWork(stats, city, cityStats, true)
         // derive GPP score
         var gpp = 0f
@@ -337,10 +337,11 @@ object Automation {
 
     /** Support [UniqueType.CreatesOneImprovement] unique - find best tile for placement automation */
     fun getTileForConstructionImprovement(city: City, improvement: TileImprovement): Tile? {
+        val localUniqueCache = LocalUniqueCache()
         return city.getTiles().filter {
             it.improvementFunctions.canBuildImprovement(improvement, city.civ)
         }.maxByOrNull {
-            rankTileForCityWork(it, city, city.cityStats.currentCityStats)
+            rankTileForCityWork(it, city, city.cityStats.currentCityStats, localUniqueCache)
         }
     }
 
