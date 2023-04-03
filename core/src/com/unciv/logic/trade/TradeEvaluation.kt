@@ -63,7 +63,7 @@ class TradeEvaluation {
 
     fun getTradeAcceptability(trade: Trade, evaluator: Civilization, tradePartner: Civilization): Int {
         val citiesAskedToSurrender = trade.ourOffers.filter { it.type == TradeType.City }.count()
-        val maxCitiesToSurrender = ceil(evaluator.cities.size.toFloat() / 10).toInt()
+        val maxCitiesToSurrender = ceil(evaluator.cities.size.toFloat() / 5).toInt()
         if (citiesAskedToSurrender > maxCitiesToSurrender) {
             return Int.MIN_VALUE
         }
