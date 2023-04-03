@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
+import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.components.extensions.toPercent
@@ -151,11 +152,13 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
 
         val tilesToEvaluate = city.getCenterTile().getTilesInDistance(3)
             .filter { it.getOwner() == currentCiv && !it.isBlockaded() }.toList().asSequence()
+
+        val localUniqueCache = LocalUniqueCache()
         for (i in 1..getFreePopulation()) {
             //evaluate tiles
             val (bestTile, valueBestTile) = tilesToEvaluate
                     .filterNot { it.providesYield() }
-                    .associateWith { Automation.rankTileForCityWork(it, city, cityStats) }
+                    .associateWith { Automation.rankTileForCityWork(it, city, cityStats, localUniqueCache) }
                     .maxByOrNull { it.value }
                     ?: object : Map.Entry<Tile?, Float> {
                         override val key: Tile? = null
@@ -176,7 +179,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
             if (valueBestTile > valueBestSpecialist) {
                 if (bestTile != null) {
                     city.workedTiles = city.workedTiles.withItem(bestTile.position)
-                    cityStats[Stat.Food] += bestTile.stats.getTileStats(city, city.civ)[Stat.Food]
+                    cityStats[Stat.Food] += bestTile.stats.getTileStats(city, city.civ, localUniqueCache)[Stat.Food]
                 }
             } else if (bestJob != null) {
                 specialistAllocations.add(bestJob, 1)
