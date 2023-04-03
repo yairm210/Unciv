@@ -217,7 +217,7 @@ class PortraitNation(name: String, size: Float) : Portrait(Type.Nation, name, si
     override fun getDefaultImage(): Image {
 
         val nation = ruleset.nations[imageName]
-        val isCityState = nation != null && nation.isCityState()
+        val isCityState = nation != null && nation.isCityState
         val pathCityState = "NationIcons/CityState"
 
         return when {

@@ -217,7 +217,7 @@ class GlobalPoliticsOverviewTable (
 
         //allied CS
         for (cityState in gameInfo.getAliveCityStates()) {
-            if (cityState.diplomacy[civ.civName]?.relationshipLevel() == RelationshipLevel.Ally) {
+            if (cityState.diplomacy[civ.civName]?.isRelationshipLevelEQ(RelationshipLevel.Ally) == true) {
                 val alliedText = "Allied with [${getCivName(cityState)}]".toLabel()
                 alliedText.color = Color.GREEN
                 politicsTable.add(alliedText).row()

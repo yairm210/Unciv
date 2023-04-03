@@ -68,7 +68,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         }
 
         for (nation in ruleset.nations.values) {
-            if (nation.cities.isEmpty() && !nation.isSpectator() && !nation.isBarbarian()) {
+            if (nation.cities.isEmpty() && !nation.isSpectator && !nation.isBarbarian) {
                 lines += "${nation.name} can settle cities, but has no city names!"
             }
 
@@ -572,7 +572,9 @@ class RulesetErrorList : ArrayList<RulesetError>() {
     fun isWarnUser() = getFinalSeverity() >= RulesetErrorSeverity.Warning
 
     fun getErrorText(unfiltered: Boolean = false) =
-            filter { unfiltered || it.errorSeverityToReport != RulesetErrorSeverity.WarningOptionsOnly }
+            getErrorText { unfiltered || it.errorSeverityToReport != RulesetErrorSeverity.WarningOptionsOnly }
+    fun getErrorText(filter: (RulesetError)->Boolean) =
+            filter(filter)
                 .sortedByDescending { it.errorSeverityToReport }
                 .joinToString("\n") { it.errorSeverityToReport.name + ": " + it.text }
 }

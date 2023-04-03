@@ -17,6 +17,7 @@ import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.ZoomableScrollPane
 import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.screens.basescreen.UncivStage
 
 
 /**
@@ -43,8 +44,27 @@ class EditorMapHolder(
         if (editorScreen == null) touchable = Touchable.disabled
         continuousScrollingX = tileMap.mapParameters.worldWrap
         addTiles(parentScreen.stage)
-        if (editorScreen != null) addCaptureListener(getDragPaintListener())
+        if (editorScreen != null) {
+            addCaptureListener(getDragPaintListener())
+            setupZoomPanListeners()
+        }
         reloadMaxZoom()
+    }
+
+    /** See also: [WorldMapHolder.setupZoomPanListeners][com.unciv.ui.screens.worldscreen.WorldMapHolder.setupZoomPanListeners] */
+    private fun setupZoomPanListeners() {
+
+        fun setActHit() {
+            val isEnabled = !isZooming() && !isPanning
+            (stage as UncivStage).performPointerEnterExitEvents = isEnabled
+            tileGroupMap.shouldAct = isEnabled
+            tileGroupMap.shouldHit = isEnabled
+        }
+
+        onPanStartListener = { setActHit() }
+        onPanStopListener = { setActHit() }
+        onZoomStartListener = { setActHit() }
+        onZoomStopListener = { setActHit() }
     }
 
     private fun addTiles(stage: Stage) {

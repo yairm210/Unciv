@@ -63,4 +63,10 @@ class SkinStrings(skin: String = UncivGame.Current.settings.skin) {
         }
         return ImageGetter.getNinePatch(location, tint)
     }
+
+    fun getUIColor(path: String, default: Color? = null) =
+            skinConfig.skinVariants[path]?.tint
+                ?: default
+                ?: skinConfig.clearColor
+
 }

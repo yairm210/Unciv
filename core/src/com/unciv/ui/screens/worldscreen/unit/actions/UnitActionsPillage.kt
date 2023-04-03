@@ -1,7 +1,6 @@
 package com.unciv.ui.screens.worldscreen.unit.actions
 
 import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.mapunit.MapUnit
@@ -13,7 +12,6 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.hasOpenPopups
-import com.unciv.ui.screens.worldscreen.WorldScreen
 import kotlin.random.Random
 
 object UnitActionsPillage {
@@ -22,12 +20,8 @@ object UnitActionsPillage {
         val pillageAction = getPillageAction(unit)
             ?: return
         if (pillageAction.action == null)
-            actionList += UnitAction(
-                UnitActionType.Pillage,
-                title = "${UnitActionType.Pillage} [${unit.currentTile.getImprovementToPillageName()!!}]",
-                action = null)
-        else actionList += UnitAction(type = UnitActionType.Pillage,
-            title = "${UnitActionType.Pillage} [${unit.currentTile.getImprovementToPillageName()!!}]") {
+            actionList += pillageAction
+        else actionList += UnitAction(UnitActionType.Pillage, pillageAction.title) {
             if (!GUI.getWorldScreen().hasOpenPopups()) {
                 val pillageText = "Are you sure you want to pillage this [${unit.currentTile.getImprovementToPillageName()!!}]?"
                 ConfirmPopup(
@@ -45,11 +39,13 @@ object UnitActionsPillage {
 
     fun getPillageAction(unit: MapUnit): UnitAction? {
         val tile = unit.currentTile
-        if (unit.isCivilian() || !tile.canPillageTile() || tile.getOwner() == unit.civ) return null
+        val improvementName = unit.currentTile.getImprovementToPillageName()
+        if (unit.isCivilian() || improvementName == null || tile.getOwner() == unit.civ) return null
         return UnitAction(
             UnitActionType.Pillage,
+            title = "${UnitActionType.Pillage} [$improvementName]",
             action = {
-                val pillagedImprovement = unit.currentTile.getImprovementToPillageName()!!
+                val pillagedImprovement = unit.currentTile.getImprovementToPillageName()!!  // can this differ from improvementName due to later execution???
                 val pillagingImprovement = unit.currentTile.canPillageTileImprovement()
                 val pillageText = "An enemy [${unit.baseUnit.name}] has pillaged our [$pillagedImprovement]"
                 val icon = "ImprovementIcons/$pillagedImprovement"
@@ -72,44 +68,51 @@ object UnitActionsPillage {
 
                 if (pillagingImprovement)  // only Improvements heal HP
                     unit.healBy(25)
-            }.takeIf { unit.currentMovement > 0 && UnitActions.canPillage(unit, tile) })
+            }.takeIf { unit.currentMovement > 0 && UnitActions.canPillage(unit, tile) }
+        )
     }
 
     private fun pillageLooting(tile: Tile, unit: MapUnit) {
-        // Stats objects for reporting pillage results in a notification
-        val pillageYield = Stats()
-        val globalPillageYield = Stats()
-        val toCityPillageYield = Stats()
         val closestCity = unit.civ.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
         val improvement = tile.getImprovementToPillage()!!
 
+        // Accumulate the loot
+        val pillageYield = Stats()
         for (unique in improvement.getMatchingUniques(UniqueType.PillageYieldRandom)) {
-            for (stat in unique.stats) {
-                val looted = Random.nextInt((stat.value + 1).toInt()) + Random.nextInt((stat.value + 1).toInt())
-                pillageYield.add(stat.key, looted.toFloat())
+            for ((stat, value) in unique.stats) {
+                // Unique text says "approximately [X]", so we add 0..X twice - think an RPG's 2d12
+                val looted = Random.nextInt((value + 1).toInt()) + Random.nextInt((value + 1).toInt())
+                pillageYield.add(stat, looted.toFloat())
             }
         }
         for (unique in improvement.getMatchingUniques(UniqueType.PillageYieldFixed)) {
-            for (stat in unique.stats) {
-                pillageYield.add(stat.key, stat.value)
-            }
+            pillageYield.add(unique.stats)
         }
 
-        for (stat in pillageYield) {
-            if (stat.key in Stat.statsWithCivWideField) {
-                unit.civ.addStat(stat.key, stat.value.toInt())
-                globalPillageYield[stat.key] += stat.value
+        // Please no notification when there's no loot
+        if (pillageYield.isEmpty()) return
+
+        // Distribute the loot and keep record what went to civ/city for the notification(s)
+        val globalPillageYield = Stats()
+        val toCityPillageYield = Stats()
+        for ((stat, value) in pillageYield) {
+            if (stat in Stat.statsWithCivWideField) {
+                unit.civ.addStat(stat, value.toInt())
+                globalPillageYield[stat] += value
             }
             else if (closestCity != null) {
-                closestCity.addStat(stat.key, stat.value.toInt())
-                toCityPillageYield[stat.key] += stat.value
+                closestCity.addStat(stat, value.toInt())
+                toCityPillageYield[stat] += value
             }
         }
 
-        val lootNotificationText = if (!toCityPillageYield.isEmpty() && closestCity != null)
-            "We have looted [${toCityPillageYield.toStringWithoutIcons()}] from a [${improvement.name}] which has been sent to [${closestCity.name}]"
-        else "We have looted [${globalPillageYield.toStringWithoutIcons()}] from a [${improvement.name}]"
-
-        unit.civ.addNotification(lootNotificationText, tile.position, NotificationCategory.War, "ImprovementIcons/${improvement.name}", NotificationIcon.War)
+        // Now tell the user about the swag
+        fun Stats.notify(suffix: String) {
+            if (isEmpty()) return
+            val text = "We have looted [${toStringWithoutIcons()}] from a [${improvement.name}]" + suffix
+            unit.civ.addNotification(text, tile.position, NotificationCategory.War, "ImprovementIcons/${improvement.name}", NotificationIcon.War)
+        }
+        toCityPillageYield.notify(" which has been sent to [${closestCity?.name}]")
+        globalPillageYield.notify("")
     }
 }

@@ -14,8 +14,8 @@ object EasterEggRulesets {
         temperatureShift = when(HolidayDates.getMonth()) {
             Month.JANUARY -> -1.4f
             Month.FEBRUARY -> -1.3f
-            Month.MARCH -> -0.4f
-            Month.AUGUST -> 0.4f
+            Month.MARCH -> 0.4f // actually generates a lot of grassland
+            Month.AUGUST -> -0.4f // actually generates a lot more desert
             Month.NOVEMBER -> -0.7f
             Month.DECEMBER -> -1.3f
             else -> 0f
