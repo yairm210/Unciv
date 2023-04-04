@@ -23,7 +23,6 @@ class VictoryScreenReplay(
     private val finalTurn = gameInfo.turns
     private var replayTimer : Timer.Task? = null
     private val replayMap = ReplayMap(gameInfo.tileMap)
-    private val header = Table()
 
     private val header = Table()
     private val yearLabel = "".toLabel()
@@ -33,10 +32,14 @@ class VictoryScreenReplay(
     private val playPauseButton = Container(pauseImage)
 
     init {
+        // yearLabel should be OK with 80f, Label("4000 BC").prefWidth is nearly 78f.
+        // The 190f is twice (that plus space=15f). The minimum 120f should never happen, just in case.
         val firstTurn = gameInfo.historyStartTurn
         val maxSliderPercent = if (worldScreen.isPortrait()) 0.75f else 0.5f
         val sliderWidth = ((finalTurn - firstTurn) * 15f + 60f)
             .coerceAtMost(worldScreen.stage.width * maxSliderPercent)
+            .coerceAtMost(worldScreen.stage.width - 190f)
+            .coerceAtLeast(120f)
         slider = UncivSlider(
             firstTurn.toFloat(), finalTurn.toFloat(), 1f,
             initial = firstTurn.toFloat(),
@@ -48,7 +51,7 @@ class VictoryScreenReplay(
         playImage.setSize(24f)
         pauseImage.setSize(24f)
         playPauseButton.apply {
-            align(Align.left)
+            // I decided against `align(Align.left)`: since the button is so much smaller than the year label, perfect symmetry is impossible
             setSize(26f, 26f)
             onClick(::togglePause)
         }
@@ -58,10 +61,10 @@ class VictoryScreenReplay(
             restartTimer()
         }
 
-        header.defaults().space(15f).padTop(15f)
-        header.add(yearLabel).minWidth(100f).right()
-        header.add(slider).width(sliderWidth).fillX()
-        header.add(playPauseButton).minWidth(100f).left()
+        header.defaults().space(15f).fillX().padTop(15f)
+        header.add(yearLabel).minWidth(80f).right()
+        header.add(slider).width(sliderWidth)
+        header.add(playPauseButton).minWidth(80f)
 
         add(replayMap).pad(10f)
     }
