@@ -19,7 +19,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var minNumberOfPlayers = 3
     var maxNumberOfPlayers = 3
     var players = ArrayList<Player>().apply {
-        add(Player().apply { playerType = PlayerType.Human })
+        add(Player(playerType = PlayerType.Human))
         for (i in 1..3) add(Player())
     }
     var randomNumberOfCityStates = false
