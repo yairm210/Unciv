@@ -384,7 +384,7 @@
 	
 	"Plains+Wheat+Farm": ["Plains","Farm+Wheat","HutFarm"],
 	"Desert+Wheat+Farm": ["Desert","Farm+Wheat","HutFarm"],
-	"Desert+Flood plains+Wheat+Farm": ["Flood plains","Farm+Wheat","HutFarm"],
+	"Desert+Flood plains+Wheat+Farm": ["Desert","Flood plains","Farm+Wheat","HutFarm"],
 	
 	"Tundra+Farm": ["Tundra","FarmT","HutFarmT"],
 	"Tundra+Deer+Farm": ["Tundra","FarmT","Deer"],
