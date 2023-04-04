@@ -32,7 +32,7 @@ import kotlin.math.sign
 /**
  * Modified Gdx [Slider]
  *
- * Has +/- buttons at the end for easier single steps
+ * Optionally has +/- buttons at the end for easier single steps
  * Shows a timed tip with the actual value every time it changes
  * Disables listeners of any ScrollPanes this is nested in while dragging
  *
@@ -43,8 +43,12 @@ import kotlin.math.sign
  * @param max           Initializes [Slider.max]
  * @param step          Initializes [Slider.stepSize]
  * @param vertical      Initializes [Slider.vertical]
- * @param plusMinus     Enable +/- buttons
- * @param onChange      Optional lambda gets called with the current value on change
+ * @param plusMinus     Enable +/- buttons - note they will also snap to [setSnapToValues].
+ * @param initial       Initializes [value]
+ * @param sound         Plays _only_ on user dragging (+/- always play the normal Click sound). Consider using [UncivSound.Silent] for sliders with many steps.
+ * @param tipType       None disables the tooltip, Auto animates it on change, Permanent leaves it on screen after initial fade-in.
+ * @param getTipText    Formats a value for the tooltip. Default formats as numeric, precision depends on [stepSize]. You can also use [UncivSlider::formatPercent][formatPercent].
+ * @param onChange      Optional lambda gets called with the current value on a user change (not when setting value programmatically).
  */
 class UncivSlider (
     min: Float,
@@ -54,10 +58,12 @@ class UncivSlider (
     plusMinus: Boolean = true,
     initial: Float,
     sound: UncivSound = UncivSound.Slider,
-    private var permanentTip: Boolean = true,
+    private val tipType: TipType = TipType.Permanent,
     private val getTipText: ((Float) -> String)? = null,
-    onChange: ((Float) -> Unit)? = null
+    private val onChange: ((Float) -> Unit)? = null
 ): Table(BaseScreen.skin) {
+    enum class TipType { None, Auto, Permanent }
+
     companion object {
         /** Can be passed directly to the [getTipText] constructor parameter */
         fun formatPercent(value: Float): String {
@@ -88,6 +94,7 @@ class UncivSlider (
     private var snapThreshold: Float = 0f
 
     // Compatibility with default Slider
+    @Suppress("unused") // Part of the Slider API
     val minValue: Float
         get() = slider.minValue
     @Suppress("unused") // Part of the Slider API
@@ -96,7 +103,9 @@ class UncivSlider (
     var value: Float
         get() = slider.value
         set(newValue) {
+            blockListener = true
             slider.value = newValue
+            blockListener = false
             valueChanged()
         }
     var stepSize: Float
@@ -116,6 +125,7 @@ class UncivSlider (
             slider.isDisabled = value
             setPlusMinusEnabled()
         }
+    @Suppress("unused") // Part of the Slider API
     /** Sets the range of this slider. The slider's current value is clamped to the range. */
     fun setRange(min: Float, max: Float) {
         slider.setRange(min, max)
@@ -133,15 +143,12 @@ class UncivSlider (
 
     // Detect changes in isDragging
     private var hasFocus = false
+    // Help value set not to trigger change listener events
+    private var blockListener = false
 
     init {
         tipLabel.setOrigin(Align.center)
         tipContainer.touchable = Touchable.disabled
-
-        /** Prevents hiding the value tooltip over the slider knob */
-        if(permanentTip)
-            tipHideTask.cancel()
-
 
         stepChanged()   // Initialize tip formatting
 
@@ -158,7 +165,7 @@ class UncivSlider (
             if (vertical) row()
         } else minusButton = null
 
-        add(slider).pad(padding).fill()
+        add(slider).pad(padding).fillY().growX()
 
         if (plusMinus) {
             if (vertical) row()
@@ -179,6 +186,7 @@ class UncivSlider (
         // Add the listener late so the setting of the initial value is silent
         slider.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
+                if (blockListener) return
                 if (slider.isDragging != hasFocus) {
                     hasFocus = slider.isDragging
                     if (hasFocus)
@@ -203,6 +211,7 @@ class UncivSlider (
                 Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)
         ) {
             value += delta
+            onChange?.invoke(value)
             return
         }
         var bestDiff = -1f
@@ -219,19 +228,28 @@ class UncivSlider (
         bestIndex += delta.sign.toInt()
         if (bestIndex !in snapToValues!!.indices) return
         value = snapToValues!![bestIndex]
+        onChange?.invoke(value)
     }
 
     // Visual feedback
     private fun valueChanged() {
-        if (getTipText == null)
-            tipLabel.setText(tipFormat.format(slider.value))
-        else
-            @Suppress("UNNECESSARY_NOT_NULL_ASSERTION") // warning wrong, without !! won't compile
-            tipLabel.setText(getTipText!!(slider.value))
-        if (!tipHideTask.isScheduled) showTip()
-        tipHideTask.cancel()
-        if (!permanentTip)
-            Timer.schedule(tipHideTask, hideDelay)
+        when {
+            tipType == TipType.None -> Unit
+            getTipText == null ->
+                tipLabel.setText(tipFormat.format(slider.value))
+            else ->
+                @Suppress("UNNECESSARY_NOT_NULL_ASSERTION") // warning wrong, without !! won't compile
+                tipLabel.setText(getTipText!!(slider.value))
+        }
+        when(tipType) {
+            TipType.None -> Unit
+            TipType.Auto -> {
+                if (!tipHideTask.isScheduled) showTip()
+                tipHideTask.cancel()
+                Timer.schedule(tipHideTask, hideDelay)
+            }
+            TipType.Permanent -> showTip()
+        }
         setPlusMinusEnabled()
     }
 
@@ -251,7 +269,7 @@ class UncivSlider (
             stepSize > 0.0099f -> "%.2f"
             else -> "%.3f"
         }
-        if (getTipText == null)
+        if (tipType != TipType.None && getTipText == null)
             tipLabel.setText(tipFormat.format(slider.value))
     }
 

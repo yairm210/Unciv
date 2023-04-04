@@ -347,7 +347,8 @@ object NextTurnAutomation {
                         (it.hasViewableResource(civInfo)
                                 && it.tileResource.resourceType == ResourceType.Strategic &&
                                 (civInfo.getCivResourcesByName()[it.resource!!] ?: 0) <= 3)
-                it.isVisible(civInfo) && it.getOwner() == null &&
+                it.isVisible(civInfo) && it.getOwner() == null
+                        && it.neighbors.any { neighbor -> neighbor.getCity() == city }
                         (hasNaturalWonder || hasLuxuryCivDoesntOwn || hasResourceCivHasNoneOrLittle)
             }
             for (highlyDesirableTileInCity in highlyDesirableTilesInCity) {
@@ -572,7 +573,7 @@ object NextTurnAutomation {
      *  a unit and selling a building to make room. Can happen due to trades etc */
     private fun freeUpSpaceResources(civInfo: Civilization) {
         // No need to build spaceship parts just yet
-        if (civInfo.gameInfo.ruleset.victories.none { civInfo.victoryManager.getNextMilestone(it.key)?.type == MilestoneType.AddedSSPartsInCapital } )
+        if (civInfo.gameInfo.ruleset.victories.none { civInfo.victoryManager.getNextMilestone(it.value)?.type == MilestoneType.AddedSSPartsInCapital } )
             return
 
         for (resource in civInfo.gameInfo.spaceResources) {
@@ -962,15 +963,21 @@ object NextTurnAutomation {
     }
 
     private fun automateCities(civInfo: Civilization) {
+        val ownMilitaryStrength = civInfo.getStatForRanking(RankingType.Force)
+        val sumOfEnemiesMilitaryStrength = civInfo.gameInfo.civilizations.filter { it != civInfo }
+            .filter { civInfo.isAtWarWith(it) }.sumOf { it.getStatForRanking(RankingType.Force) }
+        val civHasSignificantlyWeakerMilitaryThanEnemies =
+                ownMilitaryStrength < sumOfEnemiesMilitaryStrength * 0.66f
         for (city in civInfo.cities) {
             if (city.isPuppet && city.population.population > 9
-                    && !city.isInResistance()) {
+                    && !city.isInResistance()
+            ) {
                 city.annexCity()
             }
 
             city.reassignAllPopulation()
 
-            if (city.health < city.getMaxHealth()) {
+            if (city.health < city.getMaxHealth() || civHasSignificantlyWeakerMilitaryThanEnemies) {
                 Automation.tryTrainMilitaryUnit(city) // need defenses if city is under attack
                 if (city.cityConstructions.constructionQueue.isNotEmpty())
                     continue // found a unit to build so move on
