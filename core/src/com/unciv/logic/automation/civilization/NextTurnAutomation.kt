@@ -235,7 +235,16 @@ object NextTurnAutomation {
                     val valueOfOne = evaluation.evaluateSellCost(TradeOffer(ourGold.name, ourGold.type, 1, ourGold.duration), civInfo, otherCiv)
                     val amountToGive = min(deltaInOurFavor / valueOfOne, ourGold.amount)
                     deltaInOurFavor -= amountToGive * valueOfOne
-                    counterofferGifts.add(TradeOffer(ourGold.name, ourGold.type, amountToGive, ourGold.duration))
+                    if (amountToGive > 0) {
+                        counterofferGifts.add(
+                            TradeOffer(
+                                ourGold.name,
+                                ourGold.type,
+                                amountToGive,
+                                ourGold.duration
+                            )
+                        )
+                    }
                 }
             }
         }
