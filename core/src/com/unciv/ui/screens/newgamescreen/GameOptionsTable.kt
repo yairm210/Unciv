@@ -1,10 +1,8 @@
 package com.unciv.ui.screens.newgamescreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
@@ -15,12 +13,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.multiplayerscreens.MultiplayerHelpers
-import com.unciv.ui.popups.Popup
-import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.components.AutoScrollPane
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.UncivSlider
@@ -33,6 +26,11 @@ import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toImageButton
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.Popup
+import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.multiplayerscreens.MultiplayerHelpers
 
 class GameOptionsTable(
     private val previousScreen: IPreviousScreen,
@@ -207,12 +205,11 @@ class GameOptionsTable(
     }
 
     private fun numberOfPlayable() = ruleset.nations.values.count {
-        it.isMajorCiv()
+        it.isMajorCiv
     }
 
     private fun numberOfCityStates() = ruleset.nations.values.count {
-        it.isCityState()
-        && !it.hasUnique(UniqueType.CityStateDeprecated)
+        it.isCityState && !it.hasUnique(UniqueType.CityStateDeprecated)
     }
 
     private fun Table.addNoStartBiasCheckbox() =
@@ -434,7 +431,7 @@ class GameOptionsTable(
 
         var desiredCiv = ""
         if (gameParameters.mods.contains(mod)) {
-            val modNations = RulesetCache[mod]?.nations?.values?.filter { it.isMajorCiv() }
+            val modNations = RulesetCache[mod]?.nations?.values?.filter { it.isMajorCiv }
 
             if (modNations != null && modNations.any())
                 desiredCiv = modNations.random().name
@@ -481,7 +478,7 @@ private class RandomNationPickerPopup(
 
     init {
         val sortedNations = previousScreen.ruleset.nations.values
-                .filter { it.isMajorCiv() }
+                .filter { it.isMajorCiv }
                 .sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.name.tr() })
         allNationTables = ArrayList(
             sortedNations.map { NationTable(it, civBlocksWidth, 0f) }  // no need for min height

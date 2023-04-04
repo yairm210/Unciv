@@ -23,6 +23,7 @@ class VictoryScreenReplay(
     private val finalTurn = gameInfo.turns
     private var replayTimer : Timer.Task? = null
     private val replayMap = ReplayMap(gameInfo.tileMap)
+    private val header = Table()
 
     private val header = Table()
     private val yearLabel = "".toLabel()

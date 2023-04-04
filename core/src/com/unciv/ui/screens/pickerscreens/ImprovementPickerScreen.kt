@@ -12,7 +12,6 @@ import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
@@ -20,6 +19,7 @@ import com.unciv.ui.components.extensions.keyShortcuts
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.onDoubleClick
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.images.ImageGetter
 import kotlin.math.roundToInt
 
 class ImprovementPickerScreen(
@@ -79,8 +79,9 @@ class ImprovementPickerScreen(
         // clone tileInfo without "top" feature if it could be removed
         // Keep this copy around for speed
         val tileWithoutLastTerrain: Tile = tile.clone()
-        if (Constants.remove + tileWithoutLastTerrain.getLastTerrain().name in ruleSet.tileImprovements) {
-            tileWithoutLastTerrain.removeTerrainFeature(tileWithoutLastTerrain.getLastTerrain().name)
+        tileWithoutLastTerrain.setTerrainTransients()
+        if (Constants.remove + tileWithoutLastTerrain.lastTerrain.name in ruleSet.tileImprovements) {
+            tileWithoutLastTerrain.removeTerrainFeature(tileWithoutLastTerrain.lastTerrain.name)
         }
 
         val cityUniqueCache = LocalUniqueCache()
@@ -133,7 +134,7 @@ class ImprovementPickerScreen(
             val proposedSolutions = mutableListOf<String>()
 
             if (suggestRemoval)
-                proposedSolutions.add("${Constants.remove}[${tile.getLastTerrain().name}] first")
+                proposedSolutions.add("${Constants.remove}[${tile.lastTerrain.name}] first")
             if (ImprovementBuildingProblem.MissingTech in unbuildableBecause)
                 proposedSolutions.add("Research [${improvement.techRequired}] first")
             if (ImprovementBuildingProblem.NotJustOutsideBorders in unbuildableBecause)

@@ -13,16 +13,16 @@ import com.unciv.models.helpers.MapArrowType
 import com.unciv.models.helpers.MiscArrowTypes
 import com.unciv.models.helpers.TintedMapArrow
 import com.unciv.models.helpers.UnitMovementMemoryType
-import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.components.extensions.center
+import com.unciv.ui.components.extensions.centerX
+import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toPrettyString
 import com.unciv.ui.components.tilegroups.CityTileGroup
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.components.tilegroups.WorldTileGroup
 import com.unciv.ui.components.tilegroups.YieldGroup
-import com.unciv.ui.components.extensions.center
-import com.unciv.ui.components.extensions.centerX
-import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toPrettyString
+import com.unciv.ui.images.ImageGetter
 import com.unciv.utils.DebugUtils
 import kotlin.math.atan2
 import kotlin.math.min
@@ -219,7 +219,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
             .filter { tile() in it.value }
             .filter { it.key in tilemap.ruleset!!.nations } // Ignore missing nations
             .map { it.key to tilemap.ruleset!!.nations[it.key]!! }
-            .sortedWith(compareBy({ it.second.isCityState() }, { it.first }))
+            .sortedWith(compareBy({ it.second.isCityState }, { it.first }))
             .toList()
         if (nations.isEmpty()) return
 

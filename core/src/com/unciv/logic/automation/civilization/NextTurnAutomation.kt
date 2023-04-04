@@ -303,7 +303,7 @@ object NextTurnAutomation {
 
         if (!civInfo.isCityState()) {
             val potentialAllies = civInfo.getKnownCivs().filter { it.isCityState() }
-            if (potentialAllies.isNotEmpty()) {
+            if (potentialAllies.any()) {
                 val cityState =
                     potentialAllies.maxByOrNull { valueCityStateAlliance(civInfo, it) }!!
                 if (cityState.getAllyCiv() != civInfo.civName && valueCityStateAlliance(civInfo, cityState) > 0) {
@@ -347,7 +347,8 @@ object NextTurnAutomation {
                         (it.hasViewableResource(civInfo)
                                 && it.tileResource.resourceType == ResourceType.Strategic &&
                                 (civInfo.getCivResourcesByName()[it.resource!!] ?: 0) <= 3)
-                it.isVisible(civInfo) && it.getOwner() == null &&
+                it.isVisible(civInfo) && it.getOwner() == null
+                        && it.neighbors.any { neighbor -> neighbor.getCity() == city }
                         (hasNaturalWonder || hasLuxuryCivDoesntOwn || hasResourceCivHasNoneOrLittle)
             }
             for (highlyDesirableTileInCity in highlyDesirableTilesInCity) {
@@ -793,7 +794,7 @@ object NextTurnAutomation {
         // If the AI declares war on a civ without knowing the location of any cities, it'll just keep amassing an army and not sending it anywhere,
         //   and end up at a massive disadvantage
 
-        if (enemyCivs.isEmpty()) return
+        if (enemyCivs.none()) return
 
         val civWithBestMotivationToAttack = enemyCivs
                 .map { Pair(it, motivationToAttack(civInfo, it)) }
@@ -962,15 +963,21 @@ object NextTurnAutomation {
     }
 
     private fun automateCities(civInfo: Civilization) {
+        val ownMilitaryStrength = civInfo.getStatForRanking(RankingType.Force)
+        val sumOfEnemiesMilitaryStrength = civInfo.gameInfo.civilizations.filter { it != civInfo }
+            .filter { civInfo.isAtWarWith(it) }.sumOf { it.getStatForRanking(RankingType.Force) }
+        val civHasSignificantlyWeakerMilitaryThanEnemies =
+                ownMilitaryStrength < sumOfEnemiesMilitaryStrength * 0.66f
         for (city in civInfo.cities) {
             if (city.isPuppet && city.population.population > 9
-                    && !city.isInResistance()) {
+                    && !city.isInResistance()
+            ) {
                 city.annexCity()
             }
 
             city.reassignAllPopulation()
 
-            if (city.health < city.getMaxHealth()) {
+            if (city.health < city.getMaxHealth() || civHasSignificantlyWeakerMilitaryThanEnemies) {
                 Automation.tryTrainMilitaryUnit(city) // need defenses if city is under attack
                 if (city.cityConstructions.constructionQueue.isNotEmpty())
                     continue // found a unit to build so move on
@@ -1014,7 +1021,7 @@ object NextTurnAutomation {
                 }
 
             if (highestOpinion == null) null
-            else knownMajorCivs.filter { civInfo.getDiplomacyManager(it).opinionOfOtherCiv() == highestOpinion}.random().civName
+            else knownMajorCivs.filter { civInfo.getDiplomacyManager(it).opinionOfOtherCiv() == highestOpinion}.toList().random().civName
 
         } else {
             civInfo.getAllyCiv()

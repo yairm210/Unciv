@@ -18,18 +18,22 @@ import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.newgamescreen.NewGameScreen
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 //TODO someoneHasWon should look at gameInfo.victoryData
-//TODO icons for victory types
 
-class VictoryScreen(worldScreen: WorldScreen) : PickerScreen() {
+class VictoryScreen(
+    private val worldScreen: WorldScreen,
+    pageNumber: Int = 0
+) : PickerScreen(), RecreateOnResize {
 
     private val gameInfo = worldScreen.gameInfo
     private val playerCiv = worldScreen.viewingCiv
-    private val tabs = TabbedPager(separatorColor = Color.WHITE, shorcutScreen = this)
+    private val tabs = TabbedPager(separatorColor = Color.WHITE, shortcutScreen = this)
 
     internal class CivWithStat(val civ: Civilization, val value: Int) {
         constructor(civ: Civilization, category: RankingType) : this(civ, civ.getStatForRanking(category))
@@ -74,7 +78,8 @@ class VictoryScreen(worldScreen: WorldScreen) : PickerScreen() {
 
         for (tab in VictoryTabs.values()) {
             val tabHidden = tab.isHidden(playerCiv)
-            if (tabHidden && !(tab.allowAsSecret && Gdx.input.areSecretKeysPressed())) continue
+            if (tabHidden && !(tab.allowAsSecret && Gdx.input.areSecretKeysPressed()))
+                continue
             val icon = if (tab.iconName.isEmpty()) null else ImageGetter.getImage(tab.iconName)
             tabs.addPage(
                 tab.caption ?: tab.name,
@@ -85,7 +90,7 @@ class VictoryScreen(worldScreen: WorldScreen) : PickerScreen() {
                 secret = tabHidden && tab.allowAsSecret
             )
         }
-        tabs.selectPage(0)
+        tabs.selectPage(pageNumber)
 
         //**************** Set up bottom area - buttons and description label ****************
         rightSideButton.isVisible = false
@@ -112,8 +117,9 @@ class VictoryScreen(worldScreen: WorldScreen) : PickerScreen() {
         }
 
         //**************** Set up floating info panels ****************
+        // When horizontal screen space is scarce so they would overlap, insert
+        // them into the scrolling portion of the TabbedPager header instead
         tabs.pack()
-        val panelY = stage.height - tabs.getRowHeight(0) * 0.5f
         val topRightPanel = VerticalGroup().apply {
             space(5f)
             align(Align.right)
@@ -122,12 +128,19 @@ class VictoryScreen(worldScreen: WorldScreen) : PickerScreen() {
                 addActor("{Max Turns}: ${gameInfo.gameParameters.maxTurns}".toLabel())
             pack()
         }
-        stage.addActor(topRightPanel)
-        topRightPanel.setPosition(stage.width - 10f, panelY, Align.right)
-
         val difficultyLabel = "{Difficulty}: {${gameInfo.difficulty}}".toLabel()
-        stage.addActor(difficultyLabel)
-        difficultyLabel.setPosition(10f, panelY, Align.left)
+        val neededSpace = topRightPanel.width.coerceAtLeast(difficultyLabel.width) * 2 + tabs.getHeaderPrefWidth()
+        if (neededSpace > stage.width) {
+            tabs.decorateHeader(difficultyLabel, true)
+            tabs.decorateHeader(topRightPanel, false)
+            tabs.headerScroll.fadeScrollBars = false
+        } else {
+            val panelY = stage.height - tabs.getRowHeight(0) * 0.5f
+            stage.addActor(topRightPanel)
+            topRightPanel.setPosition(stage.width - 10f, panelY, Align.right)
+            stage.addActor(difficultyLabel)
+            difficultyLabel.setPosition(10f, panelY, Align.left)
+        }
     }
 
     private fun wonOrLost(description: String, victoryType: String?, hasWon: Boolean) {
@@ -162,7 +175,9 @@ class VictoryScreen(worldScreen: WorldScreen) : PickerScreen() {
     }
 
     override fun dispose() {
-        super.dispose()
         tabs.selectPage(-1)  // Tells Replay page to stop its timer
+        super.dispose()
     }
+
+    override fun recreate(): BaseScreen = VictoryScreen(worldScreen, tabs.activePage)
 }

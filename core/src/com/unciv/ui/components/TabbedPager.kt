@@ -66,7 +66,7 @@ open class TabbedPager(
     backgroundColor: Color = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.5f),
     private val headerPadding: Float = 10f,
     separatorColor: Color = Color.CLEAR,
-    private val shorcutScreen: BaseScreen? = null,
+    private val shortcutScreen: BaseScreen? = null,
     capacity: Int = 4
 ) : Table() {
 
@@ -82,7 +82,7 @@ open class TabbedPager(
         private set
 
     private val header = Table(BaseScreen.skin)
-    protected val headerScroll = LinkedScrollPane(horizontalOnly = true, header)
+    val headerScroll = LinkedScrollPane(horizontalOnly = true, header)
     protected var headerHeight = 0f
 
     private val fixedContentScroll = LinkedScrollPane(horizontalOnly = true)
@@ -508,8 +508,8 @@ open class TabbedPager(
         if (index !in 0 until pages.size) return false
         if (index == activePage) selectPage(-1)
         val page = pages.removeAt(index)
-        header.getCell(page.button).clearActor()
-        header.cells.removeIndex(index)
+        val cell = header.getCell(page.button).clearActor()
+        header.cells.removeValue(cell, true)
         return true
     }
 
@@ -656,15 +656,9 @@ open class TabbedPager(
         val buttonCell: Cell<Button>
         if (insertBefore >= 0 && insertBefore < pages.size) {
             newIndex = insertBefore
+            val cellIndex = header.cells.indexOf(header.getCell(pages[insertBefore].button))
             pages.add(insertBefore, page)
-            // Table.addActorAt breaks the Table, it's a Group method that updates children but not cells
-            // So we add an empty cell and move cell actors around
-            header.add()
-            for (i in header.cells.size - 1 downTo insertBefore + 1) {
-                val actor = header.removeActorAt(i - 1, true) as Button
-                header.cells[i].setActor<Button>(actor)
-            }
-            header.cells[insertBefore].setActor<Button>(page.button)
+            insertHeaderCellAt(cellIndex).setActor(page.button)
             buttonCell = header.getCell(page.button)
         } else {
             newIndex = pages.size
@@ -681,10 +675,40 @@ open class TabbedPager(
         return newIndex
     }
 
+    private fun insertHeaderCellAt(insertBefore: Int): Cell<Actor?> {
+        if (insertBefore < 0 || insertBefore >= header.cells.size) return header.add()
+        // Table.addActorAt breaks the Table, it's a Group method that updates children but not cells
+        // So we add an empty cell and move cell actors around
+        header.add()
+        for (i in header.cells.size - 1 downTo insertBefore + 1) {
+            val actor = header.removeActorAt(i - 1, true)
+            header.cells[i].setActor<Actor>(actor)
+        }
+        return header.cells[insertBefore]
+    }
+
     private fun addDeferredSecrets() {
         while (true) {
             val page = deferredSecretPages.removeFirstOrNull() ?: return
             addAndShowPage(page, -1)
+        }
+    }
+
+    /** Gets total width of the header buttons including their padding.
+     *  Header will be scrollable if getHeaderPrefWidth > width. */
+    fun getHeaderPrefWidth() = header.prefWidth
+
+    /** Adds any Actor to the header, e.g. informative labels.
+     *  Must be called _after_ all pages are final, otherwise effects not guaranteed.
+     *  @param leftSide If `true` then [actor] is inserted on the left, otherwise on the right of the page buttons.
+     */
+    fun decorateHeader(actor: Actor, leftSide: Boolean) {
+        val cell = insertHeaderCellAt(if (leftSide) 0 else -1)
+        cell.setActor(actor)
+        if (!leftSide) return
+        val addWidth = actor.width
+        for (page in pages) {
+            page.buttonX += addWidth
         }
     }
 }
