@@ -347,7 +347,8 @@ object NextTurnAutomation {
                         (it.hasViewableResource(civInfo)
                                 && it.tileResource.resourceType == ResourceType.Strategic &&
                                 (civInfo.getCivResourcesByName()[it.resource!!] ?: 0) <= 3)
-                it.isVisible(civInfo) && it.getOwner() == null &&
+                it.isVisible(civInfo) && it.getOwner() == null
+                        && it.neighbors.any { neighbor -> neighbor.getCity() == city }
                         (hasNaturalWonder || hasLuxuryCivDoesntOwn || hasResourceCivHasNoneOrLittle)
             }
             for (highlyDesirableTileInCity in highlyDesirableTilesInCity) {
