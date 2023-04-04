@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.ui.components.ColorMarkupLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.WrappableLabel
@@ -32,7 +33,6 @@ class NotificationsScroll(
     private var notificationsHash: Int = 0
 
     private var notificationsTable = Table()
-    private var endOfTableSpacerCell: Cell<*>? = null
 
     private val maxEntryWidth = worldScreen.stage.width * maxWidthOfStage * inverseScaleFactor
 
@@ -50,13 +50,12 @@ class NotificationsScroll(
      */
     internal fun update(
         notifications: MutableList<Notification>,
-        maxNotificationsHeight: Float,
-        tileInfoTableHeight: Float
+        maxNotificationsHeight: Float
     ) {
         val previousScrollY = scrollY
 
         updateContent(notifications)
-        updateLayout(maxNotificationsHeight, tileInfoTableHeight)
+        updateLayout(maxNotificationsHeight)
 
         scrollY = previousScrollY
         updateVisualScroll()
@@ -69,7 +68,6 @@ class NotificationsScroll(
         notificationsHash = newHash
 
         notificationsTable.clearChildren()
-        endOfTableSpacerCell = null
 
         val reversedNotifications = notifications.asReversed().toList() // toList to avoid concurrency problems
         for (category in NotificationCategory.values()){
@@ -84,7 +82,7 @@ class NotificationsScroll(
                     add(ImageGetter.getWhiteDot()).minHeight(2f).width(worldScreen.stage.width/8)
                     add(Table().apply {
                         background = backgroundDrawable
-                        add(category.name.toLabel(fontSize = 30, fontColor = Color.BLACK))
+                        add(ColorMarkupLabel(category.name, Color.BLACK, fontSize = 30))
                     }).pad(3f)
                     add(ImageGetter.getWhiteDot()).minHeight(2f).width(worldScreen.stage.width/8)
                 }).row()
@@ -120,27 +118,12 @@ class NotificationsScroll(
         notificationsTable.pack()  // needed to get height - prefHeight is set and close but not quite the same value
     }
 
-    private fun updateLayout(maxNotificationsHeight: Float, tileInfoTableHeight: Float) {
+    private fun updateLayout(maxNotificationsHeight: Float) {
         val newHeight = min(notificationsTable.height, maxNotificationsHeight * inverseScaleFactor)
-
-        sizeScrollingSpacer(tileInfoTableHeight)
 
         pack()
         height = newHeight  // after this, maxY is still incorrect until layout()
         layout()
-    }
-
-    /** Add some empty space that can be scrolled under the TileInfoTable which is covering our lower part */
-    private fun sizeScrollingSpacer(tileInfoTableHeight: Float) {
-        if (endOfTableSpacerCell == null) {
-            endOfTableSpacerCell = notificationsTable.add().pad(5f)
-            notificationsTable.row()
-        }
-        val scaledHeight = tileInfoTableHeight * inverseScaleFactor
-        endOfTableSpacerCell!!.height(scaledHeight)
-        notificationsTable.invalidate() // looks redundant but isn't
-        // (the flags it sets are already on when inspected in debugger, but when omitting it the
-        // ScrollPane will not properly scroll down to the new maxY when TileInfoTable changes to a smaller height)
     }
 
     fun setTopRight (right: Float, top: Float) {

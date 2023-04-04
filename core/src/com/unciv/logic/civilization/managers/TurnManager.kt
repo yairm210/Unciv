@@ -17,6 +17,7 @@ import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unique.endTurn
+import com.unciv.models.stats.Stats
 import com.unciv.ui.components.MayaCalendar
 import java.util.*
 import kotlin.math.max
@@ -26,6 +27,15 @@ class TurnManager(val civInfo: Civilization) {
 
 
     fun startTurn() {
+        if (civInfo.isSpectator()) return
+
+        if (civInfo.isMajorCiv() && civInfo.isAlive()) {
+            civInfo.statsHistory.recordRankingStats(civInfo)
+        }
+
+        if (civInfo.cities.isNotEmpty() && civInfo.gameInfo.ruleset.technologies.isNotEmpty())
+            civInfo.tech.updateResearchProgress()
+
         civInfo.civConstructions.startTurn()
         civInfo.attacksSinceTurnStart.clear()
         civInfo.updateStatsForNextTurn() // for things that change when turn passes e.g. golden age, city state influence
@@ -82,7 +92,7 @@ class TurnManager(val civInfo: Civilization) {
 
             if (flag == CivFlags.CityStateGreatPersonGift.name) {
                 val cityStateAllies: List<Civilization> =
-                        civInfo.getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civInfo.civName }
+                        civInfo.getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civInfo.civName }.toList()
                 val givingCityState = cityStateAllies.filter { it.cities.isNotEmpty() }.randomOrNull()
 
                 if (cityStateAllies.isNotEmpty()) civInfo.flagsCountdown[flag] = civInfo.flagsCountdown[flag]!! - 1
@@ -217,9 +227,15 @@ class TurnManager(val civInfo: Civilization) {
 
         civInfo.notifications.clear()
 
-        civInfo.updateStatsForNextTurn()
+        if (civInfo.isDefeated() || civInfo.isSpectator()) return  // yes they do call this, best not update any further stuff
 
-        val nextTurnStats = civInfo.stats.statsForNextTurn
+        var nextTurnStats =
+            if (civInfo.isBarbarian())
+                Stats()
+            else {
+                civInfo.updateStatsForNextTurn()
+                civInfo.stats.statsForNextTurn
+            }
 
         civInfo.policies.endTurn(nextTurnStats.culture.toInt())
         civInfo.totalCultureForContests += nextTurnStats.culture.toInt()
@@ -228,17 +244,18 @@ class TurnManager(val civInfo: Civilization) {
             civInfo.questManager.endTurn()
 
         // disband units until there are none left OR the gold values are normal
-        if (!civInfo.isBarbarian() && civInfo.gold < -100 && nextTurnStats.gold.toInt() < 0) {
-            for (i in 1 until (civInfo.gold / -100)) {
-                var civMilitaryUnits = civInfo.units.getCivUnits().filter { it.baseUnit.isMilitary() }
-                if (civMilitaryUnits.any()) {
-                    val unitToDisband = civMilitaryUnits.first()
-                    unitToDisband.disband()
-                    civMilitaryUnits -= unitToDisband
-                    val unitName = unitToDisband.shortDisplayName()
-                    civInfo.addNotification("Cannot provide unit upkeep for $unitName - unit has been disbanded!", NotificationCategory.Units, unitName, NotificationIcon.Death)
-                }
-            }
+        if (!civInfo.isBarbarian() && civInfo.gold <= -200 && nextTurnStats.gold.toInt() < 0) {
+            do {
+                val militaryUnits = civInfo.units.getCivUnits().filter { it.isMilitary() }  // New sequence as disband replaces unitList
+                val unitToDisband = militaryUnits.minByOrNull { it.baseUnit.cost }
+                    // or .firstOrNull()?
+                    ?: break
+                unitToDisband.disband()
+                val unitName = unitToDisband.shortDisplayName()
+                civInfo.addNotification("Cannot provide unit upkeep for $unitName - unit has been disbanded!", NotificationCategory.Units, unitName, NotificationIcon.Death)
+                // No need to recalculate unit upkeep, disband did that in UnitManager.removeUnit
+                nextTurnStats = civInfo.stats.statsForNextTurn
+            } while (civInfo.gold <= -200 && nextTurnStats.gold.toInt() < 0)
         }
 
         civInfo.addGold( nextTurnStats.gold.toInt() )
@@ -254,13 +271,10 @@ class TurnManager(val civInfo: Civilization) {
         if (civInfo.isMajorCiv()) // City-states don't get great people!
             civInfo.greatPeople.addGreatPersonPoints()
 
-        // To handle tile's owner issue (#8246), we need to run being razed city first.
-        for (city in sequence {
-            yieldAll(civInfo.cities.filter { it.isBeingRazed })
-            yieldAll(civInfo.cities.filterNot { it.isBeingRazed })
-        }.toList()) { // a city can be removed while iterating (if it's being razed) so we need to iterate over a copy
+        // To handle tile's owner issue (#8246), we need to run cities being razed first.
+        // a city can be removed while iterating (if it's being razed) so we need to iterate over a copy - sorting does one
+        for (city in civInfo.cities.sortedByDescending { it.isBeingRazed })
             CityTurnManager(city).endTurn()
-        }
 
         civInfo.temporaryUniques.endTurn()
 

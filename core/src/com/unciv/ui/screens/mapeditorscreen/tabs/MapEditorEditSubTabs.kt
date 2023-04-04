@@ -18,18 +18,18 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
-import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorEditTab
-import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorEditTab.BrushHandlerType
-import com.unciv.ui.components.tilegroups.TileGroup
-import com.unciv.ui.components.tilegroups.TileSetStrings
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.tilegroups.TileGroup
+import com.unciv.ui.components.tilegroups.TileSetStrings
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
+import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorEditTab
+import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorEditTab.BrushHandlerType
 
 internal interface IMapEditorEditSubTabs {
     fun isDisabled(): Boolean
@@ -248,7 +248,7 @@ class MapEditorEditImprovementsTab(
     companion object {
         //todo This should really be easier, the attributes should allow such a test in one go
         private val disallowImprovements = listOf(
-            "City center", Constants.repair, Constants.remove, Constants.cancelImprovementOrder
+            Constants.cityCenter, Constants.repair, Constants.remove, Constants.cancelImprovementOrder
         )
         private fun TileImprovement.group() = when {
             RoadStatus.values().any { it.name == name } -> 2
@@ -301,7 +301,7 @@ class MapEditorEditStartsTab(
     private fun allowedNations() = ruleset.nations.values.asSequence()
         .filter { it.name !in disallowNations }
     private fun getNations() = allowedNations()
-        .sortedWith(compareBy<Nation>{ it.isCityState() }.thenBy(collator) { it.name.tr() })
+        .sortedWith(compareBy<Nation>{ it.isCityState }.thenBy(collator) { it.name.tr() })
         .map { FormattedLine("[${it.name}] starting location", it.name, "Nation/${it.name}", size = 24) }
         .toList()
 

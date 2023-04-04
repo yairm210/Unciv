@@ -80,4 +80,20 @@ object TileSetCache : HashMap<String, TileSet>() {
             set(name, tileset)
         }
     }
+
+    /** Determines potentially available TileSets - by scanning for TileSet jsons.
+     *
+     *  Available before initialization finishes.
+     *  To get more reliable info, either wait until `this` is fully initialized,
+     *  or intersect with [ImageGetter.getAvailableTilesets]
+     */
+    fun getAvailableTilesets() = sequence<FileHandle> {
+        yieldAll(FileHandle("jsons/TileSets").list().asIterable())
+        for (modFolder in FileHandle("mods").list()) {
+            if (!modFolder.isDirectory || modFolder.name().startsWith('.'))
+                continue
+            yieldAll(modFolder.child("jsons/TileSets").list().asIterable())
+        }
+    }.filter { it.exists() }
+    .map { it.nameWithoutExtension().removeSuffix("Config") }
 }

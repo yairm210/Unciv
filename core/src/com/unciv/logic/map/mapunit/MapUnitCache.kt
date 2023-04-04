@@ -121,7 +121,10 @@ class MapUnitCache(val mapUnit: MapUnit) {
                 || mapUnit.hasUnique(UniqueType.CanEnterForeignTilesButLosesReligiousStrength)
 
         hasStrengthBonusInRadiusUnique = mapUnit.hasUnique(UniqueType.StrengthBonusInRadius)
-        hasCitadelPlacementUnique = mapUnit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
+        hasCitadelPlacementUnique = (
+                mapUnit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
+                + mapUnit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)
+                )
             .mapNotNull { mapUnit.civ.gameInfo.ruleset.tileImprovements[it.params[0]] }
             .any { it.hasUnique(UniqueType.TakesOverAdjacentTiles) }
     }

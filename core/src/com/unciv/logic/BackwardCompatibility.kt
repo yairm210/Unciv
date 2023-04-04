@@ -1,14 +1,12 @@
 package com.unciv.logic
 
-import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.utils.JsonValue
-import com.unciv.json.HashMapVector2
-import com.unciv.json.json
+import com.unciv.Constants
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.managers.TechManager
+import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.Ruleset
 
@@ -38,6 +36,20 @@ object BackwardCompatibility {
                         unit.promotions.promotions.remove(promotion)
             }
         }
+
+        // Mod decided you can't repair things anymore - get rid of old pillaged improvements
+        if (!ruleset.tileImprovements.containsKey(Constants.repair))
+            for (tile in tileMap.values) {
+                if (tile.roadIsPillaged) {
+                    tile.roadStatus = RoadStatus.None
+                    tile.roadIsPillaged = false
+                }
+                if (tile.improvementIsPillaged){
+                    tile.improvement = null
+                    tile.improvementIsPillaged = false
+                }
+            }
+
 
         for (city in civilizations.asSequence().flatMap { it.cities.asSequence() }) {
 
@@ -146,33 +158,8 @@ object BackwardCompatibility {
     /** Move max XP from barbarians to new home */
     @Suppress("DEPRECATION")
     fun ModOptions.updateDeprecations() {
-        if (maxXPfromBarbarians != 30) {
-            constants.maxXPfromBarbarians = maxXPfromBarbarians
-            maxXPfromBarbarians = 30
-        }
     }
 
-    /**
-     * Fixes barbarian manager camps not being correctly serialized. Previously we had a [HashMap<Vector2, Encampment] but it was being
-     * serialized as [HashMap<String, Encampment>]. We need to fix that each time an old save is loaded.
-     *
-     * When removing this, also remove [com.unciv.json.NonStringKeyMapSerializer.readOldFormat]
-     */
-    @Suppress("DEPRECATION")
-    fun BarbarianManager.migrateBarbarianCamps() {
-        if (isOldFormat(this)) {
-            val newFormat = HashMapVector2<Encampment>()
-            @Suppress("UNCHECKED_CAST") // The old format is deserialized to a <String, JsonValue> map
-            for ((key, value) in camps as MutableMap<String, JsonValue>) {
-                val newKey = Vector2().fromString(key)
-                val newValue = json().readValue(Encampment::class.java, value)
-                newFormat[newKey] = newValue
-            }
-
-            camps.clear()
-            camps.putAll(newFormat)
-        }
-    }
 
     /** Convert from Fortify X to Fortify and save off X */
     fun GameInfo.convertFortify() {
@@ -200,11 +187,11 @@ object BackwardCompatibility {
         return false
     }
 
-    @Suppress("DEPRECATION")
-    fun GameInfo.convertOldGameSpeed() {
-        if (gameParameters.gameSpeed != "" && gameParameters.gameSpeed in ruleset.speeds.keys) {
-            gameParameters.speed = gameParameters.gameSpeed
-            gameParameters.gameSpeed = ""
+    fun GameInfo.migrateToTileHistory() {
+        if (historyStartTurn >= 0) return
+        for (tile in getCities().flatMap { it.getTiles() }) {
+            tile.history.recordTakeOwnership(tile)
         }
+        historyStartTurn = turns
     }
 }

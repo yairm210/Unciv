@@ -17,6 +17,7 @@ import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.ZoomableScrollPane
 import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.screens.basescreen.UncivStage
 
 
 /**
@@ -28,7 +29,7 @@ class EditorMapHolder(
     internal val tileMap: TileMap,
     private val onTileClick: (Tile) -> Unit
 ): ZoomableScrollPane(20f, 20f) {
-    val editorScreen = parentScreen as? com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
+    val editorScreen = parentScreen as? MapEditorScreen
 
     val tileGroups = HashMap<Tile, TileGroup>()
     private lateinit var tileGroupMap: TileGroupMap<TileGroup>
@@ -43,11 +44,30 @@ class EditorMapHolder(
         if (editorScreen == null) touchable = Touchable.disabled
         continuousScrollingX = tileMap.mapParameters.worldWrap
         addTiles(parentScreen.stage)
-        if (editorScreen != null) addCaptureListener(getDragPaintListener())
+        if (editorScreen != null) {
+            addCaptureListener(getDragPaintListener())
+            setupZoomPanListeners()
+        }
         reloadMaxZoom()
     }
 
-    internal fun addTiles(stage: Stage) {
+    /** See also: [WorldMapHolder.setupZoomPanListeners][com.unciv.ui.screens.worldscreen.WorldMapHolder.setupZoomPanListeners] */
+    private fun setupZoomPanListeners() {
+
+        fun setActHit() {
+            val isEnabled = !isZooming() && !isPanning
+            (stage as UncivStage).performPointerEnterExitEvents = isEnabled
+            tileGroupMap.shouldAct = isEnabled
+            tileGroupMap.shouldHit = isEnabled
+        }
+
+        onPanStartListener = { setActHit() }
+        onPanStopListener = { setActHit() }
+        onZoomStartListener = { setActHit() }
+        onZoomStopListener = { setActHit() }
+    }
+
+    private fun addTiles(stage: Stage) {
 
         val tileSetStrings = TileSetStrings()
         val daTileGroups = tileMap.values.map { TileGroup(it, tileSetStrings) }
@@ -108,7 +128,7 @@ class EditorMapHolder(
     }
 
     /**
-     * Copy-pasted from [com.unciv.ui.worldscreen.WorldMapHolder.setCenterPosition]
+     * Copy-pasted from [com.unciv.ui.screens.worldscreen.WorldMapHolder.setCenterPosition]
      * TODO remove code duplication
      */
     fun setCenterPosition(vector: Vector2, blink: Boolean = false) {
@@ -169,7 +189,7 @@ class EditorMapHolder(
             }
 
             override fun touchDragged(event: InputEvent?, x: Float, y: Float, pointer: Int) {
-                if (!isDragging) {
+                if (!isDragging && !isPanning) {
                     isDragging = true
                     val deltaTime = System.currentTimeMillis() - touchDownTime
                     if (deltaTime > 400) {

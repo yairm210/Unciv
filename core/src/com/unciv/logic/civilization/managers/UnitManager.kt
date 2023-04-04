@@ -72,7 +72,8 @@ class UnitManager(val civInfo:Civilization) {
 
         if (unit != null)
             for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponGainingUnit))
-                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+                if (unit.matchesFilter(unique.params[0]))
+                    UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
         return unit
     }
     fun getCivUnitsSize(): Int = unitList.size
@@ -94,7 +95,7 @@ class UnitManager(val civInfo:Civilization) {
         nextPotentiallyDueAt = 0
 
         if (updateCivInfo) {
-            // Not relevant when updating TileInfo transients, since some info of the civ itself isn't yet available,
+            // Not relevant when updating Tile transients, since some info of the civ itself isn't yet available,
             // and in any case it'll be updated once civ info transients are
             civInfo.updateStatsForNextTurn() // unit upkeep
             if (mapUnit.baseUnit.getResourceRequirements().isNotEmpty())

@@ -58,6 +58,11 @@ object UniqueTriggerActivation {
                         || unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger())
                     return false
 
+                val limit = unit.getMatchingUniques(UniqueType.MaxNumberBuildable)
+                    .map { it.params[0].toInt() }.minOrNull()
+                if (limit!=null && limit <= civInfo.units.getCivUnits().count { it.name==unitName })
+                    return false
+
                 val placedUnit = civInfo.units.addUnit(unitName, chosenCity) ?: return false
 
                 val notificationText = getNotificationText(notification, triggerNotificationText,
@@ -78,8 +83,17 @@ object UniqueTriggerActivation {
                 if (chosenCity == null || unit == null || (unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger()))
                     return false
 
+                val limit = unit.getMatchingUniques(UniqueType.MaxNumberBuildable)
+                    .map { it.params[0].toInt() }.minOrNull()
+                val amountFromTriggerable = unique.params[0].toInt()
+                val actualAmount =
+                        if (limit==null) amountFromTriggerable
+                        else civInfo.units.getCivUnits().count { it.name==unitName } - limit
+
+                if (actualAmount <= 0) return false
+
                 val tilesUnitsWerePlacedOn: MutableList<Vector2> = mutableListOf()
-                for (i in 1..unique.params[0].toInt()) {
+                for (i in 1..actualAmount) {
                     val placedUnit = civInfo.units.addUnit(unitName, chosenCity)
                     if (placedUnit != null)
                         tilesUnitsWerePlacedOn.add(placedUnit.getTile().position)
@@ -164,8 +178,9 @@ object UniqueTriggerActivation {
                 civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Culture)
                 return true
             }
-            UniqueType.OneTimeEnterGoldenAge -> {
-                civInfo.goldenAges.enterGoldenAge()
+            UniqueType.OneTimeEnterGoldenAge, UniqueType.OneTimeEnterGoldenAgeTurns -> {
+                if (unique.type == UniqueType.OneTimeEnterGoldenAgeTurns) civInfo.goldenAges.enterGoldenAge(unique.params[0].toInt())
+                else civInfo.goldenAges.enterGoldenAge()
 
                 val notificationText = getNotificationText(notification, triggerNotificationText,
                     "You enter a Golden Age")
@@ -607,7 +622,8 @@ object UniqueTriggerActivation {
     fun triggerUnitwideUnique(
         unique: Unique,
         unit: MapUnit,
-        notification: String? = null
+        notification: String? = null,
+        triggerNotificationText:String? = null
     ): Boolean {
         when (unique.type) {
             UniqueType.OneTimeUnitHeal -> {
@@ -648,7 +664,7 @@ object UniqueTriggerActivation {
                     unit.civ.addNotification(notification, unit.getTile().position, NotificationCategory.Units, unit.name)
                 return true
             }
-            else -> return triggerCivwideUnique(unique, civInfo = unit.civ, tile=unit.currentTile)
+            else -> return triggerCivwideUnique(unique, civInfo = unit.civ, tile=unit.currentTile, triggerNotificationText = triggerNotificationText)
         }
     }
 }

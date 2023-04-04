@@ -22,13 +22,14 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.withItem
 import com.unciv.ui.components.extensions.withoutItem
+import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import kotlin.math.ceil
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 
@@ -288,7 +289,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             city.getRuleset().buildings[it]
                     ?: throw java.lang.Exception("Building $it is not found!")
         })
-        updateUniques()
+        updateUniques(true)
     }
 
     fun addProductionPoints(productionToAdd: Int) {
@@ -314,13 +315,17 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             val productionCost = (construction as INonPerpetualConstruction).getProductionCost(city.civ)
             if (inProgressConstructions.containsKey(currentConstructionFromQueue)
                     && inProgressConstructions[currentConstructionFromQueue]!! >= productionCost) {
-                productionOverflow = inProgressConstructions[currentConstructionFromQueue]!! - productionCost
-                // See the URL below for explanation for this cap
-                // https://forums.civfanatics.com/threads/hammer-overflow.419352/
-                val maxOverflow = maxOf(productionCost, city.cityStats.currentCityStats.production.roundToInt())
-                if (productionOverflow > maxOverflow)
-                    productionOverflow = maxOverflow
-                constructionComplete(construction)
+                val potentialOverflow = inProgressConstructions[currentConstructionFromQueue]!! - productionCost
+                if (constructionComplete(construction)){
+                    // See the URL below for explanation for this cap
+                    // https://forums.civfanatics.com/threads/hammer-overflow.419352/
+                    val maxOverflow = maxOf(productionCost, city.cityStats.currentCityStats.production.roundToInt())
+                    productionOverflow = min(maxOverflow, potentialOverflow)
+                }
+                else {
+                    city.civ.addNotification("No space available to place [${construction.name}] near [${city.name}]",
+                        city.location, NotificationCategory.Production, construction.name)
+                }
             }
         }
     }
@@ -405,8 +410,11 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         }
     }
 
-    private fun constructionComplete(construction: INonPerpetualConstruction) {
-        construction.postBuildEvent(this)
+    /** Returns false if we tried to construct a unit but it has nowhere to go */
+    private fun constructionComplete(construction: INonPerpetualConstruction): Boolean {
+        val managedToConstruct = construction.postBuildEvent(this)
+        if (!managedToConstruct) return false
+
         if (construction.name in inProgressConstructions)
             inProgressConstructions.remove(construction.name)
         if (construction.name == currentConstructionFromQueue)
@@ -426,7 +434,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             }
         } else {
             val icon = if (construction is Building) buildingIcon else construction.name // could be a unit, in which case take the unit name.
-            city.civ.addNotification("[${construction.name}] has been built in [" + city.name + "]",
+            city.civ.addNotification(
+                "[${construction.name}] has been built in [${city.name}]",
                     city.location, NotificationCategory.Production, NotificationIcon.Construction, icon)
         }
 
@@ -442,6 +451,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                     NotificationCategory.General, NotificationIcon.Construction, buildingIcon)
             }
         }
+        return true
     }
 
     fun addBuilding(buildingName: String) {
@@ -458,10 +468,11 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         updateUniques()
     }
 
-    fun updateUniques() {
+    fun updateUniques(onLoadGame:Boolean = false) {
         builtBuildingUniqueMap.clear()
         for (building in getBuiltBuildings())
             builtBuildingUniqueMap.addUniques(building.uniqueObjects)
+        if (!onLoadGame) city.cityStats.update()
     }
 
     fun addFreeBuildings() {

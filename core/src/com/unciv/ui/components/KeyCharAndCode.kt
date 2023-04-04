@@ -1,7 +1,10 @@
 package com.unciv.ui.components
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.utils.Json
+import com.badlogic.gdx.utils.JsonValue
+import com.unciv.ui.components.extensions.GdxKeyCodeFixes
+
 
 /*
  * For now, many combination keys cannot easily be expressed.
@@ -28,15 +31,10 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
     /** express keys that only have a keyCode like F1 */
     constructor(code: Int): this(Char.MIN_VALUE, code)
 
+    //** debug helper, but also used for tooltips */
     override fun toString(): String {
-        // debug helper, but also used for tooltips
-        fun fixedKeysToString(code: Int) = when (code) {
-            Input.Keys.BACKSPACE -> "Backspace"  // Gdx displaying this as "Delete" is Bullshit!
-            Input.Keys.FORWARD_DEL -> "Del"      // Likewise
-            else -> Input.Keys.toString(code)
-        }
         return when {
-            char == Char.MIN_VALUE -> fixedKeysToString(code)
+            char == Char.MIN_VALUE -> GdxKeyCodeFixes.toString(code)
             this == ESC -> "ESC"
             char < ' ' -> "Ctrl-" + (char.toCode() + 64).makeChar()
             else -> "\"$char\""
@@ -44,9 +42,6 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
     }
 
     companion object {
-        /** Tests presence of a physical keyboard - static here as convenience shortcut only */
-        val keyboardAvailable = Gdx.input.isPeripheralAvailable(Input.Peripheral.HardwareKeyboard)
-
         // Convenience shortcuts for frequently used constants
         /** Android back, assigns ESC automatically as well */
         val BACK = KeyCharAndCode(Input.Keys.BACK)
@@ -57,7 +52,7 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
         /** Automatically assigned for [RETURN] */
         val NUMPAD_ENTER = KeyCharAndCode(Input.Keys.NUMPAD_ENTER)
         val SPACE = KeyCharAndCode(Input.Keys.SPACE)
-        val DEL = KeyCharAndCode(Input.Keys.FORWARD_DEL)        // Gdx "DEL" is just plain wrong!
+        val DEL = KeyCharAndCode(GdxKeyCodeFixes.DEL)
         val TAB = KeyCharAndCode(Input.Keys.TAB)
         /** Guaranteed to be ignored by [KeyShortcutDispatcher] and never to be generated for an actual event, used as fallback to ensure no action is taken */
         val UNKNOWN = KeyCharAndCode(Input.Keys.UNKNOWN)
@@ -70,7 +65,7 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
 
         /** mini-factory for control codes from keyCodes */
         fun ctrlFromCode(keyCode: Int): KeyCharAndCode {
-            val name = Input.Keys.toString(keyCode)
+            val name = GdxKeyCodeFixes.toString(keyCode)
             if (name.length != 1 || !name[0].isLetter()) return KeyCharAndCode(Char.MIN_VALUE, keyCode)
             return ctrl(name[0])
         }
@@ -80,77 +75,35 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
 
         /** factory maps a Char to a keyCode if possible, returns a Char-based instance otherwise */
         fun mapChar(char: Char): KeyCharAndCode {
-            val code = Input.Keys.valueOf(char.uppercaseChar().toString())
+            val code = GdxKeyCodeFixes.valueOf(char.uppercaseChar().toString())
             return if (code == -1) KeyCharAndCode(char,0) else KeyCharAndCode(Char.MIN_VALUE, code)
         }
-    }
-}
 
-
-data class KeyShortcut(val key: KeyCharAndCode, val priority: Int = 0)
-
-
-open class KeyShortcutDispatcher {
-    private val shortcuts: MutableList<Pair<KeyShortcut, () -> Unit>> = mutableListOf()
-
-    fun add(shortcut: KeyShortcut?, action: (() -> Unit)?): Unit {
-        if (action == null || shortcut == null) return
-        shortcuts.removeIf { it.first == shortcut }
-        shortcuts.add(Pair(shortcut, action))
-    }
-
-    fun add(key: KeyCharAndCode?, action: (() -> Unit)?): Unit {
-        if (key != null)
-            add(KeyShortcut(key), action)
-    }
-
-    fun add(char: Char?, action: (() -> Unit)?): Unit {
-        if (char != null)
-            add(KeyCharAndCode(char), action)
-    }
-
-    fun add(keyCode: Int?, action: (() -> Unit)?): Unit {
-        if (keyCode != null)
-            add(KeyCharAndCode(keyCode), action)
-    }
-
-    fun remove(shortcut: KeyShortcut?): Unit {
-        shortcuts.removeIf { it.first == shortcut }
-    }
-
-    fun remove(key: KeyCharAndCode?): Unit {
-        shortcuts.removeIf { it.first.key == key }
-    }
-
-    fun remove(char: Char?): Unit {
-        shortcuts.removeIf { it.first.key.char == char }
-    }
-
-    fun remove(keyCode: Int?): Unit {
-        shortcuts.removeIf { it.first.key.code == keyCode }
-    }
-
-    open fun isActive(): Boolean = true
-
-
-    class Resolver(val key: KeyCharAndCode) {
-        private var priority = Int.MIN_VALUE
-        val trigerredActions: MutableList<() -> Unit> = mutableListOf()
-
-        fun updateFor(dispatcher: KeyShortcutDispatcher) {
-            if (!dispatcher.isActive()) return
-
-            for (shortcut in dispatcher.shortcuts) {
-                if (shortcut.first.key == key) {
-                    if (shortcut.first.priority == priority)
-                        trigerredActions.add(shortcut.second)
-                    else if (shortcut.first.priority > priority) {
-                        priority = shortcut.first.priority
-                        trigerredActions.clear()
-                        trigerredActions.add(shortcut.second)
-                    }
+        fun parse(text: String): KeyCharAndCode = when {
+                text.length == 1 && text[0].isDefined() -> KeyCharAndCode(text[0])
+                text.length == 3 && text[0] == '"' && text[2] == '"' -> KeyCharAndCode(text[1])
+                text.length == 6 && text.startsWith("Ctrl-") -> ctrl(text[5])
+                text == "ESC" -> ESC
+                else -> {
+                    val code = GdxKeyCodeFixes.valueOf(text)
+                    if (code == -1) UNKNOWN else KeyCharAndCode(code)
                 }
             }
+    }
+
+    class Serializer : Json.Serializer<KeyCharAndCode> {
+        override fun write(json: Json, key: KeyCharAndCode, knownType: Class<*>?) {
+            // Gdx Json is.... No comment. This `Any` is needed to resolve the ambiguity between
+            //      public void writeValue (String name, @Null Object value, @Null Class knownType)
+            // and
+            //      public void writeValue (@Null Object value, @Null Class knownType, @Null Class elementType)
+            // - we want the latter. And without the explicitly provided knownType it will _unpredictably_ use
+            // `{"class":"java.lang.String","value":"Space"}` instead of `"Space"`.
+            json.writeValue(key.toString() as Any, String::class.java, null)
+        }
+
+        override fun read(json: Json, jsonData: JsonValue, type: Class<*>?): KeyCharAndCode {
+            return parse(jsonData.asString())
         }
     }
 }

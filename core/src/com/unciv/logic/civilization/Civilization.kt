@@ -186,8 +186,6 @@ class Civilization : IsPartOfGameInfoSerialization {
     // This is basically a way to ensure our lists are immutable.
     var cities = listOf<City>()
     var citiesCreated = 0
-    @Deprecated("4.5.0 - in favor of Tile.exploredBy")
-    var exploredTiles = HashSet<Vector2>()
 
     // Limit camera within explored region
     var exploredRegion = ExploredRegion()
@@ -197,10 +195,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     var lastSeenImprovement = HashMapVector2<String>()
 
     // To correctly determine "game over" condition as clarified in #4707
-    // Nullable type meant to be deprecated and converted to non-nullable,
-    // default false once we no longer want legacy save-game compatibility
-    // This parameter means they owned THEIR OWN capital btw, not other civs'.
-    var hasEverOwnedOriginalCapital: Boolean? = null
+    var hasEverOwnedOriginalCapital: Boolean = false
 
     val passableImpassables = HashSet<String>() // For Carthage-like uniques
 
@@ -242,6 +237,8 @@ class Civilization : IsPartOfGameInfoSerialization {
     @Transient
     var hasLongCountDisplayUnique = false
 
+    var statsHistory = CivRankingHistory()
+
     constructor()
 
     constructor(civName: String) {
@@ -270,11 +267,6 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.proximity.putAll(proximity)
         toReturn.cities = cities.map { it.clone() }
         toReturn.neutralRoads = neutralRoads
-
-        // This is the only thing that is NOT switched out, which makes it a source of ConcurrentModification errors.
-        // Cloning it by-pointer is a horrific move, since the serialization would go over it ANYWAY and still lead to concurrency problems.
-        // Cloning it by iterating on the tilemap values may seem ridiculous, but it's a perfectly thread-safe way to go about it, unlike the other solutions.
-        toReturn.exploredTiles.addAll(gameInfo.tileMap.values.asSequence().map { it.position }.filter { it in exploredTiles })
         toReturn.exploredRegion = exploredRegion.clone()
         toReturn.lastSeenImprovement.putAll(lastSeenImprovement)
         toReturn.notifications.addAll(notifications)
@@ -295,6 +287,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.totalFaithForContests = totalFaithForContests
         toReturn.attacksSinceTurnStart = attacksSinceTurnStart.copy()
         toReturn.hasMovedAutomatedUnits = hasMovedAutomatedUnits
+        toReturn.statsHistory = statsHistory.clone()
         return toReturn
     }
 
@@ -317,7 +310,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getProximity(civName: String) = proximity[civName] ?: Proximity.None
 
     /** Returns only undefeated civs, aka the ones we care about */
-    fun getKnownCivs() = diplomacy.values.map { it.otherCiv() }.filter { !it.isDefeated() }
+    fun getKnownCivs() = diplomacy.values.asSequence().map { it.otherCiv() }.filter { !it.isDefeated() }
     fun knows(otherCivName: String) = diplomacy.containsKey(otherCivName)
     fun knows(otherCiv: Civilization) = knows(otherCiv.civName)
 
@@ -327,11 +320,11 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun isOneCityChallenger() = playerType == PlayerType.Human && gameInfo.gameParameters.oneCityChallenge
 
     fun isCurrentPlayer() = gameInfo.currentPlayerCiv == this
-    fun isMajorCiv() = nation.isMajorCiv()
-    fun isMinorCiv() = nation.isCityState() || nation.isBarbarian()
-    fun isCityState(): Boolean = nation.isCityState()
-    fun isBarbarian() = nation.isBarbarian()
-    fun isSpectator() = nation.isSpectator()
+    fun isMajorCiv() = nation.isMajorCiv
+    fun isMinorCiv() = nation.isCityState || nation.isBarbarian
+    fun isCityState(): Boolean = nation.isCityState
+    fun isBarbarian() = nation.isBarbarian
+    fun isSpectator() = nation.isSpectator
     fun isAlive(): Boolean = !isDefeated()
 
     @delegate:Transient
@@ -374,7 +367,10 @@ class Civilization : IsPartOfGameInfoSerialization {
     val cache = CivInfoTransientCache(this)
 
     fun updateStatsForNextTurn() {
+        val previousHappiness = stats.happiness
         stats.happiness = stats.getHappinessBreakdown().values.sum().roundToInt()
+        if (stats.happiness != previousHappiness)
+            for (city in cities) city.cityStats.update(updateCivStats = false)
         stats.statsForNextTurn = stats.getStatMapForNextTurn().values.reduce { a, b -> a + b }
     }
 
@@ -509,7 +505,7 @@ class Civilization : IsPartOfGameInfoSerialization {
      */
     fun isDefeated() = when {
         isBarbarian() || isSpectator() -> false     // Barbarians and voyeurs can't lose
-        hasEverOwnedOriginalCapital == true -> cities.isEmpty()
+        hasEverOwnedOriginalCapital -> cities.isEmpty()
         else -> units.getCivUnits().none()
     }
 
@@ -545,7 +541,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         else when (category) {
                 RankingType.Score -> calculateTotalScore().toInt()
                 RankingType.Population -> cities.sumOf { it.population.population }
-                RankingType.Crop_Yield -> stats.statsForNextTurn.food.roundToInt()
+                RankingType.CropYield -> stats.statsForNextTurn.food.roundToInt()
                 RankingType.Production -> stats.statsForNextTurn.production.roundToInt()
                 RankingType.Gold -> gold
                 RankingType.Territory -> cities.sumOf { it.tiles.size }
@@ -776,15 +772,17 @@ class Civilization : IsPartOfGameInfoSerialization {
      * Removes current capital then moves capital to argument city if not null
      */
     fun moveCapitalTo(city: City?) {
-        if (cities.isNotEmpty() && getCapital() != null) {
-            val oldCapital = getCapital()!!
-            oldCapital.cityConstructions.removeBuilding(oldCapital.capitalCityIndicator())
-        }
 
-        if (city == null) return // can't move a non-existent city but we can always remove our old capital
-        // move new capital
-        city.cityConstructions.addBuilding(city.capitalCityIndicator())
-        city.isBeingRazed = false // stop razing the new capital if it was being razed
+        val oldCapital = getCapital()
+
+        // Add new capital first so the civ doesn't get stuck in a state where it has cities but no capital
+        if (city != null) {
+            // move new capital
+            city.cityConstructions.addBuilding(city.capitalCityIndicator())
+            city.isBeingRazed = false // stop razing the new capital if it was being razed
+        }
+        if (oldCapital != null)
+            oldCapital.cityConstructions.removeBuilding(oldCapital.capitalCityIndicator())
     }
 
     fun moveCapitalToNextLargest() {

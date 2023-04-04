@@ -37,7 +37,7 @@ abstract class BaseScreen : Screen {
     protected val tutorialController by lazy { TutorialController(this) }
 
     /**
-     * Keyboard shorcuts global to the screen. While this is public and can be modified,
+     * Keyboard shortcuts global to the screen. While this is public and can be modified,
      * you most likely should use [keyShortcuts][Actor.keyShortcuts] on appropriate [Actor] instead.
      */
     val globalShortcuts = KeyShortcutDispatcher()
@@ -97,7 +97,14 @@ abstract class BaseScreen : Screen {
 
     override fun hide() {}
 
+    /**
+     * Called when this screen should release all resources.
+     *
+     * This is _not_ called automatically by Gdx, but by the [screenStack][UncivGame.screenStack]
+     * functions in [UncivGame], e.g. [replaceCurrentScreen][UncivGame.replaceCurrentScreen].
+     */
     override fun dispose() {
+        // FYI - This is a method of Gdx [Screen], not of Gdx [Disposable], but the one below _is_.
         stage.dispose()
     }
 
@@ -117,10 +124,12 @@ abstract class BaseScreen : Screen {
 
         lateinit var skin: Skin
         lateinit var skinStrings: SkinStrings
+
         fun setSkin() {
             Fonts.resetFont()
             skinStrings = SkinStrings()
             skin = Skin().apply {
+                add("default-clear", clearColor, Color::class.java)
                 add("Nativefont", Fonts.font, BitmapFont::class.java)
                 add("RoundedEdgeRectangle", skinStrings.getUiBackground("", skinStrings.roundedEdgeRectangleShape), Drawable::class.java)
                 add("Rectangle", ImageGetter.getDrawable(""), Drawable::class.java)

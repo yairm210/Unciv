@@ -82,7 +82,6 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
     }
 
     private fun Table.addSaveToCustomLocation() {
-        if (!game.files.canLoadFromCustomSaveLocation()) return
         val saveToCustomLocation = "Save to custom location".toTextButton()
         val errorLabel = "".toLabel(Color.RED)
         saveToCustomLocation.onClick {
@@ -90,15 +89,18 @@ class SaveGameScreen(val gameInfo: GameInfo) : LoadOrSaveScreen("Current saves")
             saveToCustomLocation.setText("Saving...".tr())
             saveToCustomLocation.disable()
             Concurrency.runOnNonDaemonThreadPool("Save to custom location") {
-                game.files.saveGameToCustomLocation(gameInfo, gameNameTextField.text) { result ->
-                    if (result.isError()) {
-                        errorLabel.setText("Could not save game to custom location!".tr())
-                        result.exception?.printStackTrace()
-                    } else if (result.isSuccessful()) {
+
+                game.files.saveGameToCustomLocation(gameInfo, gameNameTextField.text,
+                    {
                         game.popScreen()
+                        saveToCustomLocation.enable()
+                    },
+                    {
+                        errorLabel.setText("Could not save game to custom location!".tr())
+                        it.printStackTrace()
+                        saveToCustomLocation.enable()
                     }
-                    saveToCustomLocation.enable()
-                }
+                )
             }
         }
         add(saveToCustomLocation).row()

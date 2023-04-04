@@ -48,8 +48,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         return conditionalsApply(StateForConditionals(civInfo, city))
     }
 
-    fun conditionalsApply(state: StateForConditionals?): Boolean {
-        if (state == null) return conditionals.isEmpty()
+    fun conditionalsApply(state: StateForConditionals = StateForConditionals()): Boolean {
         if (state.ignoreConditionals) return true
         for (condition in conditionals) {
             if (!conditionalApplies(condition, state)) return false
@@ -125,7 +124,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         state: StateForConditionals
     ): Boolean {
 
-        if (condition.type!!.targetTypes.contains(UniqueTarget.TriggerCondition))
+        val nonConditionalConditionTypes = setOf(UniqueTarget.TriggerCondition, UniqueTarget.UnitTriggerCondition, UniqueTarget.UnitActionModifier)
+        if (condition.type!!.targetTypes.any { it in nonConditionalConditionTypes })
             return true // not a filtering condition
 
         fun ruleset() = state.civInfo!!.gameInfo.ruleset
@@ -146,7 +146,6 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         return when (condition.type) {
             // These are 'what to do' and not 'when to do' conditionals
             UniqueType.ConditionalTimedUnique -> true
-            UniqueType.ConditionalConsumeUnit -> true
 
             UniqueType.ConditionalBeforeTurns -> state.civInfo != null && state.civInfo.gameInfo.turns < condition.params[0].toInt()
             UniqueType.ConditionalAfterTurns -> state.civInfo != null && state.civInfo.gameInfo.turns >= condition.params[0].toInt()
@@ -227,7 +226,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.ourCombatant != null && state.ourCombatant.getHealth() < condition.params[0].toInt()
             UniqueType.ConditionalHasNotUsedOtherActions ->
                 state.unit != null &&
-                state.unit.run { religiousActionsUnitCanDo().all { abilityUsesLeft[it] == maxAbilityUses[it] } }
+                state.unit.run { limitedActionsUnitCanDo().all { abilityUsesLeft[it] == maxAbilityUses[it] } }
 
             UniqueType.ConditionalInTiles ->
                 relevantTile?.matchesFilter(condition.params[0], state.civInfo) == true

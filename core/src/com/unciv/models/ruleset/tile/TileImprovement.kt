@@ -13,9 +13,9 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showReligionInCivilopedia
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
-import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import kotlin.math.roundToInt
 
@@ -274,7 +274,8 @@ class TileImprovement : RulesetStatsObject() {
     private fun getCreatingUnits(ruleset: Ruleset): List<BaseUnit> {
         return ruleset.units.values.asSequence()
             .filter { unit ->
-                unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit, StateForConditionals.IgnoreConditionals)
+                (unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit, StateForConditionals.IgnoreConditionals)
+                        + unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly))
                     .any { it.params[0] == name }
             }.toList()
     }

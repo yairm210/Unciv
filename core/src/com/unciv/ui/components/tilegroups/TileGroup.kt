@@ -2,7 +2,6 @@ package com.unciv.ui.components.tilegroups
 
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.ui.components.tilegroups.layers.TileLayerBorders
@@ -13,6 +12,7 @@ import com.unciv.ui.components.tilegroups.layers.TileLayerOverlay
 import com.unciv.ui.components.tilegroups.layers.TileLayerTerrain
 import com.unciv.ui.components.tilegroups.layers.TileLayerUnitArt
 import com.unciv.ui.components.tilegroups.layers.TileLayerUnitFlag
+import com.unciv.utils.DebugUtils
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -40,20 +40,22 @@ open class TileGroup(
     val hexagonImageOrigin = Pair(hexagonImageWidth / 2f, sqrt((hexagonImageWidth / 2f).pow(2) - (hexagonImageWidth / 4f).pow(2)))
     val hexagonImagePosition = Pair(-hexagonImageOrigin.first / 3f, -hexagonImageOrigin.second / 4f)
 
-    var isForceVisible = UncivGame.Current.viewEntireMapForDebug
+    var isForceVisible = DebugUtils.VISIBLE_MAP
     var isForMapEditorIcon = false
 
     @Suppress("LeakingThis") val layerTerrain = TileLayerTerrain(this, groupSize)
     @Suppress("LeakingThis") val layerFeatures = TileLayerFeatures(this, groupSize)
     @Suppress("LeakingThis") val layerBorders = TileLayerBorders(this, groupSize)
+    @Suppress("LeakingThis") val layerMisc = TileLayerMisc(this, groupSize)
     @Suppress("LeakingThis") val layerOverlay = TileLayerOverlay(this, groupSize)
     @Suppress("LeakingThis") val layerUnitArt = TileLayerUnitArt(this, groupSize)
     @Suppress("LeakingThis") val layerUnitFlag = TileLayerUnitFlag(this, groupSize)
     @Suppress("LeakingThis") val layerCityButton = TileLayerCityButton(this, groupSize)
-    @Suppress("LeakingThis") val layerMisc = TileLayerMisc(this, groupSize)
 
     init {
+        isTransform = false // performance helper - nothing here is rotated or scaled
         this.setSize(groupSize, groupSize)
+
         this.addActor(layerTerrain)
         this.addActor(layerFeatures)
         this.addActor(layerBorders)
@@ -64,8 +66,6 @@ open class TileGroup(
         this.addActor(layerCityButton)
 
         layerTerrain.update(null)
-
-        isTransform = false // performance helper - nothing here is rotated or scaled
     }
 
     open fun clone() = TileGroup(tile, tileSetStrings)
@@ -83,27 +83,33 @@ open class TileGroup(
         layerUnitFlag.reset()
     }
 
+    private fun setAllLayersVisible(isVisible: Boolean) {
+        layerTerrain.isVisible = isVisible
+        layerFeatures.isVisible = isVisible
+        layerBorders.isVisible = isVisible
+        layerMisc.isVisible = isVisible
+        layerOverlay.isVisible = isVisible
+        layerUnitArt.isVisible = isVisible
+        layerUnitFlag.isVisible = isVisible
+        layerCityButton.isVisible = isVisible
+    }
+
     open fun update(viewingCiv: Civilization? = null) {
 
         layerMisc.removeHexOutline()
         layerOverlay.hideHighlight()
         layerOverlay.hideCrosshair()
 
-        val layers = listOf(
-            layerTerrain, layerFeatures, layerBorders, layerMisc,
-            layerOverlay, layerUnitArt, layerUnitFlag, layerCityButton)
-
         // Show all layers by default
-        layers.forEach { it.isVisible = true }
+        setAllLayersVisible(true)
 
         // Do not update layers if tile is not explored by viewing player
         if (viewingCiv != null && !(isForceVisible || viewingCiv.hasExplored(tile))) {
+            reset()
             // If tile has explored neighbors - reveal layers partially
-            if (tile.neighbors.any { viewingCiv.hasExplored(it) })
-                reset()
-            // Else - hide all layers
-            else
-                layers.forEach { it.isVisible = false }
+            if (tile.neighbors.none { viewingCiv.hasExplored(it) })
+                // Else - hide all layers
+                setAllLayersVisible(false)
             return
         }
 

@@ -1,6 +1,5 @@
 package com.unciv.models.stats
 
-import com.unciv.Constants
 import com.unciv.models.translations.tr
 import kotlin.reflect.KMutableProperty0
 
@@ -150,9 +149,9 @@ open class Stats(
         }
     }
 
-    /** Since notificaitons are translated on the fly, when saving stats there we need to do so in English */
+    /** Since notifications are translated on the fly, when saving stats there we need to do so in English */
     fun toStringForNotifications() = this.joinToString {
-        (if (it.value > 0) "+" else "") + it.value.toInt() + " " + it.key.toString().tr(Constants.english)
+        (if (it.value > 0) "+" else "") + it.value.toInt() + " " + it.key.toString()
     }
 
     // For display in diplomacy window
@@ -233,7 +232,7 @@ open class Stats(
         fun parse(string: String): Stats {
             val toReturn = Stats()
             val statsWithBonuses = string.split(", ")
-            for(statWithBonuses in statsWithBonuses){
+            for(statWithBonuses in statsWithBonuses) {
                 val match = statRegex.matchEntire(statWithBonuses)!!
                 val statName = match.groupValues[3]
                 val statAmount = match.groupValues[2].toFloat() * (if (match.groupValues[1] == "-") -1 else 1)
@@ -241,6 +240,9 @@ open class Stats(
             }
             return toReturn
         }
+
+        val ZERO = Stats()
+        val DefaultCityCenterMinimum = Stats(food = 2f, production = 1f)
     }
 }
 

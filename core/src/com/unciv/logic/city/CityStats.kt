@@ -1,7 +1,6 @@
 package com.unciv.logic.city
 
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
@@ -17,6 +16,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.toPercent
+import com.unciv.utils.DebugUtils
 import kotlin.math.min
 
 
@@ -178,14 +178,14 @@ class CityStats(val city: City) {
         return !city.containsBuildingUnique(UniqueType.RemoveAnnexUnhappiness)
     }
 
-    fun getStatsOfSpecialist(specialistName: String): Stats {
+    fun getStatsOfSpecialist(specialistName: String, localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats {
         val specialist = city.getRuleset().specialists[specialistName]
             ?: return Stats()
         val stats = specialist.cloneStats()
-        for (unique in city.getMatchingUniques(UniqueType.StatsFromSpecialist))
+        for (unique in localUniqueCache.get(UniqueType.StatsFromSpecialist.name, city.getMatchingUniques(UniqueType.StatsFromSpecialist)))
             if (city.matchesFilter(unique.params[1]))
                 stats.add(unique.stats)
-        for (unique in city.civ.getMatchingUniques(UniqueType.StatsFromObject))
+        for (unique in localUniqueCache.get(UniqueType.StatsFromObject.name, city.civ.getMatchingUniques(UniqueType.StatsFromObject)))
             if (unique.params[1] == specialistName)
                 stats.add(unique.stats)
         return stats
@@ -193,8 +193,9 @@ class CityStats(val city: City) {
 
     private fun getStatsFromSpecialists(specialists: Counter<String>): Stats {
         val stats = Stats()
+        val localUniqueCache = LocalUniqueCache()
         for (entry in specialists.filter { it.value > 0 })
-            stats.add(getStatsOfSpecialist(entry.key) * entry.value)
+            stats.add(getStatsOfSpecialist(entry.key, localUniqueCache) * entry.value)
         return stats
     }
 
@@ -464,7 +465,7 @@ class CityStats(val city: City) {
 
         newStatsBonusTree.add(getStatsPercentBonusesFromUniquesBySource(currentConstruction))
 
-        if (UncivGame.Current.superchargedForDebug) {
+        if (DebugUtils.SUPERCHARGED) {
             val stats = Stats()
             for (stat in Stat.values()) stats[stat] = 10000f
             newStatsBonusTree.addStats(stats, "Supercharged")
@@ -474,7 +475,8 @@ class CityStats(val city: City) {
     }
 
     fun update(currentConstruction: IConstruction = city.cityConstructions.getCurrentConstruction(),
-               updateTileStats:Boolean = true) {
+               updateTileStats:Boolean = true,
+                updateCivStats:Boolean = true) {
         if (updateTileStats) updateTileStats()
 
         // We need to compute Tile yields before happiness
@@ -490,7 +492,7 @@ class CityStats(val city: City) {
         for (stat in finalStatList.values) newCurrentCityStats.add(stat)
         currentCityStats = newCurrentCityStats
 
-        city.civ.updateStatsForNextTurn()
+        if (updateCivStats) city.civ.updateStatsForNextTurn()
     }
 
     private fun updateFinalStatList(currentConstruction: IConstruction) {

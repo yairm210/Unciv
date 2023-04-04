@@ -14,13 +14,6 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
-import com.unciv.ui.screens.civilopediascreen.FormattedLine.IconDisplay
-import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
-import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
-import com.unciv.ui.popups.ToastPopup
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.WrappableLabel
@@ -29,6 +22,13 @@ import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.screens.civilopediascreen.FormattedLine.IconDisplay
+import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
+import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
 
 class MapEditorViewTab(
     private val editorScreen: MapEditorScreen
@@ -48,7 +48,7 @@ class MapEditorViewTab(
     }
 
     private fun createMockCiv(ruleset: Ruleset) = Civilization().apply {
-        // This crappy construct exists only to allow us to call TileInfo.getTileStats
+        // This crappy construct exists only to allow us to call Tile.TileStatFunctions.getTileStats
         nation = Nation()
         nation.name = "Test"
         gameInfo = GameInfo()
@@ -235,11 +235,11 @@ class MapEditorViewTab(
         startingLocationsByNation.asSequence()
         .filter { tile == null || tile in it.value }
         .mapNotNull { ruleset!!.nations[it.key] }
-        .sortedWith(compareBy<Nation>{ it.isCityState() }.thenBy(collator) { it.name.tr() })
+        .sortedWith(compareBy<Nation>{ it.isCityState }.thenBy(collator) { it.name.tr() })
 
     private fun TileMap.getStartingLocationSummary() =
         startingLocationsByNation.asSequence()
         .mapNotNull { if (it.key in ruleset!!.nations) ruleset!!.nations[it.key]!! to it.value.size else null }
-        .sortedWith(compareBy<Pair<Nation,Int>>{ it.first.isCityState() }.thenBy(collator) { it.first.name.tr() })
+        .sortedWith(compareBy<Pair<Nation,Int>>{ it.first.isCityState }.thenBy(collator) { it.first.name.tr() })
         .map { it.first.name to it.second }
 }

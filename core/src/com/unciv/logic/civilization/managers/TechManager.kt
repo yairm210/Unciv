@@ -23,7 +23,6 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.components.extensions.withItem
-import java.util.*
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
@@ -91,6 +90,19 @@ class TechManager : IsPartOfGameInfoSerialization {
 
     fun getNumberOfTechsResearched(): Int = techsResearched.size
 
+    fun getOverflowScience(techName: String): Int {
+        return if (overflowScience == 0) 0
+            else (getScienceModifier(techName) * overflowScience).toInt()
+    }
+
+    private fun getScienceModifier(techName: String): Float { // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/
+        val techsResearchedKnownCivs = civInfo.getKnownCivs()
+            .count { it.isMajorCiv() && it.tech.isResearched(techName) }
+        val undefeatedCivs = civInfo.gameInfo.civilizations
+            .count { it.isMajorCiv() && !it.isDefeated() }
+        return 1 + techsResearchedKnownCivs / undefeatedCivs.toFloat() * 0.3f
+    }
+
     private fun getRuleset() = civInfo.gameInfo.ruleset
 
     fun costOfTech(techName: String): Int {
@@ -98,12 +110,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         if (civInfo.isHuman())
             techCost *= civInfo.getDifficulty().researchCostModifier
         techCost *= civInfo.gameInfo.speed.scienceCostModifier
-        val techsResearchedKnownCivs = civInfo.getKnownCivs()
-                .count { it.isMajorCiv() && it.tech.isResearched(techName) }
-        val undefeatedCivs = civInfo.gameInfo.civilizations
-                .count { it.isMajorCiv() && !it.isDefeated() }
-        // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/
-        techCost /= 1 + techsResearchedKnownCivs / undefeatedCivs.toFloat() * 0.3f
+        techCost /= getScienceModifier(techName)
         // https://civilization.fandom.com/wiki/Map_(Civ5)
         val worldSizeModifier = with (civInfo.gameInfo.tileMap.mapParameters.mapSize) {
             when {
@@ -130,11 +137,18 @@ class TechManager : IsPartOfGameInfoSerialization {
     fun researchOfTech(TechName: String?) = techsInProgress[TechName] ?: 0
     // Was once duplicated as fun scienceSpentOnTech(tech: String): Int
 
-    fun remainingScienceToTech(techName: String) = costOfTech(techName) - researchOfTech(techName)
+    fun remainingScienceToTech(techName: String): Int {
+        val spareScience = if (canBeResearched(techName)) getOverflowScience(techName) else 0
+        return costOfTech(techName) - researchOfTech(techName) - spareScience
+    }
 
-    fun turnsToTech(techName: String) = when {
-        civInfo.stats.statsForNextTurn.science <= 0f -> "∞"
-        else -> max(1, ceil(remainingScienceToTech(techName).toDouble() / civInfo.stats.statsForNextTurn.science).toInt()).toString()
+    fun turnsToTech(techName: String): String {
+        val remainingCost = remainingScienceToTech(techName).toDouble()
+        return when {
+            remainingCost <= 0f -> "0"
+            civInfo.stats.statsForNextTurn.science <= 0f -> "∞"
+            else -> max(1, ceil(remainingCost / civInfo.stats.statsForNextTurn.science).toInt()).toString()
+        }
     }
 
     fun isResearched(techName: String): Boolean = techsResearched.contains(techName)
@@ -153,13 +167,13 @@ class TechManager : IsPartOfGameInfoSerialization {
     //endregion
 
     fun getRequiredTechsToDestination(destinationTech: Technology): List<Technology> {
-        val prerequisites = Stack<Technology>()
+        val prerequisites = mutableListOf<Technology>()
 
         val checkPrerequisites = ArrayDeque<Technology>()
         checkPrerequisites.add(destinationTech)
 
         while (!checkPrerequisites.isEmpty()) {
-            val techToCheck = checkPrerequisites.pop()
+            val techToCheck = checkPrerequisites.removeFirst()
             // future tech can have been researched even when we're researching it,
             // so...if we skip it we'll end up with 0 techs in the "required techs", which will mean that we don't have anything to research. Yeah.
             if (!techToCheck.isContinuallyResearchable() &&
@@ -214,15 +228,15 @@ class TechManager : IsPartOfGameInfoSerialization {
         var finalScienceToAdd = scienceForNewTurn
 
         if (scienceFromResearchAgreements != 0) {
-            finalScienceToAdd += scienceFromResearchAgreements()
+            val scienceBoost = scienceFromResearchAgreements()
+            finalScienceToAdd += scienceBoost
             scienceFromResearchAgreements = 0
+            civInfo.addNotification("We gained [$scienceBoost] Science from Research Agreement",
+                NotificationCategory.General,
+                NotificationIcon.Science)
         }
-        if (overflowScience != 0) { // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/
-            val techsResearchedKnownCivs = civInfo.getKnownCivs()
-                    .count { it.isMajorCiv() && it.tech.isResearched(currentTechnologyName()!!) }
-            val undefeatedCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() && !it.isDefeated() }
-            val finalScienceFromOverflow = ((1 + techsResearchedKnownCivs / undefeatedCivs.toFloat() * 0.3f) * overflowScience).toInt()
-            finalScienceToAdd += finalScienceFromOverflow
+        if (overflowScience != 0) {
+            finalScienceToAdd += getOverflowScience(currentTechnologyName()!!)
             overflowScience = 0
         }
 
@@ -242,6 +256,20 @@ class TechManager : IsPartOfGameInfoSerialization {
         addTechnology(currentTechnology)
     }
 
+    /**
+     * Checks whether the research on the current technology can be completed
+     * and, if so, completes the research.
+     */
+    fun updateResearchProgress() {
+        val currentTechnology = currentTechnologyName() ?: return
+        val realOverflow = getOverflowScience(currentTechnology)
+        val scienceSpent = researchOfTech(currentTechnology) + realOverflow
+        if (scienceSpent >= costOfTech(currentTechnology)) {
+            overflowScience = 0
+            addScience(realOverflow)
+        }
+    }
+
     fun getFreeTechnology(techName: String) {
         freeTechs--
         addTechnology(techName)
@@ -256,6 +284,7 @@ class TechManager : IsPartOfGameInfoSerialization {
             techsToResearch.remove(techName)
         else
             repeatingTechsResearched++
+        techsInProgress.remove(techName)
         researchedTechnologies = researchedTechnologies.withItem(newTech)
         addTechToTransients(newTech)
 
@@ -271,10 +300,11 @@ class TechManager : IsPartOfGameInfoSerialization {
 
         updateTransientBooleans()
         for (city in civInfo.cities) {
+            city.cityStats.update()
             city.updateCitizens = true
         }
 
-        if(!civInfo.isSpectator())
+        if (!civInfo.isSpectator())
             civInfo.addNotification("Research of [$techName] has completed!", TechAction(techName),
                 NotificationCategory.General,
                 NotificationIcon.Science, techName)
@@ -300,73 +330,57 @@ class TechManager : IsPartOfGameInfoSerialization {
         }
 
         moveToNewEra()
+        updateResearchProgress()
     }
 
     private fun obsoleteOldUnits(techName: String) {
-        val obsoleteUnits =
-                getRuleset().units.values.filter { it.obsoleteTech == techName }.map { it.name }
-        val unitUpgrades = HashMap<String, HashSet<City>>()
-        for (city in civInfo.cities) {
-            // Do not use replaceAll - that's a Java 8 feature and will fail on older phones!
-            val oldQueue =
-                    city.cityConstructions.constructionQueue.toList()  // copy, since we're changing the queue
-            city.cityConstructions.constructionQueue.clear()
-            for (constructionName in oldQueue) {
-                if (constructionName in obsoleteUnits) {
-                    if (constructionName !in unitUpgrades.keys) {
-                        unitUpgrades[constructionName] = hashSetOf()
-                    }
-                    unitUpgrades[constructionName]?.add(city)
-                    val construction = city.cityConstructions.getConstruction(constructionName)
-                    if (construction is BaseUnit && construction.upgradesTo != null) {
-                        city.cityConstructions.constructionQueue.add(construction.upgradesTo!!)
-                    }
-                } else city.cityConstructions.constructionQueue.add(constructionName)
-            }
+        // First build a map with obsoleted units to their (nation-specific) upgrade
+        val ruleset = getRuleset()
+        fun BaseUnit.getEquivalentUpgradeOrNull(): BaseUnit? {
+            if (upgradesTo !in ruleset.units) return null  // also excludes upgradesTo==null
+            return civInfo.getEquivalentUnit(upgradesTo!!)
         }
+        val obsoleteUnits = getRuleset().units.asSequence()
+            .filter { it.value.obsoleteTech == techName }
+            .map { it.key to it.value.getEquivalentUpgradeOrNull() }
+            .toMap()
+        if (obsoleteUnits.isEmpty()) return
+
+        // Apply each to all cities - and remember which cities had which obsoleted unit
+        //  in their construction queues in this Map<String, MutableSet<City>>:
+        val unitUpgrades = obsoleteUnits.keys.associateWith { mutableSetOf<City>() }
+        fun transformConstruction(old: String, city: City): String? {
+            val entry = unitUpgrades[old] ?: return old  // Entry OK, not obsolete
+            entry.add(city)  // Remember city has updated its queue
+            return obsoleteUnits[old]?.name  // Replacement, or pass through null to remove from queue
+        }
+        for (city in civInfo.cities) {
+            // Replace queue - the sequence iteration and finalization happens before the result
+            // is reassigned, therefore no concurrent modification worries
+            city.cityConstructions.constructionQueue =
+                city.cityConstructions.constructionQueue
+                .asSequence()
+                .mapNotNull { transformConstruction(it, city) }
+                .toMutableList()
+        }
+
+        // As long as TurnManager does cities after tech, we don't need to clean up
+        // inProgressConstructions - CityConstructions.validateInProgressConstructions does it.
 
         // Add notifications for obsolete units/constructions
         for ((unit, cities) in unitUpgrades) {
-            val construction = cities.first().cityConstructions.getConstruction(unit)
-            if (cities.size == 1) {
-                val city = cities.first()
-                if (construction is BaseUnit && construction.upgradesTo != null) {
-                    val text =
-                            "[${city.name}] changed production from [$unit] to [${construction.upgradesTo!!}]"
-                    civInfo.addNotification(
-                        text, city.location,
-                        NotificationCategory.Production, unit,
-                        NotificationIcon.Construction, construction.upgradesTo!!
-                    )
-                } else {
-                    val text =
-                            "[$unit] has become obsolete and was removed from the queue in [${city.name}]!"
-                    civInfo.addNotification(
-                        text, city.location,
-                        NotificationCategory.Production,
-                        NotificationIcon.Construction
-                    )
-                }
-            } else {
-                val locationAction = LocationAction(cities.asSequence().map { it.location })
-                if (construction is BaseUnit && construction.upgradesTo != null) {
-                    val text =
-                            "[${cities.size}] cities changed production from [$unit] to [${construction.upgradesTo!!}]"
-                    civInfo.addNotification(
-                        text, locationAction,
-                        NotificationCategory.Production, unit,
-                        NotificationIcon.Construction, construction.upgradesTo!!
-                    )
-                } else {
-                    val text =
-                            "[$unit] has become obsolete and was removed from the queue in [${cities.size}] cities!"
-                    civInfo.addNotification(
-                        text, locationAction,
-                        NotificationCategory.Production,
-                        NotificationIcon.Construction
-                    )
-                }
-            }
+            if (cities.isEmpty()) continue
+            val locationAction = LocationAction(cities.mapTo(ArrayList(cities.size)) { it.location })
+            val cityText = if (cities.size == 1) "[${cities.first().name}]"
+                else "[${cities.size}] cities"
+            val newUnit = obsoleteUnits[unit]?.name
+            val text = if (newUnit == null)
+                "[$unit] has become obsolete and was removed from the queue in $cityText!"
+                else "$cityText changed production from [$unit] to [$newUnit]"
+            val icons = if (newUnit == null)
+                arrayOf(NotificationIcon.Construction)
+                else arrayOf(unit, NotificationIcon.Construction, newUnit)
+            civInfo.addNotification(text, locationAction, NotificationCategory.Production, *icons)
         }
     }
 
@@ -392,7 +406,7 @@ class TechManager : IsPartOfGameInfoSerialization {
             for (policyBranch in getRuleset().policyBranches.values.filter {
                 it.era == currentEra.name && civInfo.policies.isAdoptable(it)
             }) {
-                if(!civInfo.isSpectator())
+                if (!civInfo.isSpectator())
                     civInfo.addNotification(
                         "[${policyBranch.name}] policy branch unlocked!",
                         NotificationCategory.General,

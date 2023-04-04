@@ -57,7 +57,8 @@ class UniqueDocsWriter {
         lines += "# Uniques"
         lines += "Simple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](../Unique-parameters)"
 
-        val conditionalLikeUniqueTargets = setOf(UniqueTarget.Conditional, UniqueTarget.TriggerCondition, UniqueTarget.UnitTriggerCondition)
+        val conditionalLikeUniqueTargets = setOf(UniqueTarget.Conditional, UniqueTarget.TriggerCondition,
+            UniqueTarget.UnitTriggerCondition, UniqueTarget.UnitActionModifier)
 
         for ((targetType, uniqueTypes) in targetTypesToUniques) {
             if (uniqueTypes.isEmpty()) continue

@@ -24,10 +24,26 @@ class TutorialController(screen: BaseScreen) {
     var allTutorialsShowedCallback: (() -> Unit)? = null
     private val tutorialRender = TutorialRender(screen)
 
-    //todo These should live in a ruleset allowing moddability
-    private val tutorials: LinkedHashMap<String, Tutorial> =
-            json().fromJsonFile(Array<Tutorial>::class.java, "jsons/Tutorials.json")
-                .associateByTo(linkedMapOf()) { it.name }
+    private val tutorials: LinkedHashMap<String, Tutorial> = loadTutorialsFromJson()
+
+    companion object {
+        // static to allow use from TutorialTranslationTests
+        fun loadTutorialsFromJson(includeMods: Boolean = true): LinkedHashMap<String, Tutorial> {
+            val result = linkedMapOf<String, Tutorial>()
+            for (path in tutorialFiles(includeMods)) {
+                json().fromJsonFile(Array<Tutorial>::class.java, path)
+                    .associateByTo(result) { it.name }
+            }
+            return result
+        }
+        private fun tutorialFiles(includeMods: Boolean) = sequence<String> {
+            yield("jsons/Tutorials.json")
+            if (!includeMods) return@sequence
+            val mods = UncivGame.Current.gameInfo?.ruleset?.mods ?: return@sequence
+            val names = mods.asSequence().map { "mods/$it/jsons/Tutorials.json" }
+            yieldAll(names.filter { Gdx.files.local(it).exists() })
+        }
+    }
 
     fun showTutorial(tutorial: TutorialTrigger) {
         tutorialQueue.add(tutorial)

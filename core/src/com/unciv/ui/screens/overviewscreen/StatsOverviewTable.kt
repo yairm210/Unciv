@@ -4,11 +4,11 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
+import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.extensions.addSeparator
@@ -28,6 +28,11 @@ class StatsOverviewTab(
     private val greatPeopleTable = Table()
     private val scoreTable = Table()
     private val isReligionEnabled = gameInfo.isReligionEnabled()
+
+    override fun activated(index: Int, caption: String, pager: TabbedPager) {
+        overviewScreen.game.settings.addCompletedTutorialTask("See your stats breakdown")
+        super.activated(index, caption, pager)
+    }
 
     init {
         val tablePadding = 30f  // Padding around each of the stat tables

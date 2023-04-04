@@ -222,7 +222,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         var newAllyName: String? = null
         if (!civInfo.isCityState()) return
         val maxInfluence = civInfo.diplomacy
-            .filter { !it.value.otherCiv().isCityState() && !it.value.otherCiv().isDefeated() }
+            .filter { it.value.otherCiv().isMajorCiv() && !it.value.otherCiv().isDefeated() }
             .maxByOrNull { it.value.getInfluence() }
         if (maxInfluence != null && maxInfluence.value.getInfluence() >= 60) {
             newAllyName = maxInfluence.key
@@ -263,7 +263,7 @@ class CityStateFunctions(val civInfo: Civilization) {
                     }
                 }
             }
-            if (oldAllyName != null) {
+            if (oldAllyName != null && civInfo.isAlive()) {
                 val oldAllyCiv = civInfo.gameInfo.getCivilization(oldAllyName)
                 val text = "We have lost alliance with [${civInfo.civName}]."
                 if (capitalLocation != null) oldAllyCiv.addNotification(text, capitalLocation,
@@ -298,7 +298,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         return (!civInfo.isDefeated()
                 && civInfo.isCityState()
                 && civInfo.cities.any()
-                && civInfo.getDiplomacyManager(otherCiv).relationshipLevel() == RelationshipLevel.Ally
+                && civInfo.getDiplomacyManager(otherCiv).isRelationshipLevelEQ(RelationshipLevel.Ally)
                 && !otherCiv.getDiplomacyManager(civInfo).hasFlag(DiplomacyFlags.MarriageCooldown)
                 && otherCiv.getMatchingUniques(UniqueType.CityStateCanBeBoughtForGold).any()
                 && otherCiv.gold >= getDiplomaticMarriageCost())
@@ -464,7 +464,7 @@ class CityStateFunctions(val civInfo: Civilization) {
             if (diplomacy.hasFlag(DiplomacyFlags.AngerFreeIntrusion)) continue // They recently helped us
 
             val unitsInBorder = otherCiv.units.getCivUnits().count { !it.isCivilian() && it.getTile().getOwner() == civInfo }
-            if (unitsInBorder > 0 && diplomacy.relationshipLevel() < RelationshipLevel.Friend) {
+            if (unitsInBorder > 0 && diplomacy.isRelationshipLevelLT(RelationshipLevel.Friend)) {
                 diplomacy.addInfluence(-10f)
                 if (!diplomacy.hasFlag(DiplomacyFlags.BorderConflict)) {
                     otherCiv.popupAlerts.add(PopupAlert(AlertType.BorderConflict, civInfo.civName))

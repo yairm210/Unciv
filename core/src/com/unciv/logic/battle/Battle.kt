@@ -155,15 +155,9 @@ object Battle {
             for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeatingUnit, stateForConditionals))
                 if (unique.conditionals.any { it.type == UniqueType.TriggerUponDefeatingUnit
                                 && enemy.unit.matchesFilter(it.params[0]) })
-                    UniqueTriggerActivation.triggerUnitwideUnique(unique, ourUnit.unit)
+                    UniqueTriggerActivation.triggerUnitwideUnique(unique, ourUnit.unit, triggerNotificationText = "due to our [${ourUnit.getName()}] defeating a [${enemy.getName()}]")
         }
 
-        fun triggerDefeatUniques(ourUnit: MapUnitCombatant, enemy: ICombatant){
-            val stateForConditionals = StateForConditionals(civInfo = ourUnit.getCivInfo(),
-                ourCombatant = ourUnit, theirCombatant=enemy, tile = attackedTile)
-            for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeat, stateForConditionals))
-                UniqueTriggerActivation.triggerUnitwideUnique(unique, ourUnit.unit)
-        }
 
         // Add culture when defeating a barbarian when Honor policy is adopted, gold from enemy killed when honor is complete
         // or any enemy military unit with Sacrificial captives unique (can be either attacker or defender!)
@@ -172,14 +166,14 @@ object Battle {
             tryHealAfterKilling(attacker)
 
             if (attacker is MapUnitCombatant) triggerVictoryUniques(attacker, defender)
-            triggerDefeatUniques(defender, attacker)
+            triggerDefeatUniques(defender, attacker, attackedTile)
 
         } else if (attacker.isDefeated() && attacker is MapUnitCombatant && !attacker.unit.isCivilian()) {
             tryEarnFromKilling(defender, attacker)
             tryHealAfterKilling(defender)
 
             if (defender is MapUnitCombatant) triggerVictoryUniques(defender, attacker)
-            triggerDefeatUniques(attacker, defender)
+            triggerDefeatUniques(attacker, defender, attackedTile)
         }
 
         if (attacker is MapUnitCombatant) {
@@ -197,6 +191,19 @@ object Battle {
         reduceAttackerMovementPointsAndAttacks(attacker, defender)
 
         if (!isAlreadyDefeatedCity) postBattleAddXp(attacker, defender)
+
+        if (attacker is CityCombatant){
+            val cityCanBombardNotification = attacker.getCivInfo().notifications
+                .firstOrNull { it.text == "Your city [${attacker.getName()}] can bombard the enemy!" }
+            attacker.getCivInfo().notifications.remove(cityCanBombardNotification)
+        }
+    }
+
+    private fun triggerDefeatUniques(ourUnit: MapUnitCombatant, enemy: ICombatant, attackedTile: Tile){
+        val stateForConditionals = StateForConditionals(civInfo = ourUnit.getCivInfo(),
+            ourCombatant = ourUnit, theirCombatant=enemy, tile = attackedTile)
+        for (unique in ourUnit.unit.getTriggeredUniques(UniqueType.TriggerUponDefeat, stateForConditionals))
+            UniqueTriggerActivation.triggerUnitwideUnique(unique, ourUnit.unit, triggerNotificationText = "due to our [${ourUnit.getName()}] being defeated by a [${enemy.getName()}]")
     }
 
     private fun tryEarnFromKilling(civUnit: ICombatant, defeatedUnit: MapUnitCombatant) {
@@ -367,14 +374,14 @@ object Battle {
         val attackerDamageDealt = defenderHealthBefore - defender.getHealth()
 
         if (attacker is MapUnitCombatant)
-            for (unique in attacker.unit.getTriggeredUniques(UniqueType.TriggerUponPromotion))
+            for (unique in attacker.unit.getTriggeredUniques(UniqueType.TriggerUponLosingHealth))
                 if (unique.conditionals.any { it.params[0].toInt() <= defenderDamageDealt })
-                    UniqueTriggerActivation.triggerUnitwideUnique(unique, attacker.unit)
+                    UniqueTriggerActivation.triggerUnitwideUnique(unique, attacker.unit, triggerNotificationText = "due to losing [$defenderDamageDealt] HP")
 
         if (defender is MapUnitCombatant)
-            for (unique in defender.unit.getTriggeredUniques(UniqueType.TriggerUponPromotion))
+            for (unique in defender.unit.getTriggeredUniques(UniqueType.TriggerUponLosingHealth))
                 if (unique.conditionals.any { it.params[0].toInt() <= attackerDamageDealt })
-                    UniqueTriggerActivation.triggerUnitwideUnique(unique, defender.unit)
+                    UniqueTriggerActivation.triggerUnitwideUnique(unique, defender.unit, triggerNotificationText = "due to losing [$attackerDamageDealt] HP")
 
         plunderFromDamage(attacker, defender, attackerDamageDealt)
         return DamageDealt(attackerDamageDealt, defenderDamageDealt)
@@ -552,7 +559,7 @@ object Battle {
         }
 
         if (!thisCombatant.isDefeated() && thisCombatant.unit.promotions.canBePromoted())
-            thisCombatant.getCivInfo().addNotification("[${thisCombatant.unit.name}] can be promoted!",thisCombatant.getTile().position, NotificationCategory.Units, thisCombatant.unit.name)
+            thisCombatant.getCivInfo().addNotification("[${thisCombatant.unit.displayName()}] can be promoted!",thisCombatant.getTile().position, NotificationCategory.Units, thisCombatant.unit.name)
     }
 
     private fun conquerCity(city: City, attacker: MapUnitCombatant) {
@@ -624,7 +631,7 @@ object Battle {
         val capturedUnitTile = capturedUnit.getTile()
         val originalOwner = if (capturedUnit.originalOwner != null)
             capturedUnit.civ.gameInfo.getCivilization(capturedUnit.originalOwner!!)
-            else null
+        else null
 
         var wasDestroyedInstead = false
         when {
@@ -652,20 +659,33 @@ object Battle {
                     && originalOwner.isAlive()
                     && !attacker.getCivInfo().isAtWarWith(originalOwner)
                     && attacker.getCivInfo().playerType == PlayerType.Human // Only humans get the choice
-                -> {
+            -> {
                 capturedUnit.capturedBy(attacker.getCivInfo())
-                attacker.getCivInfo().popupAlerts.add(PopupAlert(AlertType.RecapturedCivilian, capturedUnitTile.position.toString()))
+                attacker.getCivInfo().popupAlerts.add(
+                    PopupAlert(
+                        AlertType.RecapturedCivilian,
+                        capturedUnitTile.position.toString()
+                    )
+                )
             }
 
             else -> captureOrConvertToWorker(capturedUnit, attacker.getCivInfo())
         }
 
         if (!wasDestroyedInstead)
-            defenderCiv.addNotification("An enemy [" + attacker.getName() + "] has captured our [" + defender.getName() + "]",
-                defender.getTile().position, NotificationCategory.War, attacker.getName(), NotificationIcon.War, defender.getName())
-        else
-            defenderCiv.addNotification("An enemy [" + attacker.getName() + "] has destroyed our [" + defender.getName() + "]",
-                defender.getTile().position, NotificationCategory.War, attacker.getName(), NotificationIcon.War, defender.getName())
+            defenderCiv.addNotification(
+                "An enemy [${attacker.getName()}] has captured our [${defender.getName()}]",
+                defender.getTile().position, NotificationCategory.War, attacker.getName(),
+                NotificationIcon.War, defender.getName()
+            )
+        else {
+            defenderCiv.addNotification(
+                "An enemy [${attacker.getName()}] has destroyed our [${defender.getName()}]",
+                defender.getTile().position, NotificationCategory.War, attacker.getName(),
+                NotificationIcon.War, defender.getName()
+            )
+            triggerDefeatUniques(defender, attacker, capturedUnitTile)
+        }
 
         if (checkDefeat)
             destroyIfDefeated(defenderCiv, attacker.getCivInfo())

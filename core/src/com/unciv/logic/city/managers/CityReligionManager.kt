@@ -146,7 +146,9 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
             if (checkForReligionAdoption) getMajorityReligionName()
             else null
 
+        val previousFollowers = followers.clone()
         followers.clear()
+
         if (city.population.population <= 0) return
 
         val remainders = HashMap<String, Float>()
@@ -175,11 +177,14 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
 
         followers.remove(Constants.noReligionName)
 
+
         if (checkForReligionAdoption) {
             val newMajorityReligion = getMajorityReligionName()
             if (oldMajorityReligion != newMajorityReligion && newMajorityReligion != null) {
                 triggerReligionAdoption(newMajorityReligion)
             }
+            if (followers != previousFollowers)
+                city.cityStats.update()
         }
     }
 
@@ -240,13 +245,13 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
             addPressure(religionThisIsTheHolyCityOf!!,5 * pressureFromAdjacentCities, false)
         }
 
-        for (city in city.civ.gameInfo.getCities()) {
-            if (city == this.city) continue
-            val majorityReligionOfCity = city.religion.getMajorityReligionName() ?: continue
+        for (otherCity in city.civ.gameInfo.getCities()) {
+            if (otherCity == city) continue
+            val majorityReligionOfCity = otherCity.religion.getMajorityReligionName() ?: continue
             if (!this.city.civ.gameInfo.religions[majorityReligionOfCity]!!.isMajorReligion()) continue
-            if (city.getCenterTile().aerialDistanceTo(this.city.getCenterTile())
-                    > city.religion.getSpreadRange()) continue
-            addPressure(majorityReligionOfCity, city.religion.pressureAmountToAdjacentCities(this.city), false)
+            if (otherCity.getCenterTile().aerialDistanceTo(city.getCenterTile())
+                    > otherCity.religion.getSpreadRange()) continue
+            addPressure(majorityReligionOfCity, otherCity.religion.pressureAmountToAdjacentCities(city), false)
         }
 
         updateNumberOfFollowers()

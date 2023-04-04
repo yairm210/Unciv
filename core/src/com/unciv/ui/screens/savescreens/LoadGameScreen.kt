@@ -159,22 +159,22 @@ class LoadGameScreen : LoadOrSaveScreen() {
     }
 
     private fun Table.addLoadFromCustomLocationButton() {
-        if (!game.files.canLoadFromCustomSaveLocation()) return
         val loadFromCustomLocation = loadFromCustomLocation.toTextButton()
         loadFromCustomLocation.onClick {
             errorLabel.isVisible = false
             loadFromCustomLocation.setText(Constants.loading.tr())
             loadFromCustomLocation.disable()
             Concurrency.run(Companion.loadFromCustomLocation) {
-                game.files.loadGameFromCustomLocation { result ->
-                    if (result.isError()) {
-                        handleLoadGameException(result.exception!!, "Could not load game from custom location!")
-                    } else if (result.isSuccessful()) {
-                        Concurrency.run {
-                            game.loadGame(result.gameData!!, true)
-                        }
+                game.files.loadGameFromCustomLocation(
+                    {
+                        Concurrency.run { game.loadGame(it, true) }
+                        loadFromCustomLocation.enable()
+                    },
+                    {
+                        handleLoadGameException(it, "Could not load game from custom location!")
+                        loadFromCustomLocation.enable()
                     }
-                }
+                )
             }
         }
         add(loadFromCustomLocation).row()

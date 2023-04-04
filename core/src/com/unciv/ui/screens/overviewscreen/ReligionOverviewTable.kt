@@ -12,6 +12,7 @@ import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 import com.unciv.ui.images.ImageGetter
@@ -66,6 +67,22 @@ class ReligionOverviewTab(
     }
 
     private fun Table.addCivSpecificStats() {
+        // This is not Civ-specific, but -oh well- still fits
+        val remaining = viewingPlayer.religionManager.remainingFoundableReligions()
+        val minWidth = max(religionButtonLabel.prefWidth, overviewScreen.stage.width / 3)
+        val headerText = "Religions to be founded: [$remaining]"
+        val religionCountExpander = ExpanderTab(
+            headerText, fontSize = 18, headerPad =  5f,
+            startsOutOpened = false, defaultPad =  0f, expanderWidth = minWidth
+        ) {
+            it.defaults().padTop(10f)
+            for ((text, num) in viewingPlayer.religionManager.remainingFoundableReligionsBreakdown()) {
+                it.add(text.toLabel())
+                it.add(num.toString().toLabel(alignment = Align.right)).right().row()
+            }
+        }
+        add(religionCountExpander).colspan(2).growX().row()
+
         if (viewingPlayer.religionManager.canGenerateProphet()) {
             add("Minimal Faith required for\nthe next [great prophet equivalent]:"
                 .fillPlaceholders(viewingPlayer.religionManager.getGreatProphetEquivalent()!!)
@@ -76,9 +93,6 @@ class ReligionOverviewTab(
                 .toLabel()
             ).right().row()
         }
-
-        add("Religions to be founded:".toLabel())
-        add((viewingPlayer.religionManager.remainingFoundableReligions()).toLabel()).right().row()
 
         add("Religious status:".toLabel()).left()
         add(viewingPlayer.religionManager.religionState.toString().toLabel()).right().row()
@@ -111,10 +125,11 @@ class ReligionOverviewTab(
         }
     }
 
-    override fun select(selection: String) {
+    override fun select(selection: String): Float? {
         persistableData.selectedReligion = selection
         loadReligionButtons()  // so the icon is "highlighted"
         loadReligion(selection)
+        return null
     }
     private fun loadReligion(religionName: String?) {
         if (religionName == null) return

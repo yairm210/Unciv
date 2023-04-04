@@ -30,6 +30,15 @@ object MayaCalendar {
     val digits = zero..nineteen
     fun digitIcon(ch: Char) = iconFolder + (ch.toCode() - zero.toCode()).toString()
 
+    val allSymbols = sequence {
+        yield(tun)
+        yield(katun)
+        yield(baktun)
+        yieldAll(digits)
+    }.iterator().run {
+        Array<Char>(23) { next() }
+    }
+
     // Calculation
     private const val daysOn30000101BCE = 36000 + 5040 + 240 + 11
 

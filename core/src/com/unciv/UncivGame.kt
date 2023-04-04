@@ -25,7 +25,7 @@ import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.components.FontImplementation
+import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.crashhandling.wrapCrashHandlingUnit
@@ -41,7 +41,10 @@ import com.unciv.ui.screens.worldscreen.PlayerReadyScreen
 import com.unciv.ui.screens.worldscreen.WorldMapHolder
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
+import com.unciv.utils.DebugUtils
+import com.unciv.utils.Display
 import com.unciv.utils.Log
+import com.unciv.utils.PlatformSpecific
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import com.unciv.utils.concurrency.withGLContext
@@ -51,12 +54,9 @@ import kotlinx.coroutines.CancellationException
 import java.io.PrintWriter
 import java.util.*
 import kotlin.collections.ArrayDeque
+import kotlin.system.exitProcess
 
 object GUI {
-
-    fun isDebugMapVisible(): Boolean {
-        return UncivGame.Current.viewEntireMapForDebug
-    }
 
     fun setUpdateWorldOnNextRender() {
         UncivGame.Current.worldScreen?.shouldUpdate = true
@@ -72,10 +72,6 @@ object GUI {
 
     fun getSettings(): GameSettings {
         return UncivGame.Current.settings
-    }
-
-    fun getFontImpl(): FontImplementation {
-        return UncivGame.Current.fontImplementation!!
     }
 
     fun isWorldLoaded(): Boolean {
@@ -114,41 +110,29 @@ object GUI {
         return UncivGame.Current.worldScreen!!.selectedCiv
     }
 
+    private var keyboardAvailableCache: Boolean? = null
+    /** Tests availability of a physical keyboard */
+    val keyboardAvailable: Boolean
+        get() {
+            // defer decision if Gdx.input not yet initialized
+            if (keyboardAvailableCache == null && Gdx.input != null)
+                keyboardAvailableCache = Gdx.input.isPeripheralAvailable(Input.Peripheral.HardwareKeyboard)
+            return keyboardAvailableCache ?: false
+        }
+
 }
 
-class UncivGame(parameters: UncivGameParameters) : Game() {
-    constructor() : this(UncivGameParameters())
-
-    val crashReportSysInfo = parameters.crashReportSysInfo
-    val cancelDiscordEvent = parameters.cancelDiscordEvent
-    var fontImplementation = parameters.fontImplementation
-    val consoleMode = parameters.consoleMode
-    private val customSaveLocationHelper = parameters.customFileLocationHelper
-    val platformSpecificHelper = parameters.platformSpecificHelper
-    private val audioExceptionHelper = parameters.audioExceptionHelper
+open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpecific {
 
     var deepLinkedMultiplayerGame: String? = null
     var gameInfo: GameInfo? = null
+
     lateinit var settings: GameSettings
     lateinit var musicController: MusicController
     lateinit var onlineMultiplayer: OnlineMultiplayer
     lateinit var files: UncivFiles
 
     var isTutorialTaskCollapsed = false
-
-    /**
-     * This exists so that when debugging we can see the entire map.
-     * Remember to turn this to false before commit and upload!
-     */
-    var viewEntireMapForDebug = false
-    /** For when you need to test something in an advanced game and don't have time to faff around */
-    var superchargedForDebug = false
-
-    /** Simulate until this turn on the first "Next turn" button press.
-     *  Does not update World View changes until finished.
-     *  Set to 0 to disable.
-     */
-    var simulateUntilTurnForDebug: Int = 0
 
     var worldScreen: WorldScreen? = null
         private set
@@ -167,10 +151,10 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         isInitialized = false // this could be on reload, therefore we need to keep setting this to false
         Gdx.input.setCatchKey(Input.Keys.BACK, true)
         if (Gdx.app.type != Application.ApplicationType.Desktop) {
-            viewEntireMapForDebug = false
+            DebugUtils.VISIBLE_MAP = false
         }
         Current = this
-        files = UncivFiles(Gdx.files, customSaveLocationHelper, platformSpecificHelper?.shouldPreferExternalStorage() == true)
+        files = UncivFiles(Gdx.files)
 
         // If this takes too long players, especially with older phones, get ANR problems.
         // Whatever needs graphics needs to be done on the main thread,
@@ -185,15 +169,12 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
          * - Font (hence Fonts.resetFont() inside setSkin())
          */
         settings = files.getGeneralSettings() // needed for the screen
-        settings.refreshScreenMode()
+        Display.setScreenMode(settings.screenMode, settings)
         setAsRootScreen(GameStartScreen())  // NOT dependent on any atlas or skin
         GameSounds.init()
 
         musicController = MusicController()  // early, but at this point does only copy volume from settings
-        audioExceptionHelper?.installHooks(
-            musicController.getAudioLoopCallback(),
-            musicController.getAudioExceptionHandler()
-        )
+        installAudioHooks()
 
         onlineMultiplayer = OnlineMultiplayer()
 
@@ -208,7 +189,9 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
         ImageGetter.resetAtlases()
         ImageGetter.setNewRuleset(ImageGetter.ruleset)  // This needs to come after the settings, since we may have default visual mods
-        if (settings.tileSet !in ImageGetter.getAvailableTilesets()) { // If one of the tilesets is no longer available, default back
+        val availableTileSets = ImageGetter.getAvailableTilesets().toSet()
+            .intersect(TileSetCache.getAvailableTilesets().toSet())
+        if (settings.tileSet !in availableTileSets) { // If the configured tileset is no longer available, default back
             settings.tileSet = Constants.defaultTileset
         }
 
@@ -230,7 +213,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
             // Loading available fonts can take a long time on Android phones.
             // Therefore we initialize the lazy parameters in the font implementation, while we're in another thread, to avoid ANRs on main thread
-            fontImplementation?.setFontFamily(settings.fontFamilyData, settings.getFontSize())
+            Fonts.fontImplementation.setFontFamily(settings.fontFamilyData, settings.getFontSize())
 
             // This stuff needs to run on the main thread because it needs the GL context
             launchOnGLThread {
@@ -474,8 +457,6 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     override fun dispose() {
         Gdx.input.inputProcessor = null // don't allow ANRs when shutting down, that's silly
-
-        cancelDiscordEvent?.invoke()
         SoundPlayer.clearCache()
         if (::musicController.isInitialized) musicController.gracefulShutdown()  // Do allow fade-out
 
@@ -498,7 +479,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         // On desktop this should only be this one and "DestroyJavaVM"
         logRunningThreads()
 
-        System.exit(0)
+        exitProcess(0)
     }
 
     private fun logRunningThreads() {
@@ -523,7 +504,6 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         } catch (ex: Exception) {
             // ignore
         }
-        if (platformSpecificHelper?.handleUncaughtThrowable(ex) == true) return
         Gdx.app.postRunnable {
             setAsRootScreen(CrashScreen(ex))
         }
@@ -551,7 +531,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.5.1", 823)
+        val VERSION = Version("4.5.16-patch1", 842)
         //endregion
 
         lateinit var Current: UncivGame

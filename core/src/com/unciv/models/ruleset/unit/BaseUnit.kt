@@ -12,10 +12,11 @@ import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.components.extensions.filterAndLogic
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
+import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import kotlin.math.pow
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
@@ -33,7 +34,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var range: Int = 2
     var interceptRange = 0
     var unitType: String = ""
-    fun getType() = ruleset.unitTypes[unitType]!!
+
+    val type by lazy { ruleset.unitTypes[unitType]!! }
     override var requiredTech: String? = null
     private var requiredResource: String? = null
 
@@ -84,6 +86,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     override fun canBePurchasedWithStat(city: City?, stat: Stat): Boolean {
         if (city == null) return super.canBePurchasedWithStat(city, stat)
+        if (getRejectionReasons(city.civ, city).any { it.type != RejectionReasonType.Unbuildable  })
+            return false
         if (costFunctions.canBePurchasedWithStat(city, stat)) return true
         return super.canBePurchasedWithStat(city, stat)
     }
@@ -290,11 +294,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             "non-air" -> !movesLikeAirUnits()
 
             "Nuclear Weapon" -> isNuclearWeapon()
-            // "Great" should be deprecated, replaced by "Great Person".
-            "Great Person", "Great" -> isGreatPerson()
+            "Great Person" -> isGreatPerson()
             "Religious" -> hasUnique(UniqueType.ReligiousUnit)
             else -> {
-                if (getType().matchesFilter(filter)) return true
+                if (type.matchesFilter(filter)) return true
                 if (
                     // Uniques using these kinds of filters should be deprecated and replaced with adjective-only parameters
                     filter.endsWith(" units")
@@ -311,7 +314,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon)
 
-    fun movesLikeAirUnits() = getType().getMovementType() == UnitMovementType.Air
+    fun movesLikeAirUnits() = type.getMovementType() == UnitMovementType.Air
 
     /** Returns resource requirements from both uniques and requiredResource field */
     override fun getResourceRequirements(): HashMap<String, Int> = resourceRequirementsInternal
@@ -331,15 +334,15 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     fun isMilitary() = isRanged() || isMelee()
     fun isCivilian() = !isMilitary()
 
-    val isLandUnitInternal by lazy { getType().isLandUnit() }
+    val isLandUnitInternal by lazy { type.isLandUnit() }
     fun isLandUnit() = isLandUnitInternal
-    fun isWaterUnit() = getType().isWaterUnit()
-    fun isAirUnit() = getType().isAirUnit()
+    fun isWaterUnit() = type.isWaterUnit()
+    fun isAirUnit() = type.isAirUnit()
 
     fun isProbablySiegeUnit() =
         (
             isRanged()
-            && (uniqueObjects + getType().uniqueObjects)
+            && (uniqueObjects + type.uniqueObjects)
                 .any { it.isOfType(UniqueType.Strength)
                     && it.params[0].toInt() > 0
                     && it.conditionals.any { conditional -> conditional.isOfType(UniqueType.ConditionalVsCity) }

@@ -1,3 +1,223 @@
+## 4.5.16
+
+Many many performance improvements!
+
+By SomeTroglodyte:
+- Music player controls
+
+## 4.5.15
+
+Automated units don't try and conquer the same city twice
+
+Constructed units that can't be placed are put on hold till the next turn
+
+Solve 'desktop tries to create window of size 0/0' bug
+
+Make AI buy city tiles.  - By WhoIsJohannes
+
+By SomeTroglodyte:
+- Untinted stat symbols in tinted text
+- Moddable Civilopedia Welcome
+- Fix disbanding units a civ cannot afford
+- Main menu cancels background map creation when obsolete
+
+## 4.5.14
+
+Mods that remove 'repair' improvement no longer cause crashes down the line
+
+Archipelago creates water again
+
+By SomeTroglodyte:
+- TileSet mods can no longer lock user out
+- Obsoleted units replaced in construction queues by Nation-unique upgrades
+- Fix exploit allowing promotion with 0 movement
+- Fix notifications for pillage loot
+- A renamed unit shows that new name in can promote notifications
+
+AbsoluteUnits - Hwach'a, Camel Archer  - By letstalkaboutdune
+
+## 4.5.13
+
+Gold per turn is evaluated less the more turns 'in the future' it will be payed
+
+Returned Perlin map type
+
+By SomeTroglodyte:
+- Map scroll speed
+- Fix MiscLayer not respecting fog of war for spectator
+- More Spectator/Barbarians fixes related to income
+
+By itanasi:
+- Automated Civilians don't multi-turn path through Enemy Territory
+- More variety in Main Menu map
+
+City-state music plays when first meeting them - By Skekdog
+
+Add AbsoluteUnits license info - By letstalkaboutdune
+
+## 4.5.12
+
+Spectators no longer affect games they are in
+
+Triggered notification text for unit triggers sent correctly
+
+By SomeTroglodyte:
+- "Sleep until healed" knows when you can't
+- Tiny tweak to Max Turns slider
+
+By Gualdimar:
+- Better multiplayer button location in portrait mode
+- Improvements in science display
+
+AbsoluteUnits - Landsknecht, Knight_v2, Missionary (post-Industrial)  - By letstalkaboutdune
+
+## 4.5.11
+
+Fixed 'upon gaining unit' trigger activating for all units
+
+modding: 'Only available when' applies to beliefs
+
+Better promotion positioning in unit overview
+
+Stat updates propagate where they didn't before
+
+Hide bombard notification after bombarding
+
+By SomeTroglodyte:
+- Desktop starting size fix
+- Fix stats reward for GP consumption escalation
+- Fix Great Person Create Improvement w/ Resource
+
+By Gualdimar:
+- Victory screen fixed button position
+- Fixed foreign city religion table exploit
+
+## 4.5.10
+
+Tilesets: Separated *unexplored* tiles from *not visible* tiles
+
+Add city size (population) to TradeOffer.kt - By WhoIsJohannes
+
+By SomeTroglodyte:
+- Fixed header in city detailed stats popup
+- Map editor explorable with arrow keys
+- Fix Garrison bonus logic
+
+Save settings when closing the options popup  - By Gualdimar
+
+## 4.5.9
+
+UI: Mod checker tab aligns mods
+
+Modding:
+- Units from triggers respect "limited to [amount] per civilization"
+- Added notification for several unit triggers
+- 'upon being defeated' applies to destroyed civilians as well
+
+By SomeTroglodyte:
+- Show garrison in City overview
+- Harden and improve "Download Mod from Url" parser
+- Future tech fix
+
+By Gualdimar:
+- Trade ending notification
+- Fixed popup positioning after changing screen orientation
+
+Improved Minimap colors  - By Caballero-Arepa
+
+## 4.5.8
+
+By Gualdimar:
+- World wrap scrolling fix
+- Notifications scroll pane position fix
+- Double trades fix + Diplomacy screen layout fix
+- Minimap hotseat fix
+
+By SomeTroglodyte:
+- Fix SelectBox ScrollPane being transparent
+
+## 4.5.7
+
+Add Replay feature in VictoryScreen  - By WhoIsJohannes
+
+All units can be automated
+
+By SomeTroglodyte:
+- Make City center minimum tile yields moddable
+
+## 4.5.6
+
+By SomeTroglodyte:
+- Custom key bindings
+- Fix city desert tiles with Petra selectable
+- Fix possible crash involving right-click attack
+- Improve completeness and consistency of Technology descriptions
+
+AbsoluteUnits - Great Prophet, Settler (Industrial Era)  - By letstalkaboutdune
+
+## 4.5.5
+
+Dynamic minimap - By Gualdimar
+
+Better AI evaluation of which improvement to build on a tile
+
+Added 'additional times' to limited actions
+
+Android: selectable orientation  - By vegeta1k95
+
+## 4.5.4
+
+Fixed endless loop for mod checker
+
+Modding: global alert available as triggerable for all objects
+
+Better order of unit actions
+
+Better checks for when units are purchasable
+
+Fixed flanking bonus calculation when attacking unit is not adjacent to enemy
+
+Automated workers do not remove Forest tiles for Camp improvements
+
+Fix ExploredRegion rectangular maps support + Zoomout flicker prevention reworked  - By Gualdimar
+
+Make "Borderless" display option translatable  - By Ouaz
+
+## 4.5.3
+
+Unit Action moddability!
+- 'founds a new city' now accepts action modifiers
+- 'for [amount] movement' modifier
+- '[amount] times', 'once', 'after which this unit is consumed'  modifiers for limited actions
+
+Android: "Screen Mode" option  - By vegeta1k95
+
+By SomeTroglodyte:
+- Better Religion info and some moddability
+- Diplomacy trade layout fix
+- Show terrain overriding yields in Civilopedia
+
+Fixed multiplayer password  - By GGGuenni
+
+Fixed map editor painting while dragging - By Gualdimar
+
+## 4.5.2
+
+Show death symbol next to actions that expend the unit
+
+Modding:
+- 'create improvement' action, <consuming this unit> and <as an action> modifiers
+
+- gifting cities no longer causes crash
+
+By GGGuenni:
+- Fixed wrong implementation of Basic auth
+- Fixed TurnChecker can not authenticate
+
+Fix missing desert for flood plains in hexarealm tileset  - By AdityaMH
+
+Fix random nations pool popup  - By SomeTroglodyte
+
 ## 4.5.1
 
 Introduced unit triggers!

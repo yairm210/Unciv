@@ -59,9 +59,6 @@ class ModOptions : IHasUniques {
     var modSize = 0
     var topics = mutableListOf<String>()
 
-    @Deprecated("As of 3.18.15")
-    var maxXPfromBarbarians = 30
-
     override var uniques = ArrayList<String>()
 
     // If these two are delegated with "by lazy", the mod download process crashes and burns
@@ -509,8 +506,13 @@ object RulesetCache : HashMap<String,Ruleset>() {
                 debug("Mod loaded successfully: %s", modRuleset.name)
                 if (Log.shouldLog()) {
                     val modLinksErrors = modRuleset.checkModLinks()
-                    if (modLinksErrors.any()) {
-                        debug("checkModLinks errors: %s", modLinksErrors.getErrorText())
+                    // For extension mods which use references to base ruleset objects, the parameter type
+                    // errors are irrelevant - the checker ran without a base ruleset
+                    val logFilter: (RulesetError) -> Boolean =
+                        if (modRuleset.modOptions.isBaseRuleset) { { it.errorSeverityToReport > RulesetErrorSeverity.WarningOptionsOnly } }
+                        else { { it.errorSeverityToReport > RulesetErrorSeverity.WarningOptionsOnly && !it.text.contains("does not fit parameter type") } }
+                    if (modLinksErrors.any(logFilter)) {
+                        debug("checkModLinks errors: %s", modLinksErrors.getErrorText(logFilter))
                     }
                 }
             } catch (ex: Exception) {

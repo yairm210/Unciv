@@ -45,7 +45,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private val isAtWar = civInfo.isAtWar()
     private val buildingsForVictory = civInfo.gameInfo.getEnabledVictories().values
-            .mapNotNull { civInfo.victoryManager.getNextMilestone(it.name) }
+            .mapNotNull { civInfo.victoryManager.getNextMilestone(it) }
             .filter { it.type == MilestoneType.BuiltBuilding || it.type == MilestoneType.BuildingBuiltGlobally }
             .map { it.params[0] }
 

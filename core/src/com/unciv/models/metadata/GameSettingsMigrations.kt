@@ -10,10 +10,6 @@ fun GameSettings.doMigrations(json: JsonValue) {
         migrateMultiplayerSettings(json)
         version = 1
     }
-    if (resolution != ""){
-        screenSize = ScreenSize.values().first { it.virtualWidth == resolution.split("x").first().toFloat() }
-        resolution = ""
-    }
 }
 
 fun GameSettings.isMigrationNecessary(): Boolean {

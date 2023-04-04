@@ -12,7 +12,6 @@ import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.models.UncivSound
 import com.unciv.models.metadata.GameSetting
 import com.unciv.models.metadata.GameSettings
-import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -27,6 +26,7 @@ import com.unciv.ui.components.extensions.toGdxArray
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.popups.AuthPopup
+import com.unciv.ui.popups.options.SettingsSelect.SelectItem
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import java.time.Duration
@@ -93,7 +93,9 @@ fun multiplayerTab(
 
     addSeparator(tab)
 
-    addMultiplayerServerOptions(tab, optionsPopup, listOf(curRefreshSelect, allRefreshSelect, turnCheckerSelect).filterNotNull())
+    addMultiplayerServerOptions(tab, optionsPopup,
+        listOfNotNull(curRefreshSelect, allRefreshSelect, turnCheckerSelect)
+    )
 
     return tab
 }
@@ -118,13 +120,13 @@ private fun createNotificationSoundOptions(): List<SelectItem<UncivSound>> = lis
 
 private fun buildUnitAttackSoundOptions(): List<SelectItem<UncivSound>> {
     return RulesetCache.getSortedBaseRulesets()
-        .map(RulesetCache::get).filterNotNull()
-        .map(Ruleset::units).map { it.values }
-        .flatMap { it }
-        .filter { it.attackSound != null }
-        .filter { it.attackSound != "nuke" } // much too long for a notification
+        .asSequence()
+        .mapNotNull(RulesetCache::get)
+        .flatMap { it.units.values }
+        .filter { it.attackSound != null && it.attackSound != "nuke" } // much too long for a notification
         .distinctBy { it.attackSound }
         .map { SelectItem("[${it.name}] Attack Sound", UncivSound(it.attackSound!!)) }
+        .toList()
 }
 
 private fun addMultiplayerServerOptions(
@@ -162,7 +164,6 @@ private fun addMultiplayerServerOptions(
         } else {
             settings.multiplayer.server = multiplayerServerTextField.text
         }
-        settings.save()
     }
 
     serverIpTable.add(multiplayerServerTextField)
@@ -172,7 +173,6 @@ private fun addMultiplayerServerOptions(
     serverIpTable.add("Reset to Dropbox".toTextButton().onClick {
         multiplayerServerTextField.text = Constants.dropboxMultiplayerServer
         for (refreshSelect in toUpdate) refreshSelect.update(false)
-        settings.save()
     })
 
     serverIpTable.add(connectionToServerButton.onClick {
@@ -282,12 +282,17 @@ private fun successfullyConnectedToServer(action: (Boolean, Boolean) -> Unit) {
 }
 
 private fun setPassword(password: String, optionsPopup: OptionsPopup) {
-    if (password.isNullOrBlank())
+    if (password.isBlank())
         return
 
     val popup = Popup(optionsPopup.stageToShowOn).apply {
         addGoodSizedLabel("Awaiting response...").row()
         open(true)
+    }
+
+    if (password.length < 6) {
+        popup.reuseWith("Password must be at least 6 characters long", true)
+        return
     }
 
     if (UncivGame.Current.onlineMultiplayer.serverFeatureSet.authVersion == 0) {

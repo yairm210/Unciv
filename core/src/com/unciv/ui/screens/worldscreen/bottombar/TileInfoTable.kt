@@ -15,6 +15,8 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.addBorderAllowOpacity
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toPrettyString
+import com.unciv.utils.DebugUtils
 
 class TileInfoTable(private val viewingCiv :Civilization) : Table(BaseScreen.skin) {
     init {
@@ -27,13 +29,13 @@ class TileInfoTable(private val viewingCiv :Civilization) : Table(BaseScreen.ski
     internal fun updateTileTable(tile: Tile?) {
         clearChildren()
 
-        if (tile != null && (UncivGame.Current.viewEntireMapForDebug || viewingCiv.hasExplored(tile)) ) {
+        if (tile != null && (DebugUtils.VISIBLE_MAP || viewingCiv.hasExplored(tile)) ) {
             add(getStatsTable(tile))
             add(MarkupRenderer.render(TileDescription.toMarkup(tile, viewingCiv), padding = 0f, iconDisplay = IconDisplay.None) {
                 UncivGame.Current.pushScreen(CivilopediaScreen(viewingCiv.gameInfo.ruleset, link = it))
             } ).pad(5f).row()
-            if (UncivGame.Current.viewEntireMapForDebug)
-                add(tile.position.run { "(${x.toInt()},${y.toInt()})" }.toLabel()).colspan(2).pad(5f)
+            if (DebugUtils.VISIBLE_MAP)
+                add(tile.position.toPrettyString().toLabel()).colspan(2).pad(5f)
         }
 
         pack()

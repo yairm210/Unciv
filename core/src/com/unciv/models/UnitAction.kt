@@ -4,8 +4,9 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.unciv.Constants
 import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.images.ImageGetter
 
 
 /** Unit Actions - class - carries dynamic data and actual execution.
@@ -97,16 +98,16 @@ enum class UnitActionType(
     Repair(Constants.repair,
         { ImageGetter.getUnitActionPortrait("Repair") }, 'r', UncivSound.Construction),
     Create("Create",
-        null, 'i', UncivSound.Chimes),
-    HurryResearch("Hurry Research",
+        null, 'i', false, UncivSound.Chimes),
+    HurryResearch("{Hurry Research} (${Fonts.death})",
         { ImageGetter.getUnitActionPortrait("HurryResearch") }, 'g', UncivSound.Chimes),
     StartGoldenAge("Start Golden Age",
         { ImageGetter.getUnitActionPortrait("StartGoldenAge") }, 'g', UncivSound.Chimes),
-    HurryWonder("Hurry Wonder",
+    HurryWonder("{Hurry Wonder} (${Fonts.death})",
         { ImageGetter.getUnitActionPortrait("HurryConstruction") }, 'g', UncivSound.Chimes),
-    HurryBuilding("Hurry Construction",
+    HurryBuilding("{Hurry Construction} (${Fonts.death})",
         { ImageGetter.getUnitActionPortrait("HurryConstruction") }, 'g', UncivSound.Chimes),
-    ConductTradeMission("Conduct Trade Mission",
+    ConductTradeMission("{Conduct Trade Mission} (${Fonts.death})",
         { ImageGetter.getUnitActionPortrait("ConductTradeMission") }, 'g', UncivSound.Chimes),
     FoundReligion("Found a Religion",
         { ImageGetter.getUnitActionPortrait("FoundReligion") }, 'g', UncivSound.Choir),

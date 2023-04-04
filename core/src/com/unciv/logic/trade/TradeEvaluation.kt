@@ -12,7 +12,9 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.victoryscreen.RankingType
+import kotlin.math.ceil
 import kotlin.math.min
+import kotlin.math.pow
 import kotlin.math.sqrt
 
 class TradeEvaluation {
@@ -60,6 +62,12 @@ class TradeEvaluation {
     }
 
     fun getTradeAcceptability(trade: Trade, evaluator: Civilization, tradePartner: Civilization): Int {
+        val citiesAskedToSurrender = trade.ourOffers.filter { it.type == TradeType.City }.count()
+        val maxCitiesToSurrender = ceil(evaluator.cities.size.toFloat() / 5).toInt()
+        if (citiesAskedToSurrender > maxCitiesToSurrender) {
+            return Int.MIN_VALUE
+        }
+
         val sumOfTheirOffers = trade.theirOffers.asSequence()
                 .filter { it.type != TradeType.Treaty } // since treaties should only be evaluated once for 2 sides
                 .map { evaluateBuyCost(it, evaluator, tradePartner) }.sum()
@@ -69,7 +77,7 @@ class TradeEvaluation {
         // If we're making a peace treaty, don't try to up the bargain for people you don't like.
         // Leads to spartan behaviour where you demand more, the more you hate the enemy...unhelpful
         if (trade.ourOffers.none { it.name == Constants.peaceTreaty || it.name == Constants.researchAgreement }) {
-            val relationshipLevel = evaluator.getDiplomacyManager(tradePartner).relationshipLevel()
+            val relationshipLevel = evaluator.getDiplomacyManager(tradePartner).relationshipIgnoreAfraid()
             if (relationshipLevel == RelationshipLevel.Enemy) sumOfOurOffers = (sumOfOurOffers * 1.5).toInt()
             else if (relationshipLevel == RelationshipLevel.Unforgivable) sumOfOurOffers *= 2
         }
@@ -80,7 +88,8 @@ class TradeEvaluation {
     fun evaluateBuyCost(offer: TradeOffer, civInfo: Civilization, tradePartner: Civilization): Int {
         when (offer.type) {
             TradeType.Gold -> return offer.amount
-            TradeType.Gold_Per_Turn -> return offer.amount * offer.duration
+            // GPT loses 1% of value for each 'future' turn, meaning: gold now is more valuable than gold in the future
+            TradeType.Gold_Per_Turn -> return (1..offer.duration).sumOf { offer.amount * 0.99.pow(it) }.toInt()
             TradeType.Treaty -> {
                 return when (offer.name) {
                     // Since it will be evaluated twice, once when they evaluate our offer and once when they evaluate theirs
@@ -248,16 +257,15 @@ class TradeEvaluation {
                 val city = civInfo.cities.firstOrNull { it.id == offer.name }
                     ?: throw Exception("Got an offer to sell city id " + offer.name + " which does't seem to exist for this civ!")
 
-                val capitalcity = civInfo.getCapital()!!
-                val distanceCost = distanceCityTradeModifier(civInfo, capitalcity, city)
+                val distanceBonus = distanceCityTradeModifier(civInfo, city)
                 val stats = city.cityStats.currentCityStats
                 val sumOfStats =
-                    stats.culture + stats.gold + stats.science + stats.production + stats.happiness + stats.food - distanceCost
-                return sumOfStats.toInt() * 100
+                    stats.culture + stats.gold + stats.science + stats.production + stats.happiness + stats.food + distanceBonus
+                return min(sumOfStats.toInt() * 100, 1000)
             }
             TradeType.Agreement -> {
                 if (offer.name == Constants.openBorders) {
-                    return when (civInfo.getDiplomacyManager(tradePartner).relationshipLevel()) {
+                    return when (civInfo.getDiplomacyManager(tradePartner).relationshipIgnoreAfraid()) {
                         RelationshipLevel.Unforgivable -> 10000
                         RelationshipLevel.Enemy -> 2000
                         RelationshipLevel.Competitor -> 500
@@ -270,11 +278,15 @@ class TradeEvaluation {
         }
     }
 
-    private fun distanceCityTradeModifier(civInfo: Civilization, capitalcity: City, city: City): Int{
-        val distanceBetweenCities = capitalcity.getCenterTile().aerialDistanceTo(city.getCenterTile())
+    /** This code returns a positive value if the city is significantly far away from the capital
+     * and given how this method is used this ends up making such cities more expensive. That's how
+     * I found it. I'm not sure it makes sense. One might also find arguments why cities closer to
+     * the capital are more expensive. */
+    private fun distanceCityTradeModifier(civInfo: Civilization, city: City): Int{
+        val distanceToCapital = civInfo.getCapital()!!.getCenterTile().aerialDistanceTo(city.getCenterTile())
 
-        if (distanceBetweenCities < 500) return 0
-        return min(50,  (500 - distanceBetweenCities) * civInfo.getEraNumber())
+        if (distanceToCapital < 500) return 0
+        return (distanceToCapital - 500) * civInfo.getEraNumber()
     }
 
     fun evaluatePeaceCostForThem(ourCivilization: Civilization, otherCivilization: Civilization): Int {
@@ -285,11 +297,34 @@ class TradeEvaluation {
         if (ourCombatStrength > theirCombatStrength) {
             val absoluteAdvantage = ourCombatStrength - theirCombatStrength
             val percentageAdvantage = absoluteAdvantage / theirCombatStrength.toFloat()
+            // We don't add the same constraint here. We should not make peace easily if we're
+            // heavily advantaged.
             return (absoluteAdvantage * percentageAdvantage).toInt() * 10
         } else {
+            // This results in huge values for large power imbalances. However, we should not give
+            // up everything just because there is a big power imbalance. There's a better chance to
+            // recover if you don't give away all your cities for example.
+            //
+            // Example A (this would probably give us away everything):
+            // absoluteAdvantage = 10000 - 100 = 9500
+            // percentageAdvantage = 9500 / 100 = 95
+            // return -(9500 * 95) * 10 = -9025000
+            //
+            // Example B (this is borderline)
+            // absoluteAdvantage = 10000 - 2500 = 7500
+            // percentageAdvantage = 7500 / 2500 = 3
+            // return -(7500 * 3) * 10 = -225000
+            //
+            // Example C (this is fine):
+            // absoluteAdvantage = 10000 - 5000 = 5000
+            // percentageAdvantage = 5000 / 5000 = 1
+            // return -(5000 * 1) * 10 = -50000
+            //
+            // Hence we cap the max cost at 100k which equals about 2 or 3 cities in the mid game
+            // (stats ~30 each)
             val absoluteAdvantage = theirCombatStrength - ourCombatStrength
             val percentageAdvantage = absoluteAdvantage / ourCombatStrength.toFloat()
-            return -(absoluteAdvantage * percentageAdvantage).toInt() * 10
+            return -min((absoluteAdvantage * percentageAdvantage).toInt() * 10, 100000)
         }
     }
 

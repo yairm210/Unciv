@@ -25,6 +25,7 @@ import com.unciv.ui.components.FontFamilyData
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.keyShortcuts
 import com.unciv.ui.components.extensions.onActivation
@@ -35,6 +36,8 @@ import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.extensions.withoutItem
+import com.unciv.utils.Display
+import com.unciv.utils.ScreenOrientation
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import kotlinx.coroutines.CoroutineScope
@@ -54,19 +57,15 @@ fun advancedTab(
 
     addAutosaveTurnsSelectBox(this, settings)
 
-    if (UncivGame.Current.platformSpecificHelper?.hasDisplayCutout() == true)
-        optionsPopup.addCheckbox(this, "Enable display cutout (requires restart)", settings.androidCutout, false) { settings.androidCutout = it }
+    if (Display.hasOrientation()) {
+        addOrientationSelectBox(this, optionsPopup)
+    }
+
+    if (Display.hasCutout()) {
+        addCutoutCheckbox(this, optionsPopup)
+    }
 
     addMaxZoomSlider(this, settings)
-
-    val helper = UncivGame.Current.platformSpecificHelper
-    if (helper != null && Gdx.app.type == Application.ApplicationType.Android) {
-        optionsPopup.addCheckbox(this, "Enable portrait orientation", settings.allowAndroidPortrait) {
-            settings.allowAndroidPortrait = it
-            // Note the following might close the options screen indirectly and delayed
-            helper.allowPortrait(it)
-        }
-    }
 
     addFontFamilySelect(this, settings, optionsPopup.selectBoxMinWidth, onFontChange)
 
@@ -77,6 +76,31 @@ fun advancedTab(
     addSetUserId(this, settings)
 
     addEasterEggsCheckBox(this, settings)
+}
+
+private fun addCutoutCheckbox(table: Table, optionsPopup: OptionsPopup) {
+    optionsPopup.addCheckbox(table, "Enable display cutout (requires restart)", optionsPopup.settings.androidCutout)
+    {
+        optionsPopup.settings.androidCutout = it
+    }
+}
+
+private fun addOrientationSelectBox(table: Table, optionsPopup: OptionsPopup) {
+
+    val settings = optionsPopup.settings
+
+    table.add("Screen orientation".toLabel()).left().fillX()
+
+    val selectBox = SelectBox<ScreenOrientation>(table.skin)
+    selectBox.items = Array(ScreenOrientation.values())
+    selectBox.selected = settings.displayOrientation
+    selectBox.onChange {
+        val orientation = selectBox.selected
+        settings.displayOrientation = orientation
+        Display.setOrientation(orientation)
+    }
+
+    table.add(selectBox).minWidth(optionsPopup.selectBoxMinWidth).pad(10f).row()
 }
 
 private fun addAutosaveTurnsSelectBox(table: Table, settings: GameSettings) {
@@ -92,7 +116,6 @@ private fun addAutosaveTurnsSelectBox(table: Table, settings: GameSettings) {
 
     autosaveTurnsSelectBox.onChange {
         settings.turnsBetweenAutosaves = autosaveTurnsSelectBox.selected
-        settings.save()
     }
 }
 
@@ -183,7 +206,6 @@ private fun addFontSizeMultiplier(
         initial = settings.fontSizeMultiplier
     ) {
         settings.fontSizeMultiplier = it
-        settings.save()
     }
     fontSizeSlider.onChange {
         if (!fontSizeSlider.isDragging)
@@ -199,7 +221,6 @@ private fun addMaxZoomSlider(table: Table, settings: GameSettings) {
         initial = settings.maxWorldZoomOut
     ) {
         settings.maxWorldZoomOut = it
-        settings.save()
         if (GUI.isWorldLoaded())
             GUI.getMap().reloadMaxZoom()
     }
@@ -237,7 +258,7 @@ private fun addTranslationGeneration(table: Table, optionsPopup: OptionsPopup) {
         Concurrency.run("GenerateScreenshot") {
             val extraImagesLocation = "../../extraImages"
             // I'm not sure why we need to advance the y by 2 for every screenshot... but that's the only way it remains centered
-            generateScreenshots(arrayListOf(
+            generateScreenshots(optionsPopup.settings, arrayListOf(
                 ScreenshotConfig(630, 500, ScreenSize.Medium, "$extraImagesLocation/itch.io image.png", Vector2(-2f, 2f),false),
                 ScreenshotConfig(1280, 640, ScreenSize.Medium, "$extraImagesLocation/GithubPreviewImage.png", Vector2(-2f, 4f)),
                 ScreenshotConfig(1024, 500, ScreenSize.Medium, "$extraImagesLocation/Feature graphic - Google Play.png",Vector2(-2f, 6f)),
@@ -251,12 +272,12 @@ private fun addTranslationGeneration(table: Table, optionsPopup: OptionsPopup) {
 
 data class ScreenshotConfig(val width: Int, val height: Int, val screenSize: ScreenSize, var fileLocation:String, var centerTile:Vector2, var attackCity:Boolean=true)
 
-private fun CoroutineScope.generateScreenshots(configs:ArrayList<ScreenshotConfig>) {
+private fun CoroutineScope.generateScreenshots(settings: GameSettings, configs:ArrayList<ScreenshotConfig>) {
     val currentConfig = configs.first()
     launchOnGLThread {
         val screenshotGame =
                 UncivGame.Current.files.loadGameByName("ScreenshotGenerationGame")
-        UncivGame.Current.settings.screenSize = currentConfig.screenSize
+        settings.screenSize = currentConfig.screenSize
         val newScreen = UncivGame.Current.loadGame(screenshotGame)
         newScreen.stage.viewport.update(currentConfig.width, currentConfig.height, true)
 
@@ -290,7 +311,7 @@ private fun CoroutineScope.generateScreenshots(configs:ArrayList<ScreenshotConfi
                 )
                 pixmap.dispose()
                 val newConfigs = configs.withoutItem(currentConfig)
-                if (newConfigs.isNotEmpty()) generateScreenshots(newConfigs)
+                if (newConfigs.isNotEmpty()) generateScreenshots(settings, newConfigs)
             }
         }
     }
@@ -309,7 +330,6 @@ private fun addSetUserId(table: Table, settings: GameSettings) {
                     "Take user ID from clipboard"
                 ) {
                     settings.multiplayer.userId = clipboardContents
-                    settings.save()
                     idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!".tr())
                 }.open(true)
                 idSetLabel.isVisible = true

@@ -205,29 +205,17 @@ class TileMap : IsPartOfGameInfoSerialization {
                 }.filterNotNull()
 
     /** @return all tiles within [rectangle], respecting world edges and wrap.
-     *  If using row/column coordinates the rectangle will be "straight" ie parallel with rectangular map edges. */
-    fun getTilesInRectangle(rectangle: Rectangle, rowsAndColumns: Boolean = false): Sequence<Tile> =
-            if (rectangle.width <= 0 || rectangle.height <= 0) {
-                val tile = getIfTileExistsOrNull(rectangle.x.toInt(), rectangle.y.toInt())
-                if (tile == null) sequenceOf()
-                else sequenceOf(tile)
+     *  The rectangle will be "straight" ie parallel with rectangular map edges. */
+    fun getTilesInRectangle(rectangle: Rectangle) = sequence {
+            val x = rectangle.x.toInt()
+            val y = rectangle.y.toInt()
+            for (worldColumnNumber in x until x + rectangle.width.toInt()) {
+                for (worldRowNumber in y until y + rectangle.height.toInt()) {
+                    val hexCoords = HexMath.getTileCoordsFromColumnRow(worldColumnNumber, worldRowNumber)
+                    yield(getIfTileExistsOrNull(hexCoords.x.toInt(), hexCoords.y.toInt()))
+                }
             }
-            else
-                sequence {
-                    for (rectColumnNumber in 0 until rectangle.width.toInt()) {
-                        for (rectRowNumber in 0 until rectangle.height.toInt()) {
-                            val worldColumnNumber = rectangle.x.toInt() + rectColumnNumber
-                            val worldRowNumber = rectangle.y.toInt() + rectRowNumber
-
-                            if (rowsAndColumns) {
-                                val hexCoords = HexMath.getTileCoordsFromColumnRow(worldColumnNumber, worldRowNumber)
-                                yield(getIfTileExistsOrNull(hexCoords.x.toInt(), hexCoords.y.toInt()))
-                            }
-                            else
-                                yield(getIfTileExistsOrNull(worldColumnNumber, worldRowNumber))
-                        }
-                    }
-                }.filterNotNull()
+        }.filterNotNull()
 
     /** @return tile at hex coordinates ([x],[y]) or null if they are outside the map. Respects map edges and world wrap. */
     fun getIfTileExistsOrNull(x: Int, y: Int): Tile? {
@@ -393,7 +381,7 @@ class TileMap : IsPartOfGameInfoSerialization {
             rulesetIncompatibilities.addAll(set)
 
         // All the rest is to find missing nations
-        try { // This can fail if the map contains a resource that isn't in the ruleset, in TileInfo.tileResource
+        try { // This can fail if the map contains a resource that isn't in the ruleset, in Tile.tileResource
             setTransients(ruleset)
         } catch (ex: Exception) {
             return rulesetIncompatibilities
@@ -450,10 +438,10 @@ class TileMap : IsPartOfGameInfoSerialization {
             tileMatrix[tileInfo.position.x.toInt() - leftX][tileInfo.position.y.toInt() - bottomY] = tileInfo
         }
         for (tileInfo in values) {
-            // Do ***NOT*** call TileInfo.setTerrainTransients before the tileMatrix is complete -
+            // Do ***NOT*** call Tile.setTerrainTransients before the tileMatrix is complete -
             // setting transients might trigger the neighbors lazy (e.g. thanks to convertHillToTerrainFeature).
             // When that lazy runs, some directions might be omitted because getIfTileExistsOrNull
-            // looks at tileMatrix. Thus filling TileInfos into tileMatrix and setting their
+            // looks at tileMatrix. Thus filling Tiles into tileMatrix and setting their
             // transients in the same loop will leave incomplete cached `neighbors`.
             tileInfo.tileMap = this
             tileInfo.ruleset = this.ruleset!!
@@ -462,8 +450,8 @@ class TileMap : IsPartOfGameInfoSerialization {
         }
     }
 
-    /** Initialize based on TileInfo which Civ has neutral tile roads
-     */
+    /** Initialize Civilization.neutralRoads based on Tile.roadOwner
+     *  - which Civ owns roads on which neutral tiles */
     fun setNeutralTransients() {
         for (tileInfo in values) {
             tileInfo.setOwnerTransients()

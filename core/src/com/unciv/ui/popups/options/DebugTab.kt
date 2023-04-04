@@ -14,15 +14,18 @@ import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.utils.DebugUtils
 
-fun debugTab() = Table(BaseScreen.skin).apply {
+fun debugTab(
+    optionsPopup: OptionsPopup
+) = Table(BaseScreen.skin).apply {
     pad(10f)
     defaults().pad(5f)
     val game = UncivGame.Current
 
     if (GUI.isWorldLoaded()) {
         val simulateButton = "Simulate until turn:".toTextButton()
-        val simulateTextField = UncivTextField.create("Turn", game.simulateUntilTurnForDebug.toString())
+        val simulateTextField = UncivTextField.create("Turn", DebugUtils.SIMULATE_UNTIL_TURN.toString())
         val invalidInputLabel = "This is not a valid integer!".toLabel().also { it.isVisible = false }
         simulateButton.onClick {
             val simulateUntilTurns = simulateTextField.text.toIntOrNull()
@@ -30,7 +33,7 @@ fun debugTab() = Table(BaseScreen.skin).apply {
                 invalidInputLabel.isVisible = true
                 return@onClick
             }
-            game.simulateUntilTurnForDebug = simulateUntilTurns
+            DebugUtils.SIMULATE_UNTIL_TURN = simulateUntilTurns
             invalidInputLabel.isVisible = false
             GUI.getWorldScreen().nextTurn()
         }
@@ -39,12 +42,16 @@ fun debugTab() = Table(BaseScreen.skin).apply {
         add(invalidInputLabel).colspan(2).row()
     }
 
-    add("Supercharged".toCheckBox(game.superchargedForDebug) {
-        game.superchargedForDebug = it
+    add("Supercharged".toCheckBox(DebugUtils.SUPERCHARGED) {
+        DebugUtils.SUPERCHARGED = it
     }).colspan(2).row()
-    add("View entire map".toCheckBox(game.viewEntireMapForDebug) {
-        game.viewEntireMapForDebug = it
+    add("View entire map".toCheckBox(DebugUtils.VISIBLE_MAP) {
+        DebugUtils.VISIBLE_MAP = it
     }).colspan(2).row()
+    add("Show coordinates on tiles".toCheckBox(DebugUtils.SHOW_TILE_COORDS) {
+        DebugUtils.SHOW_TILE_COORDS = it
+    }).colspan(2).row()
+
     val curGameInfo = game.gameInfo
     if (curGameInfo != null) {
         add("God mode (current game)".toCheckBox(curGameInfo.gameParameters.godMode) {
@@ -54,12 +61,20 @@ fun debugTab() = Table(BaseScreen.skin).apply {
     add("Enable espionage option".toCheckBox(game.settings.enableEspionageOption) {
         game.settings.enableEspionageOption = it
     }).colspan(2).row()
+
     add("Save games compressed".toCheckBox(UncivFiles.saveZipped) {
         UncivFiles.saveZipped = it
     }).colspan(2).row()
     add("Save maps compressed".toCheckBox(MapSaver.saveZipped) {
         MapSaver.saveZipped = it
     }).colspan(2).row()
+
+    if (GUI.keyboardAvailable) {
+        add("Show keyboard bindings".toCheckBox(optionsPopup.enableKeyBindingsTab) {
+            optionsPopup.enableKeyBindingsTab = it
+            optionsPopup.showOrHideKeyBindings()
+        }).colspan(2).row()
+    }
 
     add("Gdx Scene2D debug".toCheckBox(BaseScreen.enableSceneDebug) {
         BaseScreen.enableSceneDebug = it

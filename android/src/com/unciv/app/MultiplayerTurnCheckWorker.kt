@@ -24,7 +24,6 @@ import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.OnlineMultiplayerFiles
 import com.unciv.models.metadata.GameSettingsMultiplayer
-import com.unciv.ui.screens.savescreens.Gzip
 import kotlinx.coroutines.runBlocking
 import java.io.FileNotFoundException
 import java.io.PrintWriter
@@ -216,7 +215,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                         Pair(USER_ID, settings.userId), Pair(CONFIGURED_DELAY, settings.turnCheckerDelay.seconds),
                         Pair(PERSISTENT_NOTIFICATION_ENABLED, settings.turnCheckerPersistentNotificationEnabled),
                         Pair(FILE_STORAGE, settings.server),
-                        Pair(AUTH_HEADER, "Basic ${Gzip.zip(settings.userId)}:${Gzip.zip(settings.passwords[settings.server] ?: "")}"))
+                        Pair(AUTH_HEADER, settings.getAuthHeader()))
 
                 if (settings.turnCheckerPersistentNotificationEnabled) {
                     showPersistentNotification(applicationContext, "—", settings.turnCheckerDelay)
@@ -269,7 +268,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         val gdxFiles = DefaultAndroidFiles(applicationContext.assets, ContextWrapper(applicationContext), true)
         // GDX's AndroidFileHandle uses Gdx.files internally, so we need to set that to our new instance
         Gdx.files = gdxFiles
-        files = UncivFiles(gdxFiles, null, true)
+        files = UncivFiles(gdxFiles)
     }
 
     override fun doWork(): Result = runBlocking {

@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.TemporalAction
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.badlogic.gdx.scenes.scene2d.utils.Cullable
+import com.unciv.models.metadata.GameSettings
 import com.unciv.UncivGame
 import java.lang.Float.max
 import java.lang.Float.min
@@ -39,7 +40,10 @@ open class ZoomableScrollPane(
     private val horizontalPadding get() = width / 2
     private val verticalPadding get() = height / 2
 
+    /** Will be set from [GameSettings.mapAutoScroll] */
     var isAutoScrollEnabled = false
+    /** Will be set from [GameSettings.mapPanningSpeed] */
+    var mapPanningSpeed: Float = 6f
 
     init {
         this.addListener(zoomListener)
@@ -78,6 +82,17 @@ open class ZoomableScrollPane(
         super.scrollX(pixelsX)
         updateCulling()
         onViewportChanged()
+    }
+
+    override fun setScrollX(pixels: Float) {
+        var result = pixels
+
+        if (continuousScrollingX) {
+            if (result < 0f) result += maxX
+            else if (result > maxX) result -= maxX
+        }
+
+        super.setScrollX(result)
     }
 
     override fun scrollY(pixelsY: Float) {
@@ -263,21 +278,26 @@ open class ZoomableScrollPane(
         if (isAutoScrollEnabled && !Gdx.input.isTouched) {
 
             val posX = Gdx.input.x
-            val posY = Gdx.input.y
+            val posY = Gdx.input.y  // Viewport coord: goes down, unlike world coordinates
 
-            if (posX <= 2f) {
-                scrollX -= 3f
-            } else if (posX >= stage.viewport.screenWidth - 2f) {
-                scrollX += 3f
+            val deltaX = when {
+                posX <= 2 -> 1
+                posX >= stage.viewport.screenWidth - 2 -> -1
+                else -> 0
+            }
+            val deltaY = when {
+                posY <= 6 -> -1
+                posY >= stage.viewport.screenHeight - 6 -> 1
+                else -> 0
             }
 
-            if (posY <= 6f) {
-                scrollY -= 3f
-            } else if (posY >= stage.viewport.screenHeight - 6f) {
-                scrollY += 3f
+            if (deltaX != 0 || deltaY != 0) {
+                // if Gdx deltaTime is > KeyboardPanningListener.deltaTime, then mouse auto scroll would be slower
+                // (Gdx deltaTime is measured, not a constant, depends on framerate)
+                // The extra factor is empirical to make mouse and WASD keyboard feel the same
+                val relativeSpeed = Gdx.graphics.deltaTime / KeyboardPanningListener.deltaTime * 0.3f
+                doKeyOrMousePanning(deltaX * relativeSpeed, deltaY * relativeSpeed)
             }
-
-            updateVisualScroll()
         }
         super.draw(batch, parentAlpha)
     }
@@ -292,15 +312,6 @@ open class ZoomableScrollPane(
             setScrollbarsVisible(true)
             scrollX = restrictX(deltaX)
             scrollY = restrictY(deltaY)
-
-            when {
-                continuousScrollingX && scrollPercentX >= 1 && deltaX < 0 -> {
-                    scrollPercentX = 0f
-                }
-                continuousScrollingX && scrollPercentX <= 0 && deltaX > 0-> {
-                    scrollPercentX = 1f
-                }
-            }
 
             //clamp() call is missing here but it doesn't seem to make any big difference in this case
 
@@ -317,7 +328,21 @@ open class ZoomableScrollPane(
     }
 
     open fun restrictX(deltaX: Float): Float = scrollX - deltaX
-    open fun restrictY(deltaY:Float): Float = scrollY + deltaY
+    open fun restrictY(deltaY: Float): Float = scrollY + deltaY
+
+    /**
+     * Perform keyboard WASD or mouse-at-edge panning.
+     * Called from [KeyboardPanningListener] and [draw] if [isAutoScrollEnabled] is on.
+     *
+     * Positive [deltaX] = Left, Positive [deltaY] = DOWN
+     */
+    fun doKeyOrMousePanning(deltaX: Float, deltaY: Float) {
+        if (deltaX == 0f && deltaY == 0f) return
+        val amountToMove = mapPanningSpeed / scaleX
+        scrollX = restrictX(deltaX * amountToMove)
+        scrollY = restrictY(deltaY * amountToMove)
+        updateVisualScroll()
+    }
 
     override fun getFlickScrollListener(): ActorGestureListener {
         return FlickScrollListener()

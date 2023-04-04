@@ -4,9 +4,8 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.UncivGame.Version
 import com.unciv.logic.BackwardCompatibility.convertFortify
-import com.unciv.logic.BackwardCompatibility.convertOldGameSpeed
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
-import com.unciv.logic.BackwardCompatibility.migrateBarbarianCamps
+import com.unciv.logic.BackwardCompatibility.migrateToTileHistory
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.GameInfo.Companion.CURRENT_COMPATIBILITY_NUMBER
 import com.unciv.logic.GameInfo.Companion.FIRST_WITHOUT
@@ -32,6 +31,7 @@ import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
+import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
 import java.util.*
 
@@ -64,8 +64,9 @@ data class CompatibilityVersion(
 
 }
 
-data class VictoryData(val winningCiv:String, val victoryType:String, val victoryTurn:Int){
-    constructor(): this("","",0) // for serializer
+data class VictoryData(val winningCiv: String, val victoryType: String, val victoryTurn: Int) {
+    @Suppress("unused")  // used by json serialization
+    constructor(): this("","",0)
 }
 
 class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion {
@@ -101,6 +102,17 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var diplomaticVictoryVotesCast = HashMap<String, String>()
     // Set to false whenever the results still need te be processed
     var diplomaticVictoryVotesProcessed = false
+
+    /** The turn the replay history started recording.
+     *
+     *  *   `-1` means the game was serialized with an older version without replay
+     *  *   `0`  would be the normal value in any newer game
+     *      (remember gameParameters.startingEra is not implemented through turns starting > 0)
+     *  *   `>0` would be set by compatibility migration, handled in [BackwardCompatibility.migrateToTileHistory]
+     *
+     *  @see [com.unciv.logic.map.tile.TileHistory]
+     */
+    var historyStartTurn = -1
 
     /**
      * Keep track of a custom location this game was saved to _or_ loaded from, using it as the default custom location for any further save/load attempts.
@@ -163,6 +175,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         toReturn.oneMoreTurnMode = oneMoreTurnMode
         toReturn.customSaveLocation = customSaveLocation
         toReturn.victoryData = victoryData
+        toReturn.historyStartTurn = historyStartTurn
 
         return toReturn
     }
@@ -186,9 +199,11 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         }
     }
 
+    @delegate:Transient
+    val civMap by lazy { civilizations.associateBy { it.civName } }
     /** Get a civ by name
      *  @throws NoSuchElementException if no civ of that name is in the game (alive or dead)! */
-    fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
+    fun getCivilization(civName: String) = civMap.getValue(civName)
     fun getCurrentPlayerCivilization() = currentPlayerCiv
     fun getCivilizationsAsPreviews() = civilizations.map { it.asPreview() }.toMutableList()
     /** Get barbarian civ
@@ -253,7 +268,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     //region State changing functions
 
     // Do we automatically simulate until N turn?
-    fun isSimulation(): Boolean = turns < UncivGame.Current.simulateUntilTurnForDebug
+    fun isSimulation(): Boolean = turns < DebugUtils.SIMULATE_UNTIL_TURN
             || turns < simulateMaxTurns && simulateUntilWin
 
     fun nextTurn() {
@@ -266,7 +281,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             playerIndex = (playerIndex + 1) % civilizations.size
             if (playerIndex == 0) {
                 turns++
-                if (UncivGame.Current.simulateUntilTurnForDebug != 0)
+                if (DebugUtils.SIMULATE_UNTIL_TURN != 0)
                     debug("Starting simulation of turn %s", turns)
             }
             player = civilizations[playerIndex]
@@ -311,8 +326,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             setNextPlayer()
         }
 
-        if (turns == UncivGame.Current.simulateUntilTurnForDebug)
-            UncivGame.Current.simulateUntilTurnForDebug = 0
+        if (turns == DebugUtils.SIMULATE_UNTIL_TURN)
+            DebugUtils.SIMULATE_UNTIL_TURN = 0
 
         // We found human player, so we are making him current
         currentTurnStartTime = System.currentTimeMillis()
@@ -406,7 +421,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     }
 
     /** Generate a notification pointing out resources.
-     *  Used by [addTechnology][TechManager.addTechnology] and [ResourcesOverviewTab][com.unciv.ui.overviewscreen.ResourcesOverviewTab]
+     *  Used by [addTechnology][TechManager.addTechnology] and [ResourcesOverviewTab][com.unciv.ui.screens.overviewscreen.ResourcesOverviewTab]
      * @param maxDistance from next City, 0 removes distance limitation.
      * @param showForeign Disables filter to exclude foreign territory.
      * @return `false` if no resources were found and no notification was added.
@@ -480,7 +495,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             gameParameters.baseRuleset = baseRulesetInMods
             gameParameters.mods = LinkedHashSet(gameParameters.mods.filter { it != baseRulesetInMods })
         }
-        barbarians.migrateBarbarianCamps()
 
         ruleset = RulesetCache.getComplexRuleset(gameParameters)
 
@@ -495,8 +509,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         }
 
         removeMissingModReferences()
-
-        convertOldGameSpeed()
 
         for (baseUnit in ruleset.units.values)
             baseUnit.ruleset = ruleset
@@ -534,16 +546,17 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         convertFortify()
 
-        for (civInfo in sequence {
+        for (civInfo in civilizations.asSequence()
             // update city-state resource first since the happiness of major civ depends on it.
             // See issue: https://github.com/yairm210/Unciv/issues/7781
-            yieldAll(civilizations.filter { it.isCityState() })
-            yieldAll(civilizations.filter { !it.isCityState() })
-        }) {
+            .sortedByDescending { it.isCityState() }
+        ) {
             for (unit in civInfo.units.getCivUnits())
                 unit.updateVisibleTiles(false) // this needs to be done after all the units are assigned to their civs and all other transients are set
-            if(civInfo.playerType == PlayerType.Human)
-                civInfo.exploredRegion.setMapParameters(tileMap.mapParameters.worldWrap, tileMap.mapParameters.mapSize.radius) // Required for the correct calculation of the explored region on world wrap maps
+            if (civInfo.playerType == PlayerType.Human)
+                civInfo.exploredRegion.setMapParameters(tileMap.mapParameters) // Required for the correct calculation of the explored region on world wrap maps
+
+            civInfo.cache.updateOurTiles()
             civInfo.cache.updateSightAndResources() // only run ONCE and not for each unit - this is a huge performance saver!
 
             // Since this depends on the cities of ALL civilizations,
@@ -574,10 +587,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
                 cityInfo.cityStats.update()
             }
-
-            if (civInfo.hasEverOwnedOriginalCapital == null) {
-                civInfo.hasEverOwnedOriginalCapital = civInfo.cities.any { it.isOriginalCapital }
-            }
         }
 
         spaceResources.clear()
@@ -591,9 +600,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         guaranteeUnitPromotions()
 
-        for (player in civilizations)
-            for (tile in player.exploredTiles)
-                tileMap[tile].setExplored(player, true)
+        migrateToTileHistory()
     }
 
     //endregion

@@ -10,6 +10,7 @@ import com.unciv.logic.city.managers.CityReligionManager
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
@@ -153,6 +154,12 @@ class City : IsPartOfGameInfoSerialization {
         return connectionTypePredicate(mediumTypes)
     }
 
+    fun isGarrisoned() = getGarrison() != null
+    fun getGarrison(): MapUnit? =
+            getCenterTile().militaryUnit?.takeIf {
+                it.civ == this.civ && it.canGarrison()
+            }
+
     fun hasFlag(flag: CityFlags) = flagsCountdown.containsKey(flag.name)
     fun getFlag(flag: CityFlags) = flagsCountdown[flag.name]!!
 
@@ -239,31 +246,16 @@ class City : IsPartOfGameInfoSerialization {
 
     fun getTileResourceAmount(tile: Tile): Int {
         if (tile.resource == null) return 0
+        if (!tile.providesResources(civ)) return 0
+
         val resource = tile.tileResource
-        if (resource.revealedBy != null && !civ.tech.isResearched(resource.revealedBy!!)) return 0
+        var amountToAdd = if (resource.resourceType == ResourceType.Strategic) tile.resourceAmount
+            else 1
+        if (resource.resourceType == ResourceType.Luxury
+            && containsBuildingUnique(UniqueType.ProvidesExtraLuxuryFromCityResources))
+            amountToAdd += 1
 
-        // Even if the improvement exists (we conquered an enemy city or somesuch) or we have a city on it, we won't get the resource until the correct tech is researched
-        if (resource.getImprovements().any()) {
-            if (!resource.getImprovements().any { improvementString ->
-                val improvement = getRuleset().tileImprovements[improvementString]!!
-                improvement.techRequired == null || civ.tech.isResearched(improvement.techRequired!!)
-            }) return 0
-        }
-
-        if ((tile.getUnpillagedImprovement() != null && resource.isImprovedBy(tile.improvement!!)) || tile.isCityCenter()
-            // Per https://gaming.stackexchange.com/questions/53155/do-manufactories-and-customs-houses-sacrifice-the-strategic-or-luxury-resources
-            || resource.resourceType == ResourceType.Strategic && tile.containsUnpillagedGreatImprovement()
-        ) {
-            var amountToAdd = if (resource.resourceType == ResourceType.Strategic) tile.resourceAmount
-                else 1
-            if (resource.resourceType == ResourceType.Luxury
-                && containsBuildingUnique(UniqueType.ProvidesExtraLuxuryFromCityResources)
-            )
-                amountToAdd += 1
-
-            return amountToAdd
-        }
-        return 0
+        return amountToAdd
     }
 
     fun isGrowing() = foodForNextTurn() > 0
@@ -383,8 +375,8 @@ class City : IsPartOfGameInfoSerialization {
         expansion.city = this
         expansion.setTransients()
         cityConstructions.city = this
-        cityConstructions.setTransients()
         religion.setTransients(this)
+        cityConstructions.setTransients()
         espionage.setTransients(this)
     }
 
@@ -527,7 +519,7 @@ class City : IsPartOfGameInfoSerialization {
             "in all cities with a world wonder" -> cityConstructions.getBuiltBuildings()
                 .any { it.isWonder }
             "in all cities connected to capital" -> isConnectedToCapital()
-            "in all cities with a garrison" -> getCenterTile().militaryUnit != null
+            "in all cities with a garrison" -> isGarrisoned()
             "in all cities in which the majority religion is a major religion" ->
                 religion.getMajorityReligionName() != null
                 && religion.getMajorityReligion()!!.isMajorReligion()
@@ -567,7 +559,7 @@ class City : IsPartOfGameInfoSerialization {
                 getLocalMatchingUniques(uniqueType, stateForConditionals)
     }
 
-    fun getLocalMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null): Sequence<Unique> {
+    fun getLocalMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(civ, this)): Sequence<Unique> {
         return (
             cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { !it.isAntiLocalEffect }
             + religion.getUniques().filter { it.isOfType(uniqueType) }

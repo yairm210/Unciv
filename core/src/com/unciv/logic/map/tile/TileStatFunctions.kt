@@ -18,27 +18,10 @@ class TileStatFunctions(val tile: Tile) {
     fun getTileStats(city: City?, observingCiv: Civilization?,
                      localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)
     ): Stats {
-        var stats = tile.getBaseTerrain().cloneStats()
+        val stats = getTerrainStats()
+        var minimumStats = if (tile.isCityCenter()) Stats.DefaultCityCenterMinimum else Stats.ZERO
 
         val stateForConditionals = StateForConditionals(civInfo = observingCiv, city = city, tile = tile)
-
-        for (terrainFeatureBase in tile.terrainFeatureObjects) {
-            when {
-                terrainFeatureBase.hasUnique(UniqueType.NullifyYields) ->
-                    return terrainFeatureBase.cloneStats()
-                terrainFeatureBase.overrideStats -> stats = terrainFeatureBase.cloneStats()
-                else -> stats.add(terrainFeatureBase)
-            }
-        }
-
-        if (tile.naturalWonder != null) {
-            val wonderStats = tile.getNaturalWonder().cloneStats()
-
-            if (tile.getNaturalWonder().overrideStats)
-                stats = wonderStats
-            else
-                stats.add(wonderStats)
-        }
 
         if (city != null) {
             var tileUniques = city.getMatchingUniques(UniqueType.StatsFromTiles, StateForConditionals.IgnoreConditionals)
@@ -76,36 +59,70 @@ class TileStatFunctions(val tile: Tile) {
 
             if (stats.gold != 0f && observingCiv.goldenAges.isGoldenAge())
                 stats.gold++
-        }
-        if (tile.isCityCenter()) {
-            if (stats.food < 2) stats.food = 2f
-            if (stats.production < 1) stats.production = 1f
+
+            if (improvement != null) {
+                val ensureMinUnique = improvement
+                    .getMatchingUniques(UniqueType.EnsureMinimumStats, stateForConditionals)
+                    .firstOrNull()
+                if (ensureMinUnique != null) minimumStats = ensureMinUnique.stats
+            }
         }
 
-        for ((stat, value) in stats)
-            if (value < 0f) stats[stat] = 0f
+        stats.coerceAtLeast(minimumStats)  // Minimum 0 or as defined by City center
 
-        for ((stat, value) in getTilePercentageStats(observingCiv, city)) {
+        for ((stat, value) in getTilePercentageStats(observingCiv, city, localUniqueCache)) {
             stats[stat] *= value.toPercent()
         }
 
         return stats
     }
 
+    /** Ensures each stat is >= [other].stat - modifies in place */
+    private fun Stats.coerceAtLeast(other: Stats) {
+        for ((stat, value) in other)
+            if (this[stat] < value) this[stat] = value
+    }
+
+    /** Gets basic stats to start off [getTileStats] or [getTileStartYield], independently mutable result */
+    private fun getTerrainStats(): Stats {
+        var stats: Stats? = null
+
+        // allTerrains iterates over base, natural wonder, then features
+        for (terrain in tile.allTerrains) {
+            when {
+                terrain.hasUnique(UniqueType.NullifyYields) ->
+                    return terrain.cloneStats()
+                terrain.overrideStats || stats == null ->
+                    stats = terrain.cloneStats()
+                else ->
+                    stats.add(terrain)
+            }
+        }
+        return stats ?: Stats.ZERO // For tests
+    }
+
     // Only gets the tile percentage bonus, not the improvement percentage bonus
     @Suppress("MemberVisibilityCanBePrivate")
-    fun getTilePercentageStats(observingCiv: Civilization?, city: City?): Stats {
+    fun getTilePercentageStats(observingCiv: Civilization?, city: City?, uniqueCache: LocalUniqueCache): Stats {
         val stats = Stats()
         val stateForConditionals = StateForConditionals(civInfo = observingCiv, city = city, tile = tile)
 
         if (city != null) {
-            for (unique in city.getMatchingUniques(UniqueType.StatPercentFromObject, stateForConditionals)) {
+            // Since the tile changes every time, we cache all uniques, and filter by conditional state only when iterating
+            val cachedStatPercentFromObjectUniques = uniqueCache.get(UniqueType.StatPercentFromObject.name,
+                city.getMatchingUniques(UniqueType.StatPercentFromObject, StateForConditionals.IgnoreConditionals))
+
+            for (unique in cachedStatPercentFromObjectUniques) {
+                if (!unique.conditionalsApply(stateForConditionals)) continue
                 val tileFilter = unique.params[2]
                 if (tile.matchesTerrainFilter(tileFilter, observingCiv))
                     stats[Stat.valueOf(unique.params[1])] += unique.params[0].toFloat()
             }
 
-            for (unique in city.getMatchingUniques(UniqueType.AllStatsPercentFromObject, stateForConditionals)) {
+            val cachedAllStatPercentFromObjectUniques = uniqueCache.get(UniqueType.AllStatsPercentFromObject.name,
+                city.getMatchingUniques(UniqueType.AllStatsPercentFromObject, StateForConditionals.IgnoreConditionals))
+            for (unique in cachedAllStatPercentFromObjectUniques) {
+                if (!unique.conditionalsApply(stateForConditionals)) continue
                 val tileFilter = unique.params[1]
                 if (!tile.matchesTerrainFilter(tileFilter, observingCiv)) continue
                 val statPercentage = unique.params[0].toFloat()
@@ -132,10 +149,12 @@ class TileStatFunctions(val tile: Tile) {
         return stats
     }
 
-    fun getTileStartScore(): Float {
+    fun getTileStartScore(cityCenterMinStats: Stats): Float {
         var sum = 0f
         for (closeTile in tile.getTilesInDistance(2)) {
-            val tileYield = closeTile.stats.getTileStartYield(closeTile == tile)
+            val tileYield = closeTile.stats.getTileStartYield(
+                if (closeTile == tile) cityCenterMinStats else Stats.ZERO
+            )
             sum += tileYield
             if (closeTile in tile.neighbors)
                 sum += tileYield
@@ -155,25 +174,12 @@ class TileStatFunctions(val tile: Tile) {
         return sum
     }
 
-    private fun getTileStartYield(isCenter: Boolean): Float {
-        var stats = tile.getBaseTerrain().cloneStats()
-
-        for (terrainFeatureBase in tile.terrainFeatureObjects) {
-            if (terrainFeatureBase.overrideStats)
-                stats = terrainFeatureBase.cloneStats()
-            else
-                stats.add(terrainFeatureBase)
+    private fun getTileStartYield(minimumStats: Stats) =
+        getTerrainStats().run {
+            if (tile.resource != null) add(tile.tileResource)
+            coerceAtLeast(minimumStats)
+            food + production + gold
         }
-        if (tile.resource != null) stats.add(tile.tileResource)
-
-        if (stats.production < 0) stats.production = 0f
-        if (isCenter) {
-            if (stats.food < 2) stats.food = 2f
-            if (stats.production < 1) stats.production = 1f
-        }
-
-        return stats.food + stats.production + stats.gold
-    }
 
 
     // Also multiplies the stats by the percentage bonus for improvements (but not for tiles)

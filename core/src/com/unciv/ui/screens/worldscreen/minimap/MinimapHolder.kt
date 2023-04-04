@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.images.ImageGetter
@@ -43,20 +44,19 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
         backgroundColor = Color.GREEN
     )
 
-    init {
-        rebuildIfSizeChanged()
-    }
-
-    private fun rebuildIfSizeChanged() {
+    private fun rebuildIfSizeChanged(civInfo: Civilization) {
+        // For Spectator should not restrict minimap
+        var civInfo: Civilization? = civInfo
+        if(GUI.getViewingPlayer().isSpectator()) civInfo = null
         val newMinimapSize = worldScreen.game.settings.minimapSize
-        if (newMinimapSize == minimapSize) return
+        if (newMinimapSize == minimapSize && civInfo?.exploredRegion?.shouldUpdateMinimap() != true) return
         minimapSize = newMinimapSize
-        rebuild()
+        rebuild(civInfo)
     }
 
-    private fun rebuild(){
+    private fun rebuild(civInfo: Civilization?){
         this.clear()
-        minimap = Minimap(mapHolder, minimapSize)
+        minimap = Minimap(mapHolder, minimapSize, civInfo)
         add(getToggleIcons()).align(Align.bottom)
         add(getWrappedMinimap())
         pack()
@@ -97,7 +97,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder) : Table() {
     }
 
     fun update(civInfo: Civilization) {
-        rebuildIfSizeChanged()
+        rebuildIfSizeChanged(civInfo)
         isVisible = UncivGame.Current.settings.showMinimap
         if (isVisible) {
             minimap.update(civInfo)

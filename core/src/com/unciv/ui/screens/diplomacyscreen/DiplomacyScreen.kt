@@ -29,6 +29,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
+import com.unciv.ui.components.ColorMarkupLabel
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
@@ -56,10 +57,11 @@ import com.unciv.ui.components.AutoScrollPane as ScrollPane
  *
  * When [selectCiv] is given and [selectTrade] is not, that Civilization is selected as if clicked on the left side.
  * When [selectCiv] and [selectTrade] are supplied, that Trade for that Civilization is selected, used for the counter-offer option from `TradePopup`.
+ * Note calling this with [selectCiv] a City State and [selectTrade] supplied is **not allowed**.
  */
 @Suppress("KDocUnresolvedReference")  // Mentioning non-field parameters is flagged, but they work anyway
 class DiplomacyScreen(
-    val viewingCiv: Civilization,
+    private val viewingCiv: Civilization,
     private val selectCiv: Civilization? = null,
     private val selectTrade: Trade? = null
 ): BaseScreen(), RecreateOnResize {
@@ -69,7 +71,7 @@ class DiplomacyScreen(
     }
 
     private val leftSideTable = Table().apply { defaults().pad(nationIconPad) }
-    val leftSideScroll = ScrollPane(leftSideTable)
+    private val leftSideScroll = ScrollPane(leftSideTable)
     private val rightSideTable = Table()
     private val closeButton = Constants.close.toTextButton()
 
@@ -169,20 +171,13 @@ class DiplomacyScreen(
         rightSideTable.clear()
         UncivGame.Current.musicController.chooseTrack(otherCiv.civName,
             MusicMood.peaceOrWar(viewingCiv.isAtWarWith(otherCiv)),MusicTrackChooserFlags.setSelectNation)
-        if (otherCiv.isCityState()) rightSideTable.add(
-            ScrollPane(getCityStateDiplomacyTable(otherCiv))
-        )
-        else rightSideTable.add(ScrollPane(getMajorCivDiplomacyTable(otherCiv)))
-            .height(stage.height)
+        rightSideTable.add(ScrollPane(
+            if (otherCiv.isCityState()) getCityStateDiplomacyTable(otherCiv)
+            else getMajorCivDiplomacyTable(otherCiv)
+        )).height(stage.height)
     }
 
-    private fun setTrade(civ: Civilization): TradeTable {
-        rightSideTable.clear()
-        val tradeTable = TradeTable(civ, this)
-        rightSideTable.add(tradeTable)
-        return tradeTable
-    }
-
+    //region City State Diplomacy
     private fun getCityStateDiplomacyTableHeader(otherCiv: Civilization): Table {
         val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
 
@@ -262,7 +257,7 @@ class DiplomacyScreen(
         val allyBonusObjects = viewingCiv.cityStateFunctions.getCityStateBonuses(otherCiv.cityStateType, RelationshipLevel.Ally)
         allyBonusText += allyBonusObjects.joinToString(separator = "\n") { it.text.tr() }
 
-        val relationLevel = otherCivDiplomacyManager.relationshipLevel()
+        val relationLevel = otherCivDiplomacyManager.relationshipIgnoreAfraid()
         if (relationLevel >= RelationshipLevel.Friend) {
             // RelationshipChange = Ally -> Friend or Friend -> Favorable
             val turnsToRelationshipChange = otherCivDiplomacyManager.getTurnsToRelationshipChange()
@@ -272,12 +267,12 @@ class DiplomacyScreen(
         }
 
         val friendBonusLabelColor = if (relationLevel == RelationshipLevel.Friend) Color.GREEN else Color.GRAY
-        val friendBonusLabel = friendBonusText.toLabel(friendBonusLabelColor)
+        val friendBonusLabel = ColorMarkupLabel(friendBonusText, friendBonusLabelColor)
             .apply { setAlignment(Align.center) }
         diplomacyTable.add(friendBonusLabel).row()
 
         val allyBonusLabelColor = if (relationLevel == RelationshipLevel.Ally) Color.GREEN else Color.GRAY
-        val allyBonusLabel = allyBonusText.toLabel(allyBonusLabelColor)
+        val allyBonusLabel = ColorMarkupLabel(allyBonusText, allyBonusLabelColor)
             .apply { setAlignment(Align.center) }
         diplomacyTable.add(allyBonusLabel).row()
 
@@ -289,7 +284,6 @@ class DiplomacyScreen(
 
         return diplomacyTable
     }
-
 
     private fun getCityStateDiplomacyTable(otherCiv: Civilization): Table {
         val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
@@ -635,6 +629,8 @@ class DiplomacyScreen(
         return warTable
     }
 
+    //endregion
+    //region Major Civ Diplomacy
 
     private fun getMajorCivDiplomacyTable(otherCiv: Civilization): Table {
         val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
@@ -642,7 +638,7 @@ class DiplomacyScreen(
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
 
-        val helloText = if (otherCivDiplomacyManager.relationshipLevel() <= RelationshipLevel.Enemy)
+        val helloText = if (otherCivDiplomacyManager.isRelationshipLevelLE(RelationshipLevel.Enemy))
             otherCiv.nation.hateHello
         else otherCiv.nation.neutralHello
         val leaderIntroTable = LeaderIntroTable(otherCiv, helloText)
@@ -699,6 +695,13 @@ class DiplomacyScreen(
         }
 
         return diplomacyTable
+    }
+
+    private fun setTrade(civ: Civilization): TradeTable {
+        rightSideTable.clear()
+        val tradeTable = TradeTable(civ, this)
+        rightSideTable.add(tradeTable)
+        return tradeTable
     }
 
     private fun getNegotiatePeaceMajorCivButton(
@@ -909,6 +912,8 @@ class DiplomacyScreen(
         return declareWarButton
     }
 
+    //endregion
+
     // response currently always gets "Very Well.", but that may expand in the future.
     @Suppress("SameParameterValue")
     private fun setRightSideFlavorText(
@@ -939,6 +944,13 @@ class DiplomacyScreen(
         }
         return goToOnMapButton
     }
+
+    /** Calculate a width for [TradeTable] two-column layout, called from [OfferColumnsTable]
+     *
+     *  _Caller is responsible to not exceed this **including its own padding**_
+     */
+    // Note breaking the rule above will squeeze the leftSideScroll to the left - cumulatively.
+    internal fun getTradeColumnsWidth() = (stage.width * 0.8f - 3f) / 2  // 3 for SplitPane handle
 
     override fun resize(width: Int, height: Int) {
         super.resize(width, height)

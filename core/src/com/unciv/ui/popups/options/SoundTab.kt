@@ -15,6 +15,7 @@ import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.extensions.toImageButton
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import kotlin.math.floor
@@ -32,23 +33,11 @@ fun soundTab(
     addCitySoundsVolumeSlider(this, settings)
 
     if (UncivGame.Current.musicController.isMusicAvailable()) {
-        addMusicVolumeSlider(this, settings, music)
-        addMusicPauseSlider(this, settings, music)
-        addMusicCurrentlyPlaying(this, music)
-        addButton(this, "Pause", action = { music.pause(0.5f) })
-        addButton(this, "Resume", action = { music.resume(0.5f) })
-        addButton(this, "Skip", action = { music.chooseTrack(flags = MusicTrackChooserFlags.none) })
-        row()
+        addMusicControls(this, settings, music)
     }
 
     if (!UncivGame.Current.musicController.isDefaultFileAvailable())
         addDownloadMusic(this, optionsPopup)
-}
-
-private fun addButton(table: Table, text: String, action: () -> Unit) {
-    val button = text.toTextButton()
-    table.add(button)
-    button.onClick { action.invoke() }
 }
 
 private fun addDownloadMusic(table: Table, optionsPopup: OptionsPopup) {
@@ -80,7 +69,6 @@ private fun addDownloadMusic(table: Table, optionsPopup: OptionsPopup) {
     }
 }
 
-
 private fun addSoundEffectsVolumeSlider(table: Table, settings: GameSettings) {
     table.add("Sound effects volume".tr()).left().fillX()
 
@@ -90,7 +78,6 @@ private fun addSoundEffectsVolumeSlider(table: Table, settings: GameSettings) {
         getTipText = UncivSlider::formatPercent
     ) {
         settings.soundEffectsVolume = it
-        settings.save()
     }
     table.add(soundEffectsVolumeSlider).pad(5f).row()
 }
@@ -104,12 +91,11 @@ private fun addCitySoundsVolumeSlider(table: Table, settings: GameSettings) {
         getTipText = UncivSlider::formatPercent
     ) {
         settings.citySoundsVolume = it
-        settings.save()
     }
     table.add(citySoundVolumeSlider).pad(5f).row()
 }
 
-fun addMusicVolumeSlider(table: Table, settings: GameSettings, music: MusicController) {
+private fun addMusicVolumeSlider(table: Table, settings: GameSettings, music: MusicController) {
     table.add("Music volume".tr()).left().fillX()
 
     val musicVolumeSlider = UncivSlider(
@@ -119,7 +105,6 @@ fun addMusicVolumeSlider(table: Table, settings: GameSettings, music: MusicContr
         getTipText = UncivSlider::formatPercent
     ) {
         settings.musicVolume = it
-        settings.save()
 
         music.setVolume(it)
         if (!music.isPlaying())
@@ -128,7 +113,7 @@ fun addMusicVolumeSlider(table: Table, settings: GameSettings, music: MusicContr
     table.add(musicVolumeSlider).pad(5f).row()
 }
 
-fun addMusicPauseSlider(table: Table, settings: GameSettings, music: MusicController) {
+private fun addMusicPauseSlider(table: Table, settings: GameSettings, music: MusicController) {
     // map to/from 0-1-2..10-12-14..30-35-40..60-75-90-105-120
     fun posToLength(pos: Float): Float = when (pos) {
         in 0f..10f -> pos
@@ -164,7 +149,7 @@ fun addMusicPauseSlider(table: Table, settings: GameSettings, music: MusicContro
     table.add(pauseLengthSlider).pad(5f).row()
 }
 
-fun addMusicCurrentlyPlaying(table: Table, music: MusicController) {
+private fun addMusicCurrentlyPlaying(table: Table, music: MusicController) {
     val label = WrappableLabel("", table.width - 10f, Color(-0x2f5001), 16)
     label.wrap = true
     table.add(label).padTop(20f).colspan(2).fillX().row()
@@ -173,7 +158,23 @@ fun addMusicCurrentlyPlaying(table: Table, music: MusicController) {
             label.setText("Currently playing: [$it]".tr())
         }
     }
-    label.onClick(UncivSound.Silent) {
-        music.chooseTrack(flags = MusicTrackChooserFlags.none)
-    }
+}
+
+private fun addSimplePlayerControls(table: Table, music: MusicController) {
+    fun String.toImageButton(overColor: Color) = toImageButton(30f, 30f, Color.CLEAR, overColor)
+    table.add(Table().apply {
+        defaults().space(25f)
+        add("OtherIcons/Pause".toImageButton(Color.GOLD).onClick { music.pause(0.5f) })
+        add("OtherIcons/ForwardArrow".toImageButton(Color.LIME).onClick { music.resume(0.5f) })
+        add("OtherIcons/Loading".toImageButton(Color.VIOLET).onClick { music.chooseTrack(flags = MusicTrackChooserFlags.none) })
+    }).colspan(2).center().row()
+}
+
+/** Adds music volume/pause sliders, currently playing label and player controls to a [table] */
+// public - used here and in WorldScreenMenuPopup
+fun addMusicControls(table: Table, settings: GameSettings, music: MusicController) {
+    addMusicVolumeSlider(table, settings, music)
+    addMusicPauseSlider(table, settings, music)
+    addMusicCurrentlyPlaying(table, music)
+    addSimplePlayerControls(table, music)
 }

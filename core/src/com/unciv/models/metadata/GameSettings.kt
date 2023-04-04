@@ -1,13 +1,18 @@
 package com.unciv.models.metadata
 
-import com.badlogic.gdx.Application
+import com.badlogic.gdx.Application.ApplicationType
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.utils.Base64Coder
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.UncivSound
 import com.unciv.ui.components.FontFamilyData
 import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.KeyboardBindings
+import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
+import com.unciv.utils.Display
+import com.unciv.utils.ScreenOrientation
 import java.text.Collator
 import java.time.Duration
 import java.util.*
@@ -24,14 +29,13 @@ enum class ScreenSize(val virtualWidth:Float, val virtualHeight:Float){
     Huge(1500f,1000f)
 }
 
-enum class ScreenWindow {
-    Windowed,
-    Fullscreen
-}
-
 class GameSettings {
 
+    /** Allows panning the map by moving the pointer to the screen edges */
     var mapAutoScroll: Boolean = false
+    /** How fast the map pans using keyboard or with [mapAutoScroll] and mouse */
+    var mapPanningSpeed: Float = 6f
+
     var showWorkedTiles: Boolean = false
     var showResourcesAndImprovements: Boolean = true
     var showTileYields: Boolean = false
@@ -43,10 +47,8 @@ class GameSettings {
     var language: String = Constants.english
     @Transient
     var locale: Locale? = null
-    @Deprecated("Since 4.3.6 - replaces with screenSize")
-    var resolution: String = "900x600"
     var screenSize:ScreenSize = ScreenSize.Small
-    var screenWindow: ScreenWindow = ScreenWindow.Windowed
+    var screenMode: Int = 0
     var tutorialsShown = HashSet<String>()
     var tutorialTasksCompleted = HashSet<String>()
 
@@ -90,9 +92,10 @@ class GameSettings {
 
     var enableEspionageOption = false
 
-    var lastOverviewPage: String = "Cities"
+    var lastOverviewPage = EmpireOverviewCategories.Cities  // serializes same as the String we had before
 
-    var allowAndroidPortrait = false    // Opt-in to allow Unciv to follow a screen rotation to portrait
+    /** Orientation for mobile platforms */
+    var displayOrientation = ScreenOrientation.Landscape
 
     /** Saves the last successful new game's setup */
     var lastGameSetup: GameSetupInfo? = null
@@ -105,21 +108,26 @@ class GameSettings {
     /** Maximum zoom-out of the map - performance heavy */
     var maxWorldZoomOut = 2f
 
+    var keyBindings = KeyboardBindings()
+
     /** used to migrate from older versions of the settings */
     var version: Int? = null
 
     init {
         // 26 = Android Oreo. Versions below may display permanent icon in notification bar.
-        if (Gdx.app?.type == Application.ApplicationType.Android && Gdx.app.version < 26) {
+        if (Gdx.app?.type == ApplicationType.Android && Gdx.app.version < 26) {
             multiplayer.turnCheckerPersistentNotificationEnabled = false
         }
     }
 
     fun save() {
-        if (!isFreshlyCreated && Gdx.app?.type == Application.ApplicationType.Desktop) {
-            windowState = WindowState(Gdx.graphics.width, Gdx.graphics.height)
-        }
+        refreshWindowSize()
         UncivGame.Current.files.setGeneralSettings(this)
+    }
+    fun refreshWindowSize() {
+        if (isFreshlyCreated || Gdx.app.type != ApplicationType.Desktop) return
+        if (!Display.hasUserSelectableSize(screenMode)) return
+        windowState = WindowState(Gdx.graphics.width, Gdx.graphics.height)
     }
 
     fun addCompletedTutorialTask(tutorialTask: String): Boolean {
@@ -153,28 +161,11 @@ class GameSettings {
     fun getCollatorFromLocale(): Collator {
         return Collator.getInstance(getCurrentLocale())
     }
-
-    fun refreshScreenMode() {
-
-        if (Gdx.app.type != Application.ApplicationType.Desktop)
-            return
-
-        when (screenWindow) {
-            ScreenWindow.Windowed -> {
-                Gdx.graphics.setWindowedMode(
-                    windowState.width.coerceAtLeast(120),
-                    windowState.height.coerceAtLeast(80))
-            }
-
-            ScreenWindow.Fullscreen -> {
-                Gdx.graphics.setFullscreenMode(Gdx.graphics.displayMode)
-            }
-        }
-    }
 }
 
 enum class LocaleCode(var language: String, var country: String) {
     Arabic("ar", "IQ"),
+    Belarusian("be", "BY"),
     BrazilianPortuguese("pt", "BR"),
     Bulgarian("bg", "BG"),
     Catalan("ca", "ES"),
@@ -233,6 +224,12 @@ class GameSettingsMultiplayer {
     var currentGameTurnNotificationSound: UncivSound = UncivSound.Silent
     var otherGameTurnNotificationSound: UncivSound = UncivSound.Silent
     var hideDropboxWarning = false
+
+    fun getAuthHeader(): String {
+        val serverPassword = passwords[server] ?: ""
+        val preEncodedAuthValue = "$userId:$serverPassword"
+        return "Basic ${Base64Coder.encodeString(preEncodedAuthValue)}"
+    }
 }
 
 enum class GameSetting(

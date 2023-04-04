@@ -21,10 +21,9 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.components.AutoScrollPane
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.KeyCharAndCode
-import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.keyShortcuts
@@ -33,23 +32,28 @@ import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
-import com.unciv.ui.screens.multiplayerscreens.MultiplayerScreen
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.popups.popups
-import com.unciv.ui.screens.savescreens.LoadGameScreen
-import com.unciv.ui.screens.savescreens.QuickSave
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
+import com.unciv.ui.screens.mainmenuscreen.EasterEggRulesets.modifyForEasterEgg
+import com.unciv.ui.screens.mapeditorscreen.EditorMapHolder
+import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
+import com.unciv.ui.screens.multiplayerscreens.MultiplayerScreen
 import com.unciv.ui.screens.newgamescreen.NewGameScreen
 import com.unciv.ui.screens.pickerscreens.ModManagementScreen
-import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMenuPopup
-import com.unciv.ui.screens.mainmenuscreen.EasterEggRulesets.modifyForEasterEgg
+import com.unciv.ui.screens.savescreens.LoadGameScreen
+import com.unciv.ui.screens.savescreens.QuickSave
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMenuPopup
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.isActive
 import kotlin.math.min
 
 
@@ -59,6 +63,8 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
     }
     private val singleColumn = isCrampedPortrait()
     private var easterEggRuleset: Ruleset? = null  // Cache it so the next 'egg' can be found in Civilopedia
+
+    private var backgroundMapGenerationJob: Job? = null
 
     /** Create one **Main Menu Button** including onClick/key binding
      *  @param text      The text to display on the button
@@ -83,7 +89,10 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         table.add(text.toLabel(fontSize = 30, alignment = Align.left)).expand().left().minWidth(200f)
 
         table.touchable = Touchable.enabled
-        table.onActivation(function)
+        table.onActivation {
+            stopBackgroundMapGeneration()
+            function()
+        }
 
         if (key != null) {
             if (!keyVisualOnly)
@@ -103,50 +112,11 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         // will not exist unless we reset the ruleset and images
         ImageGetter.ruleset = RulesetCache.getVanillaRuleset()
 
-        Concurrency.run("ShowMapBackground") {
-            var scale = 1f
-            var mapWidth = stage.width / TileGroupMap.groupHorizontalAdvance
-            var mapHeight = stage.height / TileGroupMap.groupSize
-            if (mapWidth * mapHeight > 3000f) {  // 3000 as max estimated number of tiles is arbitrary (we had typically 721 before)
-                scale = mapWidth * mapHeight / 3000f
-                mapWidth /= scale
-                mapHeight /= scale
-                scale = min(scale, 20f)
-            }
-
-            val baseRuleset = RulesetCache.getVanillaRuleset()
-            easterEggRuleset = EasterEggRulesets.getTodayEasterEggRuleset()?.let {
-                RulesetCache.getComplexRuleset(baseRuleset, listOf(it))
-            }
-            val mapRuleset = if (game.settings.enableEasterEggs) easterEggRuleset ?: baseRuleset else baseRuleset
-
-            val newMap = MapGenerator(mapRuleset)
-                    .generateMap(MapParameters().apply {
-                        shape = MapShape.rectangular
-                        mapSize = MapSizeNew(MapSize.Small)
-                        type = MapType.pangaea
-                        temperatureExtremeness = 1f
-                        waterThreshold = -0.1f // mainly land, gets about 30% water
-                        modifyForEasterEgg()
-                    })
-
-            launchOnGLThread { // for GL context
-                ImageGetter.setNewRuleset(mapRuleset)
-                val mapHolder = com.unciv.ui.screens.mapeditorscreen.EditorMapHolder(
-                    this@MainMenuScreen,
-                    newMap
-                ) {}
-                mapHolder.setScale(scale)
-                backgroundTable.addAction(Actions.sequence(
-                        Actions.fadeOut(0f),
-                        Actions.run {
-                            backgroundTable.addActor(mapHolder)
-                            mapHolder.center(backgroundTable)
-                        },
-                        Actions.fadeIn(0.3f)
-                ))
-            }
-        }
+        // This is an extreme safeguard - should an invalid settings.tileSet ever make it past the
+        // guard in UncivGame.create, simply omit the background so the user can at least get to options
+        // (let him crash when loading a game but avoid locking him out entirely)
+        if (game.settings.tileSet in TileSetCache)
+            startBackgroundMapGeneration()
 
         val column1 = Table().apply { defaults().pad(10f).fillX() }
         val column2 = if (singleColumn) column1 else Table().apply { defaults().pad(10f).fillX() }
@@ -219,6 +189,68 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         stage.addActor(helpButton)
     }
 
+    private fun startBackgroundMapGeneration() {
+        stopBackgroundMapGeneration()  // shouldn't be necessary as resize re-instantiates this class
+        backgroundMapGenerationJob = Concurrency.run("ShowMapBackground") {
+            var scale = 1f
+            var mapWidth = stage.width / TileGroupMap.groupHorizontalAdvance
+            var mapHeight = stage.height / TileGroupMap.groupSize
+            if (mapWidth * mapHeight > 3000f) {  // 3000 as max estimated number of tiles is arbitrary (we had typically 721 before)
+                scale = mapWidth * mapHeight / 3000f
+                mapWidth /= scale
+                mapHeight /= scale
+                scale = min(scale, 20f)
+            }
+
+            val baseRuleset = RulesetCache.getVanillaRuleset()
+            easterEggRuleset = EasterEggRulesets.getTodayEasterEggRuleset()?.let {
+                RulesetCache.getComplexRuleset(baseRuleset, listOf(it))
+            }
+            val mapRuleset = if (game.settings.enableEasterEggs) easterEggRuleset ?: baseRuleset else baseRuleset
+
+            val newMap = MapGenerator(mapRuleset, this)
+                .generateMap(MapParameters().apply {
+                    shape = MapShape.rectangular
+                    mapSize = MapSizeNew(MapSize.Small)
+                    type = MapType.pangaea
+                    temperatureExtremeness = .7f
+                    waterThreshold = -0.1f // mainly land, gets about 30% water
+                    modifyForEasterEgg()
+                })
+
+            launchOnGLThread { // for GL context
+                ImageGetter.setNewRuleset(mapRuleset)
+                val mapHolder = EditorMapHolder(
+                    this@MainMenuScreen,
+                    newMap
+                ) {}
+                mapHolder.setScale(scale)
+
+                backgroundTable.addAction(Actions.sequence(
+                    Actions.fadeOut(0f),
+                    Actions.run {
+                        backgroundTable.clearChildren()
+                        backgroundTable.addActor(mapHolder)
+                        mapHolder.center(backgroundTable)
+                    },
+                    Actions.fadeIn(0.3f)
+                ))
+            }
+        }.apply {
+            invokeOnCompletion {
+                backgroundMapGenerationJob = null
+            }
+        }
+    }
+
+    private fun stopBackgroundMapGeneration() {
+        val currentJob = backgroundMapGenerationJob
+            ?: return
+        backgroundMapGenerationJob = null
+        if (currentJob.isCancelled) return
+        currentJob.cancel()
+        backgroundTable.clearActions()
+    }
 
     private fun resumeGame() {
         if (GUI.isWorldLoaded()) {
@@ -283,6 +315,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
     }
 
     private fun openCivilopedia() {
+        stopBackgroundMapGeneration()
         val rulesetParameters = game.settings.lastGameSetup?.gameParameters
         val ruleset = easterEggRuleset ?:
             if (rulesetParameters == null)
@@ -294,5 +327,8 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         game.pushScreen(CivilopediaScreen(ruleset))
     }
 
-    override fun recreate(): BaseScreen = MainMenuScreen()
+    override fun recreate(): BaseScreen {
+        stopBackgroundMapGeneration()
+        return MainMenuScreen()
+    }
 }

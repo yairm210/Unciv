@@ -48,7 +48,7 @@ class ExpanderTab(
         val persistedStates = HashMap<String, Boolean>()
     }
 
-    private val header = Table(skin)  // Header with label and icon, touchable to show/hide
+    val header = Table(skin)  // Header with label and icon, touchable to show/hide
     private val headerLabel = title.toLabel(fontSize = fontSize)
     private val headerIcon = ImageGetter.getImage(arrowImage)
     private val contentWrapper = Table()  // Wrapper for innerTable, this is what will be shown/hidden

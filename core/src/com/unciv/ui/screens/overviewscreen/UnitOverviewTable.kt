@@ -2,7 +2,10 @@ package com.unciv.ui.screens.overviewscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.Action
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
@@ -12,11 +15,6 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.images.IconTextButton
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
-import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.TabbedPager
@@ -28,8 +26,15 @@ import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toPrettyString
+import com.unciv.ui.images.IconTextButton
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
+import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.abs
+import kotlin.math.ceil
 
 /**
  * Supplies the Unit sub-table for the Empire Overview
@@ -53,12 +58,23 @@ class UnitOverviewTab(
     }
     override fun deactivated(index: Int, caption: String, pager: TabbedPager) {
         persistableData.scrollY = pager.getPageScrollY(index)
+        removeBlinkAction()
     }
 
     private val supplyTableWidth = (overviewScreen.stage.width * 0.25f).coerceAtLeast(240f)
     private val unitListTable = Table() // could be `this` instead, extra nesting helps readability a little
     private val unitHeaderTable = Table()
     private val fixedContent = Table()
+
+    // used for select()
+    private var blinkAction: Action? = null
+    private var blinkActor: Actor? = null
+    private fun removeBlinkAction() {
+        if (blinkAction == null || blinkActor == null) return
+        blinkActor!!.removeAction(blinkAction)
+        blinkAction = null
+        blinkActor = null
+    }
 
     override fun getFixedContent() = fixedContent
 
@@ -170,30 +186,36 @@ class UnitOverviewTab(
                     UnitGroup(unit, 20f),
                     fontColor = if (unit.due && unit.isIdle()) Color.WHITE else Color.LIGHT_GRAY
                 )
+            button.name = getUnitIdentifier(unit)  // Marker to find a unit in select()
             button.onClick {
                 showWorldScreenAt(unit)
             }
             add(button).fillX()
 
-            // Columns: action, strength, ranged, moves
+            // Column: edit-name
             val editIcon = ImageGetter.getImage("OtherIcons/Pencil").apply { this.color = Color.WHITE }.surroundWithCircle(30f, true, Color.valueOf("000c31"))
             editIcon.onClick {
                 UnitRenamePopup(
                     screen = overviewScreen,
                     unit = unit,
                     actionOnClose = {
-                        overviewScreen.game.replaceCurrentScreen(EmpireOverviewScreen(viewingPlayer, "", "")) })
+                        overviewScreen.game.replaceCurrentScreen(
+                            EmpireOverviewScreen(viewingPlayer, selection = getUnitIdentifier(unit))
+                        )
+                    })
             }
             add(editIcon)
 
+            // Column: action
             fun getActionLabel(unit: MapUnit) = when {
                 unit.action == null -> ""
                 unit.isFortified() -> UnitActionType.Fortify.value
                 unit.isMoving() -> "Moving"
                 else -> unit.action!!
             }
-
             if (unit.action == null) add() else add(getActionLabel(unit).toLabel())
+
+            // Columns: strength, ranged
             if (baseUnit.strength > 0) add(baseUnit.strength.toLabel()) else add()
             if (baseUnit.rangedStrength > 0) add(baseUnit.rangedStrength.toLabel()) else add()
             add(unit.getMovementString().toLabel())
@@ -211,8 +233,18 @@ class UnitOverviewTab(
             // Promotions column
             val promotionsTable = Table()
             // getPromotions goes by json order on demand, so this is same sorting as on picker
-            for (promotion in unit.promotions.getPromotions(true))
-                promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name))
+            val promotions = unit.promotions.getPromotions(true)
+            if (promotions.any()) {
+                val numberOfLines = ceil(promotions.count() / 8f).toInt()
+                val promotionsPerLine = promotions.count() / numberOfLines
+                var promotionsThisLine = 0
+                for (promotion in promotions) {
+                    promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name))
+                    promotionsThisLine++
+                    if (promotionsThisLine == promotionsPerLine && numberOfLines>1) promotionsTable.row()
+                }
+            }
+
             if (unit.promotions.canBePromoted())
                 promotionsTable.add(
                     ImageGetter.getImage("OtherIcons/Star").apply {
@@ -247,5 +279,28 @@ class UnitOverviewTab(
             row()
         }
         return this
+    }
+
+    companion object {
+        fun getUnitIdentifier(unit: MapUnit) = unit.run { "$name@${getTile().position.toPrettyString()}" }
+    }
+
+    override fun select(selection: String): Float? {
+        val cell = unitListTable.cells.asSequence()
+                .filter { it.actor is IconTextButton && it.actor.name == selection }
+                .firstOrNull() ?: return null
+        val button = cell.actor as IconTextButton
+        val scrollY = (0 until cell.row)
+            .map { unitListTable.getRowHeight(it) }.sum() -
+                (parent.height - unitListTable.getRowHeight(cell.row)) / 2
+
+        removeBlinkAction()
+        blinkAction = Actions.repeat(3, Actions.sequence(
+            Actions.fadeOut(0.17f),
+            Actions.fadeIn(0.17f)
+        ))
+        blinkActor = button
+        button.addAction(blinkAction)
+        return scrollY
     }
 }

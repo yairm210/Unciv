@@ -1,17 +1,11 @@
 package com.unciv.ui.screens.overviewscreen
 
 import com.badlogic.gdx.utils.Align
-import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewTab.EmpireOverviewTabPersistableData
 import com.unciv.ui.components.KeyCharAndCode
 
-private typealias FactoryType = (Civilization, EmpireOverviewScreen, EmpireOverviewTabPersistableData?) -> EmpireOverviewTab
-
-enum class EmpireOverviewTabState { Normal, Disabled, Hidden }
-private typealias StateTesterType = (Civilization) -> EmpireOverviewTabState
-private fun Boolean.toState(): EmpireOverviewTabState = if (this) EmpireOverviewTabState.Disabled else EmpireOverviewTabState.Normal
 
 /** This controls which Tabs for the [EmpireOverviewScreen] exist and their order.
  *
@@ -21,54 +15,70 @@ private fun Boolean.toState(): EmpireOverviewTabState = if (this) EmpireOverview
 enum class EmpireOverviewCategories(
     val iconName: String,
     val shortcutKey: KeyCharAndCode,
-    val scrollAlign: Int,
-    val factory: FactoryType,
-    val stateTester: StateTesterType
+    val scrollAlign: Int
 ) {
-    Cities("OtherIcons/Cities", 'C', Align.topLeft,
-        fun (viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?)
-                = CityOverviewTab(viewingPlayer, overviewScreen, persistedData),
-        fun (viewingPlayer: Civilization) = viewingPlayer.cities.isEmpty().toState()),
-    Stats("StatIcons/Gold", 'S', Align.top,
-        fun (viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, _: EmpireOverviewTabPersistableData?)
-                = StatsOverviewTab(viewingPlayer, overviewScreen),
-        fun (_: Civilization) = EmpireOverviewTabState.Normal),
-    Trades("StatIcons/Acquire", 'T', Align.top,
-        fun (viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, _: EmpireOverviewTabPersistableData?)
-                = TradesOverviewTab(viewingPlayer, overviewScreen),
-        fun (viewingPlayer: Civilization) =
-                (viewingPlayer.diplomacy.values.all { it.trades.isEmpty()} && !viewingPlayer.diplomacy.values.any{it.otherCiv().tradeRequests.any { it.requestingCiv == viewingPlayer.civName }}).toState()),
-    Units("OtherIcons/Shield", 'U', Align.topLeft,
-        fun (viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?)
-                = UnitOverviewTab(viewingPlayer, overviewScreen, persistedData),
-        fun (viewingPlayer: Civilization) = viewingPlayer.units.getCivUnits().none().toState()),
-    Politics("OtherIcons/Politics", 'P', Align.top,
-        fun (viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?)
-                = GlobalPoliticsOverviewTable(viewingPlayer, overviewScreen, persistedData),
-        fun (_: Civilization) = EmpireOverviewTabState.Normal),
-    Resources("StatIcons/Happiness", 'R', Align.topLeft,
-        fun (viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?)
-                = ResourcesOverviewTab(viewingPlayer, overviewScreen, persistedData),
-        fun (viewingPlayer: Civilization) = (!viewingPlayer.detailedCivResources.any { it.resource.resourceType != ResourceType.Bonus }).toState()),
-    Religion("StatIcons/Faith", 'F', Align.top,
-        fun (viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?)
-                = ReligionOverviewTab(viewingPlayer, overviewScreen, persistedData),
-        fun (viewingPlayer: Civilization) = when {
+    Cities("OtherIcons/Cities", 'C', Align.topLeft) {
+        override fun createTab(viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?) =
+                CityOverviewTab(viewingPlayer, overviewScreen, persistedData)
+        override fun showDisabled(viewingPlayer: Civilization) = viewingPlayer.cities.isEmpty()
+    },
+    Stats("StatIcons/Gold", 'S', Align.top) {
+        override fun createTab(viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?) =
+                StatsOverviewTab(viewingPlayer, overviewScreen)
+        override fun showDisabled(viewingPlayer: Civilization) = viewingPlayer.isSpectator()
+    },
+    Trades("StatIcons/Acquire", 'T', Align.top) {
+        override fun createTab(viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?) =
+                TradesOverviewTab(viewingPlayer, overviewScreen)
+        override fun showDisabled(viewingPlayer: Civilization) =
+                viewingPlayer.diplomacy.values.all { it.trades.isEmpty() } &&
+                viewingPlayer.diplomacy.values.none { diplomacyManager ->
+                        diplomacyManager.otherCiv().tradeRequests.any { it.requestingCiv == viewingPlayer.civName }
+                    }
+    },
+    Units("OtherIcons/Shield", 'U', Align.topLeft) {
+        override fun createTab(viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?) =
+                UnitOverviewTab(viewingPlayer, overviewScreen, persistedData)
+        override fun showDisabled(viewingPlayer: Civilization) = viewingPlayer.units.getCivUnits().none()
+    },
+    Politics("OtherIcons/Politics", 'P', Align.top) {
+        override fun createTab(viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?) =
+                GlobalPoliticsOverviewTable(viewingPlayer, overviewScreen, persistedData)
+    },
+    Resources("StatIcons/Happiness", 'R', Align.topLeft) {
+        override fun createTab(viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?) =
+                ResourcesOverviewTab(viewingPlayer, overviewScreen, persistedData)
+        override fun showDisabled(viewingPlayer: Civilization) = viewingPlayer.detailedCivResources.none { it.resource.resourceType != ResourceType.Bonus }
+    },
+    Religion("StatIcons/Faith", 'F', Align.top) {
+        override fun createTab(viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?) =
+                ReligionOverviewTab(viewingPlayer, overviewScreen, persistedData)
+        override fun testState(viewingPlayer: Civilization) = when {
             !viewingPlayer.gameInfo.isReligionEnabled() -> EmpireOverviewTabState.Hidden
             viewingPlayer.gameInfo.religions.isEmpty() -> EmpireOverviewTabState.Disabled
             else -> EmpireOverviewTabState.Normal
-        }),
-    Wonders("OtherIcons/Wonders", 'W', Align.top,
-        fun (viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, _: EmpireOverviewTabPersistableData?)
-                = WonderOverviewTab(viewingPlayer, overviewScreen),
-        fun (viewingPlayer: Civilization) = (viewingPlayer.naturalWonders.isEmpty() && viewingPlayer.cities.isEmpty()).toState()),
-    Notifications("OtherIcons/Notifications", 'N', Align.top,
-        fun (viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?)
-                = NotificationsOverviewTable(viewingPlayer, overviewScreen, persistedData),
-        fun (_: Civilization) = EmpireOverviewTabState.Normal)
+        }
+    },
+    Wonders("OtherIcons/Wonders", 'W', Align.top) {
+        override fun createTab(viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?) =
+                WonderOverviewTab(viewingPlayer, overviewScreen)
+        override fun showDisabled(viewingPlayer: Civilization) = (viewingPlayer.naturalWonders.isEmpty() && viewingPlayer.cities.isEmpty())
+    },
+    Notifications("OtherIcons/Notifications", 'N', Align.top) {
+        override fun createTab(viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?) =
+                NotificationsOverviewTable(viewingPlayer, overviewScreen, persistedData)
+    }
 
-    ; //must be here
+    ;
 
-    constructor(iconName: String, shortcutChar: Char, scrollAlign: Int, factory: FactoryType, stateTester: StateTesterType = { _ -> EmpireOverviewTabState.Normal })
-        : this(iconName, KeyCharAndCode(shortcutChar), scrollAlign, factory, stateTester)
+    constructor(iconName: String, shortcutChar: Char, scrollAlign: Int)
+        : this(iconName, KeyCharAndCode(shortcutChar), scrollAlign)
+
+    enum class EmpireOverviewTabState { Normal, Disabled, Hidden }
+
+    abstract fun createTab(viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?): EmpireOverviewTab
+    open fun showDisabled(viewingPlayer: Civilization) = false
+    open fun testState(viewingPlayer: Civilization) =
+            if (showDisabled(viewingPlayer)) EmpireOverviewTabState.Disabled
+            else EmpireOverviewTabState.Normal
 }

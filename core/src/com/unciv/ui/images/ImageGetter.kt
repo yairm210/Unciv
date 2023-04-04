@@ -448,8 +448,16 @@ object ImageGetter {
 
     fun getAvailableSkins() = ninePatchDrawables.keys.asSequence().map { it.split("/")[1] }.distinct()
 
-    fun getAvailableTilesets() = textureRegionDrawables.keys.asSequence().filter { it.startsWith("TileSets") && !it.contains("/Units/") }
-            .map { it.split("/")[1] }.distinct()
+    /** Determines available TileSets from the currently loaded Texture paths.
+     *
+     *  Note [TileSetCache] will not necessarily load all of them, e.g. if a Mod fails
+     *  to provide a config json for a graphic with a Tileset path.
+     *
+     *  Intersect with [TileSetCache.getAvailableTilesets] for a more reliable answer
+     */
+    fun getAvailableTilesets() = textureRegionDrawables.keys.asSequence()
+        .filter { it.startsWith("TileSets") && !it.contains("/Units/") }
+        .map { it.split("/")[1] }.distinct()
 
     fun getAvailableUnitsets() = textureRegionDrawables.keys.asSequence().filter { it.contains("/Units/") }
         .map { it.split("/")[1] }.distinct()

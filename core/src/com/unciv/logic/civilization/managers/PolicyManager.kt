@@ -229,10 +229,6 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     private fun triggerGlobalAlerts(
         policy: Policy, extraNotificationText: String = ""
     ) {
-        var extraNotificationTextCopy = extraNotificationText
-        if (extraNotificationText != "") {
-            extraNotificationTextCopy = " ${extraNotificationText}"
-        }
         for (civ in civInfo.gameInfo.civilizations.filter { it.isMajorCiv() }) {
             if (civ == civInfo) continue
             val defaultNotificationText = if (civ.getKnownCivs().contains(civInfo)) {
@@ -241,7 +237,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
                 "An unknown civilization has adopted the [${policy.name}] policy"
             }
             civ.addNotification(
-                "{${defaultNotificationText}}{${extraNotificationTextCopy}}",
+                "{${defaultNotificationText}} {${extraNotificationText}}",
                 NotificationCategory.General,
                 NotificationIcon.Culture
             )

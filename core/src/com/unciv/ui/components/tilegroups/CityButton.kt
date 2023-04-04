@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.city.INonPerpetualConstruction
@@ -33,6 +32,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.cityscreen.CityReligionInfoTable
 import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
+import com.unciv.utils.DebugUtils
 import kotlin.math.max
 import kotlin.math.min
 
@@ -228,7 +228,7 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
         pad(0f)
         defaults().pad(0f)
 
-        val isShowDetailedInfo = UncivGame.Current.viewEntireMapForDebug
+        val isShowDetailedInfo = DebugUtils.VISIBLE_MAP
                 || city.civ == viewingCiv
                 || viewingCiv.isSpectator()
 
@@ -532,7 +532,7 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
             if (isButtonMoved) {
                 // second tap on the button will go to the city screen
                 // if this city belongs to you and you are not iterating though the air units
-                if (GUI.isDebugMapVisible() || viewingPlayer.isSpectator()
+                if (DebugUtils.VISIBLE_MAP || viewingPlayer.isSpectator()
                     || (belongsToViewingCiv() && !tileGroup.tile.airUnits.contains(unitTable.selectedUnit))) {
                         GUI.pushScreen(CityScreen(city))
                 } else if (viewingPlayer.knows(city.civ)) {
@@ -594,7 +594,9 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
             add(CityReligionInfoTable(city.religion, true)).colspan(3).row()
             addOKButton("Diplomacy") { openDiplomacy() }
             add().expandX()
-            addCloseButton()
+            addCloseButton() {
+                GUI.getWorldScreen().run { nextTurnButton.update(this@run) }
+            }
         }
         popup.open()
     }

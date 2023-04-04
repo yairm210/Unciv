@@ -3,7 +3,6 @@
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
@@ -22,6 +21,7 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.utils.DebugUtils
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.random.Random
@@ -97,6 +97,10 @@ open class Tile : IsPartOfGameInfoSerialization {
         private set
 
     @Transient
+    lateinit var lastTerrain: Terrain
+        private set
+
+    @Transient
     var terrainUniqueMap = UniqueMap()
         private set
 
@@ -129,6 +133,8 @@ open class Tile : IsPartOfGameInfoSerialization {
     var hasBottomRightRiver = false
     var hasBottomRiver = false
     var hasBottomLeftRiver = false
+
+    var history: TileHistory = TileHistory()
 
     private var continent = -1
 
@@ -169,6 +175,7 @@ open class Tile : IsPartOfGameInfoSerialization {
         toReturn.hasBottomRiver = hasBottomRiver
         toReturn.continent = continent
         toReturn.exploredBy.addAll(exploredBy)
+        toReturn.history = history.clone()
         return toReturn
     }
 
@@ -176,15 +183,6 @@ open class Tile : IsPartOfGameInfoSerialization {
 
     fun containsGreatImprovement(): Boolean {
         return getTileImprovement()?.isGreatImprovement() == true
-    }
-
-    fun containsUnpillagedGreatImprovement(): Boolean {
-        return getUnpillagedTileImprovement()?.isGreatImprovement() == true
-    }
-
-    fun containsUnfinishedGreatImprovement(): Boolean {
-        if (improvementInProgress == null) return false
-        return ruleset.tileImprovements[improvementInProgress!!]!!.isGreatImprovement()
     }
 
     /** Returns military, civilian and air units in tile */
@@ -211,13 +209,6 @@ open class Tile : IsPartOfGameInfoSerialization {
 
     fun getCity(): City? = owningCity
 
-    fun getLastTerrain(): Terrain = when {
-        terrainFeatures.isNotEmpty() -> ruleset.terrains[terrainFeatures.last()]
-                ?: getBaseTerrain()  // defense against rare edge cases involving baseTerrain Hill deprecation
-        naturalWonder != null -> getNaturalWonder()
-        else -> getBaseTerrain()
-    }
-
     @Transient
     private var tileResourceCache: TileResource? = null
     val tileResource: TileResource
@@ -235,21 +226,19 @@ open class Tile : IsPartOfGameInfoSerialization {
             else ruleset.terrains[naturalWonder!!]!!
 
     fun isVisible(player: Civilization): Boolean {
-        if (UncivGame.Current.viewEntireMapForDebug)
+        if (DebugUtils.VISIBLE_MAP)
             return true
         return player.viewableTiles.contains(this)
     }
 
     fun isExplored(player: Civilization): Boolean {
-        if (UncivGame.Current.viewEntireMapForDebug || player.isSpectator())
+        if (DebugUtils.VISIBLE_MAP || player.isSpectator())
             return true
         return exploredBy.contains(player.civName)
     }
 
     fun setExplored(player: Civilization, isExplored: Boolean, explorerPosition: Vector2? = null) {
         if (isExplored) {
-            player.exploredTiles.add(position)
-
             // Disable the undo button if a new tile has been explored
             if (exploredBy.add(player.civName) && GUI.isWorldLoaded()) {
                 val worldScreen = GUI.getWorldScreen()
@@ -260,13 +249,12 @@ open class Tile : IsPartOfGameInfoSerialization {
                 player.exploredRegion.checkTilePosition(position, explorerPosition)
         } else {
             exploredBy.remove(player.civName)
-            player.exploredTiles.remove(position)
         }
     }
 
     fun isCityCenter(): Boolean = isCityCenterInternal
     fun isNaturalWonder(): Boolean = naturalWonder != null
-    fun isImpassible() = getLastTerrain().impassable
+    fun isImpassible() = lastTerrain.impassable
 
     fun getTileImprovement(): TileImprovement? = if (improvement == null) null else ruleset.tileImprovements[improvement!!]
     fun getUnpillagedTileImprovement(): TileImprovement? = if (getUnpillagedImprovement() == null) null else ruleset.tileImprovements[improvement!!]
@@ -498,6 +486,20 @@ open class Tile : IsPartOfGameInfoSerialization {
         return fertility
     }
 
+    fun providesResources(civInfo: Civilization): Boolean {
+        if (!hasViewableResource(civInfo)) return false
+        if (isCityCenter()) return true
+        val improvement = getUnpillagedTileImprovement()
+        if (improvement != null && improvement.name in tileResource.getImprovements()
+                && (improvement.techRequired==null || civInfo.tech.isResearched(improvement.techRequired!!))) return true
+        // TODO: Generic-ify to unique
+        if (tileResource.resourceType==ResourceType.Strategic
+                && improvement!=null
+                && improvement.isGreatImprovement())
+            return true
+        return false
+    }
+
     // This should be the only adjacency function
     fun isAdjacentTo(terrainFilter:String): Boolean {
         // Rivers are odd, as they aren't technically part of any specific tile but still count towards adjacency
@@ -627,7 +629,7 @@ open class Tile : IsPartOfGameInfoSerialization {
 
     /** Shows important properties of this tile for debugging _only_, it helps to see what you're doing */
     override fun toString(): String {
-        val lineList = arrayListOf("TileInfo @$position")
+        val lineList = arrayListOf("Tile @$position")
         if (!this::baseTerrain.isInitialized) return lineList[0] + ", uninitialized"
         if (isCityCenter()) lineList += getCity()!!.name
         lineList += baseTerrain
@@ -821,6 +823,13 @@ open class Tile : IsPartOfGameInfoSerialization {
         val newUniqueMap = UniqueMap()
         for (terrain in allTerrains)
             newUniqueMap.addUniques(terrain.uniqueObjects)
+
+        lastTerrain = when {
+            terrainFeatures.isNotEmpty() -> ruleset.terrains[terrainFeatures.last()]
+                ?: getBaseTerrain()  // defense against rare edge cases involving baseTerrain Hill deprecation
+            naturalWonder != null -> getNaturalWonder()
+            else -> getBaseTerrain()
+        }
         terrainUniqueMap = newUniqueMap
     }
 
@@ -878,11 +887,10 @@ open class Tile : IsPartOfGameInfoSerialization {
                 removeRoad()
         } else {
             // otherwise use pillage/repair systems
-            if (canPillageTileImprovement()) {
+            if (canPillageTileImprovement())
                 improvementIsPillaged = true
-            } else {
+            else
                 roadIsPillaged = true
-            }
         }
     }
 

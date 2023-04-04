@@ -9,13 +9,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.city.CityFlags
 import com.unciv.logic.city.City
+import com.unciv.logic.city.CityFlags
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.cityscreen.CityScreen
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
@@ -24,6 +22,8 @@ import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.cityscreen.CityScreen
 import kotlin.math.roundToInt
 
 class CityOverviewTab(
@@ -48,7 +48,8 @@ class CityOverviewTab(
         private const val CITY = "City"
         private const val WLTK = "WLTK"
         private const val CONSTRUCTION = "Construction"
-        private val alphabeticColumns = listOf(CITY, CONSTRUCTION, WLTK)
+        private const val GARRISON = "Garrison"
+        private val alphabeticColumns = listOf(CITY, CONSTRUCTION, WLTK, GARRISON)
 
         private val citySortIcon = ImageGetter.getUnitIcon("Settler")
             .surroundWithCircle(iconSize)
@@ -61,6 +62,10 @@ class CityOverviewTab(
             .apply { color = Color.BLACK }
             .surroundWithCircle(iconSize, color = Color.LIGHT_GRAY)
             .apply { addTooltip("Current construction", 18f, tipAlign = Align.center) }
+        private val garrisonSortIcon = ImageGetter.getImage("OtherIcons/Shield")
+            .apply { color = Color.BLACK }
+            .surroundWithCircle(iconSize, color = Color.LIGHT_GRAY)
+            .apply { addTooltip("Garrisoned by unit", 18f, tipAlign = Align.center) }
 
         // Readability helpers
         private fun String.isStat() = Stat.isStat(this)
@@ -103,7 +108,7 @@ class CityOverviewTab(
         add(cityInfoTableTotal)
     }
 
-    fun toggleSort(sortBy: String) {
+    private fun toggleSort(sortBy: String) {
         if (sortBy == persistableData.sortedBy) {
             persistableData.descending = !persistableData.descending
         } else {
@@ -112,7 +117,7 @@ class CityOverviewTab(
         }
     }
 
-    fun getComparator() = Comparator { city2: City, city1: City ->
+    private fun getComparator() = Comparator { city2: City, city1: City ->
         when(persistableData.sortedBy) {
             CITY -> collator.compare(city2.name.tr(), city1.name.tr())
             CONSTRUCTION -> collator.compare(
@@ -120,6 +125,10 @@ class CityOverviewTab(
                 city1.cityConstructions.currentConstructionFromQueue.tr())
             "Population" -> city2.population.population - city1.population.population
             WLTK -> city2.isWeLoveTheKingDayActive().compareTo(city1.isWeLoveTheKingDayActive())
+            GARRISON -> collator.compare(
+                    city2.getGarrison()?.name?.tr() ?: "",
+                    city1.getGarrison()?.name?.tr() ?: "",
+                )
             else -> {
                 val stat = Stat.safeValueOf(persistableData.sortedBy)!!
                 city2.getStat(stat) - city1.getStat(stat)
@@ -172,6 +181,7 @@ class CityOverviewTab(
             addSortIcon(name)
         }
         addSortIcon(WLTK, wltkSortIcon)
+        addSortIcon(GARRISON, garrisonSortIcon)
         cityInfoTableHeader.pack()
     }
 
@@ -221,11 +231,23 @@ class CityOverviewTab(
                 city.demandedResource.isNotEmpty() -> {
                     val image = ImageGetter.getResourcePortrait(city.demandedResource, iconSize *0.7f)
                     image.addTooltip("Demanding [${city.demandedResource}]", 18f, tipAlign = Align.topLeft)
-                    cityInfoTableDetails.add(image).padLeft(iconSize *0.3f)
+                    cityInfoTableDetails.add(image)
                 }
                 else -> cityInfoTableDetails.add()
             }
 
+            val garrisonUnit = city.getGarrison()
+            if (garrisonUnit == null) {
+                cityInfoTableDetails.add()
+            } else {
+                val garrisonUnitName = garrisonUnit.displayName()
+                val garrisonUnitIcon = ImageGetter.getConstructionPortrait(garrisonUnit.baseUnit.getIconName(), iconSize * 0.7f)
+                garrisonUnitIcon.addTooltip(garrisonUnitName, 18f, tipAlign = Align.topLeft)
+                garrisonUnitIcon.onClick {
+                    overviewScreen.select(EmpireOverviewCategories.Units, UnitOverviewTab.getUnitIdentifier(garrisonUnit) )
+                }
+                cityInfoTableDetails.add(garrisonUnitIcon)
+            }
             cityInfoTableDetails.row()
         }
 
@@ -248,6 +270,7 @@ class CityOverviewTab(
             else cityInfoTableTotal.add(viewingPlayer.cities.sumOf { it.getStat(stat) }.toCenteredLabel())
         }
         cityInfoTableTotal.add(viewingPlayer.cities.count { it.isWeLoveTheKingDayActive() }.toCenteredLabel())
+        cityInfoTableTotal.add(viewingPlayer.cities.count { it.isGarrisoned() }.toCenteredLabel())
         cityInfoTableTotal.pack()
     }
 }

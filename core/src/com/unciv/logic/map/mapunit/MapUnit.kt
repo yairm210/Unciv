@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.unit.UnitAutomation
-import com.unciv.logic.automation.unit.WorkerAutomation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
@@ -43,7 +42,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     lateinit var currentTile: Tile
 
     @Transient
-    val movement = UnitMovementAlgorithms(this)
+    val movement = UnitMovement(this)
 
     @Transient
     val upgrade = UnitUpgradeManager(this)
@@ -110,8 +109,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
     var isTransported: Boolean = false
     var turnsFortified = 0
 
+    // Old, to be deprecated
+    @Deprecated("As of 4.5.3")
     var abilityUsesLeft: HashMap<String, Int> = hashMapOf()
+    @Deprecated("As of 4.5.3")
     var maxAbilityUses: HashMap<String, Int> = hashMapOf()
+
+    // New - track only *how many have been used*, derive max from uniques, left = max - used
+    var abilityToTimesUsed: HashMap<String, Int> = hashMapOf()
 
     var religion: String? = null
     var religiousStrengthLost = 0
@@ -174,6 +179,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         toReturn.isTransported = isTransported
         toReturn.abilityUsesLeft.putAll(abilityUsesLeft)
         toReturn.maxAbilityUses.putAll(maxAbilityUses)
+        toReturn.abilityToTimesUsed.putAll(abilityToTimesUsed)
         toReturn.religion = religion
         toReturn.religiousStrengthLost = religiousStrengthLost
         toReturn.movementMemories = movementMemories.copy()
@@ -183,7 +189,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     val type: UnitType
-        get() = baseUnit.getType()
+        get() = baseUnit.type
 
     fun baseUnit(): BaseUnit = baseUnit
     fun getMovementString(): String =
@@ -301,7 +307,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
 
         // Set equality automatically determines if anything changed - https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-abstract-set/equals.html
-        if (updateCivViewableTiles && oldViewableTiles != viewableTiles)
+        if (updateCivViewableTiles && oldViewableTiles != viewableTiles
+                // Don't bother updating if all previous and current viewable tiles are within our borders
+                && (oldViewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles }
+                        || viewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles }))
             civ.cache.updateViewableTiles(explorerPosition)
     }
 
@@ -408,6 +417,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return getMatchingUniques(UniqueType.HealAdjacentUnits).sumOf { it.params[0].toInt() }
     }
 
+    fun getHealAmountForCurrentTile() = when {
+        isEmbarked() -> 0 // embarked units can't heal
+        health >= 100 -> 0 // No need to heal if at max health
+        hasUnique(UniqueType.HealOnlyByPillaging, checkCivInfoUniques = true) -> 0
+        else -> rankTileForHealing(getTile())
+    }
+    fun canHealInCurrentTile() = getHealAmountForCurrentTile() > 0
+
     // Only military land units can truly "garrison"
     fun canGarrison() = isMilitary() && baseUnit.isLandUnit()
 
@@ -471,7 +488,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             return
         }
 
-        if (isAutomated()) WorkerAutomation.automateWorkerAction(this)
+        if (isAutomated()) UnitAutomation.automateUnitMoves(this)
 
         if (isExploring()) UnitAutomation.automatedExplore(this)
     }
@@ -560,11 +577,11 @@ class MapUnit : IsPartOfGameInfoSerialization {
         for (unique in civ.getMatchingUniques(UniqueType.ProvidesGoldWheneverGreatPersonExpended)) {
             gainedStats.gold += (100 * civ.gameInfo.speed.goldCostModifier).toInt()
         }
+        val speedModifiers = civ.gameInfo.speed.statCostModifiers
         for (unique in civ.getMatchingUniques(UniqueType.ProvidesStatsWheneverGreatPersonExpended)) {
-            val uniqueStats = unique.stats
-            val speedModifiers = civ.gameInfo.speed.statCostModifiers
-            for (stat in uniqueStats) {
-                uniqueStats[stat.key] = stat.value * speedModifiers[stat.key]!!
+            val uniqueStats = unique.stats.clone()
+            for ((stat, value) in uniqueStats) {
+                uniqueStats[stat] = value * speedModifiers[stat]!!
             }
             gainedStats.add(uniqueStats)
         }
@@ -815,12 +832,12 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return civ.gameInfo.religions[religion]!!.getReligionDisplayName()
     }
 
-    fun religiousActionsUnitCanDo(): Sequence<String> {
+    fun limitedActionsUnitCanDo(): Sequence<String> {
         return getMatchingUniques(UniqueType.CanActionSeveralTimes)
             .map { it.params[0] }
     }
 
-    fun canDoReligiousAction(action: String): Boolean {
+    fun canDoLimitedAction(action: String): Boolean {
         return getMatchingUniques(UniqueType.CanActionSeveralTimes).any { it.params[0] == action }
     }
 
@@ -833,7 +850,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun setupAbilityUses(buildCity: City? = null) {
-        for (action in religiousActionsUnitCanDo()) {
+        for (action in limitedActionsUnitCanDo()) {
             val baseAmount = getBaseMaxActionUses(action)
             val additional =
                 if (buildCity == null) 0

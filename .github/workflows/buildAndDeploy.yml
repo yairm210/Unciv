@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Build and deploy
+name: Deploy
 
 # Controls when the action will run.
 on:
@@ -8,27 +8,43 @@ on:
   push:
     tags:
       - '*' # This doesn't mean that it HAS to have a tag, only that the workflow triggers when we push a tag
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # On push events only, if it's a "Update X" commit, it's probably something done through the UI -
-    #  so an .md or yaml change, and not something we need to rebuild over
-    # We can't simply put !startsWith - see https://github.community/t/expression-syntax-for-not-startswith/17040
-    if: github.event_name != 'push' || startsWith(github.event.commits[0].message, 'Update ') != true
+  get-release-body:
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    outputs:
+      release_body: ${{ steps.read_release.outputs.release_body }}
+
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+
+      - name: Read release.md and use it as a body of new release. This will fail for patch releases, since they have no readme.
+        continue-on-error: true
+        id: read_release
+        shell: bash
+        run: |
+          ## To test this in Windows PS:  cat .\changelog.md | wsl grep -Pzo --color '\\#{2}.3.15.7[^\\#]*?\\#{2}' | wsl head -n -2
+          r=$(grep -Pzo '\#{2}.${{ github.ref_name }}[^\#]*\#' changelog.md)  # grep to get only our release
+          r=$(echo "$r" | head -n -2 | tail -n +3)
+
+          ## See https://trstringer.com/github-actions-multiline-strings/
+
+          echo "--- Set variable manually in github env ---"
+
+          echo "release_body<<EOF" >> $GITHUB_OUTPUT
+          echo "$r" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+
+  build-jar:
+    runs-on: ubuntu-latest
+    needs: get-release-body
+    steps:
+      - uses: actions/checkout@v3
 
       - uses: actions/setup-java@v3
         with:
@@ -36,7 +52,7 @@ jobs:
           java-version: '11'
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2.3.3
+        uses: gradle/gradle-build-action@v2.4.0
 
       - name: Compile kotlin and build classes
         run: ./gradlew classes
@@ -47,49 +63,66 @@ jobs:
       - name: Run unit tests
         run: ./gradlew --no-build-cache cleanTest test tests:test
 
-
-# RELEASE
-
-      - name: Get release tag # We can then get the tag using ${{steps.tag.outputs.tag}} as below
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-        id: tag
-        uses: dawidd6/action-get-tag@v1
-
-
-      - name: Read release.md and use it as a body of new release. This will fail for patch releases, since they have no readme.
+      - name: build UncivServer.jar
         continue-on-error: true
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-        id: read_release
-        shell: bash
         run: |
-          ## To test this in Windows PS:  cat .\changelog.md | wsl grep -Pzo --color '\\#{2}.3.15.7[^\\#]*?\\#{2}' | wsl head -n -2
-          r=$(grep -Pzo '\#{2}.${{steps.tag.outputs.tag}}[^\#]*\#' changelog.md)  # grep to get only our release
-          r=$(echo "$r" | head -n -2 | tail -n +3)
+          ./gradlew desktop:dist
+          ./gradlew desktop:zipLinuxFilesForJar
 
-          ## See https://trstringer.com/github-actions-multiline-strings/
+      - name: Upload JAR
+        continue-on-error: true
+        uses: actions/upload-artifact@v3
+        with:
+          name: UncivJar
+          path: |
+            desktop/build/libs/Unciv.jar
 
-          echo "--- Set variable manually in github env ---"
+      - name: Upload linux files
+        continue-on-error: true
+        uses: actions/upload-artifact@v3
+        with:
+          name: UncivLinuxFiles
+          path: |
+            deploy/linuxFilesForJar.zip
 
-          echo "RELEASE_BODY<<EOF" >> $GITHUB_ENV
-          echo "$r" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+      - name: build UncivServer.jar
+        continue-on-error: true
+        run: |
+          ./gradlew server:dist
+
+      - name: Upload Server
+        continue-on-error: true
+        uses: actions/upload-artifact@v3
+        with:
+          name: UncivServer
+          path: server/build/libs/UncivServer.jar
 
 
-## ANDROID
+  android-build:
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    needs: get-release-body
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2.3.3
 
       - name: Prepare .aab (for Google Play) and .apk (for Github) files
-        continue-on-error: true
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         shell: bash
         run: |
           mkdir whatsNewDirectory
-          echo "${{ env.RELEASE_BODY }}" > whatsNewDirectory/whatsnew-en-US
+          echo "${{needs.get-release-body.outputs.release_body}}" > whatsNewDirectory/whatsnew-en-US
           ./gradlew :android:bundleRelease
           ./gradlew :android:assembleRelease
 
       - name: Sign AAB for Google Play upload
         uses: r0adkll/sign-android-release@v1
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         with:
           releaseDirectory: android/build/outputs/bundle/release
           signingKeyBase64: ${{ secrets.BUNDLE_SIGNING_KEY_BASE64 }}
@@ -98,9 +131,8 @@ jobs:
           keyPassword: ${{ secrets.BUNDLE_SIGNING_KEY_PASSWORD }}
 
       - name: Upload AAB to google play
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-        continue-on-error: true
         uses: r0adkll/upload-google-play@v1.0.15
+        continue-on-error: true
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON  }}
           packageName: com.unciv.app
@@ -112,8 +144,6 @@ jobs:
 
       - name: Sign APK for Github upload
         uses: r0adkll/sign-android-release@v1
-        continue-on-error: true
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         with:
           releaseDirectory: android/build/outputs/apk/release
           signingKeyBase64: ${{ secrets.BUNDLE_SIGNING_KEY_BASE64 }}
@@ -123,19 +153,72 @@ jobs:
 
 
       - name: Move APK to deploy folder
-        continue-on-error: true
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         shell: bash
         run: |
-          mkdir deploy
-          ls android/build/outputs/apk/release
-          mv android/build/outputs/apk/release/Unciv-release-unsigned-signed.apk deploy/Unciv-signed.apk
+          mv android/build/outputs/apk/release/Unciv-release-unsigned-signed.apk Unciv-signed.apk
 
-## DESKTOP
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: UncivAPK
+          path: Unciv-signed.apk
+
+
+  packr-build:
+    runs-on: ubuntu-latest
+    needs: build-jar
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2.3.3
+
+      - name: Download JAR
+        uses: actions/download-artifact@v3
+        # See 'Upload JAR' step in 'build' job
+        with:
+          name: UncivJar
+
+      - name: Display structure of downloaded files
+        run: ls -R
+
+      - name: Packr build
+        run: |
+          mkdir -p desktop/build/libs
+          mv Unciv.jar desktop/build/libs
+
+          wget -q -O packr-all-4.0.0.jar https://github.com/libgdx/packr/releases/download/4.0.0/packr-all-4.0.0.jar
+          wget -q -O jre-linux-64.tar.gz https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.11%2B9/OpenJDK11U-jre_x64_linux_hotspot_11.0.11_9.tar.gz
+          ./gradlew desktop:packrLinux64
+
+          wget -q -O jdk-windows-64.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip
+          ./gradlew desktop:packrWindows64
+
+      - name: Upload packed zips
+        uses: actions/upload-artifact@v3
+        with:
+          name: UncivDeploymentZips
+          path: |
+            deploy/Unciv-Windows64.zip
+            deploy/Unciv-Linux64.zip
+
+  upload-to-itch:
+    runs-on: ubuntu-latest
+    needs: [packr-build]
+    continue-on-error: true
+    steps:
+
+      - name: Download packed zips
+        uses: actions/download-artifact@v3
+        with:
+          name: UncivDeploymentZips
 
       - name: Upload to itch.io
-        continue-on-error: true
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         env:
           BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
         run: |
@@ -143,34 +226,28 @@ jobs:
           unzip butler.zip
           chmod +x butler
 
-          wget -q -O packr-all-4.0.0.jar https://github.com/libgdx/packr/releases/download/4.0.0/packr-all-4.0.0.jar
-          wget -q -O jre-linux-64.tar.gz https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.11%2B9/OpenJDK11U-jre_x64_linux_hotspot_11.0.11_9.tar.gz
-          ./gradlew desktop:packrLinux64
-          ./butler push deploy/Unciv-Linux64.zip yairm210/unciv:Linux64     --userversion ${{steps.tag.outputs.tag}}
-          ./gradlew desktop:zipLinuxFilesForJar
+          ./butler push Unciv-Linux64.zip yairm210/unciv:Linux64     --userversion ${{ github.ref_name }}
+          ./butler push Unciv-Windows64.zip yairm210/unciv:Windows64 --userversion ${{ github.ref_name }}
 
-          #  MacOS bundles correctly but does not run as intended, see https://github.com/yairm210/Unciv/issues/4970
-          #  Disabled until this can be checked by sommeone who actually has a Mac computer
-          #  wget -q -O jre-macOS.tar.gz https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.11%2B9/OpenJDK11U-jre_x64_mac_hotspot_11.0.11_9.tar.gz
-          #  ./gradlew desktop:packrMacOS
-          #  ./butler push deploy/Unciv-MacOS.zip yairm210/unciv:MacOS --userversion ${{steps.tag.outputs.tag}}
+  upload-to-steam:
+    runs-on: ubuntu-latest
+    needs: [packr-build]
+    continue-on-error: true
+    steps:
 
-          wget -q -O jdk-windows-64.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip
-          ./gradlew desktop:packrWindows64
-          ./butler push deploy/Unciv-Windows64.zip yairm210/unciv:Windows64 --userversion ${{steps.tag.outputs.tag}}
+      - name: Download packed zips
+        uses: actions/download-artifact@v3
+        with:
+          name: UncivDeploymentZips
 
-          mv desktop/build/libs/Unciv.jar deploy/Unciv.jar
-
-
-          # Unzip zips for steam deployment
+      - name: Unzip zips for steam deployment
+        shell: bash
+        run: |
           mkdir steam
-          unzip deploy/Unciv-Windows64.zip -d steam/Unciv-Windows64
-          unzip deploy/Unciv-Linux64.zip -d steam/Unciv-Linux64
-
+          unzip Unciv-Windows64.zip -d steam/Unciv-Windows64
+          unzip Unciv-Linux64.zip -d steam/Unciv-Linux64
 
       - name: Steam deploy
-        continue-on-error: true
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         uses: game-ci/steam-deploy@v1
         with:
           username: ${{ secrets.STEAM_USERNAME }}
@@ -179,51 +256,80 @@ jobs:
           ssfnFileName: ${{ secrets.STEAM_SSFN_FILE_NAME }}
           ssfnFileContents: ${{ secrets.STEAM_SSFN_FILE_CONTENTS }}
           appId: 2118950
-          buildDescription: ${{steps.tag.outputs.tag}}
+          buildDescription: ${{ github.ref_name }}
           rootPath: steam
           depot1Path: Unciv-Windows64
           depot2Path: Unciv-Linux64
           releaseBranch: release
 
-## Server
+  upload-github-release-and-post-to-discord:
+    needs: [get-release-body, android-build, packr-build]
+    runs-on: ubuntu-latest
+    steps:
 
-      - name: Build UncivServer.jar
-        continue-on-error: true
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+      - name: Download all artifacts
+        uses: actions/download-artifact@v3
+
+      - name: consolidate deploy folder
         run: |
-          ./gradlew server:dist
-          mv server/build/libs/UncivServer.jar deploy/UncivServer.jar
+          mkdir deploy
+          mv UncivJar/Unciv.jar deploy
+          mv UncivLinuxFiles/linuxFilesForJar.zip deploy
+          mv UncivDeploymentZips/Unciv-Windows64.zip deploy
+          mv UncivDeploymentZips/Unciv-Linux64.zip deploy
+          mv UncivAPK/Unciv-signed.apk deploy
+          mv UncivServer/UncivServer.jar deploy
 
-## Finalize
+      - name: Check if this is a real release or a test version, for Github release
+        id: check-version-tag
+        run: |
+          if [[ ${{ github.ref_name }} =~ [0-9]\.[0-9]+\.[0-9]+ ]]; then
+            echo "real_release=true" >> $GITHUB_OUTPUT
+          fi
 
       - name: Upload binaries to Github release
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         continue-on-error: true
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: deploy/*
           tag: ${{ github.ref }}
+          prerelease: ${{ steps.check-version-tag.outputs.real_release != 'true' }}
           overwrite: true
           file_glob: true
-            # <--- Use environment variables that was created earlier - see https://github.com/svenstaro/upload-release-action
-            # Single-quotes do not solve the multiline problem.
+          # <--- Use environment variables that was created earlier - see https://github.com/svenstaro/upload-release-action
+          # Single-quotes do not solve the multiline problem.
           body: |
-            ## ${{steps.tag.outputs.tag}}
+            ## ${{ github.ref_name }}
 
-            ${{ env.RELEASE_BODY }}
+            ${{needs.get-release-body.outputs.release_body}}
 
+      - name: Post announcement on Discord
+        continue-on-error: true
+        ## On patch releases, don't notify Discord
+        if: needs.get-release-body.outputs.release_body != ''
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@0.3.2
+        with:
+          args: | # See https://discordjs.guide/miscellaneous/parsing-mention-arguments.html#how-discord-mentions-work
+            <@&663705024265715743>
+            *${{ github.ref_name }} rolling out!*
+
+            ${{needs.get-release-body.outputs.release_body}}
+
+  AUR-update:
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    needs: [get-release-body, upload-github-release-and-post-to-discord]
+    steps:
 
       - name: Get AUR PKGBUILD
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-        continue-on-error: true
         run: |
           curl --silent --output PKGBUILD 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=unciv-bin'
-          sed -E -e "s#(_pkgver=).*#\1${{steps.tag.outputs.tag}}#" -e "s#(pkgrel=).*#\10#" -i PKGBUILD
+          sed -E -e "s#(_pkgver=).*#\1${{ github.ref_name }}#" -e "s#(pkgrel=).*#\10#" -i PKGBUILD
 
       - name: Publish AUR package
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-        continue-on-error: true
         uses: Thyrum/github-actions-deploy-aur@master
         with:
           pkgname: unciv-bin
@@ -232,24 +338,9 @@ jobs:
           commit_email: ${{ secrets.AUR_COMMIT_EMAIL }}
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
           commit_message: |
-            Update to ${{steps.tag.outputs.tag}}
+            Update to ${{ github.ref_name }}
 
-            ${{ env.RELEASE_BODY }}
+            ${{needs.get-release-body.outputs.release_body}}
           ssh_keyscan_types: rsa,dsa,ecdsa,ed25519
           updpkgsums: true
           allow_empty_commits: false
-
-
-      - name: Post announcement on Discord
-        continue-on-error: true
-        ## On patch releases, don't notify Discord
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') && env.RELEASE_BODY != ''
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        uses: Ilshidur/action-discord@0.3.2
-        with:
-          args: | # See https://discordjs.guide/miscellaneous/parsing-mention-arguments.html#how-discord-mentions-work
-            <@&663705024265715743>
-            *${{steps.tag.outputs.tag}} rolling out!*
-
-            ${{ env.RELEASE_BODY }}

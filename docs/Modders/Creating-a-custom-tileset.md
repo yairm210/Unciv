@@ -30,6 +30,7 @@ To create a config for your tileset you just need to create a new .json file und
 This is an example of such a config file that will be explain below:
 
 ```json
+{
     "useColorAsBaseTerrain": "false",
     "useSummaryImages": "true",
     "unexploredTileColor": {"r":1,"g":1,"b":1,"a":1},
@@ -39,11 +40,12 @@ This is an example of such a config file that will be explain below:
     "tileScales": {
         "City center":1.2,
         "Citadel":1.5
-    }
+    },
     "ruleVariants": {
         "Grassland+Forest": ["Grassland","ForestForGrassland"],
         "Grassland+Jungle+Dyes+Trading post": ["Grassland","JungleForGrasslandBack","Dyes+Trading post","JungleForGrasslandFront"]
     }
+}
 ```
 
 ### useColorAsBaseTerrain
@@ -99,6 +101,17 @@ A dictionary mapping string to a list of strings. Default value: empty
 The ruleVariants are the most powerful part of the tileset config. With this, you can define, for a specific tile, which images and in which order these images should be used.
 
 An example is given in the code above. For the tile "Grassland+Jungle+Dyes+Trading post" we then use the images "Grassland", "JungleForGrasslandBack", "Dyes+Trading post" and "JungleForGrasslandFront" in that order.
+
+## Fog and unexplored tiles
+
+Unciv distinguishes between "unexplored" tiles, which are tiles the Civ has never seen,
+and "not visible" tiles, which are those that were seen once but now are not.
+
+Not visible tiles are grayed out by design, and on top of that have the `CrosshatchHexagon.png` image applied to them.
+
+Unexplored tiles display the `UnexploredTile.png` image, on top of which `CrosshatchHexagon.png` is applied.
+
+You can set the CrosshatchHexagon to be functionally invisible by replacing it with a 1px by 1px invisible image.
 
 ## Unit images
 

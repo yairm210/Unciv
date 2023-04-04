@@ -62,7 +62,7 @@ class PromotionNode(val promotion: Promotion) {
     }
 
     class CustomComparator(
-        val baseNode: PromotionNode
+        private val baseNode: PromotionNode
     ) : Comparator<PromotionNode> {
         override fun compare(a: PromotionNode, b: PromotionNode): Int {
             val baseName = baseNode.baseName
@@ -78,15 +78,15 @@ class PromotionNode(val promotion: Promotion) {
 
 }
 
-class PromotionButton(
+private class PromotionButton(
     val node: PromotionNode,
     val isPickable: Boolean = true,
     val isPromoted: Boolean = false
-
 ) : BorderedTable(
     path="PromotionScreen/PromotionButton",
     defaultBgShape = BaseScreen.skinStrings.roundedEdgeRectangleMidShape,
-    defaultBgBorder = BaseScreen.skinStrings.roundedEdgeRectangleMidBorderShape) {
+    defaultBgBorder = BaseScreen.skinStrings.roundedEdgeRectangleMidBorderShape
+) {
 
     var isSelected = false
     val label = node.promotion.name.toLabel().apply {
@@ -132,11 +132,11 @@ class PromotionButton(
 class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResize {
 
     companion object Colors {
-        val Default:Color = Color.BLACK
-        val Selected:Color = colorFromRGB(72, 147, 175)
-        val Promoted:Color = colorFromRGB(255, 215, 0).darken(0.2f)
-        val Pickable:Color = colorFromRGB(28, 80, 0)
-        val Prerequisite:Color = colorFromRGB(14, 92, 86)
+        val Default: Color = Color.BLACK
+        val Selected: Color = colorFromRGB(72, 147, 175)
+        val Promoted: Color = colorFromRGB(255, 215, 0).darken(0.2f)
+        val Pickable: Color = colorFromRGB(28, 80, 0)
+        val Prerequisite: Color = colorFromRGB(14, 92, 86)
     }
 
     private val promotionsTable = Table()
@@ -144,28 +144,25 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
     private var selectedPromotion: PromotionButton? = null
     private var lines = ArrayList<Image>()
 
-    private fun acceptPromotion(node: PromotionNode?) {
-        // if user managed to click disabled button, still do nothing
-        if (node == null) return
-
-        unit.promotions.addPromotion(node.promotion.name)
-        game.replaceCurrentScreen(recreate())
-    }
+    // [acceptPromotion] will [recreate] the screen, so these are constant for this picker's lifetime
+    private val canChangeState = GUI.isAllowedChangeState()
+    private val canBePromoted = unit.promotions.canBePromoted()
+    private val canPromoteNow = canChangeState && canBePromoted &&
+            unit.currentMovement > 0 && unit.attacksThisTurn == 0
 
     init {
         setDefaultCloseAction()
 
-        rightSideButton.setText("Pick promotion".tr())
-        rightSideButton.onClick(UncivSound.Promote) {
-            if (selectedPromotion?.isPickable == true)
-                acceptPromotion(selectedPromotion?.node)
+        if (canPromoteNow) {
+            rightSideButton.setText("Pick promotion".tr())
+            rightSideButton.onClick(UncivSound.Promote) {
+                if (selectedPromotion?.isPickable == true)
+                    acceptPromotion(selectedPromotion?.node)
+            }
+        } else {
+            rightSideButton.isVisible = false
         }
 
-        val canBePromoted = unit.promotions.canBePromoted()
-        val canChangeState = GUI.isAllowedChangeState()
-        val canPromoteNow = canBePromoted && canChangeState
-                && unit.currentMovement > 0 && unit.attacksThisTurn == 0
-        rightSideButton.isEnabled = canPromoteNow
         descriptionLabel.setText(updateDescriptionLabel())
 
         val availablePromotionsGroup = Table()
@@ -197,13 +194,18 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
         displayTutorial(TutorialTrigger.Experience)
     }
 
+    private fun acceptPromotion(node: PromotionNode?) {
+        // if user managed to click disabled button, still do nothing
+        if (node == null) return
+
+        unit.promotions.addPromotion(node.promotion.name)
+        game.replaceCurrentScreen(recreate())
+    }
+
     private fun fillTable(promotions: Collection<Promotion>) {
         val map = LinkedHashMap<String, PromotionNode>()
 
         val availablePromotions = unit.promotions.getAvailablePromotions()
-
-        val canBePromoted = unit.promotions.canBePromoted()
-        val canChangeState = GUI.isAllowedChangeState()
 
         // Create nodes
         // Pass 1 - create nodes for all promotions
@@ -248,10 +250,8 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
             // Choose best predecessor - the one with less depth
             var best: PromotionNode? = null
             for (predecessor in node.predecessors) {
-                if (best == null)
+                if (best == null || predecessor.maxDepth < best.maxDepth)
                     best = predecessor
-                else
-                    best = if (predecessor.maxDepth < best.maxDepth) predecessor else best
             }
 
             // Remove everything else, leave only best
@@ -300,7 +300,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
                     val cell = cellMatrix[row][col]
                     val isPromotionAvailable = node.promotion in availablePromotions
                     val hasPromotion = unit.promotions.promotions.contains(name)
-                    val isPickable = canBePromoted && isPromotionAvailable && !hasPromotion && canChangeState
+                    val isPickable = canPromoteNow && isPromotionAvailable && !hasPromotion
                     val button = getButton(promotions, node, isPickable, hasPromotion)
                     promotionToButton[name] = button
                     cell.setActor(button)

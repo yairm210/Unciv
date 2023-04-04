@@ -1,19 +1,19 @@
 package com.unciv.logic.map.tile
 
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.components.Fonts
+import com.unciv.utils.DebugUtils
 
 object TileDescription {
 
     /** Get info on a selected tile, used on WorldScreen (right side above minimap), CityScreen or MapEditorViewTab. */
     fun toMarkup(tile: Tile, viewingCiv: Civilization?): ArrayList<FormattedLine> {
         val lineList = ArrayList<FormattedLine>()
-        val isViewableToPlayer = viewingCiv == null || UncivGame.Current.viewEntireMapForDebug
+        val isViewableToPlayer = viewingCiv == null || DebugUtils.VISIBLE_MAP
                 || viewingCiv.viewableTiles.contains(tile)
 
         if (tile.isCityCenter()) {
@@ -21,7 +21,7 @@ object TileDescription {
             var cityString = city.name.tr()
             if (isViewableToPlayer) cityString += " (${city.health})"
             lineList += FormattedLine(cityString)
-            if (UncivGame.Current.viewEntireMapForDebug || city.civ == viewingCiv)
+            if (DebugUtils.VISIBLE_MAP || city.civ == viewingCiv)
                 lineList += city.cityConstructions.getProductionMarkup(tile.ruleset)
         }
 
