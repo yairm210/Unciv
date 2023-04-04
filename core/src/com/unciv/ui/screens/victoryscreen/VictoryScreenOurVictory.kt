@@ -2,6 +2,7 @@ package com.unciv.ui.screens.victoryscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Victory
 import com.unciv.ui.components.TabbedPager
@@ -16,6 +17,8 @@ class VictoryScreenOurVictory(
     private val header = Table()
 
     init {
+        align(Align.top)
+
         val gameInfo = worldScreen.gameInfo
         val victoriesToShow = gameInfo.getEnabledVictories()
 
