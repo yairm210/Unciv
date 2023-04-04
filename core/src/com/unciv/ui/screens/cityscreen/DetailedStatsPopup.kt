@@ -160,7 +160,7 @@ class DetailedStatsPopup(
         }
         totalTable.row()
 
-        // Mini version of EmpireOverviewTab.equalizeColumns - the number columns work thanks to statColMinWidth
+        // Mini version of IPageExtensions.equalizeColumns - the number columns work thanks to statColMinWidth
         headerTable.packIfNeeded()
         totalTable.packIfNeeded()
         val firstColumnWidth = max(totalTable.getColumnWidth(0), headerTable.getColumnWidth(0))
