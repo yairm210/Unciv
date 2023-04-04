@@ -2,6 +2,7 @@ package com.unciv.ui.screens.victoryscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.extensions.addSeparator
@@ -15,6 +16,8 @@ class VictoryScreenCivRankings(
     private val header = Table()
 
     init {
+        align(Align.topLeft)
+        header.align(Align.topLeft)
         defaults().pad(10f)
 
         val majorCivs = worldScreen.gameInfo.civilizations.filter { it.isMajorCiv() }

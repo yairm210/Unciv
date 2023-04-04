@@ -541,6 +541,7 @@ open class TabbedPager(
      * @param insertBefore -1 to add at the end, or index of existing page to insert this before it.
      * @param secret Marks page as 'secret'. A password is asked once per [TabbedPager] and if it does not match the has passed in the constructor the page and all subsequent secret pages are dropped.
      * @param disabled Initial disabled state. Disabled pages cannot be selected even with [selectPage], their button is dimmed.
+     * @param scrollAlign Used only once on first page activation - sets the content ScrollPane's scrollX/scrollY so your content (which must have valid width/height at the time) aligns as specified to the pager's content area.
      * @param shortcutKey Optional keyboard key to associate.
      * @param syncScroll If on, the ScrollPanes for [content] and [fixed content][IPageExtensions.getFixedContent] will synchronize horizontally.
      * @return The new page's index or -1 if it could not be immediately added (secret).

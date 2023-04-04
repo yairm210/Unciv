@@ -25,7 +25,6 @@ import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 //TODO someoneHasWon should look at gameInfo.victoryData
-//TODO replay slider
 
 class VictoryScreen(
     private val worldScreen: WorldScreen,
@@ -44,8 +43,6 @@ class VictoryScreen(
         val key: Char,
         val iconName: String = "",
         val caption: String? = null,
-        val align: Int = Align.topLeft,
-        val syncScroll: Boolean = true,
         val allowAsSecret: Boolean = false
     ) {
         OurStatus('O', "StatIcons/Specialist", caption = "Our status") {
@@ -63,7 +60,7 @@ class VictoryScreen(
             override fun getContent(worldScreen: WorldScreen) = VictoryScreenCivRankings(worldScreen)
             override fun isHidden(playerCiv: Civilization) = UncivGame.Current.settings.useDemographics
         },
-        Replay('P', "OtherIcons/Load", align = Align.top, syncScroll = false, allowAsSecret = true) {
+        Replay('P', "OtherIcons/Load", allowAsSecret = true) {
             override fun getContent(worldScreen: WorldScreen) = VictoryScreenReplay(worldScreen)
             override fun isHidden(playerCiv: Civilization) =
                 !playerCiv.isSpectator() && playerCiv.gameInfo.victoryData == null && playerCiv.isAlive()
@@ -75,7 +72,7 @@ class VictoryScreen(
     init {
         //**************** Set up the tabs ****************
         splitPane.setFirstWidget(tabs)
-        val iconSize = Constants.defaultFontSize.toFloat()
+        val iconSize = Constants.headingFontSize.toFloat()
 
         for (tab in VictoryTabs.values()) {
             val tabHidden = tab.isHidden(playerCiv)
@@ -86,7 +83,7 @@ class VictoryScreen(
                 tab.caption ?: tab.name,
                 tab.getContent(worldScreen),
                 icon, iconSize,
-                scrollAlign = tab.align, syncScroll = tab.syncScroll,
+                scrollAlign = Align.topLeft,
                 shortcutKey = KeyCharAndCode(tab.key),
                 secret = tabHidden && tab.allowAsSecret
             )
