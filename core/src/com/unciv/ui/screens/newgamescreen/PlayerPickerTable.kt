@@ -19,6 +19,7 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.UncivTextField
+import com.unciv.ui.components.WrappableLabel
 import com.unciv.ui.components.extensions.*
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
@@ -44,12 +45,13 @@ class PlayerPickerTable(
     blockWidth: Float = 0f
 ): Table() {
     val playerListTable = Table()
-    val civBlocksWidth = if(blockWidth <= 10f) previousScreen.stage.width / 3 - 5f else blockWidth
+    val civBlocksWidth = if (blockWidth <= 10f) previousScreen.stage.width / 3 - 5f else blockWidth
+    private var randomNumberLabel: WrappableLabel? = null
 
-    /** Locks player table for editing, currently unused, was previously used for scenarios and could be useful in the future.*/
+    /** Locks player table for editing, currently unused, was previously used for scenarios and could be useful in the future. */
     var locked = false
 
-    /** No random civilization is available, used during map editing.*/
+    /** No random civilization is available, potentially used in the future  during map editing. */
     var noRandom = false
 
     private val friendList = FriendList()
@@ -82,27 +84,47 @@ class PlayerPickerTable(
         for (player in gameParameters.players) {
             playerListTable.add(getPlayerTable(player)).width(civBlocksWidth).padBottom(20f).row()
         }
+
+        val isRandomNumberOfPlayers = gameParameters.randomNumberOfPlayers
+        if (isRandomNumberOfPlayers) {
+            randomNumberLabel = WrappableLabel("", civBlocksWidth - 20f, Color.GOLD)
+            playerListTable.add(randomNumberLabel).fillX().pad(0f, 10f, 20f, 10f).row()
+            updateRandomNumberLabel()
+        }
+
         if (!locked && gameParameters.players.size < gameBasics.nations.values.count { it.isMajorCiv }) {
             val addPlayerButton = "+".toLabel(Color.BLACK, 30)
                 .apply { this.setAlignment(Align.center) }
                 .surroundWithCircle(50f)
                 .onClick {
-                    var player = Player()
                     // no random mode - add first not spectator civ if still available
-                    if (noRandom) {
+                    val player = if (noRandom || isRandomNumberOfPlayers) {
                         val availableCiv = getAvailablePlayerCivs().firstOrNull()
-                        if (availableCiv != null) player = Player(availableCiv.name)
-                        // Spectators only Humans
-                        else player = Player(Constants.spectator, PlayerType.Human)
-                    }
+                        if (availableCiv != null) Player(availableCiv.name)
+                        // Spectators can only be Humans
+                        else Player(Constants.spectator, PlayerType.Human)
+                    } else Player()  // normal: add random AI
                     gameParameters.players.add(player)
                     update()
                 }
             playerListTable.add(addPlayerButton).pad(10f)
         }
-        // enable start game when more than 1 active player
-        val moreThanOnePlayer = 1 < gameParameters.players.count { it.chosenCiv != Constants.spectator }
-        (previousScreen as? PickerScreen)?.setRightSideButtonEnabled(moreThanOnePlayer)
+
+        // enable start game when at least one human player and they're not alone
+        val humanPlayerCount = gameParameters.players.count { it.playerType == PlayerType.Human }
+        val isValid = humanPlayerCount >= 2 || humanPlayerCount >= 1 && isRandomNumberOfPlayers
+        (previousScreen as? PickerScreen)?.setRightSideButtonEnabled(isValid)
+    }
+
+    fun updateRandomNumberLabel() {
+        randomNumberLabel?.run {
+            val text = "These [${gameParameters.players.size}] players will be adjusted to [${gameParameters.minNumberOfPlayers}" +
+                "]-[${gameParameters.maxNumberOfPlayers}] actual players by adding random AI's or by randomly omitting AI's."
+            wrap = false
+            align(Align.center)
+            setText(text.tr())
+            wrap = true
+        }
     }
 
     /**
@@ -288,7 +310,7 @@ class FriendSelectionPopup(
     screen: BaseScreen,
 ) : Popup(screen) {
 
-    val pickerPane = PickerPane()
+    private val pickerPane = PickerPane()
     private var selectedFriendId: String? = null
 
     init {

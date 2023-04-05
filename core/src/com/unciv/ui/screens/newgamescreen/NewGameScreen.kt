@@ -67,7 +67,11 @@ class NewGameScreen(
             this, gameSetupInfo.gameParameters,
             if (isNarrowerThan4to3()) stage.width - 20f else 0f
         )
-        newGameOptionsTable = GameOptionsTable(this, isNarrowerThan4to3()) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
+        newGameOptionsTable = GameOptionsTable(
+            this, isNarrowerThan4to3(),
+            updatePlayerPickerTable = { desiredCiv -> playerPickerTable.update(desiredCiv) },
+            updatePlayerPickerRandomLabel = { playerPickerTable.updateRandomNumberLabel() }
+        )
         mapOptionsTable = MapOptionsTable(this)
         setDefaultCloseAction()
 
