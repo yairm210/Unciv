@@ -10,7 +10,7 @@ import com.unciv.ui.screens.multiplayerscreens.LobbyScreen
 import com.unciv.utils.Log
 
 /**
- * Variant of [Popup] used to ask the questions related to opening a new APIv2 multiplayer lobby
+ * Variant of [Popup] used to ask the questions related to opening a new [ApiVersion.APIv2] multiplayer lobby
  */
 class CreateLobbyPopup(private val base: BaseScreen) : Popup(base.stage) {
     private var requirePassword: Boolean = false

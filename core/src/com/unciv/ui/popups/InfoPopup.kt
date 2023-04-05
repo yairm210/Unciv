@@ -28,8 +28,6 @@ open class InfoPopup(
 
         /**
          * Wrap the execution of a [coroutine] to display an [InfoPopup] when a [UncivShowableException] occurs
-         *
-         * This function should be called from the GL thread to avoid race conditions.
          */
         suspend fun <T> wrap(stage: Stage, vararg texts: String, coroutine: suspend () -> T): T? {
             try {
@@ -46,18 +44,21 @@ open class InfoPopup(
          * Show a loading popup while running a [coroutine] and return its optional result
          *
          * This function will display an [InfoPopup] when a [UncivShowableException] occurs.
-         * This function should be called from the GL thread to avoid race conditions.
          */
         fun <T> load(stage: Stage, vararg texts: String, coroutine: suspend () -> T): T? {
             val popup = InfoPopup(stage, "Loading")
             return runBlocking {
                 try {
                     val result = coroutine()
-                    popup.close()
+                    Concurrency.runOnGLThread {
+                        popup.close()
+                    }
                     result
                 } catch (e: UncivShowableException) {
-                    popup.close()
-                    InfoPopup(stage, *texts, e.localizedMessage)
+                    Concurrency.runOnGLThread {
+                        popup.close()
+                        InfoPopup(stage, *texts, e.localizedMessage)
+                    }
                     null
                 }
             }

@@ -3,7 +3,6 @@ package com.unciv.ui.screens.multiplayerscreens
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.multiplayer.apiv2.LobbyResponse
-import com.unciv.ui.components.RefreshButton
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
@@ -14,28 +13,25 @@ import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
+import kotlinx.coroutines.delay
 
 /**
  * Table listing all available open lobbies and allow joining them by clicking on them
  */
 class LobbyBrowserTable(private val screen: BaseScreen): Table() {
 
-    private val updateButton = RefreshButton().onClick {
-        triggerUpdate()
-    }
     private val noLobbies = "Sorry, no open lobbies at the moment!".toLabel()
     private val enterLobbyPasswordText = "This lobby requires a password to join. Please enter it below:"
 
     init {
         add(noLobbies).row()
-        add(updateButton).padTop(30f).row()
         triggerUpdate()
     }
 
     /**
      * Open a lobby by joining it (may ask for a passphrase for protected lobbies)
      */
-    private fun openLobby(lobby: LobbyResponse) {
+    private fun joinLobby(lobby: LobbyResponse) {
         Log.debug("Trying to join lobby '${lobby.name}' (UUID ${lobby.uuid}) ...")
         if (lobby.hasPassword) {
             val popup = AskTextPopup(
@@ -70,7 +66,6 @@ class LobbyBrowserTable(private val screen: BaseScreen): Table() {
         clearChildren()
         if (lobbies.isEmpty()) {
             add(noLobbies).row()
-            add(updateButton).padTop(30f).row()
             return
         }
 
@@ -79,11 +74,10 @@ class LobbyBrowserTable(private val screen: BaseScreen): Table() {
             // TODO: The button may be styled with icons and the texts may be translated
             val btn = "${lobby.name} (${lobby.currentPlayers}/${lobby.maxPlayers} players) ${if (lobby.hasPassword) " LOCKED" else ""}".toTextButton()
             btn.onClick {
-                openLobby(lobby)
+                joinLobby(lobby)
             }
             add(btn).row()
         }
-        add(updateButton).padTop(30f).row()
     }
 
     /**
@@ -91,6 +85,9 @@ class LobbyBrowserTable(private val screen: BaseScreen): Table() {
      */
     fun triggerUpdate() {
         Concurrency.run("Update lobby list") {
+            while (stage == null) {
+                delay(20)  // fixes race condition and null pointer exception in access to `stage`
+            }
             val listOfOpenLobbies = InfoPopup.wrap(stage) {
                 screen.game.onlineMultiplayer.api.lobby.list()
             }

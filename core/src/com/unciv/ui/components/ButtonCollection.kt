@@ -42,3 +42,12 @@ class MultiplayerButton(size: Float = Constants.headingFontSize.toFloat()): Butt
         })
     }
 }
+
+class NewButton(size: Float = Constants.headingFontSize.toFloat()): Button(BaseScreen.skin) {
+    init {
+        add(ImageGetter.getImage("OtherIcons/New").apply {
+            setOrigin(Align.center)
+            setSize(size)
+        })
+    }
+}
