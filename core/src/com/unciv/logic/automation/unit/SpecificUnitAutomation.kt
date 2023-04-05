@@ -12,6 +12,8 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitAction
+import com.unciv.models.UnitActionType
+import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.UniqueType
@@ -275,7 +277,16 @@ object SpecificUnitAutomation {
 
             if (pathToCity.isEmpty()) continue
             if (pathToCity.size > 2 && unit.getTile().getCity() != city) {
-                if (unit.getTile().militaryUnit == null) return true // Don't move until you're accompanied by a military unit
+                // Radius 5 is quite arbitrary. Few units have such a high movement radius although
+                // streets might modify it. Also there might be invisible units, so this is just an
+                // approximation for relative safety and simplicity.
+                val enemyUnitsNearby = unit.getTile().getTilesInDistance(5).any { tileNearby ->
+                    tileNearby.getUnits().any { unitOnTileNearby ->
+                        unitOnTileNearby.isMilitary() && unitOnTileNearby.civ.isAtWarWith(unit.civ)
+                    }
+                }
+                // Don't move until you're accompanied by a military unit if there are enemies nearby.
+                if (unit.getTile().militaryUnit == null && enemyUnitsNearby) return true
                 unit.movement.headTowards(city.getCenterTile())
                 return true
             }
@@ -313,23 +324,85 @@ object SpecificUnitAutomation {
      * `false` can be interpreted as: the unit doesn't know where to go or there are no city
      * states. */
     fun conductTradeMission(unit: MapUnit): Boolean {
-        val closestCityState =
-                unit.civ.gameInfo.civilizations.filter { it.isCityState() && it.cities.isNotEmpty() }
-                    .minByOrNull { unit.currentTile.aerialDistanceTo(it.cities[0].getCenterTile()) }
+        val closestCityStateTile =
+                unit.civ.gameInfo.civilizations
+                    .filter {
+                        !unit.civ.isAtWarWith(it) && it.isCityState() && it.cities.isNotEmpty() && unit.civ.hasExplored(
+                            it.cities[0].getCenterTile()
+                        )
+                    }
+                    .flatMap { it.cities[0].getTiles() }
+                    .filter { unit.movement.canReach(it) && unit.movement.getShortestPath(it).size <= 10 }
+                    .minByOrNull { unit.movement.getShortestPath(it).size }
                     ?: return false
-        val unitTileBeforeMovement = unit.currentTile
-        unit.movement.headTowards(closestCityState.cities[0].getCenterTile())
-        if (closestCityState.cities[0].getTiles().contains(unit.currentTile)) {
-            UnitActions.activateSideEffects(
-                unit,
-                unit.getMatchingUniques(UniqueType.CanTradeWithCityStateForGoldAndInfluence).first()
-            )
+
+        val conductTradeMissionAction = UnitActions.getUnitActions(unit)
+            .filter { it.type == UnitActionType.ConductTradeMission }
+            .firstOrNull()
+        if (conductTradeMissionAction?.action != null) {
+            conductTradeMissionAction.action.invoke()
             return true
         }
-        if (unitTileBeforeMovement == unit.currentTile) {
-            return false
+
+        val unitTileBeforeMovement = unit.currentTile
+        unit.movement.headTowards(closestCityStateTile)
+
+        return unitTileBeforeMovement != unit.currentTile
+    }
+
+    /**
+     * If there's a city nearby that can construct a wonder, walk there an get it built. Typically I
+     * like to build all wonders in the same city to have the boni accumulate (and it typically ends
+     * up being my capital), but that would need too much logic (e.g. how far away is the capital,
+     * is the wonder likely still available by the time I'm there, is this particular wonder even
+     * buildable in the capital, etc.)
+     *
+     * @return whether there was any progress in speeding up a wonder construction. A return value
+     * of `false` can be interpreted as: the unit doesn't know where to go or is stuck. */
+    fun speedupWonderConstruction(unit: MapUnit): Boolean {
+        val nearbyCityWithAvailableWonders = unit.civ.cities.filter { city ->
+            // Maybe it would be nice to make space in the city if there's already some
+            // other civilian unit in there for whatever reason, but again that seems a lot of
+            // additional complexity for questionable gain.
+            (unit.movement.canMoveTo(city.getCenterTile()) || unit.currentTile == city.getCenterTile())
+                && unit.movement.getShortestPath(city.getCenterTile()).size <= 5
+                // Don't speed up construction in small cities. There's a risk the great
+                // engineer can't get it done entirely and then it takes forever for the small
+                // city to finish the rest.
+                && city.population.population >= 3
+                && getWonderThatWouldBenefitFromBeingSpedUp(city) != null
+        }.minByOrNull { unit.movement.getShortestPath(it.getCenterTile()).size }
+        if (nearbyCityWithAvailableWonders != null) {
+            if (unit.currentTile == nearbyCityWithAvailableWonders.getCenterTile()) {
+                val wonderToHurry =
+                        getWonderThatWouldBenefitFromBeingSpedUp(nearbyCityWithAvailableWonders)!!
+                nearbyCityWithAvailableWonders.cityConstructions.constructionQueue.add(
+                    0,
+                    wonderToHurry.name
+                )
+                UnitActions.getUnitActions(unit)
+                    .first {
+                        it.type == UnitActionType.HurryBuilding
+                                || it.type == UnitActionType.HurryWonder }
+                    .action!!.invoke()
+                return true
+            }
+
+            // Walk towards the city.
+            val tileBeforeMoving = unit.getTile()
+            unit.movement.headTowards(nearbyCityWithAvailableWonders.getCenterTile())
+            if (tileBeforeMoving != unit.currentTile)
+            // This means we're getting there and not stuck.
+                return true
         }
-        return true
+        return false
+    }
+
+    private fun getWonderThatWouldBenefitFromBeingSpedUp(city: City): Building? {
+        return city.cityConstructions.getBuildableBuildings().filter { building ->
+            building.isWonder && building.canBeHurried()
+                    && city.cityConstructions.turnsToConstruction(building.name) >= 5
+        }.sortedBy { -city.cityConstructions.getRemainingWork(it.name) }.firstOrNull()
     }
 
     fun automateAddInCapital(unit: MapUnit) {

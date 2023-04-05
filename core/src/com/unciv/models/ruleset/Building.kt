@@ -758,4 +758,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
         return false
     }
+
+    fun canBeHurried() : Boolean {
+        return !hasUnique(UniqueType.CannotBeHurried)
+    }
 }
