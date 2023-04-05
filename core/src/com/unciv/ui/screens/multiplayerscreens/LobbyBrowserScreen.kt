@@ -1,78 +1,93 @@
 package com.unciv.ui.screens.multiplayerscreens
 
-import com.badlogic.gdx.scenes.scene2d.ui.*
-import com.unciv.UncivGame
-import com.unciv.logic.multiplayer.apiv2.LobbyResponse
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.Constants
+import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.NewButton
 import com.unciv.ui.components.RefreshButton
-import com.unciv.ui.popups.Popup
-import com.unciv.ui.components.extensions.disable
-import com.unciv.ui.components.extensions.enable
+import com.unciv.ui.components.extensions.addSeparator
+import com.unciv.ui.components.extensions.addSeparatorVertical
+import com.unciv.ui.components.extensions.brighten
+import com.unciv.ui.components.extensions.keyShortcuts
+import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.popups.CreateLobbyPopup
-import com.unciv.ui.popups.InfoPopup
+import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
-import com.unciv.ui.screens.pickerscreens.PickerScreen
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Log
-import com.unciv.utils.concurrency.Concurrency
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
 
 /**
- * Screen that should list all open lobbies in the left side and details about a selected lobby in the right side
- *
- * The right side is not fully implemented yet. The right side button should join a lobby.
- * A lobby might be password-protected (=private), in that case a pop-up should ask for the password.
+ * Screen that should list all open lobbies on the left side, with buttons to interact with them and a list of recently opened games on the right
  */
-class LobbyBrowserScreen : PickerScreen() {
+class LobbyBrowserScreen : BaseScreen() {
     private val lobbyBrowserTable = LobbyBrowserTable(this)
-    private val rightSideTable = Table() // use for details about a lobby
+    private val gameList = GameListV2(this, ::onSelect)
 
-    private val newLobbyButton = "Open lobby".toTextButton()
-    private val noLobbySelected = "Select a lobby to show details"
+    private val table = Table()  // main table including all content of this screen
+    private val bottomTable = Table()  // bottom bar including the cancel and help buttons
+
+    private val newLobbyButton = NewButton()
+    private val helpButton = "Help".toTextButton()
+    private val updateButton = RefreshButton()
+    private val closeButton = Constants.close.toTextButton()
 
     init {
-        setDefaultCloseAction()
+        table.add("Lobby browser".toLabel(fontSize = Constants.headingFontSize)).padTop(20f).padBottom(10f)
+        table.add().colspan(2)  // layout purposes only
+        table.add("Currently open games".toLabel(fontSize = Constants.headingFontSize)).padTop(20f).padBottom(10f)
+        table.row()
 
-        // The functionality of joining a lobby will be added on-demand in [refreshLobbyList]
-        rightSideButton.setText("Join lobby")
-        rightSideButton.disable()
+        val lobbyButtons = Table()
+        newLobbyButton.onClick {
+            CreateLobbyPopup(this as BaseScreen)
+            // TODO: Testing with random UUID, need a pop-up to determine private/public lobby type
+            //game.pushScreen(LobbyScreen(UUID.randomUUID(), UUID.randomUUID()))
+        }
+        updateButton.onClick {
+            lobbyBrowserTable.triggerUpdate()
+        }
+        lobbyButtons.add(newLobbyButton).padBottom(5f).row()
+        lobbyButtons.add("F".toTextButton().apply {
+            onClick { ToastPopup("Filtering is not implemented yet", stage) }
+        }).padBottom(5f).row()
+        lobbyButtons.add(updateButton).row()
 
-        val tab = Table()
-        val helpButton = "Help".toTextButton()
+        table.add(ScrollPane(lobbyBrowserTable).apply { setScrollingDisabled(true, false) }).growX().growY().padRight(10f)
+        table.add(lobbyButtons).padLeft(10f).growY()
+        table.addSeparatorVertical(Color.DARK_GRAY, 1f).height(0.75f * stage.height).padLeft(10f).padRight(10f).growY()
+        table.add(ScrollPane(gameList).apply { setScrollingDisabled(true, false) }).growX()
+        table.row()
+
+        closeButton.keyShortcuts.add(KeyCharAndCode.ESC)
+        closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
+        closeButton.onActivation {
+            game.popScreen()
+        }
         helpButton.onClick {
             val helpPopup = Popup(this)
             helpPopup.addGoodSizedLabel("This should become a lobby browser.").row()  // TODO
             helpPopup.addCloseButton()
             helpPopup.open()
         }
-        tab.add(helpButton)
-        tab.x = (stage.width - helpButton.width)
-        tab.y = (stage.height - helpButton.height)
-        stage.addActor(tab)
+        bottomTable.add(closeButton).pad(20f)
+        bottomTable.add().colspan(2).growX()  // layout purposes only
+        bottomTable.add(helpButton).pad(20f)
 
-        val mainTable = Table()
-        mainTable.add(ScrollPane(lobbyBrowserTable).apply { setScrollingDisabled(true, false) }).height(stage.height * 2 / 3)
-        mainTable.add(rightSideTable)
-        topTable.add(mainTable).row()
-        scrollPane.setScrollingDisabled(false, true)
+        table.addSeparator(skinStrings.skinConfig.baseColor.brighten(0.1f), height = 1f).width(stage.width * 0.85f).padTop(15f).row()
+        table.row().bottom().fillX().maxHeight(stage.height / 8)
+        table.add(bottomTable).colspan(4).fillX()
 
-        rightSideTable.defaults().fillX()
-        rightSideTable.defaults().pad(20.0f)
-        rightSideTable.add(noLobbySelected.toLabel()).padBottom(10f).row()
+        table.setFillParent(true)
+        stage.addActor(table)
     }
 
-    /**
-     * Update the right side table with details about a specific lobby
-     */
-    private fun updateRightSideTable(selectedLobby: LobbyResponse) {
-        rightSideTable.clear()
-        // TODO: This texts need translation
-        rightSideTable.add("${selectedLobby.name} (${selectedLobby.currentPlayers}/${selectedLobby.maxPlayers} players)".toLabel()).padBottom(10f).row()
-        if (selectedLobby.hasPassword) {
-            rightSideTable.add("This lobby requires a password to join.".toLabel()).row()
-        }
-        rightSideTable.add("Created: ${selectedLobby.createdAt}.".toLabel()).row()
-        rightSideTable.add("Owner: ${selectedLobby.owner.displayName}".toLabel()).row()
+    private fun onSelect(gameName: String) {
+        Log.debug("Selecting game '%s'", gameName)  // TODO: Implement handling
     }
+
 }

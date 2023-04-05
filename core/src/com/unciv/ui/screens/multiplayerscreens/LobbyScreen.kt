@@ -39,7 +39,6 @@ import com.unciv.utils.concurrency.Concurrency
 import kotlinx.coroutines.delay
 import java.util.*
 
-
 /**
  * Lobby screen for open lobbies
  *

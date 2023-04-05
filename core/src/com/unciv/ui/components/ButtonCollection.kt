@@ -51,3 +51,12 @@ class NewButton(size: Float = Constants.headingFontSize.toFloat()): Button(BaseS
         })
     }
 }
+
+class PencilButton(size: Float = Constants.headingFontSize.toFloat()): Button(BaseScreen.skin) {
+    init {
+        add(ImageGetter.getImage("OtherIcons/Pencil").apply {
+            setOrigin(Align.center)
+            setSize(size)
+        })
+    }
+}
