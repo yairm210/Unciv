@@ -93,7 +93,7 @@ class PlayerPickerTable(
                         val availableCiv = getAvailablePlayerCivs().firstOrNull()
                         if (availableCiv != null) player = Player(availableCiv.name)
                         // Spectators only Humans
-                        else player = Player(Constants.spectator).apply { playerType = PlayerType.Human }
+                        else player = Player(Constants.spectator, PlayerType.Human)
                     }
                     gameParameters.players.add(player)
                     update()
