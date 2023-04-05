@@ -23,14 +23,12 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.setSize
-import com.unciv.ui.components.extensions.toLabel
 
 class GameList(
-    private val onSelected: (String) -> Unit,
-    private val useV2: Boolean = false  // set for APIv2 to change GameDisplay to GameDisplayV2
+    onSelected: (String) -> Unit
 ) : VerticalGroup() {
 
-    private val gameDisplays = mutableMapOf<String, GameDisplayBase>()
+    private val gameDisplays = mutableMapOf<String, GameDisplay>()
 
     private val events = EventBus.EventReceiver()
 
@@ -62,47 +60,21 @@ class GameList(
     }
 
     private fun addGame(name: String, preview: GameInfoPreview?, error: Exception?, onSelected: (String) -> Unit) {
-        val gameDisplay = if (useV2) GameDisplayV2(name, preview, onSelected) else GameDisplay(name, preview, error, onSelected)
+        val gameDisplay = GameDisplay(name, preview, error, onSelected)
         gameDisplays[name] = gameDisplay
         addActor(gameDisplay)
         children.sort()
     }
 }
 
-/**
- * Common abstract base class for [GameDisplay] and [GameDisplayV2] allowing more code reuse
- */
-private abstract class GameDisplayBase: Table(), Comparable<GameDisplayBase> {
-    protected abstract var preview: GameInfoPreview?
-    protected abstract var gameName: String
-
-    abstract fun changeName(newName: String)
-
-    protected fun createIndicator(imagePath: String): Actor {
-        val image = ImageGetter.getImage(imagePath)
-        image.setSize(50f)
-        val container = Container(image)
-        container.padRight(5f)
-        return container
-    }
-
-    fun isPlayersTurn() = preview?.isUsersTurn() == true
-
-    override fun compareTo(other: GameDisplayBase): Int =
-            if (isPlayersTurn() != other.isPlayersTurn()) // games where it's the player's turn are displayed first, thus must get the lower number
-                other.isPlayersTurn().compareTo(isPlayersTurn())
-            else gameName.compareTo(other.gameName)
-    override fun equals(other: Any?): Boolean = (other is GameDisplayBase) && (gameName == other.gameName)
-    override fun hashCode(): Int = gameName.hashCode()
-}
-
 private class GameDisplay(
-    override var gameName: String,
-    override var preview: GameInfoPreview?,
+    multiplayerGameName: String,
+    var preview: GameInfoPreview?,
     error: Exception?,
     private val onSelected: (String) -> Unit
-) : GameDisplayBase() {
-
+) : Table(), Comparable<GameDisplay> {
+    var gameName: String = multiplayerGameName
+        private set
     val gameButton = TextButton(gameName, BaseScreen.skin)
     val turnIndicator = createIndicator("OtherIcons/ExclamationMark")
     val errorIndicator = createIndicator("StatIcons/Malcontent")
@@ -139,7 +111,7 @@ private class GameDisplay(
         }
     }
 
-    override fun changeName(newName: String) {
+    fun changeName(newName: String) {
         gameName = newName
         gameButton.setText(newName)
     }
@@ -153,25 +125,21 @@ private class GameDisplay(
         if (hasError) statusIndicators.addActor(errorIndicator)
         else errorIndicator.remove()
     }
-}
 
-private class GameDisplayV2(
-    override var gameName: String,
-    override var preview: GameInfoPreview?,
-    private val onSelected: (String) -> Unit
-): GameDisplayBase() {
-
-    private val gameButton = TextButton(gameName, BaseScreen.skin)
-    private val statusIndicators = HorizontalGroup()
-
-    init {
-        add(gameName.toLabel())
-        add(statusIndicators)
-        add(gameButton)
-        onClick { onSelected(gameName) }
+    private fun createIndicator(imagePath: String): Actor {
+        val image = ImageGetter.getImage(imagePath)
+        image.setSize(50f)
+        val container = Container(image)
+        container.padRight(5f)
+        return container
     }
 
-    override fun changeName(newName: String) {
-        // TODO
-    }
+    fun isPlayersTurn() = preview?.isUsersTurn() == true
+
+    override fun compareTo(other: GameDisplay): Int =
+            if (isPlayersTurn() != other.isPlayersTurn()) // games where it's the player's turn are displayed first, thus must get the lower number
+                other.isPlayersTurn().compareTo(isPlayersTurn())
+            else gameName.compareTo(other.gameName)
+    override fun equals(other: Any?): Boolean = (other is GameDisplay) && (gameName == other.gameName)
+    override fun hashCode(): Int = gameName.hashCode()
 }
