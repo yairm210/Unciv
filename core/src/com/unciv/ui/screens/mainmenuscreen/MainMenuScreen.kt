@@ -45,8 +45,8 @@ import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.mainmenuscreen.EasterEggRulesets.modifyForEasterEgg
 import com.unciv.ui.screens.mapeditorscreen.EditorMapHolder
 import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
+import com.unciv.ui.screens.multiplayerscreens.LobbyBrowserScreen
 import com.unciv.ui.screens.multiplayerscreens.MultiplayerScreen
-import com.unciv.ui.screens.multiplayerscreens.MultiplayerScreenV2
 import com.unciv.ui.screens.newgamescreen.NewGameScreen
 import com.unciv.ui.screens.pickerscreens.ModManagementScreen
 import com.unciv.ui.screens.savescreens.LoadGameScreen
@@ -296,30 +296,36 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
                 RegisterLoginPopup(this.stage) {
                     Log.debug("Register popup success state: %s", it)
                     if (it) {
-                        game.pushScreen(MultiplayerScreenV2())
+                        game.pushScreen(LobbyBrowserScreen())
                     }
                 }.open()
             } else {
                 // Authentication is handled before the multiplayer screen is shown
-                val popup = Popup(stage)
-                popup.addGoodSizedLabel("Loading...")
                 if (!game.onlineMultiplayer.api.isAuthenticated()) {
+                    val popup = Popup(stage)
+                    popup.addGoodSizedLabel("Loading...")
                     popup.open()
                     Concurrency.run {
                         if (game.onlineMultiplayer.api.refreshSession()) {
                             Concurrency.runOnGLThread {
                                 popup.close()
-                                game.pushScreen(MultiplayerScreenV2())
+                                game.pushScreen(LobbyBrowserScreen())
                             }
                         } else {
+                            game.onlineMultiplayer.api.auth.logout(true)
                             Concurrency.runOnGLThread {
                                 popup.close()
-                                ToastPopup("Please login again.", this@MainMenuScreen).isVisible = true
+                                RegisterLoginPopup(this@MainMenuScreen.stage) {
+                                    Log.debug("Register popup success state: %s", it)
+                                    if (it) {
+                                        game.pushScreen(LobbyBrowserScreen())
+                                    }
+                                }.open()
                             }
                         }
                     }
                 } else {
-                    game.pushScreen(MultiplayerScreenV2())
+                    game.pushScreen(LobbyBrowserScreen())
                 }
             }
         } else {

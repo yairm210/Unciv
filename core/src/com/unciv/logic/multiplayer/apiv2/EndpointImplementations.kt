@@ -437,10 +437,11 @@ class AuthApi(private val client: HttpClient, private val authHelper: AuthHelper
                     authCookie.maxAge,
                     Pair(username, password)
                 )
+                true
             } else {
                 Log.error("No recognized, valid session cookie found in login response!")
+                false
             }
-            true
         } else {
             false
         }

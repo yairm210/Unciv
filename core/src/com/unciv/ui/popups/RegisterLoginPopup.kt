@@ -48,6 +48,7 @@ class RegisterLoginPopup(private val stage: Stage, authSuccessful: ((Boolean) ->
                         val success = UncivGame.Current.onlineMultiplayer.api.auth.login(
                             usernameField.text, passwordField.text
                         )
+                        UncivGame.Current.onlineMultiplayer.api.refreshSession(ignoreLastCredentials = true)
                         launchOnGLThread {
                             Log.debug("Updating username and password after successfully authenticating")
                             UncivGame.Current.settings.multiplayer.userName = usernameField.text
@@ -79,6 +80,7 @@ class RegisterLoginPopup(private val stage: Stage, authSuccessful: ((Boolean) ->
                         UncivGame.Current.onlineMultiplayer.api.auth.login(
                             usernameField.text, passwordField.text
                         )
+                        UncivGame.Current.onlineMultiplayer.api.refreshSession(ignoreLastCredentials = true)
                         launchOnGLThread {
                             Log.debug("Updating username and password after successfully authenticating")
                             UncivGame.Current.settings.multiplayer.userName = usernameField.text

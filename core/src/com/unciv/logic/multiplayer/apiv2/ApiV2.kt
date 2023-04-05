@@ -66,7 +66,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
         }
 
         if (credentials != null) {
-            if (!auth.login(credentials.first, credentials.second)) {
+            if (!auth.login(credentials.first, credentials.second, suppress = true)) {
                 Log.debug("Login failed using provided credentials (username '${credentials.first}')")
             } else {
                 lastSuccessfulAuthentication.set(Instant.now())
@@ -331,9 +331,11 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
      * Refresh the currently used session by logging in with username and password stored in the game settings
      *
      * Any errors are suppressed. Differentiating invalid logins from network issues is therefore impossible.
+     *
+     * Set [ignoreLastCredentials] to refresh the session even if there was no last successful credentials.
      */
-    suspend fun refreshSession(): Boolean {
-        if (lastSuccessfulCredentials == null) {
+    suspend fun refreshSession(ignoreLastCredentials: Boolean = false): Boolean {
+        if (lastSuccessfulCredentials == null && !ignoreLastCredentials) {
             return false
         }
         val success = try {
