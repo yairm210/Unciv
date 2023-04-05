@@ -19,7 +19,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var minNumberOfPlayers = 3
     var maxNumberOfPlayers = 3
     var players = ArrayList<Player>().apply {
-        add(Player().apply { playerType = PlayerType.Human })
+        add(Player(playerType = PlayerType.Human))
         for (i in 1..3) add(Player())
     }
     var randomNumberOfCityStates = false
@@ -86,11 +86,9 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
             yield("$difficulty $speed $startingEra")
             yield("${players.count { it.playerType == PlayerType.Human }} ${PlayerType.Human}")
             yield("${players.count { it.playerType == PlayerType.AI }} ${PlayerType.AI}")
-            yield("$minNumberOfCityStates Min CS")
-            yield("$maxNumberOfCityStates Max CS")
-            yield("$numberOfCityStates CS")
-            if (randomNumberOfPlayers) yield("Random number of Players")
-            if (randomNumberOfCityStates) yield("Random number of City-States")
+            if (randomNumberOfPlayers) yield("Random number of Players: $minNumberOfPlayers..$maxNumberOfPlayers")
+            if (randomNumberOfCityStates) yield("Random number of City-States: $minNumberOfCityStates..$maxNumberOfCityStates")
+            else yield("$numberOfCityStates CS")
             if (isOnlineMultiplayer) yield("Online Multiplayer")
             if (noBarbarians) yield("No barbs")
             if (ragingBarbarians) yield("Raging barbs")

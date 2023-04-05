@@ -65,18 +65,9 @@ internal object ConsoleLauncher {
             speed = Speed.DEFAULT
             noBarbarians = true
             players = ArrayList<Player>().apply {
-                add(Player().apply {
-                    playerType = PlayerType.AI
-                    chosenCiv = civilization1
-                })
-                add(Player().apply {
-                    playerType = PlayerType.AI
-                    chosenCiv = civilization2
-                })
-                add(Player().apply {
-                    playerType = PlayerType.Human
-                    chosenCiv = Constants.spectator
-                })
+                add(Player(civilization1))
+                add(Player(civilization2))
+                add(Player(Constants.spectator, PlayerType.Human))
             }
         }
     }

@@ -597,3 +597,6 @@ object GdxKeyCodeFixes {
         else -> Input.Keys.valueOf(name)
     }
 }
+
+fun Input.areSecretKeysPressed() = isKeyPressed(Input.Keys.SHIFT_RIGHT) &&
+        (isKeyPressed(Input.Keys.CONTROL_RIGHT) || isKeyPressed(Input.Keys.ALT_RIGHT))
