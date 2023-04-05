@@ -53,7 +53,6 @@ import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMenuPopup
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.isActive
 import kotlin.math.min
 
 
@@ -157,6 +156,11 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             { this.openOptionsPopup() }
         column2.add(optionsTable).row()
 
+        val eyes = if (XEyes.shouldShowEasterEgg()) {
+            XEyes.GetAPair(66f, XEyes.randomColor()).also {
+                stage.addActor(it)  // ZOrder between map and buttons
+            }
+        } else null
 
         val table = Table().apply { defaults().pad(10f) }
         table.add(column1)
@@ -187,6 +191,8 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         helpButton.addTooltip(KeyCharAndCode(Input.Keys.F1), 30f)
         helpButton.setPosition(30f, 30f)
         stage.addActor(helpButton)
+
+        eyes?.peekOutFrom(listOf(quickstartTable, newGameButton, multiplayerTable, mapEditorScreenTable, modsTable, optionsTable))
     }
 
     private fun startBackgroundMapGeneration() {
@@ -203,10 +209,11 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             }
 
             val baseRuleset = RulesetCache.getVanillaRuleset()
-            easterEggRuleset = EasterEggRulesets.getTodayEasterEggRuleset()?.let {
-                RulesetCache.getComplexRuleset(baseRuleset, listOf(it))
-            }
-            val mapRuleset = if (game.settings.enableEasterEggs) easterEggRuleset ?: baseRuleset else baseRuleset
+            easterEggRuleset = if (!game.settings.enableEasterEggs) null
+                else EasterEggRulesets.getTodayEasterEggRuleset()?.let {
+                    RulesetCache.getComplexRuleset(baseRuleset, listOf(it))
+                }
+            val mapRuleset =  easterEggRuleset ?: baseRuleset
 
             val newMap = MapGenerator(mapRuleset, this)
                 .generateMap(MapParameters().apply {
