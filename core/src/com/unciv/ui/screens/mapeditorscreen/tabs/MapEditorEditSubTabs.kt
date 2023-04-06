@@ -299,7 +299,7 @@ class MapEditorEditStartsTab(
     }
 
     private fun allowedNations() = ruleset.nations.values.asSequence()
-        .filter { it.name !in disallowNations }
+        .filter { it.name !in disallowNations && !it.hasUnique(UniqueType.CityStateDeprecated) }
     private fun getNations() = allowedNations()
         .sortedWith(compareBy<Nation>{ it.isCityState }.thenBy(collator) { it.name.tr() })
         .map { FormattedLine("[${it.name}] starting location", it.name, "Nation/${it.name}", size = 24) }
