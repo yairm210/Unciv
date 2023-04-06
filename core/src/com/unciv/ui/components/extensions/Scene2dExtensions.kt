@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -473,6 +474,18 @@ fun String.toTextButton(style: TextButtonStyle? = null): TextButton {
     return if (style == null) TextButton(text, BaseScreen.skin) else TextButton(text, style)
 }
 
+/** Convert a texture path into an Image, make an ImageButton with a [tinted][overColor]
+ *  hover version of the image from it, then [surroundWithCircle] it. */
+fun String.toImageButton(iconSize: Float, circleSize: Float, circleColor: Color, overColor: Color): Group {
+    val style = ImageButton.ImageButtonStyle()
+    val image = ImageGetter.getDrawable(this)
+    style.imageUp = image
+    style.imageOver = image.tint(overColor)
+    val button = ImageButton(style)
+    button.setSize(iconSize, iconSize)
+    return button.surroundWithCircle( circleSize, false, circleColor)
+}
+
 /** Translate a [String] and make a [Label] widget from it */
 fun String.toLabel() = Label(this.tr(), BaseScreen.skin)
 /** Make a [Label] widget containing this [Int] as text */
@@ -584,6 +597,9 @@ object GdxKeyCodeFixes {
         else -> Input.Keys.valueOf(name)
     }
 }
+
+fun Input.areSecretKeysPressed() = isKeyPressed(Input.Keys.SHIFT_RIGHT) &&
+        (isKeyPressed(Input.Keys.CONTROL_RIGHT) || isKeyPressed(Input.Keys.ALT_RIGHT))
 
 /** Sets first row cell's minWidth to the max of the widths of that column over all given tables
  *

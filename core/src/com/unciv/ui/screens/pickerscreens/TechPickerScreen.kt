@@ -58,11 +58,11 @@ class TechPickerScreen(
     private var researchableTechs = civInfo.gameInfo.ruleset.technologies.keys
             .filter { civTech.canBeResearched(it) }.toHashSet()
 
-    private val currentTechColor = colorFromRGB(72, 147, 175)
-    private val researchedTechColor = colorFromRGB(255, 215, 0)
-    private val researchableTechColor = colorFromRGB(28, 170, 0)
-    private val queuedTechColor = colorFromRGB(7*2, 46*2, 43*2)
-
+    private val currentTechColor = skinStrings.getUIColor("TechPickerScreen/CurrentTechColor", colorFromRGB(72, 147, 175))
+    private val researchedTechColor = skinStrings.getUIColor("TechPickerScreen/ResearchedTechColor", colorFromRGB(255, 215, 0))
+    private val researchableTechColor = skinStrings.getUIColor("TechPickerScreen/ResearchableTechColor", colorFromRGB(28, 170, 0))
+    private val queuedTechColor = skinStrings.getUIColor("TechPickerScreen/QueuedTechColor", colorFromRGB(7*2, 46*2, 43*2))
+    private val researchedFutureTechColor = skinStrings.getUIColor("TechPickerScreen/ResearchedFutureTechColor", colorFromRGB(127, 50, 0))
 
     private val turnsToTech = civInfo.gameInfo.ruleset.technologies.values.associateBy({ it.name }, { civTech.turnsToTech(it.name) })
 
@@ -114,6 +114,8 @@ class TechPickerScreen(
             civTech.getFreeTechnology(selectedTech!!.name)
         }
         else civTech.techsToResearch = tempTechsToResearch
+
+        civTech.updateResearchProgress()
 
         game.settings.addCompletedTutorialTask("Pick technology")
 
@@ -199,8 +201,10 @@ class TechPickerScreen(
 
     private fun setButtonsInfo() {
         for ((techName, techButton) in techNameToButton) {
+            val isResearched = civTech.isResearched(techName)
             techButton.setButtonColor(when {
-                civTech.isResearched(techName) && techName != Constants.futureTech -> researchedTechColor
+                isResearched && techName != Constants.futureTech -> researchedTechColor
+                isResearched -> researchedFutureTechColor
                 // if we're here to pick a free tech, show the current tech like the rest of the researchables so it'll be obvious what we can pick
                 tempTechsToResearch.firstOrNull() == techName && !freeTechPick -> currentTechColor
                 researchableTechs.contains(techName) -> researchableTechColor
@@ -208,16 +212,11 @@ class TechPickerScreen(
                 else -> Color.BLACK.cpy()
             })
 
-            if (civTech.isResearched(techName) && techName != Constants.futureTech) {
+            if (isResearched && techName != Constants.futureTech) {
                 techButton.text.color = colorFromRGB(154, 98, 16)
-                techButton.color = researchedTechColor.cpy().darken(0.5f)
             }
 
-            if (techName == selectedTech?.name && civTech.isResearched(techName)) {
-                techButton.setButtonColor(colorFromRGB(230, 220, 114))
-            }
-
-            if (!civTech.isResearched(techName) || techName == Constants.futureTech) {
+            if (!isResearched || techName == Constants.futureTech) {
                 techButton.turns.setText(turnsToTech[techName] + "${Fonts.turn}".tr())
             }
 
@@ -424,7 +423,7 @@ class TechPickerScreen(
     }
 
     private fun getTechProgressLabel(techs: List<String>): String {
-        val progress = techs.sumOf { tech -> civTech.researchOfTech(tech) }
+        val progress = techs.sumOf { tech -> civTech.researchOfTech(tech) } + civTech.getOverflowScience(techs.first())
         val techCost = techs.sumOf { tech -> civInfo.tech.costOfTech(tech) }
         return "(${progress}/${techCost})"
     }

@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter.DigitsOnlyFilter
+import com.badlogic.gdx.utils.Align
 import com.unciv.logic.map.MapGeneratedMainType
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapResources
@@ -13,7 +14,6 @@ import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.mapgenerator.MapGenerationRandomness
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.UncivTextField
@@ -23,6 +23,7 @@ import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.screens.basescreen.BaseScreen
 
 /** Table for editing [mapParameters]
  *
@@ -132,6 +133,7 @@ class MapParametersTable(
             MapType.fourCorners,
             MapType.archipelago,
             MapType.innerSea,
+            MapType.perlin,
             if (forMapEditor && mapGeneratedMainType != MapGeneratedMainType.randomGenerated) MapType.empty else null
         )
 
@@ -273,6 +275,10 @@ class MapParametersTable(
                 mapParameters.mapResources = resourceSelectBox.selected.value
             }
 
+            if (forMapEditor) {
+                val comment = "This is used for painting resources, not in map generator steps:"
+                add(comment.toLabel(Color.GOLD, 14, Align.center).apply { wrap=true }).colspan(2).row()
+            }
             add("{Resource Setting}:".toLabel()).left()
             add(resourceSelectBox).fillX().row()
         }
@@ -361,7 +367,7 @@ class MapParametersTable(
             return slider
         }
 
-        fun addTextButton(text: String, shouldAddToTable: Boolean = false, action: ((Boolean) -> Unit),) {
+        fun addTextButton(text: String, shouldAddToTable: Boolean = false, action: ((Boolean) -> Unit)) {
             val button = text.toTextButton()
             button.onClick { action.invoke(true) }
             if (shouldAddToTable)
@@ -377,8 +383,10 @@ class MapParametersTable(
         addSlider("Temperature shift", {mapParameters.temperatureShift}, -0.4f, 0.4f, 0.1f)
         { mapParameters.temperatureShift = it }
 
-        addSlider("Resource richness", {mapParameters.resourceRichness},0f, 0.5f)
-        { mapParameters.resourceRichness = it }
+        if (forMapEditor) {
+            addSlider("Resource richness", { mapParameters.resourceRichness }, 0f, 0.5f)
+            { mapParameters.resourceRichness = it }
+        }
 
         addSlider("Vegetation richness", {mapParameters.vegetationRichness}, 0f, 1f)
         { mapParameters.vegetationRichness = it }

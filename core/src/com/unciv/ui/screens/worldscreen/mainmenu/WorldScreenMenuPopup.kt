@@ -3,12 +3,9 @@ package com.unciv.ui.screens.worldscreen.mainmenu
 import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSetupInfo
-import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.newgamescreen.NewGameScreen
-import com.unciv.ui.popups.options.addMusicCurrentlyPlaying
-import com.unciv.ui.popups.options.addMusicPauseSlider
-import com.unciv.ui.popups.options.addMusicVolumeSlider
+import com.unciv.ui.popups.options.addMusicControls
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.screens.savescreens.SaveGameScreen
@@ -92,16 +89,7 @@ class WorldScreenMusicButton(val worldScreen: WorldScreen) : Popup(worldScreen) 
         val settings = UncivGame.Current.settings
 
         defaults().fillX()
-        addMusicVolumeSlider(this, settings, musicController)
-        row()
-        addMusicPauseSlider(this , settings, musicController)
-        row()
-        addMusicCurrentlyPlaying(this, musicController)
-        row()
-        addButton("Pause", action = { musicController.pause(0.5f) })
-        addButton("Resume", action = { musicController.resume(0.5f) })
-        addButton("Skip", action = { musicController.chooseTrack(flags = MusicTrackChooserFlags.none) }).row()
-
-        addCloseButton()
+        addMusicControls(this, settings, musicController)
+        addCloseButton().colspan(2)
     }
 }

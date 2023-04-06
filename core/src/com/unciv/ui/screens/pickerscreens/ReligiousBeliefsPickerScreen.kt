@@ -10,9 +10,8 @@ import com.unciv.models.Counter
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popups.AskTextPopup
 import com.unciv.ui.components.AutoScrollPane
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
@@ -21,10 +20,12 @@ import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.surroundWithCircle
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.AskTextPopup
 
 class ReligiousBeliefsPickerScreen (
     choosingCiv: Civilization,
-    newBeliefsToChoose: Counter<BeliefType>,
+    numberOfBeliefsCanChoose: Counter<BeliefType>,
     pickIconAndName: Boolean
 ): ReligionPickerScreenCommon(choosingCiv, disableScroll = true) {
     // Roughly follows the layout of the original (although I am not very good at UI designing, so please improve this)
@@ -44,7 +45,7 @@ class ReligiousBeliefsPickerScreen (
     // One entry per new Belief to choose - the left side will offer these below the choices from earlier in the game
     class BeliefToChoose(val type: BeliefType, var belief: Belief? = null)
     private val beliefsToChoose: Array<BeliefToChoose> =
-        newBeliefsToChoose.flatMap { entry -> (0 until entry.value).map { BeliefToChoose(entry.key) } }.toTypedArray()
+        numberOfBeliefsCanChoose.flatMap { entry -> (0 until entry.value).map { BeliefToChoose(entry.key) } }.toTypedArray()
 
     private var leftSelection = Selection()
     private var leftSelectedIndex = -1
@@ -193,8 +194,10 @@ class ReligiousBeliefsPickerScreen (
         rightBeliefsToChoose.clear()
         rightSelection.clear()
         val availableBeliefs = ruleset.beliefs.values
-            .filter { (it.type == beliefType || beliefType == BeliefType.Any) }
+            .filter { it.type == beliefType || beliefType == BeliefType.Any }
+
         val civReligionManager = currentReligion.getFounder().religionManager
+
         for (belief in availableBeliefs) {
             val beliefButton = getBeliefButton(belief)
             when {
@@ -213,6 +216,9 @@ class ReligiousBeliefsPickerScreen (
                     // The Belief is not available because someone already has it
                     beliefButton.disable(redDisableColor)
                 }
+                belief.getMatchingUniques(UniqueType.OnlyAvailableWhen).any { !it.conditionalsApply(choosingCiv) } ->
+                    beliefButton.disable(redDisableColor) // Blocked
+
                 else ->
                     beliefButton.onClickSelect(rightSelection, belief) {
                         beliefsToChoose[leftButtonIndex].belief = belief

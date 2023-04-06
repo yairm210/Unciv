@@ -3,6 +3,7 @@ package com.unciv.logic.automation.unit
 import com.unciv.Constants
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
+import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.map.mapunit.MapUnit
@@ -116,6 +117,9 @@ object BattleHelper {
 
         val tileCombatant = Battle.getMapCombatantOfTile(tile) ?: return false
         if (tileCombatant.getCivInfo() == combatant.getCivInfo()) return false
+        // If the user automates units, one may capture the city before the user had a chance to decide what to do with it,
+        //  and then the next unit should not attack that city
+        if (tileCombatant is CityCombatant && tileCombatant.city.hasJustBeenConquered) return false
         if (!combatant.getCivInfo().isAtWarWith(tileCombatant.getCivInfo())) return false
 
         if (combatant is MapUnitCombatant && combatant.isLandUnit() && combatant.isMelee() &&

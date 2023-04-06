@@ -52,7 +52,7 @@ class SerializationTests {
         val param = GameParameters().apply {
             numberOfCityStates = 0
             players.clear()
-            players.add(Player("Rome").apply { playerType = PlayerType.Human })
+            players.add(Player("Rome", PlayerType.Human))
             players.add(Player("Greece"))
         }
         val mapParameters = MapParameters().apply {

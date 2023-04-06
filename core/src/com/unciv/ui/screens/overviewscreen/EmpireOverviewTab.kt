@@ -1,13 +1,9 @@
 package com.unciv.ui.screens.overviewscreen
 
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Civilization
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.TabbedPager
-import com.unciv.ui.components.extensions.packIfNeeded
-import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.screens.basescreen.BaseScreen
 
 abstract class EmpireOverviewTab (
     val viewingPlayer: Civilization,
@@ -32,4 +28,5 @@ abstract class EmpireOverviewTab (
     open fun select(selection: String): Float? = null
 
     val gameInfo = viewingPlayer.gameInfo
+
 }

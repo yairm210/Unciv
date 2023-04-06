@@ -1,3 +1,97 @@
+## 4.5.16
+
+Many many performance improvements!
+
+By SomeTroglodyte:
+- Music player controls
+
+## 4.5.15
+
+Automated units don't try and conquer the same city twice
+
+Constructed units that can't be placed are put on hold till the next turn
+
+Solve 'desktop tries to create window of size 0/0' bug
+
+Make AI buy city tiles.  - By WhoIsJohannes
+
+By SomeTroglodyte:
+- Untinted stat symbols in tinted text
+- Moddable Civilopedia Welcome
+- Fix disbanding units a civ cannot afford
+- Main menu cancels background map creation when obsolete
+
+## 4.5.14
+
+Mods that remove 'repair' improvement no longer cause crashes down the line
+
+Archipelago creates water again
+
+By SomeTroglodyte:
+- TileSet mods can no longer lock user out
+- Obsoleted units replaced in construction queues by Nation-unique upgrades
+- Fix exploit allowing promotion with 0 movement
+- Fix notifications for pillage loot
+- A renamed unit shows that new name in can promote notifications
+
+AbsoluteUnits - Hwach'a, Camel Archer  - By letstalkaboutdune
+
+## 4.5.13
+
+Gold per turn is evaluated less the more turns 'in the future' it will be payed
+
+Returned Perlin map type
+
+By SomeTroglodyte:
+- Map scroll speed
+- Fix MiscLayer not respecting fog of war for spectator
+- More Spectator/Barbarians fixes related to income
+
+By itanasi:
+- Automated Civilians don't multi-turn path through Enemy Territory
+- More variety in Main Menu map
+
+City-state music plays when first meeting them - By Skekdog
+
+Add AbsoluteUnits license info - By letstalkaboutdune
+
+## 4.5.12
+
+Spectators no longer affect games they are in
+
+Triggered notification text for unit triggers sent correctly
+
+By SomeTroglodyte:
+- "Sleep until healed" knows when you can't
+- Tiny tweak to Max Turns slider
+
+By Gualdimar:
+- Better multiplayer button location in portrait mode
+- Improvements in science display
+
+AbsoluteUnits - Landsknecht, Knight_v2, Missionary (post-Industrial)  - By letstalkaboutdune
+
+## 4.5.11
+
+Fixed 'upon gaining unit' trigger activating for all units
+
+modding: 'Only available when' applies to beliefs
+
+Better promotion positioning in unit overview
+
+Stat updates propagate where they didn't before
+
+Hide bombard notification after bombarding
+
+By SomeTroglodyte:
+- Desktop starting size fix
+- Fix stats reward for GP consumption escalation
+- Fix Great Person Create Improvement w/ Resource
+
+By Gualdimar:
+- Victory screen fixed button position
+- Fixed foreign city religion table exploit
+
 ## 4.5.10
 
 Tilesets: Separated *unexplored* tiles from *not visible* tiles

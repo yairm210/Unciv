@@ -189,7 +189,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     val type: UnitType
-        get() = baseUnit.getType()
+        get() = baseUnit.type
 
     fun baseUnit(): BaseUnit = baseUnit
     fun getMovementString(): String =
@@ -307,7 +307,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
 
         // Set equality automatically determines if anything changed - https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-abstract-set/equals.html
-        if (updateCivViewableTiles && oldViewableTiles != viewableTiles)
+        if (updateCivViewableTiles && oldViewableTiles != viewableTiles
+                // Don't bother updating if all previous and current viewable tiles are within our borders
+                && (oldViewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles }
+                        || viewableTiles.any { it !in civ.cache.ourTilesAndNeighboringTiles }))
             civ.cache.updateViewableTiles(explorerPosition)
     }
 
@@ -413,6 +416,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
     private fun adjacentHealingBonus(): Int {
         return getMatchingUniques(UniqueType.HealAdjacentUnits).sumOf { it.params[0].toInt() }
     }
+
+    fun getHealAmountForCurrentTile() = when {
+        isEmbarked() -> 0 // embarked units can't heal
+        health >= 100 -> 0 // No need to heal if at max health
+        hasUnique(UniqueType.HealOnlyByPillaging, checkCivInfoUniques = true) -> 0
+        else -> rankTileForHealing(getTile())
+    }
+    fun canHealInCurrentTile() = getHealAmountForCurrentTile() > 0
 
     // Only military land units can truly "garrison"
     fun canGarrison() = isMilitary() && baseUnit.isLandUnit()
@@ -566,11 +577,11 @@ class MapUnit : IsPartOfGameInfoSerialization {
         for (unique in civ.getMatchingUniques(UniqueType.ProvidesGoldWheneverGreatPersonExpended)) {
             gainedStats.gold += (100 * civ.gameInfo.speed.goldCostModifier).toInt()
         }
+        val speedModifiers = civ.gameInfo.speed.statCostModifiers
         for (unique in civ.getMatchingUniques(UniqueType.ProvidesStatsWheneverGreatPersonExpended)) {
-            val uniqueStats = unique.stats
-            val speedModifiers = civ.gameInfo.speed.statCostModifiers
-            for (stat in uniqueStats) {
-                uniqueStats[stat.key] = stat.value * speedModifiers[stat.key]!!
+            val uniqueStats = unique.stats.clone()
+            for ((stat, value) in uniqueStats) {
+                uniqueStats[stat] = value * speedModifiers[stat]!!
             }
             gainedStats.add(uniqueStats)
         }

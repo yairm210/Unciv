@@ -40,18 +40,33 @@ class SkinStrings(skin: String = UncivGame.Current.settings.skin) {
      * @param default   The path to the background which should be used if path is not available.
      *                  Should be one of the predefined ones inside SkinStrings or null to get a
      *                  solid background.
+     *
+     * @param tintColor Default tint color if the UI Skin doesn't specify one. If both not specified,
+     *                  the returned background will not be tinted. If the UI Skin specifies a
+     *                  separate alpha value, it will be applied to a clone of either color.
      */
     fun getUiBackground(path: String, default: String? = null, tintColor: Color? = null): NinePatchDrawable {
         val locationByName = skinLocation + path
-        val locationByConfigVariant = skinLocation + skinConfig.skinVariants[path]?.image
-        val tint = (skinConfig.skinVariants[path]?.tint ?: tintColor)?.apply {
-            a = skinConfig.skinVariants[path]?.alpha ?: a
+        val skinVariant = skinConfig.skinVariants[path]
+        val locationByConfigVariant = if (skinVariant?.image != null) skinLocation + skinVariant.image else null
+        val tint = (skinVariant?.tint ?: tintColor)?.run {
+            if (skinVariant?.alpha == null) this
+            else cpy().apply { a = skinVariant.alpha }
         }
-
-        return when {
-            ImageGetter.ninePatchImageExists(locationByConfigVariant) -> ImageGetter.getNinePatch(locationByConfigVariant, tint)
-            ImageGetter.ninePatchImageExists(locationByName) -> ImageGetter.getNinePatch(locationByName, tint)
-            else -> ImageGetter.getNinePatch(default, tint)
+        val location = when {
+            locationByConfigVariant != null && ImageGetter.ninePatchImageExists(locationByConfigVariant) ->
+                locationByConfigVariant
+            ImageGetter.ninePatchImageExists(locationByName) ->
+                locationByName
+            else ->
+                default
         }
+        return ImageGetter.getNinePatch(location, tint)
     }
+
+    fun getUIColor(path: String, default: Color? = null) =
+            skinConfig.skinVariants[path]?.tint
+                ?: default
+                ?: skinConfig.clearColor
+
 }

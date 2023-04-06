@@ -237,6 +237,8 @@ class Civilization : IsPartOfGameInfoSerialization {
     @Transient
     var hasLongCountDisplayUnique = false
 
+    var statsHistory = CivRankingHistory()
+
     constructor()
 
     constructor(civName: String) {
@@ -285,6 +287,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.totalFaithForContests = totalFaithForContests
         toReturn.attacksSinceTurnStart = attacksSinceTurnStart.copy()
         toReturn.hasMovedAutomatedUnits = hasMovedAutomatedUnits
+        toReturn.statsHistory = statsHistory.clone()
         return toReturn
     }
 
@@ -307,7 +310,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getProximity(civName: String) = proximity[civName] ?: Proximity.None
 
     /** Returns only undefeated civs, aka the ones we care about */
-    fun getKnownCivs() = diplomacy.values.map { it.otherCiv() }.filter { !it.isDefeated() }
+    fun getKnownCivs() = diplomacy.values.asSequence().map { it.otherCiv() }.filter { !it.isDefeated() }
     fun knows(otherCivName: String) = diplomacy.containsKey(otherCivName)
     fun knows(otherCiv: Civilization) = knows(otherCiv.civName)
 
@@ -317,11 +320,11 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun isOneCityChallenger() = playerType == PlayerType.Human && gameInfo.gameParameters.oneCityChallenge
 
     fun isCurrentPlayer() = gameInfo.currentPlayerCiv == this
-    fun isMajorCiv() = nation.isMajorCiv()
-    fun isMinorCiv() = nation.isCityState() || nation.isBarbarian()
-    fun isCityState(): Boolean = nation.isCityState()
-    fun isBarbarian() = nation.isBarbarian()
-    fun isSpectator() = nation.isSpectator()
+    fun isMajorCiv() = nation.isMajorCiv
+    fun isMinorCiv() = nation.isCityState || nation.isBarbarian
+    fun isCityState(): Boolean = nation.isCityState
+    fun isBarbarian() = nation.isBarbarian
+    fun isSpectator() = nation.isSpectator
     fun isAlive(): Boolean = !isDefeated()
 
     @delegate:Transient
@@ -502,7 +505,7 @@ class Civilization : IsPartOfGameInfoSerialization {
      */
     fun isDefeated() = when {
         isBarbarian() || isSpectator() -> false     // Barbarians and voyeurs can't lose
-        hasEverOwnedOriginalCapital == true -> cities.isEmpty()
+        hasEverOwnedOriginalCapital -> cities.isEmpty()
         else -> units.getCivUnits().none()
     }
 
@@ -538,7 +541,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         else when (category) {
                 RankingType.Score -> calculateTotalScore().toInt()
                 RankingType.Population -> cities.sumOf { it.population.population }
-                RankingType.Crop_Yield -> stats.statsForNextTurn.food.roundToInt()
+                RankingType.CropYield -> stats.statsForNextTurn.food.roundToInt()
                 RankingType.Production -> stats.statsForNextTurn.production.roundToInt()
                 RankingType.Gold -> gold
                 RankingType.Territory -> cities.sumOf { it.tiles.size }
@@ -769,15 +772,17 @@ class Civilization : IsPartOfGameInfoSerialization {
      * Removes current capital then moves capital to argument city if not null
      */
     fun moveCapitalTo(city: City?) {
-        if (cities.isNotEmpty() && getCapital() != null) {
-            val oldCapital = getCapital()!!
-            oldCapital.cityConstructions.removeBuilding(oldCapital.capitalCityIndicator())
-        }
 
-        if (city == null) return // can't move a non-existent city but we can always remove our old capital
-        // move new capital
-        city.cityConstructions.addBuilding(city.capitalCityIndicator())
-        city.isBeingRazed = false // stop razing the new capital if it was being razed
+        val oldCapital = getCapital()
+
+        // Add new capital first so the civ doesn't get stuck in a state where it has cities but no capital
+        if (city != null) {
+            // move new capital
+            city.cityConstructions.addBuilding(city.capitalCityIndicator())
+            city.isBeingRazed = false // stop razing the new capital if it was being razed
+        }
+        if (oldCapital != null)
+            oldCapital.cityConstructions.removeBuilding(oldCapital.capitalCityIndicator())
     }
 
     fun moveCapitalToNextLargest() {

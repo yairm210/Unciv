@@ -92,13 +92,13 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)
                 val nation = civInfo.nation
                 addLeaderName(civInfo)
+                music.chooseTrack(civInfo.civName, MusicMood.themeOrPeace, MusicTrackChooserFlags.setSpecific)
                 if (civInfo.isCityState()) {
                     addGoodSizedLabel("We have encountered the City-State of [${nation.name}]!").row()
                     add(getCloseButton("Excellent!"))
                 } else {
                     addGoodSizedLabel(nation.introduction).row()
                     add(getCloseButton("A pleasure to meet you."))
-                    music.chooseTrack(civInfo.civName, MusicMood.themeOrPeace, MusicTrackChooserFlags.setSpecific)
                 }
             }
             AlertType.CityConquered -> {
@@ -293,13 +293,13 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 val player = worldScreen.viewingCiv
                 addLeaderName(bullyOrAttacker)
 
-                val relation = bullyOrAttacker.getDiplomacyManager(player).relationshipLevel()
+                val isAtLeastNeutral = bullyOrAttacker.getDiplomacyManager(player).isRelationshipLevelGE(RelationshipLevel.Neutral)
                 val text = when {
-                    popupAlert.type == AlertType.BulliedProtectedMinor && relation >= RelationshipLevel.Neutral ->  // Nice message
+                    popupAlert.type == AlertType.BulliedProtectedMinor && isAtLeastNeutral ->  // Nice message
                         "I've been informed that my armies have taken tribute from [${cityState.civName}], a city-state under your protection.\nI assure you, this was quite unintentional, and I hope that this does not serve to drive us apart."
                     popupAlert.type == AlertType.BulliedProtectedMinor ->  // Nasty message
                         "We asked [${cityState.civName}] for a tribute recently and they gave in.\nYou promised to protect them from such things, but we both know you cannot back that up."
-                    relation >= RelationshipLevel.Neutral ->  // Nice message
+                    isAtLeastNeutral ->  // Nice message
                         "It's come to my attention that I may have attacked [${cityState.civName}], a city-state under your protection.\nWhile it was not my goal to be at odds with your empire, this was deemed a necessary course of action."
                     else ->  // Nasty message
                         "I thought you might like to know that I've launched an invasion of one of your little pet states.\nThe lands of [${cityState.civName}] will make a fine addition to my own."

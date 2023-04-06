@@ -17,6 +17,7 @@ import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.utils.Log
@@ -370,9 +371,14 @@ class WorkerAutomation(
         }
         if (potentialTileImprovements.isEmpty()) return null
 
+        val cityUniqueCaches = HashMap<City, LocalUniqueCache>()
         fun getRankingWithImprovement(improvementName: String): Float {
             val improvement = ruleSet.tileImprovements[improvementName]!!
-            val stats = tile.stats.getImprovementStats(improvement, civInfo, tile.getCity())
+            val city = tile.getCity()
+            val cache =
+                    if (city == null) LocalUniqueCache(false)
+                    else cityUniqueCaches.getOrPut(city) { LocalUniqueCache() }
+            val stats = tile.stats.getImprovementStats(improvement, civInfo, tile.getCity(), cache)
             return Automation.rankStatsValue(stats, unit.civ)
         }
 
@@ -381,7 +387,7 @@ class WorkerAutomation(
             .filter { it.second > 0f }
             .maxByOrNull { it.second }?.first
 
-        val lastTerrain = tile.getLastTerrain()
+        val lastTerrain = tile.lastTerrain
 
         fun isUnbuildableAndRemovable(terrain: Terrain): Boolean = terrain.unbuildable
                 && ruleSet.tileImprovements.containsKey(Constants.remove + terrain.name)
@@ -483,7 +489,7 @@ class WorkerAutomation(
         val enemyCivs = civInfo.getKnownCivs()
             .filterNot { it == civInfo || it.cities.isEmpty() || !civInfo.getDiplomacyManager(it).canAttack() }
         // no potential enemies
-        if (enemyCivs.isEmpty()) return false
+        if (enemyCivs.none()) return false
 
         val threatMapping: (Civilization) -> Int = {
             // the war is already a good nudge to build forts
@@ -501,7 +507,7 @@ class WorkerAutomation(
             civInfo,
             it) <= threatMapping(it) }
         // no threat, let's not build fort
-        if (enemyCivsIsCloseEnough.isEmpty()) return false
+        if (enemyCivsIsCloseEnough.none()) return false
 
         // make list of enemy cities as sources of threat
         val enemyCities = mutableListOf<Tile>()

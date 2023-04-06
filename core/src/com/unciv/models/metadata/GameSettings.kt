@@ -1,6 +1,6 @@
 package com.unciv.models.metadata
 
-import com.badlogic.gdx.Application
+import com.badlogic.gdx.Application.ApplicationType
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Base64Coder
 import com.unciv.Constants
@@ -11,6 +11,7 @@ import com.unciv.ui.components.FontFamilyData
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.KeyboardBindings
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
+import com.unciv.utils.Display
 import com.unciv.utils.ScreenOrientation
 import java.text.Collator
 import java.time.Duration
@@ -30,7 +31,11 @@ enum class ScreenSize(val virtualWidth:Float, val virtualHeight:Float){
 
 class GameSettings {
 
+    /** Allows panning the map by moving the pointer to the screen edges */
     var mapAutoScroll: Boolean = false
+    /** How fast the map pans using keyboard or with [mapAutoScroll] and mouse */
+    var mapPanningSpeed: Float = 6f
+
     var showWorkedTiles: Boolean = false
     var showResourcesAndImprovements: Boolean = true
     var showTileYields: Boolean = false
@@ -110,16 +115,19 @@ class GameSettings {
 
     init {
         // 26 = Android Oreo. Versions below may display permanent icon in notification bar.
-        if (Gdx.app?.type == Application.ApplicationType.Android && Gdx.app.version < 26) {
+        if (Gdx.app?.type == ApplicationType.Android && Gdx.app.version < 26) {
             multiplayer.turnCheckerPersistentNotificationEnabled = false
         }
     }
 
     fun save() {
-        if (!isFreshlyCreated && Gdx.app?.type == Application.ApplicationType.Desktop) {
-            windowState = WindowState(Gdx.graphics.width, Gdx.graphics.height)
-        }
+        refreshWindowSize()
         UncivGame.Current.files.setGeneralSettings(this)
+    }
+    fun refreshWindowSize() {
+        if (isFreshlyCreated || Gdx.app.type != ApplicationType.Desktop) return
+        if (!Display.hasUserSelectableSize(screenMode)) return
+        windowState = WindowState(Gdx.graphics.width, Gdx.graphics.height)
     }
 
     fun addCompletedTutorialTask(tutorialTask: String): Boolean {

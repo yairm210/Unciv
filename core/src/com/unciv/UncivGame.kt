@@ -189,7 +189,9 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
         ImageGetter.resetAtlases()
         ImageGetter.setNewRuleset(ImageGetter.ruleset)  // This needs to come after the settings, since we may have default visual mods
-        if (settings.tileSet !in ImageGetter.getAvailableTilesets()) { // If one of the tilesets is no longer available, default back
+        val availableTileSets = ImageGetter.getAvailableTilesets().toSet()
+            .intersect(TileSetCache.getAvailableTilesets().toSet())
+        if (settings.tileSet !in availableTileSets) { // If the configured tileset is no longer available, default back
             settings.tileSet = Constants.defaultTileset
         }
 
@@ -529,7 +531,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.5.10", 834)
+        val VERSION = Version("4.5.16-patch1", 842)
         //endregion
 
         lateinit var Current: UncivGame

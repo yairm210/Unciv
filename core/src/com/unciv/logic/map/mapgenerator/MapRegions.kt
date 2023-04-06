@@ -646,9 +646,9 @@ class MapRegions (val ruleset: Ruleset){
             val validBonuses = ruleset.tileResources.values.filter {
                 it.resourceType == ResourceType.Bonus &&
                 it.food >= 1 &&
-                plot.getLastTerrain().name in it.terrainsCanBeFoundOn
+                plot.lastTerrain.name in it.terrainsCanBeFoundOn
             }
-            val goodPlotForOasis = canPlaceOasis && plot.getLastTerrain().name in oasisEquivalent!!.occursOn
+            val goodPlotForOasis = canPlaceOasis && plot.lastTerrain.name in oasisEquivalent!!.occursOn
 
             if (validBonuses.isNotEmpty() || goodPlotForOasis) {
                 if (goodPlotForOasis) {
@@ -699,7 +699,7 @@ class MapRegions (val ruleset: Ruleset){
 
                 if (plot.resource != null) continue
 
-                val bonusToPlace = stoneTypeBonuses.filter { plot.getLastTerrain().name in it.terrainsCanBeFoundOn }.randomOrNull()
+                val bonusToPlace = stoneTypeBonuses.filter { plot.lastTerrain.name in it.terrainsCanBeFoundOn }.randomOrNull()
                 if (bonusToPlace != null) {
                     plot.resource = bonusToPlace.name
                     stoneNeeded--
@@ -715,7 +715,7 @@ class MapRegions (val ruleset: Ruleset){
         val bestImprovementYield = tile.tileMap.ruleset!!.tileImprovements.values
                 .filter { !it.hasUnique(UniqueType.GreatImprovement) &&
                         it.uniqueTo == null &&
-                        tile.getLastTerrain().name in it.terrainsCanBeBuiltOn }
+                        tile.lastTerrain.name in it.terrainsCanBeBuiltOn }
                 .maxOfOrNull { it[stat] }
         return baseYield + (bestImprovementYield ?: 0f)
     }
@@ -1124,7 +1124,7 @@ class MapRegions (val ruleset: Ruleset){
         // Second place one (1) luxury at minor civ start locations
         // Check only ones that got a start location
         for (startLocation in tileMap.startingLocationsByNation
-                .filterKeys { ruleset.nations[it]!!.isCityState() }.map { it.value.first() }) {
+                .filterKeys { ruleset.nations[it]!!.isCityState }.map { it.value.first() }) {
             val region = regions.firstOrNull { startLocation in it.tiles }
             val tilesToCheck = startLocation.getTilesInDistanceRange(1..2)
             // 75% probability that we first attempt to place a "city state" luxury, then a random or regional one
@@ -1315,7 +1315,7 @@ class MapRegions (val ruleset: Ruleset){
 
         if (modernOptions.any())
             for (cityStateLocation in tileMap.startingLocationsByNation
-                    .filterKeys { ruleset.nations[it]!!.isCityState() }.values.map { it.first() }) {
+                    .filterKeys { ruleset.nations[it]!!.isCityState }.values.map { it.first() }) {
                 val resourceToPlace = modernOptions.random()
                 totalPlaced[resourceToPlace] =
                         totalPlaced[resourceToPlace]!! + tryAddingResourceToTiles(resourceToPlace, 1, cityStateLocation.getTilesInDistanceRange(1..3))
@@ -1334,7 +1334,7 @@ class MapRegions (val ruleset: Ruleset){
                 continue
             val weightings = strategicResources.map {
                 if (fallbackStrategic) {
-                    if (tile.getLastTerrain().name in it.terrainsCanBeFoundOn) 1f else 0f
+                    if (tile.lastTerrain.name in it.terrainsCanBeFoundOn) 1f else 0f
                 } else {
                     val uniques = it.getMatchingUniques(UniqueType.MinorDepositWeighting, conditionalTerrain).toList()
                     uniques.sumOf { unique -> unique.params[0].toInt() }.toFloat()
@@ -1391,7 +1391,7 @@ class MapRegions (val ruleset: Ruleset){
             if(fallbackBonuses && resource.resourceType == ResourceType.Bonus) {
                 // Since we haven't been able to generate any rule-based lists, just generate new ones on the fly
                 // Increase impact to avoid clustering since there is no terrain type stratification.
-                val fallbackList = tileMap.values.filter { it.getLastTerrain().name in resource.terrainsCanBeFoundOn }.shuffled()
+                val fallbackList = tileMap.values.filter { it.lastTerrain.name in resource.terrainsCanBeFoundOn }.shuffled()
                 placeResourcesInTiles((20 * bonusMultiplier).toInt(), fallbackList, listOf(resource), 2 + extraImpact, 2 + extraImpact, false)
             }
         }
@@ -1440,7 +1440,7 @@ class MapRegions (val ruleset: Ruleset){
         for (tile in tiles) {
             val conditionalTerrain = StateForConditionals(attackedTile = tile)
             if (tile.resource == null &&
-                    tile.getLastTerrain().name in resource.terrainsCanBeFoundOn &&
+                    tile.lastTerrain.name in resource.terrainsCanBeFoundOn &&
                     !tile.getBaseTerrain().hasUnique(UniqueType.BlocksResources, conditionalTerrain) &&
                     !resource.hasUnique(UniqueType.NoNaturalGeneration, conditionalTerrain) &&
                     resource.getMatchingUniques(UniqueType.TileGenerationConditions).none {
@@ -1515,7 +1515,7 @@ class MapRegions (val ruleset: Ruleset){
         for (tile in tileList) {
             if (tile.resource != null ||
                     (testTerrains &&
-                            (tile.getLastTerrain().name !in resourceOptions.first().terrainsCanBeFoundOn ||
+                            (tile.lastTerrain.name !in resourceOptions.first().terrainsCanBeFoundOn ||
                             resourceOptions.first().hasUnique(UniqueType.NoNaturalGeneration, conditionalTerrain)) ) ||
                     tile.getBaseTerrain().hasUnique(UniqueType.BlocksResources, conditionalTerrain))
                 continue // Can't place here, can't be a fallback tile

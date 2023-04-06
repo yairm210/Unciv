@@ -45,6 +45,7 @@ fun displayTab(
             if (GUI.isWorldLoaded())
                 GUI.getMap().isAutoScrollEnabled = settings.mapAutoScroll
         }
+        addScrollSpeedSlider(this, settings, optionsPopup.selectBoxMinWidth)
     }
 
     optionsPopup.addCheckbox(this, "Show unit movement arrows", settings.showUnitMovements, true) { settings.showUnitMovements = it }
@@ -121,6 +122,20 @@ private fun addMinimapSizeSlider(table: Table, settings: GameSettings, selectBox
     table.add(minimapSlider).minWidth(selectBoxMinWidth).pad(10f).row()
 }
 
+private fun addScrollSpeedSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
+    table.add("Map panning speed".toLabel()).left().fillX()
+
+    val scrollSpeedSlider = UncivSlider(
+        0.2f, 25f, 0.2f, initial = settings.mapPanningSpeed
+    ) {
+        settings.mapPanningSpeed = it
+        settings.save()
+        if (GUI.isWorldLoaded())
+            GUI.getMap().mapPanningSpeed = settings.mapPanningSpeed
+    }
+    table.add(scrollSpeedSlider).minWidth(selectBoxMinWidth).pad(10f).row()
+}
+
 private fun addUnitIconAlphaSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
     table.add("Unit icon opacity".toLabel()).left().fillX()
 
@@ -149,6 +164,7 @@ private fun addScreenModeSelectBox(table: Table, settings: GameSettings, selectB
     selectBox.items = Array(modes.values.toTypedArray())
     selectBox.selected = current
     selectBox.onChange {
+        settings.refreshWindowSize()
         val mode = selectBox.selected
         settings.screenMode = mode.getId()
         Display.setScreenMode(mode.getId(), settings)
