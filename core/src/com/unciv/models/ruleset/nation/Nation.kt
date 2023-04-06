@@ -17,7 +17,7 @@ import kotlin.math.pow
 
  class Nation : RulesetObject() {
     var leaderName = ""
-    fun getLeaderDisplayName() = if (isCityState) name
+    fun getLeaderDisplayName() = if (leaderName.isEmpty()) name
     else "[$leaderName] of [$name]"
 
     val style = ""

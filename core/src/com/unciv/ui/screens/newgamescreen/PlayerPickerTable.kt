@@ -11,6 +11,7 @@ import com.unciv.logic.IdChecker
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.metadata.GameParameters
+import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
@@ -51,7 +52,7 @@ class PlayerPickerTable(
     /** Locks player table for editing, currently unused, was previously used for scenarios and could be useful in the future. */
     var locked = false
 
-    /** No random civilization is available, potentially used in the future  during map editing. */
+    /** No random civilization is available, potentially used in the future during map editing. */
     var noRandom = false
 
     private val friendList = FriendList()
@@ -167,88 +168,109 @@ class PlayerPickerTable(
         playerTable.add(nationTable).left()
 
         val playerTypeTextButton = player.playerType.name.toTextButton()
+        playerTable.add(playerTypeTextButton).width(100f).pad(5f).right()
+        fun updatePlayerTypeButtonEnabled() {
+            // This could be written much shorter with logical operators - I think this is readable
+            playerTypeTextButton.isEnabled = when {
+                // Can always change AI to Human
+                player.playerType == PlayerType.AI -> true
+                // we cannot change Spectator player to AI type, robots not allowed to spectate :(
+                player.chosenCiv == Constants.spectator -> false
+                // In randomNumberOfPlayers mode, don't let the user choose random AI's
+                gameParameters.randomNumberOfPlayers && player.chosenCiv == Constants.random -> false
+                else -> true
+            }
+        }
+        updatePlayerTypeButtonEnabled()
+
+        nationTable.onClick {
+            if (locked) return@onClick
+            val noRandom = noRandom ||
+                    gameParameters.randomNumberOfPlayers && player.playerType == PlayerType.AI
+            popupNationPicker(player, noRandom)
+            updatePlayerTypeButtonEnabled()
+        }
         playerTypeTextButton.onClick {
-            if (player.playerType == PlayerType.AI)
-                player.playerType = PlayerType.Human
-            // we cannot change Spectator player to AI type, robots not allowed to spectate :(
-            else if (player.chosenCiv != Constants.spectator)
-                player.playerType = PlayerType.AI
+            player.playerType = player.playerType.toggle()
             update()
         }
-        playerTable.add(playerTypeTextButton).width(100f).pad(5f).right()
+
         if (!locked) {
-            playerTable.add("-".toLabel(Color.BLACK, 30).apply { this.setAlignment(Align.center) }
-                    .surroundWithCircle(40f)
-                    .onClick {
-                        gameParameters.players.remove(player)
-                        update()
-                    }).pad(5f).right().row()
-        }
-        if (gameParameters.isOnlineMultiplayer && player.playerType == PlayerType.Human) {
-
-            val playerIdTextField = UncivTextField.create("Please input Player ID!", player.playerId)
-            playerTable.add(playerIdTextField).colspan(2).fillX().pad(5f)
-            val errorLabel = "✘".toLabel(Color.RED)
-            playerTable.add(errorLabel).pad(5f).row()
-
-            fun onPlayerIdTextUpdated() {
-                try {
-                    UUID.fromString(IdChecker.checkAndReturnPlayerUuid(playerIdTextField.text))
-                    player.playerId = playerIdTextField.text.trim()
-                    errorLabel.apply { setText("✔");setFontColor(Color.GREEN) }
-                } catch (ex: Exception) {
-                    errorLabel.apply { setText("✘");setFontColor(Color.RED) }
+            playerTable.add("-".toLabel(Color.BLACK, 30, Align.center)
+                .surroundWithCircle(40f)
+                .onClick {
+                    gameParameters.players.remove(player)
+                    update()
                 }
-            }
-            onPlayerIdTextUpdated()
-
-            playerIdTextField.addListener { onPlayerIdTextUpdated(); true }
-            val currentUserId = UncivGame.Current.settings.multiplayer.userId
-            val setCurrentUserButton = "Set current user".toTextButton()
-            setCurrentUserButton.onClick {
-                playerIdTextField.text = currentUserId
-                onPlayerIdTextUpdated()
-            }
-            playerTable.add(setCurrentUserButton).colspan(3).fillX().pad(5f).row()
-
-            val copyFromClipboardButton = "Player ID from clipboard".toTextButton()
-            copyFromClipboardButton.onClick {
-                playerIdTextField.text = Gdx.app.clipboard.contents
-                onPlayerIdTextUpdated()
-            }
-            playerTable.add(copyFromClipboardButton).right().colspan(3).fillX().pad(5f).row()
-
-            //check if friends list is empty before adding the select friend button
-            if (friendList.friendList.isNotEmpty()) {
-                val selectPlayerFromFriendsList = "Player ID from friends list".toTextButton()
-                selectPlayerFromFriendsList.onClick {
-                    popupFriendPicker(player)
-                }
-                playerTable.add(selectPlayerFromFriendsList).left().colspan(3).fillX().pad(5f)
-            }
+            ).pad(5f).right()
         }
+
+        if (gameParameters.isOnlineMultiplayer && player.playerType == PlayerType.Human)
+            playerTable.addPlayerTableMultiplayerControls(player)
 
         return playerTable
     }
 
+    private fun Table.addPlayerTableMultiplayerControls(player: Player) {
+        row()
+
+        val playerIdTextField = UncivTextField.create("Please input Player ID!", player.playerId)
+        add(playerIdTextField).colspan(2).fillX().pad(5f)
+        val errorLabel = "✘".toLabel(Color.RED)
+        add(errorLabel).pad(5f).row()
+
+        fun onPlayerIdTextUpdated() {
+            try {
+                UUID.fromString(IdChecker.checkAndReturnPlayerUuid(playerIdTextField.text))
+                player.playerId = playerIdTextField.text.trim()
+                errorLabel.apply { setText("✔");setFontColor(Color.GREEN) }
+            } catch (ex: Exception) {
+                errorLabel.apply { setText("✘");setFontColor(Color.RED) }
+            }
+        }
+        onPlayerIdTextUpdated()
+        playerIdTextField.addListener { onPlayerIdTextUpdated(); true }
+
+        val currentUserId = UncivGame.Current.settings.multiplayer.userId
+        val setCurrentUserButton = "Set current user".toTextButton()
+        setCurrentUserButton.onClick {
+            playerIdTextField.text = currentUserId
+            onPlayerIdTextUpdated()
+        }
+        add(setCurrentUserButton).colspan(3).fillX().pad(5f).row()
+
+        val copyFromClipboardButton = "Player ID from clipboard".toTextButton()
+        copyFromClipboardButton.onClick {
+            playerIdTextField.text = Gdx.app.clipboard.contents
+            onPlayerIdTextUpdated()
+        }
+        add(copyFromClipboardButton).right().colspan(3).fillX().pad(5f).row()
+
+        //check if friends list is empty before adding the select friend button
+        if (friendList.friendList.isNotEmpty()) {
+            val selectPlayerFromFriendsList = "Player ID from friends list".toTextButton()
+            selectPlayerFromFriendsList.onClick {
+                popupFriendPicker(player)
+            }
+            add(selectPlayerFromFriendsList).left().colspan(3).fillX().pad(5f)
+        }
+    }
+
     /**
-     * Creates clickable icon and nation name for some [Player]
-     * as a [Table]. Clicking creates [popupNationPicker] to choose new nation.
+     * Creates clickable icon and nation name for some [Player].
      * @param player [Player] for which generated
      * @return [Table] containing nation icon and name
      */
     private fun getNationTable(player: Player): Table {
         val nationTable = Table()
+        val nationImageName = previousScreen.ruleset.nations[player.chosenCiv]
         val nationImage =
-            if (player.chosenCiv == Constants.random)
+            if (nationImageName == null)
                 ImageGetter.getRandomNationPortrait(40f)
-            else ImageGetter.getNationPortrait(previousScreen.ruleset.nations[player.chosenCiv]!!, 40f)
+            else ImageGetter.getNationPortrait(nationImageName, 40f)
         nationTable.add(nationImage).pad(5f)
         nationTable.add(player.chosenCiv.toLabel()).pad(5f)
         nationTable.touchable = Touchable.enabled
-        nationTable.onClick {
-            if (!locked) popupNationPicker(player)
-        }
         return nationTable
     }
 
@@ -269,8 +291,8 @@ class PlayerPickerTable(
      * ruleset and other players nation choice.
      * @param player current player
      */
-    private fun popupNationPicker(player: Player) {
-        NationPickerPopup(this, player).open()
+    private fun popupNationPicker(player: Player, noRandom: Boolean) {
+        NationPickerPopup(this, player, noRandom).open()
         update()
     }
 
@@ -349,7 +371,8 @@ class FriendSelectionPopup(
 
 private class NationPickerPopup(
     private val playerPicker: PlayerPickerTable,
-    private val player: Player
+    private val player: Player,
+    noRandom: Boolean
 ) : Popup(playerPicker.previousScreen as BaseScreen) {
     companion object {
         // These are used for the Close/OK buttons in the lower left/right corners:
@@ -379,26 +402,23 @@ private class NationPickerPopup(
         nationDetailsScroll.setOverscroll(false, false)
         add(nationDetailsScroll).size(civBlocksWidth + 10f, partHeight) // Same here, see above
 
-        val randomNation = Nation().apply {
-            name = Constants.random
-            innerColor = listOf(255, 255, 255)
-            outerColor = listOf(0, 0, 0)
-            setTransients()
-        }
-        val nations = ArrayList<Nation>()
-        if (!playerPicker.noRandom) nations += randomNation
-        val spectator = previousScreen.ruleset.nations[Constants.spectator]
-        if (spectator != null) nations += spectator
-
-        nations += playerPicker.getAvailablePlayerCivs(player.chosenCiv)
+        val nationSequence = sequence {
+            if (!noRandom) yield(Nation().apply {
+                name = Constants.random
+                innerColor = listOf(255, 255, 255)
+                outerColor = listOf(0, 0, 0)
+                setTransients()
+            })
+            val spectator = previousScreen.ruleset.nations[Constants.spectator]
+            if (spectator != null && player.playerType != PlayerType.AI)  // only humans can spectate, sorry robots
+                yield(spectator)
+        } + playerPicker.getAvailablePlayerCivs(player.chosenCiv)
             .sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.name.tr() })
+        val nations = nationSequence.toCollection(ArrayList<Nation>(previousScreen.ruleset.nations.size))
 
         var nationListScrollY = 0f
         var currentY = 0f
         for (nation in nations) {
-            // only humans can spectate, sorry robots
-            if (player.playerType == PlayerType.AI && nation.isSpectator)
-                continue
             if (player.chosenCiv == nation.name)
                 nationListScrollY = currentY
             val nationTable = NationTable(nation, civBlocksWidth, 0f) // no need for min height
@@ -407,6 +427,10 @@ private class NationPickerPopup(
             cell.row()
             nationTable.onClick {
                 setNationDetails(nation)
+            }
+            nationTable.onDoubleClick {
+                selectedNation = nation
+                returnSelected()
             }
             if (player.chosenCiv == nation.name)
                 setNationDetails(nation)

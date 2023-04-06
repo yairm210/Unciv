@@ -63,31 +63,31 @@ Each building can have the following attributes:
 
 This file contains all the nations and city states, including Barbarians and Spectator.
 
-| Attribute | Type | Optional | Notes |
-| --------- | ---- | -------- | ----- |
-| name | String | Required |  |
-| leaderName | String | Default empty | Omit only for city states! If you want LeaderPortraits, the image file names must match exactly, including case. |
-| style | String | Default empty | Modifier appended to pixel unit image names |
-| adjective | String | Default empty | Currently unused |
-| cityStateType | Enum | Default absent | Distinguishes Major Civilizations from City States (Cultured, Maritime, Mercantile, Militaristic) |
+| Attribute | Type | Optional | Notes                                                                                                                                                                                                                                  |
+| --------- | ---- | -------- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| name | String | Required |                                                                                                                                                                                                                                        |
+| leaderName | String | Default empty | Optional only for city states! If you want LeaderPortraits, the image file names must match exactly, including case.                                                                                                                   |
+| style | String | Default empty | Modifier appended to pixel unit image names                                                                                                                                                                                            |
+| adjective | String | Default empty | Currently unused                                                                                                                                                                                                                       |
+| cityStateType | Enum | Default absent | Distinguishes Major Civilizations from City States (Cultured, Maritime, Mercantile, Militaristic)                                                                                                                                      |
 | startBias | List | Default empty | Zero or more of: terrainFilter or "Avoid [terrainFilter]". Two or more will be logically "and"-ed, and if the filters result in no choices, the entire attribute is ignored (e.g. `"startBias": ["Snow","Tundra"]` will _never_ work). |
-| preferredVictoryType | Enum | Default Neutral | Neutral, Cultural, Diplomatic, Domination or Scientific |
-| startIntroPart1 | String | Default empty | Introductory blurb shown to Player on game start... |
-| startIntroPart2 | String | Default empty | ... second paragraph. ***NO*** "TBD"!!! Leave empty to skip that alert. |
-| declaringWar | String | Default empty | another greeting |
-| attacked | String | Default empty | another greeting |
-| defeated | String | Default empty | another greeting |
-| introduction | String | Default empty | another greeting |
-| neutralHello | String | Default empty | another greeting |
-| hateHello | String | Default empty | another greeting |
-| tradeRequest | String | Default empty | another greeting |
-| innerColor | 3x Integer | Default black | R, G, B for outer ring of nation icon |
-| outerColor | 3x Integer | Required | R, G, B for inner circle of nation icon |
-| uniqueName | String | Default empty | Decorative name for the special characteristic of this Nation |
-| uniqueText | String | Default empty | Replacement text for "uniques". If empty, uniques are listed individually. |
-| uniques | List | Default empty | Properties of the civilization - see [here](../Modders/Unique-parameters.md#general-uniques) |
-| cities | List | Default empty | City names used sequentially for newly founded cities. |
-| civilopediaText | List | Default empty | see [civilopediaText chapter](Miscellaneous-JSON-files.md#civilopedia-text) |
+| preferredVictoryType | Enum | Default Neutral | Neutral, Cultural, Diplomatic, Domination or Scientific                                                                                                                                                                                |
+| startIntroPart1 | String | Default empty | Introductory blurb shown to Player on game start...                                                                                                                                                                                    |
+| startIntroPart2 | String | Default empty | ... second paragraph. ***NO*** "TBD"!!! Leave empty to skip that alert.                                                                                                                                                                |
+| declaringWar | String | Default empty | another greeting                                                                                                                                                                                                                       |
+| attacked | String | Default empty | another greeting                                                                                                                                                                                                                       |
+| defeated | String | Default empty | another greeting                                                                                                                                                                                                                       |
+| introduction | String | Default empty | another greeting                                                                                                                                                                                                                       |
+| neutralHello | String | Default empty | another greeting                                                                                                                                                                                                                       |
+| hateHello | String | Default empty | another greeting                                                                                                                                                                                                                       |
+| tradeRequest | String | Default empty | another greeting                                                                                                                                                                                                                       |
+| innerColor | 3x Integer | Default black | R, G, B for outer ring of nation icon                                                                                                                                                                                                  |
+| outerColor | 3x Integer | Required | R, G, B for inner circle of nation icon                                                                                                                                                                                                |
+| uniqueName | String | Default empty | Decorative name for the special characteristic of this Nation                                                                                                                                                                          |
+| uniqueText | String | Default empty | Replacement text for "uniques". If empty, uniques are listed individually.                                                                                                                                                             |
+| uniques | List | Default empty | Properties of the civilization - see [here](../Modders/Unique-parameters.md#general-uniques)                                                                                                                                           |
+| cities | List | Default empty | City names used sequentially for newly founded cities.                                                                                                                                                                                 |
+| civilopediaText | List | Default empty | see [civilopediaText chapter](Miscellaneous-JSON-files.md#civilopedia-text)                                                                                                                                                            |
 
 ## Policies.json
 
@@ -169,7 +169,7 @@ Each specialist can have the following attributes:
 | science | Integer | defaults to 0 |
 | faith | Integer | defaults to 0 |
 | color | List of 3 Integers | required | Color of the image for this specialist |
-| greatPersonPoints | Object | defaults to none | Great person points generated by this specialist. Valid keys are the names of the great person(Great Scientist, Great Merachant, etc.), valid values are Integers (≥0) | 
+| greatPersonPoints | Object | defaults to none | Great person points generated by this specialist. Valid keys are the names of the great person(Great Scientist, Great Merachant, etc.), valid values are Integers (≥0) |
 
 ## Techs.json
 
