@@ -117,7 +117,7 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 
 The skinConfig is similar to the [tilesetConfig](Creating-a-custom-tileset.md#tileset-config) and can be used to define different colors and shapes for unciv to use.
 
-To create a config for your skin you just need to create a new .json file under `Jsons/Skins/`. Just create a .txt file and rename it to MyCoolSkinExample.json. You only have to add things if you want to change them. Else the default values will be used.
+To create a config for your skin you just need to create a new .json file under `jsons/Skins/`. Just create a .txt file and rename it to MyCoolSkinExample.json. You only have to add things if you want to change them. Else the default values will be used.
 
 This is an example of such a config file that will be explain below:
 
