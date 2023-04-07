@@ -3,6 +3,7 @@ package com.unciv.ui.screens.multiplayerscreens
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
+import com.unciv.logic.multiplayer.apiv2.GameOverviewResponse
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.NewButton
 import com.unciv.ui.components.RefreshButton
@@ -86,8 +87,8 @@ class LobbyBrowserScreen : BaseScreen() {
         stage.addActor(table)
     }
 
-    private fun onSelect(gameName: String) {
-        Log.debug("Selecting game '%s'", gameName)  // TODO: Implement handling
+    private fun onSelect(game: GameOverviewResponse) {
+        Log.debug("Selecting game '%s' (%s)", game.name, game.gameUUID)  // TODO: Implement handling
     }
 
 }

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Container
+import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.badlogic.gdx.utils.Align
@@ -18,6 +19,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.components.AutoScrollPane
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.MultiplayerButton
+import com.unciv.ui.components.PencilButton
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.keyShortcuts
@@ -67,7 +69,7 @@ class LobbyScreen(private val lobbyUUID: UUID, private val lobbyChatUUID: UUID, 
 
     private val screenTitle = "Lobby: $lobbyName".toLabel(fontSize = Constants.headingFontSize)
     private val lobbyPlayerList = LobbyPlayerList(lobbyUUID, mutableListOf(), this) { update() }
-    private val chatMessageList = ChatMessageList(lobbyChatUUID)
+    private val chatMessageList = ChatMessageList(lobbyChatUUID, game.onlineMultiplayer)
     private val menuButtonGameOptions = "Game options".toTextButton()
     private val menuButtonMapOptions = "Map options".toTextButton()
     private val menuButtonInvite = "Invite player".toTextButton()
@@ -137,9 +139,7 @@ class LobbyScreen(private val lobbyUUID: UUID, private val lobbyChatUUID: UUID, 
         optionsTable.add(menuButtonInvite).padBottom(10f).row()
         optionsTable.add(menuButtonStartGame).row()
 
-        val chatScroll = AutoScrollPane(chatMessageList, skin)
-        chatScroll.setScrollingDisabled(true, false)
-
+        val chatTable = ChatTable(chatMessageList, true)
         val menuBar = Table()
         menuBar.align(Align.bottom)
         menuBar.add(bottomButtonLeave).pad(10f)
@@ -149,7 +149,10 @@ class LobbyScreen(private val lobbyUUID: UUID, private val lobbyChatUUID: UUID, 
 
         // Construct the table which makes up the whole lobby screen
         table.row()
-        table.add(Container(screenTitle).pad(10f)).colspan(3).fillX()
+        val topLine = HorizontalGroup()
+        topLine.addActor(Container(screenTitle).padRight(10f))
+        topLine.addActor(PencilButton().apply { onClick { ToastPopup("Renaming a lobby is not implemented.", stage) } })
+        table.add(topLine.pad(10f).center()).colspan(3).fillX()
         table.addSeparator(skinStrings.skinConfig.baseColor.brighten(0.1f), height = 0.5f).width(stage.width * 0.85f).padBottom(15f).row()
         table.row().expandX().expandY()
         table.add(playerScroll).fillX().expandY().prefWidth(stage.width * 0.6f).padLeft(5f)
@@ -157,7 +160,7 @@ class LobbyScreen(private val lobbyUUID: UUID, private val lobbyChatUUID: UUID, 
         table.add(optionsTable).prefWidth(stage.width * 0.1f).padLeft(0f).padRight(0f)
         // TODO: Add vertical horizontal bar like a left border for the chat screen
         // table.addSeparatorVertical(skinStrings.skinConfig.baseColor.brighten(0.1f), width = 0.5f).height(0.5f * stage.height).width(0.1f).pad(0f).space(0f)
-        table.add(chatScroll).fillX().expandY().prefWidth(stage.width * 0.5f).padRight(5f)
+        table.add(chatTable).fillX().expandY().prefWidth(stage.width * 0.5f).padRight(5f)
         table.addSeparator(skinStrings.skinConfig.baseColor.brighten(0.1f), height = 0.5f).width(stage.width * 0.85f).padTop(15f).row()
         table.row().bottom().fillX().maxHeight(stage.height / 8)
         table.add(menuBar).colspan(3).fillX()

@@ -17,7 +17,7 @@ import kotlin.math.max
 
 class ChatRoomScreen(private val chatRoomUUID: UUID) : PickerScreen() {
 
-    private val messageTable = ChatMessageList(chatRoomUUID)
+    private val messageTable = ChatMessageList(chatRoomUUID, game.onlineMultiplayer)
 
     private val events = EventBus.EventReceiver()  // listen for incoming chat messages in the current chat
 

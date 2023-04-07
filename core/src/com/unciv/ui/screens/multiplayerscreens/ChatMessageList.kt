@@ -3,12 +3,15 @@ package com.unciv.ui.screens.multiplayerscreens
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.logic.multiplayer.apiv2.AccountResponse
+import com.unciv.logic.multiplayer.apiv2.ApiV2
 import com.unciv.logic.multiplayer.apiv2.ChatMessage
 import com.unciv.ui.components.AutoScrollPane
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.utils.concurrency.Concurrency
 import java.time.Instant
 import java.util.*
 
@@ -24,11 +27,20 @@ import java.util.*
  *      val chatMessages = ChatMessageList(UUID.randomUUID())
  *      val chatScroll = AutoScrollPane(chatMessages, skin)
  *      chatScroll.setScrollingDisabled(true, false)
+ *
+ * Another good way is to use the [ChatTable] directly.
  */
-class ChatMessageList(private val chatRoomUUID: UUID): Table() {
+class ChatMessageList(private val chatRoomUUID: UUID, private val mp: OnlineMultiplayer): Table() {
     init {
         defaults().expandX().space(5f)
         recreate(listOf<ChatMessage>())
+    }
+
+    /**
+     * Send a [message] to the chat room by dispatching a coroutine which handles it
+     */
+    fun sendMessage(message: String) {
+        // TODO
     }
 
     /**
@@ -39,7 +51,25 @@ class ChatMessageList(private val chatRoomUUID: UUID): Table() {
      * Use [suppress] to avoid showing an [InfoPopup] for any failures.
      */
     fun triggerRefresh(suppress: Boolean = false) {
-        // TODO
+        Concurrency.run {
+            if (suppress) {
+                val chatInfo = mp.api.chat.get(chatRoomUUID, true)
+                if (chatInfo != null) {
+                    Concurrency.runOnGLThread {
+                        recreate(chatInfo.messages)
+                    }
+                }
+            } else {
+                InfoPopup.wrap(stage) {
+                    val chatInfo = mp.api.chat.get(chatRoomUUID, false)
+                    if (chatInfo != null) {
+                        Concurrency.runOnGLThread {
+                            recreate(chatInfo.messages)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
