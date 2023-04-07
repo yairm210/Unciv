@@ -1,6 +1,8 @@
 ﻿package com.unciv.ui.screens.mainmenuscreen
 
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Stack
@@ -21,6 +23,7 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.components.AutoScrollPane
 import com.unciv.ui.components.KeyCharAndCode
@@ -28,9 +31,12 @@ import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.keyShortcuts
 import com.unciv.ui.components.extensions.onActivation
+import com.unciv.ui.components.extensions.onChange
+import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.tilegroups.TileGroupMap
+import com.unciv.ui.components.widgets.UncivSelectBox
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
@@ -49,6 +55,7 @@ import com.unciv.ui.screens.pickerscreens.ModManagementScreen
 import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.screens.savescreens.QuickSave
 import com.unciv.ui.screens.worldscreen.BackgroundActor
+import com.unciv.ui.screens.victoryscreen.RankingType
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMenuPopup
 import com.unciv.utils.concurrency.Concurrency
@@ -194,6 +201,8 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         helpButton.addTooltip(KeyCharAndCode(Input.Keys.F1), 30f)
         helpButton.setPosition(30f, 30f)
         stage.addActor(helpButton)
+
+        addUncivSelectBoxTests(stage)
     }
 
     private fun startBackgroundMapGeneration() {
@@ -344,5 +353,75 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
     override fun recreate(): BaseScreen {
         stopBackgroundMapGeneration()
         return MainMenuScreen()
+    }
+
+    private fun addUncivSelectBoxTests(stage: Stage) {
+        val test1 = UncivSelectBox(RankingTypeBoxItem.values(), skin)
+        test1.width = test1.scrollPane.list.prefWidth
+        test1.height = test1.scrollPane.list.itemHeight.coerceAtLeast(36f)
+        test1.setPosition(stage.width - 30f, stage.height - 30f, Align.topRight)
+        stage.addActor(test1)
+
+        test1.onChange {
+            ToastPopup("Selected ${test1.selected}", stage)
+        }
+
+        val test2 = UncivSelectBox(NationsBoxItem.values(), skin)
+        test2.maxListCount = 8
+        test2.width = test2.scrollPane.list.prefWidth
+        test2.height = test2.scrollPane.list.itemHeight
+        test2.setPosition(stage.width - 30f, stage.height - 130f, Align.topRight)
+        stage.addActor(test2)
+
+        test2.onChange {
+            ToastPopup("Selected ${test2.selected}", stage)
+        }
+    }
+
+    class RankingTypeBoxItem(val value: RankingType) : UncivSelectBox.BoxItem {
+        private var actor: Actor? = null
+
+        override fun getActor(): Actor {
+            if (actor != null) return actor!!
+            val result = Table()
+            value.getImage()?.also { result.add(it).size(15f) }
+            result.add(value.label.toLabel())
+            result.pack()
+            actor = result
+            return result
+        }
+
+        override fun toString() = value.label
+
+        companion object {
+            fun values() = RankingType.values().asSequence()
+                .map { RankingTypeBoxItem(it) }.asIterable()
+        }
+    }
+
+    class NationsBoxItem(val nation: Nation) : UncivSelectBox.BoxItem {
+        private var actor: Actor? = null
+
+        override fun getActor(): Actor {
+            if (actor != null) return actor!!
+            val result = Table()
+            result.defaults().space(10f).align(Align.center)
+            result.add(ImageGetter.getNationPortrait(nation, 48f)).size(48f)
+            val textureName = "LeaderIcons/" + nation.leaderName
+            if (ImageGetter.imageExists(textureName))
+                result.add(ImageGetter.getImage(textureName).apply { setSize(72f) }).size(72f)
+            else
+                result.add(nation.name.toLabel())
+            result.pack()
+            actor = result
+            return result
+        }
+
+        override fun toString() = nation.name
+
+        companion object {
+            fun values() = RulesetCache.getVanillaRuleset().nations.values.asSequence()
+                .map { NationsBoxItem(it) }.asIterable()
+        }
     }
 }
