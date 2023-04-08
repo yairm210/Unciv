@@ -92,7 +92,8 @@ class GameSettings {
 
     var enableEspionageOption = false
 
-    var lastOverviewPage = EmpireOverviewCategories.Cities  // serializes same as the String we had before
+    // This is a string not an enum so if tabs change it won't screw up the json serialization
+    var lastOverviewPage = EmpireOverviewCategories.Cities.name
 
     /** Orientation for mobile platforms */
     var displayOrientation = ScreenOrientation.Landscape
