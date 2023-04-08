@@ -309,38 +309,58 @@ class LocalUniqueCache(val cache:Boolean = true) {
     }
 }
 
-class UniqueMap: HashMap<String, ArrayList<Unique>>() {
+open class UniqueMap(): HashMap<String, ArrayList<Unique>>() {
     //todo Once all untyped Uniques are converted, this should be  HashMap<UniqueType, *>
     // For now, we can have both map types "side by side" each serving their own purpose,
     // and gradually this one will be deprecated in favor of the other
+    constructor(uniqueObjects: Iterable<Unique>) : this() {
+        @Suppress("LeakingThis")
+        addUniques(uniqueObjects)
+    }
 
     /** Adds one [unique] unless it has a ConditionalTimedUnique conditional */
-    fun addUnique(unique: Unique) {
+    open fun addUnique(unique: Unique) {
         if (unique.conditionals.any { it.type == UniqueType.ConditionalTimedUnique }) return
         if (!containsKey(unique.placeholderText)) this[unique.placeholderText] = ArrayList()
         this[unique.placeholderText]!!.add(unique)
     }
 
     /** Calls [addUnique] on each item from [uniques] */
-    fun addUniques(uniques: Iterable<Unique>) {
+    open fun addUniques(uniques: Iterable<Unique>) {
         for (unique in uniques) addUnique(unique)
     }
 
-    fun getUniques(placeholderText: String): Sequence<Unique> {
+    open fun getUniques(placeholderText: String): Sequence<Unique> {
         return this[placeholderText]?.asSequence() ?: emptySequence()
     }
 
     fun getUniques(uniqueType: UniqueType) = getUniques(uniqueType.placeholderText)
 
-    fun getMatchingUniques(uniqueType: UniqueType, state: StateForConditionals) = getUniques(uniqueType)
+    open fun getMatchingUniques(uniqueType: UniqueType, state: StateForConditionals) = getUniques(uniqueType)
         .filter { it.conditionalsApply(state) }
 
-    fun getAllUniques() = this.asSequence().flatMap { it.value.asSequence() }
+    open fun getAllUniques() = this.asSequence().flatMap { it.value.asSequence() }
 
-    fun getTriggeredUniques(trigger: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> {
-        val result = getAllUniques().filter { it.conditionals.any { it.type == trigger } }
+    open fun getTriggeredUniques(trigger: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> {
+        return getAllUniques()
+            .filter { it.conditionals.any { c -> c.type == trigger } }
             .filter { it.conditionalsApply(stateForConditionals) }
-        return result
+    }
+
+    companion object {
+        // Slightly optimized, almost immutable
+        val empty = object : UniqueMap() {
+            override fun clear() = throw UnsupportedOperationException()
+            override fun put(key: String, value: ArrayList<Unique>): ArrayList<Unique> = throw UnsupportedOperationException()
+            override fun putAll(from: Map<out String, ArrayList<Unique>>) = throw UnsupportedOperationException()
+            override fun remove(key: String): ArrayList<Unique> = throw UnsupportedOperationException()
+            override fun addUnique(unique: Unique) = throw UnsupportedOperationException()
+            override fun addUniques(uniques: Iterable<Unique>) = throw UnsupportedOperationException()
+            override fun getUniques(placeholderText: String) = emptySequence<Unique>()
+            override fun getMatchingUniques(uniqueType: UniqueType, state: StateForConditionals) = emptySequence<Unique>()
+            override fun getAllUniques() = emptySequence<Unique>()
+            override fun getTriggeredUniques(trigger: UniqueType, stateForConditionals: StateForConditionals) = emptySequence<Unique>()
+        }
     }
 }
 
@@ -378,4 +398,3 @@ fun ArrayList<TemporaryUnique>.getMatchingUniques(uniqueType: UniqueType, stateF
             .map { it.uniqueObject }
             .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) }
     }
-

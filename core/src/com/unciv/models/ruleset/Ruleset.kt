@@ -22,6 +22,7 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -61,10 +62,10 @@ class ModOptions : IHasUniques {
 
     override var uniques = ArrayList<String>()
 
-    // If these two are delegated with "by lazy", the mod download process crashes and burns
-    // Instead, Ruleset.load sets them, which is preferable in this case anyway
-    override var uniqueObjects: List<Unique> = listOf()
-    override var uniqueMap: Map<String, List<Unique>> = mapOf()
+    @Transient
+    override var uniqueObjectsInternal: List<Unique>? = null
+    @Transient
+    override var uniqueMapInternal: UniqueMap? = null
 
     override fun getUniqueTarget() = UniqueTarget.ModOptions
 
@@ -252,9 +253,7 @@ class Ruleset {
             try {
                 modOptions = json().fromJsonFile(ModOptions::class.java, modOptionsFile)
                 modOptions.updateDeprecations()
-            } catch (ex: Exception) {}
-            modOptions.uniqueObjects = modOptions.uniques.map { Unique(it, UniqueTarget.ModOptions) }
-            modOptions.uniqueMap = modOptions.uniqueObjects.groupBy { it.placeholderText }
+            } catch (_: Exception) {}
         }
 
         val techFile = folderHandle.child("Techs.json")

@@ -13,18 +13,10 @@ interface IRulesetObject: INamed, IHasUniques, ICivilopediaText
 abstract class RulesetObject: IRulesetObject {
     override var name = ""
     override var uniques = ArrayList<String>() // Can not be a hashset as that would remove doubles
-    @delegate:Transient
-    override val uniqueObjects: List<Unique> by lazy {
-        if (uniques.isEmpty()) emptyList()
-        else uniques.map { Unique(it, getUniqueTarget(), name) }
-    }
-    @delegate:Transient
-    override val uniqueMap: UniqueMap by lazy {
-        if (uniques.isEmpty()) UniqueMap()
-        val newUniqueMap = UniqueMap()
-        newUniqueMap.addUniques(uniqueObjects)
-        newUniqueMap
-    }
+    @Transient
+    override var uniqueObjectsInternal: List<Unique>? = null
+    @Transient
+    override var uniqueMapInternal: UniqueMap? = null
 
     override var civilopediaText = listOf<FormattedLine>()
     override fun toString() = name
@@ -33,16 +25,10 @@ abstract class RulesetObject: IRulesetObject {
 // Same, but inherits from NamedStats - I couldn't find a way to unify the declarations but this is fine
 abstract class RulesetStatsObject: NamedStats(), IRulesetObject {
     override var uniques = ArrayList<String>() // Can not be a hashset as that would remove doubles
-    @delegate:Transient
-    override val uniqueObjects: List<Unique> by lazy {
-        if (uniques.isEmpty()) emptyList()
-        else uniques.map { Unique(it, getUniqueTarget(), name) }
-    }
-    @delegate:Transient
-    override val uniqueMap: Map<String, List<Unique>> by lazy {
-        if (uniques.isEmpty()) emptyMap()
-        else uniqueObjects.groupBy { it.placeholderText }
-    }
+    @Transient
+    override var uniqueObjectsInternal: List<Unique>? = null
+    @Transient
+    override var uniqueMapInternal: UniqueMap? = null
 
     override var civilopediaText = listOf<FormattedLine>()
 }
