@@ -1,34 +1,16 @@
+Battle table bonuses according to tile to attack from
 
-
-Battle table displays bonuses according to tile that unit will attack from, not the current tile it's on
-
-Fixed bug where AI could buy tiles not contiguous to city - @WhoIsJohannes
-
-Resolved  - invalid conditionals on building uniques no longer lead to crashes
-
-4.5.16-patch
-
-Fixed release notes for new versions
+AI cannot buy tiles not contiguous to city
 
 By SomeTroglodyte:
-- Notifications can be hidden 
-- Victory screen score charts 
-- Carrier right-click attack fix 
-- Main menu background map changes infrequently 
-- Random Nations game starter - reactive UI 
-- Random nation count 
-- Victory screen replay gets a Slider 
-- Change map resource controls presentation 
-- Victory screen reorg/cleanup 
-- Prevent MapEditor 'pinch zoom' painting tiles 
+- Notifications can be hidden
+- "Random Nations" fixes
+- Victory screen reorg/cleanup
+- MapEditor 'pinch zoom' painting fix
 
 By WhoIsJohannes:
-- Show city size in CityScreenCityPickerTable.kt 
-- Don't buy tiles in the very early game. 
-- Prevent offering zero gold. 
-- Don't do anything crazy if military is inferior and never give away m… 
-- Get going with producing military if your ass is about to get kicked. 
+- Victory screen score charts!
+- AI: Don't buy tiles in the very early game.
+- AI: Military production when under stress
 
 AbsoluteUnits - Mandekalu Cavalry, Conquistador, Inquisitor (Post-Industrial)  - By letstalkaboutdune
-
-Fix missing desert (again) in wheat farm in flood plains in hexarealm  - By AdityaMH
