@@ -53,6 +53,16 @@ Allows to only activate a unique for certain buildings. Allowed options are:
     -   Provides that stat as a bonus for resources (e.g. +1 Food from every Wheat)
     -   Provides that stat per some amount of population (e.g. +1 Science for every 2 population [cityFilter])
 
+## nationFilter
+
+Allows filtering for specific nations.
+
+- `All`
+- `City-states`
+- `Major`
+- Nation name
+- Nation unique
+
 ## cityFilter
 
 cityFilters allow us to choose the range of cities affected by this unique:

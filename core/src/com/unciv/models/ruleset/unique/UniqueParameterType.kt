@@ -175,6 +175,21 @@ enum class UniqueParameterType(
         }
     },
 
+    /** Implemented by [Nation.matchesFilter][com.unciv.models.ruleset.Building.matchesFilter] */
+    NationFilter("nationFilter", Constants.cityStates) {
+        private val knownValues = setOf(Constants.cityStates, "Major", "All")
+
+        override fun getErrorSeverity(
+            parameterText: String,
+            ruleset: Ruleset
+        ): UniqueType.UniqueComplianceErrorSeverity? {
+            if (parameterText in knownValues) return null
+            if (ruleset.nations.containsKey(parameterText)) return null
+            if (ruleset.nations.values.any { it.hasUnique(parameterText) }) return null
+            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+        }
+    },
+
     /** Implemented by [CityInfo.matchesFilter][com.unciv.logic.city.City.matchesFilter] */
     CityFilter("cityFilter", "in all cities", null, "City filters") {
         private val cityFilterStrings = setOf(

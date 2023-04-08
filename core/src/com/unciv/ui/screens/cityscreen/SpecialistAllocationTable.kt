@@ -65,6 +65,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.s
             else Color.GRAY // unassigned
             val icon = ImageGetter.getSpecialistIcon(color)
             specialistIconTable.add(icon).size(30f)
+            if (i % 6 == 0) specialistIconTable.row()
         }
         return specialistIconTable
     }
