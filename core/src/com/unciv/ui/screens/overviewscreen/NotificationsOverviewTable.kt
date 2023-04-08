@@ -42,10 +42,7 @@ class NotificationsOverviewTable(
     private val notificationLog = viewingPlayer.notificationsLog
     private val notificationTable = Table(BaseScreen.skin)
 
-    private val scaleFactor = 0.3f
-    private val inverseScaleFactor = 1f / scaleFactor
-    private val maxWidthOfStage = 0.333f
-    private val maxEntryWidth = worldScreen.stage.width * maxWidthOfStage * inverseScaleFactor
+    private val maxEntryWidth = worldScreen.stage.width - 20f
 
     val iconSize = 20f
 
@@ -101,7 +98,7 @@ class NotificationsOverviewTable(
                     notification.action?.execute(worldScreen)
                 }
 
-                notification.addNotificationIcons(worldScreen.gameInfo.ruleset, iconSize, notificationTable)
+                notification.addNotificationIconsTo(notificationTable, worldScreen.gameInfo.ruleset, iconSize)
 
                 turnTable.add(notificationTable).padTop(5f)
                 turnTable.padTop(20f).row()
