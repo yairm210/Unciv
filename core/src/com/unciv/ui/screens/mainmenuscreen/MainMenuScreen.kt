@@ -1,9 +1,9 @@
 ﻿package com.unciv.ui.screens.mainmenuscreen
 
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.ui.Stack
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
@@ -48,23 +48,28 @@ import com.unciv.ui.screens.newgamescreen.NewGameScreen
 import com.unciv.ui.screens.pickerscreens.ModManagementScreen
 import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.screens.savescreens.QuickSave
+import com.unciv.ui.screens.worldscreen.BackgroundActor
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMenuPopup
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.isActive
 import kotlin.math.min
 
 
 class MainMenuScreen: BaseScreen(), RecreateOnResize {
-    private val backgroundTable = Table().apply {
-        background = skinStrings.getUiBackground("MainMenuScreen/Background", tintColor = Color.WHITE)
-    }
+    private val backgroundStack = Stack()
     private val singleColumn = isCrampedPortrait()
     private var easterEggRuleset: Ruleset? = null  // Cache it so the next 'egg' can be found in Civilopedia
 
     private var backgroundMapGenerationJob: Job? = null
+    private var backgroundMapExists = false
+
+    companion object {
+        const val mapFadeTime = 1.3f
+        const val mapFirstFadeTime = 0.3f
+        const val mapReplaceDelay = 15f
+    }
 
     /** Create one **Main Menu Button** including onClick/key binding
      *  @param text      The text to display on the button
@@ -105,8 +110,10 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
     }
 
     init {
-        stage.addActor(backgroundTable)
-        backgroundTable.center(stage)
+        val background = skinStrings.getUiBackground("MainMenuScreen/Background", tintColor = clearColor)
+        backgroundStack.add(BackgroundActor(background, Align.center))
+        stage.addActor(backgroundStack)
+        backgroundStack.setFillParent(true)
 
         // If we were in a mod, some of the resource images for the background map we're creating
         // will not exist unless we reset the ruleset and images
@@ -225,20 +232,27 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
                     newMap
                 ) {}
                 mapHolder.setScale(scale)
+                mapHolder.color = mapHolder.color.cpy()
+                mapHolder.color.a = 0f
+                backgroundStack.add(mapHolder)
 
-                backgroundTable.addAction(Actions.sequence(
-                    Actions.fadeOut(0f),
-                    Actions.run {
-                        backgroundTable.clearChildren()
-                        backgroundTable.addActor(mapHolder)
-                        mapHolder.center(backgroundTable)
-                    },
-                    Actions.fadeIn(0.3f)
-                ))
+                if (backgroundMapExists) {
+                    mapHolder.addAction(Actions.sequence(
+                        Actions.fadeIn(mapFadeTime),
+                        Actions.run { backgroundStack.removeActorAt(1, false) }
+                    ))
+                } else {
+                    backgroundMapExists = true
+                    mapHolder.addAction(Actions.fadeIn(mapFirstFadeTime))
+                }
             }
         }.apply {
             invokeOnCompletion {
                 backgroundMapGenerationJob = null
+                backgroundStack.addAction(Actions.sequence(
+                    Actions.delay(mapReplaceDelay),
+                    Actions.run { startBackgroundMapGeneration() }
+                ))
             }
         }
     }
@@ -249,7 +263,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         backgroundMapGenerationJob = null
         if (currentJob.isCancelled) return
         currentJob.cancel()
-        backgroundTable.clearActions()
+        backgroundStack.clearActions()
     }
 
     private fun resumeGame() {
