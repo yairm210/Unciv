@@ -39,12 +39,9 @@ class UnitType() : RulesetObject() {
     /** Implements [UniqueParameterType.UnitTypeFilter][com.unciv.models.ruleset.unique.UniqueParameterType.UnitTypeFilter] */
     fun matchesFilter(filter: String): Boolean {
         return when (filter) {
-            "Land" -> isLandUnit()
-            "Water" -> isWaterUnit()
-            "Air" -> isAirUnit()
-            else -> {
-                uniques.contains(filter)
-            }
+            unitMovementType?.name -> true
+            in uniques -> true
+            else -> false
         }
     }
 

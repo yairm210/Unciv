@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -24,6 +25,14 @@ import kotlin.math.pow
 /** This is the basic info of the units, as specified in Units.json,
  in contrast to MapUnit, which is a specific unit of a certain type that appears on the map */
 class BaseUnit : RulesetObject(), INonPerpetualConstruction {
+    override val uniqueObjects: List<Unique> get() {
+        if (!::ruleset.isInitialized)
+            return uniquesToUniqueObjects(uniques)
+        if (uniques.isEmpty() && type.uniques.isEmpty()) return emptyList()
+        if (uniqueObjectsInternal == null)
+            uniqueObjectsInternal = uniquesToUniqueObjects((uniques.asSequence() + type.uniques.asSequence()).asIterable())
+        return uniqueObjectsInternal!!
+    }
 
     override var cost: Int = 0
     override var hurryCostModifier: Int = 0
@@ -334,7 +343,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     fun isMilitary() = isRanged() || isMelee()
     fun isCivilian() = !isMilitary()
 
-    val isLandUnitInternal by lazy { type.isLandUnit() }
+    private val isLandUnitInternal by lazy { type.isLandUnit() }
     fun isLandUnit() = isLandUnitInternal
     fun isWaterUnit() = type.isWaterUnit()
     fun isAirUnit() = type.isAirUnit()
@@ -342,11 +351,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     fun isProbablySiegeUnit() =
         (
             isRanged()
-            && (uniqueObjects + type.uniqueObjects)
-                .any { it.isOfType(UniqueType.Strength)
-                    && it.params[0].toInt() > 0
-                    && it.conditionals.any { conditional -> conditional.isOfType(UniqueType.ConditionalVsCity) }
-                }
+            && uniqueMap.getUniques(UniqueType.Strength).any {
+                it.params[0].toInt() > 0
+                && it.conditionals.any { conditional -> conditional.isOfType(UniqueType.ConditionalVsCity) }
+            }
         )
 
     fun getForceEvaluation(): Int {
