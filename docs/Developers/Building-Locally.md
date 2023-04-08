@@ -15,7 +15,7 @@ So first things first - the initial "No assumptions" setup to have Unciv run fro
 -   Load the project in Android Studio, Gradle will attempt the initial sync. If this is your first time with Android Studio, this may require you to accept the Android Build-tools licenses, which works differently on every device, so search for your OS-specific solution.
     -   A new install may not be able to do the initial sync - this comes in the form of `Unable to find method ''void org.apache.commons.compress.archivers.zip.ZipFile.<init>(java.nio.channels.SeekableByteChannel)''` errors when you try to sync. If you have this problem go into File > Settings > Appearance & Behavior > System Settings > Android SDK
         -   Click "SDK Platforms"
-        -   Click "Android API 32 (Sv2)"
+        -   Click "Android 12L (Sv2)"
         -   Click "SDK Tools"
         -   Select "Show Package Details" in the bottom right
         -   Choose version 32.0.0 under "Android SDK Build-Tools"
@@ -30,7 +30,7 @@ So first things first - the initial "No assumptions" setup to have Unciv run fro
         -   If you get a `../../docs/uniques.md (No such file or directory)` error that means you forgot to set the working directory!
 -   Select the Desktop configuration (or however you chose to name it) and click the green arrow button to run! Or you can use the next button -the green critter with six legs and two feelers - to start debugging.
 -   A few Android Studio settings that are recommended:
-    - Going to Settings > Version Control > Commit and turning off 'Before commit - perform code analysis'
+    - Going to Settings > Version Control > Commit and turning off 'Before Commit - Analyze code'
     - Settings > Editor > Code Style > Kotlin > Tabs and Indents > Continuation Indent: 4
     ![image](https://user-images.githubusercontent.com/44038014/169315352-9ba0c4cf-307c-44d1-b3bc-2a58752c6854.png)
     - Settings > Editor > General > On Save > Uncheck Remove trailing spaces on: [...] to prevent it from removing necessary trailing whitespace in template.properties for translation files
