@@ -14,20 +14,23 @@ So first things first - the initial "No assumptions" setup to have Unciv run fro
     -   Clone your fork with git - the location will be https://github.com/YourUsername/Unciv.git, visible from the green "Clone or download" button at https://github.com/YourUsername/Unciv
 -   Load the project in Android Studio, Gradle will attempt the initial sync. If this is your first time with Android Studio, this may require you to accept the Android Build-tools licenses, which works differently on every device, so search for your OS-specific solution.
     -   A new install may not be able to do the initial sync - this comes in the form of `Unable to find method ''void org.apache.commons.compress.archivers.zip.ZipFile.<init>(java.nio.channels.SeekableByteChannel)''` errors when you try to sync. If you have this problem go into File > Settings > Appearance & Behavior > System Settings > Android SDK
-        -   Click "SDK Platforms"
-        -   Click "Android 12L (Sv2)"
-        -   Click "SDK Tools"
-        -   Select "Show Package Details" in the bottom right
-        -   Choose version 32.0.0 under "Android SDK Build-Tools"
-        -   Click "Apply"
-        -   Restart Android Studio
+        - Click "SDK Platforms"
+        - Click "Android 12L (Sv2)"
+        ![image](/docs/assets/Android_SDK_Platforms.png)
+        - Click "SDK Tools"
+        - Select "Show Package Details" in the bottom right
+        - Choose version 32.0.0 under "Android SDK Build-Tools"
+        ![image](/docs/assets/Android_SDK_Tools.png)
+        - Click "Apply"
+        - Restart Android Studio
 -   In Android Studio, Run > Edit configurations (be sure the Gradle sync is finished successfully first).
     -   Click "+" to add a new configuration
     -   Choose "Application"
     -   Give the configuration a name, we recommend "Desktop"
     -   Set the module classpath (the box to the right of the Java selection) to `Unciv.desktop.main` (`Unciv.desktop` for Bumblebee or below), main class to `com.unciv.app.desktop.DesktopLauncher` and `<repo_folder>\android\assets\` as the Working directory, OK to close the window
-        -   It _may_ be useful to set some VM options - activate the field in the run config editor with Alt-V or via the Modify Options menu, then add `-Xmx4096m -Xms256m -XX:MaxMetaspaceSize=256m` to allow a debugged game a little more memory. Or, use the `-DnoLog=` or `-DonlyLog=` options to control console logging. See the [Log.kt](https://github.com/yairm210/Unciv/blob/master/core/src/com/unciv/utils/Log.kt) comments for details.
-        -   If you get a `../../docs/uniques.md (No such file or directory)` error that means you forgot to set the working directory!
+        - It _may_ be useful to set some VM options - activate the field in the run config editor with Alt-V or via the Modify Options menu, then add `-Xmx4096m -Xms256m -XX:MaxMetaspaceSize=256m` to allow a debugged game a little more memory. Or, use the `-DnoLog=` or `-DonlyLog=` options to control console logging. See the [Log.kt](https://github.com/yairm210/Unciv/blob/master/core/src/com/unciv/utils/Log.kt) comments for details.
+        - If you get a `../../docs/uniques.md (No such file or directory)` error that means you forgot to set the working directory!
+        ![image](/docs/assets/Desktop_Build.png)
 -   Select the Desktop configuration (or however you chose to name it) and click the green arrow button to run! Or you can use the next button -the green critter with six legs and two feelers - to start debugging.
 -   A few Android Studio settings that are recommended:
     - Going to Settings > Version Control > Commit and turning off 'Before Commit - Analyze code'
