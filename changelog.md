@@ -6,7 +6,7 @@ Resolved crash screen copy error
 
 UI: Better wrapping for long construction item names in city streen
 
-"<for [nationFilter]>" conditional added
+Modding: Added conditional to filter by nation type
 
 By SomeTroglodyte:
 - User option to control NotificationScroll behaviour
