@@ -121,7 +121,7 @@ object UnitAutomation {
         val upgradedUnit = unit.upgrade.getUnitToUpgradeTo()
         if (!upgradedUnit.isBuildable(unit.civ)) return false // for resource reasons, usually
 
-        if (upgradedUnit.getResourceRequirements().keys.any { !unit.baseUnit.requiresResource(it) }) {
+        if (upgradedUnit.getResourceRequirementsPerTurn().keys.any { !unit.baseUnit.requiresResource(it) }) {
             // The upgrade requires new resource types, so check if we are willing to invest them
             if (!Automation.allowSpendingResource(unit.civ, upgradedUnit)) return false
         }

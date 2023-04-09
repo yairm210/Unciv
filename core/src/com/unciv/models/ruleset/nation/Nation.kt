@@ -236,8 +236,8 @@ class Nation : RulesetObject() {
                     yield(FormattedLine("${Fonts.range} " + "[${unit.range}] vs [${originalUnit.range}]".tr(), indent=1))
                 if (unit.movement != originalUnit.movement)
                     yield(FormattedLine("${Fonts.movement} " + "[${unit.movement}] vs [${originalUnit.movement}]".tr(), indent=1))
-                for (resource in originalUnit.getResourceRequirements().keys)
-                    if (!unit.getResourceRequirements().containsKey(resource)) {
+                for (resource in originalUnit.getResourceRequirementsPerTurn().keys)
+                    if (!unit.getResourceRequirementsPerTurn().containsKey(resource)) {
                         yield(FormattedLine("[$resource] not required", link="Resource/$resource", indent=1))
                     }
                 // This does not use the auto-linking FormattedLine(Unique) for two reasons:

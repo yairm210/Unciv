@@ -404,6 +404,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         val isResourceFilter: (TradeOffer) -> Boolean = {
             (it.type == TradeType.Strategic_Resource || it.type == TradeType.Luxury_Resource)
                     && resourcesMap.containsKey(it.name)
+                    && !resourcesMap[it.name]!!.isStockpiled()
         }
         for (trade in trades) {
             for (offer in trade.ourOffers.filter(isResourceFilter))
@@ -436,8 +437,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
             // Every cancelled trade can change this - if 1 resource is missing,
             // don't cancel all trades of that resource, only cancel one (the first one, as it happens, since they're added chronologically)
-            val negativeCivResources = civInfo.getCivResources()
-                .filter { it.amount < 0 }.map { it.resource.name }
+            val negativeCivResources = civInfo.getCivResourceSupply()
+                .filter { it.amount < 0 && !it.resource.isStockpiled() }.map { it.resource.name }
 
             for (offer in trade.ourOffers) {
                 if (offer.type in listOf(TradeType.Luxury_Resource, TradeType.Strategic_Resource)

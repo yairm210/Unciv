@@ -2,6 +2,7 @@ package com.unciv.ui.components.extensions
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.Fonts
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.temporal.ChronoUnit
@@ -17,7 +18,11 @@ fun Int.toPercent() = toFloat().toPercent()
 fun Float.toPercent() = 1 + this/100
 
 /** Convert a [resource name][this] into "Consumes [amount] $resource" string (untranslated) */
-fun String.getConsumesAmountString(amount: Int) = "Consumes [$amount] [$this]"
+fun String.getConsumesAmountString(amount: Int, isStockpiled:Boolean): String {
+    val uniqueString = "{Consumes [$amount] [$this]}"
+    if (!isStockpiled) return uniqueString
+    else return "$uniqueString /${Fonts.turn}"
+}
 
 /** Convert a [resource name][this] into "Need [amount] more $resource" string (untranslated) */
 fun String.getNeedMoreAmountString(amount: Int) = "Need [$amount] more [$this]"
@@ -34,7 +39,7 @@ fun Duration.format(): String {
         if (firstPartAlreadyAdded) {
             sb.append(", ")
         }
-        sb.append("[${part}] $unit")
+        sb.append("[$part] $unit")
         firstPartAlreadyAdded = true
     }
     return sb.toString()

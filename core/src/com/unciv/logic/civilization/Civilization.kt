@@ -31,6 +31,7 @@ import com.unciv.logic.civilization.transients.CivInfoTransientCache
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.trade.TradeRequest
+import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Victory
@@ -111,7 +112,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     var detailedCivResources = ResourceSupplyList()
 
     @Transient
-    var summarizedCivResources = ResourceSupplyList()
+    var summarizedCivResourceSupply = ResourceSupplyList()
 
     @Transient
     val cityStateFunctions = CityStateFunctions(this)
@@ -171,6 +172,8 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     /** See DiplomacyManager.flagsCountdown for why this does not map Enums to ints */
     var flagsCountdown = HashMap<String, Int>()
+
+    var resourceStockpiles = Counter<String>()
 
     /** Arraylist instead of HashMap as the same unique might appear multiple times
      * We don't use pairs, as these cannot be serialized due to having no no-arg constructor
@@ -288,6 +291,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.attacksSinceTurnStart = attacksSinceTurnStart.copy()
         toReturn.hasMovedAutomatedUnits = hasMovedAutomatedUnits
         toReturn.statsHistory = statsHistory.clone()
+        toReturn.resourceStockpiles = resourceStockpiles.clone()
         return toReturn
     }
 
@@ -376,12 +380,18 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun getHappiness() = stats.happiness
 
-    fun getCivResources(): ResourceSupplyList = summarizedCivResources
+    /** Note that for stockpiled resources, this gives by how much it grows per turn, not current amount */
+    fun getCivResourceSupply(): ResourceSupplyList = summarizedCivResourceSupply
 
-    // Preserves some origins for resources so we can separate them for trades
+    /** Preserves some origins for resources so we can separate them for trades
+     * Stockpiled uniques cannot be traded currently
+     */
     fun getCivResourcesWithOriginsForTrade(): ResourceSupplyList {
         val newResourceSupplyList = ResourceSupplyList(keepZeroAmounts = true)
+
         for (resourceSupply in detailedCivResources) {
+            if (resourceSupply.resource.isStockpiled()) continue
+            if (resourceSupply.resource.hasUnique(UniqueType.CannotBeTraded)) continue
             // If we got it from another trade or from a CS, preserve the origin
             if (resourceSupply.isCityStateOrTradeOrigin()) {
                 newResourceSupplyList.add(resourceSupply.copy())
@@ -398,12 +408,16 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     /**
      * Returns a dictionary of ALL resource names, and the amount that the civ has of each
+     * Stockpiled resources return the stockpiled amount
      */
     fun getCivResourcesByName(): HashMap<String, Int> {
         val hashMap = HashMap<String, Int>(gameInfo.ruleset.tileResources.size)
         for (resource in gameInfo.ruleset.tileResources.keys) hashMap[resource] = 0
-        for (entry in getCivResources())
-            hashMap[entry.resource.name] = entry.amount
+        for (entry in getCivResourceSupply())
+            if (!entry.resource.isStockpiled())
+                hashMap[entry.resource.name] = entry.amount
+        for ((key, value) in resourceStockpiles)
+            hashMap[key] = value
         return hashMap
     }
 
@@ -442,7 +456,7 @@ class Civilization : IsPartOfGameInfoSerialization {
             yieldAll(religionManager.religion!!.getFounderUniques()
                 .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) })
 
-        yieldAll(getCivResources().asSequence()
+        yieldAll(getCivResourceSupply().asSequence()
             .filter { it.amount > 0 }
             .flatMap { it.resource.getMatchingUniques(uniqueType, stateForConditionals) }
         )
