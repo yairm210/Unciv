@@ -1,3 +1,25 @@
+## 4.5.18
+
+4.5.17-patch1
+
+Resolved  - crash screen '
+
+toString extension including sign (+/-)
+
+Actually implemented nation filter conditional
+
+Better wrapping for long construction item names
+
+"<for [nationFilter]>" conditional added
+
+By SomeTroglodyte:
+- User option to control NotificationScroll behaviour 
+- Code Reorg AlertPopup 
+
+Attempt to re-add screenshots to help new Android Studio setups. Check if rendering properly  - By itanasi
+
+Updated Building-Locally.md  - By vermontbail
+
 ## 4.5.17
 
 Battle table bonuses according to tile to attack from
