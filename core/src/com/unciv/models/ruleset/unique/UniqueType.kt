@@ -153,8 +153,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     CannotBuildUnits("Cannot build [baseUnitFilter] units", UniqueTarget.Global),
 
     // These act like Triggerables for stockpiled resources, and provide per-turn for non-stockpiled resources
-    ConsumesResources("Consumes [amount] [resource]", UniqueTarget.Triggerable, UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit),
-    ProvidesResources("Provides [amount] [resource]", UniqueTarget.Triggerable, UniqueTarget.Improvement, UniqueTarget.Global),
+    ConsumesResources("Consumes [amount] [resource]", UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit),
+    ProvidesResources("Provides [amount] [resource]", UniqueTarget.Improvement, UniqueTarget.Global),
 
     GrowthPercentBonus("[relativeAmount]% growth [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     CarryOverFood("[relativeAmount]% Food is carried over after population increases [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -726,7 +726,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     OneTimeRevealEntireMap("Reveals the entire map", UniqueTarget.Triggerable),  // used in tech
     OneTimeFreeBelief("Gain a free [beliefType] belief", UniqueTarget.Triggerable),
     OneTimeTriggerVoting("Triggers voting for the Diplomatic Victory", UniqueTarget.Triggerable),  // used in Building
-    OneTimeAddResourceStockpile("Gain ", UniqueTarget.Triggerable),
+
+    OneTimeConsumeResources("Instantly consumes [amount] [resource]", UniqueTarget.Triggerable),
+    OneTimeProvideResources("Instantly provides [amount] [resource]", UniqueTarget.Triggerable),
 
     OneTimeGainStat("Gain [amount] [stat/resource]", UniqueTarget.Triggerable),
     OneTimeGainStatRange("Gain [amount]-[amount] [stat]", UniqueTarget.Triggerable),

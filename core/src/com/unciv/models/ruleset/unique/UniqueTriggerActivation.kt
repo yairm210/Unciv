@@ -330,6 +330,38 @@ object UniqueTriggerActivation {
                 return true
             }
 
+            UniqueType.OneTimeProvideResources -> {
+                val amount = unique.params[0].toInt()
+                val resourceName = unique.params[1]
+                val resource = ruleSet.tileResources[resourceName] ?: return false
+                if (!resource.isStockpiled()) return false
+
+                civInfo.resourceStockpiles.add(resourceName, amount)
+
+                val notificationText = getNotificationText(notification, triggerNotificationText,
+                    "You have gained [$amount] [$resourceName]")
+                    ?: return true
+
+                civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Science, "ResourceIcons/$resourceName")
+                return true
+            }
+
+            UniqueType.OneTimeConsumeResources -> {
+                val amount = unique.params[0].toInt()
+                val resourceName = unique.params[1]
+                val resource = ruleSet.tileResources[resourceName] ?: return false
+                if (!resource.isStockpiled()) return false
+
+                civInfo.resourceStockpiles.add(resourceName, amount)
+
+                val notificationText = getNotificationText(notification, triggerNotificationText,
+                    "You have lost [$amount] [$resourceName]")
+                    ?: return true
+
+                civInfo.addNotification(notificationText, NotificationCategory.General, NotificationIcon.Science, "ResourceIcons/$resourceName")
+                return true
+            }
+
             UniqueType.OneTimeRevealEntireMap -> {
                 if (notification != null) {
                     civInfo.addNotification(notification, LocationAction(tile?.position), NotificationCategory.General, NotificationIcon.Scout)
