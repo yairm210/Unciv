@@ -22,7 +22,7 @@ fun String.getConsumesAmountString(amount: Int) = "Consumes [$amount] [$this]"
 /** Convert a [resource name][this] into "Need [amount] more $resource" string (untranslated) */
 fun String.getNeedMoreAmountString(amount: Int) = "Need [$amount] more [$this]"
 
-fun Int.toPlusMinus() = if (this > 0) "+$this" else this.toString()
+fun Int.toStringSigned() = if (this > 0) "+$this" else this.toString()
 
 /** Formats the [Duration] into a translated string */
 fun Duration.format(): String {
@@ -34,7 +34,7 @@ fun Duration.format(): String {
         if (firstPartAlreadyAdded) {
             sb.append(", ")
         }
-        sb.append("[${part}] $unit")
+        sb.append("[$part] $unit")
         firstPartAlreadyAdded = true
     }
     return sb.toString()

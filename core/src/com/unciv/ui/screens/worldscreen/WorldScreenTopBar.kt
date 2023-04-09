@@ -25,7 +25,7 @@ import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.setFontColor
 import com.unciv.ui.components.extensions.setFontSize
 import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toPlusMinus
+import com.unciv.ui.components.extensions.toStringSigned
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.popups
@@ -364,7 +364,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
             else {
                 val perTurn = civResourceSupply.firstOrNull { it.resource == resource }?.amount ?: 0
                 if (perTurn == 0) label.setText(amount)
-                else label.setText("$amount (${perTurn.toPlusMinus()})")
+                else label.setText("$amount (${perTurn.toStringSigned()})")
             }
             resourcesWrapper.add(label).padTop(8f)  // digits don't have descenders, so push them down a little
         }

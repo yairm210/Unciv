@@ -1,16 +1,6 @@
 # Uniques
 Simple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](../Unique-parameters)
 ## Triggerable uniques
-??? example  "Consumes [amount] [resource]"
-	Example: "Consumes [3] [Iron]"
-
-	Applicable to: Triggerable, Building, Unit, Improvement
-
-??? example  "Provides [amount] [resource]"
-	Example: "Provides [3] [Iron]"
-
-	Applicable to: Triggerable, Global, Improvement
-
 ??? example  "Free [baseUnitFilter] appears"
 	Example: "Free [Melee] appears"
 
@@ -84,7 +74,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Triggers voting for the Diplomatic Victory"
 	Applicable to: Triggerable
 
-??? example  "Gain "
+??? example  "Instantly consumes [amount] [resource]"
+	Example: "Instantly consumes [3] [Iron]"
+
+	Applicable to: Triggerable
+
+??? example  "Instantly provides [amount] [resource]"
+	Example: "Instantly provides [3] [Iron]"
+
 	Applicable to: Triggerable
 
 ??? example  "Gain [amount] [stat/resource]"
@@ -331,6 +328,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "Cannot build [Melee] units"
 
 	Applicable to: Global
+
+??? example  "Provides [amount] [resource]"
+	Example: "Provides [3] [Iron]"
+
+	Applicable to: Global, Improvement
 
 ??? example  "[relativeAmount]% growth [cityFilter]"
 	Example: "[+20]% growth [in all cities]"
@@ -917,6 +919,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: FollowerBelief
 
 ## Building uniques
+??? example  "Consumes [amount] [resource]"
+	Example: "Consumes [3] [Iron]"
+
+	Applicable to: Building, Unit, Improvement
+
 ??? example  "Unbuildable"
 	Applicable to: Building, Unit, Improvement
 
