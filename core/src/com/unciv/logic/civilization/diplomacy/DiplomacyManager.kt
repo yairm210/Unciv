@@ -18,6 +18,7 @@ import com.unciv.ui.components.extensions.toPercent
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.sign
 
 enum class RelationshipLevel(val color: Color) {
     // War is tested separately for the Diplomacy Screen. Colored RED.
@@ -185,7 +186,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
      */
     private fun compareRelationshipLevel(level: RelationshipLevel, comparesAs: Int): Boolean {
         if (!civInfo.isCityState())
-            return relationshipLevel().compareTo(level) == comparesAs
+            return relationshipLevel().compareTo(level).sign == comparesAs
         return when(level) {
             RelationshipLevel.Afraid -> when {
                 comparesAs < 0 -> getInfluence() < 0
@@ -199,7 +200,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             }
             else ->
                 // Outside the potentially expensive questions, do it the easy way
-                relationshipLevel().compareTo(level) == comparesAs
+                // Except - Enum.compareTo does not behave quite like other compareTo's
+                // or like kotlinlang.org says, thus the `sign`
+                relationshipLevel().compareTo(level).sign == comparesAs
         }
     }
     /** @see compareRelationshipLevel */
