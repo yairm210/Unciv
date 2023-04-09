@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.utils.Align
+import com.unciv.GUI
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.ui.components.ColorMarkupLabel
@@ -23,15 +24,18 @@ import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
 
 /*TODO
- *  Some persistence - over game or over settings?
- *  Check state after Undo
- *  Idea: Blink the button when new notifications while "away"
+ *  Un-hiding the notifications when new ones arrive is a little pointless due to Categories:
+ *      * try to scroll new into view? Very complicated as the "old" state is only "available" in the Widgets
+ *      * Don't unless a new user option disables categories, then scroll to top?
+ *  Idea: Blink or tint the button when new notifications while Hidden
  *  Idea: The little "1" on the bell - remove and draw actual count
  */
 
 class NotificationsScroll(
     private val worldScreen: WorldScreen
 ) : ScrollPane(null) {
+    enum class UserSetting(val static: Boolean = false) { Disabled(true), Hidden, Visible, Permanent(true) }
+
     private companion object {
         /** Scale the entire ScrollPane by this factor */
         const val scaleFactor = 0.5f
@@ -71,6 +75,9 @@ class NotificationsScroll(
 
     private val restoreButton = RestoreButton()
 
+    private var userSetting = UserSetting.Visible
+    private var userSettingChanged = false
+
     init {
         actor = notificationsTable.right()
         touchable = Touchable.childrenOnly
@@ -81,11 +88,12 @@ class NotificationsScroll(
 
     /** Access to hidden "state" - writing it will ensure this is fully visible or hidden and the
      *  restore button shown as needed - with animation. */
+    @Suppress("MemberVisibilityCanBePrivate")  // API for future use
     var isHidden: Boolean
         get () = scrollX <= scrolledAwayEpsilon
         set(value) {
-            restoreButton.blocked = false
-            scrollX = if (value) 0f else width
+            restoreButton.unblock()
+            scrollX = if (value) 0f else maxX
         }
 
     /**
@@ -102,25 +110,34 @@ class NotificationsScroll(
         coveredNotificationsTop: Float,
         coveredNotificationsBottom: Float
     ) {
-        // Initial scrollX should scroll all the way to the right - the setter automatically clamps
-        val previousScrollX = if (notificationsTable.hasChildren()) scrollX else Float.MAX_VALUE
+        if (getUserSettingCheckDisabled()) return
+
+        val previousScrollX = when {
+            isScrollingDisabledX -> width  // switching from Permanent - scrollX and maxX are 0
+            userSetting.static -> maxX  // Permanent: fully visible
+            notificationsTable.hasChildren() -> scrollX  // save current scroll
+            else -> 0f  // Swiching Hidden to Dynamic - animate "in" only
+        }
         val previousScrollY = scrollY
 
-        restoreButton.blocked = true  // For the update, since ScrollPane may layout and change scrollX
-        if (updateContent(notifications, coveredNotificationsTop, coveredNotificationsBottom)) {
+        restoreButton.block()  // For the update, since ScrollPane may layout and change scrollX
+        val contentChanged = updateContent(notifications, coveredNotificationsTop, coveredNotificationsBottom)
+        if (contentChanged) {
             updateLayout()
-            if (notifications.isEmpty())
-                scrollX = previousScrollX
-            else
-                isHidden = false
         } else {
             updateSpacers(coveredNotificationsTop, coveredNotificationsBottom)
-            scrollX = previousScrollX
         }
 
+        scrollX = previousScrollX
         scrollY = previousScrollY
         updateVisualScroll()
-        restoreButton.blocked = false
+
+        applyUserSettingChange()
+        if (!userSetting.static) {
+            restoreButton.unblock()
+            if (contentChanged && !userSettingChanged && isHidden)
+                isHidden = false
+        }
 
         // Do the positioning here since WorldScreen may also call update when just its geometry changed
         setPosition(stage.width - width * scaleFactor, 0f)
@@ -281,8 +298,9 @@ class NotificationsScroll(
     }
 
     inner class RestoreButton : Container<IconCircleGroup>() {
-        var blocked = true
-        var active = false
+        private var blockCheck = true
+        private var blockAct = true
+        private var active = false
 
         init {
             actor = ImageGetter.getImage("OtherIcons/Notifications")
@@ -292,37 +310,50 @@ class NotificationsScroll(
             color = color.cpy()  // So we don't mutate a skin element while fading
             color.a = 0f  // for first fade-in
             onClick {
-                scrollX = this@NotificationsScroll.width
+                scrollX = maxX
                 hide()
             }
             pack()  // `this` needs to adopt the size of `actor`, won't happen automatically (surprisingly)
         }
 
+        fun block() {
+            blockCheck = true
+            blockAct = true
+        }
+        fun unblock() {
+            blockCheck = false
+            blockAct = false
+        }
+
         fun show() {
             active = true
-            blocked = false
+            clearActions()
+            updateUserSetting(UserSetting.Hidden)
             if (parent == null)
-                worldScreen.stage.addActor(this)
+                // `addActorAfter` to stay behind any popups
+                worldScreen.stage.root.addActorAfter(this@NotificationsScroll, this)
+            blockAct = false
             addAction(Actions.fadeIn(1f))
         }
 
         fun hide() {
+            active = false
             clearActions()
-            blocked = false
+            updateUserSetting(UserSetting.Visible)
             if (parent == null) return
+            blockAct = false
             addAction(
                 Actions.sequence(
                     Actions.fadeOut(0.333f),
                     Actions.run {
                         remove()
-                        active = false
                     }
                 )
             )
         }
 
         fun checkScrollX(scrollX: Float) {
-            if (blocked) return
+            if (blockCheck) return
             if (active && scrollX >= scrolledAwayEpsilon * 2)
                 hide()
             if (!active && scrollX <= scrolledAwayEpsilon)
@@ -331,9 +362,63 @@ class NotificationsScroll(
 
         override fun act(delta: Float) {
             // Actions are blocked while update() is rebuilding the UI elements - to be safe from unexpected state changes
-            if (!blocked)
-                super.act(delta)
+            if (!blockAct) super.act(delta)
         }
     }
 
+    private fun getUserSettingCheckDisabled(): Boolean {
+        val settingString = GUI.getSettings().notificationScroll
+        val setting = UserSetting.values().firstOrNull { it.name == settingString }
+            ?: UserSetting.Visible
+        userSettingChanged = false
+        if (setting == userSetting)
+            return setting == UserSetting.Disabled
+
+        userSetting = setting
+        userSettingChanged = true
+        if (setting != UserSetting.Disabled) return false
+
+        notificationsTable.clear()
+        notificationsHash = 0
+        scrollX = 0f
+        updateVisualScroll()
+        setScrollingDisabled(false, false)
+        isVisible = false
+        restoreButton.hide()
+        return true
+    }
+
+    private fun applyUserSettingChange() {
+        if (!userSettingChanged) return
+        // Here the rebuild of content and restoring of scrollX/Y already happened
+        restoreButton.block()
+        val fromPermanent = isScrollingDisabledX
+        setScrollingDisabled(userSetting.static, false)
+        if (fromPermanent) {
+            validate()
+            scrollX = maxX
+            updateVisualScroll()
+        }
+        when (userSetting) {
+            UserSetting.Hidden -> {
+                if (!isHidden) isHidden = true
+                restoreButton.show()
+            }
+            UserSetting.Visible -> {
+                if (isHidden) isHidden = false
+                restoreButton.hide()
+            }
+            UserSetting.Permanent -> {
+                restoreButton.hide()
+            }
+            else -> return
+        }
+        isVisible = true
+    }
+
+    private fun updateUserSetting(newSetting: UserSetting) {
+        if (newSetting == userSetting || userSetting.static) return
+        userSetting = newSetting
+        GUI.getSettings().notificationScroll = newSetting.name
+    }
 }
