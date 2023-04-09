@@ -349,7 +349,23 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         constructionQueue.clear()
 
         for (constructionName in queueSnapshot) {
-            if (getConstruction(constructionName).isBuildable(this))
+            val construction = getConstruction(constructionName)
+            // First construction will be built next turn, we need to make sure it has the correct resources
+            if (constructionQueue.isEmpty() && getWorkDone(constructionName) == 0){
+                val costUniques = when (construction) {
+                    is BaseUnit -> construction.getMatchingUniques(UniqueType.CostsResources)
+                    is Building -> construction.getMatchingUniques(UniqueType.CostsResources)
+                    else -> emptySequence()
+                }
+                val civResources = city.civ.getCivResourcesByName()
+
+                if (costUniques.any {
+                            val resourceName = it.params[1]
+                            civResources[resourceName] == null
+                                    || it.params[0].toInt() > civResources[resourceName]!! })
+                    continue // Removes this construction from the queue
+            }
+            if (construction.isBuildable(this))
                 constructionQueue.add(constructionName)
         }
     }
@@ -392,6 +408,18 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     private fun constructionBegun(construction: IConstruction) {
+        val costUniques = when (construction) {
+            is BaseUnit -> construction.getMatchingUniques(UniqueType.CostsResources)
+            is Building -> construction.getMatchingUniques(UniqueType.CostsResources)
+            else -> emptySequence()
+        }
+
+        for (unique in costUniques){
+            val amount = unique.params[0].toInt()
+            val resourceName = unique.params[1]
+            city.civ.resourceStockpiles.add(resourceName, -amount)
+        }
+
         if (construction !is Building) return
         if (!construction.hasUnique(UniqueType.TriggersAlertOnStart)) return
         val buildingIcon = "BuildingIcons/${construction.name}"

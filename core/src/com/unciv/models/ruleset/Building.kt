@@ -128,8 +128,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 val resource = city.getRuleset().tileResources[resourceName] ?: continue
                 val consumesString = resourceName.getConsumesAmountString(amount, resource.isStockpiled())
 
-                lines += if (showAdditionalInfo)
-                    "$consumesString ({[$available] available})"
+                lines += if (showAdditionalInfo) "$consumesString ({[$available] available})"
                 else consumesString
             }
         }

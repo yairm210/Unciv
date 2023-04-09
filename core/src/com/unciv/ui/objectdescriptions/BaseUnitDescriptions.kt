@@ -92,7 +92,7 @@ object BaseUnitDescriptions {
                 val buyCost = (30.0 * baseUnit.cost.toFloat().pow(0.75f) * baseUnit.hurryCostModifier.toPercent()).toInt() / 10 * 10
                 stats += "$buyCost${Fonts.gold}"
             }
-            textList += FormattedLine(stats.joinToString(", ", "{Cost}: "))
+            textList += FormattedLine(stats.joinToString("/", "{Cost}: "))
         }
 
         if (baseUnit.replacementTextForUniques.isNotEmpty()) {
