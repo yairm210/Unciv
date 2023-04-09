@@ -122,7 +122,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (isNationalWonder) lines += "National Wonder"
         if (!isFree) {
             val availableResources = if (!showAdditionalInfo) emptyMap()
-                else city.civ.getCivResources().associate { it.resource.name to it.amount }
+                else city.civ.getCivResourcesByName()
             for ((resource, amount) in getResourceRequirements()) {
                 val available = availableResources[resource] ?: 0
                 lines += if (showAdditionalInfo)

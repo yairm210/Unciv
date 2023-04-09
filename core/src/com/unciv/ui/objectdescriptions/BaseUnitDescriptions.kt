@@ -9,10 +9,10 @@ import com.unciv.models.ruleset.unit.UnitMovementType
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.getConsumesAmountString
 import com.unciv.ui.components.extensions.toPercent
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import kotlin.math.pow
 
 object BaseUnitDescriptions {
@@ -35,7 +35,7 @@ object BaseUnitDescriptions {
      * @param city Supplies civInfo to show available resources after resource requirements */
     fun getDescription(baseUnit: BaseUnit, city: City): String {
         val lines = mutableListOf<String>()
-        val availableResources = city.civ.getCivResources().associate { it.resource.name to it.amount }
+        val availableResources = city.civ.getCivResourcesByName()
         for ((resource, amount) in baseUnit.getResourceRequirements()) {
             val available = availableResources[resource] ?: 0
             lines += "{${resource.getConsumesAmountString(amount)}} ({[$available] available})".tr()

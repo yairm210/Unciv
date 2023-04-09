@@ -311,7 +311,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         if (civInfo.detailedCivResources == newDetailedCivResources) return
 
         civInfo.detailedCivResources = newDetailedCivResources
-        civInfo.summarizedCivResources = newDetailedCivResources.sumByResource("All")
+        civInfo.summarizedCivResourceSupply = newDetailedCivResources.sumByResource("All")
 
         civInfo.updateStatsForNextTurn() // More or less resources = more or less happiness, with potential domino effects
     }

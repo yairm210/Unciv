@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.Fonts
@@ -24,6 +25,7 @@ import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.setFontColor
 import com.unciv.ui.components.extensions.setFontSize
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toPlusMinus
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.popups
@@ -347,14 +349,23 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         turnsLabel.setText(Fonts.turn + "" + civInfo.gameInfo.turns + " | " + yearText)
         resourcesWrapper.clearChildren()
         var firstPadLeft = 20f  // We want a distance from the turns entry to the first resource, but only if any resource is displayed
-        val civResources = civInfo.getCivResources()
+        val civResources = civInfo.getCivResourcesByName()
+        val civResourceSupply = civInfo.getCivResourceSupply()
         for ((resource, label, icon) in resourceActors) {
             if (resource.revealedBy != null && !civInfo.tech.isResearched(resource.revealedBy!!))
                 continue
+            if (resource.hasUnique(UniqueType.NotShownOnWorldScreen)) continue
+
             resourcesWrapper.add(icon).padLeft(firstPadLeft).padRight(0f)
             firstPadLeft = 5f
-            val amount = civResources.get(resource, "All")?.amount ?: 0
-            label.setText(amount)
+            val amount = civResources[resource.name] ?: 0
+            if (!resource.isStockpiled())
+                label.setText(amount)
+            else {
+                val perTurn = civResourceSupply.firstOrNull { it.resource == resource }?.amount ?: 0
+                if (perTurn == 0) label.setText(amount)
+                else label.setText("$amount (${perTurn.toPlusMinus()})")
+            }
             resourcesWrapper.add(label).padTop(8f)  // digits don't have descenders, so push them down a little
         }
 

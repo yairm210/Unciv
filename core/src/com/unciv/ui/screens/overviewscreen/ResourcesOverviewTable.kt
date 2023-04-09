@@ -11,10 +11,6 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
@@ -22,6 +18,10 @@ import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
+import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 
 
 class ResourcesOverviewTab(
@@ -73,10 +73,16 @@ class ResourcesOverviewTab(
     private val extraOrigins: List<ExtraInfoOrigin> = extraDrilldown.asSequence()
         .mapNotNull { ExtraInfoOrigin.safeValueOf(it.origin) }.distinct().toList()
 
-    private fun ResourceSupplyList.getLabel(resource: TileResource, origin: String): Label? =
-        get(resource, origin)?.amount?.toLabel()
-    private fun ResourceSupplyList.getTotalLabel(resource: TileResource): Label =
-        filter { it.resource == resource }.sumOf { it.amount }.toLabel()
+    private fun ResourceSupplyList.getLabel(resource: TileResource, origin: String): Label? {
+        val amount = get(resource, origin)?.amount ?: return null
+        return if (resource.isStockpiled() && amount > 0) "+$amount".toLabel()
+        else amount.toLabel()
+    }
+    private fun ResourceSupplyList.getTotalLabel(resource: TileResource): Label {
+        val total = filter { it.resource == resource }.sumOf { it.amount }
+        return if (resource.isStockpiled() && total > 0) "+$total".toLabel()
+        else total.toLabel()
+    }
     private fun getResourceImage(name: String) =
         ImageGetter.getResourcePortrait(name, iconSize).apply {
             onClick {

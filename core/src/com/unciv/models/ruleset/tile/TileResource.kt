@@ -15,6 +15,7 @@ class TileResource : RulesetStatsObject() {
     var resourceType: ResourceType = ResourceType.Bonus
     var terrainsCanBeFoundOn: List<String> = listOf()
     var improvement: String? = null
+    /** stats that this resource adds to a tile */
     var improvementStats: Stats? = null
     var revealedBy: String? = null
     var improvedBy: List<String> = listOf()
@@ -134,6 +135,8 @@ class TileResource : RulesetStatsObject() {
             tile.improvementFunctions.canBuildImprovement(civInfo.gameInfo.ruleset.tileImprovements[it]!!, civInfo)
         }
     }
+
+    fun isStockpiled() = hasUnique(UniqueType.Stockpiled)
 
     class DepositAmount {
         var sparse: Int = 1

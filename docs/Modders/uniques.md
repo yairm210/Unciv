@@ -1,6 +1,16 @@
 # Uniques
 Simple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](../Unique-parameters)
 ## Triggerable uniques
+??? example  "Consumes [amount] [resource]"
+	Example: "Consumes [3] [Iron]"
+
+	Applicable to: Triggerable, Building, Unit, Improvement
+
+??? example  "Provides [amount] [resource]"
+	Example: "Provides [3] [Iron]"
+
+	Applicable to: Triggerable, Global, Improvement
+
 ??? example  "Free [baseUnitFilter] appears"
 	Example: "Free [Melee] appears"
 
@@ -74,7 +84,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Triggers voting for the Diplomatic Victory"
 	Applicable to: Triggerable
 
-??? example  "Gain [amount] [stat]"
+??? example  "Gain "
+	Applicable to: Triggerable
+
+??? example  "Gain [amount] [stat/resource]"
 	Example: "Gain [3] [Culture]"
 
 	Applicable to: Triggerable
@@ -318,11 +331,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "Cannot build [Melee] units"
 
 	Applicable to: Global
-
-??? example  "Provides [amount] [resource]"
-	Example: "Provides [3] [Iron]"
-
-	Applicable to: Global, Improvement
 
 ??? example  "[relativeAmount]% growth [cityFilter]"
 	Example: "[+20]% growth [in all cities]"
@@ -909,11 +917,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: FollowerBelief
 
 ## Building uniques
-??? example  "Consumes [amount] [resource]"
-	Example: "Consumes [3] [Iron]"
-
-	Applicable to: Building, Unit, Improvement
-
 ??? example  "Unbuildable"
 	Applicable to: Building, Unit, Improvement
 
@@ -1599,6 +1602,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Resource
 
 ??? example  "Can only be created by Mercantile City-States"
+	Applicable to: Resource
+
+??? example  "Stockpiled"
+	Applicable to: Resource
+
+??? example  "Not shown on world screen"
 	Applicable to: Resource
 
 ??? example  "Generated with weight [amount]"
