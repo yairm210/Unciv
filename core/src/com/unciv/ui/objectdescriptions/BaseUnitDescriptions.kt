@@ -36,9 +36,11 @@ object BaseUnitDescriptions {
     fun getDescription(baseUnit: BaseUnit, city: City): String {
         val lines = mutableListOf<String>()
         val availableResources = city.civ.getCivResourcesByName()
-        for ((resource, amount) in baseUnit.getResourceRequirements()) {
-            val available = availableResources[resource] ?: 0
-            lines += "{${resource.getConsumesAmountString(amount)}} ({[$available] available})".tr()
+        for ((resourceName, amount) in baseUnit.getResourceRequirementsPerTurn()) {
+            val available = availableResources[resourceName] ?: 0
+            val resource = baseUnit.ruleset.tileResources[resourceName] ?: continue
+            val consumesString = resourceName.getConsumesAmountString(amount, resource.isStockpiled())
+            lines += "$consumesString ({[$available] available})".tr()
         }
         var strengthLine = ""
         if (baseUnit.strength != 0) {
@@ -105,12 +107,13 @@ object BaseUnitDescriptions {
             }
         }
 
-        val resourceRequirements = baseUnit.getResourceRequirements()
+        val resourceRequirements = baseUnit.getResourceRequirementsPerTurn()
         if (resourceRequirements.isNotEmpty()) {
             textList += FormattedLine()
-            for ((resource, amount) in resourceRequirements) {
+            for ((resourceName, amount) in resourceRequirements) {
+                val resource = ruleset.tileResources[resourceName] ?: continue
                 textList += FormattedLine(
-                    resource.getConsumesAmountString(amount),
+                    resourceName.getConsumesAmountString(amount, resource.isStockpiled()),
                     link = "Resource/$resource", color = "#F42"
                 )
             }

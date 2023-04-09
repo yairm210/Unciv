@@ -202,7 +202,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
             val useStoredProduction = entry is Building || !cityConstructions.isBeingConstructedOrEnqueued(entry.name)
             val buttonText = cityConstructions.getTurnsToConstructionString(entry.name, useStoredProduction).trim()
-            val resourcesRequired = entry.getResourceRequirements()
+            val resourcesRequired = entry.getResourceRequirementsPerTurn()
             val mostImportantRejection =
                     entry.getRejectionReasons(cityConstructions)
                         .filter { it.isImportantRejection() }
@@ -317,9 +317,11 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 if (constructionName in PerpetualConstruction.perpetualConstructionsMap) "\n∞"
                 else cityConstructions.getTurnsToConstructionString(constructionName, isFirstConstructionOfItsKind)
 
-        val constructionResource = cityConstructions.getConstruction(constructionName).getResourceRequirements()
-        for ((resource, amount) in constructionResource)
-            text += "\n" + resource.getConsumesAmountString(amount).tr()
+        val constructionResource = cityConstructions.getConstruction(constructionName).getResourceRequirementsPerTurn()
+        for ((resourceName, amount) in constructionResource) {
+            val resource = cityConstructions.city.getRuleset().tileResources[resourceName] ?: continue
+            text += "\n" + resourceName.getConsumesAmountString(amount, resource.isStockpiled()).tr()
+        }
 
         table.defaults().pad(2f).minWidth(40f)
         if (isFirstConstructionOfItsKind) table.add(getProgressBar(constructionName)).minWidth(5f)

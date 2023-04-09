@@ -14,7 +14,8 @@ import kotlin.math.roundToInt
 interface IConstruction : INamed {
     fun isBuildable(cityConstructions: CityConstructions): Boolean
     fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean
-    fun getResourceRequirements(): HashMap<String,Int>
+    /** Gets *per turn* resource requirements - does not include immediate costs for stockpiled resources */
+    fun getResourceRequirementsPerTurn(): HashMap<String,Int>
     fun requiresResource(resource: String): Boolean
 }
 
@@ -210,7 +211,7 @@ open class PerpetualConstruction(override var name: String, val description: Str
     override fun isBuildable(cityConstructions: CityConstructions): Boolean =
             throw Exception("Impossible!")
 
-    override fun getResourceRequirements(): HashMap<String, Int> = hashMapOf()
+    override fun getResourceRequirementsPerTurn(): HashMap<String, Int> = hashMapOf()
 
     override fun requiresResource(resource: String) = false
 

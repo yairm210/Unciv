@@ -92,7 +92,7 @@ class TileResource : RulesetStatsObject() {
             }
         }
 
-        val buildingsThatConsumeThis = ruleset.buildings.values.filter { it.getResourceRequirements().containsKey(name) }
+        val buildingsThatConsumeThis = ruleset.buildings.values.filter { it.getResourceRequirementsPerTurn().containsKey(name) }
         if (buildingsThatConsumeThis.isNotEmpty()) {
             textList += FormattedLine()
             textList += FormattedLine("{Buildings that consume this resource}:")
@@ -101,7 +101,7 @@ class TileResource : RulesetStatsObject() {
             }
         }
 
-        val unitsThatConsumeThis = ruleset.units.values.filter { it.getResourceRequirements().containsKey(name) }
+        val unitsThatConsumeThis = ruleset.units.values.filter { it.getResourceRequirementsPerTurn().containsKey(name) }
         if (unitsThatConsumeThis.isNotEmpty()) {
             textList += FormattedLine()
             textList += FormattedLine("{Units that consume this resource}: ")

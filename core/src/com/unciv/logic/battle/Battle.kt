@@ -818,7 +818,7 @@ object Battle {
 
         var damageModifierFromMissingResource = 1f
         val civResources = attacker.getCivInfo().getCivResourcesByName()
-        for (resource in attacker.unit.baseUnit.getResourceRequirements().keys) {
+        for (resource in attacker.unit.baseUnit.getResourceRequirementsPerTurn().keys) {
             if (civResources[resource]!! < 0 && !attacker.getCivInfo().isBarbarian())
                 damageModifierFromMissingResource *= 0.5f // I could not find a source for this number, but this felt about right
         }

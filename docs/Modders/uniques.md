@@ -924,6 +924,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Building, Unit, Improvement
 
+??? example  "Costs [amount] [resource]"
+	Example: "Costs [3] [Iron]"
+
+	Applicable to: Building, Unit, Improvement
+
 ??? example  "Unbuildable"
 	Applicable to: Building, Unit, Improvement
 

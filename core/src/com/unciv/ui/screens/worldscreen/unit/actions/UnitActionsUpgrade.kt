@@ -42,9 +42,9 @@ object UnitActionsUpgrade{
         // Check _new_ resource requirements (display only - yes even for free or special upgrades)
         // Using Counter to aggregate is a bit exaggerated, but - respect the mad modder.
         val resourceRequirementsDelta = Counter<String>()
-        for ((resource, amount) in unit.baseUnit().getResourceRequirements())
+        for ((resource, amount) in unit.baseUnit().getResourceRequirementsPerTurn())
             resourceRequirementsDelta.add(resource, -amount)
-        for ((resource, amount) in upgradedUnit.getResourceRequirements())
+        for ((resource, amount) in upgradedUnit.getResourceRequirementsPerTurn())
             resourceRequirementsDelta.add(resource, amount)
         val newResourceRequirementsString = resourceRequirementsDelta.entries
             .filter { it.value > 0 }

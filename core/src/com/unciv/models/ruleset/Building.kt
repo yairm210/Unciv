@@ -123,11 +123,14 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (!isFree) {
             val availableResources = if (!showAdditionalInfo) emptyMap()
                 else city.civ.getCivResourcesByName()
-            for ((resource, amount) in getResourceRequirements()) {
-                val available = availableResources[resource] ?: 0
+            for ((resourceName, amount) in getResourceRequirementsPerTurn()) {
+                val available = availableResources[resourceName] ?: 0
+                val resource = city.getRuleset().tileResources[resourceName] ?: continue
+                val consumesString = resourceName.getConsumesAmountString(amount, resource.isStockpiled())
+
                 lines += if (showAdditionalInfo)
-                        "{${resource.getConsumesAmountString(amount)}} ({[$available] available})"
-                    else resource.getConsumesAmountString(amount)
+                    "$consumesString ({[$available] available})"
+                else consumesString
             }
         }
 
@@ -254,14 +257,14 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             textList += FormattedLine("Requires [$requiredBuilding] to be built in the city",
                 link="Building/$requiredBuilding")
 
-        val resourceRequirements = getResourceRequirements()
+        val resourceRequirements = getResourceRequirementsPerTurn()
         if (resourceRequirements.isNotEmpty()) {
             textList += FormattedLine()
-            for ((resource, amount) in resourceRequirements) {
+            for ((resourceName, amount) in resourceRequirements) {
+                val resource = ruleset.tileResources[resourceName] ?: continue
                 textList += FormattedLine(
-                    // the 1 variant should deprecate some time
-                    resource.getConsumesAmountString(amount),
-                    link="Resources/$resource", color="#F42" )
+                    resourceName.getConsumesAmountString(amount, resource.isStockpiled()),
+                    link="Resources/$resourceName", color="#F42" )
             }
         }
 
@@ -615,7 +618,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             yield(RejectionReasonType.RequiresBuildingInThisCity.toInstance("Requires a [${civ.getEquivalentBuilding(requiredBuilding!!)}] in this city"))
         }
 
-        for ((resource, requiredAmount) in getResourceRequirements()) {
+        for ((resource, requiredAmount) in getResourceRequirementsPerTurn()) {
             val availableAmount = civ.getCivResourcesByName()[resource]!!
             if (availableAmount < requiredAmount) {
                 yield(RejectionReasonType.ConsumesResources.toInstance(resource.getNeedMoreAmountString(requiredAmount - availableAmount)))
@@ -740,7 +743,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     fun isSellable() = !isAnyWonder() && !hasUnique(UniqueType.Unsellable)
 
-    override fun getResourceRequirements(): HashMap<String, Int> = resourceRequirementsInternal
+    override fun getResourceRequirementsPerTurn(): HashMap<String, Int> = resourceRequirementsInternal
 
     private val resourceRequirementsInternal: HashMap<String, Int> by lazy {
         val resourceRequirements = HashMap<String, Int>()
@@ -754,6 +757,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     override fun requiresResource(resource: String): Boolean {
         if (requiredResource == resource) return true
         for (unique in getMatchingUniques(UniqueType.ConsumesResources)) {
+            if (unique.params[1] == resource) return true
+        }
+        for (unique in getMatchingUniques(UniqueType.CostsResources)) {
             if (unique.params[1] == resource) return true
         }
         return false
