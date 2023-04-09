@@ -1619,6 +1619,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Stockpiled"
 	Applicable to: Resource
 
+??? example  "Cannot be traded"
+	Applicable to: Resource
+
 ??? example  "Not shown on world screen"
 	Applicable to: Resource
 

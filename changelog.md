@@ -1,24 +1,15 @@
-## 4.5.18
+## 4.6.0
 
-4.5.17-patch1
+Modding: Resources can now be optionally stockpiled, as in Gathering Storm, Endless Legend, etc!
 
-Resolved  - crash screen '
+Resolved crash screen copy error
 
-toString extension including sign (+/-)
-
-Actually implemented nation filter conditional
-
-Better wrapping for long construction item names
+UI: Better wrapping for long construction item names in city streen
 
 "<for [nationFilter]>" conditional added
 
 By SomeTroglodyte:
-- User option to control NotificationScroll behaviour 
-- Code Reorg AlertPopup 
-
-Attempt to re-add screenshots to help new Android Studio setups. Check if rendering properly  - By itanasi
-
-Updated Building-Locally.md  - By vermontbail
+- User option to control NotificationScroll behaviour
 
 ## 4.5.17
 
