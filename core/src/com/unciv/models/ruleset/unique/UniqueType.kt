@@ -583,6 +583,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ResourceAmountOnTiles("Deposits in [tileFilter] tiles always provide [amount] resources", UniqueTarget.Resource),
     CityStateOnlyResource("Can only be created by Mercantile City-States", UniqueTarget.Resource),
     Stockpiled("Stockpiled", UniqueTarget.Resource),
+    CannotBeTraded("Cannot be traded", UniqueTarget.Resource),
     NotShownOnWorldScreen("Not shown on world screen", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
 
     ResourceWeighting("Generated with weight [amount]", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
@@ -731,7 +732,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     /** For stockpiled resources */
     OneTimeConsumeResources("Instantly consumes [amount] [resource]", UniqueTarget.Triggerable),
-
     /** For stockpiled resources */
     OneTimeProvideResources("Instantly provides [amount] [resource]", UniqueTarget.Triggerable),
 

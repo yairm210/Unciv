@@ -404,6 +404,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         val isResourceFilter: (TradeOffer) -> Boolean = {
             (it.type == TradeType.Strategic_Resource || it.type == TradeType.Luxury_Resource)
                     && resourcesMap.containsKey(it.name)
+                    && !resourcesMap[it.name]!!.isStockpiled()
         }
         for (trade in trades) {
             for (offer in trade.ourOffers.filter(isResourceFilter))

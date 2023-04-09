@@ -391,6 +391,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
         for (resourceSupply in detailedCivResources) {
             if (resourceSupply.resource.isStockpiled()) continue
+            if (resourceSupply.resource.hasUnique(UniqueType.CannotBeTraded)) continue
             // If we got it from another trade or from a CS, preserve the origin
             if (resourceSupply.isCityStateOrTradeOrigin()) {
                 newResourceSupplyList.add(resourceSupply.copy())
