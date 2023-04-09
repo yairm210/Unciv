@@ -351,12 +351,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         for (constructionName in queueSnapshot) {
             val construction = getConstruction(constructionName)
             // First construction will be built next turn, we need to make sure it has the correct resources
-            if (constructionQueue.isEmpty() && getWorkDone(constructionName) == 0){
-                val costUniques = when (construction) {
-                    is BaseUnit -> construction.getMatchingUniques(UniqueType.CostsResources)
-                    is Building -> construction.getMatchingUniques(UniqueType.CostsResources)
-                    else -> emptySequence()
-                }
+            if (constructionQueue.isEmpty() && getWorkDone(constructionName) == 0) {
+                val costUniques = construction.getMatchingUniquesNotConflicting(UniqueType.CostsResources)
                 val civResources = city.civ.getCivResourcesByName()
 
                 if (costUniques.any {
@@ -408,11 +404,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     private fun constructionBegun(construction: IConstruction) {
-        val costUniques = when (construction) {
-            is BaseUnit -> construction.getMatchingUniques(UniqueType.CostsResources)
-            is Building -> construction.getMatchingUniques(UniqueType.CostsResources)
-            else -> emptySequence()
-        }
+        val costUniques = construction.getMatchingUniquesNotConflicting(UniqueType.CostsResources)
 
         for (unique in costUniques){
             val amount = unique.params[0].toInt()
