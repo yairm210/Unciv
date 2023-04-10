@@ -307,12 +307,19 @@ data class AccountUpdatedMessage (
 @Serializable(with = WebSocketMessageTypeSerializer::class)
 enum class WebSocketMessageType(val type: String) {
     InvalidMessage("invalidMessage"),
+    GameStarted("gameStarted"),
     UpdateGameData("updateGameData"),
     ClientDisconnected("clientDisconnected"),
     ClientReconnected("clientReconnected"),
     IncomingChatMessage("incomingChatMessage"),
     IncomingInvite("incomingInvite"),
-    GameStarted("gameStarted");
+    IncomingFriendRequest("incomingFriendRequest"),
+    FriendshipChanged("friendshipChanged"),
+    LobbyJoin("lobbyJoin"),
+    LobbyClosed("lobbyClosed"),
+    LobbyLeave("lobbyLeave"),
+    LobbyKick("lobbyKick"),
+    AccountUpdated("accountUpdated");
 
     companion object {
         private val VALUES = values()

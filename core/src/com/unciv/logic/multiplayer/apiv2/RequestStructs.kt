@@ -66,6 +66,14 @@ data class GameUploadRequest(
 )
 
 /**
+ * The request to join a lobby
+ */
+@Serializable
+data class JoinLobbyRequest(
+    val password: String? = null
+)
+
+/**
  * The request data of a login request
  */
 @Serializable

@@ -70,6 +70,10 @@ enum class ApiStatusCode(val value: Int) {
     InvalidLobbyUuid(1017),
     InvalidFriendUuid(1018),
     GameNotFound(1019),
+    InvalidMessage(1020),
+    WsNotConnected(1021),
+    LobbyFull(1022),
+    InvalidPlayerUUID(1023),
 
     InternalServerError(2000),
     DatabaseError(2001),

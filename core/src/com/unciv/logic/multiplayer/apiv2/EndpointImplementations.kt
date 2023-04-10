@@ -757,7 +757,7 @@ class InviteApi(private val client: HttpClient, private val authHelper: AuthHelp
      * Invite a friend to a lobby
      *
      * The executing user must be in the specified open lobby. The invited
-     * friend (identified by its [friendUUID]) must not be in a friend request state.
+     * player (identified by its [friendUUID]) must not be in a friend request state.
      *
      * Use [suppress] to forbid throwing *any* errors (returns false, otherwise true or an error).
      *
@@ -766,13 +766,34 @@ class InviteApi(private val client: HttpClient, private val authHelper: AuthHelp
      */
     suspend fun new(friendUUID: UUID, lobbyUUID: UUID, suppress: Boolean = false): Boolean {
         val response = request(
-            HttpMethod.Post, "/api/v2/friends",
+            HttpMethod.Post, "/api/v2/invites",
             client, authHelper,
             suppress = suppress,
             refine = { b ->
                 b.contentType(ContentType.Application.Json)
                 b.setBody(CreateInviteRequest(friendUUID, lobbyUUID))
             },
+            retry = getDefaultRetry(client, authHelper)
+        )
+        return response?.status?.isSuccess() == true
+    }
+
+    /**
+     * Reject or retract an invite to a lobby
+     *
+     * This endpoint can be used either by the sender of the invite
+     * to retract the invite or by the receiver to reject the invite.
+     *
+     * Use [suppress] to forbid throwing *any* errors (returns false, otherwise true or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
+     */
+    suspend fun reject(inviteUUID: UUID, suppress: Boolean = false): Boolean {
+        val response = request(
+            HttpMethod.Delete, "/api/v2/invites/$inviteUUID",
+            client, authHelper,
+            suppress = suppress,
             retry = getDefaultRetry(client, authHelper)
         )
         return response?.status?.isSuccess() == true
@@ -858,6 +879,93 @@ class LobbyApi(private val client: HttpClient, private val authHelper: AuthHelpe
     }
 
     /**
+     * Kick a player from an open lobby (as the lobby owner)
+     *
+     * All players in the lobby as well as the kicked player will receive a [LobbyKickMessage] on success.
+     *
+     * Use [suppress] to forbid throwing *any* errors (returns false, otherwise true or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
+     */
+    suspend fun kick(lobbyUUID: UUID, playerUUID: UUID, suppress: Boolean = false): Boolean {
+        val response = request(
+            HttpMethod.Delete, "/api/v2/lobbies/$lobbyUUID/$playerUUID",
+            client, authHelper,
+            suppress = suppress,
+            retry = getDefaultRetry(client, authHelper)
+        )
+        return response?.status?.isSuccess() == true
+    }
+
+    /**
+     * Close an open lobby (as the lobby owner)
+     *
+     * On success, all joined players will receive a [LobbyClosedMessage] via WebSocket.
+     *
+     * Use [suppress] to forbid throwing *any* errors (returns false, otherwise true or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
+     */
+    suspend fun close(lobbyUUID: UUID, suppress: Boolean = false): Boolean {
+        val response = request(
+            HttpMethod.Delete, "/api/v2/lobbies/$lobbyUUID",
+            client, authHelper,
+            suppress = suppress,
+            retry = getDefaultRetry(client, authHelper)
+        )
+        return response?.status?.isSuccess() == true
+    }
+
+    /**
+     * Join an existing lobby
+     *
+     * The executing user must not be the owner of a lobby or member of a lobby.
+     * To be placed in a lobby, an active WebSocket connection is required.
+     * As a lobby might be protected by password, the optional parameter password
+     * may be specified. On success, all players that were in the lobby before,
+     * are notified about the new player with a [LobbyJoinMessage].
+     *
+     * Use [suppress] to forbid throwing *any* errors (returns false, otherwise true or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
+     */
+    suspend fun join(lobbyUUID: UUID, password: String? = null, suppress: Boolean = false): Boolean {
+        return request(
+            HttpMethod.Post, "/api/v2/lobbies/$lobbyUUID/join",
+            client, authHelper,
+            suppress = suppress,
+            refine = { b ->
+                b.contentType(ContentType.Application.Json)
+                b.setBody(JoinLobbyRequest(password = password))
+            },
+            retry = getDefaultRetry(client, authHelper)
+        )?.status?.isSuccess() == true
+    }
+
+    /**
+     * Leave an open lobby
+     *
+     * This endpoint can only be used by joined users.
+     * All players in the lobby will receive a [LobbyLeaveMessage] on success.
+     *
+     * Use [suppress] to forbid throwing *any* errors (returns false, otherwise true or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
+     */
+    suspend fun leave(lobbyUUID: UUID, suppress: Boolean = false): Boolean {
+        return request(
+            HttpMethod.Post, "/api/v2/lobbies/$lobbyUUID/leave",
+            client, authHelper,
+            suppress = suppress,
+            retry = getDefaultRetry(client, authHelper)
+        )?.status?.isSuccess() == true
+    }
+
+    /**
      * Start a game from an existing lobby
      *
      * The executing user must be the owner of the lobby. The lobby is deleted in the
@@ -870,6 +978,11 @@ class LobbyApi(private val client: HttpClient, private val authHelper: AuthHelpe
      * Note: This behaviour is subject to change. The server should be set the order in
      * which players are allowed to make their turns. This allows the server to detect
      * malicious players trying to update the game state before its their turn.
+     *
+     * Use [suppress] to forbid throwing *any* errors (returns null, otherwise [StartGameResponse] or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
     suspend fun startGame(lobbyUUID: UUID, suppress: Boolean = false): StartGameResponse? {
         return request(
