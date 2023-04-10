@@ -46,9 +46,9 @@ class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.s
             val newSpecialists = cityInfo.population.getNewSpecialists()
             val assignedSpecialists = newSpecialists[specialistName]!!
 
-            if (cityScreen.canChangeState) add(getUnassignButton(assignedSpecialists, specialistName))
+            if (cityScreen.canCityBeChanged()) add(getUnassignButton(assignedSpecialists, specialistName))
             add(getAllocationTable(assignedSpecialists, maxSpecialists, specialistName)).pad(10f)
-            if (cityScreen.canChangeState) add(getAssignButton(assignedSpecialists, maxSpecialists, specialistName))
+            if (cityScreen.canCityBeChanged()) add(getAssignButton(assignedSpecialists, maxSpecialists, specialistName))
             addSeparatorVertical().pad(10f)
             add(getSpecialistStatsTable(specialistName)).row()
         }
@@ -82,7 +82,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.s
             cityInfo.cityStats.update()
             cityScreen.update()
         }
-        if (cityInfo.population.getFreePopulation() == 0 || !cityScreen.canChangeState)
+        if (cityInfo.population.getFreePopulation() == 0 || !cityScreen.canCityBeChanged())
             assignButton.clear()
         return assignButton
     }
@@ -99,7 +99,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.s
         }
 
         if (assignedSpecialists <= 0 || cityInfo.isPuppet) unassignButton.isVisible = false
-        if (!cityScreen.canChangeState) unassignButton.clear()
+        if (!cityScreen.canCityBeChanged()) unassignButton.clear()
         return unassignButton
     }
 

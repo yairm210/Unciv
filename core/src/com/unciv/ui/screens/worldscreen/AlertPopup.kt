@@ -1,16 +1,21 @@
 package com.unciv.ui.screens.worldscreen
 
+import com.badlogic.gdx.Input
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.battle.Battle
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
@@ -19,14 +24,18 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.keyShortcuts
 import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.pad
+import com.unciv.ui.components.extensions.surroundWithCircle
+import com.unciv.ui.components.extensions.surroundWithThinCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
+import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.screens.diplomacyscreen.LeaderIntroTable
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
 import java.util.*
@@ -124,8 +133,9 @@ class AlertPopup(
 
     private fun addCityConquered() {
         val city = getCity(popupAlert.value)
-        addQuestionAboutTheCity(city.name)
         val conqueringCiv = gameInfo.getCurrentPlayerCivilization()
+
+        addQuestionAboutTheCity(city, conqueringCiv)
 
         if (city.foundingCiv != ""
                 && city.civ.civName != city.foundingCiv // can't liberate if the city actually belongs to those guys
@@ -180,12 +190,13 @@ class AlertPopup(
 
     private fun addCityTraded() {
         val city = getCity(popupAlert.value)
-        addQuestionAboutTheCity(city.name)
-        val conqueringCiv = gameInfo.getCurrentPlayerCivilization()
+        val receivingCiv = gameInfo.getCurrentPlayerCivilization()
 
-        if (!conqueringCiv.isAtWarWith(getCiv(city.foundingCiv))) {
+        addQuestionAboutTheCity(city, receivingCiv)
+
+        if (!receivingCiv.isAtWarWith(getCiv(city.foundingCiv))) {
             addLiberateOption(city.foundingCiv) {
-                city.liberateCity(conqueringCiv)
+                city.liberateCity(receivingCiv)
                 worldScreen.shouldUpdate = true
                 close()
             }
@@ -415,45 +426,60 @@ class AlertPopup(
         addSeparator()
     }
 
-    private fun addQuestionAboutTheCity(cityName: String) {
-        addGoodSizedLabel("What would you like to do with the city of [$cityName]?",
-            Constants.headingFontSize).padBottom(20f).row()
+    private fun addQuestionAboutTheCity(city: City, conqueringCiv: Civilization) {
+        addGoodSizedLabel("What would you like to do with the city of [${city.name}]?",
+            Constants.headingFontSize).padBottom(20f)
+
+        val button = ImageGetter.getImage(NotificationIcon.City)
+            .surroundWithCircle(36f, color = Color.LIGHT_GRAY)
+            .surroundWithThinCircle(Color.WHITE)
+        val searchIcon = ImageGetter.getImage("OtherIcons/Search")
+        searchIcon.color = Color.RED.darken(0.5f)
+        searchIcon.setSize(20f, 20f)
+        searchIcon.setPosition(7f, 10f)
+        button.addActor(searchIcon)
+        add(button).row()
+
+        button.keyShortcuts.add(Input.Keys.F1)
+        button.onActivation {
+            GUI.pushScreen(CityScreen(city.getPuppetPreview(conqueringCiv), isAnnexPreview = true))
+        }
     }
 
     private fun addDestroyOption(destroyAction: () -> Unit) {
         val button = "Destroy".toTextButton()
         button.onActivation { destroyAction() }
         button.keyShortcuts.add('d')
-        add(button).row()
-        addGoodSizedLabel("Destroying the city instantly razes the city to the ground.").row()
+        add(button).colspan(2).row()
+        addGoodSizedLabel("Destroying the city instantly razes the city to the ground.").colspan(2).row()
     }
 
     private fun addAnnexOption(annexAction: () -> Unit) {
         val button = "Annex".toTextButton()
         button.onActivation { annexAction() }
         button.keyShortcuts.add('a')
-        add(button).row()
-        addGoodSizedLabel("Annexed cities become part of your regular empire.").row()
-        addGoodSizedLabel("Their citizens generate 2x the unhappiness, unless you build a courthouse.").row()
+        add(button).colspan(2).row()
+        addGoodSizedLabel("Annexed cities become part of your regular empire.").colspan(2).row()
+        addGoodSizedLabel("Their citizens generate 2x the unhappiness, unless you build a courthouse.").colspan(2).row()
     }
 
     private fun addPuppetOption(puppetAction: () -> Unit) {
         val button = "Puppet".toTextButton()
         button.onActivation { puppetAction() }
         button.keyShortcuts.add('p')
-        add(button).row()
-        addGoodSizedLabel("Puppeted cities do not increase your tech or policy cost.").row()
-        addGoodSizedLabel("You have no control over the the production of puppeted cities.").row()
-        addGoodSizedLabel("Puppeted cities also generate 25% less Gold and Science.").row()
-        addGoodSizedLabel("A puppeted city can be annexed at any time.").row()
+        add(button).colspan(2).row()
+        addGoodSizedLabel("Puppeted cities do not increase your tech or policy cost.").colspan(2).row()
+        addGoodSizedLabel("You have no control over the the production of puppeted cities.").colspan(2).row()
+        addGoodSizedLabel("Puppeted cities also generate 25% less Gold and Science.").colspan(2).row()
+        addGoodSizedLabel("A puppeted city can be annexed at any time.").colspan(2).row()
     }
 
     private fun addLiberateOption(foundingCiv: String, liberateAction: () -> Unit) {
         val button = "Liberate (city returns to [originalOwner])".fillPlaceholders(foundingCiv).toTextButton()
         button.onActivation { liberateAction() }
         button.keyShortcuts.add('l')
-        add(button).row()
-        addGoodSizedLabel("Liberating a city returns it to its original owner, giving you a massive relationship boost with them!")
+        add(button).colspan(2).row()
+        addGoodSizedLabel("Liberating a city returns it to its original owner, giving you a massive relationship boost with them!").colspan(2).row()
     }
 
     private fun addRazeOption(canRaze: () -> Boolean, razeAction: () -> Unit) {
@@ -465,12 +491,12 @@ class AlertPopup(
                 keyShortcuts.add('r')
             }
         }
-        add(button).row()
+        add(button).colspan(2).row()
         if (canRaze()) {
-            addGoodSizedLabel("Razing the city annexes it, and starts burning the city to the ground.").row()
-            addGoodSizedLabel("The population will gradually dwindle until the city is destroyed.").row()
+            addGoodSizedLabel("Razing the city annexes it, and starts burning the city to the ground.").colspan(2).row()
+            addGoodSizedLabel("The population will gradually dwindle until the city is destroyed.").colspan(2).row()
         } else {
-            addGoodSizedLabel("Original capitals and holy cities cannot be razed.").row()
+            addGoodSizedLabel("Original capitals and holy cities cannot be razed.").colspan(2).row()
         }
     }
 

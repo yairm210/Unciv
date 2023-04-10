@@ -408,7 +408,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         pickConstructionButton.add(constructionTable).expandX().left()
 
-        if (!cannotAddConstructionToQueue(construction, cityScreen.city, cityScreen.city.cityConstructions)) {
+        if (!cannotAddConstructionToQueue(construction, cityScreen.city.cityConstructions)) {
             val addToQueueButton = ImageGetter.getImage("OtherIcons/New")
                 .apply { color = Color.BLACK }.surroundWithCircle(40f)
             addToQueueButton.onClick(UncivSound.Silent) {
@@ -447,12 +447,11 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
     private fun isSelectedQueueEntry(): Boolean = selectedQueueEntry >= 0
 
-    private fun cannotAddConstructionToQueue(construction: IConstruction, city: City, cityConstructions: CityConstructions): Boolean {
+    private fun cannotAddConstructionToQueue(construction: IConstruction, cityConstructions: CityConstructions): Boolean {
         return cityConstructions.isQueueFull()
                 || !cityConstructions.getConstruction(construction.name).isBuildable(cityConstructions)
-                || !cityScreen.canChangeState
+                || !cityScreen.canCityBeChanged()
                 || construction is PerpetualConstruction && cityConstructions.isBeingConstructedOrEnqueued(construction.name)
-                || city.isPuppet
     }
 
     private fun getQueueButton(construction: IConstruction?): TextButton {
@@ -471,7 +470,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         } else {
             button = "Add to queue".toTextButton()
             if (construction == null
-                    || cannotAddConstructionToQueue(construction, city, cityConstructions)) {
+                    || cannotAddConstructionToQueue(construction, cityConstructions)) {
                 button.disable()
             } else {
                 button.onClick(UncivSound.Silent) {
@@ -486,7 +485,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
     private fun addConstructionToQueue(construction: IConstruction, cityConstructions: CityConstructions) {
         // Some evil person decided to double tap real fast - #4977
-        if (cannotAddConstructionToQueue(construction, cityScreen.city, cityConstructions))
+        if (cannotAddConstructionToQueue(construction, cityConstructions))
             return
 
         // UniqueType.CreatesOneImprovement support - don't add yet, postpone until target tile for the improvement is selected
@@ -605,8 +604,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     private fun isConstructionPurchaseAllowed(construction: INonPerpetualConstruction, stat: Stat, constructionBuyCost: Int): Boolean {
         val city = cityScreen.city
         return when {
-            city.isPuppet -> false
-            !cityScreen.canChangeState -> false
+            !cityScreen.canCityBeChanged() -> false
             city.isInResistance() -> false
             !construction.isPurchasable(city.cityConstructions) -> false    // checks via 'rejection reason'
             construction is BaseUnit && !city.canPlaceNewUnit(construction) -> false

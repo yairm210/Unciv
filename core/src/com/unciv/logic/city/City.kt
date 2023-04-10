@@ -465,7 +465,11 @@ class City : IsPartOfGameInfoSerialization {
     fun puppetCity(conqueringCiv: Civilization) =
         CityInfoConquestFunctions(this).puppetCity(conqueringCiv)
 
-    /* Liberating is returning a city to its founder - makes you LOSE warmongering points **/
+    /** Create a clone viewable in CityScreen with puppetCity simulated (building/stats changes but no diplomacy repercussions...) */
+    fun getPuppetPreview(conqueringCiv: Civilization) =
+            CityInfoConquestFunctions(this).getPuppetPreview(conqueringCiv)
+
+    /** Liberating is returning a city to its founder - makes you LOSE warmongering points */
     fun liberateCity(conqueringCiv: Civilization) =
         CityInfoConquestFunctions(this).liberateCity(conqueringCiv)
 

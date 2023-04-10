@@ -43,7 +43,8 @@ import com.unciv.ui.screens.worldscreen.WorldScreen
 class CityScreen(
     internal val city: City,
     initSelectedConstruction: IConstruction? = null,
-    initSelectedTile: Tile? = null
+    initSelectedTile: Tile? = null,
+    internal val isAnnexPreview: Boolean = false
 ): BaseScreen(), RecreateOnResize {
     companion object {
         /** Distance from stage edges to floating widgets */
@@ -54,7 +55,7 @@ class CityScreen(
     }
 
     /** Toggles or adds/removes all state changing buttons */
-    val canChangeState = GUI.isAllowedChangeState()
+    private val canChangeState = GUI.isAllowedChangeState() && !isAnnexPreview
 
     // Clockwise from the top-left
 
@@ -104,12 +105,12 @@ class CityScreen(
     )
 
     // The following fields control what the user selects
-    var selectedConstruction: IConstruction? = initSelectedConstruction
+    internal var selectedConstruction: IConstruction? = initSelectedConstruction
         private set
-    var selectedTile: Tile? = initSelectedTile
-        private set
+    private var selectedTile: Tile? = initSelectedTile
+
     /** If set, we are waiting for the user to pick a tile for [UniqueType.CreatesOneImprovement] */
-    var pickTileData: PickTileForImprovementData? = null
+    private var pickTileData: PickTileForImprovementData? = null
     /** A [Building] with [UniqueType.CreatesOneImprovement] has been selected _in the queue_: show the tile it will place the improvement on */
     private var selectedQueueEntryTargetTile: Tile? = null
     /** Cached city.expansion.chooseNewTileToOwn() */
@@ -136,8 +137,10 @@ class CityScreen(
         stage.addActor(exitCityButton)
         update()
 
-        globalShortcuts.add(Input.Keys.LEFT) { page(-1) }
-        globalShortcuts.add(Input.Keys.RIGHT) { page(1) }
+        if (!isAnnexPreview) {
+            globalShortcuts.add(Input.Keys.LEFT) { page(-1) }
+            globalShortcuts.add(Input.Keys.RIGHT) { page(1) }
+        }
     }
 
     internal fun update() {
@@ -193,7 +196,7 @@ class CityScreen(
         }
     }
 
-    fun canCityBeChanged(): Boolean {
+    internal fun canCityBeChanged(): Boolean {
         return canChangeState && !city.isPuppet
     }
 
@@ -250,6 +253,7 @@ class CityScreen(
 
     private fun updateAnnexAndRazeCityButton() {
         razeCityButtonHolder.clear()
+        if (isAnnexPreview) return
 
         fun addWltkIcon(name: String, apply: Image.()->Unit = {}) =
             razeCityButtonHolder.add(ImageGetter.getImage(name).apply(apply)).size(wltkIconSize)
@@ -338,7 +342,7 @@ class CityScreen(
 
     private fun tileWorkedIconOnClick(tileGroup: CityTileGroup, city: City) {
 
-        if (!canChangeState || city.isPuppet) return
+        if (!canCityBeChanged()) return
         val tile = tileGroup.tile
 
         // Cycling as: Not-worked -> Worked -> Locked -> Not-worked
@@ -404,10 +408,10 @@ class CityScreen(
         update()
     }
 
-    fun selectConstruction(name: String) {
+    internal fun selectConstruction(name: String) {
         selectConstruction(city.cityConstructions.getConstruction(name))
     }
-    fun selectConstruction(newConstruction: IConstruction) {
+    internal fun selectConstruction(newConstruction: IConstruction) {
         selectedConstruction = newConstruction
         if (newConstruction is Building && newConstruction.hasCreateOneImprovementUnique()) {
             val improvement = newConstruction.getImprovementToCreate(city.getRuleset())
@@ -425,21 +429,21 @@ class CityScreen(
         pickTileData = null
         selectedTile = newTile
     }
-    fun clearSelection() = selectTile(null)
+    internal fun clearSelection() = selectTile(null)
 
-    fun startPickTileForCreatesOneImprovement(construction: Building, stat: Stat, isBuying: Boolean) {
+    internal fun startPickTileForCreatesOneImprovement(construction: Building, stat: Stat, isBuying: Boolean) {
         val improvement = construction.getImprovementToCreate(city.getRuleset()) ?: return
         pickTileData = PickTileForImprovementData(construction, improvement, isBuying, stat)
         updateTileGroups()
         ToastPopup("Please select a tile for this building's [${improvement.name}]", this)
     }
-    fun stopPickTileForCreatesOneImprovement() {
+    internal fun stopPickTileForCreatesOneImprovement() {
         if (pickTileData == null) return
         pickTileData = null
         updateTileGroups()
     }
 
-    fun exit() {
+    private fun exit() {
         val newScreen = game.popScreen()
         if (newScreen is WorldScreen) {
             newScreen.mapHolder.setCenterPosition(city.location, immediately = true)
@@ -447,7 +451,7 @@ class CityScreen(
         }
     }
 
-    fun page(delta: Int) {
+    internal fun page(delta: Int) {
         val civInfo = city.civ
         val numCities = civInfo.cities.size
         if (numCities == 0) return
@@ -458,7 +462,7 @@ class CityScreen(
         game.replaceCurrentScreen(newCityScreen)
     }
 
-    override fun recreate(): BaseScreen = CityScreen(city)
+    override fun recreate(): BaseScreen = CityScreen(city, isAnnexPreview = isAnnexPreview)
 
     override fun dispose() {
         cityAmbiencePlayer.dispose()

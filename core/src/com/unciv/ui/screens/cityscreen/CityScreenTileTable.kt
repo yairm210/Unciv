@@ -67,7 +67,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
                 askToBuyTile(selectedTile)
             }
             buyTileButton.keyShortcuts.add('T')
-            buyTileButton.isEnabled =  cityScreen.canChangeState && city.civ.hasStatToBuy(Stat.Gold, goldCostOfTile)
+            buyTileButton.isEnabled =  cityScreen.canCityBeChanged() && city.civ.hasStatToBuy(Stat.Gold, goldCostOfTile)
             buyTileButton.addTooltip('T')  // The key binding is done in CityScreen constructor
             innerTable.add(buyTileButton).padTop(5f).row()
         }
@@ -86,7 +86,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
                     update(selectedTile)
                     cityScreen.update()
                 }
-                if (!cityScreen.canChangeState) unlockButton.disable()
+                if (!cityScreen.canCityBeChanged()) unlockButton.disable()
                 innerTable.add(unlockButton).padTop(5f).row()
             } else {
                 val lockButton = "Lock".toTextButton()
@@ -95,7 +95,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
                     update(selectedTile)
                     cityScreen.update()
                 }
-                if (!cityScreen.canChangeState) lockButton.disable()
+                if (!cityScreen.canCityBeChanged()) lockButton.disable()
                 innerTable.add(lockButton).padTop(5f).row()
             }
         }
@@ -115,7 +115,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
      */
     private fun askToBuyTile(selectedTile: Tile) {
         // These checks are redundant for the onClick action, but not for the keyboard binding
-        if (!cityScreen.canChangeState || !city.expansion.canBuyTile(selectedTile)) return
+        if (!cityScreen.canCityBeChanged() || !city.expansion.canBuyTile(selectedTile)) return
         val goldCostOfTile = city.expansion.getGoldCostOfTile(selectedTile)
         if (!city.civ.hasStatToBuy(Stat.Gold, goldCostOfTile)) return
 

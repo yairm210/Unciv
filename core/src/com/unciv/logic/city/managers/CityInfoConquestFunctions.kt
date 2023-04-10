@@ -140,7 +140,8 @@ class CityInfoConquestFunctions(val city: City){
 
             // must be before moving the city to the conquering civ,
             // so the repercussions are properly checked
-            diplomaticRepercussionsForConqueringCity(oldCiv, conqueringCiv)
+            if (oldCiv != conqueringCiv)  // for getPuppetPreview
+                diplomaticRepercussionsForConqueringCity(oldCiv, conqueringCiv)
 
             conquerCity(conqueringCiv, oldCiv, conqueringCiv)
 
@@ -328,6 +329,30 @@ class CityInfoConquestFunctions(val city: City){
         }
         newCiv.cache.updateOurTiles()
         oldCiv.cache.updateOurTiles()
+    }
+
+    fun getPuppetPreview(conqueringCiv: Civilization): City {
+        val mockCity = city.clone()
+        val mockCiv = Civilization().apply {
+            gameInfo = city.civ.gameInfo
+            nation = city.civ.nation
+            setTransients()
+            val mockCapital = City()
+            mockCapital.setTransients(this)
+            mockCapital.tilesInRange = hashSetOf()
+            cities = listOf(mockCapital)
+            moveCapitalTo(mockCapital)
+        }
+        mockCity.tiles = hashSetOf()
+        mockCity.workedTiles = hashSetOf()
+        mockCity.lockedTiles = hashSetOf()
+        mockCity.setTransients(mockCiv)
+        mockCity.cityConstructions.constructionQueue.clear()
+        mockCity.puppetCity(mockCiv)
+        mockCity.tiles.addAll(city.tiles)
+        mockCity.cityStats.update(updateCivStats = false)
+        mockCity.civ = conqueringCiv  // Else no map (mockCiv.hasExplored), and use my GP points etc
+        return mockCity
     }
 
 }

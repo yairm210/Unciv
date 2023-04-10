@@ -20,7 +20,7 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
         background = BaseScreen.skinStrings.getUiBackground("CityScreen/CityPickerTable", BaseScreen.skinStrings.roundedEdgeRectangleShape, civInfo.nation.getOuterColor())
         clear()
 
-        if (civInfo.cities.size > 1) {
+        if (civInfo.cities.size > 1 && !cityScreen.isAnnexPreview) {
             val prevCityButton = Table() // so we get a wider clickable area than just the image itself
             val image = ImageGetter.getImage("OtherIcons/BackArrow")
             image.color = civInfo.nation.getInnerColor()
@@ -54,7 +54,7 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
 
         val currentCityLabel = city.run { "{$name} (${population.population})" }
             .toLabel(fontSize = 30, fontColor = civInfo.nation.getInnerColor())
-        if (cityScreen.canChangeState) currentCityLabel.onClick {
+        if (cityScreen.canCityBeChanged()) currentCityLabel.onClick {
             CityRenamePopup(
                 screen = cityScreen,
                 city = city,
@@ -68,8 +68,8 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
 
         add(cityNameTable).width(stage.width / 4)
 
-        if (civInfo.cities.size > 1) {
-            val nextCityButton = Table() // so we gt a wider clickable area than just the image itself
+        if (civInfo.cities.size > 1 && !cityScreen.isAnnexPreview) {
+            val nextCityButton = Table() // so we get a wider clickable area than just the image itself
             val image = ImageGetter.getImage("OtherIcons/BackArrow")
             image.setSize(25f, 25f)
             image.setOrigin(Align.center)
