@@ -7,56 +7,24 @@ import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 
-class RefreshButton(size: Float = Constants.headingFontSize.toFloat()): Button(BaseScreen.skin) {
-    init {
-        add(ImageGetter.getImage("OtherIcons/Loading").apply {
+open class SpecificButton(private val size: Float, private val path: String): Button(BaseScreen.skin) {
+    init { create() }
+
+    private fun create() {
+        add(ImageGetter.getImage(path).apply {
             setOrigin(Align.center)
             setSize(size)
         })
     }
 }
 
-class SearchButton(size: Float = Constants.headingFontSize.toFloat()): Button(BaseScreen.skin) {
-    init {
-        add(ImageGetter.getImage("OtherIcons/Search").apply {
-            setOrigin(Align.center)
-            setSize(size)
-        })
-    }
-}
-
-class ChatButton(size: Float = Constants.headingFontSize.toFloat()): Button(BaseScreen.skin) {
-    init {
-        add(ImageGetter.getImage("OtherIcons/DiplomacyW").apply {
-            setOrigin(Align.center)
-            setSize(size)
-        })
-    }
-}
-
-class MultiplayerButton(size: Float = Constants.headingFontSize.toFloat()): Button(BaseScreen.skin) {
-    init {
-        add(ImageGetter.getImage("OtherIcons/Multiplayer").apply {
-            setOrigin(Align.center)
-            setSize(size)
-        })
-    }
-}
-
-class NewButton(size: Float = Constants.headingFontSize.toFloat()): Button(BaseScreen.skin) {
-    init {
-        add(ImageGetter.getImage("OtherIcons/New").apply {
-            setOrigin(Align.center)
-            setSize(size)
-        })
-    }
-}
-
-class PencilButton(size: Float = Constants.headingFontSize.toFloat()): Button(BaseScreen.skin) {
-    init {
-        add(ImageGetter.getImage("OtherIcons/Pencil").apply {
-            setOrigin(Align.center)
-            setSize(size)
-        })
-    }
-}
+class RefreshButton(size: Float = Constants.headingFontSize.toFloat()): SpecificButton(size, "OtherIcons/Loading")
+class SearchButton(size: Float = Constants.headingFontSize.toFloat()): SpecificButton(size, "OtherIcons/Search")
+class ChatButton(size: Float = Constants.headingFontSize.toFloat()): SpecificButton(size, "OtherIcons/DiplomacyW")
+class CloseButton(size: Float = Constants.headingFontSize.toFloat()): SpecificButton(size, "OtherIcons/Close")
+class MultiplayerButton(size: Float = Constants.headingFontSize.toFloat()): SpecificButton(size, "OtherIcons/Multiplayer")
+class PencilButton(size: Float = Constants.headingFontSize.toFloat()): SpecificButton(size, "OtherIcons/Pencil")
+class NewButton(size: Float = Constants.headingFontSize.toFloat()): SpecificButton(size, "OtherIcons/New")
+class ArrowButton(size: Float = Constants.headingFontSize.toFloat()): SpecificButton(size, "OtherIcons/ArrowRight")
+class CheckmarkButton(size: Float = Constants.headingFontSize.toFloat()): SpecificButton(size, "OtherIcons/Checkmark")
+class OptionsButton(size: Float = Constants.headingFontSize.toFloat()): SpecificButton(size, "OtherIcons/Options")

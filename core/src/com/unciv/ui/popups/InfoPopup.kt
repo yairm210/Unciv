@@ -21,7 +21,7 @@ open class InfoPopup(
             addGoodSizedLabel(element).row()
         }
         addCloseButton(action = action).row()
-        open()
+        open(force = true)
     }
 
     companion object {
