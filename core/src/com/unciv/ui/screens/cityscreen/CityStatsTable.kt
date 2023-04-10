@@ -142,7 +142,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         val unassignedPopString = "{Unassigned population}: ".tr() +
                 cityInfo.population.getFreePopulation().toString() + "/" + cityInfo.population.population
         val unassignedPopLabel = unassignedPopString.toLabel()
-        if (cityScreen.canChangeState)
+        if (cityScreen.canCityBeChanged())
             unassignedPopLabel.onClick { cityInfo.reassignPopulation(); cityScreen.update() }
 
         var turnsToExpansionString =

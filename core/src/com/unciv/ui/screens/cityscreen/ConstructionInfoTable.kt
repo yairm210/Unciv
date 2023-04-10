@@ -118,8 +118,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
                 }
 
                 if (cityScreen.city.hasSoldBuildingThisTurn && !cityScreen.city.civ.gameInfo.gameParameters.godMode
-                        || cityScreen.city.isPuppet
-                        || !cityScreen.canChangeState)
+                        || !cityScreen.canCityBeChanged())
                     sellBuildingButton.disable()
             }
         }
