@@ -311,10 +311,7 @@ object SpecificUnitAutomation {
                         .firstOrNull()?.action?.invoke()
                 return true
             }
-            if (unitTileBeforeMovement == unit.currentTile) {
-                return false
-            }
-            return true
+            return unitTileBeforeMovement != unit.currentTile
         }
         // No city needs this improvement.
         return false
@@ -400,7 +397,7 @@ object SpecificUnitAutomation {
 
     private fun getWonderThatWouldBenefitFromBeingSpedUp(city: City): Building? {
         return city.cityConstructions.getBuildableBuildings().filter { building ->
-            building.isWonder && building.canBeHurried()
+            building.isWonder && !building.hasUnique(UniqueType.CannotBeHurried)
                     && city.cityConstructions.turnsToConstruction(building.name) >= 5
         }.sortedBy { -city.cityConstructions.getRemainingWork(it.name) }.firstOrNull()
     }
