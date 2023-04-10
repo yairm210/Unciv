@@ -175,7 +175,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
 
         if (!civ.isBarbarian()) { // Barbarians don't need resources
-            for ((resource, requiredAmount) in getResourceRequirements()) {
+            for ((resource, requiredAmount) in getResourceRequirementsPerTurn()) {
                 val availableAmount = civ.getCivResourcesByName()[resource]!!
                 if (availableAmount < requiredAmount) {
                     result.add(
@@ -317,7 +317,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     fun movesLikeAirUnits() = type.getMovementType() == UnitMovementType.Air
 
     /** Returns resource requirements from both uniques and requiredResource field */
-    override fun getResourceRequirements(): HashMap<String, Int> = resourceRequirementsInternal
+    override fun getResourceRequirementsPerTurn(): HashMap<String, Int> = resourceRequirementsInternal
 
     private val resourceRequirementsInternal: HashMap<String, Int> by lazy {
         val resourceRequirements = HashMap<String, Int>()
@@ -327,7 +327,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         resourceRequirements
     }
 
-    override fun requiresResource(resource: String) = getResourceRequirements().containsKey(resource)
+    override fun requiresResource(resource: String) = getResourceRequirementsPerTurn().containsKey(resource)
 
     fun isRanged() = rangedStrength > 0
     fun isMelee() = !isRanged() && strength > 0

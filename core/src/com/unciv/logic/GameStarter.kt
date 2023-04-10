@@ -344,14 +344,18 @@ object GameStarter {
 
         for (player in chosenPlayers) {
             val civ = Civilization(player.chosenCiv)
-            if (player.chosenCiv in usedMajorCivs) {
-                for (tech in startingTechs)
-                    civ.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
-                civ.playerType = player.playerType
-                civ.playerId = player.playerId
-            } else {
-                if (!civ.cityStateFunctions.initCityState(ruleset, newGameParameters.startingEra, unusedMajorCivs))
-                    continue
+            when (player.chosenCiv) {
+                Constants.spectator ->
+                    civ.playerType = player.playerType
+                in usedMajorCivs -> {
+                    for (tech in startingTechs)
+                        civ.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
+                    civ.playerType = player.playerType
+                    civ.playerId = player.playerId
+                }
+                else ->
+                    if (!civ.cityStateFunctions.initCityState(ruleset, newGameParameters.startingEra, unusedMajorCivs))
+                        continue
             }
             gameInfo.civilizations.add(civ)
         }

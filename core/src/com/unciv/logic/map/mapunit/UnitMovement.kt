@@ -304,6 +304,8 @@ class UnitMovement(val unit: MapUnit) {
         }
     }
 
+    class UnreachableDestinationException(msg: String) : Exception(msg)
+
     fun getTileToMoveToThisTurn(finalDestination: Tile): Tile {
 
         val currentTile = unit.getTile()
@@ -313,8 +315,6 @@ class UnitMovement(val unit: MapUnit) {
         if ((unit.baseUnit.movesLikeAirUnits() || unit.isPreparingParadrop()) && canMoveTo(finalDestination)) return finalDestination
 
         val distanceToTiles = getDistanceToTiles()
-
-        class UnreachableDestinationException(msg: String) : Exception(msg)
 
         // If the tile is far away, we need to build a path how to get there, and then take the first step
         if (!distanceToTiles.containsKey(finalDestination))
@@ -329,7 +329,7 @@ class UnitMovement(val unit: MapUnit) {
         val destinationNeighbors = finalDestination.neighbors
         return when (currentTile) {
             in destinationNeighbors -> currentTile // We're right nearby anyway, no need to move
-            else -> destinationNeighbors.asSequence()
+            else -> destinationNeighbors
                 .filter { distanceToTiles.containsKey(it) && canMoveTo(it) }
                 .minByOrNull { distanceToTiles.getValue(it).totalDistance } // we can get a little closer
                     ?: currentTile // We can't get closer...

@@ -25,7 +25,7 @@ BaseTerrain, TerrainFeatures, Resource, Improvement.
 
 This is where tileset configs shine. You can use these to alter the way Unicv renders tiles.
 
-To create a config for your tileset you just need to create a new .json file under Jsons/Tilesets/. Just create a .txt file and rename it to MyCoolTilesetExample.json. You only have to add things if you want to change them. Else the default values will be used.
+To create a config for your tileset you just need to create a new .json file under jsons/Tilesets/. Just create a .txt file and rename it to MyCoolTilesetExample.json. You only have to add things if you want to change them. Else the default values will be used.
 
 This is an example of such a config file that will be explain below:
 
