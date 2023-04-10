@@ -1,5 +1,6 @@
 package com.unciv.logic.multiplayer.apiv2
 
+import com.unciv.logic.event.Event
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.util.*
@@ -18,19 +19,19 @@ enum class FriendshipEvent(val type: String) {
  */
 @Serializable
 data class GameStarted(
-    @SerialName("gameUuid")
+    @SerialName("game_uuid")
     @Serializable(with = UUIDSerializer::class)
     val gameUUID: UUID,
-    @SerialName("gameChatUuid")
+    @SerialName("game_chat_uuid")
     @Serializable(with = UUIDSerializer::class)
     val gameChatUUID: UUID,
-    @SerialName("lobbyUuid")
+    @SerialName("lobby_uuid")
     @Serializable(with = UUIDSerializer::class)
     val lobbyUUID: UUID,
-    @SerialName("lobbyChatUuid")
+    @SerialName("lobby_chat_uuid")
     @Serializable(with = UUIDSerializer::class)
     val lobbyChatUUID: UUID,
-)
+) : Event
 
 /**
  * An update of the game data
@@ -39,63 +40,64 @@ data class GameStarted(
  */
 @Serializable
 data class UpdateGameData(
-    @SerialName("gameId")
+    @SerialName("game_uuid")
     @Serializable(with = UUIDSerializer::class)
     val gameUUID: UUID,
+    @SerialName("game_data")
     val gameData: String,  // base64-encoded, gzipped game state
     /** A counter that is incremented every time a new game states has been uploaded for the same [gameUUID] via HTTP API. */
-    @SerialName("gameDataId")
+    @SerialName("game_data_id")
     val gameDataID: Long
-)
+) : Event
 
 /**
  * Notification for clients if a client in their game disconnected
  */
 @Serializable
 data class ClientDisconnected(
-    @SerialName("gameUuid")
+    @SerialName("game_uuid")
     @Serializable(with = UUIDSerializer::class)
     val gameUUID: UUID,
     @Serializable(with = UUIDSerializer::class)
     val uuid: UUID  // client identifier
-)
+) : Event
 
 /**
  * Notification for clients if a client in their game reconnected
  */
 @Serializable
 data class ClientReconnected(
-    @SerialName("gameUuid")
+    @SerialName("game_uuid")
     @Serializable(with = UUIDSerializer::class)
     val gameUUID: UUID,
     @Serializable(with = UUIDSerializer::class)
     val uuid: UUID  // client identifier
-)
+) : Event
 
 /**
  * A new chat message is sent to the client
  */
 @Serializable
 data class IncomingChatMessage(
-    @SerialName("chatUuid")
+    @SerialName("chat_uuid")
     @Serializable(with = UUIDSerializer::class)
     val chatUUID: UUID,
     val message: ChatMessage
-)
+) : Event
 
 /**
  * An invite to a lobby is sent to the client
  */
 @Serializable
 data class IncomingInvite(
-    @SerialName("inviteUuid")
+    @SerialName("invite_uuid")
     @Serializable(with = UUIDSerializer::class)
     val inviteUUID: UUID,
     val from: AccountResponse,
-    @SerialName("lobbyUuid")
+    @SerialName("lobby_uuid")
     @Serializable(with = UUIDSerializer::class)
     val lobbyUUID: UUID
-)
+) : Event
 
 /**
  * A friend request is sent to a client
@@ -103,7 +105,7 @@ data class IncomingInvite(
 @Serializable
 data class IncomingFriendRequest(
     val from: AccountResponse
-)
+) : Event
 
 /**
  * A friendship was modified
@@ -112,39 +114,39 @@ data class IncomingFriendRequest(
 data class FriendshipChanged(
     val friend: AccountResponse,
     val event: FriendshipEvent
-)
+) : Event
 
 /**
  * A new player joined the lobby
  */
 @Serializable
 data class LobbyJoin(
-    @SerialName("lobbyUuid")
+    @SerialName("lobby_uuid")
     @Serializable(with = UUIDSerializer::class)
     val lobbyUUID: UUID,
     val player: AccountResponse
-)
+) : Event
 
 /**
  * A lobby closed in which the client was part of
  */
 @Serializable
 data class LobbyClosed(
-    @SerialName("lobbyUuid")
+    @SerialName("lobby_uuid")
     @Serializable(with = UUIDSerializer::class)
     val lobbyUUID: UUID
-)
+) : Event
 
 /**
  * A player has left the lobby
  */
 @Serializable
 data class LobbyLeave(
-    @SerialName("lobbyUuid")
+    @SerialName("lobby_uuid")
     @Serializable(with = UUIDSerializer::class)
     val lobbyUUID: UUID,
     val player: AccountResponse
-)
+) : Event
 
 /**
  * A player was kicked out of the lobby.
@@ -153,11 +155,11 @@ data class LobbyLeave(
  */
 @Serializable
 data class LobbyKick(
-    @SerialName("lobbyUuid")
+    @SerialName("lobby_uuid")
     @Serializable(with = UUIDSerializer::class)
     val lobbyUUID: UUID,
     val player: AccountResponse
-)
+) : Event
 
 /**
  * The user account was updated
@@ -167,13 +169,21 @@ data class LobbyKick(
 @Serializable
 data class AccountUpdated(
     val account: AccountResponse
-)
+) : Event
 
 /**
  * The base WebSocket message, encapsulating only the type of the message
  */
 interface WebSocketMessage {
     val type: WebSocketMessageType
+}
+
+/**
+ * The useful base WebSocket message, encapsulating only the type of the message and the content
+ */
+interface WebSocketMessageWithContent: WebSocketMessage {
+    override val type: WebSocketMessageType
+    val content: Event
 }
 
 /**
@@ -190,8 +200,8 @@ data class InvalidMessage(
 @Serializable
 data class GameStartedMessage (
     override val type: WebSocketMessageType,
-    val content: GameStarted
-) : WebSocketMessage
+    override val content: GameStarted
+) : WebSocketMessageWithContent
 
 /**
  * Message to publish the new game state from the server to all clients
@@ -199,8 +209,8 @@ data class GameStartedMessage (
 @Serializable
 data class UpdateGameDataMessage (
     override val type: WebSocketMessageType,
-    val content: UpdateGameData
-) : WebSocketMessage
+    override val content: UpdateGameData
+) : WebSocketMessageWithContent
 
 /**
  * Message to indicate that a client disconnected
@@ -208,8 +218,8 @@ data class UpdateGameDataMessage (
 @Serializable
 data class ClientDisconnectedMessage (
     override val type: WebSocketMessageType,
-    val content: ClientDisconnected
-) : WebSocketMessage
+    override val content: ClientDisconnected
+) : WebSocketMessageWithContent
 
 /**
  * Message to indicate that a client, who previously disconnected, reconnected
@@ -217,8 +227,8 @@ data class ClientDisconnectedMessage (
 @Serializable
 data class ClientReconnectedMessage (
     override val type: WebSocketMessageType,
-    val content: ClientReconnected
-) : WebSocketMessage
+    override val content: ClientReconnected
+) : WebSocketMessageWithContent
 
 /**
  * Message to indicate that a user received a new text message via the chat feature
@@ -226,8 +236,8 @@ data class ClientReconnectedMessage (
 @Serializable
 data class IncomingChatMessageMessage (
     override val type: WebSocketMessageType,
-    val content: IncomingChatMessage
-) : WebSocketMessage
+    override val content: IncomingChatMessage
+) : WebSocketMessageWithContent
 
 /**
  * Message to indicate that a client gets invited to a lobby
@@ -235,8 +245,8 @@ data class IncomingChatMessageMessage (
 @Serializable
 data class IncomingInviteMessage (
     override val type: WebSocketMessageType,
-    val content: IncomingInvite
-) : WebSocketMessage
+    override val content: IncomingInvite
+) : WebSocketMessageWithContent
 
 /**
  * Message to indicate that a client received a friend request
@@ -244,8 +254,8 @@ data class IncomingInviteMessage (
 @Serializable
 data class IncomingFriendRequestMessage (
     override val type: WebSocketMessageType,
-    val content: IncomingFriendRequest
-) : WebSocketMessage
+    override val content: IncomingFriendRequest
+) : WebSocketMessageWithContent
 
 /**
  * Message to indicate that a friendship has changed
@@ -253,8 +263,8 @@ data class IncomingFriendRequestMessage (
 @Serializable
 data class FriendshipChangedMessage (
     override val type: WebSocketMessageType,
-    val content: FriendshipChanged
-) : WebSocketMessage
+    override val content: FriendshipChanged
+) : WebSocketMessageWithContent
 
 /**
  * Message to indicate that a client joined the lobby
@@ -262,8 +272,8 @@ data class FriendshipChangedMessage (
 @Serializable
 data class LobbyJoinMessage (
     override val type: WebSocketMessageType,
-    val content: LobbyJoin
-) : WebSocketMessage
+    override val content: LobbyJoin
+) : WebSocketMessageWithContent
 
 /**
  * Message to indicate that the current lobby got closed
@@ -271,8 +281,8 @@ data class LobbyJoinMessage (
 @Serializable
 data class LobbyClosedMessage (
     override val type: WebSocketMessageType,
-    val content: LobbyClosed
-) : WebSocketMessage
+    override val content: LobbyClosed
+) : WebSocketMessageWithContent
 
 /**
  * Message to indicate that a client left the lobby
@@ -280,8 +290,8 @@ data class LobbyClosedMessage (
 @Serializable
 data class LobbyLeaveMessage (
     override val type: WebSocketMessageType,
-    val content: LobbyLeave
-) : WebSocketMessage
+    override val content: LobbyLeave
+) : WebSocketMessageWithContent
 
 /**
  * Message to indicate that a client got kicked out of the lobby
@@ -289,8 +299,8 @@ data class LobbyLeaveMessage (
 @Serializable
 data class LobbyKickMessage (
     override val type: WebSocketMessageType,
-    val content: LobbyKick
-) : WebSocketMessage
+    override val content: LobbyKick
+) : WebSocketMessageWithContent
 
 /**
  * Message to indicate that the current user account's data have been changed
@@ -298,8 +308,8 @@ data class LobbyKickMessage (
 @Serializable
 data class AccountUpdatedMessage (
     override val type: WebSocketMessageType,
-    val content: AccountUpdated
-) : WebSocketMessage
+    override val content: AccountUpdated
+) : WebSocketMessageWithContent
 
 /**
  * Type enum of all known WebSocket messages

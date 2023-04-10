@@ -164,7 +164,7 @@ data class FriendRequestResponse(
  */
 @Serializable
 data class GameOverviewResponse(
-    @SerialName("chat_room_id")
+    @SerialName("chat_room_uuid")
     @Serializable(with = UUIDSerializer::class)
     val chatRoomUUID: UUID,
     @SerialName("game_data_id")
@@ -307,6 +307,29 @@ data class GetInvitesResponse(
 @Serializable
 data class GetLobbiesResponse(
     val lobbies: List<LobbyResponse>
+)
+
+/**
+ * A single lobby (in contrast to [LobbyResponse], this is fetched by its own)
+ */
+@Serializable
+data class GetLobbyResponse(
+    @Serializable(with = UUIDSerializer::class)
+    val uuid: UUID,
+    val name: String,
+    @SerialName("max_players")
+    val maxPlayers: Int,
+    @SerialName("current_players")
+    val currentPlayers: List<AccountResponse>,
+    @SerialName("chat_room_uuid")
+    @Serializable(with = UUIDSerializer::class)
+    val chatRoomUUID: UUID,
+    @SerialName("created_at")
+    @Serializable(with = InstantSerializer::class)
+    val createdAt: Instant,
+    @SerialName("password")
+    val hasPassword: Boolean,
+    val owner: AccountResponse
 )
 
 /**
