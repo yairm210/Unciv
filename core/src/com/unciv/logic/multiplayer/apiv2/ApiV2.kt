@@ -11,6 +11,7 @@ import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.websocket.*
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.serialization.json.Json
@@ -79,7 +80,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
         initialized = true
     }
 
-    // ---------------- SIMPLE GETTER ----------------
+    // ---------------- LIFECYCLE FUNCTIONALITY ----------------
 
     /**
      * Determine if the user is authenticated by comparing timestamps
@@ -95,6 +96,17 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
      */
     fun isInitialized(): Boolean {
         return initialized
+    }
+
+    /**
+     * Dispose this class and its children and jobs
+     */
+    fun dispose() {
+        sendChannel?.close()
+        for (job in websocketJobs) {
+            job.cancel()
+        }
+        client.cancel()
     }
 
     // ---------------- COMPATIBILITY FUNCTIONALITY ----------------

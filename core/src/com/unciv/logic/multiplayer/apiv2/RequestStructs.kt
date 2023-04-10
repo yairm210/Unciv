@@ -91,6 +91,14 @@ data class LookupAccountUsernameRequest(
 )
 
 /**
+ * The request for sending a message to a chatroom
+ */
+@Serializable
+data class SendMessageRequest(
+    val message: String
+)
+
+/**
  * The set password request data
  *
  * The parameter [newPassword] must not be empty.

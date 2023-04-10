@@ -15,6 +15,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.util.network.*
 import java.io.IOException
+import java.time.Instant
 import java.util.*
 
 /**
@@ -31,6 +32,11 @@ private val RETRY_CODES = listOf(ApiStatusCode.Unauthenticated)
  * Default value for randomly generated passwords
  */
 private const val DEFAULT_RANDOM_PASSWORD_LENGTH = 32
+
+/**
+ * Max age of a cached entry before it will be re-queried
+ */
+private const val MAX_CACHE_AGE_SECONDS = 60L
 
 /**
  * Perform a HTTP request via [method] to [endpoint]
@@ -189,6 +195,43 @@ private fun getDefaultRetry(client: HttpClient, authHelper: AuthHelper): (suspen
 }
 
 /**
+ * Simple cache for GET queries to the API
+ */
+private object Cache {
+    private var responseCache: MutableMap<String, Pair<Instant, HttpResponse>> = mutableMapOf()
+
+    /**
+     * Clear the response cache
+     */
+    fun clear() {
+        responseCache.clear()
+    }
+
+    /**
+     * Wrapper around [request] to cache responses to GET queries up to [MAX_CACHE_AGE_SECONDS]
+     */
+    suspend fun get(
+        endpoint: String,
+        client: HttpClient,
+        authHelper: AuthHelper,
+        refine: ((HttpRequestBuilder) -> Unit)? = null,
+        suppress: Boolean = false,
+        cache: Boolean = true,
+        retry: (suspend () -> Boolean)? = null
+    ): HttpResponse? {
+        val result = responseCache[endpoint]
+        if (cache && result != null && result.first.plusSeconds(MAX_CACHE_AGE_SECONDS).isAfter(Instant.now())) {
+            return result.second
+        }
+        val response = request(HttpMethod.Get, endpoint, client, authHelper, refine, suppress, retry)
+        if (cache && response != null) {
+            responseCache[endpoint] = Pair(Instant.now(), response)
+        }
+        return response
+    }
+}
+
+/**
  * API wrapper for account handling (do not use directly; use the Api class instead)
  */
 class AccountsApi(private val client: HttpClient, private val authHelper: AuthHelper) {
@@ -196,16 +239,18 @@ class AccountsApi(private val client: HttpClient, private val authHelper: AuthHe
     /**
      * Retrieve information about the currently logged in user
      *
+     * Unset [cache] to avoid using the cache and update the data from the server.
      * Use [suppress] to forbid throwing *any* errors (returns null, otherwise [AccountResponse] or an error).
      *
      * @throws ApiException: thrown for defined and recognized API problems
      * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    suspend fun get(suppress: Boolean = false): AccountResponse? {
-        return request(
-            HttpMethod.Get, "/api/v2/accounts/me",
+    suspend fun get(cache: Boolean = true, suppress: Boolean = false): AccountResponse? {
+        return Cache.get(
+            "/api/v2/accounts/me",
             client, authHelper,
             suppress = suppress,
+            cache = cache,
             retry = getDefaultRetry(client, authHelper)
         )?.body()
     }
@@ -213,16 +258,18 @@ class AccountsApi(private val client: HttpClient, private val authHelper: AuthHe
     /**
      * Retrieve details for an account by its [uuid] (always preferred to using usernames)
      *
+     * Unset [cache] to avoid using the cache and update the data from the server.
      * Use [suppress] to forbid throwing *any* errors (returns null, otherwise [AccountResponse] or an error).
      *
      * @throws ApiException: thrown for defined and recognized API problems
      * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    suspend fun lookup(uuid: UUID, suppress: Boolean = false): AccountResponse? {
-        return request(
-            HttpMethod.Get, "/api/v2/accounts/$uuid",
+    suspend fun lookup(uuid: UUID, cache: Boolean = true, suppress: Boolean = false): AccountResponse? {
+        return Cache.get(
+            "/api/v2/accounts/$uuid",
             client, authHelper,
             suppress = suppress,
+            cache = cache,
             retry = getDefaultRetry(client, authHelper)
         )?.body()
     }
@@ -466,9 +513,11 @@ class AuthApi(private val client: HttpClient, private val authHelper: AuthHelper
             )
         } catch (e: Throwable) {
             authHelper.unset()
+            Cache.clear()
             Log.debug("Logout failed due to %s (%s), dropped session anyways", e, e.message)
             return false
         }
+        Cache.clear()
         return if (response?.status?.isSuccess() == true) {
             authHelper.unset()
             Log.debug("Logged out successfully, dropped session")
@@ -530,6 +579,30 @@ class ChatApi(private val client: HttpClient, private val authHelper: AuthHelper
             suppress = suppress,
             retry = getDefaultRetry(client, authHelper)
         )?.body()
+    }
+
+    /**
+     * Send a message to a chat room
+     *
+     * The executing user must be a member of the chatroom and the message must not be empty.
+     *
+     * Use [suppress] to forbid throwing *any* errors (returns false, otherwise true or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
+     */
+    suspend fun send(message: String, chatRoomUUID: UUID, suppress: Boolean = false): ChatMessage? {
+        val response = request(
+            HttpMethod.Post, "/api/v2/chats/$chatRoomUUID",
+            client, authHelper,
+            suppress = suppress,
+            refine = { b ->
+                b.contentType(ContentType.Application.Json)
+                b.setBody(SendMessageRequest(message))
+            },
+            retry = getDefaultRetry(client, authHelper)
+        )
+        return response?.body()
     }
 
 }
@@ -824,6 +897,25 @@ class LobbyApi(private val client: HttpClient, private val authHelper: AuthHelpe
             retry = getDefaultRetry(client, authHelper)
         )?.body()
         return body?.lobbies
+    }
+
+    /**
+     * Fetch a single open lobby
+     *
+     * If [LobbyResponse.hasPassword] is true, the lobby is secured by a user-set password.
+     *
+     * Use [suppress] to forbid throwing *any* errors (returns null, otherwise [GetLobbyResponse] or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
+     */
+    suspend fun get(lobbyUUID: UUID, suppress: Boolean = false): GetLobbyResponse? {
+        return request(
+            HttpMethod.Get, "/api/v2/lobbies/$lobbyUUID",
+            client, authHelper,
+            suppress = suppress,
+            retry = getDefaultRetry(client, authHelper)
+        )?.body()
     }
 
     /**
