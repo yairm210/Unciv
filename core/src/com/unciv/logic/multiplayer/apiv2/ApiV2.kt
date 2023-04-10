@@ -49,9 +49,6 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
     /** Cache for the game details to make certain lookups faster */
     private val gameDetails: MutableMap<UUID, TimedGameDetails> = mutableMapOf()
 
-    /** User identification on the server, may be null if unset or not logged in */
-    var user: AccountResponse? = null
-
     /**
      * Initialize this class (performing actual networking connectivity)
      *
@@ -71,7 +68,6 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
             } else {
                 lastSuccessfulAuthentication.set(Instant.now())
                 lastSuccessfulCredentials = credentials
-                user = account.get()
                 Concurrency.run {
                     refreshGameDetails()
                 }
@@ -248,6 +244,10 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
             WebSocketMessageType.InvalidMessage -> {
                 Log.debug("Received invalid message from WebSocket connection")
             }
+            WebSocketMessageType.GameStarted -> {
+                Log.debug("Received GameStarted message from WebSocket connection")
+                // TODO: Implement game start handling
+            }
             WebSocketMessageType.UpdateGameData -> {
                 // TODO
                 /*
@@ -276,9 +276,33 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
                 Log.debug("Received IncomingInvite message from WebSocket connection")
                 // TODO: Implement invite handling
             }
-            WebSocketMessageType.GameStarted -> {
-                Log.debug("Received GameStarted message from WebSocket connection")
-                // TODO: Implement game start handling
+            WebSocketMessageType.IncomingFriendRequest -> {
+                Log.debug("Received IncomingFriendRequest message from WebSocket connection")
+                // TODO: Implement this branch
+            }
+            WebSocketMessageType.FriendshipChanged -> {
+                Log.debug("Received FriendshipChanged message from WebSocket connection")
+                // TODO: Implement this branch
+            }
+            WebSocketMessageType.LobbyJoin -> {
+                Log.debug("Received LobbyJoin message from WebSocket connection")
+                // TODO: Implement this branch
+            }
+            WebSocketMessageType.LobbyClosed -> {
+                Log.debug("Received LobbyClosed message from WebSocket connection")
+                // TODO: Implement this branch
+            }
+            WebSocketMessageType.LobbyLeave -> {
+                Log.debug("Received LobbyLeave message from WebSocket connection")
+                // TODO: Implement this branch
+            }
+            WebSocketMessageType.LobbyKick -> {
+                Log.debug("Received LobbyKick message from WebSocket connection")
+                // TODO: Implement this branch
+            }
+            WebSocketMessageType.AccountUpdated -> {
+                Log.debug("Received AccountUpdated message from WebSocket connection")
+                // TODO: Implement this branch
             }
         }
     }
