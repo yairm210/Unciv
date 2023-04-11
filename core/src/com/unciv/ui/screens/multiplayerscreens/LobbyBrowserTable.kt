@@ -42,7 +42,7 @@ class LobbyBrowserTable(private val screen: BaseScreen): Table() {
                 maxLength = 120
             ) {
                 InfoPopup.load(stage) {
-                    // TODO: screen.game.onlineMultiplayer.api.lobby.join
+                    screen.game.onlineMultiplayer.api.lobby.join(lobby.uuid)
                     Concurrency.runOnGLThread {
                         screen.game.pushScreen(LobbyScreen(lobby))
                     }
@@ -51,7 +51,7 @@ class LobbyBrowserTable(private val screen: BaseScreen): Table() {
             popup.open()
         } else {
             InfoPopup.load(stage) {
-                // TODO: screen.game.onlineMultiplayer.api.lobby.join
+                screen.game.onlineMultiplayer.api.lobby.join(lobby.uuid)
                 Concurrency.runOnGLThread {
                     screen.game.pushScreen(LobbyScreen(lobby))
                 }
