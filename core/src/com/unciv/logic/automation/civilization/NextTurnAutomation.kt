@@ -235,7 +235,16 @@ object NextTurnAutomation {
                     val valueOfOne = evaluation.evaluateSellCost(TradeOffer(ourGold.name, ourGold.type, 1, ourGold.duration), civInfo, otherCiv)
                     val amountToGive = min(deltaInOurFavor / valueOfOne, ourGold.amount)
                     deltaInOurFavor -= amountToGive * valueOfOne
-                    counterofferGifts.add(TradeOffer(ourGold.name, ourGold.type, amountToGive, ourGold.duration))
+                    if (amountToGive > 0) {
+                        counterofferGifts.add(
+                            TradeOffer(
+                                ourGold.name,
+                                ourGold.type,
+                                amountToGive,
+                                ourGold.duration
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -326,6 +335,12 @@ object NextTurnAutomation {
 
     private fun maybeBuyCityTiles(civInfo: Civilization) {
         if (civInfo.gold <= 0)
+            return
+        // Don't buy tiles in the very early game. It is unlikely that we already have the required
+        // tech, the necessary worker and that there is a reasonable threat from another player to
+        // grab the tile. We could also check all that, but it would require a lot of cycles each
+        // turn and this is probably a good approximation.
+        if (civInfo.gameInfo.turns < (civInfo.gameInfo.speed.scienceCostModifier * 20).toInt())
             return
 
         val highlyDesirableTiles: SortedMap<Tile, MutableSet<City>> = TreeMap(

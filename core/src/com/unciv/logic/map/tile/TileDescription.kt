@@ -4,8 +4,9 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.extensions.toStringSigned
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.utils.DebugUtils
 
 object TileDescription {
@@ -76,8 +77,7 @@ object TileDescription {
 
         val defenceBonus = tile.getDefensiveBonus()
         if (defenceBonus != 0f) {
-            var defencePercentString = (defenceBonus * 100).toInt().toString() + "%"
-            if (!defencePercentString.startsWith("-")) defencePercentString = "+$defencePercentString"
+            val defencePercentString = (defenceBonus * 100).toInt().toStringSigned() + "%"
             lineList += FormattedLine("[$defencePercentString] to unit defence")
         }
         if (tile.isImpassible()) lineList += FormattedLine(Constants.impassable)

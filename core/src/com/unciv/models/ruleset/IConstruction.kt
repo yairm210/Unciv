@@ -3,6 +3,7 @@ package com.unciv.logic.city
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
@@ -14,8 +15,11 @@ import kotlin.math.roundToInt
 interface IConstruction : INamed {
     fun isBuildable(cityConstructions: CityConstructions): Boolean
     fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean
-    fun getResourceRequirements(): HashMap<String,Int>
+    /** Gets *per turn* resource requirements - does not include immediate costs for stockpiled resources */
+    fun getResourceRequirementsPerTurn(): HashMap<String,Int>
     fun requiresResource(resource: String): Boolean
+    /** We can't call this getMatchingUniques because then it would conflict with IHasUniques */
+    fun getMatchingUniquesNotConflicting(uniqueType: UniqueType) = sequenceOf<Unique>()
 }
 
 interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
@@ -82,6 +86,9 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     fun getCostForConstructionsIncreasingInPrice(baseCost: Int, increaseCost: Int, previouslyBought: Int): Int {
         return (baseCost + increaseCost / 2f * ( previouslyBought * previouslyBought + previouslyBought )).toInt()
     }
+
+    override fun getMatchingUniquesNotConflicting(uniqueType: UniqueType): Sequence<Unique> =
+            getMatchingUniques(uniqueType)
 }
 
 
@@ -210,7 +217,7 @@ open class PerpetualConstruction(override var name: String, val description: Str
     override fun isBuildable(cityConstructions: CityConstructions): Boolean =
             throw Exception("Impossible!")
 
-    override fun getResourceRequirements(): HashMap<String, Int> = hashMapOf()
+    override fun getResourceRequirementsPerTurn(): HashMap<String, Int> = hashMapOf()
 
     override fun requiresResource(resource: String) = false
 

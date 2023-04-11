@@ -7,27 +7,30 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
 import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.ScreenSize
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.newgamescreen.TranslatedSelectBox
-import com.unciv.ui.popups.ConfirmPopup
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.WrappableLabel
+import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.onChange
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.ConfirmPopup
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.newgamescreen.TranslatedSelectBox
+import com.unciv.ui.screens.worldscreen.NotificationsScroll
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenMode
 
-
+/**
+ *  @param onChange Callback for _major_ changes, OptionsPopup will rebuild itself and the WorldScreen
+ */
 fun displayTab(
     optionsPopup: OptionsPopup,
     onChange: () -> Unit,
@@ -37,7 +40,11 @@ fun displayTab(
 
     val settings = optionsPopup.settings
 
+    add("Screen".toLabel(fontSize = 24)).colspan(2).row()
+
     addScreenModeSelectBox(this, settings, optionsPopup.selectBoxMinWidth)
+    addScreenSizeSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
+
 
     if (Gdx.app.type == Application.ApplicationType.Desktop) {
         optionsPopup.addCheckbox(this, "Map mouse auto-scroll", settings.mapAutoScroll, true) {
@@ -48,28 +55,37 @@ fun displayTab(
         addScrollSpeedSlider(this, settings, optionsPopup.selectBoxMinWidth)
     }
 
+    addSeparator()
+    add("Graphics".toLabel(fontSize = 24)).colspan(2).row()
+
+    addTileSetSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
+    addUnitSetSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
+    addSkinSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
+
+    addSeparator()
+    add("UI".toLabel(fontSize = 24)).colspan(2).row()
+
+    addNotificationScrollSelect(this, settings, optionsPopup.selectBoxMinWidth)
+    addMinimapSizeSlider(this, settings, optionsPopup.selectBoxMinWidth)
+    optionsPopup.addCheckbox(this, "Show tutorials", settings.showTutorials, updateWorld = true, newRow = false) { settings.showTutorials = it }
+    addResetTutorials(this, settings)
+    optionsPopup.addCheckbox(this, "Show zoom buttons in world screen", settings.showZoomButtons, true) { settings.showZoomButtons = it }
+    optionsPopup.addCheckbox(this, "Experimental Demographics scoreboard", settings.useDemographics, true) { settings.useDemographics = it }
+
+    addSeparator()
+    add("Visual Hints".toLabel(fontSize = 24)).colspan(2).row()
+
     optionsPopup.addCheckbox(this, "Show unit movement arrows", settings.showUnitMovements, true) { settings.showUnitMovements = it }
     optionsPopup.addCheckbox(this, "Show suggested city locations for units that can found cities", settings.showSettlersSuggestedCityLocations, true) { settings.showSettlersSuggestedCityLocations = it }
     optionsPopup.addCheckbox(this, "Show tile yields", settings.showTileYields, true) { settings.showTileYields = it } // JN
     optionsPopup.addCheckbox(this, "Show worked tiles", settings.showWorkedTiles, true) { settings.showWorkedTiles = it }
     optionsPopup.addCheckbox(this, "Show resources and improvements", settings.showResourcesAndImprovements, true) { settings.showResourcesAndImprovements = it }
-    optionsPopup.addCheckbox(this, "Show tutorials", settings.showTutorials, true, false) { settings.showTutorials = it }
-    addResetTutorials(this, settings)
     optionsPopup.addCheckbox(this, "Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
-    optionsPopup.addCheckbox(this, "Experimental Demographics scoreboard", settings.useDemographics, true) { settings.useDemographics = it }
-    optionsPopup.addCheckbox(this, "Show zoom buttons in world screen", settings.showZoomButtons, true) { settings.showZoomButtons = it }
-
-    addMinimapSizeSlider(this, settings, optionsPopup.selectBoxMinWidth)
 
     addUnitIconAlphaSlider(this, settings, optionsPopup.selectBoxMinWidth)
 
-    addScreenSizeSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
-
-    addTileSetSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
-
-    addUnitSetSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
-
-    addSkinSelectBox(this, settings, optionsPopup.selectBoxMinWidth, onChange)
+    addSeparator()
+    add("Performance".toLabel(fontSize = 24)).colspan(2).row()
 
     optionsPopup.addCheckbox(this, "Continuous rendering", settings.continuousRendering) {
         settings.continuousRendering = it
@@ -116,9 +132,7 @@ private fun addMinimapSizeSlider(table: Table, settings: GameSettings, selectBox
             settings.showMinimap = true
             settings.minimapSize = size
         }
-        val worldScreen = GUI.getWorldScreenIfActive()
-        if (worldScreen != null)
-            GUI.setUpdateWorldOnNextRender()
+        GUI.setUpdateWorldOnNextRender()
     }
     table.add(minimapSlider).minWidth(selectBoxMinWidth).pad(10f).row()
 }
@@ -146,11 +160,7 @@ private fun addUnitIconAlphaSlider(table: Table, settings: GameSettings, selectB
         0f, 1f, 0.1f, initial = settings.unitIconOpacity, getTipText = getTipText
     ) {
         settings.unitIconOpacity = it
-
-        val worldScreen = UncivGame.Current.getWorldScreenIfActive()
-        if (worldScreen != null)
-            worldScreen.shouldUpdate = true
-
+        GUI.setUpdateWorldOnNextRender()
     }
     table.add(unitIconAlphaSlider).minWidth(selectBoxMinWidth).pad(10f).row()
 }
@@ -177,7 +187,7 @@ private fun addScreenModeSelectBox(table: Table, settings: GameSettings, selectB
 private fun addScreenSizeSelectBox(table: Table, settings: GameSettings, selectBoxMinWidth: Float, onResolutionChange: () -> Unit) {
     table.add("Screen Size".toLabel()).left().fillX()
 
-    val screenSizeSelectBox = TranslatedSelectBox(ScreenSize.values().map { it.name }, settings.screenSize.name,table.skin)
+    val screenSizeSelectBox = TranslatedSelectBox(ScreenSize.values().map { it.name }, settings.screenSize.name, table.skin)
     table.add(screenSizeSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()
 
     screenSizeSelectBox.onChange {
@@ -266,4 +276,20 @@ private fun addResetTutorials(table: Table, settings: GameSettings) {
             }.open(true)
     }
     table.add(resetTutorialsButton).center().row()
+}
+
+private fun addNotificationScrollSelect(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {
+    table.add("Notifications on world screen".toLabel()).left().fillX()
+
+    val selectBox = TranslatedSelectBox(
+        NotificationsScroll.UserSetting.values().map { it.name },
+        settings.notificationScroll,
+        table.skin
+    )
+    table.add(selectBox).minWidth(selectBoxMinWidth).pad(10f).row()
+
+    selectBox.onChange {
+        settings.notificationScroll = selectBox.selected.value
+        GUI.setUpdateWorldOnNextRender()
+    }
 }

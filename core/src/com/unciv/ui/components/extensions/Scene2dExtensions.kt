@@ -48,15 +48,15 @@ private class RestorableTextButtonStyle(
     val restoreStyle: ButtonStyle
 ) : TextButtonStyle(baseStyle)
 
-/** Disable a [Button] by setting its [touchable][Button.touchable] and [color][Button.color] properties. */
+/** Disable a [Button] by setting its [touchable][Button.touchable] and [style][Button.style] properties. */
 fun Button.disable() {
     touchable = Touchable.disabled
     val oldStyle = style
+    if (oldStyle is RestorableTextButtonStyle) return
     val disabledStyle = BaseScreen.skin.get("disabled", TextButtonStyle::class.java)
-    if (oldStyle !is RestorableTextButtonStyle)
-        style = RestorableTextButtonStyle(disabledStyle, oldStyle)
+    style = RestorableTextButtonStyle(disabledStyle, oldStyle)
 }
-/** Enable a [Button] by setting its [touchable][Button.touchable] and [color][Button.color] properties. */
+/** Enable a [Button] by setting its [touchable][Button.touchable] and [style][Button.style] properties. */
 fun Button.enable() {
     val oldStyle = style
     if (oldStyle is RestorableTextButtonStyle) {
@@ -64,7 +64,7 @@ fun Button.enable() {
     }
     touchable = Touchable.enabled
 }
-/** Enable or disable a [Button] by setting its [touchable][Button.touchable] and [color][Button.color] properties,
+/** Enable or disable a [Button] by setting its [touchable][Button.touchable] and [style][Button.style] properties,
  *  or returns the corresponding state.
  *
  *  Do not confuse with Gdx' builtin [isDisabled][Button.isDisabled] property,

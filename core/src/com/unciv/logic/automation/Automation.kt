@@ -263,7 +263,7 @@ object Automation {
         if (construction.name in civInfo.gameInfo.spaceResources)
             return true
 
-        val requiredResources = construction.getResourceRequirements()
+        val requiredResources = construction.getResourceRequirementsPerTurn()
         // Does it even require any resources?
         if (requiredResources.isEmpty())
             return true
@@ -281,9 +281,9 @@ object Automation {
             for (city in civInfo.cities) {
                 val otherConstruction = city.cityConstructions.getCurrentConstruction()
                 if (otherConstruction is Building)
-                    futureForBuildings += otherConstruction.getResourceRequirements()[resource] ?: 0
+                    futureForBuildings += otherConstruction.getResourceRequirementsPerTurn()[resource] ?: 0
                 else
-                    futureForUnits += otherConstruction.getResourceRequirements()[resource] ?: 0
+                    futureForUnits += otherConstruction.getResourceRequirementsPerTurn()[resource] ?: 0
             }
 
             // Make sure we have some for space

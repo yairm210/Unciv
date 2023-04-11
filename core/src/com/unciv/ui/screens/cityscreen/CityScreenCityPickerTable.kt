@@ -52,7 +52,8 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
             cityNameTable.add(starImage).size(20f).padRight(5f)
         }
 
-        val currentCityLabel = city.name.toLabel(fontSize = 30, fontColor = civInfo.nation.getInnerColor())
+        val currentCityLabel = city.run { "{$name} (${population.population})" }
+            .toLabel(fontSize = 30, fontColor = civInfo.nation.getInnerColor())
         if (cityScreen.canChangeState) currentCityLabel.onClick {
             CityRenamePopup(
                 screen = cityScreen,

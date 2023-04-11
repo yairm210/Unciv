@@ -1,0 +1,10 @@
+Modding: Resources can now be optionally stockpiled, as in Gathering Storm, Endless Legend, etc!
+
+Resolved crash screen copy error
+
+UI: Better wrapping for long construction item names in city streen
+
+"<for [nationFilter]>" conditional added
+
+By SomeTroglodyte:
+- User option to control NotificationScroll behaviour

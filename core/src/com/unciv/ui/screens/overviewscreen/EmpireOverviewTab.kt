@@ -16,10 +16,7 @@ abstract class EmpireOverviewTab (
     open val persistableData = persistedData ?: EmpireOverviewTabPersistableData()
 
     override fun activated(index: Int, caption: String, pager: TabbedPager) {
-        overviewScreen.game.settings.lastOverviewPage =
-                // shouldn't throw because EmpireOverviewScreen takes the TabbedPager
-                // captions directly from EmpireOverviewCategories.name
-                EmpireOverviewCategories.valueOf(caption)
+        overviewScreen.game.settings.lastOverviewPage = caption
     }
 
     /** Override if the tab can _select_ something specific.

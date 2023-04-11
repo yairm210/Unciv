@@ -1,3 +1,35 @@
+## 4.6.0
+
+Modding: Resources can now be optionally stockpiled, as in Gathering Storm, Endless Legend, etc!
+
+Resolved crash screen copy error
+
+UI: Better wrapping for long construction item names in city streen
+
+Modding: Added conditional to filter by nation type
+
+By SomeTroglodyte:
+- User option to control NotificationScroll behaviour
+
+## 4.5.17
+
+Battle table bonuses according to tile to attack from
+
+AI cannot buy tiles not contiguous to city
+
+By SomeTroglodyte:
+- Notifications can be hidden
+- "Random Nations" fixes
+- Victory screen reorg/cleanup
+- MapEditor 'pinch zoom' painting fix
+
+By WhoIsJohannes:
+- Victory screen score charts!
+- AI: Don't buy tiles in the very early game.
+- AI: Military production when under stress
+
+AbsoluteUnits - Mandekalu Cavalry, Conquistador, Inquisitor (Post-Industrial)  - By letstalkaboutdune
+
 ## 4.5.16
 
 Many many performance improvements!

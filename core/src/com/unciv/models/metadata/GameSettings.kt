@@ -21,7 +21,11 @@ import kotlin.reflect.KMutableProperty0
 
 data class WindowState (val width: Int = 900, val height: Int = 600)
 
-enum class ScreenSize(val virtualWidth:Float, val virtualHeight:Float){
+enum class ScreenSize(
+    @Suppress("unused")  // Actual width determined by screen aspect ratio, this as comment only
+    val virtualWidth: Float,
+    val virtualHeight: Float
+) {
     Tiny(750f,500f),
     Small(900f,600f),
     Medium(1050f,700f),
@@ -93,7 +97,8 @@ class GameSettings {
 
     var enableEspionageOption = false
 
-    var lastOverviewPage = EmpireOverviewCategories.Cities  // serializes same as the String we had before
+    // This is a string not an enum so if tabs change it won't screw up the json serialization
+    var lastOverviewPage = EmpireOverviewCategories.Cities.name
 
     /** Orientation for mobile platforms */
     var displayOrientation = ScreenOrientation.Landscape
@@ -110,6 +115,9 @@ class GameSettings {
     var maxWorldZoomOut = 2f
 
     var keyBindings = KeyboardBindings()
+
+    /** NotificationScroll on Word Screen visibility control - mapped to NotificationsScroll.UserSetting enum */
+    var notificationScroll: String = ""
 
     /** used to migrate from older versions of the settings */
     var version: Int? = null
@@ -153,7 +161,7 @@ class GameSettings {
         return (Fonts.ORIGINAL_FONT_SIZE * fontSizeMultiplier).toInt()
     }
 
-    fun getCurrentLocale(): Locale {
+    private fun getCurrentLocale(): Locale {
         if (locale == null)
             updateLocaleFromLanguage()
         return locale!!
@@ -213,15 +221,16 @@ enum class LocaleCode(var language: String, var country: String) {
 class GameSettingsMultiplayer {
     var userId = ""
     var passwords = mutableMapOf<String, String>()
+    @Suppress("unused")  // @GGuenni knows what he intended with this field
     var userName: String = ""
     var server = Constants.uncivXyzServer
     var friendList: MutableList<FriendList.Friend> = mutableListOf()
     var turnCheckerEnabled = true
     var turnCheckerPersistentNotificationEnabled = true
-    var turnCheckerDelay = Duration.ofMinutes(5)
+    var turnCheckerDelay: Duration = Duration.ofMinutes(5)
     var statusButtonInSinglePlayer = false
-    var currentGameRefreshDelay = Duration.ofSeconds(10)
-    var allGameRefreshDelay = Duration.ofMinutes(5)
+    var currentGameRefreshDelay: Duration = Duration.ofSeconds(10)
+    var allGameRefreshDelay: Duration = Duration.ofMinutes(5)
     var currentGameTurnNotificationSound: UncivSound = UncivSound.Silent
     var otherGameTurnNotificationSound: UncivSound = UncivSound.Silent
     var hideDropboxWarning = false
@@ -233,6 +242,7 @@ class GameSettingsMultiplayer {
     }
 }
 
+@Suppress("SuspiciousCallableReferenceInLambda")  // By @Azzurite, safe as long as that warning below is followed
 enum class GameSetting(
     val kClass: KClass<*>,
     private val propertyGetter: (GameSettings) -> KMutableProperty0<*>
