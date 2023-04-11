@@ -199,6 +199,7 @@ object Fonts {
         val settings = GUI.getSettings()
         fontImplementation.setFontFamily(settings.fontFamilyData, settings.getFontSize())
         font = fontImplementation.getBitmapFont()
+        font.data.markupEnabled = true
     }
 
     /** Reduce the font list returned by platform-specific code to font families (plain variant if possible) */
