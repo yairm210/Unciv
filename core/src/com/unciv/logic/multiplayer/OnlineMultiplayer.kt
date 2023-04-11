@@ -23,6 +23,7 @@ import com.unciv.utils.concurrency.launchOnThreadPool
 import com.unciv.utils.concurrency.withGLContext
 import com.unciv.utils.debug
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
@@ -66,6 +67,7 @@ class OnlineMultiplayer {
     private val files = UncivGame.Current.files
     val multiplayerFiles = OnlineMultiplayerFiles()
     private lateinit var featureSet: ServerFeatureSet
+    private var pollChecker: Job? = null
 
     private val savedGames: MutableMap<FileHandle, OnlineMultiplayerGame> = Collections.synchronizedMap(mutableMapOf())
 
@@ -509,7 +511,7 @@ class OnlineMultiplayer {
     private fun startPollChecker() {
         if (apiVersion in listOf(ApiVersion.APIv0, ApiVersion.APIv1)) {
             Log.debug("Starting poll service for remote games ...")
-            flow<Unit> {
+            pollChecker = flow<Unit> {
                 while (true) {
                     delay(500)
 
@@ -524,6 +526,16 @@ class OnlineMultiplayer {
                     throttle(lastAllGamesRefresh, multiplayerSettings.allGameRefreshDelay, {}) { requestUpdate(doNotUpdate = doNotUpdate) }
                 }
             }.launchIn(CoroutineScope(Dispatcher.DAEMON))
+        }
+    }
+
+    /**
+     * Dispose this [OnlineMultiplayer] instance by closing its background jobs and connections
+     */
+    fun dispose() {
+        pollChecker?.cancel()
+        if (apiVersion == ApiVersion.APIv2) {
+            api.dispose()
         }
     }
 

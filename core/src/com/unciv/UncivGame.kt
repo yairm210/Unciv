@@ -540,6 +540,38 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         fun isCurrentInitialized() = this::Current.isInitialized
         fun isCurrentGame(gameId: String): Boolean = isCurrentInitialized() && Current.gameInfo != null && Current.gameInfo!!.gameId == gameId
         fun isDeepLinkedGameLoading() = isCurrentInitialized() && Current.deepLinkedMultiplayerGame != null
+
+        /**
+         * Replace the [onlineMultiplayer] instance in-place
+         *
+         * This might be useful if the server URL or other core values
+         * got changed. This is a blocking operation.
+         */
+        fun refreshOnlineMultiplayer() {
+            val mp = Concurrency.runBlocking {
+                val newMultiplayer = OnlineMultiplayer()
+                newMultiplayer.initialize()
+
+                // Check if the server is available in case the feature set has changed
+                try {
+                    newMultiplayer.checkServerStatus()
+                } catch (ex: Exception) {
+                    debug("Couldn't connect to server: " + ex.message)
+                }
+                newMultiplayer
+            }
+            if (mp != null) {
+                Concurrency.runOnGLThread {
+                    val oldMultiplayer = Current.onlineMultiplayer
+                    Current.onlineMultiplayer = mp
+                    Concurrency.run {
+                        oldMultiplayer.dispose()
+                    }
+                }
+            } else {
+                Log.error("Failed to refresh online multiplayer successfully")
+            }
+        }
     }
 
     data class Version(

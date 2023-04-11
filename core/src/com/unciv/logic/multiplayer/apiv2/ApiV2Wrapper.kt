@@ -64,7 +64,7 @@ open class ApiV2Wrapper(private val baseUrl: String) {
     private val authHelper = AuthHelper()
 
     // Queue to keep references to all opened WebSocket handler jobs
-    private var websocketJobs = ConcurrentLinkedQueue<Job>()
+    protected var websocketJobs = ConcurrentLinkedQueue<Job>()
 
     init {
         client.plugin(HttpSend).intercept { request ->
