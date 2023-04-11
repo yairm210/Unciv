@@ -270,6 +270,9 @@ object Fonts {
 
         for (improvementName in ruleset.tileImprovements.keys)
             addChar(improvementName, ImageGetter.getImprovementPortrait(improvementName, ORIGINAL_FONT_SIZE))
+
+        for (nation in ruleset.nations.values)
+            addChar(nation.name, ImageGetter.getNationPortrait(nation, ORIGINAL_FONT_SIZE))
     }
 
     fun getPixmapFromActor(actor: Actor): Pixmap {

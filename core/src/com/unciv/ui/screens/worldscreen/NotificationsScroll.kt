@@ -249,14 +249,12 @@ class NotificationsScroll(
             val listItem = Table()
             listItem.background = backgroundDrawable
 
-            // Here for when we merge colorMarkupLabel with WrappableLabel
             val maxLabelWidth = maxEntryWidth - (iconSize + 5f) * notification.icons.size - 10f
             val label = ColorMarkupLabel(notification.text, Color.BLACK, fontSize= fontSize)
             label.width = maxLabelWidth
             label.wrap = true
             label.setAlignment(Align.center)
             listItem.add(label).padRight(10f)
-
 
             notification.addNotificationIconsTo(listItem, worldScreen.gameInfo.ruleset, iconSize)
 
