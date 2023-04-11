@@ -226,7 +226,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
             }
 
             add(menuButton).size(50f).padRight(0f)
-            add(selectedCivLabel).padRight(0f)
+            add(selectedCivLabel).padRight(10f)
             pack()
         }
 
