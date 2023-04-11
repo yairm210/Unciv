@@ -15,6 +15,8 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.images.PortraitUnavailableWonderForTechTree
+import com.unciv.ui.images.PortraitWonderForTechTree
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
 import com.unciv.ui.screens.pickerscreens.TechButton
@@ -91,7 +93,22 @@ object TechnologyDescriptions {
         }
 
         for (building in getEnabledBuildings(techName, ruleset, viewingCiv)) {
-            yield(ImageGetter.getConstructionPortrait(building.name, techIconSize))
+            // We don't need to show the unavailable marker for techs that are already researched
+            // since this is mostly a feature to choose which technologies to research.
+            if (building.isWonder && !viewingCiv.tech.isResearched(techName)) {
+                val isAvailable = viewingCiv.gameInfo.getCities()
+                    .none { it.cityConstructions.builtBuildings.contains(building.name) }
+                val wonderConstructionPortrait =
+                        if (isAvailable)
+                            PortraitWonderForTechTree(building.name, techIconSize)
+                        else
+                            PortraitUnavailableWonderForTechTree(building.name, techIconSize)
+                yield(wonderConstructionPortrait)
+            } else if (building.isWonder || building.isNationalWonder) {
+                yield(PortraitWonderForTechTree(building.name, techIconSize))
+            } else {
+                yield(ImageGetter.getConstructionPortrait(building.name, techIconSize))
+            }
         }
 
         yieldAll(

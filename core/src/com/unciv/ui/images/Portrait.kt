@@ -171,6 +171,21 @@ class PortraitBuilding(name: String, size: Float) : Portrait(Type.Building, name
     }
 }
 
+class PortraitWonderForTechTree(name: String, size: Float) : Portrait(Type.Building, name, size) {
+    override fun getDefaultInnerBackgroundTint(): Color {
+        return Color.valueOf("89c5fd")
+    }
+}
+
+class PortraitUnavailableWonderForTechTree(name: String, size: Float) : Portrait(Type.Building, name, size) {
+    override fun getDefaultInnerBackgroundTint(): Color {
+        return Color.valueOf("89c5fd")
+    }
+    override fun getDefaultOuterBackgroundTint(): Color {
+        return Color.RED
+    }
+}
+
 class PortraitUnique(name: String, size: Float) : Portrait(Type.Unique, name, size) {
     override fun getDefaultImageTint(): Color {
         return Color.BLACK
