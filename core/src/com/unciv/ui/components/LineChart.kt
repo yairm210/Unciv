@@ -92,27 +92,6 @@ class LineChart(
         val stageCoords = localToStageCoordinates(Vector2(0f, 0f))
         batch.transformMatrix = Matrix4().translate(stageCoords.x, stageCoords.y, 0f)
 
-/* +++ WhoIsJohannes's code drew all the CivGroups on the right - I replaced that with just a
-   +++ Nation symbol at the selected civ's line end
-
-        // We draw civilization labels first, because they limit the extension of the chart to the
-        // right. We want to draw orientation lines together with the labels of the y axis and
-        // therefore we need to know first how much space the civilization boxes took on the right.
-        var yPosOfNextCiv = chartHeight
-        val civGroups = lastTurnDataPoints.toList().sortedByDescending { (_, v) -> v.y }.map {
-            VictoryScreenCivGroup(it.first, " - ", it.second.y.toString(), currentPlayerCiv)
-        }
-        val largestCivGroupWidth = civGroups.maxOf { it.width }
-        civGroups.forEach {
-            it.setPosition(
-                chartWidth - largestCivGroupWidth + (largestCivGroupWidth - it.width) / 2,
-                yPosOfNextCiv - it.height
-            )
-            it.draw(batch, 1f)
-            // Currently we don't really check whether y is overflowing to the bottom here.
-            yPosOfNextCiv -= it.height + paddingBetweenCivs
-        }
- */
         val lastTurnDataPoints = getLastTurnDataPoints()
         val selectedCivIcon: Actor? =
             if (selectedCiv !in lastTurnDataPoints) null
