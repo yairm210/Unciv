@@ -20,8 +20,8 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.json.json
 import com.unciv.logic.city.PerpetualConstruction
-import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.components.*
@@ -74,6 +74,9 @@ object ImageGetter {
 
         TileSetCache.assembleTileSetConfigs(ruleset.mods)
         SkinCache.assembleSkinConfigs(ruleset.mods)
+
+        Fonts.resetFont()
+        Fonts.addRulesetImages(ruleset)
     }
 
     /** Loads all atlas/texture files from a folder, as controlled by an Atlases.json */

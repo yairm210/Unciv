@@ -7,6 +7,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.ui.components.Fonts
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import java.util.*
@@ -417,6 +418,9 @@ fun String.tr(): String {
 
     val stat = Stat.safeValueOf(this)
     if (stat != null) return stat.character + translation
+
+    if (Fonts.rulesetObjectNameToChar.containsKey(this))
+        return Fonts.rulesetObjectNameToChar[this]!! + translation
 
     return translation
 }
