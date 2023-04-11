@@ -152,6 +152,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
             UniqueType.ConditionalChance -> stateBasedRandom.nextFloat() < condition.params[0].toFloat() / 100f
 
+            UniqueType.ConditionalNationFilter -> state.civInfo?.nation?.matchesFilter(condition.params[0]) == true
             UniqueType.ConditionalWar -> state.civInfo?.isAtWar() == true
             UniqueType.ConditionalNotWar -> state.civInfo?.isAtWar() == false
             UniqueType.ConditionalWithResource -> state.civInfo?.hasResource(condition.params[0]) == true

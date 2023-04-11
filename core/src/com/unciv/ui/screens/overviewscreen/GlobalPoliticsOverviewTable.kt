@@ -182,8 +182,7 @@ class GlobalPoliticsOverviewTable (
 
         // wars
         for (otherCiv in civ.getKnownCivs()) {
-            if(civ.isAtWarWith(otherCiv)) {
-                println(getCivName(otherCiv))
+            if (civ.isAtWarWith(otherCiv)) {
                 val warText = "At war with [${getCivName(otherCiv)}]".toLabel()
                 warText.color = Color.RED
                 politicsTable.add(warText).row()
@@ -193,7 +192,7 @@ class GlobalPoliticsOverviewTable (
 
         // declaration of friendships
         for (otherCiv in civ.getKnownCivs()) {
-            if(civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.DeclarationOfFriendship) == true) {
+            if (civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.DeclarationOfFriendship) == true) {
                 val friendText = "Friends with [${getCivName(otherCiv)}]".toLabel()
                 friendText.color = Color.GREEN
                 val turnsLeftText = " (${civ.diplomacy[otherCiv.civName]?.getFlag(DiplomacyFlags.DeclarationOfFriendship)} ${Fonts.turn})".toLabel()
@@ -205,7 +204,7 @@ class GlobalPoliticsOverviewTable (
 
         // denounced civs
         for (otherCiv in civ.getKnownCivs()) {
-            if(civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.Denunciation) == true) {
+            if (civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.Denunciation) == true) {
                 val denouncedText = "Denounced [${getCivName(otherCiv)}]".toLabel()
                 denouncedText.color = Color.RED
                 val turnsLeftText = "(${civ.diplomacy[otherCiv.civName]?.getFlag(DiplomacyFlags.Denunciation)} ${Fonts.turn})".toLabel()

@@ -105,8 +105,8 @@ class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civili
                                 unit.movement.teleportToClosestMoveableTile()
                         }
                     }
-                    to.cache.updateViewableTiles()
-                    from.cache.updateViewableTiles()
+                    to.cache.updateOurTiles()
+                    from.cache.updateOurTiles()
 
                     // suggest an option to liberate the city
                     if (to.isHuman()

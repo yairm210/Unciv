@@ -28,7 +28,7 @@ jobs:
         shell: bash
         run: |
           ## To test this in Windows PS:  cat .\changelog.md | wsl grep -Pzo --color '\\#{2}.3.15.7[^\\#]*?\\#{2}' | wsl head -n -2
-          r=$(grep -Pzo '\#{2}.$${{ github.ref_name }}[^\#]*\#' changelog.md)  # grep to get only our release
+          r=$(grep -Pzo '\#{2}.${{ github.ref_name }}[^\#]*\#' changelog.md)  # grep to get only our release
           r=$(echo "$r" | head -n -2 | tail -n +3)
 
           ## See https://trstringer.com/github-actions-multiline-strings/

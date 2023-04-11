@@ -38,14 +38,14 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private val civUnits = civInfo.units.getCivUnits()
     private val militaryUnits = civUnits.count { it.baseUnit.isMilitary() }
-    private val workers = civUnits.count { it.cache.hasUniqueToBuildImprovements && it.isCivilian() }.toFloat()
+    private val workers = civUnits.count { it.cache.hasUniqueToBuildImprovements}.toFloat()
     private val cities = civInfo.cities.size
     private val allTechsAreResearched = civInfo.gameInfo.ruleset.technologies.values
         .all { civInfo.tech.isResearched(it.name) || !civInfo.tech.canBeResearched(it.name)}
 
     private val isAtWar = civInfo.isAtWar()
     private val buildingsForVictory = civInfo.gameInfo.getEnabledVictories().values
-            .mapNotNull { civInfo.victoryManager.getNextMilestone(it.name) }
+            .mapNotNull { civInfo.victoryManager.getNextMilestone(it) }
             .filter { it.type == MilestoneType.BuiltBuilding || it.type == MilestoneType.BuildingBuiltGlobally }
             .map { it.params[0] }
 

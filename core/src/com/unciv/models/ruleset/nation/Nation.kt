@@ -1,4 +1,4 @@
- package com.unciv.models.ruleset.nation
+package com.unciv.models.ruleset.nation
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
@@ -9,16 +9,16 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showReligionInCivilopedia
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.colorFromRGB
+import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showReligionInCivilopedia
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import kotlin.math.pow
 
- class Nation : RulesetObject() {
+class Nation : RulesetObject() {
     var leaderName = ""
-    fun getLeaderDisplayName() = if (isCityState()) name
-    else "[$leaderName] of [$name]"
+    fun getLeaderDisplayName() = if (isCityState || isSpectator) name
+        else "[$leaderName] of [$name]"
 
     val style = ""
     fun getStyleOrCivName() = style.ifEmpty { name }
@@ -36,7 +36,6 @@ import kotlin.math.pow
 
     lateinit var outerColor: List<Int>
     var uniqueName = ""
-    override fun getUniqueTarget() = UniqueTarget.Nation
     var uniqueText = ""
     var innerColor: List<Int>? = null
     var startBias = ArrayList<String>()
@@ -52,6 +51,10 @@ import kotlin.math.pow
 
     var favoredReligion: String? = null
 
+    var cities: ArrayList<String> = arrayListOf()
+
+    override fun getUniqueTarget() = UniqueTarget.Nation
+
     @Transient
     private lateinit var outerColorObject: Color
     fun getOuterColor(): Color = outerColorObject
@@ -61,10 +64,10 @@ import kotlin.math.pow
 
     fun getInnerColor(): Color = innerColorObject
 
-    fun isCityState() = cityStateType != null
-    fun isMajorCiv() = !isBarbarian() && !isCityState() && !isSpectator()
-    fun isBarbarian() = name == Constants.barbarians
-    fun isSpectator() = name == Constants.spectator
+    val isCityState by lazy { cityStateType != null }
+    val isMajorCiv by lazy { !isBarbarian && !isCityState && !isSpectator }
+    val isBarbarian by lazy { name == Constants.barbarians }
+    val isSpectator by lazy { name == Constants.spectator }
 
     // This is its own transient because we'll need to check this for every tile-to-tile movement which is harsh
     @Transient
@@ -84,18 +87,16 @@ import kotlin.math.pow
         ignoreHillMovementCost = uniques.contains("Units ignore terrain costs when moving into any tile with Hills")
     }
 
-    var cities: ArrayList<String> = arrayListOf()
-
 
     override fun makeLink() = "Nation/$name"
     override fun getSortGroup(ruleset: Ruleset) = when {
-        isCityState() -> 1
-        isBarbarian() -> 9
+        isCityState -> 1
+        isBarbarian -> 9
         else -> 0
     }
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
-        if (isCityState()) return getCityStateInfo(ruleset)
+        if (isCityState) return getCityStateInfo(ruleset)
 
         val textList = ArrayList<FormattedLine>()
 
@@ -235,8 +236,8 @@ import kotlin.math.pow
                     yield(FormattedLine("${Fonts.range} " + "[${unit.range}] vs [${originalUnit.range}]".tr(), indent=1))
                 if (unit.movement != originalUnit.movement)
                     yield(FormattedLine("${Fonts.movement} " + "[${unit.movement}] vs [${originalUnit.movement}]".tr(), indent=1))
-                for (resource in originalUnit.getResourceRequirements().keys)
-                    if (!unit.getResourceRequirements().containsKey(resource)) {
+                for (resource in originalUnit.getResourceRequirementsPerTurn().keys)
+                    if (!unit.getResourceRequirementsPerTurn().containsKey(resource)) {
                         yield(FormattedLine("[$resource] not required", link="Resource/$resource", indent=1))
                     }
                 // This does not use the auto-linking FormattedLine(Unique) for two reasons:
@@ -294,38 +295,41 @@ import kotlin.math.pow
         }
     }
 
-     fun getContrastRatio() = getContrastRatio(getInnerColor(), getOuterColor())
+    fun getContrastRatio() = getContrastRatio(getInnerColor(), getOuterColor())
 
-     fun matchesFilter(filter: String): Boolean {
-         return when (filter) {
-             "All" -> true
-             name -> true
-             "Major" -> isMajorCiv()
-             "CityState" -> isCityState()
-             else -> uniques.contains(filter)
-         }
-     }
- }
+    fun matchesFilter(filter: String): Boolean {
+        return when (filter) {
+            "All" -> true
+            name -> true
+            "Major" -> isMajorCiv
+            // To be deprecated, replaced by "City-States"
+            "CityState" -> isCityState
+            Constants.cityStates -> isCityState
+            else -> uniques.contains(filter)
+        }
+    }
+}
 
 
- /** All defined by https://www.w3.org/TR/WCAG20/#relativeluminancedef */
- fun getRelativeLuminance(color:Color):Double{
-     fun getRelativeChannelLuminance(channel:Float):Double =
-             if (channel < 0.03928)  channel / 12.92
-             else ((channel + 0.055) / 1.055).pow(2.4)
+/** All defined by https://www.w3.org/TR/WCAG20/#relativeluminancedef */
+fun getRelativeLuminance(color: Color): Double {
+    fun getRelativeChannelLuminance(channel: Float): Double =
+            if (channel < 0.03928) channel / 12.92
+            else ((channel + 0.055) / 1.055).pow(2.4)
 
-     val R = getRelativeChannelLuminance(color.r)
-     val G = getRelativeChannelLuminance(color.g)
-     val B = getRelativeChannelLuminance(color.b)
+    val R = getRelativeChannelLuminance(color.r)
+    val G = getRelativeChannelLuminance(color.g)
+    val B = getRelativeChannelLuminance(color.b)
 
-     return 0.2126 * R + 0.7152 * G + 0.0722 * B
- }
+    return 0.2126 * R + 0.7152 * G + 0.0722 * B
+}
 
- /** https://www.w3.org/TR/WCAG20/#contrast-ratiodef */
- fun getContrastRatio(color1:Color, color2:Color): Double { // ratio can range from 1 to 21
-     val innerColorLuminance = getRelativeLuminance(color1)
-     val outerColorLuminance = getRelativeLuminance(color2)
+/** https://www.w3.org/TR/WCAG20/#contrast-ratiodef */
+fun getContrastRatio(color1: Color, color2: Color): Double { // ratio can range from 1 to 21
+    val innerColorLuminance = getRelativeLuminance(color1)
+    val outerColorLuminance = getRelativeLuminance(color2)
 
-     return if (innerColorLuminance > outerColorLuminance) (innerColorLuminance + 0.05) / (outerColorLuminance + 0.05)
-     else (outerColorLuminance + 0.05) / (innerColorLuminance + 0.05)
- }
+    return if (innerColorLuminance > outerColorLuminance)
+        (innerColorLuminance + 0.05) / (outerColorLuminance + 0.05)
+        else (outerColorLuminance + 0.05) / (innerColorLuminance + 0.05)
+}

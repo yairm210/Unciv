@@ -121,7 +121,7 @@ object UnitAutomation {
         val upgradedUnit = unit.upgrade.getUnitToUpgradeTo()
         if (!upgradedUnit.isBuildable(unit.civ)) return false // for resource reasons, usually
 
-        if (upgradedUnit.getResourceRequirements().keys.any { !unit.baseUnit.requiresResource(it) }) {
+        if (upgradedUnit.getResourceRequirementsPerTurn().keys.any { !unit.baseUnit.requiresResource(it) }) {
             // The upgrade requires new resource types, so check if we are willing to invest them
             if (!Automation.allowSpendingResource(unit.civ, upgradedUnit)) return false
         }
@@ -150,6 +150,14 @@ object UnitAutomation {
             val availablePromotions = unit.promotions.getAvailablePromotions()
             if (availablePromotions.any())
                 unit.promotions.addPromotion(availablePromotions.toList().random().name)
+        }
+
+        //This allows for military units with certain civilian abilities to behave as civilians in peace and soldiers in war
+        if ((unit.hasUnique(UniqueType.BuildImprovements) || unit.hasUnique(UniqueType.FoundCity) ||
+                unit.hasUnique(UniqueType.ReligiousUnit) || unit.hasUnique(UniqueType.CreateWaterImprovements))
+                && !unit.civ.isAtWar()){
+            automateCivilianUnit(unit)
+            return
         }
 
         if (unit.baseUnit.isAirUnit() && unit.canIntercept())

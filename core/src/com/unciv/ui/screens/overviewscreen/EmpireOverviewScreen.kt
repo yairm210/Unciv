@@ -3,13 +3,13 @@ package com.unciv.ui.screens.overviewscreen
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
+import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories.EmpireOverviewTabState
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewTab.EmpireOverviewTabPersistableData
-import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.KeyCharAndCode
-import com.unciv.ui.screens.basescreen.RecreateOnResize
-import com.unciv.ui.components.TabbedPager
 
 class EmpireOverviewScreen(
     private var viewingPlayer: Civilization,
@@ -39,7 +39,7 @@ class EmpireOverviewScreen(
     }
 
     init {
-        val selectCategory = defaultCategory ?: game.settings.lastOverviewPage
+        val selectCategory = defaultCategory ?: EmpireOverviewCategories.values().firstOrNull { it.name == game.settings.lastOverviewPage }
         val iconSize = Constants.defaultFontSize.toFloat()
 
         globalShortcuts.add(KeyCharAndCode.BACK) { game.popScreen() }
@@ -83,7 +83,8 @@ class EmpireOverviewScreen(
 
     override fun recreate(): BaseScreen {
         updatePersistState(pageObjects)
-        return EmpireOverviewScreen(viewingPlayer, game.settings.lastOverviewPage)
+        return EmpireOverviewScreen(viewingPlayer,
+            EmpireOverviewCategories.values().firstOrNull { it.name == game.settings.lastOverviewPage })
     }
 
     fun resizePage(tab: EmpireOverviewTab) {

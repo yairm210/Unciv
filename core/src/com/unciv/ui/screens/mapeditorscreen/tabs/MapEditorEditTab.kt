@@ -90,7 +90,11 @@ class MapEditorEditTab(
             defaults().pad(10f).left()
             add(brushLabel)
             brushCell = add().padLeft(0f)
-            brushSlider = UncivSlider(1f,6f,1f, initial = 1f, getTipText = { getBrushTip(it).tr() }, permanentTip = false) {
+            brushSlider = UncivSlider(1f,6f,1f,
+                initial = 1f,
+                getTipText = { getBrushTip(it).tr() },
+                tipType = UncivSlider.TipType.Auto
+            ) {
                 brushSize = if (it > 5f) -1 else it.toInt()
                 brushLabel.setText("Brush ([${getBrushTip(it, true)}]):".tr())
             }
@@ -189,6 +193,7 @@ class MapEditorEditTab(
 
     fun tileClickHandler(tile: Tile) {
         if (brushSize < -1 || brushSize > 5 || brushHandlerType == BrushHandlerType.None) return
+        if (editorScreen.mapHolder.isPanning || editorScreen.mapHolder.isZooming()) return
         editorScreen.hideSelection()
 
         when (brushHandlerType) {

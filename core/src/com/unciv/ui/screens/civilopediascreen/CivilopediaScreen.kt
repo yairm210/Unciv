@@ -17,17 +17,17 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
-import com.unciv.ui.images.IconTextButton
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.KeyCharAndCode
-import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.images.IconTextButton
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
 
 /** Screen displaying the Civilopedia
@@ -217,7 +217,7 @@ class CivilopediaScreen(
                 CivilopediaCategories.Improvement -> ruleset.tileImprovements.values
                 CivilopediaCategories.Unit -> ruleset.units.values
                 CivilopediaCategories.UnitType -> UnitType.getCivilopediaIterator(ruleset)
-                CivilopediaCategories.Nation -> ruleset.nations.values.filter { !it.isSpectator() }
+                CivilopediaCategories.Nation -> ruleset.nations.values.filter { !it.isSpectator }
                 CivilopediaCategories.Technology -> ruleset.technologies.values
                 CivilopediaCategories.Promotion -> ruleset.unitPromotions.values
                 CivilopediaCategories.Policy -> ruleset.policies.values

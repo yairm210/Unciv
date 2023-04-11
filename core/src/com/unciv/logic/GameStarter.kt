@@ -23,7 +23,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.utils.debug
-import java.util.*
+import kotlin.collections.ArrayDeque
 
 object GameStarter {
     // temporary instrumentation while tuning/debugging
@@ -59,12 +59,15 @@ object GameStarter {
             gameSetupInfo.gameParameters.speed = ruleset.speeds.keys.first()
         }
 
+        var phaseOneChosenCivs: List<Player> = emptyList() // Never used, but the compiler needs it due to runAndMeasure capturing the var
         if (gameSetupInfo.mapParameters.name != "") runAndMeasure("loadMap") {
             tileMap = MapSaver.loadMap(gameSetupInfo.mapFile!!)
             // Don't override the map parameters - this can include if we world wrap or not!
+            phaseOneChosenCivs = chooseCivilizations(gameSetupInfo.gameParameters, gameInfo, ruleset, existingMap = true)
         } else runAndMeasure("generateMap") {
-            // The mapgen needs to know what civs are in the game to generate regions, starts and resources
-            addCivilizations(gameSetupInfo.gameParameters, gameInfo, ruleset, existingMap = false)
+            // The MapGen needs to know what civs are in the game to generate regions, starts and resources
+            phaseOneChosenCivs = chooseCivilizations(gameSetupInfo.gameParameters, gameInfo, ruleset, existingMap = false)
+            addCivilizations(gameSetupInfo.gameParameters, gameInfo, ruleset, phaseOneChosenCivs)
             tileMap = mapGen.generateMap(gameSetupInfo.mapParameters, gameSetupInfo.gameParameters, gameInfo.civilizations)
             tileMap.mapParameters = gameSetupInfo.mapParameters
             // Now forget them for a moment! MapGen can silently fail to place some city states, so then we'll use the old fallback method to place those.
@@ -79,7 +82,7 @@ object GameStarter {
                 gameSetupInfo.gameParameters,
                 gameInfo,
                 ruleset,
-                existingMap = true
+                phaseOneChosenCivs
             ) // this is before gameInfo.setTransients, so gameInfo doesn't yet have the gameBasics
         }
 
@@ -223,83 +226,80 @@ object GameStarter {
         }
     }
 
-    private fun addCivilizations(newGameParameters: GameParameters, gameInfo: GameInfo, ruleset: Ruleset, existingMap: Boolean) {
-        val availableCivNames = Stack<String>()
-        if (gameSetupInfo.gameParameters.enableRandomNationsPool) {
-            availableCivNames.addAll(gameSetupInfo.gameParameters.randomNationsPool.shuffled())
-        } else
-            // CityState or Spectator civs are not available for Random pick
-            availableCivNames.addAll(ruleset.nations.filter { it.value.isMajorCiv() }.keys.shuffled())
+    private fun chooseCivilizations(
+        newGameParameters: GameParameters,
+        gameInfo: GameInfo,
+        ruleset: Ruleset,
+        existingMap: Boolean
+    ): List<Player> {
+        val chosenPlayers = mutableListOf<Player>()  // Yes this preserves order
+        val dequeCapacity = ruleset.nations.size
 
-        availableCivNames.removeAll(newGameParameters.players.map { it.chosenCiv }.toSet())
+        val selectedPlayerNames = newGameParameters.players
+            .map { it.chosenCiv }.toSet()
+        val randomNationsPool = (
+                if (gameSetupInfo.gameParameters.enableRandomNationsPool)
+                    gameSetupInfo.gameParameters.randomNationsPool.asSequence()
+                else
+                    ruleset.nations.filter { it.value.isMajorCiv }.keys.asSequence()
+                ).filter { it !in selectedPlayerNames }
+            .shuffled().toCollection(ArrayDeque(dequeCapacity))
 
-        val startingTechs = ruleset.technologies.values.filter { it.hasUnique(UniqueType.StartingTech) }
-
-        if (!newGameParameters.noBarbarians && ruleset.nations.containsKey(Constants.barbarians)) {
-            val barbarianCivilization = Civilization(Constants.barbarians)
-            gameInfo.civilizations.add(barbarianCivilization)
-        }
-
-        val civNamesWithStartingLocations = if (existingMap) gameInfo.tileMap.startingLocationsByNation.keys
+        val civNamesWithStartingLocations =
+            if (existingMap) gameInfo.tileMap.startingLocationsByNation.keys
             else emptySet()
-        val presetMajors = Stack<String>()
-        presetMajors.addAll(availableCivNames.filter { it in civNamesWithStartingLocations })
+        val presetRandomNationsPool = randomNationsPool
+            .filter { it in civNamesWithStartingLocations }
+            .shuffled().toCollection(ArrayDeque(dequeCapacity))
+        randomNationsPool.removeAll(presetRandomNationsPool)
 
+        // At this point the civ names in newGameParameters.players, randomNationsPool and presetRandomNationsPool
+        // are mutually exclusive. Random should **not** exist in the two random pools, but we have not explicitly guarded
+        // here against the UI leaving one in gameParameters.randomNationsPool or map editor in tileMap.startingLocationsByNation.
+
+        var extraRandomAIPlayers = 0
+        var selectedAIToSkip = emptyList<Player>()
         if (newGameParameters.randomNumberOfPlayers) {
             // This swaps min and max if the user accidentally swapped min and max
             val min = newGameParameters.minNumberOfPlayers.coerceAtMost(newGameParameters.maxNumberOfPlayers)
             val max = newGameParameters.maxNumberOfPlayers.coerceAtLeast(newGameParameters.minNumberOfPlayers)
-            var playerCount = (min..max).random()
-
-            val humanPlayerCount = newGameParameters.players.count {
-                it.playerType === PlayerType.Human
+            val nonAICount = newGameParameters.players.count {
+                it.playerType === PlayerType.Human || it.chosenCiv === Constants.spectator
             }
-            val spectatorCount = newGameParameters.players.count {
-                it.chosenCiv === Constants.spectator
-            }
-            playerCount = playerCount.coerceAtLeast(humanPlayerCount + spectatorCount)
+            val desiredNumberOfPlayers = (min.coerceAtLeast(nonAICount)..max.coerceAtLeast(nonAICount)).random()
 
-            if (newGameParameters.players.size < playerCount) {
-                val neededPlayers = playerCount - newGameParameters.players.size
-                for (i in 1..neededPlayers) newGameParameters.players.add(Player())
-            } else if (newGameParameters.players.size > playerCount) {
-                val extraPlayers = newGameParameters.players.size - playerCount
-                val playersToRemove = newGameParameters.players.filter {
-                    it.playerType === PlayerType.AI
-                }.shuffled().subList(0, extraPlayers)
-
-                @Suppress("ConvertArgumentToSet")  // Not worth it for a handful entries
-                newGameParameters.players.removeAll(playersToRemove)
+            if (desiredNumberOfPlayers > newGameParameters.players.size) {
+                extraRandomAIPlayers = desiredNumberOfPlayers - newGameParameters.players.size
+            } else if (desiredNumberOfPlayers < newGameParameters.players.size) {
+                val extraPlayers = newGameParameters.players.size - desiredNumberOfPlayers
+                selectedAIToSkip = newGameParameters.players
+                    .filter { it.playerType === PlayerType.AI }
+                    .shuffled()
+                    .sortedByDescending { it.chosenCiv == Constants.random }
+                    .subList(0, extraPlayers)
             }
         }
 
-        for (player in newGameParameters.players.sortedBy { it.chosenCiv == Constants.random }) {
-            val nationName = when {
-                player.chosenCiv != Constants.random -> player.chosenCiv
-                presetMajors.isNotEmpty() -> presetMajors.pop()
-                else -> availableCivNames.pop()
+        // Add player entries to the result
+        (
+            // Join two Sequences, one the explicitly chosen players...
+            newGameParameters.players.asSequence()
+            .filterNot { it in selectedAIToSkip }
+            .sortedWith(compareBy<Player> { it.chosenCiv == Constants.random } // Nonrandom before random
+                .thenBy { it.playerType == PlayerType.AI }) // Human before AI
+            // ...another for the extra random ones
+            + (0 until extraRandomAIPlayers).asSequence().map { Player() }
+        ).mapNotNull {
+            // Resolve random players
+            when {
+                it.chosenCiv != Constants.random -> it
+                presetRandomNationsPool.isNotEmpty() -> Player(presetRandomNationsPool.removeLast(), it.playerType)
+                randomNationsPool.isNotEmpty() -> Player(randomNationsPool.removeLast(), it.playerType)
+                else -> null
             }
-            availableCivNames.remove(nationName) // In case we got it from a map preset
+        }.toCollection(chosenPlayers)
 
-            val playerCiv = Civilization(nationName)
-            for (tech in startingTechs)
-                playerCiv.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
-            playerCiv.playerType = player.playerType
-            playerCiv.playerId = player.playerId
-            gameInfo.civilizations.add(playerCiv)
-        }
-
-        val availableCityStatesNames = Stack<String>()
-        // since we shuffle and then order by, we end up with all the City-States with starting tiles first in a random order,
-        //   and then all the other City-States in a random order! Because the sortedBy function is stable!
-        availableCityStatesNames.addAll( ruleset.nations
-            .filter {
-                it.value.isCityState() &&
-                !it.value.hasUnique(UniqueType.CityStateDeprecated)
-            }.keys
-            .shuffled()
-            .sortedBy { it in civNamesWithStartingLocations } ) // pop() gets the last item, so sort ascending
-
+        // Add CityStates to result - disguised as normal AI, but addCivilizations will detect them
         val numberOfCityStates = if (newGameParameters.randomNumberOfCityStates) {
             // This swaps min and max if the user accidentally swapped min and max
             val min = newGameParameters.minNumberOfCityStates.coerceAtMost(newGameParameters.maxNumberOfCityStates)
@@ -308,18 +308,56 @@ object GameStarter {
         } else {
             newGameParameters.numberOfCityStates
         }
-        var addedCityStates = 0
-        // Keep trying to add city states until we reach the target number.
-        while (addedCityStates < numberOfCityStates) {
-            if (availableCityStatesNames.isEmpty()) // We ran out of city-states somehow
-                break
 
-            val cityStateName = availableCityStatesNames.pop()
-            val civ = Civilization(cityStateName)
-            if (civ.cityStateFunctions.initCityState(ruleset, newGameParameters.startingEra, availableCivNames)) {
-                gameInfo.civilizations.add(civ)
-                addedCityStates++
+        ruleset.nations.asSequence()
+            .filter {
+                it.value.isCityState &&
+                        !it.value.hasUnique(UniqueType.CityStateDeprecated)
+            }.map { it.key }
+            .shuffled()
+            .sortedByDescending { it in civNamesWithStartingLocations }  // please those with location first
+            .take(numberOfCityStates)
+            .map { Player(it) }
+            .toCollection(chosenPlayers)
+
+        return chosenPlayers
+    }
+
+    private fun addCivilizations(
+        newGameParameters: GameParameters,
+        gameInfo: GameInfo,
+        ruleset: Ruleset,
+        chosenPlayers: List<Player>
+    ) {
+        val startingTechs = ruleset.technologies.values.filter { it.hasUnique(UniqueType.StartingTech) }
+
+        if (!newGameParameters.noBarbarians && ruleset.nations.containsKey(Constants.barbarians)) {
+            val barbarianCivilization = Civilization(Constants.barbarians)
+            gameInfo.civilizations.add(barbarianCivilization)
+        }
+
+        val usedCivNames = chosenPlayers.map { it.chosenCiv }.toSet()
+        val (usedMajorCivs, unusedMajorCivs) = ruleset.nations.asSequence()
+            .filter { it.value.isMajorCiv }
+            .map { it.key }
+            .partition { it in usedCivNames }
+
+        for (player in chosenPlayers) {
+            val civ = Civilization(player.chosenCiv)
+            when (player.chosenCiv) {
+                Constants.spectator ->
+                    civ.playerType = player.playerType
+                in usedMajorCivs -> {
+                    for (tech in startingTechs)
+                        civ.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
+                    civ.playerType = player.playerType
+                    civ.playerId = player.playerId
+                }
+                else ->
+                    if (!civ.cityStateFunctions.initCityState(ruleset, newGameParameters.startingEra, unusedMajorCivs))
+                        continue
             }
+            gameInfo.civilizations.add(civ)
         }
     }
 

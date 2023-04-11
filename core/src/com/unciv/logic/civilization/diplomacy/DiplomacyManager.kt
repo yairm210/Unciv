@@ -18,6 +18,7 @@ import com.unciv.ui.components.extensions.toPercent
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.sign
 
 enum class RelationshipLevel(val color: Color) {
     // War is tested separately for the Diplomacy Screen. Colored RED.
@@ -185,7 +186,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
      */
     private fun compareRelationshipLevel(level: RelationshipLevel, comparesAs: Int): Boolean {
         if (!civInfo.isCityState())
-            return relationshipLevel().compareTo(level) == comparesAs
+            return relationshipLevel().compareTo(level).sign == comparesAs
         return when(level) {
             RelationshipLevel.Afraid -> when {
                 comparesAs < 0 -> getInfluence() < 0
@@ -199,7 +200,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             }
             else ->
                 // Outside the potentially expensive questions, do it the easy way
-                relationshipLevel().compareTo(level) == comparesAs
+                // Except - Enum.compareTo does not behave quite like other compareTo's
+                // or like kotlinlang.org says, thus the `sign`
+                relationshipLevel().compareTo(level).sign == comparesAs
         }
     }
     /** @see compareRelationshipLevel */
@@ -404,6 +407,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         val isResourceFilter: (TradeOffer) -> Boolean = {
             (it.type == TradeType.Strategic_Resource || it.type == TradeType.Luxury_Resource)
                     && resourcesMap.containsKey(it.name)
+                    && !resourcesMap[it.name]!!.isStockpiled()
         }
         for (trade in trades) {
             for (offer in trade.ourOffers.filter(isResourceFilter))
@@ -416,7 +420,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
     /** Returns the [civilizations][Civilization] that know about both sides ([civInfo] and [otherCiv]) */
-    fun getCommonKnownCivs(): Set<Civilization> = civInfo.getKnownCivs().intersect(otherCiv().getKnownCivs().toSet())
+    fun getCommonKnownCivs(): Set<Civilization> = civInfo.getKnownCivs().toSet().intersect(otherCiv().getKnownCivs().toSet())
 
     /** Returns true when the [civInfo]'s territory is considered allied for [otherCiv].
      *  This includes friendly and allied city-states and the open border treaties.
@@ -436,8 +440,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
             // Every cancelled trade can change this - if 1 resource is missing,
             // don't cancel all trades of that resource, only cancel one (the first one, as it happens, since they're added chronologically)
-            val negativeCivResources = civInfo.getCivResources()
-                .filter { it.amount < 0 }.map { it.resource.name }
+            val negativeCivResources = civInfo.getCivResourceSupply()
+                .filter { it.amount < 0 && !it.resource.isStockpiled() }.map { it.resource.name }
 
             for (offer in trade.ourOffers) {
                 if (offer.type in listOf(TradeType.Luxury_Resource, TradeType.Strategic_Resource)

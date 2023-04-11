@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -47,15 +48,15 @@ private class RestorableTextButtonStyle(
     val restoreStyle: ButtonStyle
 ) : TextButtonStyle(baseStyle)
 
-/** Disable a [Button] by setting its [touchable][Button.touchable] and [color][Button.color] properties. */
+/** Disable a [Button] by setting its [touchable][Button.touchable] and [style][Button.style] properties. */
 fun Button.disable() {
     touchable = Touchable.disabled
     val oldStyle = style
+    if (oldStyle is RestorableTextButtonStyle) return
     val disabledStyle = BaseScreen.skin.get("disabled", TextButtonStyle::class.java)
-    if (oldStyle !is RestorableTextButtonStyle)
-        style = RestorableTextButtonStyle(disabledStyle, oldStyle)
+    style = RestorableTextButtonStyle(disabledStyle, oldStyle)
 }
-/** Enable a [Button] by setting its [touchable][Button.touchable] and [color][Button.color] properties. */
+/** Enable a [Button] by setting its [touchable][Button.touchable] and [style][Button.style] properties. */
 fun Button.enable() {
     val oldStyle = style
     if (oldStyle is RestorableTextButtonStyle) {
@@ -63,7 +64,7 @@ fun Button.enable() {
     }
     touchable = Touchable.enabled
 }
-/** Enable or disable a [Button] by setting its [touchable][Button.touchable] and [color][Button.color] properties,
+/** Enable or disable a [Button] by setting its [touchable][Button.touchable] and [style][Button.style] properties,
  *  or returns the corresponding state.
  *
  *  Do not confuse with Gdx' builtin [isDisabled][Button.isDisabled] property,
@@ -473,6 +474,18 @@ fun String.toTextButton(style: TextButtonStyle? = null): TextButton {
     return if (style == null) TextButton(text, BaseScreen.skin) else TextButton(text, style)
 }
 
+/** Convert a texture path into an Image, make an ImageButton with a [tinted][overColor]
+ *  hover version of the image from it, then [surroundWithCircle] it. */
+fun String.toImageButton(iconSize: Float, circleSize: Float, circleColor: Color, overColor: Color): Group {
+    val style = ImageButton.ImageButtonStyle()
+    val image = ImageGetter.getDrawable(this)
+    style.imageUp = image
+    style.imageOver = image.tint(overColor)
+    val button = ImageButton(style)
+    button.setSize(iconSize, iconSize)
+    return button.surroundWithCircle( circleSize, false, circleColor)
+}
+
 /** Translate a [String] and make a [Label] widget from it */
 fun String.toLabel() = Label(this.tr(), BaseScreen.skin)
 /** Make a [Label] widget containing this [Int] as text */
@@ -594,3 +607,6 @@ object GdxKeyCodeFixes {
         }
     }
 }
+
+fun Input.areSecretKeysPressed() = isKeyPressed(Input.Keys.SHIFT_RIGHT) &&
+        (isKeyPressed(Input.Keys.CONTROL_RIGHT) || isKeyPressed(Input.Keys.ALT_RIGHT))

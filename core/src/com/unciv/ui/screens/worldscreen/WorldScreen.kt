@@ -326,7 +326,7 @@ class WorldScreen(
     // and we don't get any silly concurrency problems!
     private fun update() {
 
-        if(uiEnabled){
+        if (uiEnabled) {
             displayTutorialsOnUpdate()
 
             bottomUnitTable.update()
@@ -402,10 +402,10 @@ class WorldScreen(
 
         updateGameplayButtons()
 
-        val maxNotificationsHeight = statusButtons.y -
-                (if (game.settings.showMinimap) minimapWrapper.height else 0f) - bottomTileInfoTable.height - 5f
-        notificationsScroll.update(viewingCiv.notifications, maxNotificationsHeight)
-        notificationsScroll.setTopRight(stage.width - 10f, statusButtons.y - 5f)
+        val coveredNotificationsTop = stage.height - statusButtons.y
+        val coveredNotificationsBottom = bottomTileInfoTable.height +
+                (if (game.settings.showMinimap) minimapWrapper.height else 0f)
+        notificationsScroll.update(viewingCiv.notifications, coveredNotificationsTop, coveredNotificationsBottom)
 
         val posZoomFromRight = if (game.settings.showMinimap) minimapWrapper.width
         else bottomTileInfoTable.width

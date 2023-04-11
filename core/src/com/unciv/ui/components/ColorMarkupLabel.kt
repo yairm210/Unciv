@@ -3,6 +3,7 @@
 package com.unciv.ui.components
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Colors
 import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.unciv.Constants
@@ -34,6 +35,10 @@ class ColorMarkupLabel private constructor(
                 fontSize: Int = Constants.defaultFontSize)
         : this (fontSize, prepareText(text, textColor, symbolColor))
 
+    /** Only if wrap was turned on, this is the prefWidth before.
+     *  Used for getMaxWidth as better estimate than the default 0. */
+    private var unwrappedPrefWidth = 0f
+
     init {
         if (fontSize != Constants.defaultFontSize) {
             val labelStyle = LabelStyle(style) // clone otherwise all default-styled Labels affected
@@ -57,6 +62,31 @@ class ColorMarkupLabel private constructor(
         style.font.data.markupEnabled = originalMarkupEnabled
     }
 
+    override fun getPrefWidth(): Float {
+        if (!wrap) return super.getPrefWidth()
+        // Label has a Quirk that together with bad choices in Table become a bug:
+        // Label.getPrefWidth will always return 0 if wrap is on, and Table will NOT
+        // interpret that as "unknown" like it should but as "I want to be 0 wide".
+        super.getPrefHeight()  // Ensure scaleAndComputePrefSize has been run
+        // private field prefWidth now has the correct value. However, there is no way
+        // to get it because temporarily turning wrap off (to circumvent the bad check)
+        // will invalidate which will run scaleAndComputePrefSize again without wrap...
+        val field = Label::class.java.getDeclaredField("prefWidth")
+        field.isAccessible = true
+        val result = field.getFloat(this)
+        // That prefWidth we got still might have to be wrapped in some background metrics
+        if (style.background == null) return result
+        return style.background.run { (result + leftWidth + rightWidth).coerceAtLeast(minWidth) }
+    }
+
+    override fun setWrap(wrap: Boolean) {
+        if (!this.wrap)
+            unwrappedPrefWidth = super.getPrefWidth()
+        super.setWrap(wrap)
+    }
+    override fun getMinWidth() = 48f
+    override fun getMaxWidth() = unwrappedPrefWidth  // If unwrapped, we return 0 same as super
+
     companion object {
         private fun mapMarkup(text: String): String {
             val translated = text.tr()
@@ -64,24 +94,12 @@ class ColorMarkupLabel private constructor(
             return translated.replace('«', '[').replace('»', ']')
         }
 
-        private fun Color.toMarkup() = when {
-            this == Color.CLEAR -> "CLEAR"
-            this == Color.BLACK -> "BLACK"
-            this == Color.BLUE -> "BLUE"
-            this == Color.CYAN -> "CYAN"
-            this == Color.GOLD -> "GOLD"
-            this == Color.GRAY -> "GRAY"
-            this == Color.GREEN -> "GREEN"
-            this == Color.LIME -> "LIME"
-            this == Color.NAVY -> "NAVY"
-            this == Color.PINK -> "PINK"
-            this == Color.RED -> "RED"
-            this == Color.SKY -> "SKY"
-            this == Color.TAN -> "TAN"
-            this == Color.TEAL -> "TEAL"
-            this == Color.WHITE -> "WHITE"
-            a < 1f -> "#" + toString()
-            else -> "#" + toString().substring(0,6)
+        private val inverseColorMap = Colors.getColors().associate { it.value to it.key }
+        private fun Color.toMarkup(): String {
+            val mapEntry = inverseColorMap[this]
+            if (mapEntry != null) return mapEntry
+            if (a < 1f) return "#" + toString()
+            return "#" + toString().substring(0,6)
         }
 
         private fun prepareText(text: String, textColor: Color, symbolColor: Color): String {

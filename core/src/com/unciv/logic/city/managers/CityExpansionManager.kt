@@ -147,7 +147,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
 
         tile.setOwningCity(null)
 
-        city.civ.cache.updateCivResources()
+        city.civ.cache.updateOurTiles()
         city.cityStats.update()
 
         tile.history.recordRelinquishOwnership(tile)
@@ -169,14 +169,13 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
         city.tiles = city.tiles.withItem(tile.position)
         tile.setOwningCity(city)
         city.population.autoAssignPopulation()
-        city.civ.cache.updateCivResources()
+        city.civ.cache.updateOurTiles()
         city.cityStats.update()
 
         for (unit in tile.getUnits().toList()) // toListed because we're modifying
             if (!unit.civ.diplomacyFunctions.canPassThroughTiles(city.civ))
                 unit.movement.teleportToClosestMoveableTile()
 
-        city.civ.cache.updateViewableTiles()
 
         tile.history.recordTakeOwnership(tile)
     }
@@ -187,7 +186,8 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
             val location = addNewTileWithCulture()
             if (location != null) {
                 val locations = LocationAction(location, city.location)
-                city.civ.addNotification("[" + city.name + "] has expanded its borders!", locations, NotificationCategory.Cities, NotificationIcon.Culture)
+                city.civ.addNotification("[${city.name}] has expanded its borders!", locations,
+                    NotificationCategory.Cities, NotificationIcon.Culture)
             }
         }
     }

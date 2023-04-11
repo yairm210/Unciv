@@ -199,9 +199,11 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         }
     }
 
+    @delegate:Transient
+    val civMap by lazy { civilizations.associateBy { it.civName } }
     /** Get a civ by name
      *  @throws NoSuchElementException if no civ of that name is in the game (alive or dead)! */
-    fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
+    fun getCivilization(civName: String) = civMap.getValue(civName)
     fun getCurrentPlayerCivilization() = currentPlayerCiv
     fun getCivilizationsAsPreviews() = civilizations.map { it.asPreview() }.toMutableList()
     /** Get barbarian civ
@@ -551,8 +553,10 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         ) {
             for (unit in civInfo.units.getCivUnits())
                 unit.updateVisibleTiles(false) // this needs to be done after all the units are assigned to their civs and all other transients are set
-            if(civInfo.playerType == PlayerType.Human)
+            if (civInfo.playerType == PlayerType.Human)
                 civInfo.exploredRegion.setMapParameters(tileMap.mapParameters) // Required for the correct calculation of the explored region on world wrap maps
+
+            civInfo.cache.updateOurTiles()
             civInfo.cache.updateSightAndResources() // only run ONCE and not for each unit - this is a huge performance saver!
 
             // Since this depends on the cities of ALL civilizations,
@@ -587,7 +591,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         spaceResources.clear()
         spaceResources.addAll(ruleset.buildings.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
-            .flatMap { it.getResourceRequirements().keys })
+            .flatMap { it.getResourceRequirementsPerTurn().keys })
         spaceResources.addAll(ruleset.victories.values.flatMap { it.requiredSpaceshipParts })
 
         barbarians.setTransients(this)

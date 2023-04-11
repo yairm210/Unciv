@@ -68,7 +68,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         }
 
         for (nation in ruleset.nations.values) {
-            if (nation.cities.isEmpty() && !nation.isSpectator() && !nation.isBarbarian()) {
+            if (nation.cities.isEmpty() && !nation.isSpectator && !nation.isBarbarian) {
                 lines += "${nation.name} can settle cities, but has no city names!"
             }
 
@@ -157,7 +157,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                     )
             }
 
-            for (resource in unit.getResourceRequirements().keys)
+            for (resource in unit.getResourceRequirementsPerTurn().keys)
                 if (!ruleset.tileResources.containsKey(resource))
                     lines += "${unit.name} requires resource $resource which does not exist!"
             if (unit.replaces != null && !ruleset.units.containsKey(unit.replaces!!))
@@ -189,7 +189,7 @@ class RulesetValidator(val ruleset: Ruleset) {
             for (specialistName in building.specialistSlots.keys)
                 if (!ruleset.specialists.containsKey(specialistName))
                     lines += "${building.name} provides specialist $specialistName which does not exist!"
-            for (resource in building.getResourceRequirements().keys)
+            for (resource in building.getResourceRequirementsPerTurn().keys)
                 if (!ruleset.tileResources.containsKey(resource))
                     lines += "${building.name} requires resource $resource which does not exist!"
             if (building.replaces != null && !ruleset.buildings.containsKey(building.replaces!!))
