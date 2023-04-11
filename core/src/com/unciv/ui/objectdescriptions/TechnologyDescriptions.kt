@@ -41,7 +41,7 @@ object TechnologyDescriptions {
         if (enabledUnits.any()) {
             lineList += "{Units enabled}: "
             for (unit in enabledUnits)
-                lineList += " • " + unit.name.tr() + " (" + unit.getShortDescription() + ")"
+                lineList += " • ${unit.name.tr()} (${unit.getShortDescription()})\n"
         }
 
         val (wonders, regularBuildings) = getEnabledBuildings(name, ruleset, viewingCiv)
@@ -50,13 +50,13 @@ object TechnologyDescriptions {
         if (regularBuildings.isNotEmpty()) {
             lineList += "{Buildings enabled}: "
             for (building in regularBuildings)
-                lineList += " • " + building.name.tr() + " (" + building.getShortDescription() + ")"
+                lineList += " • ${building.name.tr()} (${building.getShortDescription()})\n"
         }
 
         if (wonders.isNotEmpty()) {
             lineList += "{Wonders enabled}: "
             for (wonder in wonders)
-                lineList += " • " + wonder.name.tr() + " (" + wonder.getShortDescription() + ")"
+                lineList += " • ${wonder.name.tr()} (${wonder.getShortDescription()})\n"
         }
 
         for (obj in getObsoletedObjects(name, ruleset, viewingCiv))

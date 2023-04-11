@@ -21,7 +21,6 @@ import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.images.ImageGetter
 
 
@@ -259,9 +258,17 @@ object Fonts {
         for (resourceName in ruleset.tileResources.keys)
             addChar(resourceName, ImageGetter.getResourcePortrait(resourceName, ORIGINAL_FONT_SIZE))
 
+        for (buildingName in ruleset.buildings.keys)
+            addChar(buildingName, ImageGetter.getConstructionPortrait(buildingName, ORIGINAL_FONT_SIZE))
 
         for (unitName in ruleset.units.keys)
-            addChar(unitName, ImageGetter.getUnitIcon(unitName).surroundWithCircle(50f))
+            addChar(unitName, ImageGetter.getConstructionPortrait(unitName, ORIGINAL_FONT_SIZE))
+
+        for (promotionName in ruleset.unitPromotions.keys)
+            addChar(promotionName, ImageGetter.getPromotionPortrait(promotionName, ORIGINAL_FONT_SIZE))
+
+        for (improvementName in ruleset.tileImprovements.keys)
+            addChar(improvementName, ImageGetter.getImprovementPortrait(improvementName, ORIGINAL_FONT_SIZE))
     }
 
     fun getPixmapFromActor(actor: Actor): Pixmap {
