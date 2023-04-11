@@ -9,12 +9,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.logic.GameInfo
+import com.unciv.logic.GameStarter
 import com.unciv.logic.multiplayer.apiv2.AccountResponse
 import com.unciv.logic.multiplayer.apiv2.FriendRequestResponse
 import com.unciv.logic.multiplayer.apiv2.FriendResponse
 import com.unciv.logic.multiplayer.apiv2.GetLobbyResponse
 import com.unciv.logic.multiplayer.apiv2.LobbyResponse
 import com.unciv.logic.multiplayer.apiv2.OnlineAccountResponse
+import com.unciv.logic.multiplayer.apiv2.StartGameResponse
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.components.AutoScrollPane
@@ -109,7 +112,7 @@ class LobbyScreen(
                 game.onlineMultiplayer.api.lobby.startGame(lobbyUUID)
             }
             if (lobbyStartResponse != null) {
-                ToastPopup("The start game feature has not been implemented yet.", stage)
+                startGame(lobbyStartResponse)
             }
         }
 
@@ -216,6 +219,56 @@ class LobbyScreen(
         stage.clear()
         stage.addActor(table)
         return this
+    }
+
+    /**
+     * Build a new [GameInfo], upload it to the server and start the game
+     */
+    private fun startGame(lobbyStart: StartGameResponse) {
+        Log.debug("Starting lobby '%s' (%s) as game %s", lobbyName, lobbyUUID, lobbyStart.gameUUID)
+        val popup = Popup(this)
+        Concurrency.runOnGLThread {
+            popup.addGoodSizedLabel("Working...").row()
+            popup.open(force = true)
+        }
+
+        Concurrency.runOnNonDaemonThreadPool {
+            val gameInfo = try {
+                GameStarter.startNewGame(gameSetupInfo, lobbyStart.gameUUID.toString())
+            } catch (exception: Exception) {
+                Log.error(
+                    "Failed to create a new GameInfo for game %s: %s",
+                    lobbyStart.gameUUID,
+                    exception
+                )
+                exception.printStackTrace()
+                Concurrency.runOnGLThread {
+                    popup.apply {
+                        reuseWith("It looks like we can't make a map with the parameters you requested!")
+                        row()
+                        addGoodSizedLabel("Maybe you put too many players into too small a map?").row()
+                        addCloseButton()
+                    }
+                }
+                return@runOnNonDaemonThreadPool
+            }
+
+            Log.debug("Successfully created new game %s", gameInfo.gameId)
+            Concurrency.runOnGLThread {
+                popup.reuseWith("Uploading...")
+            }
+            runBlocking {
+                InfoPopup.wrap(stage) {
+                    game.onlineMultiplayer.createGame(gameInfo)
+                    true
+                }
+                Log.debug("Uploaded game %s", lobbyStart.gameUUID)
+            }
+            Concurrency.runOnGLThread {
+                popup.close()
+                game.loadGame(gameInfo)
+            }
+        }
     }
 
     override fun lockTables() {
