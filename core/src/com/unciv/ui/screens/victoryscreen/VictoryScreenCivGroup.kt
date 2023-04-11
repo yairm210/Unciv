@@ -42,7 +42,8 @@ internal class VictoryScreenCivGroup(
                 backgroundColor = Color.LIGHT_GRAY
                 labelColor = Color.BLACK
             }
-            currentPlayer == civ // || game.viewEntireMapForDebug
+            currentPlayer.isSpectator()
+                    || currentPlayer == civ // || game.viewEntireMapForDebug
                     || currentPlayer.knows(civ)
                     || currentPlayer.isDefeated()
                     || currentPlayer.victoryManager.hasWon() -> {
