@@ -20,12 +20,6 @@ import kotlin.math.pow
 
 private data class DataPoint(val x: Int, val y: Int, val civ: Civilization)
 
-// TODO: This currently does not support negative values (e.g. for happiness or gold). Adding this
-//  seems like a major hassle. The question would be if you'd still want the x axis to be on the
-//  bottom, or whether it should move up somewhere to the middle. What if all values are negative?
-//  Should it then go to the top? And where do the labels of the x-axis go anyways? Or would we just
-//  want a non-zero based y-axis (yikes). Also computing the labels for the y axis, so that they are
-//  "nice" (whatever that means) would be quite challenging.
 class LineChart(
     data: Map<Int, Map<Civilization, Int>>,
     private val viewingCiv: Civilization,
