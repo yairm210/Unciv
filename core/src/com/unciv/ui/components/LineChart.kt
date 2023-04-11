@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Widget
@@ -49,9 +48,6 @@ class LineChart(
      * as `0` is not counted. */
     private val maxLabels = 10
 
-    private val paddingBetweenCivs = 10f
-    private val civGroupToChartPadding = 10f
-
     private val xLabels: List<Int>
     private val yLabels: List<Int>
 
@@ -93,18 +89,6 @@ class LineChart(
         batch.transformMatrix = Matrix4().translate(stageCoords.x, stageCoords.y, 0f)
 
         val lastTurnDataPoints = getLastTurnDataPoints()
-        val selectedCivIcon: Actor? =
-            if (selectedCiv !in lastTurnDataPoints) null
-            else VictoryScreenCivGroup(
-                selectedCiv,
-                "",
-                viewingCiv,
-                DefeatedPlayerStyle.REGULAR
-            ).children[0].run {
-                (this as? Image)?.surroundWithCircle(30f, color = Color.LIGHT_GRAY)
-                    ?: this
-            }
-        val largestCivGroupWidth = if (selectedCivIcon == null) -civGroupToChartPadding else 33f
 
         val labelHeight = Label("123", Label.LabelStyle(Fonts.font, axisLabelColor)).height
         val yLabelsAsLabels =
@@ -134,7 +118,7 @@ class LineChart(
                 batch,
                 widestYLabelWidth + axisToLabelPadding + axisLineWidth,
                 yPos + labelHeight / 2,
-                chartWidth - largestCivGroupWidth - civGroupToChartPadding,
+                chartWidth,
                 yPos + labelHeight / 2,
                 orientationLineColor,
                 orientationLineWidth
@@ -148,8 +132,7 @@ class LineChart(
         val lastXAxisLabelWidth = xLabelsAsLabels[xLabelsAsLabels.size - 1].width
         val xAxisLabelMinX =
                 widestYLabelWidth + axisToLabelPadding + axisLineWidth / 2 - firstXAxisLabelWidth / 2
-        val xAxisLabelMaxX =
-                chartWidth - largestCivGroupWidth - paddingBetweenCivs - lastXAxisLabelWidth / 2
+        val xAxisLabelMaxX = chartWidth - lastXAxisLabelWidth / 2
         val xAxisLabelXRange = xAxisLabelMaxX - xAxisLabelMinX
         xLabels.forEachIndexed { index, labelAsInt ->
             val label = Label(labelAsInt.toString(), Label.LabelStyle(Fonts.font, axisLabelColor))
@@ -175,14 +158,13 @@ class LineChart(
         drawLine(batch, yAxisX, xAxisY, yAxisX, chartHeight, axisColor, axisLineWidth)
 
         // Draw x-axis
-        val xAxisRight = chartWidth - largestCivGroupWidth - civGroupToChartPadding
+        val xAxisRight = chartWidth
         drawLine(batch, yAxisX, xAxisY, xAxisRight, xAxisY, axisColor, axisLineWidth)
 
 
         // Draw line charts for each color
         val linesMinX = widestYLabelWidth + axisToLabelPadding + axisLineWidth
-        val linesMaxX =
-                chartWidth - largestCivGroupWidth - civGroupToChartPadding - lastXAxisLabelWidth / 2
+        val linesMaxX = chartWidth - lastXAxisLabelWidth / 2
         val linesMinY = labelHeight + axisToLabelPadding + axisLineWidth
         val linesMaxY = chartHeight - labelHeight / 2
         val scaleX = (linesMaxX - linesMinX) / xLabels.max()
@@ -214,15 +196,30 @@ class LineChart(
                     linesMinX + currPoint.x * scaleX, linesMinY + currPoint.y * scaleY,
                     civ.nation.getOuterColor(), chartLineWidth
                 )
-            }
-        }
 
-        // Draw the selected Civ icon to the right of its last datapoint
-        selectedCivIcon?.run {
-            val yPos = linesMinY + lastTurnDataPoints[selectedCiv]!!.y * scaleY
-            setPosition(chartWidth, yPos, Align.right)
-            setSize(33f, 33f) // Dead Civs need this
-            draw(batch, parentAlpha)
+                // Draw the selected Civ icon on its last datapoint
+                if (i == points.size - 1 && selectedCiv == civ && selectedCiv in lastTurnDataPoints) {
+                    val selectedCivIcon =
+                            VictoryScreenCivGroup(
+                                selectedCiv,
+                                "",
+                                viewingCiv,
+                                DefeatedPlayerStyle.REGULAR
+                            ).children[0].run {
+                                (this as? Image)?.surroundWithCircle(30f, color = Color.LIGHT_GRAY)
+                                    ?: this
+                            }
+                    selectedCivIcon.run {
+                        setPosition(
+                            linesMinX + currPoint.x * scaleX,
+                            linesMinY + currPoint.y * scaleY,
+                            Align.center
+                        )
+                        setSize(33f, 33f) // Dead Civs need this
+                        draw(batch, parentAlpha)
+                    }
+                }
+            }
         }
 
         // Restore the previous batch transformation matrix
