@@ -16,6 +16,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.newgamescreen.TranslatedSelectBox
+import com.unciv.ui.screens.victoryscreen.VictoryScreenCivGroup.DefeatedPlayerStyle
 
 class VictoryScreenCharts(
     worldScreen: WorldScreen
@@ -69,7 +70,7 @@ class VictoryScreenCharts(
         for (civEntry in sortedCivs) {
             if (civEntry.civ != selectedCiv) civButtonsTable.add()
             else civButtonsTable.add(markerIcon).size(24f).right()
-            val button = VictoryScreenCivGroup(civEntry, viewingCiv)
+            val button = VictoryScreenCivGroup(civEntry, viewingCiv, DefeatedPlayerStyle.REGULAR)
             button.touchable = Touchable.enabled
             civButtonsTable.add(button).row()
             button.onClick {

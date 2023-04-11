@@ -20,15 +20,37 @@ internal class VictoryScreenCivGroup(
     civ: Civilization,
     separator: String,
     additionalInfo: String,
-    currentPlayer: Civilization
+    currentPlayer: Civilization,
+    defeatedPlayerStyle: DefeatedPlayerStyle
 ) : Table() {
     // Note this Table has no skin - works as long as no element tries to get its skin from the parent
 
-    constructor(civEntry: VictoryScreen.CivWithStat, currentPlayer: Civilization)
-            : this(civEntry.civ, ": ", civEntry.value.toString(), currentPlayer)
-    constructor(civ: Civilization, additionalInfo: String, currentPlayer: Civilization)
-            // That tr() is only needed to support additionalInfo containing {} because tr() doesn't support nested ones.
-            : this(civ, "\n", additionalInfo.tr(), currentPlayer)
+    internal enum class DefeatedPlayerStyle {
+        REGULAR,
+        GREYED_OUT,
+    }
+
+    constructor(
+        civEntry: VictoryScreen.CivWithStat,
+        currentPlayer: Civilization,
+        defeatedPlayerStyle: DefeatedPlayerStyle = DefeatedPlayerStyle.GREYED_OUT
+    )
+            : this(
+        civEntry.civ,
+        ": ",
+        civEntry.value.toString(),
+        currentPlayer,
+        defeatedPlayerStyle
+    )
+
+    constructor(
+        civ: Civilization,
+        additionalInfo: String,
+        currentPlayer: Civilization,
+        defeatedPlayerStyle: DefeatedPlayerStyle = DefeatedPlayerStyle.GREYED_OUT
+    )
+    // That tr() is only needed to support additionalInfo containing {} because tr() doesn't support nested ones.
+            : this(civ, "\n", additionalInfo.tr(), currentPlayer, defeatedPlayerStyle)
 
     init {
         var labelText = if (additionalInfo.isEmpty()) civ.civName
@@ -37,12 +59,13 @@ internal class VictoryScreenCivGroup(
         val backgroundColor: Color
 
         when {
-            civ.isDefeated() -> {
+            civ.isDefeated() && defeatedPlayerStyle == DefeatedPlayerStyle.GREYED_OUT -> {
                 add(ImageGetter.getImage("OtherIcons/DisbandUnit")).size(30f)
                 backgroundColor = Color.LIGHT_GRAY
                 labelColor = Color.BLACK
             }
             currentPlayer.isSpectator()
+                    || civ.isDefeated() && defeatedPlayerStyle == DefeatedPlayerStyle.REGULAR
                     || currentPlayer == civ // || game.viewEntireMapForDebug
                     || currentPlayer.knows(civ)
                     || currentPlayer.isDefeated()

@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Matrix4
-import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -14,6 +13,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.screens.victoryscreen.VictoryScreenCivGroup
+import com.unciv.ui.screens.victoryscreen.VictoryScreenCivGroup.DefeatedPlayerStyle
 import kotlin.math.ceil
 import kotlin.math.log10
 import kotlin.math.pow
@@ -116,7 +116,12 @@ class LineChart(
         val lastTurnDataPoints = getLastTurnDataPoints()
         val selectedCivIcon: Actor? =
             if (selectedCiv !in lastTurnDataPoints) null
-            else VictoryScreenCivGroup(selectedCiv, "", viewingCiv).children[0].run {
+            else VictoryScreenCivGroup(
+                selectedCiv,
+                "",
+                viewingCiv,
+                DefeatedPlayerStyle.REGULAR
+            ).children[0].run {
                 (this as? Image)?.surroundWithCircle(30f, color = Color.LIGHT_GRAY)
                     ?: this
             }
