@@ -561,15 +561,17 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
                 newMultiplayer
             }
             if (mp != null) {
-                Concurrency.runOnGLThread {
-                    val oldMultiplayer = Current.onlineMultiplayer
-                    Current.onlineMultiplayer = mp
-                    Concurrency.run {
-                        oldMultiplayer.dispose()
+                Concurrency.runBlocking {
+                    Concurrency.runOnGLThread {
+                        val oldMultiplayer = Current.onlineMultiplayer
+                        Current.onlineMultiplayer = mp
+                        Concurrency.run {
+                            oldMultiplayer.dispose()
+                        }
                     }
                 }
             } else {
-                Log.error("Failed to refresh online multiplayer successfully")
+                Log.error("Failed to refresh online multiplayer")
             }
         }
     }

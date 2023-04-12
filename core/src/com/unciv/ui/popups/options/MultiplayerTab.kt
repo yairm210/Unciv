@@ -191,21 +191,26 @@ private fun addMultiplayerServerOptions(
             addGoodSizedLabel("Awaiting response...").row()
             open(true)
         }
-        UncivGame.refreshOnlineMultiplayer()
-
-        successfullyConnectedToServer { connectionSuccess, authSuccess ->
-            if (connectionSuccess && authSuccess) {
-                popup.reuseWith("Success!", true)
-            } else if (connectionSuccess) {
-                popup.close()
-                AuthPopup(optionsPopup.stageToShowOn) {
-                    success -> popup.apply{
-                        reuseWith(if (success) "Success!" else "Failed!", true)
-                        open(true)
+        Concurrency.runOnNonDaemonThreadPool {
+            UncivGame.refreshOnlineMultiplayer()
+            successfullyConnectedToServer { connectionSuccess, authSuccess ->
+                if (connectionSuccess && authSuccess) {
+                    popup.reuseWith("Success!", true)
+                } else if (connectionSuccess) {
+                    if (UncivGame.Current.onlineMultiplayer.apiVersion != ApiVersion.APIv2) {
+                        popup.close()
+                        AuthPopup(optionsPopup.stageToShowOn) {
+                                success -> popup.apply{
+                            reuseWith(if (success) "Success!" else "Failed!", true)
+                            open(true)
+                        }
+                        }.open(true)
+                    } else {
+                        popup.reuseWith("Success!", true)
                     }
-                }.open(true)
-            } else {
-                popup.reuseWith("Failed!", true)
+                } else {
+                    popup.reuseWith("Failed!", true)
+                }
             }
         }
     }).row()
@@ -297,8 +302,6 @@ private fun addTurnCheckerOptions(
 private fun successfullyConnectedToServer(action: (Boolean, Boolean) -> Unit) {
     Concurrency.run("TestIsAlive") {
         try {
-            // TODO: Detecting API version changes doesn't work without game restart yet,
-            //  therefore this server check will almost certainly fail when the server changes
             val connectionSuccess = UncivGame.Current.onlineMultiplayer.checkServerStatus()
             var authSuccess = false
             if (connectionSuccess) {
