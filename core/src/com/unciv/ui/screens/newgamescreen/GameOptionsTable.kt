@@ -39,6 +39,7 @@ import kotlin.reflect.KMutableProperty0
 class GameOptionsTable(
     private val previousScreen: IPreviousScreen,
     private val isPortrait: Boolean = false,
+    private val multiplayerOnly: Boolean = false,
     private val updatePlayerPickerTable: (desiredCiv: String) -> Unit,
     private val updatePlayerPickerRandomLabel: () -> Unit
 ) : Table(BaseScreen.skin) {
@@ -93,11 +94,13 @@ class GameOptionsTable(
         }).row()
         addVictoryTypeCheckboxes()
 
-        val checkboxTable = Table().apply { defaults().left().pad(2.5f) }
-        checkboxTable.addIsOnlineMultiplayerCheckbox()
-        if (gameParameters.isOnlineMultiplayer)
-            checkboxTable.addAnyoneCanSpectateCheckbox()
-        add(checkboxTable).center().row()
+        if (!multiplayerOnly) {
+            val checkboxTable = Table().apply { defaults().left().pad(2.5f) }
+            checkboxTable.addIsOnlineMultiplayerCheckbox()
+            if (gameParameters.isOnlineMultiplayer)
+                checkboxTable.addAnyoneCanSpectateCheckbox()
+            add(checkboxTable).center().row()
+        }
 
         val expander = ExpanderTab(
             "Advanced Settings",

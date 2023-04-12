@@ -72,9 +72,7 @@ class LobbyScreen(
 
     override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters)
 
-    private val gameOptionsTable = GameOptionsTable(this, updatePlayerPickerTable = { x ->
-        Log.error("Updating player picker table with '%s' is not implemented yet.", x)
-    })
+    private val gameOptionsTable: GameOptionsTable
     private val mapOptionsTable = MapOptionsTable(this)
 
     private val me
@@ -94,6 +92,11 @@ class LobbyScreen(
     private val bottomButtonHelp = "Help".toTextButton()
 
     init {
+        gameSetupInfo.gameParameters.isOnlineMultiplayer = true
+        gameOptionsTable = GameOptionsTable(this, multiplayerOnly = true, updatePlayerPickerRandomLabel = {}, updatePlayerPickerTable = { x ->
+            Log.error("Updating player picker table with '%s' is not implemented yet.", x)
+        })
+
         changeLobbyNameButton.onActivation {
             ToastPopup("Renaming a lobby is not implemented.", stage)
         }
