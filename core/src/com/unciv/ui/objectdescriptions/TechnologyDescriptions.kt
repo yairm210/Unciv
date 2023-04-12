@@ -16,7 +16,6 @@ import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.PortraitUnavailableWonderForTechTree
-import com.unciv.ui.images.PortraitWonderForTechTree
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
 import com.unciv.ui.screens.pickerscreens.TechButton
@@ -96,16 +95,18 @@ object TechnologyDescriptions {
             // We don't need to show the unavailable marker for techs that are already researched
             // since this is mostly a feature to choose which technologies to research.
             if (building.isWonder && !viewingCiv.tech.isResearched(techName)) {
-                val isAvailable = viewingCiv.gameInfo.getCities()
-                    .none { it.cityConstructions.builtBuildings.contains(building.name) }
+                val isAlreadyBuilt = viewingCiv.gameInfo.getCities()
+                    // This is theoretically not necessary since we already checked the viewingCiv
+                    // doesn't have the tech, so it can't have this built anyways. It should be a
+                    // little more performant though to add this filter.
+                    .filter{ it.civ != viewingCiv }
+                    .any { it.cityConstructions.builtBuildings.contains(building.name) }
                 val wonderConstructionPortrait =
-                        if (isAvailable)
-                            PortraitWonderForTechTree(building.name, techIconSize)
-                        else
+                        if (isAlreadyBuilt)
                             PortraitUnavailableWonderForTechTree(building.name, techIconSize)
+                        else
+                            ImageGetter.getConstructionPortrait(building.name, techIconSize)
                 yield(wonderConstructionPortrait)
-            } else if (building.isWonder || building.isNationalWonder) {
-                yield(PortraitWonderForTechTree(building.name, techIconSize))
             } else {
                 yield(ImageGetter.getConstructionPortrait(building.name, techIconSize))
             }
