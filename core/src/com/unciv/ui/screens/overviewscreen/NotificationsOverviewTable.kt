@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.ui.components.ColorMarkupLabel
@@ -90,10 +91,12 @@ class NotificationsOverviewTable(
                 notificationTable.add(label).width(worldScreen.stage.width/2 - iconSize * notification.icons.size)
                 notificationTable.background = BaseScreen.skinStrings.getUiBackground("OverviewScreen/NotificationOverviewTable/Notification", BaseScreen.skinStrings.roundedEdgeRectangleShape)
                 notificationTable.touchable = Touchable.enabled
-                notificationTable.onClick {
-                    UncivGame.Current.resetToWorldScreen()
-                    notification.action?.execute(worldScreen)
-                }
+                if (notification.action != null)
+                    notificationTable.onClick {
+                        worldScreen.notificationsScroll.oneTimeNotification = notification
+                        UncivGame.Current.resetToWorldScreen()
+                        notification.action?.execute(worldScreen)
+                    }
 
                 notification.addNotificationIconsTo(notificationTable, worldScreen.gameInfo.ruleset, iconSize)
 
