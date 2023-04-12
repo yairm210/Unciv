@@ -8,7 +8,6 @@ import com.unciv.ui.components.RefreshButton
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.extensions.keyShortcuts
 import com.unciv.ui.components.extensions.onActivation
-import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 
 /**
@@ -20,7 +19,8 @@ class ChatTable(chatMessageList: ChatMessageList, showRefreshButton: Boolean, ma
     init {
         val chatScroll = AutoScrollPane(chatMessageList, BaseScreen.skin)
         chatScroll.setScrollingDisabled(true, false)
-        add(chatScroll).fillX().expandY().padBottom(10f)
+        val width = if (showRefreshButton) 3 else 2
+        add(chatScroll).colspan(width).fillX().expandY().padBottom(10f)
         row()
 
         val nameField = UncivTextField.create("New message")
@@ -29,7 +29,6 @@ class ChatTable(chatMessageList: ChatMessageList, showRefreshButton: Boolean, ma
         }
         val sendButton = ArrowButton()
         sendButton.onActivation {
-            ToastPopup("Sending your message '${nameField.text}' is not implemented yet.", stage)
             chatMessageList.sendMessage(nameField.text)
             nameField.text = ""
         }

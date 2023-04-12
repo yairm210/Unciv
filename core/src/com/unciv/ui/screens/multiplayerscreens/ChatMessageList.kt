@@ -3,15 +3,18 @@ package com.unciv.ui.screens.multiplayerscreens
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.OnlineMultiplayer
-import com.unciv.logic.multiplayer.apiv2.AccountResponse
-import com.unciv.logic.multiplayer.apiv2.ApiV2
 import com.unciv.logic.multiplayer.apiv2.ChatMessage
+import com.unciv.logic.multiplayer.apiv2.IncomingChatMessage
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.AutoScrollPane
+import com.unciv.ui.components.extensions.formatShort
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.concurrency.Concurrency
+import java.time.Duration
 import java.time.Instant
 import java.util.*
 
@@ -31,16 +34,37 @@ import java.util.*
  * Another good way is to use the [ChatTable] directly.
  */
 class ChatMessageList(private val chatRoomUUID: UUID, private val mp: OnlineMultiplayer): Table() {
+    private val events = EventBus.EventReceiver()
+    private var messageCache: MutableList<ChatMessage> = mutableListOf()
+
     init {
         defaults().expandX().space(5f)
-        recreate(listOf<ChatMessage>())
+        recreate(messageCache)
+        triggerRefresh()
+
+        events.receive(IncomingChatMessage::class, { it.chatUUID == chatRoomUUID }) {
+            messageCache.add(it.message)
+            Concurrency.runOnGLThread {
+                recreate(messageCache)
+            }
+        }
     }
 
     /**
      * Send a [message] to the chat room by dispatching a coroutine which handles it
+     *
+     * Use [suppress] to avoid showing an [InfoPopup] for any failures.
      */
-    fun sendMessage(message: String) {
-        // TODO
+    fun sendMessage(message: String, suppress: Boolean = false) {
+        Concurrency.run {
+            if (suppress) {
+                messageCache.add(mp.api.chat.send(message, chatRoomUUID)!!)
+            } else {
+                InfoPopup.wrap(stage) {
+                    messageCache.add(mp.api.chat.send(message, chatRoomUUID)!!)
+                }
+            }
+        }
     }
 
     /**
@@ -51,32 +75,30 @@ class ChatMessageList(private val chatRoomUUID: UUID, private val mp: OnlineMult
      * Use [suppress] to avoid showing an [InfoPopup] for any failures.
      */
     fun triggerRefresh(suppress: Boolean = false) {
-        Concurrency.run {
-            if (suppress) {
-                val chatInfo = mp.api.chat.get(chatRoomUUID, true)
-                if (chatInfo != null) {
-                    Concurrency.runOnGLThread {
-                        recreate(chatInfo.messages)
-                    }
-                }
-            } else {
-                InfoPopup.wrap(stage) {
-                    val chatInfo = mp.api.chat.get(chatRoomUUID, false)
+        Concurrency.runOnGLThread {
+            val s = stage
+            Concurrency.run {
+                if (suppress) {
+                    val chatInfo = mp.api.chat.get(chatRoomUUID, true)
                     if (chatInfo != null) {
                         Concurrency.runOnGLThread {
+                            messageCache = chatInfo.messages.toMutableList()
                             recreate(chatInfo.messages)
+                        }
+                    }
+                } else {
+                    InfoPopup.wrap(s) {
+                        val chatInfo = mp.api.chat.get(chatRoomUUID, false)
+                        if (chatInfo != null) {
+                            Concurrency.runOnGLThread {
+                                messageCache = chatInfo.messages.toMutableList()
+                                recreate(chatInfo.messages)
+                            }
                         }
                     }
                 }
             }
         }
-    }
-
-    /**
-     * Recreate the message list from strings for testing purposes using random fill data
-     */
-    internal fun recreate(messages: List<String>) {
-        recreate(messages.map { ChatMessage(UUID.randomUUID(), AccountResponse("user", "User", UUID.randomUUID()), it, Instant.now()) })
     }
 
     /**
@@ -91,9 +113,11 @@ class ChatMessageList(private val chatRoomUUID: UUID, private val mp: OnlineMult
             return
         }
 
+        val now = Instant.now()
         for (message in messages) {
             row()
-            val label = Label("${message.sender.displayName} [${message.sender.username}] (${message.createdAt}):\n${message.message}", BaseScreen.skin)
+            val time = "[${Duration.between(message.createdAt, now).formatShort()}] ago".tr()
+            val label = Label("${message.sender.displayName} (${message.sender.username}) $time:\n${message.message}", BaseScreen.skin)
             label.setAlignment(Align.left)
             label.wrap = true
             val cell = add(label)
