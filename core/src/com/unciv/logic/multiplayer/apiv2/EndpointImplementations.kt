@@ -431,7 +431,7 @@ class AccountsApi(private val client: HttpClient, private val authHelper: AuthHe
 /**
  * API wrapper for authentication handling (do not use directly; use the Api class instead)
  */
-class AuthApi(private val client: HttpClient, private val authHelper: AuthHelper) {
+class AuthApi(private val client: HttpClient, private val authHelper: AuthHelper, private val afterLogin: suspend () -> Unit) {
 
     /**
      * Try logging in with [username] and [password] for testing purposes, don't set the session cookie
@@ -484,6 +484,7 @@ class AuthApi(private val client: HttpClient, private val authHelper: AuthHelper
                     authCookie.maxAge,
                     Pair(username, password)
                 )
+                afterLogin()
                 true
             } else {
                 Log.error("No recognized, valid session cookie found in login response!")

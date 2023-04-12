@@ -63,7 +63,7 @@ open class ApiV2Wrapper(private val baseUrl: String) {
      * track of user-supplied credentials to be able to refresh expired sessions on the fly */
     private val authHelper = AuthHelper()
 
-    // Queue to keep references to all opened WebSocket handler jobs
+    /** Queue to keep references to all opened WebSocket handler jobs */
     protected var websocketJobs = ConcurrentLinkedQueue<Job>()
 
     init {
@@ -83,6 +83,15 @@ open class ApiV2Wrapper(private val baseUrl: String) {
     }
 
     /**
+     * Coroutine directly executed after every successful login to the server,
+     * which also refreshed the session cookie (i.e., not [AuthApi.loginOnly]).
+     * This coroutine should not raise any unhandled exceptions, because otherwise
+     * the login function will fail as well. If it requires longer operations,
+     * those operations should be detached from the current thread.
+     */
+    protected open suspend fun afterLogin() {}
+
+    /**
      * API for account management
      */
     internal val account = AccountsApi(client, authHelper)
@@ -90,7 +99,7 @@ open class ApiV2Wrapper(private val baseUrl: String) {
     /**
      * API for authentication management
      */
-    internal val auth = AuthApi(client, authHelper)
+    internal val auth = AuthApi(client, authHelper, ::afterLogin)
 
     /**
      * API for chat management
