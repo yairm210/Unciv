@@ -305,7 +305,7 @@ object UnitAutomation {
             val improvementCanBePlacedEventually =
                     SpecificUnitAutomation.automateImprovementPlacer(unit)
             if (!improvementCanBePlacedEventually)
-                tryStartGoldenAge(unit)
+                startGoldenAgeIfHasAbility(unit)
         }
 
         // TODO: The AI tends to have a lot of great generals. Maybe there should be a cutoff
@@ -315,7 +315,7 @@ object UnitAutomation {
         return // The AI doesn't know how to handle unknown civilian units
     }
 
-    private fun tryStartGoldenAge(unit: MapUnit) {
+    private fun startGoldenAgeIfHasAbility(unit: MapUnit) {
         UnitActions.getUnitActions(unit).filter { it.type == UnitActionType.StartGoldenAge }
             .firstOrNull()?.action!!.invoke()
     }
