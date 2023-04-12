@@ -65,6 +65,7 @@ class NewGameScreen(
         if (gameSetupInfo.gameParameters.victoryTypes.isEmpty())
             gameSetupInfo.gameParameters.victoryTypes.addAll(ruleset.victories.keys)
 
+        rightSideButton.enable()  // now because PlayerPickerTable init might disable it again
         playerPickerTable = PlayerPickerTable(
             this, gameSetupInfo.gameParameters,
             if (isPortrait) stage.width - 20f else 0f
@@ -98,7 +99,6 @@ class NewGameScreen(
             }
         }
 
-        rightSideButton.enable()
         rightSideButton.setText("Start game!".tr())
         rightSideButton.onClick(this::onStartGameClicked)
     }

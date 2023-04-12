@@ -221,17 +221,14 @@ class GameOptionsTable(
 
     private fun Table.addRandomPlayersCheckbox() =
             addCheckbox("Random number of Civilizations", gameParameters.randomNumberOfPlayers)
-            {newRandomNumberOfPlayers ->
+            { newRandomNumberOfPlayers ->
                 gameParameters.randomNumberOfPlayers = newRandomNumberOfPlayers
                 if (newRandomNumberOfPlayers) {
                     // remove all random AI from player picker
-                    val newPlayers = gameParameters.players.asSequence()
+                    gameParameters.players = gameParameters.players.asSequence()
                         .filterNot { it.playerType == PlayerType.AI && it.chosenCiv == Constants.random }
                         .toCollection(ArrayList(gameParameters.players.size))
-                    if (newPlayers.size != gameParameters.players.size) {
-                        gameParameters.players = newPlayers
-                        updatePlayerPickerTable("")
-                    }
+                    updatePlayerPickerTable("")
                 } else {
                     // Fill up player picker with random AI until previously active min reached
                     val additionalRandom = gameParameters.minNumberOfPlayers - gameParameters.players.size
