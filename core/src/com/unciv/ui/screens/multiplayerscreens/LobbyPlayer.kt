@@ -13,7 +13,7 @@ import com.unciv.models.metadata.Player
  * easy backward compatibility without any further modifications.
  * Human players are identified by a valid [account], use null for AI players.
  */
-class LobbyPlayer(internal val account: AccountResponse?, var chosenCiv: String = Constants.random) {
+internal class LobbyPlayer(internal val account: AccountResponse?, var chosenCiv: String = Constants.random) {
     val isAI: Boolean
         get() = account == null
 

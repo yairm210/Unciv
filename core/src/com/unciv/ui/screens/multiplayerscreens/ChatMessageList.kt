@@ -58,10 +58,10 @@ class ChatMessageList(private val chatRoomUUID: UUID, private val mp: OnlineMult
     fun sendMessage(message: String, suppress: Boolean = false) {
         Concurrency.run {
             if (suppress) {
-                messageCache.add(mp.api.chat.send(message, chatRoomUUID)!!)
+                mp.api.chat.send(message, chatRoomUUID)
             } else {
                 InfoPopup.wrap(stage) {
-                    messageCache.add(mp.api.chat.send(message, chatRoomUUID)!!)
+                    mp.api.chat.send(message, chatRoomUUID)
                 }
             }
         }
@@ -116,13 +116,21 @@ class ChatMessageList(private val chatRoomUUID: UUID, private val mp: OnlineMult
         val now = Instant.now()
         for (message in messages) {
             row()
-            val time = "[${Duration.between(message.createdAt, now).formatShort()}] ago".tr()
-            val label = Label("${message.sender.displayName} (${message.sender.username}) $time:\n${message.message}", BaseScreen.skin)
-            label.setAlignment(Align.left)
-            label.wrap = true
-            val cell = add(label)
-            cell.fillX()
+            addMessage(message, now)
         }
+    }
+
+    /**
+     * Add a single message to the list of chat messages
+     */
+    private fun addMessage(message: ChatMessage, now: Instant? = null) {
+        val time = "[${Duration.between(message.createdAt, now ?: Instant.now()).formatShort()}] ago".tr()
+        val label = Label("${message.sender.displayName} (${message.sender.username}) $time:\n${message.message}", BaseScreen.skin)
+        label.setAlignment(Align.left)
+        label.wrap = true
+        val cell = add(label)
+        cell.fillX()
+        row()
     }
 
 }

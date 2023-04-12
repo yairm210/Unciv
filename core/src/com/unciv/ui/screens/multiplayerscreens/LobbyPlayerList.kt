@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.logic.multiplayer.apiv2.AccountResponse
 import com.unciv.models.metadata.Player
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.onClick
@@ -24,17 +25,17 @@ import java.util.*
  */
 class LobbyPlayerList(
     private val lobbyUUID: UUID,
-    private val mutablePlayers: MutableList<LobbyPlayer> = mutableListOf(),
+    startPlayers: List<AccountResponse> = listOf(),
     private val base: IPreviousScreen,
     private val update: () -> Unit
 ) : Table() {
-    internal val players: List<LobbyPlayer> = mutablePlayers
+    internal val players: MutableList<LobbyPlayer> = startPlayers.map { LobbyPlayer(it) }.toMutableList()
 
     private val addBotButton = "+".toLabel(Color.LIGHT_GRAY, 30)
         .apply { this.setAlignment(Align.center) }
         .surroundWithCircle(50f, color = Color.GRAY)
         .onClick {
-            mutablePlayers.add(LobbyPlayer(null, Constants.random))
+            players.add(LobbyPlayer(null, Constants.random))
             recreate()
         }
 
@@ -60,8 +61,22 @@ class LobbyPlayerList(
             row()
             val movements = VerticalGroup()
             movements.space(5f)
-            movements.addActor("↑".toLabel(fontSize = Constants.headingFontSize).onClick { Log.error("Click up not implemented yet") })
-            movements.addActor("↓".toLabel(fontSize = Constants.headingFontSize).onClick { Log.error("Click down not implemented yet") })
+            movements.addActor("↑".toLabel(fontSize = Constants.headingFontSize).onClick {
+                if (i > 0) {
+                    val above = players[i-1]
+                    players[i-1] = players[i]
+                    players[i] = above
+                    recreate()
+                }
+            })
+            movements.addActor("↓".toLabel(fontSize = Constants.headingFontSize).onClick {
+                if (i < players.size - 1) {
+                    val below = players[i+1]
+                    players[i+1] = players[i]
+                    players[i] = below
+                    recreate()
+                }
+            })
             add(movements)
 
             val player = players[i]
@@ -78,7 +93,7 @@ class LobbyPlayerList(
                 if (!player.isAI) {
                     ToastPopup("Kicking human players has not been implemented yet.", stage)  // TODO: Implement this
                 }
-                val success = mutablePlayers.remove(player)
+                val success = players.remove(player)
                 Log.debug("Removing player %s [%s]: %s", player.account, i, if (success) "success" else "failure")
                 recreate()
             }
