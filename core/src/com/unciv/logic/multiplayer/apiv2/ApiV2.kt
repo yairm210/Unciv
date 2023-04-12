@@ -1,5 +1,7 @@
 package com.unciv.logic.multiplayer.apiv2
 
+import com.unciv.UncivGame
+import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.storage.ApiV2FileStorageEmulator
 import com.unciv.logic.multiplayer.ApiVersion
 import com.unciv.logic.multiplayer.storage.ApiV2FileStorageWrapper
@@ -41,9 +43,6 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
     /** Info whether this class is fully initialized and ready to use */
     private var initialized = false
 
-    /** Credentials used during the last successful login */
-    private var lastSuccessfulCredentials: Pair<String, String>? = null
-
     /** Timestamp of the last successful login */
     private var lastSuccessfulAuthentication: AtomicReference<Instant?> = AtomicReference()
 
@@ -68,11 +67,9 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
                 Log.debug("Login failed using provided credentials (username '${credentials.first}')")
             } else {
                 lastSuccessfulAuthentication.set(Instant.now())
-                lastSuccessfulCredentials = credentials
                 Concurrency.run {
                     refreshGameDetails()
                 }
-                websocket(::handleWebSocket)
             }
         }
         ApiV2FileStorageWrapper.storage = ApiV2FileStorageEmulator(this)
@@ -187,15 +184,6 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
     }
 
     /**
-     * Fetch server's details about a game based on its game ID
-     *
-     * @throws MultiplayerFileNotFoundException: if the [gameId] can't be resolved on the server
-     */
-    suspend fun getGameDetails(gameId: String): GameDetails {
-        return getGameDetails(UUID.fromString(gameId))
-    }
-
-    /**
      * Refresh the cache of known multiplayer games, [gameDetails]
      */
     private suspend fun refreshGameDetails() {
@@ -213,109 +201,67 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
     // ---------------- WEBSOCKET FUNCTIONALITY ----------------
 
     /**
-     * Send text as a [FrameType.TEXT] frame to the remote side (fire & forget)
+     * Send text as a [FrameType.TEXT] frame to the server via WebSocket (fire & forget)
      *
-     * Returns [Unit] if no exception is thrown
+     * Use [suppress] to forbid throwing *any* errors (returns false, otherwise true or an error).
+     *
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    internal suspend fun sendText(text: String): Unit {
-        if (sendChannel == null) {
+    internal suspend fun sendText(text: String, suppress: Boolean = false): Boolean {
+        val channel = sendChannel
+        if (channel == null) {
             Log.debug("No WebSocket connection, can't send text frame to server: '$text'")
-            return
+            if (suppress) {
+                return false
+            } else {
+                throw UncivNetworkException("WebSocket not connected", null)
+            }
         }
         try {
-            sendChannel?.send(Frame.Text(text))
+            channel.send(Frame.Text(text))
         } catch (e: Throwable) {
-            Log.debug("%s\n%s", e.localizedMessage, e.stackTraceToString())
-            throw e
-        }
-    }
-
-    /**
-     * Send text as a [FrameType.TEXT] frame to the remote side (fire & forget)
-     *
-     * Returns true on success, false otherwise. Any error is suppressed!
-     */
-    internal suspend fun sendTextSuppressed(text: String): Boolean {
-        if (sendChannel == null) {
-            Log.debug("No WebSocket connection, can't send text frame to server: '$text'")
-            return false
-        }
-        try {
-            sendChannel!!.send(Frame.Text(text))
-        } catch (e: Throwable) {
-            Log.debug("%s\n%s", e.localizedMessage, e.stackTraceToString())
+            Log.debug("Sending text via WebSocket failed: %s\n%s", e.localizedMessage, e.stackTraceToString())
+            if (!suppress) {
+                throw UncivNetworkException(e)
+            } else {
+                return false
+            }
         }
         return true
     }
 
     /**
-     * Handle incoming WebSocket messages
+     * Send a [FrameType.PING] frame to the server, without awaiting a response
+     *
+     * This operation might fail with some exception, e.g. network exceptions.
+     * Internally, a random 8-byte array will be used for the ping. It returns
+     * true when sending worked as expected, false when there's no send channel
+     * available and an any exception otherwise.
      */
-    private suspend fun handleIncomingWSMessage(msg: WebSocketMessage) {
-        when (msg.type) {
-            WebSocketMessageType.InvalidMessage -> {
-                Log.debug("Received invalid message from WebSocket connection")
-            }
-            WebSocketMessageType.GameStarted -> {
-                Log.debug("Received GameStarted message from WebSocket connection")
-                // TODO: Implement game start handling
-            }
-            WebSocketMessageType.UpdateGameData -> {
-                // TODO
-                /*
-                @Suppress("CAST_NEVER_SUCCEEDS")
-                val gameInfo = UncivFiles.gameInfoFromString((msg as UpdateGameData).gameData)
-                Log.debug("Saving new game info for name '${gameInfo.gameId}'")
-                UncivGame.Current.files.saveGame(gameInfo, gameInfo.gameId)
-                withGLContext {
-                    EventBus.send(MultiplayerGameUpdated(gameInfo.gameId, gameInfo.asPreview()))
-                }
-                 */
-            }
-            WebSocketMessageType.ClientDisconnected -> {
-                Log.debug("Received ClientDisconnected message from WebSocket connection")
-                // TODO: Implement client connectivity handling
-            }
-            WebSocketMessageType.ClientReconnected -> {
-                Log.debug("Received ClientReconnected message from WebSocket connection")
-                // TODO: Implement client connectivity handling
-            }
-            WebSocketMessageType.IncomingChatMessage -> {
-                Log.debug("Received IncomingChatMessage message from WebSocket connection")
-                // TODO: Implement chat message handling
-            }
-            WebSocketMessageType.IncomingInvite -> {
-                Log.debug("Received IncomingInvite message from WebSocket connection")
-                // TODO: Implement invite handling
-            }
-            WebSocketMessageType.IncomingFriendRequest -> {
-                Log.debug("Received IncomingFriendRequest message from WebSocket connection")
-                // TODO: Implement this branch
-            }
-            WebSocketMessageType.FriendshipChanged -> {
-                Log.debug("Received FriendshipChanged message from WebSocket connection")
-                // TODO: Implement this branch
-            }
-            WebSocketMessageType.LobbyJoin -> {
-                Log.debug("Received LobbyJoin message from WebSocket connection")
-                // TODO: Implement this branch
-            }
-            WebSocketMessageType.LobbyClosed -> {
-                Log.debug("Received LobbyClosed message from WebSocket connection")
-                // TODO: Implement this branch
-            }
-            WebSocketMessageType.LobbyLeave -> {
-                Log.debug("Received LobbyLeave message from WebSocket connection")
-                // TODO: Implement this branch
-            }
-            WebSocketMessageType.LobbyKick -> {
-                Log.debug("Received LobbyKick message from WebSocket connection")
-                // TODO: Implement this branch
-            }
-            WebSocketMessageType.AccountUpdated -> {
-                Log.debug("Received AccountUpdated message from WebSocket connection")
-                // TODO: Implement this branch
-            }
+    internal suspend fun sendPing(): Boolean {
+        val body = ByteArray(8)
+        Random().nextBytes(body)
+        val channel = sendChannel
+        return if (channel == null) {
+            false
+        } else {
+            channel.send(Frame.Ping(body))
+            true
+        }
+    }
+
+    /**
+     * Create a new WebSocket connection after logging in and if there's no current connection available
+     */
+    override suspend fun afterLogin() {
+        val pingSuccess = try {
+            sendPing()
+        } catch (e: Exception) {
+            Log.debug("Exception while sending WebSocket PING: %s", e.localizedMessage)
+            false
+        }
+        if (!pingSuccess) {
+            websocket(::handleWebSocket)
         }
     }
 
@@ -331,7 +277,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
                 val incomingFrame = session.incoming.receive()
                 when (incomingFrame.frameType) {
                     FrameType.CLOSE, FrameType.PING, FrameType.PONG -> {
-                        // This handler won't handle control frames
+                        // This WebSocket handler won't handle control frames
                         Log.debug("Received CLOSE, PING or PONG as message")
                     }
                     FrameType.BINARY -> {
@@ -342,7 +288,19 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
                             val text = (incomingFrame as Frame.Text).readText()
                             val msg = Json.decodeFromString(WebSocketMessageSerializer(), text)
                             Log.debug("Incoming WebSocket message ${msg::class.java.canonicalName}: $msg")
-                            handleIncomingWSMessage(msg)
+                            when (msg.type) {
+                                WebSocketMessageType.InvalidMessage -> {
+                                    Log.debug("Received 'InvalidMessage' from WebSocket connection")
+                                }
+                                else -> {
+                                    // Casting any message but InvalidMessage to WebSocketMessageWithContent should work,
+                                    // otherwise the class hierarchy has been messed up somehow; all messages should have content
+                                    Log.debug("Sending event %s with content %s", msg, (msg as WebSocketMessageWithContent).content)
+                                    Concurrency.runOnGLThread {
+                                        EventBus.send(msg.content)
+                                    }
+                                }
+                            }
                         } catch (e: Throwable) {
                             Log.error("%s\n%s", e.localizedMessage, e.stackTraceToString())
                         }
@@ -354,7 +312,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
             sendChannel?.close()
             session.close()
         } catch (e: Throwable) {
-            Log.error("%s\n%s", e.localizedMessage, e.stackTraceToString())
+            Log.error("Error while handling a WebSocket connection: %s\n%s", e.localizedMessage, e.stackTraceToString())
             sendChannel?.close()
             session.close()
             throw e
@@ -371,15 +329,14 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
      * Set [ignoreLastCredentials] to refresh the session even if there was no last successful credentials.
      */
     suspend fun refreshSession(ignoreLastCredentials: Boolean = false): Boolean {
-        if (lastSuccessfulCredentials == null && !ignoreLastCredentials) {
+        if (!ignoreLastCredentials) {
             return false
         }
-        val success = try {
-            auth.login(lastSuccessfulCredentials!!.first, lastSuccessfulCredentials!!.second)
-        } catch (e: Throwable) {
-            Log.error("Suppressed error in 'refreshSession': $e")
-            false
-        }
+        val success = auth.login(
+            UncivGame.Current.settings.multiplayer.userName,
+            UncivGame.Current.settings.multiplayer.passwords[UncivGame.Current.onlineMultiplayer.baseUrl] ?: "",
+            suppress = true
+        )
         if (success) {
             lastSuccessfulAuthentication.set(Instant.now())
         }
