@@ -3,10 +3,11 @@ package com.unciv.ui.screens.multiplayerscreens
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.multiplayer.apiv2.LobbyResponse
+import com.unciv.ui.components.ArrowButton
+import com.unciv.ui.components.LockButton
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.AskTextPopup
 import com.unciv.ui.popups.InfoPopup
@@ -18,7 +19,7 @@ import kotlinx.coroutines.delay
 /**
  * Table listing all available open lobbies and allow joining them by clicking on them
  */
-internal class LobbyBrowserTable(private val screen: BaseScreen): Table() {
+internal class LobbyBrowserTable(private val screen: BaseScreen): Table(BaseScreen.skin) {
 
     private val noLobbies = "Sorry, no open lobbies at the moment!".toLabel()
     private val enterLobbyPasswordText = "This lobby requires a password to join. Please enter it below:"
@@ -42,7 +43,7 @@ internal class LobbyBrowserTable(private val screen: BaseScreen): Table() {
                 maxLength = 120
             ) {
                 InfoPopup.load(stage) {
-                    screen.game.onlineMultiplayer.api.lobby.join(lobby.uuid)
+                    screen.game.onlineMultiplayer.api.lobby.join(lobby.uuid, it)
                     Concurrency.runOnGLThread {
                         screen.game.pushScreen(LobbyScreen(lobby))
                     }
@@ -71,12 +72,13 @@ internal class LobbyBrowserTable(private val screen: BaseScreen): Table() {
 
         lobbies.sortedBy { it.createdAt }
         for (lobby in lobbies.reversed()) {
-            // TODO: The button may be styled with icons and the texts may be translated
-            val btn = "${lobby.name} (${lobby.currentPlayers}/${lobby.maxPlayers} players) ${if (lobby.hasPassword) " LOCKED" else ""}".toTextButton()
-            btn.onClick {
-                joinLobby(lobby)
+            add(lobby.name).padRight(15f)
+            add("${lobby.currentPlayers}/${lobby.maxPlayers}").padRight(10f)
+            if (lobby.hasPassword) {
+                add(LockButton().onClick { joinLobby(lobby) }).padBottom(5f).row()
+            } else {
+                add(ArrowButton().onClick { joinLobby(lobby) }).padBottom(5f).row()
             }
-            add(btn).row()
         }
     }
 
