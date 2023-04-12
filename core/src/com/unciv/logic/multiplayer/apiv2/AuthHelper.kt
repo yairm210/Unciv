@@ -4,7 +4,6 @@ import com.unciv.utils.Log
 import io.ktor.client.request.*
 import io.ktor.http.*
 import java.time.Instant
-import java.util.*
 import java.util.concurrent.atomic.AtomicReference
 
 /**
@@ -28,9 +27,6 @@ class AuthHelper {
 
     /** Timestamp of the last successful login */
     private var lastSuccessfulAuthentication: AtomicReference<Instant?> = AtomicReference()
-
-    /** User identification on the server, may be null if unset or not logged in */
-    var user: UUID? = null
 
     /**
      * Set the session cookie, update the last refresh timestamp and the last successful credentials
@@ -66,4 +62,5 @@ class AuthHelper {
             Log.debug("Session cookie is not available")
         }
     }
+
 }

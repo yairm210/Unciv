@@ -754,20 +754,43 @@ class GameApi(private val client: HttpClient, private val authHelper: AuthHelper
     /**
      * Retrieves a single game identified by [gameUUID] which is currently open (actively played)
      *
-     *
      * Other than [list], this method's return value contains a full game state (on success).
+     * Set [cache] to false to avoid getting a cached result by this function. This
+     * is especially useful for receiving a new game on purpose / on request.
+     *
      * Use [suppress] to forbid throwing *any* errors (returns null, otherwise [GameStateResponse] or an error).
      *
      * @throws ApiException: thrown for defined and recognized API problems
      * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
-    suspend fun get(gameUUID: UUID, suppress: Boolean = false): GameStateResponse? {
-        return request(
-            HttpMethod.Get, "/api/v2/games/$gameUUID",
+    suspend fun get(gameUUID: UUID, cache: Boolean = true, suppress: Boolean = false): GameStateResponse? {
+        return Cache.get(
+            "/api/v2/games/$gameUUID",
             client, authHelper,
             suppress = suppress,
+            cache = cache,
             retry = getDefaultRetry(client, authHelper)
         )?.body()
+    }
+
+    /**
+     * Retrieves an overview of a single game of a player (or null if no such game is available)
+     *
+     * The response does not contain any full game state, but rather a
+     * shortened game state identified by its ID and state identifier.
+     * If the state ([GameOverviewResponse.gameDataID]) of a known game
+     * differs from the last known identifier, the server has a newer
+     * state of the game. The [GameOverviewResponse.lastActivity] field
+     * is a convenience attribute and shouldn't be used for update checks.
+     *
+     * Use [suppress] to forbid throwing *any* errors (returns null, otherwise [GameOverviewResponse] or an error).
+     *
+     * @throws ApiException: thrown for defined and recognized API problems
+     * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
+     */
+    suspend fun head(gameUUID: UUID, suppress: Boolean = false): GameOverviewResponse? {
+        val result = list(suppress = suppress)
+        return result?.filter { it.gameUUID == gameUUID }?.get(0)
     }
 
     /**

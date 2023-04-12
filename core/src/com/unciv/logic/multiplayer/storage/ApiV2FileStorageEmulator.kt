@@ -22,7 +22,7 @@ class ApiV2FileStorageEmulator(private val api: ApiV2): FileStorage {
 
     override suspend fun loadGameData(gameId: String): String {
         val uuid = UUID.fromString(gameId.lowercase())
-        return api.game.get(uuid)!!.gameData
+        return api.game.get(uuid, cache = false)!!.gameData
     }
 
     override suspend fun loadPreviewData(gameId: String): String {

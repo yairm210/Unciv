@@ -18,7 +18,7 @@ import kotlinx.coroutines.delay
 /**
  * Table listing all available open lobbies and allow joining them by clicking on them
  */
-class LobbyBrowserTable(private val screen: BaseScreen): Table() {
+internal class LobbyBrowserTable(private val screen: BaseScreen): Table() {
 
     private val noLobbies = "Sorry, no open lobbies at the moment!".toLabel()
     private val enterLobbyPasswordText = "This lobby requires a password to join. Please enter it below:"

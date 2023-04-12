@@ -54,7 +54,12 @@ class CreateLobbyPopup(private val base: BaseScreen) : Popup(base.stage) {
     private fun onClose() {
         Log.debug("Creating a new lobby '%s'", nameField.text)
         val response = InfoPopup.load(base.stage) {
-            base.game.onlineMultiplayer.api.lobby.open(nameField.text, if (requirePassword) passwordField.text else null)
+            val openedLobby = base.game.onlineMultiplayer.api.lobby.open(nameField.text, if (requirePassword) passwordField.text else null)
+            if (openedLobby != null) {
+                base.game.onlineMultiplayer.api.lobby.get(openedLobby.lobbyUUID)
+            } else {
+                null
+            }
         }
         if (response != null) {
             base.game.pushScreen(LobbyScreen(response))

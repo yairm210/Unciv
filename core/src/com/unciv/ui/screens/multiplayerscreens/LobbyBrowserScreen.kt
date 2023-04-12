@@ -16,10 +16,13 @@ import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.popups.CreateLobbyPopup
+import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Log
+import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.concurrency.Concurrency.runBlocking
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
 
 /**
@@ -87,8 +90,16 @@ class LobbyBrowserScreen : BaseScreen() {
         stage.addActor(table)
     }
 
-    private fun onSelect(game: GameOverviewResponse) {
-        Log.debug("Selecting game '%s' (%s)", game.name, game.gameUUID)  // TODO: Implement handling
+    private fun onSelect(gameOverview: GameOverviewResponse) {
+        Log.debug("Loading game '%s' (%s)", gameOverview.name, gameOverview.gameUUID)
+        val gameInfo = InfoPopup.load(stage) {
+            game.onlineMultiplayer.downloadGame(gameOverview.gameUUID.toString())
+        }
+        if (gameInfo != null) {
+            Concurrency.runOnNonDaemonThreadPool {
+                game.loadGame(gameInfo)
+            }
+        }
     }
 
 }

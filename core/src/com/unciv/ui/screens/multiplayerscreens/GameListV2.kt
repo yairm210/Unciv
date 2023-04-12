@@ -16,7 +16,7 @@ import kotlinx.coroutines.delay
 /**
  * Table listing the recently played open games for APIv2 multiplayer games
  */
-class GameListV2(private val screen: BaseScreen, private val onSelected: (String) -> Unit) : Table() {
+class GameListV2(private val screen: BaseScreen, private val onSelected: (GameOverviewResponse) -> Unit) : Table(BaseScreen.skin) {
 
     private val noGames = "No recently played games here".toLabel()
     private val games = mutableListOf<GameOverviewResponse>()
@@ -31,12 +31,11 @@ class GameListV2(private val screen: BaseScreen, private val onSelected: (String
     private fun addGame(game: GameOverviewResponse) {
         // TODO: Determine if it's the current turn, then add an indicator for that
 
-        add(game.name)
-        add(game.lastActivity.toString())
-        add(game.lastPlayer.username)
-        add(game.gameDataID.toString())
-        add(game.gameUUID.toString())
-        add(game.gameDataID.toString())
+        add(game.name).apply { onClick { onSelected(game) } }
+        add(game.lastActivity.toString()).apply { onClick { onSelected(game) } }
+        add(game.lastPlayer.username).apply { onClick { onSelected(game) } }
+        add(game.gameDataID.toString()).apply { onClick { onSelected(game) } }
+        add(game.gameDataID.toString()).apply { onClick { onSelected(game) } }
 
         add(PencilButton().apply { onClick {
             ToastPopup("Renaming game ${game.gameUUID} not implemented yet", screen.stage)

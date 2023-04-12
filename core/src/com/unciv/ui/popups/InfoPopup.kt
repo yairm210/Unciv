@@ -46,7 +46,8 @@ open class InfoPopup(
          * This function will display an [InfoPopup] when a [UncivShowableException] occurs.
          */
         fun <T> load(stage: Stage, vararg texts: String, coroutine: suspend () -> T): T? {
-            val popup = InfoPopup(stage, "Loading")
+            val popup = Popup(stage).apply { addGoodSizedLabel("Working...").row() }
+            popup.open(force = true)
             return runBlocking {
                 try {
                     val result = coroutine()
