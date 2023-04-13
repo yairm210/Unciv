@@ -1,9 +1,9 @@
 package com.unciv.ui.screens.civilopediascreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.UncivGame
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.stats.INamed
-import com.unciv.UncivGame  // Kdoc only
 
 
 /** Addon common to most ruleset game objects managing civilopedia display

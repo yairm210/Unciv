@@ -70,7 +70,7 @@ open class Portrait(val type: Type, val imageName: String, val size: Float, val 
     }
 
     /** Inner image */
-    private fun getMainImage() : Image {
+    fun getMainImage() : Image {
         return when {
             ImageGetter.imageExists(pathPortrait) -> {
                 isPortrait = true

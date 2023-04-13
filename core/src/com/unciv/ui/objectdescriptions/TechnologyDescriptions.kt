@@ -42,7 +42,7 @@ object TechnologyDescriptions {
         if (enabledUnits.any()) {
             lineList += "{Units enabled}: "
             for (unit in enabledUnits)
-                lineList += " • " + unit.name.tr() + " (" + unit.getShortDescription() + ")"
+                lineList += " • ${unit.name.tr()} (${unit.getShortDescription()})\n"
         }
 
         val (wonders, regularBuildings) = getEnabledBuildings(name, ruleset, viewingCiv)
@@ -51,13 +51,13 @@ object TechnologyDescriptions {
         if (regularBuildings.isNotEmpty()) {
             lineList += "{Buildings enabled}: "
             for (building in regularBuildings)
-                lineList += " • " + building.name.tr() + " (" + building.getShortDescription() + ")"
+                lineList += " • ${building.name.tr()} (${building.getShortDescription()})\n"
         }
 
         if (wonders.isNotEmpty()) {
             lineList += "{Wonders enabled}: "
             for (wonder in wonders)
-                lineList += " • " + wonder.name.tr() + " (" + wonder.getShortDescription() + ")"
+                lineList += " • ${wonder.name.tr()} (${wonder.getShortDescription()})\n"
         }
 
         for (obj in getObsoletedObjects(name, ruleset, viewingCiv))
@@ -204,7 +204,7 @@ object TechnologyDescriptions {
             lineList += FormattedLine()
             lineList += FormattedLine("{Units enabled}:")
             for (unit in enabledUnits)
-                lineList += FormattedLine(unit.name.tr() + " (" + unit.getShortDescription() + ")", link = unit.makeLink())
+                lineList += FormattedLine(unit.name.tr(true) + " (" + unit.getShortDescription() + ")", link = unit.makeLink())
         }
 
         val (wonders, regularBuildings) = getEnabledBuildings(name, ruleset, null)
@@ -214,14 +214,14 @@ object TechnologyDescriptions {
             lineList += FormattedLine()
             lineList += FormattedLine("{Wonders enabled}:")
             for (wonder in wonders)
-                lineList += FormattedLine(wonder.name.tr() + " (" + wonder.getShortDescription() + ")", link = wonder.makeLink())
+                lineList += FormattedLine(wonder.name.tr(true) + " (" + wonder.getShortDescription() + ")", link = wonder.makeLink())
         }
 
         if (regularBuildings.isNotEmpty()) {
             lineList += FormattedLine()
             lineList += FormattedLine("{Buildings enabled}:")
             for (building in regularBuildings)
-                lineList += FormattedLine(building.name.tr() + " (" + building.getShortDescription() + ")", link = building.makeLink())
+                lineList += FormattedLine(building.name.tr(true) + " (" + building.getShortDescription() + ")", link = building.makeLink())
         }
 
         val obsoletedObjects = getObsoletedObjects(name, ruleset, null).toList()

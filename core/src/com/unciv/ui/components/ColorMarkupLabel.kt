@@ -114,7 +114,7 @@ class ColorMarkupLabel private constructor(
             val sb = StringBuilder(translated.length + 42)
             var currentColor = ' '
             for (char in translated) {
-                val newColor = if (char in Fonts.allSymbols) 'S' else 'T'
+                val newColor = if (char in Fonts.allSymbols || char in Fonts.charToRulesetImageActor) 'S' else 'T'
                 if (newColor != currentColor) {
                     if (currentColor != ' ') sb.append("[]")
                     sb.append('[')
