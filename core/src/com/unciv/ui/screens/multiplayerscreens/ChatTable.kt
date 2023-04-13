@@ -15,7 +15,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
  *
  * Optionally, it can display a [RefreshButton] to the right of the send button.
  */
-class ChatTable(chatMessageList: ChatMessageList, showRefreshButton: Boolean, maxLength: Int? = null): Table() {
+class ChatTable(private val chatMessageList: ChatMessageList, showRefreshButton: Boolean, maxLength: Int? = null): Table() {
     init {
         val chatScroll = AutoScrollPane(chatMessageList, BaseScreen.skin)
         chatScroll.setScrollingDisabled(true, false)
@@ -46,5 +46,9 @@ class ChatTable(chatMessageList: ChatMessageList, showRefreshButton: Boolean, ma
             add(sendButton).padLeft(10f).padRight(5f)
         }
         row()
+    }
+
+    fun dispose() {
+        chatMessageList.dispose()
     }
 }

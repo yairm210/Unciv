@@ -66,4 +66,8 @@ class ChatRoomScreen(private val chatRoomUUID: UUID) : PickerScreen() {
         stage.addActor(tab)
     }
 
+    override fun dispose() {
+        messageTable.dispose()
+    }
+
 }

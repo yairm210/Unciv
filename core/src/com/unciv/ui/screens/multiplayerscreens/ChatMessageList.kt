@@ -14,9 +14,14 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.concurrency.Concurrency
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import java.time.Duration
 import java.time.Instant
 import java.util.*
+
+/** Interval to redraw the chat message list in milliseconds */
+private const val REDRAW_INTERVAL = 5000L
 
 /**
  * Simple list for messages from a multiplayer chat
@@ -31,11 +36,13 @@ import java.util.*
  *      val chatScroll = AutoScrollPane(chatMessages, skin)
  *      chatScroll.setScrollingDisabled(true, false)
  *
- * Another good way is to use the [ChatTable] directly.
+ * Another good way is to use the [ChatTable] directly. Make sure to [dispose]
+ * this table, since it holds a coroutine which updates itself periodically.
  */
 class ChatMessageList(private val chatRoomUUID: UUID, private val mp: OnlineMultiplayer): Table() {
     private val events = EventBus.EventReceiver()
     private var messageCache: MutableList<ChatMessage> = mutableListOf()
+    private var redrawJob: Job = Concurrency.run { redrawPeriodically() }
 
     init {
         defaults().expandX().space(5f)
@@ -131,6 +138,27 @@ class ChatMessageList(private val chatRoomUUID: UUID, private val mp: OnlineMult
         val cell = add(label)
         cell.fillX()
         row()
+    }
+
+    /**
+     * Redraw the chat message list in the background periodically (see [REDRAW_INTERVAL])
+     *
+     * This function doesn't contain any networking functionality. Cancel it via [dispose].
+     */
+    private suspend fun redrawPeriodically() {
+        while (true) {
+            delay(REDRAW_INTERVAL)
+            Concurrency.runOnGLThread {
+                recreate(messageCache)
+            }
+        }
+    }
+
+    /**
+     * Dispose this instance and cancel the [redrawJob]
+     */
+    internal fun dispose() {
+        redrawJob.cancel()
     }
 
 }

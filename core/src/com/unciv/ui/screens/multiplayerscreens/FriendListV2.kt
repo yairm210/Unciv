@@ -22,7 +22,6 @@ import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.multiplayerscreens.FriendListV2.Companion.showEditPopup
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import java.util.*
@@ -32,7 +31,7 @@ import java.util.*
  *
  * Set [me] to the currently logged in user to correctly filter friend requests (if enabled).
  * Set [requests] to show friend requests with buttons to accept or deny the request at the
- * top. Use [chat] to show a button that opens a chat dialog with a single friend. Use
+ * top. Use [chat] to specify a callback when a user wants to chat with someone. Use
  * [select] to specify a callback that can be used to select a player by clicking a button
  * next to it. Use [edit] to specify a callback that can be used to edit a friend.
  * A sane default for this functionality is the [showEditPopup] function.
@@ -43,10 +42,10 @@ internal class FriendListV2(
     private val me: UUID,
     friends: List<FriendResponse> = listOf(),
     friendRequests: List<FriendRequestResponse> = listOf(),
-    private val requests: Boolean = false,
-    private val chat: Boolean = true,
-    private val select: ((UUID) -> Unit)? = null,
-    private val edit: ((UUID) -> Unit)? = null
+    val requests: Boolean = false,
+    val chat: ((UUID) -> Unit)? = null,
+    val select: ((UUID) -> Unit)? = null,
+    val edit: ((UUID) -> Unit)? = null
 ) : Table() {
     init {
         recreate(friends, friendRequests)
@@ -107,13 +106,13 @@ internal class FriendListV2(
             return table
         }
 
-        val width = 2 + (if (chat) 1 else 0) + (if (edit != null) 1 else 0) + (if (select != null) 1 else 0)
+        val width = 2 + (if (chat != null) 1 else 0) + (if (edit != null) 1 else 0) + (if (select != null) 1 else 0)
         table.add("Friends".toLabel(fontSize = Constants.headingFontSize)).colspan(width).padBottom(10f).row()
 
         for (friend in friends) {
             table.add("${friend.friend.displayName} (${friend.friend.username})").padBottom(5f)
-            if (chat) {
-                table.add(ChatButton().apply { onActivation { ToastPopup("Chatting is not implemented yet", stage).open(force = true) } }).padLeft(5f).padBottom(5f)
+            if (chat != null) {
+                table.add(ChatButton().apply { onActivation { (chat)(friend.friend.uuid) } }).padLeft(5f).padBottom(5f)
             }
             if (edit != null) {
                 table.add(OptionsButton().apply { onActivation { (edit)(friend.friend.uuid ) } }).padLeft(5f).padBottom(5f)
