@@ -307,7 +307,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         if (!civInfo.isSpectator())
             civInfo.addNotification("Research of [$techName] has completed!", TechAction(techName),
                 NotificationCategory.General,
-                NotificationIcon.Science, techName)
+                NotificationIcon.Science)
         if (isNewTech)
             civInfo.popupAlerts.add(PopupAlert(AlertType.TechResearched, techName))
 

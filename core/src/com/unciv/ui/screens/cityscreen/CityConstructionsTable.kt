@@ -313,7 +313,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         val isFirstConstructionOfItsKind = cityConstructions.isFirstConstructionOfItsKind(constructionQueueIndex, constructionName)
 
-        var text = constructionName.tr() +
+        var text = constructionName.tr(true) +
                 if (constructionName in PerpetualConstruction.perpetualConstructionsMap) "\n∞"
                 else cityConstructions.getTurnsToConstructionString(constructionName, isFirstConstructionOfItsKind)
 
@@ -386,7 +386,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         val resourceTable = Table().apply { isTransform = false }
 
         val textColor = if (constructionButtonDTO.rejectionReason == null) Color.WHITE else Color.RED
-        constructionTable.add(construction.name.toLabel(fontColor = textColor).apply { wrap=true })
+        constructionTable.add(construction.name.toLabel(fontColor = textColor, hideIcons = true).apply { wrap=true })
             .width(cityScreen.stage.width/5).expandX().left().row()
 
         resourceTable.add(constructionButtonDTO.buttonText.toLabel()).expandX().left()

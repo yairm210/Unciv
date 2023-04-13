@@ -14,10 +14,7 @@ import com.unciv.models.TutorialTrigger
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.translations.tr
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.BorderedTable
-import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.isEnabled
@@ -26,6 +23,9 @@ import com.unciv.ui.components.extensions.onDoubleClick
 import com.unciv.ui.components.extensions.setFontColor
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.basescreen.RecreateOnResize
 import java.lang.Integer.max
 import kotlin.math.abs
 
@@ -89,7 +89,7 @@ private class PromotionButton(
 ) {
 
     var isSelected = false
-    val label = node.promotion.name.toLabel().apply {
+    val label = node.promotion.name.toLabel(hideIcons = true).apply {
         wrap = false
         setAlignment(Align.left)
         setEllipsis(true)
