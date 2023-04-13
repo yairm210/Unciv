@@ -86,6 +86,7 @@ class NotificationsScroll(
 
     private var userSetting = UserSetting.Visible
     private var userSettingChanged = false
+    private var enlargeHighlight = false
 
     /** onClick sets this to request highlighting on the next update (which it then triggers) */
     private var clickedNotification: Notification? = null
@@ -133,6 +134,7 @@ class NotificationsScroll(
         coveredNotificationsBottom: Float
     ) {
         if (getUserSettingCheckDisabled()) return
+        enlargeHighlight = GUI.getSettings().enlargeSelectedNotification
 
         // Remember scroll position _relative to topRight_
         val previousScrollXinv = when {
@@ -279,7 +281,7 @@ class NotificationsScroll(
                 captionWidth
             }).pad(listItemPad)
             val rightPad = categoryHorizontalPad + rightPadToScreenEdge + (
-                    if (highlightNotification == null) 0f
+                    if (!enlargeHighlight || highlightNotification == null) 0f
                     else selectionExtraRightPad
                 )
             rightLineCell = add(ImageGetter.getWhiteDot())
@@ -309,9 +311,10 @@ class NotificationsScroll(
 
         init {
             val isSelected = notification === highlightNotification  // Notification does not implement equality contract
-            val labelFontSize = if (isSelected) fontSize + fontSize/2 else fontSize
-            val itemIconSize = if (isSelected) iconSize * 1.5f else iconSize
-            val topBottomPad = if (isSelected) selectedListItemPad else listItemPad
+            val isEnlarged = isSelected && enlargeHighlight
+            val labelFontSize = if (isEnlarged) fontSize + fontSize/2 else fontSize
+            val itemIconSize = if (isEnlarged) iconSize * 1.5f else iconSize
+            val topBottomPad = if (isEnlarged) selectedListItemPad else listItemPad
 
             val listItem = Table()
             listItem.background = if (!isSelected || !coloredHighlight) backgroundDrawable else {
