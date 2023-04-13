@@ -406,6 +406,13 @@ enum class UniqueParameterType(
             }
     },
 
+    StockpiledResource("stockpiledResource", "StockpiledResource", "The name of any stockpiled") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+                UniqueType.UniqueComplianceErrorSeverity? = if (parameterText in ruleset.tileResources && ruleset.tileResources[parameterText]!!.isStockpiled()) null
+                else UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+    },
+
+
     /** Used by [UniqueType.FreeExtraBeliefs], see ReligionManager.getBeliefsToChooseAt* functions */
     BeliefTypeName("beliefType", "Follower", "'Pantheon', 'Follower', 'Founder' or 'Enhancer'") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
