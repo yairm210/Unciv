@@ -23,6 +23,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
+import com.unciv.ui.components.ColorMarkupLabel
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addBorder
@@ -401,7 +402,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         for (unique in constructionButtonDTO.construction.getMatchingUniquesNotConflicting(UniqueType.CostsResources)){
             val color = if (constructionButtonDTO.rejectionReason?.type == RejectionReasonType.ConsumesResources)
                 Color.RED else Color.WHITE
-            resourceTable.add(unique.params[0].toLabel(fontColor = color)).expandX().left().padLeft(5f)
+            resourceTable.add(ColorMarkupLabel(unique.params[0], color)).expandX().left().padLeft(5f)
             resourceTable.add(ImageGetter.getResourcePortrait(unique.params[1], 15f)).padBottom(1f)
         }
         constructionTable.add(resourceTable).expandX().left()
@@ -425,8 +426,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             pickConstructionButton.color.a = 0.9f
             icon.color.a = 0.5f
             if (constructionButtonDTO.rejectionReason.type != RejectionReasonType.ConsumesResources) {
-                pickConstructionButton.add(constructionButtonDTO.rejectionReason.errorMessage
-                    .toLabel(Color.RED).apply { wrap = true })
+                pickConstructionButton.add(
+                    ColorMarkupLabel(constructionButtonDTO.rejectionReason.errorMessage, Color.RED)
+                        .apply { wrap = true })
                     .colspan(pickConstructionButton.columns)
                     .width(cityScreen.stage.width/4).fillX().left().padTop(2f)
             }
