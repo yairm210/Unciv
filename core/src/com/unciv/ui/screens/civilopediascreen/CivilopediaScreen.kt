@@ -139,8 +139,8 @@ class CivilopediaScreen(
                     entryButton.add(entry.image).padLeft(20f).padRight(10f)
                 else
                     entryButton.add(entry.image).padLeft(10f)
-            entryButton.left().add(entry.name.tr(entry.image!=null)
-                .toLabel(Color.WHITE, 25)).pad(10f)
+            entryButton.left().add(entry.name
+                .toLabel(Color.WHITE, 25, hideIcons=true)).pad(10f)
             entryButton.onClick { selectEntry(entry) }
             entryButton.name = entry.name               // make button findable
             val cell = entrySelectTable.add(entryButton).height(75f).expandX().fillX()

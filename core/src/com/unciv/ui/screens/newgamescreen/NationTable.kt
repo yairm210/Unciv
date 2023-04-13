@@ -8,7 +8,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
-import com.unciv.models.translations.tr
 import com.unciv.ui.components.WrappableLabel
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.images.ImageGetter
@@ -41,7 +40,7 @@ class NationTable(val nation: Nation, width: Float, minHeight: Float, ruleset: R
         val titleText = if (ruleset == null || nation.name == Constants.random || nation.name == Constants.spectator)
             nation.name else nation.getLeaderDisplayName()
         val leaderDisplayNameMaxWidth = internalWidth - 70f // for the nation indicator with padding
-        val leaderDisplayLabel = WrappableLabel(titleText.tr(true), leaderDisplayNameMaxWidth, innerColor, Constants.headingFontSize)
+        val leaderDisplayLabel = WrappableLabel(titleText, leaderDisplayNameMaxWidth, innerColor, Constants.headingFontSize, hideIcons = true)
         if (leaderDisplayLabel.prefWidth > leaderDisplayNameMaxWidth - 2f) {
             leaderDisplayLabel.wrap = true
             titleTable.add(leaderDisplayLabel).width(leaderDisplayNameMaxWidth)

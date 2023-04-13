@@ -280,7 +280,7 @@ class PlayerPickerTable(
                 ImageGetter.getRandomNationPortrait(40f)
             else ImageGetter.getNationPortrait(nationImageName, 40f)
         nationTable.add(nationImage).pad(5f)
-        nationTable.add(player.chosenCiv.tr(true).toLabel()).pad(5f)
+        nationTable.add(player.chosenCiv.toLabel(hideIcons = true)).pad(5f)
         nationTable.touchable = Touchable.enabled
         return nationTable
     }

@@ -11,7 +11,6 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -286,8 +285,7 @@ class FormattedLine (
                 else -> (indent-1) * indentPad +
                         indentOneAtNumIcons * (minIconSize + iconPad) + iconPad - usedWidth
             }
-            val label = if (fontSize == Constants.defaultFontSize && labelColor == defaultColor) textToDisplay.tr(true).toLabel()
-            else textToDisplay.tr(true).toLabel(labelColor,fontSize)
+            val label = textToDisplay.toLabel(labelColor, fontSize, hideIcons = icon.isNotEmpty())
             label.wrap = !centered && labelWidth > 0f
             label.setAlignment(align)
             if (labelWidth == 0f)
