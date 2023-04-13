@@ -145,7 +145,7 @@ class ResourcesOverviewTab(
         add(turnImageH)
         for (resource in resources) {
             add(getResourceImage(resource.name).apply {
-                addTooltip(resource.name, tipAlign = Align.topLeft)
+                addTooltip(resource.name, tipAlign = Align.topLeft, hideIcons = true)
             })
         }
         addSeparator()
