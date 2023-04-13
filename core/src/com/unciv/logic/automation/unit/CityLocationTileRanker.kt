@@ -9,22 +9,73 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 
 class CityLocationTileRanker {
+    enum class IntendedUse {
+        AI_CITY_FOUNDING,
+        HUMAN_CITY_LOCATION_SUGGESTION,
+    }
+
     companion object {
-        fun getBestTilesToFoundCity(unit: MapUnit): Sequence<Pair<Tile, Float>> {
+        fun getBestTilesToFoundCity(unit: MapUnit, intendedUse: IntendedUse): Sequence<Pair<Tile, Float>> {
+            val radius = when(intendedUse) {
+                IntendedUse.AI_CITY_FOUNDING -> {
+                    val distanceFromHome =
+                            if (unit.civ.cities.isEmpty()) 0
+                            else unit.civ.cities.minOf {
+                                it.getCenterTile().aerialDistanceTo(unit.getTile())
+                            }
+                    // Restrict vision when far from home to avoid death marches
+                    (8 - distanceFromHome).coerceIn(1, 5)
+                }
+                IntendedUse.HUMAN_CITY_LOCATION_SUGGESTION -> 5
+            }
+            val possibleCityLocations = getPossibleCityLocations(unit, radius)
+
+            val tilesToExclude = when(intendedUse) {
+                IntendedUse.AI_CITY_FOUNDING ->
+                    // Tiles near cities of civs we promised to not settle near them.
+                    sequence {
+                        for (city in unit.civ.gameInfo.getCities()) {
+                            val center = city.getCenterTile()
+                            if (unit.civ.knows(city.civ) &&
+                                    // If the CITY OWNER knows that the UNIT OWNER agreed not to settle near them
+                                    city.civ.getDiplomacyManager(unit.civ)
+                                        .hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)
+                            ) {
+                                yieldAll(
+                                    center.getTilesInDistance(6)
+                                        .filter { canUseTileForRanking(it, unit.civ) })
+                            }
+                        }
+                    }.toSet()
+                IntendedUse.HUMAN_CITY_LOCATION_SUGGESTION -> emptyList()
+            }
+
+            // This is to improve performance - instead of ranking each tile in the area up to 19 times, do it once.
+            val nearbyTileRankings = getNearbyTileRankings(unit.getTile(), unit.civ)
+
+            val luxuryResourcesInCivArea = getLuxuryResourcesInCivArea(unit.civ)
+
+            return possibleCityLocations
+                .filter { it !in tilesToExclude }
+                .map {
+                    Pair(
+                        it,
+                        rankTileAsCityCenterWithCachedValues(
+                            it,
+                            nearbyTileRankings,
+                            luxuryResourcesInCivArea,
+                            unit.civ
+                        ),
+                    )
+                }
+                .sortedByDescending { it.second }
+        }
+
+        fun getPossibleCityLocations(unit: MapUnit, radius: Int): Sequence<Tile> {
             val modConstants = unit.civ.gameInfo.ruleset.modOptions.constants
             val tilesNearCities = sequence {
                 for (city in unit.civ.gameInfo.getCities()) {
                     val center = city.getCenterTile()
-                    if (unit.civ.knows(city.civ) &&
-                            // If the CITY OWNER knows that the UNIT OWNER agreed not to settle near them
-                            city.civ.getDiplomacyManager(unit.civ)
-                                .hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)
-                    ) {
-                        yieldAll(
-                            center.getTilesInDistance(6)
-                                .filter { canUseTileForRanking(it, unit.civ) })
-                        continue
-                    }
                     yieldAll(
                         center.getTilesInDistance(modConstants.minimalCityDistance)
                             .filter { canUseTileForRanking(it, unit.civ) }
@@ -38,17 +89,7 @@ class CityLocationTileRanker {
                 }
             }.toSet()
 
-            // This is to improve performance - instead of ranking each tile in the area up to 19 times, do it once.
-            val nearbyTileRankings = getNearbyTileRankings(unit.getTile(), unit.civ)
-
-            val distanceFromHome = if (unit.civ.cities.isEmpty()) 0
-            else unit.civ.cities.minOf { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
-            val range = (8 - distanceFromHome).coerceIn(
-                1,
-                5
-            ) // Restrict vision when far from home to avoid death marches
-
-            val possibleCityLocations = unit.getTile().getTilesInDistance(range)
+            return unit.getTile().getTilesInDistance(radius)
                 .filter { canUseTileForRanking(it, unit.civ) }
                 .filter {
                     val tileOwner = it.getOwner()
@@ -56,22 +97,6 @@ class CityLocationTileRanker {
                             && (unit.currentTile == it || unit.movement.canMoveTo(it))
                             && it !in tilesNearCities
                 }
-
-            val luxuryResourcesInCivArea = getLuxuryResourcesInCivArea(unit.civ)
-
-            return possibleCityLocations
-                .map {
-                    Pair(
-                        it,
-                        rankTileAsCityCenterWithCachedValues(
-                            it,
-                            nearbyTileRankings,
-                            luxuryResourcesInCivArea,
-                            unit.civ
-                        ),
-                    )
-                }
-                .sortedByDescending { it.second }
         }
 
         fun rankTileAsCityCenter(tile: Tile, civ: Civilization): Float {

@@ -20,6 +20,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.automation.unit.AttackableTile
 import com.unciv.logic.automation.unit.BattleHelper
 import com.unciv.logic.automation.unit.CityLocationTileRanker
+import com.unciv.logic.automation.unit.CityLocationTileRanker.IntendedUse.HUMAN_CITY_LOCATION_SUGGESTION
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
@@ -699,11 +700,25 @@ class WorldMapHolder(
             }
         }
 
+        // Highlight tiles where city can be founded and where it can't
+        if (unit.hasUnique(UniqueType.FoundCity)
+                && UncivGame.Current.settings.showSettlersPossibleCityLocations) {
+            val cityFoundingHighlightRadius = 5
+            val tilesWhereCityCanBeFounded = CityLocationTileRanker.getPossibleCityLocations(unit, cityFoundingHighlightRadius)
+                .filter { it.isExplored(unit.civ) }
+            tilesWhereCityCanBeFounded
+                .forEach { tileGroups[it]!!.layerOverlay.showHighlight(Color.GREEN, alpha = 0.2f) }
+            unit.getTile().getTilesInDistance(cityFoundingHighlightRadius)
+                .filter { it.isExplored(unit.civ) && it !in tilesWhereCityCanBeFounded }
+                .forEach { tileGroups[it]!!.layerOverlay.showHighlight(Color.RED, alpha = 0.2f) }
+        }
+
         // Highlight best tiles for city founding
         if (unit.hasUnique(UniqueType.FoundCity)
                 && UncivGame.Current.settings.showSettlersSuggestedCityLocations
         ) {
-            CityLocationTileRanker.getBestTilesToFoundCity(unit).map { it.first }
+            CityLocationTileRanker.getBestTilesToFoundCity(unit, HUMAN_CITY_LOCATION_SUGGESTION)
+                .map { it.first }
                 .filter { it.isExplored(unit.civ) }.take(3).forEach {
                     tileGroups[it]!!.layerOverlay.showGoodCityLocationIndicator()
                 }

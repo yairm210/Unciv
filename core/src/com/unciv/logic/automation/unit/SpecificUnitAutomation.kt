@@ -2,6 +2,7 @@
 
 import com.unciv.Constants
 import com.unciv.logic.automation.Automation
+import com.unciv.logic.automation.unit.CityLocationTileRanker.IntendedUse.AI_CITY_FOUNDING
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.GreatGeneralImplementation
 import com.unciv.logic.battle.MapUnitCombatant
@@ -150,7 +151,7 @@ object SpecificUnitAutomation {
         // It's possible that we'll see a tile "over the sea" that's better than the tiles close by, but that's not a reason to abandon the close tiles!
         // Also this lead to some routing problems, see https://github.com/yairm210/Unciv/issues/3653
         val bestCityLocation: Tile? =
-                CityLocationTileRanker.getBestTilesToFoundCity(unit).firstOrNull {
+                CityLocationTileRanker.getBestTilesToFoundCity(unit, AI_CITY_FOUNDING).firstOrNull {
                     val pathSize = unit.movement.getShortestPath(it.first).size
                     return@firstOrNull pathSize in 1..3
                 }?.first
