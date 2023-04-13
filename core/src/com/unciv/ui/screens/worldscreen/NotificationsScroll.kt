@@ -90,6 +90,8 @@ class NotificationsScroll(
     private var selectedNotification: Notification? = null
     /** Detect changes in [selectedNotification] */
     private var lastSelectedNotification: WeakReference<Notification>? = null
+    /** Used once after updateContent to scroll the highlighted notification into view */
+    private var selectedCell: Cell<ListItem>? = null
     /** Display one additional notification once, to show from history in overview */
     var oneTimeNotification: Notification? = null
 
@@ -144,8 +146,15 @@ class NotificationsScroll(
             updateSpacers(coveredNotificationsTop, coveredNotificationsBottom)
         }
 
+        if (selectedCell == null) {
+            scrollY = previousScrollY
+        } else {
+//             selectedCell!!.also { this.scrollTo(it.actorX, it.actorY ,
+//                 it.actorWidth, it.actorHeight) }
+            scrollY = maxY - selectedCell!!.actorY + 0.5f *
+                (scrollHeight - selectedCell!!.actorHeight + coveredNotificationsBottom - coveredNotificationsTop)
+        }
         scrollX = maxX - previousScrollXinv
-        scrollY = previousScrollY
         updateVisualScroll()
 
         applyUserSettingChange()
@@ -171,10 +180,10 @@ class NotificationsScroll(
         // no news? - keep our list as it is
         if (oneTimeNotification == null && selectedNotification != null)
             oneTimeNotification = selectedNotification
+        else if (oneTimeNotification != null)
+            selectedNotification = oneTimeNotification
         if (oneTimeNotification in notifications)
             oneTimeNotification = null
-        if (oneTimeNotification != null)
-            selectedNotification = oneTimeNotification
         val newHash = notifications.hashCode() + oneTimeNotification.hashCode() * 31
         if (notificationsHash == newHash) {
             if (lastSelectedNotification == selectedNotification) return false
@@ -216,7 +225,9 @@ class NotificationsScroll(
             for (notification in categoryNotifications) {
                 val item = ListItem(notification, backgroundDrawable)
                 itemWidths.add(item.itemWidth)
-                notificationsTable.add(item).right().row()
+                val itemCell = notificationsTable.add(item)
+                if (notification == selectedNotification) selectedCell = itemCell
+                itemCell.right().row()
             }
         }
 
