@@ -27,8 +27,7 @@ class LobbyPlayerList(
     private val lobbyUUID: UUID,
     private var editable: Boolean,
     startPlayers: List<AccountResponse> = listOf(),
-    private val base: IPreviousScreen,
-    private val update: () -> Unit
+    private val base: IPreviousScreen
 ) : Table() {
     internal val players: MutableList<LobbyPlayer> = startPlayers.map { LobbyPlayer(it) }.toMutableList()
 
@@ -129,7 +128,7 @@ class LobbyPlayerList(
 
     private fun reassignRemovedModReferences() {
         for (player in players) {
-            if (!base.ruleset.nations.containsKey(player.chosenCiv) || base.ruleset.nations[player.chosenCiv]!!.isCityState())
+            if (!base.ruleset.nations.containsKey(player.chosenCiv) || base.ruleset.nations[player.chosenCiv]!!.isCityState)
                 player.chosenCiv = Constants.random
         }
     }
@@ -148,7 +147,7 @@ class LobbyPlayerList(
         nationTable.add(player.chosenCiv.toLabel()).padRight(5f)
         nationTable.touchable = Touchable.enabled
         val availableCivilisations = base.ruleset.nations.values.asSequence()
-            .filter { it.isMajorCiv() }
+            .filter { it.isMajorCiv }
             .filter { it.name == player.chosenCiv || players.none { player -> player.chosenCiv == it.name } }
         nationTable.onClick {
             val p = player.to()

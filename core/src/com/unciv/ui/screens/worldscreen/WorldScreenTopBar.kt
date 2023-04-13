@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.multiplayer.ApiVersion
-import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.UniqueType
@@ -18,6 +17,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.MayaCalendar
+import com.unciv.ui.components.MultiplayerButton
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.YearTextUtil
 import com.unciv.ui.components.extensions.colorFromRGB
@@ -29,7 +29,7 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toStringSigned
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.popups.popups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
@@ -41,8 +41,9 @@ import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
 import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMenuPopup
-import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -74,7 +75,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private val resourcesWrapper = Table()
     private val resourceTable = getResourceTable()
     private val selectedCivTable = SelectedCivilizationTable(worldScreen)
-    private val openGameChatButton = OpenGameChatTable(worldScreen)
+    private val socialButton = SocialButtonWrapper(worldScreen)
     private val overviewButton = OverviewAndSupplyTable(worldScreen)
     private val leftFillerCell: Cell<BackgroundActor>
     private val rightFillerCell: Cell<BackgroundActor>
@@ -176,27 +177,24 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         return resourceTable
     }
 
-    private class OpenGameChatTable(worldScreen: WorldScreen) : Table(BaseScreen.skin) {
+    private class SocialButtonWrapper(worldScreen: WorldScreen) : Table(BaseScreen.skin) {
         init {
-            // The chat feature will only be enabled if the multiplayer server has support for it
+            // The social features will only be enabled if the multiplayer server has support for it
             if (worldScreen.gameInfo.gameParameters.isOnlineMultiplayer && worldScreen.game.onlineMultiplayer.apiVersion == ApiVersion.APIv2) {
-                val openChatButton = "Chat".toTextButton()
-                openChatButton.onClick {
+                val socialButton = MultiplayerButton()
+                socialButton.onClick {
                     Concurrency.run {
-                        try {
-                            val details = worldScreen.game.onlineMultiplayer.api.getGameDetails(worldScreen.gameInfo.gameId)
+                        val details = InfoPopup.wrap(worldScreen.stage) {
+                            worldScreen.game.onlineMultiplayer.api.game.head(UUID.fromString(worldScreen.gameInfo.gameId))
+                        }
+                        if (details != null) {
                             Concurrency.runOnGLThread {
                                 worldScreen.game.pushScreen(ChatRoomScreen(details.chatRoomUUID))
-                            }
-                        } catch (e: MultiplayerFileNotFoundException) {
-                            Concurrency.runOnGLThread {
-                                Log.error("No game details associated with game '%s' found", worldScreen.gameInfo.gameId)
-                                ToastPopup("No chat associated with this game found.", worldScreen.stage)
                             }
                         }
                     }
                 }
-                add(openChatButton).pad(10f)
+                add(socialButton).pad(10f)
                 pack()
             }
         }
@@ -281,7 +279,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
         val statsWidth = statsTable.minWidth
         val resourceWidth = resourceTable.minWidth
-        val chatWidth = openGameChatButton.minWidth
+        val socialWidth = socialButton.minWidth
         val overviewWidth = overviewButton.minWidth
         val selectedCivWidth = selectedCivTable.minWidth
         val leftRightNeeded = max(selectedCivWidth, overviewWidth)
@@ -310,7 +308,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         }
 
         val leftFillerWidth = if (fillerHeight > 0f) selectedCivWidth else 0f
-        val rightFillerWidth = if (fillerHeight > 0f) (overviewWidth + chatWidth) else 0f
+        val rightFillerWidth = if (fillerHeight > 0f) (overviewWidth + socialWidth) else 0f
         if (leftFillerCell.minHeight != fillerHeight
                 || leftFillerCell.minWidth != leftFillerWidth
                 || rightFillerCell.minWidth != rightFillerWidth) {
@@ -325,10 +323,10 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         setPosition(0f, stage.height, Align.topLeft)
 
         selectedCivTable.setPosition(1f, buttonY, Align.left)
-        openGameChatButton.setPosition(stage.width - overviewButton.width - 5f, buttonY, Align.right)
+        socialButton.setPosition(stage.width - overviewButton.width - 5f, buttonY, Align.right)
         overviewButton.setPosition(stage.width, buttonY, Align.right)
         addActor(selectedCivTable) // needs to be after pack
-        addActor(openGameChatButton)
+        addActor(socialButton)
         addActor(overviewButton)
     }
 

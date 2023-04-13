@@ -96,7 +96,7 @@ class LobbyScreen(
             currentPlayers.add(owner)
         }
         gameSetupInfo.gameParameters.isOnlineMultiplayer = true
-        lobbyPlayerList = LobbyPlayerList(lobbyUUID, owner == me, currentPlayers, this) { update() }
+        lobbyPlayerList = LobbyPlayerList(lobbyUUID, owner == me, currentPlayers, this)
         gameOptionsTable = GameOptionsTable(this, multiplayerOnly = true, updatePlayerPickerRandomLabel = {}, updatePlayerPickerTable = { x ->
             Log.error("Updating player picker table with '%s' is not implemented yet.", x)
             lobbyPlayerList.recreate()
@@ -292,10 +292,6 @@ class LobbyScreen(
     }
 
     override fun updateRuleset() {
-        Log.error("Not yet implemented")
-    }
-
-    private fun update() {
         Log.error("Not yet implemented")
     }
 

@@ -17,7 +17,7 @@ internal class LobbyPlayer(internal val account: AccountResponse?, var chosenCiv
     val isAI: Boolean
         get() = account == null
 
-    fun to() = Player().apply {
+    fun to() = Player(chosenCiv = chosenCiv).apply {
         playerType = PlayerType.AI
         if (!isAI) {
             playerType = PlayerType.Human
