@@ -1097,7 +1097,9 @@ object Battle {
         val percentChance = baseWithdrawChance - max(0, (attackBaseUnit.movement-2)) * 20 -
                 fromTile.neighbors.filterNot { it == attTile || it in attTile.neighbors }.count { canNotWithdrawTo(it) } * 20
         // Get a random number in [0,100) : if the number <= percentChance, defender will withdraw from melee
-        if (Random().nextInt(100) > percentChance) return false
+        if (Random( // 'randomness' is consistent for turn and tile, to avoid save-scumming
+                    (attacker.getCivInfo().gameInfo.turns * defender.getTile().hashCode()).toLong()
+        ).nextInt(100) > percentChance) return false
         val firstCandidateTiles = fromTile.neighbors.filterNot { it == attTile || it in attTile.neighbors }
                 .filterNot { canNotWithdrawTo(it) }
         val secondCandidateTiles = fromTile.neighbors.filter { it in attTile.neighbors }
