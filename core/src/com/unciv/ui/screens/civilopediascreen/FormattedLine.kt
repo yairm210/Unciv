@@ -285,7 +285,7 @@ class FormattedLine (
                 else -> (indent-1) * indentPad +
                         indentOneAtNumIcons * (minIconSize + iconPad) + iconPad - usedWidth
             }
-            val label = textToDisplay.toLabel(labelColor, fontSize, hideIcons = icon.isNotEmpty())
+            val label = textToDisplay.toLabel(labelColor, fontSize, hideIcons = iconCount!=0)
             label.wrap = !centered && labelWidth > 0f
             label.setAlignment(align)
             if (labelWidth == 0f)

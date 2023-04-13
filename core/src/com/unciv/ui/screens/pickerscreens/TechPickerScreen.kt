@@ -15,10 +15,6 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.darken
@@ -27,6 +23,10 @@ import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.onDoubleClick
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
+import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.utils.concurrency.Concurrency
 import kotlin.math.abs
 
@@ -220,7 +220,7 @@ class TechPickerScreen(
                 techButton.turns.setText(turnsToTech[techName] + "${Fonts.turn}".tr())
             }
 
-            techButton.text.setText(techName.tr())
+            techButton.text.setText(techName.tr(true))
         }
 
         addConnectingLines()
