@@ -124,7 +124,7 @@ class PlayerPickerTable(
 
         // enable start game when at least one human player and they're not alone
         val humanPlayerCount = gameParameters.players.count { it.playerType == PlayerType.Human }
-        val isValid = humanPlayerCount >= 1
+        val isValid = humanPlayerCount >= 1 && (isRandomNumberOfPlayers || gameParameters.players.size >= 2)
         (previousScreen as? PickerScreen)?.setRightSideButtonEnabled(isValid)
     }
 
