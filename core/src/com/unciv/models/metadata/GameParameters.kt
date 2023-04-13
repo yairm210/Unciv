@@ -18,7 +18,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var randomNumberOfPlayers = false
     var minNumberOfPlayers = 3
     var maxNumberOfPlayers = 3
-    var players = ArrayList<Player>().apply {
+    var players: MutableList<Player> = ArrayList<Player>().apply {
         add(Player(playerType = PlayerType.Human))
         for (i in 1..3) add(Player())
     }

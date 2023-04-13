@@ -61,14 +61,14 @@ class LobbyScreen(
     private val lobbyChatUUID: UUID,
     private var lobbyName: String,
     private val maxPlayers: Int,
-    private var currentPlayers: List<AccountResponse>,
+    private var currentPlayers: MutableList<AccountResponse>,
     private val hasPassword: Boolean,
     private val owner: AccountResponse,
     override val gameSetupInfo: GameSetupInfo
 ): BaseScreen(), MapOptionsInterface {
 
     constructor(lobby: LobbyResponse): this(lobby.uuid, lobby.chatRoomUUID, lobby.name, lobby.maxPlayers, mutableListOf(), lobby.hasPassword, lobby.owner, GameSetupInfo.fromSettings())
-    constructor(lobby: GetLobbyResponse): this(lobby.uuid, lobby.chatRoomUUID, lobby.name, lobby.maxPlayers, lobby.currentPlayers, lobby.hasPassword, lobby.owner, GameSetupInfo.fromSettings())
+    constructor(lobby: GetLobbyResponse): this(lobby.uuid, lobby.chatRoomUUID, lobby.name, lobby.maxPlayers, lobby.currentPlayers.toMutableList(), lobby.hasPassword, lobby.owner, GameSetupInfo.fromSettings())
 
     override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters)
 
@@ -80,7 +80,7 @@ class LobbyScreen(
     private val screenTitle
         get() = "Lobby: [$lobbyName] [${currentPlayers.size + 1}]/[$maxPlayers]".toLabel(fontSize = Constants.headingFontSize)
 
-    private val lobbyPlayerList = LobbyPlayerList(lobbyUUID, mutableListOf(), this) { update() }
+    private val lobbyPlayerList: LobbyPlayerList
     private val chatMessageList = ChatMessageList(lobbyChatUUID, game.onlineMultiplayer)
     private val changeLobbyNameButton = PencilButton()
     private val menuButtonGameOptions = "Game options".toTextButton()
@@ -92,9 +92,14 @@ class LobbyScreen(
     private val bottomButtonHelp = "Help".toTextButton()
 
     init {
+        if (owner !in currentPlayers) {
+            currentPlayers.add(owner)
+        }
         gameSetupInfo.gameParameters.isOnlineMultiplayer = true
+        lobbyPlayerList = LobbyPlayerList(lobbyUUID, owner == me, currentPlayers, this) { update() }
         gameOptionsTable = GameOptionsTable(this, multiplayerOnly = true, updatePlayerPickerRandomLabel = {}, updatePlayerPickerTable = { x ->
             Log.error("Updating player picker table with '%s' is not implemented yet.", x)
+            lobbyPlayerList.recreate()
         })
 
         changeLobbyNameButton.onActivation {
@@ -166,7 +171,7 @@ class LobbyScreen(
             null
         }
         if (lobby != null) {
-            currentPlayers = lobby.currentPlayers
+            currentPlayers = lobby.currentPlayers.toMutableList()
             lobbyName = lobby.name
             Concurrency.runOnGLThread {
                 recreate()

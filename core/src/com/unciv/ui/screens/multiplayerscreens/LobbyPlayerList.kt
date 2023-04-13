@@ -25,6 +25,7 @@ import java.util.*
  */
 class LobbyPlayerList(
     private val lobbyUUID: UUID,
+    private var editable: Boolean,
     startPlayers: List<AccountResponse> = listOf(),
     private val base: IPreviousScreen,
     private val update: () -> Unit
@@ -49,11 +50,14 @@ class LobbyPlayerList(
      */
     fun recreate() {
         clearChildren()
+        reassignRemovedModReferences()
         if (players.isEmpty()) {
             val label = "No players here yet".toLabel()
             label.setAlignment(Align.center)
             add(label).fillX().fillY().center().padBottom(15f).row()
-            add(addBotButton)
+            if (editable) {
+                add(addBotButton)
+            }
             return
         }
 
@@ -77,10 +81,12 @@ class LobbyPlayerList(
                     recreate()
                 }
             })
-            add(movements)
+            if (editable) {
+                add(movements)
+            }
 
             val player = players[i]
-            add(getNationTable(player))
+            add(getNationTable(i))
             if (player.isAI) {
                 add("AI".toLabel())
             } else {
@@ -97,7 +103,9 @@ class LobbyPlayerList(
                 Log.debug("Removing player %s [%s]: %s", player.account, i, if (success) "success" else "failure")
                 recreate()
             }
-            add(kickButton)
+            if (editable) {
+                add(kickButton)
+            }
 
             if (i < players.size - 1) {
                 row()
@@ -106,13 +114,31 @@ class LobbyPlayerList(
         }
 
         row()
-        add(addBotButton).colspan(columns).fillX().center()
+        if (editable) {
+            add(addBotButton).colspan(columns).fillX().center()
+        }
+        updateParameters()
     }
 
     /**
-     * Create clickable icon and nation name for some [LobbyPlayer], where clicking creates [NationPickerPopup]
+     * Update game parameters to reflect changes in the list of players
      */
-    private fun getNationTable(player: LobbyPlayer): Table {
+    internal fun updateParameters() {
+        base.gameSetupInfo.gameParameters.players = players.map { it.to() }.toMutableList()
+    }
+
+    private fun reassignRemovedModReferences() {
+        for (player in players) {
+            if (!base.ruleset.nations.containsKey(player.chosenCiv) || base.ruleset.nations[player.chosenCiv]!!.isCityState())
+                player.chosenCiv = Constants.random
+        }
+    }
+
+    /**
+     * Create clickable icon and nation name for some [LobbyPlayer] based on its index in [players], where clicking creates [NationPickerPopup]
+     */
+    private fun getNationTable(index: Int): Table {
+        val player = players[index]
         val nationTable = Table()
         val nationImage =
             if (player.chosenCiv == Constants.random)
@@ -127,9 +153,9 @@ class LobbyPlayerList(
         nationTable.onClick {
             val p = player.to()
             NationPickerPopup(p, 0.45f * stage.width, base as BaseScreen, base, false, availableCivilisations) {
-                player.chosenCiv = p.chosenCiv
+                players[index].chosenCiv = p.chosenCiv
+                updateParameters()
                 recreate()
-                update()
             }.open()
         }
         return nationTable
