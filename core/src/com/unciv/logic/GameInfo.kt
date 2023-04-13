@@ -18,6 +18,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.managers.TechManager
 import com.unciv.logic.civilization.managers.TurnManager
+import com.unciv.logic.civilization.managers.VictoryManager
 import com.unciv.logic.map.CityDistanceData
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
@@ -395,6 +396,16 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             }
         }
         diplomaticVictoryVotesProcessed = true
+    }
+
+    /** @return `true` if someone has won - checks existing [victoryData] and each civ's [VictoryManager.getVictoryTypeAchieved] */
+    fun checkForVictory(): Boolean {
+        if (victoryData != null) return true
+        for (civ in civilizations) {
+            TurnManager(civ).updateWinningCiv()
+            if (victoryData != null) return true
+        }
+        return false
     }
 
     private fun addEnemyUnitNotification(thisPlayer: Civilization, tiles: List<Tile>, inOrNear: String) {
