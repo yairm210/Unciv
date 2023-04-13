@@ -21,7 +21,6 @@ import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
-import java.lang.ref.WeakReference
 
 /*TODO
  *  Un-hiding the notifications when new ones arrive is a little pointless due to Categories:
@@ -55,7 +54,7 @@ class NotificationsScroll(
         const val selectionExtraRightPad = 12f
         /** Padding within ListItem, included in clickable area, except to the right */
         const val listItemPad = 3f
-        /** Top/Bottom padding within ListItem replaces [listItemPad] for the [selectedNotification] */
+        /** Top/Bottom padding within ListItem replaces [listItemPad] for the [highlightNotification] */
         const val selectedListItemPad = 15f
         /** Extra spacing between the outer edges of the category header decoration lines and
          *  the left and right edges of the widest notification label - this is the background's
@@ -66,9 +65,10 @@ class NotificationsScroll(
         /** Distance of restore button to TileInfoTable and screen edge */
         const val restoreButtonPad = 12f
         /** Background tint for [oneTimeNotification] */
-        private val oneTimeNotificationColor = Color.valueOf("FCE77E")
+        private val oneTimeNotificationColor = Color.valueOf("fceea8")
     }
 
+    //region private fields
     private var notificationsHash: Int = 0
 
     private var notificationsTable = Table()
@@ -76,6 +76,7 @@ class NotificationsScroll(
     private var bottomSpacerCell: Cell<Actor?>? = null
 
     private val maxEntryWidth = worldScreen.stage.width * maxWidthOfStage * inverseScaleFactor
+
     /** For category header decoration lines */
     private val minCategoryLineWidth = worldScreen.stage.width * 0.075f
     /** Show restoreButton when less than this much of the pane is left */
@@ -86,13 +87,17 @@ class NotificationsScroll(
     private var userSetting = UserSetting.Visible
     private var userSettingChanged = false
 
-    /** Highlight one notification if the user selects it (and it has an action) */
-    private var selectedNotification: Notification? = null
-    /** Detect changes in [selectedNotification] */
-    private var lastSelectedNotification: WeakReference<Notification>? = null
+    /** onClick sets this to request highlighting on the next update (which it then triggers) */
+    private var clickedNotification: Notification? = null
+    /** Set _only_ during updateContent to draw the actual highlighting */
+    private var highlightNotification: Notification? = null
+    /** Set _only_ during updateContent to draw the highlighted entry with a colored background */
+    private var coloredHighlight = false
     /** Used once after updateContent to scroll the highlighted notification into view */
     private var selectedCell: Cell<ListItem>? = null
-    /** Display one additional notification once, to show from history in overview */
+    //endregion
+
+    /** Display one additional notification once, to re-show an entry from the history in overview */
     var oneTimeNotification: Notification? = null
 
     init {
@@ -146,15 +151,17 @@ class NotificationsScroll(
             updateSpacers(coveredNotificationsTop, coveredNotificationsBottom)
         }
 
-        if (selectedCell == null) {
-            scrollY = previousScrollY
-        } else {
-//             selectedCell!!.also { this.scrollTo(it.actorX, it.actorY ,
-//                 it.actorWidth, it.actorHeight) }
-            scrollY = maxY - selectedCell!!.actorY + 0.5f *
-                (scrollHeight - selectedCell!!.actorHeight + coveredNotificationsBottom - coveredNotificationsTop)
-        }
         scrollX = maxX - previousScrollXinv
+        scrollY = if (selectedCell == null) {
+            previousScrollY
+        } else selectedCell!!.let {
+            val actualBottom = (it.actorY + notificationsTable.y) * scaleFactor
+            val actualTop = (it.actorY + it.actorHeight + notificationsTable.y) * scaleFactor
+            val fullyVisible = actualBottom >= coveredNotificationsBottom && actualTop <= stage.height - coveredNotificationsTop
+            val centeredBottom = (stage.height - coveredNotificationsTop + coveredNotificationsBottom - it.actorHeight * scaleFactor) / 2
+            val centeredScrollY = centeredBottom * inverseScaleFactor - it.actorY + maxY
+            if (fullyVisible) previousScrollY else centeredScrollY
+        }
         updateVisualScroll()
 
         applyUserSettingChange()
@@ -177,28 +184,36 @@ class NotificationsScroll(
         coveredNotificationsTop: Float,
         coveredNotificationsBottom: Float
     ): Boolean {
-        // no news? - keep our list as it is
-        if (oneTimeNotification == null && selectedNotification != null)
-            oneTimeNotification = selectedNotification
-        else if (oneTimeNotification != null)
-            selectedNotification = oneTimeNotification
-        if (oneTimeNotification in notifications)
-            oneTimeNotification = null
+        selectedCell = null
+
+        // Detect what to draw and if there's any changes part 1
+        if (oneTimeNotification == null && clickedNotification != null)
+            oneTimeNotification = clickedNotification  // reselecting can keep a "one-time" in the list
         val newHash = notifications.hashCode() + oneTimeNotification.hashCode() * 31
-        if (notificationsHash == newHash) {
-            if (lastSelectedNotification == selectedNotification) return false
-            // Only selection changed - rebuild to realize visual selection
-            lastSelectedNotification = WeakReference(selectedNotification)
-        } else {
-            // Content changed - clear selection
-            selectedNotification = null
-            lastSelectedNotification = null
-        }
+
+        // Determine highlight
+        coloredHighlight = false
+        var additionalNotification = emptySequence<Notification>()
+        highlightNotification = if (oneTimeNotification == null) clickedNotification
+        else oneTimeNotification!!.apply {
+                if (this !in notifications) {
+                    additionalNotification = sequenceOf(this)
+                    coloredHighlight = true
+                }
+                oneTimeNotification = null
+            }
+        clickedNotification = null
+
+        // Detect change part 2 - early exit if no re-render needed
+        // Note no change detection for highlightNotification - if there's a selection we always
+        // need the redraw to determine the selectedCell, to enable scroll-into-view
+        if (notificationsHash == newHash && highlightNotification == null) return false
         notificationsHash = newHash
 
+        // Rebuild the notifications list
         notificationsTable.clear()
         notificationsTable.pack()  // forget last width!
-        if (notifications.isEmpty() && oneTimeNotification == null) return true
+        if (notifications.isEmpty() && additionalNotification.none()) return true
 
         val categoryHeaders = mutableListOf<CategoryHeader>()
         val itemWidths = mutableListOf<Float>()
@@ -209,10 +224,8 @@ class NotificationsScroll(
 
         val backgroundDrawable = BaseScreen.skinStrings.getUiBackground("WorldScreen/Notification", BaseScreen.skinStrings.roundedEdgeRectangleShape)
 
-        val orderedNotifications = sequence {
-                if (oneTimeNotification != null) yield(oneTimeNotification!!)
-                yieldAll(notifications.asReversed())
-            }.groupBy { NotificationCategory.safeValueOf(it.category) ?: NotificationCategory.General }
+        val orderedNotifications = (additionalNotification + notifications.asReversed())
+            .groupBy { NotificationCategory.safeValueOf(it.category) ?: NotificationCategory.General }
             .toSortedMap()  // This sorts by Category ordinal, so far intentional - the order of the grouped lists are unaffected
         for ((category, categoryNotifications) in orderedNotifications) {
             if (category == NotificationCategory.General)
@@ -226,7 +239,7 @@ class NotificationsScroll(
                 val item = ListItem(notification, backgroundDrawable)
                 itemWidths.add(item.itemWidth)
                 val itemCell = notificationsTable.add(item)
-                if (notification == selectedNotification) selectedCell = itemCell
+                if (notification == highlightNotification) selectedCell = itemCell
                 itemCell.right().row()
             }
         }
@@ -241,8 +254,7 @@ class NotificationsScroll(
         bottomSpacerCell = notificationsTable.add()
             .height(coveredNotificationsBottom * inverseScaleFactor).expandY()
         notificationsTable.row()
-        selectedNotification = null  // clear selection on next update unless user clicks again
-        oneTimeNotification = null
+        highlightNotification = null  // no longer needed
         return true
     }
 
@@ -267,7 +279,7 @@ class NotificationsScroll(
                 captionWidth
             }).pad(listItemPad)
             val rightPad = categoryHorizontalPad + rightPadToScreenEdge + (
-                    if (selectedNotification == null) 0f
+                    if (highlightNotification == null) 0f
                     else selectionExtraRightPad
                 )
             rightLineCell = add(ImageGetter.getWhiteDot())
@@ -296,13 +308,13 @@ class NotificationsScroll(
         val itemWidth: Float
 
         init {
-            val isSelected = notification === selectedNotification  // Notification does not implement equality contract
+            val isSelected = notification === highlightNotification  // Notification does not implement equality contract
             val labelFontSize = if (isSelected) fontSize + fontSize/2 else fontSize
             val itemIconSize = if (isSelected) iconSize * 1.5f else iconSize
             val topBottomPad = if (isSelected) selectedListItemPad else listItemPad
 
             val listItem = Table()
-            listItem.background = if (notification !== oneTimeNotification) backgroundDrawable else {
+            listItem.background = if (!isSelected || !coloredHighlight) backgroundDrawable else {
                 BaseScreen.skinStrings.getUiBackground("WorldScreen/Notification", BaseScreen.skinStrings.roundedEdgeRectangleShape, oneTimeNotificationColor)
             }
 
@@ -321,12 +333,10 @@ class NotificationsScroll(
             // this avoids accidentally clicking in between the messages, resulting in a map click
             add(listItem).pad(topBottomPad, listItemPad, topBottomPad, rightPadToScreenEdge)
             touchable = Touchable.enabled
-            if (notification.action != null) {
-                onClick {
-                    notification.action?.execute(worldScreen)
-                    selectedNotification = notification
-                    GUI.setUpdateWorldOnNextRender()
-                }
+            onClick {
+                notification.action?.execute(worldScreen)
+                clickedNotification = notification
+                GUI.setUpdateWorldOnNextRender()
             }
         }
     }
