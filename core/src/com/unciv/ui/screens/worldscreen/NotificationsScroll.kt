@@ -127,11 +127,12 @@ class NotificationsScroll(
     ) {
         if (getUserSettingCheckDisabled()) return
 
-        val previousScrollX = when {
-            isScrollingDisabledX -> width  // switching from Permanent - scrollX and maxX are 0
-            userSetting.static -> maxX  // Permanent: fully visible
-            notificationsTable.hasChildren() -> scrollX  // save current scroll
-            else -> 0f  // Swiching Hidden to Dynamic - animate "in" only
+        // Remember scroll position _relative to topRight_
+        val previousScrollXinv = when {
+            isScrollingDisabledX -> 0f  // switching from Permanent - scrollX and maxX are 0
+            userSetting.static -> 0f  // Permanent: fully visible
+            notificationsTable.hasChildren() -> maxX - scrollX  // save current scroll
+            else -> maxX  // Swiching Hidden to Dynamic - animate "in" only
         }
         val previousScrollY = scrollY
 
@@ -143,7 +144,7 @@ class NotificationsScroll(
             updateSpacers(coveredNotificationsTop, coveredNotificationsBottom)
         }
 
-        scrollX = previousScrollX
+        scrollX = maxX - previousScrollXinv
         scrollY = previousScrollY
         updateVisualScroll()
 
