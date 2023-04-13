@@ -106,9 +106,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
      * @param filterUniques If provided, include only uniques for which this function returns true.
      */
     private fun getUniquesStringsWithoutDisablers(filterUniques: ((Unique) -> Boolean)? = null) = getUniquesStrings {
-            !it.hasFlag(UniqueFlag.HiddenToUsers)
-            && filterUniques?.invoke(it) ?: true
-        }
+        !it.hasFlag(UniqueFlag.HiddenToUsers)
+                && filterUniques?.invoke(it) ?: true
+    }
 
     /** used in CityScreen (CityInfoTable and ConstructionInfoTable) */
     fun getDescription(city: City, showAdditionalInfo: Boolean): String {
@@ -116,13 +116,13 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         val lines = ArrayList<String>()
         val isFree = name in city.civ.civConstructions.getFreeBuildings(city.id)
         if (uniqueTo != null) lines += if (replaces == null) "Unique to [$uniqueTo]"
-            else "Unique to [$uniqueTo], replaces [$replaces]"
+        else "Unique to [$uniqueTo], replaces [$replaces]"
         val missingUnique = getMatchingUniques(UniqueType.RequiresBuildingInAllCities).firstOrNull()
         if (isWonder) lines += "Wonder"
         if (isNationalWonder) lines += "National Wonder"
         if (!isFree) {
             val availableResources = if (!showAdditionalInfo) emptyMap()
-                else city.civ.getCivResourcesByName()
+            else city.civ.getCivResourcesByName()
             for ((resourceName, amount) in getResourceRequirementsPerTurn()) {
                 val available = availableResources[resourceName] ?: 0
                 val resource = city.getRuleset().tileResources[resourceName] ?: continue
@@ -145,8 +145,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             if (replacementTextForUniques != "") lines += replacementTextForUniques
             else lines += getUniquesStringsWithoutDisablers(
                 filterUniques = if (missingCities.isEmpty()) null
-                    else { unique -> !unique.isOfType(UniqueType.RequiresBuildingInAllCities) }
-                    // Filter out the "Requires a [] in all cities" unique if any cities are still missing the required building, since in that case the list of cities will be appended at the end.
+                else { unique -> !unique.isOfType(UniqueType.RequiresBuildingInAllCities) }
+                // Filter out the "Requires a [] in all cities" unique if any cities are still missing the required building, since in that case the list of cities will be appended at the end.
             )
         }
         if (!stats.isEmpty())
@@ -170,8 +170,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (showAdditionalInfo && missingCities.isNotEmpty()) {
             // Could be red. But IMO that should be done by enabling GDX's ColorMarkupLanguage globally instead of adding a separate label.
             lines += "\n" +
-                "[${city.civ.getEquivalentBuilding(missingUnique!!.params[0])}] required:".tr() +
-                " " + missingCities.joinToString(", ") { "{${it.name}}" }
+                    "[${city.civ.getEquivalentBuilding(missingUnique!!.params[0])}] required:".tr() +
+                    " " + missingCities.joinToString(", ") { "{${it.name}}" }
             // Can't nest square bracket placeholders inside curlies, and don't see any way to define wildcard placeholders. So run translation explicitly on base text.
         }
         return lines.joinToString("\n") { it.tr() }.trim()
@@ -183,9 +183,14 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                  localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats {
         // Calls the clone function of the NamedStats this class is derived from, not a clone function of this class
         val stats = cloneStats()
-
         for (unique in localUniqueCache.get("StatsFromObject", city.getMatchingUniques(UniqueType.StatsFromObject))) {
             if (!matchesFilter(unique.params[1])) continue
+            stats.add(unique.stats)
+        }
+
+        for (unique in localUniqueCache.get("StatsFromObjectPerCity", city.getMatchingUniques(UniqueType.StatsFromObjectPerCity))) {
+            if (!matchesFilter(unique.params[1])) continue
+            if (city.matchesFilter(unique.params[2]))
             stats.add(unique.stats)
         }
 
@@ -197,6 +202,18 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 if (matchesFilter(unique.params[1]))
                     stats.add(unique.stats)
             }
+        for (unique in localUniqueCache.get("SpecificStatPercentFromObjectPerCity", city.getMatchingUniques(UniqueType.SpecificStatsPercentFromObjectPerCity))) {
+            if (matchesFilter(unique.params[2]) && city.matchesFilter(unique.params[3]))
+                stats[Stat.valueOf(unique.params[1])] *= unique.params[0].toFloat().toPercent()
+        }
+
+        for (unique in localUniqueCache.get("AllStatsPercentFromObjectPerCity", city.getMatchingUniques(UniqueType.AllStatsPercentFromObjectPerCity))) {
+            if (!matchesFilter(unique.params[1])) continue
+            if (!city.matchesFilter(unique.params[2])) continue
+            for (stat in Stat.values()) {
+                stats[stat] *= unique.params[0].toFloat().toPercent()
+            }
+        }
         return stats
     }
 
@@ -206,6 +223,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         for (unique in localUniqueCache.get("StatPercentFromObject", civInfo.getMatchingUniques(UniqueType.StatPercentFromObject))) {
             if (matchesFilter(unique.params[2]))
+                stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+        }
+        for (unique in localUniqueCache.get("StatPercentFromObjectPerCity", civInfo.getMatchingUniques(UniqueType.StatPercentFromObjectPerCity))) {
+            if (matchesFilter(unique.params[2]) && city.matchesFilter(unique.params[3]))
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
 
@@ -364,28 +385,28 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         val conditionalState = StateForConditionals(civInfo = city.civ, city = city)
         return (
-            city.getMatchingUniques(UniqueType.BuyBuildingsIncreasingCost, conditionalState)
-                .any {
-                    it.params[2] == stat.name
-                    && matchesFilter(it.params[0])
-                    && city.matchesFilter(it.params[3])
-                }
-            || city.getMatchingUniques(UniqueType.BuyBuildingsByProductionCost, conditionalState)
-                .any { it.params[1] == stat.name && matchesFilter(it.params[0]) }
-            || city.getMatchingUniques(UniqueType.BuyBuildingsWithStat, conditionalState)
-                .any {
-                    it.params[1] == stat.name
-                    && matchesFilter(it.params[0])
-                    && city.matchesFilter(it.params[2])
-                }
-            || city.getMatchingUniques(UniqueType.BuyBuildingsForAmountStat, conditionalState)
-                .any {
-                    it.params[2] == stat.name
-                    && matchesFilter(it.params[0])
-                    && city.matchesFilter(it.params[3])
-                }
-            || super.canBePurchasedWithStat(city, stat)
-        )
+                city.getMatchingUniques(UniqueType.BuyBuildingsIncreasingCost, conditionalState)
+                    .any {
+                        it.params[2] == stat.name
+                                && matchesFilter(it.params[0])
+                                && city.matchesFilter(it.params[3])
+                    }
+                        || city.getMatchingUniques(UniqueType.BuyBuildingsByProductionCost, conditionalState)
+                    .any { it.params[1] == stat.name && matchesFilter(it.params[0]) }
+                        || city.getMatchingUniques(UniqueType.BuyBuildingsWithStat, conditionalState)
+                    .any {
+                        it.params[1] == stat.name
+                                && matchesFilter(it.params[0])
+                                && city.matchesFilter(it.params[2])
+                    }
+                        || city.getMatchingUniques(UniqueType.BuyBuildingsForAmountStat, conditionalState)
+                    .any {
+                        it.params[2] == stat.name
+                                && matchesFilter(it.params[0])
+                                && city.matchesFilter(it.params[3])
+                    }
+                        || super.canBePurchasedWithStat(city, stat)
+                )
     }
 
     override fun getBaseBuyCost(city: City, stat: Stat): Int? {
@@ -399,8 +420,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             yieldAll(city.getMatchingUniques(UniqueType.BuyBuildingsIncreasingCost, conditionalState)
                 .filter {
                     it.params[2] == stat.name
-                    && matchesFilter(it.params[0])
-                    && city.matchesFilter(it.params[3])
+                            && matchesFilter(it.params[0])
+                            && city.matchesFilter(it.params[3])
                 }.map {
                     getCostForConstructionsIncreasingInPrice(
                         it.params[1].toInt(),
@@ -414,19 +435,19 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 .map { getProductionCost(city.civ) * it.params[2].toInt() }
             )
             if (city.getMatchingUniques(UniqueType.BuyBuildingsWithStat, conditionalState)
-                .any {
-                    it.params[1] == stat.name
-                    && matchesFilter(it.params[0])
-                    && city.matchesFilter(it.params[2])
-                }
+                        .any {
+                            it.params[1] == stat.name
+                                    && matchesFilter(it.params[0])
+                                    && city.matchesFilter(it.params[2])
+                        }
             ) {
                 yield(city.civ.getEra().baseUnitBuyCost)
             }
             yieldAll(city.getMatchingUniques(UniqueType.BuyBuildingsForAmountStat, conditionalState)
                 .filter {
                     it.params[2] == stat.name
-                    && matchesFilter(it.params[0])
-                    && city.matchesFilter(it.params[3])
+                            && matchesFilter(it.params[0])
+                            && city.matchesFilter(it.params[3])
                 }.map { it.params[1].toInt() }
             )
         }.minOrNull()
@@ -457,10 +478,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         val rejectionReasons = getRejectionReasons(cityConstructions)
         return rejectionReasons.none { !it.shouldShow }
-            || (
+                || (
                 canBePurchasedWithAnyStat(cityConstructions.city)
-                && rejectionReasons.all { it.type == RejectionReasonType.Unbuildable }
-            )
+                        && rejectionReasons.all { it.type == RejectionReasonType.Unbuildable }
+                )
     }
 
     override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> = sequence {
@@ -503,7 +524,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
                 UniqueType.MustHaveOwnedWithinTiles ->
                     if (cityCenter.getTilesInDistance(unique.params[1].toInt())
-                        .none { it.matchesFilter(unique.params[0], civ) && it.getOwner() == cityConstructions.city.civ }
+                                .none { it.matchesFilter(unique.params[0], civ) && it.getOwner() == cityConstructions.city.civ }
                     )
                         yield(RejectionReasonType.MustOwnTile.toInstance(unique.text))
 
@@ -538,11 +559,11 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     if (numberOfCitiesWithBuilding < numberOfCitiesRequired) {
                         val equivalentBuildingName = civ.getEquivalentBuilding(buildingName).name
                         yield(
-                                // replace with civ-specific building for user
-                                RejectionReasonType.RequiresBuildingInAllCities.toInstance(
-                                    unique.text.fillPlaceholders(equivalentBuildingName, numberOfCitiesRequired.toString()) +
-                                            " ($numberOfCitiesWithBuilding/$numberOfCitiesRequired)"
-                                ) )
+                            // replace with civ-specific building for user
+                            RejectionReasonType.RequiresBuildingInAllCities.toInstance(
+                                unique.text.fillPlaceholders(equivalentBuildingName, numberOfCitiesRequired.toString()) +
+                                        " ($numberOfCitiesWithBuilding/$numberOfCitiesRequired)"
+                            ) )
                     }
                 }
 
@@ -554,10 +575,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                             }
                     ) {
                         yield(
-                                // replace with civ-specific building for user
-                                RejectionReasonType.RequiresBuildingInAllCities.toInstance(
-                                    "Requires a [${civ.getEquivalentBuilding(unique.params[0])}] in all cities"
-                                )
+                            // replace with civ-specific building for user
+                            RejectionReasonType.RequiresBuildingInAllCities.toInstance(
+                                "Requires a [${civ.getEquivalentBuilding(unique.params[0])}] in all cities"
+                            )
                         )
                     }
                 }
@@ -628,11 +649,11 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             val containsResourceWithImprovement = cityConstructions.city.getWorkableTiles()
                 .any {
                     it.resource != null
-                    && requiredNearbyImprovedResources!!.contains(it.resource!!)
-                    && it.getOwner() == civ
-                    && ((it.getUnpillagedImprovement() != null && it.tileResource.isImprovedBy(it.improvement!!)) || it.isCityCenter()
-                       || (it.getUnpillagedTileImprovement()?.isGreatImprovement() == true && it.tileResource.resourceType == ResourceType.Strategic)
-                    )
+                            && requiredNearbyImprovedResources!!.contains(it.resource!!)
+                            && it.getOwner() == civ
+                            && ((it.getUnpillagedImprovement() != null && it.tileResource.isImprovedBy(it.improvement!!)) || it.isCityCenter()
+                            || (it.getUnpillagedTileImprovement()?.isGreatImprovement() == true && it.tileResource.resourceType == ResourceType.Strategic)
+                            )
                 }
             if (!containsResourceWithImprovement)
                 yield(RejectionReasonType.RequiresNearbyResource.toInstance("Nearby $requiredNearbyImprovedResources required"))

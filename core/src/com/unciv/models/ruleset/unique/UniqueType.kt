@@ -97,6 +97,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     StatsFromTilesWithout("[stats] from [tileFilter] tiles without [tileFilter] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     // This is a doozy
     StatsFromObject("[stats] from every [tileFilter/specialist/buildingFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    StatsFromObjectPerCity("[stats] from every [tileFilter/specialist/buildingFilter] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatsFromTradeRoute("[stats] from each Trade Route", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatsFromGlobalCitiesFollowingReligion("[stats] for each global city following this religion", UniqueTarget.FounderBelief),
     StatsFromGlobalFollowers("[stats] from every [amount] global followers [cityFilter]", UniqueTarget.FounderBelief),
@@ -108,6 +109,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     StatPercentBonusCities("[relativeAmount]% [stat] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatPercentFromObject("[relativeAmount]% [stat] from every [tileFilter/buildingFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     AllStatsPercentFromObject("[relativeAmount]% Yield from every [tileFilter/buildingFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    StatPercentFromObjectPerCity("[relativeAmount]% [stat] from every [tileFilter/buildingFilter] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    SpecificStatsPercentFromObjectPerCity("[relativeAmount]% [stat] Yield from every [tileFilter/buildingFilter] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    AllStatsPercentFromObjectPerCity("[relativeAmount]% Yield from every [tileFilter/buildingFilter] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatPercentFromReligionFollowers("[relativeAmount]% [stat] from every follower, up to [relativeAmount]%", UniqueTarget.FollowerBelief),
     BonusStatsFromCityStates("[relativeAmount]% [stat] from City-States", UniqueTarget.Global),
     StatPercentFromTradeRoutes("[relativeAmount]% [stat] from Trade Routes", UniqueTarget.Global),

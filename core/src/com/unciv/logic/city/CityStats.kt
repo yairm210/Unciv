@@ -188,6 +188,10 @@ class CityStats(val city: City) {
         for (unique in localUniqueCache.get(UniqueType.StatsFromObject.name, city.civ.getMatchingUniques(UniqueType.StatsFromObject)))
             if (unique.params[1] == specialistName)
                 stats.add(unique.stats)
+        for (unique in localUniqueCache.get(UniqueType.StatsFromObjectPerCity.name, city.getMatchingUniques(UniqueType.StatsFromObjectPerCity)))
+            if (unique.params[1] == specialistName)
+                if (city.matchesFilter(unique.params[2]))
+                    stats.add(unique.stats)
         return stats
     }
 
@@ -272,19 +276,19 @@ class CityStats(val city: City) {
         }
 
         val uniquesToCheck =
-            when {
-                currentConstruction is BaseUnit ->
-                    city.getMatchingUniques(UniqueType.PercentProductionUnits)
-                currentConstruction is Building && currentConstruction.isAnyWonder() ->
-                    city.getMatchingUniques(UniqueType.PercentProductionWonders)
-                currentConstruction is Building && !currentConstruction.isAnyWonder() ->
-                    city.getMatchingUniques(UniqueType.PercentProductionBuildings)
-                else -> sequenceOf() // Science/Gold production
-            }
+                when {
+                    currentConstruction is BaseUnit ->
+                        city.getMatchingUniques(UniqueType.PercentProductionUnits)
+                    currentConstruction is Building && currentConstruction.isAnyWonder() ->
+                        city.getMatchingUniques(UniqueType.PercentProductionWonders)
+                    currentConstruction is Building && !currentConstruction.isAnyWonder() ->
+                        city.getMatchingUniques(UniqueType.PercentProductionBuildings)
+                    else -> sequenceOf() // Science/Gold production
+                }
 
         for (unique in uniquesToCheck) {
             if (constructionMatchesFilter(currentConstruction, unique.params[1])
-                && city.matchesFilter(unique.params[2])
+                    && city.matchesFilter(unique.params[2])
             )
                 addUniqueStats(unique, Stat.Production, unique.params[0].toFloat())
         }
@@ -298,9 +302,9 @@ class CityStats(val city: City) {
                 ))
 
         if (currentConstruction is Building
-            && city.civ.cities.isNotEmpty()
-            && city.civ.getCapital() != null
-            && city.civ.getCapital()!!.cityConstructions.builtBuildings.contains(currentConstruction.name)
+                && city.civ.cities.isNotEmpty()
+                && city.civ.getCapital() != null
+                && city.civ.getCapital()!!.cityConstructions.builtBuildings.contains(currentConstruction.name)
         ) {
             for (unique in city.getMatchingUniques(UniqueType.PercentProductionBuildingsInCapital))
                 addUniqueStats(unique, Stat.Production, unique.params[0].toFloat())
@@ -328,11 +332,11 @@ class CityStats(val city: City) {
 
         // Railroad, or harbor from railroad
         return if (roadType == RoadStatus.Railroad)
-                city.isConnectedToCapital {
+            city.isConnectedToCapital {
                     roadTypes ->
-                    roadTypes.any { it.contains(RoadStatus.Railroad.name) }
-                }
-            else city.isConnectedToCapital()
+                roadTypes.any { it.contains(RoadStatus.Railroad.name) }
+            }
+        else city.isConnectedToCapital()
     }
 
     private fun getBuildingMaintenanceCosts(): Float {
@@ -410,8 +414,8 @@ class CityStats(val city: City) {
         if (hasExtraAnnexUnhappiness()) newHappinessList["Occupied City"] = -2f //annexed city
 
         val happinessFromSpecialists =
-            getStatsFromSpecialists(city.population.getNewSpecialists()).happiness.toInt()
-                .toFloat()
+                getStatsFromSpecialists(city.population.getNewSpecialists()).happiness.toInt()
+                    .toFloat()
         if (happinessFromSpecialists > 0) newHappinessList["Specialists"] = happinessFromSpecialists
 
         newHappinessList["Buildings"] = statsFromBuildings.totalStats.happiness.toInt().toFloat()
@@ -442,7 +446,7 @@ class CityStats(val city: City) {
         ), "Population")
         newBaseStatList["Tile yields"] = statsFromTiles
         newBaseStatList["Specialists"] =
-            getStatsFromSpecialists(city.population.getNewSpecialists())
+                getStatsFromSpecialists(city.population.getNewSpecialists())
         newBaseStatList["Trade routes"] = getStatsFromTradeRoute()
         newBaseStatTree.children["Buildings"] = statsFromBuildings
 
@@ -476,7 +480,7 @@ class CityStats(val city: City) {
 
     fun update(currentConstruction: IConstruction = city.cityConstructions.getCurrentConstruction(),
                updateTileStats:Boolean = true,
-                updateCivStats:Boolean = true) {
+               updateCivStats:Boolean = true) {
         if (updateTileStats) updateTileStats()
 
         // We need to compute Tile yields before happiness
@@ -580,11 +584,11 @@ class CityStats(val city: City) {
         newFinalStatList["Maintenance"] = Stats(gold = -buildingsMaintenance.toInt().toFloat())
 
         if (totalFood > 0
-            && currentConstruction is INonPerpetualConstruction
-            && currentConstruction.hasUnique(UniqueType.ConvertFoodToProductionWhenConstructed)
+                && currentConstruction is INonPerpetualConstruction
+                && currentConstruction.hasUnique(UniqueType.ConvertFoodToProductionWhenConstructed)
         ) {
             newFinalStatList["Excess food to production"] =
-                Stats(production = getProductionFromExcessiveFood(totalFood), food = -totalFood)
+                    Stats(production = getProductionFromExcessiveFood(totalFood), food = -totalFood)
         }
 
         val growthNullifyingUnique = city.getMatchingUniques(UniqueType.NullifiesGrowth).firstOrNull()
@@ -609,8 +613,8 @@ class CityStats(val city: City) {
     // See for details: https://civilization.fandom.com/wiki/Settler_(Civ5)
     private fun getProductionFromExcessiveFood(food : Float): Float {
         return if (food >= 4.0f ) 2.0f + (food / 4.0f).toInt()
-          else if (food >= 2.0f ) 2.0f
-          else if (food >= 1.0f ) 1.0f
+        else if (food >= 2.0f ) 2.0f
+        else if (food >= 1.0f ) 1.0f
         else 0.0f
     }
 
