@@ -251,21 +251,6 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
     }
 
     /**
-     * Create a new WebSocket connection after logging in and if there's no current connection available
-     */
-    override suspend fun afterLogin() {
-        val pingSuccess = try {
-            sendPing()
-        } catch (e: Exception) {
-            Log.debug("Exception while sending WebSocket PING: %s", e.localizedMessage)
-            false
-        }
-        if (!pingSuccess) {
-            websocket(::handleWebSocket)
-        }
-    }
-
-    /**
      * Handle a newly established WebSocket connection
      */
     private suspend fun handleWebSocket(session: ClientWebSocketSession) {
@@ -295,9 +280,8 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
                                 else -> {
                                     // Casting any message but InvalidMessage to WebSocketMessageWithContent should work,
                                     // otherwise the class hierarchy has been messed up somehow; all messages should have content
-                                    Log.debug("Sending event %s with content %s", msg, (msg as WebSocketMessageWithContent).content)
                                     Concurrency.runOnGLThread {
-                                        EventBus.send(msg.content)
+                                        EventBus.send((msg as WebSocketMessageWithContent).content)
                                     }
                                 }
                             }
@@ -320,6 +304,37 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
     }
 
     // ---------------- SESSION FUNCTIONALITY ----------------
+
+    /**
+     * Perform post-login hooks and updates
+     *
+     * 1. Create a new WebSocket connection after logging in and
+     *    if there's no current connection available
+     * 2. Update the [UncivGame.Current.settings.multiplayer.userId]
+     *    (this makes using APIv0/APIv1 games impossible if the user ID is not preserved!)
+     */
+    @Suppress("KDocUnresolvedReference")
+    override suspend fun afterLogin() {
+        val pingSuccess = try {
+            sendPing()
+        } catch (e: Exception) {
+            Log.debug("Exception while sending WebSocket PING: %s", e.localizedMessage)
+            false
+        }
+        if (!pingSuccess) {
+            websocket(::handleWebSocket)
+        }
+        val me = account.get()
+        if (me != null) {
+            Log.error(
+                "Updating user ID from %s to %s. This is no error. But you may need the old ID to be able to access your old multiplayer saves.",
+                UncivGame.Current.settings.multiplayer.userId,
+                me.uuid
+            )
+            UncivGame.Current.settings.multiplayer.userId = me.uuid.toString()
+            UncivGame.Current.settings.save()
+        }
+    }
 
     /**
      * Refresh the currently used session by logging in with username and password stored in the game settings
