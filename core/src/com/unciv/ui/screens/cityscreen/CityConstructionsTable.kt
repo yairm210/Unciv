@@ -579,13 +579,13 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     ) {
         if (!isConstructionPurchaseShown(construction, stat)) return
         val city = cityScreen.city
-        val constructionBuyCost = construction.getStatBuyCost(city, stat)!!
-        if (!isConstructionPurchaseAllowed(construction, stat, constructionBuyCost)) return
+        val constructionStatBuyCost = construction.getStatBuyCost(city, stat)!!
+        if (!isConstructionPurchaseAllowed(construction, stat, constructionStatBuyCost)) return
 
         cityScreen.closeAllPopups()
 
         val purchasePrompt = "Currently you have [${city.getStatReserve(stat)}] [${stat.name}].".tr() + "\n\n" +
-                "Would you like to purchase [${construction.name}] for [$constructionBuyCost] [${stat.character}]?".tr()
+                "Would you like to purchase [${construction.name}] for [$constructionStatBuyCost] [${stat.character}]?".tr()
         ConfirmPopup(
             cityScreen,
             purchasePrompt,

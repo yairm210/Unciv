@@ -74,13 +74,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Triggers voting for the Diplomatic Victory"
 	Applicable to: Triggerable
 
-??? example  "Instantly consumes [amount] [resource]"
-	Example: "Instantly consumes [3] [Iron]"
+??? example  "Instantly consumes [amount] [stockpiledResource]"
+	Example: "Instantly consumes [3] [StockpiledResource]"
 
 	Applicable to: Triggerable
 
-??? example  "Instantly provides [amount] [resource]"
-	Example: "Instantly provides [3] [Iron]"
+??? example  "Instantly provides [amount] [stockpiledResource]"
+	Example: "Instantly provides [3] [StockpiledResource]"
 
 	Applicable to: Triggerable
 
@@ -924,8 +924,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Building, Unit, Improvement
 
-??? example  "Costs [amount] [resource]"
-	Example: "Costs [3] [Iron]"
+??? example  "Costs [amount] [stockpiledResource]"
+	Example: "Costs [3] [StockpiledResource]"
 
 	Applicable to: Building, Unit, Improvement
 
@@ -2055,6 +2055,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[specialist]: The name of any specialist.
 *[stat]: This is one of the 7 major stats in the game - `Gold`, `Science`, `Production`, `Food`, `Happiness`, `Culture` and `Faith`. Note that the stat names need to be capitalized!
 *[stats]: For example: `+2 Production, +3 Food`. Note that the stat names need to be capitalized!
+*[stockpiledResource]: The name of any stockpiled.
 *[tech]: The name of any tech.
 *[tileFilter]: Anything that can be used either in an improvementFilter or in a terrainFilter can be used here, plus 'unimproved'
 *[victoryType]: The name of any victory type: 'Neutral', 'Cultural', 'Diplomatic', 'Domination', 'Scientific', 'Time'
