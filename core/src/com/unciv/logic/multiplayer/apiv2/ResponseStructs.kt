@@ -358,7 +358,7 @@ data class LobbyResponse(
 /**
  * The account data
  *
- * It provides the extra field ``online`` indicating whether the account has any connected client.
+ * It provides the extra field [online] indicating whether the account has any connected client.
  */
 @Serializable
 data class OnlineAccountResponse(
@@ -368,7 +368,9 @@ data class OnlineAccountResponse(
     val username: String,
     @SerialName("display_name")
     val displayName: String
-)
+) {
+    fun to() = AccountResponse(uuid = uuid, username = username, displayName = displayName)
+}
 
 /**
  * The response when starting a game

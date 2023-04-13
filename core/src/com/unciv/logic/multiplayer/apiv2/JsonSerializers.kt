@@ -101,3 +101,18 @@ internal class WebSocketMessageTypeSerializer : KSerializer<WebSocketMessageType
         return WebSocketMessageType.getByValue(decoder.decodeString())
     }
 }
+
+/**
+ * Serializer for the FriendshipEvent WebSocket message enum to make encoding/decoding as string work
+ */
+internal class FriendshipEventSerializer : KSerializer<FriendshipEvent> {
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("FriendshipEventSerializer", PrimitiveKind.STRING)
+
+    override fun serialize(encoder: Encoder, value: FriendshipEvent) {
+        encoder.encodeString(value.type)
+    }
+
+    override fun deserialize(decoder: Decoder): FriendshipEvent {
+        return FriendshipEvent.getByValue(decoder.decodeString())
+    }
+}
