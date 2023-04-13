@@ -298,8 +298,8 @@ object Battle {
         fun unitGainFromDefeatingUnit(): Boolean {
             if (!attacker.isMelee()) return false
             var unitCaptured = false
-            for (unique in attacker.getCivInfo()
-                .getMatchingUniques(UniqueType.GainFromDefeatingUnit)) {
+            val state = StateForConditionals(attacker.getCivInfo(), ourCombatant = attacker, theirCombatant = defender)
+            for (unique in attacker.getMatchingUniques(UniqueType.GainFromDefeatingUnit, state, true)) {
                 if (defender.unit.matchesFilter(unique.params[0])) {
                     attacker.getCivInfo().addGold(unique.params[1].toInt())
                     unitCaptured = true
