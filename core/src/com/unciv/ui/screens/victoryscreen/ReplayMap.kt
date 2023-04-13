@@ -3,6 +3,7 @@ package com.unciv.ui.screens.victoryscreen
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.UncivGame
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.TileMap
 import com.unciv.ui.screens.worldscreen.minimap.MinimapTile
 import com.unciv.ui.screens.worldscreen.minimap.MinimapTileUtil
@@ -59,11 +60,15 @@ class ReplayMap(val tileMap: TileMap) : Group() {
     }
 
 
-    fun update(turn: Int) {
+    fun update(turn: Int, viewingCiv: Civilization) {
+        val viewingCivIsDefeated = viewingCiv.gameInfo.victoryData != null || !viewingCiv.isAlive()
         for (minimapTile in minimapTiles) {
-            minimapTile.updateColor(false, turn)
-            minimapTile.updateBorders(turn).updateActorsIn(this)
-            minimapTile.updateCityCircle(turn).updateActorsIn(this)
+            val isVisible = viewingCivIsDefeated || viewingCiv.hasExplored(minimapTile.tile)
+            minimapTile.updateColor(!isVisible, turn)
+            if (isVisible) {
+                minimapTile.updateBorders(turn).updateActorsIn(this)
+                minimapTile.updateCityCircle(turn).updateActorsIn(this)
+            }
         }
     }
 

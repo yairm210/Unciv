@@ -70,7 +70,16 @@ class VictoryScreen(
         Replay('P', "OtherIcons/Load", allowAsSecret = true) {
             override fun getContent(worldScreen: WorldScreen) = VictoryScreenReplay(worldScreen)
             override fun isHidden(playerCiv: Civilization) =
-                !playerCiv.isSpectator() && playerCiv.gameInfo.victoryData == null && playerCiv.isAlive()
+                !playerCiv.isSpectator()
+                        && playerCiv.gameInfo.victoryData == null
+                        && playerCiv.isAlive()
+                        // We show the replay after 50 turns. This is quite an arbitrary number, but
+                        // we don't want to leak the starting position right away (assuming we don't
+                        // condense the replay map in a similar way to the minimap (ie. it fills
+                        // to only the discovered area) and probably before 50 turns not much
+                        // interesting would happen anyway in the replay and the slider might feel
+                        // weird, too.
+                        && playerCiv.gameInfo.turns < 50
         };
         abstract fun getContent(worldScreen: WorldScreen): Table
         open fun isHidden(playerCiv: Civilization) = false
