@@ -124,7 +124,7 @@ class PlayerPickerTable(
 
         // enable start game when at least one human player and they're not alone
         val humanPlayerCount = gameParameters.players.count { it.playerType == PlayerType.Human }
-        val isValid = humanPlayerCount >= 1
+        val isValid = humanPlayerCount >= 1 && (isRandomNumberOfPlayers || gameParameters.players.size >= 2)
         (previousScreen as? PickerScreen)?.setRightSideButtonEnabled(isValid)
     }
 
@@ -280,7 +280,7 @@ class PlayerPickerTable(
                 ImageGetter.getRandomNationPortrait(40f)
             else ImageGetter.getNationPortrait(nationImageName, 40f)
         nationTable.add(nationImage).pad(5f)
-        nationTable.add(player.chosenCiv.toLabel()).pad(5f)
+        nationTable.add(player.chosenCiv.toLabel(hideIcons = true)).pad(5f)
         nationTable.touchable = Touchable.enabled
         return nationTable
     }

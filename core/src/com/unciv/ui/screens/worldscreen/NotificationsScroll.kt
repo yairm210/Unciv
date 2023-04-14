@@ -14,13 +14,12 @@ import com.unciv.GUI
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.ui.components.ColorMarkupLabel
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.WrappableLabel
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.images.IconCircleGroup
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
 
 /*TODO
@@ -251,14 +250,11 @@ class NotificationsScroll(
             listItem.background = backgroundDrawable
 
             val maxLabelWidth = maxEntryWidth - (iconSize + 5f) * notification.icons.size - 10f
-            val label = WrappableLabel(notification.text, maxLabelWidth, Color.BLACK, fontSize)
+            val label = ColorMarkupLabel(notification.text, Color.BLACK, fontSize= fontSize)
+            label.width = maxLabelWidth
+            label.wrap = true
             label.setAlignment(Align.center)
-            if (label.prefWidth > maxLabelWidth * scaleFactor) {  // can't explain why the comparison needs scaleFactor
-                label.wrap = true
-                listItem.add(label).maxWidth(label.optimizePrefWidth()).padRight(10f)
-            } else {
-                listItem.add(label).padRight(10f)
-            }
+            listItem.add(label).padRight(10f)
 
             notification.addNotificationIconsTo(listItem, worldScreen.gameInfo.ruleset, iconSize)
 

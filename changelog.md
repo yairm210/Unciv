@@ -1,3 +1,23 @@
+## 4.6.1
+
+All game object images shown in text!
+
+'Display' options subcatagorized - kudos @Ouaz
+
+By WhoIsJohannes:
+- highlight suitable city-founding tiles
+- Show replay after 50 turns
+- Charts improvements
+
+By SomeTroglodyte:
+- Fix startBias regional assignments
+- Victory detection improvements
+- Fix map editor resource label
+
+AbsoluteUnits - Turtle Ship, Ship of the Line, Sea Beggar - By letstalkaboutdune
+
+AI: Military units w/ Civilian uniques Automation  - By MioBestWaifu
+
 ## 4.6.0
 
 Modding: Resources can now be optionally stockpiled, as in Gathering Storm, Endless Legend, etc!

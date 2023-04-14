@@ -82,18 +82,19 @@ object TileSetCache : HashMap<String, TileSet>() {
     }
 
     /** Determines potentially available TileSets - by scanning for TileSet jsons.
-     *
      *  Available before initialization finishes.
-     *  To get more reliable info, either wait until `this` is fully initialized,
-     *  or intersect with [ImageGetter.getAvailableTilesets]
      */
-    fun getAvailableTilesets() = sequence<FileHandle> {
-        yieldAll(FileHandle("jsons/TileSets").list().asIterable())
-        for (modFolder in FileHandle("mods").list()) {
-            if (!modFolder.isDirectory || modFolder.name().startsWith('.'))
-                continue
-            yieldAll(modFolder.child("jsons/TileSets").list().asIterable())
-        }
-    }.filter { it.exists() }
-    .map { it.nameWithoutExtension().removeSuffix("Config") }
+    fun getAvailableTilesets(imageGetterTilesets:Sequence<String>): Set<String> {
+        val modTilesetConfigFiles = Gdx.files.local("mods").list().asSequence()
+            .filter { it.isDirectory && !it.name().startsWith('.') }
+            .flatMap { it.child("jsons/TileSets").list().asSequence() }
+
+        val builtinTilesetConfigFiles = imageGetterTilesets
+            .map { Gdx.files.internal("jsons/TileSets/$it.json") }
+
+        return (builtinTilesetConfigFiles + modTilesetConfigFiles)
+            .filter { it.exists() }
+            .map { it.nameWithoutExtension().removeSuffix("Config") }
+            .toSet()
+    }
 }

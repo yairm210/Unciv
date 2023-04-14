@@ -63,31 +63,38 @@ Each building can have the following attributes:
 
 This file contains all the nations and city states, including Barbarians and Spectator.
 
-| Attribute | Type | Optional | Notes |
-| --------- | ---- | -------- | ----- |
-| name | String | Required |  |
-| leaderName | String | Default empty | Omit only for city states! If you want LeaderPortraits, the image file names must match exactly, including case. |
-| style | String | Default empty | Modifier appended to pixel unit image names |
-| adjective | String | Default empty | Currently unused |
-| cityStateType | Enum | Default absent | Distinguishes Major Civilizations from City States (Cultured, Maritime, Mercantile, Militaristic) |
-| startBias | List | Default empty | Zero or more of: terrainFilter or "Avoid [terrainFilter]". Two or more will be logically "and"-ed, and if the filters result in no choices, the entire attribute is ignored (e.g. `"startBias": ["Snow","Tundra"]` will _never_ work). |
-| preferredVictoryType | Enum | Default Neutral | Neutral, Cultural, Diplomatic, Domination or Scientific |
-| startIntroPart1 | String | Default empty | Introductory blurb shown to Player on game start... |
-| startIntroPart2 | String | Default empty | ... second paragraph. ***NO*** "TBD"!!! Leave empty to skip that alert. |
-| declaringWar | String | Default empty | another greeting |
-| attacked | String | Default empty | another greeting |
-| defeated | String | Default empty | another greeting |
-| introduction | String | Default empty | another greeting |
-| neutralHello | String | Default empty | another greeting |
-| hateHello | String | Default empty | another greeting |
-| tradeRequest | String | Default empty | another greeting |
-| innerColor | 3x Integer | Default black | R, G, B for outer ring of nation icon |
-| outerColor | 3x Integer | Required | R, G, B for inner circle of nation icon |
-| uniqueName | String | Default empty | Decorative name for the special characteristic of this Nation |
-| uniqueText | String | Default empty | Replacement text for "uniques". If empty, uniques are listed individually. |
-| uniques | List | Default empty | Properties of the civilization - see [here](../Modders/Unique-parameters.md#general-uniques) |
-| cities | List | Default empty | City names used sequentially for newly founded cities. |
-| civilopediaText | List | Default empty | see [civilopediaText chapter](Miscellaneous-JSON-files.md#civilopedia-text) |
+| Attribute            | Type       | Optional         | Notes                                                                                                            |
+|----------------------|------------|------------------|------------------------------------------------------------------------------------------------------------------|
+| name                 | String     | Required         |                                                                                                                  |
+| leaderName           | String     | Default empty    | Omit only for city states! If you want LeaderPortraits, the image file names must match exactly, including case. |
+| style                | String     | Default empty    | Modifier appended to pixel unit image names                                                                      |
+| adjective            | String     | Default empty    | Currently unused                                                                                                 |
+| cityStateType        | Enum       | Default absent   | Distinguishes Major Civilizations from City States (Cultured, Maritime, Mercantile, Militaristic)                |
+| startBias            | List       | Default empty    | Zero or more of: terrainFilter or "Avoid [terrainFilter]". [^S]                                                  |
+| preferredVictoryType | Enum       | Default Neutral  | Neutral, Cultural, Diplomatic, Domination or Scientific                                                          |
+| startIntroPart1      | String     | Default empty    | Introductory blurb shown to Player on game start...                                                              |
+| startIntroPart2      | String     | Default empty    | ... second paragraph. ***NO*** "TBD"!!! Leave empty to skip that alert.                                          |
+| declaringWar         | String     | Default empty    | another greeting                                                                                                 |
+| attacked             | String     | Default empty    | another greeting                                                                                                 |
+| defeated             | String     | Default empty    | another greeting                                                                                                 |
+| introduction         | String     | Default empty    | another greeting                                                                                                 |
+| neutralHello         | String     | Default empty    | another greeting                                                                                                 |
+| hateHello            | String     | Default empty    | another greeting                                                                                                 |
+| tradeRequest         | String     | Default empty    | another greeting                                                                                                 |
+| innerColor           | 3x Integer | Default black    | R, G, B for outer ring of nation icon                                                                            |
+| outerColor           | 3x Integer | Required         | R, G, B for inner circle of nation icon                                                                          |
+| uniqueName           | String     | Default empty    | Decorative name for the special characteristic of this Nation                                                    |
+| uniqueText           | String     | Default empty    | Replacement text for "uniques". If empty, uniques are listed individually.                                       |
+| uniques              | List       | Default empty    | Properties of the civilization - see [here](../Modders/Unique-parameters.md#general-uniques)                     |
+| cities               | List       | Default empty    | City names used sequentially for newly founded cities.                                                           |
+| civilopediaText      | List       | Default empty    | see [civilopediaText chapter](Miscellaneous-JSON-files.md#civilopedia-text)                                      |
+
+[^S]: A "Coast" preference (_unless_ combined with "Avoid") is translated to a complex test for coastal land tiles, tiles next to Lakes, river tiles or near-river tiles, and such civs are processed first. Other startBias entries are ignored in that case.
+      Other positive (no "Avoid") startBias are processed next. Multiple positive preferences are treated equally, but get no "fallback".
+      Single positive startBias can get a "fallback" region if there is no (or no more) region with that primary type: any leftover region with as much of the specified terrain as possible will do.
+      Multiple "Avoid" entries are treated equally (and reduce chance for success - if no region is left avoiding _all_ specified types that civ gets a random one).
+      When combining preferred terrain with "Avoid", the latter takes precedence, and preferred terrain only has minor weight when choosing between regions that are not of a type to avoid.
+      These notes are **only** valid when playing on generated maps, loaded maps from map editor get no "regions" and startBias is processed differently (but you can expect single-entry startBias to work best).
 
 ## Policies.json
 
