@@ -131,29 +131,17 @@ class StatsOverviewTab(
     inner class UnhappinessTable : Table() {
         val show: Boolean
 
-        private val uniqueTypesDependingOnHappiness: Set<UniqueType>
         private val uniques: Set<Unique>
 
         init {
             defaults().pad(5f)
-
-            val happinessConditionals = setOf(UniqueType.ConditionalHappy, UniqueType.ConditionalBelowHappiness, UniqueType.ConditionalBetweenHappiness)
-            uniqueTypesDependingOnHappiness = gameInfo.ruleset.allIHasUniques()
-                .flatMap { it.uniqueObjects }
-                .filter { it.conditionals.any {
-                        conditional -> conditional.type in happinessConditionals
-                } }
-                .mapNotNull { it.type }.toSet()
-            uniques = uniqueTypesDependingOnHappiness.asSequence()
-                .flatMap { viewingPlayer.getMatchingUniques(it) }
-                .filter {
-                    it.conditionals.any {
-                        // Check again in case some Unique exists both with happiness condition and without
-                            conditional ->
-                        conditional.type in happinessConditionals
-                    }
-                }
-                .toSet()  // distinct
+            uniques = sequenceOf(
+                    UniqueType.ConditionalBetweenHappiness,
+                    UniqueType.ConditionalBelowHappiness
+                ).flatMap { conditional ->
+                    viewingPlayer.getTriggeredUniques(conditional)
+                        .sortedBy { it.type } // otherwise order might change as a HashMap is involved
+                }.toSet()
             show = uniques.isNotEmpty()
         }
 
