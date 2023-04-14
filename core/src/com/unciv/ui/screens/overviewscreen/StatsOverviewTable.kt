@@ -6,6 +6,8 @@ import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.ModOptionsConstants
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
 import com.unciv.ui.components.TabbedPager
@@ -13,6 +15,8 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 import kotlin.math.roundToInt
 
 class StatsOverviewTab(
@@ -20,6 +24,7 @@ class StatsOverviewTab(
     overviewScreen: EmpireOverviewScreen
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
     private val happinessTable = Table()
+    private val unhappinessTable = UnhappinessTable()
     private val goldAndSliderTable = Table()
     private val goldTable = Table()
     private val scienceTable = Table()
@@ -45,6 +50,7 @@ class StatsOverviewTab(
         faithTable.defaults().pad(5f)
         greatPeopleTable.defaults().pad(5f)
         scoreTable.defaults().pad(5f)
+        unhappinessTable.update()
 
         goldAndSliderTable.add(goldTable).row()
         if (gameInfo.ruleset.modOptions.uniques.contains(ModOptionsConstants.convertGoldToScience))
@@ -54,6 +60,7 @@ class StatsOverviewTab(
 
         val allStatTables = sequence {
             yield(happinessTable)
+            if (unhappinessTable.show) yield(unhappinessTable)
             yield(goldAndSliderTable)
             yield(scienceTable)
             yield(cultureTable)
@@ -119,6 +126,50 @@ class StatsOverviewTab(
         for ((key, value) in happinessBreakdown)
             addLabeledValue(key, value)
         addTotal(happinessBreakdown.values.sum())
+    }
+
+    inner class UnhappinessTable : Table() {
+        val show: Boolean
+
+        private val uniqueTypesDependingOnHappiness: Set<UniqueType>
+        private val uniques: Set<Unique>
+
+        init {
+            defaults().pad(5f)
+
+            val happinessConditionals = setOf(UniqueType.ConditionalHappy, UniqueType.ConditionalBelowHappiness, UniqueType.ConditionalBetweenHappiness)
+            uniqueTypesDependingOnHappiness = gameInfo.ruleset.allIHasUniques()
+                .flatMap { it.uniqueObjects }
+                .filter { it.conditionals.any {
+                        conditional -> conditional.type in happinessConditionals
+                } }
+                .mapNotNull { it.type }.toSet()
+            uniques = uniqueTypesDependingOnHappiness.asSequence()
+                .flatMap { viewingPlayer.getMatchingUniques(it) }
+                .filter {
+                    it.conditionals.any {
+                        // Check again in case some Unique exists both with happiness condition and without
+                            conditional ->
+                        conditional.type in happinessConditionals
+                    }
+                }
+                .toSet()  // distinct
+            show = uniques.isNotEmpty()
+        }
+
+        fun update() {
+            add(ImageGetter.getStatIcon("Malcontent"))
+                .size(Constants.headingFontSize.toFloat())
+                .right().padRight(1f)
+            add("Unhappiness".toLabel(fontSize = Constants.headingFontSize)).left()
+            addSeparator()
+
+            add(MarkupRenderer.render(
+                uniques.map { FormattedLine(it) },
+                labelWidth = (overviewScreen.stage.width * 0.25f).coerceAtLeast(greatPeopleTable.width * 0.8f),
+                iconDisplay = FormattedLine.IconDisplay.NoLink
+            )).colspan(2)
+        }
     }
 
     private fun Table.updateStatTable(stat: Stat, statMap: StatMap) {
