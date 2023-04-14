@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.logic.multiplayer.apiv2.GameOverviewResponse
 import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.MultiplayerButton
 import com.unciv.ui.components.NewButton
 import com.unciv.ui.components.RefreshButton
 import com.unciv.ui.components.extensions.addSeparator
@@ -32,10 +33,14 @@ class LobbyBrowserScreen : BaseScreen() {
     private val lobbyBrowserTable = LobbyBrowserTable(this)
     private val gameList = GameListV2(this, ::onSelect)
 
+    private val me
+        get() = kotlinx.coroutines.runBlocking { game.onlineMultiplayer.api.account.get() }!!
+
     private val table = Table()  // main table including all content of this screen
     private val bottomTable = Table()  // bottom bar including the cancel and help buttons
 
     private val newLobbyButton = NewButton()
+    private val socialButton = MultiplayerButton()
     private val helpButton = "Help".toTextButton()
     private val updateButton = RefreshButton()
     private val closeButton = Constants.close.toTextButton()
@@ -72,6 +77,12 @@ class LobbyBrowserScreen : BaseScreen() {
         closeButton.onActivation {
             game.popScreen()
         }
+        socialButton.onClick {
+            val popup = Popup(stage)
+            popup.innerTable.add(SocialMenuTable(this as BaseScreen, me.uuid)).center().fillX().fillY().row()
+            popup.addCloseButton()
+            popup.open()
+        }
         helpButton.onClick {
             val helpPopup = Popup(this)
             helpPopup.addGoodSizedLabel("This should become a lobby browser.").row()  // TODO
@@ -79,7 +90,8 @@ class LobbyBrowserScreen : BaseScreen() {
             helpPopup.open()
         }
         bottomTable.add(closeButton).pad(20f)
-        bottomTable.add().colspan(2).growX()  // layout purposes only
+        bottomTable.add().growX()  // layout purposes only
+        bottomTable.add(socialButton).pad(10f)
         bottomTable.add(helpButton).pad(20f)
 
         table.addSeparator(skinStrings.skinConfig.baseColor.brighten(0.1f), height = 1f).width(stage.width * 0.85f).padTop(15f).row()

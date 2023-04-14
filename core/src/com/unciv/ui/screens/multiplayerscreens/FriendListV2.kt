@@ -3,6 +3,8 @@ package com.unciv.ui.screens.multiplayerscreens
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
+import com.unciv.logic.multiplayer.apiv2.ApiException
+import com.unciv.logic.multiplayer.apiv2.ApiStatusCode
 import com.unciv.logic.multiplayer.apiv2.FriendRequestResponse
 import com.unciv.logic.multiplayer.apiv2.FriendResponse
 import com.unciv.ui.components.ArrowButton
@@ -34,7 +36,7 @@ import java.util.*
  * top. Use [chat] to specify a callback when a user wants to chat with someone. Use
  * [select] to specify a callback that can be used to select a player by clicking a button
  * next to it. Use [edit] to specify a callback that can be used to edit a friend.
- * A sane default for this functionality is the [showEditPopup] function.
+ * A sane default for this functionality is the [showRemoveFriendshipPopup] function.
  * This table should be encapsulated into a [base]screen or pop-up containing one.
  */
 internal class FriendListV2(
@@ -83,7 +85,7 @@ internal class FriendListV2(
      */
     fun recreate(friends: List<FriendResponse>, friendRequests: List<FriendRequestResponse> = listOf()) {
         val body = Table()
-        if (requests && friendRequests.isNotEmpty()) {
+        if (requests) {
             body.add(getRequestTable(friendRequests)).padBottom(10f).row()
             body.addSeparatorVertical(Color.DARK_GRAY, 1f).padBottom(10f).row()
         }
@@ -135,10 +137,25 @@ internal class FriendListV2(
         val nameField = UncivTextField.create("Search player")
         val searchButton = SearchButton()
         searchButton.onActivation {
-            Log.debug("Searching for player '%s'", nameField.text)
+            val searchString = nameField.text
+            if (searchString == "") {
+                return@onActivation
+            }
+            Log.debug("Searching for player '%s'", searchString)
             Concurrency.run {
                 val response = InfoPopup.wrap(base.stage) {
-                    base.game.onlineMultiplayer.api.account.lookup(nameField.text)
+                    try {
+                        base.game.onlineMultiplayer.api.account.lookup(searchString)
+                    } catch (exc: ApiException) {
+                        if (exc.error.statusCode == ApiStatusCode.InvalidUsername) {
+                            Concurrency.runOnGLThread {
+                                ToastPopup("No player [$searchString] found", stage).open(force = true)
+                            }
+                            null
+                        } else {
+                            throw exc
+                        }
+                    }
                 }
                 if (response != null) {
                     Concurrency.runOnGLThread {
@@ -155,16 +172,19 @@ internal class FriendListV2(
                                     nameField.text = ""
                                 }
                             }
-                        }
+                        }.open(force = true)
                     }
                 }
             }
         }
 
         searchButton.keyShortcuts.add(KeyCharAndCode.RETURN)
-        add(nameField).padLeft(5f).padRight(5f)
-        add(searchButton).padRight(5f)
-        row()
+        val nameCell = table.add(nameField).padLeft(5f).padRight(5f).padBottom(15f).growX()
+        if (friendRequests.isNotEmpty()) {
+            nameCell.colspan(2)
+        }
+        table.add(searchButton).padBottom(15f)
+        table.row()
 
         for (request in friendRequests.filter { it.to.uuid == me }) {
             table.add("${request.from.displayName} (${request.from.username})").padBottom(5f)
@@ -173,19 +193,20 @@ internal class FriendListV2(
                     base.game.onlineMultiplayer.api.friend.accept(request.uuid)
                     triggerUpdate()
                 }
-            } })
+            } }).padBottom(5f).padLeft(5f)
             table.add(CloseButton().apply { onActivation {
                 InfoPopup.load(stage) {
                     base.game.onlineMultiplayer.api.friend.delete(request.uuid)
+                    triggerUpdate()
                 }
-            } })
+            } }).padBottom(5f).padLeft(5f)
             table.row()
         }
         return table
     }
 
     companion object {
-        fun showEditPopup(friend: UUID, screen: BaseScreen) {
+        fun showRemoveFriendshipPopup(friend: UUID, screen: BaseScreen) {
             val popup = ConfirmPopup(
                 screen.stage,
                 "Do you really want to remove [$friend] as friend?",

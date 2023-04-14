@@ -113,7 +113,17 @@ class LobbyScreen(
             WrapPopup(stage, mapOptionsTable)
         }
         menuButtonInvite.onClick {
-            WrapPopup(stage, LobbyInviteTable(lobbyUUID, this as BaseScreen))
+            val friends = FriendListV2(
+                this as BaseScreen,
+                me.uuid,
+                select = {
+                    InfoPopup.load(stage) {
+                        game.onlineMultiplayer.api.invite.new(it, lobbyUUID)
+                    }
+                }
+            )
+            InfoPopup.load(stage) { friends.triggerUpdate() }
+            WrapPopup(stage, friends)
         }
         menuButtonStartGame.onActivation {
             val lobbyStartResponse = InfoPopup.load(stage) {
@@ -148,6 +158,10 @@ class LobbyScreen(
         Concurrency.run {
             refresh()
         }
+    }
+
+    override fun dispose() {
+        chatMessageList.dispose()
     }
 
     private class WrapPopup(stage: Stage, other: Actor, action: (() -> Unit)? = null) : Popup(stage) {
@@ -185,7 +199,6 @@ class LobbyScreen(
     fun recreate(): BaseScreen {
         val table = Table()
 
-        val players = VerticalGroup()
         val playerScroll = AutoScrollPane(lobbyPlayerList, skin)
         playerScroll.setScrollingDisabled(true, false)
 
