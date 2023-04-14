@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -141,7 +142,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         yieldAll(getRejectionReasons(civInfo, cityConstructions.city))
     }
 
-    fun getRejectionReasons(civ: Civilization, city:City?=null): Sequence<RejectionReason> {
+    fun getRejectionReasons(civ: Civilization, city: City? = null): Sequence<RejectionReason> {
         val result = mutableListOf<RejectionReason>()
         if (requiredTech != null && !civ.tech.isResearched(requiredTech!!))
             result.add(RejectionReasonType.RequiresTech.toInstance("$requiredTech not researched"))
@@ -189,16 +190,15 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             }
         }
 
-        for (unique in civ.getMatchingUniques(UniqueType.CannotBuildUnits))
-            if (this@BaseUnit.matchesFilter(unique.params[0])) {
-                if (unique.conditionals.any { it.type == UniqueType.ConditionalBelowHappiness }) {
-                    result.add(
-                        RejectionReasonType.CannotBeBuilt.toInstance(
-                            unique.text,
-                            true
-                        )
-                    )
-                } else result.add(RejectionReasonType.CannotBeBuilt.toInstance())
+        val stateForConditionals = StateForConditionals(civ, city)
+        for (unique in civ.getMatchingUniques(UniqueType.CannotBuildUnits, stateForConditionals))
+            if (this.matchesFilter(unique.params[0])) {
+                val hasHappinessCondition = unique.conditionals.any {
+                    it.type == UniqueType.ConditionalBelowHappiness || it.type == UniqueType.ConditionalBetweenHappiness
+                }
+                if (hasHappinessCondition)
+                    result.add(RejectionReasonType.CannotBeBuiltUnhappiness.toInstance(unique.text))
+                else result.add(RejectionReasonType.CannotBeBuilt.toInstance())
             }
         return result.asSequence()
     }
