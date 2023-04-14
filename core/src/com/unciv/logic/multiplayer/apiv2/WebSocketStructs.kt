@@ -8,10 +8,16 @@ import java.util.*
 /**
  * Enum of all events that can happen in a friendship
  */
+@Serializable(with = FriendshipEventSerializer::class)
 enum class FriendshipEvent(val type: String) {
     Accepted("accepted"),
     Rejected("rejected"),
     Deleted("deleted");
+
+    companion object {
+        private val VALUES = FriendshipEvent.values()
+        fun getByValue(type: String) = VALUES.first { it.type == type }
+    }
 }
 
 /**
