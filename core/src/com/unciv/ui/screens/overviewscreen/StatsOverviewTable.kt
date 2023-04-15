@@ -9,10 +9,10 @@ import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
 import com.unciv.ui.components.TabbedPager
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.images.ImageGetter
 import kotlin.math.roundToInt
 
 class StatsOverviewTab(
@@ -104,7 +104,7 @@ class StatsOverviewTab(
     private fun Table.addLabeledValue(label: String, value: Float) {
         val roundedValue = value.roundToInt()
         if (roundedValue == 0) return
-        add(label.toLabel()).left()
+        add(label.toLabel(hideIcons = true)).left()
         add(roundedValue.toLabel()).right().row()
     }
     private fun Table.addTotal(value: Float) {
