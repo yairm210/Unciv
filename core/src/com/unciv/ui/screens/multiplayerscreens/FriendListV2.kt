@@ -3,6 +3,7 @@ package com.unciv.ui.screens.multiplayerscreens
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
+import com.unciv.logic.multiplayer.apiv2.AccountResponse
 import com.unciv.logic.multiplayer.apiv2.ApiException
 import com.unciv.logic.multiplayer.apiv2.ApiStatusCode
 import com.unciv.logic.multiplayer.apiv2.FriendRequestResponse
@@ -36,7 +37,10 @@ import java.util.*
  * top. Use [chat] to specify a callback when a user wants to chat with someone. Use
  * [select] to specify a callback that can be used to select a player by clicking a button
  * next to it. Use [edit] to specify a callback that can be used to edit a friend.
- * A sane default for this functionality is the [showRemoveFriendshipPopup] function.
+ * [chat], [select] and [edit] receive the friendship [UUID] as well as the [AccountResponse]
+ * of the friend. Only [chat] gets called with the UUID of the chat room as well.
+ *
+ * A sane default for the [edit] functionality is the [showRemoveFriendshipPopup] function.
  * This table should be encapsulated into a [base]screen or pop-up containing one.
  */
 internal class FriendListV2(
@@ -45,9 +49,9 @@ internal class FriendListV2(
     friends: List<FriendResponse> = listOf(),
     friendRequests: List<FriendRequestResponse> = listOf(),
     val requests: Boolean = false,
-    val chat: ((UUID) -> Unit)? = null,
-    val select: ((UUID) -> Unit)? = null,
-    val edit: ((UUID) -> Unit)? = null
+    val chat: ((UUID, AccountResponse, UUID) -> Unit)? = null,
+    val select: ((UUID, AccountResponse) -> Unit)? = null,
+    val edit: ((UUID, AccountResponse) -> Unit)? = null
 ) : Table() {
     init {
         recreate(friends, friendRequests)
@@ -114,13 +118,13 @@ internal class FriendListV2(
         for (friend in friends) {
             table.add("${friend.friend.displayName} (${friend.friend.username})").padBottom(5f)
             if (chat != null) {
-                table.add(ChatButton().apply { onActivation { (chat)(friend.friend.uuid) } }).padLeft(5f).padBottom(5f)
+                table.add(ChatButton().apply { onActivation { (chat)(friend.uuid, friend.friend.to(), friend.chatUUID) } }).padLeft(5f).padBottom(5f)
             }
             if (edit != null) {
-                table.add(OptionsButton().apply { onActivation { (edit)(friend.friend.uuid ) } }).padLeft(5f).padBottom(5f)
+                table.add(OptionsButton().apply { onActivation { (edit)(friend.uuid, friend.friend.to()) } }).padLeft(5f).padBottom(5f)
             }
             if (select != null) {
-                table.add(ArrowButton().apply { onActivation { (select)(friend.friend.uuid ) } }).padLeft(5f).padBottom(5f)
+                table.add(ArrowButton().apply { onActivation { (select)(friend.uuid, friend.friend.to()) } }).padLeft(5f).padBottom(5f)
             }
             table.row()
         }
@@ -206,18 +210,18 @@ internal class FriendListV2(
     }
 
     companion object {
-        fun showRemoveFriendshipPopup(friend: UUID, screen: BaseScreen) {
+        fun showRemoveFriendshipPopup(friendship: UUID, friend: AccountResponse, screen: BaseScreen) {
             val popup = ConfirmPopup(
                 screen.stage,
-                "Do you really want to remove [$friend] as friend?",
+                "Do you really want to remove [${friend.username}] as friend?",
                 "Yes",
                 false
             ) {
-                Log.debug("Unfriending with %s", friend)
+                Log.debug("Unfriending with %s (friendship UUID: %s)", friend.username, friendship)
                 InfoPopup.load(screen.stage) {
-                    screen.game.onlineMultiplayer.api.friend.delete(friend)
+                    screen.game.onlineMultiplayer.api.friend.delete(friendship)
                     Concurrency.runOnGLThread {
-                        ToastPopup("You removed [$friend] as friend", screen.stage)
+                        ToastPopup("You removed [${friend.username}] as friend", screen.stage)
                     }
                 }
             }

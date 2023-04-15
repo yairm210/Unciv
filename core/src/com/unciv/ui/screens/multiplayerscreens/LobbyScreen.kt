@@ -116,9 +116,9 @@ class LobbyScreen(
             val friends = FriendListV2(
                 this as BaseScreen,
                 me.uuid,
-                select = {
+                select = { _, friend ->
                     InfoPopup.load(stage) {
-                        game.onlineMultiplayer.api.invite.new(it, lobbyUUID)
+                        game.onlineMultiplayer.api.invite.new(friend.uuid, lobbyUUID)
                     }
                 }
             )
@@ -227,7 +227,7 @@ class LobbyScreen(
         table.add(topLine.pad(10f).center()).colspan(3).fillX()
         table.addSeparator(skinStrings.skinConfig.baseColor.brighten(0.1f), height = 0.5f).width(stage.width * 0.85f).padBottom(15f).row()
         table.row().expandX().expandY()
-        table.add(playerScroll).fillX().expandY().prefWidth(stage.width * 0.6f).padLeft(5f)
+        table.add(playerScroll).fillX().expandY().prefWidth(stage.width * 0.4f).padLeft(5f)
         // TODO: The options table is way to big, reduce its width somehow
         table.add(optionsTable).prefWidth(stage.width * 0.1f).padLeft(0f).padRight(0f)
         // TODO: Add vertical horizontal bar like a left border for the chat screen
