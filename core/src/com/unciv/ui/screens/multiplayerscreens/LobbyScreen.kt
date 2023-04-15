@@ -6,17 +6,18 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
+import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.apiv2.AccountResponse
-import com.unciv.logic.multiplayer.apiv2.FriendRequestResponse
-import com.unciv.logic.multiplayer.apiv2.FriendResponse
 import com.unciv.logic.multiplayer.apiv2.GetLobbyResponse
+import com.unciv.logic.multiplayer.apiv2.LobbyClosed
+import com.unciv.logic.multiplayer.apiv2.LobbyJoin
+import com.unciv.logic.multiplayer.apiv2.LobbyKick
+import com.unciv.logic.multiplayer.apiv2.LobbyLeave
 import com.unciv.logic.multiplayer.apiv2.LobbyResponse
-import com.unciv.logic.multiplayer.apiv2.OnlineAccountResponse
 import com.unciv.logic.multiplayer.apiv2.StartGameResponse
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.RulesetCache
@@ -24,15 +25,15 @@ import com.unciv.ui.components.AutoScrollPane
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.MultiplayerButton
 import com.unciv.ui.components.PencilButton
-import com.unciv.ui.components.RefreshButton
-import com.unciv.ui.components.SearchButton
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.keyShortcuts
 import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
@@ -71,6 +72,7 @@ class LobbyScreen(
     constructor(lobby: GetLobbyResponse): this(lobby.uuid, lobby.chatRoomUUID, lobby.name, lobby.maxPlayers, lobby.currentPlayers.toMutableList(), lobby.hasPassword, lobby.owner, GameSetupInfo.fromSettings())
 
     override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters)
+    private val events = EventBus.EventReceiver()
 
     private val gameOptionsTable: GameOptionsTable
     private val mapOptionsTable = MapOptionsTable(this)
@@ -154,6 +156,30 @@ class LobbyScreen(
             ToastPopup("The help feature has not been implemented yet.", stage)
         }
 
+        events.receive(LobbyJoin::class, { it.lobbyUUID == lobbyUUID }) {
+            Log.debug("Player %s joined lobby %s", it.player, lobbyUUID)
+            lobbyPlayerList.addPlayer(it.player)
+            ToastPopup("${it.player.username} has joined the lobby", stage)
+        }
+        events.receive(LobbyLeave::class, { it.lobbyUUID == lobbyUUID }) {
+            Log.debug("Player %s left lobby %s", it.player, lobbyUUID)
+            lobbyPlayerList.removePlayer(it.player.uuid)
+            ToastPopup("${it.player.username} has left the lobby", stage)
+        }
+        events.receive(LobbyKick::class, { it.lobbyUUID == lobbyUUID }) {
+            val success = lobbyPlayerList.removePlayer(it.player.uuid)
+            Log.debug("Removing player %s from lobby %s", it.player, if (success) "succeeded" else "failed")
+            if (success) {
+                ToastPopup("${it.player.username} has been kicked", stage)
+            }
+        }
+        events.receive(LobbyClosed::class, { it.lobbyUUID == lobbyUUID }) {
+            Log.debug("Lobby %s has been closed", lobbyUUID)
+            InfoPopup(stage, "This lobby has been closed.") {
+                game.popScreen()
+            }
+        }
+
         recreate()
         Concurrency.run {
             refresh()
@@ -222,6 +248,12 @@ class LobbyScreen(
         // Construct the table which makes up the whole lobby screen
         table.row()
         val topLine = HorizontalGroup()
+        if (hasPassword) {
+            topLine.addActor(Container(ImageGetter.getImage("OtherIcons/LockSmall").apply {
+                setOrigin(Align.center)
+                setSize(Constants.headingFontSize.toFloat())
+            }).apply { padRight(10f) })
+        }
         topLine.addActor(Container(screenTitle).padRight(10f))
         topLine.addActor(changeLobbyNameButton)
         table.add(topLine.pad(10f).center()).colspan(3).fillX()

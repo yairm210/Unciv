@@ -91,8 +91,8 @@ class LobbyBrowserScreen : BaseScreen() {
         }
         bottomTable.add(closeButton).pad(20f)
         bottomTable.add().growX()  // layout purposes only
-        bottomTable.add(socialButton).pad(10f)
-        bottomTable.add(helpButton).pad(20f)
+        bottomTable.add(socialButton).pad(5f)
+        bottomTable.add(helpButton).padRight(20f)
 
         table.addSeparator(skinStrings.skinConfig.baseColor.brighten(0.1f), height = 1f).width(stage.width * 0.85f).padTop(15f).row()
         table.row().bottom().fillX().maxHeight(stage.height / 8)
