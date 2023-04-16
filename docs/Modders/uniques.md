@@ -1811,6 +1811,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;in this city&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;in other cities&gt;"
+	Applicable to: Conditional
+
 ??? example  "&lt;in cities with a [buildingFilter]&gt;"
 	Example: "&lt;in cities with a [Culture]&gt;"
 

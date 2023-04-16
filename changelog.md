@@ -1,3 +1,22 @@
+## 4.6.2
+
+Added "in this city", "in other cities" conditionals for city-based uniques
+
+More UI cleanup
+
+Removed many double / badly-placed icons
+
+Tileset no longer reverts on Android after restarting game
+
+Solved randomness issues with Retreat chance and unit gain from defeat
+
+By SomeTroglodyte:
+- Unhappiness effects
+- Fix more leaks of the actual Player count in random mode
+- Allow city & tile conditionals on production-to-stat-enabling unique
+
+Make new "Charts" button translatable  - By Ouaz
+
 ## 4.6.1
 
 All game object images shown in text!

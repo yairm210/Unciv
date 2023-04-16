@@ -472,8 +472,8 @@ fun Image.setSize(size: Float) {
 }
 
 /** Translate a [String] and make a [TextButton] widget from it */
-fun String.toTextButton(style: TextButtonStyle? = null): TextButton {
-    val text = this.tr()
+fun String.toTextButton(style: TextButtonStyle? = null, hideIcons: Boolean = false): TextButton {
+    val text = this.tr(hideIcons)
     return if (style == null) TextButton(text, BaseScreen.skin) else TextButton(text, style)
 }
 
