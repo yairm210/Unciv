@@ -127,7 +127,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     fun getCityProductionTextForCityButton(): String {
         val currentConstructionSnapshot = currentConstructionFromQueue // See below
-        var result = currentConstructionSnapshot.tr()
+        var result = currentConstructionSnapshot.tr(true)
         if (currentConstructionSnapshot.isNotEmpty()) {
             val construction = PerpetualConstruction.perpetualConstructionsMap[currentConstructionSnapshot]
             result += construction?.getProductionTooltip(city)

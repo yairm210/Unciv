@@ -196,7 +196,7 @@ class CityOverviewTab(
 
         val constructionCells: MutableList<Cell<Label>> = mutableListOf()
         for (city in cityList) {
-            val button = city.name.toTextButton()
+            val button = city.name.toTextButton(hideIcons = true)
             button.onClick {
                 overviewScreen.game.pushScreen(CityScreen(city))
             }

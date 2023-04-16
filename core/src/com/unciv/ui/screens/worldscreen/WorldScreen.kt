@@ -113,7 +113,7 @@ class WorldScreen(
     private val zoomController = ZoomButtonPair(mapHolder)
     internal val minimapWrapper = MinimapHolder(mapHolder)
     private val bottomTileInfoTable = TileInfoTable(viewingCiv)
-    private val notificationsScroll = NotificationsScroll(this)
+    internal val notificationsScroll = NotificationsScroll(this)
     internal val nextTurnButton = NextTurnButton()
     private val statusButtons = StatusButtons(nextTurnButton)
     private val tutorialTaskTable = Table().apply {
@@ -377,7 +377,7 @@ class WorldScreen(
             when {
                 viewingCiv.shouldShowDiplomaticVotingResults() ->
                     UncivGame.Current.pushScreen(DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv))
-                !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.civilizations.any { it.victoryManager.hasWon() }) ->
+                !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.checkForVictory()) ->
                     game.pushScreen(VictoryScreen(this))
                 viewingCiv.greatPeople.freeGreatPeople > 0 ->
                     game.pushScreen(GreatPersonPickerScreen(viewingCiv))
