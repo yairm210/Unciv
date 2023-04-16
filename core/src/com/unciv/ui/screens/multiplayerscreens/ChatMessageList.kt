@@ -3,6 +3,7 @@ package com.unciv.ui.screens.multiplayerscreens
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.badlogic.gdx.utils.Disposable
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.logic.multiplayer.apiv2.ChatMessage
@@ -39,7 +40,7 @@ private const val REDRAW_INTERVAL = 5000L
  * Another good way is to use the [ChatTable] directly. Make sure to [dispose]
  * this table, since it holds a coroutine which updates itself periodically.
  */
-class ChatMessageList(private val chatRoomUUID: UUID, private val mp: OnlineMultiplayer): Table() {
+class ChatMessageList(private val chatRoomUUID: UUID, private val mp: OnlineMultiplayer): Table(), Disposable {
     private val events = EventBus.EventReceiver()
     private var messageCache: MutableList<ChatMessage> = mutableListOf()
     private var redrawJob: Job = Concurrency.run { redrawPeriodically() }
@@ -157,7 +158,7 @@ class ChatMessageList(private val chatRoomUUID: UUID, private val mp: OnlineMult
     /**
      * Dispose this instance and cancel the [redrawJob]
      */
-    internal fun dispose() {
+    override fun dispose() {
         redrawJob.cancel()
     }
 

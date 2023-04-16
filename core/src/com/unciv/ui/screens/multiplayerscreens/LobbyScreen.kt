@@ -80,7 +80,7 @@ class LobbyScreen(
     private val me
         get() = runBlocking { game.onlineMultiplayer.api.account.get() }!!
     private val screenTitle
-        get() = "Lobby: [$lobbyName] [${lobbyPlayerList.players.size + 1}]/[$maxPlayers]".toLabel(fontSize = Constants.headingFontSize)
+        get() = "Lobby: [$lobbyName] [${lobbyPlayerList.players.size}]/[$maxPlayers]".toLabel(fontSize = Constants.headingFontSize)
 
     private val lobbyPlayerList: LobbyPlayerList
     private val chatMessageList = ChatMessageList(lobbyChatUUID, game.onlineMultiplayer)
@@ -188,6 +188,7 @@ class LobbyScreen(
 
     override fun dispose() {
         chatMessageList.dispose()
+        super.dispose()
     }
 
     private class WrapPopup(stage: Stage, other: Actor, action: (() -> Unit)? = null) : Popup(stage) {

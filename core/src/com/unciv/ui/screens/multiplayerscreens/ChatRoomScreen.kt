@@ -68,6 +68,7 @@ class ChatRoomScreen(private val chatRoomUUID: UUID) : PickerScreen() {
 
     override fun dispose() {
         messageTable.dispose()
+        super.dispose()
     }
 
 }

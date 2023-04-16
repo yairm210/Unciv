@@ -114,4 +114,9 @@ class LobbyBrowserScreen : BaseScreen() {
         }
     }
 
+    override fun dispose() {
+        gameList.dispose()
+        super.dispose()
+    }
+
 }
