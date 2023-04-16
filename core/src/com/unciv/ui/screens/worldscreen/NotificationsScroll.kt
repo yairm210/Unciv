@@ -17,6 +17,7 @@ import com.unciv.ui.components.ColorMarkupLabel
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.surroundWithCircle
+import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -215,7 +216,7 @@ class NotificationsScroll(
                 .minHeight(2f).width(minCategoryLineWidth)
             add(Table().apply {
                 background = backgroundDrawable
-                val label = ColorMarkupLabel(category.name, Color.BLACK, fontSize = fontSize)
+                val label = category.name.toLabel(Color.BLACK, fontSize = fontSize, hideIcons = true)
                 add(label)
                 captionWidth = prefWidth  // of this wrapper including background rims
                 captionWidth
