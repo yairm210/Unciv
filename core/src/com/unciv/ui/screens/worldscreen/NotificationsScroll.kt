@@ -15,6 +15,7 @@ import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
 import com.unciv.ui.components.ColorMarkupLabel
+import com.unciv.ui.components.WrappableLabel
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.surroundWithCircle
@@ -312,7 +313,7 @@ class NotificationsScroll(
         init {
             val isSelected = notification === highlightNotification  // Notification does not implement equality contract
             val isEnlarged = isSelected && enlargeHighlight
-            val labelFontSize = if (isEnlarged) fontSize + fontSize/2 else fontSize
+            val labelFontSize = if (isEnlarged) fontSize + fontSize / 2 else fontSize
             val itemIconSize = if (isEnlarged) iconSize * 1.5f else iconSize
             val topBottomPad = if (isEnlarged) selectedListItemPad else listItemPad
 
@@ -322,11 +323,14 @@ class NotificationsScroll(
             }
 
             val maxLabelWidth = maxEntryWidth - (itemIconSize + 5f) * notification.icons.size - 10f
-            val label = ColorMarkupLabel(notification.text, Color.BLACK, fontSize= labelFontSize)
-            label.width = maxLabelWidth
-            label.wrap = true
+            val label = WrappableLabel(notification.text, maxLabelWidth, Color.BLACK, labelFontSize, hideIcons = true)
             label.setAlignment(Align.center)
-            listItem.add(label).padRight(10f)
+            if (label.prefWidth > maxLabelWidth * scaleFactor) {  // can't explain why the comparison needs scaleFactor
+                label.wrap = true
+                listItem.add(label).maxWidth(label.optimizePrefWidth()).padRight(10f)
+            } else {
+                listItem.add(label).padRight(10f)
+            }
 
             notification.addNotificationIconsTo(listItem, worldScreen.gameInfo.ruleset, itemIconSize)
 
