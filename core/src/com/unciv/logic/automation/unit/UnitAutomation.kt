@@ -9,6 +9,7 @@ import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.managers.ReligionState
@@ -271,23 +272,24 @@ object UnitAutomation {
         if (unit.hasUnique(UniqueType.PreventSpreadingReligion) || unit.canDoLimitedAction(Constants.removeHeresy))
             return SpecificUnitAutomation.automateInquisitor(unit)
 
-        // Great scientist -> Hurry research in about 50% of cases.
+        val isLateGame = isLateGame(unit.civ)
+        // Great scientist -> Hurry research if late game
         if (UnitActions.getUnitActions(unit).any { it.type == UnitActionType.HurryResearch }
-                && unit.name.hashCode() % 2 > 0) {
+                && isLateGame) {
             UnitActions.getUnitActions(unit)
                 .first { it.type == UnitActionType.HurryResearch }.action!!.invoke()
             return
         }
 
-        // Great merchant -> Conduct trade mission in about 50% of cases if not at war.
+        // Great merchant -> Conduct trade mission if late game and if not at war.
         // TODO: This could be more complex to walk to the city state that is most beneficial to
         //  also have more influence.
-        if (unit.name.hashCode() % 2 >= 0
-                && unit.hasUnique(UniqueType.CanTradeWithCityStateForGoldAndInfluence)
+        if (unit.hasUnique(UniqueType.CanTradeWithCityStateForGoldAndInfluence)
                 // Don't wander around with the great merchant when at war. Barbs might also be a
                 // problem, but hopefully by the time we have a great merchant, they're under
                 // control.
                 && !unit.civ.isAtWar()
+                && isLateGame
         ) {
             val tradeMissionCanBeConductedEventually =
                     SpecificUnitAutomation.conductTradeMission(unit)
@@ -295,8 +297,10 @@ object UnitAutomation {
                 return
         }
 
-        // Great engineer -> Try to speed up wonder construction
-        if (unit.hasUnique(UniqueType.CanSpeedupConstruction) || unit.hasUnique(UniqueType.CanSpeedupWonderConstruction)) {
+        // Great engineer -> Try to speed up wonder construction if late game
+        if (isLateGame &&
+                (unit.hasUnique(UniqueType.CanSpeedupConstruction)
+                        || unit.hasUnique(UniqueType.CanSpeedupWonderConstruction))) {
             val wonderCanBeSpedUpEventually = SpecificUnitAutomation.speedupWonderConstruction(unit)
             if (wonderCanBeSpedUpEventually)
                 return
@@ -321,6 +325,12 @@ object UnitAutomation {
         //  ages?
 
         return // The AI doesn't know how to handle unknown civilian units
+    }
+
+    private fun isLateGame(civ: Civilization): Boolean {
+        val researchCompletePercent =
+                (civ.tech.researchedTechnologies.size * 1.0f) / civ.gameInfo.ruleset.technologies.size
+        return researchCompletePercent >= 0.8f
     }
 
     private fun startGoldenAgeIfHasAbility(unit: MapUnit) {

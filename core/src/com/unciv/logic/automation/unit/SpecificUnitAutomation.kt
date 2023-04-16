@@ -13,8 +13,6 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
@@ -262,18 +260,19 @@ object SpecificUnitAutomation {
         val closestCityStateTile =
                 unit.civ.gameInfo.civilizations
                     .filter {
-                        !unit.civ.isAtWarWith(it) && it.isCityState() && it.cities.isNotEmpty() && unit.civ.hasExplored(
-                            it.cities[0].getCenterTile()
-                        )
+                        !unit.civ.isAtWarWith(it) && it.isCityState() && it.cities.isNotEmpty()
                     }
                     .flatMap { it.cities[0].getTiles() }
-                    .filter { unit.movement.canReach(it) && unit.movement.getShortestPath(it).size <= 10 }
-                    .minByOrNull { unit.movement.getShortestPath(it).size }
+                    .filter { unit.civ.hasExplored(it) }
+                    .mapNotNull { tile ->
+                        val path = unit.movement.getShortestPath(tile)
+                        if (path.size <= 10) tile to path.size else null
+                    }
+                    .minByOrNull { it.second }?.first
                     ?: return false
 
         val conductTradeMissionAction = UnitActions.getUnitActions(unit)
-            .filter { it.type == UnitActionType.ConductTradeMission }
-            .firstOrNull()
+            .firstOrNull { it.type == UnitActionType.ConductTradeMission }
         if (conductTradeMissionAction?.action != null) {
             conductTradeMissionAction.action.invoke()
             return true
@@ -300,37 +299,39 @@ object SpecificUnitAutomation {
             // other civilian unit in there for whatever reason, but again that seems a lot of
             // additional complexity for questionable gain.
             (unit.movement.canMoveTo(city.getCenterTile()) || unit.currentTile == city.getCenterTile())
-                && unit.movement.getShortestPath(city.getCenterTile()).size <= 5
-                // Don't speed up construction in small cities. There's a risk the great
-                // engineer can't get it done entirely and then it takes forever for the small
-                // city to finish the rest.
-                && city.population.population >= 3
-                && getWonderThatWouldBenefitFromBeingSpedUp(city) != null
-        }.minByOrNull { unit.movement.getShortestPath(it.getCenterTile()).size }
-        if (nearbyCityWithAvailableWonders != null) {
-            if (unit.currentTile == nearbyCityWithAvailableWonders.getCenterTile()) {
-                val wonderToHurry =
-                        getWonderThatWouldBenefitFromBeingSpedUp(nearbyCityWithAvailableWonders)!!
-                nearbyCityWithAvailableWonders.cityConstructions.constructionQueue.add(
-                    0,
-                    wonderToHurry.name
-                )
-                UnitActions.getUnitActions(unit)
-                    .first {
-                        it.type == UnitActionType.HurryBuilding
-                                || it.type == UnitActionType.HurryWonder }
-                    .action!!.invoke()
-                return true
-            }
+                    // Don't speed up construction in small cities. There's a risk the great
+                    // engineer can't get it done entirely and then it takes forever for the small
+                    // city to finish the rest.
+                    && city.population.population >= 3
+                    && getWonderThatWouldBenefitFromBeingSpedUp(city) != null
+        }.mapNotNull { city ->
+            val path = unit.movement.getShortestPath(city.getCenterTile())
+            if (path.size <= 5) city to path.size else null
+        }.minByOrNull { it.second }?.first
 
-            // Walk towards the city.
-            val tileBeforeMoving = unit.getTile()
-            unit.movement.headTowards(nearbyCityWithAvailableWonders.getCenterTile())
-            if (tileBeforeMoving != unit.currentTile)
-            // This means we're getting there and not stuck.
-                return true
+        if (nearbyCityWithAvailableWonders == null) {
+            return false
         }
-        return false
+
+        if (unit.currentTile == nearbyCityWithAvailableWonders.getCenterTile()) {
+            val wonderToHurry =
+                    getWonderThatWouldBenefitFromBeingSpedUp(nearbyCityWithAvailableWonders)!!
+            nearbyCityWithAvailableWonders.cityConstructions.constructionQueue.add(
+                0,
+                wonderToHurry.name
+            )
+            UnitActions.getUnitActions(unit)
+                .first {
+                    it.type == UnitActionType.HurryBuilding
+                            || it.type == UnitActionType.HurryWonder }
+                .action!!.invoke()
+            return true
+        }
+
+        // Walk towards the city.
+        val tileBeforeMoving = unit.getTile()
+        unit.movement.headTowards(nearbyCityWithAvailableWonders.getCenterTile())
+        return tileBeforeMoving != unit.currentTile
     }
 
     private fun getWonderThatWouldBenefitFromBeingSpedUp(city: City): Building? {
