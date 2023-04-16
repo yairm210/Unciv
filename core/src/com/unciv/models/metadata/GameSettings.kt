@@ -120,7 +120,7 @@ class GameSettings {
     var notificationScroll: String = ""
 
     /** If on, selected notifications are drawn enlarged with wider padding */
-    var enlargeSelectedNotification = false
+    var enlargeSelectedNotification = true
 
     /** used to migrate from older versions of the settings */
     var version: Int? = null

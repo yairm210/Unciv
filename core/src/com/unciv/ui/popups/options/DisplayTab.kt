@@ -66,7 +66,6 @@ fun displayTab(
     add("UI".toLabel(fontSize = 24)).colspan(2).row()
 
     addNotificationScrollSelect(this, settings, optionsPopup.selectBoxMinWidth)
-    optionsPopup.addCheckbox(this, "Enlarge clicked notifications", settings.enlargeSelectedNotification) { settings.enlargeSelectedNotification = it }
     addMinimapSizeSlider(this, settings, optionsPopup.selectBoxMinWidth)
     optionsPopup.addCheckbox(this, "Show tutorials", settings.showTutorials, updateWorld = true, newRow = false) { settings.showTutorials = it }
     addResetTutorials(this, settings)
