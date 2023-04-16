@@ -162,7 +162,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalWhenBelowAmountResource -> state.civInfo != null
                     && state.civInfo.getCivResourcesByName()[condition.params[1]]!! < condition.params[0].toInt()
             UniqueType.ConditionalHappy ->
-                state.civInfo != null && state.civInfo.stats.statsForNextTurn.happiness >= 0
+                state.civInfo != null && state.civInfo.stats.happiness >= 0
             UniqueType.ConditionalBetweenHappiness ->
                 state.civInfo != null
                 && condition.params[0].toInt() <= state.civInfo.stats.happiness
@@ -379,4 +379,3 @@ fun ArrayList<TemporaryUnique>.getMatchingUniques(uniqueType: UniqueType, stateF
             .map { it.uniqueObject }
             .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) }
     }
-
