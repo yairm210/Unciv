@@ -127,15 +127,20 @@ object BattleHelper {
         )
             return false
 
+        if (combatant is MapUnitCombatant && combatant.hasUnique(UniqueType.CannotAttack))
+            return false
+
         if (combatant is MapUnitCombatant &&
-            combatant.unit.hasUnique(UniqueType.CanOnlyAttackUnits) &&
-            combatant.unit.getMatchingUniques(UniqueType.CanOnlyAttackUnits).none { tileCombatant.matchesCategory(it.params[0]) }
+            combatant.unit.getMatchingUniques(UniqueType.CanOnlyAttackUnits).run {
+                any() && none { tileCombatant.matchesCategory(it.params[0]) }
+            }
         )
             return false
 
         if (combatant is MapUnitCombatant &&
-            combatant.unit.getMatchingUniques(UniqueType.CanOnlyAttackTiles)
-                .let { unique -> unique.any() && unique.none { tile.matchesFilter(it.params[0]) } }
+            combatant.unit.getMatchingUniques(UniqueType.CanOnlyAttackTiles).run {
+                any() && none { tile.matchesFilter(it.params[0]) }
+            }
         )
             return false
 

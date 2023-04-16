@@ -175,6 +175,21 @@ enum class UniqueParameterType(
         }
     },
 
+    /** Implemented by [Nation.matchesFilter][com.unciv.models.ruleset.Building.matchesFilter] */
+    NationFilter("nationFilter", Constants.cityStates) {
+        private val knownValues = setOf(Constants.cityStates, "Major", "All")
+
+        override fun getErrorSeverity(
+            parameterText: String,
+            ruleset: Ruleset
+        ): UniqueType.UniqueComplianceErrorSeverity? {
+            if (parameterText in knownValues) return null
+            if (ruleset.nations.containsKey(parameterText)) return null
+            if (ruleset.nations.values.any { it.hasUnique(parameterText) }) return null
+            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+        }
+    },
+
     /** Implemented by [CityInfo.matchesFilter][com.unciv.logic.city.City.matchesFilter] */
     CityFilter("cityFilter", "in all cities", null, "City filters") {
         private val cityFilterStrings = setOf(
@@ -390,6 +405,13 @@ enum class UniqueParameterType(
                 else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
             }
     },
+
+    StockpiledResource("stockpiledResource", "StockpiledResource", "The name of any stockpiled") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+                UniqueType.UniqueComplianceErrorSeverity? = if (parameterText in ruleset.tileResources && ruleset.tileResources[parameterText]!!.isStockpiled()) null
+                else UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+    },
+
 
     /** Used by [UniqueType.FreeExtraBeliefs], see ReligionManager.getBeliefsToChooseAt* functions */
     BeliefTypeName("beliefType", "Follower", "'Pantheon', 'Follower', 'Founder' or 'Enhancer'") {

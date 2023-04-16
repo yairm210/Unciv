@@ -99,6 +99,7 @@ open class TileGroup(
         layerMisc.removeHexOutline()
         layerOverlay.hideHighlight()
         layerOverlay.hideCrosshair()
+        layerOverlay.hideGoodCityLocationIndicator()
 
         // Show all layers by default
         setAllLayersVisible(true)

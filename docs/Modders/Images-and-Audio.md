@@ -94,23 +94,24 @@ Triggers indicate context (call it intent, mood, whatever, it doesn't matter) by
 
 The current list of triggers is as follows:
 
-| Description | Prefix | [^M] | Suffix | [^X] | Flags |
-| ----------- |:------ |:----:| ------:|:----:|:-----:|
-| Automatic next-track[^0] | | | Ambient | | |
-| Launch game[^1] | | | Menu | | |
-| Every 10th turn | (player civ name) | [^M] | Peace or War[^2] | | [^F] |
-| New game: Select a mod | (mod name) | [^M] | Theme | | [^S] |
-| New game: Pick a nation for a player | (nation name) | [^M] | Theme or Peace | | [^S] |
-| Diplomacy: Select player | (nation name) | [^M] | Peace or War[^3] | | [^S] |
-| First contact[^4] | (civ name) | [^M] | Theme or Peace | [^X] | |
-| War declaration[^5] | (civ name) | [^M] | War | [^X] | |
-| Civ defeated | (civ name) | | Defeat | [^X] | |
-| Golden Age | (civ name) | [^M] | Golden | [^X] | |
-| Wonder built | (wonder name) | [^M] | Wonder | [^X] | |
-| Tech researched | (tech name) | [^M] | Researched | [^X] | |
-| Map editor: Select nation start location | (nation name) | [^M] | Theme | | [^S] |
-| Options: Volume slider or Default track downloaded | | | | | [^D] |
-| Options: Click currently playing label[^6] | | [^M] | Ambient | | [^S] |
+| Description                                        | Prefix            | [^M] |           Suffix | [^X]  | Flags |
+|----------------------------------------------------|:------------------|:----:|-----------------:|:-----:|:-----:|
+| Automatic next-track[^0]                           |                   |      |          Ambient |       |       |
+| Launch game[^1]                                    |                   |      |             Menu |       |       |
+| Every 10th turn                                    | (player civ name) | [^M] | Peace or War[^2] |       | [^F]  |
+| New game: Select a mod                             | (mod name)        | [^M] |            Theme |       | [^S]  |
+| New game: Pick a nation for a player               | (nation name)     | [^M] |   Theme or Peace |       | [^S]  |
+| Diplomacy: Select player                           | (nation name)     | [^M] | Peace or War[^3] |       | [^S]  |
+| First contact[^4]                                  | (civ name)        | [^M] |   Theme or Peace | [^X]  |       |
+| War declaration[^5]                                | (civ name)        | [^M] |              War | [^X]  |       |
+| Civ defeated                                       | (civ name)        |      |           Defeat | [^X]  |       |
+| Player wins                                        | (civ name)        |      |          Victory | [^X]  |       |
+| Golden Age                                         | (civ name)        | [^M] |           Golden | [^X]  |       |
+| Wonder built                                       | (wonder name)     | [^M] |           Wonder | [^X]  |       |
+| Tech researched                                    | (tech name)       | [^M] |       Researched | [^X]  |       |
+| Map editor: Select nation start location           | (nation name)     | [^M] |            Theme |       | [^S]  |
+| Options: Volume slider or Default track downloaded |                   |      |                  |       | [^D]  |
+| Music controls (Options or from Menu) Next track   |                   |      |          Ambient |       |       |
 
 Legend:
 
@@ -126,4 +127,3 @@ Legend:
 -   [^3]: According to your relation to the picked player.
 -   [^4]: Excluding City States.
 -   [^5]: Both in the alert when another player declares War on you and declaring War yourself in Diplomacy screen.
--   [^6]: Yes these flags are not optimal.

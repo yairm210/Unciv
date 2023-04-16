@@ -2342,6 +2342,27 @@ TileSets/AbsoluteUnits/Units/Scout-2
   orig: 95, 81
   offset: 0, 0
   index: -1
+TileSets/AbsoluteUnits/Units/Sea Beggar
+  rotate: false
+  xy: 161, 230
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Sea Beggar-1
+  rotate: false
+  xy: 89, 86
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Sea Beggar-2
+  rotate: false
+  xy: 161, 166
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
 TileSets/AbsoluteUnits/Units/Settler
   rotate: false
   xy: 1348, 1850
@@ -2382,6 +2403,27 @@ TileSets/AbsoluteUnits/Units/Settler-Industrial era-2
   xy: 112, 1939
   size: 100, 81
   orig: 100, 81
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Ship of the Line
+  rotate: false
+  xy: 89, 22
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Ship of the Line-1
+  rotate: false
+  xy: 161, 102
+  size: 64, 56
+  orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Ship of the Line-2
+  rotate: false
+  xy: 161, 38
+  size: 64, 56
+  orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Skirmisher
@@ -2435,21 +2477,21 @@ TileSets/AbsoluteUnits/Units/Spearman-2
   index: -1
 TileSets/AbsoluteUnits/Units/Submarine
   rotate: false
-  xy: 161, 230
+  xy: 234, 348
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Submarine-1
   rotate: false
-  xy: 89, 86
+  xy: 233, 284
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Submarine-2
   rotate: false
-  xy: 161, 166
+  xy: 233, 220
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
@@ -2498,44 +2540,65 @@ TileSets/AbsoluteUnits/Units/Tank-2
   index: -1
 TileSets/AbsoluteUnits/Units/Trebuchet
   rotate: false
-  xy: 89, 22
+  xy: 233, 156
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Trebuchet-1
   rotate: false
-  xy: 161, 102
+  xy: 233, 92
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Trebuchet-2
   rotate: false
-  xy: 161, 38
+  xy: 233, 28
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Trireme
   rotate: false
-  xy: 234, 348
+  xy: 1743, 1740
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Trireme-1
   rotate: false
-  xy: 233, 284
+  xy: 1815, 1740
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Trireme-2
   rotate: false
-  xy: 233, 220
+  xy: 1743, 1676
   size: 64, 56
   orig: 64, 56
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Turtle Ship
+  rotate: false
+  xy: 1815, 1672
+  size: 64, 60
+  orig: 64, 60
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Turtle Ship-1
+  rotate: false
+  xy: 1887, 1686
+  size: 64, 60
+  orig: 64, 60
+  offset: 0, 0
+  index: -1
+TileSets/AbsoluteUnits/Units/Turtle Ship-2
+  rotate: false
+  xy: 1959, 1686
+  size: 64, 60
+  orig: 64, 60
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/War Chariot
@@ -2624,42 +2687,42 @@ TileSets/AbsoluteUnits/Units/Warrior-2
   index: -1
 TileSets/AbsoluteUnits/Units/Work Boats
   rotate: false
-  xy: 233, 156
+  xy: 1887, 1622
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Work Boats-1
   rotate: false
-  xy: 233, 92
+  xy: 1959, 1622
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Work Boats-2
   rotate: false
-  xy: 233, 28
+  xy: 1743, 1612
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Work Boats-Industrial era
   rotate: false
-  xy: 1743, 1740
+  xy: 1815, 1608
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Work Boats-Industrial era-1
   rotate: false
-  xy: 1815, 1740
+  xy: 1887, 1558
   size: 64, 56
   orig: 64, 56
   offset: 0, 0
   index: -1
 TileSets/AbsoluteUnits/Units/Work Boats-Industrial era-2
   rotate: false
-  xy: 1743, 1676
+  xy: 1959, 1558
   size: 64, 56
   orig: 64, 56
   offset: 0, 0

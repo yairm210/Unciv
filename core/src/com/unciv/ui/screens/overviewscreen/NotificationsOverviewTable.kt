@@ -8,13 +8,12 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.components.ColorMarkupLabel
 import com.unciv.ui.components.TabbedPager
-import com.unciv.ui.components.WrappableLabel
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.screens.worldscreen.WorldScreen
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
 
 class NotificationsOverviewTable(
     viewingPlayer: Civilization,
@@ -41,11 +40,6 @@ class NotificationsOverviewTable(
 
     private val notificationLog = viewingPlayer.notificationsLog
     private val notificationTable = Table(BaseScreen.skin)
-
-    private val scaleFactor = 0.3f
-    private val inverseScaleFactor = 1f / scaleFactor
-    private val maxWidthOfStage = 0.333f
-    private val maxEntryWidth = worldScreen.stage.width * maxWidthOfStage * inverseScaleFactor
 
     val iconSize = 20f
 
@@ -90,10 +84,10 @@ class NotificationsOverviewTable(
             for (notification in categoryNotifications) {
                 val notificationTable = Table(BaseScreen.skin)
 
-                val labelWidth = maxEntryWidth - iconSize * notification.icons.size - 10f
-                val label = WrappableLabel(notification.text, labelWidth, Color.BLACK, 20)
+                val label = ColorMarkupLabel(notification.text, Color.BLACK, fontSize = 20)
+                    .apply { wrap = true }
 
-                notificationTable.add(label)
+                notificationTable.add(label).width(worldScreen.stage.width/2 - iconSize * notification.icons.size)
                 notificationTable.background = BaseScreen.skinStrings.getUiBackground("OverviewScreen/NotificationOverviewTable/Notification", BaseScreen.skinStrings.roundedEdgeRectangleShape)
                 notificationTable.touchable = Touchable.enabled
                 notificationTable.onClick {
@@ -101,7 +95,7 @@ class NotificationsOverviewTable(
                     notification.action?.execute(worldScreen)
                 }
 
-                notification.addNotificationIcons(worldScreen.gameInfo.ruleset, iconSize, notificationTable)
+                notification.addNotificationIconsTo(notificationTable, worldScreen.gameInfo.ruleset, iconSize)
 
                 turnTable.add(notificationTable).padTop(5f)
                 turnTable.padTop(20f).row()

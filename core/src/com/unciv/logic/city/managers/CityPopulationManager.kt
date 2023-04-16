@@ -102,20 +102,26 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
             if (population > 1) addPopulation(-1)
             foodStored = 0
         }
-        if (foodStored >= getFoodToNextPopulation()) {  // growth!
-            foodStored -= getFoodToNextPopulation()
-            var percentOfFoodCarriedOver =
-                city.getMatchingUniques(UniqueType.CarryOverFood)
-                    .filter { city.matchesFilter(it.params[1]) }
-                    .sumOf { it.params[0].toInt() }
-            // Try to avoid runaway food gain in mods, just in case
-            if (percentOfFoodCarriedOver > 95) percentOfFoodCarriedOver = 95
-            foodStored += (getFoodToNextPopulation() * percentOfFoodCarriedOver / 100f).toInt()
-            addPopulation(1)
-            city.updateCitizens = true
-            city.civ.addNotification("[${city.name}] has grown!", city.location,
-                NotificationCategory.Cities, NotificationIcon.Growth)
-        }
+        val foodNeededToGrow = getFoodToNextPopulation()
+        if (foodStored < foodNeededToGrow) return
+
+        // What if the stores are already over foodNeededToGrow but NullifiesGrowth is in effect?
+        // We could simply test food==0 - but this way NullifiesStat(food) will still allow growth:
+        if (city.getMatchingUniques(UniqueType.NullifiesGrowth).any())
+            return
+
+        // growth!
+        foodStored -= foodNeededToGrow
+        val percentOfFoodCarriedOver =
+            city.getMatchingUniques(UniqueType.CarryOverFood)
+                .filter { city.matchesFilter(it.params[1]) }
+                .sumOf { it.params[0].toInt() }
+                .coerceAtMost(95)  // Try to avoid runaway food gain in mods, just in case
+        foodStored += (foodNeededToGrow * percentOfFoodCarriedOver / 100f).toInt()
+        addPopulation(1)
+        city.updateCitizens = true
+        city.civ.addNotification("[${city.name}] has grown!", city.location,
+            NotificationCategory.Cities, NotificationIcon.Growth)
     }
 
     fun addPopulation(count: Int) {

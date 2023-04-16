@@ -49,6 +49,11 @@ enum class NotificationCategory{
     War,
     Religion,
     Cities
+    ;
+    companion object {
+        fun safeValueOf(name: String): NotificationCategory? =
+                values().firstOrNull { it.name == name }
+    }
 }
 
 /**
@@ -70,17 +75,18 @@ open class Notification() : IsPartOfGameInfoSerialization {
         this.category = category.name
     }
 
-    fun addNotificationIcons(ruleset: Ruleset, iconSize: Float, table: Table) {
+    fun addNotificationIconsTo(table: Table, ruleset: Ruleset, iconSize: Float) {
         if (icons.isEmpty()) return
         for (icon in icons.reversed()) {
             val image: Actor = when {
-                ruleset.technologies.containsKey(icon) -> ImageGetter.getTechIconPortrait(icon, iconSize)
-                ruleset.nations.containsKey(icon) -> ImageGetter.getNationPortrait(
-                    ruleset.nations[icon]!!,
-                    iconSize
-                )
-                ruleset.units.containsKey(icon) -> ImageGetter.getUnitIcon(icon)
-                else -> ImageGetter.getImage(icon)
+                ruleset.technologies.containsKey(icon) ->
+                    ImageGetter.getTechIconPortrait(icon, iconSize)
+                ruleset.nations.containsKey(icon) ->
+                    ImageGetter.getNationPortrait(ruleset.nations[icon]!!, iconSize)
+                ruleset.units.containsKey(icon) ->
+                    ImageGetter.getUnitIcon(icon)
+                else ->
+                    ImageGetter.getImage(icon)
             }
             table.add(image).size(iconSize).padRight(5f)
         }

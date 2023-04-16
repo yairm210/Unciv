@@ -305,13 +305,13 @@ class CivInfoTransientCache(val civInfo: Civilization) {
 
         for (unit in civInfo.units.getCivUnits())
             newDetailedCivResources.subtractResourceRequirements(
-                unit.baseUnit.getResourceRequirements(), civInfo.gameInfo.ruleset, "Units")
+                unit.baseUnit.getResourceRequirementsPerTurn(), civInfo.gameInfo.ruleset, "Units")
 
         // Check if anything has actually changed so we don't update stats for no reason - this uses List equality which means it checks the elements
         if (civInfo.detailedCivResources == newDetailedCivResources) return
 
         civInfo.detailedCivResources = newDetailedCivResources
-        civInfo.summarizedCivResources = newDetailedCivResources.sumByResource("All")
+        civInfo.summarizedCivResourceSupply = newDetailedCivResources.sumByResource("All")
 
         civInfo.updateStatsForNextTurn() // More or less resources = more or less happiness, with potential domino effects
     }

@@ -23,7 +23,6 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.utils.debug
-import kotlin.collections.ArrayDeque
 
 object GameStarter {
     // temporary instrumentation while tuning/debugging
@@ -293,8 +292,8 @@ object GameStarter {
             // Resolve random players
             when {
                 it.chosenCiv != Constants.random -> it
-                presetRandomNationsPool.isNotEmpty() -> Player(presetRandomNationsPool.removeLast(), it.playerType)
-                randomNationsPool.isNotEmpty() -> Player(randomNationsPool.removeLast(), it.playerType)
+                presetRandomNationsPool.isNotEmpty() -> Player(presetRandomNationsPool.removeLast(), it.playerType, it.playerId)
+                randomNationsPool.isNotEmpty() -> Player(randomNationsPool.removeLast(), it.playerType, it.playerId)
                 else -> null
             }
         }.toCollection(chosenPlayers)
@@ -344,14 +343,18 @@ object GameStarter {
 
         for (player in chosenPlayers) {
             val civ = Civilization(player.chosenCiv)
-            if (player.chosenCiv in usedMajorCivs) {
-                for (tech in startingTechs)
-                    civ.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
-                civ.playerType = player.playerType
-                civ.playerId = player.playerId
-            } else {
-                if (!civ.cityStateFunctions.initCityState(ruleset, newGameParameters.startingEra, unusedMajorCivs))
-                    continue
+            when (player.chosenCiv) {
+                Constants.spectator ->
+                    civ.playerType = player.playerType
+                in usedMajorCivs -> {
+                    for (tech in startingTechs)
+                        civ.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
+                    civ.playerType = player.playerType
+                    civ.playerId = player.playerId
+                }
+                else ->
+                    if (!civ.cityStateFunctions.initCityState(ruleset, newGameParameters.startingEra, unusedMajorCivs))
+                        continue
             }
             gameInfo.civilizations.add(civ)
         }

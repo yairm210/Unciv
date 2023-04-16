@@ -298,8 +298,8 @@ object Battle {
         fun unitGainFromDefeatingUnit(): Boolean {
             if (!attacker.isMelee()) return false
             var unitCaptured = false
-            for (unique in attacker.getCivInfo()
-                .getMatchingUniques(UniqueType.GainFromDefeatingUnit)) {
+            val state = StateForConditionals(attacker.getCivInfo(), ourCombatant = attacker, theirCombatant = defender)
+            for (unique in attacker.getMatchingUniques(UniqueType.GainFromDefeatingUnit, state, true)) {
                 if (defender.unit.matchesFilter(unique.params[0])) {
                     attacker.getCivInfo().addGold(unique.params[1].toInt())
                     unitCaptured = true
@@ -818,7 +818,7 @@ object Battle {
 
         var damageModifierFromMissingResource = 1f
         val civResources = attacker.getCivInfo().getCivResourcesByName()
-        for (resource in attacker.unit.baseUnit.getResourceRequirements().keys) {
+        for (resource in attacker.unit.baseUnit.getResourceRequirementsPerTurn().keys) {
             if (civResources[resource]!! < 0 && !attacker.getCivInfo().isBarbarian())
                 damageModifierFromMissingResource *= 0.5f // I could not find a source for this number, but this felt about right
         }
@@ -1097,7 +1097,9 @@ object Battle {
         val percentChance = baseWithdrawChance - max(0, (attackBaseUnit.movement-2)) * 20 -
                 fromTile.neighbors.filterNot { it == attTile || it in attTile.neighbors }.count { canNotWithdrawTo(it) } * 20
         // Get a random number in [0,100) : if the number <= percentChance, defender will withdraw from melee
-        if (Random().nextInt(100) > percentChance) return false
+        if (Random( // 'randomness' is consistent for turn and tile, to avoid save-scumming
+                    (attacker.getCivInfo().gameInfo.turns * defender.getTile().hashCode()).toLong()
+        ).nextInt(100) > percentChance) return false
         val firstCandidateTiles = fromTile.neighbors.filterNot { it == attTile || it in attTile.neighbors }
                 .filterNot { canNotWithdrawTo(it) }
         val secondCandidateTiles = fromTile.neighbors.filter { it in attTile.neighbors }

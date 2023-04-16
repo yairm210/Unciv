@@ -7,10 +7,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.VictoryData
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.translations.tr
+import com.unciv.ui.audio.MusicMood
+import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.extensions.areSecretKeysPressed
@@ -23,14 +26,13 @@ import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.newgamescreen.NewGameScreen
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
-
-//TODO someoneHasWon should look at gameInfo.victoryData
+import java.util.EnumSet
 
 class VictoryScreen(
     private val worldScreen: WorldScreen,
     pageNumber: Int = 0
 ) : PickerScreen(), RecreateOnResize {
-
+    private val music get() = UncivGame.Current.musicController
     private val gameInfo = worldScreen.gameInfo
     private val playerCiv = worldScreen.viewingCiv
     private val tabs = TabbedPager(separatorColor = Color.WHITE, shortcutScreen = this)
@@ -60,10 +62,24 @@ class VictoryScreen(
             override fun getContent(worldScreen: WorldScreen) = VictoryScreenCivRankings(worldScreen)
             override fun isHidden(playerCiv: Civilization) = UncivGame.Current.settings.useDemographics
         },
+        Charts('C', "OtherIcons/Charts") {
+            override fun getContent(worldScreen: WorldScreen) = VictoryScreenCharts(worldScreen)
+            override fun isHidden(playerCiv: Civilization) =
+                !playerCiv.isSpectator() && playerCiv.statsHistory.size < 2
+        },
         Replay('P', "OtherIcons/Load", allowAsSecret = true) {
             override fun getContent(worldScreen: WorldScreen) = VictoryScreenReplay(worldScreen)
             override fun isHidden(playerCiv: Civilization) =
-                !playerCiv.isSpectator() && playerCiv.gameInfo.victoryData == null && playerCiv.isAlive()
+                !playerCiv.isSpectator()
+                        && playerCiv.gameInfo.victoryData == null
+                        && playerCiv.isAlive()
+                        // We show the replay after 50 turns. This is quite an arbitrary number, but
+                        // we don't want to leak the starting position right away (assuming we don't
+                        // condense the replay map in a similar way to the minimap (ie. it fills
+                        // to only the discovered area) and probably before 50 turns not much
+                        // interesting would happen anyway in the replay and the slider might feel
+                        // weird, too.
+                        && playerCiv.gameInfo.turns < 50
         };
         abstract fun getContent(worldScreen: WorldScreen): Table
         open fun isHidden(playerCiv: Civilization) = false
@@ -91,27 +107,17 @@ class VictoryScreen(
         tabs.selectPage(pageNumber)
 
         //**************** Set up bottom area - buttons and description label ****************
-        rightSideButton.isVisible = false
-
-        var someoneHasWon = false
-
-        val playerVictoryType = playerCiv.victoryManager.getVictoryTypeAchieved()
-        if (playerVictoryType != null) {
-            someoneHasWon = true
-            wonOrLost("You have won a [$playerVictoryType] Victory!", playerVictoryType, true)
-        }
-        for (civ in gameInfo.civilizations.filter { it.isMajorCiv() && it != playerCiv }) {
-            val civVictoryType = civ.victoryManager.getVictoryTypeAchieved()
-            if (civVictoryType != null) {
-                someoneHasWon = true
-                wonOrLost("[${civ.civName}] has won a [$civVictoryType] Victory!", civVictoryType, false)
+        when {
+            gameInfo.victoryData != null ->
+                displayWinner(gameInfo.victoryData!!)
+            playerCiv.isDefeated() -> {
+                displayWonOrLost(Victory().defeatString)
+                music.chooseTrack(playerCiv.civName, MusicMood.Defeat, EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch))
             }
-        }
-
-        if (playerCiv.isDefeated()) {
-            wonOrLost("", null, false)
-        } else if (!someoneHasWon) {
-            setDefaultCloseAction()
+            else -> {
+                rightSideButton.isVisible = false
+                setDefaultCloseAction()
+            }
         }
 
         //**************** Set up floating info panels ****************
@@ -141,18 +147,24 @@ class VictoryScreen(
         }
     }
 
-    private fun wonOrLost(description: String, victoryType: String?, hasWon: Boolean) {
-        val victory = playerCiv.gameInfo.ruleset.victories[victoryType]
+    private fun displayWinner(victoryData: VictoryData) {
+        // We could add `, victoryTurn` to the left side - undecided how to display
+        val (winningCiv, victoryType) = victoryData
+        val victory = gameInfo.ruleset.victories[victoryType]
             ?: Victory()  // This contains our default victory/defeat texts
-        val endGameMessage = when {
-                hasWon -> victory.victoryString
-                else -> victory.defeatString
-            }
+        if (winningCiv == playerCiv.civName) {
+            displayWonOrLost("You have won a [$victoryType] Victory!", victory.victoryString)
+            music.chooseTrack(playerCiv.civName, listOf(MusicMood.Victory, MusicMood.Theme), EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch))
+        } else {
+            displayWonOrLost("[$winningCiv] has won a [$victoryType] Victory!", victory.defeatString)
+            music.chooseTrack(playerCiv.civName, MusicMood.Defeat, EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch))
+        }
+    }
 
-        descriptionLabel.setText(description.tr() + "\n" + endGameMessage.tr())
+    private fun displayWonOrLost(vararg descriptions: String) {
+        descriptionLabel.setText(descriptions.joinToString("\n") { it.tr() })
 
         rightSideButton.setText("Start new game".tr())
-        rightSideButton.isVisible = true
         rightSideButton.enable()
         rightSideButton.onClick {
             val newGameSetupInfo = GameSetupInfo(gameInfo)

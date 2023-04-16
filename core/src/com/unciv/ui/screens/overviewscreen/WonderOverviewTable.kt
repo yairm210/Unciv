@@ -74,7 +74,7 @@ class WonderOverviewTab(
             // Terrain image padding is a bit unpredictable, they need ~5f more. Ensure equal line spacing on name, not image:
             add(image).pad(0f, 10f, 0f, 10f)
 
-            add(wonder.getNameColumn().toLabel()).pad(15f, 10f, 15f, 10f)
+            add(wonder.getNameColumn().toLabel(hideIcons = true)).pad(15f, 10f, 15f, 10f)
             add(wonder.getStatusColumn().toLabel())
             val locationText = wonder.getLocationColumn()
             if (locationText.isNotEmpty()) {

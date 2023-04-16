@@ -321,7 +321,7 @@ class WorldScreen(
     // and we don't get any silly concurrency problems!
     private fun update() {
 
-        if(uiEnabled){
+        if (uiEnabled) {
             displayTutorialsOnUpdate()
 
             bottomUnitTable.update()
@@ -377,7 +377,7 @@ class WorldScreen(
             when {
                 viewingCiv.shouldShowDiplomaticVotingResults() ->
                     UncivGame.Current.pushScreen(DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv))
-                !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.civilizations.any { it.victoryManager.hasWon() }) ->
+                !gameInfo.oneMoreTurnMode && (viewingCiv.isDefeated() || gameInfo.checkForVictory()) ->
                     game.pushScreen(VictoryScreen(this))
                 viewingCiv.greatPeople.freeGreatPeople > 0 ->
                     game.pushScreen(GreatPersonPickerScreen(viewingCiv))
@@ -397,10 +397,10 @@ class WorldScreen(
 
         updateGameplayButtons()
 
-        val maxNotificationsHeight = statusButtons.y -
-                (if (game.settings.showMinimap) minimapWrapper.height else 0f) - bottomTileInfoTable.height - 5f
-        notificationsScroll.update(viewingCiv.notifications, maxNotificationsHeight)
-        notificationsScroll.setTopRight(stage.width - 10f, statusButtons.y - 5f)
+        val coveredNotificationsTop = stage.height - statusButtons.y
+        val coveredNotificationsBottom = bottomTileInfoTable.height +
+                (if (game.settings.showMinimap) minimapWrapper.height else 0f)
+        notificationsScroll.update(viewingCiv.notifications, coveredNotificationsTop, coveredNotificationsBottom)
 
         val posZoomFromRight = if (game.settings.showMinimap) minimapWrapper.width
         else bottomTileInfoTable.width

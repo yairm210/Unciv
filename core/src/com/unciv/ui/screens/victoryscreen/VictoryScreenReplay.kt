@@ -19,6 +19,7 @@ class VictoryScreenReplay(
     worldScreen: WorldScreen
 ) : Table(BaseScreen.skin), TabbedPager.IPageExtensions {
     private val gameInfo = worldScreen.gameInfo
+    private val viewingCiv = worldScreen.viewingCiv
 
     private val finalTurn = gameInfo.turns
     private var replayTimer : Timer.Task? = null
@@ -110,7 +111,7 @@ class VictoryScreenReplay(
             )
         )
         slider.value = turn.toFloat()
-        replayMap.update(turn)
+        replayMap.update(turn, viewingCiv)
         if (turn == finalTurn) resetTimer()
     }
 

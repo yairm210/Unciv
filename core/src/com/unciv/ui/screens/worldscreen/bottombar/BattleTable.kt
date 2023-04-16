@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.UncivGame
 import com.unciv.logic.automation.unit.AttackableTile
 import com.unciv.logic.automation.unit.BattleHelper
 import com.unciv.logic.automation.unit.UnitAutomation
@@ -72,7 +71,14 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         } else {
             val defender = tryGetDefender() ?: return hide()
             if (attacker is CityCombatant && defender is CityCombatant) return hide()
-            simulateBattle(attacker, defender)
+            val tileToAttackFrom = if (attacker is MapUnitCombatant)
+                BattleHelper.getAttackableEnemies(
+                    attacker.unit,
+                    attacker.unit.movement.getDistanceToTiles()
+                )
+                    .firstOrNull { it.tileToAttack == defender.getTile() }?.tileToAttackFrom ?: attacker.getTile()
+            else attacker.getTile()
+            simulateBattle(attacker, defender, tileToAttackFrom)
         }
 
         isVisible = true
@@ -84,7 +90,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         val unitTable = worldScreen.bottomUnitTable
         return if (unitTable.selectedUnit != null
                 && !unitTable.selectedUnit!!.isCivilian()
-                && !unitTable.selectedUnit!!.hasUnique(UniqueType.CannotAttack))
+                && !unitTable.selectedUnit!!.hasUnique(UniqueType.CannotAttack))  // purely cosmetic - hide battle table
                     MapUnitCombatant(unitTable.selectedUnit!!)
         else if (unitTable.selectedCity != null)
             CityCombatant(unitTable.selectedCity!!)
@@ -134,17 +140,17 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         add(modifierLabel).width(quarterScreen - upOrDownLabel.minWidth)
     }
 
-    private fun simulateBattle(attacker: ICombatant, defender: ICombatant){
+    private fun simulateBattle(attacker: ICombatant, defender: ICombatant, tileToAttackFrom: Tile){
         clear()
 
         val attackerNameWrapper = Table()
-        val attackerLabel = attacker.getName().toLabel()
+        val attackerLabel = attacker.getName().toLabel(hideIcons = true)
         attackerNameWrapper.add(getIcon(attacker)).padRight(5f)
         attackerNameWrapper.add(attackerLabel)
         add(attackerNameWrapper)
 
         val defenderNameWrapper = Table()
-        val defenderLabel = Label(defender.getName().tr(), skin)
+        val defenderLabel = Label(defender.getName().tr(hideIcons = true), skin)
         defenderNameWrapper.add(getIcon(defender)).padRight(5f)
 
         defenderNameWrapper.add(defenderLabel)
@@ -161,12 +167,12 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         add(defender.getDefendingStrength(attacker.isRanged()).toString() + defenceIcon).row()
 
         val attackerModifiers =
-                BattleDamage.getAttackModifiers(attacker, defender).map {
+                BattleDamage.getAttackModifiers(attacker, defender, tileToAttackFrom).map {
                     getModifierTable(it.key, it.value)
                 }
         val defenderModifiers =
                 if (defender is MapUnitCombatant)
-                    BattleDamage.getDefenceModifiers(attacker, defender).map {
+                    BattleDamage.getDefenceModifiers(attacker, defender, tileToAttackFrom).map {
                         getModifierTable(it.key, it.value)
                     }
                 else listOf()
@@ -179,8 +185,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         if (attackerModifiers.any() || defenderModifiers.any()){
             addSeparator()
-            val attackerStrength = BattleDamage.getAttackingStrength(attacker, defender).roundToInt()
-            val defenderStrength = BattleDamage.getDefendingStrength(attacker, defender).roundToInt()
+            val attackerStrength = BattleDamage.getAttackingStrength(attacker, defender, tileToAttackFrom).roundToInt()
+            val defenderStrength = BattleDamage.getDefendingStrength(attacker, defender, tileToAttackFrom).roundToInt()
             add(attackerStrength.toString() + attackIcon)
             add(defenderStrength.toString() + attackIcon).row()
         }
@@ -193,12 +199,12 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             row()
         }
 
-        val maxDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender, 1f)
-        val minDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender, 0f)
+        val maxDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender, tileToAttackFrom, 1f)
+        val minDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender, tileToAttackFrom, 0f)
         var expectedDamageToDefenderForHealthbar = (maxDamageToDefender + minDamageToDefender) / 2
 
-        val maxDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, defender, 1f)
-        val minDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, defender, 0f)
+        val maxDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, defender, tileToAttackFrom, 1f)
+        val minDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, defender, tileToAttackFrom, 0f)
         var expectedDamageToAttackerForHealthbar = (maxDamageToAttacker + minDamageToAttacker) / 2
 
         if (expectedDamageToAttackerForHealthbar > attacker.getHealth() && expectedDamageToDefenderForHealthbar > defender.getHealth()) {

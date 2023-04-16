@@ -155,6 +155,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ConsumesResources("Consumes [amount] [resource]", UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit),
     ProvidesResources("Provides [amount] [resource]", UniqueTarget.Improvement, UniqueTarget.Global),
 
+    CostsResources("Costs [amount] [stockpiledResource]", UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit),
+
     GrowthPercentBonus("[relativeAmount]% growth [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     CarryOverFood("[relativeAmount]% Food is carried over after population increases [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
@@ -579,6 +581,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     /////// Resource uniques
     ResourceAmountOnTiles("Deposits in [tileFilter] tiles always provide [amount] resources", UniqueTarget.Resource),
     CityStateOnlyResource("Can only be created by Mercantile City-States", UniqueTarget.Resource),
+    Stockpiled("Stockpiled", UniqueTarget.Resource),
+    CannotBeTraded("Cannot be traded", UniqueTarget.Resource),
+    NotShownOnWorldScreen("Not shown on world screen", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
 
     ResourceWeighting("Generated with weight [amount]", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
     MinorDepositWeighting("Minor deposits generated with weight [amount]", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
@@ -628,6 +633,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
 
     /////// civ conditionals
+    ConditionalNationFilter("for [nationFilter]", UniqueTarget.Conditional),
     ConditionalWar("when at war", UniqueTarget.Conditional),
     ConditionalNotWar("when not at war", UniqueTarget.Conditional),
     ConditionalGoldenAge("during a Golden Age", UniqueTarget.Conditional),
@@ -665,6 +671,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ConditionalWhenBelowAmountResource("when below [amount] [resource]", UniqueTarget.Conditional),
 
     /////// city conditionals
+    ConditionalInThisCity("in this city", UniqueTarget.Conditional),
+    ConditionalInOtherCities("in other cities", UniqueTarget.Conditional),
     ConditionalCityWithBuilding("in cities with a [buildingFilter]", UniqueTarget.Conditional),
     ConditionalCityWithoutBuilding("in cities without a [buildingFilter]", UniqueTarget.Conditional),
     ConditionalPopulationFilter("in cities with at least [amount] [populationFilter]", UniqueTarget.Conditional),
@@ -723,7 +731,10 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     OneTimeFreeBelief("Gain a free [beliefType] belief", UniqueTarget.Triggerable),
     OneTimeTriggerVoting("Triggers voting for the Diplomatic Victory", UniqueTarget.Triggerable),  // used in Building
 
-    OneTimeGainStat("Gain [amount] [stat]", UniqueTarget.Triggerable),
+    OneTimeConsumeResources("Instantly consumes [amount] [stockpiledResource]", UniqueTarget.Triggerable),
+    OneTimeProvideResources("Instantly provides [amount] [stockpiledResource]", UniqueTarget.Triggerable),
+
+    OneTimeGainStat("Gain [amount] [stat/resource]", UniqueTarget.Triggerable),
     OneTimeGainStatRange("Gain [amount]-[amount] [stat]", UniqueTarget.Triggerable),
     OneTimeGainPantheon("Gain enough Faith for a Pantheon", UniqueTarget.Triggerable),
     OneTimeGainProphet("Gain enough Faith for [amount]% of a Great Prophet", UniqueTarget.Triggerable),

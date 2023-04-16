@@ -7,6 +7,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.ui.components.Fonts
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import java.util.*
@@ -291,7 +292,7 @@ object TranslationActiveModsCache {
  *                  defaults to the input string if no translation is available,
  *                  but with placeholder or sentence brackets removed.
  */
-fun String.tr(): String {
+fun String.tr(hideIcons:Boolean = false): String {
     val language:String = UncivGame.Current.settings.language
     if (contains('<') && contains('>')) { // Conditionals!
         /**
@@ -307,13 +308,13 @@ fun String.tr(): String {
          * together into the final fully translated string.
          */
 
-        var translatedBaseUnique = this.removeConditionals().tr()
+        var translatedBaseUnique = this.removeConditionals().tr(hideIcons)
 
         val conditionals = this.getConditionals().map { it.placeholderText }
         val conditionsWithTranslation: LinkedHashMap<String, String> = linkedMapOf()
 
         for (conditional in this.getConditionals())
-            conditionsWithTranslation[conditional.placeholderText] = conditional.text.tr()
+            conditionsWithTranslation[conditional.placeholderText] = conditional.text.tr(hideIcons)
 
         val translatedConditionals: MutableList<String> = mutableListOf()
 
@@ -401,14 +402,14 @@ fun String.tr(): String {
         for (i in termsInMessage.indices) {
             languageSpecificPlaceholder = languageSpecificPlaceholder.replace(
                 "[${termsInTranslationPlaceholder[i]}]", // re-add square brackets to placeholder terms
-                termsInMessage[i].tr()
+                termsInMessage[i].tr(hideIcons)
             )
         }
         return languageSpecificPlaceholder      // every component is already translated
     }
 
     if (processCurly) { // Translating partial sentences
-        return curlyBraceRegex.replace(this) { it.groups[1]!!.value.tr() }
+        return curlyBraceRegex.replace(this) { it.groups[1]!!.value.tr(hideIcons) }
     }
 
     if (Stats.isStats(this)) return Stats.parse(this).toString()
@@ -417,6 +418,9 @@ fun String.tr(): String {
 
     val stat = Stat.safeValueOf(this)
     if (stat != null) return stat.character + translation
+
+    if (!hideIcons && Fonts.rulesetObjectNameToChar.containsKey(this))
+        return Fonts.rulesetObjectNameToChar[this]!! + translation
 
     return translation
 }

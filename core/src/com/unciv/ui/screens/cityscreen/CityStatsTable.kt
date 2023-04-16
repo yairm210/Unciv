@@ -8,16 +8,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFlags
 import com.unciv.logic.city.CityFocus
-import com.unciv.logic.city.City
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.components.ColorMarkupLabel
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.addSeparator
@@ -29,6 +27,9 @@ import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toGroup
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import kotlin.math.ceil
 import kotlin.math.round
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
@@ -184,7 +185,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                 "We Love The King Day for another [${cityInfo.getFlag(CityFlags.WeLoveTheKing)}] turns".toLabel(Color.LIME)
             cityInfo.demandedResource.isNotEmpty() ->
                 ImageGetter.getResourcePortrait(cityInfo.demandedResource, 20f) to
-                "Demanding [${cityInfo.demandedResource}]".toLabel(Color.CORAL)
+                ColorMarkupLabel("Demanding [${cityInfo.demandedResource}]",Color.CORAL)
             else -> null to null
         }
         if (wltkLabel != null) {
@@ -351,7 +352,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
 
             info.add(ImageGetter.getUnitIcon(greatPersonName, Color.GOLD).toGroup(20f))
                 .left().padBottom(4f).padRight(5f)
-            info.add("{$greatPersonName} (+$gppPerTurn)".toLabel()).left().padBottom(4f).expandX().row()
+            info.add("{$greatPersonName} (+$gppPerTurn)".toLabel(hideIcons = true)).left().padBottom(4f).expandX().row()
 
             val gppCurrent = city.civ.greatPeople.greatPersonPointsCounter[greatPersonName]
             val gppNeeded = city.civ.greatPeople.getPointsRequiredForGreatPerson()

@@ -19,6 +19,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.unit.AttackableTile
 import com.unciv.logic.automation.unit.BattleHelper
+import com.unciv.logic.automation.unit.CityLocationTileRanker
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
@@ -26,6 +27,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.mapunit.UnitMovement
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UncivSound
 import com.unciv.models.helpers.MapArrowType
@@ -266,9 +268,12 @@ class WorldMapHolder(
             try {
                 tileToMoveTo = selectedUnit.movement.getTileToMoveToThisTurn(targetTile)
             } catch (ex: Exception) {
-                Log.error("Exception in getTileToMoveToThisTurn", ex)
-                return@run
-            } // can't move here
+                // This is normal e.g. when selecting an air unit then right-clicking on an empty tile
+                // Or telling a ship to run onto a coastal land tile.
+                if (ex !is UnitMovement.UnreachableDestinationException)
+                    Log.error("Exception in getTileToMoveToThisTurn", ex)
+                return@run // can't move here
+            }
 
             worldScreen.preActionGameInfo = worldScreen.gameInfo.clone()
 
@@ -692,6 +697,16 @@ class WorldMapHolder(
                     else 1f
                 )
             }
+        }
+
+        // Highlight best tiles for city founding
+        if (unit.hasUnique(UniqueType.FoundCity)
+                && UncivGame.Current.settings.showSettlersSuggestedCityLocations
+        ) {
+            CityLocationTileRanker.getBestTilesToFoundCity(unit).map { it.first }
+                .filter { it.isExplored(unit.civ) }.take(3).forEach {
+                    tileGroups[it]!!.layerOverlay.showGoodCityLocationIndicator()
+                }
         }
     }
 

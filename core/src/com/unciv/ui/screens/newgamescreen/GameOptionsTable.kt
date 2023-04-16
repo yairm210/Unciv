@@ -5,8 +5,11 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.metadata.GameParameters
+import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.unique.UniqueType
@@ -31,11 +34,13 @@ import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.multiplayerscreens.MultiplayerHelpers
+import kotlin.reflect.KMutableProperty0
 
 class GameOptionsTable(
     private val previousScreen: IPreviousScreen,
     private val isPortrait: Boolean = false,
-    private val updatePlayerPickerTable: (desiredCiv:String)->Unit
+    private val updatePlayerPickerTable: (desiredCiv: String) -> Unit,
+    private val updatePlayerPickerRandomLabel: () -> Unit
 ) : Table(BaseScreen.skin) {
     var gameParameters = previousScreen.gameSetupInfo.gameParameters
     val ruleset = previousScreen.ruleset
@@ -77,12 +82,10 @@ class GameOptionsTable(
                 if (turnSlider != null)
                     add(turnSlider).padTop(10f).row()
                 if (gameParameters.randomNumberOfPlayers) {
-                    addMinPlayersSlider()
-                    addMaxPlayersSlider()
+                    addMinMaxPlayersSliders()
                 }
                 if (gameParameters.randomNumberOfCityStates) {
-                    addMinCityStatesSlider()
-                    addMaxCityStatesSlider()
+                    addMinMaxCityStatesSliders()
                 } else {
                     addCityStatesSlider()
                 }
@@ -204,7 +207,7 @@ class GameOptionsTable(
         add(button)
     }
 
-    private fun numberOfPlayable() = ruleset.nations.values.count {
+    private fun numberOfMajorCivs() = ruleset.nations.values.count {
         it.isMajorCiv
     }
 
@@ -218,64 +221,98 @@ class GameOptionsTable(
 
     private fun Table.addRandomPlayersCheckbox() =
             addCheckbox("Random number of Civilizations", gameParameters.randomNumberOfPlayers)
-            {
-                gameParameters.randomNumberOfPlayers = it
+            { newRandomNumberOfPlayers ->
+                gameParameters.randomNumberOfPlayers = newRandomNumberOfPlayers
+                if (newRandomNumberOfPlayers) {
+                    // remove all random AI from player picker
+                    gameParameters.players = gameParameters.players.asSequence()
+                        .filterNot { it.playerType == PlayerType.AI && it.chosenCiv == Constants.random }
+                        .toCollection(ArrayList(gameParameters.players.size))
+                    updatePlayerPickerTable("")
+                } else {
+                    // Fill up player picker with random AI until previously active min reached
+                    val additionalRandom = gameParameters.minNumberOfPlayers - gameParameters.players.size
+                    if (additionalRandom > 0) {
+                        repeat(additionalRandom) {
+                            gameParameters.players.add(Player(Constants.random))
+                        }
+                        updatePlayerPickerTable("")
+                    }
+                }
                 update()  // To see the new sliders
             }
 
     private fun Table.addRandomCityStatesCheckbox() =
             addCheckbox("Random number of City-States", gameParameters.randomNumberOfCityStates)
             {
-                gameParameters.randomNumberOfCityStates = it
+                gameParameters.run {
+                    randomNumberOfCityStates = it
+                    if (it) {
+                        if (numberOfCityStates > maxNumberOfCityStates)
+                            maxNumberOfCityStates = numberOfCityStates
+                        if (numberOfCityStates < minNumberOfCityStates)
+                            minNumberOfCityStates = numberOfCityStates
+                    } else {
+                        if (numberOfCityStates > maxNumberOfCityStates)
+                            numberOfCityStates = maxNumberOfCityStates
+                        if (numberOfCityStates < minNumberOfCityStates)
+                            numberOfCityStates = minNumberOfCityStates
+                    }
+                }
                 update()  // To see the changed sliders
             }
 
-    private fun Table.addMinPlayersSlider() {
-        val playableAvailable = numberOfPlayable()
-        if (playableAvailable == 0) return
+    private fun Table.addLinkedMinMaxSliders(
+        minValue: Int, maxValue: Int,
+        minText: String, maxText: String,
+        minField: KMutableProperty0<Int>,
+        maxField: KMutableProperty0<Int>,
+        onChangeCallback: (() -> Unit)? = null
+    ) {
+        if (maxValue < minValue) return
 
-        add("{Min number of Civilizations}:".toLabel()).left().expandX()
-        val slider = UncivSlider(2f, playableAvailable.toFloat(), 1f, initial = gameParameters.minNumberOfPlayers.toFloat()) {
-            gameParameters.minNumberOfPlayers = it.toInt()
+        @Suppress("JoinDeclarationAndAssignment")  // it's a forward declaration!
+        lateinit var maxSlider: UncivSlider  // lateinit safe because the closure won't use it until the user operates a slider
+        val minSlider = UncivSlider(minValue.toFloat(), maxValue.toFloat(), 1f, initial = minField.get().toFloat()) {
+            val newMin = it.toInt()
+            minField.set(newMin)
+            if (newMin > maxSlider.value.toInt()) {
+                maxSlider.value = it
+                maxField.set(newMin)
+            }
+            onChangeCallback?.invoke()
         }
-        slider.isDisabled = locked
-        add(slider).padTop(10f).row()
+        minSlider.isDisabled = locked
+        maxSlider = UncivSlider(minValue.toFloat(), maxValue.toFloat(), 1f, initial = maxField.get().toFloat()) {
+            val newMax = it.toInt()
+            maxField.set(newMax)
+            if (newMax < minSlider.value.toInt()) {
+                minSlider.value = it
+                minField.set(newMax)
+            }
+            onChangeCallback?.invoke()
+        }
+        maxSlider.isDisabled = locked
+
+        add(minText.toLabel()).left().expandX()
+        add(minSlider).padTop(10f).row()
+        add(maxText.toLabel()).left().expandX()
+        add(maxSlider).padTop(10f).row()
     }
 
-    private fun Table.addMaxPlayersSlider() {
-        val playableAvailable = numberOfPlayable()
-        if (playableAvailable == 0) return
-
-        add("{Max number of Civilizations}:".toLabel()).left().expandX()
-        val slider = UncivSlider(2f, playableAvailable.toFloat(), 1f, initial = gameParameters.maxNumberOfPlayers.toFloat()) {
-            gameParameters.maxNumberOfPlayers = it.toInt()
-        }
-        slider.isDisabled = locked
-        add(slider).padTop(10f).row()
+    private fun Table.addMinMaxPlayersSliders() {
+        addLinkedMinMaxSliders(2, numberOfMajorCivs(),
+            "{Min number of Civilizations}:", "{Max number of Civilizations}:",
+            gameParameters::minNumberOfPlayers, gameParameters::maxNumberOfPlayers,
+            updatePlayerPickerRandomLabel
+        )
     }
 
-    private fun Table.addMinCityStatesSlider() {
-        val cityStatesAvailable = numberOfCityStates()
-        if (cityStatesAvailable == 0) return
-
-        add("{Min number of City-States}:".toLabel()).left().expandX()
-        val slider = UncivSlider(0f, cityStatesAvailable.toFloat(), 1f, initial = gameParameters.minNumberOfCityStates.toFloat()) {
-            gameParameters.minNumberOfCityStates = it.toInt()
-        }
-        slider.isDisabled = locked
-        add(slider).padTop(10f).row()
-    }
-
-    private fun Table.addMaxCityStatesSlider() {
-        val cityStatesAvailable = numberOfCityStates()
-        if (cityStatesAvailable == 0) return
-
-        add("{Max number of City-States}:".toLabel()).left().expandX()
-        val slider = UncivSlider(0f, cityStatesAvailable.toFloat(), 1f, initial = gameParameters.maxNumberOfCityStates.toFloat()) {
-            gameParameters.maxNumberOfCityStates = it.toInt()
-        }
-        slider.isDisabled = locked
-        add(slider).padTop(10f).row()
+    private fun Table.addMinMaxCityStatesSliders() {
+        addLinkedMinMaxSliders( 0, numberOfCityStates(),
+            "{Min number of City-States}:", "{Max number of City-States}:",
+            gameParameters::minNumberOfCityStates, gameParameters::maxNumberOfCityStates
+        )
     }
 
     private fun Table.addCityStatesSlider() {
