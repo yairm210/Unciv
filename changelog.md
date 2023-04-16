@@ -1,35 +1,19 @@
 ## 4.6.2
 
-Hide icons in game file names - see 
-
-Removed icons from city names, removed icons from notifications for performance reasons
-
 Added "in this city", "in other cities" conditionals for city-based uniques
-
-Resolves 
-
-4.6.1-patch2
-
-4.6.1-patch1
 
 More UI cleanup
 
-Removed more double icons
+Removed many double / badly-placed icons
 
-Resolved  - Return error when cannot upload game to Dropbox
+Tileset no longer reverts on Android after restarting game
 
-Resolved  - Can again spectate games where not an original participant
-
-Resolved  - Tileset no longer reverts to default on Android after restarting game
-
-Retreat chance is savescum-safe - 
-
-Resolved  - 'unit gain from defeating unit' takes attacking/defending units into account for randomness
+Solved randomness issues with Retreat chance and unit gain from defeat
 
 By SomeTroglodyte:
-- Unhappiness effects 
-- Fix more leaks of the actual Player count in random mode 
-- Allow city- or tile- related conditionals on PerpetualStatConversion enabling unique 
+- Unhappiness effects
+- Fix more leaks of the actual Player count in random mode
+- Allow city & tile conditionals on production-to-stat-enabling unique
 
 Make new "Charts" button translatable  - By Ouaz
 
