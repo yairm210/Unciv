@@ -217,11 +217,25 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     fun remainingFoundableReligionsBreakdown() = sequence {
         val gameInfo = civInfo.gameInfo
         val ruleset = gameInfo.ruleset
+        yield("Available religion symbols" to ruleset.religions.size)
+
         val multiplier = ruleset.modOptions.constants.religionLimitMultiplier
         val base = ruleset.modOptions.constants.religionLimitBase
         val civCount = gameInfo.civilizations.count { it.isMajorCiv() }
-        yield("Available religion symbols" to ruleset.religions.size)
-        yield("Number of civilizations * [$multiplier] + [$base]" to base + (civCount * multiplier).toInt())
+        val hideCivCount = civInfo.hideCivCount()
+        if (hideCivCount) {
+            val knownCivs = 1 + civInfo.getKnownCivs().count { it.isMajorCiv() }
+            val estimatedCivCount = (
+                    gameInfo.gameParameters.minNumberOfPlayers.coerceAtLeast(knownCivs) +
+                            gameInfo.gameParameters.maxNumberOfPlayers - 1
+                    ) / 2 + 1
+            val civsAndBase = base + (estimatedCivCount * multiplier).toInt()
+            yield("Estimated number of civilizations * [$multiplier] + [$base]" to civsAndBase)
+        } else {
+            val civsAndBase = base + (civCount * multiplier).toInt()
+            yield("Number of civilizations * [$multiplier] + [$base]" to civsAndBase)
+        }
+
         yield("Religions already founded" to foundedReligionsCount())
         yield("Available founder beliefs" to numberOfBeliefsAvailable(BeliefType.Founder))
         yield("Available follower beliefs" to numberOfBeliefsAvailable(BeliefType.Follower))
