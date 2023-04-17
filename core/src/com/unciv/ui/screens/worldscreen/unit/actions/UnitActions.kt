@@ -159,12 +159,8 @@ object UnitActions {
         return UnitAction(UnitActionType.Create, "Create [$improvementName]",
             action = {
                 tile.changeImprovement(improvementName)
-                val city = tile.getCity()
-                if (city != null) {
-                    city.cityStats.update()
-                    city.civ.cache.updateCivResources()
-                }
-                unit.destroy()
+                tile.getTileImprovement()!!.handleImprovementCompletion(unit)
+                unit.destroy()  // Modders may wish for a nondestructive way, but that should be another Unique
             }.takeIf { unit.currentMovement > 0 })
     }
 
@@ -502,7 +498,7 @@ object UnitActions {
                     unitTile.stopWorkingOnImprovement()
                     improvement.handleImprovementCompletion(unit)
 
-                    // without this the world screen won't the improvement because it isn't the 'last seen improvement'
+                    // without this the world screen won't show the improvement because it isn't the 'last seen improvement'
                     unit.civ.cache.updateViewableTiles()
 
                     if (unique.type == UniqueType.ConstructImprovementConsumingUnit) unit.consume()
