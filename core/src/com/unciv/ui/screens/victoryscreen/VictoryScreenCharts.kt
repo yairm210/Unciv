@@ -66,7 +66,8 @@ class VictoryScreenCharts(
         val sortedCivs = gameInfo.civilizations.asSequence()
             .filter { it.isMajorCiv() }
             .map { VictoryScreen.CivWithStat(it, rankingType) }
-            .sortedByDescending { it.value }
+            .sortedBy { it.civ.civName }
+            .sortedByDescending { if(it.civ.isDefeated()) Int.MIN_VALUE else it.value }
         for (civEntry in sortedCivs) {
             if (civEntry.civ != selectedCiv) civButtonsTable.add()
             else civButtonsTable.add(markerIcon).size(24f).right()
