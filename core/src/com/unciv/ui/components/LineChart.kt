@@ -214,7 +214,7 @@ class LineChart(
                 drawLine(batch, a.x, a.y, b.x, b.y, civ.nation.getOuterColor(), chartLineWidth)
 
                 // Draw the selected Civ icon on its last datapoint
-                if (i == points.size - 1 && selectedCiv == civ && selectedCiv in lastTurnDataPoints) {
+                if (i == simplifiedScaledPoints.size - 1 && selectedCiv == civ && selectedCiv in lastTurnDataPoints) {
                     val selectedCivIcon =
                             VictoryScreenCivGroup(
                                 selectedCiv,
