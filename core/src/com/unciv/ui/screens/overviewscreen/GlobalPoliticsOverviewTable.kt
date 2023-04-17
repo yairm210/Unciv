@@ -129,7 +129,7 @@ class GlobalPoliticsOverviewTable (
         val civInfoTable = Table(skin)
         val leaderName = civ.nation.leaderName
         civInfoTable.add(leaderName.toLabel(fontSize = 30)).row()
-        civInfoTable.add(civ.civName.toLabel()).row()
+        civInfoTable.add(civ.civName.toLabel(hideIcons = true)).row()
         civInfoTable.add(civ.tech.era.name.toLabel()).row()
         return civInfoTable
     }

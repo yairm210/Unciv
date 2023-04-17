@@ -184,8 +184,7 @@ class UnitOverviewTab(
             val button = IconTextButton(
                     unit.displayName(),
                     UnitGroup(unit, 20f),
-                    fontColor = if (unit.due && unit.isIdle()) Color.WHITE else Color.LIGHT_GRAY,
-                hideIcons = true
+                    fontColor = if (unit.due && unit.isIdle()) Color.WHITE else Color.LIGHT_GRAY
                 )
             button.name = getUnitIdentifier(unit)  // Marker to find a unit in select()
             button.onClick {
