@@ -17,8 +17,9 @@ import kotlin.math.ceil
 import kotlin.math.log10
 import kotlin.math.max
 import kotlin.math.pow
+import kotlin.math.sqrt
 
-private data class DataPoint(val x: Int, val y: Int, val civ: Civilization)
+private data class DataPoint<T>(val x: T, val y: T, val civ: Civilization)
 
 class LineChart(
     data: Map<Int, Map<Civilization, Int>>,
@@ -49,7 +50,7 @@ class LineChart(
     private val hasNegativeYValues: Boolean
     private val negativeYLabel: Int
 
-    private val dataPoints: List<DataPoint> = data.flatMap { turn ->
+    private val dataPoints: List<DataPoint<Int>> = data.flatMap { turn ->
         turn.value.map { (civ, value) ->
             DataPoint(turn.key, value, civ)
         }
@@ -189,17 +190,28 @@ class LineChart(
         }
         for (civ in civIterationOrder) {
             val points = pointsByCiv[civ]!!
-            for (i in 1 until points.size) {
-                val prevPoint = points[i - 1]
-                val currPoint = points[i]
-                val prevPointYScale = if (prevPoint.y < 0f) negativeScaleY else scaleY
-                val currPointYScale = if (currPoint.y < 0f) negativeScaleY else scaleY
-                drawLine(
-                    batch,
-                    linesMinX + prevPoint.x * scaleX, linesMinY + prevPoint.y * prevPointYScale,
-                    linesMinX + currPoint.x * scaleX, linesMinY + currPoint.y * currPointYScale,
-                    civ.nation.getOuterColor(), chartLineWidth
-                )
+            val scaledPoints : List<DataPoint<Float>> = points.map {
+                val yScale = if (it.y < 0f) negativeScaleY else scaleY
+                DataPoint(linesMinX + it.x * scaleX, linesMinY + it.y * yScale, it.civ)
+            }
+            // Probably nobody can tell the difference of one pixel, so that seems like a reasonable epsilon.
+            val simplifiedScaledPoints = douglasPeucker(scaledPoints, 1f)
+            // Draw a background line for the selected civ. We need to do this before all other
+            // lines of the selected civ, but after all lines of other civs.
+            if (civ == selectedCiv) {
+                for (i in 1 until simplifiedScaledPoints.size) {
+                    val a = simplifiedScaledPoints[i - 1]
+                    val b = simplifiedScaledPoints[i]
+                    drawLine(
+                        batch, a.x, a.y, b.x, b.y,
+                        civ.nation.getInnerColor(), chartLineWidth * 3
+                    )
+                }
+            }
+            for (i in 1 until simplifiedScaledPoints.size) {
+                val a = simplifiedScaledPoints[i - 1]
+                val b = simplifiedScaledPoints[i]
+                drawLine(batch, a.x, a.y, b.x, b.y, civ.nation.getOuterColor(), chartLineWidth)
 
                 // Draw the selected Civ icon on its last datapoint
                 if (i == points.size - 1 && selectedCiv == civ && selectedCiv in lastTurnDataPoints) {
@@ -214,11 +226,7 @@ class LineChart(
                                     ?: this
                             }
                     selectedCivIcon.run {
-                        setPosition(
-                            linesMinX + currPoint.x * scaleX,
-                            linesMinY + currPoint.y * currPointYScale,
-                            Align.center
-                        )
+                        setPosition(b.x, b.y, Align.center)
                         setSize(33f, 33f) // Dead Civs need this
                         draw(batch, parentAlpha)
                     }
@@ -230,8 +238,8 @@ class LineChart(
         batch.transformMatrix = oldTransformMatrix
     }
 
-    private fun getLastTurnDataPoints(): MutableMap<Civilization, DataPoint> {
-        val lastDataPoints = mutableMapOf<Civilization, DataPoint>()
+    private fun getLastTurnDataPoints(): MutableMap<Civilization, DataPoint<Int>> {
+        val lastDataPoints = mutableMapOf<Civilization, DataPoint<Int>>()
         for (dataPoint in dataPoints) {
             if (!lastDataPoints.containsKey(dataPoint.civ) || lastDataPoints[dataPoint.civ]!!.x < dataPoint.x) {
                 lastDataPoints[dataPoint.civ] = dataPoint
@@ -256,9 +264,80 @@ class LineChart(
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
         shapeRenderer.color = color
         shapeRenderer.rectLine(x1, y1, x2, y2, width)
+        // Draw a circle at the beginning and end points of the line to make consecutive lines
+        // (which might point in different directions) connect nicely.
+        shapeRenderer.circle(x1, y1, width / 2)
+        shapeRenderer.circle(x2, y2, width / 2)
         shapeRenderer.end()
 
         batch.begin()
+    }
+
+    private fun douglasPeucker(points: List<DataPoint<Float>>, epsilon: Float): List<DataPoint<Float>> {
+        if (points.size < 3) {
+            return points
+        }
+
+        val dMax = FloatArray(points.size)
+        var index = 0
+        var maxDistance = 0.0f
+
+        // Find the point with the maximum distance from the line segment
+        for (i in 1 until points.lastIndex) {
+            val distance = perpendicularDistance(points[i], points[0], points.last())
+            dMax[i] = distance
+
+            if (distance > maxDistance) {
+                index = i
+                maxDistance = distance
+            }
+        }
+
+        // If the maximum distance is greater than epsilon, recursively simplify
+        val resultList: MutableList<DataPoint<Float>> = mutableListOf()
+        if (maxDistance > epsilon) {
+            val recursiveList1 = douglasPeucker(points.subList(0, index + 1), epsilon)
+            val recursiveList2 = douglasPeucker(points.subList(index, points.size), epsilon)
+
+            resultList.addAll(recursiveList1.subList(0, recursiveList1.lastIndex))
+            resultList.addAll(recursiveList2)
+        } else {
+            resultList.add(points.first())
+            resultList.add(points.last())
+        }
+
+        return resultList
+    }
+
+    // Calculates the perpendicular distance between a point and a line segment
+    private fun perpendicularDistance(
+        point: DataPoint<Float>,
+        start: DataPoint<Float>,
+        end: DataPoint<Float>
+    ): Float {
+        val x = point.x
+        val y = point.y
+        val x1 = start.x
+        val y1 = start.y
+        val x2 = end.x
+        val y2 = end.y
+
+        val a = x - x1
+        val b = y - y1
+        val c = x2 - x1
+        val d = y2 - y1
+
+        val dot = a * c + b * d
+        val lenSq = c * c + d * d
+        val param = if (lenSq == 0.0f) 0.0f else dot / lenSq
+
+        val xx = if (param < 0) x1 else if (param > 1) x2 else x1 + param * c
+        val yy = if (param < 0) y1 else if (param > 1) y2 else y1 + param * d
+
+        val dx = x - xx
+        val dy = y - yy
+
+        return sqrt((dx * dx + dy * dy).toDouble()).toFloat()
     }
 
     override fun getMinWidth() = chartWidth
