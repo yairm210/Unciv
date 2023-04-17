@@ -185,7 +185,12 @@ class LobbyPlayerList(
         if (editable) {
             add(addBotButton).colspan(columns).fillX().center()
         } else {
-            add("Non-human players are not shown in this list.".toLabel(fontSize = (Constants.defaultFontSize * 0.75).roundToInt())).colspan(columns).fillX().padTop(20f).center()
+            add(
+                "Non-human players are not shown in this list.".toLabel(
+                    alignment = Align.center,
+                    fontSize = Constants.smallFontSize
+                )
+            ).colspan(columns).growX().padTop(20f).center()
         }
         updateParameters()
     }

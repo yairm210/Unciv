@@ -15,17 +15,22 @@ import com.unciv.ui.screens.basescreen.BaseScreen
  *
  * Optionally, it can display a [RefreshButton] to the right of the send button.
  */
-class ChatTable(private val chatMessageList: ChatMessageList, showRefreshButton: Boolean, maxLength: Int? = null): Table() {
+class ChatTable(private val chatMessageList: ChatMessageList, showRefreshButton: Boolean, actorHeight: Float? = null, maxMessageLength: Int? = null): Table() {
     init {
         val chatScroll = AutoScrollPane(chatMessageList, BaseScreen.skin)
         chatScroll.setScrollingDisabled(true, false)
+
+        val chatCell = add(chatScroll)
+        if (actorHeight != null) {
+            chatCell.actorHeight = actorHeight
+        }
         val width = if (showRefreshButton) 3 else 2
-        add(chatScroll).colspan(width).fillX().expandY().padBottom(10f)
+        chatCell.colspan(width).fillX().expandY().padBottom(10f)
         row()
 
         val nameField = UncivTextField.create("New message")
-        if (maxLength != null) {
-            nameField.maxLength = maxLength
+        if (maxMessageLength != null) {
+            nameField.maxLength = maxMessageLength
         }
         val sendButton = ArrowButton()
         sendButton.onActivation {

@@ -1,9 +1,11 @@
 package com.unciv.ui.screens.multiplayerscreens
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Disposable
+import com.unciv.Constants
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.logic.multiplayer.apiv2.ChatMessage
@@ -11,6 +13,8 @@ import com.unciv.logic.multiplayer.apiv2.IncomingChatMessage
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.AutoScrollPane
 import com.unciv.ui.components.extensions.formatShort
+import com.unciv.ui.components.extensions.setFontColor
+import com.unciv.ui.components.extensions.setFontSize
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -133,11 +137,16 @@ class ChatMessageList(private val chatRoomUUID: UUID, private val mp: OnlineMult
      */
     private fun addMessage(message: ChatMessage, now: Instant? = null) {
         val time = "[${Duration.between(message.createdAt, now ?: Instant.now()).formatShort()}] ago".tr()
-        val label = Label("${message.sender.displayName} (${message.sender.username}) $time:\n${message.message}", BaseScreen.skin)
-        label.setAlignment(Align.left)
-        label.wrap = true
-        val cell = add(label)
-        cell.fillX()
+        val infoLine = Label("${message.sender.displayName}, $time:", BaseScreen.skin)
+        infoLine.setFontColor(Color.GRAY)
+        infoLine.setFontSize(Constants.smallFontSize)
+        infoLine.setAlignment(Align.left)
+        add(infoLine).fillX()
+        row()
+        val msg = Label(message.message, BaseScreen.skin)
+        msg.setAlignment(Align.left)
+        msg.wrap = true
+        add(msg).fillX()
         row()
     }
 

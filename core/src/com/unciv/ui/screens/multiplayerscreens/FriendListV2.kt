@@ -90,10 +90,10 @@ internal class FriendListV2(
     fun recreate(friends: List<FriendResponse>, friendRequests: List<FriendRequestResponse> = listOf()) {
         val body = Table()
         if (requests) {
-            body.add(getRequestTable(friendRequests)).padBottom(10f).row()
+            body.add(getRequestTable(friendRequests)).padBottom(10f).growX().row()
             body.addSeparatorVertical(Color.DARK_GRAY, 1f).padBottom(10f).row()
         }
-        body.add(getFriendTable(friends))
+        body.add(getFriendTable(friends)).growX()
 
         val scroll = AutoScrollPane(body, BaseScreen.skin)
         scroll.setScrollingDisabled(true, false)

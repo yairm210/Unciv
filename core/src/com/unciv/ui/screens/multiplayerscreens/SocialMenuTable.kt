@@ -12,15 +12,23 @@ import java.util.*
 
 class SocialMenuTable(
     private val base: BaseScreen,
-    private val me: UUID
+    me: UUID,
+    maxChatHeight: Float = 0.8f * base.stage.height
 ): Table(BaseScreen.skin) {
 
-    internal val friendList = FriendListV2(base, me, requests = true, chat = { _, a, c -> startChatting(a, c) }, edit = { f, a -> FriendListV2.showRemoveFriendshipPopup(f, a, base) })
-    private val container = Container<ChatTable>()
+    internal val friendList = FriendListV2(
+        base,
+        me,
+        requests = true,
+        chat = { _, a, c -> startChatting(a, c) },
+        edit = { f, a -> FriendListV2.showRemoveFriendshipPopup(f, a, base) }
+    )
+    private val chatContainer = Container<ChatTable>()
+    private var lastSelectedFriendChat: UUID? = null
 
     init {
-        add(friendList)
-        add(container)
+        add(friendList).growX()
+        add(chatContainer).maxHeight(maxChatHeight)
         Concurrency.run {
             while (stage == null) {
                 delay(10)
@@ -30,9 +38,19 @@ class SocialMenuTable(
     }
 
     private fun startChatting(friend: AccountResponse, chatRoom: UUID) {
+        if (lastSelectedFriendChat == chatRoom) {
+            chatContainer.actor?.dispose()
+            chatContainer.actor = null
+            lastSelectedFriendChat = null
+            return
+        }
+        lastSelectedFriendChat = chatRoom
         Log.debug("Opening chat dialog with friend %s (room %s)", friend, chatRoom)
-        container.actor?.dispose()
-        container.actor = ChatTable(ChatMessageList(chatRoom, base.game.onlineMultiplayer), true)
+        chatContainer.actor?.dispose()
+        chatContainer.actor = ChatTable(
+            ChatMessageList(chatRoom, base.game.onlineMultiplayer),
+            false
+        ).apply { padLeft(15f) }
     }
 
 }
