@@ -123,7 +123,7 @@ class DetailedStatsPopup(
             if (onlyWithStat != null && finalStats[onlyWithStat!!] == 0f)
                 continue
 
-            val label = source.toLabel().apply {
+            val label = source.toLabel(hideIcons = true).apply {
                 setAlignment(Align.left)
                 onClick {
                     sourceHighlighted = if (sourceHighlighted == source) null else source
@@ -224,7 +224,7 @@ class DetailedStatsPopup(
                 continue
             }
 
-            val label = text.toLabel().apply {
+            val label = text.toLabel(hideIcons = true).apply {
                 setAlignment(Align.left)
                 onClick {
                     sourceHighlighted = if (sourceHighlighted == text) null else text
