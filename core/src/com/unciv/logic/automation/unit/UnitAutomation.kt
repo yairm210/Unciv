@@ -334,8 +334,7 @@ object UnitAutomation {
     }
 
     private fun startGoldenAgeIfHasAbility(unit: MapUnit) {
-        UnitActions.getUnitActions(unit).filter { it.type == UnitActionType.StartGoldenAge }
-            .firstOrNull()?.action!!.invoke()
+        UnitActions.getUnitActions(unit).firstOrNull { it.type == UnitActionType.StartGoldenAge }?.action?.invoke()
     }
 
     /** @return true only if the unit has 0 movement left */
