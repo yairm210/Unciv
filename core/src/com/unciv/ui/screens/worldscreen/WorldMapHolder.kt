@@ -653,7 +653,6 @@ class WorldMapHolder(
             // Highlight tile unit can move to
             if (unit.movement.canMoveTo(tile) ||
                     unit.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !unit.baseUnit.movesLikeAirUnits()) {
-                val alpha = if (UncivGame.Current.settings.singleTapMove || isAirUnit) 0.7f else 0.3f
                 group.layerMisc.overlayTerrain(moveTileOverlayColor)
             }
 
@@ -707,10 +706,10 @@ class WorldMapHolder(
             val tilesWhereCityCanBeFounded = CityLocationTileRanker.getPossibleCityLocations(unit, cityFoundingHighlightRadius)
                 .filter { it.isExplored(unit.civ) }
             tilesWhereCityCanBeFounded
-                .forEach { tileGroups[it]!!.layerOverlay.showHighlight(Color.GREEN, alpha = 0.2f) }
+                .forEach { tileGroups[it]!!.layerMisc.overlayTerrain(Color.GREEN) }
             unit.getTile().getTilesInDistance(cityFoundingHighlightRadius)
                 .filter { it.isExplored(unit.civ) && it !in tilesWhereCityCanBeFounded }
-                .forEach { tileGroups[it]!!.layerOverlay.showHighlight(Color.RED, alpha = 0.2f) }
+                .forEach { tileGroups[it]!!.layerMisc.overlayTerrain(Color.RED) }
         }
 
         // Highlight best tiles for city founding
