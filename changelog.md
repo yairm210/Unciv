@@ -1,3 +1,38 @@
+## 4.6.3
+
+Hopefully solved RAM-related crashes
+
+Removed more double icons from many places
+
+Aircraft attack/move range colors entire tile
+
+By WhoIsJohannes:
+- Show garrison in city screen
+- Great people automation
+- Order defeated civs after alive civs even if the alive civs score is negative (e.g. for happiness)
+- Fix golden age length action text
+
+Notifications can be "selected"  - By SomeTroglodyte
+
+## 4.6.2
+
+Added "in this city", "in other cities" conditionals for city-based uniques
+
+More UI cleanup
+
+Removed many double / badly-placed icons
+
+Tileset no longer reverts on Android after restarting game
+
+Solved randomness issues with Retreat chance and unit gain from defeat
+
+By SomeTroglodyte:
+- Unhappiness effects
+- Fix more leaks of the actual Player count in random mode
+- Allow city & tile conditionals on production-to-stat-enabling unique
+
+Make new "Charts" button translatable  - By Ouaz
+
 ## 4.6.1
 
 All game object images shown in text!

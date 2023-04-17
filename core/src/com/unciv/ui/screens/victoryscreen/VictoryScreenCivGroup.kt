@@ -84,7 +84,7 @@ internal class VictoryScreenCivGroup(
         }
 
         background = BaseScreen.skinStrings.getUiBackground("VictoryScreen/CivGroup", BaseScreen.skinStrings.roundedEdgeRectangleShape, backgroundColor)
-        val label = labelText.toLabel(labelColor)
+        val label = labelText.toLabel(labelColor, hideIcons = true)
         label.setAlignment(Align.center)
 
         add(label).padLeft(10f)

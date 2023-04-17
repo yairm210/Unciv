@@ -15,10 +15,8 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.HexMath
 import com.unciv.models.ruleset.Policy.PolicyBranchType
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
 import com.unciv.ui.components.AutoScrollPane
-import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.components.ColorMarkupLabel
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addBorder
@@ -28,6 +26,9 @@ import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
 import kotlin.math.roundToInt
 
 class GlobalPoliticsOverviewTable (
@@ -128,7 +129,7 @@ class GlobalPoliticsOverviewTable (
         val civInfoTable = Table(skin)
         val leaderName = civ.nation.leaderName
         civInfoTable.add(leaderName.toLabel(fontSize = 30)).row()
-        civInfoTable.add(civ.civName.toLabel()).row()
+        civInfoTable.add(civ.civName.toLabel(hideIcons = true)).row()
         civInfoTable.add(civ.tech.era.name.toLabel()).row()
         return civInfoTable
     }
@@ -160,7 +161,7 @@ class GlobalPoliticsOverviewTable (
                         worldScreen.mapHolder.setCenterPosition(wonder.location.position)
                     }
                 }
-                wonderTable.add(wonderName).row()
+                wonderTable.add(wonderName).left().row()
             }
         }
 
@@ -183,8 +184,7 @@ class GlobalPoliticsOverviewTable (
         // wars
         for (otherCiv in civ.getKnownCivs()) {
             if (civ.isAtWarWith(otherCiv)) {
-                val warText = "At war with [${getCivName(otherCiv)}]".toLabel()
-                warText.color = Color.RED
+                val warText = ColorMarkupLabel("At war with [${getCivName(otherCiv)}]", Color.RED)
                 politicsTable.add(warText).row()
             }
         }
@@ -193,8 +193,7 @@ class GlobalPoliticsOverviewTable (
         // declaration of friendships
         for (otherCiv in civ.getKnownCivs()) {
             if (civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.DeclarationOfFriendship) == true) {
-                val friendText = "Friends with [${getCivName(otherCiv)}]".toLabel()
-                friendText.color = Color.GREEN
+                val friendText = ColorMarkupLabel("Friends with [${getCivName(otherCiv)}]", Color.GREEN)
                 val turnsLeftText = " (${civ.diplomacy[otherCiv.civName]?.getFlag(DiplomacyFlags.DeclarationOfFriendship)} ${Fonts.turn})".toLabel()
                 politicsTable.add(friendText)
                 politicsTable.add(turnsLeftText).row()
@@ -205,8 +204,7 @@ class GlobalPoliticsOverviewTable (
         // denounced civs
         for (otherCiv in civ.getKnownCivs()) {
             if (civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.Denunciation) == true) {
-                val denouncedText = "Denounced [${getCivName(otherCiv)}]".toLabel()
-                denouncedText.color = Color.RED
+                val denouncedText = ColorMarkupLabel("Denounced [${getCivName(otherCiv)}]", Color.RED)
                 val turnsLeftText = "(${civ.diplomacy[otherCiv.civName]?.getFlag(DiplomacyFlags.Denunciation)} ${Fonts.turn})".toLabel()
                 politicsTable.add(denouncedText)
                 politicsTable.add(turnsLeftText).row()
@@ -217,8 +215,7 @@ class GlobalPoliticsOverviewTable (
         //allied CS
         for (cityState in gameInfo.getAliveCityStates()) {
             if (cityState.diplomacy[civ.civName]?.isRelationshipLevelEQ(RelationshipLevel.Ally) == true) {
-                val alliedText = "Allied with [${getCivName(cityState)}]".toLabel()
-                alliedText.color = Color.GREEN
+                val alliedText = ColorMarkupLabel("Allied with [${getCivName(cityState)}]", Color.GREEN)
                 politicsTable.add(alliedText).row()
             }
         }

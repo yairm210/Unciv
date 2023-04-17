@@ -295,6 +295,13 @@ object Fonts {
         Gdx.gl.glReadPixels(0, 0, w, h, GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, pixmap.pixels)
         frameBuffer.end()
 
+        // These need to be disposed so they don't clog up the RAM *but not right now*
+        Gdx.app.postRunnable {
+            spriteBatch.dispose()
+            frameBuffer.dispose()
+        }
+
+
         // Pixmap is now *upside down* so we need to flip it around the y axis
         for (i in 0..w)
             for (j in 0..h/2) {

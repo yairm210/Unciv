@@ -37,8 +37,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
     val allParams = params + conditionals.flatMap { it.params }
 
-    val isLocalEffect = params.contains("in this city")
-    val isAntiLocalEffect = params.contains("in other cities")
+    val isLocalEffect = params.contains("in this city") || conditionals.any { it.type == UniqueType.ConditionalInThisCity }
+    val isAntiLocalEffect = params.contains("in other cities") || conditionals.any { it.type == UniqueType.ConditionalInOtherCities }
 
     fun hasFlag(flag: UniqueFlag) = type != null && type.flags.contains(flag)
 
@@ -162,7 +162,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalWhenBelowAmountResource -> state.civInfo != null
                     && state.civInfo.getCivResourcesByName()[condition.params[1]]!! < condition.params[0].toInt()
             UniqueType.ConditionalHappy ->
-                state.civInfo != null && state.civInfo.stats.statsForNextTurn.happiness >= 0
+                state.civInfo != null && state.civInfo.stats.happiness >= 0
             UniqueType.ConditionalBetweenHappiness ->
                 state.civInfo != null
                 && condition.params[0].toInt() <= state.civInfo.stats.happiness
@@ -204,6 +204,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalBuildingBuilt ->
                 state.civInfo != null && state.civInfo.cities.any { it.cityConstructions.containsBuildingOrEquivalent(condition.params[0]) }
 
+            // Filtered via city.getMatchingUniques
+            UniqueType.ConditionalInThisCity -> true
             UniqueType.ConditionalCityWithBuilding ->
                 state.city != null && state.city.cityConstructions.containsBuildingOrEquivalent(condition.params[0])
             UniqueType.ConditionalCityWithoutBuilding ->
@@ -379,4 +381,3 @@ fun ArrayList<TemporaryUnique>.getMatchingUniques(uniqueType: UniqueType, stateF
             .map { it.uniqueObject }
             .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) }
     }
-

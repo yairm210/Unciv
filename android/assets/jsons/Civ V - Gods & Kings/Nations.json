@@ -376,7 +376,7 @@
         "declaringWar": "I cannot wait until ye grow even mightier. Therefore, prepare for war!",
 		"attacked": "Corrupted villain! We will bring you into the ground!",
 		"defeated": "Germany has been destroyed. I weep for the future generations.",
-		"introduction": "Guten tag. In the name of the great German people, I bid you welcome.",
+		"introduction": "Guten Tag. In the name of the great German people, I bid you welcome.",
 		"neutralHello": "What now?",
 		"hateHello": "So, out with it!",
 		"tradeRequest": "It would be in your best interest, to carefully consider this proposal.",
@@ -788,7 +788,7 @@
         "favoredReligion": "Tengriism",
 		"uniqueName": "Scourge of God",
 		"uniques": ["[+1 Production] from every [Pasture]", "Cities are razed [2] times as fast", "Starts with [Animal Husbandry]", "\"Borrows\" city names from other civilizations in the game"],
-		"cities": ["Atilla's Court"],
+		"cities": ["Attila's Court"],
         "spyNames": ["Balamber", "Uldin", "Donatus", "Charato", "Octar", "Bleda", "Ellac", "Dengizik", "Hildico", "Gudrun"]
     },
 	{

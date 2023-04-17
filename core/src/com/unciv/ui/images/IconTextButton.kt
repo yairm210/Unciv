@@ -7,8 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.screens.basescreen.BaseScreen
 
 /**
  * Translate a [String] and make a [Button] widget from it, with control over font size, font colour, an optional icon, and custom formatting.
@@ -25,7 +25,7 @@ open class IconTextButton(
     fontColor: Color = Color.WHITE
 ): Button(BaseScreen.skin) {
     /** [Label] instance produced by and with content and formatting as specified to [String.toLabel]. */
-    val label = text.toLabel(fontColor, fontSize)
+    val label = text.toLabel(fontColor, fontSize, hideIcons = true) // Since by definition we already have an icon
     /** Table cell containing the [icon] if any, or `null`. */
     val iconCell: Cell<Actor> =
         if (icon != null) {

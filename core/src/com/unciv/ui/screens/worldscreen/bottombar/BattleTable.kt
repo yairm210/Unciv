@@ -144,13 +144,13 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         clear()
 
         val attackerNameWrapper = Table()
-        val attackerLabel = attacker.getName().toLabel()
+        val attackerLabel = attacker.getName().toLabel(hideIcons = true)
         attackerNameWrapper.add(getIcon(attacker)).padRight(5f)
         attackerNameWrapper.add(attackerLabel)
         add(attackerNameWrapper)
 
         val defenderNameWrapper = Table()
-        val defenderLabel = Label(defender.getName().tr(), skin)
+        val defenderLabel = Label(defender.getName().tr(hideIcons = true), skin)
         defenderNameWrapper.add(getIcon(defender)).padRight(5f)
 
         defenderNameWrapper.add(defenderLabel)

@@ -32,6 +32,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.Counter
+import com.unciv.models.metadata.GameParameters // Kdoc only
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Victory
@@ -53,7 +54,6 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.victoryscreen.RankingType
-import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -540,7 +540,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getLeaderDisplayName(): String {
         val severalHumans = gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1
         val online = gameInfo.gameParameters.isOnlineMultiplayer
-        return nation.getLeaderDisplayName().tr() +
+        return nation.getLeaderDisplayName().tr(hideIcons = true) +
             when {
                 !online && !severalHumans -> ""  // offline single player will know everybody else is AI
                 playerType == PlayerType.AI -> " (${"AI".tr()})"
@@ -795,8 +795,7 @@ class Civilization : IsPartOfGameInfoSerialization {
             city.cityConstructions.addBuilding(city.capitalCityIndicator())
             city.isBeingRazed = false // stop razing the new capital if it was being razed
         }
-        if (oldCapital != null)
-            oldCapital.cityConstructions.removeBuilding(oldCapital.capitalCityIndicator())
+        oldCapital?.cityConstructions?.removeBuilding(oldCapital.capitalCityIndicator())
     }
 
     fun moveCapitalToNextLargest() {
@@ -813,6 +812,20 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun getAllyCiv() = allyCivName
     fun setAllyCiv(newAllyName: String?) { allyCivName = newAllyName }
+
+    /** Determine if this civ (typically as human player) is allowed to know how many major civs there are
+     *
+     *  Can only be `true` if [GameParameters.randomNumberOfPlayers] is `true`, but in that case
+     *  we try to see if the player _could_ be certain with a modicum of cleverness...
+     */
+    fun hideCivCount(): Boolean {
+        if (!gameInfo.gameParameters.randomNumberOfPlayers) return false
+        val knownCivs = 1 + getKnownCivs().count { it.isMajorCiv() }
+        if (knownCivs >= gameInfo.gameParameters.maxNumberOfPlayers) return false
+        if (hasUnique(UniqueType.OneTimeRevealEntireMap)) return false
+        // Other ideas? viewableTiles.size == gameInfo.tileMap.tileList.size seems not quite useful...
+        return true
+    }
 
     fun asPreview() = CivilizationInfoPreview(this)
 }

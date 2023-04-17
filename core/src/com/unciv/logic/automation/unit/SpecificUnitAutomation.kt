@@ -12,6 +12,8 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitAction
+import com.unciv.models.UnitActionType
+import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
@@ -184,13 +186,15 @@ object SpecificUnitAutomation {
             foundCityAction.action.invoke()
     }
 
-    fun automateImprovementPlacer(unit: MapUnit) {
+    /** @return whether there was any progress in placing the improvement. A return value of `false`
+     * can be interpreted as: the unit doesn't know where to place the improvement or is stuck. */
+    fun automateImprovementPlacer(unit: MapUnit) : Boolean {
         val improvementBuildingUniques = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit) +
                 unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)
 
         val improvementName = improvementBuildingUniques.first().params[0]
         val improvement = unit.civ.gameInfo.ruleset.tileImprovements[improvementName]
-            ?: return
+            ?: return false
         val relatedStat = improvement.maxByOrNull { it.value }?.key ?: Stat.Culture
 
         val citiesByStatBoost = unit.civ.cities.sortedByDescending {
@@ -210,9 +214,18 @@ object SpecificUnitAutomation {
 
             if (pathToCity.isEmpty()) continue
             if (pathToCity.size > 2 && unit.getTile().getCity() != city) {
-                if (unit.getTile().militaryUnit == null) return // Don't move until you're accompanied by a military unit
+                // Radius 5 is quite arbitrary. Few units have such a high movement radius although
+                // streets might modify it. Also there might be invisible units, so this is just an
+                // approximation for relative safety and simplicity.
+                val enemyUnitsNearby = unit.getTile().getTilesInDistance(5).any { tileNearby ->
+                    tileNearby.getUnits().any { unitOnTileNearby ->
+                        unitOnTileNearby.isMilitary() && unitOnTileNearby.civ.isAtWarWith(unit.civ)
+                    }
+                }
+                // Don't move until you're accompanied by a military unit if there are enemies nearby.
+                if (unit.getTile().militaryUnit == null && enemyUnitsNearby) return true
                 unit.movement.headTowards(city.getCenterTile())
-                return
+                return true
             }
 
             // if we got here, we're pretty close, start looking!
@@ -225,14 +238,108 @@ object SpecificUnitAutomation {
                 .firstOrNull { unit.movement.canReach(it) }
                 ?: continue // to another city
 
+            val unitTileBeforeMovement = unit.currentTile
             unit.movement.headTowards(chosenTile)
-            if (unit.currentTile == chosenTile)
+            if (unit.currentTile == chosenTile) {
                 if (unit.currentTile.isPillaged())
                     UnitActions.getRepairAction(unit).invoke()
                 else
-                    UnitActions.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
-            return
+                    UnitActions.getImprovementConstructionActions(unit, unit.currentTile)
+                        .firstOrNull()?.action?.invoke()
+                return true
+            }
+            return unitTileBeforeMovement != unit.currentTile
         }
+        // No city needs this improvement.
+        return false
+    }
+
+    /** @return whether there was any progress in conducting the trade mission. A return value of
+     * `false` can be interpreted as: the unit doesn't know where to go or there are no city
+     * states. */
+    fun conductTradeMission(unit: MapUnit): Boolean {
+        val closestCityStateTile =
+                unit.civ.gameInfo.civilizations
+                    .filter {
+                        !unit.civ.isAtWarWith(it) && it.isCityState() && it.cities.isNotEmpty()
+                    }
+                    .flatMap { it.cities[0].getTiles() }
+                    .filter { unit.civ.hasExplored(it) }
+                    .mapNotNull { tile ->
+                        val path = unit.movement.getShortestPath(tile)
+                        if (path.size <= 10) tile to path.size else null
+                    }
+                    .minByOrNull { it.second }?.first
+                    ?: return false
+
+        val conductTradeMissionAction = UnitActions.getUnitActions(unit)
+            .firstOrNull { it.type == UnitActionType.ConductTradeMission }
+        if (conductTradeMissionAction?.action != null) {
+            conductTradeMissionAction.action.invoke()
+            return true
+        }
+
+        val unitTileBeforeMovement = unit.currentTile
+        unit.movement.headTowards(closestCityStateTile)
+
+        return unitTileBeforeMovement != unit.currentTile
+    }
+
+    /**
+     * If there's a city nearby that can construct a wonder, walk there an get it built. Typically I
+     * like to build all wonders in the same city to have the boni accumulate (and it typically ends
+     * up being my capital), but that would need too much logic (e.g. how far away is the capital,
+     * is the wonder likely still available by the time I'm there, is this particular wonder even
+     * buildable in the capital, etc.)
+     *
+     * @return whether there was any progress in speeding up a wonder construction. A return value
+     * of `false` can be interpreted as: the unit doesn't know where to go or is stuck. */
+    fun speedupWonderConstruction(unit: MapUnit): Boolean {
+        val nearbyCityWithAvailableWonders = unit.civ.cities.filter { city ->
+            // Maybe it would be nice to make space in the city if there's already some
+            // other civilian unit in there for whatever reason, but again that seems a lot of
+            // additional complexity for questionable gain.
+            (unit.movement.canMoveTo(city.getCenterTile()) || unit.currentTile == city.getCenterTile())
+                    // Don't speed up construction in small cities. There's a risk the great
+                    // engineer can't get it done entirely and then it takes forever for the small
+                    // city to finish the rest.
+                    && city.population.population >= 3
+                    && getWonderThatWouldBenefitFromBeingSpedUp(city) != null
+        }.mapNotNull { city ->
+            val path = unit.movement.getShortestPath(city.getCenterTile())
+            if (path.size <= 5) city to path.size else null
+        }.minByOrNull { it.second }?.first
+
+        if (nearbyCityWithAvailableWonders == null) {
+            return false
+        }
+
+        if (unit.currentTile == nearbyCityWithAvailableWonders.getCenterTile()) {
+            val wonderToHurry =
+                    getWonderThatWouldBenefitFromBeingSpedUp(nearbyCityWithAvailableWonders)!!
+            nearbyCityWithAvailableWonders.cityConstructions.constructionQueue.add(
+                0,
+                wonderToHurry.name
+            )
+            UnitActions.getUnitActions(unit)
+                .first {
+                    it.type == UnitActionType.HurryBuilding
+                            || it.type == UnitActionType.HurryWonder }
+                .action!!.invoke()
+            return true
+        }
+
+        // Walk towards the city.
+        val tileBeforeMoving = unit.getTile()
+        unit.movement.headTowards(nearbyCityWithAvailableWonders.getCenterTile())
+        return tileBeforeMoving != unit.currentTile
+    }
+
+    private fun getWonderThatWouldBenefitFromBeingSpedUp(city: City): Building? {
+        return city.cityConstructions.getBuildableBuildings().filter { building ->
+            building.isWonder && !building.hasUnique(UniqueType.CannotBeHurried)
+                    && city.cityConstructions.turnsToConstruction(building.name) >= 5
+        }.sortedBy { -city.cityConstructions.getRemainingWork(it.name) }.firstOrNull()
     }
 
     fun automateAddInCapital(unit: MapUnit) {
