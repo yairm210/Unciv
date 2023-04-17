@@ -643,16 +643,16 @@ class WorldMapHolder(
                 if (tile.aerialDistanceTo(unit.getTile()) <= unit.getRange()) {
                     // The tile is within attack range
                     group.layerMisc.overlayTerrain(Color.RED)
-                } else if (tile.isExplored(worldScreen.viewingCiv)) {
+                } else if (tile.isExplored(worldScreen.viewingCiv) && tile.aerialDistanceTo(unit.getTile()) <= unit.getRange()*2) {
                     // The tile is within move range
-                    group.layerMisc.overlayTerrain(Color.BLUE)
+                    group.layerMisc.overlayTerrain(if (unit.movement.canMoveTo(tile)) Color.WHITE else Color.BLUE)
                 }
             }
 
             // Highlight tile unit can move to
             if (unit.movement.canMoveTo(tile) ||
                     unit.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !unit.baseUnit.movesLikeAirUnits()) {
-                val alpha = if (UncivGame.Current.settings.singleTapMove || isAirUnit) 0.7f else 0.3f
+                val alpha = if (UncivGame.Current.settings.singleTapMove) 0.7f else 0.3f
                 group.layerOverlay.showHighlight(moveTileOverlayColor, alpha)
             }
 
