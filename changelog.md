@@ -1,3 +1,15 @@
+## 4.6.3
+
+Aircraft attack/move range colors entire tile
+
+By WhoIsJohannes:
+- Show garrison in city screen, so that it's easier to decide whether one should produce a military unit. 
+- Great people automation 
+- Order defeated civs after alive civs even if the alive civs score is negative (e.g. for happiness) 
+- Fix golden age length action text 
+
+Notifications can be "selected"  - By SomeTroglodyte
+
 ## 4.6.2
 
 Added "in this city", "in other cities" conditionals for city-based uniques
