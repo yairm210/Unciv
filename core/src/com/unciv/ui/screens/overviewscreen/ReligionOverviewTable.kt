@@ -89,7 +89,7 @@ class ReligionOverviewTab(
         }
         add(religionCountExpander).colspan(2).growX().row()
 
-        if (manager.canGenerateProphet()) {
+        if (manager.canGenerateProphet(ignoreFaithAmount = true)) {
             add("Minimal Faith required for\nthe next [great prophet equivalent]:"
                 .fillPlaceholders(manager.getGreatProphetEquivalent()!!)
                 .toLabel()
