@@ -653,7 +653,7 @@ class WorldMapHolder(
             if (unit.movement.canMoveTo(tile) ||
                     unit.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !unit.baseUnit.movesLikeAirUnits()) {
                 val alpha = if (UncivGame.Current.settings.singleTapMove || isAirUnit) 0.7f else 0.3f
-                group.layerMisc.overlayTerrain(moveTileOverlayColor)
+                group.layerOverlay.showHighlight(moveTileOverlayColor, alpha)
             }
 
         }
