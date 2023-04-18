@@ -285,6 +285,8 @@ object Fonts {
                 FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.width, Gdx.graphics.height, false)
         frameBuffer.begin()
 
+        Gdx.gl.glClearColor(0f,0f,0f,0f)
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         spriteBatch.begin()
         actor.draw(spriteBatch, 1f)
         spriteBatch.end()
