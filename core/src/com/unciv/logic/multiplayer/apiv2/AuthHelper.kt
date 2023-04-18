@@ -7,11 +7,6 @@ import java.time.Instant
 import java.util.concurrent.atomic.AtomicReference
 
 /**
- * Name of the session cookie returned and expected by the server
- */
-internal const val SESSION_COOKIE_NAME = "id"
-
-/**
  * Authentication helper which doesn't support multiple cookies, but just does the job correctly
  *
  * It also stores the username and password as well as the timestamp of the last successful login.
