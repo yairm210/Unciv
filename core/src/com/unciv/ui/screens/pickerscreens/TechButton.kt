@@ -6,10 +6,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.managers.TechManager
+import com.unciv.ui.components.HealthBar
 import com.unciv.ui.objectdescriptions.TechnologyDescriptions
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.extensions.addBorder
 import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.centerY
@@ -56,15 +56,18 @@ class TechButton(
         if (isWorldScreen) {
             val techCost = techManager.costOfTech(techName)
             val remainingTech = techManager.remainingScienceToTech(techName)
-            val techThisTurn = techManager.civInfo.stats.statsForNextTurn.science
+            val techThisTurn = techManager.civInfo.stats.statsForNextTurn.science.toInt()
+            val complete = techCost - remainingTech
+            val completeNextTurn = (complete + techThisTurn).coerceAtMost(techCost)
 
-            val percentComplete = (techCost - remainingTech) / techCost.toFloat()
-            val percentWillBeComplete = (techCost - (remainingTech-techThisTurn)) / techCost.toFloat()
-            val progressBar = ImageGetter.ProgressBar(2f, 48f, true)
-                    .setBackground(Color.WHITE)
-                    .setSemiProgress(Color.BLUE.cpy().brighten(0.3f), percentWillBeComplete)
-                    .setProgress(Color.BLUE.cpy().darken(0.5f), percentComplete)
-            add(progressBar.addBorder(1f, Color.GRAY.cpy())).padLeft(0f).padRight(5f)
+            val progressBar = HealthBar(0, techCost, 3, true)
+            progressBar.style.apply {
+                colors = arrayOf(Color.BLUE.darken(0.5f), Color.BLUE.brighten(0.3f), Color.WHITE)
+                setBarSize(2f, 48f)
+                setBackground(Color.GRAY, 1f)
+            }
+            progressBar.setValues(complete, completeNextTurn)
+            add(progressBar).fillY().padLeft(0f).padRight(5f)
         }
 
         val rightSide = Table()
