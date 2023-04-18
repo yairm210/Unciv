@@ -8,10 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.actions.RelativeTemporalAction
-import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction
-import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
@@ -141,33 +138,16 @@ object BattleTableHelpers {
 
     }
 
-    fun getHealthBar(maxHealth: Int, currentHealth: Int, maxRemainingHealth: Int, minRemainingHealth: Int): Table {
-        val healthBar = Table()
-        val totalWidth = 100f
-        fun addHealthToBar(image: Image, amount:Int) {
-            val width = totalWidth * amount / maxHealth
-            healthBar.add(image).size(width.coerceIn(0f, totalWidth),3f)
+    fun getHealthBar(maxHealth: Int, currentHealth: Int, maxRemainingHealth: Int, minRemainingHealth: Int): HealthBar {
+        val healthBar = HealthBar(0, maxHealth, segmentCount = 4)
+        healthBar.style.apply {
+            colors = arrayOf(Color.BLACK, Color.FIREBRICK, Color.ORANGE, Color.GREEN)
+            setBarSize(100f, 3f)
+            flashingSegment = 1
         }
-
-        val damagedHealth = ImageGetter.getDot(Color.FIREBRICK)
-        if (UncivGame.Current.settings.continuousRendering) {
-            damagedHealth.addAction(Actions.repeat(
-                RepeatAction.FOREVER, Actions.sequence(
-                Actions.color(Color.BLACK, 0.7f),
-                Actions.color(Color.FIREBRICK, 0.7f)
-            ))) }
-
-        val maybeDamagedHealth = ImageGetter.getDot(Color.ORANGE)
-
-        val remainingHealthDot = ImageGetter.getWhiteDot()
-        remainingHealthDot.color = Color.GREEN
-
-        addHealthToBar(ImageGetter.getDot(Color.BLACK), maxHealth - currentHealth)
-        addHealthToBar(damagedHealth, currentHealth - maxRemainingHealth)
-        addHealthToBar(maybeDamagedHealth, maxRemainingHealth - minRemainingHealth)
-        addHealthToBar(remainingHealthDot, minRemainingHealth)
-
-        healthBar.pack()
+        healthBar.allowAnimations = UncivGame.Current.settings.continuousRendering
+        // Logical order: healthBar.setValues(minRemainingHealth, maxRemainingHealth, currentHealth) - no, we want to emulate status quo
+        healthBar.setValues(maxHealth - currentHealth, maxHealth - maxRemainingHealth, maxHealth - minRemainingHealth)
         return healthBar
     }
 }
