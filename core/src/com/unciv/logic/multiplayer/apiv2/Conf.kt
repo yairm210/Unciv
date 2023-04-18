@@ -9,7 +9,7 @@ internal const val SESSION_COOKIE_NAME = "id"
 internal const val DEFAULT_LOBBY_MAX_PLAYERS = 32
 
 /** Default ping frequency for outgoing WebSocket connection in seconds */
-internal const val DEFAULT_WEBSOCKET_PING_FREQUENCY = 5_000L
+internal const val DEFAULT_WEBSOCKET_PING_FREQUENCY = 15_000L
 
 /** Default session timeout expected from multiplayer servers (unreliable) */
 internal val DEFAULT_SESSION_TIMEOUT = Duration.ofSeconds(15 * 60)

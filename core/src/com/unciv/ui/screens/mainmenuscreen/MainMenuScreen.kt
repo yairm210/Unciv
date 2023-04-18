@@ -293,7 +293,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         if (game.onlineMultiplayer.apiVersion == ApiVersion.APIv2) {
             if (!game.onlineMultiplayer.hasAuthentication()) {
                 Log.debug("Opening the register popup since no auth credentials were found for the server %s", game.onlineMultiplayer.baseUrl)
-                RegisterLoginPopup(this.stage) {
+                RegisterLoginPopup(this, confirmUsage = true) {
                     Log.debug("Register popup success state: %s", it)
                     if (it) {
                         game.pushScreen(LobbyBrowserScreen())
@@ -315,7 +315,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
                             game.onlineMultiplayer.api.auth.logout(true)
                             Concurrency.runOnGLThread {
                                 popup.close()
-                                RegisterLoginPopup(this@MainMenuScreen.stage) {
+                                RegisterLoginPopup(this@MainMenuScreen, confirmUsage = true) {
                                     Log.debug("Register popup success state: %s", it)
                                     if (it) {
                                         game.pushScreen(LobbyBrowserScreen())
