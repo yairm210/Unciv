@@ -115,6 +115,19 @@ class HealthBar(
             field = value
         }
 
+    /** Special case for the UnitGroup - one segment colored by value and 1f black border */
+    fun setupForUnitOrCity(current: Int) {
+        style.background = BaseScreen.skinStrings.getUiBackground("General/HealthBar", tintColor = Color.BLACK)
+        style.padVertical = 1f
+        style.padHorizontal = 1.2f
+        values[0] = current.toFloat()
+        style.colors[0] = when {
+            current <= 33 -> Color.RED
+            current <= 66 -> Color.ORANGE
+            else -> Color.GREEN
+        }
+    }
+
     /** Sets all values.
      *
      *  If newValues.size is less than segmentCount-1, only a subset of the values will be updated.

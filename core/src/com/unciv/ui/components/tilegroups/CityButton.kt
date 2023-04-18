@@ -18,7 +18,7 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.TutorialTrigger
 import com.unciv.ui.components.BorderedTable
 import com.unciv.ui.components.Fonts
-import com.unciv.ui.components.extensions.center
+import com.unciv.ui.components.HealthBar
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.darken
@@ -131,7 +131,7 @@ private class DefenceTable(city: City) : BorderedTable(
 
 }
 
-class AirUnitTable(city: City, numberOfUnits: Int, size: Float=14f) : BorderedTable(
+class AirUnitTable(city: City, numberOfUnits: Int, size: Float = 14f) : BorderedTable(
     path="WorldScreen/CityButton/AirUnitTable",
     defaultBgShape = BaseScreen.skinStrings.roundedEdgeRectangleSmallShape,
     defaultBgBorder = BaseScreen.skinStrings.roundedEdgeRectangleSmallShape) {
@@ -374,7 +374,6 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
 
         add(progressTable).minWidth(6f).padRight(2f)
         add(icon).minWidth(26f)
-
     }
 
     private fun addCivIcon(city: City) {
@@ -440,12 +439,12 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
         pack()
 
         // If city damaged - add health bar
-        if (isCityViewable && city.health < city.getMaxHealth().toFloat()) {
-            val healthBar = ImageGetter.getHealthBar(city.health.toFloat(),
-                city.getMaxHealth().toFloat(), 100f, 3f)
+        val maxHealth = city.getMaxHealth()
+        if (isCityViewable && city.health < maxHealth) {
+            val healthBar = HealthBar(0, maxHealth)
+            healthBar.setupForUnitOrCity(city.health)
+            healthBar.setBounds(cityTable.width / 2 - 51.5f, cityTable.y + cityTable.height - 6f, 103f, 5f)
             addActor(healthBar)
-            healthBar.center(this)
-            healthBar.y = cityTable.y + cityTable.height-healthBar.height - 1f
         }
 
         setOrigin(Align.center)
@@ -593,7 +592,7 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
             add(CityReligionInfoTable(city.religion, true)).colspan(3).row()
             addOKButton("Diplomacy") { openDiplomacy() }
             add().expandX()
-            addCloseButton() {
+            addCloseButton {
                 GUI.getWorldScreen().run { nextTurnButton.update(this@run) }
             }
         }

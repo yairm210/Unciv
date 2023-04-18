@@ -12,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
@@ -26,7 +25,6 @@ import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.components.*
 import com.unciv.ui.components.extensions.*
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.debug
 import kotlin.math.atan2
 import kotlin.math.max
@@ -394,27 +392,6 @@ object ImageGetter {
             }
             return this
         }
-    }
-
-    fun getHealthBar(currentHealth: Float, maxHealth: Float, healthBarSize: Float, height: Float=5f): Table {
-        val healthPercent = currentHealth / maxHealth
-        val healthBar = Table()
-
-        val healthPartOfBar = getWhiteDot()
-        healthPartOfBar.color = when {
-            healthPercent > 2 / 3f -> Color.GREEN
-            healthPercent > 1 / 3f -> Color.ORANGE
-            else -> Color.RED
-        }
-        healthBar.add(healthPartOfBar).size(healthBarSize * healthPercent, height)
-
-        val emptyPartOfBar = getDot(Color.BLACK)
-        healthBar.add(emptyPartOfBar).size(healthBarSize * (1 - healthPercent), height)
-
-        healthBar.pad(1f)
-        healthBar.pack()
-        healthBar.background = BaseScreen.skinStrings.getUiBackground("General/HealthBar", tintColor = Color.BLACK)
-        return healthBar
     }
 
     fun getLine(startX: Float, startY: Float, endX: Float, endY: Float, width: Float): Image {
