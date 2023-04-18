@@ -261,14 +261,19 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
 
         val table = Table()
 
-        var growthPercentage = city.population.foodStored / city.population.getFoodToNextPopulation().toFloat()
-        if (growthPercentage < 0) growthPercentage = 0.0f
-        if (growthPercentage > 1) growthPercentage = 1.0f
-
-        val growthBar = ImageGetter.getProgressBarVertical(4f, 30f,
-            if (city.isStarving()) 1.0f else growthPercentage,
-            if (city.isStarving()) Color.RED else CityButton.ColorGrowth, Color.BLACK, 1f)
-        growthBar.color.a = 0.8f
+        val foodMax = city.population.getFoodToNextPopulation()
+        val starvingSegment = if (city.isStarving()) foodMax else 0
+        val foodStored = city.population.foodStored.coerceAtLeast(starvingSegment)
+        val foodNextTurn = (foodStored + city.foodForNextTurn()).coerceAtLeast(starvingSegment)
+        val growthBar = HealthBar(0, foodMax, 4, true)
+        growthBar.style.apply {
+            colors = arrayOf(Color.RED, CityButton.ColorGrowth, CityButton.ColorGrowth.darken(0.4f), Color.BLACK)
+            setBarSize(2f, 30f)
+            setBackground(Color.BLACK, 1f)
+            padVertical = 0f
+        }
+        growthBar.setValues(starvingSegment, foodStored, foodNextTurn)
+        growthBar.color.a = 0.9f
 
         val turnLabelText = when {
             city.isGrowing() -> {
@@ -281,15 +286,6 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
             }
             else -> "-"
         }
-
-        if (city.isGrowing()) {
-            var nextTurnPercentage = (city.foodForNextTurn() + city.population.foodStored) / city.population.getFoodToNextPopulation().toFloat()
-            if (nextTurnPercentage < 0) nextTurnPercentage = 0.0f
-            if (nextTurnPercentage > 1) nextTurnPercentage = 1.0f
-
-            growthBar.setSemiProgress(CityButton.ColorGrowth.cpy().darken(0.4f), nextTurnPercentage, 1f)
-        }
-
         val turnLabel = turnLabelText.toLabel(fontColor = textColor, fontSize = 13)
 
         table.add(growthBar).padRight(2f)
@@ -341,33 +337,32 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
 
         val progressTable = Table()
 
-        var nextTurnPercentage = 0f
-        var percentage = 0f
         var turns = "-"
         var icon: Group? = null
+        var productionBar: HealthBar? = null
 
         if (cityConstructions.currentConstructionFromQueue.isNotEmpty()) {
             if (cityCurrentConstruction !is PerpetualConstruction) {
                 val turnsToConstruction = cityConstructions.turnsToConstruction(cityCurrentConstruction.name)
                 if (turnsToConstruction < 100)
                     turns = turnsToConstruction.toString()
-                percentage = cityConstructions.getWorkDone(cityCurrentConstruction.name) /
-                        (cityCurrentConstruction as INonPerpetualConstruction).getProductionCost(cityConstructions.city.civ).toFloat()
-                nextTurnPercentage = (cityConstructions.getWorkDone(cityCurrentConstruction.name) + city.cityStats.currentCityStats.production) /
-                        cityCurrentConstruction.getProductionCost(cityConstructions.city.civ).toFloat()
 
-                if (nextTurnPercentage > 1f) nextTurnPercentage = 1f
-                if (nextTurnPercentage < 0f) nextTurnPercentage = 0f
+                val workDone = cityConstructions.getWorkDone(cityCurrentConstruction.name)
+                val workNextTurn = workDone + city.cityStats.currentCityStats.production.toInt()
+                val workCost = (cityCurrentConstruction as INonPerpetualConstruction).getProductionCost(cityConstructions.city.civ)
+                productionBar = HealthBar(0, workCost, 3, true)
+                productionBar.style.apply {
+                    colors = arrayOf(CityButton.ColorConstruction, CityButton.ColorConstruction.darken(0.4f), Color.BLACK)
+                    setSize(2f, 30f)
+                    setBackground(Color.BLACK, 1f)
+                }
+                productionBar.setValues(workDone, workNextTurn)
+                productionBar.color.a = 0.9f
             } else {
                 turns = "∞"
             }
             icon = ImageGetter.getConstructionPortrait(cityCurrentConstruction.name, 24f)
         }
-
-        val productionBar = ImageGetter.getProgressBarVertical(4f, 30f, percentage,
-            CityButton.ColorConstruction, Color.BLACK, 1f)
-        productionBar.setSemiProgress(CityButton.ColorConstruction.cpy().darken(0.4f), nextTurnPercentage, 1f)
-        productionBar.color.a = 0.8f
 
         progressTable.add(turns.toLabel(textColor, 13)).expandY().bottom()
         progressTable.add(productionBar).padLeft(2f)
