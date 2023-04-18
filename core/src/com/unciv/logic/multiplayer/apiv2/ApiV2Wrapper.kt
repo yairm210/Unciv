@@ -20,9 +20,6 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import java.util.concurrent.ConcurrentLinkedQueue
 
-/** Default value for max number of players in a lobby if no other value is set */
-internal const val DEFAULT_LOBBY_MAX_PLAYERS = 32
-
 /**
  * API wrapper around the newly implemented REST API for multiplayer game handling
  *
@@ -51,7 +48,7 @@ open class ApiV2Wrapper(private val baseUrl: String) {
             connectTimeoutMillis = 3000
         }
         install(WebSockets) {
-            pingInterval = 90_000
+            // Pings are configured manually to enable re-connecting automatically, don't use `pingInterval`
             contentConverter = KotlinxWebsocketSerializationConverter(Json)
         }
         defaultRequest {
@@ -144,17 +141,20 @@ open class ApiV2Wrapper(private val baseUrl: String) {
                     authHelper.add(this)
                     url {
                         takeFrom(baseUrl)
-                        protocol = URLProtocol.WS  // TODO: Verify that secure WebSockets (WSS) work as well
+                        protocol = if (baseUrl.startsWith("https://")) URLProtocol.WSS else URLProtocol.WS  // TODO: Verify that secure WebSockets (WSS) work as well
                         path("/api/v2/ws")
                     }
                 }
-                val job = Concurrency.runOnNonDaemonThreadPool {
+                val job = Concurrency.run {
                     handler(session)
                 }
                 websocketJobs.add(job)
                 Log.debug("A new WebSocket has been created, running in job $job")
             } catch (e: SerializationException) {
-                Log.debug("Failed to create a WebSocket: $e")
+                Log.debug("Failed to create a WebSocket: %s", e.localizedMessage)
+                return@coroutineScope false
+            } catch (e: Exception) {
+                Log.debug("Failed to establish WebSocket connection: %s", e.localizedMessage)
                 return@coroutineScope false
             }
         }

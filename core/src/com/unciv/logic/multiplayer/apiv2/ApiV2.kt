@@ -1,5 +1,6 @@
 package com.unciv.logic.multiplayer.apiv2
 
+import com.badlogic.gdx.utils.Disposable
 import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.storage.ApiV2FileStorageEmulator
@@ -16,22 +17,16 @@ import io.ktor.websocket.*
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
-import java.time.Duration
 import java.time.Instant
 import java.util.*
 import java.util.concurrent.atomic.AtomicReference
 
-/** Default session timeout expected from multiplayer servers (unreliable) */
-private val DEFAULT_SESSION_TIMEOUT = Duration.ofSeconds(15 * 60)
-
-/** Default cache expiry timeout to indicate that certain data needs to be re-fetched */
-private val DEFAULT_CACHE_EXPIRY = Duration.ofSeconds(30 * 60)
-
 /**
  * Main class to interact with multiplayer servers implementing [ApiVersion.ApiV2]
  */
-class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
+class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
 
     /** Cache the result of the last server API compatibility check */
     private var compatibilityCheck: Boolean? = null
@@ -98,7 +93,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
     /**
      * Dispose this class and its children and jobs
      */
-    fun dispose() {
+    override fun dispose() {
         sendChannel?.close()
         for (job in websocketJobs) {
             job.cancel()
@@ -257,6 +252,22 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
         sendChannel?.close()
         sendChannel = session.outgoing
 
+        websocketJobs.add(Concurrency.run {
+            val currentChannel = session.outgoing
+            while (sendChannel != null && currentChannel == sendChannel) {
+                delay(DEFAULT_WEBSOCKET_PING_FREQUENCY)
+                try {
+                    sendPing()
+                } catch (e: Exception) {
+                    Log.debug("Failed to send WebSocket ping: %s", e.localizedMessage)
+                    Concurrency.run {
+                        websocket(::handleWebSocket)
+                    }
+                }
+            }
+            Log.debug("It looks like the WebSocket channel has been replaced")
+        })
+
         try {
             while (true) {
                 val incomingFrame = session.incoming.receive()
@@ -295,10 +306,16 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl) {
             Log.debug("The WebSocket channel was closed: $e")
             sendChannel?.close()
             session.close()
+            Concurrency.run {
+                websocket(::handleWebSocket)
+            }
         } catch (e: Throwable) {
             Log.error("Error while handling a WebSocket connection: %s\n%s", e.localizedMessage, e.stackTraceToString())
             sendChannel?.close()
             session.close()
+            Concurrency.run {
+                websocket(::handleWebSocket)
+            }
             throw e
         }
     }
