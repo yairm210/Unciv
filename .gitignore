@@ -126,15 +126,11 @@ Thumbs.db
 !/ios-moe/xcode/*.xcodeproj/xcshareddata
 !/ios-moe/xcode/*.xcodeproj/project.pbxproj
 /ios-moe/xcode/native/
-SaveFiles/
 android/android-release.apk
-android/assets/GameSettings.json
 android/release/output.json
 android/release/android-release.apk
 android/release/release/android.aab
-android/assets/fonts/
 android/release/android.aab
-android/assets/maps/
 android/release/android.aab.sig
 android/release/android-release.aab
 tests/build/
@@ -145,11 +141,17 @@ server/packrCache/
 deploy/
 android/release/
 
+# Transient Unciv files
+android/assets/GameSettings.json
+android/assets/lasterror.txt
+android/assets/fonts/
+android/assets/maps/
 android/assets/mods/
-android/assets/SaveFiles/
-android/assets/scenarios/
 android/assets/MultiplayerGames/
 android/assets/music/
+android/assets/SaveFiles/
+android/assets/scenarios/
+SaveFiles/
 
 # Visual Studio Code
 .vscode/
@@ -159,4 +161,5 @@ android/assets/music/
 node_modules/
 package-lock.json
 package.json
-/android/assets/lasterror.txt
+
+# Unsorted additions
