@@ -17,8 +17,8 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.HealthBar
 import com.unciv.ui.components.extensions.addSeparator
-import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.onClick
@@ -350,30 +350,23 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
             val info = Table()
 
             info.add(ImageGetter.getUnitIcon(greatPersonName, Color.GOLD).toGroup(20f))
-                .left().padBottom(4f).padRight(5f)
-            info.add("{$greatPersonName} (+$gppPerTurn)".toLabel(hideIcons = true)).left().padBottom(4f).expandX().row()
+                .left().padBottom(1f).padRight(5f).padLeft(1f)
+            info.add("{$greatPersonName} (+$gppPerTurn)".toLabel(hideIcons = true)).left().padBottom(1f).expandX().row()
 
-            val gppCurrent = city.civ.greatPeople.greatPersonPointsCounter[greatPersonName]
+            val gppCurrent = city.civ.greatPeople.greatPersonPointsCounter[greatPersonName] ?: 0
             val gppNeeded = city.civ.greatPeople.getPointsRequiredForGreatPerson()
-
-            val percent = gppCurrent!! / gppNeeded.toFloat()
-
-            val progressBar = ImageGetter.ProgressBar(300f, 25f, false)
-            progressBar.setBackground(Color.BLACK.cpy().apply { a = 0.8f })
-            progressBar.setProgress(Color.ORANGE, percent)
-            progressBar.apply {
-                val bar = ImageGetter.getWhiteDot()
-                bar.color = Color.GRAY
-                bar.setSize(width+5f, height+5f)
-                bar.center(this)
-                addActor(bar)
-                bar.toBack()
+            val progressBar = HealthBar(0, gppNeeded)
+            progressBar.style.apply {
+                colors = arrayOf(Color.ORANGE, Color.BLACK.cpy().apply { a = 0.8f })
+                setBarSize(300f, 25f)
+                setBackground(Color.GRAY, 2.9f)
+                fontSize = 14
             }
-            progressBar.setLabel(Color.WHITE, "$gppCurrent/$gppNeeded", fontSize = 14)
+            progressBar.setValues(gppCurrent)
 
             info.add(progressBar).colspan(2).left().expandX().row()
 
-            greatPeopleTable.add(info).growX().top().padBottom(10f)
+            greatPeopleTable.add(info).growX().top().padBottom(7f)
             greatPeopleTable.add(ImageGetter.getConstructionPortrait(greatPersonName, 50f)).row()
         }
 

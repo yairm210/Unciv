@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Widget
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.utils.Align
@@ -69,6 +70,9 @@ class HealthBar(
         var flashDuration: Float = 1.4f
         var flashMaxDarken: Float = 0.7f
 
+        /** If this is set, a white Label showing values and maxValue is drawn on top */
+        var fontSize = 0
+
         /** Sets background to a uniform color and sets padding as that background includes no margins */
         fun setBackground(color: Color, pad: Float) {
             background = ImageGetter.getDrawable(null).tint(color)
@@ -104,11 +108,14 @@ class HealthBar(
 
     private var flashingAction: FlashingAction? = null
     private var flashingValue = 1f
+
+    private var label: Label? = null
     //endregion
 
     operator fun get(index: Int) = values[index]
     operator fun set(index: Int, value: Float) {
         values[index] = value.coerceIn(minValue, maxValue)
+        invalidate()
     }
 
     /** Shortcut to first value */
@@ -165,6 +172,17 @@ class HealthBar(
 
     override fun layout() {
         values.sort()
+        if (style.fontSize == 0) return
+
+        val labelText = (values.asSequence() + maxValue)
+            .joinToString("/") { "%.0f".format(it) }
+        val label = this.label ?:
+                Label(null, Label.LabelStyle(Fonts.font, Color.WHITE))
+                .apply { this@HealthBar.label = this }
+        label.setFontScale(style.fontSize / Fonts.ORIGINAL_FONT_SIZE)
+        label.setAlignment(Align.center)
+        label.setText(labelText)
+        label.validate()
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
@@ -207,6 +225,11 @@ class HealthBar(
             }
             if (style.isVertical) drawSegment.y += segmentLength else drawSegment.x += segmentLength
         }
+
+        if (style.fontSize == 0) return
+        val label = this.label ?: return
+        label.setPosition(x + width / 2, y + height / 2, Align.center)
+        label.draw(batch, parentAlpha)
     }
     //endregion
 
