@@ -278,15 +278,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         val conditionalState = StateForConditionals(civInfo = civ, unit = this)
 
+        val relevantUniques = getMatchingUniques(UniqueType.Sight, conditionalState, checkCivInfoUniques = true) +
+                getTile().getMatchingUniques(UniqueType.Sight, conditionalState)
         if (isEmbarked() && !hasUnique(UniqueType.NormalVisionWhenEmbarked, conditionalState, checkCivInfoUniques = true)) {
-            return 1
+            visibilityRange += relevantUniques
+                .filter { it.conditionals.any { it.type == UniqueType.ConditionalOurUnit && it.params[0] == Constants.embarked } }
+                .sumOf { it.params[0].toInt() }
         }
-
-        visibilityRange += getMatchingUniques(UniqueType.Sight, conditionalState, checkCivInfoUniques = true)
-            .sumOf { it.params[0].toInt() }
-
-        visibilityRange += getTile().getMatchingUniques(UniqueType.Sight, conditionalState)
-            .sumOf { it.params[0].toInt() }
+        else visibilityRange += relevantUniques.sumOf { it.params[0].toInt() }
 
         if (visibilityRange < 1) visibilityRange = 1
 
@@ -799,15 +798,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return filter.filterAndLogic { matchesFilter(it) } // multiple types at once - AND logic. Looks like:"{Military} {Land}"
             ?: when (filter) {
 
-            // todo: unit filters should be adjectives, fitting "[filterType] units"
-            // This means converting "wounded units" to "Wounded", "Barbarians" to "Barbarian"
-            "Wounded", "wounded units" -> health < 100
+            Constants.wounded, "wounded units" -> health < 100
             Constants.barbarians, "Barbarian" -> civ.isBarbarian()
             "City-State" -> civ.isCityState()
-            "Embarked" -> isEmbarked()
+            Constants.embarked -> isEmbarked()
             "Non-City" -> true
             else -> {
                 if (baseUnit.matchesFilter(filter)) return true
+                if (civ.nation.matchesFilter(filter)) return true
                 if (tempUniquesMap.containsKey(filter)) return true
                 return false
             }

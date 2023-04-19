@@ -441,6 +441,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     HealAdjacentUnits("All adjacent units heal [amount] HP when healing", UniqueTarget.Unit),
 
     // Vision
+
+    @Deprecated("as of 4.6.4", ReplaceWith("[+1] Sight <for [Embarked] units>\" OR \"[+1] Sight <when [Embarked]>"))
     NormalVisionWhenEmbarked("Normal vision when embarked", UniqueTarget.Unit, UniqueTarget.Global),
     DefenceBonusWhenEmbarked("Defense bonus when embarked", UniqueTarget.Unit, UniqueTarget.Global),
     NoSight("No Sight", UniqueTarget.Unit),

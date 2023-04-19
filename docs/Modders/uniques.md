@@ -1840,6 +1840,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;when [mapUnitFilter]&gt;"
+	Example: "&lt;when [Wounded]&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;for units with [promotion]&gt;"
 	Example: "&lt;for units with [Shock I]&gt;"
 
