@@ -523,43 +523,46 @@ object Battle {
 
     // XP!
     private fun addXp(thisCombatant: ICombatant, amount: Int, otherCombatant: ICombatant) {
-        var baseXP = amount
         if (thisCombatant !is MapUnitCombatant) return
-        val modConstants = thisCombatant.unit.civ.gameInfo.ruleset.modOptions.constants
-        if (thisCombatant.unit.promotions.totalXpProduced() >= modConstants.maxXPfromBarbarians
-                && otherCombatant.getCivInfo().isBarbarian())
+        val civ = thisCombatant.getCivInfo()
+        val otherIsBarbarian = otherCombatant.getCivInfo().isBarbarian()
+        val promotions = thisCombatant.unit.promotions
+        val modConstants = civ.gameInfo.ruleset.modOptions.constants
+
+        if (otherIsBarbarian && promotions.totalXpProduced() >= modConstants.maxXPfromBarbarians)
             return
+        val unitCouldAlreadyPromote = promotions.canBePromoted()
 
-        val stateForConditionals = StateForConditionals(civInfo = thisCombatant.getCivInfo(), ourCombatant = thisCombatant, theirCombatant = otherCombatant)
+        val stateForConditionals = StateForConditionals(civInfo = civ, ourCombatant = thisCombatant, theirCombatant = otherCombatant)
 
-        for (unique in thisCombatant.getMatchingUniques(UniqueType.FlatXPGain, stateForConditionals, true))
-            baseXP += unique.params[0].toInt()
+        val baseXP = thisCombatant
+            .getMatchingUniques(UniqueType.FlatXPGain, stateForConditionals, true)
+            .fold(amount) { acc, unique -> acc + unique.params[0].toInt() }
 
-        var xpModifier = 1f
-
-        for (unique in thisCombatant.getMatchingUniques(UniqueType.PercentageXPGain, stateForConditionals, true))
-            xpModifier += unique.params[0].toFloat() / 100
+        val xpModifier = thisCombatant
+            .getMatchingUniques(UniqueType.PercentageXPGain, stateForConditionals, true)
+            .fold(1f) { acc, unique -> acc + unique.params[0].toFloat() / 100 }
 
         val xpGained = (baseXP * xpModifier).toInt()
-        thisCombatant.unit.promotions.XP += xpGained
+        promotions.XP += xpGained
 
-
-        if (thisCombatant.getCivInfo().isMajorCiv() && !otherCombatant.getCivInfo().isBarbarian()) { // Can't get great generals from Barbarians
-            var greatGeneralPointsModifier = 1f
-            for (unique in thisCombatant.getMatchingUniques(UniqueType.GreatPersonEarnedFaster, stateForConditionals, true)) {
-                val unitName = unique.params[0]
-                // From the unique we know this unit exists
-                val unit = thisCombatant.getCivInfo().gameInfo.ruleset.units[unitName]!!
-                if (unit.uniques.contains("Great Person - [War]"))
-                    greatGeneralPointsModifier += unique.params[1].toFloat() / 100
-            }
+        if (!otherIsBarbarian && civ.isMajorCiv()) { // Can't get great generals from Barbarians
+            val greatGeneralPointsModifier = thisCombatant
+                .getMatchingUniques(UniqueType.GreatPersonEarnedFaster, stateForConditionals, true)
+                .filter { unique ->
+                    val unitName = unique.params[0]
+                    // From the unique we know this unit exists
+                    val unit = civ.gameInfo.ruleset.units[unitName]!!
+                    unit.uniques.contains("Great Person - [War]")
+                }
+                .fold (1f) { acc, unique -> acc +  unique.params[1].toFloat() / 100 }
 
             val greatGeneralPointsGained = (xpGained * greatGeneralPointsModifier).toInt()
-            thisCombatant.getCivInfo().greatPeople.greatGeneralPoints += greatGeneralPointsGained
+            civ.greatPeople.greatGeneralPoints += greatGeneralPointsGained
         }
 
-        if (!thisCombatant.isDefeated() && thisCombatant.unit.promotions.canBePromoted())
-            thisCombatant.getCivInfo().addNotification("[${thisCombatant.unit.displayName()}] can be promoted!",thisCombatant.getTile().position, NotificationCategory.Units, thisCombatant.unit.name)
+        if (!thisCombatant.isDefeated() && !unitCouldAlreadyPromote && promotions.canBePromoted())
+            civ.addNotification("[${thisCombatant.unit.displayName()}] can be promoted!",thisCombatant.getTile().position, NotificationCategory.Units, thisCombatant.unit.name)
     }
 
     private fun conquerCity(city: City, attacker: MapUnitCombatant) {
