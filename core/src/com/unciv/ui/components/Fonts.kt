@@ -160,8 +160,13 @@ class NativeBitmapFontData(
             MayaCalendar.katun -> getPixmap(MayaCalendar.katunIcon)
             MayaCalendar.baktun -> getPixmap(MayaCalendar.baktunIcon)
             in MayaCalendar.digits -> getPixmap(MayaCalendar.digitIcon(ch))
-            in Fonts.charToRulesetImageActor -> Fonts.getPixmapFromActor(
-                Fonts.charToRulesetImageActor[ch]!!)
+            in Fonts.charToRulesetImageActor ->
+                try {
+                    // This sometimes fails with a "Frame buffer couldn't be constructed: incomplete attachment" error, unclear why
+                    Fonts.getPixmapFromActor(Fonts.charToRulesetImageActor[ch]!!)
+                } catch (ex: Exception) {
+                    Pixmap(0,0, Pixmap.Format.RGBA8888) // Empty space
+                }
             else -> fontImplementation.getCharPixmap(ch)
         }
     }

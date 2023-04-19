@@ -806,9 +806,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Can only heal by pillaging"
 	Applicable to: Global, Unit
 
-??? example  "Normal vision when embarked"
-	Applicable to: Global, Unit
-
 ??? example  "Defense bonus when embarked"
 	Applicable to: Global, Unit
 
