@@ -137,7 +137,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
         val relevantTile by lazy { state.attackedTile
             ?: state.tile
-            ?: state.unit?.getTile()
+            ?: relevantUnit?.getTile()
             ?: state.city?.getCenterTile()
         }
 

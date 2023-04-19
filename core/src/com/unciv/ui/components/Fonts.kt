@@ -283,15 +283,16 @@ object Fonts {
             addChar(nation.name, ImageGetter.getNationPortrait(nation, ORIGINAL_FONT_SIZE))
     }
 
-    fun getPixmapFromActor(actor: Actor): Pixmap {
-        val spriteBatch = SpriteBatch()
+    val frameBuffer by lazy { FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.width, Gdx.graphics.height, false) }
+    val spriteBatch by lazy { SpriteBatch() }
 
-        val frameBuffer =
-                FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.width, Gdx.graphics.height, false)
+    fun getPixmapFromActor(actor: Actor): Pixmap {
+
         frameBuffer.begin()
 
         Gdx.gl.glClearColor(0f,0f,0f,0f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+
         spriteBatch.begin()
         actor.draw(spriteBatch, 1f)
         spriteBatch.end()
@@ -301,10 +302,6 @@ object Fonts {
         val pixmap = Pixmap(w, h, Pixmap.Format.RGBA8888)
         Gdx.gl.glReadPixels(0, 0, w, h, GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, pixmap.pixels)
         frameBuffer.end()
-
-        // These need to be disposed so they don't clog up the RAM *but not right now*
-        spriteBatch.dispose()
-        frameBuffer.dispose()
 
 
         // Pixmap is now *upside down* so we need to flip it around the y axis
