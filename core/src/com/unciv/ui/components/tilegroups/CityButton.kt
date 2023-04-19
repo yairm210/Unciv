@@ -346,22 +346,12 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
                 val turnsToConstruction = cityConstructions.turnsToConstruction(cityCurrentConstruction.name)
                 if (turnsToConstruction < 100)
                     turns = turnsToConstruction.toString()
-
-                val workDone = cityConstructions.getWorkDone(cityCurrentConstruction.name)
-                val workNextTurn = workDone + city.cityStats.currentCityStats.production.toInt()
-                val workCost = (cityCurrentConstruction as INonPerpetualConstruction).getProductionCost(cityConstructions.city.civ)
-                productionBar = HealthBar(0, workCost, 3, true)
-                productionBar.style.apply {
-                    colors = arrayOf(CityButton.ColorConstruction, CityButton.ColorConstruction.darken(0.4f), Color.BLACK)
-                    setSize(2f, 30f)
-                    setBackground(Color.BLACK, 1f)
-                }
-                productionBar.setValues(workDone, workNextTurn)
-                productionBar.color.a = 0.9f
             } else {
                 turns = "∞"
             }
             icon = ImageGetter.getConstructionPortrait(cityCurrentConstruction.name, 24f)
+            productionBar = HealthBar.getCityConstructionBar(city, cityCurrentConstruction.name, Color.BLACK)
+            productionBar.color.a = 0.9f
         }
 
         progressTable.add(turns.toLabel(textColor, 13)).expandY().bottom()

@@ -1,7 +1,6 @@
 package com.unciv.ui.screens.cityscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -25,11 +24,11 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.ColorMarkupLabel
 import com.unciv.ui.components.ExpanderTab
+import com.unciv.ui.components.HealthBar
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addBorder
 import com.unciv.ui.components.extensions.addCell
 import com.unciv.ui.components.extensions.addSeparator
-import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.getConsumesAmountString
@@ -325,8 +324,8 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         }
 
         table.defaults().pad(2f).minWidth(40f)
-        if (isFirstConstructionOfItsKind) table.add(getProgressBar(constructionName)).minWidth(5f)
-        else table.add().minWidth(5f)
+        if (isFirstConstructionOfItsKind) table.add(getProgressBar(constructionName)).minWidth(4f)
+        else table.add().minWidth(4f)
         table.add(ImageGetter.getConstructionPortrait(constructionName, 40f)).padRight(10f)
         table.add(text.toLabel()).expandX().fillX().left()
 
@@ -349,17 +348,8 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         return table
     }
 
-    private fun getProgressBar(constructionName: String): Group {
-        val cityConstructions = cityScreen.city.cityConstructions
-        val construction = cityConstructions.getConstruction(constructionName)
-        if (construction is PerpetualConstruction) return Table()
-        if (cityConstructions.getWorkDone(constructionName) == 0) return Table()
-
-        val constructionPercentage = cityConstructions.getWorkDone(constructionName) /
-                (construction as INonPerpetualConstruction).getProductionCost(cityConstructions.city.civ).toFloat()
-        return ImageGetter.getProgressBarVertical(2f, 30f, constructionPercentage,
-                Color.BROWN.brighten(0.5f), Color.WHITE)
-    }
+    private fun getProgressBar(constructionName: String, hideIfNoWorkDone: Boolean = false) =
+        HealthBar.getCityConstructionBar(cityScreen.city, constructionName, Color.WHITE, hideIfNoWorkDone)
 
     private fun getConstructionButton(constructionButtonDTO: ConstructionButtonDTO): Table {
         val construction = constructionButtonDTO.construction
@@ -380,7 +370,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         }
 
         val icon = ImageGetter.getConstructionPortrait(construction.name, 40f)
-        pickConstructionButton.add(getProgressBar(construction.name)).padRight(5f)
+        pickConstructionButton.add(getProgressBar(construction.name, true)).padRight(5f)
         pickConstructionButton.add(icon).padRight(10f)
 
         val constructionTable = Table().apply { isTransform = false }

@@ -7,12 +7,20 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Widget
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
+import com.badlogic.gdx.utils.Align
+import com.unciv.logic.city.City
+import com.unciv.logic.city.INonPerpetualConstruction
+import com.unciv.ui.components.extensions.darken
+import com.unciv.ui.components.tilegroups.CityButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import kotlin.math.PI
 import kotlin.math.cos
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
+
+//TODO Since HealthBar instances can share style instances with the same values, use common ones.
+//      - skin, dedicated cache, enum, or companion vals?
 
 /**
  *  A reusable Widget to draw progress bars, health bars and the like.
@@ -241,4 +249,45 @@ class HealthBar(
         }
     }
     // endregion
+
+    companion object {
+        /** Factory for a vertical bar used on the WorldScreen CityButton and CityConstructionsTable */
+        fun getCityConstructionBar(
+            city: City,
+            constructionName: String,
+            remainingColor: Color,
+            hideIfNoWorkDone: Boolean = false
+        ): HealthBar {
+            fun transparentHealthBar() = HealthBar().apply { style.setBarSize(4f, 30f) }
+
+            val cityConstructions = city.cityConstructions
+            val construction = cityConstructions.getConstruction(constructionName)
+
+            val workCost: Int
+            val workDone: Int
+            val workNextTurn: Int
+            if (construction is INonPerpetualConstruction) {
+                workCost = construction.getProductionCost(city.civ).coerceAtLeast(1)
+                workDone = cityConstructions.getWorkDone(construction.name)
+                workNextTurn = workDone + city.cityStats.currentCityStats.production.toInt()
+            } else {
+                workCost = 1
+                workDone = 0
+                workNextTurn = 0
+            }
+            if (hideIfNoWorkDone && workDone == 0)
+                return transparentHealthBar()
+
+            val productionBar = HealthBar(0, workCost, 3, true)
+            productionBar.style.apply {
+                colors = arrayOf(CityButton.ColorConstruction, CityButton.ColorConstruction.darken(0.4f), remainingColor)
+                setBarSize(2f, 30f)
+                setBackground(Color.BLACK, 1f)
+                padVertical = 0f
+            }
+            productionBar.setValues(workDone, workNextTurn)
+
+            return productionBar
+        }
+    }
 }
