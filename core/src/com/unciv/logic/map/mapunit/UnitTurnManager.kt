@@ -208,9 +208,8 @@ class UnitTurnManager(val unit: MapUnit) {
             tile.improvementInProgress == RoadStatus.Railroad.name -> tile.addRoad(RoadStatus.Railroad, unit.civ)
             tile.improvementInProgress == Constants.repair -> tile.setRepaired()
             else -> {
-                val improvement = unit.civ.gameInfo.ruleset.tileImprovements[tile.improvementInProgress]!!
-                improvement.handleImprovementCompletion(unit)
                 tile.changeImprovement(tile.improvementInProgress)
+                tile.getTileImprovement()!!.handleImprovementCompletion(unit)
             }
         }
 

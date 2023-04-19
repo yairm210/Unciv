@@ -19,22 +19,23 @@ class CityTurnManager(val city: City) {
         city.cityConstructions.constructIfEnough()
         city.cityConstructions.addFreeBuildings()
 
-        city.cityStats.update()
         city.tryUpdateRoadStatus()
         city.attackedThisTurn = false
+
+        // The ordering is intentional - you get a turn without WLTKD even if you have the next resource already
+        // Also resolve end of resistance before updateCitizens
+        if (!city.hasFlag(CityFlags.WeLoveTheKing))
+            tryWeLoveTheKing()
+        nextTurnFlags()
 
         if (city.isPuppet) {
             city.cityAIFocus = CityFocus.GoldFocus
             city.reassignAllPopulation()
         } else if (city.updateCitizens) {
-            city.reassignPopulation()
+            city.reassignPopulation()  // includes cityStats.update
             city.updateCitizens = false
-        }
-
-        // The ordering is intentional - you get a turn without WLTKD even if you have the next resource already
-        if (!city.hasFlag(CityFlags.WeLoveTheKing))
-            tryWeLoveTheKing()
-        nextTurnFlags()
+        } else
+            city.cityStats.update()
 
         // Seed resource demand countdown
         if (city.demandedResource == "" && !city.hasFlag(CityFlags.ResourceDemand)) {
@@ -74,6 +75,7 @@ class CityTurnManager(val city: City) {
                         demandNewResource()
                     }
                     CityFlags.Resistance.name -> {
+                        city.updateCitizens = true
                         city.civ.addNotification(
                             "The resistance in [${city.name}] has ended!",
                             city.location, NotificationCategory.General, "StatIcons/Resistance")
