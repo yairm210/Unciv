@@ -21,6 +21,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.removeConditionals
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.Fonts
@@ -158,12 +159,8 @@ object UnitActions {
         return UnitAction(UnitActionType.Create, "Create [$improvementName]",
             action = {
                 tile.changeImprovement(improvementName)
-                val city = tile.getCity()
-                if (city != null) {
-                    city.cityStats.update()
-                    city.civ.cache.updateCivResources()
-                }
-                unit.destroy()
+                tile.getTileImprovement()!!.handleImprovementCompletion(unit)
+                unit.destroy()  // Modders may wish for a nondestructive way, but that should be another Unique
             }.takeIf { unit.currentMovement > 0 })
     }
 
@@ -501,7 +498,7 @@ object UnitActions {
                     unitTile.stopWorkingOnImprovement()
                     improvement.handleImprovementCompletion(unit)
 
-                    // without this the world screen won't the improvement because it isn't the 'last seen improvement'
+                    // without this the world screen won't show the improvement because it isn't the 'last seen improvement'
                     unit.civ.cache.updateViewableTiles()
 
                     if (unique.type == UniqueType.ConstructImprovementConsumingUnit) unit.consume()
@@ -675,9 +672,14 @@ object UnitActions {
                     && unique.conditionals.none { it.type == UniqueType.ConditionalTimedUnique }) continue
             if (usagesLeft(unit, unique)==0) continue
 
-            val unitAction = UnitAction(type = UnitActionType.TriggerUnique,
-                title = actionTextWithSideEffects(unique.text.removeConditionals(), unique, unit)
-                ){
+            val baseTitle = if (unique.isOfType(UniqueType.OneTimeEnterGoldenAgeTurns))
+                    unique.placeholderText.fillPlaceholders(
+                        unit.civ.goldenAges.calculateGoldenAgeLength(
+                            unique.params[0].toInt()).toString())
+                else unique.text.removeConditionals()
+            val title = actionTextWithSideEffects(baseTitle, unique, unit)
+
+            val unitAction = UnitAction(type = UnitActionType.TriggerUnique, title){
                 UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
                 activateSideEffects(unit, unique)
             }
@@ -758,7 +760,7 @@ object UnitActions {
         return null
     }
 
-    fun actionTextWithSideEffects(originalText:String, actionUnique: Unique, unit: MapUnit): String {
+    fun actionTextWithSideEffects(originalText: String, actionUnique: Unique, unit: MapUnit): String {
         val sideEffectString = getSideEffectString(unit, actionUnique)
         if (sideEffectString == "") return originalText
         else return "{$originalText} $sideEffectString"

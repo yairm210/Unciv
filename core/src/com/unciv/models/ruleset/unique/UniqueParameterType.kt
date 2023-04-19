@@ -71,8 +71,8 @@ enum class UniqueParameterType(
     },
 
     /** Implemented by [MapUnit.matchesFilter][com.unciv.logic.map.MapUnit.matchesFilter] */
-    MapUnitFilter("mapUnitFilter", "Wounded", null, "Map Unit Filters") {
-        private val knownValues = setOf("Wounded", Constants.barbarians, "City-State", "Embarked", "Non-City")
+    MapUnitFilter("mapUnitFilter", Constants.wounded, null, "Map Unit Filters") {
+        private val knownValues = setOf(Constants.wounded, Constants.barbarians, "City-State", Constants.embarked, "Non-City")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText.startsWith('{')) // "{filter} {filter}" for and logic

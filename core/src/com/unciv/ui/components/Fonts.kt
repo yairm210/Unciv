@@ -160,8 +160,13 @@ class NativeBitmapFontData(
             MayaCalendar.katun -> getPixmap(MayaCalendar.katunIcon)
             MayaCalendar.baktun -> getPixmap(MayaCalendar.baktunIcon)
             in MayaCalendar.digits -> getPixmap(MayaCalendar.digitIcon(ch))
-            in Fonts.charToRulesetImageActor -> Fonts.getPixmapFromActor(
-                Fonts.charToRulesetImageActor[ch]!!)
+            in Fonts.charToRulesetImageActor ->
+                try {
+                    // This sometimes fails with a "Frame buffer couldn't be constructed: incomplete attachment" error, unclear why
+                    Fonts.getPixmapFromActor(Fonts.charToRulesetImageActor[ch]!!)
+                } catch (ex: Exception) {
+                    Pixmap(0,0, Pixmap.Format.RGBA8888) // Empty space
+                }
             else -> fontImplementation.getCharPixmap(ch)
         }
     }
@@ -285,6 +290,8 @@ object Fonts {
                 FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.width, Gdx.graphics.height, false)
         frameBuffer.begin()
 
+        Gdx.gl.glClearColor(0f,0f,0f,0f)
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         spriteBatch.begin()
         actor.draw(spriteBatch, 1f)
         spriteBatch.end()
@@ -294,6 +301,11 @@ object Fonts {
         val pixmap = Pixmap(w, h, Pixmap.Format.RGBA8888)
         Gdx.gl.glReadPixels(0, 0, w, h, GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, pixmap.pixels)
         frameBuffer.end()
+
+        // These need to be disposed so they don't clog up the RAM *but not right now*
+        spriteBatch.dispose()
+        frameBuffer.dispose()
+
 
         // Pixmap is now *upside down* so we need to flip it around the y axis
         for (i in 0..w)

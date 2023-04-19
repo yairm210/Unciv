@@ -806,9 +806,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Can only heal by pillaging"
 	Applicable to: Global, Unit
 
-??? example  "Normal vision when embarked"
-	Applicable to: Global, Unit
-
 ??? example  "Defense bonus when embarked"
 	Applicable to: Global, Unit
 
@@ -1837,6 +1834,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;for [mapUnitFilter] units&gt;"
 	Example: "&lt;for [Wounded] units&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when [mapUnitFilter]&gt;"
+	Example: "&lt;when [Wounded]&gt;"
 
 	Applicable to: Conditional
 

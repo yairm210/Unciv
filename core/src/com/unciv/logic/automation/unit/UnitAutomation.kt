@@ -9,11 +9,13 @@ import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
@@ -270,14 +272,69 @@ object UnitAutomation {
         if (unit.hasUnique(UniqueType.PreventSpreadingReligion) || unit.canDoLimitedAction(Constants.removeHeresy))
             return SpecificUnitAutomation.automateInquisitor(unit)
 
-        if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit)
-                || unit.hasUnique(UniqueType.ConstructImprovementInstantly))
-        // catch great prophet for civs who can't found/enhance/spread religion
-            return SpecificUnitAutomation.automateImprovementPlacer(unit) // includes great people plus moddable units
+        val isLateGame = isLateGame(unit.civ)
+        // Great scientist -> Hurry research if late game
+        if (UnitActions.getUnitActions(unit).any { it.type == UnitActionType.HurryResearch }
+                && isLateGame) {
+            UnitActions.getUnitActions(unit)
+                .first { it.type == UnitActionType.HurryResearch }.action!!.invoke()
+            return
+        }
 
-        // ToDo: automation of great people skills (may speed up construction, provides a science boost, etc.)
+        // Great merchant -> Conduct trade mission if late game and if not at war.
+        // TODO: This could be more complex to walk to the city state that is most beneficial to
+        //  also have more influence.
+        if (unit.hasUnique(UniqueType.CanTradeWithCityStateForGoldAndInfluence)
+                // Don't wander around with the great merchant when at war. Barbs might also be a
+                // problem, but hopefully by the time we have a great merchant, they're under
+                // control.
+                && !unit.civ.isAtWar()
+                && isLateGame
+        ) {
+            val tradeMissionCanBeConductedEventually =
+                    SpecificUnitAutomation.conductTradeMission(unit)
+            if (tradeMissionCanBeConductedEventually)
+                return
+        }
+
+        // Great engineer -> Try to speed up wonder construction if late game
+        if (isLateGame &&
+                (unit.hasUnique(UniqueType.CanSpeedupConstruction)
+                        || unit.hasUnique(UniqueType.CanSpeedupWonderConstruction))) {
+            val wonderCanBeSpedUpEventually = SpecificUnitAutomation.speedupWonderConstruction(unit)
+            if (wonderCanBeSpedUpEventually)
+                return
+        }
+
+
+        // This has to come after the individual abilities for the great people that can also place
+        // instant improvements (e.g. great scientist).
+        if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit)
+                || unit.hasUnique(UniqueType.ConstructImprovementInstantly)
+        ) {
+            // catch great prophet for civs who can't found/enhance/spread religion
+            // includes great people plus moddable units
+            val improvementCanBePlacedEventually =
+                    SpecificUnitAutomation.automateImprovementPlacer(unit)
+            if (!improvementCanBePlacedEventually)
+                startGoldenAgeIfHasAbility(unit)
+        }
+
+        // TODO: The AI tends to have a lot of great generals. Maybe there should be a cutoff
+        //  (depending on number of cities) and after that they should just be used to start golden
+        //  ages?
 
         return // The AI doesn't know how to handle unknown civilian units
+    }
+
+    private fun isLateGame(civ: Civilization): Boolean {
+        val researchCompletePercent =
+                (civ.tech.researchedTechnologies.size * 1.0f) / civ.gameInfo.ruleset.technologies.size
+        return researchCompletePercent >= 0.8f
+    }
+
+    private fun startGoldenAgeIfHasAbility(unit: MapUnit) {
+        UnitActions.getUnitActions(unit).firstOrNull { it.type == UnitActionType.StartGoldenAge }?.action?.invoke()
     }
 
     /** @return true only if the unit has 0 movement left */

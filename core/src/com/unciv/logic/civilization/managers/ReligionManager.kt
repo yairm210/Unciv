@@ -155,11 +155,11 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         return faithCost.toInt()
     }
 
-    fun canGenerateProphet(): Boolean {
+    fun canGenerateProphet(ignoreFaithAmount: Boolean = false): Boolean {
         if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion, no prophets
         if (religion == null || religionState == ReligionState.None) return false // First get a pantheon, then we'll talk about a real religion
         if (getGreatProphetEquivalent() == null) return false
-        if (storedFaith < faithForNextGreatProphet()) return false
+        if (!ignoreFaithAmount && storedFaith < faithForNextGreatProphet()) return false
         if (!civInfo.isMajorCiv()) return false
         if (civInfo.hasUnique(UniqueType.MayNotGenerateGreatProphet)) return false
         if (religionState == ReligionState.Pantheon && remainingFoundableReligions() == 0) return false // too many have been founded

@@ -96,19 +96,7 @@ Allowed values are:
 -   `Great Improvements`, `Great`
 -   `All Road` - for Roads & Railroads
 
-## mapUnitFilter
-
-This indicates a unit as placed on the map. Compare with `baseUnitFilter`.
-It can be any value noted in `baseUnitFilter` or one of the following:
-
--   `Wounded`, `wounded units`
--   `City-State`
--   `Barbarians`, `Barbarian`
--   Again, any combination of the above is also allowed, e.g. `[{Wounded} {Water}]` units.
-
 ## nationFilter
-
-At the moment only implemented for [ModOptions.nationsToRemove](../Other/Miscellaneous-JSON-files.md#modoptionsjson).
 
 Allowed values are:
 
@@ -117,6 +105,17 @@ Allowed values are:
 - `CityState`
 - The name of a Nation
 - A unique a Nation has (verbatim, no placeholders)
+
+## mapUnitFilter
+
+This indicates a unit as placed on the map. Compare with `baseUnitFilter`.
+
+- Any value noted in `baseUnitFilter`
+- `Wounded`
+- `Embarked`
+- `City-State`
+- `Barbarians`, `Barbarian`
+- Again, any combination of the above is also allowed, e.g. `[{Wounded} {Water}]` units.
 
 ## populationFilter
 
