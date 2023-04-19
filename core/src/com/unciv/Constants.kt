@@ -74,6 +74,10 @@ object Constants {
     const val barbarians = "Barbarians"
     const val spectator = "Spectator"
 
+    const val embarked = "Embarked"
+    const val wounded = "Wounded"
+
+
     const val rising = "Rising"
     const val lowering = "Lowering"
     const val remove = "Remove "

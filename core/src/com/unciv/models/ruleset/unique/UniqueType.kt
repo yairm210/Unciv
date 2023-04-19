@@ -680,6 +680,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     /////// unit conditionals
     ConditionalOurUnit("for [mapUnitFilter] units", UniqueTarget.Conditional),
+    ConditionalOurUnitOnUnit("when [mapUnitFilter]", UniqueTarget.Conditional), // Same but for the unit itself
     ConditionalUnitWithPromotion("for units with [promotion]", UniqueTarget.Conditional),
     ConditionalUnitWithoutPromotion("for units without [promotion]", UniqueTarget.Conditional),
     ConditionalVsCity("vs cities", UniqueTarget.Conditional),
