@@ -14,9 +14,9 @@ import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.newgamescreen.TranslatedSelectBox
 import com.unciv.ui.screens.victoryscreen.VictoryScreenCivGroup.DefeatedPlayerStyle
+import com.unciv.ui.screens.worldscreen.WorldScreen
 
 class VictoryScreenCharts(
     worldScreen: WorldScreen
@@ -27,7 +27,7 @@ class VictoryScreenCharts(
     private var selectedCiv = worldScreen.selectedCiv
     private val viewingCiv = worldScreen.viewingCiv
 
-    private val rankingTypeSelect = TranslatedSelectBox(RankingType.values().map { it.name }, rankingType.name, skin)
+    private val rankingTypeSelect = TranslatedSelectBox(RankingType.values().map { it.label }, rankingType.name, skin)
     private val civButtonsTable = Table()
     private val civButtonsScroll = AutoScrollPane(civButtonsTable)
     private val controlsColumn = Table()
