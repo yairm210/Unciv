@@ -1,31 +1,21 @@
 ## 4.6.4
 
-Removed more double icons
-
 Avoid font-related crash
 
-Replaced hardcoded embarked sight with configurable
+Modding: Configurable embarked sight
 
-UnitFilter accepts NationFilter of the civ (e.g. "vs [England] units")
+UnitFilter accepts NationFilter (e.g. "vs [England] units")
 
-Resolved  - Clear frameBuffer before we use it to draw images
-
-Resolved  - removed icons from selectboxes
-
-4.6.3-patch1
-
-Patch fix for crash, from Discord - @WhoIsJohannes
-
-Whoops a movement change got in when it shouldn't have
+Resolved image gliches in font icons, hopefully
 
 By SomeTroglodyte:
-- Reassign workers when resistance ends or improvement created 
-- Fix "religions to be founded" expanders accumulating 
-- I'm pretty sure annexed cities in resistance shouldn't be allowed to buy tiles 
+- Reassign workers when resistance ends or improvement created
+- Fix "religions to be founded" expanders accumulating
+- Annexed cities in resistance cannot buy tiles
 
 By WhoIsJohannes:
-- Show replay after 5 rounds and don't reveal where player is on the map. 
-- LineChart improvements (Highlight & DP) 
+- Show replay after 5 rounds and don't reveal where player is on the map.
+- Chart improvements (Highlight & performance)
 
 ## 4.6.3
 

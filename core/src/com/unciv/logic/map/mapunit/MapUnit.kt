@@ -282,7 +282,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
                 getTile().getMatchingUniques(UniqueType.Sight, conditionalState)
         if (isEmbarked() && !hasUnique(UniqueType.NormalVisionWhenEmbarked, conditionalState, checkCivInfoUniques = true)) {
             visibilityRange += relevantUniques
-                .filter { it.conditionals.any { it.type == UniqueType.ConditionalOurUnit && it.params[0] == Constants.embarked } }
+                .filter { it.conditionals.any {
+                    (it.type == UniqueType.ConditionalOurUnit || it.type == UniqueType.ConditionalOurUnitOnUnit)
+                            && it.params[0] == Constants.embarked } }
                 .sumOf { it.params[0].toInt() }
         }
         else visibilityRange += relevantUniques.sumOf { it.params[0].toInt() }
