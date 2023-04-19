@@ -147,7 +147,7 @@ This file contains the Quests that may be given to major Civilizations by City S
 | name | String | Required | Unique identifier name of the quest, it is also shown |
 | description | String | Required | Description of the quest shown to players |
 | type | Enum | Default Individual | Individual or Global |
-| influece | Float | Default 40 | Influence reward gained on quest completion |
+| influence | Float | Default 40 | Influence reward gained on quest completion |
 | duration | Integer | Default 0 | Maximum number of turns to complete the quest, 0 if there's no turn limit |
 | minimumCivs | Integer | Default 1 | Minimum number of Civs needed to start the quest. It is meaningful only for type = Global |
 
@@ -193,7 +193,7 @@ This file contains all the technologies. It is organized into an outer list of '
 | techCost | Integer | Required | Default cost of the techs in this column. |
 | buildingCost | Integer | Required | Default cost of buildings requiring this tech. |
 | wonderCost | Integer | Required | Default cost of wonders requiring this tech. |
-| techs | List of Techs | Required | List of techs as follows - pay attention to the nesting of {} and []. |
+| techs | List | Required | List of techs as follows - pay attention to the nesting of {} and []. |
 
 #### Tech structure
 
