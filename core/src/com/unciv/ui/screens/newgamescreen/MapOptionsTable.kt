@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.newgamescreen
 
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
@@ -13,6 +14,10 @@ import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.onChange
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.screens.victoryscreen.ReplayMap
+import com.unciv.utils.concurrency.Concurrency
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.isActive
 
 class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
 
@@ -21,8 +26,10 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
     val generatedMapOptionsTable = MapParametersTable(newGameScreen, mapParameters, MapGeneratedMainType.generated)
     private val randomMapOptionsTable = MapParametersTable(newGameScreen, mapParameters, MapGeneratedMainType.randomGenerated)
     private val savedMapOptionsTable = Table()
+    private val loadMapMiniMap = Container<ReplayMap?>()
     lateinit var mapTypeSelectBox: TranslatedSelectBox
     private val mapFileSelectBox = createMapFileSelectBox()
+    private var mapPreviewJob: Job? = null
 
     private val mapFilesSequence = sequence<FileHandle> {
         yieldAll(MapSaver.getMaps().asSequence())
@@ -52,7 +59,8 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
         savedMapOptionsTable.add(mapFileSelectBox)
             .maxWidth((columnWidth - 120f).coerceAtLeast(120f))
             .right().row()
-
+        savedMapOptionsTable.add(loadMapMiniMap)
+            .colspan(2).center().size(columnWidth, columnWidth * 0.75f).row()
 
         fun updateOnMapTypeChange() {
             mapTypeSpecificTable.clear()
@@ -101,6 +109,7 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
     private fun createMapFileSelectBox(): SelectBox<FileHandleWrapper> {
         val mapFileSelectBox = SelectBox<FileHandleWrapper>(BaseScreen.skin)
         mapFileSelectBox.onChange {
+            cancelBackgroundJobs()
             val mapFile = mapFileSelectBox.selected.fileHandle
             val mapParams = try {
                 MapSaver.loadMapParameters(mapFile)
@@ -122,6 +131,7 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
             newGameScreen.gameSetupInfo.gameParameters.baseRuleset = mapMods.first.firstOrNull() ?: mapParams.baseRuleset
             newGameScreen.updateRuleset()
             newGameScreen.updateTables()
+            startMapPreview(mapFile)
         }
         return mapFileSelectBox
     }
@@ -145,6 +155,33 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
             ?: return
         mapFileSelectBox.selected = selectedItem
         newGameScreen.gameSetupInfo.mapFile = selectedItem.fileHandle
+    }
+
+    private fun startMapPreview(mapFile: FileHandle) {
+        mapPreviewJob = Concurrency.run {
+            try {
+                val map = MapSaver.loadMap(mapFile)
+                if (!isActive) return@run
+                map.setTransients(newGameScreen.ruleset, false)
+                if (!isActive) return@run
+                val miniMap = ReplayMap(map, null, 300f, 200f)
+                if (!isActive) return@run
+                miniMap.update(0)
+                if (!isActive) return@run
+                Concurrency.runOnGLThread {
+                    loadMapMiniMap.actor = miniMap
+                }
+            } catch (_: Throwable) {}
+        }.apply {
+            invokeOnCompletion {
+                mapPreviewJob = null
+            }
+        }
+    }
+
+    fun cancelBackgroundJobs() {
+        mapPreviewJob?.cancel()
+        mapPreviewJob = null
     }
 
     // The SelectBox auto displays the text a object.toString(), which on the FileHandle itself includes the folder path.
