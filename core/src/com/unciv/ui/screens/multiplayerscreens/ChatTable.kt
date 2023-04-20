@@ -44,7 +44,7 @@ class ChatTable(private val chatMessageList: ChatMessageList, showRefreshButton:
             add(sendButton).padLeft(10f).padRight(10f)
             val refreshButton = RefreshButton()
             refreshButton.onActivation {
-                chatMessageList.triggerRefresh(false)
+                chatMessageList.triggerRefresh(stage, false)
             }
             add(refreshButton).padRight(5f)
         } else {

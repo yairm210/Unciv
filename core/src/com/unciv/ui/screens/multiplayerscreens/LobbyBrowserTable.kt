@@ -63,15 +63,14 @@ internal class LobbyBrowserTable(private val screen: BaseScreen): Table(BaseScre
     /**
      * Recreate the table of this lobby browser using the supplied list of lobbies
      */
-    fun recreate(lobbies: List<LobbyResponse>) {
+    internal fun recreate(lobbies: List<LobbyResponse>) {
         clearChildren()
         if (lobbies.isEmpty()) {
             add(noLobbies).row()
             return
         }
 
-        lobbies.sortedBy { it.createdAt }
-        for (lobby in lobbies.reversed()) {
+        for (lobby in lobbies.sortedBy { it.createdAt }.reversed()) {
             add(lobby.name).padRight(15f)
             add("${lobby.currentPlayers}/${lobby.maxPlayers}").padRight(10f)
             if (lobby.hasPassword) {

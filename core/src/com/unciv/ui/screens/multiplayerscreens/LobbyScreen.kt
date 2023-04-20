@@ -7,11 +7,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.badlogic.gdx.utils.Disposable
 import com.unciv.Constants
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
 import com.unciv.logic.event.EventBus
+import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.apiv2.AccountResponse
+import com.unciv.logic.multiplayer.apiv2.GameStarted
 import com.unciv.logic.multiplayer.apiv2.GetLobbyResponse
 import com.unciv.logic.multiplayer.apiv2.LobbyClosed
 import com.unciv.logic.multiplayer.apiv2.LobbyJoin
@@ -19,6 +22,7 @@ import com.unciv.logic.multiplayer.apiv2.LobbyKick
 import com.unciv.logic.multiplayer.apiv2.LobbyLeave
 import com.unciv.logic.multiplayer.apiv2.LobbyResponse
 import com.unciv.logic.multiplayer.apiv2.StartGameResponse
+import com.unciv.logic.multiplayer.apiv2.UpdateGameData
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.components.AutoScrollPane
@@ -44,6 +48,7 @@ import com.unciv.ui.screens.newgamescreen.MapOptionsTable
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import java.util.*
 
@@ -71,6 +76,7 @@ class LobbyScreen(
     constructor(lobby: LobbyResponse): this(lobby.uuid, lobby.chatRoomUUID, lobby.name, lobby.maxPlayers, mutableListOf(), lobby.hasPassword, lobby.owner, GameSetupInfo.fromSettings())
     constructor(lobby: GetLobbyResponse): this(lobby.uuid, lobby.chatRoomUUID, lobby.name, lobby.maxPlayers, lobby.currentPlayers.toMutableList(), lobby.hasPassword, lobby.owner, GameSetupInfo.fromSettings())
 
+    private var gameUUID: UUID? = null
     override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters)
     private val events = EventBus.EventReceiver()
 
@@ -84,6 +90,8 @@ class LobbyScreen(
 
     private val lobbyPlayerList: LobbyPlayerList
     private val chatMessageList = ChatMessageList(lobbyChatUUID, game.onlineMultiplayer)
+    private val disposables = mutableListOf<Disposable>()
+
     private val changeLobbyNameButton = PencilButton()
     private val menuButtonGameOptions = "Game options".toTextButton()
     private val menuButtonMapOptions = "Map options".toTextButton()
@@ -98,7 +106,7 @@ class LobbyScreen(
             currentPlayers.add(owner)
         }
         gameSetupInfo.gameParameters.isOnlineMultiplayer = true
-        lobbyPlayerList = LobbyPlayerList(lobbyUUID, owner == me, game.onlineMultiplayer.api, currentPlayers, this)
+        lobbyPlayerList = LobbyPlayerList(lobbyUUID, owner == me, game.onlineMultiplayer.api, ::recreate, currentPlayers, this)
         gameOptionsTable = GameOptionsTable(this, multiplayerOnly = true, updatePlayerPickerRandomLabel = {}, updatePlayerPickerTable = { x ->
             Log.error("Updating player picker table with '%s' is not implemented yet.", x)
             lobbyPlayerList.recreate()
@@ -162,17 +170,26 @@ class LobbyScreen(
         events.receive(LobbyJoin::class, { it.lobbyUUID == lobbyUUID }) {
             Log.debug("Player %s joined lobby %s", it.player, lobbyUUID)
             lobbyPlayerList.addPlayer(it.player)
+            recreate()
             ToastPopup("${it.player.username} has joined the lobby", stage)
         }
         events.receive(LobbyLeave::class, { it.lobbyUUID == lobbyUUID }) {
             Log.debug("Player %s left lobby %s", it.player, lobbyUUID)
             lobbyPlayerList.removePlayer(it.player.uuid)
+            recreate()
             ToastPopup("${it.player.username} has left the lobby", stage)
         }
         events.receive(LobbyKick::class, { it.lobbyUUID == lobbyUUID }) {
+            if (it.player.uuid == me.uuid) {
+                InfoPopup(stage, "You have been kicked out of this lobby!") {
+                    game.popScreen()
+                }
+                return@receive
+            }
             val success = lobbyPlayerList.removePlayer(it.player.uuid)
             Log.debug("Removing player %s from lobby %s", it.player, if (success) "succeeded" else "failed")
             if (success) {
+                recreate()
                 ToastPopup("${it.player.username} has been kicked", stage)
             }
         }
@@ -183,14 +200,46 @@ class LobbyScreen(
             }
         }
 
+        val startingGamePopup = Popup(stage)
+        events.receive(GameStarted::class, { it.lobbyUUID == lobbyUUID }) {
+            Log.debug("Game in lobby %s has been started", lobbyUUID)
+            gameUUID = it.gameUUID
+            startingGamePopup.clearChildren()
+            startingGamePopup.addGoodSizedLabel("The game is starting. Waiting for host...")
+            startingGamePopup.addGoodSizedLabel("Closing this popup will return you to the lobby browser.")
+            startingGamePopup.innerTable.add("Open game chat".toTextButton().onClick {
+                Log.debug("Opening game chat %s for game %s of lobby %s", it.gameChatUUID, it.gameUUID, lobbyName)
+                val gameChat = ChatMessageList(it.gameChatUUID, game.onlineMultiplayer)
+                disposables.add(gameChat)
+                val wrapper = WrapPopup(stage, ChatTable(gameChat, true))
+                wrapper.open(force = true)
+            })
+            startingGamePopup.addCloseButton {
+                game.popScreen()
+            }
+            startingGamePopup.open(force = true)
+        }
+        events.receive(UpdateGameData::class, { gameUUID != null && it.gameUUID == gameUUID }) {
+            val gameInfo = UncivFiles.gameInfoFromString(it.gameData)
+            Log.debug("Successfully loaded game %s from WebSocket event", gameInfo.gameId)
+            startingGamePopup.reuseWith("Working...")
+            Concurrency.runOnNonDaemonThreadPool {
+                game.loadGame(gameInfo)
+            }
+        }
+
         recreate()
         Concurrency.run {
             refresh()
         }
+        chatMessageList.triggerRefresh(stage)
     }
 
     override fun dispose() {
         chatMessageList.dispose()
+        for (disposable in disposables) {
+            disposable.dispose()
+        }
         super.dispose()
     }
 
@@ -203,11 +252,9 @@ class LobbyScreen(
     }
 
     /**
-     * Refresh the cached data for this lobby and its chat room and recreate the screen
+     * Refresh the cached data for this lobby and recreate the screen
      */
     private suspend fun refresh() {
-        chatMessageList.triggerRefresh()
-
         val lobby = try {
             game.onlineMultiplayer.api.lobby.get(lobbyUUID)
         } catch (e: Exception) {
@@ -219,6 +266,19 @@ class LobbyScreen(
             if (owner !in refreshedLobbyPlayers) {
                 refreshedLobbyPlayers.add(owner)
             }
+
+            // This construction prevents null pointer exceptions when `refresh`
+            // is executed concurrently to the constructor of this class, because
+            // `lobbyPlayerList` might be uninitialized when this function is executed
+            while (true) {
+                try {
+                    lobbyPlayerList.removePlayer(owner.uuid)
+                    break
+                } catch (_: NullPointerException) {
+                    delay(1)
+                }
+            }
+
             lobbyPlayerList.updateCurrentPlayers(refreshedLobbyPlayers)
             lobbyName = lobby.name
             Concurrency.runOnGLThread {
@@ -341,7 +401,9 @@ class LobbyScreen(
     }
 
     override fun updateTables() {
-        Log.error("Not yet implemented")
+        Concurrency.run {
+            refresh()
+        }
     }
 
     override fun updateRuleset() {

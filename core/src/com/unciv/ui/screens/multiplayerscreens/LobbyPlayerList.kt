@@ -15,14 +15,13 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.newgamescreen.IPreviousScreen
+import com.unciv.ui.screens.newgamescreen.MapOptionsInterface
 import com.unciv.ui.screens.newgamescreen.NationPickerPopup
 import com.unciv.utils.Log
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.util.*
-import kotlin.math.roundToInt
 
 /**
  * List of players in an APIv2 lobby screen
@@ -31,8 +30,9 @@ class LobbyPlayerList(
     private val lobbyUUID: UUID,
     private var editable: Boolean,
     private var api: ApiV2,
+    private val update: (() -> Unit)? = null,  // use for signaling player changes via buttons to the caller
     startPlayers: List<AccountResponse> = listOf(),
-    private val base: IPreviousScreen
+    private val base: MapOptionsInterface
 ) : Table() {
     private val mutex = Mutex()  // used to synchronize changes to the players list
     internal val players: MutableList<LobbyPlayer> = startPlayers.map { LobbyPlayer(it) }.toMutableList()
@@ -47,6 +47,7 @@ class LobbyPlayerList(
                 }
             }
             recreate()
+            update?.invoke()
         }
 
     init {
@@ -165,9 +166,12 @@ class LobbyPlayerList(
                                     success = players.remove(player)
                                 }
                             }
+                        } else {
+                            base.updateTables()
                         }
                         Log.debug("Removing player %s [%s]: %s", player.account, i, if (success) "success" else "failure")
                         recreate()
+                        update?.invoke()
                     }
                     if (editable) {
                         add(kickButton)
