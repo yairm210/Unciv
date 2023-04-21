@@ -290,38 +290,44 @@ object NextTurnAutomation {
         return
     }
 
-    /** allow AI to spend money to purchase city-state friendship, buildings & unit */
-    private fun useGold(civInfo: Civilization) {
-        if (civInfo.getHappiness() > 0 && civInfo.hasUnique(UniqueType.CityStateCanBeBoughtForGold)) {
-            for (cityState in civInfo.getKnownCivs().filter { it.isCityState() } ) {
-                if (cityState.cityStateFunctions.canBeMarriedBy(civInfo))
-                    cityState.cityStateFunctions.diplomaticMarriage(civInfo)
-                if (civInfo.getHappiness() <= 0) break // Stop marrying if happiness is getting too low
+    private fun useGoldForCityStates(civ: Civilization) {
+        val knownCityStates = civ.getKnownCivs().filter { it.isCityState() }
+
+        // canBeMarriedBy checks actual cost, but it can't be below 500*speedmodifier, and the later check is expensive
+        if (civ.gold >= 330 && civ.getHappiness() > 0 && civ.hasUnique(UniqueType.CityStateCanBeBoughtForGold)) {
+            for (cityState in knownCityStates.toList() ) {  // Materialize sequence as diplomaticMarriage may kill a CS
+                if (cityState.cityStateFunctions.canBeMarriedBy(civ))
+                    cityState.cityStateFunctions.diplomaticMarriage(civ)
+                if (civ.getHappiness() <= 0) break // Stop marrying if happiness is getting too low
             }
         }
 
-        if (civInfo.wantsToFocusOn(Victory.Focus.Culture)) {
-            for (cityState in civInfo.getKnownCivs()
-                    .filter { it.isCityState() && it.cityStateFunctions.canProvideStat(Stat.Culture) }) {
-                val diploManager = cityState.getDiplomacyManager(civInfo)
+        if (civ.gold < 250) return  // skip checks if tryGainInfluence will bail anyway
+        if (civ.wantsToFocusOn(Victory.Focus.Culture)) {
+            for (cityState in knownCityStates.filter { it.cityStateFunctions.canProvideStat(Stat.Culture) }) {
+                val diploManager = cityState.getDiplomacyManager(civ)
                 if (diploManager.getInfluence() < 40) { // we want to gain influence with them
-                    tryGainInfluence(civInfo, cityState)
+                    tryGainInfluence(civ, cityState)
                 }
             }
         }
 
-        if (!civInfo.isCityState()) {
-            val potentialAllies = civInfo.getKnownCivs().filter { it.isCityState() }
-            if (potentialAllies.any()) {
-                val cityState =
-                    potentialAllies.maxByOrNull { valueCityStateAlliance(civInfo, it) }!!
-                if (cityState.getAllyCiv() != civInfo.civName && valueCityStateAlliance(civInfo, cityState) > 0) {
-                    tryGainInfluence(civInfo, cityState)
-                }
-            }
+        if (civ.gold < 250 || knownCityStates.none()) return
+        val cityState = knownCityStates
+            .filter { it.getAllyCiv() != civ.civName }
+            .associateWith { valueCityStateAlliance(civ, it) }
+            .maxByOrNull { it.value }?.takeIf { it.value > 0 }?.key
+        if (cityState != null) {
+            tryGainInfluence(civ, cityState)
         }
+    }
 
-        for (city in civInfo.cities.sortedByDescending { it.population.population }) {
+    /** allow AI to spend money to purchase city-state friendship, buildings & unit */
+    private fun useGold(civ: Civilization) {
+        if (civ.isMajorCiv())
+            useGoldForCityStates(civ)
+
+        for (city in civ.cities.sortedByDescending { it.population.population }) {
             val construction = city.cityConstructions.getCurrentConstruction()
             if (construction is PerpetualConstruction) continue
             if ((construction as INonPerpetualConstruction).canBePurchasedWithStat(city, Stat.Gold)
@@ -330,7 +336,7 @@ object NextTurnAutomation {
             }
         }
 
-        maybeBuyCityTiles(civInfo)
+        maybeBuyCityTiles(civ)
     }
 
     private fun maybeBuyCityTiles(civInfo: Civilization) {
