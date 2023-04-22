@@ -26,6 +26,7 @@ import com.unciv.ui.components.extensions.toGdxArray
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.popups.AuthPopup
+import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.options.SettingsSelect.SelectItem
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -34,6 +35,7 @@ import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import java.time.Duration
 import java.time.temporal.ChronoUnit
+import java.util.*
 
 fun multiplayerTab(
     optionsPopup: OptionsPopup
@@ -210,7 +212,7 @@ private fun addMultiplayerServerOptions(
                                     Concurrency.runOnNonDaemonThreadPool {
                                         UncivGame.refreshOnlineMultiplayer()
                                     }
-                                    popup.reuseWith("Success!", true)
+                                    popup.reuseWith("Success! Detected $apiVersion!", true)
                                 } else {
                                     popup.reuseWith("Failed!", true)
                                 }
@@ -226,11 +228,15 @@ private fun addMultiplayerServerOptions(
                         }
                     }
                 } else {
+                    Concurrency.runOnGLThread {
+                        popup.reuseWith("Success! Detected $apiVersion!", true)
+                    }
                     Concurrency.runOnNonDaemonThreadPool {
                         UncivGame.refreshOnlineMultiplayer()
                     }
                 }
             } catch (e: Exception) {
+                Log.debug("Connectivity exception: %s", e.localizedMessage)
                 Concurrency.runOnGLThread {
                     popup.reuseWith("Failed!", true)
                 }
@@ -255,7 +261,7 @@ private fun addMultiplayerServerOptions(
                     popup.reuseWith("Failed!", true)
                 }
             }
-            */
+             */
         }
     }).row()
 
@@ -284,9 +290,9 @@ private fun addMultiplayerServerOptions(
         serverIpTable.add(passwordStatusTable).colspan(2).row()
     }
 
-    if (UncivGame.Current.onlineMultiplayer.apiVersion == ApiVersion.APIv2 && UncivGame.Current.onlineMultiplayer.hasAuthentication()) {
+    if (UncivGame.Current.onlineMultiplayer.apiVersion == ApiVersion.APIv2) {
         val logoutButton = "Logout".toTextButton()
-        serverIpTable.add(logoutButton.onClick {
+        logoutButton.onClick {
             // Setting the button text as user response isn't the most beautiful way, but the easiest
             logoutButton.setText("Loading...".tr())
             settings.multiplayer.passwords.remove(settings.multiplayer.server)
@@ -305,7 +311,40 @@ private fun addMultiplayerServerOptions(
                     }
                 }
             }
-        }).colspan(2).padBottom(8f).row()
+        }
+
+        val setUserIdButton = "Set user ID".toTextButton()
+        setUserIdButton.onClick {
+            val popup = Popup(optionsPopup.stageToShowOn)
+            popup.addGoodSizedLabel("You can restore a previous user ID here if you want to change back to another multiplayer server. Just insert your old user ID below or copy it from your clipboard. Note that changing the user ID has no effect for newer multiplayer servers, because it would be overwritten by login.").colspan(4).row()
+
+            val inputField = UncivTextField.create("User ID")
+            popup.add(inputField).growX().colspan(3)
+            popup.add("From clipboard".toTextButton().onClick {
+                inputField.text = Gdx.app.clipboard.contents
+            }).padLeft(10f).row()
+
+            popup.addCloseButton().colspan(2)
+            popup.addOKButton {
+                val newUserID = inputField.text
+                try {
+                    UUID.fromString(newUserID)
+                    Log.debug("Writing new user ID '%s'", newUserID)
+                    UncivGame.Current.settings.multiplayer.userId = newUserID
+                    UncivGame.Current.settings.save()
+                } catch (_: IllegalArgumentException) {
+                    InfoPopup(optionsPopup.stageToShowOn, "This user ID seems to be invalid.")
+                }
+            }.colspan(2).row()
+            popup.open(force = true)
+        }
+
+        if (UncivGame.Current.onlineMultiplayer.hasAuthentication()) {
+            serverIpTable.add(logoutButton).padTop(8f)
+            serverIpTable.add(setUserIdButton).padTop(8f).row()
+        } else {
+            serverIpTable.add(setUserIdButton).padTop(8f).colspan(2).row()
+        }
     }
 
     tab.add(serverIpTable).colspan(2).fillX().row()
@@ -343,6 +382,7 @@ private fun addTurnCheckerOptions(
     return turnCheckerSelect
 }
 
+/*
 private fun successfullyConnectedToServer(action: (Boolean, Boolean) -> Unit) {
     Concurrency.run("TestIsAlive") {
         try {
@@ -365,6 +405,7 @@ private fun successfullyConnectedToServer(action: (Boolean, Boolean) -> Unit) {
         }
     }
 }
+ */
 
 private fun setPassword(password: String, optionsPopup: OptionsPopup) {
     if (password.isBlank())
