@@ -16,3 +16,9 @@ internal val DEFAULT_SESSION_TIMEOUT = Duration.ofSeconds(15 * 60)
 
 /** Default cache expiry timeout to indicate that certain data needs to be re-fetched */
 internal val DEFAULT_CACHE_EXPIRY = Duration.ofSeconds(30 * 60)
+
+/** Default timeout for a single request (miliseconds) */
+internal const val DEFAULT_REQUEST_TIMEOUT = 5000L
+
+/** Default timeout for connecting to a remote server (miliseconds) */
+internal const val DEFAULT_CONNECT_TIMEOUT = 3000L

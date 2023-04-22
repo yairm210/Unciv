@@ -44,8 +44,8 @@ open class ApiV2Wrapper(private val baseUrl: String) {
             })
         }
         install(HttpTimeout) {
-            requestTimeoutMillis = 5000
-            connectTimeoutMillis = 3000
+            requestTimeoutMillis = DEFAULT_REQUEST_TIMEOUT
+            connectTimeoutMillis = DEFAULT_CONNECT_TIMEOUT
         }
         install(WebSockets) {
             // Pings are configured manually to enable re-connecting automatically, don't use `pingInterval`
