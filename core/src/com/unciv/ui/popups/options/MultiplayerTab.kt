@@ -29,6 +29,7 @@ import com.unciv.ui.popups.AuthPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.options.SettingsSelect.SelectItem
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import java.time.Duration
@@ -192,7 +193,49 @@ private fun addMultiplayerServerOptions(
             open(true)
         }
         Concurrency.runOnNonDaemonThreadPool {
-            UncivGame.refreshOnlineMultiplayer()
+            try {
+                val apiVersion = ApiVersion.detect(multiplayerServerTextField.text, suppress = false)
+                if (apiVersion == ApiVersion.APIv1) {
+                    val authSuccess = try {
+                        UncivGame.Current.onlineMultiplayer.authenticate(null)
+                    } catch (e: Exception) {
+                        Log.debug("Failed to authenticate: %s", e.localizedMessage)
+                        false
+                    }
+                    if (!authSuccess) {
+                        Concurrency.runOnGLThread {
+                            popup.close()
+                            AuthPopup(optionsPopup.stageToShowOn) { success ->
+                                if (success) {
+                                    Concurrency.runOnNonDaemonThreadPool {
+                                        UncivGame.refreshOnlineMultiplayer()
+                                    }
+                                    popup.reuseWith("Success!", true)
+                                } else {
+                                    popup.reuseWith("Failed!", true)
+                                }
+                                popup.open(true)
+                            }.open(true)
+                        }
+                    } else {
+                        Concurrency.runOnNonDaemonThreadPool {
+                            UncivGame.refreshOnlineMultiplayer()
+                        }
+                        Concurrency.runOnGLThread {
+                            popup.reuseWith("Success! Detected $apiVersion!", true)
+                        }
+                    }
+                } else {
+                    Concurrency.runOnNonDaemonThreadPool {
+                        UncivGame.refreshOnlineMultiplayer()
+                    }
+                }
+            } catch (e: Exception) {
+                Concurrency.runOnGLThread {
+                    popup.reuseWith("Failed!", true)
+                }
+            }
+            /*
             successfullyConnectedToServer { connectionSuccess, authSuccess ->
                 if (connectionSuccess && authSuccess) {
                     popup.reuseWith("Success!", true)
@@ -212,6 +255,7 @@ private fun addMultiplayerServerOptions(
                     popup.reuseWith("Failed!", true)
                 }
             }
+            */
         }
     }).row()
 
