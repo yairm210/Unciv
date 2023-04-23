@@ -27,13 +27,12 @@ object UnitAutomation {
     private const val CLOSE_ENEMY_TURNS_AWAY_LIMIT = 3f
 
     private fun isGoodTileToExplore(unit: MapUnit, tile: Tile): Boolean {
-        return unit.movement.canMoveTo(tile)
-                && (tile.getOwner() == null || !tile.getOwner()!!.isCityState())
+        return (tile.getOwner() == null || !tile.getOwner()!!.isCityState())
                 && tile.neighbors.any { !unit.civ.hasExplored(it) }
                 && (!unit.civ.isCityState() || tile.neighbors.any { it.getOwner() == unit.civ }) // Don't want city-states exploring far outside their borders
                 && unit.getDamageFromTerrain(tile) <= 0    // Don't take unnecessary damage
-                && tile.getTilesInDistance(3)  // don't walk in range of enemy units
-            .none { tile_it -> containsEnemyMilitaryUnit(unit, tile_it)}
+                && tile.getTilesInDistance(3) .none { containsEnemyMilitaryUnit(unit, it) } // don't walk in range of enemy units
+                && unit.movement.canMoveTo(tile) // expensive, evaluate last
                 && unit.movement.canReach(tile) // expensive, evaluate last
     }
 
