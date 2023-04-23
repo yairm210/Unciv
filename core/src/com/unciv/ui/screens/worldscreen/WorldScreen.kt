@@ -15,6 +15,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.map.MapVisualization
+import com.unciv.logic.multiplayer.MultiplayerGameCanBeLoaded
 import com.unciv.logic.multiplayer.MultiplayerGameUpdated
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
@@ -200,6 +201,15 @@ class WorldScreen(
                 }
                 Concurrency.run("Load latest multiplayer state") {
                     loadLatestMultiplayerState()
+                }
+            }
+            // APIv2-based online multiplayer games use this event to notify about changes for the game
+            events.receive(MultiplayerGameCanBeLoaded::class, { it.gameInfo.gameId == gameId }) {
+                if (it.gameInfo.gameId == UncivGame.Current.gameInfo?.gameId) {
+                    Concurrency.run {
+                        UncivGame.Current.loadGame(gameInfo)
+                        UncivGame.Current.notifyTurnStarted()
+                    }
                 }
             }
         }

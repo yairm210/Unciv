@@ -1,6 +1,7 @@
 package com.unciv.logic.multiplayer
 
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.utils.Disposable
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.json.json
@@ -10,7 +11,10 @@ import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.event.EventBus
+import com.unciv.logic.files.IncompatibleGameInfoVersionException
+import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.apiv2.ApiV2
+import com.unciv.logic.multiplayer.apiv2.UpdateGameData
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
@@ -49,7 +53,7 @@ private val FILE_UPDATE_THROTTLE_PERIOD = Duration.ofSeconds(60)
  *
  * See the file of [com.unciv.logic.multiplayer.MultiplayerGameAdded] for all available [EventBus] events.
  */
-class OnlineMultiplayer {
+class OnlineMultiplayer: Disposable {
     private val settings
         get() = UncivGame.Current.settings
 
@@ -69,6 +73,8 @@ class OnlineMultiplayer {
     private lateinit var featureSet: ServerFeatureSet
     private var pollChecker: Job? = null
 
+    private val events = EventBus.EventReceiver()
+
     private val savedGames: MutableMap<FileHandle, OnlineMultiplayerGame> = Collections.synchronizedMap(mutableMapOf())
 
     private val lastFileUpdate: AtomicReference<Instant?> = AtomicReference()
@@ -80,6 +86,23 @@ class OnlineMultiplayer {
 
     /** Server API auto-detection happens in the coroutine [initialize] */
     lateinit var apiVersion: ApiVersion
+
+    init {
+        events.receive(UpdateGameData::class, null) {
+            Concurrency.runOnNonDaemonThreadPool {
+                try {
+                    val gameInfo = UncivFiles.gameInfoFromString(it.gameData)
+                    addGame(gameInfo)
+                    gameInfo.isUpToDate = true
+                    Concurrency.runOnGLThread {
+                        EventBus.send(MultiplayerGameCanBeLoaded(gameInfo, it.gameDataID))
+                    }
+                } catch (e: IncompatibleGameInfoVersionException) {
+                    Log.debug("Failed to load GameInfo from incoming event: %s", e.localizedMessage)
+                }
+            }
+        }
+    }
 
     /**
      * Initialize this instance and detect the API version of the server automatically
@@ -516,8 +539,9 @@ class OnlineMultiplayer {
     /**
      * Dispose this [OnlineMultiplayer] instance by closing its background jobs and connections
      */
-    fun dispose() {
+    override fun dispose() {
         pollChecker?.cancel()
+        events.stopReceiving()
         if (apiVersion == ApiVersion.APIv2) {
             api.dispose()
         }
