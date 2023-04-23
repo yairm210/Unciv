@@ -180,6 +180,7 @@ class ChatMessageList(private val chatRoomUUID: UUID, private val mp: OnlineMult
      * Dispose this instance and cancel the [redrawJob]
      */
     override fun dispose() {
+        events.stopReceiving()
         redrawJob.cancel()
     }
 

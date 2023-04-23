@@ -14,17 +14,20 @@ import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Disposable
 import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
+import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.HasMultiplayerGameName
 import com.unciv.logic.multiplayer.MultiplayerGameNameChanged
 import com.unciv.logic.multiplayer.MultiplayerGameUpdateEnded
 import com.unciv.logic.multiplayer.MultiplayerGameUpdateStarted
 import com.unciv.logic.multiplayer.MultiplayerGameUpdated
 import com.unciv.logic.multiplayer.OnlineMultiplayerGame
+import com.unciv.logic.multiplayer.apiv2.UpdateGameData
 import com.unciv.logic.multiplayer.isUsersTurn
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.setSize
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import kotlinx.coroutines.Job
@@ -71,6 +74,23 @@ class MultiplayerStatusButton(
 
         events.receive(MultiplayerGameUpdateStarted::class, curGameFilter) { startLoading() }
         events.receive(MultiplayerGameUpdateEnded::class, curGameFilter) { stopLoading() }
+
+        // APIv2 games will just receive their updates via this WebSocket event
+        events.receive(UpdateGameData::class, null) {
+            Concurrency.runOnNonDaemonThreadPool {
+                val gameInfo = UncivFiles.gameInfoFromString(it.gameData)
+                if (gameInfo.gameId == curGame?.preview?.gameId) {
+                    try {
+                        UncivGame.Current.loadGame(gameInfo)
+                    } catch (e: Exception) {
+                        Log.error("Failed to load game update from incoming event: %s", e.localizedMessage)
+                    }
+                    Log.debug("Game name: '%s'", curGameName)
+                    EventBus.send(MultiplayerGameUpdated(curGameName ?: "", gameInfo.asPreview()))
+                    UncivGame.Current.notifyTurnStarted()
+                }
+            }
+        }
 
         onClick {
             MultiplayerStatusPopup(screen).open()

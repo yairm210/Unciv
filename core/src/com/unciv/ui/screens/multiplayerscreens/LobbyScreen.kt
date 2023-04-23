@@ -236,6 +236,7 @@ class LobbyScreen(
     }
 
     override fun dispose() {
+        events.stopReceiving()
         chatMessageList.dispose()
         for (disposable in disposables) {
             disposable.dispose()
