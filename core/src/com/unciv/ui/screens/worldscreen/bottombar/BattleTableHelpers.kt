@@ -6,11 +6,13 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
+import com.badlogic.gdx.scenes.scene2d.actions.RelativeTemporalAction
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.battle.ICombatant
+import com.unciv.logic.map.HexMath
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
@@ -47,15 +49,50 @@ object BattleTableHelpers {
                 actor.color = color.cpy().lerp(Color.RED, percent)
         }
 
+        val actorsToMove = getMapActorsForCombatant(attacker).toList()
+
+        val attackVectorHexCoords = defender.getTile().position.cpy().sub(attacker.getTile().position)
+        val attackVectorWorldCoords = HexMath.hex2WorldCoords(attackVectorHexCoords)
+            .nor()  // normalize vector to length of "1"
+            .scl(10f) // we want 10 pixel movement
+
         stage.addAction(
             Actions.sequence(
-            object : FloatAction(0f, 1f, 0.3f, Interpolation.sine) {
-                override fun update(percent: Float) = updateRedPercent(percent)
-            },
-            object : FloatAction(0f, 1f, 0.3f, Interpolation.sine) {
-                override fun update(percent: Float) = updateRedPercent(1 - percent)
-            }
+                object : RelativeTemporalAction(){
+                    init {
+                        duration = 0.5f
+                        interpolation = Interpolation.sine
+                    }
+                    override fun updateRelative(percentDelta: Float) {
+                        for (actor in actorsToMove){
+                            actor.moveBy(attackVectorWorldCoords.x * percentDelta, attackVectorWorldCoords.y * percentDelta)
+                        }
+                    }
+                },
+                Actions.parallel( // While the unit is moving back to its normal position, we flash the damages on both units
+                    object : RelativeTemporalAction(){
+                        init {
+                            duration = 0.5f
+                            interpolation = Interpolation.sine
+                        }
+                        override fun updateRelative(percentDelta: Float) {
+                            for (actor in actorsToMove){
+                                actor.moveBy(attackVectorWorldCoords.x * -percentDelta, attackVectorWorldCoords.y * -percentDelta)
+                            }
+                        }
+                    },
+                    Actions.sequence(
+                        object : FloatAction(0f, 1f, 0.3f, Interpolation.sine) {
+                            override fun update(percent: Float) = updateRedPercent(percent)
+                        },
+                        object : FloatAction(0f, 1f, 0.3f, Interpolation.sine) {
+                            override fun update(percent: Float) = updateRedPercent(1 - percent)
+                        }
+                    )
+                )
         ))
+
+
     }
 
     fun getHealthBar(maxHealth: Int, currentHealth: Int, maxRemainingHealth: Int, minRemainingHealth: Int): Table {
