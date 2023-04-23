@@ -163,6 +163,9 @@ class UnitMovement(val unit: MapUnit) {
         distanceToTiles[unitTile] = ParentTileAndTotalDistance(unitTile, unitTile, 0f)
         var tilesToCheck = listOf(unitTile)
 
+        val passThroughCache = HashMap<Tile, Boolean>() // Cache for canPassThrough
+        val movementCostCache = HashMap<Pair<Tile, Tile>, Float>() // Cache for getMovementCostBetweenAdjacentTiles
+
         while (tilesToCheck.isNotEmpty()) {
             val updatedTiles = ArrayList<Tile>()
             for (tileToCheck in tilesToCheck)
@@ -171,13 +174,14 @@ class UnitMovement(val unit: MapUnit) {
                     var totalDistanceToTile: Float = when {
                         !unit.civ.hasExplored(neighbor) ->
                             distanceToTiles[tileToCheck]!!.totalDistance + 1f  // If we don't know then we just guess it to be 1.
-                        !canPassThrough(neighbor) -> unitMovement // Can't go here.
+                        !passThroughCache.getOrPut(neighbor) { canPassThrough(neighbor) } -> unitMovement // Can't go here.
                         // The reason that we don't just "return" is so that when calculating how to reach an enemy,
                         // You need to assume his tile is reachable, otherwise all movement algorithms on reaching enemy
                         // cities and units goes kaput.
                         else -> {
-                            val distanceBetweenTiles = getMovementCostBetweenAdjacentTiles(tileToCheck, neighbor, unit.civ, considerZoneOfControl)
-                            distanceToTiles[tileToCheck]!!.totalDistance + distanceBetweenTiles
+                            val key = Pair(tileToCheck, neighbor)
+                            movementCostCache.getOrPut(key) { getMovementCostBetweenAdjacentTiles(tileToCheck, neighbor, unit.civ, considerZoneOfControl) }
+                            distanceToTiles[tileToCheck]!!.totalDistance + movementCostCache[key]!!
                         }
                     }
 
