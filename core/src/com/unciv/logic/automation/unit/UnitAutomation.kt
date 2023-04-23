@@ -274,11 +274,13 @@ object UnitAutomation {
 
         val isLateGame = isLateGame(unit.civ)
         // Great scientist -> Hurry research if late game
-        if (UnitActions.getUnitActions(unit).any { it.type == UnitActionType.HurryResearch }
-                && isLateGame) {
-            UnitActions.getUnitActions(unit)
-                .first { it.type == UnitActionType.HurryResearch }.action!!.invoke()
-            return
+        if (isLateGame) {
+            val hurryResearch = UnitActions.getUnitActions(unit)
+                .firstOrNull { it.type == UnitActionType.HurryResearch }?.action
+            if (hurryResearch != null) {
+                hurryResearch()
+                return
+            }
         }
 
         // Great merchant -> Conduct trade mission if late game and if not at war.
@@ -286,8 +288,7 @@ object UnitAutomation {
         //  also have more influence.
         if (unit.hasUnique(UniqueType.CanTradeWithCityStateForGoldAndInfluence)
                 // Don't wander around with the great merchant when at war. Barbs might also be a
-                // problem, but hopefully by the time we have a great merchant, they're under
-                // control.
+                // problem, but hopefully by the time we have a great merchant, they're under control.
                 && !unit.civ.isAtWar()
                 && isLateGame
         ) {
