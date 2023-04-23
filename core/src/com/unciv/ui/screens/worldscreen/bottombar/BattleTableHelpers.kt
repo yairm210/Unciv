@@ -60,7 +60,7 @@ object BattleTableHelpers {
             Actions.sequence(
                 object : RelativeTemporalAction(){
                     init {
-                        duration = 0.5f
+                        duration = 0.3f
                         interpolation = Interpolation.sine
                     }
                     override fun updateRelative(percentDelta: Float) {
@@ -72,7 +72,7 @@ object BattleTableHelpers {
                 Actions.parallel( // While the unit is moving back to its normal position, we flash the damages on both units
                     object : RelativeTemporalAction(){
                         init {
-                            duration = 0.5f
+                            duration = 0.3f
                             interpolation = Interpolation.sine
                         }
                         override fun updateRelative(percentDelta: Float) {
@@ -82,10 +82,10 @@ object BattleTableHelpers {
                         }
                     },
                     Actions.sequence(
-                        object : FloatAction(0f, 1f, 0.3f, Interpolation.sine) {
+                        object : FloatAction(0f, 1f, 0.2f, Interpolation.sine) {
                             override fun update(percent: Float) = updateRedPercent(percent)
                         },
-                        object : FloatAction(0f, 1f, 0.3f, Interpolation.sine) {
+                        object : FloatAction(0f, 1f, 0.2f, Interpolation.sine) {
                             override fun update(percent: Float) = updateRedPercent(1 - percent)
                         }
                     )
