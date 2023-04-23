@@ -78,6 +78,12 @@ object UnitAutomation {
     private fun tryFogBust(unit: MapUnit): Boolean {
         if (!Automation.afraidOfBarbarians(unit.civ)) return false // Not if we're not afraid
 
+        // If everything around this unit is visible, we can stop.
+        // Calculations below are quite expensive especially in the late game.
+        if (unit.currentTile.getTilesInDistance(5).any { !it.isVisible(unit.civ) }) {
+            return false
+        }
+
         val reachableTilesThisTurn =
                 unit.movement.getDistanceToTiles().keys.filter { isGoodTileForFogBusting(unit, it) }
         if (reachableTilesThisTurn.any()) {
