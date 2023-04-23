@@ -266,7 +266,8 @@ object SpecificUnitAutomation {
                     .filter { unit.civ.hasExplored(it) }
                     .mapNotNull { tile ->
                         val path = unit.movement.getShortestPath(tile)
-                        if (path.size <= 10) tile to path.size else null
+                        // 0 is unreachable, 10 is too far away
+                        if (path.size in 1..10) tile to path.size else null
                     }
                     .minByOrNull { it.second }?.first
                     ?: return false
