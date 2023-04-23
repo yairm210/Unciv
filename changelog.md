@@ -1,3 +1,26 @@
+## 4.6.5
+
+Resolved  - Dockerfile update for new location
+
+Resolved  - Solved AI Great Scientist crash
+
+Resolved  #9246 #9248 #9252 #9237 - Great Merchant doesn't try to go to unreachable tiles
+
+4.6.4-patch2
+
+4.6.4-patch1
+
+By letstalkaboutdune:
+- AbsoluteUnits - Sipahi, Hakkapeliitta 
+- AbsoluteUnits - Janissary, Tercio, Musketeer, Minuteman 
+
+By SomeTroglodyte:
+- Make AI diplomatic marriage safe from concurrent modification issues 
+- Fix Main Menu BG map cycle not stopping on user action 
+- Little documentation cleanup 
+
+fix: fix a typo in Civilization-related-JSON-files.md  - By caffidev
+
 ## 4.6.4
 
 Avoid font-related crash
