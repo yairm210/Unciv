@@ -156,6 +156,13 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     }
 
     private fun setNewViewableTiles() {
+        if (civInfo.isDefeated()) {
+            // Avoid meeting dead city states when entering a tile owned by their former ally (#9245)
+            // In that case ourTilesAndNeighboringTiles and getCivUnits will be empty, but the for
+            // loop getKnownCivs/getAllyCiv would add tiles.
+            civInfo.viewableTiles = emptySet()
+            return
+        }
 
         // while spectating all map is visible
         if (civInfo.isSpectator() || DebugUtils.VISIBLE_MAP) {
