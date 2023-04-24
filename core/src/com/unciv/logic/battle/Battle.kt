@@ -535,19 +535,20 @@ object Battle {
 
         val stateForConditionals = StateForConditionals(civInfo = civ, ourCombatant = thisCombatant, theirCombatant = otherCombatant)
 
-        val baseXP = thisCombatant
+        val baseXP = amount + thisCombatant
             .getMatchingUniques(UniqueType.FlatXPGain, stateForConditionals, true)
-            .fold(amount) { acc, unique -> acc + unique.params[0].toInt() }
+            .sumOf { it.params[0].toInt() }
 
-        val xpModifier = thisCombatant
+        val xpBonus = thisCombatant
             .getMatchingUniques(UniqueType.PercentageXPGain, stateForConditionals, true)
-            .fold(1f) { acc, unique -> acc + unique.params[0].toFloat() / 100 }
+            .sumOf { it.params[0].toDouble() }
+        val xpModifier = 1.0 + xpBonus / 100
 
         val xpGained = (baseXP * xpModifier).toInt()
         promotions.XP += xpGained
 
         if (!otherIsBarbarian && civ.isMajorCiv()) { // Can't get great generals from Barbarians
-            val greatGeneralPointsModifier = thisCombatant
+            val greatGeneralPointsBonus = thisCombatant
                 .getMatchingUniques(UniqueType.GreatPersonEarnedFaster, stateForConditionals, true)
                 .filter { unique ->
                     val unitName = unique.params[0]
@@ -555,7 +556,8 @@ object Battle {
                     val unit = civ.gameInfo.ruleset.units[unitName]!!
                     unit.uniques.contains("Great Person - [War]")
                 }
-                .fold (1f) { acc, unique -> acc +  unique.params[1].toFloat() / 100 }
+                .sumOf { it.params[1].toDouble() }
+            val greatGeneralPointsModifier = 1.0 + greatGeneralPointsBonus / 100
 
             val greatGeneralPointsGained = (xpGained * greatGeneralPointsModifier).toInt()
             civ.greatPeople.greatGeneralPoints += greatGeneralPointsGained
