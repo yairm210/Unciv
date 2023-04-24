@@ -829,10 +829,6 @@ object NextTurnAutomation {
     /** Will return the motivation to attack, but might short circuit if the value is guaranteed to
      * be lower than `atLeast`. So any values below `atLeast` should not be used for comparison. */
     private fun hasAtLeastMotivationToAttack(civInfo: Civilization, otherCiv: Civilization, atLeast: Int): Int {
-        if (atLeast <= 0) {
-            throw IllegalArgumentException(atLeast.toString())
-        }
-
         val closestCities = getClosestCities(civInfo, otherCiv) ?: return 0
         val baseForce = 30f
 
