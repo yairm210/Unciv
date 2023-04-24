@@ -45,7 +45,7 @@ private const val REDRAW_INTERVAL = 5000L
  * Another good way is to use the [ChatTable] directly. Make sure to [dispose]
  * this table, since it holds a coroutine which updates itself periodically.
  */
-class ChatMessageList(private val chatRoomUUID: UUID, private val mp: OnlineMultiplayer): Table(), Disposable {
+class ChatMessageList(private val showHeading: Boolean, private val type: Pair<ChatRoomType, String>, private val chatRoomUUID: UUID, private val mp: OnlineMultiplayer): Table(), Disposable {
     private val events = EventBus.EventReceiver()
     private var messageCache: MutableList<ChatMessage> = mutableListOf()
     private var redrawJob: Job = Concurrency.run { redrawPeriodically() }
@@ -130,6 +130,10 @@ class ChatMessageList(private val chatRoomUUID: UUID, private val mp: OnlineMult
      */
     fun recreate(messages: List<ChatMessage>) {
         clearChildren()
+        if (showHeading) {
+            add("${type.first.name} chat: ${type.second}".toLabel(fontSize = Constants.headingFontSize).apply { setAlignment(Align.center) }).growX().row()
+        }
+
         if (messages.isEmpty()) {
             val label = "No messages here yet".toLabel()
             label.setAlignment(Align.center)

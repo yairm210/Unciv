@@ -2,10 +2,9 @@ package com.unciv.ui.screens.multiplayerscreens
 
 import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.logic.multiplayer.apiv2.AccountResponse
+import com.badlogic.gdx.utils.Disposable
 import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import kotlinx.coroutines.delay
 import java.util.*
@@ -13,44 +12,53 @@ import java.util.*
 class SocialMenuTable(
     private val base: BaseScreen,
     me: UUID,
+    initialChatRoom: Triple<UUID, ChatRoomType, String>? = null,
+    private val chatHeadingFilter: List<ChatRoomType> = listOf(),
+    friendRequests: Boolean = true,
     maxChatHeight: Float = 0.8f * base.stage.height
-): Table(BaseScreen.skin) {
-
-    internal val friendList = FriendListV2(
+): Table(BaseScreen.skin), Disposable {
+    private val friendList = FriendListV2(
         base,
         me,
-        requests = true,
-        chat = { _, a, c -> startChatting(a, c) },
+        requests = friendRequests,
+        chat = { _, a, c -> startChatting(c, ChatRoomType.Friend, a.displayName) },
         edit = { f, a -> FriendListV2.showRemoveFriendshipPopup(f, a, base) }
     )
     private val chatContainer = Container<ChatTable>()
-    private var lastSelectedFriendChat: UUID? = null
+    private var lastSelectedChat: UUID? = null
 
     init {
-        add(friendList).growX()
-        add(chatContainer).maxHeight(maxChatHeight)
+        debugAll()
+        add(friendList).growX().minWidth(base.stage.width * 0.45f).padRight(5f)
+        add(chatContainer).minWidth(base.stage.width * 0.45f).maxHeight(maxChatHeight).growX()
         Concurrency.run {
             while (stage == null) {
                 delay(10)
             }
             InfoPopup.wrap(stage) { friendList.triggerUpdate() }
         }
+        if (initialChatRoom != null) {
+            startChatting(initialChatRoom.first, initialChatRoom.second, initialChatRoom.third)
+        }
     }
 
-    private fun startChatting(friend: AccountResponse, chatRoom: UUID) {
-        if (lastSelectedFriendChat == chatRoom) {
+    private fun startChatting(chatRoom: UUID, chatRoomType: ChatRoomType, name: String) {
+        if (lastSelectedChat == chatRoom) {
             chatContainer.actor?.dispose()
             chatContainer.actor = null
-            lastSelectedFriendChat = null
+            lastSelectedChat = null
             return
         }
-        lastSelectedFriendChat = chatRoom
-        Log.debug("Opening chat dialog with friend %s (room %s)", friend, chatRoom)
+        lastSelectedChat = chatRoom
         chatContainer.actor?.dispose()
         chatContainer.actor = ChatTable(
-            ChatMessageList(chatRoom, base.game.onlineMultiplayer),
+            ChatMessageList(chatRoomType in chatHeadingFilter, Pair(chatRoomType, name), chatRoom, base.game.onlineMultiplayer),
             false
         ).apply { padLeft(15f) }
     }
 
+    override fun dispose() {
+        chatContainer.actor?.dispose()
+        chatContainer.actor = null
+    }
 }

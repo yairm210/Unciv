@@ -64,7 +64,7 @@ import java.util.*
  */
 class LobbyScreen(
     private val lobbyUUID: UUID,
-    lobbyChatUUID: UUID,
+    private val lobbyChatUUID: UUID,
     private var lobbyName: String,
     private val maxPlayers: Int,
     currentPlayers: MutableList<AccountResponse>,
@@ -89,7 +89,7 @@ class LobbyScreen(
         get() = "Lobby: [$lobbyName] [${lobbyPlayerList.players.size}]/[$maxPlayers]".toLabel(fontSize = Constants.headingFontSize)
 
     private val lobbyPlayerList: LobbyPlayerList
-    private val chatMessageList = ChatMessageList(lobbyChatUUID, game.onlineMultiplayer)
+    private val chatMessageList = ChatMessageList(false, Pair(ChatRoomType.Lobby, lobbyName), lobbyChatUUID, game.onlineMultiplayer)
     private val disposables = mutableListOf<Disposable>()
 
     private val changeLobbyNameButton = PencilButton()
@@ -209,7 +209,7 @@ class LobbyScreen(
             startingGamePopup.addGoodSizedLabel("Closing this popup will return you to the lobby browser.")
             startingGamePopup.innerTable.add("Open game chat".toTextButton().onClick {
                 Log.debug("Opening game chat %s for game %s of lobby %s", it.gameChatUUID, it.gameUUID, lobbyName)
-                val gameChat = ChatMessageList(it.gameChatUUID, game.onlineMultiplayer)
+                val gameChat = ChatMessageList(true, Pair(ChatRoomType.Game, lobbyName), it.gameChatUUID, game.onlineMultiplayer)
                 disposables.add(gameChat)
                 val wrapper = WrapPopup(stage, ChatTable(gameChat, true))
                 wrapper.open(force = true)

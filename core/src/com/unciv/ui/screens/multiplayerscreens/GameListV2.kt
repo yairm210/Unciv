@@ -51,7 +51,12 @@ class GameListV2(private val screen: BaseScreen, private val onSelected: (GameOv
         add(ChatButton().apply { onClick {
             Log.debug("Opening chat room ${game.chatRoomUUID} from game list")
             val popup = Popup(screen.stage)
-            val chatMessageList = ChatMessageList(game.chatRoomUUID, screen.game.onlineMultiplayer)
+            val chatMessageList = ChatMessageList(
+                true,
+                Pair(ChatRoomType.Game, game.name),
+                game.chatRoomUUID,
+                screen.game.onlineMultiplayer
+            )
             disposables.add(chatMessageList)
             popup.innerTable.add(ChatTable(chatMessageList, false)).padBottom(10f).row()
             popup.addCloseButton()
