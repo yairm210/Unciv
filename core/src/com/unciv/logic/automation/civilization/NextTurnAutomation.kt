@@ -985,8 +985,10 @@ object NextTurnAutomation {
 
     private fun automateCities(civInfo: Civilization) {
         val ownMilitaryStrength = civInfo.getStatForRanking(RankingType.Force)
-        val sumOfEnemiesMilitaryStrength = civInfo.gameInfo.civilizations.filter { it != civInfo }
-            .filter { civInfo.isAtWarWith(it) }.sumOf { it.getStatForRanking(RankingType.Force) }
+        val sumOfEnemiesMilitaryStrength =
+                civInfo.gameInfo.civilizations
+                    .filter { it != civInfo && !it.isBarbarian() && civInfo.isAtWarWith(it) }
+                    .sumOf { it.getStatForRanking(RankingType.Force) }
         val civHasSignificantlyWeakerMilitaryThanEnemies =
                 ownMilitaryStrength < sumOfEnemiesMilitaryStrength * 0.66f
         for (city in civInfo.cities) {
