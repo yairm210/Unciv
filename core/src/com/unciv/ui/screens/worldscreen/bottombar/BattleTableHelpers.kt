@@ -9,11 +9,14 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.actions.RelativeTemporalAction
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.battle.ICombatant
+import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.map.HexMath
+import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
@@ -41,6 +44,49 @@ object BattleTableHelpers {
         }
     }
 
+
+    class AttackAnimationAction(
+        val attacker: ICombatant,
+        val defenderActors: List<Actor>,
+        val currentTileSetStrings: TileSetStrings
+    ): SequenceAction(){
+        init {
+            if (defenderActors.any()) {
+                val attackAnimationLocation = getAttackAnimationLocation()
+                if (attackAnimationLocation != null){
+                    var i = 1
+                    while (ImageGetter.imageExists(attackAnimationLocation+i)){
+                        val image = ImageGetter.getImage(attackAnimationLocation+i)
+                        addAction(Actions.run {
+                            defenderActors.first().parent.addActor(image)
+                        })
+                        addAction(Actions.delay(0.1f))
+                        addAction(Actions.removeActor(image))
+                        i++
+                    }
+                }
+            }
+        }
+
+        private fun getAttackAnimationLocation(): String?{
+            if (attacker is MapUnitCombatant) {
+                val unitSpecificAttackAnimationLocation =
+                        currentTileSetStrings.getString(
+                            currentTileSetStrings.unitsLocation,
+                            attacker.getUnitType().name,
+                            "-attack-"
+                        )
+                if (ImageGetter.imageExists(unitSpecificAttackAnimationLocation+"1")) return unitSpecificAttackAnimationLocation
+            }
+
+            val unitTypeAttackAnimationLocation =
+                    currentTileSetStrings.getString(currentTileSetStrings.unitsLocation, attacker.getUnitType().name, "-attack-")
+
+            if (ImageGetter.imageExists(unitTypeAttackAnimationLocation+"1")) return unitTypeAttackAnimationLocation
+            return null
+        }
+    }
+
     fun WorldScreen.battleAnimation(
         attacker: ICombatant, damageToAttacker: Int,
         defender: ICombatant, damageToDefender: Int
@@ -50,7 +96,7 @@ object BattleTableHelpers {
                     val tileGroup = mapHolder.tileGroups[combatant.getTile()]!!
                     if (combatant.isCity()) {
                         val icon = tileGroup.layerMisc.improvementIcon
-                        if (icon != null) yield(icon)
+                        if (icon != null) yield (icon)
                     }
                     else {
                         val slot = if (combatant.isCivilian()) 0 else 1
@@ -76,6 +122,15 @@ object BattleTableHelpers {
                 MoveActorsAction(actorsToMove, attackVectorWorldCoords),
                 Actions.parallel( // While the unit is moving back to its normal position, we flash the damages on both units
                     MoveActorsAction(actorsToMove, attackVectorWorldCoords.cpy().scl(-1f)),
+                    AttackAnimationAction(attacker,
+                        if (damageToDefender != 0) getMapActorsForCombatant(defender).toList() else listOf(),
+                        mapHolder.currentTileSetStrings
+                    ),
+                    AttackAnimationAction(
+                        defender,
+                        if (damageToAttacker != 0) getMapActorsForCombatant(attacker).toList() else listOf(),
+                        mapHolder.currentTileSetStrings
+                    ),
                     Actions.sequence(
                         FlashRedAction(0f,1f, actorsToFlashRed),
                         FlashRedAction(1f,0f, actorsToFlashRed)
