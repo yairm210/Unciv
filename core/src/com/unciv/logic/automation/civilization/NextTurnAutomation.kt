@@ -817,15 +817,22 @@ object NextTurnAutomation {
 
         if (enemyCivs.none()) return
 
+        val minMotivationToAttack = 20
         val civWithBestMotivationToAttack = enemyCivs
-                .map { Pair(it, motivationToAttack(civInfo, it)) }
+                .map { Pair(it, hasAtLeastMotivationToAttack(civInfo, it, minMotivationToAttack)) }
                 .maxByOrNull { it.second }!!
 
-        if (civWithBestMotivationToAttack.second >= 20)
+        if (civWithBestMotivationToAttack.second >= minMotivationToAttack)
             civInfo.getDiplomacyManager(civWithBestMotivationToAttack.first).declareWar()
     }
 
-    private fun motivationToAttack(civInfo: Civilization, otherCiv: Civilization): Int {
+    /** Will return the motivation to attack, but might short circuit if the value is guaranteed to
+     * be lower than `atLeast`. So any values below `atLeast` should not be used for comparison. */
+    private fun hasAtLeastMotivationToAttack(civInfo: Civilization, otherCiv: Civilization, atLeast: Int): Int {
+        if (atLeast <= 0) {
+            throw IllegalArgumentException(atLeast.toString())
+        }
+
         val closestCities = getClosestCities(civInfo, otherCiv) ?: return 0
         val baseForce = 30f
 
@@ -859,12 +866,6 @@ object NextTurnAutomation {
                     && (owner == otherCiv || owner == null || civInfo.diplomacyFunctions.canPassThroughTiles(owner))
         }
 
-        val reachableEnemyCitiesBfs = BFS(civInfo.getCapital()!!.getCenterTile()) { isTileCanMoveThrough(it) }
-        reachableEnemyCitiesBfs.stepToEnd()
-        val reachableEnemyCities = otherCiv.cities.filter { reachableEnemyCitiesBfs.hasReachedTile(it.getCenterTile()) }
-        if (reachableEnemyCities.isEmpty()) return 0 // Can't even reach the enemy city, no point in war.
-
-
         val modifierMap = HashMap<String, Int>()
         val combatStrengthRatio = ourCombatStrength / theirCombatStrength
         val combatStrengthModifier = when {
@@ -879,14 +880,6 @@ object NextTurnAutomation {
 
         if (closestCities.aerialDistance > 7)
             modifierMap["Far away cities"] = -10
-
-        val landPathBFS = BFS(ourCity.getCenterTile()) {
-            it.isLand && isTileCanMoveThrough(it)
-        }
-
-        landPathBFS.stepUntilDestination(theirCity.getCenterTile())
-        if (!landPathBFS.hasReachedTile(theirCity.getCenterTile()))
-            modifierMap["No land path"] = -10
 
         val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
         if (diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement))
@@ -924,7 +917,35 @@ object NextTurnAutomation {
                 modifierMap["About to win"] = 15
         }
 
-        return modifierMap.values.sum()
+        var motivationSoFar = modifierMap.values.sum()
+
+        // We don't need to execute the expensive BFSs below if we're below the threshold here
+        // anyways, since it won't get better from those, only worse.
+        if (motivationSoFar < atLeast) {
+            return motivationSoFar
+        }
+
+
+        val landPathBFS = BFS(ourCity.getCenterTile()) {
+            it.isLand && isTileCanMoveThrough(it)
+        }
+
+        landPathBFS.stepUntilDestination(theirCity.getCenterTile())
+        if (!landPathBFS.hasReachedTile(theirCity.getCenterTile()))
+            motivationSoFar -= -10
+
+        // We don't need to execute the expensive BFSs below if we're below the threshold here
+        // anyways, since it won't get better from those, only worse.
+        if (motivationSoFar < atLeast) {
+            return motivationSoFar
+        }
+
+        val reachableEnemyCitiesBfs = BFS(civInfo.getCapital()!!.getCenterTile()) { isTileCanMoveThrough(it) }
+        reachableEnemyCitiesBfs.stepToEnd()
+        val reachableEnemyCities = otherCiv.cities.filter { reachableEnemyCitiesBfs.hasReachedTile(it.getCenterTile()) }
+        if (reachableEnemyCities.isEmpty()) return 0 // Can't even reach the enemy city, no point in war.
+
+        return motivationSoFar
     }
 
 
@@ -941,8 +962,10 @@ object NextTurnAutomation {
                 .filter { it.tradeRequests.none { tradeRequest -> tradeRequest.requestingCiv == civInfo.civName && tradeRequest.trade.isPeaceTreaty() } }
 
         for (enemy in enemiesCiv) {
-            val motivationToAttack = motivationToAttack(civInfo, enemy)
-            if (motivationToAttack >= 10) continue // We can still fight. Refuse peace.
+            if(hasAtLeastMotivationToAttack(civInfo, enemy, 10) >= 10) {
+                // We can still fight. Refuse peace.
+                continue
+            }
 
             // pay for peace
             val tradeLogic = TradeLogic(civInfo, enemy)
