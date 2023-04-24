@@ -160,11 +160,15 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
             .filter { it.getOwner() == currentCiv && !it.isBlockaded() }.toList().asSequence()
 
         val localUniqueCache = LocalUniqueCache()
+        val rankTileForCityWorkCache = mutableMapOf<Tile, Float>() // Create the tile cache
+
         for (i in 1..getFreePopulation()) {
             //evaluate tiles
             val (bestTile, valueBestTile) = tilesToEvaluate
                     .filterNot { it.providesYield() }
-                    .associateWith { Automation.rankTileForCityWork(it, city, cityStats, localUniqueCache) }
+                    .associateWith { rankTileForCityWorkCache.getOrPut(it) {
+                        Automation.rankTileForCityWork(it, city, cityStats, localUniqueCache)
+                    } }
                     .maxByOrNull { it.value }
                     ?: object : Map.Entry<Tile?, Float> {
                         override val key: Tile? = null
