@@ -285,7 +285,7 @@ class WorkerAutomation(
                 .filter {
                     (it.civilianUnit == null || it == currentTile)
                             && (it.owningCity == null || it.getOwner()==civInfo)
-                            && (tileCanBeImproved(unit, it) || it.isPillaged())
+                            && getPriority(it) > 1
                             && it.getTilesInDistance(2)  // don't work in range of enemy cities
                         .none { tile -> tile.isCityCenter() && tile.getCity()!!.civ.isAtWarWith(civInfo) }
                             && it.getTilesInDistance(3)  // don't work in range of enemy units
@@ -293,13 +293,10 @@ class WorkerAutomation(
                 }
                 .sortedByDescending { getPriority(it) }
 
-        // the tile needs to be actually reachable - more difficult than it seems,
-        // which is why we DON'T calculate this for every possible tile in the radius,
-        // but only for the tile that's about to be chosen.
-        val selectedTile = workableTiles.firstOrNull { unit.movement.canReach(it) }
+        // These are the expensive calculations (tileCanBeImproved, canReach), so we only apply these filters after everything else it done.
+        val selectedTile = workableTiles.firstOrNull { unit.movement.canReach(it) && (tileCanBeImproved(unit, it) || it.isPillaged()) }
 
         return if (selectedTile != null
-                && getPriority(selectedTile) > 1
                 && (!workableTiles.contains(currentTile)
                     || getPriority(selectedTile) > getPriority(currentTile)))
             selectedTile
