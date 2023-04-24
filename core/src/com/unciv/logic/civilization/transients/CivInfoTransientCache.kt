@@ -143,13 +143,13 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     /** Our tiles update pretty infrequently - most 'viewable tile' changes are due to unit movements,
      * which means we can store this separately and use it 'as is' so we don't need to find the neighboring tiles every time
      * a unit moves */
-    fun updateOurTiles(){
-        val newOurTilesAndNeighboring = HashSet<Tile>()
-        val ownedTiles = civInfo.cities.asSequence().flatMap { it.getTiles() }
-        newOurTilesAndNeighboring.addAll(ownedTiles)
-        val neighboringUnownedTiles = ownedTiles.flatMap { tile -> tile.neighbors.filter { it.getOwner() != civInfo } }
-        newOurTilesAndNeighboring.addAll(neighboringUnownedTiles)
-        ourTilesAndNeighboringTiles = newOurTilesAndNeighboring
+    fun updateOurTiles() {
+        ourTilesAndNeighboringTiles = civInfo.cities.asSequence()
+            .flatMap { it.getTiles() } // our owned tiles, still distinct
+            .flatMap { sequenceOf(it) + it.neighbors }
+            // now we got a mix of owned, unowned and competitor-owned tiles, and **duplicates**
+            // but Sequence.toSet is just as good at making them distinct as any other operation
+            .toSet()
 
         updateViewableTiles()
         updateCivResources()
