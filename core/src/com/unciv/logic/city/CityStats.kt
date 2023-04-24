@@ -593,7 +593,7 @@ class CityStats(val city: City) {
             val amountToRemove = -newFinalStatList.values.sumOf { it[Stat.Food].toDouble() }
             newFinalStatList.add(
                 getSourceNameForUnique(growthNullifyingUnique),
-                Stats().apply { this[Stat.Food] = amountToRemove.toFloat() }
+                Stats(food = amountToRemove.toFloat())
             )
         }
 

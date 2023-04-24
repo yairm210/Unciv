@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization.managers
 
+import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.AlertType
@@ -307,7 +308,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         if (!civInfo.isSpectator())
             civInfo.addNotification("Research of [$techName] has completed!", TechAction(techName),
                 NotificationCategory.General,
-                NotificationIcon.Science, techName)
+                NotificationIcon.Science)
         if (isNewTech)
             civInfo.popupAlerts.add(PopupAlert(AlertType.TechResearched, techName))
 
@@ -486,8 +487,8 @@ class TechManager : IsPartOfGameInfoSerialization {
         val enterOceanUniques = civInfo.getMatchingUniques(UniqueType.UnitsMayEnterOcean)
         allUnitsCanEnterOcean = enterOceanUniques.any { it.params[0] == "All" }
         embarkedUnitsCanEnterOcean = allUnitsCanEnterOcean ||
-                enterOceanUniques.any { it.params[0] == "Embarked" }
-        specificUnitsCanEnterOcean = enterOceanUniques.any { it.params[0] != "All" && it.params[0] != "Embarked" }
+                enterOceanUniques.any { it.params[0] == Constants.embarked }
+        specificUnitsCanEnterOcean = enterOceanUniques.any { it.params[0] != "All" && it.params[0] != Constants.embarked }
 
         movementSpeedOnRoads = if (civInfo.hasUnique(UniqueType.RoadMovementSpeed))
             RoadStatus.Road.movementImproved else RoadStatus.Road.movement

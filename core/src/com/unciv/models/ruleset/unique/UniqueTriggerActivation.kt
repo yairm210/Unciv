@@ -352,7 +352,7 @@ object UniqueTriggerActivation {
                 val resource = ruleSet.tileResources[resourceName] ?: return false
                 if (!resource.isStockpiled()) return false
 
-                civInfo.resourceStockpiles.add(resourceName, amount)
+                civInfo.resourceStockpiles.add(resourceName, -amount)
 
                 val notificationText = getNotificationText(notification, triggerNotificationText,
                     "You have lost [$amount] [$resourceName]")

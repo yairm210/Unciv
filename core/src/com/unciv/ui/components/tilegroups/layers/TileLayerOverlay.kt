@@ -14,6 +14,7 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
     private val highlight = ImageGetter.getImage(strings().highlight).setHexagonSize() // for blue and red circles/emphasis on the tile
     private val crosshair = ImageGetter.getImage(strings().crosshair).setHexagonSize() // for when a unit is targeted
+    private val goodCityLocationIndicator = ImageGetter.getImage("OtherIcons/Cities").setHexagonSize(0.25f)
     private val fog = ImageGetter.getImage(strings().crosshatchHexagon ).setHexagonSize()
     private val unexplored = ImageGetter.getImage(strings().unexploredTile ).setHexagonSize()
 
@@ -21,6 +22,7 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
         highlight.isVisible = false
         crosshair.isVisible = false
+        goodCityLocationIndicator.isVisible = false
         fog.isVisible = false
         fog.color = Color.WHITE.cpy().apply { a = 0.2f }
 
@@ -29,6 +31,7 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         addActor(highlight)
         addActor(fog)
         addActor(crosshair)
+        addActor(goodCityLocationIndicator)
     }
 
     fun showCrosshair(alpha: Float = 1f) {
@@ -58,10 +61,21 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         determineVisibility()
     }
 
+    fun showGoodCityLocationIndicator() {
+        goodCityLocationIndicator.isVisible = true
+        determineVisibility()
+    }
+
+    fun hideGoodCityLocationIndicator() {
+        goodCityLocationIndicator.isVisible = false
+        determineVisibility()
+    }
+
     fun reset() {
         fog.isVisible = true
         highlight.isVisible = false
         crosshair.isVisible = false
+        goodCityLocationIndicator.isVisible = false
         determineVisibility()
     }
 
@@ -79,7 +93,7 @@ class TileLayerOverlay(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
     }
 
     override fun determineVisibility() {
-        isVisible = fog.isVisible || highlight.isVisible || crosshair.isVisible
+        isVisible = fog.isVisible || highlight.isVisible || crosshair.isVisible || goodCityLocationIndicator.isVisible
     }
 
 }

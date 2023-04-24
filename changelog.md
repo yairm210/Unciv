@@ -1,3 +1,105 @@
+## 4.6.6
+
+Testing: Damage animations on damaged units
+
+Units sprites move towards the enemy they're attacking
+
+Removed deprecated settings
+
+By WhoIsJohannes:
+- Performance improvements
+- AI does not consider Barbarian as 'enemy civ' for 'should we declare war' decisions
+- Don't leak other civs in the game through LineChart colors.
+
+Avoid first contact alerts for dead City-States  - By SomeTroglodyte
+
+## 4.6.5
+
+Solved AI Great Scientist crash
+
+Great Merchant doesn't try to go to unreachable tiles
+
+By letstalkaboutdune:
+- AbsoluteUnits - Sipahi, Hakkapeliitta, Janissary, Tercio, Musketeer, Minuteman
+
+By SomeTroglodyte:
+- Make AI diplomatic marriage safe from concurrent modification issues
+- Fix Main Menu BG map cycle not stopping on user action
+
+## 4.6.4
+
+Avoid font-related crash
+
+Modding: Configurable embarked sight
+
+UnitFilter accepts NationFilter (e.g. "vs [England] units")
+
+Resolved image gliches in font icons, hopefully
+
+By SomeTroglodyte:
+- Reassign workers when resistance ends or improvement created
+- Fix "religions to be founded" expanders accumulating
+- Annexed cities in resistance cannot buy tiles
+
+By WhoIsJohannes:
+- Show replay after 5 rounds and don't reveal where player is on the map.
+- Chart improvements (Highlight & performance)
+
+## 4.6.3
+
+Hopefully solved RAM-related crashes
+
+Removed more double icons from many places
+
+Aircraft attack/move range colors entire tile
+
+By WhoIsJohannes:
+- Show garrison in city screen
+- Great people automation
+- Order defeated civs after alive civs even if the alive civs score is negative (e.g. for happiness)
+- Fix golden age length action text
+
+Notifications can be "selected"  - By SomeTroglodyte
+
+## 4.6.2
+
+Added "in this city", "in other cities" conditionals for city-based uniques
+
+More UI cleanup
+
+Removed many double / badly-placed icons
+
+Tileset no longer reverts on Android after restarting game
+
+Solved randomness issues with Retreat chance and unit gain from defeat
+
+By SomeTroglodyte:
+- Unhappiness effects
+- Fix more leaks of the actual Player count in random mode
+- Allow city & tile conditionals on production-to-stat-enabling unique
+
+Make new "Charts" button translatable  - By Ouaz
+
+## 4.6.1
+
+All game object images shown in text!
+
+'Display' options subcatagorized - kudos @Ouaz
+
+By WhoIsJohannes:
+- highlight suitable city-founding tiles
+- Show replay after 50 turns
+- Charts improvements
+
+By SomeTroglodyte:
+- Fix startBias regional assignments
+- Victory detection improvements
+- Fix map editor resource label
+
+AbsoluteUnits - Turtle Ship, Ship of the Line, Sea Beggar - By letstalkaboutdune
+
+AI: Military units w/ Civilian uniques Automation  - By MioBestWaifu
+
 ## 4.6.0
 
 Modding: Resources can now be optionally stockpiled, as in Gathering Storm, Endless Legend, etc!

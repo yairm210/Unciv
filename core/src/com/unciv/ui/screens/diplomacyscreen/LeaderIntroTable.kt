@@ -4,9 +4,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
+import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.extensions.toLabel
 
 /**
  * This is meant to be used for any kind of civ introduction - [DiplomacyScreen],
@@ -29,7 +29,7 @@ class LeaderIntroTable (
         defaults().align(Align.center)
         val nation = civInfo.nation
         val leaderPortraitFile = "LeaderIcons/" + nation.leaderName
-        val leaderLabel = civInfo.getLeaderDisplayName().toLabel(fontSize = Constants.headingFontSize)
+        val leaderLabel = civInfo.getLeaderDisplayName().toLabel(fontSize = Constants.headingFontSize, hideIcons = true)
         val nationIndicator = ImageGetter.getNationPortrait(nation, 24f)
         if (nation.leaderName.isNotEmpty() && ImageGetter.imageExists(leaderPortraitFile)) {
             val nameTable = Table()

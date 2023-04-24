@@ -97,8 +97,10 @@ open class TileGroup(
     open fun update(viewingCiv: Civilization? = null) {
 
         layerMisc.removeHexOutline()
+        layerMisc.hideTerrainOverlay()
         layerOverlay.hideHighlight()
         layerOverlay.hideCrosshair()
+        layerOverlay.hideGoodCityLocationIndicator()
 
         // Show all layers by default
         setAllLayersVisible(true)

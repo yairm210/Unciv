@@ -57,8 +57,9 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
 
     fun canBuyTile(tile: Tile): Boolean {
         return when {
-            city.isPuppet -> false
+            city.isPuppet || city.isBeingRazed -> false
             tile.getOwner() != null -> false
+            city.isInResistance() -> false
             tile !in city.tilesInRange -> false
             else -> tile.neighbors.any { it.getCity() == city }
         }

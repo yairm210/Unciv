@@ -28,7 +28,7 @@ import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
-import com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers.flashWoundedCombatants
+import com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers.battleAnimation
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers.getHealthBar
 import com.unciv.utils.DebugUtils
 import kotlin.math.max
@@ -144,13 +144,13 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         clear()
 
         val attackerNameWrapper = Table()
-        val attackerLabel = attacker.getName().toLabel()
+        val attackerLabel = attacker.getName().toLabel(hideIcons = true)
         attackerNameWrapper.add(getIcon(attacker)).padRight(5f)
         attackerNameWrapper.add(attackerLabel)
         add(attackerNameWrapper)
 
         val defenderNameWrapper = Table()
-        val defenderLabel = Label(defender.getName().tr(), skin)
+        val defenderLabel = Label(defender.getName().tr(hideIcons = true), skin)
         defenderNameWrapper.add(getIcon(defender)).padRight(5f)
 
         defenderNameWrapper.add(defenderLabel)
@@ -311,7 +311,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         SoundPlayer.play(attacker.getAttackSound())
         Battle.attackOrNuke(attacker, attackableTile)
 
-        worldScreen.flashWoundedCombatants(attacker, damageToAttacker, defender, damageToDefender)
+        worldScreen.battleAnimation(attacker, damageToAttacker, defender, damageToDefender)
     }
 
 

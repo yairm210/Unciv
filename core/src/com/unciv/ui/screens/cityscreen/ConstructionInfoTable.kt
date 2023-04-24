@@ -70,7 +70,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
                 }
             }).pad(5f)
 
-            var buildingText = construction.name.tr()
+            var buildingText = construction.name.tr(hideIcons = true)
             val specialConstruction = PerpetualConstruction.perpetualConstructionsMap[construction.name]
 
             buildingText += specialConstruction?.getProductionTooltip(city)

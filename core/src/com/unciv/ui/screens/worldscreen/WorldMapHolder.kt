@@ -19,6 +19,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.unit.AttackableTile
 import com.unciv.logic.automation.unit.BattleHelper
+import com.unciv.logic.automation.unit.CityLocationTileRanker
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
@@ -641,17 +642,17 @@ class WorldMapHolder(
             if (isAirUnit && !unit.isPreparingAirSweep()) {
                 if (tile.aerialDistanceTo(unit.getTile()) <= unit.getRange()) {
                     // The tile is within attack range
-                    group.layerOverlay.showHighlight(Color.RED, 0.3f)
-                } else {
+                    group.layerMisc.overlayTerrain(Color.RED)
+                } else if (tile.isExplored(worldScreen.viewingCiv) && tile.aerialDistanceTo(unit.getTile()) <= unit.getRange()*2) {
                     // The tile is within move range
-                    group.layerOverlay.showHighlight(Color.BLUE, 0.3f)
+                    group.layerMisc.overlayTerrain(if (unit.movement.canMoveTo(tile)) Color.WHITE else Color.BLUE)
                 }
             }
 
             // Highlight tile unit can move to
             if (unit.movement.canMoveTo(tile) ||
                     unit.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !unit.baseUnit.movesLikeAirUnits()) {
-                val alpha = if (UncivGame.Current.settings.singleTapMove || isAirUnit) 0.7f else 0.3f
+                val alpha = if (UncivGame.Current.settings.singleTapMove) 0.7f else 0.3f
                 group.layerOverlay.showHighlight(moveTileOverlayColor, alpha)
             }
 
@@ -696,6 +697,17 @@ class WorldMapHolder(
                     else 1f
                 )
             }
+        }
+
+        // Highlight best tiles for city founding
+        if (unit.hasUnique(UniqueType.FoundCity)
+                && UncivGame.Current.settings.showSettlersSuggestedCityLocations
+        ) {
+            CityLocationTileRanker.getBestTilesToFoundCity(unit).map { it.first }
+                .filter { it.isExplored(unit.civ) }.take(3).forEach {
+                    tileGroups[it]!!.layerOverlay.showGoodCityLocationIndicator()
+                }
+
         }
     }
 

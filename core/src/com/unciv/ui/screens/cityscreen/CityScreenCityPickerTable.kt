@@ -4,11 +4,12 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.pickerscreens.CityRenamePopup
-import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.components.UnitGroup
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.pickerscreens.CityRenamePopup
 
 /** Widget for the City Screen -
  *  the panel at bottom center showing the city name and offering arrows to cycle through the cities. */
@@ -53,7 +54,7 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
         }
 
         val currentCityLabel = city.run { "{$name} (${population.population})" }
-            .toLabel(fontSize = 30, fontColor = civInfo.nation.getInnerColor())
+            .toLabel(fontSize = 30, fontColor = civInfo.nation.getInnerColor(), hideIcons = true)
         if (cityScreen.canChangeState) currentCityLabel.onClick {
             CityRenamePopup(
                 screen = cityScreen,
@@ -65,6 +66,11 @@ class CityScreenCityPickerTable(private val cityScreen: CityScreen) : Table() {
         }
 
         cityNameTable.add(currentCityLabel)
+
+        val garrison = city.getGarrison()
+        if (garrison != null) {
+            cityNameTable.add(UnitGroup(garrison, 30f)).padLeft(5f)
+        }
 
         add(cityNameTable).width(stage.width / 4)
 

@@ -113,13 +113,13 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     /** used in CityScreen (CityInfoTable and ConstructionInfoTable) */
     fun getDescription(city: City, showAdditionalInfo: Boolean): String {
         val stats = getStats(city)
-        val lines = ArrayList<String>()
+        val translatedLines = ArrayList<String>() // Some translations require special handling
         val isFree = name in city.civ.civConstructions.getFreeBuildings(city.id)
-        if (uniqueTo != null) lines += if (replaces == null) "Unique to [$uniqueTo]"
-            else "Unique to [$uniqueTo], replaces [$replaces]"
+        if (uniqueTo != null) translatedLines += if (replaces == null) "Unique to [$uniqueTo]".tr()
+            else "Unique to [$uniqueTo], replaces [$replaces]".tr()
         val missingUnique = getMatchingUniques(UniqueType.RequiresBuildingInAllCities).firstOrNull()
-        if (isWonder) lines += "Wonder"
-        if (isNationalWonder) lines += "National Wonder"
+        if (isWonder) translatedLines += "Wonder".tr()
+        if (isNationalWonder) translatedLines += "National Wonder".tr()
         if (!isFree) {
             val availableResources = if (!showAdditionalInfo) emptyMap()
                 else city.civ.getCivResourcesByName()
@@ -128,8 +128,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 val resource = city.getRuleset().tileResources[resourceName] ?: continue
                 val consumesString = resourceName.getConsumesAmountString(amount, resource.isStockpiled())
 
-                lines += if (showAdditionalInfo) "$consumesString ({[$available] available})"
-                else consumesString
+                translatedLines += if (showAdditionalInfo) "$consumesString ({[$available] available})".tr()
+                else consumesString.tr()
             }
         }
 
@@ -142,39 +142,39 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             }
         else listOf()
         if (uniques.isNotEmpty()) {
-            if (replacementTextForUniques != "") lines += replacementTextForUniques
-            else lines += getUniquesStringsWithoutDisablers(
+            if (replacementTextForUniques != "") translatedLines += replacementTextForUniques.tr()
+            else translatedLines += getUniquesStringsWithoutDisablers(
                 filterUniques = if (missingCities.isEmpty()) null
                     else { unique -> !unique.isOfType(UniqueType.RequiresBuildingInAllCities) }
                     // Filter out the "Requires a [] in all cities" unique if any cities are still missing the required building, since in that case the list of cities will be appended at the end.
-            )
+            ).map { it.tr() }
         }
         if (!stats.isEmpty())
-            lines += stats.toString()
+            translatedLines += stats.toString()
 
         for ((stat, value) in getStatPercentageBonuses(city))
-            if (value != 0f) lines += "+${value.toInt()}% {${stat.name}}"
+            if (value != 0f) translatedLines += "+${value.toInt()}% {${stat.name}}".tr()
 
         for ((greatPersonName, value) in greatPersonPoints)
-            lines += "+$value " + "[$greatPersonName] points".tr()
+            translatedLines += "+$value " + "[$greatPersonName] points".tr()
 
         for ((specialistName, amount) in newSpecialists())
-            lines += "+$amount " + "[$specialistName] slots".tr()
+            translatedLines += "+$amount " + "[$specialistName] slots".tr()
 
         if (requiredNearbyImprovedResources != null)
-            lines += "Requires worked [" + requiredNearbyImprovedResources!!.joinToString("/") { it.tr() } + "] near city"
+            translatedLines += "Requires worked [${requiredNearbyImprovedResources!!.joinToString("/") { it.tr() }}] near city".tr()
 
-        if (cityStrength != 0) lines += "{City strength} +$cityStrength"
-        if (cityHealth != 0) lines += "{City health} +$cityHealth"
-        if (maintenance != 0 && !isFree) lines += "{Maintenance cost}: $maintenance {Gold}"
+        if (cityStrength != 0) translatedLines += "{City strength} +$cityStrength".tr()
+        if (cityHealth != 0) translatedLines += "{City health} +$cityHealth".tr()
+        if (maintenance != 0 && !isFree) translatedLines += "{Maintenance cost}: $maintenance {Gold}".tr()
         if (showAdditionalInfo && missingCities.isNotEmpty()) {
             // Could be red. But IMO that should be done by enabling GDX's ColorMarkupLanguage globally instead of adding a separate label.
-            lines += "\n" +
+            translatedLines += "\n" +
                 "[${city.civ.getEquivalentBuilding(missingUnique!!.params[0])}] required:".tr() +
-                " " + missingCities.joinToString(", ") { "{${it.name}}" }
+                " " + missingCities.joinToString(", ") { it.name.tr(hideIcons = true) }
             // Can't nest square bracket placeholders inside curlies, and don't see any way to define wildcard placeholders. So run translation explicitly on base text.
         }
-        return lines.joinToString("\n") { it.tr() }.trim()
+        return translatedLines.joinToString("\n").trim()
     }
 
     fun getStats(city: City,

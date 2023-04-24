@@ -30,13 +30,16 @@ import com.unciv.Constants
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.KeyShortcutDispatcher
 import com.unciv.ui.components.KeyboardBinding
+import com.unciv.ui.components.extensions.GdxKeyCodeFixes.DEL
+import com.unciv.ui.components.extensions.GdxKeyCodeFixes.toString
+import com.unciv.ui.components.extensions.GdxKeyCodeFixes.valueOf
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.concurrency.Concurrency
 
 /**
@@ -469,8 +472,8 @@ fun Image.setSize(size: Float) {
 }
 
 /** Translate a [String] and make a [TextButton] widget from it */
-fun String.toTextButton(style: TextButtonStyle? = null): TextButton {
-    val text = this.tr()
+fun String.toTextButton(style: TextButtonStyle? = null, hideIcons: Boolean = false): TextButton {
+    val text = this.tr(hideIcons)
     return if (style == null) TextButton(text, BaseScreen.skin) else TextButton(text, style)
 }
 
@@ -493,8 +496,9 @@ fun Int.toLabel() = this.toString().toLabel()
 
 /** Translate a [String] and make a [Label] widget from it with a specified font color and size */
 fun String.toLabel(fontColor: Color = Color.WHITE,
-                   fontSize: Int = Constants.defaultFontSize,
-                   alignment: Int = Align.left ): Label {
+                    fontSize: Int = Constants.defaultFontSize,
+                    alignment: Int = Align.left,
+                    hideIcons: Boolean = false): Label {
     // We don't want to use setFontSize and setFontColor because they set the font,
     //  which means we need to rebuild the font cache which means more memory allocation.
     var labelStyle = BaseScreen.skin.get(Label.LabelStyle::class.java)
@@ -503,7 +507,7 @@ fun String.toLabel(fontColor: Color = Color.WHITE,
         labelStyle.fontColor = fontColor
         if (fontSize != Constants.defaultFontSize) labelStyle.font = Fonts.font
     }
-    return Label(this.tr(), labelStyle).apply {
+    return Label(this.tr(hideIcons), labelStyle).apply {
         setFontScale(fontSize / Fonts.ORIGINAL_FONT_SIZE)
         setAlignment(alignment)
     }

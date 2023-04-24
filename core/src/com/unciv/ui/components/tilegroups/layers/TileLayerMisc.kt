@@ -45,6 +45,14 @@ private class MapArrow(val targetTile: Tile, val arrowType: MapArrowType, val st
 
 class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
 
+    // For different unit views, we want to effectively "ignore" the terrain and color it by special view
+    private val terrainOverlay = ImageGetter.getImage(strings().hexagon ).setHexagonSize()
+
+    init {
+        terrainOverlay.isVisible = false
+        addActor(terrainOverlay)
+    }
+
     override fun act(delta: Float) {}
     override fun hit(x: Float, y: Float, touchable: Boolean): Actor? {
         return if (workedIcon == null) {
@@ -306,6 +314,17 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         determineVisibility()
     }
 
+    fun overlayTerrain(color: Color) {
+        terrainOverlay.color = color.cpy().lerp(Color.WHITE, 0.3f).apply { a = 0.4f }
+        terrainOverlay.isVisible = true
+        determineVisibility()
+    }
+
+    fun hideTerrainOverlay(){
+        terrainOverlay.isVisible = false
+        determineVisibility()
+    }
+
 
     fun addArrow(targetTile: Tile, type: MapArrowType) {
         if (targetTile.position != tile().position)
@@ -352,6 +371,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
                 || hexOutlineIcon != null
                 || arrows.isNotEmpty()
                 || startingLocationIcons.isNotEmpty()
+                || terrainOverlay.isVisible
     }
 
     fun reset() {

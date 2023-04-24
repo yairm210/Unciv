@@ -4,7 +4,6 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
@@ -13,8 +12,6 @@ import com.unciv.models.UncivSound
 import com.unciv.models.metadata.GameSetting
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.ui.popups.Popup
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.brighten
@@ -26,7 +23,9 @@ import com.unciv.ui.components.extensions.toGdxArray
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.popups.AuthPopup
+import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.options.SettingsSelect.SelectItem
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import java.time.Duration
@@ -169,11 +168,6 @@ private fun addMultiplayerServerOptions(
     serverIpTable.add(multiplayerServerTextField)
         .minWidth(optionsPopup.stageToShowOn.width / 2)
         .colspan(2).growX().padBottom(8f).row()
-
-    serverIpTable.add("Reset to Dropbox".toTextButton().onClick {
-        multiplayerServerTextField.text = Constants.dropboxMultiplayerServer
-        for (refreshSelect in toUpdate) refreshSelect.update(false)
-    })
 
     serverIpTable.add(connectionToServerButton.onClick {
         val popup = Popup(optionsPopup.stageToShowOn).apply {

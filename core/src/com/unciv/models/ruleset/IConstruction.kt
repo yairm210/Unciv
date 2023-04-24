@@ -130,6 +130,7 @@ class RejectionReason(val type: RejectionReasonType,
         RejectionReasonType.RequiresBuildingInAllCities,
         RejectionReasonType.RequiresBuildingInThisCity,
         RejectionReasonType.RequiresBuildingInSomeCity,
+        RejectionReasonType.CannotBeBuiltUnhappiness,
         RejectionReasonType.PopulationRequirement,
         RejectionReasonType.ConsumesResources,
         RejectionReasonType.CanOnlyBePurchased,
@@ -160,6 +161,7 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
     UniqueToOtherNation(false, "Unique to another nation"),
     ReplacedByOurUnique(false, "Our unique replaces this"),
     CannotBeBuilt(false, "Cannot be built by this nation"),
+    CannotBeBuiltUnhappiness(true, "Unhappiness"),
 
     Obsoleted(false, "Obsolete"),
     RequiresTech(false, "Required tech not researched"),
@@ -231,10 +233,12 @@ open class PerpetualStatConversion(val stat: Stat) :
     fun getConversionRate(city: City) : Int = (1/city.cityStats.getStatConversionRate(stat)).roundToInt()
 
     override fun isBuildable(cityConstructions: CityConstructions): Boolean {
-        if (stat == Stat.Faith && !cityConstructions.city.civ.gameInfo.isReligionEnabled())
+        val city = cityConstructions.city
+        if (stat == Stat.Faith && !city.civ.gameInfo.isReligionEnabled())
             return false
 
-        return cityConstructions.city.civ.getMatchingUniques(UniqueType.EnablesCivWideStatProduction)
+        val stateForConditionals = StateForConditionals(city.civ, city, tile = city.getCenterTile())
+        return city.civ.getMatchingUniques(UniqueType.EnablesCivWideStatProduction, stateForConditionals)
             .any { it.params[0] == stat.name }
     }
 }

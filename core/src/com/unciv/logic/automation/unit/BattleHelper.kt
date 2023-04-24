@@ -78,7 +78,7 @@ object BattleHelper {
                     reachableTile,
                     tile,
                     movementLeft,
-                    Battle.getMapCombatantOfTile(tile)!!
+                    Battle.getMapCombatantOfTile(tile)
                 )
                 else if (tile in tilesWithoutEnemies) continue // avoid checking the same empty tile multiple times
                 else if (tileContainsAttackableEnemy(unit, tile, tilesToCheck)) {
@@ -103,7 +103,6 @@ object BattleHelper {
         if (!containsAttackableEnemy(tile, MapUnitCombatant(unit))) return false
         if (tile !in (tilesToCheck ?: unit.civ.viewableTiles)) return false
         val mapCombatant = Battle.getMapCombatantOfTile(tile)
-
 
         return (!unit.baseUnit.isMelee() || mapCombatant !is MapUnitCombatant || !mapCombatant.unit.isCivilian() || unit.movement.canPassThrough(tile))
     }

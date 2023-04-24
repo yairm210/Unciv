@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
-import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -203,7 +202,6 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private class SelectedCivilizationTable(worldScreen: WorldScreen) : Table(BaseScreen.skin) {
         private var selectedCiv = ""
         private val selectedCivLabel = "".toLabel()
-        private val selectedCivIconHolder = Container<Actor>()
         private val menuButton = ImageGetter.getImage("OtherIcons/MenuIcon")
 
         init {
@@ -227,13 +225,8 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
                 worldScreen.game.pushScreen(civilopediaScreen)
             }
 
-            selectedCivIconHolder.onClick {
-                worldScreen.openEmpireOverview()
-            }
-
             add(menuButton).size(50f).padRight(0f)
-            add(selectedCivLabel).padRight(0f)
-            add(selectedCivIconHolder).size(35f)
+            add(selectedCivLabel).padRight(10f)
             pack()
         }
 
@@ -243,9 +236,6 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
             this.selectedCiv = newCiv
 
             selectedCivLabel.setText(newCiv.tr())
-            val nation = worldScreen.gameInfo.ruleset.nations[worldScreen.selectedCiv.civName]!!
-            val selectedCivIcon = ImageGetter.getNationPortrait(nation, 35f)
-            selectedCivIconHolder.actor = selectedCivIcon
             invalidate()
             pack()
         }

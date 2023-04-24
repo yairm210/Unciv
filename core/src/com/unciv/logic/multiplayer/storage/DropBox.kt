@@ -95,7 +95,7 @@ object DropBox: FileStorage {
             data=data,
             contentType="application/octet-stream",
             dropboxApiArg = """{"path":"${getLocalGameLocation(fileName)}","mode":{".tag":"overwrite"}}"""
-        )
+        )!!
     }
 
     override fun loadFileData(fileName: String): String {

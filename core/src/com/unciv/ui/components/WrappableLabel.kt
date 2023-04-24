@@ -17,8 +17,9 @@ class WrappableLabel(
     text: String,
     private val expectedWidth: Float,
     fontColor: Color = Color.WHITE,
-    private val fontSize: Int = Constants.defaultFontSize
-) : Label(text.tr(), BaseScreen.skin) {
+    private val fontSize: Int = Constants.defaultFontSize,
+    hideIcons: Boolean = false
+) : Label(text.tr(hideIcons), BaseScreen.skin) {
     private var _measuredWidth = 0f
     private var optimizedWidth = Float.MAX_VALUE
 

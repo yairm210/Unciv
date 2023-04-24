@@ -34,7 +34,8 @@ class VictoryScreenCivRankings(
             val column = Table().apply { defaults().space(10f) }
             val civData = majorCivs
                 .map { VictoryScreen.CivWithStat(it, category) }
-                .sortedByDescending { it.value }
+                .sortedBy { it.civ.civName }
+                .sortedByDescending { if(it.civ.isDefeated()) Int.MIN_VALUE else it.value }
             for (civEntry in civData) {
                 column.add(VictoryScreenCivGroup(civEntry, worldScreen.viewingCiv)).fillX().row()
             }

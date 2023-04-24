@@ -258,12 +258,12 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
     }
 
     private fun stopBackgroundMapGeneration() {
+        backgroundStack.clearActions()
         val currentJob = backgroundMapGenerationJob
             ?: return
         backgroundMapGenerationJob = null
         if (currentJob.isCancelled) return
         currentJob.cancel()
-        backgroundStack.clearActions()
     }
 
     private fun resumeGame() {

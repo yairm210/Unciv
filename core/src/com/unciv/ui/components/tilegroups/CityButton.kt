@@ -16,7 +16,6 @@ import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.TutorialTrigger
-import com.unciv.models.translations.tr
 import com.unciv.ui.components.BorderedTable
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.center
@@ -312,7 +311,7 @@ private class CityTable(city: City, forPopup: Boolean = false) : BorderedTable(
             table.add(capitalIcon).size(20f).padRight(5f)
         }
 
-        val cityName = city.name.tr().toLabel(fontColor = textColor, alignment = Align.center)
+        val cityName = city.name.toLabel(fontColor = textColor, alignment = Align.center, hideIcons = true)
         table.add(cityName).growY().center()
 
         if (!forPopup) {

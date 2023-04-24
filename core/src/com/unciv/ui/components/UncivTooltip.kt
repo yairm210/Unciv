@@ -180,11 +180,12 @@ class UncivTooltip <T: Actor>(
             size: Float = 26f,
             always: Boolean = false,
             targetAlign: Int = Align.topRight,
-            tipAlign: Int = Align.top
+            tipAlign: Int = Align.top,
+            hideIcons: Boolean = false
         ) {
             if (!(always || GUI.keyboardAvailable) || text.isEmpty()) return
 
-            val label = text.toLabel(BaseScreen.skinStrings.skinConfig.baseColor, 38)
+            val label = text.toLabel(BaseScreen.skinStrings.skinConfig.baseColor, 38, hideIcons = hideIcons)
             label.setAlignment(Align.center)
 
             val background = BaseScreen.skinStrings.getUiBackground("General/Tooltip", BaseScreen.skinStrings.roundedEdgeRectangleShape, Color.LIGHT_GRAY)

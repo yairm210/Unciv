@@ -44,6 +44,7 @@ class GameSettings {
     var showResourcesAndImprovements: Boolean = true
     var showTileYields: Boolean = false
     var showUnitMovements: Boolean = false
+    var showSettlersSuggestedCityLocations: Boolean = true
 
     var checkForDueUnits: Boolean = true
     var autoUnitCycle: Boolean = true
@@ -77,7 +78,6 @@ class GameSettings {
     val showPixelUnits: Boolean get() = unitSet != null
     var showPixelImprovements: Boolean = true
     var continuousRendering = false
-    var experimentalRendering = false
     var orderTradeOffersByAmount = true
     var confirmNextTurn = false
     var windowState = WindowState()
@@ -117,6 +117,9 @@ class GameSettings {
 
     /** NotificationScroll on Word Screen visibility control - mapped to NotificationsScroll.UserSetting enum */
     var notificationScroll: String = ""
+
+    /** If on, selected notifications are drawn enlarged with wider padding */
+    var enlargeSelectedNotification = true
 
     /** used to migrate from older versions of the settings */
     var version: Int? = null
