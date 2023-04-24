@@ -180,8 +180,11 @@ class UnitMovement(val unit: MapUnit) {
                         // cities and units goes kaput.
                         else -> {
                             val key = Pair(tileToCheck, neighbor)
-                            movementCostCache.getOrPut(key) { getMovementCostBetweenAdjacentTiles(tileToCheck, neighbor, unit.civ, considerZoneOfControl) }
-                            distanceToTiles[tileToCheck]!!.totalDistance + movementCostCache[key]!!
+                            val movementCost =
+                                    movementCostCache.getOrPut(key) {
+                                        getMovementCostBetweenAdjacentTiles(tileToCheck, neighbor, unit.civ, considerZoneOfControl)
+                                    }
+                            distanceToTiles[tileToCheck]!!.totalDistance + movementCost
                         }
                     }
 
