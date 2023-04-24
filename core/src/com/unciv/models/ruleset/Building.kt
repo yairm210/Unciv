@@ -689,6 +689,13 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (isStatRelated(Stat.Science) && civInfo.hasUnique(UniqueType.TechBoostWhenScientificBuildingsBuiltInCapital))
             civInfo.tech.addScience(civInfo.tech.scienceOfLast8Turns.sum() / 8)
 
+        // Happiness change _may_ invalidate best worked tiles (#9238), but if the building
+        // isn't bought then reassignPopulation will run later in startTurn anyway
+        if (boughtWith != null && isStatRelated(Stat.Happiness)) {
+            cityConstructions.city.reassignPopulation()
+            cityConstructions.city.updateCitizens = false
+        }
+
         cityConstructions.city.cityStats.update() // new building, new stats
         civInfo.cache.updateCivResources() // this building/unit could be a resource-requiring one
         civInfo.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
@@ -721,6 +728,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (getMatchingUniques(UniqueType.Stats).any { it.stats[stat] > 0 }) return true
         if (getMatchingUniques(UniqueType.StatsFromTiles).any { it.stats[stat] > 0 }) return true
         if (getMatchingUniques(UniqueType.StatsPerPopulation).any { it.stats[stat] > 0 }) return true
+        if (stat == Stat.Happiness && hasUnique(UniqueType.RemoveAnnexUnhappiness)) return true
         return false
     }
 
