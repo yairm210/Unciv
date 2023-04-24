@@ -1,20 +1,12 @@
-
-
-Remove 'reset to Dropbox' button since it's deprecated
-
-Remove experimental rendering (experiment unsuccessful)
-
 Testing: Damage animations on damaged units
-
-chore: Battle animation readability
-
-Slightly faster animation
 
 Units sprites move towards the enemy they're attacking
 
+Removed deprecated settings
+
 By WhoIsJohannes:
-- Performance improvements 
-- Civs should not go all-out war if they're weaker than barbs 
-- Don't leak other civs in the game through LineChart colors. 
+- Performance improvements
+- AI does not consider Barbarian as 'enemy civ' for 'should we declare war' decisions
+- Don't leak other civs in the game through LineChart colors.
 
 Avoid first contact alerts for dead City-States  - By SomeTroglodyte
