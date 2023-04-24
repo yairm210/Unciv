@@ -34,7 +34,6 @@ import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.abs
-import kotlin.math.ceil
 
 /**
  * Supplies the Unit sub-table for the Empire Overview
@@ -235,13 +234,14 @@ class UnitOverviewTab(
             // getPromotions goes by json order on demand, so this is same sorting as on picker
             val promotions = unit.promotions.getPromotions(true)
             if (promotions.any()) {
-                val numberOfLines = ceil(promotions.count() / 8f).toInt()
-                val promotionsPerLine = promotions.count() / numberOfLines
-                var promotionsThisLine = 0
-                for (promotion in promotions) {
-                    promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name))
-                    promotionsThisLine++
-                    if (promotionsThisLine == promotionsPerLine && numberOfLines>1) promotionsTable.row()
+                val iconCount = promotions.count() + (if (unit.promotions.canBePromoted()) 1 else 0)
+                val numberOfLines = (iconCount - 1) / 8 + 1
+                val promotionsPerLine = (iconCount - 1) / numberOfLines + 1
+                for (linePromotions in promotions.chunked(promotionsPerLine)) {
+                    for (promotion in linePromotions) {
+                        promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name))
+                    }
+                    if (linePromotions.size == promotionsPerLine) promotionsTable.row()
                 }
             }
 

@@ -1,3 +1,18 @@
+## 4.6.6
+
+Testing: Damage animations on damaged units
+
+Units sprites move towards the enemy they're attacking
+
+Removed deprecated settings
+
+By WhoIsJohannes:
+- Performance improvements
+- AI does not consider Barbarian as 'enemy civ' for 'should we declare war' decisions
+- Don't leak other civs in the game through LineChart colors.
+
+Avoid first contact alerts for dead City-States  - By SomeTroglodyte
+
 ## 4.6.5
 
 Solved AI Great Scientist crash
