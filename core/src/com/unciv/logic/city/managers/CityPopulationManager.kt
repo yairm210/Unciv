@@ -160,7 +160,6 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
             .filter { it.getOwner() == currentCiv && !it.isBlockaded() }.toList().asSequence()
 
         val localUniqueCache = LocalUniqueCache()
-
         for (i in 1..getFreePopulation()) {
             //evaluate tiles
             val (bestTile, valueBestTile) = tilesToEvaluate
