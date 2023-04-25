@@ -145,7 +145,7 @@ class TileStatFunctions(val tile: Tile) {
 
         } else if (observingCiv != null) {
             val cachedStatPercentFromObjectCivUniques = uniqueCache.get(
-                "civ-" + observingCiv.civName + "-" + UniqueType.StatPercentFromObject.name,
+                "civ-" + observingCiv.civName + "-" + UniqueType.StatPercentFromObject.name + "-" + stateForConditionals,
                 observingCiv.getMatchingUniques(
                     UniqueType.StatPercentFromObject,
                     stateForConditionals
@@ -158,7 +158,7 @@ class TileStatFunctions(val tile: Tile) {
             }
 
             val cachedAllStatPercentFromObjectCivUniques = uniqueCache.get(
-                "civ-" + observingCiv.civName + "-" + UniqueType.AllStatsPercentFromObject.name,
+                "civ-" + observingCiv.civName + "-" + UniqueType.AllStatsPercentFromObject.name + "-" + stateForConditionals,
                 observingCiv.getMatchingUniques(
                     UniqueType.AllStatsPercentFromObject,
                     stateForConditionals
