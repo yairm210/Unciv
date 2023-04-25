@@ -30,14 +30,14 @@ class TileStatFunctions(val tile: Tile) {
             var tileUniques = city.getMatchingUniques(UniqueType.StatsFromTiles, StateForConditionals.IgnoreConditionals)
                 .filter { city.matchesFilter(it.params[2]) }
             tileUniques += city.getMatchingUniques(UniqueType.StatsFromObject, StateForConditionals.IgnoreConditionals)
-            for (unique in localUniqueCache.get("StatsFromTilesAndObjects", tileUniques)) {
+            for (unique in localUniqueCache.get("StatsFromTilesAndObjects-" + city.id, tileUniques)) {
                 if (!unique.conditionalsApply(stateForConditionals)) continue
                 val tileType = unique.params[1]
                 if (!tile.matchesTerrainFilter(tileType, observingCiv)) continue
                 stats.add(unique.stats)
             }
 
-            for (unique in localUniqueCache.get("StatsFromTilesWithout",
+            for (unique in localUniqueCache.get("StatsFromTilesWithout" + city.id,
                 city.getMatchingUniques(UniqueType.StatsFromTilesWithout, StateForConditionals.IgnoreConditionals))
             ) {
                 if (
@@ -258,7 +258,7 @@ class TileStatFunctions(val tile: Tile) {
             //  therefore if we want the cache to be useful it needs to hold the pre-filtered uniques,
             //  and then for each improvement we'll filter the uniques locally.
             //  This is still a MASSIVE save of RAM!
-            val tileUniques = cityUniqueCache.get(UniqueType.StatsFromTiles.name,
+            val tileUniques = cityUniqueCache.get(UniqueType.StatsFromTiles.name + "-" + city.id,
                 city.getMatchingUniques(UniqueType.StatsFromTiles, StateForConditionals.IgnoreConditionals)
                     .filter { city.matchesFilter(it.params[2]) }) // These are the uniques for all improvements for this city,
                 .filter { it.conditionalsApply(conditionalState) } // ...and this is those with applicable conditions
@@ -277,7 +277,7 @@ class TileStatFunctions(val tile: Tile) {
 
         fun statsFromObject() {
             // Same as above - cache holds unfiltered uniques for the city, while we use only the filtered ones
-            val uniques = cityUniqueCache.get(UniqueType.StatsFromObject.name,
+            val uniques = cityUniqueCache.get(UniqueType.StatsFromObject.name + "-" + city.id,
                 city.getMatchingUniques(UniqueType.StatsFromObject, StateForConditionals.IgnoreConditionals))
                 .filter { it.conditionalsApply(conditionalState) }
             for (unique in uniques) {
@@ -307,7 +307,7 @@ class TileStatFunctions(val tile: Tile) {
         if (city != null) {
             // As above, since the conditional is tile-dependant,
             //  we save uniques in the cache without conditional filtering, and use only filtered ones
-            val allStatPercentUniques = cityUniqueCache.get(UniqueType.AllStatsPercentFromObject.name,
+            val allStatPercentUniques = cityUniqueCache.get(UniqueType.AllStatsPercentFromObject.name + "-" + city.id,
                 city.getMatchingUniques(UniqueType.AllStatsPercentFromObject, StateForConditionals.IgnoreConditionals))
                 .filter { it.conditionalsApply(conditionalState) }
             for (unique in allStatPercentUniques) {
@@ -318,7 +318,7 @@ class TileStatFunctions(val tile: Tile) {
             }
 
             // Same trick different unique - not sure if worth generalizing this 'late apply' of conditions?
-            val statPercentUniques = cityUniqueCache.get(UniqueType.StatPercentFromObject.name,
+            val statPercentUniques = cityUniqueCache.get(UniqueType.StatPercentFromObject.name + "-" + city.id,
                 city.getMatchingUniques(UniqueType.StatPercentFromObject, StateForConditionals.IgnoreConditionals))
                 .filter { it.conditionalsApply(conditionalState) }
 
