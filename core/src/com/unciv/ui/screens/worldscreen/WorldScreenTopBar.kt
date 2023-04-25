@@ -34,7 +34,8 @@ import com.unciv.ui.popups.popups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
-import com.unciv.ui.screens.multiplayerscreens.ChatRoomScreen
+import com.unciv.ui.screens.multiplayerscreens.ChatRoomType
+import com.unciv.ui.screens.multiplayerscreens.SocialMenuScreen
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
@@ -75,10 +76,13 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private val resourcesWrapper = Table()
     private val resourceTable = getResourceTable()
     private val selectedCivTable = SelectedCivilizationTable(worldScreen)
-    private val socialButton = SocialButtonWrapper(worldScreen)
+    private val socialButton = SocialButtonWrapper(this, worldScreen)
     private val overviewButton = OverviewAndSupplyTable(worldScreen)
     private val leftFillerCell: Cell<BackgroundActor>
     private val rightFillerCell: Cell<BackgroundActor>
+
+    internal var me: UUID? = null
+    internal var gameChatRoom: UUID? = null
 
     //endregion
 
@@ -96,6 +100,22 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         val rightFillerBG = BaseScreen.skinStrings.getUiBackground("WorldScreen/TopBar/RightAttachment", BaseScreen.skinStrings.roundedEdgeRectangleShape, backColor)
         rightFillerCell = add(BackgroundActor(rightFillerBG, Align.topRight))
         pack()
+
+        // Caching the account and game data for APIv2 online games
+        Concurrency.run {
+            if (worldScreen.game.onlineMultiplayer.apiVersion == ApiVersion.APIv2 && worldScreen.gameInfo.gameParameters.isOnlineMultiplayer) {
+                InfoPopup.wrap(worldScreen.stage) {
+                    val account = worldScreen.game.onlineMultiplayer.api.account.get()
+                    if (account != null) {
+                        me = account.uuid
+                    }
+                    val gameOverview = worldScreen.game.onlineMultiplayer.api.game.head(UUID.fromString(worldScreen.gameInfo.gameId))
+                    if (gameOverview != null) {
+                        gameChatRoom = gameOverview.chatRoomUUID
+                    }
+                }
+            }
+        }
     }
 
     private fun getStatsTable(): Table {
@@ -177,7 +197,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         return resourceTable
     }
 
-    private class SocialButtonWrapper(worldScreen: WorldScreen) : Table(BaseScreen.skin) {
+    private class SocialButtonWrapper(topBar: WorldScreenTopBar, worldScreen: WorldScreen) : Table(BaseScreen.skin) {
         init {
             // The social features will only be enabled if the multiplayer server has support for it
             if (worldScreen.gameInfo.gameParameters.isOnlineMultiplayer && worldScreen.game.onlineMultiplayer.apiVersion == ApiVersion.APIv2) {
@@ -189,12 +209,12 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
                         }
                         if (details != null) {
                             Concurrency.runOnGLThread {
-                                worldScreen.game.pushScreen(ChatRoomScreen(details.chatRoomUUID))
+                                worldScreen.game.pushScreen(SocialMenuScreen(topBar.me, Triple(details.chatRoomUUID, ChatRoomType.Game, details.name)))
                             }
                         }
                     }
                 }
-                add(socialButton).pad(10f)
+                add(socialButton).padTop(10f).padBottom(10f)
                 pack()
             }
         }

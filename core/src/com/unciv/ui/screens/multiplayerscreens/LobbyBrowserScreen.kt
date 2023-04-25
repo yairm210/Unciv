@@ -2,6 +2,7 @@ package com.unciv.ui.screens.multiplayerscreens
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.multiplayer.apiv2.GameOverviewResponse
 import com.unciv.ui.components.KeyCharAndCode
@@ -34,7 +35,7 @@ class LobbyBrowserScreen : BaseScreen() {
     private val gameList = GameListV2(this, ::onSelect)
 
     private val me
-        get() = kotlinx.coroutines.runBlocking { game.onlineMultiplayer.api.account.get() }!!
+        get() = runBlocking { game.onlineMultiplayer.api.account.get() }!!
 
     private val table = Table()  // main table including all content of this screen
     private val bottomTable = Table()  // bottom bar including the cancel and help buttons
@@ -54,14 +55,14 @@ class LobbyBrowserScreen : BaseScreen() {
         val lobbyButtons = Table()
         newLobbyButton.onClick {
             CreateLobbyPopup(this as BaseScreen)
-            // TODO: Testing with random UUID, need a pop-up to determine private/public lobby type
-            //game.pushScreen(LobbyScreen(UUID.randomUUID(), UUID.randomUUID()))
         }
         updateButton.onClick {
             lobbyBrowserTable.triggerUpdate()
         }
         lobbyButtons.add(newLobbyButton).padBottom(5f).row()
         lobbyButtons.add("F".toTextButton().apply {
+            label = "F".toLabel(fontSize = Constants.headingFontSize)
+            label.setAlignment(Align.center)
             onClick { ToastPopup("Filtering is not implemented yet", stage) }
         }).padBottom(5f).row()
         lobbyButtons.add(updateButton).row()

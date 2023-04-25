@@ -15,6 +15,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.map.MapVisualization
+import com.unciv.logic.multiplayer.ApiVersion
 import com.unciv.logic.multiplayer.MultiplayerGameCanBeLoaded
 import com.unciv.logic.multiplayer.MultiplayerGameUpdated
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
@@ -657,7 +658,7 @@ class WorldScreen(
     }
 
     private fun updateMultiplayerStatusButton() {
-        if (gameInfo.gameParameters.isOnlineMultiplayer || game.settings.multiplayer.statusButtonInSinglePlayer) {
+        if ((gameInfo.gameParameters.isOnlineMultiplayer && game.onlineMultiplayer.apiVersion != ApiVersion.APIv2) || game.settings.multiplayer.statusButtonInSinglePlayer) {
             if (statusButtons.multiplayerStatusButton != null) return
             statusButtons.multiplayerStatusButton = MultiplayerStatusButton(this, game.onlineMultiplayer.getGameByGameId(gameInfo.gameId))
         } else {

@@ -204,27 +204,39 @@ class LobbyScreen(
         events.receive(GameStarted::class, { it.lobbyUUID == lobbyUUID }) {
             Log.debug("Game in lobby %s has been started", lobbyUUID)
             gameUUID = it.gameUUID
-            startingGamePopup.clearChildren()
-            startingGamePopup.addGoodSizedLabel("The game is starting. Waiting for host...")
+            startingGamePopup.reuseWith("The game is starting. Waiting for host...")
+            startingGamePopup.innerTable.cells.last().colspan(2)
+            startingGamePopup.row()
             startingGamePopup.addGoodSizedLabel("Closing this popup will return you to the lobby browser.")
-            startingGamePopup.innerTable.add("Open game chat".toTextButton().onClick {
+            startingGamePopup.innerTable.cells.last().colspan(2)
+            startingGamePopup.row()
+            startingGamePopup.innerTable.columns.inc()
+            startingGamePopup.addCloseButton {
+                game.popScreen()
+            }
+            startingGamePopup.addButton("Open game chat", KeyCharAndCode.RETURN) {
                 Log.debug("Opening game chat %s for game %s of lobby %s", it.gameChatUUID, it.gameUUID, lobbyName)
                 val gameChat = ChatMessageList(true, Pair(ChatRoomType.Game, lobbyName), it.gameChatUUID, game.onlineMultiplayer)
                 disposables.add(gameChat)
                 val wrapper = WrapPopup(stage, ChatTable(gameChat, true))
                 wrapper.open(force = true)
-            })
-            startingGamePopup.addCloseButton {
-                game.popScreen()
             }
-            startingGamePopup.open(force = true)
+            startingGamePopup.equalizeLastTwoButtonWidths()
+            startingGamePopup.open()
         }
         events.receive(UpdateGameData::class, { gameUUID != null && it.gameUUID == gameUUID }) {
-            val gameInfo = UncivFiles.gameInfoFromString(it.gameData)
-            Log.debug("Successfully loaded game %s from WebSocket event", gameInfo.gameId)
-            startingGamePopup.reuseWith("Working...")
+            Concurrency.runOnGLThread {
+                startingGamePopup.reuseWith("Working...")
+                startingGamePopup.close()
+                startingGamePopup.open(force = true)
+            }
             Concurrency.runOnNonDaemonThreadPool {
+                val gameInfo = UncivFiles.gameInfoFromString(it.gameData)
+                Log.debug("Successfully loaded game %s from WebSocket event", gameInfo.gameId)
                 game.loadGame(gameInfo)
+                Concurrency.runOnGLThread {
+                    startingGamePopup.close()
+                }
             }
         }
 
