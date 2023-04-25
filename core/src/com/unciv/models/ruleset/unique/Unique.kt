@@ -301,8 +301,23 @@ class LocalUniqueCache(val cache:Boolean = true) {
     // This stores sequences *that iterate directly on a list* - that is, pre-resolved
     private val keyToUniques = HashMap<String, Sequence<Unique>>()
 
+    fun forCityGetMatchingUniques(city: City, uniqueType: UniqueType) : Sequence<Unique> {
+        return forCityGetMatchingUniques(city, uniqueType, StateForConditionals(city.civ, city))
+    }
+    fun forCityGetMatchingUniques(city: City, uniqueType: UniqueType, stateForConditionals: StateForConditionals) : Sequence<Unique> {
+        return get("city-${city.id}-${uniqueType.name}-${stateForConditionals}", city.getMatchingUniques(uniqueType, stateForConditionals))
+    }
+
+    fun forCivGetMatchingUniques(civ: Civilization, uniqueType: UniqueType) : Sequence<Unique> {
+        return forCivGetMatchingUniques(civ, uniqueType, StateForConditionals(civ))
+    }
+
+    fun forCivGetMatchingUniques(civ: Civilization, uniqueType: UniqueType, stateForConditionals: StateForConditionals) : Sequence<Unique> {
+        return get("civ-${civ.civName}-${uniqueType.name}-${stateForConditionals}", civ.getMatchingUniques(uniqueType, stateForConditionals))
+    }
+
     /** Get cached results as a sequence */
-    fun get(key: String, sequence: Sequence<Unique>): Sequence<Unique> {
+    private fun get(key: String, sequence: Sequence<Unique>): Sequence<Unique> {
         if (!cache) return sequence
         if (keyToUniques.containsKey(key)) return keyToUniques[key]!!
         // Iterate the sequence, save actual results as a list, as return a sequence to that
