@@ -214,6 +214,10 @@ class NewGameScreen(
         }
     }
 
+    /** Subtables may need an upper limit to their width - they can ask this function. */
+    // In sync with isPortrait in init, here so UI details need not know about 3-column vs 1-column layout
+    internal fun getColumnWidth() = stage.width / (if (isNarrowerThan4to3()) 1 else 3)
+
     private fun initLandscape() {
         scrollPane.setScrollingDisabled(true,true)
 
