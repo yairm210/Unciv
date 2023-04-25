@@ -1,15 +1,15 @@
-Reimplementasi permainan pembangunan peradaban terpopuler - cepat, tidak memakan ruang, tanpa iklan, gratis selamanya!
+Implementasi ulang dari game membangun peradaban paling terkenal yang pernah ada - cepat, kecil, tanpa iklan, gratis selamanya!
 
-Bangun peradabanmu, teliti teknologi-teknologi baru, perluas kota-kotamu dan kalahkan musuh-musuhmu!
+Bangun peradabanmu, teliti teknologi, perluas kotamu dan kalahkan musuhmu!
 
-Permintaan? Eror? Daftar hal-hal yang akan dilakukan pada aplikasi ada di https://github.com/yairm210/Unciv/issues, kami menerima bantuan-bantuanmu meskipun hanya sedikit!
+Permintaan? Bug? Daftar hal-hal yang akan dilakukan pada aplikasi ada di https://github.com/yairm210/Unciv/issues, setiap bantuan kecil diterima!
 
-Pertanyaan? Komentar? Hanya mengisi waktu luang? Bergabunglah dengan kami di https://discord.gg/bjrB4Xw.
+Pertanyaan? Komentar? Hanya gabut? Bergabunglah dengan kami di https://discord.gg/bjrB4Xw.
 
-Mau membantu menerjemahkan gim ini ke dalam bahasamu? Kirim email ke yairm210@hotmail.com.
+Mau membantu menerjemahkan game ke dalam bahasamu? Kirimi saya email ke yairm210@hotmail.com.
 
-Grok Java atau Kotlin? Bergabunglah dengan kami di https://github.com/yairm210/Unciv.
+Paham Java atau Kotlin? Bergabunglah dengan kami di https://github.com/yairm210/Unciv.
 
-Dunia menunggumu! Akankah kamu membangun peradabn menjadi sebuah kerajaan yang akan bertahan seiring berjalannya waktu?
+Dunia menunggu! Akankah kamu akan membangun peradabanmi menjadi sebuah kerajaan yang akan bertahan seiring berjalannya waktu?
 
-Izin 'memiliki akses jaringan penuh' diperlukan untuk pengunduhan yang diinisiasi pengguna dan fitur multiplayer. Semua izin lainnya telah termasuk secara otomatis oleh API yang digunakan untuk menjalankan notifikasi giliran multiplayer. Izin jaringan digunakan untuk membuat daftar mod, mengunduh mod, mengunduh musik dan mengunggah/mengunduh gim multiplayer. Tidak ada komunikasi internet lainnya yand diinisiasi oleh Unciv.
+Izin 'memiliki akses jaringan penuh' diperlukan untuk pengunduhan yang dilakukan pengguna dan fitur multiplayer. Semua izin lainnya telah termasuk secara otomatis oleh API yang digunakan untuk menjalankan notifikasi giliran multiplayer. Izin jaringan digunakan untuk membuat daftar mod, mengunduh mod, mengunduh musik dan mengunggah/mengunduh game multiplayer. Tidak ada komunikasi internet lainnya yang dilakukan oleh Unciv.
