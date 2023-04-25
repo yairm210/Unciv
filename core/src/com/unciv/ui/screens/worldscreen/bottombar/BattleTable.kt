@@ -319,7 +319,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         clear()
 
         val attackerNameWrapper = Table()
-        val attackerLabel = attacker.getName().toLabel()
+        val attackerLabel = attacker.getName().toLabel(hideIcons = true)
         attackerNameWrapper.add(getIcon(attacker)).padRight(5f)
         attackerNameWrapper.add(attackerLabel)
         add(attackerNameWrapper)
@@ -334,7 +334,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         for (tile in targetTile.getTilesInDistance(blastRadius)) {
             val defender = tryGetDefenderAtTile(tile, true) ?: continue
 
-            val defenderLabel = Label(defender.getName().tr(), skin)
+            val defenderLabel = defender.getName().toLabel(hideIcons = true)
             defenderNameWrapper.add(getIcon(defender)).padRight(5f)
             defenderNameWrapper.add(defenderLabel).row()
         }
@@ -371,7 +371,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         clear()
 
         val attackerNameWrapper = Table()
-        val attackerLabel = attacker.getName().toLabel()
+        val attackerLabel = attacker.getName().toLabel(hideIcons = true)
         attackerNameWrapper.add(getIcon(attacker)).padRight(5f)
         attackerNameWrapper.add(attackerLabel)
         add(attackerNameWrapper)
