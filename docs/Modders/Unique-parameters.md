@@ -61,7 +61,7 @@ Allows filtering for specific nations.
 - `City-states`
 - `Major`
 - Nation name
-- Nation unique
+- A unique a Nation has (verbatim, no placeholders)
 
 ## cityFilter
 
@@ -96,15 +96,6 @@ Allowed values are:
 -   `Great Improvements`, `Great`
 -   `All Road` - for Roads & Railroads
 
-## nationFilter
-
-Allowed values are:
-
-- `All`
-- `Major`
-- `CityState`
-- The name of a Nation
-- A unique a Nation has (verbatim, no placeholders)
 
 ## mapUnitFilter
 
@@ -170,12 +161,13 @@ Allowed values are:
 This indicates the terrain on a single tile. The following values are allowed:
 
 -   A filter names a specific json attribute (by name):
-    -   Base terrain
-    -   Terrain features
-    -   Base terrain uniques
-    -   Terrain feature uniques
-    -   Resource
-    -   Natural wonder
+    - Base terrain
+    - Terrain features
+    - Base terrain uniques
+    - Terrain feature uniques
+    - Resource
+    - Natural wonder
+    - A [nationFilter](#nationfilter) matching the tile owner
 -   Or the filter is a constant string choosing a derived test:
     -   `All`
     -   `Water`, `Land`
