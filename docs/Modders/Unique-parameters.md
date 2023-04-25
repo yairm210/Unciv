@@ -9,6 +9,16 @@ These are split into two categories:
 
 Note that all of these are case-sensitive!
 
+## nationFilter
+
+Allows filtering for specific nations.
+
+- `All`
+- `City-states`
+- `Major`
+- Nation name
+- A unique a Nation has (verbatim, no placeholders)
+
 ## baseUnitFilter
 
 Unit filters can be divided up into two parts: `baseUnitFilter`s and `mapUnitFilter`s.
@@ -35,6 +45,19 @@ The following are allowed to be used:
 -   Any exact unique the unit type has
 -   Any combination of the above (will match only if all match). The format is `{filter1} {filter2}` and can match any number of filters. For example: `[{Military} {Water}]` units, `[{non-air} {Armor}]` units, etc. No space or other text is allowed between the `[` and the first `{`.
 
+## mapUnitFilter
+
+This indicates a unit as placed on the map. Compare with `baseUnitFilter`.
+
+- Any matching [baseUnitFilter](#baseunitfilter)
+- Any [nationFilter](#nationfilter) matching the owner
+- Any unique the unit has - also includes uniques not caught by the [baseUnitFilter](#baseunitfilter), for example promotions
+- `Wounded`
+- `Embarked`
+- `City-State`
+- `Barbarians`, `Barbarian`
+- Again, any combination of the above is also allowed, e.g. `[{Wounded} {Water}]` units.
+
 ## buildingFilter
 
 Allows to only activate a unique for certain buildings. Allowed options are:
@@ -52,16 +75,6 @@ Allows to only activate a unique for certain buildings. Allowed options are:
     -   Provides a percentage bonus for that stat (e.g. +10% Production)
     -   Provides that stat as a bonus for resources (e.g. +1 Food from every Wheat)
     -   Provides that stat per some amount of population (e.g. +1 Science for every 2 population [cityFilter])
-
-## nationFilter
-
-Allows filtering for specific nations.
-
-- `All`
-- `City-states`
-- `Major`
-- Nation name
-- A unique a Nation has (verbatim, no placeholders)
 
 ## cityFilter
 
@@ -96,17 +109,6 @@ Allowed values are:
 -   `Great Improvements`, `Great`
 -   `All Road` - for Roads & Railroads
 
-
-## mapUnitFilter
-
-This indicates a unit as placed on the map. Compare with `baseUnitFilter`.
-
-- Any value noted in `baseUnitFilter`
-- `Wounded`
-- `Embarked`
-- `City-State`
-- `Barbarians`, `Barbarian`
-- Again, any combination of the above is also allowed, e.g. `[{Wounded} {Water}]` units.
 
 ## populationFilter
 
@@ -185,6 +187,13 @@ Please note all of these are _case-sensitive_.
 Also note: Resource filters depend on whether a viewing civ is known in the context where the filter runs. Water and specific tests require a viewing civ, and if the resource needs a tech to be visible, that tech to be researched by the viewing civ. The other resource category tests can succeed without a known viewing civ only for resources not requiring any tech. So - test your mod!
 
 So for instance, the unique "[stats] from [tileFilter] tiles [cityFilter]" can match several cases:
+
+## tileFilter
+
+Any of:
+- [terrainFilter](#terrainfilter) for this tile
+- [improvementFilter](#improvementfilter) for this tile
+- `unimproved' if no improvement exists
 
 ## terrainQuality
 
