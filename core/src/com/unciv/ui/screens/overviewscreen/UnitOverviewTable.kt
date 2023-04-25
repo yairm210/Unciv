@@ -182,8 +182,8 @@ class UnitOverviewTab(
             // Unit button column - name, health, fortified, sleeping, embarked are visible here
             val button = IconTextButton(
                     unit.displayName(),
-                    UnitGroup(unit, 20f),
-                    fontColor = if (unit.due && unit.isIdle()) Color.WHITE else Color.LIGHT_GRAY
+                    UnitGroup(unit, 20f).apply { if (!unit.isIdle()) color.a = 0.5f },
+                    fontColor = if (unit.isIdle()) Color.WHITE else Color.LIGHT_GRAY
                 )
             button.name = getUnitIdentifier(unit)  // Marker to find a unit in select()
             button.onClick {
