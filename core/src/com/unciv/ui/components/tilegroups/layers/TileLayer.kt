@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.TileSetStrings
@@ -32,8 +33,10 @@ abstract class TileLayer(val tileGroup: TileGroup, size: Float) : Group() {
 
     fun isViewable(viewingCiv: Civilization) = tileGroup.isViewable(viewingCiv)
 
-    fun update(viewingCiv: Civilization?) {
-        doUpdate(viewingCiv)
+    fun update(
+            viewingCiv: Civilization?,
+            localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)) {
+        doUpdate(viewingCiv, localUniqueCache)
         determineVisibility()
     }
 
@@ -41,6 +44,8 @@ abstract class TileLayer(val tileGroup: TileGroup, size: Float) : Group() {
         isVisible = hasChildren()
     }
 
-    protected abstract fun doUpdate(viewingCiv: Civilization?)
+    protected abstract fun doUpdate(
+        viewingCiv: Civilization?,
+        localUniqueCache: LocalUniqueCache = LocalUniqueCache(false))
 
 }

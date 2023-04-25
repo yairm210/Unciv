@@ -13,7 +13,10 @@ import com.unciv.ui.components.extensions.toPercent
 
 class TileStatFunctions(val tile: Tile) {
 
-    fun getTileStats(observingCiv: Civilization?): Stats = getTileStats(tile.getCity(), observingCiv)
+    fun getTileStats(
+        observingCiv: Civilization?,
+        localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)
+    ): Stats = getTileStats(tile.getCity(), observingCiv, localUniqueCache)
 
     fun getTileStats(city: City?, observingCiv: Civilization?,
                      localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)
@@ -109,19 +112,29 @@ class TileStatFunctions(val tile: Tile) {
 
         if (city != null) {
             // Since the tile changes every time, we cache all uniques, and filter by conditional state only when iterating
-            val cachedStatPercentFromObjectUniques = uniqueCache.get(UniqueType.StatPercentFromObject.name,
-                city.getMatchingUniques(UniqueType.StatPercentFromObject, StateForConditionals.IgnoreConditionals))
+            val cachedStatPercentFromObjectCityUniques = uniqueCache.get(
+                "city-" + city.id + "-" + UniqueType.StatPercentFromObject.name,
+                city.getMatchingUniques(
+                    UniqueType.StatPercentFromObject,
+                    StateForConditionals.IgnoreConditionals
+                )
+            )
 
-            for (unique in cachedStatPercentFromObjectUniques) {
+            for (unique in cachedStatPercentFromObjectCityUniques) {
                 if (!unique.conditionalsApply(stateForConditionals)) continue
                 val tileFilter = unique.params[2]
                 if (tile.matchesTerrainFilter(tileFilter, observingCiv))
                     stats[Stat.valueOf(unique.params[1])] += unique.params[0].toFloat()
             }
 
-            val cachedAllStatPercentFromObjectUniques = uniqueCache.get(UniqueType.AllStatsPercentFromObject.name,
-                city.getMatchingUniques(UniqueType.AllStatsPercentFromObject, StateForConditionals.IgnoreConditionals))
-            for (unique in cachedAllStatPercentFromObjectUniques) {
+            val cachedAllStatPercentFromObjectCityUniques = uniqueCache.get(
+                "city-" + city.id + "-" + UniqueType.AllStatsPercentFromObject.name,
+                city.getMatchingUniques(
+                    UniqueType.AllStatsPercentFromObject,
+                    StateForConditionals.IgnoreConditionals
+                )
+            )
+            for (unique in cachedAllStatPercentFromObjectCityUniques) {
                 if (!unique.conditionalsApply(stateForConditionals)) continue
                 val tileFilter = unique.params[1]
                 if (!tile.matchesTerrainFilter(tileFilter, observingCiv)) continue
@@ -131,13 +144,27 @@ class TileStatFunctions(val tile: Tile) {
             }
 
         } else if (observingCiv != null) {
-            for (unique in observingCiv.getMatchingUniques(UniqueType.StatPercentFromObject, stateForConditionals)) {
+            val cachedStatPercentFromObjectCivUniques = uniqueCache.get(
+                "civ-" + observingCiv.civName + "-" + UniqueType.StatPercentFromObject.name,
+                observingCiv.getMatchingUniques(
+                    UniqueType.StatPercentFromObject,
+                    stateForConditionals
+                )
+            )
+            for (unique in cachedStatPercentFromObjectCivUniques) {
                 val tileFilter = unique.params[2]
                 if (tile.matchesTerrainFilter(tileFilter, observingCiv))
                     stats[Stat.valueOf(unique.params[1])] += unique.params[0].toFloat()
             }
 
-            for (unique in observingCiv.getMatchingUniques(UniqueType.AllStatsPercentFromObject, stateForConditionals)) {
+            val cachedAllStatPercentFromObjectCivUniques = uniqueCache.get(
+                "civ-" + observingCiv.civName + "-" + UniqueType.AllStatsPercentFromObject.name,
+                observingCiv.getMatchingUniques(
+                    UniqueType.AllStatsPercentFromObject,
+                    stateForConditionals
+                )
+            )
+            for (unique in cachedAllStatPercentFromObjectCivUniques) {
                 val tileFilter = unique.params[1]
                 if (!tile.matchesTerrainFilter(tileFilter, observingCiv)) continue
                 val statPercentage = unique.params[0].toFloat()

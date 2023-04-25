@@ -8,6 +8,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.stats.Stat
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.extensions.addToCenter
@@ -31,8 +32,8 @@ class CityTileGroup(val city: City, tile: Tile, tileSetStrings: TileSetStrings) 
         layerMisc.touchable = Touchable.childrenOnly
     }
 
-    override fun update(viewingCiv: Civilization?) {
-        super.update(city.civ)
+    override fun update(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
+        super.update(city.civ, localUniqueCache)
 
         tileState = CityTileState.NONE
 

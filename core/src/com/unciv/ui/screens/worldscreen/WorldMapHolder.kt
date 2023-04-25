@@ -32,6 +32,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UncivSound
 import com.unciv.models.helpers.MapArrowType
 import com.unciv.models.helpers.MiscArrowTypes
+import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.KeyCharAndCode
@@ -567,8 +568,9 @@ class WorldMapHolder(
         }
 
         // General update of all tiles
+        val uniqueCache =  LocalUniqueCache(true)
         for (tileGroup in tileGroups.values)
-            tileGroup.update(viewingCiv)
+            tileGroup.update(viewingCiv, uniqueCache)
 
         // Update tiles according to selected unit/city
         val unitTable = worldScreen.bottomUnitTable
