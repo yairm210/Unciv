@@ -229,12 +229,12 @@ class CityOverviewTab(
                     cityInfoTableDetails.add(image)
                 }
                 city.demandedResource.isNotEmpty() -> {
-                    val image = ImageGetter.getResourcePortrait(city.demandedResource, iconSize *0.7f)
-                    image.addTooltip("Demanding [${city.demandedResource}]", 18f, tipAlign = Align.topLeft)
-                    image.onClick {
-                        if (viewingPlayer.gameInfo
-                                .notifyExploredResources(viewingPlayer, city.demandedResource, 0, true)) {
-                            overviewScreen.game.popScreen()
+                    val image = ImageGetter.getResourcePortrait(city.demandedResource, iconSize *0.7f).apply {
+                        addTooltip("Demanding [${city.demandedResource}]", 18f, tipAlign = Align.topLeft)
+                        onClick {
+                            if (gameInfo.notifyExploredResources(viewingPlayer, city.demandedResource, 0, true)) {
+                                overviewScreen.game.popScreen()
+                            }
                         }
                     }
                     cityInfoTableDetails.add(image)
