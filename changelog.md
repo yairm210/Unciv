@@ -1,3 +1,34 @@
+## 4.6.7
+
+docs: Closer cropped icon for better viewing
+
+Custom icons for mkdocs
+
+Fix tests
+
+docs: better unique parameter documentation
+
+terrainFilter now accommodates nationFilter for owner
+
+Remove double icons from airsweep/nuke battle table
+
+Fade unit icon in overview if not idle
+
+By WhoIsJohannes:
+- Performance improvements 
+- Cache civ uniques while refreshing world map tiles. 
+
+Allow to reveal explored resources from a city's demanding resources in `CityOverviewTab`  - By chr56
+
+By SomeTroglodyte:
+- Visual clue a load game from clipboard is underway 
+- Fix border case crash with lone AI winning on turn 0 
+- Allow modders to use culture/faith conversion without providing the icons 
+- "can be promoted" notification only when it's actually new 
+- Fix wrapping for promotions in unit overview 
+
+Don't return 401 when auth is disabled  - By Chris1712
+
 ## 4.6.6
 
 Testing: Damage animations on damaged units
