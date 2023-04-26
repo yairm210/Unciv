@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.tilegroups.TileGroup
 import kotlin.math.atan2
@@ -69,7 +70,7 @@ class TileLayerFeatures(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup
 
     }
 
-    override fun doUpdate(viewingCiv: Civilization?) {
+    override fun doUpdate(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
         updateRoadImages()
     }
 

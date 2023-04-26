@@ -184,7 +184,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         // Calls the clone function of the NamedStats this class is derived from, not a clone function of this class
         val stats = cloneStats()
 
-        for (unique in localUniqueCache.get("StatsFromObject", city.getMatchingUniques(UniqueType.StatsFromObject))) {
+        for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromObject)) {
             if (!matchesFilter(unique.params[1])) continue
             stats.add(unique.stats)
         }
@@ -193,7 +193,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             stats.add(unique.stats)
 
         if (!isWonder)
-            for (unique in localUniqueCache.get("StatsFromBuildings", city.getMatchingUniques(UniqueType.StatsFromBuildings))) {
+            for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromBuildings)) {
                 if (matchesFilter(unique.params[1]))
                     stats.add(unique.stats)
             }
@@ -204,12 +204,12 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         val stats = percentStatBonus?.clone() ?: Stats()
         val civInfo = city?.civ ?: return stats  // initial stats
 
-        for (unique in localUniqueCache.get("StatPercentFromObject", civInfo.getMatchingUniques(UniqueType.StatPercentFromObject))) {
+        for (unique in localUniqueCache.forCivGetMatchingUniques(civInfo, UniqueType.StatPercentFromObject)) {
             if (matchesFilter(unique.params[2]))
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
 
-        for (unique in localUniqueCache.get("AllStatsPercentFromObject", civInfo.getMatchingUniques(UniqueType.AllStatsPercentFromObject))) {
+        for (unique in localUniqueCache.forCivGetMatchingUniques(civInfo, UniqueType.AllStatsPercentFromObject)) {
             if (!matchesFilter(unique.params[1])) continue
             for (stat in Stat.values()) {
                 stats.add(stat, unique.params[0].toFloat())
