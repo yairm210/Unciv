@@ -46,13 +46,11 @@ object Automation {
 
         if (specialist) {
             // If you have the Food Bonus, count as 1 extra food production (base is 2food)
-            for (unique in localUniqueCache.get(UniqueType.FoodConsumptionBySpecialists.name,
-                    city.getMatchingUniques(UniqueType.FoodConsumptionBySpecialists)))
+            for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.FoodConsumptionBySpecialists))
                 if (city.matchesFilter(unique.params[1]))
                     yieldStats.food -= (unique.params[0].toFloat() / 100f) * 2f // base 2 food per Pop
             // Specialist Happiness Percentage Change 0f-1f
-            for (unique in localUniqueCache.get(UniqueType.UnhappinessFromPopulationTypePercentageChange.name,
-                    city.getMatchingUniques(UniqueType.UnhappinessFromPopulationTypePercentageChange)))
+            for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.UnhappinessFromPopulationTypePercentageChange))
                 if (city.matchesFilter(unique.params[2]) && unique.params[1] == "Specialists")
                     yieldStats.happiness -= (unique.params[0].toFloat() / 100f)  // relative val is negative, make positive
             if (city.civ.getHappiness() < 0) yieldStats.happiness *= 2  // double weight for unhappy civilization

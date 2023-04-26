@@ -182,10 +182,10 @@ class CityStats(val city: City) {
         val specialist = city.getRuleset().specialists[specialistName]
             ?: return Stats()
         val stats = specialist.cloneStats()
-        for (unique in localUniqueCache.get(UniqueType.StatsFromSpecialist.name, city.getMatchingUniques(UniqueType.StatsFromSpecialist)))
+        for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromSpecialist))
             if (city.matchesFilter(unique.params[1]))
                 stats.add(unique.stats)
-        for (unique in localUniqueCache.get(UniqueType.StatsFromObject.name, city.civ.getMatchingUniques(UniqueType.StatsFromObject)))
+        for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromObject))
             if (unique.params[1] == specialistName)
                 stats.add(unique.stats)
         return stats
