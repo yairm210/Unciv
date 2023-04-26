@@ -78,13 +78,7 @@ private class UncivServerRunner : CliktCommand() {
         if (!file.exists())
             return true
 
-        // Extract the user id and password from the auth string
-        val (userId, password) = extractAuth(authString) ?: return false
-
-        if (authMap[userId] == null || authMap[userId] == password)
-            return true
-
-        return false
+        return validateAuth(authString)
 
         // TODO Check if the user is the current player and validate its password this requires decoding the game file
     }

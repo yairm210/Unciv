@@ -535,9 +535,11 @@ open class Tile : IsPartOfGameInfoSerialization {
             "Natural Wonder" -> naturalWonder != null
             "Featureless" -> terrainFeatures.isEmpty()
             Constants.freshWaterFilter -> isAdjacentTo(Constants.freshWater)
+
+            in terrainFeatures -> true
             else -> {
-                if (terrainFeatures.contains(filter)) return true
                 if (terrainUniqueMap.getUniques(filter).any()) return true
+                if (getOwner()?.nation?.matchesFilter(filter) == true) return true
 
                 // Resource type check is last - cannot succeed if no resource here
                 if (resource == null) return false

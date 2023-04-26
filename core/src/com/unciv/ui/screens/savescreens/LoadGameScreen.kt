@@ -142,6 +142,8 @@ class LoadGameScreen : LoadOrSaveScreen() {
     private fun getLoadFromClipboardButton(): TextButton {
         val pasteButton = loadFromClipboard.toTextButton()
         pasteButton.onActivation {
+            pasteButton.setText("Working...".tr())
+            pasteButton.disable()
             Concurrency.run(loadFromClipboard) {
                 try {
                     val clipboardContentsString = Gdx.app.clipboard.contents.trim()
@@ -149,6 +151,11 @@ class LoadGameScreen : LoadOrSaveScreen() {
                     game.loadGame(loadedGame, true)
                 } catch (ex: Exception) {
                     launchOnGLThread { handleLoadGameException(ex, "Could not load game from clipboard!") }
+                } finally {
+                    launchOnGLThread {
+                        pasteButton.setText(loadFromClipboard.tr())
+                        pasteButton.enable()
+                    }
                 }
             }
         }

@@ -99,12 +99,6 @@ fun displayTab(
     )
     continuousRenderingLabel.wrap = true
     add(continuousRenderingLabel).colspan(2).padTop(10f).row()
-
-    optionsPopup.addCheckbox(this, "Experimental rendering improvements", settings.experimentalRendering) {
-        settings.experimentalRendering = it
-        onChange()
-    }
-
 }
 
 private fun addMinimapSizeSlider(table: Table, settings: GameSettings, selectBoxMinWidth: Float) {

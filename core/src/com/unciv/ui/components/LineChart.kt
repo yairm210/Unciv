@@ -202,16 +202,22 @@ class LineChart(
                 for (i in 1 until simplifiedScaledPoints.size) {
                     val a = simplifiedScaledPoints[i - 1]
                     val b = simplifiedScaledPoints[i]
+                    val selectedCivBackgroundColor =
+                            if (viewingCiv == civ || viewingCiv.knows(civ)) civ.nation.getInnerColor()
+                            else Color.LIGHT_GRAY
                     drawLine(
                         batch, a.x, a.y, b.x, b.y,
-                        civ.nation.getInnerColor(), chartLineWidth * 3
+                        selectedCivBackgroundColor, chartLineWidth * 3
                     )
                 }
             }
             for (i in 1 until simplifiedScaledPoints.size) {
                 val a = simplifiedScaledPoints[i - 1]
                 val b = simplifiedScaledPoints[i]
-                drawLine(batch, a.x, a.y, b.x, b.y, civ.nation.getOuterColor(), chartLineWidth)
+                val civLineColor =
+                        if (viewingCiv == civ || viewingCiv.knows(civ)) civ.nation.getOuterColor()
+                        else Color.DARK_GRAY
+                drawLine(batch, a.x, a.y, b.x, b.y, civLineColor, chartLineWidth)
 
                 // Draw the selected Civ icon on its last datapoint
                 if (i == simplifiedScaledPoints.size - 1 && selectedCiv == civ && selectedCiv in lastTurnDataPoints) {
