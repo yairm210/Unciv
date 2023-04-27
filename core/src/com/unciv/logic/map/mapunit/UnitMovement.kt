@@ -157,6 +157,7 @@ class UnitMovement(val unit: MapUnit) {
                 origin: Vector2,
                 unitMovement: Float,
                 considerZoneOfControl: Boolean = true,
+                tilesToIgnore: HashSet<Tile>? = null,
                 passThroughCache: HashMap<Tile, Boolean> = HashMap(),
                 movementCostCache: HashMap<Pair<Tile, Tile>, Float> = HashMap()
             ): PathsToTilesWithinTurn {
@@ -173,6 +174,7 @@ class UnitMovement(val unit: MapUnit) {
             val updatedTiles = ArrayList<Tile>()
             for (tileToCheck in tilesToCheck)
                 for (neighbor in tileToCheck.neighbors) {
+                    if (tilesToIgnore?.contains(neighbor) == true) continue // ignore this tile
                     var totalDistanceToTile: Float = when {
                         !neighbor.isExplored(unit.civ) ->
                             distanceToTiles[tileToCheck]!!.totalDistance + 1f  // If we don't know then we just guess it to be 1.
@@ -241,41 +243,44 @@ class UnitMovement(val unit: MapUnit) {
         val movementTreeParents = HashMap<Tile, Tile?>() // contains a map of "you can get from X to Y in that turn"
         movementTreeParents[currentTile] = null
 
+        var movementThisTurn = unit.currentMovement
         var distance = 1
         val newTilesToCheck = ArrayList<Tile>()
+        var considerZoneOfControl = true // only for first distance!
         val visitedTiles: HashSet<Tile> = hashSetOf(currentTile)
         val civilization = unit.civ
-        val unitMaxMovement = unit.getMaxMovement().toFloat()
 
         val passThroughCache = HashMap<Tile, Boolean>()
         val movementCostCache = HashMap<Pair<Tile, Tile>, Float>()
         val canMoveToCache = HashMap<Tile, Boolean>()
-        val distanceToTilesWithinTurnCache = HashMap<Vector2, PathsToTilesWithinTurn>()
 
         while (true) {
+            if (distance == 2) { // only set this once after distance > 1
+                movementThisTurn = unit.getMaxMovement().toFloat()
+                considerZoneOfControl = false  // by then units would have moved around, we don't need to consider untenable futures when it harms performance!
+            }
             newTilesToCheck.clear()
 
             var tilesByPreference = tilesToCheck.sortedBy { it.aerialDistanceTo(destination) }
             // Avoid embarkation when possible
             if (unit.type.isLandUnit()) tilesByPreference = tilesByPreference.sortedByDescending { it.isLand }
 
+
             for (tileToCheck in tilesByPreference) {
                 val distanceToTilesThisTurn = if (distance == 1) {
-                    getDistanceToTiles(true, passThroughCache, movementCostCache) // check cache
+                    getDistanceToTiles(considerZoneOfControl, passThroughCache, movementCostCache) // check cache
                 }
                 else {
-                    distanceToTilesWithinTurnCache.getOrPut(tileToCheck.position) {
-                        getDistanceToTilesWithinTurn(
-                            tileToCheck.position,
-                            unitMaxMovement,
-                            false,
-                            passThroughCache,
-                            movementCostCache
-                        )
-                    }
+                    getDistanceToTilesWithinTurn(
+                        tileToCheck.position,
+                        movementThisTurn,
+                        considerZoneOfControl,
+                        visitedTiles,
+                        passThroughCache,
+                        movementCostCache
+                    )
                 }
                 for (reachableTile in distanceToTilesThisTurn.keys) {
-                    if (visitedTiles.contains(reachableTile)) continue
                     // Avoid damaging terrain on first pass
                     if (avoidDamagingTerrain && unit.getDamageFromTerrain(reachableTile) > 0)
                         continue
@@ -783,6 +788,7 @@ class UnitMovement(val unit: MapUnit) {
             unit.currentTile.position,
             unit.currentMovement,
             considerZoneOfControl,
+            null,
             passThroughCache,
             movementCostCache
         )
