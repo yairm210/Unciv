@@ -153,7 +153,14 @@ class UnitMovement(val unit: MapUnit) {
      * Does not consider if tiles can actually be entered, use canMoveTo for that.
      * If a tile can be reached within the turn, but it cannot be passed through, the total distance to it is set to unitMovement
      */
-    fun getDistanceToTilesWithinTurn(origin: Vector2, unitMovement: Float, considerZoneOfControl: Boolean = true, tilesToIgnore: HashSet<Tile>? = null): PathsToTilesWithinTurn {
+    fun getDistanceToTilesWithinTurn(
+                origin: Vector2,
+                unitMovement: Float,
+                considerZoneOfControl: Boolean = true,
+                tilesToIgnore: HashSet<Tile>? = null,
+                passThroughCache: HashMap<Tile, Boolean> = HashMap(),
+                movementCostCache: HashMap<Pair<Tile, Tile>, Float> = HashMap()
+            ): PathsToTilesWithinTurn {
         val distanceToTiles = PathsToTilesWithinTurn()
         if (unitMovement == 0f) return distanceToTiles
 
@@ -162,9 +169,6 @@ class UnitMovement(val unit: MapUnit) {
         val unitTile = if (origin == currentUnitTile.position) currentUnitTile else currentUnitTile.tileMap[origin]
         distanceToTiles[unitTile] = ParentTileAndTotalDistance(unitTile, unitTile, 0f)
         var tilesToCheck = listOf(unitTile)
-
-        val passThroughCache = HashMap<Tile, Boolean>() // Cache for canPassThrough
-        val movementCostCache = HashMap<Pair<Tile, Tile>, Float>() // Cache for getMovementCostBetweenAdjacentTiles
 
         while (tilesToCheck.isNotEmpty()) {
             val updatedTiles = ArrayList<Tile>()
@@ -246,6 +250,10 @@ class UnitMovement(val unit: MapUnit) {
         val visitedTiles: HashSet<Tile> = hashSetOf(currentTile)
         val civilization = unit.civ
 
+        val passThroughCache = HashMap<Tile, Boolean>()
+        val movementCostCache = HashMap<Pair<Tile, Tile>, Float>()
+        val canMoveToCache = HashMap<Tile, Boolean>()
+
         while (true) {
             if (distance == 2) { // only set this once after distance > 1
                 movementThisTurn = unit.getMaxMovement().toFloat()
@@ -260,10 +268,17 @@ class UnitMovement(val unit: MapUnit) {
 
             for (tileToCheck in tilesByPreference) {
                 val distanceToTilesThisTurn = if (distance == 1) {
-                    getDistanceToTiles(considerZoneOfControl) // check cache
+                    getDistanceToTiles(considerZoneOfControl, passThroughCache, movementCostCache) // check cache
                 }
                 else {
-                    getDistanceToTilesWithinTurn(tileToCheck.position, movementThisTurn, considerZoneOfControl, visitedTiles)
+                    getDistanceToTilesWithinTurn(
+                        tileToCheck.position,
+                        movementThisTurn,
+                        considerZoneOfControl,
+                        visitedTiles,
+                        passThroughCache,
+                        movementCostCache
+                    )
                 }
                 for (reachableTile in distanceToTilesThisTurn.keys) {
                     // Avoid damaging terrain on first pass
@@ -287,7 +302,9 @@ class UnitMovement(val unit: MapUnit) {
                     } else {
                         if (movementTreeParents.containsKey(reachableTile)) continue // We cannot be faster than anything existing...
                         if (!isUnknownTileWeShouldAssumeToBePassable(reachableTile) &&
-                                !canMoveTo(reachableTile)) continue // This is a tile that we can't actually enter - either an intermediary tile containing our unit, or an enemy unit/city
+                                !canMoveToCache.getOrPut(reachableTile) { canMoveTo(reachableTile) })
+                            // This is a tile that we can't actually enter - either an intermediary tile containing our unit, or an enemy unit/city
+                            continue
                         movementTreeParents[reachableTile] = tileToCheck
                         newTilesToCheck.add(reachableTile)
                     }
@@ -758,12 +775,23 @@ class UnitMovement(val unit: MapUnit) {
     }
 
 
-    fun getDistanceToTiles(considerZoneOfControl: Boolean = true): PathsToTilesWithinTurn {
+    fun getDistanceToTiles(
+                considerZoneOfControl: Boolean = true,
+                passThroughCache: HashMap<Tile, Boolean> = HashMap(),
+                movementCostCache: HashMap<Pair<Tile, Tile>, Float> = HashMap())
+            : PathsToTilesWithinTurn {
         val cacheResults = pathfindingCache.getDistanceToTiles(considerZoneOfControl)
         if (cacheResults != null) {
             return cacheResults
         }
-        val distanceToTiles = getDistanceToTilesWithinTurn(unit.currentTile.position, unit.currentMovement, considerZoneOfControl)
+        val distanceToTiles = getDistanceToTilesWithinTurn(
+            unit.currentTile.position,
+            unit.currentMovement,
+            considerZoneOfControl,
+            null,
+            passThroughCache,
+            movementCostCache
+        )
         pathfindingCache.setDistanceToTiles(considerZoneOfControl, distanceToTiles)
         return distanceToTiles
     }
