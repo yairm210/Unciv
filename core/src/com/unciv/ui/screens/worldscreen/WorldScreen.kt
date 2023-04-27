@@ -207,9 +207,38 @@ class WorldScreen(
             // APIv2-based online multiplayer games use this event to notify about changes for the game
             events.receive(MultiplayerGameCanBeLoaded::class, { it.gameInfo.gameId == gameId }) {
                 if (it.gameInfo.gameId == UncivGame.Current.gameInfo?.gameId) {
-                    Concurrency.run {
-                        UncivGame.Current.loadGame(gameInfo)
-                        UncivGame.Current.notifyTurnStarted()
+                    val currentScreen = UncivGame.Current.screen
+                    // Reload instantly if the WorldScreen is shown, otherwise ask whether to continue when the WorldScreen
+                    // is in the screen stack. If neither of them holds true, another or no game is currently played.
+                    if (currentScreen == this) {
+                        it.gameInfo.isUpToDate = true
+                        Concurrency.run {
+                            UncivGame.Current.loadGame(it.gameInfo)
+                            Concurrency.runOnGLThread {
+                                UncivGame.Current.notifyTurnStarted()
+                            }
+                        }
+                    } else if (this in UncivGame.Current.screenStack && currentScreen != null) {
+                        val popup = Popup(currentScreen)
+                        if (it.gameName == null) {
+                            popup.addGoodSizedLabel("It's your turn in game '${it.gameInfo.gameId}' now!").colspan(2).row()
+                        } else {
+                            popup.addGoodSizedLabel("It's your turn in game '${it.gameName}' now!").colspan(2).row()
+                        }
+                        popup.addCloseButton()
+                        popup.addOKButton("Switch to game") {
+                            popup.reuseWith("Working...")
+                            popup.open(force = true)
+                            it.gameInfo.isUpToDate = true
+                            Concurrency.run {
+                                UncivGame.Current.loadGame(it.gameInfo)
+                                Concurrency.runOnGLThread {
+                                    UncivGame.Current.notifyTurnStarted()
+                                }
+                            }
+                        }
+                        popup.equalizeLastTwoButtonWidths()
+                        popup.open(force = true)
                     }
                 }
             }

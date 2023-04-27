@@ -93,9 +93,9 @@ class OnlineMultiplayer: Disposable {
                 try {
                     val gameInfo = UncivFiles.gameInfoFromString(it.gameData)
                     addGame(gameInfo)
-                    gameInfo.isUpToDate = true
+                    val gameDetails = api.game.head(it.gameUUID, suppress = true)
                     Concurrency.runOnGLThread {
-                        EventBus.send(MultiplayerGameCanBeLoaded(gameInfo, it.gameDataID))
+                        EventBus.send(MultiplayerGameCanBeLoaded(gameInfo, gameDetails?.name, it.gameDataID))
                     }
                 } catch (e: IncompatibleGameInfoVersionException) {
                     Log.debug("Failed to load GameInfo from incoming event: %s", e.localizedMessage)

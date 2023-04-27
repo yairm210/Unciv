@@ -70,5 +70,6 @@ class MultiplayerGameDeleted(
  */
 class MultiplayerGameCanBeLoaded(
     val gameInfo: GameInfo,
+    val gameName: String?, // optionally, the name of the game
     val gameDataID: Long // server data ID for the game state
 ): Event
