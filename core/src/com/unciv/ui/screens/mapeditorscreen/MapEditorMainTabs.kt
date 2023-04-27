@@ -8,6 +8,7 @@ import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorGenerateTab
 import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorLoadTab
 import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorModsTab
 import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorOptionsTab
+import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorRetractTab
 import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorSaveTab
 import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorViewTab
 
@@ -17,10 +18,11 @@ class MapEditorMainTabs(
     minimumHeight = editorScreen.stage.height,
     maximumHeight = editorScreen.stage.height,
     headerFontSize = 24,
-    capacity = 7
+    capacity = 8,
 ) {
     val view = MapEditorViewTab(editorScreen)
     val generate = MapEditorGenerateTab(editorScreen)
+    val retract = MapEditorRetractTab(editorScreen)
     val edit = MapEditorEditTab(editorScreen, headerHeight)
     val load = MapEditorLoadTab(editorScreen, headerHeight)
     val save = MapEditorSaveTab(editorScreen, headerHeight)
@@ -36,6 +38,9 @@ class MapEditorMainTabs(
         addPage("Generate", generate,
             ImageGetter.getImage("OtherIcons/New"), 25f,
             shortcutKey = KeyCharAndCode.ctrl('n'))
+        addPage("Retract", retract,
+            ImageGetter.getImage("OtherIcons/BackArrow"), 25f,
+            shortcutKey = KeyCharAndCode.ctrl('r'))
         addPage("Edit", edit,
             ImageGetter.getImage("OtherIcons/Terrains"), 25f,
             shortcutKey = KeyCharAndCode.ctrl('e'))
