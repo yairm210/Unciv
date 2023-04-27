@@ -243,10 +243,9 @@ class UnitMovement(val unit: MapUnit) {
         val movementTreeParents = HashMap<Tile, Tile?>() // contains a map of "you can get from X to Y in that turn"
         movementTreeParents[currentTile] = null
 
-        var movementThisTurn = unit.currentMovement
         var distance = 1
+        val unitMaxMovement = unit.getMaxMovement().toFloat()
         val newTilesToCheck = ArrayList<Tile>()
-        var considerZoneOfControl = true // only for first distance!
         val visitedTiles: HashSet<Tile> = hashSetOf(currentTile)
         val civilization = unit.civ
 
@@ -255,10 +254,6 @@ class UnitMovement(val unit: MapUnit) {
         val canMoveToCache = HashMap<Tile, Boolean>()
 
         while (true) {
-            if (distance == 2) { // only set this once after distance > 1
-                movementThisTurn = unit.getMaxMovement().toFloat()
-                considerZoneOfControl = false  // by then units would have moved around, we don't need to consider untenable futures when it harms performance!
-            }
             newTilesToCheck.clear()
 
             var tilesByPreference = tilesToCheck.sortedBy { it.aerialDistanceTo(destination) }
@@ -268,13 +263,13 @@ class UnitMovement(val unit: MapUnit) {
 
             for (tileToCheck in tilesByPreference) {
                 val distanceToTilesThisTurn = if (distance == 1) {
-                    getDistanceToTiles(considerZoneOfControl, passThroughCache, movementCostCache) // check cache
+                    getDistanceToTiles(true, passThroughCache, movementCostCache) // check cache
                 }
                 else {
                     getDistanceToTilesWithinTurn(
                         tileToCheck.position,
-                        movementThisTurn,
-                        considerZoneOfControl,
+                        unitMaxMovement,
+                        false,
                         visitedTiles,
                         passThroughCache,
                         movementCostCache
