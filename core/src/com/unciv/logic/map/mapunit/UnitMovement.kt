@@ -174,7 +174,7 @@ class UnitMovement(val unit: MapUnit) {
             for (tileToCheck in tilesToCheck)
                 for (neighbor in tileToCheck.neighbors) {
                     var totalDistanceToTile: Float = when {
-                        !unit.civ.hasExplored(neighbor) ->
+                        !neighbor.isExplored(unit.civ) ->
                             distanceToTiles[tileToCheck]!!.totalDistance + 1f  // If we don't know then we just guess it to be 1.
                         !passThroughCache.getOrPut(neighbor) { canPassThrough(neighbor) } -> unitMovement // Can't go here.
                         // The reason that we don't just "return" is so that when calculating how to reach an enemy,
