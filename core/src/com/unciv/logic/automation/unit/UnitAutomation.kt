@@ -557,13 +557,22 @@ object UnitAutomation {
                 .firstOrNull { unit.movement.canReach(it.getCenterTile()) }
 
         if (closestReachableEnemyCity != null) {
-            return headTowardsEnemyCity(unit, closestReachableEnemyCity.getCenterTile())
+            return headTowardsEnemyCity(
+                unit,
+                closestReachableEnemyCity.getCenterTile(),
+                // This should be cached after the `canReach` call above.
+                unit.movement.getShortestPath(closestReachableEnemyCity.getCenterTile())
+            )
         }
         return false
     }
 
 
-    private fun headTowardsEnemyCity(unit: MapUnit, closestReachableEnemyCity: Tile): Boolean {
+    private fun headTowardsEnemyCity(
+        unit: MapUnit,
+        closestReachableEnemyCity: Tile,
+        shortestPath: List<Tile>
+    ): Boolean {
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         val unitRange = unit.getRange()
 
@@ -584,6 +593,18 @@ object UnitAutomation {
                 return true
             }
             return false
+        }
+
+        // None of the stuff below is relevant if we're still quite far away from the city, so we
+        // short-circuit here for performance reasons.
+        val minDistanceFromCityToConsiderForLandingArea = 3
+        val maxDistanceFromCityToConsiderForLandingArea = 5
+        if (unit.currentTile.aerialDistanceTo(closestReachableEnemyCity) > maxDistanceFromCityToConsiderForLandingArea
+                // Even in the worst case of only being able to move 1 tile per turn, we would still
+                // not overshoot.
+                && shortestPath.size > minDistanceFromCityToConsiderForLandingArea ) {
+            unit.movement.moveToTile(shortestPath[0])
+            return true
         }
 
         val ourUnitsAroundEnemyCity = closestReachableEnemyCity.getTilesInDistance(6)
@@ -614,7 +635,7 @@ object UnitAutomation {
             return true
         }
 
-        unit.movement.headTowards(closestReachableEnemyCity) // go for it!
+        unit.movement.moveToTile(shortestPath[0]) // go for it!
 
         return true
     }
@@ -682,7 +703,12 @@ object UnitAutomation {
                 .firstOrNull { unit.movement.canReach(it) }
 
         if (closestReachableCapturedCity != null) {
-            return headTowardsEnemyCity(unit, closestReachableCapturedCity)
+            return headTowardsEnemyCity(
+                unit,
+                closestReachableCapturedCity,
+                // This should be cached after the `canReach` call above.
+                unit.movement.getShortestPath(closestReachableCapturedCity)
+            )
         }
         return false
 
