@@ -17,7 +17,7 @@ import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.victoryscreen.ReplayMap
+import com.unciv.ui.screens.victoryscreen.LoadMapPreview
 import com.unciv.utils.concurrency.Concurrency
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
@@ -127,9 +127,7 @@ class MapFileSelectTable(
                 if (!isActive) return@run
                 // ReplyMap still paints outside its bounds - so we subtract padding and a little extra
                 val size = (columnWidth - 40f).coerceAtMost(500f)
-                val miniMap = ReplayMap(map, null, size, size)
-                if (!isActive) return@run
-                miniMap.update(0)
+                val miniMap = LoadMapPreview(map, size, size)
                 if (!isActive) return@run
                 Concurrency.runOnGLThread {
                     showMinimap(miniMap)
@@ -148,7 +146,7 @@ class MapFileSelectTable(
         miniMapWrapper.clearActions()
     }
 
-    private fun showMinimap(miniMap: ReplayMap) {
+    private fun showMinimap(miniMap: LoadMapPreview) {
         if (miniMapWrapper.actor == miniMap) return
         miniMapWrapper.clearActions()
         miniMapWrapper.color.a = 0f
@@ -158,7 +156,7 @@ class MapFileSelectTable(
     }
 
     private fun hideMiniMap() {
-        if (miniMapWrapper.actor !is ReplayMap) return
+        if (miniMapWrapper.actor !is LoadMapPreview) return
         miniMapWrapper.clearActions()
         miniMapWrapper.addAction(
             Actions.sequence(

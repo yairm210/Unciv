@@ -51,7 +51,7 @@ class VictoryScreenReplay(
             gameInfo.tileMap,
             worldScreen.viewingCiv,
             worldScreen.stage.width - 50,
-            worldScreen.stage.height - 250  // Empiric: `stage.height - pager.contentScroll_field.height` after inint is 244.
+            worldScreen.stage.height - 250  // Empiric: `stage.height - pager.contentScroll_field.height` after init is 244.
         )
 
         playImage.setSize(24f)
