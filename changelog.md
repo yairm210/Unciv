@@ -1,3 +1,19 @@
+## 4.6.7
+
+Modding: terrainFilter now accommodates nationFilter for tile owner
+
+Minor UI improvements
+
+Performance improvements  - By WhoIsJohannes
+
+Allow to reveal explored resources from a city's demanding resources in `CityOverviewTab`  - By chr56
+
+By SomeTroglodyte:
+- Visual clue a load game from clipboard is underway
+- Allow modders to use culture/faith conversion without providing the icons
+- "can be promoted" notification only when it's actually new
+- Fix wrapping for promotions in unit overview
+
 ## 4.6.6
 
 Testing: Damage animations on damaged units
