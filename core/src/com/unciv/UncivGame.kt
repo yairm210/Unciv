@@ -458,9 +458,13 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     override fun render() = wrappedCrashHandlingRender()
 
     override fun dispose() {
+        Log.debug("Disposing application")
         Gdx.input.inputProcessor = null // don't allow ANRs when shutting down, that's silly
         SoundPlayer.clearCache()
         if (::musicController.isInitialized) musicController.gracefulShutdown()  // Do allow fade-out
+        if (::onlineMultiplayer.isInitialized) {
+            onlineMultiplayer.dispose()
+        }
 
         val curGameInfo = gameInfo
         if (curGameInfo != null) {

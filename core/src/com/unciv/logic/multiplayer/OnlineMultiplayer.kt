@@ -542,7 +542,7 @@ class OnlineMultiplayer: Disposable {
     override fun dispose() {
         pollChecker?.cancel()
         events.stopReceiving()
-        if (apiVersion == ApiVersion.APIv2) {
+        if (isInitialized() && apiVersion == ApiVersion.APIv2) {
             api.dispose()
         }
     }
