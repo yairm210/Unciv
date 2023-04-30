@@ -16,6 +16,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.unciv.UncivGame
+import com.unciv.logic.event.EventBus
+import com.unciv.logic.multiplayer.apiv2.FriendshipChanged
+import com.unciv.logic.multiplayer.apiv2.FriendshipEvent
+import com.unciv.logic.multiplayer.apiv2.IncomingChatMessage
+import com.unciv.logic.multiplayer.apiv2.IncomingFriendRequest
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.skins.SkinStrings
 import com.unciv.ui.components.Fonts
@@ -25,6 +30,7 @@ import com.unciv.ui.components.extensions.DispatcherVetoer
 import com.unciv.ui.components.extensions.installShortcutDispatcher
 import com.unciv.ui.components.extensions.isNarrowerThan4to3
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.popups.activePopup
 import com.unciv.ui.popups.options.OptionsPopup
 import com.unciv.ui.tutorials.TutorialController
@@ -56,6 +62,30 @@ abstract class BaseScreen : Screen {
         }
 
         stage.installShortcutDispatcher(globalShortcuts, this::createPopupBasedDispatcherVetoer)
+
+        // Handling chat messages and friend requests is done here so that it displays on every screen
+        val events = EventBus.EventReceiver()
+        events.receive(IncomingChatMessage::class, null) {
+            if (it.message.sender.uuid.toString() != game.settings.multiplayer.userId) {
+                ToastPopup("You received a new text message from [${it.message.sender.displayName}]:\n[${it.message.message}]", this)
+            }
+        }
+        events.receive(IncomingFriendRequest::class, null) {
+            ToastPopup("You received a friend request from [${it.from.displayName}]", this)
+        }
+        events.receive(FriendshipChanged::class, null) {
+            when (it.event) {
+                FriendshipEvent.Accepted -> {
+                    ToastPopup("[${it.friend.displayName}] accepted your friend request", this)
+                }
+                FriendshipEvent.Rejected -> {
+                    ToastPopup("[${it.friend.displayName}] rejected your friend request", this)
+                }
+                FriendshipEvent.Deleted -> {
+                    ToastPopup("[${it.friend.displayName}] removed you as a friend", this)
+                }
+            }
+        }
     }
 
     private fun createPopupBasedDispatcherVetoer(): DispatcherVetoer? {
