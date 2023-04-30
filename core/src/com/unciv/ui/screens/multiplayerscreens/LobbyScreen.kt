@@ -218,7 +218,7 @@ class LobbyScreen(
                 Log.debug("Opening game chat %s for game %s of lobby %s", it.gameChatUUID, it.gameUUID, lobbyName)
                 val gameChat = ChatMessageList(true, Pair(ChatRoomType.Game, lobbyName), it.gameChatUUID, game.onlineMultiplayer)
                 disposables.add(gameChat)
-                val wrapper = WrapPopup(stage, ChatTable(gameChat, true))
+                val wrapper = WrapPopup(stage, ChatTable(gameChat))
                 wrapper.open(force = true)
             }
             startingGamePopup.equalizeLastTwoButtonWidths()
@@ -318,7 +318,7 @@ class LobbyScreen(
         optionsTable.add(menuButtonInvite).padBottom(10f).row()
         optionsTable.add(menuButtonStartGame).row()
 
-        val chatTable = ChatTable(chatMessageList, true)
+        val chatTable = ChatTable(chatMessageList)
         val menuBar = Table()
         menuBar.align(Align.bottom)
         menuBar.add(bottomButtonLeave).pad(20f)

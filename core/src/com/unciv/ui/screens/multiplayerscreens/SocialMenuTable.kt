@@ -52,8 +52,7 @@ class SocialMenuTable(
         lastSelectedChat = chatRoom
         chatContainer.actor?.dispose()
         chatContainer.actor = ChatTable(
-            ChatMessageList(chatRoomType in chatHeadingFilter, Pair(chatRoomType, name), chatRoom, base.game.onlineMultiplayer),
-            false
+            ChatMessageList(chatRoomType in chatHeadingFilter, Pair(chatRoomType, name), chatRoom, base.game.onlineMultiplayer)
         ).apply { padLeft(15f) }
     }
 

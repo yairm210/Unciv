@@ -163,7 +163,11 @@ internal class FriendListV2(
                 }
                 if (response != null) {
                     Concurrency.runOnGLThread {
-                        Log.debug("Looked up '%s' as '%s'", response.uuid, response.username)
+                        Log.debug("Looked up '%s' as '%s'", response.username, response.uuid)
+                        if (response.uuid == me) {
+                            InfoPopup(base.stage, "You can't request a friendship from yourself!").open()
+                            return@runOnGLThread
+                        }
                         ConfirmPopup(
                             base.stage,
                             "Do you want to send [${response.username}] a friend request?",

@@ -60,7 +60,7 @@ class RegisterLoginPopup(private val base: BaseScreen, confirmUsage: Boolean = f
             addGoodSizedLabel("It looks like you are playing for the first time on ${multiplayer.baseUrl} with this device. Please login if you have played on this server, otherwise you can register a new account as well.").colspan(3).row()
             add(usernameField).colspan(3).growX().pad(16f, 0f, 16f, 0f).row()
             add(passwordField).colspan(3).growX().pad(16f, 0f, 16f, 0f).row()
-            addCloseButton(style=negativeButtonStyle) { authSuccessful?.invoke(false) }.growX().padRight(8f)
+            addCloseButton { authSuccessful?.invoke(false) }.growX().padRight(8f)
             add(registerButton).growX().padLeft(8f)
             add(loginButton).growX().padLeft(8f)
         }

@@ -16,12 +16,10 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 /**
  * A [Table] which combines [ChatMessageList] with a text input and send button to write a new message
  *
- * Optionally, it can display a [RefreshButton] to the right of the send button
- * or replace the send message text box with a popup that asks for a message.
+ * Optionally, it can replace the send message text box with a popup that asks for a message.
  */
 class ChatTable(
     private val chatMessageList: ChatMessageList,
-    showRefreshButton: Boolean,
     useInputPopup: Boolean = false,
     actorHeight: Float? = null,
     maxMessageLength: Int? = null
@@ -34,7 +32,7 @@ class ChatTable(
         if (actorHeight != null) {
             chatCell.actorHeight = actorHeight
         }
-        val width = if (showRefreshButton) 3 else 2
+        val width = 2
         chatCell.colspan(width).fillX().expandY().padBottom(10f)
         row()
 
@@ -71,16 +69,7 @@ class ChatTable(
             sendButton.keyShortcuts.add(KeyCharAndCode.RETURN)
 
             add(messageField).padLeft(5f).growX()
-            if (showRefreshButton) {
-                add(sendButton).padLeft(10f).padRight(10f)
-                val refreshButton = RefreshButton()
-                refreshButton.onActivation {
-                    chatMessageList.triggerRefresh(stage, false)
-                }
-                add(refreshButton).padRight(5f)
-            } else {
-                add(sendButton).padLeft(10f).padRight(5f)
-            }
+            add(sendButton).padLeft(10f).padRight(5f)
             row()
         }
     }

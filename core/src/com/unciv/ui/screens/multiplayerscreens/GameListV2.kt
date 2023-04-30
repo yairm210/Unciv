@@ -55,7 +55,7 @@ class GameListV2(private val screen: BaseScreen, private val onSelected: (GameOv
                 screen.game.onlineMultiplayer
             )
             disposables.add(chatMessageList)
-            popup.innerTable.add(ChatTable(chatMessageList, false)).padBottom(10f).row()
+            popup.innerTable.add(ChatTable(chatMessageList)).padBottom(10f).row()
             popup.addCloseButton()
             popup.open(force = true)
         } }).padBottom(5f)
