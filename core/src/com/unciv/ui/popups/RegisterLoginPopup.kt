@@ -1,6 +1,9 @@
 package com.unciv.ui.popups
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.scenes.scene2d.EventListener
+import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -9,7 +12,9 @@ import com.unciv.logic.multiplayer.apiv2.ApiException
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.UncivTextField
+import com.unciv.ui.components.extensions.activate
 import com.unciv.ui.components.extensions.keyShortcuts
+import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -28,8 +33,47 @@ class RegisterLoginPopup(private val base: BaseScreen, confirmUsage: Boolean = f
     private val multiplayer = UncivGame.Current.onlineMultiplayer
     private val usernameField = UncivTextField.create("Username")
     private val passwordField = UncivTextField.create("Password")
+    private val loginButton = "Login".toTextButton()
+    private val registerButton = "Register".toTextButton()
+    private val listener: EventListener
 
     init {
+        /** Simple listener class for key presses on ENTER keys to trigger the login button */
+        class SimpleEnterListener : InputListener() {
+            override fun keyUp(event: InputEvent?, keycode: Int): Boolean {
+                if (keycode in listOf(KeyCharAndCode.RETURN.code, KeyCharAndCode.NUMPAD_ENTER.code)) {
+                    loginButton.activate()
+                }
+                return super.keyUp(event, keycode)
+            }
+        }
+
+        listener = SimpleEnterListener()
+
+        passwordField.isPasswordMode = true
+        passwordField.setPasswordCharacter('*')
+
+        loginButton.onActivation {
+            if (usernameField.text == "") {
+                stage.keyboardFocus = usernameField
+            } else if (passwordField.text == "") {
+                stage.keyboardFocus = passwordField
+            } else {
+                stage.removeListener(listener)
+                login()
+            }
+        }
+        registerButton.onClick {
+            if (usernameField.text == "") {
+                stage.keyboardFocus = usernameField
+            } else if (passwordField.text == "") {
+                stage.keyboardFocus = passwordField
+            } else {
+                stage.removeListener(listener)
+                register()
+            }
+        }
+
         if (confirmUsage) {
             askConfirmUsage {
                 build()
@@ -37,6 +81,11 @@ class RegisterLoginPopup(private val base: BaseScreen, confirmUsage: Boolean = f
         } else {
             build()
         }
+    }
+
+    override fun close() {
+        stage?.removeListener(listener)
+        super.close()
     }
 
     /**
@@ -48,21 +97,22 @@ class RegisterLoginPopup(private val base: BaseScreen, confirmUsage: Boolean = f
         if (!multiplayer.isInitialized() || multiplayer.apiVersion != ApiVersion.APIv2) {
             Log.error("Uninitialized online multiplayer instance or ${multiplayer.baseUrl} not APIv2 compatible")
             addGoodSizedLabel("Uninitialized online multiplayer instance or ${multiplayer.baseUrl} not APIv2 compatible").colspan(2).row()
-            addCloseButton(style=negativeButtonStyle) { authSuccessful?.invoke(false) }.growX().padRight(8f)
+            addCloseButton(style=negativeButtonStyle) {
+                stage?.removeListener(listener)
+                authSuccessful?.invoke(false)
+            }.growX().padRight(8f)
         } else {
-            val loginButton = "Login existing".toTextButton()
-            loginButton.keyShortcuts.add(KeyCharAndCode.RETURN)
-            val registerButton = "Register new".toTextButton()
-
-            loginButton.onClick { login() }
-            registerButton.onClick { register() }
+            stage.addListener(listener)
 
             addGoodSizedLabel("It looks like you are playing for the first time on ${multiplayer.baseUrl} with this device. Please login if you have played on this server, otherwise you can register a new account as well.").colspan(3).row()
             add(usernameField).colspan(3).growX().pad(16f, 0f, 16f, 0f).row()
             add(passwordField).colspan(3).growX().pad(16f, 0f, 16f, 0f).row()
-            addCloseButton { authSuccessful?.invoke(false) }.growX().padRight(8f)
+            addCloseButton {
+                stage?.removeListener(listener)
+                authSuccessful?.invoke(false)
+            }.growX().padRight(8f)
             add(registerButton).growX().padLeft(8f)
-            add(loginButton).growX().padLeft(8f)
+            add(loginButton).growX().padLeft(8f).apply { keyShortcuts.add(KeyCharAndCode.RETURN) }
         }
     }
 
@@ -109,17 +159,18 @@ class RegisterLoginPopup(private val base: BaseScreen, confirmUsage: Boolean = f
                     UncivGame.Current.settings.multiplayer.passwords[UncivGame.Current.onlineMultiplayer.baseUrl] = passwordField.text
                     UncivGame.Current.settings.save()
                     popup.close()
+                    stage?.removeListener(listener)
                     close()
                     authSuccessful?.invoke(success)
                 }
             } catch (e: ApiException) {
                 launchOnGLThread {
                     popup.close()
-                    close()
                     InfoPopup(
                         base.stage,
                         "Failed to login with existing account".tr() + ":\n${e.localizedMessage}"
                     ) {
+                        stage?.addListener(listener)
                         authSuccessful?.invoke(false)
                     }
                 }
@@ -143,23 +194,23 @@ class RegisterLoginPopup(private val base: BaseScreen, confirmUsage: Boolean = f
                 launchOnGLThread {
                     Log.debug("Updating username and password after successfully authenticating")
                     UncivGame.Current.settings.multiplayer.userName = usernameField.text
-                    UncivGame.Current.settings.multiplayer.passwords[UncivGame.Current.onlineMultiplayer.baseUrl] =
-                            passwordField.text
+                    UncivGame.Current.settings.multiplayer.passwords[UncivGame.Current.onlineMultiplayer.baseUrl] = passwordField.text
                     UncivGame.Current.settings.save()
                     popup.close()
                     close()
                     InfoPopup(base.stage, "Successfully registered new account".tr()) {
+                        stage?.removeListener(listener)
                         authSuccessful?.invoke(true)
                     }
                 }
             } catch (e: ApiException) {
                 launchOnGLThread {
                     popup.close()
-                    close()
                     InfoPopup(
                         base.stage,
                         "Failed to register new account".tr() + ":\n${e.localizedMessage}"
                     ) {
+                        stage?.addListener(listener)
                         authSuccessful?.invoke(false)
                     }
                 }
