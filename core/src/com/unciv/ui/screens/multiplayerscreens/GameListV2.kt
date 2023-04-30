@@ -31,14 +31,11 @@ class GameListV2(private val screen: BaseScreen, private val onSelected: (GameOv
     private val events = EventBus.EventReceiver()
 
     init {
-        // TODO: Add event handling
         add(noGames).row()
         triggerUpdate()
     }
 
     private fun addGame(game: GameOverviewResponse) {
-        // TODO: Determine if it's the current turn, then add an indicator for that
-
         add(game.name.toTextButton().onClick { onSelected(game) }).padRight(10f).padBottom(5f)
         val time = "[${Duration.between(game.lastActivity, Instant.now()).formatShort()}] ago".tr()
         add(time).padRight(10f).padBottom(5f)
@@ -82,7 +79,7 @@ class GameListV2(private val screen: BaseScreen, private val onSelected: (GameOv
     /**
      * Detach updating the list of games in another coroutine
      */
-    fun triggerUpdate() {
+    private fun triggerUpdate() {
         Concurrency.run("Update game list") {
             while (stage == null) {
                 delay(20)  // fixes race condition and null pointer exception in access to `stage`

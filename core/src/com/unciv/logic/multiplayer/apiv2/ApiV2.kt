@@ -3,8 +3,8 @@ package com.unciv.logic.multiplayer.apiv2
 import com.badlogic.gdx.utils.Disposable
 import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
-import com.unciv.logic.multiplayer.storage.ApiV2FileStorageEmulator
 import com.unciv.logic.multiplayer.ApiVersion
+import com.unciv.logic.multiplayer.storage.ApiV2FileStorageEmulator
 import com.unciv.logic.multiplayer.storage.ApiV2FileStorageWrapper
 import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
 import com.unciv.utils.Log
@@ -14,10 +14,12 @@ import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.websocket.*
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import java.time.Instant
 import java.util.*
@@ -97,6 +99,11 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
         sendChannel?.close()
         for (job in websocketJobs) {
             job.cancel()
+        }
+        for (job in websocketJobs) {
+            runBlocking {
+                job.join()
+            }
         }
         client.cancel()
     }
@@ -202,6 +209,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
      *
      * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
+    @Suppress("Unused")
     internal suspend fun sendText(text: String, suppress: Boolean = false): Boolean {
         val channel = sendChannel
         if (channel == null) {
@@ -234,8 +242,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
      * available and an any exception otherwise.
      */
     internal suspend fun sendPing(): Boolean {
-        val body = ByteArray(8)
-        Random().nextBytes(body)
+        val body = ByteArray(0)
         val channel = sendChannel
         return if (channel == null) {
             false
@@ -255,7 +262,6 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
         websocketJobs.add(Concurrency.run {
             val currentChannel = session.outgoing
             while (sendChannel != null && currentChannel == sendChannel) {
-                delay(DEFAULT_WEBSOCKET_PING_FREQUENCY)
                 try {
                     sendPing()
                 } catch (e: Exception) {
@@ -264,6 +270,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
                         websocket(::handleWebSocket)
                     }
                 }
+                delay(DEFAULT_WEBSOCKET_PING_FREQUENCY)
             }
             Log.debug("It looks like the WebSocket channel has been replaced")
         })
@@ -306,13 +313,20 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
             Log.debug("The WebSocket channel was closed: $e")
             sendChannel?.close()
             session.close()
+            session.flush()
             Concurrency.run {
                 websocket(::handleWebSocket)
             }
+        } catch (e: CancellationException) {
+            Log.debug("WebSocket coroutine was cancelled, closing connection: $e")
+            sendChannel?.close()
+            session.close()
+            session.flush()
         } catch (e: Throwable) {
             Log.error("Error while handling a WebSocket connection: %s\n%s", e.localizedMessage, e.stackTraceToString())
             sendChannel?.close()
             session.close()
+            session.flush()
             Concurrency.run {
                 websocket(::handleWebSocket)
             }
@@ -325,23 +339,13 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
     /**
      * Perform post-login hooks and updates
      *
-     * 1. Create a new WebSocket connection after logging in and
-     *    if there's no current connection available
+     * 1. Create a new WebSocket connection after logging in (ignoring existing sockets)
      * 2. Update the [UncivGame.Current.settings.multiplayer.userId]
      *    (this makes using APIv0/APIv1 games impossible if the user ID is not preserved!)
      */
     @Suppress("KDocUnresolvedReference")
     override suspend fun afterLogin() {
-        val pingSuccess = try {
-            sendPing()
-        } catch (e: Exception) {
-            Log.debug("Exception while sending WebSocket PING: %s", e.localizedMessage)
-            false
-        }
-        if (!pingSuccess) {
-            websocket(::handleWebSocket)
-        }
-        val me = account.get()
+        val me = account.get(cache = false, suppress = true)
         if (me != null) {
             Log.error(
                 "Updating user ID from %s to %s. This is no error. But you may need the old ID to be able to access your old multiplayer saves.",
@@ -350,6 +354,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
             )
             UncivGame.Current.settings.multiplayer.userId = me.uuid.toString()
             UncivGame.Current.settings.save()
+            websocket(::handleWebSocket)
         }
     }
 
