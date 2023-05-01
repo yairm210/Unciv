@@ -232,7 +232,7 @@ open class Tile : IsPartOfGameInfoSerialization {
     }
 
     fun isExplored(player: Civilization): Boolean {
-        if (DebugUtils.VISIBLE_MAP || player.isSpectator())
+        if (DebugUtils.VISIBLE_MAP || player.civName == Constants.spectator)
             return true
         return exploredBy.contains(player.civName)
     }
