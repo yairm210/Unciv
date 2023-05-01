@@ -52,7 +52,7 @@ jobs:
           java-version: '11'
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2.4.0
+        uses: gradle/gradle-build-action@v2.4.2
 
       - name: Compile kotlin and build classes
         run: ./gradlew classes
@@ -111,7 +111,7 @@ jobs:
           java-version: '11'
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2.3.3
+        uses: gradle/gradle-build-action@v2.4.2
 
       - name: Prepare .aab (for Google Play) and .apk (for Github) files
         shell: bash
@@ -176,7 +176,7 @@ jobs:
           java-version: '11'
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2.3.3
+        uses: gradle/gradle-build-action@v2.4.2
 
       - name: Download JAR
         uses: actions/download-artifact@v3
