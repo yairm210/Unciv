@@ -29,6 +29,7 @@ import java.util.*
 class LobbyPlayerList(
     private val lobbyUUID: UUID,
     private var editable: Boolean,
+    private val me: UUID,  // the currently logged-in player UUID
     private var api: ApiV2,
     private val update: (() -> Unit)? = null,  // use for signaling player changes via buttons to the caller
     startPlayers: List<AccountResponse> = listOf(),
@@ -173,7 +174,7 @@ class LobbyPlayerList(
                         recreate()
                         update?.invoke()
                     }
-                    if (editable) {
+                    if (editable && me != player.account?.uuid) {
                         add(kickButton)
                     }
 

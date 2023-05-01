@@ -7,8 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.UncivShowableException
 import com.unciv.logic.multiplayer.ApiVersion
-import com.unciv.logic.multiplayer.apiv2.ApiException
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.UncivTextField
@@ -150,9 +150,6 @@ class RegisterLoginPopup(private val base: BaseScreen, confirmUsage: Boolean = f
                 val success = UncivGame.Current.onlineMultiplayer.api.auth.login(
                     usernameField.text, passwordField.text
                 )
-                UncivGame.Current.onlineMultiplayer.api.refreshSession(
-                    ignoreLastCredentials = true
-                )
                 launchOnGLThread {
                     Log.debug("Updating username and password after successfully authenticating")
                     UncivGame.Current.settings.multiplayer.userName = usernameField.text
@@ -163,7 +160,7 @@ class RegisterLoginPopup(private val base: BaseScreen, confirmUsage: Boolean = f
                     close()
                     authSuccessful?.invoke(success)
                 }
-            } catch (e: ApiException) {
+            } catch (e: UncivShowableException) {
                 launchOnGLThread {
                     popup.close()
                     InfoPopup(
@@ -188,9 +185,6 @@ class RegisterLoginPopup(private val base: BaseScreen, confirmUsage: Boolean = f
                 UncivGame.Current.onlineMultiplayer.api.auth.login(
                     usernameField.text, passwordField.text
                 )
-                UncivGame.Current.onlineMultiplayer.api.refreshSession(
-                    ignoreLastCredentials = true
-                )
                 launchOnGLThread {
                     Log.debug("Updating username and password after successfully authenticating")
                     UncivGame.Current.settings.multiplayer.userName = usernameField.text
@@ -203,7 +197,7 @@ class RegisterLoginPopup(private val base: BaseScreen, confirmUsage: Boolean = f
                         authSuccessful?.invoke(true)
                     }
                 }
-            } catch (e: ApiException) {
+            } catch (e: UncivShowableException) {
                 launchOnGLThread {
                     popup.close()
                     InfoPopup(

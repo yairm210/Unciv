@@ -106,7 +106,7 @@ class LobbyScreen(
             currentPlayers.add(owner)
         }
         gameSetupInfo.gameParameters.isOnlineMultiplayer = true
-        lobbyPlayerList = LobbyPlayerList(lobbyUUID, owner == me, game.onlineMultiplayer.api, ::recreate, currentPlayers, this)
+        lobbyPlayerList = LobbyPlayerList(lobbyUUID, owner == me, me.uuid, game.onlineMultiplayer.api, ::recreate, currentPlayers, this)
         gameOptionsTable = GameOptionsTable(this, multiplayerOnly = true, updatePlayerPickerRandomLabel = {}, updatePlayerPickerTable = { x ->
             Log.error("Updating player picker table with '%s' is not implemented yet.", x)
             lobbyPlayerList.recreate()

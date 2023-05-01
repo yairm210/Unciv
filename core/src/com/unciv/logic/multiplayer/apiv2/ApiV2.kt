@@ -379,7 +379,6 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
         }
         return success
     }
-
 }
 
 /**
