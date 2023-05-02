@@ -315,6 +315,13 @@ class CityInfoConquestFunctions(val city: City){
 
             if (civ.gameInfo.isReligionEnabled()) religion.removeUnknownPantheons()
 
+            if (newCiv.getMatchingUniques(UniqueType.MayNotAnnexCities).any()) {
+                isPuppet = true
+                cityConstructions.currentConstructionIsUserSet = false
+                cityConstructions.constructionQueue.clear()
+                cityConstructions.chooseNextConstruction()
+            }
+
             tryUpdateRoadStatus()
             cityStats.update()
 
