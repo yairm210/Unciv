@@ -34,12 +34,16 @@ class GoldenAgeManager : IsPartOfGameInfoSerialization {
         return cost.toInt()
     }
 
-    fun enterGoldenAge(unmodifiedNumberOfTurns: Int = 10) {
+    fun calculateGoldenAgeLength(unmodifiedNumberOfTurns: Int): Int {
         var turnsToGoldenAge = unmodifiedNumberOfTurns.toFloat()
         for (unique in civInfo.getMatchingUniques(UniqueType.GoldenAgeLength))
             turnsToGoldenAge *= unique.params[0].toPercent()
         turnsToGoldenAge *= civInfo.gameInfo.speed.goldenAgeLengthModifier
-        turnsLeftForCurrentGoldenAge += turnsToGoldenAge.toInt()
+        return turnsToGoldenAge.toInt()
+    }
+
+    fun enterGoldenAge(unmodifiedNumberOfTurns: Int = 10) {
+        turnsLeftForCurrentGoldenAge += calculateGoldenAgeLength(unmodifiedNumberOfTurns)
         civInfo.addNotification("You have entered a Golden Age!", NotificationCategory.General, "StatIcons/Happiness")
         civInfo.popupAlerts.add(PopupAlert(AlertType.GoldenAge, ""))
 

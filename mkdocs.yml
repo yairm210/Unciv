@@ -1,6 +1,8 @@
 site_name: Unciv
 theme:
   name: material
+  logo: assets/Icon.png
+  favicon: assets/favicon.png
 
   palette:
     - scheme: default
@@ -18,7 +20,7 @@ theme:
 
   icon:
     repo: fontawesome/brands/github
-    
+
 repo_name: yairm210/unciv
 repo_url: https://github.com/yairm210/unciv
 
@@ -37,5 +39,5 @@ markdown_extensions:
   - pymdownx.details # For collapsable admonitions - see https://squidfunk.github.io/mkdocs-material/reference/admonitions/?h=%3F%3F%3F#collapsible-blocks
 
   # For Abbreviations
-  - abbr 
+  - abbr
   - pymdownx.snippets

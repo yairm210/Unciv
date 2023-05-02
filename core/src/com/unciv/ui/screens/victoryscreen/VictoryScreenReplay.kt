@@ -19,15 +19,14 @@ class VictoryScreenReplay(
     worldScreen: WorldScreen
 ) : Table(BaseScreen.skin), TabbedPager.IPageExtensions {
     private val gameInfo = worldScreen.gameInfo
-    private val viewingCiv = worldScreen.viewingCiv
 
     private val finalTurn = gameInfo.turns
     private var replayTimer : Timer.Task? = null
-    private val replayMap = ReplayMap(gameInfo.tileMap)
-
     private val header = Table()
+
     private val yearLabel = "".toLabel()
     private val slider: UncivSlider
+    private val replayMap: ReplayMap
     private val playImage = ImageGetter.getImage("OtherIcons/ForwardArrow")
     private val pauseImage = ImageGetter.getImage("OtherIcons/Pause")
     private val playPauseButton = Container(pauseImage)
@@ -47,6 +46,12 @@ class VictoryScreenReplay(
             sound = UncivSound.Silent,
             tipType = UncivSlider.TipType.None,
             onChange = this::sliderChanged
+        )
+        replayMap = ReplayMap(
+            gameInfo.tileMap,
+            worldScreen.viewingCiv,
+            worldScreen.stage.width - 50,
+            worldScreen.stage.height - 250
         )
 
         playImage.setSize(24f)
@@ -111,7 +116,7 @@ class VictoryScreenReplay(
             )
         )
         slider.value = turn.toFloat()
-        replayMap.update(turn, viewingCiv)
+        replayMap.update(turn)
         if (turn == finalTurn) resetTimer()
     }
 

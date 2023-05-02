@@ -1,3 +1,90 @@
+## 4.6.8
+
+Reduce a few memory allocations  - By SomeTroglodyte
+
+AbsoluteUnits - Norwegian Ski Infantry, Mehal Sefari, Carolean, Foreign Legion  - By letstalkaboutdune
+
+Various performance improvements  - By WhoIsJohannes
+
+## 4.6.7
+
+Modding: terrainFilter now accommodates nationFilter for tile owner
+
+Minor UI improvements
+
+Performance improvements  - By WhoIsJohannes
+
+Allow to reveal explored resources from a city's demanding resources in `CityOverviewTab`  - By chr56
+
+By SomeTroglodyte:
+- Visual clue a load game from clipboard is underway
+- Allow modders to use culture/faith conversion without providing the icons
+- "can be promoted" notification only when it's actually new
+- Fix wrapping for promotions in unit overview
+
+## 4.6.6
+
+Testing: Damage animations on damaged units
+
+Units sprites move towards the enemy they're attacking
+
+Removed deprecated settings
+
+By WhoIsJohannes:
+- Performance improvements
+- AI does not consider Barbarian as 'enemy civ' for 'should we declare war' decisions
+- Don't leak other civs in the game through LineChart colors.
+
+Avoid first contact alerts for dead City-States  - By SomeTroglodyte
+
+## 4.6.5
+
+Solved AI Great Scientist crash
+
+Great Merchant doesn't try to go to unreachable tiles
+
+By letstalkaboutdune:
+- AbsoluteUnits - Sipahi, Hakkapeliitta, Janissary, Tercio, Musketeer, Minuteman
+
+By SomeTroglodyte:
+- Make AI diplomatic marriage safe from concurrent modification issues
+- Fix Main Menu BG map cycle not stopping on user action
+
+## 4.6.4
+
+Avoid font-related crash
+
+Modding: Configurable embarked sight
+
+UnitFilter accepts NationFilter (e.g. "vs [England] units")
+
+Resolved image gliches in font icons, hopefully
+
+By SomeTroglodyte:
+- Reassign workers when resistance ends or improvement created
+- Fix "religions to be founded" expanders accumulating
+- Annexed cities in resistance cannot buy tiles
+
+By WhoIsJohannes:
+- Show replay after 5 rounds and don't reveal where player is on the map.
+- Chart improvements (Highlight & performance)
+
+## 4.6.3
+
+Hopefully solved RAM-related crashes
+
+Removed more double icons from many places
+
+Aircraft attack/move range colors entire tile
+
+By WhoIsJohannes:
+- Show garrison in city screen
+- Great people automation
+- Order defeated civs after alive civs even if the alive civs score is negative (e.g. for happiness)
+- Fix golden age length action text
+
+Notifications can be "selected"  - By SomeTroglodyte
+
 ## 4.6.2
 
 Added "in this city", "in other cities" conditionals for city-based uniques

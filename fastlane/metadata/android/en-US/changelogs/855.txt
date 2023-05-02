@@ -1,0 +1,10 @@
+Solved AI Great Scientist crash
+
+Great Merchant doesn't try to go to unreachable tiles
+
+By letstalkaboutdune:
+- AbsoluteUnits - Sipahi, Hakkapeliitta, Janissary, Tercio, Musketeer, Minuteman
+
+By SomeTroglodyte:
+- Make AI diplomatic marriage safe from concurrent modification issues
+- Fix Main Menu BG map cycle not stopping on user action

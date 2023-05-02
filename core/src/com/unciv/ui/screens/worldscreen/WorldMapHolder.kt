@@ -32,6 +32,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UncivSound
 import com.unciv.models.helpers.MapArrowType
 import com.unciv.models.helpers.MiscArrowTypes
+import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.KeyCharAndCode
@@ -567,8 +568,9 @@ class WorldMapHolder(
         }
 
         // General update of all tiles
+        val uniqueCache =  LocalUniqueCache(true)
         for (tileGroup in tileGroups.values)
-            tileGroup.update(viewingCiv)
+            tileGroup.update(viewingCiv, uniqueCache)
 
         // Update tiles according to selected unit/city
         val unitTable = worldScreen.bottomUnitTable
@@ -642,17 +644,17 @@ class WorldMapHolder(
             if (isAirUnit && !unit.isPreparingAirSweep()) {
                 if (tile.aerialDistanceTo(unit.getTile()) <= unit.getRange()) {
                     // The tile is within attack range
-                    group.layerOverlay.showHighlight(Color.RED, 0.3f)
-                } else {
+                    group.layerMisc.overlayTerrain(Color.RED)
+                } else if (tile.isExplored(worldScreen.viewingCiv) && tile.aerialDistanceTo(unit.getTile()) <= unit.getRange()*2) {
                     // The tile is within move range
-                    group.layerOverlay.showHighlight(Color.BLUE, 0.3f)
+                    group.layerMisc.overlayTerrain(if (unit.movement.canMoveTo(tile)) Color.WHITE else Color.BLUE)
                 }
             }
 
             // Highlight tile unit can move to
             if (unit.movement.canMoveTo(tile) ||
                     unit.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !unit.baseUnit.movesLikeAirUnits()) {
-                val alpha = if (UncivGame.Current.settings.singleTapMove || isAirUnit) 0.7f else 0.3f
+                val alpha = if (UncivGame.Current.settings.singleTapMove) 0.7f else 0.3f
                 group.layerOverlay.showHighlight(moveTileOverlayColor, alpha)
             }
 
@@ -707,6 +709,7 @@ class WorldMapHolder(
                 .filter { it.isExplored(unit.civ) }.take(3).forEach {
                     tileGroups[it]!!.layerOverlay.showGoodCityLocationIndicator()
                 }
+
         }
     }
 

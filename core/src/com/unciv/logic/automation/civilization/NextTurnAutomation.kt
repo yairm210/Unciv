@@ -290,38 +290,44 @@ object NextTurnAutomation {
         return
     }
 
-    /** allow AI to spend money to purchase city-state friendship, buildings & unit */
-    private fun useGold(civInfo: Civilization) {
-        if (civInfo.getHappiness() > 0 && civInfo.hasUnique(UniqueType.CityStateCanBeBoughtForGold)) {
-            for (cityState in civInfo.getKnownCivs().filter { it.isCityState() } ) {
-                if (cityState.cityStateFunctions.canBeMarriedBy(civInfo))
-                    cityState.cityStateFunctions.diplomaticMarriage(civInfo)
-                if (civInfo.getHappiness() <= 0) break // Stop marrying if happiness is getting too low
+    private fun useGoldForCityStates(civ: Civilization) {
+        val knownCityStates = civ.getKnownCivs().filter { it.isCityState() }
+
+        // canBeMarriedBy checks actual cost, but it can't be below 500*speedmodifier, and the later check is expensive
+        if (civ.gold >= 330 && civ.getHappiness() > 0 && civ.hasUnique(UniqueType.CityStateCanBeBoughtForGold)) {
+            for (cityState in knownCityStates.toList() ) {  // Materialize sequence as diplomaticMarriage may kill a CS
+                if (cityState.cityStateFunctions.canBeMarriedBy(civ))
+                    cityState.cityStateFunctions.diplomaticMarriage(civ)
+                if (civ.getHappiness() <= 0) break // Stop marrying if happiness is getting too low
             }
         }
 
-        if (civInfo.wantsToFocusOn(Victory.Focus.Culture)) {
-            for (cityState in civInfo.getKnownCivs()
-                    .filter { it.isCityState() && it.cityStateFunctions.canProvideStat(Stat.Culture) }) {
-                val diploManager = cityState.getDiplomacyManager(civInfo)
+        if (civ.gold < 250) return  // skip checks if tryGainInfluence will bail anyway
+        if (civ.wantsToFocusOn(Victory.Focus.Culture)) {
+            for (cityState in knownCityStates.filter { it.cityStateFunctions.canProvideStat(Stat.Culture) }) {
+                val diploManager = cityState.getDiplomacyManager(civ)
                 if (diploManager.getInfluence() < 40) { // we want to gain influence with them
-                    tryGainInfluence(civInfo, cityState)
+                    tryGainInfluence(civ, cityState)
                 }
             }
         }
 
-        if (!civInfo.isCityState()) {
-            val potentialAllies = civInfo.getKnownCivs().filter { it.isCityState() }
-            if (potentialAllies.any()) {
-                val cityState =
-                    potentialAllies.maxByOrNull { valueCityStateAlliance(civInfo, it) }!!
-                if (cityState.getAllyCiv() != civInfo.civName && valueCityStateAlliance(civInfo, cityState) > 0) {
-                    tryGainInfluence(civInfo, cityState)
-                }
-            }
+        if (civ.gold < 250 || knownCityStates.none()) return
+        val cityState = knownCityStates
+            .filter { it.getAllyCiv() != civ.civName }
+            .associateWith { valueCityStateAlliance(civ, it) }
+            .maxByOrNull { it.value }?.takeIf { it.value > 0 }?.key
+        if (cityState != null) {
+            tryGainInfluence(civ, cityState)
         }
+    }
 
-        for (city in civInfo.cities.sortedByDescending { it.population.population }) {
+    /** allow AI to spend money to purchase city-state friendship, buildings & unit */
+    private fun useGold(civ: Civilization) {
+        if (civ.isMajorCiv())
+            useGoldForCityStates(civ)
+
+        for (city in civ.cities.sortedByDescending { it.population.population }) {
             val construction = city.cityConstructions.getCurrentConstruction()
             if (construction is PerpetualConstruction) continue
             if ((construction as INonPerpetualConstruction).canBePurchasedWithStat(city, Stat.Gold)
@@ -330,7 +336,7 @@ object NextTurnAutomation {
             }
         }
 
-        maybeBuyCityTiles(civInfo)
+        maybeBuyCityTiles(civ)
     }
 
     private fun maybeBuyCityTiles(civInfo: Civilization) {
@@ -811,15 +817,18 @@ object NextTurnAutomation {
 
         if (enemyCivs.none()) return
 
+        val minMotivationToAttack = 20
         val civWithBestMotivationToAttack = enemyCivs
-                .map { Pair(it, motivationToAttack(civInfo, it)) }
+                .map { Pair(it, hasAtLeastMotivationToAttack(civInfo, it, minMotivationToAttack)) }
                 .maxByOrNull { it.second }!!
 
-        if (civWithBestMotivationToAttack.second >= 20)
+        if (civWithBestMotivationToAttack.second >= minMotivationToAttack)
             civInfo.getDiplomacyManager(civWithBestMotivationToAttack.first).declareWar()
     }
 
-    private fun motivationToAttack(civInfo: Civilization, otherCiv: Civilization): Int {
+    /** Will return the motivation to attack, but might short circuit if the value is guaranteed to
+     * be lower than `atLeast`. So any values below `atLeast` should not be used for comparison. */
+    private fun hasAtLeastMotivationToAttack(civInfo: Civilization, otherCiv: Civilization, atLeast: Int): Int {
         val closestCities = getClosestCities(civInfo, otherCiv) ?: return 0
         val baseForce = 30f
 
@@ -853,12 +862,6 @@ object NextTurnAutomation {
                     && (owner == otherCiv || owner == null || civInfo.diplomacyFunctions.canPassThroughTiles(owner))
         }
 
-        val reachableEnemyCitiesBfs = BFS(civInfo.getCapital()!!.getCenterTile()) { isTileCanMoveThrough(it) }
-        reachableEnemyCitiesBfs.stepToEnd()
-        val reachableEnemyCities = otherCiv.cities.filter { reachableEnemyCitiesBfs.hasReachedTile(it.getCenterTile()) }
-        if (reachableEnemyCities.isEmpty()) return 0 // Can't even reach the enemy city, no point in war.
-
-
         val modifierMap = HashMap<String, Int>()
         val combatStrengthRatio = ourCombatStrength / theirCombatStrength
         val combatStrengthModifier = when {
@@ -873,14 +876,6 @@ object NextTurnAutomation {
 
         if (closestCities.aerialDistance > 7)
             modifierMap["Far away cities"] = -10
-
-        val landPathBFS = BFS(ourCity.getCenterTile()) {
-            it.isLand && isTileCanMoveThrough(it)
-        }
-
-        landPathBFS.stepUntilDestination(theirCity.getCenterTile())
-        if (!landPathBFS.hasReachedTile(theirCity.getCenterTile()))
-            modifierMap["No land path"] = -10
 
         val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
         if (diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement))
@@ -918,7 +913,35 @@ object NextTurnAutomation {
                 modifierMap["About to win"] = 15
         }
 
-        return modifierMap.values.sum()
+        var motivationSoFar = modifierMap.values.sum()
+
+        // We don't need to execute the expensive BFSs below if we're below the threshold here
+        // anyways, since it won't get better from those, only worse.
+        if (motivationSoFar < atLeast) {
+            return motivationSoFar
+        }
+
+
+        val landPathBFS = BFS(ourCity.getCenterTile()) {
+            it.isLand && isTileCanMoveThrough(it)
+        }
+
+        landPathBFS.stepUntilDestination(theirCity.getCenterTile())
+        if (!landPathBFS.hasReachedTile(theirCity.getCenterTile()))
+            motivationSoFar -= -10
+
+        // We don't need to execute the expensive BFSs below if we're below the threshold here
+        // anyways, since it won't get better from those, only worse.
+        if (motivationSoFar < atLeast) {
+            return motivationSoFar
+        }
+
+        val reachableEnemyCitiesBfs = BFS(civInfo.getCapital()!!.getCenterTile()) { isTileCanMoveThrough(it) }
+        reachableEnemyCitiesBfs.stepToEnd()
+        val reachableEnemyCities = otherCiv.cities.filter { reachableEnemyCitiesBfs.hasReachedTile(it.getCenterTile()) }
+        if (reachableEnemyCities.isEmpty()) return 0 // Can't even reach the enemy city, no point in war.
+
+        return motivationSoFar
     }
 
 
@@ -935,8 +958,10 @@ object NextTurnAutomation {
                 .filter { it.tradeRequests.none { tradeRequest -> tradeRequest.requestingCiv == civInfo.civName && tradeRequest.trade.isPeaceTreaty() } }
 
         for (enemy in enemiesCiv) {
-            val motivationToAttack = motivationToAttack(civInfo, enemy)
-            if (motivationToAttack >= 10) continue // We can still fight. Refuse peace.
+            if(hasAtLeastMotivationToAttack(civInfo, enemy, 10) >= 10) {
+                // We can still fight. Refuse peace.
+                continue
+            }
 
             // pay for peace
             val tradeLogic = TradeLogic(civInfo, enemy)
@@ -979,8 +1004,10 @@ object NextTurnAutomation {
 
     private fun automateCities(civInfo: Civilization) {
         val ownMilitaryStrength = civInfo.getStatForRanking(RankingType.Force)
-        val sumOfEnemiesMilitaryStrength = civInfo.gameInfo.civilizations.filter { it != civInfo }
-            .filter { civInfo.isAtWarWith(it) }.sumOf { it.getStatForRanking(RankingType.Force) }
+        val sumOfEnemiesMilitaryStrength =
+                civInfo.gameInfo.civilizations
+                    .filter { it != civInfo && !it.isBarbarian() && civInfo.isAtWarWith(it) }
+                    .sumOf { it.getStatForRanking(RankingType.Force) }
         val civHasSignificantlyWeakerMilitaryThanEnemies =
                 ownMilitaryStrength < sumOfEnemiesMilitaryStrength * 0.66f
         for (city in civInfo.cities) {

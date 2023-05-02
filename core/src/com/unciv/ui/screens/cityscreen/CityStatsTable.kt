@@ -15,7 +15,6 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.ColorMarkupLabel
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.addSeparator
@@ -185,7 +184,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                 "We Love The King Day for another [${cityInfo.getFlag(CityFlags.WeLoveTheKing)}] turns".toLabel(Color.LIME)
             cityInfo.demandedResource.isNotEmpty() ->
                 ImageGetter.getResourcePortrait(cityInfo.demandedResource, 20f) to
-                ColorMarkupLabel("Demanding [${cityInfo.demandedResource}]",Color.CORAL)
+                "Demanding [${cityInfo.demandedResource}]".toLabel(Color.CORAL, hideIcons = true)
             else -> null to null
         }
         if (wltkLabel != null) {
@@ -275,7 +274,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         val isFree = building.name in cityScreen.city.civ.civConstructions.getFreeBuildings(cityScreen.city.id)
         val displayName = if (isFree) "{${building.name}} ({Free})" else building.name
 
-        info.add(displayName.toLabel(fontSize = Constants.defaultFontSize)).padBottom(5f).right().row()
+        info.add(displayName.toLabel(fontSize = Constants.defaultFontSize, hideIcons = true)).padBottom(5f).right().row()
 
         val stats = building.getStats(cityInfo).joinToString(separator = " ") {
             "" + it.value.toInt() + it.key.character

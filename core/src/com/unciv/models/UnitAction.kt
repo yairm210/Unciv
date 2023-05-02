@@ -18,6 +18,7 @@ data class UnitAction(
     val title: String = type.value,
     val isCurrentAction: Boolean = false,
     val uncivSound: UncivSound = type.uncivSound,
+    /** Action is Null is this unit *can* execute the action but *not right now* - it's embarked, out of moves, etc */
     val action: (() -> Unit)? = null
 ) {
     fun getIcon(): Actor {

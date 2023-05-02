@@ -80,6 +80,7 @@ class TileImprovement : RulesetStatsObject() {
         if (tile.resource != null) {
             val city = builder.getTile().getCity()
             if (city != null) {
+                city.updateCitizens = true
                 city.cityStats.update()
                 city.civ.cache.updateCivResources()
             }

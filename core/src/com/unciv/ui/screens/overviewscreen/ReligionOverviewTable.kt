@@ -41,20 +41,23 @@ class ReligionOverviewTab(
     private val religionButtonLabel = "Click an icon to see the stats of this religion".toLabel()
     private val statsTable = Table()
     private val beliefsTable = Table()
+    private val headerTable = Table()
 
-    override fun getFixedContent() = Table().apply {
+    override fun getFixedContent() = headerTable
+
+    init {
+        civStatsTable.defaults().left().pad(5f)
+        civStatsTable.addCivSpecificStats()
+
+        headerTable.apply {
             defaults().pad(5f)
             align(Align.top)
-
-            civStatsTable.defaults().left().pad(5f)
-            civStatsTable.addCivSpecificStats()
             add(civStatsTable).row()
             add(religionButtons).row()
             add(religionButtonLabel)
             addSeparator()
         }
 
-    init {
         defaults().pad(5f)
         align(Align.top)
         loadReligionButtons()
@@ -86,7 +89,7 @@ class ReligionOverviewTab(
         }
         add(religionCountExpander).colspan(2).growX().row()
 
-        if (manager.canGenerateProphet()) {
+        if (manager.canGenerateProphet(ignoreFaithAmount = true)) {
             add("Minimal Faith required for\nthe next [great prophet equivalent]:"
                 .fillPlaceholders(manager.getGreatProphetEquivalent()!!)
                 .toLabel()
