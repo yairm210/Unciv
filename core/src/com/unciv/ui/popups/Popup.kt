@@ -3,6 +3,7 @@ package com.unciv.ui.popups
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
@@ -12,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.event.EventBus
@@ -49,13 +51,16 @@ open class Popup(
 
     val events = EventBus.EventReceiver()
 
+    var hasCloseButton = false
+    var onCloseCallback: (() -> Unit)? = null
+
     init {
         // Set actor name for debugging
         name = javaClass.simpleName
 
         background = BaseScreen.skinStrings.getUiBackground(
             "General/Popup/Background",
-            tintColor = Color.GRAY.cpy().apply { a=.5f })
+            tintColor = Color.GRAY.cpy().apply { a = 0.5f })
         innerTable.background = BaseScreen.skinStrings.getUiBackground(
             "General/Popup/InnerTable",
             tintColor = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.5f)
@@ -66,9 +71,11 @@ open class Popup(
 
         super.add(if (scrollable) AutoScrollPane(innerTable, BaseScreen.skin) else innerTable)
 
-        this.isVisible = false
-        touchable = Touchable.enabled // don't allow clicking behind
-        this.setFillParent(true)
+        isVisible = false
+        touchable = Touchable.enabled
+        // clicking behind gets special treatment
+        super.addListener(getBehindClickListener())
+        super.setFillParent(true)
     }
 
     /**
@@ -114,6 +121,17 @@ open class Popup(
         if (nextPopup != null) (nextPopup as Popup).show()
     }
 
+    /** Allow closing a popup by clicking 'outside', Android-style, but only if a Close button exists */
+    private fun getBehindClickListener() = object : ClickListener() {
+        override fun clicked(event: InputEvent?, x: Float, y: Float) {
+            if (!hasCloseButton) return
+            // Since Gdx doesn't actually limit events to the actually `hit` actors...
+            if (event?.target != this@Popup) return
+            close()
+            onCloseCallback?.invoke()
+        }
+    }
+
     /* All additions to the popup are to the inner table - we shouldn't care that there's an inner table at all */
     final override fun <T : Actor?> add(actor: T): Cell<T> = innerTable.add(actor)
     override fun row(): Cell<Actor> = innerTable.row()
@@ -126,7 +144,7 @@ open class Popup(
      * @param text The caption text.
      * @param size The font size for the label.
      */
-    fun addGoodSizedLabel(text: String, size:Int=Constants.defaultFontSize): Cell<Label> {
+    fun addGoodSizedLabel(text: String, size: Int = Constants.defaultFontSize): Cell<Label> {
         val label = text.toLabel(fontSize = size)
         label.wrap = true
         label.setAlignment(Align.center)
@@ -140,7 +158,12 @@ open class Popup(
      * @param action A lambda to be executed when the button is clicked.
      * @return The new [Cell]
      */
-    fun addButton(text: String, key: KeyCharAndCode? = null, style: TextButtonStyle? = null, action: () -> Unit): Cell<TextButton> {
+    fun addButton(
+        text: String,
+        key: KeyCharAndCode? = null,
+        style: TextButtonStyle? = null,
+        action: () -> Unit
+    ): Cell<TextButton> {
         val button = text.toTextButton(style)
         button.onActivation { action() }
         button.keyShortcuts.add(key)
@@ -148,6 +171,7 @@ open class Popup(
     }
     fun addButton(text: String, key: Char, style: TextButtonStyle? = null, action: () -> Unit)
         = addButton(text, KeyCharAndCode(key), style, action).apply { row() }
+    @Suppress("unused")  // Keep the offer to pass an Input.keys value
     fun addButton(text: String, key: Int, style: TextButtonStyle? = null, action: () -> Unit)
         = addButton(text, KeyCharAndCode(key), style, action).apply { row() }
 
@@ -164,7 +188,12 @@ open class Popup(
         style: TextButtonStyle? = null,
         action: (()->Unit)? = null
     ): Cell<TextButton> {
-        val cell = addButton(text, additionalKey, style) { close(); if(action!=null) action() }
+        hasCloseButton = true
+        onCloseCallback = action
+        val cell = addButton(text, additionalKey, style) {
+            close()
+            action?.invoke()
+        }
         cell.actor.keyShortcuts.add(KeyCharAndCode.BACK)
         return cell
     }
@@ -225,6 +254,8 @@ open class Popup(
      */
     fun reuseWith(newText: String, withCloseButton: Boolean = false) {
         innerTable.clear()
+        hasCloseButton = false
+        onCloseCallback = null
         addGoodSizedLabel(newText)
         if (withCloseButton) {
             row()
@@ -263,13 +294,6 @@ val BaseScreen.activePopup: Popup?
  */
 fun BaseScreen.hasOpenPopups(): Boolean = stage.hasOpenPopups()
 private fun Stage.hasOpenPopups(): Boolean = actors.any { it is Popup && it.isVisible }
-
-/**
- * Counts number of visible[Popup]s.
- *
- * Used for key dispatcher precedence.
- */
-private fun Stage.countOpenPopups() = actors.count { it is Popup && it.isVisible }
 
 /** Closes all [Popup]s. */
 fun BaseScreen.closeAllPopups() = popups.forEach { it.close() }
