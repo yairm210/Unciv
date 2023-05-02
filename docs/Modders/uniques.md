@@ -863,7 +863,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Will not be chosen for new games"
 	Applicable to: Nation
 
-??? example  "May not annex"
+??? example  "May not annex cities"
 	Applicable to: Nation
 
 ??? example  "Starts with [tech]"

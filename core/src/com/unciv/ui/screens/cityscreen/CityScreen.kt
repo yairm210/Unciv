@@ -259,7 +259,8 @@ class CityScreen(
             addWltkIcon("OtherIcons/WLTK 1") { color = Color.FIREBRICK }.padRight(10f)
         }
 
-        if (city.isPuppet && !city.civ.getMatchingUniques(UniqueType.MayNotAnnexCities).any()) {
+        val canAnnex = !city.civ.getMatchingUniques(UniqueType.MayNotAnnexCities).any()
+        if (city.isPuppet && canAnnex) {
             val annexCityButton = "Annex city".toTextButton()
             annexCityButton.labelCell.pad(10f)
             annexCityButton.onClick {
@@ -272,8 +273,9 @@ class CityScreen(
             val razeCityButton = "Raze city".toTextButton()
             razeCityButton.labelCell.pad(10f)
             razeCityButton.onClick { city.isBeingRazed = true; update() }
-            if (!canChangeState || !city.canBeDestroyed())
+            if (!canChangeState || !city.canBeDestroyed()) {
                 razeCityButton.disable()
+            }
 
             razeCityButtonHolder.add(razeCityButton) //.colspan(cityPickerTable.columns)
         } else {
