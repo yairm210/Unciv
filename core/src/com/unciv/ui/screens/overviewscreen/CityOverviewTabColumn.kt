@@ -119,10 +119,14 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
                     }
             }
             item.demandedResource.isNotEmpty() -> {
-                ImageGetter.getResourcePortrait(item.demandedResource, iconSize * 0.7f)
-                    .apply {
-                        addTooltip("Demanding [${item.demandedResource}]", 18f, tipAlign = Align.topLeft)
+                ImageGetter.getResourcePortrait(item.demandedResource, iconSize * 0.7f).apply {
+                    addTooltip("Demanding [${item.demandedResource}]", 18f, tipAlign = Align.topLeft)
+                    onClick {
+                        if (item.civ.gameInfo.notifyExploredResources(item.civ, item.demandedResource, 0, true)) {
+                            actionContext.game.popScreen()
+                        }
                     }
+                }
             }
             else -> null
         }
