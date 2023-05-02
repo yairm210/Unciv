@@ -64,11 +64,6 @@ enum class DesktopScreenMode : ScreenMode {
 
         Gdx.graphics.setWindowedMode(width, height)
 
-        // Another kludge, prevents visual glitches and crashing cinnamon on Linux Mint
-        getWindow()?.run {
-            setPosition(positionX, positionY)
-        }
-
         return width == maximumWindowBounds.width && height == maximumWindowBounds.height
     }
 
