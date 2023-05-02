@@ -31,6 +31,8 @@ import com.unciv.logic.civilization.transients.CivInfoTransientCache
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.trade.TradeRequest
+import com.unciv.models.Counter
+import com.unciv.models.metadata.GameParameters // Kdoc only
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Victory
@@ -52,7 +54,6 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.victoryscreen.RankingType
-import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -111,7 +112,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     var detailedCivResources = ResourceSupplyList()
 
     @Transient
-    var summarizedCivResources = ResourceSupplyList()
+    var summarizedCivResourceSupply = ResourceSupplyList()
 
     @Transient
     val cityStateFunctions = CityStateFunctions(this)
@@ -171,6 +172,8 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     /** See DiplomacyManager.flagsCountdown for why this does not map Enums to ints */
     var flagsCountdown = HashMap<String, Int>()
+
+    var resourceStockpiles = Counter<String>()
 
     /** Arraylist instead of HashMap as the same unique might appear multiple times
      * We don't use pairs, as these cannot be serialized due to having no no-arg constructor
@@ -288,6 +291,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         toReturn.attacksSinceTurnStart = attacksSinceTurnStart.copy()
         toReturn.hasMovedAutomatedUnits = hasMovedAutomatedUnits
         toReturn.statsHistory = statsHistory.clone()
+        toReturn.resourceStockpiles = resourceStockpiles.clone()
         return toReturn
     }
 
@@ -310,7 +314,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getProximity(civName: String) = proximity[civName] ?: Proximity.None
 
     /** Returns only undefeated civs, aka the ones we care about */
-    fun getKnownCivs() = diplomacy.values.map { it.otherCiv() }.filter { !it.isDefeated() }
+    fun getKnownCivs() = diplomacy.values.asSequence().map { it.otherCiv() }.filter { !it.isDefeated() }
     fun knows(otherCivName: String) = diplomacy.containsKey(otherCivName)
     fun knows(otherCiv: Civilization) = knows(otherCiv.civName)
 
@@ -320,11 +324,11 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun isOneCityChallenger() = playerType == PlayerType.Human && gameInfo.gameParameters.oneCityChallenge
 
     fun isCurrentPlayer() = gameInfo.currentPlayerCiv == this
-    fun isMajorCiv() = nation.isMajorCiv()
-    fun isMinorCiv() = nation.isCityState() || nation.isBarbarian()
-    fun isCityState(): Boolean = nation.isCityState()
-    fun isBarbarian() = nation.isBarbarian()
-    fun isSpectator() = nation.isSpectator()
+    fun isMajorCiv() = nation.isMajorCiv
+    fun isMinorCiv() = nation.isCityState || nation.isBarbarian
+    fun isCityState(): Boolean = nation.isCityState
+    fun isBarbarian() = nation.isBarbarian
+    fun isSpectator() = nation.isSpectator
     fun isAlive(): Boolean = !isDefeated()
 
     @delegate:Transient
@@ -376,12 +380,18 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun getHappiness() = stats.happiness
 
-    fun getCivResources(): ResourceSupplyList = summarizedCivResources
+    /** Note that for stockpiled resources, this gives by how much it grows per turn, not current amount */
+    fun getCivResourceSupply(): ResourceSupplyList = summarizedCivResourceSupply
 
-    // Preserves some origins for resources so we can separate them for trades
+    /** Preserves some origins for resources so we can separate them for trades
+     * Stockpiled uniques cannot be traded currently
+     */
     fun getCivResourcesWithOriginsForTrade(): ResourceSupplyList {
         val newResourceSupplyList = ResourceSupplyList(keepZeroAmounts = true)
+
         for (resourceSupply in detailedCivResources) {
+            if (resourceSupply.resource.isStockpiled()) continue
+            if (resourceSupply.resource.hasUnique(UniqueType.CannotBeTraded)) continue
             // If we got it from another trade or from a CS, preserve the origin
             if (resourceSupply.isCityStateOrTradeOrigin()) {
                 newResourceSupplyList.add(resourceSupply.copy())
@@ -398,12 +408,16 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     /**
      * Returns a dictionary of ALL resource names, and the amount that the civ has of each
+     * Stockpiled resources return the stockpiled amount
      */
     fun getCivResourcesByName(): HashMap<String, Int> {
         val hashMap = HashMap<String, Int>(gameInfo.ruleset.tileResources.size)
         for (resource in gameInfo.ruleset.tileResources.keys) hashMap[resource] = 0
-        for (entry in getCivResources())
-            hashMap[entry.resource.name] = entry.amount
+        for (entry in getCivResourceSupply())
+            if (!entry.resource.isStockpiled())
+                hashMap[entry.resource.name] = entry.amount
+        for ((key, value) in resourceStockpiles)
+            hashMap[key] = value
         return hashMap
     }
 
@@ -442,7 +456,7 @@ class Civilization : IsPartOfGameInfoSerialization {
             yieldAll(religionManager.religion!!.getFounderUniques()
                 .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) })
 
-        yieldAll(getCivResources().asSequence()
+        yieldAll(getCivResourceSupply().asSequence()
             .filter { it.amount > 0 }
             .flatMap { it.resource.getMatchingUniques(uniqueType, stateForConditionals) }
         )
@@ -526,7 +540,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getLeaderDisplayName(): String {
         val severalHumans = gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1
         val online = gameInfo.gameParameters.isOnlineMultiplayer
-        return nation.getLeaderDisplayName().tr() +
+        return nation.getLeaderDisplayName().tr(hideIcons = true) +
             when {
                 !online && !severalHumans -> ""  // offline single player will know everybody else is AI
                 playerType == PlayerType.AI -> " (${"AI".tr()})"
@@ -541,7 +555,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         else when (category) {
                 RankingType.Score -> calculateTotalScore().toInt()
                 RankingType.Population -> cities.sumOf { it.population.population }
-                RankingType.Crop_Yield -> stats.statsForNextTurn.food.roundToInt()
+                RankingType.CropYield -> stats.statsForNextTurn.food.roundToInt()
                 RankingType.Production -> stats.statsForNextTurn.production.roundToInt()
                 RankingType.Gold -> gold
                 RankingType.Territory -> cities.sumOf { it.tiles.size }
@@ -781,8 +795,7 @@ class Civilization : IsPartOfGameInfoSerialization {
             city.cityConstructions.addBuilding(city.capitalCityIndicator())
             city.isBeingRazed = false // stop razing the new capital if it was being razed
         }
-        if (oldCapital != null)
-            oldCapital.cityConstructions.removeBuilding(oldCapital.capitalCityIndicator())
+        oldCapital?.cityConstructions?.removeBuilding(oldCapital.capitalCityIndicator())
     }
 
     fun moveCapitalToNextLargest() {
@@ -799,6 +812,20 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun getAllyCiv() = allyCivName
     fun setAllyCiv(newAllyName: String?) { allyCivName = newAllyName }
+
+    /** Determine if this civ (typically as human player) is allowed to know how many major civs there are
+     *
+     *  Can only be `true` if [GameParameters.randomNumberOfPlayers] is `true`, but in that case
+     *  we try to see if the player _could_ be certain with a modicum of cleverness...
+     */
+    fun hideCivCount(): Boolean {
+        if (!gameInfo.gameParameters.randomNumberOfPlayers) return false
+        val knownCivs = 1 + getKnownCivs().count { it.isMajorCiv() }
+        if (knownCivs >= gameInfo.gameParameters.maxNumberOfPlayers) return false
+        if (hasUnique(UniqueType.OneTimeRevealEntireMap)) return false
+        // Other ideas? viewableTiles.size == gameInfo.tileMap.tileList.size seems not quite useful...
+        return true
+    }
 
     fun asPreview() = CivilizationInfoPreview(this)
 }

@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -34,7 +35,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var range: Int = 2
     var interceptRange = 0
     var unitType: String = ""
-    fun getType() = ruleset.unitTypes[unitType]!!
+
+    val type by lazy { ruleset.unitTypes[unitType]!! }
     override var requiredTech: String? = null
     private var requiredResource: String? = null
 
@@ -140,7 +142,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         yieldAll(getRejectionReasons(civInfo, cityConstructions.city))
     }
 
-    fun getRejectionReasons(civ: Civilization, city:City?=null): Sequence<RejectionReason> {
+    fun getRejectionReasons(civ: Civilization, city: City? = null): Sequence<RejectionReason> {
         val result = mutableListOf<RejectionReason>()
         if (requiredTech != null && !civ.tech.isResearched(requiredTech!!))
             result.add(RejectionReasonType.RequiresTech.toInstance("$requiredTech not researched"))
@@ -174,7 +176,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
 
         if (!civ.isBarbarian()) { // Barbarians don't need resources
-            for ((resource, requiredAmount) in getResourceRequirements()) {
+            for ((resource, requiredAmount) in getResourceRequirementsPerTurn()) {
                 val availableAmount = civ.getCivResourcesByName()[resource]!!
                 if (availableAmount < requiredAmount) {
                     result.add(
@@ -188,16 +190,15 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             }
         }
 
-        for (unique in civ.getMatchingUniques(UniqueType.CannotBuildUnits))
-            if (this@BaseUnit.matchesFilter(unique.params[0])) {
-                if (unique.conditionals.any { it.type == UniqueType.ConditionalBelowHappiness }) {
-                    result.add(
-                        RejectionReasonType.CannotBeBuilt.toInstance(
-                            unique.text,
-                            true
-                        )
-                    )
-                } else result.add(RejectionReasonType.CannotBeBuilt.toInstance())
+        val stateForConditionals = StateForConditionals(civ, city)
+        for (unique in civ.getMatchingUniques(UniqueType.CannotBuildUnits, stateForConditionals))
+            if (this.matchesFilter(unique.params[0])) {
+                val hasHappinessCondition = unique.conditionals.any {
+                    it.type == UniqueType.ConditionalBelowHappiness || it.type == UniqueType.ConditionalBetweenHappiness
+                }
+                if (hasHappinessCondition)
+                    result.add(RejectionReasonType.CannotBeBuiltUnhappiness.toInstance(unique.text))
+                else result.add(RejectionReasonType.CannotBeBuilt.toInstance())
             }
         return result.asSequence()
     }
@@ -296,7 +297,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             "Great Person" -> isGreatPerson()
             "Religious" -> hasUnique(UniqueType.ReligiousUnit)
             else -> {
-                if (getType().matchesFilter(filter)) return true
+                if (type.matchesFilter(filter)) return true
                 if (
                     // Uniques using these kinds of filters should be deprecated and replaced with adjective-only parameters
                     filter.endsWith(" units")
@@ -313,10 +314,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon)
 
-    fun movesLikeAirUnits() = getType().getMovementType() == UnitMovementType.Air
+    fun movesLikeAirUnits() = type.getMovementType() == UnitMovementType.Air
 
     /** Returns resource requirements from both uniques and requiredResource field */
-    override fun getResourceRequirements(): HashMap<String, Int> = resourceRequirementsInternal
+    override fun getResourceRequirementsPerTurn(): HashMap<String, Int> = resourceRequirementsInternal
 
     private val resourceRequirementsInternal: HashMap<String, Int> by lazy {
         val resourceRequirements = HashMap<String, Int>()
@@ -326,22 +327,22 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         resourceRequirements
     }
 
-    override fun requiresResource(resource: String) = getResourceRequirements().containsKey(resource)
+    override fun requiresResource(resource: String) = getResourceRequirementsPerTurn().containsKey(resource)
 
     fun isRanged() = rangedStrength > 0
     fun isMelee() = !isRanged() && strength > 0
     fun isMilitary() = isRanged() || isMelee()
     fun isCivilian() = !isMilitary()
 
-    val isLandUnitInternal by lazy { getType().isLandUnit() }
+    val isLandUnitInternal by lazy { type.isLandUnit() }
     fun isLandUnit() = isLandUnitInternal
-    fun isWaterUnit() = getType().isWaterUnit()
-    fun isAirUnit() = getType().isAirUnit()
+    fun isWaterUnit() = type.isWaterUnit()
+    fun isAirUnit() = type.isAirUnit()
 
     fun isProbablySiegeUnit() =
         (
             isRanged()
-            && (uniqueObjects + getType().uniqueObjects)
+            && (uniqueObjects + type.uniqueObjects)
                 .any { it.isOfType(UniqueType.Strength)
                     && it.params[0].toInt() > 0
                     && it.conditionals.any { conditional -> conditional.isOfType(UniqueType.ConditionalVsCity) }

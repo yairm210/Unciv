@@ -222,7 +222,7 @@ class City : IsPartOfGameInfoSerialization {
         for (building in cityConstructions.getBuiltBuildings()) {
             // Free buildings cost no resources
             if (building.name in freeBuildings) continue
-            cityResources.subtractResourceRequirements(building.getResourceRequirements(), getRuleset(), "Buildings")
+            cityResources.subtractResourceRequirements(building.getResourceRequirementsPerTurn(), getRuleset(), "Buildings")
         }
 
         for (unique in getLocalMatchingUniques(UniqueType.ProvidesResources, StateForConditionals(civ, this))) { // E.G "Provides [1] [Iron]"

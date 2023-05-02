@@ -298,7 +298,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         return (!civInfo.isDefeated()
                 && civInfo.isCityState()
                 && civInfo.cities.any()
-                && civInfo.getDiplomacyManager(otherCiv).relationshipLevel() == RelationshipLevel.Ally
+                && civInfo.getDiplomacyManager(otherCiv).isRelationshipLevelEQ(RelationshipLevel.Ally)
                 && !otherCiv.getDiplomacyManager(civInfo).hasFlag(DiplomacyFlags.MarriageCooldown)
                 && otherCiv.getMatchingUniques(UniqueType.CityStateCanBeBoughtForGold).any()
                 && otherCiv.gold >= getDiplomaticMarriageCost())
@@ -464,7 +464,7 @@ class CityStateFunctions(val civInfo: Civilization) {
             if (diplomacy.hasFlag(DiplomacyFlags.AngerFreeIntrusion)) continue // They recently helped us
 
             val unitsInBorder = otherCiv.units.getCivUnits().count { !it.isCivilian() && it.getTile().getOwner() == civInfo }
-            if (unitsInBorder > 0 && diplomacy.relationshipLevel() < RelationshipLevel.Friend) {
+            if (unitsInBorder > 0 && diplomacy.isRelationshipLevelLT(RelationshipLevel.Friend)) {
                 diplomacy.addInfluence(-10f)
                 if (!diplomacy.hasFlag(DiplomacyFlags.BorderConflict)) {
                     otherCiv.popupAlerts.add(PopupAlert(AlertType.BorderConflict, civInfo.civName))

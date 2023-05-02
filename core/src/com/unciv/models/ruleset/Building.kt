@@ -113,21 +113,23 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     /** used in CityScreen (CityInfoTable and ConstructionInfoTable) */
     fun getDescription(city: City, showAdditionalInfo: Boolean): String {
         val stats = getStats(city)
-        val lines = ArrayList<String>()
+        val translatedLines = ArrayList<String>() // Some translations require special handling
         val isFree = name in city.civ.civConstructions.getFreeBuildings(city.id)
-        if (uniqueTo != null) lines += if (replaces == null) "Unique to [$uniqueTo]"
-            else "Unique to [$uniqueTo], replaces [$replaces]"
+        if (uniqueTo != null) translatedLines += if (replaces == null) "Unique to [$uniqueTo]".tr()
+            else "Unique to [$uniqueTo], replaces [$replaces]".tr()
         val missingUnique = getMatchingUniques(UniqueType.RequiresBuildingInAllCities).firstOrNull()
-        if (isWonder) lines += "Wonder"
-        if (isNationalWonder) lines += "National Wonder"
+        if (isWonder) translatedLines += "Wonder".tr()
+        if (isNationalWonder) translatedLines += "National Wonder".tr()
         if (!isFree) {
             val availableResources = if (!showAdditionalInfo) emptyMap()
-                else city.civ.getCivResources().associate { it.resource.name to it.amount }
-            for ((resource, amount) in getResourceRequirements()) {
-                val available = availableResources[resource] ?: 0
-                lines += if (showAdditionalInfo)
-                        "{${resource.getConsumesAmountString(amount)}} ({[$available] available})"
-                    else resource.getConsumesAmountString(amount)
+                else city.civ.getCivResourcesByName()
+            for ((resourceName, amount) in getResourceRequirementsPerTurn()) {
+                val available = availableResources[resourceName] ?: 0
+                val resource = city.getRuleset().tileResources[resourceName] ?: continue
+                val consumesString = resourceName.getConsumesAmountString(amount, resource.isStockpiled())
+
+                translatedLines += if (showAdditionalInfo) "$consumesString ({[$available] available})".tr()
+                else consumesString.tr()
             }
         }
 
@@ -140,39 +142,39 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             }
         else listOf()
         if (uniques.isNotEmpty()) {
-            if (replacementTextForUniques != "") lines += replacementTextForUniques
-            else lines += getUniquesStringsWithoutDisablers(
+            if (replacementTextForUniques != "") translatedLines += replacementTextForUniques.tr()
+            else translatedLines += getUniquesStringsWithoutDisablers(
                 filterUniques = if (missingCities.isEmpty()) null
                     else { unique -> !unique.isOfType(UniqueType.RequiresBuildingInAllCities) }
                     // Filter out the "Requires a [] in all cities" unique if any cities are still missing the required building, since in that case the list of cities will be appended at the end.
-            )
+            ).map { it.tr() }
         }
         if (!stats.isEmpty())
-            lines += stats.toString()
+            translatedLines += stats.toString()
 
         for ((stat, value) in getStatPercentageBonuses(city))
-            if (value != 0f) lines += "+${value.toInt()}% {${stat.name}}"
+            if (value != 0f) translatedLines += "+${value.toInt()}% {${stat.name}}".tr()
 
         for ((greatPersonName, value) in greatPersonPoints)
-            lines += "+$value " + "[$greatPersonName] points".tr()
+            translatedLines += "+$value " + "[$greatPersonName] points".tr()
 
         for ((specialistName, amount) in newSpecialists())
-            lines += "+$amount " + "[$specialistName] slots".tr()
+            translatedLines += "+$amount " + "[$specialistName] slots".tr()
 
         if (requiredNearbyImprovedResources != null)
-            lines += "Requires worked [" + requiredNearbyImprovedResources!!.joinToString("/") { it.tr() } + "] near city"
+            translatedLines += "Requires worked [${requiredNearbyImprovedResources!!.joinToString("/") { it.tr() }}] near city".tr()
 
-        if (cityStrength != 0) lines += "{City strength} +$cityStrength"
-        if (cityHealth != 0) lines += "{City health} +$cityHealth"
-        if (maintenance != 0 && !isFree) lines += "{Maintenance cost}: $maintenance {Gold}"
+        if (cityStrength != 0) translatedLines += "{City strength} +$cityStrength".tr()
+        if (cityHealth != 0) translatedLines += "{City health} +$cityHealth".tr()
+        if (maintenance != 0 && !isFree) translatedLines += "{Maintenance cost}: $maintenance {Gold}".tr()
         if (showAdditionalInfo && missingCities.isNotEmpty()) {
             // Could be red. But IMO that should be done by enabling GDX's ColorMarkupLanguage globally instead of adding a separate label.
-            lines += "\n" +
+            translatedLines += "\n" +
                 "[${city.civ.getEquivalentBuilding(missingUnique!!.params[0])}] required:".tr() +
-                " " + missingCities.joinToString(", ") { "{${it.name}}" }
+                " " + missingCities.joinToString(", ") { it.name.tr(hideIcons = true) }
             // Can't nest square bracket placeholders inside curlies, and don't see any way to define wildcard placeholders. So run translation explicitly on base text.
         }
-        return lines.joinToString("\n") { it.tr() }.trim()
+        return translatedLines.joinToString("\n").trim()
     }
 
     fun getStats(city: City,
@@ -182,7 +184,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         // Calls the clone function of the NamedStats this class is derived from, not a clone function of this class
         val stats = cloneStats()
 
-        for (unique in localUniqueCache.get("StatsFromObject", city.getMatchingUniques(UniqueType.StatsFromObject))) {
+        for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromObject)) {
             if (!matchesFilter(unique.params[1])) continue
             stats.add(unique.stats)
         }
@@ -191,7 +193,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             stats.add(unique.stats)
 
         if (!isWonder)
-            for (unique in localUniqueCache.get("StatsFromBuildings", city.getMatchingUniques(UniqueType.StatsFromBuildings))) {
+            for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromBuildings)) {
                 if (matchesFilter(unique.params[1]))
                     stats.add(unique.stats)
             }
@@ -202,12 +204,12 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         val stats = percentStatBonus?.clone() ?: Stats()
         val civInfo = city?.civ ?: return stats  // initial stats
 
-        for (unique in localUniqueCache.get("StatPercentFromObject", civInfo.getMatchingUniques(UniqueType.StatPercentFromObject))) {
+        for (unique in localUniqueCache.forCivGetMatchingUniques(civInfo, UniqueType.StatPercentFromObject)) {
             if (matchesFilter(unique.params[2]))
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
 
-        for (unique in localUniqueCache.get("AllStatsPercentFromObject", civInfo.getMatchingUniques(UniqueType.AllStatsPercentFromObject))) {
+        for (unique in localUniqueCache.forCivGetMatchingUniques(civInfo, UniqueType.AllStatsPercentFromObject)) {
             if (!matchesFilter(unique.params[1])) continue
             for (stat in Stat.values()) {
                 stats.add(stat, unique.params[0].toFloat())
@@ -254,14 +256,14 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             textList += FormattedLine("Requires [$requiredBuilding] to be built in the city",
                 link="Building/$requiredBuilding")
 
-        val resourceRequirements = getResourceRequirements()
+        val resourceRequirements = getResourceRequirementsPerTurn()
         if (resourceRequirements.isNotEmpty()) {
             textList += FormattedLine()
-            for ((resource, amount) in resourceRequirements) {
+            for ((resourceName, amount) in resourceRequirements) {
+                val resource = ruleset.tileResources[resourceName] ?: continue
                 textList += FormattedLine(
-                    // the 1 variant should deprecate some time
-                    resource.getConsumesAmountString(amount),
-                    link="Resources/$resource", color="#F42" )
+                    resourceName.getConsumesAmountString(amount, resource.isStockpiled()),
+                    link="Resources/$resourceName", color="#F42" )
             }
         }
 
@@ -615,7 +617,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             yield(RejectionReasonType.RequiresBuildingInThisCity.toInstance("Requires a [${civ.getEquivalentBuilding(requiredBuilding!!)}] in this city"))
         }
 
-        for ((resource, requiredAmount) in getResourceRequirements()) {
+        for ((resource, requiredAmount) in getResourceRequirementsPerTurn()) {
             val availableAmount = civ.getCivResourcesByName()[resource]!!
             if (availableAmount < requiredAmount) {
                 yield(RejectionReasonType.ConsumesResources.toInstance(resource.getNeedMoreAmountString(requiredAmount - availableAmount)))
@@ -666,7 +668,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         val triggerNotificationText ="due to constructing [$name]"
 
         for (unique in uniqueObjects)
-            if (unique.conditionals.none { it.type!!.targetTypes.contains(UniqueTarget.TriggerCondition) })
+            if (unique.conditionals.none { it.type?.targetTypes?.contains(UniqueTarget.TriggerCondition)==true })
                 UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, cityConstructions.city, triggerNotificationText = triggerNotificationText)
 
 
@@ -740,7 +742,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     fun isSellable() = !isAnyWonder() && !hasUnique(UniqueType.Unsellable)
 
-    override fun getResourceRequirements(): HashMap<String, Int> = resourceRequirementsInternal
+    override fun getResourceRequirementsPerTurn(): HashMap<String, Int> = resourceRequirementsInternal
 
     private val resourceRequirementsInternal: HashMap<String, Int> by lazy {
         val resourceRequirements = HashMap<String, Int>()
@@ -754,6 +756,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     override fun requiresResource(resource: String): Boolean {
         if (requiredResource == resource) return true
         for (unique in getMatchingUniques(UniqueType.ConsumesResources)) {
+            if (unique.params[1] == resource) return true
+        }
+        for (unique in getMatchingUniques(UniqueType.CostsResources)) {
             if (unique.params[1] == resource) return true
         }
         return false

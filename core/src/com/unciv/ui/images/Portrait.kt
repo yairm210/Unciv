@@ -70,7 +70,7 @@ open class Portrait(val type: Type, val imageName: String, val size: Float, val 
     }
 
     /** Inner image */
-    private fun getMainImage() : Image {
+    fun getMainImage() : Image {
         return when {
             ImageGetter.imageExists(pathPortrait) -> {
                 isPortrait = true
@@ -171,6 +171,12 @@ class PortraitBuilding(name: String, size: Float) : Portrait(Type.Building, name
     }
 }
 
+class PortraitUnavailableWonderForTechTree(name: String, size: Float) : Portrait(Type.Building, name, size) {
+    override fun getDefaultOuterBackgroundTint(): Color {
+        return Color.RED
+    }
+}
+
 class PortraitUnique(name: String, size: Float) : Portrait(Type.Unique, name, size) {
     override fun getDefaultImageTint(): Color {
         return Color.BLACK
@@ -217,7 +223,7 @@ class PortraitNation(name: String, size: Float) : Portrait(Type.Nation, name, si
     override fun getDefaultImage(): Image {
 
         val nation = ruleset.nations[imageName]
-        val isCityState = nation != null && nation.isCityState()
+        val isCityState = nation != null && nation.isCityState
         val pathCityState = "NationIcons/CityState"
 
         return when {

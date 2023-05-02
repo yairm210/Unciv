@@ -4,14 +4,15 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
-import com.unciv.ui.images.IconCircleGroup
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.extensions.onChange
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toStringSigned
+import com.unciv.ui.images.IconCircleGroup
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
 
 /** Simple class for showing a prompt for a positive integer to the user
  * @param screen The previous screen the user was on
@@ -90,8 +91,7 @@ class AskNumberPopup(
         fun addValueButton(value: Int) {
             centerTable.add(
                 Button(
-                    if (value > 0) "+$value".toLabel()
-                    else value.toLabel(),
+                    value.toStringSigned().toLabel(),
                     skin
                 ).apply {
                     onClick {

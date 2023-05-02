@@ -21,6 +21,8 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.components.extensions.randomWeighted
+import com.unciv.utils.Log
+import com.unciv.utils.Tag
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -210,6 +212,9 @@ class MapRegions (val ruleset: Ruleset){
         return Pair(splitOffRegion, regionToSplit)
     }
 
+    /** Buckets for startBias to region assignments, used only in [assignRegions]. [PositiveFallback] is only for logging. */
+    private enum class BiasTypes { Coastal, Positive, Negative, Random, PositiveFallback }
+
     fun assignRegions(tileMap: TileMap, civilizations: List<Civilization>, gameParameters: GameParameters) {
         if (civilizations.isEmpty()) return
 
@@ -256,28 +261,43 @@ class MapRegions (val ruleset: Ruleset){
             normalizeStart(tileMap[region.startPosition!!], tileMap, minorCiv = false)
         }
 
-        val coastBiasCivs = civilizations.filter { ruleset.nations[it.civName]!!.startBias.contains("Coast") }
-        val negativeBiasCivs = civilizations.filter { ruleset.nations[it.civName]!!.startBias.any { bias -> bias.equalsPlaceholderText("Avoid []") } }
-                .sortedByDescending { ruleset.nations[it.civName]!!.startBias.size } // Civs with more complex avoids go first
-        val randomCivs = civilizations.filter { ruleset.nations[it.civName]!!.startBias.isEmpty() }.toMutableList() // We might fill this up as we go
-        // The rest are positive bias
-        val positiveBiasCivs = civilizations.filterNot { it in coastBiasCivs || it in negativeBiasCivs || it in randomCivs }
-                .sortedBy { ruleset.nations[it.civName]!!.startBias.size } // civs with only one desired region go first
-        val positiveBiasFallbackCivs = ArrayList<Civilization>() // Civs who couldn't get their desired region at first pass
+        val civBiases = civilizations.associateWith { ruleset.nations[it.civName]!!.startBias }
+        // This ensures each civ can only be in one of the buckets
+        val civsByBiasType = civBiases.entries.groupBy(
+            keySelector = {
+                (_, startBias) ->
+                when {
+                    gameParameters.noStartBias -> BiasTypes.Random
+                    startBias.any { bias -> bias.equalsPlaceholderText("Avoid []") } -> BiasTypes.Negative
+                    "Coast" in startBias -> BiasTypes.Coastal
+                    startBias.isNotEmpty() -> BiasTypes.Positive
+                    else -> BiasTypes.Random
+                }
+            },
+            valueTransform = { (civ, _) -> civ }
+        )
+
+        val coastBiasCivs = civsByBiasType[BiasTypes.Coastal]
+                ?: emptyList()
+        val positiveBiasCivs = civsByBiasType[BiasTypes.Positive]
+                ?.sortedBy { civBiases[it]?.size } // civs with only one desired region go first
+                ?: emptyList()
+        val negativeBiasCivs = civsByBiasType[BiasTypes.Negative]
+                ?.sortedByDescending { civBiases[it]?.size } // Civs with more complex avoids go first
+                ?: emptyList()
+        val randomCivs = civsByBiasType[BiasTypes.Random]
+                ?.toMutableList() // We might fill this up as we go
+                ?: mutableListOf()
+        val positiveBiasFallbackCivs = mutableListOf<Civilization>() // Civs who couldn't get their desired region at first pass
         val unpickedRegions = regions.toMutableList()
 
         // First assign coast bias civs
         for (civ in coastBiasCivs) {
-            // If noStartBias is enabled consider these to be randomCivs
-            if (gameParameters.noStartBias) {
-                randomCivs.addAll(coastBiasCivs)
-                break
-            }
-
             // Try to find a coastal start, preferably a really coastal one
             var startRegion = unpickedRegions.filter { tileMap[it.startPosition!!].isCoastalTile() }
                     .maxByOrNull { it.terrainCounts["Coastal"] ?: 0 }
             if (startRegion != null) {
+                logAssignRegion(true, BiasTypes.Coastal, civ, startRegion)
                 assignCivToRegion(civ, startRegion)
                 unpickedRegions.remove(startRegion)
                 continue
@@ -286,6 +306,7 @@ class MapRegions (val ruleset: Ruleset){
             startRegion = unpickedRegions.filter { tileMap[it.startPosition!!].neighbors.any { neighbor -> neighbor.getBaseTerrain().hasUnique(UniqueType.FreshWater) } }
                     .maxByOrNull { it.terrainCounts["Coastal"] ?: 0 }
             if (startRegion != null) {
+                logAssignRegion(true, BiasTypes.Coastal, civ, startRegion)
                 assignCivToRegion(civ, startRegion)
                 unpickedRegions.remove(startRegion)
                 continue
@@ -294,6 +315,7 @@ class MapRegions (val ruleset: Ruleset){
             startRegion = unpickedRegions.filter { tileMap[it.startPosition!!].isAdjacentToRiver() }
                     .maxByOrNull { it.terrainCounts["Coastal"] ?: 0 }
             if (startRegion != null) {
+                logAssignRegion(true, BiasTypes.Coastal, civ, startRegion)
                 assignCivToRegion(civ, startRegion)
                 unpickedRegions.remove(startRegion)
                 continue
@@ -302,70 +324,83 @@ class MapRegions (val ruleset: Ruleset){
             startRegion = unpickedRegions.filter { tileMap[it.startPosition!!].neighbors.any { neighbor -> neighbor.isAdjacentToRiver() } }
                     .maxByOrNull { it.terrainCounts["Coastal"] ?: 0 }
             if (startRegion != null) {
+                logAssignRegion(true, BiasTypes.Coastal, civ, startRegion)
                 assignCivToRegion(civ, startRegion)
                 unpickedRegions.remove(startRegion)
                 continue
             }
             // Else pick a random region at the end
+            logAssignRegion(false, BiasTypes.Coastal, civ)
             randomCivs.add(civ)
         }
 
         // Next do positive bias civs
         for (civ in positiveBiasCivs) {
-            // If noStartBias is enabled consider these to be randomCivs
-            if (gameParameters.noStartBias) {
-                randomCivs.addAll(positiveBiasCivs)
-                break
-            }
-
             // Try to find a start that matches any of the desired regions, ideally with lots of desired terrain
-            val preferred = ruleset.nations[civ.civName]!!.startBias
+            val preferred = civBiases[civ]!!
             val startRegion = unpickedRegions.filter { it.type in preferred }
                     .maxByOrNull { it.terrainCounts.filterKeys { terrain -> terrain in preferred }.values.sum() }
             if (startRegion != null) {
+                logAssignRegion(true, BiasTypes.Positive, civ, startRegion)
                 assignCivToRegion(civ, startRegion)
                 unpickedRegions.remove(startRegion)
                 continue
-            } else if (ruleset.nations[civ.civName]!!.startBias.size == 1) { // Civs with a single bias (only) get to look for a fallback region
+            } else if (preferred.size == 1) { // Civs with a single bias (only) get to look for a fallback region
                 positiveBiasFallbackCivs.add(civ)
             } else { // Others get random starts
+                logAssignRegion(false, BiasTypes.Positive, civ)
                 randomCivs.add(civ)
             }
         }
 
         // Do a second pass for fallback civs, choosing the region most similar to the desired type
         for (civ in positiveBiasFallbackCivs) {
-            val startRegion = getFallbackRegion(ruleset.nations[civ.civName]!!.startBias.first(), unpickedRegions)
+            val startRegion = getFallbackRegion(civBiases[civ]!!.first(), unpickedRegions)
+            logAssignRegion(true, BiasTypes.PositiveFallback, civ, startRegion)
             assignCivToRegion(civ, startRegion)
             unpickedRegions.remove(startRegion)
         }
 
         // Next do negative bias ones (ie "Avoid []")
         for (civ in negativeBiasCivs) {
-            // If noStartBias is enabled consider these to be randomCivs
-            if (gameParameters.noStartBias) {
-                randomCivs.addAll(negativeBiasCivs)
-                break
-            }
-
-            val avoided = ruleset.nations[civ.civName]!!.startBias.map { it.getPlaceholderParameters()[0] }
-            // Try to find a region not of the avoided types, secondary sort by least number of undesired terrains
+            val (avoidBias, preferred) = civBiases[civ]!!
+                .partition { bias -> bias.equalsPlaceholderText("Avoid []") }
+            val avoided = avoidBias.map { it.getPlaceholderParameters()[0] }
+            // Try to find a region not of the avoided types, secondary sort by
+            // least number of undesired terrains (weighed double) / most number of desired terrains
             val startRegion = unpickedRegions.filterNot { it.type in avoided }
-                    .minByOrNull { it.terrainCounts.filterKeys { terrain -> terrain in avoided }.values.sum() }
+                    .minByOrNull {
+                        2 * it.terrainCounts.filterKeys { terrain -> terrain in avoided }.values.sum()
+                        - it.terrainCounts.filterKeys { terrain -> terrain in preferred }.values.sum()
+                    }
             if (startRegion != null) {
+                logAssignRegion(true, BiasTypes.Negative, civ, startRegion)
                 assignCivToRegion(civ, startRegion)
                 unpickedRegions.remove(startRegion)
                 continue
-            } else
+            } else {
+                logAssignRegion(false, BiasTypes.Negative, civ)
                 randomCivs.add(civ) // else pick a random region at the end
+            }
         }
 
         // Finally assign the remaining civs randomly
         for (civ in randomCivs) {
+            // throws if regions.size < civilizations.size or if the assigning mismatched - leads to popup on newgame screen
             val startRegion = unpickedRegions.random()
+            logAssignRegion(true, BiasTypes.Random, civ, startRegion)
             assignCivToRegion(civ, startRegion)
             unpickedRegions.remove(startRegion)
         }
+    }
+
+    private fun logAssignRegion(success: Boolean, startBiasType: BiasTypes, civ: Civilization, region: Region? = null) {
+        if (Log.backend.isRelease()) return
+
+        val logCiv = { civ.civName + " " + ruleset.nations[civ.civName]!!.startBias.joinToString(",", "(", ")") }
+        val msg = if (success) "(%s): %s to %s"
+            else "no region (%s) found for %s"
+        Log.debug(Tag("assignRegions"), msg, startBiasType, logCiv, region)
     }
 
     private fun getRegionPriority(terrain: Terrain?): Int? {
@@ -381,9 +416,9 @@ class MapRegions (val ruleset: Ruleset){
                 terrain.getMatchingUniques(UniqueType.RegionRequirePercentTwoTypes).first().params[3].toInt()
     }
 
-    private fun assignCivToRegion(civInfo: Civilization, region: Region) {
+    private fun assignCivToRegion(civ: Civilization, region: Region) {
         val tile = region.tileMap[region.startPosition!!]
-        region.tileMap.addStartingLocation(civInfo.civName, tile)
+        region.tileMap.addStartingLocation(civ.civName, tile)
 
         // Place impacts to keep city states etc at appropriate distance
         placeImpact(ImpactType.MinorCiv,tile, 6)
@@ -646,9 +681,9 @@ class MapRegions (val ruleset: Ruleset){
             val validBonuses = ruleset.tileResources.values.filter {
                 it.resourceType == ResourceType.Bonus &&
                 it.food >= 1 &&
-                plot.getLastTerrain().name in it.terrainsCanBeFoundOn
+                plot.lastTerrain.name in it.terrainsCanBeFoundOn
             }
-            val goodPlotForOasis = canPlaceOasis && plot.getLastTerrain().name in oasisEquivalent!!.occursOn
+            val goodPlotForOasis = canPlaceOasis && plot.lastTerrain.name in oasisEquivalent!!.occursOn
 
             if (validBonuses.isNotEmpty() || goodPlotForOasis) {
                 if (goodPlotForOasis) {
@@ -699,7 +734,7 @@ class MapRegions (val ruleset: Ruleset){
 
                 if (plot.resource != null) continue
 
-                val bonusToPlace = stoneTypeBonuses.filter { plot.getLastTerrain().name in it.terrainsCanBeFoundOn }.randomOrNull()
+                val bonusToPlace = stoneTypeBonuses.filter { plot.lastTerrain.name in it.terrainsCanBeFoundOn }.randomOrNull()
                 if (bonusToPlace != null) {
                     plot.resource = bonusToPlace.name
                     stoneNeeded--
@@ -715,7 +750,7 @@ class MapRegions (val ruleset: Ruleset){
         val bestImprovementYield = tile.tileMap.ruleset!!.tileImprovements.values
                 .filter { !it.hasUnique(UniqueType.GreatImprovement) &&
                         it.uniqueTo == null &&
-                        tile.getLastTerrain().name in it.terrainsCanBeBuiltOn }
+                        tile.lastTerrain.name in it.terrainsCanBeBuiltOn }
                 .maxOfOrNull { it[stat] }
         return baseYield + (bestImprovementYield ?: 0f)
     }
@@ -1124,7 +1159,7 @@ class MapRegions (val ruleset: Ruleset){
         // Second place one (1) luxury at minor civ start locations
         // Check only ones that got a start location
         for (startLocation in tileMap.startingLocationsByNation
-                .filterKeys { ruleset.nations[it]!!.isCityState() }.map { it.value.first() }) {
+                .filterKeys { ruleset.nations[it]!!.isCityState }.map { it.value.first() }) {
             val region = regions.firstOrNull { startLocation in it.tiles }
             val tilesToCheck = startLocation.getTilesInDistanceRange(1..2)
             // 75% probability that we first attempt to place a "city state" luxury, then a random or regional one
@@ -1315,7 +1350,7 @@ class MapRegions (val ruleset: Ruleset){
 
         if (modernOptions.any())
             for (cityStateLocation in tileMap.startingLocationsByNation
-                    .filterKeys { ruleset.nations[it]!!.isCityState() }.values.map { it.first() }) {
+                    .filterKeys { ruleset.nations[it]!!.isCityState }.values.map { it.first() }) {
                 val resourceToPlace = modernOptions.random()
                 totalPlaced[resourceToPlace] =
                         totalPlaced[resourceToPlace]!! + tryAddingResourceToTiles(resourceToPlace, 1, cityStateLocation.getTilesInDistanceRange(1..3))
@@ -1334,7 +1369,7 @@ class MapRegions (val ruleset: Ruleset){
                 continue
             val weightings = strategicResources.map {
                 if (fallbackStrategic) {
-                    if (tile.getLastTerrain().name in it.terrainsCanBeFoundOn) 1f else 0f
+                    if (tile.lastTerrain.name in it.terrainsCanBeFoundOn) 1f else 0f
                 } else {
                     val uniques = it.getMatchingUniques(UniqueType.MinorDepositWeighting, conditionalTerrain).toList()
                     uniques.sumOf { unique -> unique.params[0].toInt() }.toFloat()
@@ -1391,7 +1426,7 @@ class MapRegions (val ruleset: Ruleset){
             if(fallbackBonuses && resource.resourceType == ResourceType.Bonus) {
                 // Since we haven't been able to generate any rule-based lists, just generate new ones on the fly
                 // Increase impact to avoid clustering since there is no terrain type stratification.
-                val fallbackList = tileMap.values.filter { it.getLastTerrain().name in resource.terrainsCanBeFoundOn }.shuffled()
+                val fallbackList = tileMap.values.filter { it.lastTerrain.name in resource.terrainsCanBeFoundOn }.shuffled()
                 placeResourcesInTiles((20 * bonusMultiplier).toInt(), fallbackList, listOf(resource), 2 + extraImpact, 2 + extraImpact, false)
             }
         }
@@ -1440,7 +1475,7 @@ class MapRegions (val ruleset: Ruleset){
         for (tile in tiles) {
             val conditionalTerrain = StateForConditionals(attackedTile = tile)
             if (tile.resource == null &&
-                    tile.getLastTerrain().name in resource.terrainsCanBeFoundOn &&
+                    tile.lastTerrain.name in resource.terrainsCanBeFoundOn &&
                     !tile.getBaseTerrain().hasUnique(UniqueType.BlocksResources, conditionalTerrain) &&
                     !resource.hasUnique(UniqueType.NoNaturalGeneration, conditionalTerrain) &&
                     resource.getMatchingUniques(UniqueType.TileGenerationConditions).none {
@@ -1515,7 +1550,7 @@ class MapRegions (val ruleset: Ruleset){
         for (tile in tileList) {
             if (tile.resource != null ||
                     (testTerrains &&
-                            (tile.getLastTerrain().name !in resourceOptions.first().terrainsCanBeFoundOn ||
+                            (tile.lastTerrain.name !in resourceOptions.first().terrainsCanBeFoundOn ||
                             resourceOptions.first().hasUnique(UniqueType.NoNaturalGeneration, conditionalTerrain)) ) ||
                     tile.getBaseTerrain().hasUnique(UniqueType.BlocksResources, conditionalTerrain))
                 continue // Can't place here, can't be a fallback tile
@@ -1743,4 +1778,6 @@ class Region (val tileMap: TileMap, val rect: Rectangle, val continentID: Int = 
 
     /** Returns number terrains with [name] */
     fun getTerrainAmount(name: String) = terrainCounts[name] ?: 0
+
+    override fun toString() = "Region($type, ${tiles.size} tiles, ${terrainCounts.entries.joinToString { "${it.value} ${it.key}" }})"
 }

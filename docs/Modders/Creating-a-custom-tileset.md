@@ -25,7 +25,7 @@ BaseTerrain, TerrainFeatures, Resource, Improvement.
 
 This is where tileset configs shine. You can use these to alter the way Unicv renders tiles.
 
-To create a config for your tileset you just need to create a new .json file under Jsons/Tilesets/. Just create a .txt file and rename it to MyCoolTilesetExample.json. You only have to add things if you want to change them. Else the default values will be used.
+To create a config for your tileset you just need to create a new .json file under jsons/Tilesets/. Just create a .txt file and rename it to MyCoolTilesetExample.json. You only have to add things if you want to change them. Else the default values will be used.
 
 This is an example of such a config file that will be explain below:
 
@@ -137,3 +137,12 @@ This is used by providing multiple images per unit, each representing a coloured
 | Archer-2.png | Colour layer | Nation outer colour |
 
 The [Civ Army Color Style Sheet](https://github.com/AdityaMH/Civ-Army-Color-Style-Sheet/tree/main/Images/TileSets/FantasyHex/Units) mod by @AdityaMH and the [5Hex Tileset](https://github.com/ravignir/5Hex-Tileset/tree/master/Images/TileSets/5Hex/Units) by @ravignir are very good practical examples of how this can be used.
+
+## Attack animations
+
+These are small animations that play on units when they receive damage.
+
+They can be for unit types (Archery, Seige, Cavalry) or for specific unit names
+
+The files should be in the format of `<unit type/unit name>-attack-<frame number>`.
+For example, a 3 frame animation for Sword units would have the files `Sword-attack-1.png`, `Sword-attack-3.png`, `Sword-attack-3.png`

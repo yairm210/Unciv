@@ -15,6 +15,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.images.PortraitUnavailableWonderForTechTree
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
 import com.unciv.ui.screens.pickerscreens.TechButton
@@ -41,7 +42,7 @@ object TechnologyDescriptions {
         if (enabledUnits.any()) {
             lineList += "{Units enabled}: "
             for (unit in enabledUnits)
-                lineList += " • " + unit.name.tr() + " (" + unit.getShortDescription() + ")"
+                lineList += " • ${unit.name.tr()} (${unit.getShortDescription()})\n"
         }
 
         val (wonders, regularBuildings) = getEnabledBuildings(name, ruleset, viewingCiv)
@@ -50,13 +51,13 @@ object TechnologyDescriptions {
         if (regularBuildings.isNotEmpty()) {
             lineList += "{Buildings enabled}: "
             for (building in regularBuildings)
-                lineList += " • " + building.name.tr() + " (" + building.getShortDescription() + ")"
+                lineList += " • ${building.name.tr()} (${building.getShortDescription()})\n"
         }
 
         if (wonders.isNotEmpty()) {
             lineList += "{Wonders enabled}: "
             for (wonder in wonders)
-                lineList += " • " + wonder.name.tr() + " (" + wonder.getShortDescription() + ")"
+                lineList += " • ${wonder.name.tr()} (${wonder.getShortDescription()})\n"
         }
 
         for (obj in getObsoletedObjects(name, ruleset, viewingCiv))
@@ -91,7 +92,24 @@ object TechnologyDescriptions {
         }
 
         for (building in getEnabledBuildings(techName, ruleset, viewingCiv)) {
-            yield(ImageGetter.getConstructionPortrait(building.name, techIconSize))
+            // We don't need to show the unavailable marker for techs that are already researched
+            // since this is mostly a feature to choose which technologies to research.
+            if (building.isWonder && !viewingCiv.tech.isResearched(techName)) {
+                val isAlreadyBuilt = viewingCiv.gameInfo.getCities()
+                    // This is theoretically not necessary since we already checked the viewingCiv
+                    // doesn't have the tech, so it can't have this built anyways. It should be a
+                    // little more performant though to add this filter.
+                    .filter{ it.civ != viewingCiv }
+                    .any { it.cityConstructions.builtBuildings.contains(building.name) }
+                val wonderConstructionPortrait =
+                        if (isAlreadyBuilt)
+                            PortraitUnavailableWonderForTechTree(building.name, techIconSize)
+                        else
+                            ImageGetter.getConstructionPortrait(building.name, techIconSize)
+                yield(wonderConstructionPortrait)
+            } else {
+                yield(ImageGetter.getConstructionPortrait(building.name, techIconSize))
+            }
         }
 
         yieldAll(
@@ -186,7 +204,7 @@ object TechnologyDescriptions {
             lineList += FormattedLine()
             lineList += FormattedLine("{Units enabled}:")
             for (unit in enabledUnits)
-                lineList += FormattedLine(unit.name.tr() + " (" + unit.getShortDescription() + ")", link = unit.makeLink())
+                lineList += FormattedLine(unit.name.tr(true) + " (" + unit.getShortDescription() + ")", link = unit.makeLink())
         }
 
         val (wonders, regularBuildings) = getEnabledBuildings(name, ruleset, null)
@@ -196,14 +214,14 @@ object TechnologyDescriptions {
             lineList += FormattedLine()
             lineList += FormattedLine("{Wonders enabled}:")
             for (wonder in wonders)
-                lineList += FormattedLine(wonder.name.tr() + " (" + wonder.getShortDescription() + ")", link = wonder.makeLink())
+                lineList += FormattedLine(wonder.name.tr(true) + " (" + wonder.getShortDescription() + ")", link = wonder.makeLink())
         }
 
         if (regularBuildings.isNotEmpty()) {
             lineList += FormattedLine()
             lineList += FormattedLine("{Buildings enabled}:")
             for (building in regularBuildings)
-                lineList += FormattedLine(building.name.tr() + " (" + building.getShortDescription() + ")", link = building.makeLink())
+                lineList += FormattedLine(building.name.tr(true) + " (" + building.getShortDescription() + ")", link = building.makeLink())
         }
 
         val obsoletedObjects = getObsoletedObjects(name, ruleset, null).toList()

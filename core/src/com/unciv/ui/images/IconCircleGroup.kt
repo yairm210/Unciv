@@ -7,8 +7,14 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.utils.Align
 import com.unciv.ui.components.extensions.center
 
-class IconCircleGroup(size: Float, val actor: Actor, resizeActor: Boolean = true,
-                      color: Color = Color.WHITE, circleImage:String = "OtherIcons/Circle"): Group(){
+class IconCircleGroup(
+    size: Float,
+    val actor: Actor,
+    resizeActor: Boolean = true,
+    color: Color = Color.WHITE,
+    circleImage: String = "OtherIcons/Circle"
+): Group() {
+
     val circle = ImageGetter.getImage(circleImage).apply {
         setSize(size, size)
         setColor(color)
@@ -24,5 +30,5 @@ class IconCircleGroup(size: Float, val actor: Actor, resizeActor: Boolean = true
         addActor(actor)
     }
 
-    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha*color.a)
+    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha * color.a)
 }

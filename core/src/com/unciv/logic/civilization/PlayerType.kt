@@ -4,5 +4,6 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 
 enum class PlayerType : IsPartOfGameInfoSerialization {
     AI,
-    Human
+    Human;
+    fun toggle() = if (this == AI) Human else AI
 }

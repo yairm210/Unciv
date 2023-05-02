@@ -6,14 +6,14 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.ui.screens.civilopediascreen.FormattedLine.IconDisplay
-import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.models.ruleset.nation.Nation
 import com.unciv.ui.components.WrappableLabel
 import com.unciv.ui.components.extensions.pad
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.civilopediascreen.FormattedLine.IconDisplay
+import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 
 // The ruleset also acts as a secondary parameter to determine if this is the right or self side of the player picker
 class NationTable(val nation: Nation, width: Float, minHeight: Float, ruleset: Ruleset? = null)
@@ -40,7 +40,7 @@ class NationTable(val nation: Nation, width: Float, minHeight: Float, ruleset: R
         val titleText = if (ruleset == null || nation.name == Constants.random || nation.name == Constants.spectator)
             nation.name else nation.getLeaderDisplayName()
         val leaderDisplayNameMaxWidth = internalWidth - 70f // for the nation indicator with padding
-        val leaderDisplayLabel = WrappableLabel(titleText, leaderDisplayNameMaxWidth, innerColor, Constants.headingFontSize)
+        val leaderDisplayLabel = WrappableLabel(titleText, leaderDisplayNameMaxWidth, innerColor, Constants.headingFontSize, hideIcons = true)
         if (leaderDisplayLabel.prefWidth > leaderDisplayNameMaxWidth - 2f) {
             leaderDisplayLabel.wrap = true
             titleTable.add(leaderDisplayLabel).width(leaderDisplayNameMaxWidth)

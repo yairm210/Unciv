@@ -68,7 +68,7 @@ class UnitMovement(val unit: MapUnit) {
         if (unit.cache.ignoresTerrainCost) return 1f + extraCost
         if (areConnectedByRiver) return 100f  // Rivers take the entire turn to cross
 
-        val terrainCost = to.getLastTerrain().movementCost.toFloat()
+        val terrainCost = to.lastTerrain.movementCost.toFloat()
 
         if (unit.cache.noTerrainMovementUniques)
             return terrainCost + extraCost
@@ -153,7 +153,14 @@ class UnitMovement(val unit: MapUnit) {
      * Does not consider if tiles can actually be entered, use canMoveTo for that.
      * If a tile can be reached within the turn, but it cannot be passed through, the total distance to it is set to unitMovement
      */
-    fun getDistanceToTilesWithinTurn(origin: Vector2, unitMovement: Float, considerZoneOfControl: Boolean = true, tilesToIgnore: HashSet<Tile>? = null): PathsToTilesWithinTurn {
+    fun getDistanceToTilesWithinTurn(
+                origin: Vector2,
+                unitMovement: Float,
+                considerZoneOfControl: Boolean = true,
+                tilesToIgnore: HashSet<Tile>? = null,
+                passThroughCache: HashMap<Tile, Boolean> = HashMap(),
+                movementCostCache: HashMap<Pair<Tile, Tile>, Float> = HashMap()
+            ): PathsToTilesWithinTurn {
         val distanceToTiles = PathsToTilesWithinTurn()
         if (unitMovement == 0f) return distanceToTiles
 
@@ -169,15 +176,19 @@ class UnitMovement(val unit: MapUnit) {
                 for (neighbor in tileToCheck.neighbors) {
                     if (tilesToIgnore?.contains(neighbor) == true) continue // ignore this tile
                     var totalDistanceToTile: Float = when {
-                        !unit.civ.hasExplored(neighbor) ->
+                        !neighbor.isExplored(unit.civ) ->
                             distanceToTiles[tileToCheck]!!.totalDistance + 1f  // If we don't know then we just guess it to be 1.
-                        !canPassThrough(neighbor) -> unitMovement // Can't go here.
+                        !passThroughCache.getOrPut(neighbor) { canPassThrough(neighbor) } -> unitMovement // Can't go here.
                         // The reason that we don't just "return" is so that when calculating how to reach an enemy,
                         // You need to assume his tile is reachable, otherwise all movement algorithms on reaching enemy
                         // cities and units goes kaput.
                         else -> {
-                            val distanceBetweenTiles = getMovementCostBetweenAdjacentTiles(tileToCheck, neighbor, unit.civ, considerZoneOfControl)
-                            distanceToTiles[tileToCheck]!!.totalDistance + distanceBetweenTiles
+                            val key = Pair(tileToCheck, neighbor)
+                            val movementCost =
+                                    movementCostCache.getOrPut(key) {
+                                        getMovementCostBetweenAdjacentTiles(tileToCheck, neighbor, unit.civ, considerZoneOfControl)
+                                    }
+                            distanceToTiles[tileToCheck]!!.totalDistance + movementCost
                         }
                     }
 
@@ -232,18 +243,17 @@ class UnitMovement(val unit: MapUnit) {
         val movementTreeParents = HashMap<Tile, Tile?>() // contains a map of "you can get from X to Y in that turn"
         movementTreeParents[currentTile] = null
 
-        var movementThisTurn = unit.currentMovement
         var distance = 1
+        val unitMaxMovement = unit.getMaxMovement().toFloat()
         val newTilesToCheck = ArrayList<Tile>()
-        var considerZoneOfControl = true // only for first distance!
         val visitedTiles: HashSet<Tile> = hashSetOf(currentTile)
         val civilization = unit.civ
 
+        val passThroughCache = HashMap<Tile, Boolean>()
+        val movementCostCache = HashMap<Pair<Tile, Tile>, Float>()
+        val canMoveToCache = HashMap<Tile, Boolean>()
+
         while (true) {
-            if (distance == 2) { // only set this once after distance > 1
-                movementThisTurn = unit.getMaxMovement().toFloat()
-                considerZoneOfControl = false  // by then units would have moved around, we don't need to consider untenable futures when it harms performance!
-            }
             newTilesToCheck.clear()
 
             var tilesByPreference = tilesToCheck.sortedBy { it.aerialDistanceTo(destination) }
@@ -253,10 +263,17 @@ class UnitMovement(val unit: MapUnit) {
 
             for (tileToCheck in tilesByPreference) {
                 val distanceToTilesThisTurn = if (distance == 1) {
-                    getDistanceToTiles(considerZoneOfControl) // check cache
+                    getDistanceToTiles(true, passThroughCache, movementCostCache) // check cache
                 }
                 else {
-                    getDistanceToTilesWithinTurn(tileToCheck.position, movementThisTurn, considerZoneOfControl, visitedTiles)
+                    getDistanceToTilesWithinTurn(
+                        tileToCheck.position,
+                        unitMaxMovement,
+                        false,
+                        visitedTiles,
+                        passThroughCache,
+                        movementCostCache
+                    )
                 }
                 for (reachableTile in distanceToTilesThisTurn.keys) {
                     // Avoid damaging terrain on first pass
@@ -280,7 +297,9 @@ class UnitMovement(val unit: MapUnit) {
                     } else {
                         if (movementTreeParents.containsKey(reachableTile)) continue // We cannot be faster than anything existing...
                         if (!isUnknownTileWeShouldAssumeToBePassable(reachableTile) &&
-                                !canMoveTo(reachableTile)) continue // This is a tile that we can't actually enter - either an intermediary tile containing our unit, or an enemy unit/city
+                                !canMoveToCache.getOrPut(reachableTile) { canMoveTo(reachableTile) })
+                            // This is a tile that we can't actually enter - either an intermediary tile containing our unit, or an enemy unit/city
+                            continue
                         movementTreeParents[reachableTile] = tileToCheck
                         newTilesToCheck.add(reachableTile)
                     }
@@ -304,6 +323,8 @@ class UnitMovement(val unit: MapUnit) {
         }
     }
 
+    class UnreachableDestinationException(msg: String) : Exception(msg)
+
     fun getTileToMoveToThisTurn(finalDestination: Tile): Tile {
 
         val currentTile = unit.getTile()
@@ -313,8 +334,6 @@ class UnitMovement(val unit: MapUnit) {
         if ((unit.baseUnit.movesLikeAirUnits() || unit.isPreparingParadrop()) && canMoveTo(finalDestination)) return finalDestination
 
         val distanceToTiles = getDistanceToTiles()
-
-        class UnreachableDestinationException(msg: String) : Exception(msg)
 
         // If the tile is far away, we need to build a path how to get there, and then take the first step
         if (!distanceToTiles.containsKey(finalDestination))
@@ -329,7 +348,7 @@ class UnitMovement(val unit: MapUnit) {
         val destinationNeighbors = finalDestination.neighbors
         return when (currentTile) {
             in destinationNeighbors -> currentTile // We're right nearby anyway, no need to move
-            else -> destinationNeighbors.asSequence()
+            else -> destinationNeighbors
                 .filter { distanceToTiles.containsKey(it) && canMoveTo(it) }
                 .minByOrNull { distanceToTiles.getValue(it).totalDistance } // we can get a little closer
                     ?: currentTile // We can't get closer...
@@ -704,7 +723,7 @@ class UnitMovement(val unit: MapUnit) {
             // helicopters can pass through impassable tiles like mountains
             if (!unit.cache.canPassThroughImpassableTiles && !(unit.cache.canEnterIceTiles && tile.terrainFeatures.contains(Constants.ice))
                 // carthage-like uniques sometimes allow passage through impassible tiles
-                && !(unit.civ.passThroughImpassableUnlocked && unit.civ.passableImpassables.contains(tile.getLastTerrain().name)))
+                && !(unit.civ.passThroughImpassableUnlocked && unit.civ.passableImpassables.contains(tile.lastTerrain.name)))
                 return false
         }
         if (tile.isLand
@@ -726,6 +745,8 @@ class UnitMovement(val unit: MapUnit) {
             if (!unitSpecificAllowOcean && unit.cache.cannotEnterOceanTiles) return false
         }
 
+        if (unit.hasUnique(UniqueType.CanTradeWithCityStateForGoldAndInfluence) && tile.getOwner()?.isCityState() == true)
+            return true
         if (!unit.cache.canEnterForeignTerrain && !tile.canCivPassThrough(unit.civ)) return false
 
         // The first unit is:
@@ -749,12 +770,23 @@ class UnitMovement(val unit: MapUnit) {
     }
 
 
-    fun getDistanceToTiles(considerZoneOfControl: Boolean = true): PathsToTilesWithinTurn {
+    fun getDistanceToTiles(
+                considerZoneOfControl: Boolean = true,
+                passThroughCache: HashMap<Tile, Boolean> = HashMap(),
+                movementCostCache: HashMap<Pair<Tile, Tile>, Float> = HashMap())
+            : PathsToTilesWithinTurn {
         val cacheResults = pathfindingCache.getDistanceToTiles(considerZoneOfControl)
         if (cacheResults != null) {
             return cacheResults
         }
-        val distanceToTiles = getDistanceToTilesWithinTurn(unit.currentTile.position, unit.currentMovement, considerZoneOfControl)
+        val distanceToTiles = getDistanceToTilesWithinTurn(
+            unit.currentTile.position,
+            unit.currentMovement,
+            considerZoneOfControl,
+            null,
+            passThroughCache,
+            movementCostCache
+        )
         pathfindingCache.setDistanceToTiles(considerZoneOfControl, distanceToTiles)
         return distanceToTiles
     }

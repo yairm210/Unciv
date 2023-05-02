@@ -67,6 +67,7 @@ enum class EmpireOverviewCategories(
     Notifications("OtherIcons/Notifications", 'N', Align.top) {
         override fun createTab(viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?) =
                 NotificationsOverviewTable(viewingPlayer, overviewScreen, persistedData)
+        override fun showDisabled(viewingPlayer: Civilization) = viewingPlayer.notifications.isEmpty() && viewingPlayer.notificationsLog.isEmpty()
     }
 
     ;

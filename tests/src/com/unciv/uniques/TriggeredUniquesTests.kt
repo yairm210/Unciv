@@ -26,13 +26,13 @@ class TriggeredUniquesTests {
     @Test
     fun testConditionalTimedUniqueIsTriggerable() {
         val unique = policy.uniqueObjects.first{ it.type == UniqueType.Strength }
-        Assert.assertTrue("Unique with timed conditional must be triggerable", unique!!.isTriggerable)
+        Assert.assertTrue("Unique with timed conditional must be triggerable", unique.isTriggerable)
     }
 
     @Test
     fun testConditionalTimedUniqueStrength() {
         civInfo.policies.adopt(policy, true)
-        val modifiers = BattleDamage.getAttackModifiers(attacker, defender)
+        val modifiers = BattleDamage.getAttackModifiers(attacker, defender, attacker.getTile())
         Assert.assertTrue("Timed Strength should work right after triggering", modifiers.sumValues() == 42)
     }
 
@@ -43,7 +43,7 @@ class TriggeredUniquesTests {
         // and right now that attacker is not in the civ's unit list
         civInfo.units.addUnit(attacker.unit, false)
         TurnManager(civInfo).endTurn()
-        val modifiers = BattleDamage.getAttackModifiers(attacker, defender)
+        val modifiers = BattleDamage.getAttackModifiers(attacker, defender, attacker.getTile())
         Assert.assertTrue("Timed Strength should no longer work after endTurn", modifiers.sumValues() == 0)
     }
 }

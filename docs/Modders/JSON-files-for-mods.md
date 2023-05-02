@@ -27,11 +27,12 @@ The JSON files that make up mods can have many different fields, and as not all 
     -   [UnitPromotions.json](../Other/Unit-related-JSON-files.md#unitpromotionsjson)
     -   [UnitTypes.json](../Other/Unit-related-JSON-files.md#unittypesjson)
 -   [Miscellaneous JSON files](../Other/Miscellaneous-JSON-files.md)
-    -   [Difficulties.json](../Other/Miscellaneous-JSON-files.md#difficultiesjson)
-    -   [Eras.json](../Other/Miscellaneous-JSON-files.md#erasjson)
-    -   [ModOptions.json](../Other/Miscellaneous-JSON-files.md#modoptionsjson)
+    - [Difficulties.json](../Other/Miscellaneous-JSON-files.md#difficultiesjson)
+    - [Eras.json](../Other/Miscellaneous-JSON-files.md#erasjson)
+    - [ModOptions.json](../Other/Miscellaneous-JSON-files.md#modoptionsjson)
+    - [Tutorials.json](../Other/Miscellaneous-JSON-files.md#tutorialsjson)
 -   [Stats](../Other/Map-related-JSON-files.md#stats)
--   [Sounds](../Other/Unit-related-JSON-files.md#sounds)
+-   [Sounds](Images-and-Audio.md#sounds)
 -   [Civilopedia text](../Other/Miscellaneous-JSON-files.md#civilopedia-text)
 
 ## General Overview of JSON files
@@ -62,7 +63,7 @@ There are different types of attributes:
 | String | A word or sentence. Should be between double quotes (") |
 | Integer | A number. Can be both positive or negative. Should **not** be between quotes |
 | Boolean | A value that can either be 'true' or 'false'. Should **not** be between quotes |
-| List of [type] | If multiple values could apply (such as with the promotions above), they should be put inside a list. Each element of the list should be written like a normal attribute, seperated by comma's, and enclosed between square braces. E.g.: ["Shock I", "Shock II"] or [1, 2, 3]. |
+| List of [type] | If multiple values could apply (such as with the promotions above), they should be put inside a list. Each element of the list should be written like a normal attribute, separated by commas, and enclosed between square braces. E.g.: ["Shock I", "Shock II"] or [1, 2, 3]. |
 | Object | The most complicated type of attribute. An object is comprised of multiple attributes, each of which again has a type. These attributes have a key (the part before the ":") and a value (the part behind it). For an example, see below. |
 
 Example of a Buildings.json adding a new "Cultural Library" building which gives +50% science and +50% culture:
@@ -82,6 +83,6 @@ In some sense you can see from these types that JSON files themselves are actual
 
 ## Information on JSON files used in the game
 
-Many parts of Unciv are moddable, and for each there is a seperate json file. There is a json file for buildings, for units, for promotions units can have, for technologies, etc. The different new buildings or units you define can also have lots of different attributes, though not all are required. Below are tables documenting all the different attributes everything can have. Only the attributes which are noted to be 'required' must be provided. All others have a default value that will be used when it is omitted.
+Many parts of Unciv are moddable, and for each there is a separate json file. There is a json file for buildings, for units, for promotions units can have, for technologies, etc. The different new buildings or units you define can also have lots of different attributes, though not all are required. Below are tables documenting all the different attributes everything can have. Only the attributes which are noted to be 'required' must be provided. All others have a default value that will be used when it is omitted.
 
 The individual files are described on [separate pages](#Table-of-Contents).

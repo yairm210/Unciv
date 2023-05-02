@@ -99,7 +99,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
 
         val suitableLocations = tileMap.values.filter { tile->
             tile.resource == null &&
-            naturalWonder.occursOn.contains(tile.getLastTerrain().name) &&
+            naturalWonder.occursOn.contains(tile.lastTerrain.name) &&
             naturalWonder.uniqueObjects.all { unique ->
                 when (unique.type) {
                     UniqueType.NaturalWonderNeighborCount -> {
@@ -215,7 +215,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
         "Land" -> isLand
         Constants.hill -> isHill()
         naturalWonder -> true
-        in allTerrainFeatures -> getLastTerrain().name == filter
+        in allTerrainFeatures -> lastTerrain.name == filter
         else -> baseTerrain == filter
     }
 

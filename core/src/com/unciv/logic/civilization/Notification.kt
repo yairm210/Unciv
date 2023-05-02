@@ -49,6 +49,11 @@ enum class NotificationCategory{
     War,
     Religion,
     Cities
+    ;
+    companion object {
+        fun safeValueOf(name: String): NotificationCategory? =
+                values().firstOrNull { it.name == name }
+    }
 }
 
 /**
@@ -70,17 +75,18 @@ open class Notification() : IsPartOfGameInfoSerialization {
         this.category = category.name
     }
 
-    fun addNotificationIcons(ruleset: Ruleset, iconSize: Float, table: Table) {
+    fun addNotificationIconsTo(table: Table, ruleset: Ruleset, iconSize: Float) {
         if (icons.isEmpty()) return
         for (icon in icons.reversed()) {
             val image: Actor = when {
-                ruleset.technologies.containsKey(icon) -> ImageGetter.getTechIconPortrait(icon, iconSize)
-                ruleset.nations.containsKey(icon) -> ImageGetter.getNationPortrait(
-                    ruleset.nations[icon]!!,
-                    iconSize
-                )
-                ruleset.units.containsKey(icon) -> ImageGetter.getUnitIcon(icon)
-                else -> ImageGetter.getImage(icon)
+                ruleset.technologies.containsKey(icon) ->
+                    ImageGetter.getTechIconPortrait(icon, iconSize)
+                ruleset.nations.containsKey(icon) ->
+                    ImageGetter.getNationPortrait(ruleset.nations[icon]!!, iconSize)
+                ruleset.units.containsKey(icon) ->
+                    ImageGetter.getUnitIcon(icon)
+                else ->
+                    ImageGetter.getImage(icon)
             }
             table.add(image).size(iconSize).padRight(5f)
         }
@@ -102,11 +108,13 @@ data class LocationAction(var locations: ArrayList<Vector2> = ArrayList()) : Not
     constructor(locations: Sequence<Vector2>) : this(locations.toCollection(ArrayList()))
     constructor(vararg locations: Vector2?) : this(locations.asSequence().filterNotNull())
 
+    @Transient
+    private var index = 0
+
     override fun execute(worldScreen: WorldScreen) {
         if (locations.isNotEmpty()) {
-            var index = locations.indexOf(worldScreen.mapHolder.selectedTile?.position)
-            index = ++index % locations.size // cycle through tiles
             worldScreen.mapHolder.setCenterPosition(locations[index], selectUnit = false)
+            index = ++index % locations.size // cycle through tiles
         }
     }
 }

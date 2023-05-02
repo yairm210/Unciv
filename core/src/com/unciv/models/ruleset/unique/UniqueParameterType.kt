@@ -70,9 +70,9 @@ enum class UniqueParameterType(
         }
     },
 
-    /** Implemented by [MapUnit.matchesFilter][com.unciv.logic.map.MapUnit.matchesFilter] */
-    MapUnitFilter("mapUnitFilter", "Wounded", null, "Map Unit Filters") {
-        private val knownValues = setOf("Wounded", Constants.barbarians, "City-State", "Embarked", "Non-City")
+    /** Implemented by [MapUnit.matchesFilter][com.unciv.logic.map.mapunit.MapUnit.matchesFilter] */
+    MapUnitFilter("mapUnitFilter", Constants.wounded, null, "Map Unit Filters") {
+        private val knownValues = setOf(Constants.wounded, Constants.barbarians, "City-State", Constants.embarked, "Non-City")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText.startsWith('{')) // "{filter} {filter}" for and logic
@@ -172,6 +172,21 @@ enum class UniqueParameterType(
         ): UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText in knownValues) return null
             return UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+        }
+    },
+
+    /** Implemented by [Nation.matchesFilter][com.unciv.models.ruleset.Building.matchesFilter] */
+    NationFilter("nationFilter", Constants.cityStates) {
+        private val knownValues = setOf(Constants.cityStates, "Major", "All")
+
+        override fun getErrorSeverity(
+            parameterText: String,
+            ruleset: Ruleset
+        ): UniqueType.UniqueComplianceErrorSeverity? {
+            if (parameterText in knownValues) return null
+            if (ruleset.nations.containsKey(parameterText)) return null
+            if (ruleset.nations.values.any { it.hasUnique(parameterText) }) return null
+            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
         }
     },
 
@@ -390,6 +405,13 @@ enum class UniqueParameterType(
                 else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
             }
     },
+
+    StockpiledResource("stockpiledResource", "StockpiledResource", "The name of any stockpiled") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+                UniqueType.UniqueComplianceErrorSeverity? = if (parameterText in ruleset.tileResources && ruleset.tileResources[parameterText]!!.isStockpiled()) null
+                else UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+    },
+
 
     /** Used by [UniqueType.FreeExtraBeliefs], see ReligionManager.getBeliefsToChooseAt* functions */
     BeliefTypeName("beliefType", "Follower", "'Pantheon', 'Follower', 'Founder' or 'Enhancer'") {

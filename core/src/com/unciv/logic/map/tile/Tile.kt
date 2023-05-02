@@ -97,6 +97,10 @@ open class Tile : IsPartOfGameInfoSerialization {
         private set
 
     @Transient
+    lateinit var lastTerrain: Terrain
+        private set
+
+    @Transient
     var terrainUniqueMap = UniqueMap()
         private set
 
@@ -205,13 +209,6 @@ open class Tile : IsPartOfGameInfoSerialization {
 
     fun getCity(): City? = owningCity
 
-    fun getLastTerrain(): Terrain = when {
-        terrainFeatures.isNotEmpty() -> ruleset.terrains[terrainFeatures.last()]
-                ?: getBaseTerrain()  // defense against rare edge cases involving baseTerrain Hill deprecation
-        naturalWonder != null -> getNaturalWonder()
-        else -> getBaseTerrain()
-    }
-
     @Transient
     private var tileResourceCache: TileResource? = null
     val tileResource: TileResource
@@ -235,7 +232,7 @@ open class Tile : IsPartOfGameInfoSerialization {
     }
 
     fun isExplored(player: Civilization): Boolean {
-        if (DebugUtils.VISIBLE_MAP || player.isSpectator())
+        if (DebugUtils.VISIBLE_MAP || player.civName == Constants.spectator)
             return true
         return exploredBy.contains(player.civName)
     }
@@ -257,7 +254,7 @@ open class Tile : IsPartOfGameInfoSerialization {
 
     fun isCityCenter(): Boolean = isCityCenterInternal
     fun isNaturalWonder(): Boolean = naturalWonder != null
-    fun isImpassible() = getLastTerrain().impassable
+    fun isImpassible() = lastTerrain.impassable
 
     fun getTileImprovement(): TileImprovement? = if (improvement == null) null else ruleset.tileImprovements[improvement!!]
     fun getUnpillagedTileImprovement(): TileImprovement? = if (getUnpillagedImprovement() == null) null else ruleset.tileImprovements[improvement!!]
@@ -538,9 +535,11 @@ open class Tile : IsPartOfGameInfoSerialization {
             "Natural Wonder" -> naturalWonder != null
             "Featureless" -> terrainFeatures.isEmpty()
             Constants.freshWaterFilter -> isAdjacentTo(Constants.freshWater)
+
+            in terrainFeatures -> true
             else -> {
-                if (terrainFeatures.contains(filter)) return true
                 if (terrainUniqueMap.getUniques(filter).any()) return true
+                if (getOwner()?.nation?.matchesFilter(filter) == true) return true
 
                 // Resource type check is last - cannot succeed if no resource here
                 if (resource == null) return false
@@ -826,6 +825,13 @@ open class Tile : IsPartOfGameInfoSerialization {
         val newUniqueMap = UniqueMap()
         for (terrain in allTerrains)
             newUniqueMap.addUniques(terrain.uniqueObjects)
+
+        lastTerrain = when {
+            terrainFeatures.isNotEmpty() -> ruleset.terrains[terrainFeatures.last()]
+                ?: getBaseTerrain()  // defense against rare edge cases involving baseTerrain Hill deprecation
+            naturalWonder != null -> getNaturalWonder()
+            else -> getBaseTerrain()
+        }
         terrainUniqueMap = newUniqueMap
     }
 

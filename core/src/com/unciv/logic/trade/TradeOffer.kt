@@ -44,7 +44,7 @@ data class TradeOffer(val name: String, val type: TradeType, var amount: Int = 1
                 city?.run { "{$name} (${population.population})" } ?: "Non-existent city"
             }
             else -> name
-        }.tr()
+        }.tr(hideIcons = true)
 
         if (type.numberType == TradeTypeNumberType.Simple || type.numberType == TradeTypeNumberType.Gold) offerText += " ($amount)"
         else if (name == Constants.researchAgreement) offerText += " (-$amount${Fonts.gold})"

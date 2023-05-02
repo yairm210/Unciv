@@ -245,13 +245,13 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
             addPressure(religionThisIsTheHolyCityOf!!,5 * pressureFromAdjacentCities, false)
         }
 
-        for (city in city.civ.gameInfo.getCities()) {
-            if (city == this.city) continue
-            val majorityReligionOfCity = city.religion.getMajorityReligionName() ?: continue
+        for (otherCity in city.civ.gameInfo.getCities()) {
+            if (otherCity == city) continue
+            val majorityReligionOfCity = otherCity.religion.getMajorityReligionName() ?: continue
             if (!this.city.civ.gameInfo.religions[majorityReligionOfCity]!!.isMajorReligion()) continue
-            if (city.getCenterTile().aerialDistanceTo(this.city.getCenterTile())
-                    > city.religion.getSpreadRange()) continue
-            addPressure(majorityReligionOfCity, city.religion.pressureAmountToAdjacentCities(this.city), false)
+            if (otherCity.getCenterTile().aerialDistanceTo(city.getCenterTile())
+                    > otherCity.religion.getSpreadRange()) continue
+            addPressure(majorityReligionOfCity, otherCity.religion.pressureAmountToAdjacentCities(city), false)
         }
 
         updateNumberOfFollowers()

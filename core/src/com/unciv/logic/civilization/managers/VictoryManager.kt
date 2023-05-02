@@ -5,6 +5,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Milestone
+import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.unique.UniqueType
 
 class VictoryManager : IsPartOfGameInfoSerialization {
@@ -57,27 +58,28 @@ class VictoryManager : IsPartOfGameInfoSerialization {
 
     fun getVictoryTypeAchieved(): String? {
         if (!civInfo.isMajorCiv()) return null
-        for (victoryName in civInfo.gameInfo.gameParameters.victoryTypes
-            .filter { it != Constants.neutralVictoryType && it in civInfo.gameInfo.ruleset.victories}) {
-            if (getNextMilestone(victoryName) == null)
-                return victoryName
-        }
+        val enabledVictories = civInfo.gameInfo.gameParameters.victoryTypes
+        val victory = civInfo.gameInfo.ruleset.victories
+                .filter { it.key != Constants.neutralVictoryType && it.key in enabledVictories }
+                .map { it.value }
+                .firstOrNull { getNextMilestone(it) == null }
+        if (victory != null) return victory.name
         if (civInfo.hasUnique(UniqueType.TriggersVictory))
             return Constants.neutralVictoryType
         return null
     }
 
-    fun getNextMilestone(victory: String): Milestone? {
-        for (milestone in civInfo.gameInfo.ruleset.victories[victory]!!.milestoneObjects) {
+    fun getNextMilestone(victory: Victory): Milestone? {
+        for (milestone in victory.milestoneObjects) {
             if (!milestone.hasBeenCompletedBy(civInfo))
                 return milestone
         }
         return null
     }
 
-    fun amountMilestonesCompleted(victory: String): Int {
+    fun amountMilestonesCompleted(victory: Victory): Int {
         var completed = 0
-        for (milestone in civInfo.gameInfo.ruleset.victories[victory]!!.milestoneObjects) {
+        for (milestone in victory.milestoneObjects) {
             if (milestone.hasBeenCompletedBy(civInfo))
                 ++completed
             else

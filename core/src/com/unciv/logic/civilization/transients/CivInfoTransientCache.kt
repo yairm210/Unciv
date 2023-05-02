@@ -138,8 +138,31 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         civInfo.viewableInvisibleUnitsTiles = newViewableInvisibleTiles
     }
 
+    var ourTilesAndNeighboringTiles: Set<Tile> = HashSet()
+
+    /** Our tiles update pretty infrequently - most 'viewable tile' changes are due to unit movements,
+     * which means we can store this separately and use it 'as is' so we don't need to find the neighboring tiles every time
+     * a unit moves */
+    fun updateOurTiles() {
+        ourTilesAndNeighboringTiles = civInfo.cities.asSequence()
+            .flatMap { it.getTiles() } // our owned tiles, still distinct
+            .flatMap { sequenceOf(it) + it.neighbors }
+            // now we got a mix of owned, unowned and competitor-owned tiles, and **duplicates**
+            // but Sequence.toSet is just as good at making them distinct as any other operation
+            .toSet()
+
+        updateViewableTiles()
+        updateCivResources()
+    }
+
     private fun setNewViewableTiles() {
-        val newViewableTiles = HashSet<Tile>()
+        if (civInfo.isDefeated()) {
+            // Avoid meeting dead city states when entering a tile owned by their former ally (#9245)
+            // In that case ourTilesAndNeighboringTiles and getCivUnits will be empty, but the for
+            // loop getKnownCivs/getAllyCiv would add tiles.
+            civInfo.viewableTiles = emptySet()
+            return
+        }
 
         // while spectating all map is visible
         if (civInfo.isSpectator() || DebugUtils.VISIBLE_MAP) {
@@ -149,13 +172,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             return
         }
 
-        // There are a LOT of tiles usually.
-        // And making large lists of them just as intermediaries before we shove them into the hashset is very space-inefficient.
-        // And so, sequences to the rescue!
-        val ownedTiles = civInfo.cities.asSequence().flatMap { it.getTiles() }
-        newViewableTiles.addAll(ownedTiles)
-        val neighboringUnownedTiles = ownedTiles.flatMap { tile -> tile.neighbors.filter { it.getOwner() != civInfo } }
-        newViewableTiles.addAll(neighboringUnownedTiles)
+        val newViewableTiles = HashSet<Tile>(ourTilesAndNeighboringTiles)
         newViewableTiles.addAll(civInfo.units.getCivUnits().flatMap { unit -> unit.viewableTiles.asSequence().filter { it.getOwner() != civInfo } })
 
         for (otherCiv in civInfo.getKnownCivs()) {
@@ -295,13 +312,13 @@ class CivInfoTransientCache(val civInfo: Civilization) {
 
         for (unit in civInfo.units.getCivUnits())
             newDetailedCivResources.subtractResourceRequirements(
-                unit.baseUnit.getResourceRequirements(), civInfo.gameInfo.ruleset, "Units")
+                unit.baseUnit.getResourceRequirementsPerTurn(), civInfo.gameInfo.ruleset, "Units")
 
         // Check if anything has actually changed so we don't update stats for no reason - this uses List equality which means it checks the elements
         if (civInfo.detailedCivResources == newDetailedCivResources) return
 
         civInfo.detailedCivResources = newDetailedCivResources
-        civInfo.summarizedCivResources = newDetailedCivResources.sumByResource("All")
+        civInfo.summarizedCivResourceSupply = newDetailedCivResources.sumByResource("All")
 
         civInfo.updateStatsForNextTurn() // More or less resources = more or less happiness, with potential domino effects
     }

@@ -36,6 +36,11 @@ class TurnManager(val civInfo: Civilization) {
         if (civInfo.cities.isNotEmpty() && civInfo.gameInfo.ruleset.technologies.isNotEmpty())
             civInfo.tech.updateResearchProgress()
 
+
+        civInfo.cache.updateCivResources() // If you offered a trade last turn, this turn it will have been accepted/declined
+        for (stockpiledResource in civInfo.getCivResourceSupply().filter { it.resource.isStockpiled() })
+            civInfo.resourceStockpiles.add(stockpiledResource.resource.name, stockpiledResource.amount)
+
         civInfo.civConstructions.startTurn()
         civInfo.attacksSinceTurnStart.clear()
         civInfo.updateStatsForNextTurn() // for things that change when turn passes e.g. golden age, city state influence
@@ -70,8 +75,6 @@ class TurnManager(val civInfo: Civilization) {
                 unit.doAction()
         } else civInfo.hasMovedAutomatedUnits = false
 
-        civInfo.cache.updateCivResources() // If you offered a trade last turn, this turn it will have been accepted/declined
-
         for (tradeRequest in civInfo.tradeRequests.toList()) { // remove trade requests where one of the sides can no longer supply
             val offeringCiv = civInfo.gameInfo.getCivilization(tradeRequest.requestingCiv)
             if (offeringCiv.isDefeated() || !TradeEvaluation().isTradeValid(tradeRequest.trade, civInfo, offeringCiv)) {
@@ -92,7 +95,7 @@ class TurnManager(val civInfo: Civilization) {
 
             if (flag == CivFlags.CityStateGreatPersonGift.name) {
                 val cityStateAllies: List<Civilization> =
-                        civInfo.getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civInfo.civName }
+                        civInfo.getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civInfo.civName }.toList()
                 val givingCityState = cityStateAllies.filter { it.cities.isNotEmpty() }.randomOrNull()
 
                 if (cityStateAllies.isNotEmpty()) civInfo.flagsCountdown[flag] = civInfo.flagsCountdown[flag]!! - 1
@@ -245,15 +248,15 @@ class TurnManager(val civInfo: Civilization) {
 
         // disband units until there are none left OR the gold values are normal
         if (!civInfo.isBarbarian() && civInfo.gold <= -200 && nextTurnStats.gold.toInt() < 0) {
-            val militaryUnits = civInfo.units.getCivUnits().filter { it.isMilitary() }
             do {
+                val militaryUnits = civInfo.units.getCivUnits().filter { it.isMilitary() }  // New sequence as disband replaces unitList
                 val unitToDisband = militaryUnits.minByOrNull { it.baseUnit.cost }
                     // or .firstOrNull()?
                     ?: break
                 unitToDisband.disband()
                 val unitName = unitToDisband.shortDisplayName()
                 civInfo.addNotification("Cannot provide unit upkeep for $unitName - unit has been disbanded!", NotificationCategory.Units, unitName, NotificationIcon.Death)
-                civInfo.updateStatsForNextTurn()  // recalculate unit upkeep
+                // No need to recalculate unit upkeep, disband did that in UnitManager.removeUnit
                 nextTurnStats = civInfo.stats.statsForNextTurn
             } while (civInfo.gold <= -200 && nextTurnStats.gold.toInt() < 0)
         }
@@ -288,7 +291,7 @@ class TurnManager(val civInfo: Civilization) {
         updateWinningCiv() // Maybe we did something this turn to win
     }
 
-    private fun updateWinningCiv(){
+    fun updateWinningCiv(){
         if (civInfo.gameInfo.victoryData != null) return // Game already won
 
         val victoryType = civInfo.victoryManager.getVictoryTypeAchieved()

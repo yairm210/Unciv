@@ -298,8 +298,8 @@ object Battle {
         fun unitGainFromDefeatingUnit(): Boolean {
             if (!attacker.isMelee()) return false
             var unitCaptured = false
-            for (unique in attacker.getCivInfo()
-                .getMatchingUniques(UniqueType.GainFromDefeatingUnit)) {
+            val state = StateForConditionals(attacker.getCivInfo(), ourCombatant = attacker, theirCombatant = defender)
+            for (unique in attacker.getMatchingUniques(UniqueType.GainFromDefeatingUnit, state, true)) {
                 if (defender.unit.matchesFilter(unique.params[0])) {
                     attacker.getCivInfo().addGold(unique.params[1].toInt())
                     unitCaptured = true
@@ -523,43 +523,48 @@ object Battle {
 
     // XP!
     private fun addXp(thisCombatant: ICombatant, amount: Int, otherCombatant: ICombatant) {
-        var baseXP = amount
         if (thisCombatant !is MapUnitCombatant) return
-        val modConstants = thisCombatant.unit.civ.gameInfo.ruleset.modOptions.constants
-        if (thisCombatant.unit.promotions.totalXpProduced() >= modConstants.maxXPfromBarbarians
-                && otherCombatant.getCivInfo().isBarbarian())
+        val civ = thisCombatant.getCivInfo()
+        val otherIsBarbarian = otherCombatant.getCivInfo().isBarbarian()
+        val promotions = thisCombatant.unit.promotions
+        val modConstants = civ.gameInfo.ruleset.modOptions.constants
+
+        if (otherIsBarbarian && promotions.totalXpProduced() >= modConstants.maxXPfromBarbarians)
             return
+        val unitCouldAlreadyPromote = promotions.canBePromoted()
 
-        val stateForConditionals = StateForConditionals(civInfo = thisCombatant.getCivInfo(), ourCombatant = thisCombatant, theirCombatant = otherCombatant)
+        val stateForConditionals = StateForConditionals(civInfo = civ, ourCombatant = thisCombatant, theirCombatant = otherCombatant)
 
-        for (unique in thisCombatant.getMatchingUniques(UniqueType.FlatXPGain, stateForConditionals, true))
-            baseXP += unique.params[0].toInt()
+        val baseXP = amount + thisCombatant
+            .getMatchingUniques(UniqueType.FlatXPGain, stateForConditionals, true)
+            .sumOf { it.params[0].toInt() }
 
-        var xpModifier = 1f
-
-        for (unique in thisCombatant.getMatchingUniques(UniqueType.PercentageXPGain, stateForConditionals, true))
-            xpModifier += unique.params[0].toFloat() / 100
+        val xpBonus = thisCombatant
+            .getMatchingUniques(UniqueType.PercentageXPGain, stateForConditionals, true)
+            .sumOf { it.params[0].toDouble() }
+        val xpModifier = 1.0 + xpBonus / 100
 
         val xpGained = (baseXP * xpModifier).toInt()
-        thisCombatant.unit.promotions.XP += xpGained
+        promotions.XP += xpGained
 
-
-        if (thisCombatant.getCivInfo().isMajorCiv() && !otherCombatant.getCivInfo().isBarbarian()) { // Can't get great generals from Barbarians
-            var greatGeneralPointsModifier = 1f
-            for (unique in thisCombatant.getMatchingUniques(UniqueType.GreatPersonEarnedFaster, stateForConditionals, true)) {
-                val unitName = unique.params[0]
-                // From the unique we know this unit exists
-                val unit = thisCombatant.getCivInfo().gameInfo.ruleset.units[unitName]!!
-                if (unit.uniques.contains("Great Person - [War]"))
-                    greatGeneralPointsModifier += unique.params[1].toFloat() / 100
-            }
+        if (!otherIsBarbarian && civ.isMajorCiv()) { // Can't get great generals from Barbarians
+            val greatGeneralPointsBonus = thisCombatant
+                .getMatchingUniques(UniqueType.GreatPersonEarnedFaster, stateForConditionals, true)
+                .filter { unique ->
+                    val unitName = unique.params[0]
+                    // From the unique we know this unit exists
+                    val unit = civ.gameInfo.ruleset.units[unitName]!!
+                    unit.uniques.contains("Great Person - [War]")
+                }
+                .sumOf { it.params[1].toDouble() }
+            val greatGeneralPointsModifier = 1.0 + greatGeneralPointsBonus / 100
 
             val greatGeneralPointsGained = (xpGained * greatGeneralPointsModifier).toInt()
-            thisCombatant.getCivInfo().greatPeople.greatGeneralPoints += greatGeneralPointsGained
+            civ.greatPeople.greatGeneralPoints += greatGeneralPointsGained
         }
 
-        if (!thisCombatant.isDefeated() && thisCombatant.unit.promotions.canBePromoted())
-            thisCombatant.getCivInfo().addNotification("[${thisCombatant.unit.displayName()}] can be promoted!",thisCombatant.getTile().position, NotificationCategory.Units, thisCombatant.unit.name)
+        if (!thisCombatant.isDefeated() && !unitCouldAlreadyPromote && promotions.canBePromoted())
+            civ.addNotification("[${thisCombatant.unit.displayName()}] can be promoted!",thisCombatant.getTile().position, NotificationCategory.Units, thisCombatant.unit.name)
     }
 
     private fun conquerCity(city: City, attacker: MapUnitCombatant) {
@@ -818,7 +823,7 @@ object Battle {
 
         var damageModifierFromMissingResource = 1f
         val civResources = attacker.getCivInfo().getCivResourcesByName()
-        for (resource in attacker.unit.baseUnit.getResourceRequirements().keys) {
+        for (resource in attacker.unit.baseUnit.getResourceRequirementsPerTurn().keys) {
             if (civResources[resource]!! < 0 && !attacker.getCivInfo().isBarbarian())
                 damageModifierFromMissingResource *= 0.5f // I could not find a source for this number, but this felt about right
         }
@@ -1097,7 +1102,9 @@ object Battle {
         val percentChance = baseWithdrawChance - max(0, (attackBaseUnit.movement-2)) * 20 -
                 fromTile.neighbors.filterNot { it == attTile || it in attTile.neighbors }.count { canNotWithdrawTo(it) } * 20
         // Get a random number in [0,100) : if the number <= percentChance, defender will withdraw from melee
-        if (Random().nextInt(100) > percentChance) return false
+        if (Random( // 'randomness' is consistent for turn and tile, to avoid save-scumming
+                    (attacker.getCivInfo().gameInfo.turns * defender.getTile().hashCode()).toLong()
+        ).nextInt(100) > percentChance) return false
         val firstCandidateTiles = fromTile.neighbors.filterNot { it == attTile || it in attTile.neighbors }
                 .filterNot { canNotWithdrawTo(it) }
         val secondCandidateTiles = fromTile.neighbors.filter { it in attTile.neighbors }

@@ -1,9 +1,9 @@
 ﻿package com.unciv.ui.screens.mainmenuscreen
 
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.ui.Stack
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
@@ -48,20 +48,28 @@ import com.unciv.ui.screens.newgamescreen.NewGameScreen
 import com.unciv.ui.screens.pickerscreens.ModManagementScreen
 import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.screens.savescreens.QuickSave
+import com.unciv.ui.screens.worldscreen.BackgroundActor
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMenuPopup
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlin.math.min
 
 
 class MainMenuScreen: BaseScreen(), RecreateOnResize {
-    private val backgroundTable = Table().apply {
-        background = skinStrings.getUiBackground("MainMenuScreen/Background", tintColor = Color.WHITE)
-    }
+    private val backgroundStack = Stack()
     private val singleColumn = isCrampedPortrait()
     private var easterEggRuleset: Ruleset? = null  // Cache it so the next 'egg' can be found in Civilopedia
+
+    private var backgroundMapGenerationJob: Job? = null
+    private var backgroundMapExists = false
+
+    companion object {
+        const val mapFadeTime = 1.3f
+        const val mapFirstFadeTime = 0.3f
+        const val mapReplaceDelay = 15f
+    }
 
     /** Create one **Main Menu Button** including onClick/key binding
      *  @param text      The text to display on the button
@@ -86,7 +94,10 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         table.add(text.toLabel(fontSize = 30, alignment = Align.left)).expand().left().minWidth(200f)
 
         table.touchable = Touchable.enabled
-        table.onActivation(function)
+        table.onActivation {
+            stopBackgroundMapGeneration()
+            function()
+        }
 
         if (key != null) {
             if (!keyVisualOnly)
@@ -99,8 +110,10 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
     }
 
     init {
-        stage.addActor(backgroundTable)
-        backgroundTable.center(stage)
+        val background = skinStrings.getUiBackground("MainMenuScreen/Background", tintColor = clearColor)
+        backgroundStack.add(BackgroundActor(background, Align.center))
+        stage.addActor(backgroundStack)
+        backgroundStack.setFillParent(true)
 
         // If we were in a mod, some of the resource images for the background map we're creating
         // will not exist unless we reset the ruleset and images
@@ -110,9 +123,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         // guard in UncivGame.create, simply omit the background so the user can at least get to options
         // (let him crash when loading a game but avoid locking him out entirely)
         if (game.settings.tileSet in TileSetCache)
-            Concurrency.run("ShowMapBackground") {
-                showMapBackground()
-            }
+            startBackgroundMapGeneration()
 
         val column1 = Table().apply { defaults().pad(10f).fillX() }
         val column2 = if (singleColumn) column1 else Table().apply { defaults().pad(10f).fillX() }
@@ -185,49 +196,74 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         stage.addActor(helpButton)
     }
 
-    private fun CoroutineScope.showMapBackground() {
-        var scale = 1f
-        var mapWidth = stage.width / TileGroupMap.groupHorizontalAdvance
-        var mapHeight = stage.height / TileGroupMap.groupSize
-        if (mapWidth * mapHeight > 3000f) {  // 3000 as max estimated number of tiles is arbitrary (we had typically 721 before)
-            scale = mapWidth * mapHeight / 3000f
-            mapWidth /= scale
-            mapHeight /= scale
-            scale = min(scale, 20f)
-        }
+    private fun startBackgroundMapGeneration() {
+        stopBackgroundMapGeneration()  // shouldn't be necessary as resize re-instantiates this class
+        backgroundMapGenerationJob = Concurrency.run("ShowMapBackground") {
+            var scale = 1f
+            var mapWidth = stage.width / TileGroupMap.groupHorizontalAdvance
+            var mapHeight = stage.height / TileGroupMap.groupSize
+            if (mapWidth * mapHeight > 3000f) {  // 3000 as max estimated number of tiles is arbitrary (we had typically 721 before)
+                scale = mapWidth * mapHeight / 3000f
+                mapWidth /= scale
+                mapHeight /= scale
+                scale = min(scale, 20f)
+            }
 
-        val baseRuleset = RulesetCache.getVanillaRuleset()
-        easterEggRuleset = EasterEggRulesets.getTodayEasterEggRuleset()?.let {
-            RulesetCache.getComplexRuleset(baseRuleset, listOf(it))
-        }
-        val mapRuleset = if (game.settings.enableEasterEggs) easterEggRuleset ?: baseRuleset else baseRuleset
+            val baseRuleset = RulesetCache.getVanillaRuleset()
+            easterEggRuleset = EasterEggRulesets.getTodayEasterEggRuleset()?.let {
+                RulesetCache.getComplexRuleset(baseRuleset, listOf(it))
+            }
+            val mapRuleset = if (game.settings.enableEasterEggs) easterEggRuleset ?: baseRuleset else baseRuleset
 
-        val newMap = MapGenerator(mapRuleset)
-            .generateMap(MapParameters().apply {
-                shape = MapShape.rectangular
-                mapSize = MapSizeNew(MapSize.Small)
-                type = MapType.pangaea
-                temperatureExtremeness = 0.7f
-                waterThreshold = -0.1f // mainly land, gets about 30% water
-                modifyForEasterEgg()
-            })
+            val newMap = MapGenerator(mapRuleset, this)
+                .generateMap(MapParameters().apply {
+                    shape = MapShape.rectangular
+                    mapSize = MapSizeNew(MapSize.Small)
+                    type = MapType.pangaea
+                    temperatureExtremeness = .7f
+                    waterThreshold = -0.1f // mainly land, gets about 30% water
+                    modifyForEasterEgg()
+                })
 
-        launchOnGLThread { // for GL context
-            ImageGetter.setNewRuleset(mapRuleset)
-            val mapHolder = EditorMapHolder(
-                this@MainMenuScreen,
-                newMap
-            ) {}
-            mapHolder.setScale(scale)
-            backgroundTable.addAction(Actions.sequence(
-                Actions.fadeOut(0f),
-                Actions.run {
-                    backgroundTable.addActor(mapHolder)
-                    mapHolder.center(backgroundTable)
-                },
-                Actions.fadeIn(0.3f)
-            ))
+            launchOnGLThread { // for GL context
+                ImageGetter.setNewRuleset(mapRuleset)
+                val mapHolder = EditorMapHolder(
+                    this@MainMenuScreen,
+                    newMap
+                ) {}
+                mapHolder.setScale(scale)
+                mapHolder.color = mapHolder.color.cpy()
+                mapHolder.color.a = 0f
+                backgroundStack.add(mapHolder)
+
+                if (backgroundMapExists) {
+                    mapHolder.addAction(Actions.sequence(
+                        Actions.fadeIn(mapFadeTime),
+                        Actions.run { backgroundStack.removeActorAt(1, false) }
+                    ))
+                } else {
+                    backgroundMapExists = true
+                    mapHolder.addAction(Actions.fadeIn(mapFirstFadeTime))
+                }
+            }
+        }.apply {
+            invokeOnCompletion {
+                backgroundMapGenerationJob = null
+                backgroundStack.addAction(Actions.sequence(
+                    Actions.delay(mapReplaceDelay),
+                    Actions.run { startBackgroundMapGeneration() }
+                ))
+            }
         }
+    }
+
+    private fun stopBackgroundMapGeneration() {
+        backgroundStack.clearActions()
+        val currentJob = backgroundMapGenerationJob
+            ?: return
+        backgroundMapGenerationJob = null
+        if (currentJob.isCancelled) return
+        currentJob.cancel()
     }
 
     private fun resumeGame() {
@@ -293,6 +329,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
     }
 
     private fun openCivilopedia() {
+        stopBackgroundMapGeneration()
         val rulesetParameters = game.settings.lastGameSetup?.gameParameters
         val ruleset = easterEggRuleset ?:
             if (rulesetParameters == null)
@@ -304,5 +341,8 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         game.pushScreen(CivilopediaScreen(ruleset))
     }
 
-    override fun recreate(): BaseScreen = MainMenuScreen()
+    override fun recreate(): BaseScreen {
+        stopBackgroundMapGeneration()
+        return MainMenuScreen()
+    }
 }

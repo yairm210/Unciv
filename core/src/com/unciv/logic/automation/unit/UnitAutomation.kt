@@ -9,11 +9,13 @@ import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
@@ -25,13 +27,12 @@ object UnitAutomation {
     private const val CLOSE_ENEMY_TURNS_AWAY_LIMIT = 3f
 
     private fun isGoodTileToExplore(unit: MapUnit, tile: Tile): Boolean {
-        return unit.movement.canMoveTo(tile)
-                && (tile.getOwner() == null || !tile.getOwner()!!.isCityState())
+        return (tile.getOwner() == null || !tile.getOwner()!!.isCityState())
                 && tile.neighbors.any { !unit.civ.hasExplored(it) }
                 && (!unit.civ.isCityState() || tile.neighbors.any { it.getOwner() == unit.civ }) // Don't want city-states exploring far outside their borders
                 && unit.getDamageFromTerrain(tile) <= 0    // Don't take unnecessary damage
-                && tile.getTilesInDistance(3)  // don't walk in range of enemy units
-            .none { tile_it -> containsEnemyMilitaryUnit(unit, tile_it)}
+                && tile.getTilesInDistance(3) .none { containsEnemyMilitaryUnit(unit, it) } // don't walk in range of enemy units
+                && unit.movement.canMoveTo(tile) // expensive, evaluate last
                 && unit.movement.canReach(tile) // expensive, evaluate last
     }
 
@@ -75,6 +76,12 @@ object UnitAutomation {
     // "Fog busting" is a strategy where you put your units slightly outside your borders to discourage barbarians from spawning
     private fun tryFogBust(unit: MapUnit): Boolean {
         if (!Automation.afraidOfBarbarians(unit.civ)) return false // Not if we're not afraid
+
+        // If everything around this unit is visible, we can stop.
+        // Calculations below are quite expensive especially in the late game.
+        if (unit.currentTile.getTilesInDistance(5).any { !it.isVisible(unit.civ) }) {
+            return false
+        }
 
         val reachableTilesThisTurn =
                 unit.movement.getDistanceToTiles().keys.filter { isGoodTileForFogBusting(unit, it) }
@@ -121,7 +128,7 @@ object UnitAutomation {
         val upgradedUnit = unit.upgrade.getUnitToUpgradeTo()
         if (!upgradedUnit.isBuildable(unit.civ)) return false // for resource reasons, usually
 
-        if (upgradedUnit.getResourceRequirements().keys.any { !unit.baseUnit.requiresResource(it) }) {
+        if (upgradedUnit.getResourceRequirementsPerTurn().keys.any { !unit.baseUnit.requiresResource(it) }) {
             // The upgrade requires new resource types, so check if we are willing to invest them
             if (!Automation.allowSpendingResource(unit.civ, upgradedUnit)) return false
         }
@@ -150,6 +157,14 @@ object UnitAutomation {
             val availablePromotions = unit.promotions.getAvailablePromotions()
             if (availablePromotions.any())
                 unit.promotions.addPromotion(availablePromotions.toList().random().name)
+        }
+
+        //This allows for military units with certain civilian abilities to behave as civilians in peace and soldiers in war
+        if ((unit.hasUnique(UniqueType.BuildImprovements) || unit.hasUnique(UniqueType.FoundCity) ||
+                unit.hasUnique(UniqueType.ReligiousUnit) || unit.hasUnique(UniqueType.CreateWaterImprovements))
+                && !unit.civ.isAtWar()){
+            automateCivilianUnit(unit)
+            return
         }
 
         if (unit.baseUnit.isAirUnit() && unit.canIntercept())
@@ -262,14 +277,70 @@ object UnitAutomation {
         if (unit.hasUnique(UniqueType.PreventSpreadingReligion) || unit.canDoLimitedAction(Constants.removeHeresy))
             return SpecificUnitAutomation.automateInquisitor(unit)
 
-        if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit)
-                || unit.hasUnique(UniqueType.ConstructImprovementInstantly))
-        // catch great prophet for civs who can't found/enhance/spread religion
-            return SpecificUnitAutomation.automateImprovementPlacer(unit) // includes great people plus moddable units
+        val isLateGame = isLateGame(unit.civ)
+        // Great scientist -> Hurry research if late game
+        if (isLateGame) {
+            val hurryResearch = UnitActions.getUnitActions(unit)
+                .firstOrNull { it.type == UnitActionType.HurryResearch }?.action
+            if (hurryResearch != null) {
+                hurryResearch()
+                return
+            }
+        }
 
-        // ToDo: automation of great people skills (may speed up construction, provides a science boost, etc.)
+        // Great merchant -> Conduct trade mission if late game and if not at war.
+        // TODO: This could be more complex to walk to the city state that is most beneficial to
+        //  also have more influence.
+        if (unit.hasUnique(UniqueType.CanTradeWithCityStateForGoldAndInfluence)
+                // Don't wander around with the great merchant when at war. Barbs might also be a
+                // problem, but hopefully by the time we have a great merchant, they're under control.
+                && !unit.civ.isAtWar()
+                && isLateGame
+        ) {
+            val tradeMissionCanBeConductedEventually =
+                    SpecificUnitAutomation.conductTradeMission(unit)
+            if (tradeMissionCanBeConductedEventually)
+                return
+        }
+
+        // Great engineer -> Try to speed up wonder construction if late game
+        if (isLateGame &&
+                (unit.hasUnique(UniqueType.CanSpeedupConstruction)
+                        || unit.hasUnique(UniqueType.CanSpeedupWonderConstruction))) {
+            val wonderCanBeSpedUpEventually = SpecificUnitAutomation.speedupWonderConstruction(unit)
+            if (wonderCanBeSpedUpEventually)
+                return
+        }
+
+
+        // This has to come after the individual abilities for the great people that can also place
+        // instant improvements (e.g. great scientist).
+        if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit)
+                || unit.hasUnique(UniqueType.ConstructImprovementInstantly)
+        ) {
+            // catch great prophet for civs who can't found/enhance/spread religion
+            // includes great people plus moddable units
+            val improvementCanBePlacedEventually =
+                    SpecificUnitAutomation.automateImprovementPlacer(unit)
+            if (!improvementCanBePlacedEventually)
+                startGoldenAgeIfHasAbility(unit)
+        }
+
+        // TODO: The AI tends to have a lot of great generals. Maybe there should be a cutoff
+        //  (depending on number of cities) and after that they should just be used to start golden
+        //  ages?
 
         return // The AI doesn't know how to handle unknown civilian units
+    }
+
+    private fun isLateGame(civ: Civilization): Boolean {
+        val researchCompletePercent =
+                (civ.tech.researchedTechnologies.size * 1.0f) / civ.gameInfo.ruleset.technologies.size
+        return researchCompletePercent >= 0.8f
+    }
+
+    private fun startGoldenAgeIfHasAbility(unit: MapUnit) {
+        UnitActions.getUnitActions(unit).firstOrNull { it.type == UnitActionType.StartGoldenAge }?.action?.invoke()
     }
 
     /** @return true only if the unit has 0 movement left */
@@ -486,13 +557,22 @@ object UnitAutomation {
                 .firstOrNull { unit.movement.canReach(it.getCenterTile()) }
 
         if (closestReachableEnemyCity != null) {
-            return headTowardsEnemyCity(unit, closestReachableEnemyCity.getCenterTile())
+            return headTowardsEnemyCity(
+                unit,
+                closestReachableEnemyCity.getCenterTile(),
+                // This should be cached after the `canReach` call above.
+                unit.movement.getShortestPath(closestReachableEnemyCity.getCenterTile())
+            )
         }
         return false
     }
 
 
-    private fun headTowardsEnemyCity(unit: MapUnit, closestReachableEnemyCity: Tile): Boolean {
+    private fun headTowardsEnemyCity(
+        unit: MapUnit,
+        closestReachableEnemyCity: Tile,
+        shortestPath: List<Tile>
+    ): Boolean {
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         val unitRange = unit.getRange()
 
@@ -513,6 +593,18 @@ object UnitAutomation {
                 return true
             }
             return false
+        }
+
+        // None of the stuff below is relevant if we're still quite far away from the city, so we
+        // short-circuit here for performance reasons.
+        val minDistanceFromCityToConsiderForLandingArea = 3
+        val maxDistanceFromCityToConsiderForLandingArea = 5
+        if (unit.currentTile.aerialDistanceTo(closestReachableEnemyCity) > maxDistanceFromCityToConsiderForLandingArea
+                // Even in the worst case of only being able to move 1 tile per turn, we would still
+                // not overshoot.
+                && shortestPath.size > minDistanceFromCityToConsiderForLandingArea ) {
+            unit.movement.moveToTile(shortestPath[0])
+            return true
         }
 
         val ourUnitsAroundEnemyCity = closestReachableEnemyCity.getTilesInDistance(6)
@@ -543,7 +635,7 @@ object UnitAutomation {
             return true
         }
 
-        unit.movement.headTowards(closestReachableEnemyCity) // go for it!
+        unit.movement.moveToTile(shortestPath[0]) // go for it!
 
         return true
     }
@@ -611,7 +703,12 @@ object UnitAutomation {
                 .firstOrNull { unit.movement.canReach(it) }
 
         if (closestReachableCapturedCity != null) {
-            return headTowardsEnemyCity(unit, closestReachableCapturedCity)
+            return headTowardsEnemyCity(
+                unit,
+                closestReachableCapturedCity,
+                // This should be cached after the `canReach` call above.
+                unit.movement.getShortestPath(closestReachableCapturedCity)
+            )
         }
         return false
 

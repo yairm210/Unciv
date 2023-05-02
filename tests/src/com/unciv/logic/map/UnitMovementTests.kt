@@ -280,6 +280,7 @@ class UnitMovementTests {
                 position.set(0f, i.toFloat())
                 tile.tileMap.tileMatrix.last().add(this)
                 newTiles.add(this)
+                setTerrainTransients()
             }
         }
         // allow this tile to be teleported to

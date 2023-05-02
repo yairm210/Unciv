@@ -126,7 +126,6 @@ class CityInfoConquestFunctions(val city: City){
             }
 
         }
-        conqueringCiv.cache.updateViewableTiles() // Might see new tiles from this city
     }
 
 
@@ -157,6 +156,7 @@ class CityInfoConquestFunctions(val city: City){
     fun annexCity() {
         city.isPuppet = false
         city.cityConstructions.inProgressConstructions.clear() // undo all progress of the previous civ on units etc.
+        if (!city.isInResistance()) city.updateCitizens = true
         city.cityStats.update()
         GUI.setUpdateWorldOnNextRender()
     }
@@ -266,18 +266,16 @@ class CityInfoConquestFunctions(val city: City){
     }
 
 
-    fun moveToCiv(newCivInfo: Civilization) {
+    fun moveToCiv(newCiv: Civilization) {
+        val oldCiv = city.civ
         city.apply {
-            val oldCiv = civ
-
-
             // Remove/relocate palace for old Civ - need to do this BEFORE we move the cities between
             //  civs so the capitalCityIndicator recognizes the unique buildings of the conquered civ
             if (oldCiv.getCapital() == this)  oldCiv.moveCapitalToNextLargest()
 
             oldCiv.cities = oldCiv.cities.toMutableList().apply { remove(city) }
-            newCivInfo.cities = newCivInfo.cities.toMutableList().apply { add(city) }
-            civ = newCivInfo
+            newCiv.cities = newCiv.cities.toMutableList().apply { add(city) }
+            civ = newCiv
             hasJustBeenConquered = false
             turnAcquired = civ.gameInfo.turns
             previousOwner = oldCiv.civName
@@ -297,8 +295,8 @@ class CityInfoConquestFunctions(val city: City){
             // Place palace for newCiv if this is the only city they have
             // This needs to happen _before_ free buildings are added, as sometimes these should
             // only be placed in the capital, and then there needs to be a capital.
-            if (newCivInfo.cities.size == 1) {
-                newCivInfo.moveCapitalTo(this)
+            if (newCiv.cities.size == 1) {
+                newCiv.moveCapitalTo(this)
             }
 
             // Add our free buildings to this city and add free buildings provided by the city to other cities
@@ -308,7 +306,7 @@ class CityInfoConquestFunctions(val city: City){
 
             // Transfer unique buildings
             for (building in cityConstructions.getBuiltBuildings()) {
-                val civEquivalentBuilding = newCivInfo.getEquivalentBuilding(building.name)
+                val civEquivalentBuilding = newCiv.getEquivalentBuilding(building.name)
                 if (building != civEquivalentBuilding) {
                     cityConstructions.removeBuilding(building.name)
                     cityConstructions.addBuilding(civEquivalentBuilding.name)
@@ -329,6 +327,8 @@ class CityInfoConquestFunctions(val city: City){
                 tile.history.recordTakeOwnership(tile)
             }
         }
+        newCiv.cache.updateOurTiles()
+        oldCiv.cache.updateOurTiles()
     }
 
 }

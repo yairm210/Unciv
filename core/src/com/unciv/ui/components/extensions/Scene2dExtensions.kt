@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -29,13 +30,16 @@ import com.unciv.Constants
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.KeyShortcutDispatcher
 import com.unciv.ui.components.KeyboardBinding
+import com.unciv.ui.components.extensions.GdxKeyCodeFixes.DEL
+import com.unciv.ui.components.extensions.GdxKeyCodeFixes.toString
+import com.unciv.ui.components.extensions.GdxKeyCodeFixes.valueOf
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.concurrency.Concurrency
 
 /**
@@ -47,15 +51,15 @@ private class RestorableTextButtonStyle(
     val restoreStyle: ButtonStyle
 ) : TextButtonStyle(baseStyle)
 
-/** Disable a [Button] by setting its [touchable][Button.touchable] and [color][Button.color] properties. */
+/** Disable a [Button] by setting its [touchable][Button.touchable] and [style][Button.style] properties. */
 fun Button.disable() {
     touchable = Touchable.disabled
     val oldStyle = style
+    if (oldStyle is RestorableTextButtonStyle) return
     val disabledStyle = BaseScreen.skin.get("disabled", TextButtonStyle::class.java)
-    if (oldStyle !is RestorableTextButtonStyle)
-        style = RestorableTextButtonStyle(disabledStyle, oldStyle)
+    style = RestorableTextButtonStyle(disabledStyle, oldStyle)
 }
-/** Enable a [Button] by setting its [touchable][Button.touchable] and [color][Button.color] properties. */
+/** Enable a [Button] by setting its [touchable][Button.touchable] and [style][Button.style] properties. */
 fun Button.enable() {
     val oldStyle = style
     if (oldStyle is RestorableTextButtonStyle) {
@@ -63,7 +67,7 @@ fun Button.enable() {
     }
     touchable = Touchable.enabled
 }
-/** Enable or disable a [Button] by setting its [touchable][Button.touchable] and [color][Button.color] properties,
+/** Enable or disable a [Button] by setting its [touchable][Button.touchable] and [style][Button.style] properties,
  *  or returns the corresponding state.
  *
  *  Do not confuse with Gdx' builtin [isDisabled][Button.isDisabled] property,
@@ -468,9 +472,21 @@ fun Image.setSize(size: Float) {
 }
 
 /** Translate a [String] and make a [TextButton] widget from it */
-fun String.toTextButton(style: TextButtonStyle? = null): TextButton {
-    val text = this.tr()
+fun String.toTextButton(style: TextButtonStyle? = null, hideIcons: Boolean = false): TextButton {
+    val text = this.tr(hideIcons)
     return if (style == null) TextButton(text, BaseScreen.skin) else TextButton(text, style)
+}
+
+/** Convert a texture path into an Image, make an ImageButton with a [tinted][overColor]
+ *  hover version of the image from it, then [surroundWithCircle] it. */
+fun String.toImageButton(iconSize: Float, circleSize: Float, circleColor: Color, overColor: Color): Group {
+    val style = ImageButton.ImageButtonStyle()
+    val image = ImageGetter.getDrawable(this)
+    style.imageUp = image
+    style.imageOver = image.tint(overColor)
+    val button = ImageButton(style)
+    button.setSize(iconSize, iconSize)
+    return button.surroundWithCircle( circleSize, false, circleColor)
 }
 
 /** Translate a [String] and make a [Label] widget from it */
@@ -480,8 +496,9 @@ fun Int.toLabel() = this.toString().toLabel()
 
 /** Translate a [String] and make a [Label] widget from it with a specified font color and size */
 fun String.toLabel(fontColor: Color = Color.WHITE,
-                   fontSize: Int = Constants.defaultFontSize,
-                   alignment: Int = Align.left ): Label {
+                    fontSize: Int = Constants.defaultFontSize,
+                    alignment: Int = Align.left,
+                    hideIcons: Boolean = false): Label {
     // We don't want to use setFontSize and setFontColor because they set the font,
     //  which means we need to rebuild the font cache which means more memory allocation.
     var labelStyle = BaseScreen.skin.get(Label.LabelStyle::class.java)
@@ -490,7 +507,7 @@ fun String.toLabel(fontColor: Color = Color.WHITE,
         labelStyle.fontColor = fontColor
         if (fontSize != Constants.defaultFontSize) labelStyle.font = Fonts.font
     }
-    return Label(this.tr(), labelStyle).apply {
+    return Label(this.tr(hideIcons), labelStyle).apply {
         setFontScale(fontSize / Fonts.ORIGINAL_FONT_SIZE)
         setAlignment(alignment)
     }
@@ -584,3 +601,6 @@ object GdxKeyCodeFixes {
         else -> Input.Keys.valueOf(name)
     }
 }
+
+fun Input.areSecretKeysPressed() = isKeyPressed(Input.Keys.SHIFT_RIGHT) &&
+        (isKeyPressed(Input.Keys.CONTROL_RIGHT) || isKeyPressed(Input.Keys.ALT_RIGHT))

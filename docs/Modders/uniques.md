@@ -74,7 +74,17 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Triggers voting for the Diplomatic Victory"
 	Applicable to: Triggerable
 
-??? example  "Gain [amount] [stat]"
+??? example  "Instantly consumes [amount] [stockpiledResource]"
+	Example: "Instantly consumes [3] [StockpiledResource]"
+
+	Applicable to: Triggerable
+
+??? example  "Instantly provides [amount] [stockpiledResource]"
+	Example: "Instantly provides [3] [StockpiledResource]"
+
+	Applicable to: Triggerable
+
+??? example  "Gain [amount] [stat/resource]"
 	Example: "Gain [3] [Culture]"
 
 	Applicable to: Triggerable
@@ -796,9 +806,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Can only heal by pillaging"
 	Applicable to: Global, Unit
 
-??? example  "Normal vision when embarked"
-	Applicable to: Global, Unit
-
 ??? example  "Defense bonus when embarked"
 	Applicable to: Global, Unit
 
@@ -911,6 +918,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ## Building uniques
 ??? example  "Consumes [amount] [resource]"
 	Example: "Consumes [3] [Iron]"
+
+	Applicable to: Building, Unit, Improvement
+
+??? example  "Costs [amount] [stockpiledResource]"
+	Example: "Costs [3] [StockpiledResource]"
 
 	Applicable to: Building, Unit, Improvement
 
@@ -1601,6 +1613,15 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Can only be created by Mercantile City-States"
 	Applicable to: Resource
 
+??? example  "Stockpiled"
+	Applicable to: Resource
+
+??? example  "Cannot be traded"
+	Applicable to: Resource
+
+??? example  "Not shown on world screen"
+	Applicable to: Resource
+
 ??? example  "Generated with weight [amount]"
 	Example: "Generated with weight [3]"
 
@@ -1668,6 +1689,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;after [amount] turns&gt;"
 	Example: "&lt;after [3] turns&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;for [nationFilter]&gt;"
+	Example: "&lt;for [City-States]&gt;"
 
 	Applicable to: Conditional
 
@@ -1782,6 +1808,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
+??? example  "&lt;in this city&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;in other cities&gt;"
+	Applicable to: Conditional
+
 ??? example  "&lt;in cities with a [buildingFilter]&gt;"
 	Example: "&lt;in cities with a [Culture]&gt;"
 
@@ -1802,6 +1834,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;for [mapUnitFilter] units&gt;"
 	Example: "&lt;for [Wounded] units&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;when [mapUnitFilter]&gt;"
+	Example: "&lt;when [Wounded]&gt;"
 
 	Applicable to: Conditional
 
@@ -2026,6 +2063,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[specialist]: The name of any specialist.
 *[stat]: This is one of the 7 major stats in the game - `Gold`, `Science`, `Production`, `Food`, `Happiness`, `Culture` and `Faith`. Note that the stat names need to be capitalized!
 *[stats]: For example: `+2 Production, +3 Food`. Note that the stat names need to be capitalized!
+*[stockpiledResource]: The name of any stockpiled.
 *[tech]: The name of any tech.
 *[tileFilter]: Anything that can be used either in an improvementFilter or in a terrainFilter can be used here, plus 'unimproved'
 *[victoryType]: The name of any victory type: 'Neutral', 'Cultural', 'Diplomatic', 'Domination', 'Scientific', 'Time'

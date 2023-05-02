@@ -196,7 +196,7 @@ class CityOverviewTab(
 
         val constructionCells: MutableList<Cell<Label>> = mutableListOf()
         for (city in cityList) {
-            val button = city.name.toTextButton()
+            val button = city.name.toTextButton(hideIcons = true)
             button.onClick {
                 overviewScreen.game.pushScreen(CityScreen(city))
             }
@@ -229,8 +229,14 @@ class CityOverviewTab(
                     cityInfoTableDetails.add(image)
                 }
                 city.demandedResource.isNotEmpty() -> {
-                    val image = ImageGetter.getResourcePortrait(city.demandedResource, iconSize *0.7f)
-                    image.addTooltip("Demanding [${city.demandedResource}]", 18f, tipAlign = Align.topLeft)
+                    val image = ImageGetter.getResourcePortrait(city.demandedResource, iconSize *0.7f).apply {
+                        addTooltip("Demanding [${city.demandedResource}]", 18f, tipAlign = Align.topLeft)
+                        onClick {
+                            if (gameInfo.notifyExploredResources(viewingPlayer, city.demandedResource, 0, true)) {
+                                overviewScreen.game.popScreen()
+                            }
+                        }
+                    }
                     cityInfoTableDetails.add(image)
                 }
                 else -> cityInfoTableDetails.add()

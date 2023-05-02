@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
@@ -24,6 +25,7 @@ import com.unciv.ui.components.extensions.keyShortcuts
 import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.pad
+import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -64,7 +66,7 @@ open class TabbedPager(
     backgroundColor: Color = BaseScreen.skinStrings.skinConfig.baseColor.darken(0.5f),
     private val headerPadding: Float = 10f,
     separatorColor: Color = Color.CLEAR,
-    private val shorcutScreen: BaseScreen? = null,
+    private val shortcutScreen: BaseScreen? = null,
     capacity: Int = 4
 ) : Table() {
 
@@ -80,7 +82,7 @@ open class TabbedPager(
         private set
 
     private val header = Table(BaseScreen.skin)
-    protected val headerScroll = LinkedScrollPane(horizontalOnly = true, header)
+    val headerScroll = LinkedScrollPane(horizontalOnly = true, header)
     protected var headerHeight = 0f
 
     private val fixedContentScroll = LinkedScrollPane(horizontalOnly = true)
@@ -105,6 +107,40 @@ open class TabbedPager(
 
         /** @return Optional second content [Actor], will be placed outside the tab's main [ScrollPane] between header and `content`. Scrolls horizontally only. */
         fun getFixedContent(): Actor? = null
+
+        /** Sets first row cell's minWidth to the max of the widths of that column over all given tables
+         *
+         * Notes:
+         * - This aligns columns only if the tables are arranged vertically with equal X coordinates.
+         * - first table determines columns processed, all others must have at least the same column count.
+         * - Tables are left as needsLayout==true, so while equal width is ensured, you may have to pack if you want to see the value before this is rendered.
+         */
+        fun equalizeColumns(vararg tables: Table) {
+            for (table in tables)
+                table.packIfNeeded()
+            val columns = tables.first().columns
+            if (tables.any { it.columns < columns })
+                throw IllegalStateException("IPageExtensions.equalizeColumns needs all tables to have at least the same number of columns as the first one")
+            val widths = (0 until columns)
+                .mapTo(ArrayList(columns)) { column ->
+                    tables.maxOf { it.getColumnWidth(column) }
+                }
+            for (table in tables) {
+                for (column in 0 until columns)
+                    table.cells[column].run {
+                        if (actor == null)
+                        // Empty cells ignore minWidth, so just doing Table.add() for an empty cell in the top row will break this. Fix!
+                            setActor<Label>("".toLabel())
+                        else if (Align.isCenterHorizontal(align)) (actor as? Label)?.run {
+                            // minWidth acts like fillX, so Labels will fill and then left-align by default. Fix!
+                            if (!Align.isCenterHorizontal(labelAlign))
+                                setAlignment(Align.center)
+                        }
+                        minWidth(widths[column] - padLeft - padRight)
+                    }
+                table.invalidate()
+            }
+        }
     }
 
     //endregion
@@ -472,8 +508,8 @@ open class TabbedPager(
         if (index !in 0 until pages.size) return false
         if (index == activePage) selectPage(-1)
         val page = pages.removeAt(index)
-        header.getCell(page.button).clearActor()
-        header.cells.removeIndex(index)
+        val cell = header.getCell(page.button).clearActor()
+        header.cells.removeValue(cell, true)
         return true
     }
 
@@ -505,6 +541,7 @@ open class TabbedPager(
      * @param insertBefore -1 to add at the end, or index of existing page to insert this before it.
      * @param secret Marks page as 'secret'. A password is asked once per [TabbedPager] and if it does not match the has passed in the constructor the page and all subsequent secret pages are dropped.
      * @param disabled Initial disabled state. Disabled pages cannot be selected even with [selectPage], their button is dimmed.
+     * @param scrollAlign Used only once on first page activation - sets the content ScrollPane's scrollX/scrollY so your content (which must have valid width/height at the time) aligns as specified to the pager's content area.
      * @param shortcutKey Optional keyboard key to associate.
      * @param syncScroll If on, the ScrollPanes for [content] and [fixed content][IPageExtensions.getFixedContent] will synchronize horizontally.
      * @return The new page's index or -1 if it could not be immediately added (secret).
@@ -620,15 +657,9 @@ open class TabbedPager(
         val buttonCell: Cell<Button>
         if (insertBefore >= 0 && insertBefore < pages.size) {
             newIndex = insertBefore
+            val cellIndex = header.cells.indexOf(header.getCell(pages[insertBefore].button))
             pages.add(insertBefore, page)
-            // Table.addActorAt breaks the Table, it's a Group method that updates children but not cells
-            // So we add an empty cell and move cell actors around
-            header.add()
-            for (i in header.cells.size - 1 downTo insertBefore + 1) {
-                val actor = header.removeActorAt(i - 1, true) as Button
-                header.cells[i].setActor<Button>(actor)
-            }
-            header.cells[insertBefore].setActor<Button>(page.button)
+            insertHeaderCellAt(cellIndex).setActor(page.button)
             buttonCell = header.getCell(page.button)
         } else {
             newIndex = pages.size
@@ -645,10 +676,40 @@ open class TabbedPager(
         return newIndex
     }
 
+    private fun insertHeaderCellAt(insertBefore: Int): Cell<Actor?> {
+        if (insertBefore < 0 || insertBefore >= header.cells.size) return header.add()
+        // Table.addActorAt breaks the Table, it's a Group method that updates children but not cells
+        // So we add an empty cell and move cell actors around
+        header.add()
+        for (i in header.cells.size - 1 downTo insertBefore + 1) {
+            val actor = header.removeActorAt(i - 1, true)
+            header.cells[i].setActor<Actor>(actor)
+        }
+        return header.cells[insertBefore]
+    }
+
     private fun addDeferredSecrets() {
         while (true) {
             val page = deferredSecretPages.removeFirstOrNull() ?: return
             addAndShowPage(page, -1)
+        }
+    }
+
+    /** Gets total width of the header buttons including their padding.
+     *  Header will be scrollable if getHeaderPrefWidth > width. */
+    fun getHeaderPrefWidth() = header.prefWidth
+
+    /** Adds any Actor to the header, e.g. informative labels.
+     *  Must be called _after_ all pages are final, otherwise effects not guaranteed.
+     *  @param leftSide If `true` then [actor] is inserted on the left, otherwise on the right of the page buttons.
+     */
+    fun decorateHeader(actor: Actor, leftSide: Boolean) {
+        val cell = insertHeaderCellAt(if (leftSide) 0 else -1)
+        cell.setActor(actor)
+        if (!leftSide) return
+        val addWidth = actor.width
+        for (page in pages) {
+            page.buttonX += addWidth
         }
     }
 }

@@ -18,6 +18,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.managers.TechManager
 import com.unciv.logic.civilization.managers.TurnManager
+import com.unciv.logic.civilization.managers.VictoryManager
 import com.unciv.logic.map.CityDistanceData
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
@@ -199,9 +200,12 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         }
     }
 
+    @delegate:Transient
+    val civMap by lazy { civilizations.associateBy { it.civName } }
     /** Get a civ by name
      *  @throws NoSuchElementException if no civ of that name is in the game (alive or dead)! */
-    fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
+    fun getCivilization(civName: String) = civMap[civName]
+        ?: civilizations.first { it.civName == civName } // This is for spectators who are added in later, artificially
     fun getCurrentPlayerCivilization() = currentPlayerCiv
     fun getCivilizationsAsPreviews() = civilizations.map { it.asPreview() }.toMutableList()
     /** Get barbarian civ
@@ -395,6 +399,16 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         diplomaticVictoryVotesProcessed = true
     }
 
+    /** @return `true` if someone has won - checks existing [victoryData] and each civ's [VictoryManager.getVictoryTypeAchieved] */
+    fun checkForVictory(): Boolean {
+        if (victoryData != null) return true
+        for (civ in civilizations) {
+            TurnManager(civ).updateWinningCiv()
+            if (victoryData != null) return true
+        }
+        return false
+    }
+
     private fun addEnemyUnitNotification(thisPlayer: Civilization, tiles: List<Tile>, inOrNear: String) {
         // don't flood the player with similar messages. instead cycle through units by clicking the message multiple times.
         if (tiles.size < 3) {
@@ -551,8 +565,10 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         ) {
             for (unit in civInfo.units.getCivUnits())
                 unit.updateVisibleTiles(false) // this needs to be done after all the units are assigned to their civs and all other transients are set
-            if(civInfo.playerType == PlayerType.Human)
+            if (civInfo.playerType == PlayerType.Human)
                 civInfo.exploredRegion.setMapParameters(tileMap.mapParameters) // Required for the correct calculation of the explored region on world wrap maps
+
+            civInfo.cache.updateOurTiles()
             civInfo.cache.updateSightAndResources() // only run ONCE and not for each unit - this is a huge performance saver!
 
             // Since this depends on the cities of ALL civilizations,
@@ -587,7 +603,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         spaceResources.clear()
         spaceResources.addAll(ruleset.buildings.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
-            .flatMap { it.getResourceRequirements().keys })
+            .flatMap { it.getResourceRequirementsPerTurn().keys })
         spaceResources.addAll(ruleset.victories.values.flatMap { it.requiredSpaceshipParts })
 
         barbarians.setTransients(this)

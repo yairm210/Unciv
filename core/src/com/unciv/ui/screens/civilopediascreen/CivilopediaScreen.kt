@@ -11,22 +11,23 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
-import com.unciv.ui.images.IconTextButton
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.KeyCharAndCode
-import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.images.IconTextButton
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
 
 /** Screen displaying the Civilopedia
@@ -121,7 +122,7 @@ class CivilopediaScreen(
                 compareBy<CivilopediaEntry>{ it.sortBy }
                     .thenBy (UncivGame.Current.settings.getCollatorFromLocale()) {
                         // In order for the extra icons on Happiness and Faith to not affect sort order
-                        it.name.tr().replace(Fonts.happiness.toString(),"").replace(Fonts.faith.toString(),"") })
+                        it.name.tr(true).replace(Fonts.happiness.toString(),"").replace(Fonts.faith.toString(),"") })
 
         var currentY = -1f
 
@@ -138,7 +139,8 @@ class CivilopediaScreen(
                     entryButton.add(entry.image).padLeft(20f).padRight(10f)
                 else
                     entryButton.add(entry.image).padLeft(10f)
-            entryButton.left().add(entry.name.toLabel(Color.WHITE, 25)).pad(10f)
+            entryButton.left().add(entry.name
+                .toLabel(Color.WHITE, 25, hideIcons=true)).pad(10f)
             entryButton.onClick { selectEntry(entry) }
             entryButton.name = entry.name               // make button findable
             val cell = entrySelectTable.add(entryButton).height(75f).expandX().fillX()
@@ -182,6 +184,14 @@ class CivilopediaScreen(
             it.color = if (it.name == entry.name) Color.BLUE else Color.WHITE
         }
     }
+    private fun selectDefaultEntry() {
+        val name = ruleset.mods.asSequence()
+                .filter { RulesetCache[it]?.modOptions?.isBaseRuleset == true }
+                .plus("Civilopedia")
+                .firstOrNull { it in entryIndex.keys }
+                ?: return
+        selectEntry(name , noScrollAnimation = true)
+    }
 
     init {
         val imageSize = 50f
@@ -208,7 +218,7 @@ class CivilopediaScreen(
                 CivilopediaCategories.Improvement -> ruleset.tileImprovements.values
                 CivilopediaCategories.Unit -> ruleset.units.values
                 CivilopediaCategories.UnitType -> UnitType.getCivilopediaIterator(ruleset)
-                CivilopediaCategories.Nation -> ruleset.nations.values.filter { !it.isSpectator() }
+                CivilopediaCategories.Nation -> ruleset.nations.values.filter { !it.isSpectator }
                 CivilopediaCategories.Technology -> ruleset.technologies.values
                 CivilopediaCategories.Promotion -> ruleset.unitPromotions.values
                 CivilopediaCategories.Policy -> ruleset.policies.values
@@ -287,6 +297,9 @@ class CivilopediaScreen(
 
         if (link.isEmpty() || '/' !in link)
             selectCategory(category)
+        // show a default entry when opened without a target
+        if (link.isEmpty() && category == CivilopediaCategories.Tutorial)
+            selectDefaultEntry()
         if (link.isNotEmpty())
             if ('/' in link)
                 selectLink(link)

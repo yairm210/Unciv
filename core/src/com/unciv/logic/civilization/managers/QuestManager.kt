@@ -3,7 +3,6 @@ package com.unciv.logic.civilization.managers
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.CivFlags
@@ -26,7 +25,6 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.randomWeighted
 import com.unciv.ui.components.extensions.toPercent
 import kotlin.math.max
@@ -461,7 +459,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
                 NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
         } else {
             assignee.addNotification(
-                    "The [${assignedQuest.questName}] quest for [${civInfo.civName}] has ended. It was won by [${winners.joinToString { it.assignee.tr() }}].",
+                    "The [${assignedQuest.questName}] quest for [${civInfo.civName}] has ended. It was won by [${winners.joinToString { "{${it.assignee}}" }}].",
                     civInfo.getCapital()!!.location,
                 NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
         }
@@ -779,8 +777,8 @@ class QuestManager : IsPartOfGameInfoSerialization {
         val civilizationsToFind = challenger.getKnownCivs()
                 .filter { it.isAlive() && it.isMajorCiv() && !challenger.hasMetCivTerritory(it) }
 
-        if (civilizationsToFind.isNotEmpty())
-            return civilizationsToFind.random()
+        if (civilizationsToFind.any())
+            return civilizationsToFind.toList().random()
 
         return null
     }
@@ -798,7 +796,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
         val validTargets = civInfo.getKnownCivs().filter { it.isCityState() && challenger.knows(it)
                 && civInfo.proximity[it.civName] == closestProximity }
 
-        return validTargets.randomOrNull()
+        return validTargets.toList().randomOrNull()
     }
 
     /** Returns a [Civilization] of the civ that most recently bullied [civInfo].

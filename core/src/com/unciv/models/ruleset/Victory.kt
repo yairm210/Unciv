@@ -73,7 +73,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
     val type: MilestoneType? = MilestoneType.values().firstOrNull { uniqueDescription.getPlaceholderText() == it.text.getPlaceholderText() }
     val params = uniqueDescription.getPlaceholderParameters()
 
-    fun getIncompleteSpaceshipParts(civInfo: Civilization): Counter<String> {
+    private fun getIncompleteSpaceshipParts(civInfo: Civilization): Counter<String> {
         val incompleteSpaceshipParts = parentVictory.requiredSpaceshipPartsAsCounter.clone()
         incompleteSpaceshipParts.remove(civInfo.victoryManager.currentsSpaceshipParts)
         return incompleteSpaceshipParts
@@ -136,14 +136,20 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                 val amountDone =
                     if (completed) amountToDo
                     else civInfo.originalMajorCapitalsOwned()
-                "{$uniqueDescription} ($amountDone/$amountToDo)"
+                if (civInfo.hideCivCount())
+                    "{$uniqueDescription} ($amountDone/?)"
+                else
+                    "{$uniqueDescription} ($amountDone/$amountToDo)"
             }
             MilestoneType.DestroyAllPlayers -> {
                 val amountToDo = civInfo.gameInfo.civilizations.count { it.isMajorCiv() } - 1  // Don't count yourself
                 val amountDone =
                     if (completed) amountToDo
-                    else amountToDo - (civInfo.gameInfo.getAliveMajorCivs().filter { it != civInfo }.size)
-                "{$uniqueDescription} ($amountDone/$amountToDo)"
+                    else amountToDo - (civInfo.gameInfo.getAliveMajorCivs().count { it != civInfo })
+                if (civInfo.hideCivCount())
+                    "{$uniqueDescription} ($amountDone/?)"
+                else
+                    "{$uniqueDescription} ($amountDone/$amountToDo)"
             }
             MilestoneType.AddedSSPartsInCapital -> {
                 val completeSpaceshipParts = civInfo.victoryManager.currentsSpaceshipParts
@@ -185,8 +191,10 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
         val buttons = mutableListOf(headerButton)
         when (type) {
             // No extra buttons necessary
+            null,
             MilestoneType.BuiltBuilding, MilestoneType.BuildingBuiltGlobally,
             MilestoneType.ScoreAfterTimeOut, MilestoneType.WinDiplomaticVote -> {}
+
             MilestoneType.AddedSSPartsInCapital -> {
                 val completedSpaceshipParts = civInfo.victoryManager.currentsSpaceshipParts
                 val incompleteSpaceshipParts = getIncompleteSpaceshipParts(civInfo)
@@ -204,23 +212,30 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
             }
 
             MilestoneType.DestroyAllPlayers -> {
-                val majorCivs = civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it != civInfo }
-                for (civ in majorCivs) {
+                val hideCivCount = civInfo.hideCivCount()
+                for (civ in civInfo.gameInfo.civilizations) {
+                    if (civ == civInfo || !civ.isMajorCiv()) continue
+                    if (hideCivCount && !civInfo.knows(civ)) continue
                     val milestoneText =
-                        if (civInfo.knows(civ) || !civ.isAlive()) "Destroy [${civ.civName}]"
+                        if (civInfo.knows(civ) || civ.isDefeated()) "Destroy [${civ.civName}]"
                         else "Destroy [${Constants.unknownNationName}]"
-                    buttons.add(getMilestoneButton(milestoneText, !civ.isAlive()))
+                    buttons.add(getMilestoneButton(milestoneText, civ.isDefeated()))
                 }
+                if (hideCivCount) buttons.add(getMilestoneButton("Destroy ? * [${Constants.unknownNationName}]", false))
             }
 
             MilestoneType.CaptureAllCapitals -> {
+                val hideCivCount = civInfo.hideCivCount()
                 val originalCapitals = civInfo.gameInfo.getCities().filter { it.isOriginalCapital }
                 for (city in originalCapitals) {
+                    val isKnown = civInfo.hasExplored(city.getCenterTile())
+                    if (hideCivCount && !isKnown) continue
                     val milestoneText =
-                        if (civInfo.hasExplored(city.getCenterTile())) "Capture [${city.name}]"
+                        if (isKnown) "Capture [${city.name}]"
                         else "Capture [${Constants.unknownCityName}]"
                     buttons.add(getMilestoneButton(milestoneText, city.civ == civInfo))
                 }
+                if (hideCivCount) buttons.add(getMilestoneButton("Capture ? * [${Constants.unknownCityName}]", false))
             }
 
             MilestoneType.CompletePolicyBranches -> {
@@ -229,6 +244,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                     buttons.add(getMilestoneButton(finisher, civInfo.policies.isAdopted(finisher)))
                 }
             }
+
             MilestoneType.WorldReligion -> {
                 val majorCivs = civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it.isAlive() }
                 val civReligion = civInfo.religionManager.religion
@@ -242,7 +258,6 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
                     buttons.add(getMilestoneButton(milestoneText, milestoneMet))
                 }
             }
-            null -> {}
         }
         return buttons
     }
