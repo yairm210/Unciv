@@ -109,7 +109,7 @@ class Ruleset {
     }
 
     private fun <T : INamed> createHashmap(items: Array<T>): LinkedHashMap<String, T> {
-        val hashMap = LinkedHashMap<String, T>()
+        val hashMap = LinkedHashMap<String, T>(items.size)
         for (item in items)
             hashMap[item.name] = item
         return hashMap
