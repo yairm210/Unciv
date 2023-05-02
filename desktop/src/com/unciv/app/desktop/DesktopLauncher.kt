@@ -13,6 +13,7 @@ import com.unciv.ui.components.Fonts
 import com.unciv.utils.Display
 import com.unciv.utils.Log
 import java.awt.GraphicsEnvironment
+import kotlin.math.max
 
 internal object DesktopLauncher {
 
