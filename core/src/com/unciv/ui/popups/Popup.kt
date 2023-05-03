@@ -44,15 +44,23 @@ open class Popup(
 
     // This exists to differentiate the actual popup (the inner table)
     // from the 'screen blocking' part of the popup (which covers the entire screen)
-    val innerTable = Table(BaseScreen.skin)
+    protected val innerTable = Table(BaseScreen.skin)
 
+    /** Callbacks that will be called whenever this Popup is shown */
     val showListeners = mutableListOf<() -> Unit>()
+    /** Callbacks that will be called whenever this Popup is closed, no matter how (e.g. no distinction OK/Cancel) */
     val closeListeners = mutableListOf<() -> Unit>()
 
-    val events = EventBus.EventReceiver()
+    protected val events = EventBus.EventReceiver()
 
-    var hasCloseButton = false
-    var onCloseCallback: (() -> Unit)? = null
+    /** Enables/disables closing by clicking/trapping outside [innerTable].
+     *
+     *  Automatically set when [addCloseButton] is called but may be changed back or enabled without such a button.
+     */
+    protected var clickBehindToClose = false
+
+    /** Unlike [closeListeners] this is only fired on "click-behind" closing */
+    protected var onCloseCallback: (() -> Unit)? = null
 
     init {
         // Set actor name for debugging
@@ -124,8 +132,8 @@ open class Popup(
     /** Allow closing a popup by clicking 'outside', Android-style, but only if a Close button exists */
     private fun getBehindClickListener() = object : ClickListener() {
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
-            if (!hasCloseButton) return
-            // Since Gdx doesn't actually limit events to the actually `hit` actors...
+            if (!clickBehindToClose) return
+            // Since Gdx doesn't limit events to the actually `hit` actors...
             if (event?.target != this@Popup) return
             close()
             onCloseCallback?.invoke()
@@ -137,6 +145,12 @@ open class Popup(
     override fun row(): Cell<Actor> = innerTable.row()
     override fun defaults(): Cell<Actor> = innerTable.defaults()
     fun addSeparator() = innerTable.addSeparator()
+    override fun clear() {
+        innerTable.clear()
+        clickBehindToClose = false
+        onCloseCallback = null
+    }
+
 
     /**
      * Adds a [caption][text] label: A label with word wrap enabled over half the stage width.
@@ -188,7 +202,7 @@ open class Popup(
         style: TextButtonStyle? = null,
         action: (()->Unit)? = null
     ): Cell<TextButton> {
-        hasCloseButton = true
+        clickBehindToClose = true
         onCloseCallback = action
         val cell = addButton(text, additionalKey, style) {
             close()
@@ -253,9 +267,7 @@ open class Popup(
      * and a close button if requested
      */
     fun reuseWith(newText: String, withCloseButton: Boolean = false) {
-        innerTable.clear()
-        hasCloseButton = false
-        onCloseCallback = null
+        clear()
         addGoodSizedLabel(newText)
         if (withCloseButton) {
             row()
