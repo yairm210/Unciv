@@ -20,8 +20,10 @@ import kotlin.math.abs
  * or [MapGenerator][com.unciv.logic.map.mapgenerator.MapGenerator]; or as part of a running [game][GameInfo].
  *
  * Note: Will be Serialized -> Take special care with lateinit and lazy!
+ *
+ * @param initialCapacity Passed to constructor of [tileList]
  */
-class TileMap : IsPartOfGameInfoSerialization {
+class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     companion object {
         /** Legacy way to store starting locations - now this is used only in [translateStartingLocationsFromMap] */
         const val startingLocationPrefix = "StartingLocation "
@@ -38,7 +40,7 @@ class TileMap : IsPartOfGameInfoSerialization {
 
     var mapParameters = MapParameters()
 
-    var tileList = ArrayList<Tile>()
+    var tileList = ArrayList<Tile>(initialCapacity)
 
     /** Structure geared for simple serialization by Gdx.Json (which is a little blind to kotlin collections, especially HashSet)
      * @param position [Vector2] of the location
@@ -93,11 +95,9 @@ class TileMap : IsPartOfGameInfoSerialization {
     //endregion
     //region Constructors
 
-    /** for json parsing, we need to have a default constructor */
-    constructor()
-
     /** creates a hexagonal map of given radius (filled with grassland) */
-    constructor(radius: Int, ruleset: Ruleset, worldWrap: Boolean = false) {
+    constructor(radius: Int, ruleset: Ruleset, worldWrap: Boolean = false)
+            : this (HexMath.getNumberOfTilesInHexagon(radius)) {
         startingLocations.clear()
         val firstAvailableLandTerrain = MapLandmassGenerator.getInitializationTerrain(ruleset, TerrainType.Land)
         for (vector in HexMath.getVectorsInDistance(Vector2.Zero, radius, worldWrap))
@@ -106,7 +106,8 @@ class TileMap : IsPartOfGameInfoSerialization {
     }
 
     /** creates a rectangular map of given width and height (filled with grassland) */
-    constructor(width: Int, height: Int, ruleset: Ruleset, worldWrap: Boolean = false) {
+    constructor(width: Int, height: Int, ruleset: Ruleset, worldWrap: Boolean = false)
+            : this(width * height) {
         startingLocations.clear()
         val firstAvailableLandTerrain = MapLandmassGenerator.getInitializationTerrain(ruleset, TerrainType.Land)
 
@@ -130,13 +131,16 @@ class TileMap : IsPartOfGameInfoSerialization {
 
     /** @return a deep-copy clone of the serializable fields, no transients initialized */
     fun clone(): TileMap {
-        val toReturn = TileMap()
-        toReturn.tileList.addAll(tileList.map { it.clone() })
+        val toReturn = TileMap(tileList.size)
+        toReturn.tileList.addAll(tileList.asSequence().map { it.clone() })
         toReturn.mapParameters = mapParameters
         toReturn.ruleset = ruleset
+
+        // Note during normal play this is empty. Supported for MapEditorScreen.getMapCloneForSave.
         toReturn.startingLocations.clear()
         toReturn.startingLocations.ensureCapacity(startingLocations.size)
         toReturn.startingLocations.addAll(startingLocations)
+
         return toReturn
     }
 

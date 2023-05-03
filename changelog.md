@@ -1,3 +1,11 @@
+## 4.6.8
+
+Reduce a few memory allocations  - By SomeTroglodyte
+
+AbsoluteUnits - Norwegian Ski Infantry, Mehal Sefari, Carolean, Foreign Legion  - By letstalkaboutdune
+
+Various performance improvements  - By WhoIsJohannes
+
 ## 4.6.7
 
 Modding: terrainFilter now accommodates nationFilter for tile owner
