@@ -38,7 +38,8 @@ internal class LobbyBrowserTable(private val screen: BaseScreen): Table(BaseScre
             val popup = AskTextPopup(
                 screen,
                 enterLobbyPasswordText,
-                ImageGetter.getImage("OtherIcons/LockSmall").apply { this.color = Color.BLACK }
+                ImageGetter.getImage("OtherIcons/LockSmall")
+                    .apply { this.color = Color.BLACK }
                     .surroundWithCircle(80f),
                 maxLength = 120
             ) {

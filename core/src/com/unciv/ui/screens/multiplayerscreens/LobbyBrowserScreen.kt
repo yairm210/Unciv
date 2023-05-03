@@ -25,6 +25,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.Concurrency.runBlocking
+import kotlinx.coroutines.delay
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
 
 /**
@@ -33,6 +34,12 @@ import com.unciv.ui.components.AutoScrollPane as ScrollPane
 class LobbyBrowserScreen : BaseScreen() {
     private val lobbyBrowserTable = LobbyBrowserTable(this)
     private val gameList = GameListV2(this, ::onSelect)
+    private val updateJob = Concurrency.run {
+        while (true) {
+            delay(30 * 1000)
+            lobbyBrowserTable.triggerUpdate()
+        }
+    }
 
     private val me
         get() = runBlocking { game.onlineMultiplayer.api.account.get() }!!
@@ -116,6 +123,7 @@ class LobbyBrowserScreen : BaseScreen() {
     }
 
     override fun dispose() {
+        updateJob.cancel()
         gameList.dispose()
         super.dispose()
     }

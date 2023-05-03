@@ -10,7 +10,7 @@ import kotlinx.coroutines.runBlocking
  * @param texts The texts for the popup, as separated good-sized labels
  * @param action A lambda to execute when the button is pressed, after closing the popup
  */
-open class InfoPopup(
+class InfoPopup(
     stageToShowOn: Stage,
     vararg texts: String,
     action: (() -> Unit)? = null
@@ -48,21 +48,22 @@ open class InfoPopup(
         fun <T> load(stage: Stage, vararg texts: String, coroutine: suspend () -> T): T? {
             val popup = Popup(stage).apply { addGoodSizedLabel("Working...").row() }
             popup.open(force = true)
-            return runBlocking {
+            var result: T? = null
+            val job = Concurrency.run {
                 try {
-                    val result = coroutine()
+                    result = coroutine()
                     Concurrency.runOnGLThread {
                         popup.close()
                     }
-                    result
                 } catch (e: UncivShowableException) {
                     Concurrency.runOnGLThread {
                         popup.close()
                         InfoPopup(stage, *texts, e.localizedMessage)
                     }
-                    null
                 }
             }
+            runBlocking { job.join() }
+            return result
         }
     }
 

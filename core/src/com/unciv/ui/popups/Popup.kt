@@ -90,7 +90,7 @@ open class Popup(
      * Displays the Popup on the screen. If another popup is already open, this one will display after the other has
      * closed. Use [force] = true if you want to open this popup above the other one anyway.
      */
-    fun open(force: Boolean = false) {
+    open fun open(force: Boolean = false) {
         stageToShowOn.addActor(this)
         innerTable.pack()
         pack()

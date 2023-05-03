@@ -21,6 +21,7 @@ import com.unciv.logic.multiplayer.apiv2.FriendshipChanged
 import com.unciv.logic.multiplayer.apiv2.FriendshipEvent
 import com.unciv.logic.multiplayer.apiv2.IncomingChatMessage
 import com.unciv.logic.multiplayer.apiv2.IncomingFriendRequest
+import com.unciv.logic.multiplayer.apiv2.IncomingInvite
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.skins.SkinStrings
 import com.unciv.ui.components.Fonts
@@ -30,10 +31,12 @@ import com.unciv.ui.components.extensions.DispatcherVetoer
 import com.unciv.ui.components.extensions.installShortcutDispatcher
 import com.unciv.ui.components.extensions.isNarrowerThan4to3
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.LobbyInvitationPopup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.popups.activePopup
 import com.unciv.ui.popups.options.OptionsPopup
 import com.unciv.ui.tutorials.TutorialController
+import com.unciv.utils.concurrency.Concurrency
 
 abstract class BaseScreen : Screen {
 
@@ -83,6 +86,15 @@ abstract class BaseScreen : Screen {
                 }
                 FriendshipEvent.Deleted -> {
                     ToastPopup("[${it.friend.displayName}] removed you as a friend", this)
+                }
+            }
+        }
+        events.receive(IncomingInvite::class, null) {
+            val lobbyInvitationPopup = LobbyInvitationPopup(this, it)
+            Concurrency.run {
+                lobbyInvitationPopup.await()
+                Concurrency.runOnGLThread {
+                    lobbyInvitationPopup.open()
                 }
             }
         }
