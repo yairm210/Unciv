@@ -340,10 +340,8 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     fun getBeliefsToChooseAtFounding(): Counter<BeliefType> = getBeliefsToChooseAtProphetUse(false)
     fun getBeliefsToChooseAtEnhancing(): Counter<BeliefType> = getBeliefsToChooseAtProphetUse(true)
 
-    fun chooseBeliefs(beliefs: List<Belief>, iconName: String? = null, religionName: String? = null, useFreeBeliefs: Boolean = false) {
+    fun chooseBeliefs(beliefs: List<Belief>, useFreeBeliefs: Boolean = false) {
         when (religionState) {
-            ReligionState.FoundingReligion ->
-                foundReligion(iconName!!, religionName!!)
             ReligionState.EnhancingReligion -> {
                 religionState = ReligionState.EnhancedReligion
                 for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnhancingReligion))
@@ -381,7 +379,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     }
 
 
-    private fun foundReligion(displayName: String, name: String) {
+    internal fun foundReligion(displayName: String, name: String) {
         val newReligion = Religion(name, civInfo.gameInfo, civInfo.civName)
         newReligion.displayName = displayName
         if (religion != null) {
