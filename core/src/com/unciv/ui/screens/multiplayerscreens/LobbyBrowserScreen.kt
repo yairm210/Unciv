@@ -87,7 +87,7 @@ class LobbyBrowserScreen : BaseScreen() {
         }
         socialButton.onClick {
             val popup = Popup(stage)
-            popup.innerTable.add(SocialMenuTable(this as BaseScreen, me.uuid)).center().minWidth(0.5f * stage.width).fillX().fillY().row()
+            popup.add(SocialMenuTable(this as BaseScreen, me.uuid)).center().minWidth(0.5f * stage.width).fillX().fillY().row()
             popup.addCloseButton()
             popup.open()
         }

@@ -158,7 +158,7 @@ class LobbyScreen(
         }
         bottomButtonSocial.onActivation {
             val popup = Popup(stage)
-            popup.innerTable.add(SocialMenuTable(this as BaseScreen, me.uuid)).center().minWidth(0.5f * stage.width).fillX().fillY().row()
+            popup.add(SocialMenuTable(this as BaseScreen, me.uuid)).center().minWidth(0.5f * stage.width).fillX().fillY().row()
             popup.addCloseButton()
             popup.open()
         }
@@ -200,17 +200,19 @@ class LobbyScreen(
             }
         }
 
-        val startingGamePopup = Popup(stage)
+        val startingGamePopup = object: Popup(stage) {
+            fun getTable() = innerTable
+        }
         events.receive(GameStarted::class, { it.lobbyUUID == lobbyUUID }) {
             Log.debug("Game in lobby %s has been started", lobbyUUID)
             gameUUID = it.gameUUID
             startingGamePopup.reuseWith("The game is starting. Waiting for host...")
-            startingGamePopup.innerTable.cells.last().colspan(2)
+            startingGamePopup.getTable().cells.last().colspan(2)
             startingGamePopup.row()
             startingGamePopup.addGoodSizedLabel("Closing this popup will return you to the lobby browser.")
-            startingGamePopup.innerTable.cells.last().colspan(2)
+            startingGamePopup.getTable().cells.last().colspan(2)
             startingGamePopup.row()
-            startingGamePopup.innerTable.columns.inc()
+            startingGamePopup.getTable().columns.inc()
             startingGamePopup.addCloseButton {
                 game.popScreen()
             }
@@ -421,6 +423,10 @@ class LobbyScreen(
 
     override fun updateRuleset() {
         Log.error("Not yet implemented")
+    }
+
+    override fun getColumnWidth(): Float {
+        return stage.width / (if (isNarrowerThan4to3()) 1 else 3)
     }
 
 }
