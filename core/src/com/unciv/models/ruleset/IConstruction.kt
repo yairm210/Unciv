@@ -174,6 +174,7 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
 
     RequiresBuildingInThisCity(true, "Requires a specific building in this city!"),
     RequiresBuildingInAllCities(true, "Requires a specific building in all cities!"),
+    RequiresBuildingInSomeCities(true, "Requires a specific building in more cities!"),
     RequiresBuildingInSomeCity(true, "Requires a specific building anywhere in your empire!"),
 
     WonderAlreadyBuilt(false, "Wonder already built"),

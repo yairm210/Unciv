@@ -456,6 +456,11 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
 
         val rejectionReasons = getRejectionReasons(cityConstructions)
+
+        if (rejectionReasons.any { it.type == RejectionReasonType.RequiresBuildingInSomeCities }
+                && cityConstructions.city.civ.gameInfo.gameParameters.oneCityChallenge)
+            return false // You will never be able to get more cities, this building is effectively disabled
+
         return rejectionReasons.none { !it.shouldShow }
             || (
                 canBePurchasedWithAnyStat(cityConstructions.city)
@@ -539,7 +544,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                         val equivalentBuildingName = civ.getEquivalentBuilding(buildingName).name
                         yield(
                                 // replace with civ-specific building for user
-                                RejectionReasonType.RequiresBuildingInAllCities.toInstance(
+                                RejectionReasonType.RequiresBuildingInSomeCities.toInstance(
                                     unique.text.fillPlaceholders(equivalentBuildingName, numberOfCitiesRequired.toString()) +
                                             " ($numberOfCitiesWithBuilding/$numberOfCitiesRequired)"
                                 ) )
