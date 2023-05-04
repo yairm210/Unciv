@@ -342,13 +342,16 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         val civResources = civInfo.getCivResourcesByName()
         val civResourceSupply = civInfo.getCivResourceSupply()
         for ((resource, label, icon) in resourceActors) {
-            if (resource.revealedBy != null && !civInfo.tech.isResearched(resource.revealedBy!!))
-                continue
             if (resource.hasUnique(UniqueType.NotShownOnWorldScreen)) continue
+
+            val amount = civResources[resource.name] ?: 0
+
+            if (resource.revealedBy != null && !civInfo.tech.isResearched(resource.revealedBy!!)
+                    && amount == 0) // You can trade for resources you cannot process yourself yet
+                continue
 
             resourcesWrapper.add(icon).padLeft(firstPadLeft).padRight(0f)
             firstPadLeft = 5f
-            val amount = civResources[resource.name] ?: 0
             if (!resource.isStockpiled())
                 label.setText(amount)
             else {
