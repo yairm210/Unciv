@@ -147,7 +147,7 @@ class AlertPopup(
                 close()
             }
         } else {
-            val mayAnnex = !conqueringCiv.getMatchingUniques(UniqueType.MayNotAnnexCities).any()
+            val mayAnnex = !conqueringCiv.hasUnique(UniqueType.MayNotAnnexCities)
             addAnnexOption(mayAnnex = mayAnnex) {
                 city.puppetCity(conqueringCiv)
                 city.annexCity()
@@ -163,7 +163,7 @@ class AlertPopup(
             }
             addSeparator()
 
-            addRazeOption(canRaze = { city.canBeDestroyed(justCaptured = true) }, canAnnex = mayAnnex) {
+            addRazeOption(canRaze = { city.canBeDestroyed(justCaptured = true) }, mayAnnex = mayAnnex) {
                 city.puppetCity(conqueringCiv)
                 if (mayAnnex) { city.annexCity() }
                 city.isBeingRazed = true
@@ -467,7 +467,7 @@ class AlertPopup(
         addGoodSizedLabel("Liberating a city returns it to its original owner, giving you a massive relationship boost with them!")
     }
 
-    private fun addRazeOption(canRaze: () -> Boolean, canAnnex: Boolean?, razeAction: () -> Unit) {
+    private fun addRazeOption(canRaze: () -> Boolean, mayAnnex: Boolean, razeAction: () -> Unit) {
         val button = "Raze".toTextButton()
         button.apply {
             if (!canRaze()) disable()
@@ -478,7 +478,7 @@ class AlertPopup(
         }
         add(button).row()
         if (canRaze()) {
-            if (canAnnex == true) {
+            if (mayAnnex == true) {
                 addGoodSizedLabel("Razing the city annexes it, and starts burning the city to the ground.").row()
             } else {
                 addGoodSizedLabel("Razing the city puppets it, and starts burning the city to the ground.").row()
