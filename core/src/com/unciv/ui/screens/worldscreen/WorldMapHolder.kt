@@ -508,8 +508,8 @@ class WorldMapHolder(
         actor.toFront()
 
         actor.y += actor.height
+        actor.setOrigin(Align.bottom)
         unitActionOverlays.add(actor)
-
     }
 
     /** Returns true when the civ is a human player defeated in singleplayer game */
@@ -774,6 +774,10 @@ class WorldMapHolder(
                 if (tileGroup.layerCityButton.hasChildren())
                     tileGroup.layerCityButton.isTransform = true
                 tileGroup.layerCityButton.setScale(clampedCityButtonZoom)
+            }
+            for (actor in unitActionOverlays) {
+                if (actor is Group) actor.isTransform = true
+                actor.setScale(clampedCityButtonZoom)
             }
         }
     }
