@@ -34,7 +34,9 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
-import java.util.*
+import java.util.UUID
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 
 /**
@@ -163,9 +165,11 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     fun clone(): GameInfo {
         val toReturn = GameInfo()
         toReturn.tileMap = tileMap.clone()
-        toReturn.civilizations.addAll(civilizations.map { it.clone() })
+        toReturn.civilizations = civilizations.asSequence()
+            .map { it.clone() }
+            .toCollection(ArrayList(civilizations.size))
         toReturn.barbarians = barbarians.clone()
-        toReturn.religions.putAll(religions.map { Pair(it.key, it.value.clone()) })
+        toReturn.religions.putAll(religions.asSequence().map { it.key to it.value.clone() })
         toReturn.currentPlayer = currentPlayer
         toReturn.currentTurnStartTime = currentTurnStartTime
         toReturn.turns = turns
@@ -175,7 +179,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         toReturn.diplomaticVictoryVotesCast.putAll(diplomaticVictoryVotesCast)
         toReturn.oneMoreTurnMode = oneMoreTurnMode
         toReturn.customSaveLocation = customSaveLocation
-        toReturn.victoryData = victoryData
+        toReturn.victoryData = victoryData?.copy()
         toReturn.historyStartTurn = historyStartTurn
 
         return toReturn
