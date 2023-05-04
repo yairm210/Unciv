@@ -154,7 +154,7 @@ class AlertPopup(
                 worldScreen.shouldUpdate = true
                 close()
             }
-                addSeparator()
+            addSeparator()
 
             addPuppetOption(mayAnnex = mayAnnex) {
                 city.puppetCity(conqueringCiv)
