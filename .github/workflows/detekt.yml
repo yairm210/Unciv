@@ -1,0 +1,35 @@
+name: Detekt
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  detekt:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+        distribution: 'adopt'
+
+    - name: Setup Detekt
+      id: setup_detekt
+      uses: peter-murray/setup-detekt@v2
+      with:
+        detekt_version: '1.23.0-RC3'
+
+    - name: Run Detekt
+      run: detekt-cli --auto-correct --parallel --report md:detetk/reports.md --config config/detekt/detekt.yml
