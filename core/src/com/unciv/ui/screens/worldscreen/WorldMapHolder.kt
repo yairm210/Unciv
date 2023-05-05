@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.automation.unit.AttackableTile
 import com.unciv.logic.automation.unit.BattleHelper
@@ -206,12 +207,10 @@ class WorldMapHolder(
     }
 
     private fun onTileRightClicked(unit: MapUnit, tile: Tile) {
-        if (UncivGame.Current.gameInfo!!.getCurrentPlayerCivilization().isSpectator()) {
-            return
-        }
         removeUnitActionOverlay()
         selectedTile = tile
         unitMovementPaths.clear()
+        if (!GUI.isAllowedChangeState()) return
 
         // Concurrency might open up a race condition window - if worldScreen.shouldUpdate is on too
         // early, concurrent code might possibly call worldScreen.render() and then our request will be
