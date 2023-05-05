@@ -520,10 +520,10 @@ class PolicyPickerScreen(val viewingCiv: Civilization, val canChangeState: Boole
         }.toGroup(15f) else null
         val expandIcon = ImageGetter.getImage("OtherIcons/BackArrow").apply { rotation = 90f }.toGroup(10f)
         table.add(expandIcon).minWidth(15f).expandX().left()
-        table.add(branch.name.tr().uppercase().toLabel(fontSize = 14).apply { setAlignment(Align.center) }).center()
+        table.add(branch.name.tr(hideIcons = true).uppercase().toLabel(fontSize = 14).apply { setAlignment(Align.center) }).center()
         table.add(icon).expandX().left().padLeft(5f)
 
-        header.setTouchable(Touchable.enabled)
+        header.touchable = Touchable.enabled
 
         header.add(table).minWidth(150f).growX()
         header.pack()

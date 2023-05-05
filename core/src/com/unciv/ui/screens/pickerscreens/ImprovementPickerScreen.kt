@@ -119,7 +119,7 @@ class ImprovementPickerScreen(
                 if (isSuperseded) shortcutKey = null
             }
 
-            var labelText = improvement.name.tr()
+            var labelText = improvement.name.tr(true)
             val turnsToBuild = if (tile.improvementInProgress == improvement.name) tile.turnsToImprovement
             else improvement.getTurnsToBuild(currentPlayerCiv, unit)
 

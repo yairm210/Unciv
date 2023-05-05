@@ -21,7 +21,18 @@ import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.WrappableLabel
-import com.unciv.ui.components.extensions.*
+import com.unciv.ui.components.extensions.darken
+import com.unciv.ui.components.extensions.isEnabled
+import com.unciv.ui.components.extensions.isNarrowerThan4to3
+import com.unciv.ui.components.extensions.keyShortcuts
+import com.unciv.ui.components.extensions.onActivation
+import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.extensions.onDoubleClick
+import com.unciv.ui.components.extensions.setFontColor
+import com.unciv.ui.components.extensions.surroundWithCircle
+import com.unciv.ui.components.extensions.toImageButton
+import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -113,7 +124,7 @@ class PlayerPickerTable(
 
         // enable start game when at least one human player and they're not alone
         val humanPlayerCount = gameParameters.players.count { it.playerType == PlayerType.Human }
-        val isValid = humanPlayerCount >= 2 || humanPlayerCount >= 1 && isRandomNumberOfPlayers
+        val isValid = humanPlayerCount >= 1 && (isRandomNumberOfPlayers || gameParameters.players.size >= 2)
         (previousScreen as? PickerScreen)?.setRightSideButtonEnabled(isValid)
     }
 
@@ -269,7 +280,7 @@ class PlayerPickerTable(
                 ImageGetter.getRandomNationPortrait(40f)
             else ImageGetter.getNationPortrait(nationImageName, 40f)
         nationTable.add(nationImage).pad(5f)
-        nationTable.add(player.chosenCiv.toLabel()).pad(5f)
+        nationTable.add(player.chosenCiv.toLabel(hideIcons = true)).pad(5f)
         nationTable.touchable = Touchable.enabled
         return nationTable
     }
@@ -449,6 +460,7 @@ private class NationPickerPopup(
         closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
         closeButton.setPosition(buttonsOffsetFromEdge, buttonsOffsetFromEdge, Align.bottomLeft)
         innerTable.addActor(closeButton)
+        clickBehindToClose = true
 
         val okButton = "OtherIcons/Checkmark".toImageButton(Color.LIME)
         okButton.onClick { returnSelected() }

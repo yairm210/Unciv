@@ -9,10 +9,10 @@ import com.unciv.models.ruleset.unit.UnitMovementType
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.getConsumesAmountString
 import com.unciv.ui.components.extensions.toPercent
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import kotlin.math.pow
 
 object BaseUnitDescriptions {
@@ -35,10 +35,12 @@ object BaseUnitDescriptions {
      * @param city Supplies civInfo to show available resources after resource requirements */
     fun getDescription(baseUnit: BaseUnit, city: City): String {
         val lines = mutableListOf<String>()
-        val availableResources = city.civ.getCivResources().associate { it.resource.name to it.amount }
-        for ((resource, amount) in baseUnit.getResourceRequirements()) {
-            val available = availableResources[resource] ?: 0
-            lines += "{${resource.getConsumesAmountString(amount)}} ({[$available] available})".tr()
+        val availableResources = city.civ.getCivResourcesByName()
+        for ((resourceName, amount) in baseUnit.getResourceRequirementsPerTurn()) {
+            val available = availableResources[resourceName] ?: 0
+            val resource = baseUnit.ruleset.tileResources[resourceName] ?: continue
+            val consumesString = resourceName.getConsumesAmountString(amount, resource.isStockpiled())
+            lines += "$consumesString ({[$available] available})".tr()
         }
         var strengthLine = ""
         if (baseUnit.strength != 0) {
@@ -90,7 +92,7 @@ object BaseUnitDescriptions {
                 val buyCost = (30.0 * baseUnit.cost.toFloat().pow(0.75f) * baseUnit.hurryCostModifier.toPercent()).toInt() / 10 * 10
                 stats += "$buyCost${Fonts.gold}"
             }
-            textList += FormattedLine(stats.joinToString(", ", "{Cost}: "))
+            textList += FormattedLine(stats.joinToString("/", "{Cost}: "))
         }
 
         if (baseUnit.replacementTextForUniques.isNotEmpty()) {
@@ -105,12 +107,13 @@ object BaseUnitDescriptions {
             }
         }
 
-        val resourceRequirements = baseUnit.getResourceRequirements()
+        val resourceRequirements = baseUnit.getResourceRequirementsPerTurn()
         if (resourceRequirements.isNotEmpty()) {
             textList += FormattedLine()
-            for ((resource, amount) in resourceRequirements) {
+            for ((resourceName, amount) in resourceRequirements) {
+                val resource = ruleset.tileResources[resourceName] ?: continue
                 textList += FormattedLine(
-                    resource.getConsumesAmountString(amount),
+                    resourceName.getConsumesAmountString(amount, resource.isStockpiled()),
                     link = "Resource/$resource", color = "#F42"
                 )
             }

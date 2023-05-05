@@ -72,7 +72,7 @@ object BattleDamage {
             }
 
             val civResources = civInfo.getCivResourcesByName()
-            for (resource in combatant.unit.baseUnit.getResourceRequirements().keys)
+            for (resource in combatant.unit.baseUnit.getResourceRequirementsPerTurn().keys)
                 if (civResources[resource]!! < 0 && !civInfo.isBarbarian())
                     modifiers["Missing resource"] = -25  //todo ModConstants
 

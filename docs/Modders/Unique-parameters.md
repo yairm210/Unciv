@@ -9,6 +9,16 @@ These are split into two categories:
 
 Note that all of these are case-sensitive!
 
+## nationFilter
+
+Allows filtering for specific nations.
+
+- `All`
+- `City-states`
+- `Major`
+- Nation name
+- A unique a Nation has (verbatim, no placeholders)
+
 ## baseUnitFilter
 
 Unit filters can be divided up into two parts: `baseUnitFilter`s and `mapUnitFilter`s.
@@ -34,6 +44,19 @@ The following are allowed to be used:
 -   Any exact unique the unit has
 -   Any exact unique the unit type has
 -   Any combination of the above (will match only if all match). The format is `{filter1} {filter2}` and can match any number of filters. For example: `[{Military} {Water}]` units, `[{non-air} {Armor}]` units, etc. No space or other text is allowed between the `[` and the first `{`.
+
+## mapUnitFilter
+
+This indicates a unit as placed on the map. Compare with `baseUnitFilter`.
+
+- Any matching [baseUnitFilter](#baseunitfilter)
+- Any [nationFilter](#nationfilter) matching the owner
+- Any unique the unit has - also includes uniques not caught by the [baseUnitFilter](#baseunitfilter), for example promotions
+- `Wounded`
+- `Embarked`
+- `City-State`
+- `Barbarians`, `Barbarian`
+- Again, any combination of the above is also allowed, e.g. `[{Wounded} {Water}]` units.
 
 ## buildingFilter
 
@@ -86,27 +109,6 @@ Allowed values are:
 -   `Great Improvements`, `Great`
 -   `All Road` - for Roads & Railroads
 
-## mapUnitFilter
-
-This indicates a unit as placed on the map. Compare with `baseUnitFilter`.
-It can be any value noted in `baseUnitFilter` or one of the following:
-
--   `Wounded`, `wounded units`
--   `City-State`
--   `Barbarians`, `Barbarian`
--   Again, any combination of the above is also allowed, e.g. `[{Wounded} {Water}]` units.
-
-## nationFilter
-
-At the moment only implemented for [ModOptions.nationsToRemove](../Other/Miscellaneous-JSON-files.md#modoptionsjson).
-
-Allowed values are:
-
-- `All`
-- `Major`
-- `CityState`
-- The name of a Nation
-- A unique a Nation has (verbatim, no placeholders)
 
 ## populationFilter
 
@@ -161,12 +163,13 @@ Allowed values are:
 This indicates the terrain on a single tile. The following values are allowed:
 
 -   A filter names a specific json attribute (by name):
-    -   Base terrain
-    -   Terrain features
-    -   Base terrain uniques
-    -   Terrain feature uniques
-    -   Resource
-    -   Natural wonder
+    - Base terrain
+    - Terrain features
+    - Base terrain uniques
+    - Terrain feature uniques
+    - Resource
+    - Natural wonder
+    - A [nationFilter](#nationfilter) matching the tile owner
 -   Or the filter is a constant string choosing a derived test:
     -   `All`
     -   `Water`, `Land`
@@ -184,6 +187,13 @@ Please note all of these are _case-sensitive_.
 Also note: Resource filters depend on whether a viewing civ is known in the context where the filter runs. Water and specific tests require a viewing civ, and if the resource needs a tech to be visible, that tech to be researched by the viewing civ. The other resource category tests can succeed without a known viewing civ only for resources not requiring any tech. So - test your mod!
 
 So for instance, the unique "[stats] from [tileFilter] tiles [cityFilter]" can match several cases:
+
+## tileFilter
+
+Any of:
+- [terrainFilter](#terrainfilter) for this tile
+- [improvementFilter](#improvementfilter) for this tile
+- `unimproved' if no improvement exists
 
 ## terrainQuality
 

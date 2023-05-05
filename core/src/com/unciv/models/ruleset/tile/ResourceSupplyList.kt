@@ -62,7 +62,7 @@ class ResourceSupplyList(
             add(resourceSupply)
     }
 
-    /** Add entries from a requirements list (as produced by [IConstruction.getResourceRequirements]), expressing requirement as negative supply. */
+    /** Add entries from a requirements list (as produced by [IConstruction.getResourceRequirementsPerTurn]), expressing requirement as negative supply. */
     fun subtractResourceRequirements(resourceRequirements: HashMap<String, Int>, ruleset: Ruleset, origin: String) {
         for ((resourceName, amount) in resourceRequirements) {
             val resource = ruleset.tileResources[resourceName] ?: continue

@@ -20,10 +20,13 @@ import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.ExpanderTab
+import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
+import com.unciv.ui.components.extensions.keyShortcuts
+import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toLabel
@@ -65,6 +68,7 @@ class NewGameScreen(
         if (gameSetupInfo.gameParameters.victoryTypes.isEmpty())
             gameSetupInfo.gameParameters.victoryTypes.addAll(ruleset.victories.keys)
 
+        rightSideButton.enable()  // now because PlayerPickerTable init might disable it again
         playerPickerTable = PlayerPickerTable(
             this, gameSetupInfo.gameParameters,
             if (isPortrait) stage.width - 20f else 0f
@@ -75,7 +79,11 @@ class NewGameScreen(
             updatePlayerPickerRandomLabel = { playerPickerTable.updateRandomNumberLabel() }
         )
         mapOptionsTable = MapOptionsTable(this)
-        setDefaultCloseAction()
+        pickerPane.closeButton.onActivation {
+            mapOptionsTable.cancelBackgroundJobs()
+            game.popScreen()
+        }
+        pickerPane.closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
 
         if (isPortrait) initPortrait()
         else initLandscape()
@@ -98,12 +106,12 @@ class NewGameScreen(
             }
         }
 
-        rightSideButton.enable()
         rightSideButton.setText("Start game!".tr())
         rightSideButton.onClick(this::onStartGameClicked)
     }
 
     private fun onStartGameClicked() {
+        mapOptionsTable.cancelBackgroundJobs()
         if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
             if (!checkConnectionToMultiplayerServer()) {
                 val noInternetConnectionPopup = Popup(this)
@@ -205,6 +213,10 @@ class NewGameScreen(
             startNewGame()
         }
     }
+
+    /** Subtables may need an upper limit to their width - they can ask this function. */
+    // In sync with isPortrait in init, here so UI details need not know about 3-column vs 1-column layout
+    internal fun getColumnWidth() = stage.width / (if (isNarrowerThan4to3()) 1 else 3)
 
     private fun initLandscape() {
         scrollPane.setScrollingDisabled(true,true)

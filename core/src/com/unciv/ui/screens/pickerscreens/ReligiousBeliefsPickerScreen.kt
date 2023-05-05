@@ -75,7 +75,8 @@ class ReligiousBeliefsPickerScreen (
             if (pickIconAndName) "Choose a Religion"
             else "Enhance [${currentReligion.getReligionDisplayName()}]"
         ) {
-            chooseBeliefs(beliefsToChoose.map { it.belief!! }, displayName, religionName, usingFreeBeliefs())
+            civInfo.religionManager.foundReligion(displayName!!, religionName!!)
+            chooseBeliefs(beliefsToChoose.map { it.belief!! }, usingFreeBeliefs())
         }
     }
 

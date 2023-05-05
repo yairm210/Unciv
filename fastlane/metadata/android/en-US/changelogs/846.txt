@@ -1,0 +1,28 @@
+
+
+Added parameter type for stockpiled resources specifically
+
+Fix "Instantly consumes [amount] [resource]"
+
+Arbitrary images in font!!! 
+
+'Display' options organized into subcatagories - kudos @Ouaz
+
+By WhoIsJohannes:
+- Show a highlight for the tile that seems most suitable to found a cit… 
+- Show replay after 50 turns, but only the discovered part of it. 
+- Charts improvements 
+- Highlight non-available wonders in tech picker 
+
+By SomeTroglodyte:
+- Fix startBias regional assignments 
+- Victory screen and victory detection use VictoryData 
+- Close immediate win loophole (playing alone) 
+- Fix incorrect relationship level comparison 
+- Fix map editor resource label wrapped to about 1 char width 
+
+Make new "notifications" option translatable  - By Ouaz
+
+AbsoluteUnits - Turtle Ship, Ship of the Line, Sea Beggar  - By letstalkaboutdune
+
+Fix issue   - By MioBestWaifu

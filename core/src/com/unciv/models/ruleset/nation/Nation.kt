@@ -191,6 +191,7 @@ class Nation : RulesetObject() {
                 building.hasUnique(UniqueType.HiddenFromCivilopedia) -> continue
                 !religionEnabled && building.hasUnique(UniqueType.HiddenWithoutReligion) -> continue
             }
+            yield(FormattedLine(separator = true))
             yield(FormattedLine("{${building.name}} -", link=building.makeLink()))
             if (building.replaces != null && ruleset.buildings.containsKey(building.replaces!!)) {
                 val originalBuilding = ruleset.buildings[building.replaces!!]!!
@@ -222,6 +223,7 @@ class Nation : RulesetObject() {
     private fun getUniqueUnitsText(ruleset: Ruleset) = sequence {
         for (unit in ruleset.units.values) {
             if (unit.uniqueTo != name || unit.hasUnique(UniqueType.HiddenFromCivilopedia)) continue
+            yield(FormattedLine(separator = true))
             yield(FormattedLine("{${unit.name}} -", link="Unit/${unit.name}"))
             if (unit.replaces != null && ruleset.units.containsKey(unit.replaces!!)) {
                 val originalUnit = ruleset.units[unit.replaces!!]!!
@@ -236,8 +238,8 @@ class Nation : RulesetObject() {
                     yield(FormattedLine("${Fonts.range} " + "[${unit.range}] vs [${originalUnit.range}]".tr(), indent=1))
                 if (unit.movement != originalUnit.movement)
                     yield(FormattedLine("${Fonts.movement} " + "[${unit.movement}] vs [${originalUnit.movement}]".tr(), indent=1))
-                for (resource in originalUnit.getResourceRequirements().keys)
-                    if (!unit.getResourceRequirements().containsKey(resource)) {
+                for (resource in originalUnit.getResourceRequirementsPerTurn().keys)
+                    if (!unit.getResourceRequirementsPerTurn().containsKey(resource)) {
                         yield(FormattedLine("[$resource] not required", link="Resource/$resource", indent=1))
                     }
                 // This does not use the auto-linking FormattedLine(Unique) for two reasons:
@@ -260,7 +262,7 @@ class Nation : RulesetObject() {
                     // "{$promotion} ({$effect})" won't work as effect may contain [] and tr() does not support that kind of nesting
                     yield(
                         FormattedLine(
-                        "${promotion.tr()} (${effect.joinToString(",") { it.tr() }})",
+                        "${promotion.tr(true)} (${effect.joinToString(",") { it.tr() }})",
                         link = "Promotion/$promotion", indent = 1 )
                     )
                 }
@@ -280,6 +282,7 @@ class Nation : RulesetObject() {
         for (improvement in ruleset.tileImprovements.values) {
             if (improvement.uniqueTo != name || improvement.hasUnique(UniqueType.HiddenFromCivilopedia)) continue
 
+            yield(FormattedLine(separator = true))
             yield(FormattedLine(improvement.name, link = "Improvement/${improvement.name}"))
             yield(FormattedLine(improvement.cloneStats().toString(), indent = 1))   // = (improvement as Stats).toString minus import plus copy overhead
             if (improvement.terrainsCanBeBuiltOn.isNotEmpty()) {
@@ -302,7 +305,8 @@ class Nation : RulesetObject() {
             "All" -> true
             name -> true
             "Major" -> isMajorCiv
-            "CityState" -> isCityState
+            // "CityState" to be deprecated, replaced by "City-States"
+            "CityState", Constants.cityStates -> isCityState
             else -> uniques.contains(filter)
         }
     }

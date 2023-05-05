@@ -155,11 +155,11 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         return faithCost.toInt()
     }
 
-    fun canGenerateProphet(): Boolean {
+    fun canGenerateProphet(ignoreFaithAmount: Boolean = false): Boolean {
         if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion, no prophets
         if (religion == null || religionState == ReligionState.None) return false // First get a pantheon, then we'll talk about a real religion
         if (getGreatProphetEquivalent() == null) return false
-        if (storedFaith < faithForNextGreatProphet()) return false
+        if (!ignoreFaithAmount && storedFaith < faithForNextGreatProphet()) return false
         if (!civInfo.isMajorCiv()) return false
         if (civInfo.hasUnique(UniqueType.MayNotGenerateGreatProphet)) return false
         if (religionState == ReligionState.Pantheon && remainingFoundableReligions() == 0) return false // too many have been founded
@@ -217,11 +217,25 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     fun remainingFoundableReligionsBreakdown() = sequence {
         val gameInfo = civInfo.gameInfo
         val ruleset = gameInfo.ruleset
+        yield("Available religion symbols" to ruleset.religions.size)
+
         val multiplier = ruleset.modOptions.constants.religionLimitMultiplier
         val base = ruleset.modOptions.constants.religionLimitBase
         val civCount = gameInfo.civilizations.count { it.isMajorCiv() }
-        yield("Available religion symbols" to ruleset.religions.size)
-        yield("Number of civilizations * [$multiplier] + [$base]" to base + (civCount * multiplier).toInt())
+        val hideCivCount = civInfo.hideCivCount()
+        if (hideCivCount) {
+            val knownCivs = 1 + civInfo.getKnownCivs().count { it.isMajorCiv() }
+            val estimatedCivCount = (
+                    gameInfo.gameParameters.minNumberOfPlayers.coerceAtLeast(knownCivs) +
+                            gameInfo.gameParameters.maxNumberOfPlayers - 1
+                    ) / 2 + 1
+            val civsAndBase = base + (estimatedCivCount * multiplier).toInt()
+            yield("Estimated number of civilizations * [$multiplier] + [$base]" to civsAndBase)
+        } else {
+            val civsAndBase = base + (civCount * multiplier).toInt()
+            yield("Number of civilizations * [$multiplier] + [$base]" to civsAndBase)
+        }
+
         yield("Religions already founded" to foundedReligionsCount())
         yield("Available founder beliefs" to numberOfBeliefsAvailable(BeliefType.Founder))
         yield("Available follower beliefs" to numberOfBeliefsAvailable(BeliefType.Follower))
@@ -326,10 +340,8 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     fun getBeliefsToChooseAtFounding(): Counter<BeliefType> = getBeliefsToChooseAtProphetUse(false)
     fun getBeliefsToChooseAtEnhancing(): Counter<BeliefType> = getBeliefsToChooseAtProphetUse(true)
 
-    fun chooseBeliefs(beliefs: List<Belief>, iconName: String? = null, religionName: String? = null, useFreeBeliefs: Boolean = false) {
+    fun chooseBeliefs(beliefs: List<Belief>, useFreeBeliefs: Boolean = false) {
         when (religionState) {
-            ReligionState.FoundingReligion ->
-                foundReligion(iconName!!, religionName!!)
             ReligionState.EnhancingReligion -> {
                 religionState = ReligionState.EnhancedReligion
                 for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnhancingReligion))
@@ -367,7 +379,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     }
 
 
-    private fun foundReligion(displayName: String, name: String) {
+    internal fun foundReligion(displayName: String, name: String) {
         val newReligion = Religion(name, civInfo.gameInfo, civInfo.civName)
         newReligion.displayName = displayName
         if (religion != null) {

@@ -118,9 +118,9 @@ class TradeEvaluation {
                 val amountToBuyInOffer = min(amountWillingToBuy, offer.amount)
 
                 val canUseForBuildings = civInfo.cities
-                        .any { city -> city.cityConstructions.getBuildableBuildings().any { it.getResourceRequirements().containsKey(offer.name) } }
+                        .any { city -> city.cityConstructions.getBuildableBuildings().any { it.getResourceRequirementsPerTurn().containsKey(offer.name) } }
                 val canUseForUnits = civInfo.cities
-                        .any { city -> city.cityConstructions.getConstructableUnits().any { it.getResourceRequirements().containsKey(offer.name) } }
+                        .any { city -> city.cityConstructions.getConstructableUnits().any { it.getResourceRequirementsPerTurn().containsKey(offer.name) } }
                 if (!canUseForBuildings && !canUseForUnits) return 0
 
                 return 50 * amountToBuyInOffer
@@ -217,7 +217,7 @@ class TradeEvaluation {
                 if (!civInfo.isAtWar()) return 50 * offer.amount
 
                 val canUseForUnits = civInfo.gameInfo.ruleset.units.values
-                    .any { it.getResourceRequirements().containsKey(offer.name)
+                    .any { it.getResourceRequirementsPerTurn().containsKey(offer.name)
                             && it.isBuildable(civInfo) }
                 if (!canUseForUnits) return 50 * offer.amount
 

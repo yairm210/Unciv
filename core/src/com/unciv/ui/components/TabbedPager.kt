@@ -621,6 +621,8 @@ open class TabbedPager(
                 addOKButton {
                     if (passEntry.text.hashCode() == secretHashCode) unlockAction() else lockAction()
                 }
+                clickBehindToClose = true
+                onCloseCallback = lockAction
                 this.keyboardFocus = passEntry
             }
         }

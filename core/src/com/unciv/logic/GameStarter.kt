@@ -23,7 +23,6 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.utils.debug
-import kotlin.collections.ArrayDeque
 
 object GameStarter {
     // temporary instrumentation while tuning/debugging
@@ -293,8 +292,8 @@ object GameStarter {
             // Resolve random players
             when {
                 it.chosenCiv != Constants.random -> it
-                presetRandomNationsPool.isNotEmpty() -> Player(presetRandomNationsPool.removeLast(), it.playerType)
-                randomNationsPool.isNotEmpty() -> Player(randomNationsPool.removeLast(), it.playerType)
+                presetRandomNationsPool.isNotEmpty() -> Player(presetRandomNationsPool.removeLast(), it.playerType, it.playerId)
+                randomNationsPool.isNotEmpty() -> Player(randomNationsPool.removeLast(), it.playerType, it.playerId)
                 else -> null
             }
         }.toCollection(chosenPlayers)

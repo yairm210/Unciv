@@ -76,6 +76,8 @@ fun advancedTab(
     addSetUserId(this, settings)
 
     addEasterEggsCheckBox(this, settings)
+
+    addEnlargeNotificationsCheckBox(this, settings)
 }
 
 private fun addCutoutCheckbox(table: Table, optionsPopup: OptionsPopup) {
@@ -344,5 +346,11 @@ private fun addSetUserId(table: Table, settings: GameSettings) {
 
 private fun addEasterEggsCheckBox(table: Table, settings: GameSettings) {
     val checkbox = "Enable Easter Eggs".toCheckBox(settings.enableEasterEggs) { settings.enableEasterEggs = it }
+    table.add(checkbox).colspan(2).row()
+}
+
+private fun addEnlargeNotificationsCheckBox(table: Table, settings: GameSettings) {
+    val checkbox = "Enlarge selected notifications"
+        .toCheckBox(settings.enlargeSelectedNotification) { settings.enlargeSelectedNotification = it }
     table.add(checkbox).colspan(2).row()
 }

@@ -7,19 +7,16 @@ import com.unciv.logic.battle.GreatGeneralImplementation
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitAction
-import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.UnitActionType
+import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsReligion
-import kotlin.math.max
-import kotlin.math.min
 
 object SpecificUnitAutomation {
 
@@ -129,95 +126,36 @@ object SpecificUnitAutomation {
                 .firstOrNull()?.action?.invoke()
     }
 
-    private fun rankTileAsCityCenter(tile: Tile, nearbyTileRankings: Map<Tile, Float>,
-                                     luxuryResourcesInCivArea: Sequence<TileResource>): Float {
-        val bestTilesFromOuterLayer = tile.getTilesAtDistance(2)
-                .sortedByDescending { nearbyTileRankings[it] }.take(2)
-        val top5Tiles = (tile.neighbors + bestTilesFromOuterLayer)
-                .sortedByDescending { nearbyTileRankings[it] }
-                .take(5)
-        var rank = top5Tiles.map { nearbyTileRankings.getValue(it) }.sum()
-        if (tile.isCoastalTile()) rank += 5
-
-        val luxuryResourcesInCityArea = tile.getTilesAtDistance(2).filter { it.resource != null }
-                .map { it.tileResource }.filter { it.resourceType == ResourceType.Luxury }.distinct()
-        val luxuryResourcesAlreadyInCivArea = luxuryResourcesInCivArea.map { it.name }.toHashSet()
-        val luxuryResourcesNotYetInCiv = luxuryResourcesInCityArea
-                .count { it.name !in luxuryResourcesAlreadyInCivArea }
-        rank += luxuryResourcesNotYetInCiv * 10
-
-        return rank
-    }
-
     fun automateSettlerActions(unit: MapUnit) {
-        val modConstants = unit.civ.gameInfo.ruleset.modOptions.constants
-        if (unit.getTile().militaryUnit == null     // Don't move until you're accompanied by a military unit
-            && !unit.civ.isCityState()          // ..unless you're a city state that was unable to settle its city on turn 1
-            && unit.getDamageFromTerrain() < unit.health) return    // Also make sure we won't die waiting
-
-        val tilesNearCities = sequence {
-            for (city in unit.civ.gameInfo.getCities()) {
-                val center = city.getCenterTile()
-                if (unit.civ.knows(city.civ) &&
-                    // If the CITY OWNER knows that the UNIT OWNER agreed not to settle near them
-                    city.civ.getDiplomacyManager(unit.civ).hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)
-                ) {
-                    yieldAll(center.getTilesInDistance(6))
-                    continue
-                }
-                yieldAll(center.getTilesInDistance(modConstants.minimalCityDistance)
-                    .filter { it.getContinent() == center.getContinent() }
-                )
-                yieldAll(center.getTilesInDistance(modConstants.minimalCityDistanceOnDifferentContinents)
-                    .filter { it.getContinent() != center.getContinent() }
-                )
-            }
-        }.toSet()
-
-        // This is to improve performance - instead of ranking each tile in the area up to 19 times, do it once.
-        val nearbyTileRankings = unit.getTile().getTilesInDistance(7)
-                .associateBy({ it }, { Automation.rankTile(it, unit.civ) })
-
-        val distanceFromHome = if (unit.civ.cities.isEmpty()) 0
-            else unit.civ.cities.minOf { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
-        val range = max(1, min(5, 8 - distanceFromHome)) // Restrict vision when far from home to avoid death marches
-
-        val possibleCityLocations = unit.getTile().getTilesInDistance(range)
-                .filter {
-                    val tileOwner = it.getOwner()
-                    it.isLand && !it.isImpassible() && (tileOwner == null || tileOwner == unit.civ) // don't allow settler to settle inside other civ's territory
-                            && (unit.currentTile == it || unit.movement.canMoveTo(it))
-                            && it !in tilesNearCities
-                }.toList()
-
-        val luxuryResourcesInCivArea = unit.civ.cities.asSequence()
-                .flatMap { it.getTiles().asSequence() }.filter { it.resource != null }
-                .map { it.tileResource }.filter { it.resourceType == ResourceType.Luxury }
-                .distinct()
-
         if (unit.civ.gameInfo.turns == 0) {   // Special case, we want AI to settle in place on turn 1.
             val foundCityAction = UnitActions.getFoundCityAction(unit, unit.getTile())
             // Depending on era and difficulty we might start with more than one settler. In that case settle the one with the best location
             val otherSettlers = unit.civ.units.getCivUnits().filter { it.currentMovement > 0 && it.baseUnit == unit.baseUnit }
             if(foundCityAction?.action != null &&
                     otherSettlers.none {
-                        rankTileAsCityCenter(it.getTile(), nearbyTileRankings, emptySequence()) > rankTileAsCityCenter(unit.getTile(), nearbyTileRankings, emptySequence())
-                    } ) {
+                        CityLocationTileRanker.rankTileAsCityCenter(
+                            it.getTile(), unit.civ
+                        ) > CityLocationTileRanker.rankTileAsCityCenter(
+                            unit.getTile(), unit.civ
+                        )
+                    }
+            ) {
                 foundCityAction.action.invoke()
                 return
             }
         }
 
-        val citiesByRanking = possibleCityLocations
-                .map { Pair(it, rankTileAsCityCenter(it, nearbyTileRankings, luxuryResourcesInCivArea)) }
-                .sortedByDescending { it.second }.toList()
+        if (unit.getTile().militaryUnit == null     // Don't move until you're accompanied by a military unit
+            && !unit.civ.isCityState()          // ..unless you're a city state that was unable to settle its city on turn 1
+            && unit.getDamageFromTerrain() < unit.health) return    // Also make sure we won't die waiting
 
         // It's possible that we'll see a tile "over the sea" that's better than the tiles close by, but that's not a reason to abandon the close tiles!
         // Also this lead to some routing problems, see https://github.com/yairm210/Unciv/issues/3653
-        val bestCityLocation: Tile? = citiesByRanking.firstOrNull {
-            val pathSize = unit.movement.getShortestPath(it.first).size
-            return@firstOrNull pathSize in 1..3
-        }?.first
+        val bestCityLocation: Tile? =
+                CityLocationTileRanker.getBestTilesToFoundCity(unit).firstOrNull {
+                    val pathSize = unit.movement.getShortestPath(it.first).size
+                    return@firstOrNull pathSize in 1..3
+                }?.first
 
         if (bestCityLocation == null) { // We got a badass over here, all tiles within 5 are taken?
             // Try to move towards the frontier
@@ -247,13 +185,15 @@ object SpecificUnitAutomation {
             foundCityAction.action.invoke()
     }
 
-    fun automateImprovementPlacer(unit: MapUnit) {
+    /** @return whether there was any progress in placing the improvement. A return value of `false`
+     * can be interpreted as: the unit doesn't know where to place the improvement or is stuck. */
+    fun automateImprovementPlacer(unit: MapUnit) : Boolean {
         val improvementBuildingUniques = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit) +
                 unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)
 
         val improvementName = improvementBuildingUniques.first().params[0]
         val improvement = unit.civ.gameInfo.ruleset.tileImprovements[improvementName]
-            ?: return
+            ?: return false
         val relatedStat = improvement.maxByOrNull { it.value }?.key ?: Stat.Culture
 
         val citiesByStatBoost = unit.civ.cities.sortedByDescending {
@@ -273,9 +213,18 @@ object SpecificUnitAutomation {
 
             if (pathToCity.isEmpty()) continue
             if (pathToCity.size > 2 && unit.getTile().getCity() != city) {
-                if (unit.getTile().militaryUnit == null) return // Don't move until you're accompanied by a military unit
+                // Radius 5 is quite arbitrary. Few units have such a high movement radius although
+                // streets might modify it. Also there might be invisible units, so this is just an
+                // approximation for relative safety and simplicity.
+                val enemyUnitsNearby = unit.getTile().getTilesInDistance(5).any { tileNearby ->
+                    tileNearby.getUnits().any { unitOnTileNearby ->
+                        unitOnTileNearby.isMilitary() && unitOnTileNearby.civ.isAtWarWith(unit.civ)
+                    }
+                }
+                // Don't move until you're accompanied by a military unit if there are enemies nearby.
+                if (unit.getTile().militaryUnit == null && enemyUnitsNearby) return true
                 unit.movement.headTowards(city.getCenterTile())
-                return
+                return true
             }
 
             // if we got here, we're pretty close, start looking!
@@ -288,14 +237,109 @@ object SpecificUnitAutomation {
                 .firstOrNull { unit.movement.canReach(it) }
                 ?: continue // to another city
 
+            val unitTileBeforeMovement = unit.currentTile
             unit.movement.headTowards(chosenTile)
-            if (unit.currentTile == chosenTile)
+            if (unit.currentTile == chosenTile) {
                 if (unit.currentTile.isPillaged())
                     UnitActions.getRepairAction(unit).invoke()
                 else
-                    UnitActions.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
-            return
+                    UnitActions.getImprovementConstructionActions(unit, unit.currentTile)
+                        .firstOrNull()?.action?.invoke()
+                return true
+            }
+            return unitTileBeforeMovement != unit.currentTile
         }
+        // No city needs this improvement.
+        return false
+    }
+
+    /** @return whether there was any progress in conducting the trade mission. A return value of
+     * `false` can be interpreted as: the unit doesn't know where to go or there are no city
+     * states. */
+    fun conductTradeMission(unit: MapUnit): Boolean {
+        val closestCityStateTile =
+                unit.civ.gameInfo.civilizations
+                    .filter {
+                        !unit.civ.isAtWarWith(it) && it.isCityState() && it.cities.isNotEmpty()
+                    }
+                    .flatMap { it.cities[0].getTiles() }
+                    .filter { unit.civ.hasExplored(it) }
+                    .mapNotNull { tile ->
+                        val path = unit.movement.getShortestPath(tile)
+                        // 0 is unreachable, 10 is too far away
+                        if (path.size in 1..10) tile to path.size else null
+                    }
+                    .minByOrNull { it.second }?.first
+                    ?: return false
+
+        val conductTradeMissionAction = UnitActions.getUnitActions(unit)
+            .firstOrNull { it.type == UnitActionType.ConductTradeMission }
+        if (conductTradeMissionAction?.action != null) {
+            conductTradeMissionAction.action.invoke()
+            return true
+        }
+
+        val unitTileBeforeMovement = unit.currentTile
+        unit.movement.headTowards(closestCityStateTile)
+
+        return unitTileBeforeMovement != unit.currentTile
+    }
+
+    /**
+     * If there's a city nearby that can construct a wonder, walk there an get it built. Typically I
+     * like to build all wonders in the same city to have the boni accumulate (and it typically ends
+     * up being my capital), but that would need too much logic (e.g. how far away is the capital,
+     * is the wonder likely still available by the time I'm there, is this particular wonder even
+     * buildable in the capital, etc.)
+     *
+     * @return whether there was any progress in speeding up a wonder construction. A return value
+     * of `false` can be interpreted as: the unit doesn't know where to go or is stuck. */
+    fun speedupWonderConstruction(unit: MapUnit): Boolean {
+        val nearbyCityWithAvailableWonders = unit.civ.cities.filter { city ->
+            // Maybe it would be nice to make space in the city if there's already some
+            // other civilian unit in there for whatever reason, but again that seems a lot of
+            // additional complexity for questionable gain.
+            (unit.movement.canMoveTo(city.getCenterTile()) || unit.currentTile == city.getCenterTile())
+                    // Don't speed up construction in small cities. There's a risk the great
+                    // engineer can't get it done entirely and then it takes forever for the small
+                    // city to finish the rest.
+                    && city.population.population >= 3
+                    && getWonderThatWouldBenefitFromBeingSpedUp(city) != null
+        }.mapNotNull { city ->
+            val path = unit.movement.getShortestPath(city.getCenterTile())
+            if (path.size <= 5) city to path.size else null
+        }.minByOrNull { it.second }?.first
+
+        if (nearbyCityWithAvailableWonders == null) {
+            return false
+        }
+
+        if (unit.currentTile == nearbyCityWithAvailableWonders.getCenterTile()) {
+            val wonderToHurry =
+                    getWonderThatWouldBenefitFromBeingSpedUp(nearbyCityWithAvailableWonders)!!
+            nearbyCityWithAvailableWonders.cityConstructions.constructionQueue.add(
+                0,
+                wonderToHurry.name
+            )
+            UnitActions.getUnitActions(unit)
+                .first {
+                    it.type == UnitActionType.HurryBuilding
+                            || it.type == UnitActionType.HurryWonder }
+                .action!!.invoke()
+            return true
+        }
+
+        // Walk towards the city.
+        val tileBeforeMoving = unit.getTile()
+        unit.movement.headTowards(nearbyCityWithAvailableWonders.getCenterTile())
+        return tileBeforeMoving != unit.currentTile
+    }
+
+    private fun getWonderThatWouldBenefitFromBeingSpedUp(city: City): Building? {
+        return city.cityConstructions.getBuildableBuildings().filter { building ->
+            building.isWonder && !building.hasUnique(UniqueType.CannotBeHurried)
+                    && city.cityConstructions.turnsToConstruction(building.name) >= 5
+        }.sortedBy { -city.cityConstructions.getRemainingWork(it.name) }.firstOrNull()
     }
 
     fun automateAddInCapital(unit: MapUnit) {

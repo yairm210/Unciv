@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.ui.components.tilegroups.layers.TileLayerBorders
 import com.unciv.ui.components.tilegroups.layers.TileLayerCityButton
 import com.unciv.ui.components.tilegroups.layers.TileLayerFeatures
@@ -74,10 +75,10 @@ open class TileGroup(
             || viewingCiv.viewableTiles.contains(tile)
             || viewingCiv.isSpectator()
 
-    private fun reset() {
+    private fun reset(localUniqueCache: LocalUniqueCache) {
         layerTerrain.reset()
         layerBorders.reset()
-        layerMisc.reset()
+        layerMisc.reset(localUniqueCache)
         layerOverlay.reset()
         layerUnitArt.reset()
         layerUnitFlag.reset()
@@ -94,18 +95,21 @@ open class TileGroup(
         layerCityButton.isVisible = isVisible
     }
 
-    open fun update(viewingCiv: Civilization? = null) {
-
+    open fun update(
+            viewingCiv: Civilization? = null,
+            localUniqueCache: LocalUniqueCache = LocalUniqueCache(false)) {
         layerMisc.removeHexOutline()
+        layerMisc.hideTerrainOverlay()
         layerOverlay.hideHighlight()
         layerOverlay.hideCrosshair()
+        layerOverlay.hideGoodCityLocationIndicator()
 
         // Show all layers by default
         setAllLayersVisible(true)
 
         // Do not update layers if tile is not explored by viewing player
         if (viewingCiv != null && !(isForceVisible || viewingCiv.hasExplored(tile))) {
-            reset()
+            reset(localUniqueCache)
             // If tile has explored neighbors - reveal layers partially
             if (tile.neighbors.none { viewingCiv.hasExplored(it) })
                 // Else - hide all layers
@@ -115,14 +119,14 @@ open class TileGroup(
 
         removeMissingModReferences()
 
-        layerTerrain.update(viewingCiv)
-        layerFeatures.update(viewingCiv)
-        layerBorders.update(viewingCiv)
-        layerOverlay.update(viewingCiv)
-        layerMisc.update(viewingCiv)
-        layerUnitArt.update(viewingCiv)
-        layerUnitFlag.update(viewingCiv)
-        layerCityButton.update(viewingCiv)
+        layerTerrain.update(viewingCiv, localUniqueCache)
+        layerFeatures.update(viewingCiv, localUniqueCache)
+        layerBorders.update(viewingCiv, localUniqueCache)
+        layerOverlay.update(viewingCiv, localUniqueCache)
+        layerMisc.update(viewingCiv, localUniqueCache)
+        layerUnitArt.update(viewingCiv, localUniqueCache)
+        layerUnitFlag.update(viewingCiv, localUniqueCache)
+        layerCityButton.update(viewingCiv, localUniqueCache)
     }
 
     private fun removeMissingModReferences() {

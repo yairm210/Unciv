@@ -18,6 +18,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.managers.TechManager
 import com.unciv.logic.civilization.managers.TurnManager
+import com.unciv.logic.civilization.managers.VictoryManager
 import com.unciv.logic.map.CityDistanceData
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
@@ -33,7 +34,9 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
-import java.util.*
+import java.util.UUID
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 
 /**
@@ -162,9 +165,11 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     fun clone(): GameInfo {
         val toReturn = GameInfo()
         toReturn.tileMap = tileMap.clone()
-        toReturn.civilizations.addAll(civilizations.map { it.clone() })
+        toReturn.civilizations = civilizations.asSequence()
+            .map { it.clone() }
+            .toCollection(ArrayList(civilizations.size))
         toReturn.barbarians = barbarians.clone()
-        toReturn.religions.putAll(religions.map { Pair(it.key, it.value.clone()) })
+        toReturn.religions.putAll(religions.asSequence().map { it.key to it.value.clone() })
         toReturn.currentPlayer = currentPlayer
         toReturn.currentTurnStartTime = currentTurnStartTime
         toReturn.turns = turns
@@ -174,7 +179,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         toReturn.diplomaticVictoryVotesCast.putAll(diplomaticVictoryVotesCast)
         toReturn.oneMoreTurnMode = oneMoreTurnMode
         toReturn.customSaveLocation = customSaveLocation
-        toReturn.victoryData = victoryData
+        toReturn.victoryData = victoryData?.copy()
         toReturn.historyStartTurn = historyStartTurn
 
         return toReturn
@@ -203,7 +208,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     val civMap by lazy { civilizations.associateBy { it.civName } }
     /** Get a civ by name
      *  @throws NoSuchElementException if no civ of that name is in the game (alive or dead)! */
-    fun getCivilization(civName: String) = civMap.getValue(civName)
+    fun getCivilization(civName: String) = civMap[civName]
+        ?: civilizations.first { it.civName == civName } // This is for spectators who are added in later, artificially
     fun getCurrentPlayerCivilization() = currentPlayerCiv
     fun getCivilizationsAsPreviews() = civilizations.map { it.asPreview() }.toMutableList()
     /** Get barbarian civ
@@ -395,6 +401,16 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             }
         }
         diplomaticVictoryVotesProcessed = true
+    }
+
+    /** @return `true` if someone has won - checks existing [victoryData] and each civ's [VictoryManager.getVictoryTypeAchieved] */
+    fun checkForVictory(): Boolean {
+        if (victoryData != null) return true
+        for (civ in civilizations) {
+            TurnManager(civ).updateWinningCiv()
+            if (victoryData != null) return true
+        }
+        return false
     }
 
     private fun addEnemyUnitNotification(thisPlayer: Civilization, tiles: List<Tile>, inOrNear: String) {
@@ -591,7 +607,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         spaceResources.clear()
         spaceResources.addAll(ruleset.buildings.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
-            .flatMap { it.getResourceRequirements().keys })
+            .flatMap { it.getResourceRequirementsPerTurn().keys })
         spaceResources.addAll(ruleset.victories.values.flatMap { it.requiredSpaceshipParts })
 
         barbarians.setTransients(this)

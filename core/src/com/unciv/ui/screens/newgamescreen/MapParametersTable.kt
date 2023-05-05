@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter.DigitsOnlyFilter
 import com.badlogic.gdx.utils.Align
+import com.unciv.UncivGame
 import com.unciv.logic.map.MapGeneratedMainType
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapResources
@@ -17,6 +18,7 @@ import com.unciv.logic.map.mapgenerator.MapGenerationRandomness
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.UncivTextField
+import com.unciv.ui.components.WrappableLabel
 import com.unciv.ui.components.extensions.onChange
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.pad
@@ -78,7 +80,12 @@ class MapParametersTable(
         skin = BaseScreen.skin
         defaults().pad(5f, 10f)
         if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
-            add("{Which options should be available to the random selection?}".toLabel()).colspan(2).grow().row()
+            val prompt = "Which options should be available to the random selection?"
+            val width = (previousScreen as? NewGameScreen)?.getColumnWidth() ?: 200f
+            val label = WrappableLabel(prompt, width - 20f)  // 20 is the defaults() padding
+            label.setAlignment(Align.center)
+            label.wrap = true
+            add(label).colspan(2).grow().row()
         }
         addMapShapeSelectBox()
         addMapTypeSelectBox()
@@ -277,7 +284,11 @@ class MapParametersTable(
 
             if (forMapEditor) {
                 val comment = "This is used for painting resources, not in map generator steps:"
-                add(comment.toLabel(Color.GOLD, 14, Align.center).apply { wrap=true }).colspan(2).row()
+                val expectedWidth = (UncivGame.Current.screen?.stage?.width ?: 1200f) * 0.4f
+                val label = WrappableLabel(comment, expectedWidth, Color.GOLD, 14)
+                label.setAlignment(Align.center)
+                label.wrap = true
+                add(label).colspan(2).row()
             }
             add("{Resource Setting}:".toLabel()).left()
             add(resourceSelectBox).fillX().row()

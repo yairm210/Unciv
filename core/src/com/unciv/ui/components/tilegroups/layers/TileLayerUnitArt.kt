@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.tilegroups.TileGroup
 
@@ -63,7 +64,7 @@ class TileLayerUnitArt(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
         color.a = 0.5f
     }
 
-    override fun doUpdate(viewingCiv: Civilization?) {
+    override fun doUpdate(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
 
         val slot1Unit = tileGroup.tile.civilianUnit
         val slot2Unit = tileGroup.tile.militaryUnit

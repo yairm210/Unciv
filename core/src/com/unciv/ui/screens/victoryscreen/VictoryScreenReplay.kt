@@ -22,11 +22,11 @@ class VictoryScreenReplay(
 
     private val finalTurn = gameInfo.turns
     private var replayTimer : Timer.Task? = null
-    private val replayMap = ReplayMap(gameInfo.tileMap)
-
     private val header = Table()
+
     private val yearLabel = "".toLabel()
     private val slider: UncivSlider
+    private val replayMap: ReplayMap
     private val playImage = ImageGetter.getImage("OtherIcons/ForwardArrow")
     private val pauseImage = ImageGetter.getImage("OtherIcons/Pause")
     private val playPauseButton = Container(pauseImage)
@@ -46,6 +46,12 @@ class VictoryScreenReplay(
             sound = UncivSound.Silent,
             tipType = UncivSlider.TipType.None,
             onChange = this::sliderChanged
+        )
+        replayMap = ReplayMap(
+            gameInfo.tileMap,
+            worldScreen.viewingCiv,
+            worldScreen.stage.width - 50,
+            worldScreen.stage.height - 250  // Empiric: `stage.height - pager.contentScroll_field.height` after init is 244.
         )
 
         playImage.setSize(24f)

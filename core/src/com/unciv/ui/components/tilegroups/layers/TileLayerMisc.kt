@@ -13,6 +13,7 @@ import com.unciv.models.helpers.MapArrowType
 import com.unciv.models.helpers.MiscArrowTypes
 import com.unciv.models.helpers.TintedMapArrow
 import com.unciv.models.helpers.UnitMovementMemoryType
+import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.toLabel
@@ -44,6 +45,14 @@ private class MapArrow(val targetTile: Tile, val arrowType: MapArrowType, val st
 }
 
 class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, size) {
+
+    // For different unit views, we want to effectively "ignore" the terrain and color it by special view
+    private val terrainOverlay = ImageGetter.getImage(strings().hexagon ).setHexagonSize()
+
+    init {
+        terrainOverlay.isVisible = false
+        addActor(terrainOverlay)
+    }
 
     override fun act(delta: Float) {}
     override fun hit(x: Float, y: Float, touchable: Boolean): Actor? {
@@ -260,7 +269,11 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
     }
 
     // JN updating display of tile yields
-    private fun updateYieldIcon(viewingCiv: Civilization?, show: Boolean) {
+    private fun updateYieldIcon(
+        viewingCiv: Civilization?,
+        show: Boolean,
+        localUniqueCache: LocalUniqueCache
+    ) {
         val effectiveVisible = show &&
                 !tileGroup.isForMapEditorIcon &&  // don't have a map to calc yields
                 !(viewingCiv == null && tileGroup.isForceVisible) // main menu background
@@ -270,9 +283,9 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         if (effectiveVisible) yields.run {
             // Update YieldGroup Icon
             if (tileGroup is CityTileGroup)
-                setStats(tile().stats.getTileStats(tileGroup.city, viewingCiv))
+                setStats(tile().stats.getTileStats(tileGroup.city, viewingCiv, localUniqueCache))
             else
-                setStats(tile().stats.getTileStats(viewingCiv))
+                setStats(tile().stats.getTileStats(viewingCiv, localUniqueCache))
             toFront()
             centerX(tileGroup)
             isVisible = true
@@ -306,6 +319,17 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         determineVisibility()
     }
 
+    fun overlayTerrain(color: Color) {
+        terrainOverlay.color = color.cpy().lerp(Color.WHITE, 0.3f).apply { a = 0.4f }
+        terrainOverlay.isVisible = true
+        determineVisibility()
+    }
+
+    fun hideTerrainOverlay(){
+        terrainOverlay.isVisible = false
+        determineVisibility()
+    }
+
 
     fun addArrow(targetTile: Tile, type: MapArrowType) {
         if (targetTile.position != tile().position)
@@ -326,7 +350,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         determineVisibility()
     }
 
-    override fun doUpdate(viewingCiv: Civilization?) {
+    override fun doUpdate(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
 
         var showResourcesAndImprovements = true
         var showTileYields = true
@@ -337,7 +361,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         }
 
         updateImprovementIcon(viewingCiv, showResourcesAndImprovements)
-        updateYieldIcon(viewingCiv, showTileYields)
+        updateYieldIcon(viewingCiv, showTileYields, localUniqueCache)
         updateResourceIcon(viewingCiv, showResourcesAndImprovements)
         if (tileGroup !is WorldTileGroup || DebugUtils.SHOW_TILE_COORDS)
             updateStartingLocationIcon(true)
@@ -352,11 +376,12 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
                 || hexOutlineIcon != null
                 || arrows.isNotEmpty()
                 || startingLocationIcons.isNotEmpty()
+                || terrainOverlay.isVisible
     }
 
-    fun reset() {
+    fun reset(localUniqueCache: LocalUniqueCache) {
         updateImprovementIcon(null, false)
-        updateYieldIcon(null, false)
+        updateYieldIcon(null, false, localUniqueCache)
         updateResourceIcon(null, false)
         updateStartingLocationIcon(false)
         clearArrows()

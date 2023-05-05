@@ -25,7 +25,6 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.randomWeighted
 import com.unciv.ui.components.extensions.toPercent
 import kotlin.math.max
@@ -460,7 +459,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
                 NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
         } else {
             assignee.addNotification(
-                    "The [${assignedQuest.questName}] quest for [${civInfo.civName}] has ended. It was won by [${winners.joinToString { it.assignee.tr() }}].",
+                    "The [${assignedQuest.questName}] quest for [${civInfo.civName}] has ended. It was won by [${winners.joinToString { "{${it.assignee}}" }}].",
                     civInfo.getCapital()!!.location,
                 NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
         }

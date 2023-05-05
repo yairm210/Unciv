@@ -221,17 +221,14 @@ class GameOptionsTable(
 
     private fun Table.addRandomPlayersCheckbox() =
             addCheckbox("Random number of Civilizations", gameParameters.randomNumberOfPlayers)
-            {newRandomNumberOfPlayers ->
+            { newRandomNumberOfPlayers ->
                 gameParameters.randomNumberOfPlayers = newRandomNumberOfPlayers
                 if (newRandomNumberOfPlayers) {
                     // remove all random AI from player picker
-                    val newPlayers = gameParameters.players.asSequence()
+                    gameParameters.players = gameParameters.players.asSequence()
                         .filterNot { it.playerType == PlayerType.AI && it.chosenCiv == Constants.random }
                         .toCollection(ArrayList(gameParameters.players.size))
-                    if (newPlayers.size != gameParameters.players.size) {
-                        gameParameters.players = newPlayers
-                        updatePlayerPickerTable("")
-                    }
+                    updatePlayerPickerTable("")
                 } else {
                     // Fill up player picker with random AI until previously active min reached
                     val additionalRandom = gameParameters.minNumberOfPlayers - gameParameters.players.size
@@ -345,7 +342,7 @@ class GameOptionsTable(
     }
 
     private fun Table.addSelectBox(text: String, values: Collection<String>, initialState: String, onChange: (newValue: String) -> String?) {
-        add(text.toLabel()).left()
+        add(text.toLabel(hideIcons = true)).left()
         val selectBox = TranslatedSelectBox(values, initialState, BaseScreen.skin)
         selectBox.isDisabled = locked
         selectBox.onChange {
@@ -550,6 +547,7 @@ private class RandomNationPickerPopup(
         closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
         closeButton.setPosition(buttonsOffsetFromEdge, buttonsOffsetFromEdge, Align.bottomLeft)
         innerTable.addActor(closeButton)
+        clickBehindToClose = true
 
         val okButton = "OtherIcons/Checkmark".toImageButton(Color.LIME)
         okButton.onClick { returnSelected() }

@@ -152,7 +152,7 @@ class DiplomacyScreen(
                 questIcon.x = floor(civIndicator.width - questIcon.width)
             }
 
-            val civNameLabel = civ.civName.toLabel()
+            val civNameLabel = civ.civName.toLabel(hideIcons = true)
             leftSideTable.add(civIndicator).row()
             leftSideTable.add(civNameLabel).padBottom(20f).row()
 

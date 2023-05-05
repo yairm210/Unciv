@@ -23,11 +23,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popups.ConfirmPopup
-import com.unciv.ui.popups.Popup
-import com.unciv.ui.popups.closeAllPopups
-import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.components.ColorMarkupLabel
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addBorder
@@ -45,6 +41,11 @@ import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.ConfirmPopup
+import com.unciv.ui.popups.Popup
+import com.unciv.ui.popups.closeAllPopups
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.launchOnGLThread
 import kotlin.math.max
@@ -202,7 +203,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
             val useStoredProduction = entry is Building || !cityConstructions.isBeingConstructedOrEnqueued(entry.name)
             val buttonText = cityConstructions.getTurnsToConstructionString(entry.name, useStoredProduction).trim()
-            val resourcesRequired = entry.getResourceRequirements()
+            val resourcesRequired = entry.getResourceRequirementsPerTurn()
             val mostImportantRejection =
                     entry.getRejectionReasons(cityConstructions)
                         .filter { it.isImportantRejection() }
@@ -313,13 +314,15 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         val isFirstConstructionOfItsKind = cityConstructions.isFirstConstructionOfItsKind(constructionQueueIndex, constructionName)
 
-        var text = constructionName.tr() +
+        var text = constructionName.tr(true) +
                 if (constructionName in PerpetualConstruction.perpetualConstructionsMap) "\n∞"
                 else cityConstructions.getTurnsToConstructionString(constructionName, isFirstConstructionOfItsKind)
 
-        val constructionResource = cityConstructions.getConstruction(constructionName).getResourceRequirements()
-        for ((resource, amount) in constructionResource)
-            text += "\n" + resource.getConsumesAmountString(amount).tr()
+        val constructionResource = cityConstructions.getConstruction(constructionName).getResourceRequirementsPerTurn()
+        for ((resourceName, amount) in constructionResource) {
+            val resource = cityConstructions.city.getRuleset().tileResources[resourceName] ?: continue
+            text += "\n" + resourceName.getConsumesAmountString(amount, resource.isStockpiled()).tr()
+        }
 
         table.defaults().pad(2f).minWidth(40f)
         if (isFirstConstructionOfItsKind) table.add(getProgressBar(constructionName)).minWidth(5f)
@@ -380,28 +383,35 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         pickConstructionButton.add(getProgressBar(construction.name)).padRight(5f)
         pickConstructionButton.add(icon).padRight(10f)
 
-        val table = Table().apply { isTransform = false }
-        val tableRes = Table().apply { isTransform = false }
+        val constructionTable = Table().apply { isTransform = false }
+        val resourceTable = Table().apply { isTransform = false }
 
         val textColor = if (constructionButtonDTO.rejectionReason == null) Color.WHITE else Color.RED
-        table.add(construction.name.tr().toLabel(fontColor = textColor)).expandX().left().row()
+        constructionTable.add(construction.name.toLabel(fontColor = textColor, hideIcons = true).apply { wrap=true })
+            .width(cityScreen.stage.width/5).expandX().left().row()
 
-        tableRes.add(constructionButtonDTO.buttonText.toLabel()).expandX().left()
+        resourceTable.add(constructionButtonDTO.buttonText.toLabel()).expandX().left()
         if (constructionButtonDTO.resourcesRequired != null) {
             for ((resource, amount) in constructionButtonDTO.resourcesRequired) {
-                if (constructionButtonDTO.rejectionReason?.type == RejectionReasonType.ConsumesResources)
-                    tableRes.add(amount.toString().toLabel(fontColor = Color.RED)).expandX().left().padLeft(5f)
-                else
-                    tableRes.add(amount.toString().toLabel(fontColor = Color.WHITE)).expandX().left().padLeft(5f)
-                tableRes.add(ImageGetter.getResourcePortrait(resource, 15f)).padBottom(1f)
+                val color = if (constructionButtonDTO.rejectionReason?.type == RejectionReasonType.ConsumesResources)
+                    Color.RED else Color.WHITE
+                resourceTable.add(amount.toString().toLabel(fontColor = color)).expandX().left().padLeft(5f)
+                resourceTable.add(ImageGetter.getResourcePortrait(resource, 15f)).padBottom(1f)
             }
         }
-        table.add(tableRes).expandX().left()
+        for (unique in constructionButtonDTO.construction.getMatchingUniquesNotConflicting(UniqueType.CostsResources)){
+            val color = if (constructionButtonDTO.rejectionReason?.type == RejectionReasonType.ConsumesResources)
+                Color.RED else Color.WHITE
+            resourceTable.add(ColorMarkupLabel(unique.params[0], color)).expandX().left().padLeft(5f)
+            resourceTable.add(ImageGetter.getResourcePortrait(unique.params[1], 15f)).padBottom(1f)
+        }
+        constructionTable.add(resourceTable).expandX().left()
 
-        pickConstructionButton.add(table).expandX().left()
+        pickConstructionButton.add(constructionTable).expandX().left()
 
         if (!cannotAddConstructionToQueue(construction, cityScreen.city, cityScreen.city.cityConstructions)) {
-            val addToQueueButton = ImageGetter.getImage("OtherIcons/New").apply { color = Color.BLACK }.surroundWithCircle(40f)
+            val addToQueueButton = ImageGetter.getImage("OtherIcons/New")
+                .apply { color = Color.BLACK }.surroundWithCircle(40f)
             addToQueueButton.onClick(UncivSound.Silent) {
                 // Since the pickConstructionButton.onClick adds the construction if it's selected,
                 // this effectively adds the construction even if it's unselected
@@ -416,9 +426,11 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             pickConstructionButton.color.a = 0.9f
             icon.color.a = 0.5f
             if (constructionButtonDTO.rejectionReason.type != RejectionReasonType.ConsumesResources) {
-                pickConstructionButton.add(constructionButtonDTO.rejectionReason.errorMessage
-                    .toLabel(Color.RED).apply { wrap = true })
-                    .colspan(pickConstructionButton.columns).fillX().left().padTop(2f)
+                pickConstructionButton.add(
+                    ColorMarkupLabel(constructionButtonDTO.rejectionReason.errorMessage, Color.RED)
+                        .apply { wrap = true })
+                    .colspan(pickConstructionButton.columns)
+                    .width(cityScreen.stage.width/4).fillX().left().padTop(2f)
             }
         }
 
@@ -569,13 +581,13 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     ) {
         if (!isConstructionPurchaseShown(construction, stat)) return
         val city = cityScreen.city
-        val constructionBuyCost = construction.getStatBuyCost(city, stat)!!
-        if (!isConstructionPurchaseAllowed(construction, stat, constructionBuyCost)) return
+        val constructionStatBuyCost = construction.getStatBuyCost(city, stat)!!
+        if (!isConstructionPurchaseAllowed(construction, stat, constructionStatBuyCost)) return
 
         cityScreen.closeAllPopups()
 
         val purchasePrompt = "Currently you have [${city.getStatReserve(stat)}] [${stat.name}].".tr() + "\n\n" +
-                "Would you like to purchase [${construction.name}] for [$constructionBuyCost] [${stat.character}]?".tr()
+                "Would you like to purchase [${construction.name}] for [$constructionStatBuyCost] [${stat.character}]?".tr()
         ConfirmPopup(
             cityScreen,
             purchasePrompt,

@@ -65,6 +65,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.s
             else Color.GRAY // unassigned
             val icon = ImageGetter.getSpecialistIcon(color)
             specialistIconTable.add(icon).size(30f)
+            if (i % 5 == 0) specialistIconTable.row()
         }
         return specialistIconTable
     }
@@ -106,10 +107,20 @@ class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.s
     private fun getSpecialistStatsTable(specialistName: String): Table {
         val specialistStatTable = Table().apply { defaults().padBottom(5f).padTop(5f) }
         val specialistStats = cityInfo.cityStats.getStatsOfSpecialist(specialistName)
+        var itemsInRow = 0
+        fun incrementItemsInRow(){
+            itemsInRow++
+            if (itemsInRow % 3 == 0){
+                itemsInRow = 0
+                specialistStatTable.row()
+            }
+        }
+
         for ((key, value) in specialistStats) {
             if (value == 0f) continue
             specialistStatTable.add(value.toInt().toLabel())
             specialistStatTable.add(ImageGetter.getStatIcon(key.name)).size(20f).padRight(10f)
+            incrementItemsInRow()
         }
 
         val specialist = cityInfo.getRuleset().specialists[specialistName]!!
@@ -117,6 +128,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.s
         for (s in specialist.greatPersonPoints) {
             specialistStatTable.add(s.value.toLabel())
             specialistStatTable.add(ImageGetter.getUnitIcon(s.key, Color.GOLD).toGroup(20f)).padRight(10f)
+            incrementItemsInRow()
         }
 
         return specialistStatTable

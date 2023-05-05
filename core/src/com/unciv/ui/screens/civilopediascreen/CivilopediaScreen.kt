@@ -122,7 +122,7 @@ class CivilopediaScreen(
                 compareBy<CivilopediaEntry>{ it.sortBy }
                     .thenBy (UncivGame.Current.settings.getCollatorFromLocale()) {
                         // In order for the extra icons on Happiness and Faith to not affect sort order
-                        it.name.tr().replace(Fonts.happiness.toString(),"").replace(Fonts.faith.toString(),"") })
+                        it.name.tr(true).replace(Fonts.happiness.toString(),"").replace(Fonts.faith.toString(),"") })
 
         var currentY = -1f
 
@@ -139,7 +139,8 @@ class CivilopediaScreen(
                     entryButton.add(entry.image).padLeft(20f).padRight(10f)
                 else
                     entryButton.add(entry.image).padLeft(10f)
-            entryButton.left().add(entry.name.toLabel(Color.WHITE, 25)).pad(10f)
+            entryButton.left().add(entry.name
+                .toLabel(Color.WHITE, 25, hideIcons=true)).pad(10f)
             entryButton.onClick { selectEntry(entry) }
             entryButton.name = entry.name               // make button findable
             val cell = entrySelectTable.add(entryButton).height(75f).expandX().fillX()

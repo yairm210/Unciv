@@ -108,11 +108,13 @@ data class LocationAction(var locations: ArrayList<Vector2> = ArrayList()) : Not
     constructor(locations: Sequence<Vector2>) : this(locations.toCollection(ArrayList()))
     constructor(vararg locations: Vector2?) : this(locations.asSequence().filterNotNull())
 
+    @Transient
+    private var index = 0
+
     override fun execute(worldScreen: WorldScreen) {
         if (locations.isNotEmpty()) {
-            var index = locations.indexOf(worldScreen.mapHolder.selectedTile?.position)
-            index = ++index % locations.size // cycle through tiles
             worldScreen.mapHolder.setCenterPosition(locations[index], selectUnit = false)
+            index = ++index % locations.size // cycle through tiles
         }
     }
 }

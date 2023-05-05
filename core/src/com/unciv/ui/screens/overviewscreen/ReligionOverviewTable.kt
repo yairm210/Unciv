@@ -41,20 +41,23 @@ class ReligionOverviewTab(
     private val religionButtonLabel = "Click an icon to see the stats of this religion".toLabel()
     private val statsTable = Table()
     private val beliefsTable = Table()
+    private val headerTable = Table()
 
-    override fun getFixedContent() = Table().apply {
+    override fun getFixedContent() = headerTable
+
+    init {
+        civStatsTable.defaults().left().pad(5f)
+        civStatsTable.addCivSpecificStats()
+
+        headerTable.apply {
             defaults().pad(5f)
             align(Align.top)
-
-            civStatsTable.defaults().left().pad(5f)
-            civStatsTable.addCivSpecificStats()
             add(civStatsTable).row()
             add(religionButtons).row()
             add(religionButtonLabel)
             addSeparator()
         }
 
-    init {
         defaults().pad(5f)
         align(Align.top)
         loadReligionButtons()
@@ -68,34 +71,37 @@ class ReligionOverviewTab(
 
     private fun Table.addCivSpecificStats() {
         // This is not Civ-specific, but -oh well- still fits
-        val remaining = viewingPlayer.religionManager.remainingFoundableReligions()
         val minWidth = max(religionButtonLabel.prefWidth, overviewScreen.stage.width / 3)
-        val headerText = "Religions to be founded: [$remaining]"
+        val manager = viewingPlayer.religionManager
+        val headerText =
+            if (viewingPlayer.hideCivCount()) "Religions to be founded: [?]"
+            else "Religions to be founded: [${manager.remainingFoundableReligions()}]"
         val religionCountExpander = ExpanderTab(
             headerText, fontSize = 18, headerPad =  5f,
-            startsOutOpened = false, defaultPad =  0f, expanderWidth = minWidth
+            startsOutOpened = false, defaultPad =  0f, expanderWidth = minWidth,
+            onChange = { overviewScreen.resizePage(this@ReligionOverviewTab) }
         ) {
             it.defaults().padTop(10f)
-            for ((text, num) in viewingPlayer.religionManager.remainingFoundableReligionsBreakdown()) {
+            for ((text, num) in manager.remainingFoundableReligionsBreakdown()) {
                 it.add(text.toLabel())
                 it.add(num.toString().toLabel(alignment = Align.right)).right().row()
             }
         }
         add(religionCountExpander).colspan(2).growX().row()
 
-        if (viewingPlayer.religionManager.canGenerateProphet()) {
+        if (manager.canGenerateProphet(ignoreFaithAmount = true)) {
             add("Minimal Faith required for\nthe next [great prophet equivalent]:"
-                .fillPlaceholders(viewingPlayer.religionManager.getGreatProphetEquivalent()!!)
+                .fillPlaceholders(manager.getGreatProphetEquivalent()!!)
                 .toLabel()
             )
             add(
-                (viewingPlayer.religionManager.faithForNextGreatProphet() + 1)
+                (manager.faithForNextGreatProphet() + 1)
                 .toLabel()
             ).right().row()
         }
 
         add("Religious status:".toLabel()).left()
-        add(viewingPlayer.religionManager.religionState.toString().toLabel()).right().row()
+        add(manager.religionState.toString().toLabel()).right().row()
     }
 
     private fun loadReligionButtons() {

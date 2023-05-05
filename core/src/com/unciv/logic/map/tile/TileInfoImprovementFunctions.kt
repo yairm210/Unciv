@@ -36,19 +36,20 @@ class TileInfoImprovementFunctions(val tile: Tile) {
                 yield(ImprovementBuildingProblem.NotJustOutsideBorders)
         }
 
-        if (improvement.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals).any {
-                    !it.conditionalsApply(stateForConditionals)
-                })
+        if (improvement.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals)
+                    .any { !it.conditionalsApply(stateForConditionals) })
             yield(ImprovementBuildingProblem.UnmetConditional)
 
-        if (improvement.getMatchingUniques(UniqueType.ObsoleteWith, stateForConditionals).any {
-                    civInfo.tech.isResearched(it.params[0])
-                })
+        if (improvement.getMatchingUniques(UniqueType.ObsoleteWith, stateForConditionals)
+                    .any { civInfo.tech.isResearched(it.params[0]) })
             yield(ImprovementBuildingProblem.Obsolete)
 
-        if (improvement.getMatchingUniques(UniqueType.ConsumesResources, stateForConditionals).any {
-                    civInfo.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt()
-                })
+        if (improvement.getMatchingUniques(UniqueType.ConsumesResources, stateForConditionals)
+                    .any { civInfo.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt() })
+            yield(ImprovementBuildingProblem.MissingResources)
+
+        if (improvement.getMatchingUniques(UniqueType.CostsResources)
+                    .any { civInfo.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt() })
             yield(ImprovementBuildingProblem.MissingResources)
 
         val knownFeatureRemovals = tile.ruleset.tileImprovements.values
