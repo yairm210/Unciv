@@ -204,6 +204,10 @@ object Fonts {
     fun resetFont() {
         val settings = GUI.getSettings()
         fontImplementation.setFontFamily(settings.fontFamilyData, settings.getFontSize())
+        if (::font.isInitialized) {
+            (font.data as? NativeBitmapFontData)?.dispose()  // See #9325
+            // Don't font.dispose() even it it seems obvious -> leaves only black rectangles
+        }
         font = fontImplementation.getBitmapFont()
         font.data.markupEnabled = true
     }
