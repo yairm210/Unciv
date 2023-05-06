@@ -1,29 +1,26 @@
 ## 4.6.9
 
-Resolved  - Hide buildings requiring multiple cities in one city challenge
+Hide buildings requiring multiple cities in one city challenge
 
-Resolved  - Added Policy icons and solved 'icons from Image' reflection :)
+Added Policy icons in text
 
-Resolved  - Show Strategic resources you have by trade even if you have not researched tech for it yet
+Show Strategic resources you have by trade even if you have not researched tech for it yet
 
-Resolved  - New Kremlin quote
+Solved "get vanilla ruleset" errors after downloading mods
 
-Resolved  - solved "get vanilla ruleset" errors after downloading mods
+Scale down unit overlays on zoom in to allow selecting bombard target above city
 
-Resolve  - scale down unit overlays on zoom in to allow selecting bombard target above city
-
-Probably resolved  - AI 'found religion' crash
+Solved AI 'found religion' crash
 
 AbsoluteUnits - Hussar, Cossack, Panzer  - By letstalkaboutdune
 
 Close the friend selection popup in NewGameScreen by click outside or ESC/BACK key  - By CrsiX
 
 By SomeTroglodyte:
-- Fix memory leak from repeatedly resetting the font 
-- Slimming a locally built jar 
-- Limit saved window size to available desktop 
-- Show a preview of custom maps on new game screen 
-- Allow closing a Popup by clicking outside its area 
+- Fix memory leak from repeatedly resetting the font
+- Limit saved window size to available desktop
+- Show a preview of custom maps on new game screen
+- Allow closing a Popup by clicking outside its area
 
 ## 4.6.8
 
