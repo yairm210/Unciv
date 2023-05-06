@@ -355,7 +355,8 @@ class FriendSelectionPopup(
         val friendList = FriendPickerList(playerPicker, ::friendSelected)
         pickerPane.topTable.add(friendList)
         pickerPane.rightSideButton.setText("Select friend".tr())
-        pickerPane.closeButton.onClick(::close)
+        pickerPane.closeButton.onActivation(::close)
+        pickerPane.closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
         pickerCell.setActor<PickerPane>(pickerPane)
         pickerPane.rightSideButton.onClick {
             close()
@@ -366,6 +367,8 @@ class FriendSelectionPopup(
                 playerPicker.update()
             }
         }
+
+        clickBehindToClose = true
     }
 
     private fun friendSelected(friendName: String) {
