@@ -1,5 +1,11 @@
 ## 4.6.9
 
+Hide buildings requiring multiple cities in one city challenge
+
+Show Strategic resources you have by trade even if you have not researched tech for it yet
+
+Scale down unit overlays on zoom in to allow selecting bombard target above city
+
 Added Policy icons in text
 
 Solved AI 'found religion' crash
