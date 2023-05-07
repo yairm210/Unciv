@@ -95,7 +95,7 @@ class LobbyScreen(
     private val changeLobbyNameButton = PencilButton()
     private val menuButtonGameOptions = "Game options".toTextButton()
     private val menuButtonMapOptions = "Map options".toTextButton()
-    private val menuButtonInvite = "Invite player".toTextButton()
+    private val menuButtonInvite = "Invite friend".toTextButton()
     private val menuButtonStartGame = "Start game".toTextButton()
     private val bottomButtonLeave = if (owner.uuid == me.uuid) "Close lobby".toTextButton() else "Leave".toTextButton()
     private val bottomButtonSocial = MultiplayerButton()

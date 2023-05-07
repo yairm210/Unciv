@@ -3,6 +3,7 @@ package com.unciv.ui.popups
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.multiplayer.ApiVersion
+import com.unciv.logic.multiplayer.apiv2.AccountResponse
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -12,9 +13,9 @@ import com.unciv.utils.Log
 /**
  * Variant of [Popup] used to ask the questions related to opening a new [ApiVersion.APIv2] multiplayer lobby
  */
-class CreateLobbyPopup(private val base: BaseScreen) : Popup(base.stage) {
+class CreateLobbyPopup(private val base: BaseScreen, me: AccountResponse) : Popup(base.stage) {
     private var requirePassword: Boolean = false
-    private val nameField = UncivTextField.create("Lobby name", "New lobby").apply { this.maxLength = 64 }
+    private val nameField = UncivTextField.create("Lobby name", "${me.displayName}'s lobby").apply { this.maxLength = 64 }
     private val passwordField = UncivTextField.create("Password", "").apply { this.maxLength = 64 }
     private val checkbox = "Require password".toCheckBox(false) {
         requirePassword = it

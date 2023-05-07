@@ -25,6 +25,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Log
 import com.unciv.utils.concurrency.Concurrency
 import com.unciv.utils.concurrency.Concurrency.runBlocking
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
 
@@ -32,14 +33,9 @@ import com.unciv.ui.components.AutoScrollPane as ScrollPane
  * Screen that should list all open lobbies on the left side, with buttons to interact with them and a list of recently opened games on the right
  */
 class LobbyBrowserScreen : BaseScreen() {
-    private val lobbyBrowserTable = LobbyBrowserTable(this)
+    private val lobbyBrowserTable = LobbyBrowserTable(this) { updateJob.cancel() }
     private val gameList = GameListV2(this, ::onSelect)
-    private val updateJob = Concurrency.run {
-        while (true) {
-            delay(30 * 1000)
-            lobbyBrowserTable.triggerUpdate()
-        }
-    }
+    private var updateJob = startUpdateJob(false)
 
     private val me
         get() = runBlocking { game.onlineMultiplayer.api.account.get() }!!
@@ -61,7 +57,7 @@ class LobbyBrowserScreen : BaseScreen() {
 
         val lobbyButtons = Table()
         newLobbyButton.onClick {
-            CreateLobbyPopup(this as BaseScreen)
+            CreateLobbyPopup(this as BaseScreen, me)
         }
         updateButton.onClick {
             lobbyBrowserTable.triggerUpdate()
@@ -120,6 +116,25 @@ class LobbyBrowserScreen : BaseScreen() {
                 game.loadGame(gameInfo)
             }
         }
+    }
+
+    private fun startUpdateJob(updateNow: Boolean): Job {
+        return Concurrency.run {
+            if (updateNow) {
+                lobbyBrowserTable.triggerUpdate()
+            }
+            while (true) {
+                delay(30 * 1000)
+                lobbyBrowserTable.triggerUpdate()
+            }
+        }
+    }
+
+    override fun resume() {
+        Log.debug("Resuming LobbyBrowserScreen")
+        updateJob.cancel()
+        updateJob = startUpdateJob(true)
+        super.resume()
     }
 
     override fun dispose() {

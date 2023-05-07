@@ -19,7 +19,7 @@ import kotlinx.coroutines.delay
 /**
  * Table listing all available open lobbies and allow joining them by clicking on them
  */
-internal class LobbyBrowserTable(private val screen: BaseScreen): Table(BaseScreen.skin) {
+internal class LobbyBrowserTable(private val screen: BaseScreen, private val lobbyJoinCallback: (() -> Unit)): Table(BaseScreen.skin) {
 
     private val noLobbies = "Sorry, no open lobbies at the moment!".toLabel()
     private val enterLobbyPasswordText = "This lobby requires a password to join. Please enter it below:"
@@ -46,6 +46,7 @@ internal class LobbyBrowserTable(private val screen: BaseScreen): Table(BaseScre
                 InfoPopup.load(stage) {
                     screen.game.onlineMultiplayer.api.lobby.join(lobby.uuid, it)
                     Concurrency.runOnGLThread {
+                        lobbyJoinCallback()
                         screen.game.pushScreen(LobbyScreen(lobby))
                     }
                 }
@@ -55,6 +56,7 @@ internal class LobbyBrowserTable(private val screen: BaseScreen): Table(BaseScre
             InfoPopup.load(stage) {
                 screen.game.onlineMultiplayer.api.lobby.join(lobby.uuid)
                 Concurrency.runOnGLThread {
+                    lobbyJoinCallback()
                     screen.game.pushScreen(LobbyScreen(lobby))
                 }
             }
