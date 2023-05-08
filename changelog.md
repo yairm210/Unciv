@@ -1,3 +1,21 @@
+## 4.6.10
+
+Resolved  - Solved rare concurrency bug for explored tiles
+
+Automated workers no longer stay on unimprovable tile if another tile is improvable
+
+Songhai Civilian units no longer gain Amphibious promotion
+
+Resolved  - fixed 'enhance religion' crash
+
+4.6.9-patch2
+
+Resolved  - Improperly configured mod conditionals do not cause crash
+
+4.6.9-patch1
+
+Changes to landing page FIXED  - By vermontbail
+
 ## 4.6.9
 
 Hide buildings requiring multiple cities in one city challenge
