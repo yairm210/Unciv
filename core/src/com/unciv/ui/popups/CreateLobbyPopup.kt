@@ -15,7 +15,7 @@ import com.unciv.utils.Log
  */
 class CreateLobbyPopup(private val base: BaseScreen, me: AccountResponse) : Popup(base.stage) {
     private var requirePassword: Boolean = false
-    private val nameField = UncivTextField.create("Lobby name", "${me.displayName}'s lobby").apply { this.maxLength = 64 }
+    private val nameField = UncivTextField.create("Lobby name", "${me.displayName}'s game").apply { this.maxLength = 64 }
     private val passwordField = UncivTextField.create("Password", "").apply { this.maxLength = 64 }
     private val checkbox = "Require password".toCheckBox(false) {
         requirePassword = it
