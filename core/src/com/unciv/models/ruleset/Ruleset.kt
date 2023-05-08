@@ -488,6 +488,7 @@ object RulesetCache : HashMap<String,Ruleset>() {
                 name = ruleset.fullName
             }
         }
+        this.putAll(newRulesets)
 
         val errorLines = ArrayList<String>()
         if (!noMods){
