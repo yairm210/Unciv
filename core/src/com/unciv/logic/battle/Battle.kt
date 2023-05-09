@@ -595,6 +595,7 @@ object Battle {
         if (city.isOriginalCapital && city.foundingCiv == attackerCiv.civName) {
             // retaking old capital
             city.puppetCity(attackerCiv)
+            //Although in Civ5 Venice is unable to re-annex their capital, that seems a bit silly. No check for May not annex cities here.
             city.annexCity()
         } else if (attackerCiv.isHuman()) {
             // we're not taking our former capital
