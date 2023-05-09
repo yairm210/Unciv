@@ -259,7 +259,7 @@ class CityScreen(
             addWltkIcon("OtherIcons/WLTK 1") { color = Color.FIREBRICK }.padRight(10f)
         }
 
-        val canAnnex = !city.civ.getMatchingUniques(UniqueType.MayNotAnnexCities).any()
+        val canAnnex = !city.civ.hasUnique(UniqueType.MayNotAnnexCities)
         if (city.isPuppet && canAnnex) {
             val annexCityButton = "Annex city".toTextButton()
             annexCityButton.labelCell.pad(10f)

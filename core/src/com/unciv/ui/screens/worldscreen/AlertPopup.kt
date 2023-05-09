@@ -241,13 +241,14 @@ class AlertPopup(
                 close()
             }
         } else {
-            addAnnexOption(marryingCiv.getMatchingUniques(UniqueType.MayNotAnnexCities).any()) {
+            val mayAnnex = !marryingCiv.hasUnique(UniqueType.MayNotAnnexCities)
+            addAnnexOption(mayAnnex) {
                 city.annexCity()
                 close()
             }
             addSeparator()
 
-            addPuppetOption(marryingCiv.getMatchingUniques(UniqueType.MayNotAnnexCities).any()) {
+            addPuppetOption(mayAnnex) {
                 city.isPuppet = true
                 city.cityStats.update()
                 worldScreen.shouldUpdate = true
