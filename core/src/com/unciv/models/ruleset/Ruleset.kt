@@ -252,7 +252,9 @@ class Ruleset {
             try {
                 modOptions = json().fromJsonFile(ModOptions::class.java, modOptionsFile)
                 modOptions.updateDeprecations()
-            } catch (ex: Exception) {}
+            } catch (ex: Exception) {
+                Log.error("Failed to get modOptions from json file", ex)
+            }
             modOptions.uniqueObjects = modOptions.uniques.map { Unique(it, UniqueTarget.ModOptions) }
             modOptions.uniqueMap = modOptions.uniqueObjects.groupBy { it.placeholderText }
         }
