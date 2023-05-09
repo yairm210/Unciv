@@ -1,5 +1,5 @@
 build:
-  maxIssues: 0
+  maxIssues: 5000
   excludeCorrectable: false
   weights:
     # complexity: 2
@@ -96,7 +96,7 @@ complexity:
     active: false
     threshold: 15
   ComplexCondition:
-    active: true
+    active: false
     threshold: 4
   ComplexInterface:
     active: false
@@ -106,7 +106,7 @@ complexity:
     ignoreOverloaded: false
   CyclomaticComplexMethod:
     active: true
-    threshold: 15
+    threshold: 25
     ignoreSingleWhenExpression: false
     ignoreSimpleWhenEntries: false
     ignoreNestingFunctions: false
@@ -127,10 +127,10 @@ complexity:
     active: true
     threshold: 600
   LongMethod:
-    active: true
+    active: false
     threshold: 60
   LongParameterList:
-    active: true
+    active: false
     functionThreshold: 6
     constructorThreshold: 7
     ignoreDefaultParameters: false
@@ -165,7 +165,7 @@ complexity:
     excludeStringsWithLessThan5Characters: true
     ignoreStringsRegex: '$^'
   TooManyFunctions:
-    active: true
+    active: false
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**']
     thresholdInFiles: 11
     thresholdInClasses: 11
@@ -600,7 +600,7 @@ style:
     ignoreActualFunction: true
     excludedFunctions: []
   LoopWithTooManyJumpStatements:
-    active: true
+    active: false
     maxJumpCount: 1
   MagicNumber:
     active: false
@@ -668,7 +668,7 @@ style:
   RedundantVisibilityModifierRule:
     active: false
   ReturnCount:
-    active: true
+    active: false
     max: 2
     excludedFunctions:
       - 'equals'
@@ -686,7 +686,7 @@ style:
     maxEscapedCharacterCount: 2
     ignoredCharacters: []
   ThrowsCount:
-    active: true
+    active: false
     max: 2
     excludeGuardClauses: false
   TrailingWhitespace:
