@@ -1016,7 +1016,7 @@ object NextTurnAutomation {
                 ownMilitaryStrength < sumOfEnemiesMilitaryStrength * 0.66f
         for (city in civInfo.cities) {
             if (city.isPuppet && city.population.population > 9
-                    && !city.isInResistance()
+                    && !city.isInResistance() && !civInfo.hasUnique(UniqueType.MayNotAnnexCities)
             ) {
                 city.annexCity()
             }
@@ -1124,7 +1124,7 @@ object NextTurnAutomation {
         if ((city.population.population < 4 || civInfo.isCityState())
                 && city.foundingCiv != civInfo.civName && city.canBeDestroyed(justCaptured = true)) {
             // raze if attacker is a city state
-            city.annexCity()
+            if (!civInfo.hasUnique(UniqueType.MayNotAnnexCities)) { city.annexCity() }
             city.isBeingRazed = true
         }
     }
