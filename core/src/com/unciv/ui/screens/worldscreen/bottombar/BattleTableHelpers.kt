@@ -5,17 +5,21 @@ import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.actions.RelativeTemporalAction
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction
+import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.map.HexMath
+import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.WorldScreen
@@ -117,9 +121,16 @@ object BattleTableHelpers {
             .nor()  // normalize vector to length of "1"
             .scl(10f) // we want 10 pixel movement
 
+        val attackerGroup = mapHolder.tileGroups[attacker.getTile()]!!
+        val defenderGroup = mapHolder.tileGroups[defender.getTile()]!!
+
         stage.addAction(
             Actions.sequence(
                 MoveActorsAction(actorsToMove, attackVectorWorldCoords),
+                Actions.run {
+                    createDamageLabel(damageToAttacker, attackerGroup)
+                    createDamageLabel(damageToDefender, defenderGroup)
+                },
                 Actions.parallel( // While the unit is moving back to its normal position, we flash the damages on both units
                     MoveActorsAction(actorsToMove, attackVectorWorldCoords.cpy().scl(-1f)),
                     AttackAnimationAction(attacker,
@@ -137,8 +148,29 @@ object BattleTableHelpers {
                     )
                 )
         ))
+    }
 
+    private fun createDamageLabel(damage: Int, target: Actor) {
+        if (damage == 0) return
+        val animationDuration = 1f
 
+        val label = damage.toString().toLabel(Color.SCARLET, 50, Align.center, true)
+        label.touchable = Touchable.disabled
+        val container = Container(label)
+        container.touchable = Touchable.disabled
+        container.pack()
+        val targetCenter = target.run { localToStageCoordinates(Vector2(width * 0.5f, height * 0.5f)) }
+        container.setPosition(targetCenter.x, targetCenter.y, Align.bottom)
+
+        target.stage.addActor(container)
+        container.addAction(Actions.sequence(
+            Actions.parallel(
+                Actions.alpha(0.1f, animationDuration, Interpolation.fade),
+                Actions.scaleTo(0.05f, 0.05f, animationDuration, Interpolation.fastSlow),
+                Actions.moveBy(30f, 90f, animationDuration, Interpolation.slowFast)
+            ),
+            Actions.removeActor()
+        ))
     }
 
     fun getHealthBar(maxHealth: Int, currentHealth: Int, maxRemainingHealth: Int, minRemainingHealth: Int): Table {
