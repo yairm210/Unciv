@@ -3,6 +3,7 @@ package com.unciv.ui.screens.multiplayerscreens
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Disposable
 import com.unciv.logic.event.EventBus
+import com.unciv.logic.multiplayer.MultiplayerGameCanBeLoaded
 import com.unciv.logic.multiplayer.apiv2.GameOverviewResponse
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.ChatButton
@@ -20,6 +21,7 @@ import com.unciv.utils.concurrency.Concurrency
 import kotlinx.coroutines.delay
 import java.time.Duration
 import java.time.Instant
+import java.util.*
 
 /**
  * Table listing the recently played open games for APIv2 multiplayer games
@@ -33,6 +35,19 @@ class GameListV2(private val screen: BaseScreen, private val onSelected: (GameOv
     init {
         add(noGames).row()
         triggerUpdate()
+
+        events.receive(MultiplayerGameCanBeLoaded::class, null) {
+            Concurrency.run {
+                val updatedGame = screen.game.onlineMultiplayer.api.game.head(UUID.fromString(it.gameInfo.gameId), suppress = true)
+                if (updatedGame != null) {
+                    Concurrency.runOnGLThread {
+                        games.removeAll { game -> game.gameUUID.toString() == it.gameInfo.gameId }
+                        games.add(updatedGame)
+                        recreate()
+                    }
+                }
+            }
+        }
     }
 
     private fun addGame(game: GameOverviewResponse) {

@@ -12,6 +12,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.map.MapVisualization
@@ -204,6 +205,7 @@ class WorldScreen(
                     loadLatestMultiplayerState()
                 }
             }
+
             // APIv2-based online multiplayer games use this event to notify about changes for the game
             events.receive(MultiplayerGameCanBeLoaded::class, { it.gameInfo.gameId == gameId }) {
                 if (it.gameInfo.gameId == UncivGame.Current.gameInfo?.gameId) {
@@ -641,6 +643,10 @@ class WorldScreen(
 
             debug("Next turn took %sms", System.currentTimeMillis() - startTime)
 
+            // Special case: when you are the only human player, the game will always be up to date
+            if (gameInfo.gameParameters.isOnlineMultiplayer && gameInfoClone.civilizations.filter { it.playerType == PlayerType.Human }.size == 1) {
+                gameInfoClone.isUpToDate = true
+            }
             startNewScreenJob(gameInfoClone)
         }
     }

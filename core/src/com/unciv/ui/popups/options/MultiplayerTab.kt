@@ -263,7 +263,7 @@ private fun addMultiplayerServerOptions(
             }
              */
         }
-    }).row()
+    }).colspan(2).row()
 
     if (UncivGame.Current.onlineMultiplayer.serverFeatureSet.authVersion > 0) {
         val passwordTextField = UncivTextField.create(
@@ -339,12 +339,14 @@ private fun addMultiplayerServerOptions(
             popup.open(force = true)
         }
 
+        val wrapper = Table()
         if (UncivGame.Current.onlineMultiplayer.hasAuthentication()) {
-            serverIpTable.add(logoutButton).padTop(8f)
-            serverIpTable.add(setUserIdButton).padTop(8f).row()
+            wrapper.add(logoutButton).padRight(8f)
+            wrapper.add(setUserIdButton)
         } else {
-            serverIpTable.add(setUserIdButton).padTop(8f).colspan(2).row()
+            wrapper.add(setUserIdButton)
         }
+        serverIpTable.add(wrapper).colspan(2).padTop(8f).row()
     }
 
     tab.add(serverIpTable).colspan(2).fillX().row()
