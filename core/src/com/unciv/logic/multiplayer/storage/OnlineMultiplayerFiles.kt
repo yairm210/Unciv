@@ -62,7 +62,7 @@ class OnlineMultiplayerFiles(
         val zippedGameInfo = if (UncivGame.Current.onlineMultiplayer.apiVersion == ApiVersion.APIv2) {
             UncivFiles.gameInfoToPrettyString(gameInfo, useZip = true)
         } else {
-            UncivFiles.gameInfoToString(gameInfo)
+            UncivFiles.gameInfoToString(gameInfo, forceZip = true)
         }
         fileStorage().saveGameData(gameInfo.gameId, zippedGameInfo)
 

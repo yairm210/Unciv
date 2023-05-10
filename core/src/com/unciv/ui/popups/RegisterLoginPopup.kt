@@ -165,10 +165,7 @@ class RegisterLoginPopup(private val base: BaseScreen, confirmUsage: Boolean = f
             } catch (e: UncivShowableException) {
                 launchOnGLThread {
                     popup.close()
-                    InfoPopup(
-                        base.stage,
-                        "Failed to login with existing account".tr() + ":\n${e.localizedMessage}"
-                    ) {
+                    InfoPopup(base.stage, e.localizedMessage) {
                         stage?.addListener(listener)
                         authSuccessful?.invoke(false)
                     }
@@ -202,10 +199,7 @@ class RegisterLoginPopup(private val base: BaseScreen, confirmUsage: Boolean = f
             } catch (e: UncivShowableException) {
                 launchOnGLThread {
                     popup.close()
-                    InfoPopup(
-                        base.stage,
-                        "Failed to register new account".tr() + ":\n${e.localizedMessage}"
-                    ) {
+                    InfoPopup(base.stage, e.localizedMessage) {
                         stage?.addListener(listener)
                         authSuccessful?.invoke(false)
                     }

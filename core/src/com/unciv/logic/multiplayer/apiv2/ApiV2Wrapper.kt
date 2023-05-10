@@ -180,6 +180,33 @@ class ApiException(val error: ApiErrorResponse) : UncivShowableException(lookupE
  * Convert an API status code to a string that can be translated and shown to users
  */
 private fun lookupErrorMessage(statusCode: ApiStatusCode): String {
-    // TODO: Implement translations
-    return statusCode.name
+    return when (statusCode) {
+        ApiStatusCode.Unauthenticated -> "You are not logged in. Please login first."
+        ApiStatusCode.NotFound -> "The operation couldn't be completed, since the resource was not found."
+        ApiStatusCode.InvalidContentType -> "The media content type was invalid. Please report this as a bug."
+        ApiStatusCode.InvalidJson -> "The server didn't understand the sent data. Please report this as a bug."
+        ApiStatusCode.PayloadOverflow -> "The amount of data sent to the server was too large. Please report this as a bug."
+        ApiStatusCode.LoginFailed -> "The login failed. Is the username and password correct?"
+        ApiStatusCode.UsernameAlreadyOccupied -> "The selected username is already taken. Please choose another name."
+        ApiStatusCode.InvalidPassword -> "This password is not valid. Please choose another password."
+        ApiStatusCode.EmptyJson -> "The server encountered an empty JSON problem. Please report this as a bug."
+        ApiStatusCode.InvalidUsername -> "The username is not valid. Please choose another one."
+        ApiStatusCode.InvalidDisplayName -> "The display name is not valid. Please choose another one."
+        ApiStatusCode.FriendshipAlreadyRequested -> "You have already requested friendship with this player. Please wait until the request is accepted."
+        ApiStatusCode.AlreadyFriends -> "You are already friends, you can't request it again."
+        ApiStatusCode.MissingPrivileges -> "You don't have the required privileges to perform this operation."
+        ApiStatusCode.InvalidMaxPlayersCount -> "The maximum number of players for this lobby is out of the supported range for this server. Please adjust the number. Two players should always work."
+        ApiStatusCode.AlreadyInALobby -> "You are already in another lobby. You need to close or leave the other lobby before."
+        ApiStatusCode.InvalidUuid -> "The operation could not be completed, since an invalid UUID was given. Please retry later or restart the game. If the problem persists, please report this as a bug."
+        ApiStatusCode.InvalidLobbyUuid -> "The lobby was not found. Maybe it has already been closed?"
+        ApiStatusCode.InvalidFriendUuid -> "You must be friends with the other player before this action can be completed. Try again later."
+        ApiStatusCode.GameNotFound -> "The game was not found on the server. Try again later. If the problem persists, the game was probably already removed from the server, sorry."
+        ApiStatusCode.InvalidMessage -> "This message could not be sent, since it was invalid. Remove any invalid characters and try again."
+        ApiStatusCode.WsNotConnected -> "The WebSocket is not available. Please restart the game and try again. If the problem persists, please report this as a bug."
+        ApiStatusCode.LobbyFull -> "The lobby is currently full. You can't join right now."
+        ApiStatusCode.InvalidPlayerUUID -> "The ID of the player was invalid. Does the player exist? Please try again. If the problem persists, please report this as a bug."
+        ApiStatusCode.InternalServerError -> "Internal server error. Please report this as a bug."
+        ApiStatusCode.DatabaseError -> "Internal server database error. Please report this as a bug."
+        ApiStatusCode.SessionError -> "Internal session error. Please report this as a bug."
+    }
 }
