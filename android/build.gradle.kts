@@ -79,7 +79,7 @@ android {
 task("texturePacker") {
     doFirst {
         logger.info("Calling TexturePacker")
-        AndroidImagePacker.packImages(projectDir.path,false)
+        AndroidImagePacker.packImages(projectDir.path)
     }
 }
 

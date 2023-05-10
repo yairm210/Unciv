@@ -204,8 +204,7 @@ class ModCheckTab(
                 replacementUnique,
                 false,
                 "",
-                UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant,
-                deprecatedUnique.sourceObjectType!!
+                UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
             )
             for (error in modInvariantErrors)
                 Log.error("ModInvariantError: %s - %s", error.text, error.errorSeverityToReport)
@@ -216,8 +215,7 @@ class ModCheckTab(
                     replacementUnique,
                     false,
                     "",
-                    UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant,
-                    deprecatedUnique.sourceObjectType
+                    UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
                 )
                 for (error in modSpecificErrors)
                     Log.error("ModSpecificError: %s - %s", error.text, error.errorSeverityToReport)

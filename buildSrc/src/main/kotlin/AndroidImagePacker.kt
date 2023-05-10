@@ -54,7 +54,7 @@ object AndroidImagePacker {
         filterMag = Texture.TextureFilter.MipMapLinearLinear // I'm pretty sure this doesn't make sense for magnification, but setting it to Linear gives strange results
     }
 
-    fun packImages(workingPath: String, isRunFromJAR:Boolean) {
+    fun packImages(workingPath: String) {
         val defaultSettings = getDefaultSettings()
 
         // Scan for Image folders and build one atlas each

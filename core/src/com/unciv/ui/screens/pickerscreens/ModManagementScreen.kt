@@ -353,7 +353,7 @@ class ModManagementScreen(
      * @param modName: The mod name (name from the RuleSet)
      * @param modOptions: The ModOptions as enriched by us with GitHub metadata when originally downloaded
      */
-    private fun addModInfoToActionTable(modName: String, modOptions: ModOptions) {
+    private fun addModInfoToActionTable(modOptions: ModOptions) {
         addModInfoToActionTable(
             modOptions.modUrl,
             modOptions.lastUpdated,
@@ -534,7 +534,7 @@ class ModManagementScreen(
         selectedMod = null
         modActionTable.clear()
         // show mod information first
-        addModInfoToActionTable(mod.name, mod.modOptions)
+        addModInfoToActionTable(mod.modOptions)
 
         // offer 'permanent visual mod' toggle
         val visualMods = game.settings.visualMods

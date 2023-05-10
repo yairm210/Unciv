@@ -416,10 +416,20 @@ class Ruleset {
                         name = cityStateType.name
                         color = cityStateType.color
                         friendBonusUniques = ArrayList(cityStateType.friendBonusUniques.filter {
-                            RulesetValidator(this@Ruleset).checkUnique(Unique(it),false,"",UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific,UniqueTarget.CityState).isEmpty()
+                            RulesetValidator(this@Ruleset).checkUnique(
+                                Unique(it),
+                                false,
+                                "",
+                                UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+                            ).isEmpty()
                         })
                         allyBonusUniques = ArrayList(cityStateType.allyBonusUniques.filter {
-                            RulesetValidator(this@Ruleset).checkUnique(Unique(it),false,"",UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific,UniqueTarget.CityState).isEmpty()
+                            RulesetValidator(this@Ruleset).checkUnique(
+                                Unique(it),
+                                false,
+                                "",
+                                UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+                            ).isEmpty()
                         })
                     }
         }
