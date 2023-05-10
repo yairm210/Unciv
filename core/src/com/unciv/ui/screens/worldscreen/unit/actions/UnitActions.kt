@@ -201,6 +201,7 @@ object UnitActions {
 
             if (hasActionModifiers) activateSideEffects(unit, unique)
             else unit.destroy()
+            GUI.setUpdateWorldOnNextRender() // Set manually, since this could be triggered from the ConfirmPopup and not from the UnitActionsTable
         }
 
         if (unit.civ.playerType == PlayerType.AI)
