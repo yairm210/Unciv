@@ -135,7 +135,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         return if (techsToResearch.isEmpty()) null else techsToResearch[0]
     }
 
-    fun researchOfTech(TechName: String?) = techsInProgress[TechName] ?: 0
+    fun researchOfTech(techName: String?) = techsInProgress[techName] ?: 0
     // Was once duplicated as fun scienceSpentOnTech(tech: String): Int
 
     fun remainingScienceToTech(techName: String): Int {

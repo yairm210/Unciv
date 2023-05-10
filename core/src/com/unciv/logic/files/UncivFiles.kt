@@ -140,8 +140,8 @@ class UncivFiles(
     //endregion
     //region Saving
 
-    fun saveGame(game: GameInfo, GameName: String, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }): FileHandle {
-        val file = getSave(GameName)
+    fun saveGame(game: GameInfo, gameName: String, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }): FileHandle {
+        val file = getSave(gameName)
         saveGame(game, file, saveCompletionCallback)
         return file
     }

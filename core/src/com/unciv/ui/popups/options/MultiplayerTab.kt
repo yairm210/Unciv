@@ -364,9 +364,9 @@ private fun getInitialOptions(extraCustomServerOptions: List<SelectItem<Duration
     return if (OnlineMultiplayer.usesCustomServer()) customServerItems else dropboxItems
 }
 
-private fun fixTextFieldUrlOnType(TextField: TextField) {
-    var text: String = TextField.text
-    var cursor: Int = minOf(TextField.cursorPosition, text.length)
+private fun fixTextFieldUrlOnType(textField: TextField) {
+    var text: String = textField.text
+    var cursor: Int = minOf(textField.cursorPosition, text.length)
 
     val textBeforeCursor: String = text.substring(0, cursor)
 
@@ -378,9 +378,9 @@ private fun fixTextFieldUrlOnType(TextField: TextField) {
     cursor = multipleSlashes.replace(textBeforeCursor, "/").length
 
     // update TextField
-    if (text != TextField.text) {
-        TextField.text = text
-        TextField.cursorPosition = cursor
+    if (text != textField.text) {
+        textField.text = text
+        textField.cursorPosition = cursor
     }
 }
 
