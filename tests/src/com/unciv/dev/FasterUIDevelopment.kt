@@ -27,6 +27,7 @@ import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.time.Duration
 import java.time.Instant
+import java.util.Locale
 import java.util.concurrent.atomic.AtomicReference
 
 /** Creates a basic GDX application that mimics [UncivGame] as closely as possible, starts up fast and shows one UI element, to be returned by [DevElement.createDevElement] */
@@ -96,7 +97,7 @@ object FasterUIDevelopment {
                 override fun mouseMoved(event: InputEvent?, x: Float, y: Float): Boolean {
                     Concurrency.run {
                         throttle(lastPrint, Duration.ofMillis(500), {}) {
-                            println(String.format("x: %.1f\ty: %.1f", x, y))
+                            println(String.format(Locale.US,"x: %.1f\ty: %.1f", x, y))
                         }
                     }
                     return false
