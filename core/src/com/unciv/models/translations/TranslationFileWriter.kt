@@ -22,6 +22,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.components.KeyboardBinding
+import com.unciv.utils.Log
 import com.unciv.utils.debug
 import java.io.File
 import java.lang.reflect.Field
@@ -63,7 +64,7 @@ object TranslationFileWriter {
 
             return "Translation files are generated successfully.".tr() + fastlaneOutput
         } catch (ex: Throwable) {
-            ex.printStackTrace()
+            Log.error("Failed to generate translation files", ex)
             return ex.localizedMessage ?: ex.javaClass.simpleName
         }
     }
@@ -512,7 +513,7 @@ object TranslationFileWriter {
 
             return "Fastlane files are generated successfully.".tr()
         } catch (ex: Throwable) {
-            ex.printStackTrace()
+            Log.error("Failed to generate fastlane files", ex)
             return ex.localizedMessage ?: ex.javaClass.simpleName
         }
     }
