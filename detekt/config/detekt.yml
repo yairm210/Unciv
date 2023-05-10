@@ -1,5 +1,5 @@
 build:
-  maxIssues: 5000
+  maxIssues: 1000
   excludeCorrectable: false
   weights:
     # complexity: 2
@@ -47,7 +47,7 @@ output-reports:
   # - 'TxtOutputReport'
   # - 'XmlOutputReport'
   # - 'HtmlOutputReport'
-    - 'MdOutputReport'
+  # - 'MdOutputReport'
   # - 'SarifOutputReport'
 
 comments:
@@ -106,7 +106,7 @@ complexity:
     ignoreOverloaded: false
   CyclomaticComplexMethod:
     active: true
-    threshold: 25
+    threshold: 20
     ignoreSingleWhenExpression: false
     ignoreSimpleWhenEntries: false
     ignoreNestingFunctions: false
@@ -216,7 +216,7 @@ empty-blocks:
     active: true
   EmptyFunctionBlock:
     active: true
-    ignoreOverridden: false
+    ignoreOverridden: true
   EmptyIfBlock:
     active: true
   EmptyInitBlock:
@@ -313,12 +313,12 @@ naming:
     classPattern: '[A-Z][a-zA-Z0-9]*'
   ConstructorParameterNaming:
     active: true
-    parameterPattern: '[a-z][A-Za-z0-9]*'
-    privateParameterPattern: '[a-z][A-Za-z0-9]*'
+    parameterPattern: '(?:_?[a-z][A-Za-z0-9]*)' # parameters should also be allowed to start with an underscore (eg _gameSetupInfo to avoid shadowing)
+    privateParameterPattern: '(?:_?[a-z][A-Za-z0-9]*)' # same as above
     excludeClassPattern: '$^'
   EnumNaming:
     active: true
-    enumEntryPattern: '[A-Z][_a-zA-Z0-9]*'
+    enumEntryPattern: '^[a-zA-Z0-9_]*$'
   ForbiddenClassName:
     active: false
     forbiddenName: []
@@ -330,7 +330,7 @@ naming:
     minimumFunctionNameLength: 3
   FunctionNaming:
     active: true
-    excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**']
+    excludes: ['**/tests/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**']
     functionPattern: '[a-z][a-zA-Z0-9]*'
     excludeClassPattern: '$^'
   FunctionParameterNaming:
@@ -375,8 +375,8 @@ naming:
     minimumVariableNameLength: 1
   VariableNaming:
     active: true
-    variablePattern: '[a-z][A-Za-z0-9]*'
-    privateVariablePattern: '(_)?[a-z][A-Za-z0-9]*'
+    variablePattern: '(?:[a-z][A-Za-z0-9]*|[A-Z][A-Z0-9]*)' # kotlin standard naming scheme + names like RGB, R, G, B ...
+    privateVariablePattern: '(?:_?[a-z][A-Za-z0-9]*|_?[A-Z][A-Z0-9]*)' # same as above but private variables can also start with an underscore
     excludeClassPattern: '$^'
 
 performance:

@@ -32,4 +32,6 @@ jobs:
         detekt_version: '1.23.0-RC3'
 
     - name: Run Detekt
-      run: detekt-cli --auto-correct --parallel --config detekt/config/detekt.yml
+      run: detekt-cli
+      with:
+          args: --parallel --config detekt/config/detekt.yml
