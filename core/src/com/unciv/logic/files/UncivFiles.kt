@@ -353,7 +353,6 @@ class UncivFiles(
                 // this means there wasn't an immediate error while serializing, but this version will cause other errors later down the line
                 throw IncompatibleGameInfoVersionException(gameInfo.version)
             }
-            gameInfo.version = GameInfo.CURRENT_COMPATIBILITY_VERSION
             gameInfo.setTransients()
             return gameInfo
         }
@@ -368,6 +367,7 @@ class UncivFiles(
 
         /** Returns gzipped serialization of [game], optionally gzipped ([forceZip] overrides [saveZipped]) */
         fun gameInfoToString(game: GameInfo, forceZip: Boolean? = null): String {
+            game.version = GameInfo.CURRENT_COMPATIBILITY_VERSION
             val plainJson = json().toJson(game)
             return if (forceZip ?: saveZipped) Gzip.zip(plainJson) else plainJson
         }
