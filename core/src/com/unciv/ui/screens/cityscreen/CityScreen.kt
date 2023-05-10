@@ -9,7 +9,7 @@ import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.City
-import com.unciv.logic.city.IConstruction
+import com.unciv.models.ruleset.IConstruction
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.UncivSound

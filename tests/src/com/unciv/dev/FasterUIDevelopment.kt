@@ -21,7 +21,7 @@ import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.FontImplementation
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.toLabel
-import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.Concurrency
 import java.awt.Font
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage

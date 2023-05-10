@@ -1,7 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
-import com.unciv.logic.city.INonPerpetualConstruction
+import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unique.UniqueType

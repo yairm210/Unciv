@@ -1,6 +1,6 @@
 package com.unciv.logic.map.mapunit
 
-import com.unciv.logic.city.RejectionReasonType
+import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit

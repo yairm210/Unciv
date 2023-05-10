@@ -18,8 +18,8 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.popups.AuthPopup
 import com.unciv.utils.Log
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.launchOnGLThread
+import com.unciv.utils.Concurrency
+import com.unciv.utils.launchOnGLThread
 
 /** Subscreen of MultiplayerScreen to edit and delete saves
  * backScreen is used for getting back to the MultiplayerScreen so it doesn't have to be created over and over again */

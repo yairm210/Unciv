@@ -1,4 +1,4 @@
-package com.unciv.utils.concurrency
+package com.unciv.utils
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.LifecycleListener
@@ -62,10 +62,14 @@ object Concurrency {
     }
 
     /** Non-blocking version of [runBlocking]. Runs on a non-daemon thread pool. Use this if you do something that should always finish if possible, like saving the game. */
-    fun runOnNonDaemonThreadPool(name: String? = null, block: suspend CoroutineScope.() -> Unit) = run(name, CoroutineScope(Dispatcher.NON_DAEMON), block)
+    fun runOnNonDaemonThreadPool(name: String? = null, block: suspend CoroutineScope.() -> Unit) = run(name, CoroutineScope(
+        Dispatcher.NON_DAEMON
+    ), block)
 
     /** Non-blocking version of [runBlocking]. Runs on the GDX GL thread. Use this for all code that manipulates the GDX UI classes. */
-    fun runOnGLThread(name: String? = null, block: suspend CoroutineScope.() -> Unit) = run(name, CoroutineScope(Dispatcher.GL), block)
+    fun runOnGLThread(name: String? = null, block: suspend CoroutineScope.() -> Unit) = run(name, CoroutineScope(
+        Dispatcher.GL
+    ), block)
 
     /** Must only be called in [com.unciv.UncivGame.dispose] to not have any threads running that prevent JVM shutdown. */
     fun stopThreadPools() = EXECUTORS.forEach(ExecutorService::shutdown)
@@ -88,16 +92,21 @@ fun CoroutineScope.launchCrashHandling(
 }
 
 /** See [launch]. Runs on a daemon thread pool. Use this for code that does not necessarily need to finish executing. */
-fun CoroutineScope.launchOnThreadPool(name: String? = null, block: suspend CoroutineScope.() -> Unit) = launchCrashHandling(Dispatcher.DAEMON, name, block)
+fun CoroutineScope.launchOnThreadPool(name: String? = null, block: suspend CoroutineScope.() -> Unit) = launchCrashHandling(
+    Dispatcher.DAEMON, name, block)
 /** See [launch]. Runs on a non-daemon thread pool. Use this if you do something that should always finish if possible, like saving the game. */
-fun CoroutineScope.launchOnNonDaemonThreadPool(name: String? = null, block: suspend CoroutineScope.() -> Unit) = launchCrashHandling(Dispatcher.NON_DAEMON, name, block)
+fun CoroutineScope.launchOnNonDaemonThreadPool(name: String? = null, block: suspend CoroutineScope.() -> Unit) = launchCrashHandling(
+    Dispatcher.NON_DAEMON, name, block)
 /** See [launch]. Runs on the GDX GL thread. Use this for all code that manipulates the GDX UI classes. */
-fun CoroutineScope.launchOnGLThread(name: String? = null, block: suspend CoroutineScope.() -> Unit) = launchCrashHandling(Dispatcher.GL, name, block)
+fun CoroutineScope.launchOnGLThread(name: String? = null, block: suspend CoroutineScope.() -> Unit) = launchCrashHandling(
+    Dispatcher.GL, name, block)
 
 /** See [withContext]. Runs on a daemon thread pool. Use this for code that does not necessarily need to finish executing. */
-suspend fun <T> withThreadPoolContext(block: suspend CoroutineScope.() -> T): T = withContext(Dispatcher.DAEMON, block)
+suspend fun <T> withThreadPoolContext(block: suspend CoroutineScope.() -> T): T = withContext(
+    Dispatcher.DAEMON, block)
 /** See [withContext]. Runs on a non-daemon thread pool. Use this if you do something that should always finish if possible, like saving the game. */
-suspend fun <T> withNonDaemonThreadPoolContext(block: suspend CoroutineScope.() -> T): T = withContext(Dispatcher.NON_DAEMON, block)
+suspend fun <T> withNonDaemonThreadPoolContext(block: suspend CoroutineScope.() -> T): T = withContext(
+    Dispatcher.NON_DAEMON, block)
 /** See [withContext]. Runs on the GDX GL thread. Use this for all code that manipulates the GDX UI classes. */
 suspend fun <T> withGLContext(block: suspend CoroutineScope.() -> T): T = withContext(Dispatcher.GL, block)
 

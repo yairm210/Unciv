@@ -25,7 +25,6 @@ import com.unciv.ui.components.FontFamilyData
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
-import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.keyShortcuts
 import com.unciv.ui.components.extensions.onActivation
@@ -38,8 +37,8 @@ import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.extensions.withoutItem
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenOrientation
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.launchOnGLThread
+import com.unciv.utils.Concurrency
+import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

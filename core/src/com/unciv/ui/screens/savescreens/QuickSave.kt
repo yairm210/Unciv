@@ -8,8 +8,8 @@ import com.unciv.logic.UncivShowableException
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.worldscreen.WorldScreen
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.launchOnGLThread
+import com.unciv.utils.Concurrency
+import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.Log
 
 

@@ -1,8 +1,10 @@
-package com.unciv.logic
+package com.unciv.logic.automation.civilization
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.json.HashMapVector2
+import com.unciv.logic.GameInfo
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.tile.Tile

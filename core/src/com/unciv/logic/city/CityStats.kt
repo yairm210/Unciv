@@ -5,6 +5,8 @@ import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.GlobalUniques
+import com.unciv.models.ruleset.IConstruction
+import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
@@ -476,7 +478,7 @@ class CityStats(val city: City) {
 
     fun update(currentConstruction: IConstruction = city.cityConstructions.getCurrentConstruction(),
                updateTileStats:Boolean = true,
-                updateCivStats:Boolean = true) {
+               updateCivStats:Boolean = true) {
         if (updateTileStats) updateTileStats()
 
         // We need to compute Tile yields before happiness

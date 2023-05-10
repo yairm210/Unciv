@@ -1,8 +1,9 @@
 package com.unciv.logic
 
 import com.unciv.Constants
+import com.unciv.logic.automation.civilization.BarbarianManager
 import com.unciv.logic.city.CityConstructions
-import com.unciv.logic.city.PerpetualConstruction
+import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.managers.TechManager

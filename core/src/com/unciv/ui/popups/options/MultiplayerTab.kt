@@ -26,8 +26,8 @@ import com.unciv.ui.popups.AuthPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.options.SettingsSelect.SelectItem
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.launchOnGLThread
+import com.unciv.utils.Concurrency
+import com.unciv.utils.launchOnGLThread
 import java.time.Duration
 import java.time.temporal.ChronoUnit
 

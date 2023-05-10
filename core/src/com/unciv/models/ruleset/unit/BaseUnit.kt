@@ -2,9 +2,9 @@ package com.unciv.models.ruleset.unit
 
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
-import com.unciv.logic.city.INonPerpetualConstruction
-import com.unciv.logic.city.RejectionReason
-import com.unciv.logic.city.RejectionReasonType
+import com.unciv.models.ruleset.INonPerpetualConstruction
+import com.unciv.models.ruleset.RejectionReason
+import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.Ruleset

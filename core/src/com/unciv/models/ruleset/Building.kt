@@ -2,9 +2,6 @@ package com.unciv.models.ruleset
 
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
-import com.unciv.logic.city.INonPerpetualConstruction
-import com.unciv.logic.city.RejectionReason
-import com.unciv.logic.city.RejectionReasonType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.tile.ResourceType

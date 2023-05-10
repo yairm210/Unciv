@@ -19,7 +19,7 @@ import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.victoryscreen.LoadMapPreview
 import com.unciv.utils.Log
-import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.Concurrency
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 

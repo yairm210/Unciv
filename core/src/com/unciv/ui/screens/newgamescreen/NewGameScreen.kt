@@ -39,8 +39,8 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.Log
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.launchOnGLThread
+import com.unciv.utils.Concurrency
+import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.coroutineScope
 import java.net.URL
 import java.util.UUID

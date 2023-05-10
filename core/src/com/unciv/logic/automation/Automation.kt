@@ -2,7 +2,7 @@ package com.unciv.logic.automation
 
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFocus
-import com.unciv.logic.city.INonPerpetualConstruction
+import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileMap

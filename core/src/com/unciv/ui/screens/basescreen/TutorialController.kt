@@ -1,4 +1,4 @@
-package com.unciv.ui.tutorials
+package com.unciv.ui.screens.basescreen
 
 import com.badlogic.gdx.Gdx
 import com.unciv.Constants
@@ -9,7 +9,6 @@ import com.unciv.models.TutorialTrigger
 import com.unciv.models.ruleset.Tutorial
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
