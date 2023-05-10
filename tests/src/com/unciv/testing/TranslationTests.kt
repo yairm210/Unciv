@@ -8,7 +8,13 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.*
+import com.unciv.models.translations.TranslationEntry
+import com.unciv.models.translations.TranslationFileWriter
+import com.unciv.models.translations.Translations
+import com.unciv.models.translations.getPlaceholderParametersIgnoringLowerLevelBraces
+import com.unciv.models.translations.getPlaceholderText
+import com.unciv.models.translations.squareBraceRegex
+import com.unciv.models.translations.tr
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import org.junit.Assert
@@ -260,7 +266,7 @@ class TranslationTests {
         UncivGame.Current.settings = GameSettings()
 
         fun addTranslation(original:String, result:String){
-            UncivGame.Current.translations[original.getPlaceholderText()] =TranslationEntry(original)
+            UncivGame.Current.translations[original.getPlaceholderText()] = TranslationEntry(original)
                 .apply { this[Constants.english] = result }
         }
         addTranslation("The brother of [person]", "The sibling of [person]")

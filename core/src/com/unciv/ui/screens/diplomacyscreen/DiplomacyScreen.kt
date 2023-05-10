@@ -14,7 +14,6 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
-import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers.*
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.civilization.managers.AssignedQuest
@@ -825,8 +824,8 @@ class DiplomacyScreen(
         val diplomacyModifiersTable = Table()
         for (modifier in otherCivDiplomacyManager.diplomaticModifiers) {
             // Angry about attacked CS and destroyed CS do not stack
-            if (modifier.key == AttackedProtectedMinor.name
-                && otherCivDiplomacyManager.hasModifier(DestroyedProtectedMinor))
+            if (modifier.key == DiplomaticModifiers.AttackedProtectedMinor.name
+                && otherCivDiplomacyManager.hasModifier(DiplomaticModifiers.DestroyedProtectedMinor))
                 continue
 
             var text = DiplomaticModifiers.valueOf(modifier.key).text.tr() + " "
