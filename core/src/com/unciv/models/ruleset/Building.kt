@@ -461,11 +461,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 && cityConstructions.city.civ.gameInfo.gameParameters.oneCityChallenge)
             return false // You will never be able to get more cities, this building is effectively disabled
 
-        return rejectionReasons.none { !it.shouldShow }
-            || (
-                canBePurchasedWithAnyStat(cityConstructions.city)
+        if (rejectionReasons.none { !it.shouldShow }) return true
+        return canBePurchasedWithAnyStat(cityConstructions.city)
                 && rejectionReasons.all { it.type == RejectionReasonType.Unbuildable }
-            )
     }
 
     override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> = sequence {

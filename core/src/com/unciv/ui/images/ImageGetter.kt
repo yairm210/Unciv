@@ -75,7 +75,7 @@ object ImageGetter {
         TileSetCache.assembleTileSetConfigs(ruleset.mods)
         SkinCache.assembleSkinConfigs(ruleset.mods)
 
-        Fonts.resetFont()
+        BaseScreen.setSkin()
         Fonts.addRulesetImages(ruleset)
     }
 

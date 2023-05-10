@@ -1,3 +1,39 @@
+## 4.6.10
+
+Automated workers no longer stay on unimprovable tile if another tile is improvable
+
+Solved rare concurrency bug for explored tiles
+
+Songhai Civilian units no longer gain Amphibious promotion
+
+Fixed 'enhance religion' crash
+
+Improperly configured mod conditionals do not cause crash
+
+## 4.6.9
+
+Hide buildings requiring multiple cities in one city challenge
+
+Show Strategic resources you have by trade even if you have not researched tech for it yet
+
+Scale down unit overlays on zoom in to allow selecting bombard target above city
+
+Added Policy icons in text
+
+Solved AI 'found religion' crash
+
+Solved "get vanilla ruleset" errors after downloading mods
+
+AbsoluteUnits - Hussar, Cossack, Panzer  - By letstalkaboutdune
+
+Close the friend selection in NewGameScreen by outside click/ESC/BACK  - By CrsiX
+
+By SomeTroglodyte:
+- Fix memory leak from repeatedly resetting the font
+- Limit saved window size to available desktop
+- Show preview of custom maps on new game screen
+- Allow closing Popup by clicking outside its area
+
 ## 4.6.8
 
 Reduce a few memory allocations  - By SomeTroglodyte

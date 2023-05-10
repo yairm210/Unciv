@@ -773,10 +773,6 @@ class WorldMapHolder(
                     tileGroup.layerCityButton.isTransform = true
                 tileGroup.layerCityButton.setScale(clampedCityButtonZoom)
             }
-            for (actor in unitActionOverlays) {
-                if (actor is Group) actor.isTransform = true
-                actor.setScale(clampedCityButtonZoom)
-            }
         }
     }
 

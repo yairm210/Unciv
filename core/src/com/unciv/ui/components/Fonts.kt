@@ -197,6 +197,7 @@ object Fonts {
 
     lateinit var fontImplementation: FontImplementation
     lateinit var font: BitmapFont
+    var oldFont: BitmapFont? = null
 
     /** This resets all cached font data in object Fonts.
      *  Do not call from normal code - reset the Skin instead: `BaseScreen.setSkin()`
@@ -204,6 +205,13 @@ object Fonts {
     fun resetFont() {
         val settings = GUI.getSettings()
         fontImplementation.setFontFamily(settings.fontFamilyData, settings.getFontSize())
+        if (::font.isInitialized) {
+            // We don't dispose the old font immediately since there may be objects using it.
+            // Instead, we wait for the *next* time the font is reset - since by then all usages of the old font should not exist either - #9338
+            // Don't font.dispose() even it it seems obvious -> leaves only black rectangles - See #9325
+            (oldFont?.data as? NativeBitmapFontData)?.dispose()
+            oldFont = font
+        }
         font = fontImplementation.getBitmapFont()
         font.data.markupEnabled = true
     }
