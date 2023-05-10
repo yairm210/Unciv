@@ -147,7 +147,9 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
             for (file in Gdx.files.internal("jsons/translations").list())
                 languages.add(file.nameWithoutExtension())
         }
-        catch (ex:Exception) {} // Iterating on internal files will not work when running from a .jar
+        catch (ex:Exception) {
+            Log.error("Failed to add languages", ex)
+        } // Iterating on internal files will not work when running from a .jar
 
         languages.addAll(Locale.getAvailableLocales() // And this should work for Desktop, meaning from a .jar
                 .map { it.getDisplayName(Locale.ENGLISH) }) // Maybe THIS is the problem, that the DISPLAY locale wasn't english

@@ -6,6 +6,7 @@ import android.net.Uri
 import android.provider.DocumentsContract
 import android.provider.OpenableColumns
 import com.unciv.logic.files.PlatformSaverLoader
+import com.unciv.utils.Log
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -106,6 +107,7 @@ class AndroidSaverLoader(private val activity: Activity) : PlatformSaverLoader {
                     return ""
             }
         } catch(ex: Exception) {
+            Log.error("Failed to get filename from Uri", ex)
             return suggestedLocation.split("2F").last() // I have no idea why but the content path ends with this before the filename
         }
 

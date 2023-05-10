@@ -54,7 +54,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private val happinessLabel = "0".toLabel()
     private val cultureLabel = "0".toLabel(colorFromRGB(210, 94, 210))
     private val faithLabel = "0".toLabel(colorFromRGB(168, 196, 241))
-    private data class ResourceActors(val resource: TileResource, val Label: Label, val icon: Group)
+    private data class ResourceActors(val resource: TileResource, val label: Label, val icon: Group)
     private val resourceActors = ArrayList<ResourceActors>(12)
     private val happinessImage = Group()
 

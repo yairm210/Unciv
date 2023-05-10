@@ -18,7 +18,8 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.victoryscreen.LoadMapPreview
-import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.Log
+import com.unciv.utils.Concurrency
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 
@@ -97,7 +98,7 @@ class MapFileSelectTable(
         val mapParams = try {
             MapSaver.loadMapParameters(mapFile)
         } catch (ex:Exception){
-            ex.printStackTrace()
+            Log.error("Failed to load map parameters", ex)
             Popup(newGameScreen).apply {
                 addGoodSizedLabel("Could not load map!").row()
                 if (ex is UncivShowableException)

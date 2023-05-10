@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.Pixmap
 import com.unciv.ui.components.FontFamilyData
 import com.unciv.ui.components.FontImplementation
 import com.unciv.ui.components.Fonts
+import com.unciv.utils.Log
 import java.util.*
 import kotlin.math.abs
 
@@ -79,6 +80,7 @@ class AndroidFont : FontImplementation {
         }
         catch (e: Exception)
         {
+            Log.error("Failed to create typeface, falling back to default", e)
             // Falling back to default
             Typeface.create(Fonts.DEFAULT_FONT_FAMILY, Typeface.NORMAL)
         }

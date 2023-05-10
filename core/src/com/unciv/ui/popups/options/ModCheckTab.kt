@@ -25,8 +25,8 @@ import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.newgamescreen.TranslatedSelectBox
 import com.unciv.utils.Log
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.launchOnGLThread
+import com.unciv.utils.Concurrency
+import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.debug
 
 
@@ -204,8 +204,7 @@ class ModCheckTab(
                 replacementUnique,
                 false,
                 "",
-                UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant,
-                deprecatedUnique.sourceObjectType!!
+                UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
             )
             for (error in modInvariantErrors)
                 Log.error("ModInvariantError: %s - %s", error.text, error.errorSeverityToReport)
@@ -216,8 +215,7 @@ class ModCheckTab(
                     replacementUnique,
                     false,
                     "",
-                    UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant,
-                    deprecatedUnique.sourceObjectType
+                    UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
                 )
                 for (error in modSpecificErrors)
                     Log.error("ModSpecificError: %s - %s", error.text, error.errorSeverityToReport)

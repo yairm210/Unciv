@@ -130,11 +130,11 @@ class PolicyPickerScreen(val viewingCiv: Civilization, val canChangeState: Boole
     : PickerScreen(), RecreateOnResize {
 
     object Sizes {
-        val paddingVertical = 10f
-        val paddingHorizontal = 20f
-        val paddingBetweenHor = 10f
-        val paddingBetweenVer = 20f
-        val iconSize = 50f
+        const val paddingVertical = 10f
+        const val paddingHorizontal = 20f
+        const val paddingBetweenHor = 10f
+        const val paddingBetweenVer = 20f
+        const val iconSize = 50f
     }
 
     private var policyNameToButton = HashMap<String, PolicyButton>()

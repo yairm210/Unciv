@@ -10,8 +10,8 @@ import com.unciv.logic.multiplayer.GameUpdateResult.Type.UNCHANGED
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.OnlineMultiplayerFiles
 import com.unciv.ui.components.extensions.isLargerThan
-import com.unciv.utils.concurrency.launchOnGLThread
-import com.unciv.utils.concurrency.withGLContext
+import com.unciv.utils.launchOnGLThread
+import com.unciv.utils.withGLContext
 import com.unciv.utils.debug
 import kotlinx.coroutines.coroutineScope
 import java.time.Duration
@@ -97,7 +97,7 @@ class OnlineMultiplayerGame(
                 error = null
                 MultiplayerGameUpdateUnchanged(name, updateResult.status)
             }
-            else -> throw IllegalStateException()
+            else -> throw IllegalStateException("Unknown update event")
         }
         launchOnGLThread {
             EventBus.send(updateEvent)

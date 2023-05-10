@@ -59,10 +59,10 @@ import com.unciv.ui.screens.worldscreen.status.NextTurnButton
 import com.unciv.ui.screens.worldscreen.status.StatusButtons
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsTable
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.launchOnGLThread
-import com.unciv.utils.concurrency.launchOnThreadPool
-import com.unciv.utils.concurrency.withGLContext
+import com.unciv.utils.Concurrency
+import com.unciv.utils.launchOnGLThread
+import com.unciv.utils.launchOnThreadPool
+import com.unciv.utils.withGLContext
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope

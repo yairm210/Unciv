@@ -15,7 +15,14 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.DEFAULT_VIBRATE
 import androidx.core.app.NotificationManagerCompat
-import androidx.work.*
+import androidx.work.Constraints
+import androidx.work.Data
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.Worker
+import androidx.work.WorkerParameters
+import androidx.work.workDataOf
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.DefaultAndroidFiles
@@ -30,7 +37,8 @@ import java.io.PrintWriter
 import java.io.StringWriter
 import java.io.Writer
 import java.time.Duration
-import java.util.*
+import java.util.Arrays
+import java.util.GregorianCalendar
 import java.util.concurrent.TimeUnit
 
 
@@ -362,6 +370,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 enqueue(applicationContext, Duration.ofMinutes(1), inputDataFailIncrease)
             }
         } catch (outOfMemory: OutOfMemoryError){ // no point in trying multiple times if this was an oom error
+            Log.e(LOG_TAG, "doWork ${outOfMemory::class.simpleName}: ${outOfMemory.message}")
             return@runBlocking Result.failure()
         }
         return@runBlocking Result.success()

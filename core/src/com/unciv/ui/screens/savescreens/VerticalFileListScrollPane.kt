@@ -13,8 +13,8 @@ import com.unciv.ui.components.AutoScrollPane
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.keyShortcuts
 import com.unciv.ui.components.extensions.onClick
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.launchOnGLThread
+import com.unciv.utils.Concurrency
+import com.unciv.utils.launchOnGLThread
 
 //todo key auto-repeat for navigation keys?
 

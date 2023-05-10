@@ -169,6 +169,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
                         this@CrashScreen
                     )
                 } catch(ex:Exception) {
+                    Log.debug("Could not copy to clipboard", ex)
                     ToastPopup(
                         "Could not copy to clipboard!",
                         this@CrashScreen

@@ -8,13 +8,18 @@ import com.badlogic.gdx.utils.SerializationException
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
-import com.unciv.logic.*
+import com.unciv.logic.CompatibilityVersion
+import com.unciv.logic.GameInfo
+import com.unciv.logic.GameInfoPreview
+import com.unciv.logic.GameInfoSerializationVersion
+import com.unciv.logic.HasGameInfoSerializationVersion
+import com.unciv.logic.UncivShowableException
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.doMigrations
 import com.unciv.models.metadata.isMigrationNecessary
 import com.unciv.ui.screens.savescreens.Gzip
 import com.unciv.utils.Log
-import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.Concurrency
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
 import java.io.File
@@ -140,8 +145,8 @@ class UncivFiles(
     //endregion
     //region Saving
 
-    fun saveGame(game: GameInfo, GameName: String, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }): FileHandle {
-        val file = getSave(GameName)
+    fun saveGame(game: GameInfo, gameName: String, saveCompletionCallback: (Exception?) -> Unit = { if (it != null) throw it }): FileHandle {
+        val file = getSave(gameName)
         saveGame(game, file, saveCompletionCallback)
         return file
     }
@@ -402,6 +407,7 @@ class UncivFiles(
         try {
             saveGame(gameInfo, AUTOSAVE_FILE_NAME)
         } catch (oom: OutOfMemoryError) {
+            Log.error("Ran out of memory during autosave", oom)
             return  // not much we can do here
         }
 

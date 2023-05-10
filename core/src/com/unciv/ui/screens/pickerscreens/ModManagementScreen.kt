@@ -45,8 +45,8 @@ import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.pickerscreens.ModManagementOptions.SortType
 import com.unciv.utils.Log
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.launchOnGLThread
+import com.unciv.utils.Concurrency
+import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import java.io.IOException
@@ -218,6 +218,7 @@ class ModManagementScreen(
             try {
                 repoSearch = Github.tryGetGithubReposWithTopic(amountPerPage, pageNum)!!
             } catch (ex: Exception) {
+                Log.error("Could not download mod list", ex)
                 launchOnGLThread {
                     ToastPopup("Could not download mod list", this@ModManagementScreen)
                 }
@@ -352,7 +353,7 @@ class ModManagementScreen(
      * @param modName: The mod name (name from the RuleSet)
      * @param modOptions: The ModOptions as enriched by us with GitHub metadata when originally downloaded
      */
-    private fun addModInfoToActionTable(modName: String, modOptions: ModOptions) {
+    private fun addModInfoToActionTable(modOptions: ModOptions) {
         addModInfoToActionTable(
             modOptions.modUrl,
             modOptions.lastUpdated,
@@ -484,7 +485,7 @@ class ModManagementScreen(
                     repo,
                     Gdx.files.local("mods")
                 )
-                    ?: throw Exception()    // downloadAndExtract returns null for 404 errors and the like -> display something!
+                    ?: throw Exception("downloadAndExtract returns null for 404 errors and the like")    // downloadAndExtract returns null for 404 errors and the like -> display something!
                 Github.rewriteModOptions(repo, modFolder)
                 launchOnGLThread {
                     ToastPopup("[${repo.name}] Downloaded!", this@ModManagementScreen)
@@ -500,6 +501,7 @@ class ModManagementScreen(
                     postAction()
                 }
             } catch (ex: Exception) {
+                Log.error("Could not download ${repo.name}", ex)
                 launchOnGLThread {
                     ToastPopup("Could not download [${repo.name}]", this@ModManagementScreen)
                     postAction()
@@ -532,7 +534,7 @@ class ModManagementScreen(
         selectedMod = null
         modActionTable.clear()
         // show mod information first
-        addModInfoToActionTable(mod.name, mod.modOptions)
+        addModInfoToActionTable(mod.modOptions)
 
         // offer 'permanent visual mod' toggle
         val visualMods = game.settings.visualMods

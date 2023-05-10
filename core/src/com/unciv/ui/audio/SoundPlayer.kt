@@ -6,7 +6,7 @@ import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
 import com.unciv.models.UncivSound
-import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.Concurrency
 import com.unciv.utils.debug
 import kotlinx.coroutines.delay
 import java.io.File

@@ -2,6 +2,7 @@ package com.unciv.logic.multiplayer.storage
 
 import com.badlogic.gdx.Net
 import com.unciv.UncivGame
+import com.unciv.utils.Log
 import com.unciv.utils.debug
 import java.io.BufferedReader
 import java.io.DataOutputStream
@@ -28,6 +29,7 @@ object SimpleHttp {
         try {
             urlObj = uri.toURL()
         } catch (t: Throwable) {
+            Log.debug("Bad URL", t)
             action(false, "Bad URL", null)
             return
         }

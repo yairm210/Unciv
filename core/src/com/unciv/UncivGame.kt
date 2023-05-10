@@ -45,10 +45,10 @@ import com.unciv.utils.DebugUtils
 import com.unciv.utils.Display
 import com.unciv.utils.Log
 import com.unciv.utils.PlatformSpecific
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.launchOnGLThread
-import com.unciv.utils.concurrency.withGLContext
-import com.unciv.utils.concurrency.withThreadPoolContext
+import com.unciv.utils.Concurrency
+import com.unciv.utils.launchOnGLThread
+import com.unciv.utils.withGLContext
+import com.unciv.utils.withThreadPoolContext
 import com.unciv.utils.debug
 import kotlinx.coroutines.CancellationException
 import java.io.PrintWriter

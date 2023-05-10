@@ -5,9 +5,9 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
-import com.unciv.logic.city.IConstruction
-import com.unciv.logic.city.PerpetualConstruction
-import com.unciv.logic.city.PerpetualStatConversion
+import com.unciv.models.ruleset.IConstruction
+import com.unciv.models.ruleset.PerpetualConstruction
+import com.unciv.models.ruleset.PerpetualStatConversion
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IRulesetObject

@@ -16,10 +16,10 @@ import com.unciv.logic.multiplayer.storage.OnlineMultiplayerFiles
 import com.unciv.ui.components.extensions.isLargerThan
 import com.unciv.logic.multiplayer.storage.SimpleHttp
 import com.unciv.utils.Log
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.Dispatcher
-import com.unciv.utils.concurrency.launchOnThreadPool
-import com.unciv.utils.concurrency.withGLContext
+import com.unciv.utils.Concurrency
+import com.unciv.utils.Dispatcher
+import com.unciv.utils.launchOnThreadPool
+import com.unciv.utils.withGLContext
 import com.unciv.utils.debug
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
@@ -343,7 +343,7 @@ class OnlineMultiplayer {
                 featureSet = try {
                     json().fromJson(ServerFeatureSet::class.java, result)
                 } catch (ex: Exception) {
-                    Log.error("${UncivGame.Current.settings.multiplayer.server} does not support server feature set")
+                    Log.error("${UncivGame.Current.settings.multiplayer.server} does not support server feature set", ex)
                     ServerFeatureSet()
                 }
             }

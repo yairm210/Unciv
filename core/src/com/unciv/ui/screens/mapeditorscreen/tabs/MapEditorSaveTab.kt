@@ -25,6 +25,7 @@ import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.onChange
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.utils.Log
 import kotlin.concurrent.thread
 
 class MapEditorSaveTab(
@@ -126,7 +127,7 @@ class MapEditorSaveTab(
             }
             editorScreen.isDirty = false
         } catch (ex: Exception) {
-            ex.printStackTrace()
+            Log.error("Failed to save map", ex)
             Gdx.app.postRunnable {
                 val cantLoadGamePopup = Popup(editorScreen)
                 cantLoadGamePopup.addGoodSizedLabel("It looks like your map can't be saved!").row()

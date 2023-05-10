@@ -8,7 +8,17 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.managers.SpyAction
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.LocaleCode
-import com.unciv.models.ruleset.*
+import com.unciv.models.ruleset.Belief
+import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.GlobalUniques
+import com.unciv.models.ruleset.PolicyBranch
+import com.unciv.models.ruleset.Quest
+import com.unciv.models.ruleset.RuinReward
+import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.Specialist
+import com.unciv.models.ruleset.Speed
+import com.unciv.models.ruleset.Tutorial
+import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.nation.CityStateType
 import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.nation.Nation
@@ -17,11 +27,16 @@ import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
-import com.unciv.models.ruleset.unique.*
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueFlag
+import com.unciv.models.ruleset.unique.UniqueParameterType
+import com.unciv.models.ruleset.unique.UniqueTarget
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.components.KeyboardBinding
+import com.unciv.utils.Log
 import com.unciv.utils.debug
 import java.io.File
 import java.lang.reflect.Field
@@ -63,7 +78,7 @@ object TranslationFileWriter {
 
             return "Translation files are generated successfully.".tr() + fastlaneOutput
         } catch (ex: Throwable) {
-            ex.printStackTrace()
+            Log.error("Failed to generate translation files", ex)
             return ex.localizedMessage ?: ex.javaClass.simpleName
         }
     }
@@ -512,7 +527,7 @@ object TranslationFileWriter {
 
             return "Fastlane files are generated successfully.".tr()
         } catch (ex: Throwable) {
-            ex.printStackTrace()
+            Log.error("Failed to generate fastlane files", ex)
             return ex.localizedMessage ?: ex.javaClass.simpleName
         }
     }
