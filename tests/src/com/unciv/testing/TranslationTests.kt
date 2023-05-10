@@ -9,6 +9,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.*
+import com.unciv.utils.Log
 import com.unciv.utils.debug
 import org.junit.Assert
 import org.junit.Before
@@ -201,7 +202,7 @@ class TranslationTests {
                     translationEntry.entry.tr()
                 } catch (ex: Exception) {
                     allWordsTranslatedCorrectly = false
-                    println("Crashed when translating ${translationEntry.entry} to $language")
+                    Log.error("Crashed when translating ${translationEntry.entry} to $language", ex)
                 }
             }
         }

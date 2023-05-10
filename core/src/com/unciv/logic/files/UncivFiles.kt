@@ -402,6 +402,7 @@ class UncivFiles(
         try {
             saveGame(gameInfo, AUTOSAVE_FILE_NAME)
         } catch (oom: OutOfMemoryError) {
+            Log.error("Ran out of memory during autosave", oom)
             return  // not much we can do here
         }
 

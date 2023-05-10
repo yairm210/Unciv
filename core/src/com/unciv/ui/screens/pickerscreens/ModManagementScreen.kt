@@ -218,6 +218,7 @@ class ModManagementScreen(
             try {
                 repoSearch = Github.tryGetGithubReposWithTopic(amountPerPage, pageNum)!!
             } catch (ex: Exception) {
+                Log.error("Could not download mod list", ex)
                 launchOnGLThread {
                     ToastPopup("Could not download mod list", this@ModManagementScreen)
                 }
@@ -500,6 +501,7 @@ class ModManagementScreen(
                     postAction()
                 }
             } catch (ex: Exception) {
+                Log.error("Could not download ${repo.name}", ex)
                 launchOnGLThread {
                     ToastPopup("Could not download [${repo.name}]", this@ModManagementScreen)
                     postAction()

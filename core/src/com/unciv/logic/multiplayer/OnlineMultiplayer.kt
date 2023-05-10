@@ -343,7 +343,7 @@ class OnlineMultiplayer {
                 featureSet = try {
                     json().fromJson(ServerFeatureSet::class.java, result)
                 } catch (ex: Exception) {
-                    Log.error("${UncivGame.Current.settings.multiplayer.server} does not support server feature set")
+                    Log.error("${UncivGame.Current.settings.multiplayer.server} does not support server feature set", ex)
                     ServerFeatureSet()
                 }
             }

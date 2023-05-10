@@ -134,13 +134,13 @@ object DropBox: FileStorage {
         throw FileStorageRateLimitReached(remainingRateLimitSeconds)
     }
 
-    fun fileExists(fileName: String): Boolean = try {
-            dropboxApi("https://api.dropboxapi.com/2/files/get_metadata",
-                "{\"path\":\"$fileName\"}", "application/json")
-            true
-        } catch (ex: MultiplayerFileNotFoundException) {
-            false
-        }
+//     fun fileExists(fileName: String): Boolean = try {
+//             dropboxApi("https://api.dropboxapi.com/2/files/get_metadata",
+//                 "{\"path\":\"$fileName\"}", "application/json")
+//             true
+//         } catch (ex: MultiplayerFileNotFoundException) {
+//             false
+//         }
 
 //
 //    fun createTemplate(): String {

@@ -172,6 +172,7 @@ class NewGameScreen(
             val map = try {
                 MapSaver.loadMap(gameSetupInfo.mapFile!!)
             } catch (ex: Throwable) {
+                Log.error("Could not load map", ex)
                 Gdx.input.inputProcessor = stage
                 ToastPopup("Could not load map!", this)
                 return
