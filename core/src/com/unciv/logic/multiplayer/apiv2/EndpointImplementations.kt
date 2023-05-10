@@ -168,7 +168,7 @@ private fun getDefaultRetry(client: HttpClient, authHelper: AuthHelper): (suspen
     val lastCredentials = authHelper.lastSuccessfulCredentials.get()
     if (lastCredentials != null) {
         return suspend {
-            val response = request(HttpMethod.Post, "/api/v2/auth/login", client, authHelper, suppress = true, retry = null, refine = {b ->
+            val response = request(HttpMethod.Post, "api/v2/auth/login", client, authHelper, suppress = true, retry = null, refine = {b ->
                 b.contentType(ContentType.Application.Json)
                 b.setBody(LoginRequest(lastCredentials.first, lastCredentials.second))
             })
@@ -247,7 +247,7 @@ class AccountsApi(private val client: HttpClient, private val authHelper: AuthHe
      */
     suspend fun get(cache: Boolean = true, suppress: Boolean = false): AccountResponse? {
         return Cache.get(
-            "/api/v2/accounts/me",
+            "api/v2/accounts/me",
             client, authHelper,
             suppress = suppress,
             cache = cache,
@@ -266,7 +266,7 @@ class AccountsApi(private val client: HttpClient, private val authHelper: AuthHe
      */
     suspend fun lookup(uuid: UUID, cache: Boolean = true, suppress: Boolean = false): AccountResponse? {
         return Cache.get(
-            "/api/v2/accounts/$uuid",
+            "api/v2/accounts/$uuid",
             client, authHelper,
             suppress = suppress,
             cache = cache,
@@ -288,7 +288,7 @@ class AccountsApi(private val client: HttpClient, private val authHelper: AuthHe
      */
     suspend fun lookup(username: String, suppress: Boolean = false): AccountResponse? {
         return request(
-            HttpMethod.Post, "/api/v2/accounts/lookup",
+            HttpMethod.Post, "api/v2/accounts/lookup",
             client, authHelper,
             suppress = suppress,
             retry = getDefaultRetry(client, authHelper),
@@ -333,7 +333,7 @@ class AccountsApi(private val client: HttpClient, private val authHelper: AuthHe
      */
     private suspend fun update(r: UpdateAccountRequest, suppress: Boolean): Boolean {
         val response = request(
-            HttpMethod.Put, "/api/v2/accounts/me",
+            HttpMethod.Put, "api/v2/accounts/me",
             client, authHelper,
             suppress = suppress,
             retry = getDefaultRetry(client, authHelper),
@@ -355,7 +355,7 @@ class AccountsApi(private val client: HttpClient, private val authHelper: AuthHe
      */
     suspend fun delete(suppress: Boolean = false): Boolean {
         val response = request(
-            HttpMethod.Delete, "/api/v2/accounts/me",
+            HttpMethod.Delete, "api/v2/accounts/me",
             client, authHelper,
             suppress = suppress,
             retry = getDefaultRetry(client, authHelper)
@@ -383,7 +383,7 @@ class AccountsApi(private val client: HttpClient, private val authHelper: AuthHe
             oldLocalPassword = "" // empty passwords will yield InvalidPassword, so this is fine here
         }
         val response = request(
-            HttpMethod.Post, "/api/v2/accounts/setPassword",
+            HttpMethod.Post, "api/v2/accounts/setPassword",
             client, authHelper,
             suppress = suppress,
             retry = getDefaultRetry(client, authHelper),
@@ -410,7 +410,7 @@ class AccountsApi(private val client: HttpClient, private val authHelper: AuthHe
      */
     suspend fun register(username: String, displayName: String, password: String, suppress: Boolean = false): Boolean {
         val response = request(
-            HttpMethod.Post, "/api/v2/accounts/register",
+            HttpMethod.Post, "api/v2/accounts/register",
             client, authHelper,
             suppress = suppress,
             refine = { b ->
@@ -443,7 +443,7 @@ class AuthApi(private val client: HttpClient, private val authHelper: AuthHelper
      */
     suspend fun loginOnly(username: String, password: String): Boolean {
         val response = request(
-            HttpMethod.Post, "/api/v2/auth/login",
+            HttpMethod.Post, "api/v2/auth/login",
             client, authHelper,
             suppress = true,
             refine = { b ->
@@ -466,7 +466,7 @@ class AuthApi(private val client: HttpClient, private val authHelper: AuthHelper
      */
     suspend fun login(username: String, password: String, suppress: Boolean = false): Boolean {
         val response = request(
-            HttpMethod.Post, "/api/v2/auth/login",
+            HttpMethod.Post, "api/v2/auth/login",
             client, authHelper,
             suppress = suppress,
             refine = { b ->
@@ -507,7 +507,7 @@ class AuthApi(private val client: HttpClient, private val authHelper: AuthHelper
     suspend fun logout(suppress: Boolean = true): Boolean {
         val response = try {
             request(
-                HttpMethod.Get, "/api/v2/auth/logout",
+                HttpMethod.Get, "api/v2/auth/logout",
                 client, authHelper,
                 suppress = suppress,
                 retry = getDefaultRetry(client, authHelper)
@@ -548,7 +548,7 @@ class ChatApi(private val client: HttpClient, private val authHelper: AuthHelper
      */
     suspend fun list(suppress: Boolean = false): GetAllChatsResponse? {
         val response = request(
-            HttpMethod.Get, "/api/v2/chats",
+            HttpMethod.Get, "api/v2/chats",
             client, authHelper,
             suppress = suppress,
             retry = getDefaultRetry(client, authHelper)
@@ -575,7 +575,7 @@ class ChatApi(private val client: HttpClient, private val authHelper: AuthHelper
      */
     suspend fun get(roomUUID: UUID, suppress: Boolean = false): GetChatResponse? {
         return request(
-            HttpMethod.Get, "/api/v2/chats/$roomUUID",
+            HttpMethod.Get, "api/v2/chats/$roomUUID",
             client, authHelper,
             suppress = suppress,
             retry = getDefaultRetry(client, authHelper)
@@ -594,7 +594,7 @@ class ChatApi(private val client: HttpClient, private val authHelper: AuthHelper
      */
     suspend fun send(message: String, chatRoomUUID: UUID, suppress: Boolean = false): ChatMessage? {
         val response = request(
-            HttpMethod.Post, "/api/v2/chats/$chatRoomUUID",
+            HttpMethod.Post, "api/v2/chats/$chatRoomUUID",
             client, authHelper,
             suppress = suppress,
             refine = { b ->
@@ -623,7 +623,7 @@ class FriendApi(private val client: HttpClient, private val authHelper: AuthHelp
      */
     suspend fun list(suppress: Boolean = false): Pair<List<FriendResponse>, List<FriendRequestResponse>>? {
         val body: GetFriendResponse? = request(
-            HttpMethod.Get, "/api/v2/friends",
+            HttpMethod.Get, "api/v2/friends",
             client, authHelper,
             suppress = suppress,
             retry = getDefaultRetry(client, authHelper)
@@ -669,7 +669,7 @@ class FriendApi(private val client: HttpClient, private val authHelper: AuthHelp
      */
     suspend fun request(other: UUID, suppress: Boolean = false): Boolean {
         val response = request(
-            HttpMethod.Post, "/api/v2/friends",
+            HttpMethod.Post, "api/v2/friends",
             client, authHelper,
             suppress = suppress,
             refine = { b ->
@@ -691,7 +691,7 @@ class FriendApi(private val client: HttpClient, private val authHelper: AuthHelp
      */
     suspend fun accept(friendRequestUUID: UUID, suppress: Boolean = false): Boolean {
         val response = request(
-            HttpMethod.Put, "/api/v2/friends/$friendRequestUUID",
+            HttpMethod.Put, "api/v2/friends/$friendRequestUUID",
             client, authHelper,
             suppress = suppress,
             retry = getDefaultRetry(client, authHelper)
@@ -711,7 +711,7 @@ class FriendApi(private val client: HttpClient, private val authHelper: AuthHelp
      */
     suspend fun delete(friendUUID: UUID, suppress: Boolean = false): Boolean {
         val response = request(
-            HttpMethod.Delete, "/api/v2/friends/$friendUUID",
+            HttpMethod.Delete, "api/v2/friends/$friendUUID",
             client, authHelper,
             suppress = suppress,
             retry = getDefaultRetry(client, authHelper)
@@ -743,7 +743,7 @@ class GameApi(private val client: HttpClient, private val authHelper: AuthHelper
      */
     suspend fun list(suppress: Boolean = false): List<GameOverviewResponse>? {
         val body: GetGameOverviewResponse? = request(
-            HttpMethod.Get, "/api/v2/games",
+            HttpMethod.Get, "api/v2/games",
             client, authHelper,
             suppress = suppress,
             retry = getDefaultRetry(client, authHelper)
@@ -765,7 +765,7 @@ class GameApi(private val client: HttpClient, private val authHelper: AuthHelper
      */
     suspend fun get(gameUUID: UUID, cache: Boolean = true, suppress: Boolean = false): GameStateResponse? {
         return Cache.get(
-            "/api/v2/games/$gameUUID",
+            "api/v2/games/$gameUUID",
             client, authHelper,
             suppress = suppress,
             cache = cache,
@@ -810,7 +810,7 @@ class GameApi(private val client: HttpClient, private val authHelper: AuthHelper
      */
     suspend fun upload(gameUUID: UUID, gameData: String, suppress: Boolean = false): Long? {
         val body: GameUploadResponse? = request(
-            HttpMethod.Put, "/api/v2/games/$gameUUID",
+            HttpMethod.Put, "api/v2/games/$gameUUID",
             client, authHelper,
             suppress = suppress,
             refine = { b ->
@@ -842,7 +842,7 @@ class InviteApi(private val client: HttpClient, private val authHelper: AuthHelp
      */
     suspend fun list(suppress: Boolean = false): List<GetInvite>? {
         val body: GetInvitesResponse? = request(
-            HttpMethod.Get, "/api/v2/invites",
+            HttpMethod.Get, "api/v2/invites",
             client, authHelper,
             suppress = suppress,
             retry = getDefaultRetry(client, authHelper)
@@ -863,7 +863,7 @@ class InviteApi(private val client: HttpClient, private val authHelper: AuthHelp
      */
     suspend fun new(friendUUID: UUID, lobbyUUID: UUID, suppress: Boolean = false): Boolean {
         val response = request(
-            HttpMethod.Post, "/api/v2/invites",
+            HttpMethod.Post, "api/v2/invites",
             client, authHelper,
             suppress = suppress,
             refine = { b ->
@@ -888,7 +888,7 @@ class InviteApi(private val client: HttpClient, private val authHelper: AuthHelp
      */
     suspend fun reject(inviteUUID: UUID, suppress: Boolean = false): Boolean {
         val response = request(
-            HttpMethod.Delete, "/api/v2/invites/$inviteUUID",
+            HttpMethod.Delete, "api/v2/invites/$inviteUUID",
             client, authHelper,
             suppress = suppress,
             retry = getDefaultRetry(client, authHelper)
@@ -915,7 +915,7 @@ class LobbyApi(private val client: HttpClient, private val authHelper: AuthHelpe
      */
     suspend fun list(suppress: Boolean = false): List<LobbyResponse>? {
         val body: GetLobbiesResponse? = request(
-            HttpMethod.Get, "/api/v2/lobbies",
+            HttpMethod.Get, "api/v2/lobbies",
             client, authHelper,
             suppress = suppress,
             retry = getDefaultRetry(client, authHelper)
@@ -935,7 +935,7 @@ class LobbyApi(private val client: HttpClient, private val authHelper: AuthHelpe
      */
     suspend fun get(lobbyUUID: UUID, suppress: Boolean = false): GetLobbyResponse? {
         return request(
-            HttpMethod.Get, "/api/v2/lobbies/$lobbyUUID",
+            HttpMethod.Get, "api/v2/lobbies/$lobbyUUID",
             client, authHelper,
             suppress = suppress,
             retry = getDefaultRetry(client, authHelper)
@@ -983,7 +983,7 @@ class LobbyApi(private val client: HttpClient, private val authHelper: AuthHelpe
      */
     private suspend fun open(req: CreateLobbyRequest, suppress: Boolean): CreateLobbyResponse? {
         return request(
-            HttpMethod.Post, "/api/v2/lobbies",
+            HttpMethod.Post, "api/v2/lobbies",
             client, authHelper,
             suppress = suppress,
             refine = { b ->
@@ -1006,7 +1006,7 @@ class LobbyApi(private val client: HttpClient, private val authHelper: AuthHelpe
      */
     suspend fun kick(lobbyUUID: UUID, playerUUID: UUID, suppress: Boolean = false): Boolean {
         val response = request(
-            HttpMethod.Delete, "/api/v2/lobbies/$lobbyUUID/$playerUUID",
+            HttpMethod.Delete, "api/v2/lobbies/$lobbyUUID/$playerUUID",
             client, authHelper,
             suppress = suppress,
             retry = getDefaultRetry(client, authHelper)
@@ -1026,7 +1026,7 @@ class LobbyApi(private val client: HttpClient, private val authHelper: AuthHelpe
      */
     suspend fun close(lobbyUUID: UUID, suppress: Boolean = false): Boolean {
         val response = request(
-            HttpMethod.Delete, "/api/v2/lobbies/$lobbyUUID",
+            HttpMethod.Delete, "api/v2/lobbies/$lobbyUUID",
             client, authHelper,
             suppress = suppress,
             retry = getDefaultRetry(client, authHelper)
@@ -1050,7 +1050,7 @@ class LobbyApi(private val client: HttpClient, private val authHelper: AuthHelpe
      */
     suspend fun join(lobbyUUID: UUID, password: String? = null, suppress: Boolean = false): Boolean {
         return request(
-            HttpMethod.Post, "/api/v2/lobbies/$lobbyUUID/join",
+            HttpMethod.Post, "api/v2/lobbies/$lobbyUUID/join",
             client, authHelper,
             suppress = suppress,
             refine = { b ->
@@ -1074,7 +1074,7 @@ class LobbyApi(private val client: HttpClient, private val authHelper: AuthHelpe
      */
     suspend fun leave(lobbyUUID: UUID, suppress: Boolean = false): Boolean {
         return request(
-            HttpMethod.Post, "/api/v2/lobbies/$lobbyUUID/leave",
+            HttpMethod.Post, "api/v2/lobbies/$lobbyUUID/leave",
             client, authHelper,
             suppress = suppress,
             retry = getDefaultRetry(client, authHelper)
@@ -1102,7 +1102,7 @@ class LobbyApi(private val client: HttpClient, private val authHelper: AuthHelpe
      */
     suspend fun startGame(lobbyUUID: UUID, suppress: Boolean = false): StartGameResponse? {
         return request(
-            HttpMethod.Post, "/api/v2/lobbies/$lobbyUUID/start",
+            HttpMethod.Post, "api/v2/lobbies/$lobbyUUID/start",
             client, authHelper,
             suppress = suppress,
             retry = getDefaultRetry(client, authHelper)
