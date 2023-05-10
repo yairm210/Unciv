@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.multiplayer.ApiVersion
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
@@ -165,14 +166,23 @@ class GameOptionsTable(
             { gameParameters.nuclearWeaponsEnabled = it }
 
     private fun Table.addIsOnlineMultiplayerCheckbox() =
-            addCheckbox("Online Multiplayer", gameParameters.isOnlineMultiplayer)
-            { shouldUseMultiplayer ->
-                gameParameters.isOnlineMultiplayer = shouldUseMultiplayer
-                updatePlayerPickerTable("")
-                if (shouldUseMultiplayer) {
-                    MultiplayerHelpers.showDropboxWarning(previousScreen as BaseScreen)
+            if (UncivGame.Current.onlineMultiplayer.isInitialized() && UncivGame.Current.onlineMultiplayer.apiVersion != ApiVersion.APIv2) {
+                addCheckbox("Online Multiplayer", gameParameters.isOnlineMultiplayer)
+                { shouldUseMultiplayer ->
+                    gameParameters.isOnlineMultiplayer = shouldUseMultiplayer
+                    updatePlayerPickerTable("")
+                    if (shouldUseMultiplayer) {
+                        MultiplayerHelpers.showDropboxWarning(previousScreen as BaseScreen)
+                    }
+                    update()
                 }
-                update()
+            } else {
+                val checkBox = addCheckbox("Online Multiplayer", initialState = false) {}
+                checkBox.onChange {
+                    checkBox.isChecked = false
+                    ToastPopup("To use new multiplayer games, go back to the main menu and create a lobby from the multiplayer menu instead.", stage).open()
+                }
+                checkBox
             }
 
     private fun Table.addAnyoneCanSpectateCheckbox() =

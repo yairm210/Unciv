@@ -380,7 +380,7 @@ class MapParametersTable(
 
         fun addTextButton(text: String, shouldAddToTable: Boolean = false, action: ((Boolean) -> Unit)) {
             val button = text.toTextButton()
-            button.onClick { action.invoke(true) }
+            button.onClick { action(true) }
             if (shouldAddToTable)
                 table.add(button).colspan(2).padTop(10f).row()
         }

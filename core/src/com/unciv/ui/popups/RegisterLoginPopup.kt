@@ -37,6 +37,8 @@ class RegisterLoginPopup(private val base: BaseScreen, confirmUsage: Boolean = f
     private val registerButton = "Register".toTextButton()
     private val listener: EventListener
 
+    private var confirmationPopup: Popup? = null
+
     init {
         /** Simple listener class for key presses on ENTER keys to trigger the login button */
         class SimpleEnterListener : InputListener() {
@@ -75,9 +77,10 @@ class RegisterLoginPopup(private val base: BaseScreen, confirmUsage: Boolean = f
         }
 
         if (confirmUsage) {
-            askConfirmUsage {
+            confirmationPopup = askConfirmUsage {
                 build()
             }
+            confirmationPopup?.open()
         } else {
             build()
         }
@@ -116,24 +119,23 @@ class RegisterLoginPopup(private val base: BaseScreen, confirmUsage: Boolean = f
         }
     }
 
-    private fun askConfirmUsage(block: () -> Unit) {
+    private fun askConfirmUsage(block: () -> Unit): Popup {
         val playerId = UncivGame.Current.settings.multiplayer.userId
-        addGoodSizedLabel("By using the new multiplayer servers, you overwrite your existing player ID. Games on other servers will not be accessible anymore, unless the player ID is properly restored. Keep your player ID safe before proceeding:").colspan(2)
-        row()
-        addGoodSizedLabel(playerId)
-        addButton("Copy user ID") {
+        val popup = Popup(base)
+        popup.addGoodSizedLabel("By using the new multiplayer servers, you overwrite your existing player ID. Games on other servers will not be accessible anymore, unless the player ID is properly restored. Keep your player ID safe before proceeding:").colspan(2)
+        popup.row()
+        popup.addGoodSizedLabel(playerId)
+        popup.addButton("Copy user ID") {
             Gdx.app.clipboard.contents = base.game.settings.multiplayer.userId
             ToastPopup("UserID copied to clipboard", base).open(force = true)
         }
-        row()
-        val cell = addButton(Constants.OK) {
-            innerTable.clear()
-            block.invoke()
-        }
+        popup.row()
+        val cell = popup.addCloseButton(Constants.OK, action = block)
         cell.colspan(2)
         cell.actor.keyShortcuts.add(KeyCharAndCode.ESC)
         cell.actor.keyShortcuts.add(KeyCharAndCode.BACK)
         cell.actor.keyShortcuts.add(KeyCharAndCode.RETURN)
+        return popup
     }
 
     private fun createPopup(msg: String? = null, force: Boolean = false): Popup {

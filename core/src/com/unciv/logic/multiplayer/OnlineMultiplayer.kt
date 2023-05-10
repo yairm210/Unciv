@@ -92,6 +92,7 @@ class OnlineMultiplayer: Disposable {
             Concurrency.runOnNonDaemonThreadPool {
                 try {
                     val gameInfo = UncivFiles.gameInfoFromString(it.gameData)
+                    gameInfo.setTransients()
                     addGame(gameInfo)
                     val gameDetails = api.game.head(it.gameUUID, suppress = true)
                     Concurrency.runOnGLThread {

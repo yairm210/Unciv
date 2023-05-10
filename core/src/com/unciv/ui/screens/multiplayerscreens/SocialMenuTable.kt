@@ -28,7 +28,6 @@ class SocialMenuTable(
     private var lastSelectedChat: UUID? = null
 
     init {
-        debugAll()
         add(friendList).growX().minWidth(base.stage.width * 0.45f).padRight(5f)
         add(chatContainer).minWidth(base.stage.width * 0.45f).maxHeight(maxChatHeight).growX()
         Concurrency.run {
