@@ -353,7 +353,7 @@ open class TabbedPager(
     override fun getPrefWidth() = dimW.pref
     fun setPrefWidth(width: Float) {
         if (dimW.growMax && width > dimW.max) dimW.max = width
-        if (width !in dimW.min..dimW.max) throw IllegalArgumentException()
+        if (width !in dimW.min..dimW.max) throw IllegalArgumentException("Width is not in the required range")
         dimW.pref = width
         invalidateHierarchy()
     }
@@ -361,7 +361,7 @@ open class TabbedPager(
     fun setPrefHeight(height: Float) {
         val contentHeight = (height - headerHeight).coerceIn(0f..dimH.limit)
         if (dimH.growMax && contentHeight > dimH.max) dimH.max = contentHeight
-        if (contentHeight !in dimH.min..dimH.max) throw IllegalArgumentException()
+        if (contentHeight !in dimH.min..dimH.max) throw IllegalArgumentException("Content height is not in the required range")
         dimH.pref = contentHeight
         invalidateHierarchy()
     }

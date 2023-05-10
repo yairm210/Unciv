@@ -256,7 +256,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
                         repo,
                         Gdx.files.local("mods")
                     )
-                        ?: throw Exception() // downloadAndExtract returns null for 404 errors and the like -> display something!
+                        ?: throw Exception("downloadAndExtract returns null for 404 errors and the like") // downloadAndExtract returns null for 404 errors and the like -> display something!
                     Github.rewriteModOptions(repo, modFolder)
                     val labelText = descriptionLabel.text // Surprise - a StringBuilder
                     labelText.appendLine()

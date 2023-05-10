@@ -97,7 +97,7 @@ class OnlineMultiplayerGame(
                 error = null
                 MultiplayerGameUpdateUnchanged(name, updateResult.status)
             }
-            else -> throw IllegalStateException()
+            else -> throw IllegalStateException("Unknown update event")
         }
         launchOnGLThread {
             EventBus.send(updateEvent)
