@@ -41,15 +41,15 @@ import com.unciv.ui.screens.worldscreen.PlayerReadyScreen
 import com.unciv.ui.screens.worldscreen.WorldMapHolder
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
+import com.unciv.utils.Concurrency
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.Display
 import com.unciv.utils.Log
 import com.unciv.utils.PlatformSpecific
-import com.unciv.utils.Concurrency
+import com.unciv.utils.debug
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.withGLContext
 import com.unciv.utils.withThreadPoolContext
-import com.unciv.utils.debug
 import kotlinx.coroutines.CancellationException
 import java.io.PrintWriter
 import java.util.*
@@ -531,7 +531,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.6.11", 865)
+        val VERSION = Version("4.6.11-patch1", 866)
         //endregion
 
         lateinit var Current: UncivGame
