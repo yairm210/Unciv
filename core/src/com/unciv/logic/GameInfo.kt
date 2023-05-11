@@ -3,6 +3,7 @@ package com.unciv.logic
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.UncivGame.Version
+import com.unciv.logic.BackwardCompatibility.convertEncampmentData
 import com.unciv.logic.BackwardCompatibility.convertFortify
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
 import com.unciv.logic.BackwardCompatibility.migrateToTileHistory
@@ -35,9 +36,7 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
-import java.util.UUID
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
+import java.util.*
 
 
 /**
@@ -611,6 +610,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             .flatMap { it.getResourceRequirementsPerTurn().keys })
         spaceResources.addAll(ruleset.victories.values.flatMap { it.requiredSpaceshipParts })
 
+        convertEncampmentData()
         barbarians.setTransients(this)
 
         cityDistances.game = this
