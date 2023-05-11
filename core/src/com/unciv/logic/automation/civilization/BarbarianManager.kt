@@ -7,8 +7,8 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.randomWeighted
 import java.util.*
@@ -17,7 +17,11 @@ import kotlin.math.min
 import kotlin.math.pow
 
 class BarbarianManager : IsPartOfGameInfoSerialization {
+    /** Deprecated  */
+    @Deprecated("by 4.6.12 due to serialization containing exact class location - replaced by encampments")
     val camps = HashMapVector2<Encampment>()
+
+    val encampments = ArrayList<Encampment>()
 
     @Transient
     lateinit var gameInfo: GameInfo
@@ -27,8 +31,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
 
     fun clone(): BarbarianManager {
         val toReturn = BarbarianManager()
-        for (camp in camps.values.map { it.clone() })
-            toReturn.camps[camp.position] = camp
+        toReturn.encampments.addAll(encampments.map { it.clone() })
         return toReturn
     }
 
@@ -37,44 +40,40 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
         this.tileMap = gameInfo.tileMap
 
         // Add any preexisting camps as Encampment objects
+
+        val existingEncampmentLocations = encampments.asSequence().map { it.position }.toHashSet()
+
         for (tile in tileMap.values) {
             if (tile.improvement == Constants.barbarianEncampment
-                && camps[tile.position] == null) {
-                val newCamp = Encampment(tile.position)
-                camps[newCamp.position] = newCamp
+                    && !existingEncampmentLocations.contains(tile.position)) {
+                encampments.add(Encampment(tile.position))
             }
         }
 
-        for (camp in camps.values)
+        for (camp in encampments)
             camp.gameInfo = gameInfo
     }
 
     fun updateEncampments() {
         // Check if camps were destroyed
-        val positionsToRemove = ArrayList<Vector2>()
-        for ((position, camp) in camps) {
-            if (tileMap[position].improvement != Constants.barbarianEncampment) {
-                camp.wasDestroyed()
+        for (encampment in encampments.toList()) { // tolist to avoid concurrent modification
+            if (tileMap[encampment.position].improvement != Constants.barbarianEncampment) {
+                encampment.wasDestroyed()
             }
             // Check if the ghosts are ready to depart
-            if (camp.destroyed && camp.countdown == 0)
-                positionsToRemove.add(position)
+            if (encampment.destroyed && encampment.countdown == 0)
+                encampments.remove(encampment)
         }
-        for (position in positionsToRemove)
-            camps.remove(position)
 
         // Possibly place a new encampment
         placeBarbarianEncampment()
 
-        // Update all existing camps
-        for (camp in camps.values) {
-            camp.update()
-        }
+        for (encampment in encampments) encampment.update()
     }
 
     /** Called when an encampment was attacked, will speed up time to next spawn */
     fun campAttacked(position: Vector2) {
-        camps[position]?.wasAttacked()
+        encampments.firstOrNull { it.position == position }?.wasAttacked()
     }
 
     fun placeBarbarianEncampment() {
@@ -90,7 +89,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
         val fogTilesPerCamp = (tileMap.values.size.toFloat().pow(0.4f)).toInt() // Approximately
 
         // Check if we have more room
-        var campsToAdd = (fogTiles.size / fogTilesPerCamp) - camps.count { !it.value.destroyed }
+        var campsToAdd = (fogTiles.size / fogTilesPerCamp) - encampments.count { !it.destroyed }
 
         // First turn of the game add 1/3 of all possible camps
         if (gameInfo.turns == 1) {
@@ -104,9 +103,9 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
         // Camps can't spawn within 7 tiles of each other or within 4 tiles of major civ capitals
         val tooCloseToCapitals = gameInfo.civilizations.filterNot { it.isBarbarian() || it.isSpectator() || it.cities.isEmpty() || it.isCityState() || it.getCapital() == null }
             .flatMap { it.getCapital()!!.getCenterTile().getTilesInDistance(4) }.toSet()
-        val tooCloseToCamps = camps
-            .flatMap { tileMap[it.key].getTilesInDistance(
-                    if (it.value.destroyed) 4 else 7
+        val tooCloseToCamps = encampments
+            .flatMap { tileMap[it.position].getTilesInDistance(
+                    if (it.destroyed) 4 else 7
             ) }.toSet()
 
         val viableTiles = fogTiles.filter {
@@ -138,7 +137,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
             tile.changeImprovement(Constants.barbarianEncampment)
             val newCamp = Encampment(tile.position)
             newCamp.gameInfo = gameInfo
-            camps[newCamp.position] = newCamp
+            encampments.add(newCamp)
             notifyCivsOfBarbarianEncampment(tile)
             addedCamps++
 
