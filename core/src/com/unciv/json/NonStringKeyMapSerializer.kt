@@ -58,8 +58,10 @@ class NonStringKeyMapSerializer<MT: MutableMap<KT, Any>, KT>(
             val isOldEncampment = entry.child.next.child.run {
                     name == "class" && isString && asString() == "com.unciv.logic.Encampment"
                 }
-            val value = if (isOldEncampment)
-                json.readValue(Encampment::class.java, entry.child.next.child.next)
+            val value = if (isOldEncampment) {
+                entry.child.next.remove("class")
+                json.readValue(Encampment::class.java, entry.child.next)
+            }
             else json.readValue<Any>(null, entry.child.next)
 
             result[key!!] = value!!
