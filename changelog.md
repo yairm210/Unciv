@@ -1,3 +1,24 @@
+## 4.6.11
+
+Resolved  - update UI after founding city when breaking promise
+
+4.6.10-patch2
+
+4.6.10-patch1
+
+By SomeTroglodyte:
+- Fix 4.6.10 no longer loading older games 
+- Policy images in red text, policy branch icons in pedia 
+- Prevent some state changing actions during next-turn 
+
+Added a fix for  to complete a game turn and set upToDate for last human player  - By CrsiX
+
+By alexban011:
+- ci: added Detekt code analysis 
+- Fixed a couple warnings reported by code analysis 
+
+Add `May not annex cities` unique  - By Skekdog
+
 ## 4.6.10
 
 Automated workers no longer stay on unimprovable tile if another tile is improvable
