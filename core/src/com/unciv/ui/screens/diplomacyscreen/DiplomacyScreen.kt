@@ -350,7 +350,8 @@ class DiplomacyScreen(
                 updateRightSide(otherCiv)
             }.open()
         }
-        if (isNotPlayersTurn() || !otherCiv.cityStateFunctions.otherCivCanWithdrawProtection(viewingCiv)) revokeProtectionButton.disable()
+        if (isNotPlayersTurn() || !otherCiv.cityStateFunctions.otherCivCanWithdrawProtection(viewingCiv))
+            revokeProtectionButton.disable()
         return revokeProtectionButton
     }
 
@@ -368,7 +369,8 @@ class DiplomacyScreen(
                 updateRightSide(otherCiv)
             }.open()
         }
-        if (isNotPlayersTurn() || !otherCiv.cityStateFunctions.otherCivCanPledgeProtection(viewingCiv)) protectionButton.disable()
+        if (isNotPlayersTurn() || !otherCiv.cityStateFunctions.otherCivCanPledgeProtection(viewingCiv))
+            protectionButton.disable()
         return protectionButton
     }
 
@@ -461,7 +463,8 @@ class DiplomacyScreen(
             for (city in newCities)
                 viewingCiv.popupAlerts.add(PopupAlert(AlertType.DiplomaticMarriage, city.id))   // Player gets to choose between annex and puppet
         }
-        if (isNotPlayersTurn() || !otherCiv.cityStateFunctions.canBeMarriedBy(viewingCiv)) diplomaticMarriageButton.disable()
+        if (isNotPlayersTurn() || !otherCiv.cityStateFunctions.canBeMarriedBy(viewingCiv))
+            diplomaticMarriageButton.disable()
         return diplomaticMarriageButton
     }
 

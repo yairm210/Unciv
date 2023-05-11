@@ -1,21 +1,13 @@
 ## 4.6.11
 
-Resolved  - update UI after founding city when breaking promise
-
-4.6.10-patch2
-
-4.6.10-patch1
+Update UI after founding city when breaking promise
 
 By SomeTroglodyte:
-- Fix 4.6.10 no longer loading older games 
-- Policy images in red text, policy branch icons in pedia 
-- Prevent some state changing actions during next-turn 
+- Fixed 4.6.10 no longer loading some older games
+- Prevent some state changing actions during next-turn
+- Policy images in red text, policy branch icons in pedia
 
-Added a fix for  to complete a game turn and set upToDate for last human player  - By CrsiX
-
-By alexban011:
-- ci: added Detekt code analysis 
-- Fixed a couple warnings reported by code analysis 
+Added a fix for multiplayer with 1 human player  - By CrsiX
 
 Add `May not annex cities` unique  - By Skekdog
 
