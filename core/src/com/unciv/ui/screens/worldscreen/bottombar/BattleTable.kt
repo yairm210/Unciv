@@ -201,28 +201,9 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         val maxDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender, tileToAttackFrom, 1f)
         val minDamageToDefender = BattleDamage.calculateDamageToDefender(attacker, defender, tileToAttackFrom, 0f)
-        var expectedDamageToDefenderForHealthbar = (maxDamageToDefender + minDamageToDefender) / 2
 
         val maxDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, defender, tileToAttackFrom, 1f)
         val minDamageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, defender, tileToAttackFrom, 0f)
-        var expectedDamageToAttackerForHealthbar = (maxDamageToAttacker + minDamageToAttacker) / 2
-
-        if (expectedDamageToAttackerForHealthbar > attacker.getHealth() && expectedDamageToDefenderForHealthbar > defender.getHealth()) {
-            // when damage exceeds health, we don't want to show negative health numbers
-            // Also if both parties are supposed to die it's not indicative of who is more likely to win
-            // So we "normalize" the damages until one dies
-            if (expectedDamageToDefenderForHealthbar * attacker.getHealth() > expectedDamageToAttackerForHealthbar * defender.getHealth()) { // defender dies quicker ie first
-                // Both damages *= (defender.health/damageToDefender)
-                expectedDamageToDefenderForHealthbar = defender.getHealth()
-                expectedDamageToAttackerForHealthbar *= (defender.getHealth() / expectedDamageToDefenderForHealthbar.toFloat()).toInt()
-            } else { // attacker dies first
-                // Both damages *= (attacker.health/damageToAttacker)
-                expectedDamageToAttackerForHealthbar = attacker.getHealth()
-                expectedDamageToDefenderForHealthbar *= (attacker.getHealth() / expectedDamageToAttackerForHealthbar.toFloat()).toInt()
-            }
-        }
-        else if (expectedDamageToAttackerForHealthbar > attacker.getHealth()) expectedDamageToAttackerForHealthbar = attacker.getHealth()
-        else if (expectedDamageToDefenderForHealthbar > defender.getHealth()) expectedDamageToDefenderForHealthbar = defender.getHealth()
 
         if (attacker.isMelee() &&
                 (defender.isCivilian() || defender is CityCombatant && defender.isDefeated())) {
@@ -281,7 +262,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             attackButton.label.color = Color.GRAY
         } else {
             attackButton.onClick(UncivSound.Silent) {  // onAttackButtonClicked will do the sound
-                onAttackButtonClicked(attacker, defender, attackableTile, expectedDamageToAttackerForHealthbar, expectedDamageToDefenderForHealthbar)
+                onAttackButtonClicked(attacker, defender, attackableTile)
             }
         }
 
@@ -295,9 +276,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
     private fun onAttackButtonClicked(
         attacker: ICombatant,
         defender: ICombatant,
-        attackableTile: AttackableTile,
-        damageToAttacker: Int,
-        damageToDefender: Int
+        attackableTile: AttackableTile
     ) {
         val canStillAttack = Battle.movePreparingAttack(attacker, attackableTile)
         worldScreen.mapHolder.removeUnitActionOverlay() // the overlay was one of attacking
@@ -309,7 +288,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         if (!canStillAttack) return
         SoundPlayer.play(attacker.getAttackSound())
-        Battle.attackOrNuke(attacker, attackableTile)
+        val (damageToAttacker, damageToDefender) = Battle.attackOrNuke(attacker, attackableTile)
 
         worldScreen.battleAnimation(attacker, damageToAttacker, defender, damageToDefender)
     }

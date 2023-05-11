@@ -101,8 +101,7 @@ object BattleTableHelpers {
                     if (combatant.isCity()) {
                         val icon = tileGroup.layerMisc.improvementIcon
                         if (icon != null) yield (icon)
-                    }
-                    else {
+                    } else if (!combatant.isAirUnit()) {
                         val slot = if (combatant.isCivilian()) 0 else 1
                         yieldAll((tileGroup.layerUnitArt.getChild(slot) as Group).children)
                     }
@@ -112,7 +111,7 @@ object BattleTableHelpers {
                 sequence {
                     if (damageToDefender != 0) yieldAll(getMapActorsForCombatant(defender))
                     if (damageToAttacker != 0) yieldAll(getMapActorsForCombatant(attacker))
-                }.mapTo(arrayListOf()) { it to it.color.cpy() }.toMap()
+                }.associateWith { it.color.cpy() }
 
         val actorsToMove = getMapActorsForCombatant(attacker).toList()
 
@@ -154,7 +153,7 @@ object BattleTableHelpers {
         if (damage == 0) return
         val animationDuration = 1f
 
-        val label = damage.toString().toLabel(Color.SCARLET, 50, Align.center, true)
+        val label = damage.toString().toLabel(Color.RED, 40, Align.center, true)
         label.touchable = Touchable.disabled
         val container = Container(label)
         container.touchable = Touchable.disabled
@@ -166,8 +165,8 @@ object BattleTableHelpers {
         container.addAction(Actions.sequence(
             Actions.parallel(
                 Actions.alpha(0.1f, animationDuration, Interpolation.fade),
-                Actions.scaleTo(0.05f, 0.05f, animationDuration, Interpolation.fastSlow),
-                Actions.moveBy(30f, 90f, animationDuration, Interpolation.slowFast)
+                Actions.scaleTo(0.05f, 0.05f, animationDuration),
+                Actions.moveBy(19f, 90f, animationDuration)
             ),
             Actions.removeActor()
         ))
