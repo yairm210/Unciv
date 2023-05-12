@@ -15,7 +15,7 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
-import java.util.*
+import java.util.UUID
 
 class AddMultiplayerGameScreen : PickerScreen() {
     init {

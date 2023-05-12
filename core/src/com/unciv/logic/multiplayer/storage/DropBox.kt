@@ -11,7 +11,8 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.Charset
-import java.util.*
+import java.util.Date
+import java.util.Timer
 import kotlin.concurrent.timer
 
 
@@ -156,10 +157,10 @@ object DropBox: FileStorage {
 //        var has_more = false
 //    }
 
-    @Suppress("PropertyName")
+    @Suppress("PropertyName")  // and don't make that private or this suppress won't work
     private class MetaData: FileMetaData {
 //        var name = ""
-        private var server_modified = ""
+        var server_modified = ""
 
         override fun getLastModified(): Date {
             return server_modified.parseDate()

@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import java.time.Duration
 import java.time.Instant
-import java.util.*
+import java.util.Collections
 import java.util.concurrent.atomic.AtomicReference
 
 
@@ -139,12 +139,11 @@ class OnlineMultiplayer {
      */
     suspend fun addGame(gameId: String, gameName: String? = null) {
         val saveFileName = if (gameName.isNullOrBlank()) gameId else gameName
-        var gamePreview: GameInfoPreview
-        try {
-            gamePreview = multiplayerFiles.tryDownloadGamePreview(gameId)
+        val gamePreview: GameInfoPreview = try {
+            multiplayerFiles.tryDownloadGamePreview(gameId)
         } catch (ex: MultiplayerFileNotFoundException) {
             // Game is so old that a preview could not be found on dropbox lets try the real gameInfo instead
-            gamePreview = multiplayerFiles.tryDownloadGame(gameId).asPreview()
+            multiplayerFiles.tryDownloadGame(gameId).asPreview()
         }
         addGame(gamePreview, saveFileName)
     }
@@ -459,4 +458,3 @@ suspend fun <T> attemptAction(
 
 fun GameInfoPreview.isUsersTurn() = getCivilization(currentPlayer).playerId == UncivGame.Current.settings.multiplayer.userId
 fun GameInfo.isUsersTurn() = getCivilization(currentPlayer).playerId == UncivGame.Current.settings.multiplayer.userId
-

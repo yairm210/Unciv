@@ -11,10 +11,10 @@ import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.randomWeighted
-import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
+import kotlin.random.Random
 
 class BarbarianManager : IsPartOfGameInfoSerialization {
     /** Deprecated  */
@@ -78,7 +78,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
 
     fun placeBarbarianEncampment() {
         // Before we do the expensive stuff, do a roll to see if we will place a camp at all
-        if (gameInfo.turns > 1 && Random().nextBoolean())
+        if (gameInfo.turns > 1 && Random.Default.nextBoolean())
             return
 
         // Barbarians will only spawn in places that no one can see
@@ -119,7 +119,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
 
         var tile: Tile?
         var addedCamps = 0
-        var biasCoast = Random().nextInt(6) == 0
+        var biasCoast = Random.Default.nextInt(6) == 0
 
         // Add the camps
         while (addedCamps < campsToAdd) {
@@ -146,7 +146,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
                 // Remove some newly non-viable tiles
                 viableTiles.removeAll(tile.getTilesInDistance(7).toSet())
                 // Reroll bias
-                biasCoast = Random().nextInt(6) == 0
+                biasCoast = Random.Default.nextInt(6) == 0
             }
         }
     }
@@ -280,7 +280,7 @@ class Encampment() : IsPartOfGameInfoSerialization {
     /** When a barbarian is spawned, seed the counter for next spawn */
     private fun resetCountdown() {
         // Base 8-12 turns
-        countdown = 8 + Random().nextInt(5)
+        countdown = 8 + Random.Default.nextInt(5)
         // Quicker on Raging Barbarians
         if (gameInfo.gameParameters.ragingBarbarians)
             countdown /= 2

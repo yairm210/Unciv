@@ -45,7 +45,8 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.victoryscreen.RankingType
-import java.util.*
+import java.util.SortedMap
+import java.util.TreeMap
 import kotlin.math.min
 
 object NextTurnAutomation {
@@ -701,7 +702,7 @@ object NextTurnAutomation {
                 (it.type == beliefType || beliefType == BeliefType.Any)
                 && !additionalBeliefsToExclude.contains(it)
                 && civInfo.religionManager.getReligionWithBelief(it) == null
-                && it.getMatchingUniques(UniqueType.OnlyAvailableWhen).none { !it.conditionalsApply(civInfo) }
+                && it.getMatchingUniques(UniqueType.OnlyAvailableWhen).none { unique -> !unique.conditionalsApply(civInfo) }
             }
             .maxByOrNull { ReligionAutomation.rateBelief(civInfo, it) }
     }
@@ -762,7 +763,6 @@ object NextTurnAutomation {
     @Suppress("unused")  //todo: Work in Progress?
     private fun offerDeclarationOfFriendship(civInfo: Civilization) {
         val civsThatWeCanDeclareFriendshipWith = civInfo.getKnownCivs()
-                .asSequence()
                 .filter {
                     it.isMajorCiv() && !it.isAtWarWith(civInfo)
                             && it.getDiplomacyManager(civInfo).isRelationshipLevelGT(RelationshipLevel.Neutral)
@@ -781,7 +781,6 @@ object NextTurnAutomation {
         if (!civInfo.diplomacyFunctions.canSignResearchAgreement()) return // don't waste your time
 
         val canSignResearchAgreementCiv = civInfo.getKnownCivs()
-                .asSequence()
                 .filter {
                     civInfo.diplomacyFunctions.canSignResearchAgreementsWith(it)
                             && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedResearchAgreement)

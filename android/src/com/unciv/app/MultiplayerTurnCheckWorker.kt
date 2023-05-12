@@ -289,7 +289,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         try {
             val gameIds = inputData.getStringArray(GAME_ID)!!
             val gameNames = inputData.getStringArray(GAME_NAME)!!
-            Log.d(LOG_TAG, "doWork gameNames: ${Arrays.toString(gameNames)}")
+            Log.d(LOG_TAG, "doWork gameNames: ${gameNames.contentToString()}")
             // We only want to notify the user or update persisted notification once but still want
             // to download all games to update the files so we save the first one we find
             var foundGame: Pair<String, String>? = null

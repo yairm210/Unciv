@@ -52,7 +52,8 @@ import com.unciv.utils.withGLContext
 import com.unciv.utils.withThreadPoolContext
 import kotlinx.coroutines.CancellationException
 import java.io.PrintWriter
-import java.util.*
+import java.util.EnumSet
+import java.util.UUID
 import kotlin.collections.ArrayDeque
 import kotlin.system.exitProcess
 
@@ -484,7 +485,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     private fun logRunningThreads() {
         val numThreads = Thread.activeCount()
-        val threadList = Array(numThreads) { _ -> Thread() }
+        val threadList = Array(numThreads) { Thread() }
         Thread.enumerate(threadList)
         threadList.filter { it !== Thread.currentThread() && it.name != "DestroyJavaVM" }.forEach {
             debug("Thread %s still running in UncivGame.dispose().", it.name)

@@ -125,7 +125,7 @@ private class UncivServerRunner : CliktCommand() {
                 }
                 put("/files/{fileName}") {
                     val fileName = call.parameters["fileName"] ?: throw Exception("No fileName!")
-                    log.info("Receiving file: ${fileName}")
+                    log.info("Receiving file: $fileName")
                     val file = File(fileFolderName, fileName)
 
                     if (!validateGameAccess(file, call.request.headers["Authorization"])) {

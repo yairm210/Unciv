@@ -7,8 +7,8 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
-import java.util.*
 import kotlin.math.min
+import kotlin.random.Random
 
 class CityTurnManager(val city: City) {
 
@@ -41,7 +41,7 @@ class CityTurnManager(val city: City) {
         if (city.demandedResource == "" && !city.hasFlag(CityFlags.ResourceDemand)) {
             city.setFlag(
                 CityFlags.ResourceDemand,
-                (if (city.isCapital()) 25 else 15) + Random().nextInt(10))
+                (if (city.isCapital()) 25 else 15) + Random.Default.nextInt(10))
         }
     }
 
@@ -103,7 +103,7 @@ class CityTurnManager(val city: City) {
         if (chosenResource != null)
             city.demandedResource = chosenResource.name
         if (city.demandedResource == "") // Failed to get a valid resource, try again some time later
-            city.setFlag(CityFlags.ResourceDemand, 15 + Random().nextInt(10))
+            city.setFlag(CityFlags.ResourceDemand, 15 + Random.Default.nextInt(10))
         else
             city.civ.addNotification("[${city.name}] demands [${city.demandedResource}]!",
                 city.location, NotificationCategory.General, NotificationIcon.City, "ResourceIcons/${city.demandedResource}")
