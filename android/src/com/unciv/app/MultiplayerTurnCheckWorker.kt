@@ -29,7 +29,7 @@ import com.badlogic.gdx.backends.android.DefaultAndroidFiles
 import com.unciv.logic.GameInfo
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
-import com.unciv.logic.multiplayer.storage.OnlineMultiplayerFiles
+import com.unciv.logic.multiplayer.storage.OnlineMultiplayerServer
 import com.unciv.models.metadata.GameSettingsMultiplayer
 import kotlinx.coroutines.runBlocking
 import java.io.FileNotFoundException
@@ -307,7 +307,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
                 try {
                     Log.d(LOG_TAG, "doWork download $gameId")
-                    val gamePreview = OnlineMultiplayerFiles(fileStorage, mapOf("Authorization" to authHeader)).tryDownloadGamePreview(gameId)
+                    val gamePreview = OnlineMultiplayerServer(fileStorage, mapOf("Authorization" to authHeader)).tryDownloadGamePreview(gameId)
                     Log.d(LOG_TAG, "doWork download $gameId done")
                     val currentTurnPlayer = gamePreview.getCivilization(gamePreview.currentPlayer)
 

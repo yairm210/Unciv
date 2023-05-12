@@ -65,7 +65,7 @@ class OnlineMultiplayerGame(
      * Fires: [MultiplayerGameUpdateStarted], [MultiplayerGameUpdated], [MultiplayerGameUpdateUnchanged], [MultiplayerGameUpdateFailed]
      *
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
-     * @throws MultiplayerFileNotFoundException if the file can't be found
+     * @throws  MultiplayerFileNotFoundException if the file can't be found
      */
     suspend fun requestUpdate(forceUpdate: Boolean = false) = coroutineScope {
         val onUnchanged = { GameUpdateResult(UNCHANGED, preview!!) }
