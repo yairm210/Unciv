@@ -81,7 +81,9 @@ class OnlineMultiplayerFiles(
      */
     suspend fun tryDownloadGame(gameId: String): GameInfo {
         val zippedGameInfo = fileStorage().loadFileData(gameId)
-        return UncivFiles.gameInfoFromString(zippedGameInfo)
+        val gameInfo = UncivFiles.gameInfoFromString(zippedGameInfo)
+        gameInfo.gameParameters.multiplayerServer = UncivGame.Current.settings.multiplayer.server
+        return gameInfo
     }
 
     /**

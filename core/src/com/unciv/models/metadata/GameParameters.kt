@@ -43,6 +43,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var startingEra = "Ancient era"
 
     var isOnlineMultiplayer = false
+    var multiplayerServer: String? = null
     var anyoneCanSpectate = true
     var baseRuleset: String = BaseRuleset.Civ_V_GnK.fullName
     var mods = LinkedHashSet<String>()
@@ -74,6 +75,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
         parameters.victoryTypes = ArrayList(victoryTypes)
         parameters.startingEra = startingEra
         parameters.isOnlineMultiplayer = isOnlineMultiplayer
+        parameters.multiplayerServer = multiplayerServer
         parameters.anyoneCanSpectate = anyoneCanSpectate
         parameters.baseRuleset = baseRuleset
         parameters.mods = LinkedHashSet(mods)

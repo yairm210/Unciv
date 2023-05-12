@@ -10,9 +10,9 @@ import com.unciv.logic.multiplayer.GameUpdateResult.Type.UNCHANGED
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.OnlineMultiplayerFiles
 import com.unciv.ui.components.extensions.isLargerThan
+import com.unciv.utils.debug
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.withGLContext
-import com.unciv.utils.debug
 import kotlinx.coroutines.coroutineScope
 import java.time.Duration
 import java.time.Instant
@@ -106,7 +106,8 @@ class OnlineMultiplayerGame(
 
     private suspend fun update(): GameUpdateResult {
         val curPreview = if (preview != null) preview!! else loadPreviewFromFile()
-        val newPreview = OnlineMultiplayerFiles().tryDownloadGamePreview(curPreview.gameId)
+        val serverIdentifier = curPreview.gameParameters.multiplayerServer
+        val newPreview = OnlineMultiplayerFiles(serverIdentifier).tryDownloadGamePreview(curPreview.gameId)
         if (newPreview.turns == curPreview.turns && newPreview.currentPlayer == curPreview.currentPlayer) return GameUpdateResult(UNCHANGED, newPreview)
         UncivGame.Current.files.saveGame(newPreview, fileHandle)
         preview = newPreview
