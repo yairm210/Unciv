@@ -40,6 +40,8 @@ object Battle {
     /**
      * Moves [attacker] to [attackableTile], handles siege setup then attacks if still possible
      * (by calling [attack] or [NUKE]). Does _not_ play the attack sound!
+     *
+     * Currently not used by UI, only by automation via [BattleHelper.tryAttackNearbyEnemy][com.unciv.logic.automation.unit.BattleHelper.tryAttackNearbyEnemy]
      */
     fun moveAndAttack(attacker: ICombatant, attackableTile: AttackableTile) {
         if (!movePreparingAttack(attacker, attackableTile)) return
@@ -345,6 +347,10 @@ object Battle {
         return true
     }
 
+    /** Holder for battle result - actual damage.
+     *  @param attackerDealt Damage done by attacker to defender
+     *  @param defenderDealt Damage done by defender to attacker
+     */
     data class DamageDealt(val attackerDealt: Int, val defenderDealt: Int) {
         operator fun plus(other: DamageDealt) =
             DamageDealt(attackerDealt + other.attackerDealt, defenderDealt + other.defenderDealt)
@@ -1088,7 +1094,7 @@ object Battle {
         interceptingCiv.addNotification(interceptorText, locations, NotificationCategory.War,
                 interceptorName, NotificationIcon.War, attackerName)
 
-        return DamageDealt(damage, 0)
+        return DamageDealt(0, damage)
     }
 
     private fun doWithdrawFromMeleeAbility(attacker: ICombatant, defender: ICombatant, baseWithdrawChance: Int): Boolean {

@@ -53,6 +53,7 @@ import com.unciv.ui.components.tilegroups.WorldTileGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.UncivStage
+import com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers.battleAnimation
 import com.unciv.utils.Log
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
@@ -229,6 +230,7 @@ class WorldMapHolder(
             }
             /** If we are in unit-swapping mode and didn't find a swap partner, we don't want to move or attack */
         } else {
+            // This seems inefficient as the tileToAttack is already known - but the method also calculates tileToAttackFrom
             val attackableTile = BattleHelper
                     .getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
                     .firstOrNull { it.tileToAttack == tile }
@@ -237,7 +239,9 @@ class WorldMapHolder(
                 val attacker = MapUnitCombatant(unit)
                 if (!Battle.movePreparingAttack(attacker, attackableTile)) return
                 SoundPlayer.play(attacker.getAttackSound())
-                Battle.attackOrNuke(attacker, attackableTile)
+                val (damageToDefender, damageToAttacker) = Battle.attackOrNuke(attacker, attackableTile)
+                if (attackableTile.combatant != null)
+                    worldScreen.battleAnimation(attacker, damageToAttacker, attackableTile.combatant, damageToDefender)
                 localShouldUpdate = true
             } else if (unit.movement.canReach(tile)) {
                 /** ****** Right-click Move ****** */

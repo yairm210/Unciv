@@ -288,7 +288,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         if (!canStillAttack) return
         SoundPlayer.play(attacker.getAttackSound())
-        val (damageToAttacker, damageToDefender) = Battle.attackOrNuke(attacker, attackableTile)
+        val (damageToDefender, damageToAttacker) = Battle.attackOrNuke(attacker, attackableTile)
 
         worldScreen.battleAnimation(attacker, damageToAttacker, defender, damageToDefender)
     }

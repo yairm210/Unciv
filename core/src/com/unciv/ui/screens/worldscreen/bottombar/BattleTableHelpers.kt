@@ -153,7 +153,7 @@ object BattleTableHelpers {
         if (damage == 0) return
         val animationDuration = 1f
 
-        val label = damage.toString().toLabel(Color.RED, 40, Align.center, true)
+        val label = (-damage).toString().toLabel(Color.RED, 40, Align.center, true)
         label.touchable = Touchable.disabled
         val container = Container(label)
         container.touchable = Touchable.disabled
@@ -166,7 +166,7 @@ object BattleTableHelpers {
             Actions.parallel(
                 Actions.alpha(0.1f, animationDuration, Interpolation.fade),
                 Actions.scaleTo(0.05f, 0.05f, animationDuration),
-                Actions.moveBy(19f, 90f, animationDuration)
+                Actions.moveBy(label.width * 0.95f * 0.5f, 90f, animationDuration)
             ),
             Actions.removeActor()
         ))
