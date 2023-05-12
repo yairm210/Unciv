@@ -29,3 +29,4 @@ class ArrowButton(size: Float = Constants.headingFontSize.toFloat()): SpecificBu
 class CheckmarkButton(size: Float = Constants.headingFontSize.toFloat()): SpecificButton(size, "OtherIcons/Checkmark")
 class OptionsButton(size: Float = Constants.headingFontSize.toFloat()): SpecificButton(size, "OtherIcons/Options")
 class LockButton(size: Float = Constants.headingFontSize.toFloat()): SpecificButton(size, "OtherIcons/LockSmall")
+class SettingsButton(size: Float = Constants.headingFontSize.toFloat()): SpecificButton(size, "OtherIcons/Settings")

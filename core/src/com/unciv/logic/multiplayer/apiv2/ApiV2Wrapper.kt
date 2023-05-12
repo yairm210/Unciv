@@ -32,7 +32,13 @@ import java.util.concurrent.ConcurrentLinkedQueue
  * abstracts HTTP endpoint names from other modules in this package.
  * Use the [ApiV2] class for public methods to interact with the server.
  */
-open class ApiV2Wrapper(private val baseUrl: String) {
+open class ApiV2Wrapper(baseUrl: String) {
+    private val baseUrlImpl: String = if (baseUrl.endsWith("/")) baseUrl else ("$baseUrl/")
+    private val baseServer = URLBuilder(baseUrl).apply {
+        encodedPath = ""
+        encodedParameters = ParametersBuilder()
+        fragment = ""
+    }.toString()
 
     // HTTP client to handle the server connections, logging, content parsing and cookies
     internal val client = HttpClient(CIO) {
@@ -52,7 +58,7 @@ open class ApiV2Wrapper(private val baseUrl: String) {
             contentConverter = KotlinxWebsocketSerializationConverter(Json)
         }
         defaultRequest {
-            url(baseUrl)
+            url(baseUrlImpl)
         }
     }
 
@@ -70,7 +76,7 @@ open class ApiV2Wrapper(private val baseUrl: String) {
             Log.debug(
                 "'%s %s%s': %s (%d ms)",
                 request.method.value,
-                if (baseUrl.endsWith("/")) baseUrl.subSequence(0, baseUrl.length - 2) else baseUrl,
+                baseServer,
                 request.url.encodedPath,
                 clientCall.response.status,
                 clientCall.response.responseTime.timestamp - clientCall.response.requestTime.timestamp
@@ -140,9 +146,8 @@ open class ApiV2Wrapper(private val baseUrl: String) {
                     method = HttpMethod.Get
                     authHelper.add(this)
                     url {
-                        takeFrom(baseUrl)
-                        protocol = if (baseUrl.startsWith("https://")) URLProtocol.WSS else URLProtocol.WS  // TODO: Verify that secure WebSockets (WSS) work as well
-                        path("/api/v2/ws")
+                        protocol = if (baseUrlImpl.startsWith("https://")) URLProtocol.WSS else URLProtocol.WS  // TODO: Verify that secure WebSockets (WSS) work as well
+                        appendPathSegments("api/v2/ws")
                     }
                 }
                 val job = Concurrency.run {
@@ -164,9 +169,14 @@ open class ApiV2Wrapper(private val baseUrl: String) {
 
     /**
      * Retrieve the currently available API version of the connected server
+     *
+     * Unlike other API endpoint implementations, this function does not handle
+     * any errors or retries on failure. You must wrap any call in a try-except
+     * clause expecting any type of error. The error may not be appropriate to
+     * be shown to end users, i.e. it's definitively no [UncivShowableException].
      */
     internal suspend fun version(): VersionResponse {
-        return client.get("/api/version").body()
+        return client.get("api/version").body()
     }
 
 }

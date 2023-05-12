@@ -227,12 +227,17 @@ private fun addMultiplayerServerOptions(
                             popup.reuseWith("Success! Detected $apiVersion!", true)
                         }
                     }
-                } else {
+                } else if (apiVersion != null) {
                     Concurrency.runOnGLThread {
                         popup.reuseWith("Success! Detected $apiVersion!", true)
                     }
                     Concurrency.runOnNonDaemonThreadPool {
                         UncivGame.refreshOnlineMultiplayer()
+                    }
+                } else {
+                    Log.debug("Api version detection: null")
+                    Concurrency.runOnGLThread {
+                        popup.reuseWith("Failed!", true)
                     }
                 }
             } catch (e: Exception) {

@@ -9,6 +9,7 @@ import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.MultiplayerButton
 import com.unciv.ui.components.NewButton
 import com.unciv.ui.components.RefreshButton
+import com.unciv.ui.components.SettingsButton
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
 import com.unciv.ui.components.extensions.brighten
@@ -45,6 +46,7 @@ class LobbyBrowserScreen : BaseScreen() {
 
     private val newLobbyButton = NewButton()
     private val socialButton = MultiplayerButton()
+    private val serverSettingsButton = SettingsButton()
     private val helpButton = "Help".toTextButton()
     private val updateButton = RefreshButton()
     private val closeButton = Constants.close.toTextButton()
@@ -87,6 +89,9 @@ class LobbyBrowserScreen : BaseScreen() {
             popup.addCloseButton()
             popup.open()
         }
+        serverSettingsButton.onClick {
+            ToastPopup("The server settings feature is not implemented yet. A server list should be added here as well.", this).open()
+        }
         helpButton.onClick {
             val helpPopup = Popup(this)
             helpPopup.addGoodSizedLabel("This should become a lobby browser.").row()  // TODO
@@ -96,6 +101,7 @@ class LobbyBrowserScreen : BaseScreen() {
         bottomTable.add(closeButton).pad(20f)
         bottomTable.add().growX()  // layout purposes only
         bottomTable.add(socialButton).pad(5f)
+        bottomTable.add(serverSettingsButton).padRight(5f)
         bottomTable.add(helpButton).padRight(20f)
 
         table.addSeparator(skinStrings.skinConfig.baseColor.brighten(0.1f), height = 1f).width(stage.width * 0.85f).padTop(15f).row()

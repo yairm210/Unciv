@@ -130,7 +130,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
         }
 
         val versionInfo = try {
-            val r = client.get("/api/version")
+            val r = client.get("api/version")
             if (!r.status.isSuccess()) {
                 false
             } else {
@@ -150,7 +150,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
         }
 
         val websocketSupport = try {
-            val r = client.get("/api/v2/ws")
+            val r = client.get("api/v2/ws")
             if (r.status.isSuccess()) {
                 Log.error("Websocket endpoint from '$baseUrl' accepted unauthenticated request")
                 false

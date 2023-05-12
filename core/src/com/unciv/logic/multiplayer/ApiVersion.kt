@@ -70,6 +70,7 @@ enum class ApiVersion {
             if (baseUrl == Constants.dropboxMultiplayerServer) {
                 return APIv0
             }
+            val fixedBaseUrl = if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/"
 
             // This client instance should be used during the API detection
             val client = HttpClient(CIO) {
@@ -83,15 +84,15 @@ enum class ApiVersion {
                     connectTimeoutMillis = timeout ?: DEFAULT_CONNECT_TIMEOUT
                 }
                 defaultRequest {
-                    url(baseUrl)
+                    url(fixedBaseUrl)
                 }
             }
 
             // Try to connect to an APIv1 server at first
             val response1 = try {
-                client.get("/isalive")
+                client.get("isalive")
             } catch (e: Exception) {
-                Log.debug("Failed to fetch '/isalive' at %s: %s", baseUrl, e.localizedMessage)
+                Log.debug("Failed to fetch '/isalive' at %s: %s", fixedBaseUrl, e.localizedMessage)
                 if (!suppress) {
                     client.close()
                     throw UncivNetworkException(e)
@@ -101,26 +102,26 @@ enum class ApiVersion {
             if (response1?.status?.isSuccess() == true) {
                 // Some API implementations just return the text "true" on the `isalive` endpoint
                 if (response1.bodyAsText().startsWith("true")) {
-                    Log.debug("Detected APIv1 at %s (no feature set)", baseUrl)
+                    Log.debug("Detected APIv1 at %s (no feature set)", fixedBaseUrl)
                     client.close()
                     return APIv1
                 }
                 try {
                     val serverFeatureSet: ServerFeatureSet = json().fromJson(ServerFeatureSet::class.java, response1.bodyAsText())
                     // val serverFeatureSet: ServerFeatureSet = response1.body()
-                    Log.debug("Detected APIv1 at %s: %s", baseUrl, serverFeatureSet)
+                    Log.debug("Detected APIv1 at %s: %s", fixedBaseUrl, serverFeatureSet)
                     client.close()
                     return APIv1
                 } catch (e: Exception) {
-                    Log.debug("Failed to de-serialize OK response body of '/isalive' at %s: %s", baseUrl, e.localizedMessage)
+                    Log.debug("Failed to de-serialize OK response body of '/isalive' at %s: %s", fixedBaseUrl, e.localizedMessage)
                 }
             }
 
             // Then try to connect to an APIv2 server
             val response2 = try {
-                client.get("/api/version")
+                client.get("api/version")
             } catch (e: Exception) {
-                Log.debug("Failed to fetch '/api/version' at %s: %s", baseUrl, e.localizedMessage)
+                Log.debug("Failed to fetch '/api/version' at %s: %s", fixedBaseUrl, e.localizedMessage)
                 if (!suppress) {
                     client.close()
                     throw UncivNetworkException(e)
@@ -130,11 +131,11 @@ enum class ApiVersion {
             if (response2?.status?.isSuccess() == true) {
                 try {
                     val serverVersion: VersionResponse = response2.body()
-                    Log.debug("Detected APIv2 at %s: %s", baseUrl, serverVersion)
+                    Log.debug("Detected APIv2 at %s: %s", fixedBaseUrl, serverVersion)
                     client.close()
                     return APIv2
                 } catch (e: Exception) {
-                    Log.debug("Failed to de-serialize OK response body of '/api/version' at %s: %s", baseUrl, e.localizedMessage)
+                    Log.debug("Failed to de-serialize OK response body of '/api/version' at %s: %s", fixedBaseUrl, e.localizedMessage)
                 }
             }
 
