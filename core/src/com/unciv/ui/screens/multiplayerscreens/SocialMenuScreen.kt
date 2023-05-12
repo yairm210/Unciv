@@ -30,12 +30,11 @@ class SocialMenuScreen(me: UUID? = null, initialChatRoom: Triple<UUID, ChatRoomT
         setDefaultCloseAction()
         topTable.add(socialTable)
         rightSideButton.setText("Members".tr())
-        rightSideButton.padRight(5f)
         rightSideButton.enable()
         rightSideButton.onClick {
             InfoPopup(stage, "It would be nice to show the members of this chat room").open()
         }
-        rightSideGroup.addActor(Container(helpButton).padRight(5f))
+        rightSideGroup.addActor(Container(helpButton).padRight(5f).padLeft(5f))
     }
 
     override fun dispose() {

@@ -5,13 +5,13 @@ import com.badlogic.gdx.utils.Disposable
 import com.unciv.ui.components.ArrowButton
 import com.unciv.ui.components.AutoScrollPane
 import com.unciv.ui.components.KeyCharAndCode
-import com.unciv.ui.components.RefreshButton
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.extensions.keyShortcuts
 import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.utils.concurrency.Concurrency
 
 /**
  * A [Table] which combines [ChatMessageList] with a text input and send button to write a new message
@@ -24,9 +24,26 @@ class ChatTable(
     actorHeight: Float? = null,
     maxMessageLength: Int? = null
 ): Table(), Disposable {
+    internal val messageField = UncivTextField.create("New message")
+
     init {
         val chatScroll = AutoScrollPane(chatMessageList, BaseScreen.skin)
-        chatScroll.setScrollingDisabled(true, false)
+
+        // Callback listener to scroll to the bottom of the chat message list if the
+        // list has been provided with the initial messages or if a new message just arrived
+        var initialScrollToBottom = false
+        chatMessageList.addListener {
+            Concurrency.runOnGLThread {
+                if (chatScroll.maxY > 0f) {
+                    if (!initialScrollToBottom) {
+                        initialScrollToBottom = true
+                        chatScroll.scrollY = chatScroll.maxY
+                    } else if (it) {
+                        chatScroll.scrollY = chatScroll.maxY
+                    }
+                }
+            }
+        }
 
         val chatCell = add(chatScroll)
         if (actorHeight != null) {
@@ -57,14 +74,12 @@ class ChatTable(
             add(newButton).growX().padRight(10f).padLeft(10f).row()
 
         } else {
-            val messageField = UncivTextField.create("New message")
             if (maxMessageLength != null) {
                 messageField.maxLength = maxMessageLength
             }
             val sendButton = ArrowButton()
             sendButton.onActivation {
-                chatMessageList.sendMessage(messageField.text)
-                messageField.text = ""
+                sendMessage()
             }
             sendButton.keyShortcuts.add(KeyCharAndCode.RETURN)
 
@@ -72,6 +87,14 @@ class ChatTable(
             add(sendButton).padLeft(10f).padRight(5f)
             row()
         }
+    }
+
+    /**
+     * Simulate the button click on the send button (useful for scripts or hotkeys)
+     */
+    fun sendMessage() {
+        chatMessageList.sendMessage(messageField.text)
+        messageField.text = ""
     }
 
     override fun dispose() {

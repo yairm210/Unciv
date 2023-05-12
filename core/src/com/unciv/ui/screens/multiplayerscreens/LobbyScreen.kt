@@ -97,6 +97,7 @@ class LobbyScreen(
     private val menuButtonMapOptions = "Map options".toTextButton()
     private val menuButtonInvite = "Invite friend".toTextButton()
     private val menuButtonStartGame = "Start game".toTextButton()
+    private val chatTable = ChatTable(chatMessageList)
     private val bottomButtonLeave = if (owner.uuid == me.uuid) "Close lobby".toTextButton() else "Leave".toTextButton()
     private val bottomButtonSocial = MultiplayerButton()
     private val bottomButtonHelp = "Help".toTextButton()
@@ -242,7 +243,7 @@ class LobbyScreen(
             }
         }
 
-        recreate()
+        recreate(true)
         Concurrency.run {
             refresh()
         }
@@ -305,7 +306,7 @@ class LobbyScreen(
     /**
      * Recreate the screen including some of its elements
      */
-    fun recreate(): BaseScreen {
+    fun recreate(initial: Boolean = false): BaseScreen {
         val table = Table()
 
         val playerScroll = AutoScrollPane(lobbyPlayerList, skin)
@@ -320,7 +321,6 @@ class LobbyScreen(
         optionsTable.add(menuButtonInvite).padBottom(10f).row()
         optionsTable.add(menuButtonStartGame).row()
 
-        val chatTable = ChatTable(chatMessageList)
         val menuBar = Table()
         menuBar.align(Align.bottom)
         menuBar.add(bottomButtonLeave).pad(20f)
@@ -354,6 +354,9 @@ class LobbyScreen(
         table.setFillParent(true)
         stage.clear()
         stage.addActor(table)
+        if (initial) {
+            stage.keyboardFocus = chatTable.messageField
+        }
         return this
     }
 

@@ -49,6 +49,7 @@ class ChatMessageList(private val showHeading: Boolean, private val type: Pair<C
     private val events = EventBus.EventReceiver()
     private var messageCache: MutableList<ChatMessage> = mutableListOf()
     private var redrawJob: Job = Concurrency.run { redrawPeriodically() }
+    private val listeners = mutableListOf<(Boolean) -> Unit>()
 
     init {
         defaults().expandX().space(5f)
@@ -68,6 +69,11 @@ class ChatMessageList(private val showHeading: Boolean, private val type: Pair<C
             messageCache.add(it.message)
             Concurrency.runOnGLThread {
                 recreate(messageCache)
+                for (listener in listeners) {
+                    Concurrency.run {
+                        listener(true)
+                    }
+                }
             }
         }
     }
@@ -146,6 +152,12 @@ class ChatMessageList(private val showHeading: Boolean, private val type: Pair<C
             row()
             addMessage(message, now)
         }
+
+        for (listener in listeners) {
+            Concurrency.run {
+                listener(false)
+            }
+        }
     }
 
     /**
@@ -178,6 +190,17 @@ class ChatMessageList(private val showHeading: Boolean, private val type: Pair<C
                 recreate(messageCache)
             }
         }
+    }
+
+    /**
+     * Add a listener that gets called whenever the [recreate] function completed
+     *
+     * The callback function will be executed in a daemon thread without the GL context.
+     * The only argument of the callback will be set to true when [recreate] finished after
+     * an incoming message, otherwise false.
+     */
+    fun addListener(callback: (Boolean) -> Unit) {
+        listeners.add(callback)
     }
 
     /**
