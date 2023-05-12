@@ -8,7 +8,7 @@ import com.unciv.logic.multiplayer.GameUpdateResult.Type.CHANGED
 import com.unciv.logic.multiplayer.GameUpdateResult.Type.FAILURE
 import com.unciv.logic.multiplayer.GameUpdateResult.Type.UNCHANGED
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
-import com.unciv.logic.multiplayer.storage.OnlineMultiplayerFiles
+import com.unciv.logic.multiplayer.storage.OnlineMultiplayerServer
 import com.unciv.ui.components.extensions.isLargerThan
 import com.unciv.utils.debug
 import com.unciv.utils.launchOnGLThread
@@ -106,8 +106,8 @@ class OnlineMultiplayerGame(
 
     private suspend fun update(): GameUpdateResult {
         val curPreview = if (preview != null) preview!! else loadPreviewFromFile()
-        val serverIdentifier = curPreview.gameParameters.multiplayerServer
-        val newPreview = OnlineMultiplayerFiles(serverIdentifier).tryDownloadGamePreview(curPreview.gameId)
+        val serverIdentifier = curPreview.gameParameters.multiplayerServerUrl
+        val newPreview = OnlineMultiplayerServer(serverIdentifier).tryDownloadGamePreview(curPreview.gameId)
         if (newPreview.turns == curPreview.turns && newPreview.currentPlayer == curPreview.currentPlayer) return GameUpdateResult(UNCHANGED, newPreview)
         UncivGame.Current.files.saveGame(newPreview, fileHandle)
         preview = newPreview

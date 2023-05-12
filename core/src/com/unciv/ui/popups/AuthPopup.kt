@@ -20,7 +20,7 @@ class AuthPopup(stage: Stage, authSuccessful: ((Boolean) -> Unit)? = null)
 
         button.onClick {
             try {
-                UncivGame.Current.onlineMultiplayer.authenticate(passwordField.text)
+                UncivGame.Current.onlineMultiplayer.multiplayerServer.authenticate(passwordField.text)
                 authSuccessful?.invoke(true)
                 close()
             } catch (ex: Exception) {

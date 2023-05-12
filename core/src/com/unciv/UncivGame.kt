@@ -181,7 +181,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         Concurrency.run {
             // Check if the server is available in case the feature set has changed
             try {
-                onlineMultiplayer.checkServerStatus()
+                onlineMultiplayer.multiplayerServer.checkServerStatus()
             } catch (ex: Exception) {
                 debug("Couldn't connect to server: " + ex.message)
             }

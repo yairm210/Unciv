@@ -2,9 +2,12 @@ package com.unciv.logic.multiplayer.storage
 
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.json.json
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.files.UncivFiles
+import com.unciv.logic.multiplayer.ServerFeatureSet
+import com.unciv.utils.Log
 
 /**
  * Allows access to games stored on a server for multiplayer purposes.
@@ -17,12 +20,14 @@ import com.unciv.logic.files.UncivFiles
  * @see UncivGame.Current.settings.multiplayerServer
  */
 @Suppress("RedundantSuspendModifier") // Methods can take a long time, so force users to use them in a coroutine to not get ANRs on Android
-class OnlineMultiplayerFiles(
-    private var fileStorageIdentifier: String? = null,
+class OnlineMultiplayerServer(
+    fileStorageIdentifier: String? = null,
     private var authenticationHeader: Map<String, String>? = null
 ) {
+    internal var featureSet = ServerFeatureSet()
+    val serverUrl = fileStorageIdentifier ?: UncivGame.Current.settings.multiplayer.server
+
     fun fileStorage(): FileStorage {
-        val identifier = if (fileStorageIdentifier == null) UncivGame.Current.settings.multiplayer.server else fileStorageIdentifier
         val authHeader = if (authenticationHeader == null) {
             val settings = UncivGame.Current.settings.multiplayer
             mapOf("Authorization" to settings.getAuthHeader())
@@ -30,15 +35,72 @@ class OnlineMultiplayerFiles(
             authenticationHeader
         }
 
-        return if (identifier == Constants.dropboxMultiplayerServer) {
+        return if (serverUrl == Constants.dropboxMultiplayerServer) {
             DropBox
         } else {
             UncivServerFileStorage.apply {
-                serverUrl = identifier!!
+                serverUrl = this@OnlineMultiplayerServer.serverUrl
                 this.authHeader = authHeader
             }
         }
     }
+
+    /**
+     * Checks if the server is alive and sets the [serverFeatureSet] accordingly.
+     * @return true if the server is alive, false otherwise
+     */
+    fun checkServerStatus(): Boolean {
+        var statusOk = false
+        SimpleHttp.sendGetRequest("${serverUrl}/isalive") { success, result, _ ->
+            statusOk = success
+            if (result.isNotEmpty()) {
+                featureSet = try {
+                    json().fromJson(ServerFeatureSet::class.java, result)
+                } catch (ex: Exception) {
+                    Log.error("${UncivGame.Current.settings.multiplayer.server} does not support server feature set", ex)
+                    ServerFeatureSet()
+                }
+            }
+        }
+        return statusOk
+    }
+
+
+    /**
+     * @return true if the authentication was successful or the server does not support authentication.
+     * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
+     * @throws MultiplayerAuthException if the authentication failed
+     */
+    fun authenticate(password: String?): Boolean {
+        if (featureSet.authVersion == 0) return true
+
+        val settings = UncivGame.Current.settings.multiplayer
+
+        val success = fileStorage().authenticate(
+            userId=settings.userId,
+            password=password ?: settings.passwords[settings.server] ?: ""
+        )
+        if (password != null && success) {
+            settings.passwords[settings.server] = password
+        }
+        return success
+    }
+
+    /**
+     * @return true if setting the password was successful, false otherwise.
+     * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
+     * @throws MultiplayerAuthException if the authentication failed
+     */
+    fun setPassword(password: String): Boolean {
+        if (featureSet.authVersion > 0 && fileStorage().setPassword(newPassword = password)) {
+            val settings = UncivGame.Current.settings.multiplayer
+            settings.passwords[settings.server] = password
+            return true
+        }
+
+        return false
+    }
+
 
     /**
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
@@ -82,7 +144,7 @@ class OnlineMultiplayerFiles(
     suspend fun tryDownloadGame(gameId: String): GameInfo {
         val zippedGameInfo = fileStorage().loadFileData(gameId)
         val gameInfo = UncivFiles.gameInfoFromString(zippedGameInfo)
-        gameInfo.gameParameters.multiplayerServer = UncivGame.Current.settings.multiplayer.server
+        gameInfo.gameParameters.multiplayerServerUrl = UncivGame.Current.settings.multiplayer.server
         return gameInfo
     }
 
