@@ -192,7 +192,7 @@ private fun addMultiplayerServerOptions(
         }
     }).row()
 
-    if (UncivGame.Current.onlineMultiplayer.serverFeatureSet.authVersion > 0) {
+    if (UncivGame.Current.onlineMultiplayer.multiplayerServer.featureSet.authVersion > 0) {
         val passwordTextField = UncivTextField.create(
             settings.multiplayer.passwords[settings.multiplayer.server] ?: "Password"
         )
@@ -255,11 +255,11 @@ private fun addTurnCheckerOptions(
 private fun successfullyConnectedToServer(action: (Boolean, Boolean) -> Unit) {
     Concurrency.run("TestIsAlive") {
         try {
-            val connectionSuccess = UncivGame.Current.onlineMultiplayer.checkServerStatus()
+            val connectionSuccess = UncivGame.Current.onlineMultiplayer.multiplayerServer.checkServerStatus()
             var authSuccess = false
             if (connectionSuccess) {
                 try {
-                    authSuccess = UncivGame.Current.onlineMultiplayer.authenticate(null)
+                    authSuccess = UncivGame.Current.onlineMultiplayer.multiplayerServer.authenticate(null)
                 } catch (_: Exception) {
                     // We ignore the exception here, because we handle the failed auth onGLThread
                 }
@@ -289,7 +289,7 @@ private fun setPassword(password: String, optionsPopup: OptionsPopup) {
         return
     }
 
-    if (UncivGame.Current.onlineMultiplayer.serverFeatureSet.authVersion == 0) {
+    if (UncivGame.Current.onlineMultiplayer.multiplayerServer.featureSet.authVersion == 0) {
         popup.reuseWith("This server does not support authentication", true)
         return
     }
@@ -327,7 +327,7 @@ private fun setPassword(password: String, optionsPopup: OptionsPopup) {
 private fun successfullySetPassword(password: String, action: (Boolean, Exception?) -> Unit) {
     Concurrency.run("SetPassword") {
         try {
-            val setSuccess = UncivGame.Current.onlineMultiplayer.setPassword(password)
+            val setSuccess = UncivGame.Current.onlineMultiplayer.multiplayerServer.setPassword(password)
             launchOnGLThread {
                 action(setSuccess, null)
             }
