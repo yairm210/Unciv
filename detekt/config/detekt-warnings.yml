@@ -249,7 +249,7 @@ exceptions:
   ObjectExtendsThrowable:
     active: false
   PrintStackTrace:
-    active: true
+    active: false
   RethrowCaughtException:
     active: true
   ReturnFromFinally:
@@ -767,6 +767,4 @@ style:
     active: true
     ignoreLateinitVar: false
   WildcardImport:
-    active: true
-    excludeImports:
-      - 'java.util.*'
+    active: false
