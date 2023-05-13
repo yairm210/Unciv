@@ -39,7 +39,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.multiplayerscreens.FriendPickerList
 import com.unciv.ui.screens.pickerscreens.PickerPane
 import com.unciv.ui.screens.pickerscreens.PickerScreen
-import java.util.*
+import java.util.UUID
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
 
 /**
@@ -428,7 +428,7 @@ private class NationPickerPopup(
                 yield(spectator)
         } + playerPicker.getAvailablePlayerCivs(player.chosenCiv)
             .sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.name.tr() })
-        val nations = nationSequence.toCollection(ArrayList<Nation>(previousScreen.ruleset.nations.size))
+        val nations = nationSequence.toCollection(ArrayList(previousScreen.ruleset.nations.size))
 
         var nationListScrollY = 0f
         var currentY = 0f

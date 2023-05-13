@@ -30,7 +30,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.diplomacyscreen.LeaderIntroTable
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
-import java.util.*
+import java.util.EnumSet
 
 /**
  * [Popup] communicating events other than trade offers to the player.

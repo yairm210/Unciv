@@ -1,6 +1,6 @@
 package com.unciv.ui.audio
 
-import java.util.*
+import java.util.EnumSet
 
 enum class MusicTrackChooserFlags {
     /** Makes prefix parameter a mandatory match */

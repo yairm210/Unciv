@@ -42,7 +42,7 @@ import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.*
+import java.util.UUID
 import java.util.zip.Deflater
 
 fun advancedTab(
