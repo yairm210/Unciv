@@ -28,9 +28,9 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.utils.debug
-import java.util.*
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.random.Random
 
 /**
  * Damage calculations according to civ v wiki and https://steamcommunity.com/sharedfiles/filedetails/?id=170194443
@@ -358,7 +358,7 @@ object Battle {
             //so...for each round, we randomize who gets the attack in. Seems to be a good way to work for now.
 
             while (potentialDamageToDefender + potentialDamageToAttacker > 0) {
-                if (Random().nextInt(potentialDamageToDefender + potentialDamageToAttacker) < potentialDamageToDefender) {
+                if (Random.Default.nextInt(potentialDamageToDefender + potentialDamageToAttacker) < potentialDamageToDefender) {
                     potentialDamageToDefender--
                     defender.takeDamage(1)
                     if (defender.isDefeated()) break
@@ -707,7 +707,8 @@ object Battle {
             capturedUnit.civ = capturingCiv
 
             val workerTypeUnit = capturingCiv.gameInfo.ruleset.units.values
-                .firstOrNull { it.isCivilian() && it.getMatchingUniques(UniqueType.BuildImprovements).any { it.params[0] == "Land" } }
+                .firstOrNull { it.isCivilian() && it.getMatchingUniques(UniqueType.BuildImprovements)
+                    .any { unique -> unique.params[0] == "Land" } }
 
             if (workerTypeUnit != null)
                 capturingCiv.units.placeUnitNearTile(capturedUnit.currentTile.position, workerTypeUnit.name)
@@ -843,9 +844,9 @@ object Battle {
             if (defender.unit.isCivilian() || nukeStrength >= 2) {
                 unit.destroy()
             } else if (nukeStrength == 1) {
-                defender.takeDamage(((40 + Random().nextInt(60)) * damageModifierFromMissingResource).toInt())
+                defender.takeDamage(((40 + Random.Default.nextInt(60)) * damageModifierFromMissingResource).toInt())
             } else if (nukeStrength == 0) {
-                defender.takeDamage(((20 + Random().nextInt(30)) * damageModifierFromMissingResource).toInt())
+                defender.takeDamage(((20 + Random.Default.nextInt(30)) * damageModifierFromMissingResource).toInt())
             }
             postBattleNotifications(attacker, defender, defender.getTile())
             destroyIfDefeated(defender.getCivInfo(), attacker.getCivInfo())
@@ -865,13 +866,13 @@ object Battle {
             if (tile.terrainHasUnique(UniqueType.DestroyableByNukesChance)) {
                 for (terrainFeature in tile.terrainFeatureObjects) {
                     for (unique in terrainFeature.getMatchingUniques(UniqueType.DestroyableByNukesChance)) {
-                        if (Random().nextFloat() >= unique.params[0].toFloat() / 100f) continue
+                        if (Random.Default.nextFloat() >= unique.params[0].toFloat() / 100f) continue
                         tile.removeTerrainFeature(terrainFeature.name)
                         if (!tile.terrainFeatures.contains("Fallout"))
                             tile.addTerrainFeature("Fallout")
                     }
                 }
-            } else if (Random().nextFloat() < 0.5f && !tile.terrainFeatures.contains("Fallout")) {
+            } else if (Random.Default.nextFloat() < 0.5f && !tile.terrainFeatures.contains("Fallout")) {
                 tile.addTerrainFeature("Fallout")
             }
         }
@@ -888,8 +889,8 @@ object Battle {
         var populationLoss = targetedCity.population.population *
             when (nukeStrength) {
                 0 -> 0f
-                1 -> (30 + Random().nextInt(40)) / 100f
-                2 -> (60 + Random().nextInt(20)) / 100f
+                1 -> (30 + Random.Default.nextInt(40)) / 100f
+                2 -> (60 + Random.Default.nextInt(20)) / 100f
                 else -> 1f
             }
         for (unique in targetedCity.getMatchingUniques(UniqueType.PopulationLossFromNukes)) {
@@ -1031,7 +1032,7 @@ object Battle {
             if (defender != null && defender is MapUnitCombatant && interceptor == defender.unit) continue
             interceptor.attacksThisTurn++  // even if you miss, you took the shot
             // Does Intercept happen? If not, exit
-            if (Random().nextFloat() > interceptor.interceptChance() / 100f) return
+            if (Random.Default.nextFloat() > interceptor.interceptChance() / 100f) return
 
             var damage = BattleDamage.calculateDamageToDefender(
                 MapUnitCombatant(interceptor),

@@ -4,7 +4,7 @@ import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.map.tile.TileHistory.TileHistoryState.CityCenterType
-import java.util.*
+import java.util.TreeMap
 
 /**
  * Records events throughout the game related to a tile.

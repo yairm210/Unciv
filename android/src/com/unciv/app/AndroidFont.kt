@@ -16,7 +16,7 @@ import com.unciv.ui.components.FontFamilyData
 import com.unciv.ui.components.FontImplementation
 import com.unciv.ui.components.Fonts
 import com.unciv.utils.Log
-import java.util.*
+import java.util.Locale
 import kotlin.math.abs
 
 class AndroidFont : FontImplementation {

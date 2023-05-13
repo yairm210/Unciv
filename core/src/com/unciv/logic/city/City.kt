@@ -22,7 +22,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
-import java.util.*
+import java.util.UUID
 import kotlin.math.roundToInt
 
 enum class CityFlags {

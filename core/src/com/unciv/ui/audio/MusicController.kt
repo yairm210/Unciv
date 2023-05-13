@@ -9,7 +9,8 @@ import com.unciv.logic.multiplayer.storage.DropBox
 import com.unciv.models.metadata.GameSettings
 import com.unciv.utils.Log
 import com.unciv.utils.debug
-import java.util.*
+import java.util.EnumSet
+import java.util.Timer
 import kotlin.concurrent.thread
 import kotlin.concurrent.timer
 import kotlin.math.roundToInt
@@ -122,7 +123,7 @@ class MusicController {
     /** @return the path of the playing track or null if none playing */
     private fun currentlyPlaying(): String = when(state) {
         ControllerState.Playing, ControllerState.PlaySingle, ControllerState.Pause ->
-            musicHistory.peekLast() ?: ""
+            musicHistory.lastOrNull() ?: ""
         else -> ""
     }
 

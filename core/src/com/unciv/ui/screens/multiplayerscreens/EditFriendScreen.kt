@@ -15,7 +15,7 @@ import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
-import java.util.*
+import java.util.UUID
 
 class EditFriendScreen(selectedFriend: FriendList.Friend) : PickerScreen() {
     init {

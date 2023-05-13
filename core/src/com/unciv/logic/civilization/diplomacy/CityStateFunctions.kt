@@ -22,9 +22,9 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.victoryscreen.RankingType
-import java.util.*
 import kotlin.math.min
 import kotlin.math.pow
+import kotlin.random.Random
 
 /** Class containing city-state-specific functions */
 class CityStateFunctions(val civInfo: Civilization) {
@@ -67,7 +67,7 @@ class CityStateFunctions(val civInfo: Civilization) {
         return true
     }
 
-    fun turnsForGreatPersonFromCityState(): Int = ((37 + Random().nextInt(7)) * civInfo.gameInfo.speed.modifier).toInt()
+    fun turnsForGreatPersonFromCityState(): Int = ((37 + Random.Default.nextInt(7)) * civInfo.gameInfo.speed.modifier).toInt()
 
     /** Gain a random great person from the city state */
     fun giveGreatPersonToPatron(receivingCiv: Civilization) {
@@ -552,7 +552,7 @@ class CityStateFunctions(val civInfo: Civilization) {
             civInfo.getDiplomacyManager(attacker).becomeWary()
         }
         else if (attacker.isMinorCivAggressor()) { // They've attacked a few
-            if (Random().nextBoolean()) { // 50% chance
+            if (Random.Default.nextBoolean()) { // 50% chance
                 civInfo.getDiplomacyManager(attacker).becomeWary()
             }
         }
@@ -591,7 +591,7 @@ class CityStateFunctions(val civInfo: Civilization) {
                 if (cityState.isAtWarWith(attacker))
                     probability += 50
 
-                if (Random().nextInt(100) <= probability) {
+                if (Random.Default.nextInt(100) <= probability) {
                     cityState.getDiplomacyManager(attacker).becomeWary()
                 }
             }
@@ -684,7 +684,7 @@ class CityStateFunctions(val civInfo: Civilization) {
     ):Sequence<Unique> {
         if (civInfo.isCityState()) return emptySequence()
 
-        return civInfo.getKnownCivs().asSequence().filter { it.isCityState() }
+        return civInfo.getKnownCivs().filter { it.isCityState() }
             .flatMap {
                 // We don't use DiplomacyManager.getRelationshipLevel for performance reasons - it tries to calculate getTributeWillingness which is heavy
                 val relationshipLevel =

@@ -5,7 +5,7 @@ import club.minnced.discord.rpc.DiscordRPC
 import club.minnced.discord.rpc.DiscordRichPresence
 import com.sun.jna.Native
 import com.unciv.utils.debug
-import java.util.*
+import java.util.Timer
 import kotlin.concurrent.timer
 
 class DiscordGameInfo(

@@ -6,7 +6,9 @@ import com.unciv.ui.components.Fonts
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.temporal.ChronoUnit
-import java.util.*
+import java.util.Date
+import java.util.Locale
+import java.util.SortedMap
 
 /** Translate a percentage number - e.g. 25 - to the multiplication value - e.g. 1.25f */
 fun String.toPercent() = toFloat().toPercent()
@@ -20,8 +22,7 @@ fun Float.toPercent() = 1 + this/100
 /** Convert a [resource name][this] into "Consumes [amount] $resource" string (untranslated) */
 fun String.getConsumesAmountString(amount: Int, isStockpiled:Boolean): String {
     val uniqueString = "{Consumes [$amount] [$this]}"
-    if (!isStockpiled) return uniqueString
-    else return "$uniqueString /${Fonts.turn}"
+    return if (isStockpiled) "$uniqueString /${Fonts.turn}" else uniqueString
 }
 
 /** Convert a [resource name][this] into "Need [amount] more $resource" string (untranslated) */

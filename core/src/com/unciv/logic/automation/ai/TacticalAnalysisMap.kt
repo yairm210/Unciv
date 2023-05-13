@@ -8,7 +8,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.TileMap
 import com.unciv.utils.Log
-import java.util.*
+import java.util.UUID
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
