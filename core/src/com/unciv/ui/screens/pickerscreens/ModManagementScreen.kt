@@ -364,6 +364,9 @@ class ModManagementScreen(
             modOptions.modSize
         )
     }
+
+    val repoUrlToPreviewImage = HashMap<String, Texture?>()
+
     private fun addModInfoToActionTable(
         repoUrl: String,
         default_branch: String,
@@ -376,19 +379,38 @@ class ModManagementScreen(
         // Display metadata
 
         val imageHolder = Table()
-        Concurrency.run {
-            val imagePixmap = Github.tryGetPreviewImage(repoUrl, default_branch) ?: return@run
-            Concurrency.runOnGLThread {
-                val largestImageSize = max(imagePixmap.width, imagePixmap.height)
-                val cell = imageHolder.add(Image(Texture(imagePixmap)))
 
-                val maxAllowedImageSize = 200f
-                if (largestImageSize > maxAllowedImageSize) {
-                    val resizeRatio = maxAllowedImageSize / largestImageSize
-                    cell.size(imagePixmap.width * resizeRatio, imagePixmap.height * resizeRatio)
+        fun setTextureAsPreview(texture: Texture){
+            val maxAllowedImageSize = 200f
+            val cell = imageHolder.add(Image(texture))
+            val largestImageSize = max(texture.width, texture.height)
+            if (largestImageSize > maxAllowedImageSize) {
+                val resizeRatio = maxAllowedImageSize / largestImageSize
+                cell.size(texture.width * resizeRatio, texture.height * resizeRatio)
+            }
+        }
+
+        if (!repoUrlToPreviewImage.containsKey(repoUrl)) {
+            Concurrency.run {
+                val imagePixmap = Github.tryGetPreviewImage(repoUrl, default_branch)
+
+                if (imagePixmap == null) {
+                    repoUrlToPreviewImage[repoUrl] = null
+                    return@run
+                }
+                Concurrency.runOnGLThread {
+                    val texture = Texture(imagePixmap)
+                    imagePixmap.dispose()
+                    repoUrlToPreviewImage[repoUrl] = texture
+                    setTextureAsPreview(texture)
                 }
             }
         }
+        else {
+            val texture = repoUrlToPreviewImage[repoUrl]
+            if (texture!=null) setTextureAsPreview(texture)
+        }
+
         modActionTable.add(imageHolder).row()
 
 
