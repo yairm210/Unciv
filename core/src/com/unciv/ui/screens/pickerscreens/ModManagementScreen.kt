@@ -2,9 +2,11 @@ package com.unciv.ui.screens.pickerscreens
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -44,8 +46,8 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.pickerscreens.ModManagementOptions.SortType
-import com.unciv.utils.Log
 import com.unciv.utils.Concurrency
+import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
@@ -347,7 +349,7 @@ class ModManagementScreen(
      * @param repo: the repository instance as received from the GitHub api
      */
     private fun addModInfoToActionTable(repo: Github.Repo) {
-        addModInfoToActionTable(repo.html_url, repo.pushed_at, repo.owner.login, repo.size)
+        addModInfoToActionTable(repo.html_url, repo.default_branch, repo.pushed_at, repo.owner.login, repo.size)
     }
     /** Recreate the information part of the right-hand column
      * @param modName: The mod name (name from the RuleSet)
@@ -358,11 +360,13 @@ class ModManagementScreen(
             modOptions.modUrl,
             modOptions.lastUpdated,
             modOptions.author,
+            modOptions.defaultBranch,
             modOptions.modSize
         )
     }
     private fun addModInfoToActionTable(
         repoUrl: String,
+        default_branch: String,
         updatedAt: String,
         author: String,
         modSize: Int
@@ -370,6 +374,22 @@ class ModManagementScreen(
         // remember selected mod - for now needed only to display a background-fetched image while the user is watching
 
         // Display metadata
+
+        val imageHolder = Table()
+        Concurrency.run {
+            val imagePixmap = Github.tryGetPreviewImage(repoUrl, default_branch) ?: return@run
+            Concurrency.runOnGLThread {
+                val largestImageSize = max(imagePixmap.width, imagePixmap.height)
+                val cell = imageHolder.add(Image(Texture(imagePixmap)))
+
+                val maxAllowedImageSize = 200f
+                if (largestImageSize > maxAllowedImageSize) {
+                    val resizeRatio = maxAllowedImageSize / largestImageSize
+                    cell.size(imagePixmap.width * resizeRatio, imagePixmap.height * resizeRatio)
+                }
+            }
+        }
+        modActionTable.add(imageHolder).row()
 
 
         if (author.isNotEmpty())

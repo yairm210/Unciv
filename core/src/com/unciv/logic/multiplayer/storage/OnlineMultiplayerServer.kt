@@ -31,17 +31,12 @@ class OnlineMultiplayerServer(
         val authHeader = if (authenticationHeader == null) {
             val settings = UncivGame.Current.settings.multiplayer
             mapOf("Authorization" to settings.getAuthHeader())
-        } else {
-            authenticationHeader
-        }
+        } else authenticationHeader
 
-        return if (serverUrl == Constants.dropboxMultiplayerServer) {
-            DropBox
-        } else {
-            UncivServerFileStorage.apply {
-                serverUrl = this@OnlineMultiplayerServer.serverUrl
-                this.authHeader = authHeader
-            }
+        return if (serverUrl == Constants.dropboxMultiplayerServer) DropBox
+        else UncivServerFileStorage.apply {
+            serverUrl = this@OnlineMultiplayerServer.serverUrl
+            this.authHeader = authHeader
         }
     }
 

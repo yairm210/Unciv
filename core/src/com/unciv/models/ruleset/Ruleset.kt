@@ -55,6 +55,7 @@ class ModOptions : IHasUniques {
 
     var lastUpdated = ""
     var modUrl = ""
+    var defaultBranch = "master"
     var author = ""
     var modSize = 0
     var topics = mutableListOf<String>()

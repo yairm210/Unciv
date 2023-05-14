@@ -2,6 +2,7 @@ package com.unciv.ui.screens.pickerscreens
 
 import com.badlogic.gdx.Files
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.graphics.Pixmap
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.updateDeprecations
@@ -20,6 +21,7 @@ import java.io.InputStream
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
+import java.nio.ByteBuffer
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 
@@ -250,6 +252,15 @@ object Github {
         return null
     }
 
+    fun tryGetPreviewImage(modUrl:String, defaultBranch: String): Pixmap?{
+        val fileLocation = "$modUrl/$defaultBranch/preview.png"
+            .replace("github.com", "raw.githubusercontent.com")
+        val file = download(fileLocation) ?: return null
+        val byteArray = file.readBytes()
+        val buffer = ByteBuffer.allocateDirect(byteArray.size).put(byteArray).position(0)
+        return Pixmap(buffer)
+    }
+
     class Tree {
 
         class TreeFile {
@@ -385,6 +396,7 @@ object Github {
         val modOptionsFile = modFolder.child("jsons/ModOptions.json")
         val modOptions = if (modOptionsFile.exists()) json().fromJsonFile(ModOptions::class.java, modOptionsFile) else ModOptions()
         modOptions.modUrl = repo.html_url
+        modOptions.defaultBranch = repo.default_branch
         modOptions.lastUpdated = repo.pushed_at
         modOptions.author = repo.owner.login
         modOptions.modSize = repo.size
