@@ -2,6 +2,8 @@ package com.unciv.logic.multiplayer.apiv2
 
 import com.badlogic.gdx.utils.Disposable
 import com.unciv.UncivGame
+import com.unciv.logic.GameInfo
+import com.unciv.logic.event.Event
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.ApiVersion
 import com.unciv.logic.multiplayer.storage.ApiV2FileStorageEmulator
@@ -16,7 +18,11 @@ import io.ktor.http.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.Channel.Factory.CONFLATED
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
+import kotlinx.coroutines.channels.ClosedSendChannelException
+import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -45,6 +51,30 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
 
     /** Cache for the game details to make certain lookups faster */
     private val gameDetails: MutableMap<UUID, TimedGameDetails> = mutableMapOf()
+
+    /** List of channel that extend the usage of the [EventBus] system, see [getWebSocketEventChannel] */
+    private val eventChannelList = mutableListOf<SendChannel<Event>>()
+
+    /**
+     * Get a receiver channel for WebSocket [Event]s that is decoupled from the [EventBus] system
+     *
+     * All WebSocket events are sent to the [EventBus] as well as to all channels
+     * returned by this function, so it's possible to receive from any of these to
+     * get the event. It's better to cancel the [ReceiveChannel] after usage, but cleanup
+     * would also be carried out automatically asynchronously whenever events are sent.
+     * Note that only raw WebSocket messages are put here, i.e. no processed [GameInfo]
+     * or other large objects will be sent (the exception being [UpdateGameData], which
+     * may grow pretty big, as in up to 500 KiB as base64-encoded string data).
+     *
+     * Use the channel returned by this function if the GL render thread, which is used
+     * by the [EventBus] system, may not be available (e.g. in the Android turn checker).
+     */
+    fun getWebSocketEventChannel(): ReceiveChannel<Event> {
+        // We're using CONFLATED channels here to avoid usage of possibly huge amounts of memory
+        val c = Channel<Event>(capacity = CONFLATED)
+        eventChannelList.add(c as SendChannel<Event>)
+        return c
+    }
 
     /**
      * Initialize this class (performing actual networking connectivity)
@@ -301,6 +331,20 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
                                     Concurrency.runOnGLThread {
                                         EventBus.send((msg as WebSocketMessageWithContent).content)
                                     }
+                                    for (c in eventChannelList) {
+                                        Concurrency.run {
+                                            try {
+                                                c.send((msg as WebSocketMessageWithContent).content)
+                                            } catch (closed: ClosedSendChannelException) {
+                                                delay(10)
+                                                eventChannelList.remove(c)
+                                            } catch (t: Throwable) {
+                                                Log.debug("Sending event %s to event channel %s failed: %s", (msg as WebSocketMessageWithContent).content, c, t)
+                                                delay(10)
+                                                eventChannelList.remove(c)
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         } catch (e: Throwable) {
@@ -332,6 +376,11 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
             }
             throw e
         }
+    }
+
+    suspend fun ensureConnectedWebSocket() {
+        // TODO: Ensure that the WebSocket is connected (e.g. send a PING or build a new connection)
+        //  This should be used from the MultiplayerTurnChecker (Android)
     }
 
     // ---------------- SESSION FUNCTIONALITY ----------------

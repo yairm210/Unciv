@@ -74,9 +74,10 @@ open class ApiV2Wrapper(baseUrl: String) {
             request.userAgent("Unciv/${UncivGame.VERSION.toNiceString()}-GNU-Terry-Pratchett")
             val clientCall = execute(request)
             Log.debug(
-                "'%s %s%s': %s (%d ms)",
+                "'%s %s%s%s': %s (%d ms)",
                 request.method.value,
                 baseServer,
+                if (baseServer.endsWith("/") or request.url.encodedPath.startsWith("/")) "" else "/",
                 request.url.encodedPath,
                 clientCall.response.status,
                 clientCall.response.responseTime.timestamp - clientCall.response.requestTime.timestamp
@@ -97,37 +98,37 @@ open class ApiV2Wrapper(baseUrl: String) {
     /**
      * API for account management
      */
-    internal val account = AccountsApi(client, authHelper)
+    val account = AccountsApi(client, authHelper)
 
     /**
      * API for authentication management
      */
-    internal val auth = AuthApi(client, authHelper, ::afterLogin)
+    val auth = AuthApi(client, authHelper, ::afterLogin)
 
     /**
      * API for chat management
      */
-    internal val chat = ChatApi(client, authHelper)
+    val chat = ChatApi(client, authHelper)
 
     /**
      * API for friendship management
      */
-    internal val friend = FriendApi(client, authHelper)
+    val friend = FriendApi(client, authHelper)
 
     /**
      * API for game management
      */
-    internal val game = GameApi(client, authHelper)
+    val game = GameApi(client, authHelper)
 
     /**
      * API for invite management
      */
-    internal val invite = InviteApi(client, authHelper)
+    val invite = InviteApi(client, authHelper)
 
     /**
      * API for lobby management
      */
-    internal val lobby = LobbyApi(client, authHelper)
+    val lobby = LobbyApi(client, authHelper)
 
     /**
      * Start a new WebSocket connection
@@ -146,7 +147,6 @@ open class ApiV2Wrapper(baseUrl: String) {
                     method = HttpMethod.Get
                     authHelper.add(this)
                     url {
-                        protocol = if (baseUrlImpl.startsWith("https://")) URLProtocol.WSS else URLProtocol.WS  // TODO: Verify that secure WebSockets (WSS) work as well
                         appendPathSegments("api/v2/ws")
                     }
                 }
@@ -175,7 +175,7 @@ open class ApiV2Wrapper(baseUrl: String) {
      * clause expecting any type of error. The error may not be appropriate to
      * be shown to end users, i.e. it's definitively no [UncivShowableException].
      */
-    internal suspend fun version(): VersionResponse {
+    suspend fun version(): VersionResponse {
         return client.get("api/version").body()
     }
 
