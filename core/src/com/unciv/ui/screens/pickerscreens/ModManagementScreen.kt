@@ -358,9 +358,9 @@ class ModManagementScreen(
     private fun addModInfoToActionTable(modOptions: ModOptions) {
         addModInfoToActionTable(
             modOptions.modUrl,
+            modOptions.defaultBranch,
             modOptions.lastUpdated,
             modOptions.author,
-            modOptions.defaultBranch,
             modOptions.modSize
         )
     }
