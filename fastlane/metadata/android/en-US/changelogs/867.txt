@@ -1,15 +1,7 @@
+Animate battle damage numbers - By SomeTroglodyte
 
+When picking custom map: Display map ruleset, don't show unloadable maps
 
-Display map ruleset when picking map, don't show unloadable maps
+Modding: Allow mods to contain a "preview.png" file for visual indication
 
-Allow mods to contain a "preview.png" file for visual indication
-
-Multi-server preparations: Save server info in game, save server functionality in specific class 
-
-4.6.11-patch1 
-
-Convert 'camps' vectorhashmap to 'encampments' arraylist 
-
-By SomeTroglodyte:
-- Animate battle damage numbers 
-- Combat java.util.star-import 
+Multi-server preparations :)

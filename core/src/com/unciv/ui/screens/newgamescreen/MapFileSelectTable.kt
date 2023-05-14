@@ -32,7 +32,7 @@ class MapFileSelectTable(
     // The SelectBox auto displays the text a object.toString(), which on the FileHandle itself includes the folder path.
     //  So we wrap it in another object with a custom toString()
     private class MapWrapper(val fileHandle: FileHandle, val mapParameters: MapParameters) {
-        override fun toString(): String = mapParameters.baseRuleset + " - "+ fileHandle.name()
+        override fun toString(): String = mapParameters.baseRuleset + " | "+ fileHandle.name()
     }
     private val mapWrappers= ArrayList<MapWrapper>()
 
@@ -41,7 +41,6 @@ class MapFileSelectTable(
     init {
         defaults().pad(5f, 10f)  // Must stay same as in MapParametersTable
         val mapFileLabel = "{Map file}:".toLabel()
-        setDebug(true)
         add(mapFileLabel).left()
         add(mapFileSelectBox)
             // because SOME people gotta give the hugest names to their maps
