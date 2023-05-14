@@ -431,7 +431,7 @@ class AccountsApi(private val client: HttpClient, private val authHelper: AuthHe
 /**
  * API wrapper for authentication handling (do not use directly; use the Api class instead)
  */
-class AuthApi(private val client: HttpClient, private val authHelper: AuthHelper, private val afterLogin: suspend () -> Unit) {
+class AuthApi(private val client: HttpClient, private val authHelper: AuthHelper, private val afterLogin: suspend () -> Unit, private val afterLogout: suspend (Boolean) -> Unit) {
 
     /**
      * Try logging in with [username] and [password] for testing purposes, don't set the session cookie
@@ -516,16 +516,19 @@ class AuthApi(private val client: HttpClient, private val authHelper: AuthHelper
             authHelper.unset()
             Cache.clear()
             Log.debug("Logout failed due to %s (%s), dropped session anyways", e, e.message)
+            afterLogout(false)
             return false
         }
         Cache.clear()
         return if (response?.status?.isSuccess() == true) {
             authHelper.unset()
             Log.debug("Logged out successfully, dropped session")
+            afterLogout(true)
             true
         } else {
             authHelper.unset()
             Log.debug("Logout failed for some reason, dropped session anyways")
+            afterLogout(false)
             false
         }
     }

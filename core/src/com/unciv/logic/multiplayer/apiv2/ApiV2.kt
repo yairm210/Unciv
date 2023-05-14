@@ -2,21 +2,28 @@ package com.unciv.logic.multiplayer.apiv2
 
 import com.badlogic.gdx.utils.Disposable
 import com.unciv.UncivGame
+import com.unciv.logic.GameInfo
+import com.unciv.logic.event.Event
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.ApiVersion
 import com.unciv.logic.multiplayer.storage.ApiV2FileStorageEmulator
 import com.unciv.logic.multiplayer.storage.ApiV2FileStorageWrapper
 import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
 import com.unciv.utils.Log
-import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.Concurrency
 import io.ktor.client.call.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.Channel.Factory.CONFLATED
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
+import kotlinx.coroutines.channels.ClosedSendChannelException
+import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -45,6 +52,30 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
 
     /** Cache for the game details to make certain lookups faster */
     private val gameDetails: MutableMap<UUID, TimedGameDetails> = mutableMapOf()
+
+    /** List of channel that extend the usage of the [EventBus] system, see [getWebSocketEventChannel] */
+    private val eventChannelList = mutableListOf<SendChannel<Event>>()
+
+    /**
+     * Get a receiver channel for WebSocket [Event]s that is decoupled from the [EventBus] system
+     *
+     * All WebSocket events are sent to the [EventBus] as well as to all channels
+     * returned by this function, so it's possible to receive from any of these to
+     * get the event. It's better to cancel the [ReceiveChannel] after usage, but cleanup
+     * would also be carried out automatically asynchronously whenever events are sent.
+     * Note that only raw WebSocket messages are put here, i.e. no processed [GameInfo]
+     * or other large objects will be sent (the exception being [UpdateGameData], which
+     * may grow pretty big, as in up to 500 KiB as base64-encoded string data).
+     *
+     * Use the channel returned by this function if the GL render thread, which is used
+     * by the [EventBus] system, may not be available (e.g. in the Android turn checker).
+     */
+    fun getWebSocketEventChannel(): ReceiveChannel<Event> {
+        // We're using CONFLATED channels here to avoid usage of possibly huge amounts of memory
+        val c = Channel<Event>(capacity = CONFLATED)
+        eventChannelList.add(c as SendChannel<Event>)
+        return c
+    }
 
     /**
      * Initialize this class (performing actual networking connectivity)
@@ -97,6 +128,9 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
      */
     override fun dispose() {
         sendChannel?.close()
+        for (channel in eventChannelList) {
+            channel.close()
+        }
         for (job in websocketJobs) {
             job.cancel()
         }
@@ -237,12 +271,12 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
      * Send a [FrameType.PING] frame to the server, without awaiting a response
      *
      * This operation might fail with some exception, e.g. network exceptions.
-     * Internally, a random 8-byte array will be used for the ping. It returns
-     * true when sending worked as expected, false when there's no send channel
-     * available and an any exception otherwise.
+     * Internally, a random byte array of [size] will be used for the ping. It
+     * returns true when sending worked as expected, false when there's no
+     * send channel available and an exception otherwise.
      */
-    internal suspend fun sendPing(): Boolean {
-        val body = ByteArray(0)
+    private suspend fun sendPing(size: Int = 0): Boolean {
+        val body = ByteArray(size)
         val channel = sendChannel
         return if (channel == null) {
             false
@@ -301,6 +335,20 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
                                     Concurrency.runOnGLThread {
                                         EventBus.send((msg as WebSocketMessageWithContent).content)
                                     }
+                                    for (c in eventChannelList) {
+                                        Concurrency.run {
+                                            try {
+                                                c.send((msg as WebSocketMessageWithContent).content)
+                                            } catch (closed: ClosedSendChannelException) {
+                                                delay(10)
+                                                eventChannelList.remove(c)
+                                            } catch (t: Throwable) {
+                                                Log.debug("Sending event %s to event channel %s failed: %s", (msg as WebSocketMessageWithContent).content, c, t)
+                                                delay(10)
+                                                eventChannelList.remove(c)
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         } catch (e: Throwable) {
@@ -334,6 +382,24 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
         }
     }
 
+    /**
+     * Ensure that the WebSocket is connected (send a PING and build a new connection on failure)
+     *
+     * Use [jobCallback] to receive the newly created job handling the WS connection.
+     * Note that this callback might not get called if no new WS connection was created.
+     */
+    suspend fun ensureConnectedWebSocket(jobCallback: ((Job) -> Unit)? = null) {
+        val shouldRecreateConnection = try {
+            !sendPing()
+        } catch (e: Exception) {
+            Log.debug("Error %s while ensuring connected WebSocket: %s", e, e.localizedMessage)
+            true
+        }
+        if (shouldRecreateConnection) {
+            websocket(::handleWebSocket, jobCallback)
+        }
+    }
+
     // ---------------- SESSION FUNCTIONALITY ----------------
 
     /**
@@ -354,8 +420,25 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
             )
             UncivGame.Current.settings.multiplayer.userId = me.uuid.toString()
             UncivGame.Current.settings.save()
-            websocket(::handleWebSocket)
+            ensureConnectedWebSocket()
         }
+        super.afterLogin()
+    }
+
+    /**
+     * Perform the post-logout hook, cancelling all WebSocket jobs and event channels
+     */
+    override suspend fun afterLogout(success: Boolean) {
+        sendChannel?.close()
+        if (success) {
+            for (channel in eventChannelList) {
+                channel.close()
+            }
+            for (job in websocketJobs) {
+                job.cancel()
+            }
+        }
+        super.afterLogout(success)
     }
 
     /**

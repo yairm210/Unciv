@@ -3,7 +3,7 @@ package com.unciv.logic.multiplayer.apiv2
 import com.unciv.UncivGame
 import com.unciv.logic.UncivShowableException
 import com.unciv.utils.Log
-import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.Concurrency
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
@@ -74,9 +74,10 @@ open class ApiV2Wrapper(baseUrl: String) {
             request.userAgent("Unciv/${UncivGame.VERSION.toNiceString()}-GNU-Terry-Pratchett")
             val clientCall = execute(request)
             Log.debug(
-                "'%s %s%s': %s (%d ms)",
+                "'%s %s%s%s': %s (%d ms)",
                 request.method.value,
                 baseServer,
+                if (baseServer.endsWith("/") or request.url.encodedPath.startsWith("/")) "" else "/",
                 request.url.encodedPath,
                 clientCall.response.status,
                 clientCall.response.responseTime.timestamp - clientCall.response.requestTime.timestamp
@@ -95,39 +96,49 @@ open class ApiV2Wrapper(baseUrl: String) {
     protected open suspend fun afterLogin() {}
 
     /**
+     * Coroutine directly executed after every attempt to logout from the server.
+     * The parameter [success] determines whether logging out completed successfully,
+     * i.e. this coroutine will also be called in the case of an error.
+     * This coroutine should not raise any unhandled exceptions, because otherwise
+     * the login function will fail as well. If it requires longer operations,
+     * those operations should be detached from the current thread.
+     */
+    protected open suspend fun afterLogout(success: Boolean) {}
+
+    /**
      * API for account management
      */
-    internal val account = AccountsApi(client, authHelper)
+    val account = AccountsApi(client, authHelper)
 
     /**
      * API for authentication management
      */
-    internal val auth = AuthApi(client, authHelper, ::afterLogin)
+    val auth = AuthApi(client, authHelper, ::afterLogin, ::afterLogout)
 
     /**
      * API for chat management
      */
-    internal val chat = ChatApi(client, authHelper)
+    val chat = ChatApi(client, authHelper)
 
     /**
      * API for friendship management
      */
-    internal val friend = FriendApi(client, authHelper)
+    val friend = FriendApi(client, authHelper)
 
     /**
      * API for game management
      */
-    internal val game = GameApi(client, authHelper)
+    val game = GameApi(client, authHelper)
 
     /**
      * API for invite management
      */
-    internal val invite = InviteApi(client, authHelper)
+    val invite = InviteApi(client, authHelper)
 
     /**
      * API for lobby management
      */
-    internal val lobby = LobbyApi(client, authHelper)
+    val lobby = LobbyApi(client, authHelper)
 
     /**
      * Start a new WebSocket connection
@@ -136,8 +147,9 @@ open class ApiV2Wrapper(baseUrl: String) {
      * [ClientWebSocketSession] on success at a later point. Note that this
      * method does instantly return, detaching the creation of the WebSocket.
      * The [handler] coroutine might not get called, if opening the WS fails.
+     * Use [jobCallback] to receive the newly created job handling the WS connection.
      */
-    internal suspend fun websocket(handler: suspend (ClientWebSocketSession) -> Unit): Boolean {
+    internal suspend fun websocket(handler: suspend (ClientWebSocketSession) -> Unit, jobCallback: ((Job) -> Unit)? = null): Boolean {
         Log.debug("Starting a new WebSocket connection ...")
 
         coroutineScope {
@@ -146,15 +158,18 @@ open class ApiV2Wrapper(baseUrl: String) {
                     method = HttpMethod.Get
                     authHelper.add(this)
                     url {
-                        protocol = if (baseUrlImpl.startsWith("https://")) URLProtocol.WSS else URLProtocol.WS  // TODO: Verify that secure WebSockets (WSS) work as well
                         appendPathSegments("api/v2/ws")
                     }
                 }
-                val job = Concurrency.run {
+                val job = Concurrency.runOnNonDaemonThreadPool {
                     handler(session)
                 }
                 websocketJobs.add(job)
                 Log.debug("A new WebSocket has been created, running in job $job")
+                if (jobCallback != null) {
+                    jobCallback(job)
+                }
+                true
             } catch (e: SerializationException) {
                 Log.debug("Failed to create a WebSocket: %s", e.localizedMessage)
                 return@coroutineScope false
@@ -175,7 +190,7 @@ open class ApiV2Wrapper(baseUrl: String) {
      * clause expecting any type of error. The error may not be appropriate to
      * be shown to end users, i.e. it's definitively no [UncivShowableException].
      */
-    internal suspend fun version(): VersionResponse {
+    suspend fun version(): VersionResponse {
         return client.get("api/version").body()
     }
 
