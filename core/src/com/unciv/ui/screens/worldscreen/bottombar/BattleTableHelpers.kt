@@ -11,9 +11,11 @@ import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.actions.RelativeTemporalAction
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction
-import com.badlogic.gdx.scenes.scene2d.ui.Container
+import com.badlogic.gdx.scenes.scene2d.actions.TemporalAction
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.Stack
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.battle.ICombatant
@@ -24,25 +26,47 @@ import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
-object BattleTableHelpers {
 
-    class FlashRedAction(start:Float, end:Float, private val actorsToOriginalColors:Map<Actor, Color>) : FloatAction(start, end, 0.2f, Interpolation.sine){
+object BattleTableHelpers {
+    /** Duration of the red-tint transition, used once per direction */
+    private const val flashRedDuration = 0.2f
+    /** Duration of the attacker displacement, used once per direction */
+    private const val moveActorsDuration = 0.3f
+    /** Max distance of the attacker displacement, in world coords */
+    private const val moveActorsDisplacement = 10f
+    /** If a mod provides attack animations (e.g. swinging a sword), they're played with this duration per frame */
+    private const val attackAnimationFrameDuration = 0.1f
+    /** Duration a damage number label is visible */
+    private const val damageLabelDuration = 1.2f
+    /** Size of a damage number label - currently fixed independednt of map zoom */
+    private const val damageLabelFontSize = 40
+    /** Total distance a damage number label is displaced upwards during that time in world coords */
+    private const val damageLabelDisplacement = 90f
+
+
+    class FlashRedAction(
+        start: Float, end: Float,
+        private val actorsToOriginalColors: Map<Actor, Color>
+    ) : FloatAction(start, end, flashRedDuration, Interpolation.sine) {
         private fun updateRedPercent(percent: Float) {
             for ((actor, color) in actorsToOriginalColors)
-                actor.color = color.cpy().lerp(Color.RED, start+percent*(end-start))
+                actor.color = color.cpy().lerp(Color.RED, start + percent * (end - start))
         }
 
         override fun update(percent: Float) = updateRedPercent(percent)
     }
 
 
-    class MoveActorsAction(private val actorsToMove:List<Actor>, private val movementVector: Vector2) : RelativeTemporalAction(){
+    class MoveActorsAction(
+        private val actorsToMove: List<Actor>,
+        private val movementVector: Vector2
+    ) : RelativeTemporalAction() {
         init {
-            duration = 0.3f
+            duration = moveActorsDuration
             interpolation = Interpolation.sine
         }
         override fun updateRelative(percentDelta: Float) {
-            for (actor in actorsToMove){
+            for (actor in actorsToMove) {
                 actor.moveBy(movementVector.x * percentDelta, movementVector.y * percentDelta)
             }
         }
@@ -50,21 +74,21 @@ object BattleTableHelpers {
 
 
     class AttackAnimationAction(
-        val attacker: ICombatant,
-        val defenderActors: List<Actor>,
-        val currentTileSetStrings: TileSetStrings
-    ): SequenceAction(){
+        private val attacker: ICombatant,
+        defenderActors: List<Actor>,
+        private val currentTileSetStrings: TileSetStrings
+    ): SequenceAction() {
         init {
             if (defenderActors.any()) {
                 val attackAnimationLocation = getAttackAnimationLocation()
-                if (attackAnimationLocation != null){
+                if (attackAnimationLocation != null) {
                     var i = 1
-                    while (ImageGetter.imageExists(attackAnimationLocation+i)){
-                        val image = ImageGetter.getImage(attackAnimationLocation+i)
+                    while (ImageGetter.imageExists(attackAnimationLocation + i)){
+                        val image = ImageGetter.getImage(attackAnimationLocation + i)
                         addAction(Actions.run {
                             defenderActors.first().parent.addActor(image)
                         })
-                        addAction(Actions.delay(0.1f))
+                        addAction(Actions.delay(attackAnimationFrameDuration))
                         addAction(Actions.removeActor(image))
                         i++
                     }
@@ -72,24 +96,54 @@ object BattleTableHelpers {
             }
         }
 
-        private fun getAttackAnimationLocation(): String?{
+        private fun getAttackAnimationLocation(): String? {
+            fun TileSetStrings.getLocation(name: String) = getString(unitsLocation, name, "-attack-")
+
             if (attacker is MapUnitCombatant) {
-                val unitSpecificAttackAnimationLocation =
-                        currentTileSetStrings.getString(
-                            currentTileSetStrings.unitsLocation,
-                            attacker.getUnitType().name,
-                            "-attack-"
-                        )
-                if (ImageGetter.imageExists(unitSpecificAttackAnimationLocation+"1")) return unitSpecificAttackAnimationLocation
+                val unitSpecificAttackAnimationLocation = currentTileSetStrings.getLocation(attacker.getName())
+                if (ImageGetter.imageExists(unitSpecificAttackAnimationLocation + "1"))
+                    return unitSpecificAttackAnimationLocation
             }
 
-            val unitTypeAttackAnimationLocation =
-                    currentTileSetStrings.getString(currentTileSetStrings.unitsLocation, attacker.getUnitType().name, "-attack-")
-
-            if (ImageGetter.imageExists(unitTypeAttackAnimationLocation+"1")) return unitTypeAttackAnimationLocation
+            val unitTypeAttackAnimationLocation = currentTileSetStrings.getLocation(attacker.getUnitType().name)
+            if (ImageGetter.imageExists(unitTypeAttackAnimationLocation + "1"))
+                return unitTypeAttackAnimationLocation
             return null
         }
     }
+
+
+    /** The animation for the Damage labels */
+    private class DamageLabelAnimation(actor: WidgetGroup) : TemporalAction(damageLabelDuration) {
+        val startX = actor.x
+        val startY = actor.y
+
+        /* A tested version with smooth scale-out in addition to the alpha fade
+        val width = actor.width
+        val height = actor.height
+        init {
+            actor.isTransform = true
+        }
+        override fun update(percent: Float) {
+            actor.color.a = Interpolation.fade.apply(1f - percent)
+            val scale = Interpolation.smooth.apply(1f - percent)
+            actor.setScale(scale)
+            val x = startX + (1f - scale) * width / 2
+            val y = startY + (1f - scale) * height / 2 +
+                    Interpolation.smooth.apply(percent) * damageLabelDisplacement
+            actor.setPosition(x, y)
+        }
+        */
+
+        override fun update(percent: Float) {
+            actor.color.a = Interpolation.fade.apply(1f - percent)
+            actor.setPosition(startX, startY + percent * damageLabelDisplacement)
+        }
+        override fun end() {
+            actor.remove()
+        }
+    }
+
 
     fun WorldScreen.battleAnimation(
         attacker: ICombatant, damageToAttacker: Int,
@@ -118,17 +172,20 @@ object BattleTableHelpers {
         val attackVectorHexCoords = defender.getTile().position.cpy().sub(attacker.getTile().position)
         val attackVectorWorldCoords = HexMath.hex2WorldCoords(attackVectorHexCoords)
             .nor()  // normalize vector to length of "1"
-            .scl(10f) // we want 10 pixel movement
+            .scl(moveActorsDisplacement)
 
         val attackerGroup = mapHolder.tileGroups[attacker.getTile()]!!
         val defenderGroup = mapHolder.tileGroups[defender.getTile()]!!
+        val hideDefenderDamage = defender.isDefeated() &&
+                attacker.getTile().position == defender.getTile().position
 
         stage.addAction(
             Actions.sequence(
                 MoveActorsAction(actorsToMove, attackVectorWorldCoords),
                 Actions.run {
                     createDamageLabel(damageToAttacker, attackerGroup)
-                    createDamageLabel(damageToDefender, defenderGroup)
+                    if (!hideDefenderDamage)
+                        createDamageLabel(damageToDefender, defenderGroup)
                 },
                 Actions.parallel( // While the unit is moving back to its normal position, we flash the damages on both units
                     MoveActorsAction(actorsToMove, attackVectorWorldCoords.cpy().scl(-1f)),
@@ -151,25 +208,23 @@ object BattleTableHelpers {
 
     private fun createDamageLabel(damage: Int, target: Actor) {
         if (damage == 0) return
-        val animationDuration = 1f
 
-        val label = (-damage).toString().toLabel(Color.RED, 40, Align.center, true)
+        val label = (-damage).toString().toLabel(Color.RED, damageLabelFontSize, Align.topLeft, true)
         label.touchable = Touchable.disabled
-        val container = Container(label)
-        container.touchable = Touchable.disabled
-        container.pack()
-        val targetCenter = target.run { localToStageCoordinates(Vector2(width * 0.5f, height * 0.5f)) }
-        container.setPosition(targetCenter.x, targetCenter.y, Align.bottom)
+        val shadow = (-damage).toString().toLabel(Color.BLACK, damageLabelFontSize, Align.bottomRight, true)
+        shadow.touchable = Touchable.disabled
 
+        val container = Stack(shadow, label)
+        container.touchable = Touchable.disabled
+
+        container.pack()
+        // The +1f is what displaces the shadow under the red label
+        container.setSize(container.width + 1f, container.height + 1f)
+        val targetRight = target.run { localToStageCoordinates(Vector2(width, height * 0.5f)) }
+        container.setPosition(targetRight.x, targetRight.y, Align.center)
         target.stage.addActor(container)
-        container.addAction(Actions.sequence(
-            Actions.parallel(
-                Actions.alpha(0.1f, animationDuration, Interpolation.fade),
-                Actions.scaleTo(0.05f, 0.05f, animationDuration),
-                Actions.moveBy(label.width * 0.95f * 0.5f, 90f, animationDuration)
-            ),
-            Actions.removeActor()
-        ))
+
+        container.addAction(DamageLabelAnimation(container))
     }
 
     fun getHealthBar(maxHealth: Int, currentHealth: Int, maxRemainingHealth: Int, minRemainingHealth: Int): Table {
