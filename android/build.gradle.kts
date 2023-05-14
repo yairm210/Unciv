@@ -1,6 +1,6 @@
 import com.unciv.build.BuildConfig
-import java.util.*
 import com.unciv.build.AndroidImagePacker
+import java.util.Properties
 
 plugins {
     id("com.android.application")

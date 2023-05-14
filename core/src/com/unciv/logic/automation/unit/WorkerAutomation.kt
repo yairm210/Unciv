@@ -220,7 +220,7 @@ class WorkerAutomation(
         }
         if (candidateCities.none()) return false // do nothing.
 
-        val isCandidateTilePredicate = { it: Tile -> it.isLand && unit.movement.canPassThrough(it) }
+        val isCandidateTilePredicate: (Tile) -> Boolean = { it.isLand && unit.movement.canPassThrough(it) }
         val currentTile = unit.getTile()
         val cityTilesToSeek = ArrayList(tilesOfConnectedCities.sortedBy { it.aerialDistanceTo(currentTile) })
 
