@@ -2,6 +2,7 @@ package com.unciv.ui.screens.pickerscreens
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
@@ -52,6 +53,7 @@ import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import java.io.IOException
+import java.nio.ByteBuffer
 import kotlin.math.max
 
 /**
@@ -64,6 +66,18 @@ class ModManagementScreen(
     previousInstalledMods: HashMap<String, ModUIData>? = null,
     previousOnlineMods: HashMap<String, ModUIData>? = null
 ): PickerScreen(disableScroll = true), RecreateOnResize {
+    companion object {
+        // Tweakable constants
+        /** For preview.png */
+        const val maxAllowedPreviewImageSize = 200f
+        /** Github queries use this limit */
+        const val amountPerPage = 100
+
+        val modsToHideAsUrl by lazy {
+            val blockedModsFile = Gdx.files.internal("jsons/ManuallyBlockedMods.json")
+            json().fromJsonFile(Array<String>::class.java, blockedModsFile)
+        }
+    }
 
     private val modTable = Table().apply { defaults().pad(10f) }
     private val scrollInstalledMods = AutoScrollPane(modTable)
@@ -71,8 +85,6 @@ class ModManagementScreen(
     private val scrollOnlineMods = AutoScrollPane(downloadTable)
     private val modActionTable = Table().apply { defaults().pad(10f) }
     private val optionsManager = ModManagementOptions(this)
-
-    val amountPerPage = 100
 
     private var lastSelectedButton: Button? = null
     private var lastSyncMarkedButton: Button? = null
@@ -95,6 +107,7 @@ class ModManagementScreen(
     // cleanup - background processing needs to be stopped on exit and memory freed
     private var runningSearchJob: Job? = null
     private var stopBackgroundTasks = false
+
     override fun dispose() {
         // make sure the worker threads will not continue trying their time-intensive job
         runningSearchJob?.cancel()
@@ -349,14 +362,18 @@ class ModManagementScreen(
      * @param repo: the repository instance as received from the GitHub api
      */
     private fun addModInfoToActionTable(repo: Github.Repo) {
-        addModInfoToActionTable(repo.html_url, repo.default_branch, repo.pushed_at, repo.owner.login, repo.size)
+        addModInfoToActionTable(
+            repo.name, repo.html_url, repo.default_branch,
+            repo.pushed_at, repo.owner.login, repo.size
+        )
     }
     /** Recreate the information part of the right-hand column
      * @param modName: The mod name (name from the RuleSet)
      * @param modOptions: The ModOptions as enriched by us with GitHub metadata when originally downloaded
      */
-    private fun addModInfoToActionTable(modOptions: ModOptions) {
+    private fun addModInfoToActionTable(modName: String, modOptions: ModOptions) {
         addModInfoToActionTable(
+            modName,
             modOptions.modUrl,
             modOptions.defaultBranch,
             modOptions.lastUpdated,
@@ -368,6 +385,7 @@ class ModManagementScreen(
     private val repoUrlToPreviewImage = HashMap<String, Texture?>()
 
     private fun addModInfoToActionTable(
+        modName: String,
         repoUrl: String,
         default_branch: String,
         updatedAt: String,
@@ -380,14 +398,17 @@ class ModManagementScreen(
 
         val imageHolder = Table()
 
-        addPreviewImage(imageHolder, repoUrl, default_branch)
+        if (repoUrl.isEmpty())
+            addLocalPreviewImage(imageHolder, modName)
+        else
+            addPreviewImage(imageHolder, repoUrl, default_branch)
 
         modActionTable.add(imageHolder).row()
 
 
         if (author.isNotEmpty())
             modActionTable.add("Author: [$author]".toLabel()).row()
-        if (modSize > 0){
+        if (modSize > 0) {
             if (modSize < 2048)
                 modActionTable.add("Size: [$modSize] kB".toLabel()).padBottom(15f).row()
             else
@@ -395,7 +416,7 @@ class ModManagementScreen(
         }
 
         // offer link to open the repo itself in a browser
-        if (repoUrl != "") {
+        if (repoUrl.isNotEmpty()) {
             modActionTable.add("Open Github page".toTextButton().onClick {
                 Gdx.net.openURI(repoUrl)
             }).row()
@@ -409,6 +430,15 @@ class ModManagementScreen(
         }
     }
 
+    private fun setTextureAsPreview(imageHolder: Table, texture: Texture) {
+        val cell = imageHolder.add(Image(texture))
+        val largestImageSize = max(texture.width, texture.height)
+        if (largestImageSize > maxAllowedPreviewImageSize) {
+            val resizeRatio = maxAllowedPreviewImageSize / largestImageSize
+            cell.size(texture.width * resizeRatio, texture.height * resizeRatio)
+        }
+    }
+
     private fun addPreviewImage(
         imageHolder: Table,
         repoUrl: String,
@@ -416,19 +446,10 @@ class ModManagementScreen(
     ) {
         if (!repoUrl.startsWith("http")) return // invalid url
 
-        fun setTextureAsPreview(texture: Texture) {
-            val maxAllowedImageSize = 200f
-            val cell = imageHolder.add(Image(texture))
-            val largestImageSize = max(texture.width, texture.height)
-            if (largestImageSize > maxAllowedImageSize) {
-                val resizeRatio = maxAllowedImageSize / largestImageSize
-                cell.size(texture.width * resizeRatio, texture.height * resizeRatio)
-            }
-        }
 
         if (repoUrlToPreviewImage.containsKey(repoUrl)) {
             val texture = repoUrlToPreviewImage[repoUrl]
-            if (texture != null) setTextureAsPreview(texture)
+            if (texture != null) setTextureAsPreview(imageHolder, texture)
             return
         }
 
@@ -443,9 +464,23 @@ class ModManagementScreen(
                 val texture = Texture(imagePixmap)
                 imagePixmap.dispose()
                 repoUrlToPreviewImage[repoUrl] = texture
-                setTextureAsPreview(texture)
+                setTextureAsPreview(imageHolder, texture)
             }
         }
+    }
+
+    private fun addLocalPreviewImage(imageHolder: Table, modName: String) {
+        // No concurrency, order of magnitude 20ms
+        val modFolder = Gdx.files.local("mods/$modName")
+        val previewFile = modFolder.child("preview.jpg").takeIf { it.exists() }
+            ?: modFolder.child("preview.png").takeIf { it.exists() }
+            ?: return
+        val byteArray = previewFile.readBytes()
+        val buffer = ByteBuffer.allocateDirect(byteArray.size).put(byteArray).position(0)
+        val imagePixmap = Pixmap(buffer)
+        val texture = Texture(imagePixmap)
+        imagePixmap.dispose()
+        setTextureAsPreview(imageHolder, texture)
     }
 
     /** Create the special "Download from URL" button */
@@ -586,7 +621,7 @@ class ModManagementScreen(
         selectedMod = null
         modActionTable.clear()
         // show mod information first
-        addModInfoToActionTable(mod.modOptions)
+        addModInfoToActionTable(mod.name, mod.modOptions)
 
         // offer 'permanent visual mod' toggle
         val visualMods = game.settings.visualMods
@@ -727,10 +762,4 @@ class ModManagementScreen(
 
     override fun recreate(): BaseScreen = ModManagementScreen(installedModInfo, onlineModInfo)
 
-    companion object {
-        val modsToHideAsUrl by lazy {
-            val blockedModsFile = Gdx.files.internal("jsons/ManuallyBlockedMods.json")
-            json().fromJsonFile(Array<String>::class.java, blockedModsFile)
-        }
-    }
 }
