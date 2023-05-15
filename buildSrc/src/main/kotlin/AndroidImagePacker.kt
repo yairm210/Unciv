@@ -1,3 +1,4 @@
+@file:Suppress("InvalidPackageDeclaration")
 package com.unciv.build
 
 import com.badlogic.gdx.graphics.Texture
