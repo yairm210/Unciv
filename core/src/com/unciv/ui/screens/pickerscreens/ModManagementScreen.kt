@@ -365,7 +365,7 @@ class ModManagementScreen(
         )
     }
 
-    val repoUrlToPreviewImage = HashMap<String, Texture?>()
+    private val repoUrlToPreviewImage = HashMap<String, Texture?>()
 
     private fun addModInfoToActionTable(
         repoUrl: String,
@@ -380,36 +380,7 @@ class ModManagementScreen(
 
         val imageHolder = Table()
 
-        fun setTextureAsPreview(texture: Texture){
-            val maxAllowedImageSize = 200f
-            val cell = imageHolder.add(Image(texture))
-            val largestImageSize = max(texture.width, texture.height)
-            if (largestImageSize > maxAllowedImageSize) {
-                val resizeRatio = maxAllowedImageSize / largestImageSize
-                cell.size(texture.width * resizeRatio, texture.height * resizeRatio)
-            }
-        }
-
-        if (!repoUrlToPreviewImage.containsKey(repoUrl)) {
-            Concurrency.run {
-                val imagePixmap = Github.tryGetPreviewImage(repoUrl, default_branch)
-
-                if (imagePixmap == null) {
-                    repoUrlToPreviewImage[repoUrl] = null
-                    return@run
-                }
-                Concurrency.runOnGLThread {
-                    val texture = Texture(imagePixmap)
-                    imagePixmap.dispose()
-                    repoUrlToPreviewImage[repoUrl] = texture
-                    setTextureAsPreview(texture)
-                }
-            }
-        }
-        else {
-            val texture = repoUrlToPreviewImage[repoUrl]
-            if (texture!=null) setTextureAsPreview(texture)
-        }
+        addPreviewImage(imageHolder, repoUrl, default_branch)
 
         modActionTable.add(imageHolder).row()
 
@@ -435,6 +406,45 @@ class ModManagementScreen(
             val date = updatedAt.parseDate()
             val updateString = "{Updated}: " + date.formatDate()
             modActionTable.add(updateString.toLabel()).row()
+        }
+    }
+
+    private fun addPreviewImage(
+        imageHolder: Table,
+        repoUrl: String,
+        default_branch: String
+    ) {
+        if (!repoUrl.startsWith("http")) return // invalid url
+
+        fun setTextureAsPreview(texture: Texture) {
+            val maxAllowedImageSize = 200f
+            val cell = imageHolder.add(Image(texture))
+            val largestImageSize = max(texture.width, texture.height)
+            if (largestImageSize > maxAllowedImageSize) {
+                val resizeRatio = maxAllowedImageSize / largestImageSize
+                cell.size(texture.width * resizeRatio, texture.height * resizeRatio)
+            }
+        }
+
+        if (repoUrlToPreviewImage.containsKey(repoUrl)) {
+            val texture = repoUrlToPreviewImage[repoUrl]
+            if (texture != null) setTextureAsPreview(texture)
+            return
+        }
+
+        Concurrency.run {
+            val imagePixmap = Github.tryGetPreviewImage(repoUrl, default_branch)
+
+            if (imagePixmap == null) {
+                repoUrlToPreviewImage[repoUrl] = null
+                return@run
+            }
+            Concurrency.runOnGLThread {
+                val texture = Texture(imagePixmap)
+                imagePixmap.dispose()
+                repoUrlToPreviewImage[repoUrl] = texture
+                setTextureAsPreview(texture)
+            }
         }
     }
 
