@@ -475,12 +475,7 @@ class ModManagementScreen(
         val previewFile = modFolder.child("preview.jpg").takeIf { it.exists() }
             ?: modFolder.child("preview.png").takeIf { it.exists() }
             ?: return
-        val byteArray = previewFile.readBytes()
-        val buffer = ByteBuffer.allocateDirect(byteArray.size).put(byteArray).position(0)
-        val imagePixmap = Pixmap(buffer)
-        val texture = Texture(imagePixmap)
-        imagePixmap.dispose()
-        setTextureAsPreview(imageHolder, texture)
+        setTextureAsPreview(imageHolder, Texture(previewFile))
     }
 
     /** Create the special "Download from URL" button */
