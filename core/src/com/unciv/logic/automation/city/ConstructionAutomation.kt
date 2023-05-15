@@ -314,7 +314,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addHappinessBuildingChoice() {
         val happinessBuilding = nonWonders
-            .filter { (it.isStatRelated(Stat.Happiness)
+            .filter { it.isStatRelated(Stat.Happiness)
                     && Automation.allowAutomatedConstruction(civInfo, cityInfo, it) }
             .filterBuildable()
             .minByOrNull { it.cost }
