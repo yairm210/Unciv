@@ -106,10 +106,10 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
                 add(unitIconNameGroup)
                 add(nextIdleUnitButton)
             }
-            add(moveBetweenUnitsTable).colspan(2).fill().row()
+            add(moveBetweenUnitsTable).fill().row()
 
-            separator = addSeparator().actor!!
-            add(promotionsTable).colspan(2).row()
+            separator = addSeparator().padBottom(5f).actor!!
+            add(promotionsTable).row()
             add(unitDescriptionTable)
             touchable = Touchable.enabled
             onClick {
@@ -262,13 +262,14 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         unitIconHolder.clear()
         promotionsTable.clear()
         unitDescriptionTable.clearListeners()
+        separator.width = 0f  // ImageWithCustomSize remembers width and returns if when Table asks for prefWidth
 
         if (selectedUnit != null) {
             if (selectedUnits.size == 1) { // single selected unit
                 unitIconHolder.add(UnitGroup(selectedUnit!!, 30f)).pad(5f)
 
                 for (promotion in selectedUnit!!.promotions.getPromotions(true))
-                    promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name))
+                    promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name)).padBottom(2f)
 
                 // Since Clear also clears the listeners, we need to re-add them every time
                 promotionsTable.onClick {
