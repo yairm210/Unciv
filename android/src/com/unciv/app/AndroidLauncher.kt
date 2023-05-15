@@ -6,7 +6,9 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.WorkManager
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
+import com.unciv.app.turncheck.WorkerV1
 import com.unciv.logic.files.UncivFiles
+import com.unciv.logic.multiplayer.ApiVersion
 import com.unciv.ui.components.Fonts
 import com.unciv.utils.Display
 import com.unciv.utils.Log
@@ -33,7 +35,7 @@ open class AndroidLauncher : AndroidApplication() {
         UncivFiles.preferExternalStorage = true
 
         // Create notification channels for Multiplayer notificator
-        MultiplayerTurnCheckWorker.createNotificationChannels(applicationContext)
+        WorkerV1.createNotificationChannels(applicationContext)
 
         copyMods()
 
@@ -75,18 +77,22 @@ open class AndroidLauncher : AndroidApplication() {
                 && game.settings.multiplayer.turnCheckerEnabled
                 && game.files.getMultiplayerSaves().any()
         ) {
-            MultiplayerTurnCheckWorker.startTurnChecker(
-                applicationContext, game.files, game.gameInfo!!, game.settings.multiplayer)
+            if (game.onlineMultiplayer.isInitialized() && game.onlineMultiplayer.apiVersion == ApiVersion.APIv2) {
+                // TODO
+            } else {
+                WorkerV1.startTurnChecker(
+                    applicationContext, game.files, game.gameInfo!!, game.settings.multiplayer)
+            }
         }
         super.onPause()
     }
 
     override fun onResume() {
         try {
-            WorkManager.getInstance(applicationContext).cancelAllWorkByTag(MultiplayerTurnCheckWorker.WORK_TAG)
+            WorkManager.getInstance(applicationContext).cancelAllWorkByTag(WorkerV1.WORK_TAG)
             with(NotificationManagerCompat.from(this)) {
-                cancel(MultiplayerTurnCheckWorker.NOTIFICATION_ID_INFO)
-                cancel(MultiplayerTurnCheckWorker.NOTIFICATION_ID_SERVICE)
+                cancel(WorkerV1.NOTIFICATION_ID_INFO)
+                cancel(WorkerV1.NOTIFICATION_ID_SERVICE)
             }
         } catch (ignore: Exception) {
             /* Sometimes this fails for no apparent reason - the multiplayer checker failing to

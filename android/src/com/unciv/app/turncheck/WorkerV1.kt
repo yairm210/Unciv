@@ -1,4 +1,4 @@
-package com.unciv.app
+package com.unciv.app.turncheck
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -20,13 +20,15 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.DefaultAndroidFiles
 import com.unciv.UncivGame
+import com.unciv.app.AndroidLauncher
+import com.unciv.app.CopyToClipboardReceiver
+import com.unciv.app.R
 import com.unciv.logic.GameInfo
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.ApiVersion
 import com.unciv.logic.multiplayer.apiv2.IncomingChatMessage
 import com.unciv.logic.multiplayer.apiv2.UpdateGameData
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
-import com.unciv.logic.multiplayer.storage.OnlineMultiplayerFiles
 import com.unciv.models.metadata.GameSettingsMultiplayer
 import com.unciv.utils.concurrency.Concurrency
 import kotlinx.coroutines.Job
@@ -40,9 +42,10 @@ import java.time.Duration
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-
-class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParameters)
-    : Worker(appContext, workerParams) {
+/**
+ * Active poll-based multiplayer turn checker for APIv0 and APIv1
+ */
+class WorkerV1(appContext: Context, workerParams: WorkerParameters) : Worker(appContext, workerParams) {
 
     companion object {
         const val WORK_TAG = "UNCIV_MULTIPLAYER_TURN_CHECKER_WORKER"
@@ -75,7 +78,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                     .setRequiredNetworkType(NetworkType.CONNECTED)
                     .build()
 
-            val checkTurnWork = OneTimeWorkRequestBuilder<MultiplayerTurnCheckWorker>()
+            val checkTurnWork = OneTimeWorkRequestBuilder<WorkerV1>()
                     .setConstraints(constraints)
                     .setInitialDelay(delay.seconds, TimeUnit.SECONDS)
                     .addTag(WORK_TAG)
@@ -218,7 +221,8 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                     notifyUserAboutTurn(applicationContext, Pair(gameNames[gameIndex], gameIds[gameIndex]))
                 }
             } else {
-                val inputData = workDataOf(Pair(FAIL_COUNT, 0), Pair(GAME_ID, gameIds), Pair(GAME_NAME, gameNames),
+                val inputData = workDataOf(Pair(FAIL_COUNT, 0), Pair(GAME_ID, gameIds), Pair(
+                    GAME_NAME, gameNames),
                         Pair(USER_ID, settings.userId), Pair(CONFIGURED_DELAY, settings.turnCheckerDelay.seconds),
                         Pair(PERSISTENT_NOTIFICATION_ENABLED, settings.turnCheckerPersistentNotificationEnabled),
                         Pair(FILE_STORAGE, settings.server),
@@ -404,7 +408,9 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 }
                 return@runBlocking Result.failure()
             } else {
-                if (showPersistNotific) { showPersistentNotification(applicationContext, applicationContext.resources.getString(R.string.Notify_Error_Retrying), configuredDelay) }
+                if (showPersistNotific) { showPersistentNotification(applicationContext, applicationContext.resources.getString(
+                    R.string.Notify_Error_Retrying
+                ), configuredDelay) }
                 // If check fails, retry in one minute.
                 // Makes sense, since checks only happen if Internet is available in principle.
                 // Therefore a failure means either a problem with the GameInfo or with Dropbox.
@@ -444,7 +450,8 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 }
 
         val pendingCopyClipboardIntent: PendingIntent =
-                Intent(applicationContext, CopyToClipboardReceiver::class.java).putExtra(CLIPBOARD_EXTRA, stackTraceString)
+                Intent(applicationContext, CopyToClipboardReceiver::class.java).putExtra(
+                    CLIPBOARD_EXTRA, stackTraceString)
                         .let { notificationIntent -> PendingIntent.getBroadcast(applicationContext,0, notificationIntent, flags)
                 }
 
