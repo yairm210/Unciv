@@ -25,7 +25,7 @@ data class TradeOffer(val name: String, val type: TradeType, var amount: Int = 1
 
     constructor() : this("", TradeType.Gold, duration = -1) // so that the json deserializer can work
 
-    @Suppress("CovariantEquals")    // This is an overload, not an override of the built-in equals(Any?)
+    @Suppress("CovariantEquals", "WrongEqualsTypeParameter")    // This is an overload, not an override of the built-in equals(Any?)
     fun equals(offer: TradeOffer): Boolean {
         return offer.name == name
                 && offer.type == type
