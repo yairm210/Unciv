@@ -557,6 +557,8 @@ class WorldScreen(
     fun nextTurn() {
         isPlayersTurn = false
         shouldUpdate = true
+        nextTurnButton.startProgress(gameInfo.getCities().count() * 2 + 3, this)
+        // = two steps per city, one extra step after clone and just before new worldscreen, 1 extra so it's never 100%
 
         // on a separate thread so the user can explore their world while we're passing the turn
         nextTurnUpdateJob = Concurrency.runOnNonDaemonThreadPool("NextTurn") {
@@ -565,6 +567,8 @@ class WorldScreen(
             val originalGameInfo = gameInfo
             val gameInfoClone = originalGameInfo.clone()
             gameInfoClone.setTransients()  // this can get expensive on large games, not the clone itself
+
+            nextTurnButton.incrementProgress()
 
             gameInfoClone.nextTurn()
 
@@ -616,6 +620,8 @@ class WorldScreen(
             if (gameInfo.gameParameters.isOnlineMultiplayer && gameInfoClone.civilizations.filter { it.playerType == PlayerType.Human }.size == 1) {
                 gameInfoClone.isUpToDate = true
             }
+
+            nextTurnButton.incrementProgress()
 
             startNewScreenJob(gameInfoClone)
         }
@@ -713,7 +719,7 @@ class WorldScreen(
         displayTutorial(TutorialTrigger.LuxuryResource) { resources.any { it.resource.resourceType == ResourceType.Luxury } }
         displayTutorial(TutorialTrigger.StrategicResource) { resources.any { it.resource.resourceType == ResourceType.Strategic } }
         displayTutorial(TutorialTrigger.EnemyCity) {
-            viewingCiv.getKnownCivs().asSequence().filter { viewingCiv.isAtWarWith(it) }
+            viewingCiv.getKnownCivs().filter { viewingCiv.isAtWarWith(it) }
                     .flatMap { it.cities.asSequence() }.any { viewingCiv.hasExplored(it.getCenterTile()) }
         }
         displayTutorial(TutorialTrigger.ApolloProgram) { viewingCiv.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts) }

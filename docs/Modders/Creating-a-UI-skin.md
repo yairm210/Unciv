@@ -107,6 +107,8 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | WorldScreen/CityButton/ | InfluenceBar | null | |
 | WorldScreen/Minimap/ | Background | null | |
 | WorldScreen/Minimap/ | Border | null | |
+| WorldScreen/NextTurn/ | ProgressBar | null | |
+| WorldScreen/NextTurn/ | ProgressColor | 0x600000ff | |
 | WorldScreen/TopBar/ | LeftAttachment | roundedEdgeRectangle | |
 | WorldScreen/TopBar/ | ResourceTable | null | |
 | WorldScreen/TopBar/ | RightAttachment | roundedEdgeRectangle | |
