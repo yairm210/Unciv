@@ -115,7 +115,7 @@ When loading a mod, it needs to be in its own folder in `/mods` - this is how yo
 
 ## Other
 
-You can add an image that will be displayed to users in the mod management by adding a "preview.png" file.
+You can add an image that will be displayed to users in the mod management by adding a "preview.jpg" _or_ "preview.png" file.
 
 Existing mods can be found [here](https://github.com/topics/unciv-mod)!
 
