@@ -268,6 +268,7 @@ object Github {
         }
 
         var url: String = ""
+        @Suppress("MemberNameEqualsClassName")
         var tree = ArrayList<TreeFile>()
     }
 
