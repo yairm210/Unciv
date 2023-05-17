@@ -354,7 +354,7 @@ class MapParametersTable(
         seedTextField.onChange {
             mapParameters.seed = try {
                 seedTextField.text.toLong()
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 0L
             }
         }

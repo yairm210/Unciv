@@ -89,7 +89,7 @@ class SerializationTests {
     fun canSerializeGame() {
         val json = try {
             json().toJson(game)
-        } catch (ex: Exception) {
+        } catch (_: Exception) {
             ""
         }
         Assert.assertTrue("This test will only pass when a game can be serialized", json.isNotEmpty())

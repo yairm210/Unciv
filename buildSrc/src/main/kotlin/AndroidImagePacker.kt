@@ -69,6 +69,7 @@ object AndroidImagePacker {
                     try {
                         packImagesPerMod(mod.path, mod.path, defaultSettings)
                     } catch (ex: Throwable) {
+                        ex.printStackTrace()
                     }
                 }
             }

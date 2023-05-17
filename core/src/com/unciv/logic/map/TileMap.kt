@@ -387,7 +387,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         // All the rest is to find missing nations
         try { // This can fail if the map contains a resource that isn't in the ruleset, in Tile.tileResource
             setTransients(ruleset)
-        } catch (ex: Exception) {
+        } catch (_: Exception) {
             return rulesetIncompatibilities
         }
         setStartingLocationsTransients()

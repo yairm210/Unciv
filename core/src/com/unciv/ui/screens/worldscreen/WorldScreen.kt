@@ -757,7 +757,7 @@ private fun startNewScreenJob(gameInfo: GameInfo, autosaveDisabled:Boolean = fal
                 ToastPopup(message, mainMenu)
             }
             return@run
-        } catch (oom: OutOfMemoryError) {
+        } catch (_: OutOfMemoryError) {
             withGLContext {
                 val mainMenu = UncivGame.Current.goToMainMenu()
                 ToastPopup("Not enough memory on phone to load game!", mainMenu)

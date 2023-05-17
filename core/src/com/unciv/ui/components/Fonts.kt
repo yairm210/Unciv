@@ -165,7 +165,7 @@ class NativeBitmapFontData(
                 try {
                     // This sometimes fails with a "Frame buffer couldn't be constructed: incomplete attachment" error, unclear why
                     Fonts.getPixmapFromActor(Fonts.charToRulesetImageActor[ch]!!)
-                } catch (ex: Exception) {
+                } catch (_: Exception) {
                     Pixmap(0,0, Pixmap.Format.RGBA8888) // Empty space
                 }
             else -> fontImplementation.getCharPixmap(ch)

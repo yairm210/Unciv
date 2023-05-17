@@ -47,7 +47,7 @@ class AddMultiplayerGameScreen : PickerScreen() {
         rightSideButton.onClick {
             try {
                 UUID.fromString(IdChecker.checkAndReturnGameUuid(gameIDTextField.text))
-            } catch (ex: Exception) {
+            } catch (_: Exception) {
                 ToastPopup("Invalid game ID!", this)
                 return@onClick
             }

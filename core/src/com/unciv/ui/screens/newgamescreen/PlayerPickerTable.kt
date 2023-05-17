@@ -235,7 +235,7 @@ class PlayerPickerTable(
                 UUID.fromString(IdChecker.checkAndReturnPlayerUuid(playerIdTextField.text))
                 player.playerId = playerIdTextField.text.trim()
                 errorLabel.apply { setText("✔");setFontColor(Color.GREEN) }
-            } catch (ex: Exception) {
+            } catch (_: Exception) {
                 errorLabel.apply { setText("✘");setFontColor(Color.RED) }
             }
         }

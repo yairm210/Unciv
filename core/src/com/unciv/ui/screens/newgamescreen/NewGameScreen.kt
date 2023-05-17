@@ -125,7 +125,7 @@ class NewGameScreen(
             for (player in gameSetupInfo.gameParameters.players.filter { it.playerType == PlayerType.Human }) {
                 try {
                     UUID.fromString(IdChecker.checkAndReturnPlayerUuid(player.playerId))
-                } catch (ex: Exception) {
+                } catch (_: Exception) {
                     val invalidPlayerIdPopup = Popup(this)
                     invalidPlayerIdPopup.addGoodSizedLabel("Invalid player ID!".tr()).row()
                     invalidPlayerIdPopup.addCloseButton()
@@ -272,7 +272,7 @@ class NewGameScreen(
             con.connect()
 
             true
-        } catch(ex: Throwable) {
+        } catch(_: Throwable) {
             false
         }
     }

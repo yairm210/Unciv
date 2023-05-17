@@ -154,7 +154,7 @@ class GameSettings {
         locale = try {
             val code = LocaleCode.valueOf(languageName)
             Locale(code.language, code.country)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Locale.getDefault()
         }
     }

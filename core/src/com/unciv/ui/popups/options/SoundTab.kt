@@ -59,7 +59,7 @@ private fun addDownloadMusic(table: Table, optionsPopup: OptionsPopup) {
                     optionsPopup.tabs.replacePage("Sound", soundTab(optionsPopup))
                     UncivGame.Current.musicController.chooseTrack(flags = MusicTrackChooserFlags.setPlayDefault)
                 }
-            } catch (ex: Exception) {
+            } catch (_: Exception) {
                 launchOnGLThread {
                     errorTable.clear()
                     errorTable.add("Could not download music!".toLabel(Color.RED))

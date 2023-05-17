@@ -334,7 +334,7 @@ private fun addSetUserId(table: Table, settings: GameSettings) {
                     idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!".tr())
                 }.open(true)
                 idSetLabel.isVisible = true
-            } catch (ex: Exception) {
+            } catch (_: Exception) {
                 idSetLabel.isVisible = true
                 idSetLabel.setFontColor(Color.RED).setText("Invalid ID!".tr())
             }
