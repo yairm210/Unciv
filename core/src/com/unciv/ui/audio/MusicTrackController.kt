@@ -47,8 +47,8 @@ internal class MusicTrackController(private var volume: Float) {
         onError: ((MusicTrackController)->Unit)? = null,
         onSuccess: ((MusicTrackController)->Unit)? = null
     ) {
-        if (state != State.None || music != null)
-            throw IllegalStateException("MusicTrackController.load should only be called once")
+        check(state == State.None && music == null) { "MusicTrackController.load should only be called once" }
+
         state = State.Loading
         try {
             music = Gdx.audio.newMusic(file)
@@ -105,9 +105,8 @@ internal class MusicTrackController(private var volume: Float) {
      *  @throws IllegalStateException if called on uninitialized instance
      */
     fun play(): Boolean {
-        if (!state.canPlay || music == null) {
-            throw IllegalStateException("MusicTrackController.play called on uninitialized instance")
-        }
+        check(state.canPlay && music != null) { "MusicTrackController.play called on uninitialized instance" }
+
         // Unexplained observed exception: Gdx.Music.play fails with
         // "Unable to allocate audio buffers. AL Error: 40964" (AL_INVALID_OPERATION)
         // Approach: This track dies, parent controller will enter state Silence thus retry after a while.

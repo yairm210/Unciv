@@ -415,7 +415,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      */
     fun setTransients(ruleset: Ruleset? = null, setUnitCivTransients: Boolean = true) {
         if (ruleset != null) this.ruleset = ruleset
-        if (this.ruleset == null) throw(IllegalStateException("TileMap.setTransients called without ruleset"))
+        check(this.ruleset != null) { "TileMap.setTransients called without ruleset" }
 
         if (tileMatrix.isEmpty()) {
             val topY = tileList.asSequence().map { it.position.y.toInt() }.maxOrNull()!!
@@ -434,8 +434,9 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         } else {
             // Yes the map generator calls this repeatedly, and we don't want to end up with an oversized tileMatrix
             // rightX is -leftX or -leftX + 1 or -leftX + 2
-            if (tileMatrix.size !in (1 - 2 * leftX)..(3 - 2 * leftX))
-                throw(IllegalStateException("TileMap.setTransients called on existing tileMatrix of different size"))
+            check(tileMatrix.size in (1 - 2 * leftX)..(3 - 2 * leftX)) {
+                "TileMap.setTransients called on existing tileMatrix of different size"
+            }
         }
 
         for (tileInfo in values) {

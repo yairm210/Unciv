@@ -106,7 +106,7 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
                     !borderSegment.isLeftConcave && !borderSegment.isRightConcave -> "Convex"
                     !borderSegment.isLeftConcave && borderSegment.isRightConcave -> "ConvexConcave"
                     borderSegment.isLeftConcave && !borderSegment.isRightConcave -> "ConcaveConvex"
-                    else -> throw IllegalStateException("This shouldn't happen?")
+                    else -> error("This shouldn't happen?")
                 }
 
                 val relativeWorldPosition = tile.tileMap.getNeighborTilePositionAsWorldCoords(tile, neighbor)

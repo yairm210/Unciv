@@ -54,7 +54,7 @@ class RiverGenerator(
 
     private fun spawnRiver(initialPosition: Tile) {
         val endPosition = getClosestWaterTile(initialPosition)
-            ?: throw IllegalStateException("No water found for river destination")
+            ?: error("No water found for river destination")
         spawnRiver(initialPosition, endPosition)
     }
 
