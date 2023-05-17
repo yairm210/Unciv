@@ -345,7 +345,7 @@ object UnitAutomation {
 
     /** @return true only if the unit has 0 movement left */
     private fun tryAttacking(unit: MapUnit): Boolean {
-        for (attackNumber in unit.attacksThisTurn until unit.maxAttacksPerTurn()) {
+        repeat(unit.maxAttacksPerTurn() - unit.attacksThisTurn) {
             if (BattleHelper.tryAttackNearbyEnemy(unit)) return true
         }
         return false

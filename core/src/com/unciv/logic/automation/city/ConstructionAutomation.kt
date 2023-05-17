@@ -161,7 +161,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         val bfs = BFS(cityInfo.getCenterTile()) {
             (it.isWater || it.isCityCenter()) && it.isFriendlyTerritory(civInfo)
         }
-        for (i in 1..10) bfs.nextStep()
+        repeat(10) { bfs.nextStep() }
         if (!bfs.getReachedTiles()
             .any { tile ->
                 tile.hasViewableResource(civInfo) && tile.improvement == null && tile.getOwner() == civInfo
