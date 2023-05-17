@@ -34,15 +34,14 @@ object IdChecker {
     private fun checkAndReturnUuiId(id: String, prefix: String): String {
         val trimmedPlayerId = id.trim()
         if (trimmedPlayerId.length == 40) { // length of a UUID (36) with pre- and postfix
-            if (!trimmedPlayerId.startsWith(prefix, true)) {
-                throw IllegalArgumentException("Not a valid ID. Does not start with prefix $prefix")
-            }
+            require(trimmedPlayerId.startsWith(prefix, true)) { "Not a valid ID. Does not start with prefix $prefix" }
+
             val checkDigit = trimmedPlayerId.substring(trimmedPlayerId.lastIndex, trimmedPlayerId.lastIndex +1)
             // remember, the format is: P-9e37e983-a676-4ecc-800e-ef8ec721a9b9-5
             val shortenedPlayerId = trimmedPlayerId.substring(2, 38)
             val calculatedCheckDigit = getCheckDigit(shortenedPlayerId).toString()
-            if (calculatedCheckDigit != checkDigit) {
-                throw IllegalArgumentException("Not a valid ID. Checkdigit invalid.")
+            require(calculatedCheckDigit == checkDigit) {
+                "Not a valid ID. Checkdigit invalid."
             }
             return shortenedPlayerId
         } else if (trimmedPlayerId.length == 36) {
@@ -73,8 +72,9 @@ object IdChecker {
             val ch = idWithoutCheckdigit[idWithoutCheckdigit.length - i - 1]
 
             // throw exception for invalid characters
-            if (validChars.indexOf(ch) == -1)
-                throw IllegalArgumentException("$ch is an invalid character")
+            require(validChars.indexOf(ch) != -1) {
+                "$ch is an invalid character"
+            }
 
             // our "digit" is calculated using ASCII value - 48
             val digit = ch.code - 48
