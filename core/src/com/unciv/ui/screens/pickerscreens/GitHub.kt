@@ -402,7 +402,7 @@ object Github {
         modOptions.author = repo.owner.login
         modOptions.modSize = repo.size
         modOptions.topics = repo.topics
-        updateDeprecations()
+        modOptions.updateDeprecations()
         json().toJson(modOptions, modOptionsFile)
     }
 }
