@@ -253,9 +253,11 @@ object Github {
     }
 
     fun tryGetPreviewImage(modUrl:String, defaultBranch: String): Pixmap?{
-        val fileLocation = "$modUrl/$defaultBranch/preview.png"
+        val fileLocation = "$modUrl/$defaultBranch/preview"
             .replace("github.com", "raw.githubusercontent.com")
-        val file = download(fileLocation) ?: return null
+        val file = download("$fileLocation.jpg")
+            ?: download("$fileLocation.png")
+            ?: return null
         val byteArray = file.readBytes()
         val buffer = ByteBuffer.allocateDirect(byteArray.size).put(byteArray).position(0)
         return Pixmap(buffer)
