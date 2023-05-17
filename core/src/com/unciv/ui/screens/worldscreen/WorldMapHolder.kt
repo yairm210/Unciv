@@ -271,12 +271,19 @@ class WorldMapHolder(
             try {
                 tileToMoveTo = selectedUnit.movement.getTileToMoveToThisTurn(targetTile)
             } catch (ex: Exception) {
-                // This is normal e.g. when selecting an air unit then right-clicking on an empty tile
-                // Or telling a ship to run onto a coastal land tile.
-                if (ex !is UnitMovement.UnreachableDestinationException)
-                    Log.error("Exception in getTileToMoveToThisTurn", ex)
+                when (ex) {
+                    is UnitMovement.UnreachableDestinationException -> {
+                        // This is normal e.g. when selecting an air unit then right-clicking on an empty tile
+                        // Or telling a ship to run onto a coastal land tile.
+                        // Do nothing
+                    }
+                    else -> {
+                        Log.error("Exception in getTileToMoveToThisTurn", ex)
+                    }
+                }
                 return@run // can't move here
             }
+
 
             worldScreen.preActionGameInfo = worldScreen.gameInfo.clone()
 

@@ -571,23 +571,32 @@ class WorldScreen(
             if (originalGameInfo.gameParameters.isOnlineMultiplayer) {
                 try {
                     game.onlineMultiplayer.updateGame(gameInfoClone)
-                } catch (ex: Exception) {
-                    if (ex is MultiplayerAuthException) {
-                        launchOnGLThread {
-                            AuthPopup(this@WorldScreen) {
-                                success -> if (success) nextTurn()
-                            }.open(true)
+                }catch (ex: Exception) {
+                    when (ex) {
+                        is MultiplayerAuthException -> {
+                            launchOnGLThread {
+                                AuthPopup(this@WorldScreen) {
+                                        success -> if (success) nextTurn()
+                                }.open(true)
+                            }
                         }
-                    } else {
-                        val message = when (ex) {
-                            is FileStorageRateLimitReached -> "Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds"
-                            else -> "Could not upload game!"
+                        is FileStorageRateLimitReached -> {
+                            val message = "Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds"
+                            launchOnGLThread {
+                                val cantUploadNewGamePopup = Popup(this@WorldScreen)
+                                cantUploadNewGamePopup.addGoodSizedLabel(message).row()
+                                cantUploadNewGamePopup.addCloseButton()
+                                cantUploadNewGamePopup.open()
+                            }
                         }
-                        launchOnGLThread { // Since we're changing the UI, that should be done on the main thread
-                            val cantUploadNewGamePopup = Popup(this@WorldScreen)
-                            cantUploadNewGamePopup.addGoodSizedLabel(message).row()
-                            cantUploadNewGamePopup.addCloseButton()
-                            cantUploadNewGamePopup.open()
+                        else -> {
+                            val message = "Could not upload game!"
+                            launchOnGLThread {
+                                val cantUploadNewGamePopup = Popup(this@WorldScreen)
+                                cantUploadNewGamePopup.addGoodSizedLabel(message).row()
+                                cantUploadNewGamePopup.addCloseButton()
+                                cantUploadNewGamePopup.open()
+                            }
                         }
                     }
 
@@ -595,6 +604,7 @@ class WorldScreen(
                     this@WorldScreen.shouldUpdate = true
                     return@runOnNonDaemonThreadPool
                 }
+
             }
 
             if (game.gameInfo != originalGameInfo) // while this was turning we loaded another game
