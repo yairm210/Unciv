@@ -363,6 +363,17 @@ class ReligionManager : IsPartOfGameInfoSerialization {
                 .filter { it.type == BeliefType.Founder || it.type == BeliefType.Enhancer }
                 .map { it.name }
         )
+
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponAdoptingPolicyOrBelief))
+            for (belief in beliefs)
+                if (unique.conditionals.any {it.type == UniqueType.TriggerUponAdoptingPolicyOrBelief && it.params[0] == belief.name})
+                    UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo,
+                        triggerNotificationText = "due to adopting [${belief.name}]")
+
+        for (belief in beliefs)
+            for (unique in belief.uniqueObjects)
+                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+
         // decrement free beliefs if used
         if (useFreeBeliefs && hasFreeBeliefs()) {
             for (belief in beliefs) {
