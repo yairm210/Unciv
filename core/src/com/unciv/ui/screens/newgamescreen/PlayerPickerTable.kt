@@ -130,8 +130,17 @@ class PlayerPickerTable(
 
     fun updateRandomNumberLabel() {
         randomNumberLabel?.run {
-            val text = "These [${gameParameters.players.size}] players will be adjusted to [${gameParameters.minNumberOfPlayers}" +
-                "]-[${gameParameters.maxNumberOfPlayers}] actual players by adding random AI's or by randomly omitting AI's."
+            val playerRange = if (gameParameters.minNumberOfPlayers == gameParameters.maxNumberOfPlayers) {
+                gameParameters.minNumberOfPlayers.toString()
+            } else {
+                "${gameParameters.minNumberOfPlayers} - ${gameParameters.maxNumberOfPlayers}"
+            }
+            val numberOfExplicitPlayersText = if (gameParameters.players.size == 1) {
+                "The number of players will be adjusted"
+            } else {
+                "These [${gameParameters.players.size}] players will be adjusted"
+            }
+            val text = "[$numberOfExplicitPlayersText] to [$playerRange] actual players by adding random AI's or by randomly omitting AI's."
             wrap = false
             align(Align.center)
             setText(text.tr())
