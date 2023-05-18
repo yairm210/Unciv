@@ -6,6 +6,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.WorkManager
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
+import com.unciv.app.turncheck.Common
 import com.unciv.app.turncheck.WorkerV1
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.ApiVersion
@@ -35,7 +36,7 @@ open class AndroidLauncher : AndroidApplication() {
         UncivFiles.preferExternalStorage = true
 
         // Create notification channels for Multiplayer notificator
-        WorkerV1.createNotificationChannels(applicationContext)
+        Common.createNotificationChannels(applicationContext)
 
         copyMods()
 
@@ -89,10 +90,10 @@ open class AndroidLauncher : AndroidApplication() {
 
     override fun onResume() {
         try {
-            WorkManager.getInstance(applicationContext).cancelAllWorkByTag(WorkerV1.WORK_TAG)
+            WorkManager.getInstance(applicationContext).cancelAllWorkByTag(Common.WORK_TAG)
             with(NotificationManagerCompat.from(this)) {
-                cancel(WorkerV1.NOTIFICATION_ID_INFO)
-                cancel(WorkerV1.NOTIFICATION_ID_SERVICE)
+                cancel(Common.NOTIFICATION_ID_INFO)
+                cancel(Common.NOTIFICATION_ID_SERVICE)
             }
         } catch (ignore: Exception) {
             /* Sometimes this fails for no apparent reason - the multiplayer checker failing to
