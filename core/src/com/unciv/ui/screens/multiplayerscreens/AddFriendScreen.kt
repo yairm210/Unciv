@@ -47,7 +47,7 @@ class AddFriendScreen : PickerScreen() {
         rightSideButton.onClick {
             try {
                 UUID.fromString(IdChecker.checkAndReturnPlayerUuid(playerIDTextField.text))
-            } catch (ex: Exception) {
+            } catch (_: Exception) {
                 ToastPopup("Player ID is incorrect", this)
                 return@onClick
             }

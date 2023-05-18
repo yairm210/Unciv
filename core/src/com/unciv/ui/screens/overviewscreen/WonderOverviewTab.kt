@@ -44,8 +44,9 @@ class WonderOverviewTab(
 
         top()
         defaults().pad(10f).align(Align.center)
-        for (i in 1..5)
+        repeat(5) {
             add() // dummies so equalizeColumns can work because the first grid cell is colspan(5)
+        }
         row()
 
         createGrid()

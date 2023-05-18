@@ -387,7 +387,7 @@ class ModManagementScreen(
     private fun addModInfoToActionTable(
         modName: String,
         repoUrl: String,
-        default_branch: String,
+        defaultBranch: String,
         updatedAt: String,
         author: String,
         modSize: Int
@@ -401,7 +401,7 @@ class ModManagementScreen(
         if (repoUrl.isEmpty())
             addLocalPreviewImage(imageHolder, modName)
         else
-            addPreviewImage(imageHolder, repoUrl, default_branch)
+            addPreviewImage(imageHolder, repoUrl, defaultBranch)
 
         modActionTable.add(imageHolder).row()
 
@@ -442,7 +442,7 @@ class ModManagementScreen(
     private fun addPreviewImage(
         imageHolder: Table,
         repoUrl: String,
-        default_branch: String
+        defaultBranch: String
     ) {
         if (!repoUrl.startsWith("http")) return // invalid url
 
@@ -454,7 +454,7 @@ class ModManagementScreen(
         }
 
         Concurrency.run {
-            val imagePixmap = Github.tryGetPreviewImage(repoUrl, default_branch)
+            val imagePixmap = Github.tryGetPreviewImage(repoUrl, defaultBranch)
 
             if (imagePixmap == null) {
                 repoUrlToPreviewImage[repoUrl] = null

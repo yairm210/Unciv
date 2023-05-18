@@ -287,7 +287,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         for ((specialistName, amount) in building.newSpecialists()) {
             val specialist = cityInfo.getRuleset().specialists[specialistName]
                 ?: continue // probably a mod that doesn't have the specialist defined yet
-            for (i in 0 until amount) {
+            repeat(amount) {
                 if (assignedSpec[specialistName]!! > 0) {
                     specialistIcons.add(ImageGetter.getSpecialistIcon(specialist.colorObject))
                         .size(20f)

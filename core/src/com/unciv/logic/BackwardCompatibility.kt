@@ -156,9 +156,8 @@ object BackwardCompatibility {
     }
 
     /** Move max XP from barbarians to new home */
-    @Suppress("DEPRECATION")
-    fun ModOptions.updateDeprecations() {
-    }
+    @Suppress("DEPRECATION", "EmptyFunctionBlock")
+    fun ModOptions.updateDeprecations() { }
 
     /** Convert from Fortify X to Fortify and save off X */
     fun GameInfo.convertFortify() {

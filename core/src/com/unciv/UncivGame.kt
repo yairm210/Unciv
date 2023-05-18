@@ -501,7 +501,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
             PrintWriter(files.fileWriter("lasterror.txt")).use {
                 ex.printStackTrace(it)
             }
-        } catch (ex: Exception) {
+        } catch (_: Exception) {
             // ignore
         }
         Gdx.app.postRunnable {

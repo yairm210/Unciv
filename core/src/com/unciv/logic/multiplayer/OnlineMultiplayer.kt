@@ -135,11 +135,11 @@ class OnlineMultiplayer {
     suspend fun addGame(gameId: String, gameName: String? = null) {
         val saveFileName = if (gameName.isNullOrBlank()) gameId else gameName
         var gamePreview: GameInfoPreview
-        try {
-            gamePreview = multiplayerServer.tryDownloadGamePreview(gameId)
-        } catch (ex: MultiplayerFileNotFoundException) {
+        gamePreview = try {
+            multiplayerServer.tryDownloadGamePreview(gameId)
+        } catch (_: MultiplayerFileNotFoundException) {
             // Game is so old that a preview could not be found on dropbox lets try the real gameInfo instead
-            gamePreview = multiplayerServer.tryDownloadGame(gameId).asPreview()
+            multiplayerServer.tryDownloadGame(gameId).asPreview()
         }
         addGame(gamePreview, saveFileName)
     }

@@ -1,3 +1,4 @@
+@file:Suppress("InvalidPackageDeclaration")
 package com.unciv.build
 
 object BuildConfig {

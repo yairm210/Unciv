@@ -70,7 +70,7 @@ object QuickSave {
             val savedGame: GameInfo
             try {
                 savedGame = screen.game.files.loadLatestAutosave()
-            } catch (oom: OutOfMemoryError) {
+            } catch (_: OutOfMemoryError) {
                 outOfMemory()
                 return@run
             } catch (ex: Exception) {
@@ -89,7 +89,7 @@ object QuickSave {
             if (savedGame.gameParameters.isOnlineMultiplayer) {
                 try {
                     screen.game.onlineMultiplayer.loadGame(savedGame)
-                } catch (oom: OutOfMemoryError) {
+                } catch (_: OutOfMemoryError) {
                     outOfMemory()
                 } catch (notAPlayer: UncivShowableException) {
                     val (message) = LoadGameScreen.getLoadExceptionMessage(notAPlayer)
@@ -108,7 +108,7 @@ object QuickSave {
             } else {
                 try {
                     screen.game.loadGame(savedGame)
-                } catch (oom: OutOfMemoryError) {
+                } catch (_: OutOfMemoryError) {
                     outOfMemory()
                 } catch (ex: Exception) {
                     launchOnGLThread {

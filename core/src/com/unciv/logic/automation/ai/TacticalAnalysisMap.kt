@@ -220,6 +220,10 @@ class TacticalAnalysisMap {
         // Ensure that continents sizes are calculated
         game.tileMap.assignContinents(TileMap.AssignContinentsMode.Ensure)
 
+        groupRemainingNonCityTiles(nonCityTiles)
+    }
+
+    private fun groupRemainingNonCityTiles(nonCityTiles: ArrayList<Tile>) {
         while (nonCityTiles.isNotEmpty()) {
 
             var count = maxZoneSize
@@ -249,8 +253,8 @@ class TacticalAnalysisMap {
                     val neighborContinentSize = neighbor.tileMap.continentSizes[neighbor.getContinent()] ?: Int.MAX_VALUE
 
                     val isSameZone = neighbor.getContinent() == tile.getContinent()
-                            || isLake || (isMountain && neighbor.isLand)
-                            || neighborContinentSize < 4 || tileContinentSize < 4
+                        || isLake || (isMountain && neighbor.isLand)
+                        || neighborContinentSize < 4 || tileContinentSize < 4
 
                     if (isSameZone && nonCityTiles.contains(neighbor) && count > 0) {
                         nonCityTiles.remove(neighbor)

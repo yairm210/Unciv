@@ -141,8 +141,7 @@ object UnitAutomation {
     }
 
     fun automateUnitMoves(unit: MapUnit) {
-        if (unit.civ.isBarbarian())
-            throw IllegalStateException("Barbarians is not allowed here.")
+        check(!unit.civ.isBarbarian()) { "Barbarians is not allowed here." }
 
         // Might die next turn - move!
         if (unit.health <= unit.getDamageFromTerrain() && tryHealUnit(unit)) return
@@ -345,7 +344,7 @@ object UnitAutomation {
 
     /** @return true only if the unit has 0 movement left */
     private fun tryAttacking(unit: MapUnit): Boolean {
-        for (attackNumber in unit.attacksThisTurn until unit.maxAttacksPerTurn()) {
+        repeat(unit.maxAttacksPerTurn() - unit.attacksThisTurn) {
             if (BattleHelper.tryAttackNearbyEnemy(unit)) return true
         }
         return false

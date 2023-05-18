@@ -41,6 +41,7 @@ object FasterUIDevelopment {
             actor = "This could be your UI element in development!".toLabel()
         }
 
+        @Suppress("EmptyFunctionBlock")
         fun afterAdd() {
         }
     }

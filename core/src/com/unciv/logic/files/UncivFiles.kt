@@ -338,7 +338,7 @@ class UncivFiles(
         fun gameInfoFromString(gameData: String): GameInfo {
             val unzippedJson = try {
                 Gzip.unzip(gameData.trim())
-            } catch (ex: Exception) {
+            } catch (_: Exception) {
                 gameData.trim()
             }
             val gameInfo = try {
@@ -433,14 +433,14 @@ class UncivFiles(
     }
 
     fun loadLatestAutosave(): GameInfo {
-        try {
-            return loadGameByName(AUTOSAVE_FILE_NAME)
-        } catch (ex: Exception) {
+        return try {
+            loadGameByName(AUTOSAVE_FILE_NAME)
+        } catch (_: Exception) {
             // silent fail if we can't read the autosave for any reason - try to load the last autosave by turn number first
             val autosaves = getSaves().filter { it.name() != AUTOSAVE_FILE_NAME && it.name().startsWith(
                 AUTOSAVE_FILE_NAME
             ) }
-            return loadGameFromFile(autosaves.maxByOrNull { it.lastModified() }!!)
+            loadGameFromFile(autosaves.maxByOrNull { it.lastModified() }!!)
         }
     }
 

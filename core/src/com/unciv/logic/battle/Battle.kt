@@ -640,8 +640,8 @@ object Battle {
      * @throws IllegalArgumentException if the [attacker] and [defender] belong to the same civ.
      */
     fun captureCivilianUnit(attacker: ICombatant, defender: MapUnitCombatant, checkDefeat: Boolean = true) {
-        if (attacker.getCivInfo() == defender.getCivInfo()) {
-            throw IllegalArgumentException("Can't capture our own unit!")
+        require(attacker.getCivInfo() != defender.getCivInfo()) {
+            "Can't capture our own unit!"
         }
 
         // need to save this because if the unit is captured its owner wil be overwritten

@@ -256,8 +256,9 @@ class PortraitPromotion(name: String, size: Float) : Portrait(Type.Promotion, na
         if (level > 0) {
             val padding = if (level == 3) 0.5f else 2f
             val starTable = Table().apply { defaults().pad(padding) }
-            for (i in 1..level)
+            repeat(level) {
                 starTable.add(ImageGetter.getImage("OtherIcons/Star")).size(size / 4f)
+            }
             starTable.centerX(this)
             starTable.y = size / 6f
             addActor(starTable)

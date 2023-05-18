@@ -235,7 +235,7 @@ class PlayerPickerTable(
                 UUID.fromString(IdChecker.checkAndReturnPlayerUuid(playerIdTextField.text))
                 player.playerId = playerIdTextField.text.trim()
                 errorLabel.apply { setText("✔");setFontColor(Color.GREEN) }
-            } catch (ex: Exception) {
+            } catch (_: Exception) {
                 errorLabel.apply { setText("✘");setFontColor(Color.RED) }
             }
         }
@@ -258,7 +258,7 @@ class PlayerPickerTable(
         add(copyFromClipboardButton).right().colspan(3).fillX().pad(5f).row()
 
         //check if friends list is empty before adding the select friend button
-        if (friendList.friendList.isNotEmpty()) {
+        if (friendList.listOfFriends.isNotEmpty()) {
             val selectPlayerFromFriendsList = "Player ID from friends list".toTextButton()
             selectPlayerFromFriendsList.onClick {
                 popupFriendPicker(player)
@@ -328,7 +328,7 @@ class PlayerPickerTable(
      * @return [Sequence] of available [FriendList.Friend]s
      */
     internal fun getAvailableFriends(): Sequence<FriendList.Friend> {
-        val friendListWithRemovedFriends = friendList.friendList.toMutableList()
+        val friendListWithRemovedFriends = friendList.listOfFriends.toMutableList()
         for (index in gameParameters.players.indices) {
             val currentFriendId = previousScreen.gameSetupInfo.gameParameters.players[index].playerId
             friendListWithRemovedFriends.remove(friendList.getFriendById(currentFriendId))

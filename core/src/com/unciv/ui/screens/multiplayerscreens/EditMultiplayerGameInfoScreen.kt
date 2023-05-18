@@ -120,20 +120,24 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame) 
                     }
                 }
             } catch (ex: Exception) {
-                if (ex is MultiplayerAuthException) {
-                    launchOnGLThread {
-                        AuthPopup(this@EditMultiplayerGameInfoScreen) {
-                            success -> if (success) resign(multiplayerGame)
-                        }.open(true)
+                val (message) = LoadGameScreen.getLoadExceptionMessage(ex)
+
+                when (ex) {
+                    is MultiplayerAuthException -> {
+                        launchOnGLThread {
+                            AuthPopup(this@EditMultiplayerGameInfoScreen) { success ->
+                                if (success) resign(multiplayerGame)
+                            }.open(true)
+                        }
+                        return@runOnNonDaemonThreadPool
                     }
-                    return@runOnNonDaemonThreadPool
                 }
 
-                val (message) = LoadGameScreen.getLoadExceptionMessage(ex)
                 launchOnGLThread {
                     popup.reuseWith(message, true)
                 }
             }
+
         }
     }
 }
