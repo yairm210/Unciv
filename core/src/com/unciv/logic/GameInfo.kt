@@ -506,11 +506,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         tileMap.gameInfo = this
 
         // [TEMPORARY] Convert old saves to newer ones by moving base rulesets from the mod list to the base ruleset field
-        val baseRulesetInMods = gameParameters.mods.firstOrNull { RulesetCache[it]?.modOptions?.isBaseRuleset == true }
-        if (baseRulesetInMods != null) {
-            gameParameters.baseRuleset = baseRulesetInMods
-            gameParameters.mods = LinkedHashSet(gameParameters.mods.filter { it != baseRulesetInMods })
-        }
+        convertOldSavesToNewSaves()
 
         ruleset = RulesetCache.getComplexRuleset(gameParameters)
 
@@ -562,6 +558,24 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         convertFortify()
 
+        updateCivilizationState()
+
+        spaceResources.clear()
+        spaceResources.addAll(ruleset.buildings.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
+            .flatMap { it.getResourceRequirementsPerTurn().keys })
+        spaceResources.addAll(ruleset.victories.values.flatMap { it.requiredSpaceshipParts })
+
+        convertEncampmentData()
+        barbarians.setTransients(this)
+
+        cityDistances.game = this
+
+        guaranteeUnitPromotions()
+
+        migrateToTileHistory()
+    }
+
+    private fun updateCivilizationState() {
         for (civInfo in civilizations.asSequence()
             // update city-state resource first since the happiness of major civ depends on it.
             // See issue: https://github.com/yairm210/Unciv/issues/7781
@@ -604,20 +618,14 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
                 cityInfo.cityStats.update()
             }
         }
+    }
 
-        spaceResources.clear()
-        spaceResources.addAll(ruleset.buildings.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
-            .flatMap { it.getResourceRequirementsPerTurn().keys })
-        spaceResources.addAll(ruleset.victories.values.flatMap { it.requiredSpaceshipParts })
-
-        convertEncampmentData()
-        barbarians.setTransients(this)
-
-        cityDistances.game = this
-
-        guaranteeUnitPromotions()
-
-        migrateToTileHistory()
+    private fun convertOldSavesToNewSaves() {
+        val baseRulesetInMods = gameParameters.mods.firstOrNull { RulesetCache[it]?.modOptions?.isBaseRuleset == true }
+        if (baseRulesetInMods != null) {
+            gameParameters.baseRuleset = baseRulesetInMods
+            gameParameters.mods = LinkedHashSet(gameParameters.mods.filter { it != baseRulesetInMods })
+        }
     }
 
     //endregion
