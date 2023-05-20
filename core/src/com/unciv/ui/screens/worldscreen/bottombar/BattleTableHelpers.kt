@@ -237,11 +237,11 @@ object BattleTableHelpers {
 
         val damagedHealth = ImageGetter.getDot(Color.FIREBRICK)
         if (UncivGame.Current.settings.continuousRendering) {
-            damagedHealth.addAction(Actions.repeat(
-                RepeatAction.FOREVER, Actions.sequence(
+            damagedHealth.addAction(Actions.forever(Actions.sequence(
                 Actions.color(Color.BLACK, 0.7f),
                 Actions.color(Color.FIREBRICK, 0.7f)
-            ))) }
+            )))
+        }
 
         val maybeDamagedHealth = ImageGetter.getDot(Color.ORANGE)
 

@@ -82,7 +82,7 @@ class MultiplayerStatusButton(
 
         if (UncivGame.Current.settings.continuousRendering) {
             loadingImage.clearActions()
-            loadingImage.addAction(Actions.repeat(RepeatAction.FOREVER,Actions.rotateBy(-90f, 1f)))
+            loadingImage.addAction(Actions.forever(Actions.rotateBy(-90f, 1f)))
         }
 
         loadingImage.isVisible = true
