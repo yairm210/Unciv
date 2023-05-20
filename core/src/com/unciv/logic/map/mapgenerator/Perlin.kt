@@ -46,7 +46,7 @@ object Perlin {
         var amp = 1.0
         var max = 0.0
         var total = 0.0
-       repeat(nOctaves - 1) {
+       repeat(nOctaves) {
             total += amp * noise(x * freq / scale, y * freq / scale, z * freq / scale)
             max += amp
             freq *= lacunarity
