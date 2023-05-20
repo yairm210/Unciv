@@ -20,7 +20,7 @@ class LobbyInvitationPopup(
         val lobby = api.lobby.get(lobbyInvite.lobbyUUID, suppress = true)
         val name = lobby?.name ?: "?"
         Concurrency.runOnGLThread {
-            addGoodSizedLabel("You have been invited to the lobby '[$name]' by ${lobbyInvite.from.displayName}. Do you want to accept this invitation? You will be headed to the lobby screen.").row()
+            addGoodSizedLabel("You have been invited to the lobby '[$name]' by ${lobbyInvite.from.displayName}. Do you want to accept this invitation? You will be headed to the lobby screen.").colspan(2).row()
             addCloseButton(action = action)
             addOKButton("Accept invitation") {
                 // TODO: Implement accepting invitations

@@ -96,6 +96,16 @@ open class ApiV2Wrapper(baseUrl: String) {
     protected open suspend fun afterLogin() {}
 
     /**
+     * Coroutine directly executed after every attempt to logout from the server.
+     * The parameter [success] determines whether logging out completed successfully,
+     * i.e. this coroutine will also be called in the case of an error.
+     * This coroutine should not raise any unhandled exceptions, because otherwise
+     * the login function will fail as well. If it requires longer operations,
+     * those operations should be detached from the current thread.
+     */
+    protected open suspend fun afterLogout(success: Boolean) {}
+
+    /**
      * API for account management
      */
     val account = AccountsApi(client, authHelper)
@@ -103,7 +113,7 @@ open class ApiV2Wrapper(baseUrl: String) {
     /**
      * API for authentication management
      */
-    val auth = AuthApi(client, authHelper, ::afterLogin)
+    val auth = AuthApi(client, authHelper, ::afterLogin, ::afterLogout)
 
     /**
      * API for chat management
@@ -137,8 +147,9 @@ open class ApiV2Wrapper(baseUrl: String) {
      * [ClientWebSocketSession] on success at a later point. Note that this
      * method does instantly return, detaching the creation of the WebSocket.
      * The [handler] coroutine might not get called, if opening the WS fails.
+     * Use [jobCallback] to receive the newly created job handling the WS connection.
      */
-    internal suspend fun websocket(handler: suspend (ClientWebSocketSession) -> Unit): Boolean {
+    internal suspend fun websocket(handler: suspend (ClientWebSocketSession) -> Unit, jobCallback: ((Job) -> Unit)? = null): Boolean {
         Log.debug("Starting a new WebSocket connection ...")
 
         coroutineScope {
@@ -150,11 +161,15 @@ open class ApiV2Wrapper(baseUrl: String) {
                         appendPathSegments("api/v2/ws")
                     }
                 }
-                val job = Concurrency.run {
+                val job = Concurrency.runOnNonDaemonThreadPool {
                     handler(session)
                 }
                 websocketJobs.add(job)
                 Log.debug("A new WebSocket has been created, running in job $job")
+                if (jobCallback != null) {
+                    jobCallback(job)
+                }
+                true
             } catch (e: SerializationException) {
                 Log.debug("Failed to create a WebSocket: %s", e.localizedMessage)
                 return@coroutineScope false

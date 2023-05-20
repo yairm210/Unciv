@@ -17,6 +17,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.CONFLATED
@@ -127,6 +128,9 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
      */
     override fun dispose() {
         sendChannel?.close()
+        for (channel in eventChannelList) {
+            channel.close()
+        }
         for (job in websocketJobs) {
             job.cancel()
         }
@@ -267,12 +271,12 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
      * Send a [FrameType.PING] frame to the server, without awaiting a response
      *
      * This operation might fail with some exception, e.g. network exceptions.
-     * Internally, a random 8-byte array will be used for the ping. It returns
-     * true when sending worked as expected, false when there's no send channel
-     * available and an any exception otherwise.
+     * Internally, a random byte array of [size] will be used for the ping. It
+     * returns true when sending worked as expected, false when there's no
+     * send channel available and an exception otherwise.
      */
-    internal suspend fun sendPing(): Boolean {
-        val body = ByteArray(0)
+    private suspend fun sendPing(size: Int = 0): Boolean {
+        val body = ByteArray(size)
         val channel = sendChannel
         return if (channel == null) {
             false
@@ -378,9 +382,22 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
         }
     }
 
-    suspend fun ensureConnectedWebSocket() {
-        // TODO: Ensure that the WebSocket is connected (e.g. send a PING or build a new connection)
-        //  This should be used from the MultiplayerTurnChecker (Android)
+    /**
+     * Ensure that the WebSocket is connected (send a PING and build a new connection on failure)
+     *
+     * Use [jobCallback] to receive the newly created job handling the WS connection.
+     * Note that this callback might not get called if no new WS connection was created.
+     */
+    suspend fun ensureConnectedWebSocket(jobCallback: ((Job) -> Unit)? = null) {
+        val shouldRecreateConnection = try {
+            !sendPing()
+        } catch (e: Exception) {
+            Log.debug("Error %s while ensuring connected WebSocket: %s", e, e.localizedMessage)
+            true
+        }
+        if (shouldRecreateConnection) {
+            websocket(::handleWebSocket, jobCallback)
+        }
     }
 
     // ---------------- SESSION FUNCTIONALITY ----------------
@@ -403,8 +420,25 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
             )
             UncivGame.Current.settings.multiplayer.userId = me.uuid.toString()
             UncivGame.Current.settings.save()
-            websocket(::handleWebSocket)
+            ensureConnectedWebSocket()
         }
+        super.afterLogin()
+    }
+
+    /**
+     * Perform the post-logout hook, cancelling all WebSocket jobs and event channels
+     */
+    override suspend fun afterLogout(success: Boolean) {
+        sendChannel?.close()
+        if (success) {
+            for (channel in eventChannelList) {
+                channel.close()
+            }
+            for (job in websocketJobs) {
+                job.cancel()
+            }
+        }
+        super.afterLogout(success)
     }
 
     /**
