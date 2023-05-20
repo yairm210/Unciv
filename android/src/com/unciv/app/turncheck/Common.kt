@@ -154,8 +154,8 @@ object Common {
     }
 
     /**
-     *  Notification Channels can't be modified after creation.
-     *  Therefore Unciv needs to create new ones and delete legacy ones.
+     * Notification Channels can't be modified after creation.
+     * Therefore Unciv needs to create new ones and delete legacy ones.
      */
     private fun destroyOldChannels(appContext: Context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return

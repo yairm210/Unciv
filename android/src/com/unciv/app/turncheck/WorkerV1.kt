@@ -29,14 +29,8 @@ import com.unciv.app.turncheck.Common.notifyUserAboutTurn
 import com.unciv.app.turncheck.Common.showPersistentNotification
 import com.unciv.logic.GameInfo
 import com.unciv.logic.files.UncivFiles
-import com.unciv.logic.multiplayer.ApiVersion
-import com.unciv.logic.multiplayer.apiv2.IncomingChatMessage
-import com.unciv.logic.multiplayer.apiv2.UpdateGameData
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.models.metadata.GameSettingsMultiplayer
-import com.unciv.utils.concurrency.Concurrency
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.runBlocking
 import java.io.FileNotFoundException
 import java.io.PrintWriter
@@ -136,8 +130,6 @@ class WorkerV1(appContext: Context, workerParams: WorkerParameters) : Worker(app
      */
     private val notFoundRemotely = mutableMapOf<String, Boolean>()
 
-    private var worker: Job? = null
-
     private val files: UncivFiles
     init {
         // We can't use Gdx.files since that is only initialized within a com.badlogic.gdx.backends.android.AndroidApplication.
@@ -148,52 +140,12 @@ class WorkerV1(appContext: Context, workerParams: WorkerParameters) : Worker(app
         files = UncivFiles(gdxFiles)
     }
 
-    private suspend fun checkTurnsForApiV2() {
-        UncivGame.Current.onlineMultiplayer.api.ensureConnectedWebSocket()
-        val channel = UncivGame.Current.onlineMultiplayer.api.getWebSocketEventChannel()
-        try {
-            while (true) {
-                val event = channel.receive()
-                Log.d(LOG_TAG, "Incoming channel event: $event")
-                when (event) {
-                    is IncomingChatMessage -> {
-                        Log.i(LOG_TAG, "Incoming chat message! ${event.message}")
-                    }
-                    is UpdateGameData -> {
-                        Log.i(LOG_TAG, "Incoming game update! ${event.gameUUID} / ${event.gameDataID}")
-                        // TODO: Resolve the name of the game by cached lookup instead of API query
-                        val name = UncivGame.Current.onlineMultiplayer.api.game.head(event.gameUUID, suppress = true)?.name
-                        notifyUserAboutTurn(applicationContext, Pair(name ?: event.gameUUID.toString(), event.gameUUID.toString()))
-                        with(NotificationManagerCompat.from(applicationContext)) {
-                            cancel(NOTIFICATION_ID_SERVICE)
-                        }
-                    }
-                }
-            }
-        } catch (t: Throwable) {
-            Log.e(LOG_TAG, "checkTurn APIv2 failure: $t / ${t.localizedMessage}")
-            Log.d(LOG_TAG, t.stackTraceToString())
-            channel.cancel()
-            throw t
-        }
-    }
-
     override fun doWork(): Result = runBlocking {
         Log.i(LOG_TAG, "doWork")
         val showPersistNotific = inputData.getBoolean(PERSISTENT_NOTIFICATION_ENABLED, true)
         val configuredDelay = getConfiguredDelay(inputData)
         val fileStorage = inputData.getString(FILE_STORAGE)
         val authHeader = inputData.getString(AUTH_HEADER)!!
-
-        // In case of APIv2 games, doWork is supposed to do something entirely different
-        if (UncivGame.Current.onlineMultiplayer.isInitialized() && UncivGame.Current.onlineMultiplayer.apiVersion == ApiVersion.APIv2) {
-            Log.d(LOG_TAG, "Using APIv2 for turn checker doWork (confDelay = $configuredDelay, showNotificication = $showPersistNotific)")
-            val job = Concurrency.run { checkTurnsForApiV2() }
-            worker?.cancelAndJoin()
-            worker = job
-            Log.d(LOG_TAG, "Returning success, worker is $worker")
-            return@runBlocking Result.success()
-        }
 
         try {
             val gameIds = inputData.getStringArray(GAME_ID)!!
