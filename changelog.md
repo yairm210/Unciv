@@ -1,3 +1,30 @@
+## 4.6.13
+
+Resolved  - failure to get preview image no longer causes crash
+
+Modding: Added 'upon adopting [belief]' trigger, allowed belief adoption to trigger uniques
+
+Added turn number to victory replay
+
+Resolved  - clicking locally-added mods no longer crashes
+
+4.6.12-patch1
+
+Mod preview images: Dispose of Pixmap, cache images for later use
+
+By SomeTroglodyte:
+- Fix off-by-one error in autoAssignPopulation 
+- Fix Ensure Minimum Stats 
+- Happiness change from bought buildings can reapply citizen focus 
+- Local and/or jpg mod previews 
+- Fix UnitTable layout 
+
+By alexban011:
+- refactor: break large functions into smaller ones 
+- fix: fixed translation text 
+- Fixed more warnings 
+- deps: bump kotlin version 
+
 ## 4.6.12
 
 Animate battle damage numbers - By SomeTroglodyte

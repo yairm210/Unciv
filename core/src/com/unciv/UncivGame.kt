@@ -531,7 +531,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.6.12-patch1", 868)
+        val VERSION = Version("4.6.13", 869)
         //endregion
 
         lateinit var Current: UncivGame
