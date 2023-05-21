@@ -252,15 +252,19 @@ object Github {
         return null
     }
 
-    fun tryGetPreviewImage(modUrl:String, defaultBranch: String): Pixmap?{
+    fun tryGetPreviewImage(modUrl:String, defaultBranch: String): Pixmap? {
         val fileLocation = "$modUrl/$defaultBranch/preview"
             .replace("github.com", "raw.githubusercontent.com")
-        val file = download("$fileLocation.jpg")
-            ?: download("$fileLocation.png")
-            ?: return null
-        val byteArray = file.readBytes()
-        val buffer = ByteBuffer.allocateDirect(byteArray.size).put(byteArray).position(0)
-        return Pixmap(buffer)
+        try {
+            val file = download("$fileLocation.jpg")
+                ?: download("$fileLocation.png")
+                ?: return null
+            val byteArray = file.readBytes()
+            val buffer = ByteBuffer.allocateDirect(byteArray.size).put(byteArray).position(0)
+            return Pixmap(buffer)
+        } catch (ex: Exception) {
+            return null
+        }
     }
 
     class Tree {

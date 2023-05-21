@@ -285,9 +285,6 @@ object ImageGetter {
 
     fun religionIconExists(iconName: String) = imageExists("ReligionIcons/$iconName")
 
-    @Deprecated("Use skin defined base color instead", ReplaceWith("BaseScreen.skinStrings.skinConfig.baseColor", "com.unciv.ui.screens.basescreen.BaseScreen"))
-    fun getBlue() = Color(0x004085bf)
-
     fun getCircle() = getImage("OtherIcons/Circle")
     fun getTriangle() = getImage("OtherIcons/Triangle")
 

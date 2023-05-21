@@ -156,9 +156,6 @@ class TileInfoImprovementFunctions(val tile: Tile) {
 
             // I don't particularly like this check, but it is required to build mines on non-hill resources
             resourceIsVisible && tile.tileResource.isImprovedBy(improvement.name) -> true
-            // DEPRECATED since 4.0.14, REMOVE SOON:
-            tile.isLand && improvement.terrainsCanBeBuiltOn.isEmpty() && !improvement.hasUnique(
-                UniqueType.CanOnlyImproveResource) -> true
             // No reason this improvement should be built here, so can't build it
             else -> false
         }

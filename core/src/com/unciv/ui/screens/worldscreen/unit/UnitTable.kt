@@ -192,7 +192,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
                 }
 
                 if (!unit.isCivilian()) {
-                    unitDescriptionTable.add("XP".tr().toLabel().apply {
+                    unitDescriptionTable.add("XP".toLabel().apply {
                         onClick {
                             if (selectedUnit == null) return@onClick
                             worldScreen.game.pushScreen(PromotionPickerScreen(unit))
