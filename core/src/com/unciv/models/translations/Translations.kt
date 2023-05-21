@@ -10,7 +10,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.ui.components.Fonts
 import com.unciv.utils.Log
 import com.unciv.utils.debug
-import java.util.*
+import java.util.Locale
 
 /**
  *  This collection holds all translations for the game.
@@ -147,7 +147,9 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
             for (file in Gdx.files.internal("jsons/translations").list())
                 languages.add(file.nameWithoutExtension())
         }
-        catch (ex:Exception) {} // Iterating on internal files will not work when running from a .jar
+        catch (ex:Exception) {
+            Log.error("Failed to add languages", ex)
+        } // Iterating on internal files will not work when running from a .jar
 
         languages.addAll(Locale.getAvailableLocales() // And this should work for Desktop, meaning from a .jar
                 .map { it.getDisplayName(Locale.ENGLISH) }) // Maybe THIS is the problem, that the DISPLAY locale wasn't english
@@ -231,12 +233,15 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
 
 // Expect a literal [ followed by a captured () group and a literal ].
 // The group may contain any number of any character except ] - pattern [^]]
+@Suppress("RegExpRedundantEscape") // Some Android versions need ]}) escaped
 val squareBraceRegex = Regex("""\[([^]]*)\]""")
 
 // Analogous as above: Expect a {} pair with any chars but } in between and capture that
+@Suppress("RegExpRedundantEscape") // Some Android versions need ]}) escaped
 val curlyBraceRegex = Regex("""\{([^}]*)\}""")
 
 // Analogous as above: Expect a <> pair with any chars but > in between and capture that
+@Suppress("RegExpRedundantEscape") // Some Android versions need ]}) escaped
 val pointyBraceRegex = Regex("""\<([^>]*)\>""")
 
 

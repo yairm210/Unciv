@@ -42,13 +42,11 @@ import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
 import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMenuPopup
-import com.unciv.utils.concurrency.Concurrency
-import java.util.*
-import kotlin.collections.ArrayList
+import com.unciv.utils.Concurrency
+import java.util.UUID
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.roundToInt
-
 
 /**
  * Table consisting of the menu button, current civ, some stats and the overview button for the top of [WorldScreen]
@@ -62,7 +60,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private val happinessLabel = "0".toLabel()
     private val cultureLabel = "0".toLabel(colorFromRGB(210, 94, 210))
     private val faithLabel = "0".toLabel(colorFromRGB(168, 196, 241))
-    private data class ResourceActors(val resource: TileResource, val Label: Label, val icon: Group)
+    private data class ResourceActors(val resource: TileResource, val label: Label, val icon: Group)
     private val resourceActors = ArrayList<ResourceActors>(12)
     private val happinessImage = Group()
 

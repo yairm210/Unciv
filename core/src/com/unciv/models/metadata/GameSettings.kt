@@ -15,7 +15,7 @@ import com.unciv.utils.Display
 import com.unciv.utils.ScreenOrientation
 import java.text.Collator
 import java.time.Duration
-import java.util.*
+import java.util.Locale
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty0
 

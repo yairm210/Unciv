@@ -135,7 +135,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         return if (techsToResearch.isEmpty()) null else techsToResearch[0]
     }
 
-    fun researchOfTech(TechName: String?) = techsInProgress[TechName] ?: 0
+    fun researchOfTech(techName: String?) = techsInProgress[techName] ?: 0
     // Was once duplicated as fun scienceSpentOnTech(tech: String): Int
 
     fun remainingScienceToTech(techName: String): Int {
@@ -196,10 +196,10 @@ class TechManager : IsPartOfGameInfoSerialization {
     private fun addCurrentScienceToScienceOfLast8Turns() {
         // The Science the Great Scientist generates does not include Science from Policies, Trade routes and City-States.
         var allCitiesScience = 0f
-        civInfo.cities.forEach { it ->
+        civInfo.cities.forEach {
             val totalBaseScience = it.cityStats.baseStatTree.totalStats.science
             val totalBonusPercents = it.cityStats.statPercentBonusTree.children.asSequence()
-                .filter { it.key != "Policies" }.map { it.value.totalStats.science }.sum()
+                .filter { it2 -> it2.key != "Policies" }.map { it2 ->  it2.value.totalStats.science }.sum()
             allCitiesScience += totalBaseScience * totalBonusPercents.toPercent()
         }
         scienceOfLast8Turns[civInfo.gameInfo.turns % 8] = allCitiesScience.toInt()

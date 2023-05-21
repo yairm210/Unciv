@@ -12,10 +12,10 @@ import com.unciv.ui.screens.multiplayerscreens.ChatMessageList
 import com.unciv.ui.screens.multiplayerscreens.ChatRoomType
 import com.unciv.ui.screens.multiplayerscreens.ChatTable
 import com.unciv.ui.screens.multiplayerscreens.FriendListV2
+import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
-import com.unciv.utils.concurrency.Concurrency
 import kotlinx.coroutines.runBlocking
-import java.util.*
+import java.util.UUID
 
 class MultiplayerOverviewTable(
     viewingPlayer: Civilization,

@@ -25,9 +25,10 @@ import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.multiplayerscreens.FriendListV2.Companion.showRemoveFriendshipPopup
+import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
-import com.unciv.utils.concurrency.Concurrency
-import java.util.*
+import java.util.UUID
 
 /**
  * A [Table] to display the user's friends as a convenient list

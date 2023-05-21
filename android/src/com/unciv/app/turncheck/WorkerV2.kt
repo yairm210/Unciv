@@ -23,8 +23,8 @@ import com.unciv.logic.multiplayer.apiv2.IncomingChatMessage
 import com.unciv.logic.multiplayer.apiv2.UpdateGameData
 import com.unciv.logic.multiplayer.isUsersTurn
 import com.unciv.models.metadata.GameSettingsMultiplayer
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.Dispatcher
+import com.unciv.utils.Concurrency
+import com.unciv.utils.Dispatcher
 import kotlinx.coroutines.Job
 import java.util.UUID
 import java.util.concurrent.TimeUnit

@@ -1,6 +1,6 @@
 import com.unciv.build.BuildConfig
-import java.util.*
 import com.unciv.build.AndroidImagePacker
+import java.util.Properties
 
 plugins {
     id("com.android.application")
@@ -79,7 +79,7 @@ android {
 task("texturePacker") {
     doFirst {
         logger.info("Calling TexturePacker")
-        AndroidImagePacker.packImages(projectDir.path,false)
+        AndroidImagePacker.packImages(projectDir.path)
     }
 }
 

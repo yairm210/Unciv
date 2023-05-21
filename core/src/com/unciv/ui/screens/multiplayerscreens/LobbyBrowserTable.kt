@@ -12,8 +12,8 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.AskTextPopup
 import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
-import com.unciv.utils.concurrency.Concurrency
 import kotlinx.coroutines.delay
 
 /**

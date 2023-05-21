@@ -18,6 +18,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.BorderedTable
+import com.unciv.ui.components.ColorMarkupLabel
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.colorFromRGB
@@ -69,8 +70,8 @@ class PolicyButton(viewingCiv: Civilization, canChangeState: Boolean, val policy
 
     val icon = ImageGetter.getImage("PolicyIcons/" + policy.name)
 
-    val isPickable = policy.isPickable(viewingCiv, canChangeState)
-    val isAdopted = viewingCiv.policies.isAdopted(policy.name)
+    private val isPickable = policy.isPickable(viewingCiv, canChangeState)
+    private val isAdopted = viewingCiv.policies.isAdopted(policy.name)
 
     var isSelected = false
         set(value) {
@@ -130,11 +131,11 @@ class PolicyPickerScreen(val viewingCiv: Civilization, val canChangeState: Boole
     : PickerScreen(), RecreateOnResize {
 
     object Sizes {
-        val paddingVertical = 10f
-        val paddingHorizontal = 20f
-        val paddingBetweenHor = 10f
-        val paddingBetweenVer = 20f
-        val iconSize = 50f
+        const val paddingVertical = 10f
+        const val paddingHorizontal = 20f
+        const val paddingBetweenHor = 10f
+        const val paddingBetweenVer = 20f
+        const val iconSize = 50f
     }
 
     private var policyNameToButton = HashMap<String, PolicyButton>()
@@ -280,7 +281,8 @@ class PolicyPickerScreen(val viewingCiv: Civilization, val canChangeState: Boole
         val conditionals = LinkedHashMap<UniqueType, ArrayList<String>>()
 
         branch.uniqueMap[UniqueType.OnlyAvailableWhen.text]?.forEach {
-            it.conditionals.forEach {
+            unique ->
+            unique.conditionals.forEach {
                 if (it.type != null) {
                     if (conditionals[it.type] == null)
                         conditionals[it.type] = ArrayList()
@@ -294,8 +296,7 @@ class PolicyPickerScreen(val viewingCiv: Civilization, val canChangeState: Boole
             for ((k, v) in conditionals) {
                 warning += "• " + k.text.fillPlaceholders(v.joinToString()).tr() + "\n"
             }
-            val warningLabel = warning.toLabel(Color.RED.cpy(), 13)
-            warningLabel.setFillParent(false)
+            val warningLabel = ColorMarkupLabel(warning, Color.RED, fontSize = 13)
             warningLabel.setAlignment(Align.topLeft)
             warningLabel.wrap = true
             labelTable.add(warningLabel).pad(0f, 20f, 17f, 20f).grow()
@@ -520,7 +521,9 @@ class PolicyPickerScreen(val viewingCiv: Civilization, val canChangeState: Boole
         }.toGroup(15f) else null
         val expandIcon = ImageGetter.getImage("OtherIcons/BackArrow").apply { rotation = 90f }.toGroup(10f)
         table.add(expandIcon).minWidth(15f).expandX().left()
-        table.add(branch.name.tr(hideIcons = true).uppercase().toLabel(fontSize = 14).apply { setAlignment(Align.center) }).center()
+        table.add(
+            branch.name.tr(hideIcons = true).uppercase().toLabel(fontSize = 14, alignment = Align.center)
+        ).center()
         table.add(icon).expandX().left().padLeft(5f)
 
         header.touchable = Touchable.enabled
@@ -624,7 +627,7 @@ class PolicyPickerScreen(val viewingCiv: Civilization, val canChangeState: Boole
         return table
     }
 
-    private fun getPolicyButton(policy: Policy, size: Float = 30f): PolicyButton {
+    private fun getPolicyButton(policy: Policy, size: Float): PolicyButton {
         val button = PolicyButton(viewingCiv, canChangeState, policy, size = size)
         button.onClick { pickPolicy(button = button) }
         if (policy.isPickable(viewingCiv, canChangeState))

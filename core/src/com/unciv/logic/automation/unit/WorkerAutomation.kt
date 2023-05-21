@@ -86,7 +86,7 @@ class WorkerAutomation(
             if (result.isEmpty())
                 debug("\tempty")
             else result.forEach {
-                debug("\t$it")    //  ${it.getCity()?.name} included in Tile toString()
+                debug("\t$it")
             }
         }
         result
@@ -220,7 +220,7 @@ class WorkerAutomation(
         }
         if (candidateCities.none()) return false // do nothing.
 
-        val isCandidateTilePredicate = { it: Tile -> it.isLand && unit.movement.canPassThrough(it) }
+        val isCandidateTilePredicate: (Tile) -> Boolean = { it.isLand && unit.movement.canPassThrough(it) }
         val currentTile = unit.getTile()
         val cityTilesToSeek = ArrayList(tilesOfConnectedCities.sortedBy { it.aerialDistanceTo(currentTile) })
 
@@ -297,8 +297,9 @@ class WorkerAutomation(
         val selectedTile = workableTiles.firstOrNull { unit.movement.canReach(it) && (tileCanBeImproved(unit, it) || it.isPillaged()) }
 
         return if (selectedTile != null
-                && (!workableTiles.contains(currentTile)
-                    || getPriority(selectedTile) > getPriority(currentTile)))
+                && ((!tileCanBeImproved(unit, currentTile) && !currentTile.isPillaged()) // current tile is unimprovable
+                    || !workableTiles.contains(currentTile) // current tile is unworkable by city
+                    || getPriority(selectedTile) > getPriority(currentTile)))  // current tile is less important
             selectedTile
         else currentTile
     }

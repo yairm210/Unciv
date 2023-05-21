@@ -2,9 +2,6 @@ package com.unciv.models.ruleset
 
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
-import com.unciv.logic.city.INonPerpetualConstruction
-import com.unciv.logic.city.RejectionReason
-import com.unciv.logic.city.RejectionReasonType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.tile.ResourceType
@@ -461,11 +458,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 && cityConstructions.city.civ.gameInfo.gameParameters.oneCityChallenge)
             return false // You will never be able to get more cities, this building is effectively disabled
 
-        return rejectionReasons.none { !it.shouldShow }
-            || (
-                canBePurchasedWithAnyStat(cityConstructions.city)
+        if (rejectionReasons.none { !it.shouldShow }) return true
+        return canBePurchasedWithAnyStat(cityConstructions.city)
                 && rejectionReasons.all { it.type == RejectionReasonType.Unbuildable }
-            )
     }
 
     override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> = sequence {

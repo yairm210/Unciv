@@ -55,6 +55,7 @@ class ModOptions : IHasUniques {
 
     var lastUpdated = ""
     var modUrl = ""
+    var defaultBranch = "master"
     var author = ""
     var modSize = 0
     var topics = mutableListOf<String>()
@@ -252,7 +253,9 @@ class Ruleset {
             try {
                 modOptions = json().fromJsonFile(ModOptions::class.java, modOptionsFile)
                 modOptions.updateDeprecations()
-            } catch (ex: Exception) {}
+            } catch (ex: Exception) {
+                Log.error("Failed to get modOptions from json file", ex)
+            }
             modOptions.uniqueObjects = modOptions.uniques.map { Unique(it, UniqueTarget.ModOptions) }
             modOptions.uniqueMap = modOptions.uniqueObjects.groupBy { it.placeholderText }
         }
@@ -414,10 +417,20 @@ class Ruleset {
                         name = cityStateType.name
                         color = cityStateType.color
                         friendBonusUniques = ArrayList(cityStateType.friendBonusUniques.filter {
-                            RulesetValidator(this@Ruleset).checkUnique(Unique(it),false,"",UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific,UniqueTarget.CityState).isEmpty()
+                            RulesetValidator(this@Ruleset).checkUnique(
+                                Unique(it),
+                                false,
+                                "",
+                                UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+                            ).isEmpty()
                         })
                         allyBonusUniques = ArrayList(cityStateType.allyBonusUniques.filter {
-                            RulesetValidator(this@Ruleset).checkUnique(Unique(it),false,"",UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific,UniqueTarget.CityState).isEmpty()
+                            RulesetValidator(this@Ruleset).checkUnique(
+                                Unique(it),
+                                false,
+                                "",
+                                UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+                            ).isEmpty()
                         })
                     }
         }
@@ -488,6 +501,7 @@ object RulesetCache : HashMap<String,Ruleset>() {
                 name = ruleset.fullName
             }
         }
+        this.putAll(newRulesets)
 
         val errorLines = ArrayList<String>()
         if (!noMods){

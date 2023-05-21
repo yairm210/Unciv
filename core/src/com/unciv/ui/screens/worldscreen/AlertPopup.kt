@@ -14,6 +14,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
@@ -29,7 +30,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.diplomacyscreen.LeaderIntroTable
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
-import java.util.*
+import java.util.EnumSet
 
 /**
  * [Popup] communicating events other than trade offers to the player.
@@ -146,7 +147,8 @@ class AlertPopup(
                 close()
             }
         } else {
-            addAnnexOption {
+            val mayAnnex = !conqueringCiv.hasUnique(UniqueType.MayNotAnnexCities)
+            addAnnexOption(mayAnnex = mayAnnex) {
                 city.puppetCity(conqueringCiv)
                 city.annexCity()
                 worldScreen.shouldUpdate = true
@@ -154,16 +156,16 @@ class AlertPopup(
             }
             addSeparator()
 
-            addPuppetOption {
+            addPuppetOption(mayAnnex = mayAnnex) {
                 city.puppetCity(conqueringCiv)
                 worldScreen.shouldUpdate = true
                 close()
             }
             addSeparator()
 
-            addRazeOption(canRaze = { city.canBeDestroyed(justCaptured = true) } ) {
+            addRazeOption(canRaze = city.canBeDestroyed(justCaptured = true), mayAnnex = mayAnnex) {
                 city.puppetCity(conqueringCiv)
-                city.annexCity()
+                if (mayAnnex) { city.annexCity() }
                 city.isBeingRazed = true
                 worldScreen.shouldUpdate = true
                 close()
@@ -239,13 +241,14 @@ class AlertPopup(
                 close()
             }
         } else {
-            addAnnexOption {
+            val mayAnnex = !marryingCiv.hasUnique(UniqueType.MayNotAnnexCities)
+            addAnnexOption(mayAnnex) {
                 city.annexCity()
                 close()
             }
             addSeparator()
 
-            addPuppetOption {
+            addPuppetOption(mayAnnex) {
                 city.isPuppet = true
                 city.cityStats.update()
                 worldScreen.shouldUpdate = true
@@ -428,16 +431,25 @@ class AlertPopup(
         addGoodSizedLabel("Destroying the city instantly razes the city to the ground.").row()
     }
 
-    private fun addAnnexOption(annexAction: () -> Unit) {
+    private fun addAnnexOption(mayAnnex: Boolean, annexAction: () -> Unit) {
         val button = "Annex".toTextButton()
-        button.onActivation { annexAction() }
-        button.keyShortcuts.add('a')
+        button.apply {
+            if (!mayAnnex) disable() else {
+                button.onActivation { annexAction() }
+                button.keyShortcuts.add('a')
+            }
+        }
         add(button).row()
-        addGoodSizedLabel("Annexed cities become part of your regular empire.").row()
-        addGoodSizedLabel("Their citizens generate 2x the unhappiness, unless you build a courthouse.").row()
+        if (mayAnnex) {
+            addGoodSizedLabel("Annexed cities become part of your regular empire.").row()
+            addGoodSizedLabel("Their citizens generate 2x the unhappiness, unless you build a courthouse.").row()
+        } else {
+            addGoodSizedLabel("Your civilization may not annex this city.").row()
+        }
+
     }
 
-    private fun addPuppetOption(puppetAction: () -> Unit) {
+    private fun addPuppetOption(mayAnnex: Boolean, puppetAction: () -> Unit) {
         val button = "Puppet".toTextButton()
         button.onActivation { puppetAction() }
         button.keyShortcuts.add('p')
@@ -445,7 +457,7 @@ class AlertPopup(
         addGoodSizedLabel("Puppeted cities do not increase your tech or policy cost.").row()
         addGoodSizedLabel("You have no control over the the production of puppeted cities.").row()
         addGoodSizedLabel("Puppeted cities also generate 25% less Gold and Science.").row()
-        addGoodSizedLabel("A puppeted city can be annexed at any time.").row()
+        if (mayAnnex) addGoodSizedLabel("A puppeted city can be annexed at any time.").row()
     }
 
     private fun addLiberateOption(foundingCiv: String, liberateAction: () -> Unit) {
@@ -456,18 +468,22 @@ class AlertPopup(
         addGoodSizedLabel("Liberating a city returns it to its original owner, giving you a massive relationship boost with them!")
     }
 
-    private fun addRazeOption(canRaze: () -> Boolean, razeAction: () -> Unit) {
+    private fun addRazeOption(canRaze: Boolean, mayAnnex: Boolean, razeAction: () -> Unit) {
         val button = "Raze".toTextButton()
         button.apply {
-            if (!canRaze()) disable()
+            if (!canRaze) disable()
             else {
                 onActivation { razeAction() }
                 keyShortcuts.add('r')
             }
         }
         add(button).row()
-        if (canRaze()) {
-            addGoodSizedLabel("Razing the city annexes it, and starts burning the city to the ground.").row()
+        if (canRaze) {
+            if (mayAnnex) {
+                addGoodSizedLabel("Razing the city annexes it, and starts burning the city to the ground.").row()
+            } else {
+                addGoodSizedLabel("Razing the city puppets it, and starts burning the city to the ground.").row()
+            }
             addGoodSizedLabel("The population will gradually dwindle until the city is destroyed.").row()
         } else {
             addGoodSizedLabel("Original capitals and holy cities cannot be razed.").row()

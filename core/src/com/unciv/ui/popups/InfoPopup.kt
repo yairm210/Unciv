@@ -2,7 +2,7 @@ package com.unciv.ui.popups
 
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.unciv.logic.UncivShowableException
-import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.Concurrency
 import kotlinx.coroutines.runBlocking
 
 /** Variant of [Popup] with one label and a cancel button

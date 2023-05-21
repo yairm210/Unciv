@@ -55,8 +55,8 @@ import com.unciv.ui.screens.worldscreen.BackgroundActor
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMenuPopup
 import com.unciv.utils.Log
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.launchOnGLThread
+import com.unciv.utils.Concurrency
+import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.Job
 import kotlin.math.min
 
@@ -64,6 +64,8 @@ import kotlin.math.min
 class MainMenuScreen: BaseScreen(), RecreateOnResize {
     private val backgroundStack = Stack()
     private val singleColumn = isCrampedPortrait()
+
+    private val backgroundMapRuleset: Ruleset
     private var easterEggRuleset: Ruleset? = null  // Cache it so the next 'egg' can be found in Civilopedia
 
     private var backgroundMapGenerationJob: Job? = null
@@ -72,7 +74,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
     companion object {
         const val mapFadeTime = 1.3f
         const val mapFirstFadeTime = 0.3f
-        const val mapReplaceDelay = 15f
+        const val mapReplaceDelay = 20f
     }
 
     /** Create one **Main Menu Button** including onClick/key binding
@@ -121,7 +123,15 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
 
         // If we were in a mod, some of the resource images for the background map we're creating
         // will not exist unless we reset the ruleset and images
-        ImageGetter.ruleset = RulesetCache.getVanillaRuleset()
+        val baseRuleset = RulesetCache.getVanillaRuleset()
+        ImageGetter.ruleset = baseRuleset
+
+        if (game.settings.enableEasterEggs) {
+            val easterEggMod = EasterEggRulesets.getTodayEasterEggRuleset()
+            if (easterEggMod != null)
+                easterEggRuleset = RulesetCache.getComplexRuleset(baseRuleset, listOf(easterEggMod))
+        }
+        backgroundMapRuleset = easterEggRuleset ?: baseRuleset
 
         // This is an extreme safeguard - should an invalid settings.tileSet ever make it past the
         // guard in UncivGame.create, simply omit the background so the user can at least get to options
@@ -228,13 +238,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
                 scale = min(scale, 20f)
             }
 
-            val baseRuleset = RulesetCache.getVanillaRuleset()
-            easterEggRuleset = EasterEggRulesets.getTodayEasterEggRuleset()?.let {
-                RulesetCache.getComplexRuleset(baseRuleset, listOf(it))
-            }
-            val mapRuleset = if (game.settings.enableEasterEggs) easterEggRuleset ?: baseRuleset else baseRuleset
-
-            val newMap = MapGenerator(mapRuleset, this)
+            val newMap = MapGenerator(backgroundMapRuleset, this)
                 .generateMap(MapParameters().apply {
                     shape = MapShape.rectangular
                     mapSize = MapSizeNew(MapSize.Small)
@@ -245,7 +249,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
                 })
 
             launchOnGLThread { // for GL context
-                ImageGetter.setNewRuleset(mapRuleset)
+                ImageGetter.setNewRuleset(backgroundMapRuleset)
                 val mapHolder = EditorMapHolder(
                     this@MainMenuScreen,
                     newMap

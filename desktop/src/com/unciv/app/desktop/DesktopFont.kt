@@ -5,9 +5,13 @@ import com.badlogic.gdx.graphics.Pixmap
 import com.unciv.ui.components.FontFamilyData
 import com.unciv.ui.components.FontImplementation
 import com.unciv.ui.components.Fonts
-import java.awt.*
+import java.awt.Color
+import java.awt.Font
+import java.awt.FontMetrics
+import java.awt.GraphicsEnvironment
+import java.awt.RenderingHints
 import java.awt.image.BufferedImage
-import java.util.*
+import java.util.Locale
 
 
 class DesktopFont : FontImplementation {

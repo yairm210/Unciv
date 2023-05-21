@@ -5,9 +5,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Disposable
 import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.Concurrency
 import kotlinx.coroutines.delay
-import java.util.*
+import java.util.UUID
 
 class SocialMenuTable(
     private val base: BaseScreen,

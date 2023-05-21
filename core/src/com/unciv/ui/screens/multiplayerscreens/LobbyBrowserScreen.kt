@@ -23,9 +23,9 @@ import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.utils.Concurrency
+import com.unciv.utils.Concurrency.runBlocking
 import com.unciv.utils.Log
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.Concurrency.runBlocking
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import com.unciv.ui.components.AutoScrollPane as ScrollPane

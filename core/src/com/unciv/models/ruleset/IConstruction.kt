@@ -1,5 +1,7 @@
-package com.unciv.logic.city
+package com.unciv.models.ruleset
 
+import com.unciv.logic.city.City
+import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.StateForConditionals
@@ -94,8 +96,8 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
 
 
 class RejectionReason(val type: RejectionReasonType,
-                           val errorMessage: String = type.errorMessage,
-                           val shouldShow: Boolean = type.shouldShow) {
+                      val errorMessage: String = type.errorMessage,
+                      val shouldShow: Boolean = type.shouldShow) {
 
     fun techPolicyEraWonderRequirements(): Boolean = type in techPolicyEraWonderRequirements
 
@@ -199,7 +201,8 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
 }
 
 
-open class PerpetualConstruction(override var name: String, val description: String) : IConstruction {
+open class PerpetualConstruction(override var name: String, val description: String) :
+    IConstruction {
 
     override fun shouldBeDisplayed(cityConstructions: CityConstructions) = isBuildable(cityConstructions)
     open fun getProductionTooltip(city: City, withIcon: Boolean = false) : String = ""

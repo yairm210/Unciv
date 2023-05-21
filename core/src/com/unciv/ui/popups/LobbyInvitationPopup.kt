@@ -2,7 +2,7 @@ package com.unciv.ui.popups
 
 import com.unciv.logic.multiplayer.apiv2.IncomingInvite
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.Concurrency
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.runBlocking
 

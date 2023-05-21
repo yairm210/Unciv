@@ -263,7 +263,8 @@ class UnitOverviewTab(
             // Upgrade column
             if (unit.upgrade.canUpgrade()) {
                 val unitAction = UnitActionsUpgrade.getUpgradeAction(unit)
-                val enable = unitAction?.action != null && viewingPlayer.isCurrentPlayer()
+                val enable = unitAction?.action != null && viewingPlayer.isCurrentPlayer() &&
+                    GUI.isAllowedChangeState()
                 val upgradeIcon = ImageGetter.getUnitIcon(unit.upgrade.getUnitToUpgradeTo().name,
                     if (enable) Color.GREEN else Color.GREEN.darken(0.5f))
                 if (enable) upgradeIcon.onClick {

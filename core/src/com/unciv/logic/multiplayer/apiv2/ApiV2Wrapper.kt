@@ -3,7 +3,7 @@ package com.unciv.logic.multiplayer.apiv2
 import com.unciv.UncivGame
 import com.unciv.logic.UncivShowableException
 import com.unciv.utils.Log
-import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.Concurrency
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*

@@ -9,19 +9,19 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.ChatButton
 import com.unciv.ui.components.PencilButton
 import com.unciv.ui.components.extensions.formatShort
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
-import com.unciv.utils.concurrency.Concurrency
 import kotlinx.coroutines.delay
 import java.time.Duration
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 /**
  * Table listing the recently played open games for APIv2 multiplayer games

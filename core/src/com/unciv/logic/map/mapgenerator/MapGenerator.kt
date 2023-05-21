@@ -964,6 +964,6 @@ class MapGenerationRandomness {
             }
         }
         // unreachable due to last loop iteration always returning and initialDistance >= 1
-        throw Exception()
+        throw Exception("Unreachable code reached!")
     }
 }

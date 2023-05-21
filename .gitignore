@@ -163,3 +163,5 @@ package-lock.json
 package.json
 
 # Unsorted additions
+# Detekt
+detekt/reports.html

@@ -39,7 +39,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.multiplayerscreens.FriendPickerList
 import com.unciv.ui.screens.pickerscreens.PickerPane
 import com.unciv.ui.screens.pickerscreens.PickerScreen
-import java.util.*
+import java.util.UUID
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
 
 /**
@@ -362,7 +362,8 @@ class FriendSelectionPopup(
         val friendList = FriendPickerList(playerPicker, ::friendSelected)
         pickerPane.topTable.add(friendList)
         pickerPane.rightSideButton.setText("Select friend".tr())
-        pickerPane.closeButton.onClick(::close)
+        pickerPane.closeButton.onActivation(::close)
+        pickerPane.closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
         pickerCell.setActor<PickerPane>(pickerPane)
         pickerPane.rightSideButton.onClick {
             close()
@@ -373,6 +374,8 @@ class FriendSelectionPopup(
                 playerPicker.update()
             }
         }
+
+        clickBehindToClose = true
     }
 
     private fun friendSelected(friendName: String) {
@@ -436,7 +439,7 @@ class NationPickerPopup(
             if (spectator != null && player.playerType != PlayerType.AI)  // only humans can spectate, sorry robots
                 yield(spectator)
         } + availablePlayerCivs.sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.name.tr() })
-        val nations = nationSequence.toCollection(ArrayList<Nation>(previousScreen.ruleset.nations.size))
+        val nations = nationSequence.toCollection(ArrayList(previousScreen.ruleset.nations.size))
 
         var nationListScrollY = 0f
         var currentY = 0f

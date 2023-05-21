@@ -11,7 +11,7 @@ import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.Concurrency
 
 /**
  * A [Table] which combines [ChatMessageList] with a text input and send button to write a new message

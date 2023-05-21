@@ -16,12 +16,13 @@ import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.surroundWithCircle
-import java.io.File
+import com.unciv.ui.images.IconCircleGroup
 
 
 /** Encapsulates the knowledge on how to get an icon for each of the Civilopedia categories */
 object CivilopediaImageGetters {
     private const val policyIconFolder = "PolicyIcons"
+    private const val policyBranchIconFolder = "PolicyBranchIcons"
     private const val policyInnerSize = 0.25f
 
     // Todo: potential synergy with map editor
@@ -64,17 +65,17 @@ object CivilopediaImageGetters {
         if (nation == null) null
         else ImageGetter.getNationPortrait(nation, size)
     }
-    val policy = { name: String, size: Float ->
-        // policy branch start and complete have no icons but are linked -> nonexistence must be passed down
-        val fileName = policyIconFolder + File.separator + name
-        if (ImageGetter.imageExists(fileName))
-            ImageGetter.getImage(fileName)
-                .apply {
-                    setSize(size * policyInnerSize,size * policyInnerSize)
-                    color = Color.BROWN
-                }
-                .surroundWithCircle(size)
-        else null
+    val policy = fun(name: String, size: Float): IconCircleGroup? {
+        // result is nullable: policy branch complete have no icons but are linked -> nonexistence must be passed down
+        fun tryImage(path: String, color: Color): IconCircleGroup? {
+            if (ImageGetter.imageExists(path)) return ImageGetter.getImage(path).apply {
+                setSize(size * policyInnerSize,size * policyInnerSize)
+                this.color = color
+            }.surroundWithCircle(size)
+            return null
+        }
+        return tryImage("$policyBranchIconFolder/$name", Color.BLACK)
+            ?: tryImage("$policyIconFolder/$name", Color.BROWN)
     }
     val resource = { name: String, size: Float ->
         ImageGetter.getResourcePortrait(name, size)

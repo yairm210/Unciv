@@ -12,7 +12,14 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.DEFAULT_VIBRATE
 import androidx.core.app.NotificationManagerCompat
-import androidx.work.*
+import androidx.work.Constraints
+import androidx.work.Data
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.Worker
+import androidx.work.WorkerParameters
+import androidx.work.workDataOf
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.android.DefaultAndroidFiles
 import com.unciv.UncivGame
@@ -37,7 +44,7 @@ import java.io.PrintWriter
 import java.io.StringWriter
 import java.io.Writer
 import java.time.Duration
-import java.util.*
+import java.util.GregorianCalendar
 import java.util.concurrent.TimeUnit
 
 /**
@@ -150,7 +157,7 @@ class WorkerV1(appContext: Context, workerParams: WorkerParameters) : Worker(app
         try {
             val gameIds = inputData.getStringArray(GAME_ID)!!
             val gameNames = inputData.getStringArray(GAME_NAME)!!
-            Log.d(LOG_TAG, "doWork gameNames: ${Arrays.toString(gameNames)}")
+            Log.d(LOG_TAG, "doWork gameNames: ${gameNames.contentToString()}")
             // We only want to notify the user or update persisted notification once but still want
             // to download all games to update the files so we save the first one we find
             var foundGame: Pair<String, String>? = null
@@ -168,8 +175,8 @@ class WorkerV1(appContext: Context, workerParams: WorkerParameters) : Worker(app
 
                 try {
                     Log.d(LOG_TAG, "doWork download $gameId")
-                    val gamePreview = UncivGame.Current.onlineMultiplayer.multiplayerFiles.tryDownloadGamePreview(gameId)
-                    //val gamePreview = OnlineMultiplayerFiles(fileStorage, mapOf("Authorization" to authHeader)).tryDownloadGamePreview(gameId)
+                    val gamePreview = UncivGame.Current.onlineMultiplayer.multiplayerServer.tryDownloadGamePreview(gameId)
+                    //val gamePreview = OnlineMultiplayerServer(fileStorage, mapOf("Authorization" to authHeader)).tryDownloadGamePreview(gameId)
                     Log.d(LOG_TAG, "doWork download $gameId done")
                     val currentTurnPlayer = gamePreview.getCivilization(gamePreview.currentPlayer)
 
@@ -234,6 +241,7 @@ class WorkerV1(appContext: Context, workerParams: WorkerParameters) : Worker(app
                 enqueue(applicationContext, Duration.ofMinutes(1), inputDataFailIncrease)
             }
         } catch (outOfMemory: OutOfMemoryError){ // no point in trying multiple times if this was an oom error
+            Log.e(LOG_TAG, "doWork ${outOfMemory::class.simpleName}: ${outOfMemory.message}")
             return@runBlocking Result.failure()
         }
         return@runBlocking Result.success()

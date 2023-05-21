@@ -19,8 +19,8 @@ import com.unciv.ui.components.extensions.stageBoundingBox
 import com.unciv.ui.components.extensions.top
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.withGLContext
+import com.unciv.utils.Concurrency
+import com.unciv.utils.withGLContext
 import kotlinx.coroutines.delay
 
 object UncivTextField {

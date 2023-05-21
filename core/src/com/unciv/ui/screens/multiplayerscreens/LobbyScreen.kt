@@ -46,11 +46,11 @@ import com.unciv.ui.screens.newgamescreen.GameOptionsTable
 import com.unciv.ui.screens.newgamescreen.MapOptionsInterface
 import com.unciv.ui.screens.newgamescreen.MapOptionsTable
 import com.unciv.ui.screens.pickerscreens.PickerScreen
+import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
-import com.unciv.utils.concurrency.Concurrency
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import java.util.*
+import java.util.UUID
 
 /**
  * Lobby screen for open lobbies

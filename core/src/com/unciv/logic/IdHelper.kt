@@ -1,6 +1,6 @@
 package com.unciv.logic
 
-import java.util.*
+import java.util.Locale
 import kotlin.math.abs
 
 /**
@@ -112,5 +112,3 @@ object IdChecker {
             return (10 - (sum % 10)) % 10
         }
 }
-
-

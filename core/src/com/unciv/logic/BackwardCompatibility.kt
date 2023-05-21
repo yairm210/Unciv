@@ -2,12 +2,12 @@ package com.unciv.logic
 
 import com.unciv.Constants
 import com.unciv.logic.city.CityConstructions
-import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.managers.TechManager
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.ModOptions
+import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.Ruleset
 
 /**
@@ -160,7 +160,6 @@ object BackwardCompatibility {
     fun ModOptions.updateDeprecations() {
     }
 
-
     /** Convert from Fortify X to Fortify and save off X */
     fun GameInfo.convertFortify() {
         val reg = Regex("""^Fortify\s+(\d+)([\w\s]*)""")
@@ -175,16 +174,11 @@ object BackwardCompatibility {
         }
     }
 
-    private fun isOldFormat(manager: BarbarianManager): Boolean {
-        val keys = manager.camps.keys as Set<Any>
-        val iterator = keys.iterator()
-        while (iterator.hasNext()) {
-            val key = iterator.next()
-            if (key is String) {
-                return true
-            }
+    fun GameInfo.convertEncampmentData(){
+        if (barbarians.camps.isNotEmpty()){
+            barbarians.encampments.addAll(barbarians.camps.values)
+            barbarians.camps.clear()
         }
-        return false
     }
 
     fun GameInfo.migrateToTileHistory() {

@@ -11,7 +11,6 @@ configurations.all { resolutionStrategy {
 
 
 buildscript {
-
     repositories {
         // Chinese mirrors for quicker loading for chinese devs - uncomment if you're chinese
         // maven{ url = uri("https://maven.aliyun.com/repository/central") }
@@ -37,10 +36,10 @@ kotlin {
 
 // Plugins used for serialization of JSON for networking
 plugins {
+    id("io.gitlab.arturbosch.detekt").version("1.23.0-RC3")
     kotlin("multiplatform") version "1.8.10"
     kotlin("plugin.serialization") version "1.8.10"
 }
-
 
 allprojects {
     apply(plugin = "eclipse")

@@ -96,8 +96,8 @@ class UncivTooltip <T: Actor>(
             state = TipState.Showing
             container.addAction(Actions.sequence(
                 Actions.parallel(
-                    Actions.fadeIn(UncivSlider.tipAnimationDuration, Interpolation.fade),
-                    Actions.scaleTo(1f, 1f, 0.2f, Interpolation.fade)
+                    Actions.fadeIn(tipAnimationDuration, Interpolation.fade),
+                    Actions.scaleTo(1f, 1f, tipAnimationDuration, Interpolation.fade)
                 ),
                 Actions.run { if (state == TipState.Showing) state = TipState.Shown }
             ))
@@ -117,8 +117,8 @@ class UncivTooltip <T: Actor>(
             state = TipState.Hiding
             container.addAction(Actions.sequence(
                 Actions.parallel(
-                    Actions.alpha(0.2f, 0.2f, Interpolation.fade),
-                    Actions.scaleTo(0.05f, 0.05f, 0.2f, Interpolation.fade)
+                    Actions.alpha(0.2f, tipAnimationDuration, Interpolation.fade),
+                    Actions.scaleTo(0.05f, 0.05f, tipAnimationDuration, Interpolation.fade)
                 ),
                 Actions.removeActor(),
                 Actions.run { if (state == TipState.Hiding) state = TipState.Hidden }
@@ -164,6 +164,9 @@ class UncivTooltip <T: Actor>(
     //endregion
 
     companion object {
+        /** Duration of the fade/zoom-in/out animations */
+        const val tipAnimationDuration = 0.2f
+
         /**
          * Add a [Label]-based Tooltip with a rounded-corner background to a [Table] or other [Group].
          *

@@ -35,8 +35,7 @@ import com.unciv.ui.popups.LobbyInvitationPopup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.popups.activePopup
 import com.unciv.ui.popups.options.OptionsPopup
-import com.unciv.ui.tutorials.TutorialController
-import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.Concurrency
 
 abstract class BaseScreen : Screen {
 

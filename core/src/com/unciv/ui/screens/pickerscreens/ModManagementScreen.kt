@@ -2,9 +2,11 @@ package com.unciv.ui.screens.pickerscreens
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -44,9 +46,9 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.pickerscreens.ModManagementOptions.SortType
+import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.launchOnGLThread
+import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import java.io.IOException
@@ -218,6 +220,7 @@ class ModManagementScreen(
             try {
                 repoSearch = Github.tryGetGithubReposWithTopic(amountPerPage, pageNum)!!
             } catch (ex: Exception) {
+                Log.error("Could not download mod list", ex)
                 launchOnGLThread {
                     ToastPopup("Could not download mod list", this@ModManagementScreen)
                 }
@@ -346,22 +349,27 @@ class ModManagementScreen(
      * @param repo: the repository instance as received from the GitHub api
      */
     private fun addModInfoToActionTable(repo: Github.Repo) {
-        addModInfoToActionTable(repo.html_url, repo.pushed_at, repo.owner.login, repo.size)
+        addModInfoToActionTable(repo.html_url, repo.default_branch, repo.pushed_at, repo.owner.login, repo.size)
     }
     /** Recreate the information part of the right-hand column
      * @param modName: The mod name (name from the RuleSet)
      * @param modOptions: The ModOptions as enriched by us with GitHub metadata when originally downloaded
      */
-    private fun addModInfoToActionTable(modName: String, modOptions: ModOptions) {
+    private fun addModInfoToActionTable(modOptions: ModOptions) {
         addModInfoToActionTable(
             modOptions.modUrl,
+            modOptions.defaultBranch,
             modOptions.lastUpdated,
             modOptions.author,
             modOptions.modSize
         )
     }
+
+    val repoUrlToPreviewImage = HashMap<String, Texture?>()
+
     private fun addModInfoToActionTable(
         repoUrl: String,
+        default_branch: String,
         updatedAt: String,
         author: String,
         modSize: Int
@@ -369,6 +377,41 @@ class ModManagementScreen(
         // remember selected mod - for now needed only to display a background-fetched image while the user is watching
 
         // Display metadata
+
+        val imageHolder = Table()
+
+        fun setTextureAsPreview(texture: Texture){
+            val maxAllowedImageSize = 200f
+            val cell = imageHolder.add(Image(texture))
+            val largestImageSize = max(texture.width, texture.height)
+            if (largestImageSize > maxAllowedImageSize) {
+                val resizeRatio = maxAllowedImageSize / largestImageSize
+                cell.size(texture.width * resizeRatio, texture.height * resizeRatio)
+            }
+        }
+
+        if (!repoUrlToPreviewImage.containsKey(repoUrl)) {
+            Concurrency.run {
+                val imagePixmap = Github.tryGetPreviewImage(repoUrl, default_branch)
+
+                if (imagePixmap == null) {
+                    repoUrlToPreviewImage[repoUrl] = null
+                    return@run
+                }
+                Concurrency.runOnGLThread {
+                    val texture = Texture(imagePixmap)
+                    imagePixmap.dispose()
+                    repoUrlToPreviewImage[repoUrl] = texture
+                    setTextureAsPreview(texture)
+                }
+            }
+        }
+        else {
+            val texture = repoUrlToPreviewImage[repoUrl]
+            if (texture!=null) setTextureAsPreview(texture)
+        }
+
+        modActionTable.add(imageHolder).row()
 
 
         if (author.isNotEmpty())
@@ -484,7 +527,7 @@ class ModManagementScreen(
                     repo,
                     Gdx.files.local("mods")
                 )
-                    ?: throw Exception()    // downloadAndExtract returns null for 404 errors and the like -> display something!
+                    ?: throw Exception("downloadAndExtract returns null for 404 errors and the like")    // downloadAndExtract returns null for 404 errors and the like -> display something!
                 Github.rewriteModOptions(repo, modFolder)
                 launchOnGLThread {
                     ToastPopup("[${repo.name}] Downloaded!", this@ModManagementScreen)
@@ -500,6 +543,7 @@ class ModManagementScreen(
                     postAction()
                 }
             } catch (ex: Exception) {
+                Log.error("Could not download ${repo.name}", ex)
                 launchOnGLThread {
                     ToastPopup("Could not download [${repo.name}]", this@ModManagementScreen)
                     postAction()
@@ -532,7 +576,7 @@ class ModManagementScreen(
         selectedMod = null
         modActionTable.clear()
         // show mod information first
-        addModInfoToActionTable(mod.name, mod.modOptions)
+        addModInfoToActionTable(mod.modOptions)
 
         // offer 'permanent visual mod' toggle
         val visualMods = game.settings.visualMods

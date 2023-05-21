@@ -9,7 +9,7 @@ import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.City
-import com.unciv.logic.city.IConstruction
+import com.unciv.models.ruleset.IConstruction
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.UncivSound
@@ -259,7 +259,8 @@ class CityScreen(
             addWltkIcon("OtherIcons/WLTK 1") { color = Color.FIREBRICK }.padRight(10f)
         }
 
-        if (city.isPuppet) {
+        val canAnnex = !city.civ.hasUnique(UniqueType.MayNotAnnexCities)
+        if (city.isPuppet && canAnnex) {
             val annexCityButton = "Annex city".toTextButton()
             annexCityButton.labelCell.pad(10f)
             annexCityButton.onClick {
@@ -272,8 +273,9 @@ class CityScreen(
             val razeCityButton = "Raze city".toTextButton()
             razeCityButton.labelCell.pad(10f)
             razeCityButton.onClick { city.isBeingRazed = true; update() }
-            if (!canChangeState || !city.canBeDestroyed())
+            if (!canChangeState || !city.canBeDestroyed() || !canAnnex) {
                 razeCityButton.disable()
+            }
 
             razeCityButtonHolder.add(razeCityButton) //.colspan(cityPickerTable.columns)
         } else {
