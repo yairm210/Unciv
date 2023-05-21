@@ -9,11 +9,11 @@ import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.City
-import com.unciv.models.ruleset.IConstruction
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
@@ -21,23 +21,24 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.CityAmbiencePlayer
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popups.ConfirmPopup
-import com.unciv.ui.components.tilegroups.TileGroupMap
-import com.unciv.ui.popups.ToastPopup
-import com.unciv.ui.components.tilegroups.CityTileGroup
-import com.unciv.ui.components.tilegroups.CityTileState
-import com.unciv.ui.components.tilegroups.TileSetStrings
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.KeyCharAndCode
-import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.keyShortcuts
 import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.extensions.onDoubleClick
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.tilegroups.CityTileGroup
+import com.unciv.ui.components.tilegroups.CityTileState
+import com.unciv.ui.components.tilegroups.TileGroupMap
+import com.unciv.ui.components.tilegroups.TileSetStrings
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.ConfirmPopup
+import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 class CityScreen(
@@ -313,6 +314,7 @@ class CityScreen(
         for (tileGroup in cityTileGroups) {
             tileGroup.onClick { tileGroupOnClick(tileGroup, cityInfo) }
             tileGroup.layerMisc.onClick { tileWorkedIconOnClick(tileGroup, cityInfo) }
+            tileGroup.layerMisc.onDoubleClick { tileWorkedIconDoubleClick(tileGroup, cityInfo) }
             tileGroups.add(tileGroup)
         }
 
@@ -348,9 +350,7 @@ class CityScreen(
             if (!tile.providesYield() && city.population.getFreePopulation() > 0) {
                 city.workedTiles.add(tile.position)
                 game.settings.addCompletedTutorialTask("Reassign worked tiles")
-            } else if (tile.isWorked() && !tile.isLocked()) {
-                city.lockedTiles.add(tile.position)
-            } else if (tile.isLocked()) {
+            } else {
                 city.workedTiles.remove(tile.position)
                 city.lockedTiles.remove(tile.position)
             }
@@ -361,7 +361,7 @@ class CityScreen(
 
             val price = city.expansion.getGoldCostOfTile(tile)
             val purchasePrompt = "Currently you have [${city.civ.gold}] [Gold].".tr() + "\n\n" +
-                    "Would you like to purchase [Tile] for [$price] [${Stat.Gold.character}]?".tr()
+                "Would you like to purchase [Tile] for [$price] [${Stat.Gold.character}]?".tr()
             ConfirmPopup(
                 this,
                 purchasePrompt,
@@ -375,6 +375,17 @@ class CityScreen(
                 UncivGame.Current.replaceCurrentScreen(CityScreen(city, initSelectedTile = city.expansion.chooseNewTileToOwn()))
             }.open()
         }
+    }
+
+
+    private fun tileWorkedIconDoubleClick(tileGroup: CityTileGroup, city: City) {
+        if (!canChangeState || city.isPuppet || tileGroup.tileState != CityTileState.WORKABLE) return
+        val tile = tileGroup.tile
+
+        if (tile.isWorked())
+            city.lockedTiles.add(tile.position)
+
+        update()
     }
 
     private fun tileGroupOnClick(tileGroup: CityTileGroup, city: City) {
