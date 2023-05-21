@@ -60,7 +60,7 @@ class VerticalFileListScrollPane(
         val loadImage = ImageGetter.getImage("OtherIcons/Load")
         loadImage.setSize(50f, 50f) // So the origin sets correctly
         loadImage.setOrigin(Align.center)
-        val loadAnimation = Actions.repeat(Int.MAX_VALUE, Actions.rotateBy(360f, 2f))
+        val loadAnimation = Actions.forever(Actions.rotateBy(360f, 2f))
         loadImage.addAction(loadAnimation)
         existingSavesTable.add(loadImage).size(50f).center()
 
