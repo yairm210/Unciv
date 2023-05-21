@@ -85,12 +85,12 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
     }
 
     fun removeAllPressuresExceptFor(religion: String) {
-        val pressureFromThisReligion = pressures[religion]!!
+        val pressureFromThisReligion = pressures[religion]
         // Atheism is never removed
         val pressureFromAtheism = pressures[Constants.noReligionName]
         clearAllPressures()
         pressures.add(religion, pressureFromThisReligion)
-        if (pressureFromAtheism != null) pressures[Constants.noReligionName] = pressureFromAtheism
+        if (pressureFromAtheism != 0) pressures[Constants.noReligionName] = pressureFromAtheism
         updateNumberOfFollowers()
     }
 
@@ -192,13 +192,13 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         return followers.clone()
     }
 
-    fun getFollowersOf(religion: String): Int? {
+    fun getFollowersOf(religion: String): Int {
         return followers[religion]
     }
 
     fun getFollowersOfMajorityReligion(): Int {
         val majorityReligion = getMajorityReligionName() ?: return 0
-        return followers[majorityReligion]!!
+        return followers[majorityReligion]
     }
 
     fun getFollowersOfOtherReligionsThan(religion: String): Int {
@@ -226,7 +226,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         val religionWithMaxPressure = pressures.maxByOrNull { it.value }!!.key
         return when {
             religionWithMaxPressure == Constants.noReligionName -> null
-            followers[religionWithMaxPressure]!! >= city.population.population / 2 -> religionWithMaxPressure
+            followers[religionWithMaxPressure] >= city.population.population / 2 -> religionWithMaxPressure
             else -> null
         }
     }

@@ -688,7 +688,7 @@ object NextTurnAutomation {
         // not have used a great prophet to found/enhance our religion.
         for (belief in BeliefType.values()) {
             if (belief == BeliefType.None) continue
-            repeat(beliefsToChoose[belief] ?: 0) {
+            repeat(beliefsToChoose[belief]) {
                 chosenBeliefs.add(
                     chooseBeliefOfType(civInfo, belief, chosenBeliefs) ?: return@repeat
                 )

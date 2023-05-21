@@ -123,7 +123,7 @@ class CivConstructions : IsPartOfGameInfoSerialization {
     }
 
     fun countConstructedObjects(objectToCount: INonPerpetualConstruction): Int {
-        val amountInSpaceShip = civInfo.victoryManager.currentsSpaceshipParts[objectToCount.name] ?: 0
+        val amountInSpaceShip = civInfo.victoryManager.currentsSpaceshipParts[objectToCount.name]
 
         return amountInSpaceShip + when (objectToCount) {
             is Building -> civInfo.cities.count {

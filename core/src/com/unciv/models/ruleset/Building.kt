@@ -402,7 +402,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     getCostForConstructionsIncreasingInPrice(
                         it.params[1].toInt(),
                         it.params[4].toInt(),
-                        city.civ.civConstructions.boughtItemsWithIncreasingPrice[name] ?: 0
+                        city.civ.civConstructions.boughtItemsWithIncreasingPrice[name]
                     )
                 }
             )

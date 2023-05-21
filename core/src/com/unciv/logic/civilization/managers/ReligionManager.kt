@@ -122,7 +122,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             return false
         }
         return (religionState == ReligionState.None && storedFaith >= faithForPantheon()) // earned pantheon
-                || (freeBeliefs[BeliefType.Pantheon.name] != null && freeBeliefs[BeliefType.Pantheon.name]!! > 0) // free pantheon belief
+                || freeBeliefs[BeliefType.Pantheon.name] > 0 // free pantheon belief
     }
 
     private fun foundPantheon(beliefName: String, useFreeBelief: Boolean) {
@@ -143,7 +143,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     // https://www.reddit.com/r/civ/comments/2m82wu/can_anyone_detail_the_finer_points_of_great/
     // Game files (globaldefines.xml)
     fun faithForNextGreatProphet(): Int {
-        val greatProphetsEarned = civInfo.civConstructions.boughtItemsWithIncreasingPrice[getGreatProphetEquivalent()!!] ?: 0
+        val greatProphetsEarned = civInfo.civConstructions.boughtItemsWithIncreasingPrice[getGreatProphetEquivalent()!!]
 
         var faithCost =
             (200 + 100 * greatProphetsEarned * (greatProphetsEarned + 1) / 2f) *
@@ -306,12 +306,12 @@ class ReligionManager : IsPartOfGameInfoSerialization {
 
         // function to help with bookkeeping
         fun chooseBeliefToAdd(type: BeliefType, number: Int) {
-            val numberToAdd = min(number, availableBeliefs[type]!!)
+            val numberToAdd = min(number, availableBeliefs[type])
             beliefsToChoose.add(type, numberToAdd)
-            availableBeliefs[type] = availableBeliefs[type]!! - numberToAdd
+            availableBeliefs[type] = availableBeliefs[type] - numberToAdd
             if (type != BeliefType.Any) {
                 // deduct from BeliefType.Any as well
-                availableBeliefs[BeliefType.Any] = availableBeliefs[BeliefType.Any]!! - numberToAdd
+                availableBeliefs[BeliefType.Any] = availableBeliefs[BeliefType.Any] - numberToAdd
             }
         }
 
@@ -377,14 +377,13 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         // decrement free beliefs if used
         if (useFreeBeliefs && hasFreeBeliefs()) {
             for (belief in beliefs) {
-                if (freeBeliefs[belief.type.name] == null) continue
-                freeBeliefs[belief.type.name] = max(freeBeliefs[belief.type.name]!! - 1, 0)
+                freeBeliefs[belief.type.name] = max(freeBeliefs[belief.type.name] - 1, 0)
             }
         }
         // limit the number of free beliefs available to number of remaining beliefs even if player
         // didn't use free beliefs (e.g., used a prophet or pantheon)
         for (type in freeBeliefs.keys) {
-            freeBeliefs[type] = min(freeBeliefs[type]!!, numberOfBeliefsAvailable(BeliefType.valueOf(type)))
+            freeBeliefs[type] = min(freeBeliefs[type], numberOfBeliefsAvailable(BeliefType.valueOf(type)))
         }
         civInfo.updateStatsForNextTurn()  // a belief can have an immediate effect on stats
     }
@@ -469,7 +468,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         if (religion == null) return 0
         return civInfo.gameInfo.getCities()
             .filter { it.matchesFilter(cityFilter, civInfo) }
-            .sumOf { it.religion.getFollowersOf(religion!!.name)!! }
+            .sumOf { it.religion.getFollowersOf(religion!!.name) }
     }
 
     fun getHolyCity(): City? {

@@ -44,7 +44,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.s
             if (!cityInfo.getRuleset().specialists.containsKey(specialistName)) // specialist doesn't exist in this ruleset, probably a mod
                 continue
             val newSpecialists = cityInfo.population.getNewSpecialists()
-            val assignedSpecialists = newSpecialists[specialistName]!!
+            val assignedSpecialists = newSpecialists[specialistName]
 
             if (cityScreen.canChangeState) add(getUnassignButton(assignedSpecialists, specialistName))
             add(getAllocationTable(assignedSpecialists, maxSpecialists, specialistName)).pad(10f)

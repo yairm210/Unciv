@@ -4,7 +4,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 
 open class Counter<K> : LinkedHashMap<K, Int>(), IsPartOfGameInfoSerialization {
 
-    override operator fun get(key: K): Int? { // don't return null if empty
+    override operator fun get(key: K): Int { // don't return null if empty
         return if (containsKey(key))
         // .toInt(), because GDX deserializes Counter values as *floats* for some reason
             super.get(key)!!.toInt()
