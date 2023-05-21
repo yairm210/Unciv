@@ -244,7 +244,7 @@ class City : IsPartOfGameInfoSerialization {
         return cityResources
     }
 
-    fun getTileResourceAmount(tile: Tile): Int {
+    private fun getTileResourceAmount(tile: Tile): Int {
         if (tile.resource == null) return 0
         if (!tile.providesResources(civ)) return 0
 

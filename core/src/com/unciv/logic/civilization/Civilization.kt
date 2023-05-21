@@ -441,7 +441,11 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     // Does not return local uniques, only global ones.
     /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
-    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(this), cityToIgnore: City? = null) = sequence {
+    fun getMatchingUniques(
+        uniqueType: UniqueType,
+        stateForConditionals: StateForConditionals = StateForConditionals(this),
+        cityToIgnore: City? = null
+    ): Sequence<Unique> = sequence {
         yieldAll(nation.getMatchingUniques(uniqueType, stateForConditionals))
         yieldAll(cities.asSequence()
             .filter { it != cityToIgnore }
@@ -464,7 +468,10 @@ class Civilization : IsPartOfGameInfoSerialization {
         yieldAll(gameInfo.ruleset.globalUniques.getMatchingUniques(uniqueType, stateForConditionals))
     }
 
-    fun getTriggeredUniques(trigger: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(this)) : Sequence<Unique> = sequence{
+    fun getTriggeredUniques(
+        trigger: UniqueType,
+        stateForConditionals: StateForConditionals = StateForConditionals(this)
+    ) : Sequence<Unique> = sequence {
         yieldAll(nation.uniqueMap.getTriggeredUniques(trigger, stateForConditionals))
         yieldAll(cities.asSequence()
             .flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getTriggeredUniques(trigger, stateForConditionals) }

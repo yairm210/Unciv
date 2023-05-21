@@ -17,7 +17,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
 
     // This needs to be kept track of for the
     // "[Stats] when a city adopts this religion for the first time" unique
-    val religionsAtSomePointAdopted: HashSet<String> = hashSetOf()
+    private val religionsAtSomePointAdopted: HashSet<String> = hashSetOf()
 
     private val pressures: Counter<String> = Counter()
     // Cached because using `updateNumberOfFollowers` to get this value resulted in many calls
@@ -79,9 +79,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         if (!city.civ.gameInfo.isReligionEnabled()) return // No religion, no pressures
         pressures.add(religionName, amount)
 
-        if (shouldUpdateFollowers) {
-            updateNumberOfFollowers(shouldUpdateFollowers)
-        }
+        if (shouldUpdateFollowers) updateNumberOfFollowers()
     }
 
     fun removeAllPressuresExceptFor(religion: String) {

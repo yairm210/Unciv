@@ -16,7 +16,7 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 
-class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.skin) {
+class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin) {
     val cityInfo = cityScreen.city
 
     fun update() {
@@ -56,7 +56,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.s
     }
 
 
-    fun getAllocationTable(assignedSpecialists: Int, maxSpecialists: Int, specialistName: String): Table {
+    private fun getAllocationTable(assignedSpecialists: Int, maxSpecialists: Int, specialistName: String): Table {
 
         val specialistIconTable = Table()
         val specialistObject = cityInfo.getRuleset().specialists[specialistName]!!

@@ -33,7 +33,7 @@ import kotlin.math.ceil
 import kotlin.math.round
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
 
-class CityStatsTable(val cityScreen: CityScreen): Table() {
+class CityStatsTable(private val cityScreen: CityScreen): Table() {
     private val innerTable = Table() // table within this Table. Slightly smaller creates border
     private val upperTable = Table() // fixed position table
     private val lowerTable = Table() // table that will be in the ScrollPane

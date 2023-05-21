@@ -87,7 +87,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     override fun getProductionCost(civInfo: Civilization): Int  = costFunctions.getProductionCost(civInfo)
 
     override fun canBePurchasedWithStat(city: City?, stat: Stat): Boolean {
-        if (city == null) return super.canBePurchasedWithStat(city, stat)
+        if (city == null) return super.canBePurchasedWithStat(null, stat)
         if (getRejectionReasons(city.civ, city).any { it.type != RejectionReasonType.Unbuildable  })
             return false
         if (costFunctions.canBePurchasedWithStat(city, stat)) return true
@@ -338,7 +338,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     fun isMilitary() = isRanged() || isMelee()
     fun isCivilian() = !isMilitary()
 
-    val isLandUnitInternal by lazy { type.isLandUnit() }
+    private val isLandUnitInternal by lazy { type.isLandUnit() }
     fun isLandUnit() = isLandUnitInternal
     fun isWaterUnit() = type.isWaterUnit()
     fun isAirUnit() = type.isAirUnit()
