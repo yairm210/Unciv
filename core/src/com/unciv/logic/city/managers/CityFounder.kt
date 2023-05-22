@@ -10,7 +10,6 @@ import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 
 class CityFounder {
     fun foundCity(civInfo: Civilization, cityLocation: Vector2) :City{
@@ -92,7 +91,6 @@ class CityFounder {
         ))
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, city, triggerNotificationText = "due to founding a city")
 
-        NextTurnProgress.incrementProgressMax()
 
         return city
     }

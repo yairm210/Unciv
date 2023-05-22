@@ -7,7 +7,6 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import kotlin.math.min
 import kotlin.random.Random
 
@@ -15,8 +14,6 @@ class CityTurnManager(val city: City) {
 
 
     fun startTurn() {
-        NextTurnProgress.incrementProgress()
-
         // Construct units at the beginning of the turn,
         // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
         city.cityConstructions.constructIfEnough()
@@ -114,8 +111,6 @@ class CityTurnManager(val city: City) {
 
 
     fun endTurn() {
-        NextTurnProgress.incrementProgress()
-
         val stats = city.cityStats.currentCityStats
 
         city.cityConstructions.endTurn(stats)
@@ -149,4 +144,6 @@ class CityTurnManager(val city: City) {
             city.population.unassignExtraPopulation()
         }
     }
+
+
 }

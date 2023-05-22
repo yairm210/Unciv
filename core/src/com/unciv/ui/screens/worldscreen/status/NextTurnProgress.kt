@@ -4,13 +4,15 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
+import com.unciv.models.metadata.GameParameters
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.Concurrency
+import com.unciv.utils.Log
 
-internal class NextTurnProgress(
+class NextTurnProgress(
     // nullable so we can free the reference once the ProgressBar is shown
     private var nextTurnButton: NextTurnButton?
 ) : Table() {
@@ -24,12 +26,7 @@ internal class NextTurnProgress(
         /** Bar width is NextTurnButton.width minus background ninepatch's declared outer widths minus this */
         private const val removeHorizontalPad = 25f
         /** Speed of fading the bar in when it starts being rendered */
-        private const val fadeInDuration = 1.5f
-
-        // Accessor proxies allowing code not having a WorldScreen or NextTurnButton reference to ping us
-        private fun getProgressBar() = GUI.getWorldScreenIfActive()?.nextTurnButton?.progressBar
-        fun incrementProgress() = getProgressBar()?.increment()
-        fun incrementProgressMax() = getProgressBar()?.incrementMax()
+        private const val fadeInDuration = 1f
     }
 
     private var progress = -1
@@ -50,20 +47,34 @@ internal class NextTurnProgress(
         add()  // Empty cell for the remainder portion of the bar
     }
 
-    fun start(count: Int, worldScreen: WorldScreen) {
+    fun start(worldScreen: WorldScreen) {
         progress = 0
-        progressMax = count
+        val game = worldScreen.gameInfo
         worldScreenHash = worldScreen.hashCode()
+
+        fun GameParameters.isRandomNumberOfCivs() = randomNumberOfPlayers || randomNumberOfCityStates
+        fun GameParameters.minNumberOfCivs() =
+            (if (randomNumberOfPlayers) minNumberOfPlayers else players.size) +
+            (if (randomNumberOfCityStates) minNumberOfCityStates else numberOfCityStates)
+
+        progressMax = 3 + // one extra step after clone and just before new worldscreen, 1 extra so it's never 100%
+            when {
+                // Later turns = two steps per city (startTurn and endTurn)
+                // Note we ignore cities being founded or destroyed - after turn 0 that proportion
+                // should be small, so the bar may clamp at max for a short while;
+                // or the new WordScreen starts before it's full. Far simpler code this way.
+                game.turns > 0 -> game.getCities().count() * 2
+                // If we shouldn't disclose how many civs there are to Mr. Eagle Eye counting steps:
+                game.gameParameters.isRandomNumberOfCivs() -> game.gameParameters.minNumberOfCivs()
+                // One step per expected city to be founded (they get an endTurn, no startTurn)
+                else -> game.civilizations.count { it.isMajorCiv() && it.isAI() || it.isCityState() }
+            }
+
         startUpdateProgress()
     }
 
     fun increment() {
         progress++
-        startUpdateProgress()
-    }
-
-    fun incrementMax() {
-        progressMax++
         startUpdateProgress()
     }
 
@@ -93,7 +104,7 @@ internal class NextTurnProgress(
             this@NextTurnProgress.setPosition((width - barWidth) / 2, barYPos)
         }
 
-        val cellWidth = barWidth * progress / progressMax
+        val cellWidth = barWidth * progress.coerceAtMost(progressMax) / progressMax
         val cellHeight = background.minHeight.coerceAtLeast(defaultBarHeight)
         cells[0].actor.setSize(cellWidth, cellHeight)
         cells[1].width(barWidth - cellWidth)  // Necessary - Table has a quirk so a simple fillX() won't shrink

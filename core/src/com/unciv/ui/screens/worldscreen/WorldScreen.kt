@@ -57,6 +57,7 @@ import com.unciv.ui.screens.worldscreen.bottombar.TileInfoTable
 import com.unciv.ui.screens.worldscreen.minimap.MinimapHolder
 import com.unciv.ui.screens.worldscreen.status.MultiplayerStatusButton
 import com.unciv.ui.screens.worldscreen.status.NextTurnButton
+import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.ui.screens.worldscreen.status.StatusButtons
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsTable
@@ -557,8 +558,8 @@ class WorldScreen(
     fun nextTurn() {
         isPlayersTurn = false
         shouldUpdate = true
-        nextTurnButton.startProgress(gameInfo.getCities().count() * 2 + 3, this)
-        // = two steps per city, one extra step after clone and just before new worldscreen, 1 extra so it's never 100%
+        val progressBar = NextTurnProgress(nextTurnButton)
+        progressBar.start(this)
 
         // on a separate thread so the user can explore their world while we're passing the turn
         nextTurnUpdateJob = Concurrency.runOnNonDaemonThreadPool("NextTurn") {
@@ -568,9 +569,9 @@ class WorldScreen(
             val gameInfoClone = originalGameInfo.clone()
             gameInfoClone.setTransients()  // this can get expensive on large games, not the clone itself
 
-            nextTurnButton.incrementProgress()
+            progressBar.increment()
 
-            gameInfoClone.nextTurn()
+            gameInfoClone.nextTurn(progressBar)
 
             if (originalGameInfo.gameParameters.isOnlineMultiplayer) {
                 try {
@@ -621,7 +622,7 @@ class WorldScreen(
                 gameInfoClone.isUpToDate = true
             }
 
-            nextTurnButton.incrementProgress()
+            progressBar.increment()
 
             startNewScreenJob(gameInfoClone)
         }

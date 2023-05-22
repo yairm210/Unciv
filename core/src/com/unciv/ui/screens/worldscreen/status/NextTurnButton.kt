@@ -28,7 +28,6 @@ import com.unciv.utils.launchOnGLThread
 
 class NextTurnButton : IconTextButton("", null, 30) {
     private var nextTurnAction = NextTurnAction.Default
-    internal val progressBar = NextTurnProgress(this)
 
     init {
 //         label.setFontSize(30)
@@ -188,9 +187,6 @@ class NextTurnButton : IconTextButton("", null, 30) {
                 }
         }
     }
-
-    fun startProgress(count: Int, worldScreen: WorldScreen) = progressBar.start(count, worldScreen)
-    fun incrementProgress() = progressBar.increment()
 }
 
 class NextTurnAction(val text: String, val color: Color, val icon: String? = null, val action: () -> Unit) {
