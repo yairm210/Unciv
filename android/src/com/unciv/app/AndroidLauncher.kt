@@ -85,10 +85,16 @@ open class AndroidLauncher : AndroidApplication() {
                 WorkerV1.startTurnChecker(applicationContext, game.files, game.gameInfo!!, game.settings.multiplayer)
             }
         }
+        if (game.onlineMultiplayer.isInitialized() && game.onlineMultiplayer.apiVersion == ApiVersion.APIv2) {
+            game.onlineMultiplayer.api.disableReconnecting()
+        }
         super.onPause()
     }
 
     override fun onResume() {
+        if (game?.onlineMultiplayer?.isInitialized() == true && game?.onlineMultiplayer?.apiVersion == ApiVersion.APIv2) {
+            game?.onlineMultiplayer?.api?.enableReconnecting()
+        }
         try {
             WorkManager.getInstance(applicationContext).cancelAllWorkByTag(Common.WORK_TAG)
             with(NotificationManagerCompat.from(this)) {

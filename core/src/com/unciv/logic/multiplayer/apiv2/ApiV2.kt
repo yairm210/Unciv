@@ -9,8 +9,8 @@ import com.unciv.logic.multiplayer.ApiVersion
 import com.unciv.logic.multiplayer.storage.ApiV2FileStorageEmulator
 import com.unciv.logic.multiplayer.storage.ApiV2FileStorageWrapper
 import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
-import com.unciv.utils.Log
 import com.unciv.utils.Concurrency
+import com.unciv.utils.Log
 import io.ktor.client.call.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
@@ -46,6 +46,9 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
 
     /** Info whether this class is fully initialized and ready to use */
     private var initialized = false
+
+    /** Switch to enable auto-reconnect attempts for the WebSocket connection */
+    private var reconnectWebSocket = true
 
     /** Timestamp of the last successful login */
     private var lastSuccessfulAuthentication: AtomicReference<Instant?> = AtomicReference()
@@ -127,6 +130,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
      * Dispose this class and its children and jobs
      */
     override fun dispose() {
+        disableReconnecting()
         sendChannel?.close()
         for (channel in eventChannelList) {
             channel.close()
@@ -301,7 +305,9 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
                 } catch (e: Exception) {
                     Log.debug("Failed to send WebSocket ping: %s", e.localizedMessage)
                     Concurrency.run {
-                        websocket(::handleWebSocket)
+                        if (reconnectWebSocket) {
+                            websocket(::handleWebSocket)
+                        }
                     }
                 }
                 delay(DEFAULT_WEBSOCKET_PING_FREQUENCY)
@@ -363,7 +369,9 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
             session.close()
             session.flush()
             Concurrency.run {
-                websocket(::handleWebSocket)
+                if (reconnectWebSocket) {
+                    websocket(::handleWebSocket)
+                }
             }
         } catch (e: CancellationException) {
             Log.debug("WebSocket coroutine was cancelled, closing connection: $e")
@@ -376,7 +384,9 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
             session.close()
             session.flush()
             Concurrency.run {
-                websocket(::handleWebSocket)
+                if (reconnectWebSocket) {
+                    websocket(::handleWebSocket)
+                }
             }
             throw e
         }
@@ -411,6 +421,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
      */
     @Suppress("KDocUnresolvedReference")
     override suspend fun afterLogin() {
+        enableReconnecting()
         val me = account.get(cache = false, suppress = true)
         if (me != null) {
             Log.error(
@@ -429,6 +440,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
      * Perform the post-logout hook, cancelling all WebSocket jobs and event channels
      */
     override suspend fun afterLogout(success: Boolean) {
+        disableReconnecting()
         sendChannel?.close()
         if (success) {
             for (channel in eventChannelList) {
@@ -461,6 +473,20 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
             lastSuccessfulAuthentication.set(Instant.now())
         }
         return success
+    }
+
+    /**
+     * Enable auto re-connect attempts for the WebSocket connection
+     */
+    fun enableReconnecting() {
+        reconnectWebSocket = true
+    }
+
+    /**
+     * Disable auto re-connect attempts for the WebSocket connection
+     */
+    fun disableReconnecting() {
+        reconnectWebSocket = false
     }
 }
 

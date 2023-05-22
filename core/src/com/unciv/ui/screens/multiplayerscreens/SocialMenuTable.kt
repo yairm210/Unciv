@@ -29,7 +29,7 @@ class SocialMenuTable(
 
     init {
         add(friendList).growX().minWidth(base.stage.width * 0.45f).padRight(5f)
-        add(chatContainer).minWidth(base.stage.width * 0.45f).maxHeight(maxChatHeight).growX()
+        add(chatContainer).maxHeight(maxChatHeight).growX()
         Concurrency.run {
             while (stage == null) {
                 delay(10)

@@ -229,7 +229,28 @@ class WorldScreen(
                         } else {
                             popup.addGoodSizedLabel("It's your turn in game '${it.gameName}' now!").colspan(2).row()
                         }
-                        popup.addCloseButton()
+                        popup.addCloseButton {
+                            val updateNotification = Popup(this)
+                            updateNotification.addGoodSizedLabel("Another player just completed their turn.").colspan(2).row()
+                            updateNotification.addCloseButton()
+                            updateNotification.addOKButton("Reload game") {
+                                updateNotification.reuseWith("Working...")
+                                updateNotification.open(force = true)
+                                val updatedGameInfo = InfoPopup.load(this.stage) {
+                                    game.onlineMultiplayer.downloadGame(it.gameInfo.gameId)
+                                }
+                                if (updatedGameInfo != null) {
+                                    Concurrency.runOnNonDaemonThreadPool {
+                                        game.loadGame(updatedGameInfo)
+                                        Concurrency.runOnGLThread {
+                                            UncivGame.Current.notifyTurnStarted()
+                                        }
+                                    }
+                                }
+                            }
+                            updateNotification.equalizeLastTwoButtonWidths()
+                            updateNotification.open()
+                        }
                         popup.addOKButton("Switch to game") {
                             popup.reuseWith("Working...")
                             popup.open(force = true)
@@ -245,6 +266,11 @@ class WorldScreen(
                         popup.open(force = true)
                     }
                 }
+            }
+
+            // Ensure a WebSocket connection is established for APIv2 games
+            if (game.onlineMultiplayer.isInitialized() && game.onlineMultiplayer.hasAuthentication() && game.onlineMultiplayer.apiVersion == ApiVersion.APIv2) {
+                Concurrency.run { game.onlineMultiplayer.api.ensureConnectedWebSocket() }
             }
         }
 
