@@ -126,12 +126,12 @@ object SpecificUnitAutomation {
                 .firstOrNull()?.action?.invoke()
     }
 
-    fun automateSettlerActions(unit: MapUnit) {
+    fun automateSettlerActions(unit: MapUnit, tilesWhereWeWillBeCaptured: Set<Tile>) {
         if (unit.civ.gameInfo.turns == 0) {   // Special case, we want AI to settle in place on turn 1.
             val foundCityAction = UnitActions.getFoundCityAction(unit, unit.getTile())
             // Depending on era and difficulty we might start with more than one settler. In that case settle the one with the best location
             val otherSettlers = unit.civ.units.getCivUnits().filter { it.currentMovement > 0 && it.baseUnit == unit.baseUnit }
-            if(foundCityAction?.action != null &&
+            if (foundCityAction?.action != null &&
                     otherSettlers.none {
                         CityLocationTileRanker.rankTileAsCityCenter(
                             it.getTile(), unit.civ
@@ -145,14 +145,13 @@ object SpecificUnitAutomation {
             }
         }
 
-        if (unit.getTile().militaryUnit == null     // Don't move until you're accompanied by a military unit
-            && !unit.civ.isCityState()          // ..unless you're a city state that was unable to settle its city on turn 1
-            && unit.getDamageFromTerrain() < unit.health) return    // Also make sure we won't die waiting
+        if (unit.getDamageFromTerrain() < unit.health) return    // Also make sure we won't die waiting
 
         // It's possible that we'll see a tile "over the sea" that's better than the tiles close by, but that's not a reason to abandon the close tiles!
         // Also this lead to some routing problems, see https://github.com/yairm210/Unciv/issues/3653
         val bestCityLocation: Tile? =
                 CityLocationTileRanker.getBestTilesToFoundCity(unit).firstOrNull {
+                    if (it.first in tilesWhereWeWillBeCaptured) return@firstOrNull false
                     val pathSize = unit.movement.getShortestPath(it.first).size
                     return@firstOrNull pathSize in 1..3
                 }?.first
@@ -169,7 +168,7 @@ object SpecificUnitAutomation {
             if (frontierCity != null && getFrontierScore(frontierCity) > 0  && unit.movement.canReach(frontierCity.getCenterTile()))
                 unit.movement.headTowards(frontierCity.getCenterTile())
             if (UnitAutomation.tryExplore(unit)) return // try to find new areas
-            UnitAutomation.wander(unit) // go around aimlessly
+            UnitAutomation.wander(unit, tilesToAvoid = tilesWhereWeWillBeCaptured) // go around aimlessly
             return
         }
 

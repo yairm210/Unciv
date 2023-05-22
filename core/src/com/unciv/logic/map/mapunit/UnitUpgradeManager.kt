@@ -59,14 +59,7 @@ class UnitUpgradeManager(val unit:MapUnit) {
     ): Boolean {
         if (unit.name == unitToUpgradeTo.name) return false
 
-        // We need to remove the unit from the civ for this check,
-        // because if the unit requires, say, horses, and so does its upgrade,
-        // and the civ currently has 0 horses, we need to see if the upgrade will be buildable
-        // WHEN THE CURRENT UNIT IS NOT HERE
-        // TODO redesign without kludge: Inform getRejectionReasons about 'virtually available' resources somehow
-        unit.civ.units.removeUnit(unit)
-        val rejectionReasons = unitToUpgradeTo.getRejectionReasons(unit.civ)
-        unit.civ.units.addUnit(unit)
+        val rejectionReasons = unitToUpgradeTo.getRejectionReasons(unit.civ, additionalResources = unit.baseUnit.getResourceRequirementsPerTurn())
 
         var relevantRejectionReasons = rejectionReasons.filterNot { it.type == RejectionReasonType.Unbuildable }
         if (ignoreRequirements)
