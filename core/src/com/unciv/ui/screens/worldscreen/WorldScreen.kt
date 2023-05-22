@@ -57,6 +57,7 @@ import com.unciv.ui.screens.worldscreen.bottombar.TileInfoTable
 import com.unciv.ui.screens.worldscreen.minimap.MinimapHolder
 import com.unciv.ui.screens.worldscreen.status.MultiplayerStatusButton
 import com.unciv.ui.screens.worldscreen.status.NextTurnButton
+import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.ui.screens.worldscreen.status.StatusButtons
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsTable
@@ -557,6 +558,8 @@ class WorldScreen(
     fun nextTurn() {
         isPlayersTurn = false
         shouldUpdate = true
+        val progressBar = NextTurnProgress(nextTurnButton)
+        progressBar.start(this)
 
         // on a separate thread so the user can explore their world while we're passing the turn
         nextTurnUpdateJob = Concurrency.runOnNonDaemonThreadPool("NextTurn") {
@@ -566,7 +569,9 @@ class WorldScreen(
             val gameInfoClone = originalGameInfo.clone()
             gameInfoClone.setTransients()  // this can get expensive on large games, not the clone itself
 
-            gameInfoClone.nextTurn()
+            progressBar.increment()
+
+            gameInfoClone.nextTurn(progressBar)
 
             if (originalGameInfo.gameParameters.isOnlineMultiplayer) {
                 try {
@@ -616,6 +621,8 @@ class WorldScreen(
             if (gameInfo.gameParameters.isOnlineMultiplayer && gameInfoClone.civilizations.filter { it.playerType == PlayerType.Human }.size == 1) {
                 gameInfoClone.isUpToDate = true
             }
+
+            progressBar.increment()
 
             startNewScreenJob(gameInfoClone)
         }
@@ -713,7 +720,7 @@ class WorldScreen(
         displayTutorial(TutorialTrigger.LuxuryResource) { resources.any { it.resource.resourceType == ResourceType.Luxury } }
         displayTutorial(TutorialTrigger.StrategicResource) { resources.any { it.resource.resourceType == ResourceType.Strategic } }
         displayTutorial(TutorialTrigger.EnemyCity) {
-            viewingCiv.getKnownCivs().asSequence().filter { viewingCiv.isAtWarWith(it) }
+            viewingCiv.getKnownCivs().filter { viewingCiv.isAtWarWith(it) }
                     .flatMap { it.cities.asSequence() }.any { viewingCiv.hasExplored(it.getCenterTile()) }
         }
         displayTutorial(TutorialTrigger.ApolloProgram) { viewingCiv.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts) }

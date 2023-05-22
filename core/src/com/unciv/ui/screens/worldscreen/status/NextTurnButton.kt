@@ -27,7 +27,7 @@ import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
 
 class NextTurnButton : IconTextButton("", null, 30) {
-    private var nextTurnAction = NextTurnAction("", Color.BLACK) {}
+    private var nextTurnAction = NextTurnAction.Default
 
     init {
 //         label.setFontSize(30)
@@ -41,29 +41,31 @@ class NextTurnButton : IconTextButton("", null, 30) {
 
     fun update(worldScreen: WorldScreen) {
         nextTurnAction = getNextTurnAction(worldScreen)
+        updateButton(nextTurnAction)
+
+        isEnabled = !worldScreen.hasOpenPopups() && worldScreen.isPlayersTurn
+                && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning()
+    }
+    internal fun updateButton(nextTurnAction: NextTurnAction) {
         label.setText(nextTurnAction.text.tr())
         label.color = nextTurnAction.color
-        if (nextTurnAction.icon != null && ImageGetter.imageExists(nextTurnAction.icon!!))
+        if (nextTurnAction.icon != null && ImageGetter.imageExists(nextTurnAction.icon))
             iconCell.setActor(ImageGetter.getImage(nextTurnAction.icon).apply { setSize(30f) })
         else
             iconCell.clearActor()
         pack()
-
-        isEnabled = !worldScreen.hasOpenPopups() && worldScreen.isPlayersTurn
-                && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning()
     }
 
 
     private fun getNextTurnAction(worldScreen: WorldScreen): NextTurnAction {
         return when {
             worldScreen.isNextTurnUpdateRunning() ->
-                NextTurnAction("Working...", Color.GRAY, "NotificationIcons/Working") {}
+                NextTurnAction.Working
             !worldScreen.isPlayersTurn && worldScreen.gameInfo.gameParameters.isOnlineMultiplayer ->
                 NextTurnAction("Waiting for [${worldScreen.gameInfo.currentPlayerCiv}]...", Color.GRAY,
                     "NotificationIcons/Waiting") {}
             !worldScreen.isPlayersTurn && !worldScreen.gameInfo.gameParameters.isOnlineMultiplayer ->
-                NextTurnAction("Waiting for other players...",Color.GRAY,
-                    "NotificationIcons/Waiting") {}
+                NextTurnAction.Waiting
 
             worldScreen.viewingCiv.cities.any {
                 !it.isPuppet &&
@@ -185,7 +187,12 @@ class NextTurnButton : IconTextButton("", null, 30) {
                 }
         }
     }
-
 }
 
-class NextTurnAction(val text: String, val color: Color, val icon: String? = null, val action: () -> Unit)
+class NextTurnAction(val text: String, val color: Color, val icon: String? = null, val action: () -> Unit) {
+    companion object Prefabs {
+        val Default = NextTurnAction("", Color.BLACK) {}
+        val Working = NextTurnAction("Working...", Color.GRAY, "NotificationIcons/Working") {}
+        val Waiting = NextTurnAction("Waiting for other players...",Color.GRAY, "NotificationIcons/Waiting") {}
+    }
+}
