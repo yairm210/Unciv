@@ -203,11 +203,9 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         }
 
         // unassign specialists that cannot be (e.g. the city was captured and one of the specialist buildings was destroyed)
-        val maxSpecialists = getMaxSpecialists()
-        val specialistsHashmap = specialistAllocations
-        for ((specialistName, amount) in specialistsHashmap)
-            if (amount > maxSpecialists[specialistName])
-                specialistAllocations[specialistName] = maxSpecialists[specialistName]
+        for ((specialistName, maxAmount) in getMaxSpecialists())
+            if (specialistAllocations[specialistName] > maxAmount)
+                specialistAllocations[specialistName] = maxAmount
 
         val localUniqueCache = LocalUniqueCache()
 
