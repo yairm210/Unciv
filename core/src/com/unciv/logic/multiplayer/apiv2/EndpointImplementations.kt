@@ -793,7 +793,7 @@ class GameApi(private val client: HttpClient, private val authHelper: AuthHelper
      */
     suspend fun head(gameUUID: UUID, suppress: Boolean = false): GameOverviewResponse? {
         val result = list(suppress = suppress)
-        return result?.filter { it.gameUUID == gameUUID }?.get(0)
+        return result?.filter { it.gameUUID == gameUUID }?.getOrNull(0)
     }
 
     /**

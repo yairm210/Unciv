@@ -22,3 +22,6 @@ internal const val DEFAULT_REQUEST_TIMEOUT = 10_000L
 
 /** Default timeout for connecting to a remote server (miliseconds) */
 internal const val DEFAULT_CONNECT_TIMEOUT = 5_000L
+
+/** Default timeout for a single WebSocket PING-PONG roundtrip */
+internal const val DEFAULT_WEBSOCKET_PING_TIMEOUT = 10_000L
