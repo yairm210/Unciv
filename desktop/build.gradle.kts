@@ -59,6 +59,7 @@ tasks.register<Jar>("dist") { // Compiles the jar file
             + configurations.compileClasspath.get().resolve()
         ).map { if (it.isDirectory) it else zipTree(it) }})
     from(files(assetsDir))
+    exclude("mods", "SaveFiles", "MultiplayerFiles", "GameSettings.json", "lasterror.txt")
     // This is for the .dll and .so files to make the Discord RPC work on all desktops
     from(files(discordDir))
     archiveFileName.set("${BuildConfig.appName}.jar")

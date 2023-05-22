@@ -20,7 +20,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var maxNumberOfPlayers = 3
     var players = ArrayList<Player>().apply {
         add(Player(playerType = PlayerType.Human))
-        for (i in 1..3) add(Player())
+        repeat(3) { add(Player()) }
     }
     var randomNumberOfCityStates = false
     var minNumberOfCityStates = 6
@@ -43,6 +43,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var startingEra = "Ancient era"
 
     var isOnlineMultiplayer = false
+    var multiplayerServerUrl: String? = null
     var anyoneCanSpectate = true
     var baseRuleset: String = BaseRuleset.Civ_V_GnK.fullName
     var mods = LinkedHashSet<String>()
@@ -74,6 +75,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
         parameters.victoryTypes = ArrayList(victoryTypes)
         parameters.startingEra = startingEra
         parameters.isOnlineMultiplayer = isOnlineMultiplayer
+        parameters.multiplayerServerUrl = multiplayerServerUrl
         parameters.anyoneCanSpectate = anyoneCanSpectate
         parameters.baseRuleset = baseRuleset
         parameters.mods = LinkedHashSet(mods)

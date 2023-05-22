@@ -11,7 +11,8 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.Charset
-import java.util.*
+import java.util.Date
+import java.util.Timer
 import kotlin.concurrent.timer
 
 
@@ -134,13 +135,13 @@ object DropBox: FileStorage {
         throw FileStorageRateLimitReached(remainingRateLimitSeconds)
     }
 
-    fun fileExists(fileName: String): Boolean = try {
-            dropboxApi("https://api.dropboxapi.com/2/files/get_metadata",
-                "{\"path\":\"$fileName\"}", "application/json")
-            true
-        } catch (ex: MultiplayerFileNotFoundException) {
-            false
-        }
+//     fun fileExists(fileName: String): Boolean = try {
+//             dropboxApi("https://api.dropboxapi.com/2/files/get_metadata",
+//                 "{\"path\":\"$fileName\"}", "application/json")
+//             true
+//         } catch (ex: MultiplayerFileNotFoundException) {
+//             false
+//         }
 
 //
 //    fun createTemplate(): String {
@@ -156,10 +157,10 @@ object DropBox: FileStorage {
 //        var has_more = false
 //    }
 
-    @Suppress("PropertyName")
+    @Suppress("PropertyName")  // and don't make that private or this suppress won't work
     private class MetaData: FileMetaData {
 //        var name = ""
-        private var server_modified = ""
+        var server_modified = ""
 
         override fun getLastModified(): Date {
             return server_modified.parseDate()

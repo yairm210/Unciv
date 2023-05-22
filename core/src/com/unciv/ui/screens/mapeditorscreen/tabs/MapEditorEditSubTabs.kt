@@ -1,4 +1,4 @@
-package com.unciv.ui.screens.mapeditorscreen
+package com.unciv.ui.screens.mapeditorscreen.tabs
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -28,7 +28,6 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
-import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorEditTab
 import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorEditTab.BrushHandlerType
 
 internal interface IMapEditorEditSubTabs {
@@ -352,7 +351,9 @@ class MapEditorEditRiversTab(
             add(getRiverIcon(RiverEdge.Left)).padRight(10f)
             add("Bottom left river".toLabel(fontSize = 32))
             onClick {
-                editTab.setBrush(BrushHandlerType.Direct,"Bottom left river", getTileGroupWithRivers(RiverEdge.Left)) { tile ->
+                editTab.setBrush(BrushHandlerType.Direct,"Bottom left river", getTileGroupWithRivers(
+                    RiverEdge.Left
+                )) { tile ->
                     tile.hasBottomLeftRiver = !tile.hasBottomLeftRiver
                 }
             }
@@ -363,7 +364,9 @@ class MapEditorEditRiversTab(
             add(getRiverIcon(RiverEdge.Bottom)).padRight(10f)
             add("Bottom river".toLabel(fontSize = 32))
             onClick {
-                editTab.setBrush(BrushHandlerType.Direct,"Bottom river", getTileGroupWithRivers(RiverEdge.Bottom)) { tile ->
+                editTab.setBrush(BrushHandlerType.Direct,"Bottom river", getTileGroupWithRivers(
+                    RiverEdge.Bottom
+                )) { tile ->
                     tile.hasBottomRiver = !tile.hasBottomRiver
                 }
             }
@@ -374,7 +377,9 @@ class MapEditorEditRiversTab(
             add(getRiverIcon(RiverEdge.Right)).padRight(10f)
             add("Bottom right river".toLabel(fontSize = 32))
             onClick {
-                editTab.setBrush(BrushHandlerType.Direct,"Bottom right river", getTileGroupWithRivers(RiverEdge.Right)) { tile ->
+                editTab.setBrush(BrushHandlerType.Direct,"Bottom right river", getTileGroupWithRivers(
+                    RiverEdge.Right
+                )) { tile ->
                     tile.hasBottomRightRiver = !tile.hasBottomRightRiver
                 }
             }

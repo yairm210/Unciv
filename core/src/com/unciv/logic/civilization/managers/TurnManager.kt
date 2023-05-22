@@ -19,9 +19,10 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unique.endTurn
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.MayaCalendar
-import java.util.*
+import com.unciv.utils.Log
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.random.Random
 
 class TurnManager(val civInfo: Civilization) {
 
@@ -167,11 +168,12 @@ class TurnManager(val civInfo: Civilization) {
             // The first test in `updateRevolts` should prevent getting here in a no-barbarians game, but it has been shown to still occur
             civInfo.gameInfo.getBarbarianCivilization()
         } catch (ex: NoSuchElementException) {
+            Log.error("Barbarian civilization not found", ex)
             civInfo.removeFlag(CivFlags.RevoltSpawning.name)
             return
         }
 
-        val random = Random()
+        val random = Random.Default
         val rebelCount = 1 + random.nextInt(100 + 20 * (civInfo.cities.size - 1)) / 100
         val spawnCity = civInfo.cities.maxByOrNull { random.nextInt(it.population.population + 10) } ?: return
         val spawnTile = spawnCity.getTiles().maxByOrNull { rateTileForRevoltSpawn(it) } ?: return
@@ -213,7 +215,7 @@ class TurnManager(val civInfo: Civilization) {
     }
 
     private fun getTurnsBeforeRevolt() =
-            ((4 + Random().nextInt(3)) * max(civInfo.gameInfo.speed.modifier, 1f)).toInt()
+            ((4 + Random.Default.nextInt(3)) * max(civInfo.gameInfo.speed.modifier, 1f)).toInt()
 
 
     fun endTurn() {

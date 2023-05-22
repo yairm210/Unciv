@@ -3,12 +3,14 @@ package com.unciv.logic
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.UncivGame.Version
+import com.unciv.logic.BackwardCompatibility.convertEncampmentData
 import com.unciv.logic.BackwardCompatibility.convertFortify
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
 import com.unciv.logic.BackwardCompatibility.migrateToTileHistory
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.GameInfo.Companion.CURRENT_COMPATIBILITY_NUMBER
 import com.unciv.logic.GameInfo.Companion.FIRST_WITHOUT
+import com.unciv.logic.automation.civilization.BarbarianManager
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.CivilizationInfoPreview
@@ -34,7 +36,7 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
-import java.util.*
+import java.util.UUID
 
 
 /**
@@ -163,9 +165,11 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     fun clone(): GameInfo {
         val toReturn = GameInfo()
         toReturn.tileMap = tileMap.clone()
-        toReturn.civilizations.addAll(civilizations.map { it.clone() })
+        toReturn.civilizations = civilizations.asSequence()
+            .map { it.clone() }
+            .toCollection(ArrayList(civilizations.size))
         toReturn.barbarians = barbarians.clone()
-        toReturn.religions.putAll(religions.map { Pair(it.key, it.value.clone()) })
+        toReturn.religions.putAll(religions.asSequence().map { it.key to it.value.clone() })
         toReturn.currentPlayer = currentPlayer
         toReturn.currentTurnStartTime = currentTurnStartTime
         toReturn.turns = turns
@@ -175,7 +179,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         toReturn.diplomaticVictoryVotesCast.putAll(diplomaticVictoryVotesCast)
         toReturn.oneMoreTurnMode = oneMoreTurnMode
         toReturn.customSaveLocation = customSaveLocation
-        toReturn.victoryData = victoryData
+        toReturn.victoryData = victoryData?.copy()
         toReturn.historyStartTurn = historyStartTurn
 
         return toReturn
@@ -502,11 +506,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         tileMap.gameInfo = this
 
         // [TEMPORARY] Convert old saves to newer ones by moving base rulesets from the mod list to the base ruleset field
-        val baseRulesetInMods = gameParameters.mods.firstOrNull { RulesetCache[it]?.modOptions?.isBaseRuleset == true }
-        if (baseRulesetInMods != null) {
-            gameParameters.baseRuleset = baseRulesetInMods
-            gameParameters.mods = LinkedHashSet(gameParameters.mods.filter { it != baseRulesetInMods })
-        }
+        convertOldSavesToNewSaves()
 
         ruleset = RulesetCache.getComplexRuleset(gameParameters)
 
@@ -558,6 +558,24 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         convertFortify()
 
+        updateCivilizationState()
+
+        spaceResources.clear()
+        spaceResources.addAll(ruleset.buildings.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
+            .flatMap { it.getResourceRequirementsPerTurn().keys })
+        spaceResources.addAll(ruleset.victories.values.flatMap { it.requiredSpaceshipParts })
+
+        convertEncampmentData()
+        barbarians.setTransients(this)
+
+        cityDistances.game = this
+
+        guaranteeUnitPromotions()
+
+        migrateToTileHistory()
+    }
+
+    private fun updateCivilizationState() {
         for (civInfo in civilizations.asSequence()
             // update city-state resource first since the happiness of major civ depends on it.
             // See issue: https://github.com/yairm210/Unciv/issues/7781
@@ -600,19 +618,14 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
                 cityInfo.cityStats.update()
             }
         }
+    }
 
-        spaceResources.clear()
-        spaceResources.addAll(ruleset.buildings.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
-            .flatMap { it.getResourceRequirementsPerTurn().keys })
-        spaceResources.addAll(ruleset.victories.values.flatMap { it.requiredSpaceshipParts })
-
-        barbarians.setTransients(this)
-
-        cityDistances.game = this
-
-        guaranteeUnitPromotions()
-
-        migrateToTileHistory()
+    private fun convertOldSavesToNewSaves() {
+        val baseRulesetInMods = gameParameters.mods.firstOrNull { RulesetCache[it]?.modOptions?.isBaseRuleset == true }
+        if (baseRulesetInMods != null) {
+            gameParameters.baseRuleset = baseRulesetInMods
+            gameParameters.mods = LinkedHashSet(gameParameters.mods.filter { it != baseRulesetInMods })
+        }
     }
 
     //endregion

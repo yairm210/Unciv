@@ -50,7 +50,7 @@ class Simulation(
         val jobs: ArrayList<Job> = ArrayList()
         for (threadId in 1..threadsNumber) {
             jobs.add(launch(CoroutineName("simulation-${threadId}")) {
-                for (i in 1..simulationsPerThread) {
+                repeat(simulationsPerThread) {
                     val gameInfo = GameStarter.startNewGame(GameSetupInfo(newGameInfo))
                     gameInfo.simulateMaxTurns = maxTurns
                     gameInfo.simulateUntilWin = true

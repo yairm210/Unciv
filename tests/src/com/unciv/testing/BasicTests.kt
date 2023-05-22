@@ -329,7 +329,7 @@ class BasicTests {
         val statCount = Stat.values().size
         val stats = Stats()
 
-        for (i in 0 until iterations) {
+        repeat(iterations) {
             val value: Float = random.nextDouble(-10.0, 10.0).toFloat()
             stats.add( Stats(gold = value) )
             stats.forEach {

@@ -13,7 +13,7 @@ import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
-import java.util.*
+import java.util.UUID
 
 class AddFriendScreen : PickerScreen() {
     init {
@@ -47,7 +47,7 @@ class AddFriendScreen : PickerScreen() {
         rightSideButton.onClick {
             try {
                 UUID.fromString(IdChecker.checkAndReturnPlayerUuid(playerIDTextField.text))
-            } catch (ex: Exception) {
+            } catch (_: Exception) {
                 ToastPopup("Player ID is incorrect", this)
                 return@onClick
             }

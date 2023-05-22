@@ -21,6 +21,7 @@ import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.images.ImageGetter
 
 
@@ -164,7 +165,7 @@ class NativeBitmapFontData(
                 try {
                     // This sometimes fails with a "Frame buffer couldn't be constructed: incomplete attachment" error, unclear why
                     Fonts.getPixmapFromActor(Fonts.charToRulesetImageActor[ch]!!)
-                } catch (ex: Exception) {
+                } catch (_: Exception) {
                     Pixmap(0,0, Pixmap.Format.RGBA8888) // Empty space
                 }
             else -> fontImplementation.getCharPixmap(ch)
@@ -281,6 +282,12 @@ object Fonts {
 
         for (nation in ruleset.nations.values)
             addChar(nation.name, ImageGetter.getNationPortrait(nation, ORIGINAL_FONT_SIZE))
+
+        for (policy in ruleset.policies.values) {
+            val fileLocation = if (policy.name in ruleset.policyBranches)
+                "PolicyBranchIcons/" + policy.name else "PolicyIcons/" + policy.name
+            addChar(policy.name, ImageGetter.getImage(fileLocation).apply { setSize(ORIGINAL_FONT_SIZE) })
+        }
     }
 
     val frameBuffer by lazy { FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.width, Gdx.graphics.height, false) }
@@ -305,6 +312,7 @@ object Fonts {
 
 
         // Pixmap is now *upside down* so we need to flip it around the y axis
+        pixmap.blending = Pixmap.Blending.None
         for (i in 0..w)
             for (j in 0..h/2) {
                 val topPixel = pixmap.getPixel(i,j)

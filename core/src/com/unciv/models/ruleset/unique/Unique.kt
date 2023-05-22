@@ -109,8 +109,10 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         // filter out possible replacements that are obviously wrong
         val uniquesWithNoErrors = finalPossibleUniques.filter {
             val unique = Unique(it)
-            val errors = RulesetValidator(ruleset).checkUnique(unique, true, "",
-                UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific, unique.type!!.targetTypes.first())
+            val errors = RulesetValidator(ruleset).checkUnique(
+                unique, true, "",
+                UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+            )
             errors.isEmpty()
         }
         if (uniquesWithNoErrors.size == 1) return uniquesWithNoErrors.first()
@@ -125,7 +127,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     ): Boolean {
 
         val nonConditionalConditionTypes = setOf(UniqueTarget.TriggerCondition, UniqueTarget.UnitTriggerCondition, UniqueTarget.UnitActionModifier)
-        if (condition.type!!.targetTypes.any { it in nonConditionalConditionTypes })
+        if (condition.type?.targetTypes?.any { it in nonConditionalConditionTypes } == true)
             return true // not a filtering condition
 
         fun ruleset() = state.civInfo!!.gameInfo.ruleset

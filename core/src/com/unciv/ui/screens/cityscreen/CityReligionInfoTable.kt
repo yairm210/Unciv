@@ -66,7 +66,7 @@ class CityReligionInfoTable(
                 add(followerCount.toLabel()).pad(5f)
                 addSeparatorVertical(gridColor)
                 if (futurePressures.containsKey(religion))
-                    add(("+ [${futurePressures[religion]!!}] pressure").toLabel()).pad(5f)
+                    add(("+ [${futurePressures[religion]}] pressure").toLabel()).pad(5f)
                 else
                     add()
                 row()

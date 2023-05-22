@@ -5,9 +5,13 @@ import com.badlogic.gdx.graphics.Pixmap
 import com.unciv.ui.components.FontFamilyData
 import com.unciv.ui.components.FontImplementation
 import com.unciv.ui.components.Fonts
-import java.awt.*
+import java.awt.Color
+import java.awt.Font
+import java.awt.FontMetrics
+import java.awt.GraphicsEnvironment
+import java.awt.RenderingHints
 import java.awt.image.BufferedImage
-import java.util.*
+import java.util.Locale
 
 
 class DesktopFont : FontImplementation {
@@ -44,7 +48,7 @@ class DesktopFont : FontImplementation {
             font = Font.createFont(Font.TRUETYPE_FONT, fontFile).deriveFont(size.toFloat())
             ge.registerFont(font)
         }
-        catch (e: Exception)
+        catch (_: Exception)
         {
             // Fallback to default, if failed.
             font = Font(Fonts.DEFAULT_FONT_FAMILY, Font.PLAIN, size)

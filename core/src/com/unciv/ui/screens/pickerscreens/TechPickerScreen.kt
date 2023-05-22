@@ -27,7 +27,7 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
-import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.Concurrency
 import kotlin.math.abs
 
 

@@ -54,7 +54,7 @@ class RiverGenerator(
 
     private fun spawnRiver(initialPosition: Tile) {
         val endPosition = getClosestWaterTile(initialPosition)
-            ?: throw IllegalStateException("No water found for river destination")
+            ?: error("No water found for river destination")
         spawnRiver(initialPosition, endPosition)
     }
 
@@ -64,7 +64,7 @@ class RiverGenerator(
         var riverCoordinate = RiverCoordinate(initialPosition.position,
                 RiverCoordinate.BottomRightOrLeft.values().random(randomness.RNG))
 
-        for (step in 1..maxRiverLength) {     // Arbitrary max on river length, otherwise this will go in circles - rarely
+        repeat(maxRiverLength) {     // Arbitrary max on river length, otherwise this will go in circles - rarely
             val riverCoordinateTile = tileMap[riverCoordinate.position]
             resultingTiles?.add(riverCoordinateTile)
             if (riverCoordinate.getAdjacentTiles(tileMap).any { it.isWater }) return

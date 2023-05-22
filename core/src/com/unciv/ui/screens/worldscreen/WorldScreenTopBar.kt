@@ -54,7 +54,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private val happinessLabel = "0".toLabel()
     private val cultureLabel = "0".toLabel(colorFromRGB(210, 94, 210))
     private val faithLabel = "0".toLabel(colorFromRGB(168, 196, 241))
-    private data class ResourceActors(val resource: TileResource, val Label: Label, val icon: Group)
+    private data class ResourceActors(val resource: TileResource, val label: Label, val icon: Group)
     private val resourceActors = ArrayList<ResourceActors>(12)
     private val happinessImage = Group()
 
@@ -342,13 +342,16 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         val civResources = civInfo.getCivResourcesByName()
         val civResourceSupply = civInfo.getCivResourceSupply()
         for ((resource, label, icon) in resourceActors) {
-            if (resource.revealedBy != null && !civInfo.tech.isResearched(resource.revealedBy!!))
-                continue
             if (resource.hasUnique(UniqueType.NotShownOnWorldScreen)) continue
+
+            val amount = civResources[resource.name] ?: 0
+
+            if (resource.revealedBy != null && !civInfo.tech.isResearched(resource.revealedBy!!)
+                    && amount == 0) // You can trade for resources you cannot process yourself yet
+                continue
 
             resourcesWrapper.add(icon).padLeft(firstPadLeft).padRight(0f)
             firstPadLeft = 5f
-            val amount = civResources[resource.name] ?: 0
             if (!resource.isStockpiled())
                 label.setText(amount)
             else {

@@ -37,9 +37,10 @@ ij_kotlin_keep_blank_lines_in_code = 2
 ij_kotlin_keep_blank_lines_in_declarations = 2
 ij_kotlin_block_comment_at_first_column = true
 ij_kotlin_line_comment_add_space = true
-ij_kotlin_name_count_to_use_star_import = 999
-ij_kotlin_name_count_to_use_star_import_for_members = 999
-ij_kotlin_continuation_indent_size = 8
+ij_kotlin_name_count_to_use_star_import = 100
+ij_kotlin_name_count_to_use_star_import_for_members = 100
+ij_kotlin_packages_to_use_import_on_demand = kotlinx.android.synthetic.**,io.ktor.**
+ij_kotlin_continuation_indent_size = 4
 ij_kotlin_continuation_indent_for_chained_calls = false
 ij_kotlin_continuation_indent_for_expression_bodies = true
 ij_kotlin_continuation_indent_in_argument_lists = false
@@ -47,6 +48,9 @@ ij_kotlin_continuation_indent_in_elvis = false
 ij_kotlin_continuation_indent_in_if_conditions = true
 ij_kotlin_continuation_indent_in_parameter_lists = false
 ij_kotlin_continuation_indent_in_supertype_lists = false
+ij_java_class_count_to_use_import_on_demand = 100
+ij_java_names_count_to_use_import_on_demand = 100
+ij_java_use_single_class_imports = true
 
 [*.json]
 ij_json_keep_blank_lines_in_code = 0

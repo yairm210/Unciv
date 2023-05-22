@@ -2,12 +2,12 @@ package com.unciv.logic
 
 import com.unciv.Constants
 import com.unciv.logic.city.CityConstructions
-import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.managers.TechManager
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.ModOptions
+import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.Ruleset
 
 /**
@@ -27,6 +27,17 @@ object BackwardCompatibility {
     fun GameInfo.removeMissingModReferences() {
         tileMap.removeMissingTerrainModReferences(ruleset)
 
+        removeUnitsAndPromotions()
+
+        // Mod decided you can't repair things anymore - get rid of old pillaged improvements
+        removeOldPillagedImprovements()
+
+        handleMissingReferencesForEachCity()
+
+        removeTechAndPolicies()
+    }
+
+    private fun GameInfo.removeUnitsAndPromotions() {
         for (tile in tileMap.values) {
             for (unit in tile.getUnits()) {
                 if (!ruleset.units.containsKey(unit.name)) tile.removeUnit(unit)
@@ -36,8 +47,9 @@ object BackwardCompatibility {
                         unit.promotions.promotions.remove(promotion)
             }
         }
+    }
 
-        // Mod decided you can't repair things anymore - get rid of old pillaged improvements
+    private fun GameInfo.removeOldPillagedImprovements() {
         if (!ruleset.tileImprovements.containsKey(Constants.repair))
             for (tile in tileMap.values) {
                 if (tile.roadIsPillaged) {
@@ -49,8 +61,9 @@ object BackwardCompatibility {
                     tile.improvementIsPillaged = false
                 }
             }
+    }
 
-
+    private fun GameInfo.handleMissingReferencesForEachCity() {
         for (city in civilizations.asSequence().flatMap { it.cities.asSequence() }) {
 
             changeBuildingNameIfNotInRuleset(ruleset, city.cityConstructions, "Hanse", "Bank")
@@ -63,8 +76,8 @@ object BackwardCompatibility {
 
             fun isInvalidConstruction(construction: String) =
                 !ruleset.buildings.containsKey(construction)
-                        && !ruleset.units.containsKey(construction)
-                        && !PerpetualConstruction.perpetualConstructionsMap.containsKey(construction)
+                    && !ruleset.units.containsKey(construction)
+                    && !PerpetualConstruction.perpetualConstructionsMap.containsKey(construction)
 
             // Remove invalid buildings or units from the queue - don't just check buildings and units because it might be a special construction as well
             for (construction in city.cityConstructions.constructionQueue.toList()) {
@@ -76,7 +89,9 @@ object BackwardCompatibility {
                 if (isInvalidConstruction(construction))
                     city.cityConstructions.inProgressConstructions.remove(construction)
         }
+    }
 
+    private fun GameInfo.removeTechAndPolicies() {
         for (civInfo in civilizations) {
             for (tech in civInfo.tech.techsResearched.toList())
                 if (!ruleset.technologies.containsKey(tech))
@@ -156,10 +171,8 @@ object BackwardCompatibility {
     }
 
     /** Move max XP from barbarians to new home */
-    @Suppress("DEPRECATION")
-    fun ModOptions.updateDeprecations() {
-    }
-
+    @Suppress("DEPRECATION", "EmptyFunctionBlock")
+    fun ModOptions.updateDeprecations() { }
 
     /** Convert from Fortify X to Fortify and save off X */
     fun GameInfo.convertFortify() {
@@ -175,16 +188,11 @@ object BackwardCompatibility {
         }
     }
 
-    private fun isOldFormat(manager: BarbarianManager): Boolean {
-        val keys = manager.camps.keys as Set<Any>
-        val iterator = keys.iterator()
-        while (iterator.hasNext()) {
-            val key = iterator.next()
-            if (key is String) {
-                return true
-            }
+    fun GameInfo.convertEncampmentData(){
+        if (barbarians.camps.isNotEmpty()){
+            barbarians.encampments.addAll(barbarians.camps.values)
+            barbarians.camps.clear()
         }
-        return false
     }
 
     fun GameInfo.migrateToTileHistory() {

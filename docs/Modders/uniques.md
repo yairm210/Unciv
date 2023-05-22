@@ -863,6 +863,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Will not be chosen for new games"
 	Applicable to: Nation
 
+??? example  "May not annex cities"
+	Applicable to: Nation
+
 ??? example  "Starts with [tech]"
 	Example: "Starts with [Agriculture]"
 
@@ -1949,7 +1952,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: TriggerCondition
 
-??? example  "&lt;upon adopting [policy]&gt;"
+??? example  "&lt;upon adopting [policy/belief]&gt;"
 	Example: "&lt;upon adopting [Oligarchy]&gt;"
 
 	Applicable to: TriggerCondition

@@ -80,7 +80,12 @@ class MapParametersTable(
         skin = BaseScreen.skin
         defaults().pad(5f, 10f)
         if (mapGeneratedMainType == MapGeneratedMainType.randomGenerated) {
-            add("{Which options should be available to the random selection?}".toLabel()).colspan(2).grow().row()
+            val prompt = "Which options should be available to the random selection?"
+            val width = (previousScreen as? NewGameScreen)?.getColumnWidth() ?: 200f
+            val label = WrappableLabel(prompt, width - 20f)  // 20 is the defaults() padding
+            label.setAlignment(Align.center)
+            label.wrap = true
+            add(label).colspan(2).grow().row()
         }
         addMapShapeSelectBox()
         addMapTypeSelectBox()
@@ -349,7 +354,7 @@ class MapParametersTable(
         seedTextField.onChange {
             mapParameters.seed = try {
                 seedTextField.text.toLong()
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 0L
             }
         }

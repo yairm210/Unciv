@@ -149,9 +149,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    constructor(civilization: Civilization, OtherCivName: String) : this() {
+    constructor(civilization: Civilization, mOtherCivName: String) : this() {
         civInfo = civilization
-        otherCivName = OtherCivName
+        otherCivName = mOtherCivName
         updateHasOpenBorders()
     }
 

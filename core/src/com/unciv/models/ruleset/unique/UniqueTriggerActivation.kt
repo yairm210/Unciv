@@ -93,7 +93,7 @@ object UniqueTriggerActivation {
                 if (actualAmount <= 0) return false
 
                 val tilesUnitsWerePlacedOn: MutableList<Vector2> = mutableListOf()
-                for (i in 1..actualAmount) {
+                repeat(actualAmount) {
                     val placedUnit = civInfo.units.addUnit(unitName, chosenCity)
                     if (placedUnit != null)
                         tilesUnitsWerePlacedOn.add(placedUnit.getTile().position)

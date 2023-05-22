@@ -33,7 +33,7 @@ object SystemUtils {
         // Java VM memory limit as set by -Xmx
         val maxMemory = try {
             Runtime.getRuntime().maxMemory() / 1024 / 1024
-        } catch (ex: Throwable) { -1L }
+        } catch (_: Throwable) { -1L }
         if (maxMemory > 0) {
             builder.append('\t')
             builder.appendLine("Max Memory: $maxMemory MB")
@@ -69,7 +69,7 @@ object SystemUtils {
             goodLines.map { it.split("REG_SZ") }
                 .filter { it.size == 2 }
                 .associate { it[0].trim() to it[1].trim() }
-        } catch (ex: Throwable) { mapOf() }
+        } catch (_: Throwable) { mapOf() }
 
         if ("ProductName" !in entries) return ""
 
@@ -89,7 +89,7 @@ object SystemUtils {
                 .map { it.split('=') }
                 .filter { it.size == 2 }
                 .associate { it[0] to it[1].removeSuffix("\"").removePrefix("\"") }
-        } catch (ex: Throwable) { mapOf() }
+        } catch (_: Throwable) { mapOf() }
         if ("NAME" !in osRelease) return ""
         return osRelease["PRETTY_NAME"] ?: "${osRelease["NAME"]} ${osRelease["VERSION"]}"
     }

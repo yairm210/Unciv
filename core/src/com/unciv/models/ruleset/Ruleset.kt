@@ -55,6 +55,7 @@ class ModOptions : IHasUniques {
 
     var lastUpdated = ""
     var modUrl = ""
+    var defaultBranch = "master"
     var author = ""
     var modSize = 0
     var topics = mutableListOf<String>()
@@ -109,7 +110,7 @@ class Ruleset {
     }
 
     private fun <T : INamed> createHashmap(items: Array<T>): LinkedHashMap<String, T> {
-        val hashMap = LinkedHashMap<String, T>()
+        val hashMap = LinkedHashMap<String, T>(items.size)
         for (item in items)
             hashMap[item.name] = item
         return hashMap
@@ -252,7 +253,9 @@ class Ruleset {
             try {
                 modOptions = json().fromJsonFile(ModOptions::class.java, modOptionsFile)
                 modOptions.updateDeprecations()
-            } catch (ex: Exception) {}
+            } catch (ex: Exception) {
+                Log.error("Failed to get modOptions from json file", ex)
+            }
             modOptions.uniqueObjects = modOptions.uniques.map { Unique(it, UniqueTarget.ModOptions) }
             modOptions.uniqueMap = modOptions.uniqueObjects.groupBy { it.placeholderText }
         }
@@ -414,10 +417,20 @@ class Ruleset {
                         name = cityStateType.name
                         color = cityStateType.color
                         friendBonusUniques = ArrayList(cityStateType.friendBonusUniques.filter {
-                            RulesetValidator(this@Ruleset).checkUnique(Unique(it),false,"",UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific,UniqueTarget.CityState).isEmpty()
+                            RulesetValidator(this@Ruleset).checkUnique(
+                                Unique(it),
+                                false,
+                                "",
+                                UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+                            ).isEmpty()
                         })
                         allyBonusUniques = ArrayList(cityStateType.allyBonusUniques.filter {
-                            RulesetValidator(this@Ruleset).checkUnique(Unique(it),false,"",UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific,UniqueTarget.CityState).isEmpty()
+                            RulesetValidator(this@Ruleset).checkUnique(
+                                Unique(it),
+                                false,
+                                "",
+                                UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+                            ).isEmpty()
                         })
                     }
         }
@@ -476,52 +489,60 @@ object RulesetCache : HashMap<String,Ruleset>() {
 
     /** Returns error lines from loading the rulesets, so we can display the errors to users */
     fun loadRulesets(consoleMode: Boolean = false, noMods: Boolean = false) :List<String> {
-        clear()
+        val newRulesets = HashMap<String, Ruleset>()
+
         for (ruleset in BaseRuleset.values()) {
             val fileName = "jsons/${ruleset.fullName}"
             val fileHandle =
                 if (consoleMode) FileHandle(fileName)
                 else Gdx.files.internal(fileName)
-            this[ruleset.fullName] = Ruleset().apply {
+            newRulesets[ruleset.fullName] = Ruleset().apply {
                 load(fileHandle)
                 name = ruleset.fullName
             }
         }
-
-        if (noMods) return listOf()
-
-        val modsHandles = if (consoleMode) FileHandle("mods").list()
-        else Gdx.files.local("mods").list()
+        this.putAll(newRulesets)
 
         val errorLines = ArrayList<String>()
-        for (modFolder in modsHandles) {
-            if (modFolder.name().startsWith('.')) continue
-            if (!modFolder.isDirectory) continue
-            try {
-                val modRuleset = Ruleset()
-                modRuleset.load(modFolder.child("jsons"))
-                modRuleset.name = modFolder.name()
-                modRuleset.folderLocation = modFolder
-                this[modRuleset.name] = modRuleset
-                debug("Mod loaded successfully: %s", modRuleset.name)
-                if (Log.shouldLog()) {
-                    val modLinksErrors = modRuleset.checkModLinks()
-                    // For extension mods which use references to base ruleset objects, the parameter type
-                    // errors are irrelevant - the checker ran without a base ruleset
-                    val logFilter: (RulesetError) -> Boolean =
-                        if (modRuleset.modOptions.isBaseRuleset) { { it.errorSeverityToReport > RulesetErrorSeverity.WarningOptionsOnly } }
-                        else { { it.errorSeverityToReport > RulesetErrorSeverity.WarningOptionsOnly && !it.text.contains("does not fit parameter type") } }
-                    if (modLinksErrors.any(logFilter)) {
-                        debug("checkModLinks errors: %s", modLinksErrors.getErrorText(logFilter))
+        if (!noMods){
+            val modsHandles = if (consoleMode) FileHandle("mods").list()
+            else Gdx.files.local("mods").list()
+
+            for (modFolder in modsHandles) {
+                if (modFolder.name().startsWith('.')) continue
+                if (!modFolder.isDirectory) continue
+                try {
+                    val modRuleset = Ruleset()
+                    modRuleset.load(modFolder.child("jsons"))
+                    modRuleset.name = modFolder.name()
+                    modRuleset.folderLocation = modFolder
+                    newRulesets[modRuleset.name] = modRuleset
+                    debug("Mod loaded successfully: %s", modRuleset.name)
+                    if (Log.shouldLog()) {
+                        val modLinksErrors = modRuleset.checkModLinks()
+                        // For extension mods which use references to base ruleset objects, the parameter type
+                        // errors are irrelevant - the checker ran without a base ruleset
+                        val logFilter: (RulesetError) -> Boolean =
+                            if (modRuleset.modOptions.isBaseRuleset) { { it.errorSeverityToReport > RulesetErrorSeverity.WarningOptionsOnly } }
+                            else { { it.errorSeverityToReport > RulesetErrorSeverity.WarningOptionsOnly && !it.text.contains("does not fit parameter type") } }
+                        if (modLinksErrors.any(logFilter)) {
+                            debug("checkModLinks errors: %s", modLinksErrors.getErrorText(logFilter))
+                        }
                     }
+                } catch (ex: Exception) {
+                    errorLines += "Exception loading mod '${modFolder.name()}':"
+                    errorLines += "  ${ex.localizedMessage}"
+                    errorLines += "  ${ex.cause?.localizedMessage}"
                 }
-            } catch (ex: Exception) {
-                errorLines += "Exception loading mod '${modFolder.name()}':"
-                errorLines += "  ${ex.localizedMessage}"
-                errorLines += "  ${ex.cause?.localizedMessage}"
             }
+            if (Log.shouldLog()) for (line in errorLines) debug(line)
         }
-        if (Log.shouldLog()) for (line in errorLines) debug(line)
+
+        // We save the 'old' cache values until we're ready to replace everything, so that the cache isn't empty while we try to load ruleset files
+        // - this previously lead to "can't find Vanilla ruleset" if the user had a lot of mods and downloaded a new one
+        this.clear()
+        this.putAll(newRulesets)
+
         return errorLines
     }
 

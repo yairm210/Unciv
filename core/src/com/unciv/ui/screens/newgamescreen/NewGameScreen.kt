@@ -20,10 +20,13 @@ import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.ExpanderTab
+import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
+import com.unciv.ui.components.extensions.keyShortcuts
+import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toLabel
@@ -36,8 +39,8 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.Log
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.launchOnGLThread
+import com.unciv.utils.Concurrency
+import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.coroutineScope
 import java.net.URL
 import java.util.UUID
@@ -76,7 +79,11 @@ class NewGameScreen(
             updatePlayerPickerRandomLabel = { playerPickerTable.updateRandomNumberLabel() }
         )
         mapOptionsTable = MapOptionsTable(this)
-        setDefaultCloseAction()
+        pickerPane.closeButton.onActivation {
+            mapOptionsTable.cancelBackgroundJobs()
+            game.popScreen()
+        }
+        pickerPane.closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
 
         if (isPortrait) initPortrait()
         else initLandscape()
@@ -104,6 +111,7 @@ class NewGameScreen(
     }
 
     private fun onStartGameClicked() {
+        mapOptionsTable.cancelBackgroundJobs()
         if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
             if (!checkConnectionToMultiplayerServer()) {
                 val noInternetConnectionPopup = Popup(this)
@@ -117,7 +125,7 @@ class NewGameScreen(
             for (player in gameSetupInfo.gameParameters.players.filter { it.playerType == PlayerType.Human }) {
                 try {
                     UUID.fromString(IdChecker.checkAndReturnPlayerUuid(player.playerId))
-                } catch (ex: Exception) {
+                } catch (_: Exception) {
                     val invalidPlayerIdPopup = Popup(this)
                     invalidPlayerIdPopup.addGoodSizedLabel("Invalid player ID!".tr()).row()
                     invalidPlayerIdPopup.addCloseButton()
@@ -164,6 +172,7 @@ class NewGameScreen(
             val map = try {
                 MapSaver.loadMap(gameSetupInfo.mapFile!!)
             } catch (ex: Throwable) {
+                Log.error("Could not load map", ex)
                 Gdx.input.inputProcessor = stage
                 ToastPopup("Could not load map!", this)
                 return
@@ -205,6 +214,10 @@ class NewGameScreen(
             startNewGame()
         }
     }
+
+    /** Subtables may need an upper limit to their width - they can ask this function. */
+    // In sync with isPortrait in init, here so UI details need not know about 3-column vs 1-column layout
+    internal fun getColumnWidth() = stage.width / (if (isNarrowerThan4to3()) 1 else 3)
 
     private fun initLandscape() {
         scrollPane.setScrollingDisabled(true,true)
@@ -259,7 +272,7 @@ class NewGameScreen(
             con.connect()
 
             true
-        } catch(ex: Throwable) {
+        } catch(_: Throwable) {
             false
         }
     }

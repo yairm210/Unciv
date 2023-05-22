@@ -1,7 +1,6 @@
 package com.unciv.ui.popups.options
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
@@ -17,8 +16,8 @@ import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.withGLContext
+import com.unciv.utils.Concurrency
+import com.unciv.utils.withGLContext
 import kotlin.reflect.KMutableProperty0
 
 /**

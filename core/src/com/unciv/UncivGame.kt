@@ -41,19 +41,19 @@ import com.unciv.ui.screens.worldscreen.PlayerReadyScreen
 import com.unciv.ui.screens.worldscreen.WorldMapHolder
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
+import com.unciv.utils.Concurrency
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.Display
 import com.unciv.utils.Log
 import com.unciv.utils.PlatformSpecific
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.launchOnGLThread
-import com.unciv.utils.concurrency.withGLContext
-import com.unciv.utils.concurrency.withThreadPoolContext
 import com.unciv.utils.debug
+import com.unciv.utils.launchOnGLThread
+import com.unciv.utils.withGLContext
+import com.unciv.utils.withThreadPoolContext
 import kotlinx.coroutines.CancellationException
 import java.io.PrintWriter
-import java.util.*
-import kotlin.collections.ArrayDeque
+import java.util.EnumSet
+import java.util.UUID
 import kotlin.system.exitProcess
 
 object GUI {
@@ -181,7 +181,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         Concurrency.run {
             // Check if the server is available in case the feature set has changed
             try {
-                onlineMultiplayer.checkServerStatus()
+                onlineMultiplayer.multiplayerServer.checkServerStatus()
             } catch (ex: Exception) {
                 debug("Couldn't connect to server: " + ex.message)
             }
@@ -484,7 +484,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     private fun logRunningThreads() {
         val numThreads = Thread.activeCount()
-        val threadList = Array(numThreads) { _ -> Thread() }
+        val threadList = Array(numThreads) { Thread() }
         Thread.enumerate(threadList)
         threadList.filter { it !== Thread.currentThread() && it.name != "DestroyJavaVM" }.forEach {
             debug("Thread %s still running in UncivGame.dispose().", it.name)
@@ -501,7 +501,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
             PrintWriter(files.fileWriter("lasterror.txt")).use {
                 ex.printStackTrace(it)
             }
-        } catch (ex: Exception) {
+        } catch (_: Exception) {
             // ignore
         }
         Gdx.app.postRunnable {
@@ -531,7 +531,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.6.7", 857)
+        val VERSION = Version("4.6.13", 869)
         //endregion
 
         lateinit var Current: UncivGame

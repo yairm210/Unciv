@@ -13,7 +13,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.event.EventBus
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.UncivStage
-import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.Concurrency
 
 class AndroidGame(private val activity: Activity) : UncivGame() {
 

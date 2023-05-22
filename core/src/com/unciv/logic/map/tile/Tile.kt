@@ -21,6 +21,8 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.components.extensions.withItem
+import com.unciv.ui.components.extensions.withoutItem
 import com.unciv.utils.DebugUtils
 import kotlin.math.abs
 import kotlin.math.min
@@ -85,6 +87,7 @@ open class Tile : IsPartOfGameInfoSerialization {
     var terrainFeatures: List<String> = listOf()
         private set
 
+    /** Should be immutable - never be altered in-place, instead replaced */
     var exploredBy = HashSet<String>()
 
     @Transient
@@ -174,7 +177,7 @@ open class Tile : IsPartOfGameInfoSerialization {
         toReturn.hasBottomRightRiver = hasBottomRightRiver
         toReturn.hasBottomRiver = hasBottomRiver
         toReturn.continent = continent
-        toReturn.exploredBy.addAll(exploredBy)
+        toReturn.exploredBy = exploredBy
         toReturn.history = history.clone()
         return toReturn
     }
@@ -232,7 +235,7 @@ open class Tile : IsPartOfGameInfoSerialization {
     }
 
     fun isExplored(player: Civilization): Boolean {
-        if (DebugUtils.VISIBLE_MAP || player.isSpectator())
+        if (DebugUtils.VISIBLE_MAP || player.civName == Constants.spectator)
             return true
         return exploredBy.contains(player.civName)
     }
@@ -240,15 +243,18 @@ open class Tile : IsPartOfGameInfoSerialization {
     fun setExplored(player: Civilization, isExplored: Boolean, explorerPosition: Vector2? = null) {
         if (isExplored) {
             // Disable the undo button if a new tile has been explored
-            if (exploredBy.add(player.civName) && GUI.isWorldLoaded()) {
-                val worldScreen = GUI.getWorldScreen()
-                worldScreen.preActionGameInfo = worldScreen.gameInfo
+            if (!exploredBy.contains(player.civName)) {
+                if (GUI.isWorldLoaded()) {
+                    val worldScreen = GUI.getWorldScreen()
+                    worldScreen.preActionGameInfo = worldScreen.gameInfo
+                }
+                exploredBy = exploredBy.withItem(player.civName)
             }
 
             if (player.playerType == PlayerType.Human)
                 player.exploredRegion.checkTilePosition(position, explorerPosition)
         } else {
-            exploredBy.remove(player.civName)
+            exploredBy = exploredBy.withoutItem(player.civName)
         }
     }
 

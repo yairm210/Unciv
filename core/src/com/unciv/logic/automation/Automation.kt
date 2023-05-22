@@ -2,7 +2,7 @@ package com.unciv.logic.automation
 
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFocus
-import com.unciv.logic.city.INonPerpetualConstruction
+import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileMap
@@ -279,9 +279,9 @@ object Automation {
             for (city in civInfo.cities) {
                 val otherConstruction = city.cityConstructions.getCurrentConstruction()
                 if (otherConstruction is Building)
-                    futureForBuildings += otherConstruction.getResourceRequirementsPerTurn()[resource] ?: 0
+                    futureForBuildings += otherConstruction.getResourceRequirementsPerTurn()[resource]
                 else
-                    futureForUnits += otherConstruction.getResourceRequirementsPerTurn()[resource] ?: 0
+                    futureForUnits += otherConstruction.getResourceRequirementsPerTurn()[resource]
             }
 
             // Make sure we have some for space

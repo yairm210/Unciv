@@ -17,8 +17,9 @@ import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.popups.AuthPopup
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.launchOnGLThread
+import com.unciv.utils.Log
+import com.unciv.utils.Concurrency
+import com.unciv.utils.launchOnGLThread
 
 /** Subscreen of MultiplayerScreen to edit and delete saves
  * backScreen is used for getting back to the MultiplayerScreen so it doesn't have to be created over and over again */
@@ -41,6 +42,7 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame) 
                     game.onlineMultiplayer.deleteGame(multiplayerGame)
                     game.popScreen()
                 } catch (ex: Exception) {
+                    Log.error("Could not delete game!", ex)
                     ToastPopup("Could not delete game!", this)
                 }
             }
@@ -118,20 +120,24 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame) 
                     }
                 }
             } catch (ex: Exception) {
-                if (ex is MultiplayerAuthException) {
-                    launchOnGLThread {
-                        AuthPopup(this@EditMultiplayerGameInfoScreen) {
-                            success -> if (success) resign(multiplayerGame)
-                        }.open(true)
+                val (message) = LoadGameScreen.getLoadExceptionMessage(ex)
+
+                when (ex) {
+                    is MultiplayerAuthException -> {
+                        launchOnGLThread {
+                            AuthPopup(this@EditMultiplayerGameInfoScreen) { success ->
+                                if (success) resign(multiplayerGame)
+                            }.open(true)
+                        }
+                        return@runOnNonDaemonThreadPool
                     }
-                    return@runOnNonDaemonThreadPool
                 }
 
-                val (message) = LoadGameScreen.getLoadExceptionMessage(ex)
                 launchOnGLThread {
                     popup.reuseWith(message, true)
                 }
             }
+
         }
     }
 }

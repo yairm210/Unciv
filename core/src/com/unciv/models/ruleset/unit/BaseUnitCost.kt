@@ -88,7 +88,7 @@ class BaseUnitCost(val baseUnit: BaseUnit) {
                     baseUnit.getCostForConstructionsIncreasingInPrice(
                         it.params[1].toInt(),
                         it.params[4].toInt(),
-                        city.civ.civConstructions.boughtItemsWithIncreasingPrice[baseUnit.name] ?: 0
+                        city.civ.civConstructions.boughtItemsWithIncreasingPrice[baseUnit.name]
                     )
                 }
             )
