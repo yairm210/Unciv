@@ -206,8 +206,8 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         val maxSpecialists = getMaxSpecialists()
         val specialistsHashmap = specialistAllocations
         for ((specialistName, amount) in specialistsHashmap)
-            if (amount > maxSpecialists[specialistName]!!)
-                specialistAllocations[specialistName] = maxSpecialists[specialistName]!!
+            if (amount > maxSpecialists[specialistName])
+                specialistAllocations[specialistName] = maxSpecialists[specialistName]
 
         val localUniqueCache = LocalUniqueCache()
 

@@ -244,7 +244,7 @@ class City : IsPartOfGameInfoSerialization {
         return cityResources
     }
 
-    fun getTileResourceAmount(tile: Tile): Int {
+    private fun getTileResourceAmount(tile: Tile): Int {
         if (tile.resource == null) return 0
         if (!tile.providesResources(civ)) return 0
 
@@ -308,13 +308,13 @@ class City : IsPartOfGameInfoSerialization {
             for (unique in civ.getMatchingUniques(UniqueType.GreatPersonEarnedFaster, stateForConditionals)) {
                 val unitName = unique.params[0]
                 if (!gppCounter.containsKey(unitName)) continue
-                gppCounter.add(unitName, gppCounter[unitName]!! * unique.params[1].toInt() / 100)
+                gppCounter.add(unitName, gppCounter[unitName] * unique.params[1].toInt() / 100)
             }
 
             val allGppPercentageBonus = getGreatPersonPercentageBonus()
 
             for (unitName in gppCounter.keys)
-                gppCounter.add(unitName, gppCounter[unitName]!! * allGppPercentageBonus / 100)
+                gppCounter.add(unitName, gppCounter[unitName] * allGppPercentageBonus / 100)
         }
 
         return sourceToGPP
