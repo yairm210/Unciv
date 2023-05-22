@@ -1,6 +1,7 @@
 package com.unciv.logic.city
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.GUI
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.managers.CityEspionageManager
 import com.unciv.logic.city.managers.CityExpansionManager
@@ -403,6 +404,10 @@ class City : IsPartOfGameInfoSerialization {
         reassignPopulation(resetLocked = true)
     }
 
+    /** Apply worked tiles optimization (aka CityFocus) - Expensive!
+     *
+     *  If the next City.startTurn is soon enough, then use [reassignPopulationDeferred] instead.
+     */
     fun reassignPopulation(resetLocked: Boolean = false) {
         if (resetLocked) {
             workedTiles = hashSetOf()
@@ -412,9 +417,20 @@ class City : IsPartOfGameInfoSerialization {
         }
         if (!manualSpecialists)
             population.specialistAllocations.clear()
+        updateCitizens = false
         population.autoAssignPopulation()
     }
 
+    /** Apply worked tiles optimization (aka CityFocus) -
+     *  immediately for a human player whoes turn it is (interactive),
+     *  or deferred to the next startTurn while nextTurn is running (for AI)
+     *  @see reassignPopulation
+     */
+    fun reassignPopulationDeferred() {
+        // TODO - is this the best (or even correct) way to detect "interactive" UI calls?
+        if (GUI.isMyTurn() && GUI.getViewingPlayer() == civ) reassignPopulation()
+        else updateCitizens = true
+    }
 
     fun destroyCity(overrideSafeties: Boolean = false) {
         // Original capitals and holy cities cannot be destroyed,

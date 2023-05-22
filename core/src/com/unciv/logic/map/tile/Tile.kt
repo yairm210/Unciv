@@ -881,7 +881,11 @@ open class Tile : IsPartOfGameInfoSerialization {
             return
         // http://well-of-souls.com/civ/civ5_improvements.html says that naval improvements are destroyed upon pillage
         //    and I can't find any other sources so I'll go with that
-        if (!isLand) { changeImprovement(null); return }
+        if (!isLand) {
+            changeImprovement(null)
+            owningCity?.reassignPopulationDeferred()
+            return
+        }
 
         // Setting turnsToImprovement might interfere with UniqueType.CreatesOneImprovement
         improvementFunctions.removeCreatesOneImprovementMarker()
@@ -900,6 +904,8 @@ open class Tile : IsPartOfGameInfoSerialization {
             else
                 roadIsPillaged = true
         }
+
+        owningCity?.reassignPopulationDeferred()
     }
 
     fun isPillaged(): Boolean {
@@ -913,6 +919,8 @@ open class Tile : IsPartOfGameInfoSerialization {
             improvementIsPillaged = false
         else
             roadIsPillaged = false
+
+        owningCity?.reassignPopulationDeferred()
     }
 
 
