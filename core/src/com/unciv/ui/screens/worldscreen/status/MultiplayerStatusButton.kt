@@ -20,22 +20,46 @@ import com.unciv.logic.multiplayer.MultiplayerGameUpdateEnded
 import com.unciv.logic.multiplayer.MultiplayerGameUpdateStarted
 import com.unciv.logic.multiplayer.MultiplayerGameUpdated
 import com.unciv.logic.multiplayer.OnlineMultiplayerGame
+import com.unciv.logic.multiplayer.apiv2.AccountResponse
+import com.unciv.logic.multiplayer.apiv2.GameOverviewResponse
 import com.unciv.logic.multiplayer.isUsersTurn
+import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.multiplayerscreens.ChatRoomType
+import com.unciv.ui.screens.multiplayerscreens.SocialMenuScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import java.time.Duration
 import java.time.Instant
+import java.util.UUID
 
-class MultiplayerStatusButton(
+abstract class MultiplayerStatusButton : Button(BaseScreen.skin), Disposable {
+    protected fun createMultiplayerImage(): Image {
+        val img = ImageGetter.getImage("OtherIcons/Multiplayer")
+        img.setSize(40f)
+        return img
+    }
+
+    protected fun createLoadingImage(): Image {
+        val img = ImageGetter.getImage("OtherIcons/Loading")
+        img.setSize(40f)
+        img.isVisible = false
+        img.setOrigin(Align.center)
+        return img
+    }
+}
+
+class MultiplayerStatusButtonV1(
     screen: BaseScreen,
     curGame: OnlineMultiplayerGame?
-) : Button(BaseScreen.skin), Disposable {
+) : MultiplayerStatusButton() {
     private var curGameName = curGame?.name
     private val multiplayerImage = createMultiplayerImage()
     private val loadingImage = createLoadingImage()
@@ -122,21 +146,6 @@ class MultiplayerStatusButton(
             .toMutableSet()
     }
 
-
-    private fun createMultiplayerImage(): Image {
-        val img = ImageGetter.getImage("OtherIcons/Multiplayer")
-        img.setSize(40f)
-        return img
-    }
-
-    private fun createLoadingImage(): Image {
-        val img = ImageGetter.getImage("OtherIcons/Loading")
-        img.setSize(40f)
-        img.isVisible = false
-        img.setOrigin(Align.center)
-        return img
-    }
-
     private fun updateTurnIndicator(flash: Boolean = true) {
         if (gameNamesWithCurrentTurn.size == 0) {
             turnIndicatorCell.clearActor()
@@ -195,5 +204,58 @@ private class TurnIndicator : HorizontalGroup(), Disposable {
 
     override fun dispose() {
         job?.cancel()
+    }
+}
+
+/**
+ * Multiplayer status button for APIv2 games only
+ *
+ * It shows a completely different user interfaces than the previous V1 buttons above.
+ */
+class MultiplayerStatusButtonV2(screen: BaseScreen, private val gameUUID: UUID) : MultiplayerStatusButton() {
+    constructor(screen: BaseScreen, gameId: String) : this(screen, UUID.fromString(gameId))
+
+    private var me: AccountResponse? = null
+    private var gameDetails: GameOverviewResponse? = null
+    private val events = EventBus.EventReceiver()
+
+    private val turnIndicator = TurnIndicator()
+    private val turnIndicatorCell: Cell<Actor>
+    private val multiplayerImage = createMultiplayerImage()
+
+    init {
+        turnIndicatorCell = add().padTop(10f).padBottom(10f)
+        add(multiplayerImage).pad(5f)
+
+        Concurrency.runOnNonDaemonThreadPool{ me = screen.game.onlineMultiplayer.api.account.get() }
+        Concurrency.run {
+            gameDetails = InfoPopup.wrap(screen.stage) {
+                screen.game.onlineMultiplayer.api.game.head(gameUUID)
+            }
+        }
+
+        onActivation {
+            var details = gameDetails
+            // Retrying in case the cache was broken somehow
+            if (details == null) {
+                runBlocking {
+                    details = InfoPopup.wrap(screen.stage) {
+                        screen.game.onlineMultiplayer.api.game.head(gameUUID)
+                    }
+                }
+            }
+            // If there are no details after the retry, the game is most likely not played on that server
+            if (details == null) {
+                screen.game.pushScreen(SocialMenuScreen(me?.uuid, null))
+            } else {
+                gameDetails = details
+                screen.game.pushScreen(SocialMenuScreen(me?.uuid, Triple(details!!.chatRoomUUID, ChatRoomType.Game, details!!.name)))
+            }
+        }
+    }
+
+    override fun dispose() {
+        events.stopReceiving()
+        turnIndicator.dispose()
     }
 }

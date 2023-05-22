@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.multiplayer.ApiVersion
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.UniqueType
@@ -17,7 +16,6 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.MayaCalendar
-import com.unciv.ui.components.MultiplayerButton
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.YearTextUtil
 import com.unciv.ui.components.extensions.colorFromRGB
@@ -29,21 +27,16 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toStringSigned
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.popups.popups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
-import com.unciv.ui.screens.multiplayerscreens.ChatRoomType
-import com.unciv.ui.screens.multiplayerscreens.SocialMenuScreen
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.screens.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
 import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMenuPopup
-import com.unciv.utils.Concurrency
-import java.util.UUID
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -74,14 +67,9 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private val resourcesWrapper = Table()
     private val resourceTable = getResourceTable()
     private val selectedCivTable = SelectedCivilizationTable(worldScreen)
-    private val socialButton = SocialButtonWrapper(this, worldScreen)
     private val overviewButton = OverviewAndSupplyTable(worldScreen)
     private val leftFillerCell: Cell<BackgroundActor>
     private val rightFillerCell: Cell<BackgroundActor>
-
-    internal var me: UUID? = null
-    internal var gameChatRoom: UUID? = null
-
     //endregion
 
     init {
@@ -98,22 +86,6 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         val rightFillerBG = BaseScreen.skinStrings.getUiBackground("WorldScreen/TopBar/RightAttachment", BaseScreen.skinStrings.roundedEdgeRectangleShape, backColor)
         rightFillerCell = add(BackgroundActor(rightFillerBG, Align.topRight))
         pack()
-
-        // Caching the account and game data for APIv2 online games
-        Concurrency.run {
-            if (worldScreen.game.onlineMultiplayer.apiVersion == ApiVersion.APIv2 && worldScreen.gameInfo.gameParameters.isOnlineMultiplayer) {
-                InfoPopup.wrap(worldScreen.stage) {
-                    val account = worldScreen.game.onlineMultiplayer.api.account.get()
-                    if (account != null) {
-                        me = account.uuid
-                    }
-                    val gameOverview = worldScreen.game.onlineMultiplayer.api.game.head(UUID.fromString(worldScreen.gameInfo.gameId))
-                    if (gameOverview != null) {
-                        gameChatRoom = gameOverview.chatRoomUUID
-                    }
-                }
-            }
-        }
     }
 
     private fun getStatsTable(): Table {
@@ -195,29 +167,6 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         return resourceTable
     }
 
-    private class SocialButtonWrapper(topBar: WorldScreenTopBar, worldScreen: WorldScreen) : Table(BaseScreen.skin) {
-        init {
-            // The social features will only be enabled if the multiplayer server has support for it
-            if (worldScreen.gameInfo.gameParameters.isOnlineMultiplayer && worldScreen.game.onlineMultiplayer.apiVersion == ApiVersion.APIv2) {
-                val socialButton = MultiplayerButton()
-                socialButton.onClick {
-                    Concurrency.run {
-                        val details = InfoPopup.wrap(worldScreen.stage) {
-                            worldScreen.game.onlineMultiplayer.api.game.head(UUID.fromString(worldScreen.gameInfo.gameId))
-                        }
-                        if (details != null) {
-                            Concurrency.runOnGLThread {
-                                worldScreen.game.pushScreen(SocialMenuScreen(topBar.me, Triple(details.chatRoomUUID, ChatRoomType.Game, details.name)))
-                            }
-                        }
-                    }
-                }
-                add(socialButton).padTop(10f).padBottom(10f)
-                pack()
-            }
-        }
-    }
-
     private class OverviewAndSupplyTable(worldScreen: WorldScreen) : Table(BaseScreen.skin) {
         val unitSupplyImage = ImageGetter.getImage("OtherIcons/ExclamationMark")
             .apply { color = Color.FIREBRICK }
@@ -297,7 +246,6 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
         val statsWidth = statsTable.minWidth
         val resourceWidth = resourceTable.minWidth
-        val socialWidth = socialButton.minWidth
         val overviewWidth = overviewButton.minWidth
         val selectedCivWidth = selectedCivTable.minWidth
         val leftRightNeeded = max(selectedCivWidth, overviewWidth)
@@ -326,7 +274,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         }
 
         val leftFillerWidth = if (fillerHeight > 0f) selectedCivWidth else 0f
-        val rightFillerWidth = if (fillerHeight > 0f) (overviewWidth + socialWidth) else 0f
+        val rightFillerWidth = if (fillerHeight > 0f) overviewWidth else 0f
         if (leftFillerCell.minHeight != fillerHeight
                 || leftFillerCell.minWidth != leftFillerWidth
                 || rightFillerCell.minWidth != rightFillerWidth) {
@@ -341,10 +289,8 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         setPosition(0f, stage.height, Align.topLeft)
 
         selectedCivTable.setPosition(1f, buttonY, Align.left)
-        socialButton.setPosition(stage.width - overviewButton.width - 5f, buttonY, Align.right)
         overviewButton.setPosition(stage.width, buttonY, Align.right)
         addActor(selectedCivTable) // needs to be after pack
-        addActor(socialButton)
         addActor(overviewButton)
     }
 

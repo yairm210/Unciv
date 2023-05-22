@@ -177,6 +177,7 @@ class GameOptionsTable(
                     update()
                 }
             } else {
+                gameParameters.isOnlineMultiplayer = false
                 val checkBox = addCheckbox("Online Multiplayer", initialState = false) {}
                 checkBox.onChange {
                     checkBox.isChecked = false

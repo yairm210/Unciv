@@ -10,6 +10,7 @@ class StatusButtons(
     var multiplayerStatusButton: MultiplayerStatusButton? = multiplayerStatusButton
         set(button) {
             multiplayerStatusButton?.remove()
+            multiplayerStatusButton?.dispose()
             field = button
             if (button != null) {
                 addActorAt(0, button)

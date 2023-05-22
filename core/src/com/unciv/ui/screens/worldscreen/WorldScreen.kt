@@ -37,6 +37,7 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.AuthPopup
+import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.popups.hasOpenPopups
@@ -57,16 +58,17 @@ import com.unciv.ui.screens.victoryscreen.VictoryScreen
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTable
 import com.unciv.ui.screens.worldscreen.bottombar.TileInfoTable
 import com.unciv.ui.screens.worldscreen.minimap.MinimapHolder
-import com.unciv.ui.screens.worldscreen.status.MultiplayerStatusButton
+import com.unciv.ui.screens.worldscreen.status.MultiplayerStatusButtonV1
+import com.unciv.ui.screens.worldscreen.status.MultiplayerStatusButtonV2
 import com.unciv.ui.screens.worldscreen.status.NextTurnButton
 import com.unciv.ui.screens.worldscreen.status.StatusButtons
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsTable
 import com.unciv.utils.Concurrency
+import com.unciv.utils.debug
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.launchOnThreadPool
 import com.unciv.utils.withGLContext
-import com.unciv.utils.debug
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 
@@ -693,9 +695,13 @@ class WorldScreen(
     }
 
     private fun updateMultiplayerStatusButton() {
-        if ((gameInfo.gameParameters.isOnlineMultiplayer && game.onlineMultiplayer.apiVersion != ApiVersion.APIv2) || game.settings.multiplayer.statusButtonInSinglePlayer) {
+        if (gameInfo.gameParameters.isOnlineMultiplayer || game.settings.multiplayer.statusButtonInSinglePlayer) {
             if (statusButtons.multiplayerStatusButton != null) return
-            statusButtons.multiplayerStatusButton = MultiplayerStatusButton(this, game.onlineMultiplayer.getGameByGameId(gameInfo.gameId))
+            if (game.onlineMultiplayer.isInitialized() && game.onlineMultiplayer.apiVersion == ApiVersion.APIv2) {
+                statusButtons.multiplayerStatusButton = MultiplayerStatusButtonV2(this, gameInfo.gameId)
+            } else {
+                statusButtons.multiplayerStatusButton = MultiplayerStatusButtonV1(this, game.onlineMultiplayer.getGameByGameId(gameInfo.gameId))
+            }
         } else {
             if (statusButtons.multiplayerStatusButton == null) return
             statusButtons.multiplayerStatusButton = null
