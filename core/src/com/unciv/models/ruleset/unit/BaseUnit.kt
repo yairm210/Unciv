@@ -2,12 +2,12 @@ package com.unciv.models.ruleset.unit
 
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
-import com.unciv.models.ruleset.INonPerpetualConstruction
-import com.unciv.models.ruleset.RejectionReason
-import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.Counter
+import com.unciv.models.ruleset.INonPerpetualConstruction
+import com.unciv.models.ruleset.RejectionReason
+import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.StateForConditionals
@@ -88,6 +88,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     override fun canBePurchasedWithStat(city: City?, stat: Stat): Boolean {
         if (city == null) return super.canBePurchasedWithStat(null, stat)
+        if (hasUnique(UniqueType.CannotBePurchased)) return false
         if (getRejectionReasons(city.civ, city).any { it.type != RejectionReasonType.Unbuildable  })
             return false
         if (costFunctions.canBePurchasedWithStat(city, stat)) return true
