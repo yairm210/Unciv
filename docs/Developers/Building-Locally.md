@@ -99,6 +99,16 @@ You can (and in some cases _should_) run and even debug the unit tests locally.
     -   Under "Gradle Project", choose "Unciv" from the dropdown (or type it), set "Tasks" to `:tests:test` and "Arguments" to `--tests "com.unciv.*"`, OK to close the window.
 -   Select the "Unit Tests" configuration and click the green arrow button to run! Or start a debug session as above.
 
+## Code Smells
+
+You can run `detekt` to check for code smells and other linting issues. To do so download [detekt-cli](https://github.com/detekt/detekt/releases/latest) (the zip file) and unzip it. Then to generate the reports go to the Unciv top directory and run one of the following commands to generate the report. NOTE: If you're using windows, replace `detekt-cli` with `detekt-cli.bat`.
+- For detecting warnings: `PATH/TO/DETEKT/detekt-cli --parallel --report html:detekt/reports.html --config detekt/config/detekt-warnings.yml
+  `
+- For detecting errors: `PATH/TO/DETEKT/detekt-cli --parallel --report html:detekt/reports.html --config detekt/config/detekt-errors.yml
+  `
+
+Then you can find the report in detekt/reports.html
+
 ## Next steps
 
 Congratulations! Unciv should now be running on your computer! Now we can start changing some code, and later we'll see how your changes make it into the main repository!
