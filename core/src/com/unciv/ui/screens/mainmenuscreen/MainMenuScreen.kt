@@ -152,11 +152,9 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             { game.pushScreen(NewGameScreen()) }
         column1.add(newGameButton).row()
 
-        if (game.files.getSaves().any()) {
-            val loadGameTable = getMenuButton("Load game", "OtherIcons/Load", 'l')
-                { game.pushScreen(LoadGameScreen()) }
-            column1.add(loadGameTable).row()
-        }
+        val loadGameTable = getMenuButton("Load game", "OtherIcons/Load", 'l')
+            { game.pushScreen(LoadGameScreen()) }
+        column1.add(loadGameTable).row()
 
         val multiplayerTable = getMenuButton("Multiplayer", "OtherIcons/Multiplayer", 'm')
             { game.pushScreen(MultiplayerScreen()) }
