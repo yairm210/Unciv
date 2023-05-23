@@ -1,0 +1,18 @@
+
+
+Resolve  - city-state-owned great merchants can no longer 'conduct trade mission' on their own tiles
+
+Resolve  - don't crash for ByteBuffer byte errors
+
+Game saves are regular json, not minimalized json 
+
+AI civilian improvement: Don't freeze when enemy is near, keep working in tiles where he can't reach
+
+Units that can enter foreign lands without open borders are not expelled on open borders end
+
+Population icon gets locked with doubleclick, clicks cycle between assigned and unassigned 
+
+By SomeTroglodyte:
+- Fix ConcurrentModificationException when puppeting a city 
+- Next-Turn Progressbar 
+- Resolve To-do in Unit upgrade resource requirements 
