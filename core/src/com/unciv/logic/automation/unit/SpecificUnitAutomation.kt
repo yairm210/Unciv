@@ -259,7 +259,10 @@ object SpecificUnitAutomation {
         val closestCityStateTile =
                 unit.civ.gameInfo.civilizations
                     .filter {
-                        !unit.civ.isAtWarWith(it) && it.isCityState() && it.cities.isNotEmpty()
+                        it != unit.civ
+                            && !unit.civ.isAtWarWith(it)
+                            && it.isCityState()
+                            && it.cities.isNotEmpty()
                     }
                     .flatMap { it.cities[0].getTiles() }
                     .filter { unit.civ.hasExplored(it) }

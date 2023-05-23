@@ -6,8 +6,8 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
-import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.mapunit.UnitMovement
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -37,7 +37,7 @@ class DiplomacyFunctions(val civInfo:Civilization){
         otherCiv.diplomacyFunctions.meetCiv(civInfo, warOnContact)
     }
 
-    fun meetCiv(otherCiv: Civilization, warOnContact: Boolean = false) {
+    private fun meetCiv(otherCiv: Civilization, warOnContact: Boolean = false) {
         civInfo.diplomacy[otherCiv.civName] = DiplomacyManager(civInfo, otherCiv.civName)
             .apply { diplomaticStatus = DiplomaticStatus.Peace }
 
