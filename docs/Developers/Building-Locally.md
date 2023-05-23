@@ -101,7 +101,7 @@ You can (and in some cases _should_) run and even debug the unit tests locally.
 
 ## Code Smells
 
-You can run `detekt` to check for code smells and other linting issues. To do so download [detekt-cli](https://github.com/detekt/detekt/releases/latest) (the zip file) and unzip it. Then to generate the reports go to the Unciv top directory and run one of the following commands to generate the report.
+You can run `detekt` to check for code smells and other linting issues. To do so download [detekt-cli](https://github.com/detekt/detekt/releases/latest) (the zip file) and unzip it. Then to generate the reports go to the Unciv top directory and run one of the following commands to generate the report. NOTE: If you're using windows, replace `detekt-cli` with `detekt-cli.bat`.
 - For detecting warnings: `PATH/TO/DETEKT/detekt-cli --parallel --report html:detekt/reports.html --config detekt/config/detekt-warnings.yml
   `
 - For detecting errors: `PATH/TO/DETEKT/detekt-cli --parallel --report html:detekt/reports.html --config detekt/config/detekt-errors.yml
