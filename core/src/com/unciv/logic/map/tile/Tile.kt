@@ -55,11 +55,9 @@ open class Tile : IsPartOfGameInfoSerialization {
                 getRoadOwner()!!.neutralRoads.remove(this.position)
             }
             roadOwner = city.civ.civName // only when taking control, otherwise last owner
-        } else {
-            if (roadStatus != RoadStatus.None && owningCity != null) {
-                // previous tile owner still owns road, add to tracker
-                owningCity!!.civ.neutralRoads.add(this.position)
-            }
+        } else if (roadStatus != RoadStatus.None && owningCity != null) {
+            // previous tile owner still owns road, add to tracker
+            owningCity!!.civ.neutralRoads.add(this.position)
         }
         owningCity = city
         isCityCenterInternal = getCity()?.location == position

@@ -1,18 +1,15 @@
-
-
-Resolve  - city-state-owned great merchants can no longer 'conduct trade mission' on their own tiles
-
-Resolve  - don't crash for ByteBuffer byte errors
-
-Game saves are regular json, not minimalized json 
-
-AI civilian improvement: Don't freeze when enemy is near, keep working in tiles where he can't reach
-
-Units that can enter foreign lands without open borders are not expelled on open borders end
-
-Population icon gets locked with doubleclick, clicks cycle between assigned and unassigned 
-
 By SomeTroglodyte:
-- Fix ConcurrentModificationException when puppeting a city 
-- Next-Turn Progressbar 
-- Resolve To-do in Unit upgrade resource requirements 
+- Next-Turn Progressbar
+- Fixed crash when puppeting city
+
+Population icon gets locked with doubleclick, clicks cycle assigned-unassigned
+
+Resolved crashes when clicking mod in mod management
+
+AI civilian improvement: keep working in tiles where enemy units can't reach
+
+Prophets are not expelled on open borders end
+
+City-state-owned great merchants can no longer 'conduct trade mission' on their own tiles
+
+Game saves are regular json, not libgdx-specific format
