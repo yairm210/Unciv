@@ -333,7 +333,7 @@ class WorkerAutomation(
             val chosenImprovement = chooseImprovement(unit, tile)
             if (chosenImprovement != null && tile.improvementFunctions.canBuildImprovement(chosenImprovement, civInfo) && unit.canBuildImprovement(chosenImprovement, tile)) return true
         } else if (!tile.containsGreatImprovement() && tile.hasViewableResource(civInfo)
-            && tile.tileResource.isImprovedBy(tile.improvement!!)
+            && (!tile.tileResource.isImprovedBy(tile.improvement!!))
             && (chooseImprovement(unit, tile) // if the chosen improvement is not null and buildable
                 .let { it != null && tile.improvementFunctions.canBuildImprovement(it, civInfo) && unit.canBuildImprovement(it, tile)}))
             return true
