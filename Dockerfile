@@ -18,14 +18,14 @@ RUN ./gradlew --version
 
 # Build unciv
 COPY . /src/
-RUN ./gradlew classes
+RUN ./gradlew desktop:classes
 RUN ./gradlew desktop:packrLinux64 --stacktrace --info --daemon --scan
 RUN ./gradlew desktop:zipLinuxFilesForJar
 
 FROM accetto/ubuntu-vnc-xfce-opengl-g3 as run
 WORKDIR /home/headless/Desktop/
 COPY --chown=1001:1001 --from=build /src/deploy/* /usr/
-COPY --chown=1001:1001 --from=build /src/deploy/Unciv.jar /usr/share/Unciv/Unciv.jar
-COPY --chown=1001:1001 --from=build /src/deploy/linuxFilesForJar/* /home/headless/Desktop/
+COPY --chown=1001:1001 --from=build /src/desktop/build/libs/Unciv.jar /usr/share/Unciv/Unciv.jar
+COPY --chown=1001:1001 --from=build /src/desktop/linuxFilesForJar/* /home/headless/Desktop/
 RUN chmod +x Unciv.sh
 USER 1001
