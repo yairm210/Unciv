@@ -242,6 +242,7 @@ object UnitAutomation {
             .mapNotNull { it.militaryUnit }
             .filter { it.civ.isAtWarWith(unit.civ) }
             .flatMap { it.movement.getReachableTilesInCurrentTurn() }
+            .filter { it.militaryUnit?.civ != unit.civ }
             .toSet()
 
         if (unit.hasUnique(UniqueType.FoundCity))

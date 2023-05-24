@@ -145,8 +145,6 @@ object SpecificUnitAutomation {
             }
         }
 
-        if (unit.getDamageFromTerrain() < unit.health) return    // Also make sure we won't die waiting
-
         // It's possible that we'll see a tile "over the sea" that's better than the tiles close by, but that's not a reason to abandon the close tiles!
         // Also this lead to some routing problems, see https://github.com/yairm210/Unciv/issues/3653
         val bestCityLocation: Tile? =
