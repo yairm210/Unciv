@@ -495,13 +495,12 @@ open class Tile : IsPartOfGameInfoSerialization {
         if (isCityCenter()) return true
         val improvement = getUnpillagedTileImprovement()
         if (improvement != null && improvement.name in tileResource.getImprovements()
-                && (improvement.techRequired==null || civInfo.tech.isResearched(improvement.techRequired!!))) return true
+                && (improvement.techRequired == null || civInfo.tech.isResearched(improvement.techRequired!!))
+            ) return true
         // TODO: Generic-ify to unique
-        if (tileResource.resourceType==ResourceType.Strategic
-                && improvement!=null
-                && improvement.isGreatImprovement())
-            return true
-        return false
+        return (tileResource.resourceType == ResourceType.Strategic
+            && improvement != null
+            && improvement.isGreatImprovement())
     }
 
     // This should be the only adjacency function

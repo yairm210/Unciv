@@ -86,11 +86,13 @@ class ResourcesOverviewTab(
             ) }
         return label
     }
+
     private fun ResourceSupplyList.getTotalLabel(resource: TileResource): Label {
         val total = filter { it.resource == resource }.sumOf { it.amount }
         return if (resource.isStockpiled() && total > 0) "+$total".toLabel()
         else total.toLabel()
     }
+
     private fun getResourceImage(name: String) =
         ImageGetter.getResourcePortrait(name, iconSize).apply {
             onClick { showOneTimeNotification(
@@ -243,7 +245,7 @@ class ResourcesOverviewTab(
     private fun getExtraDrilldown(): ResourceSupplyList {
         val newResourceSupplyList = ResourceSupplyList()
         for (city in viewingPlayer.cities) {
-            if (!city.demandedResource.isEmpty()) {
+            if (city.demandedResource.isNotEmpty()) {
                 val wltkResource = gameInfo.ruleset.tileResources[city.demandedResource]!!
                 if (city.isWeLoveTheKingDayActive()) {
                     newResourceSupplyList.add(wltkResource, ExtraInfoOrigin.CelebratingWLKT.name)
