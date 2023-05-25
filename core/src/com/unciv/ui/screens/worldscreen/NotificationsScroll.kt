@@ -110,6 +110,14 @@ class NotificationsScroll(
         height = worldScreen.stage.height * inverseScaleFactor
     }
 
+    /**
+     * If a Gdx ScrollPane has content larger than its size on both dimensions (if only one axis is
+     * scrollable, the wheel will always scroll that axis), it will prefer mapping the mouse wheel
+     * to *horizontal* scrolling, which is not quite the best choice for our notifications.
+     *
+     * The intuitive approach might be to change the listener (by overriding [addScrollListener]),
+     * but luckily this works too.
+     */
     override fun getMouseWheelX() = 0f
 
     /** Access to hidden "state" - writing it will ensure this is fully visible or hidden and the
