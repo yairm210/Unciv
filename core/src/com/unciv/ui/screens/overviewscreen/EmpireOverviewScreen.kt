@@ -82,6 +82,7 @@ class EmpireOverviewScreen(
     }
 
     override fun recreate(): BaseScreen {
+        tabbedPager.selectPage(-1)  // trigger deselect on _old_ instance so the tabs can persist their stuff
         updatePersistState(pageObjects)
         return EmpireOverviewScreen(viewingPlayer,
             EmpireOverviewCategories.values().firstOrNull { it.name == game.settings.lastOverviewPage })
