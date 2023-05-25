@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
@@ -228,6 +229,11 @@ class ResourcesOverviewTab(
         overviewScreen.resizePage(this)  // Without the height is miscalculated - shouldn't be
     }
 
+    private fun Tile.countAsUnimproved(): Boolean = resource != null &&
+            tileResource.resourceType != ResourceType.Bonus &&
+            hasViewableResource(viewingPlayer) &&
+            !providesResources(viewingPlayer)
+
     private fun getExtraDrilldown(): ResourceSupplyList {
         val newResourceSupplyList = ResourceSupplyList()
         for (city in viewingPlayer.cities) {
@@ -239,15 +245,9 @@ class ResourcesOverviewTab(
                     newResourceSupplyList.add(wltkResource, ExtraInfoOrigin.DemandingWLTK.name)
                 }
             }
-            for (tile in city.getTiles()) {
-                if (tile.isCityCenter()) continue
-                if (!tile.hasViewableResource(viewingPlayer)) continue
-                val tileResource = tile.tileResource
-                if (tileResource.resourceType == ResourceType.Bonus) continue
-                if (tile.getUnpillagedImprovement() != null && tileResource.isImprovedBy(tile.improvement!!)) continue
-                if (tileResource.resourceType == ResourceType.Strategic && tile.getTileImprovement()?.isGreatImprovement() == true) continue
-                newResourceSupplyList.add(tileResource, ExtraInfoOrigin.Unimproved.name)
-            }
+            for (tile in city.getTiles())
+                if (tile.countAsUnimproved())
+                    newResourceSupplyList.add(tile.tileResource, ExtraInfoOrigin.Unimproved.name)
         }
 
         for (otherCiv in viewingPlayer.getKnownCivs())
