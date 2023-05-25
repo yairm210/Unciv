@@ -9,7 +9,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
-import com.unciv.ui.components.extensions.*
+import com.unciv.ui.components.extensions.addSeparator
+import com.unciv.ui.components.extensions.center
+import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.extensions.pad
+import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.screens.basescreen.BaseScreen
 
 
