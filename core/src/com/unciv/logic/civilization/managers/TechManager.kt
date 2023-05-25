@@ -314,7 +314,9 @@ class TechManager : IsPartOfGameInfoSerialization {
 
         if (civInfo.playerType == PlayerType.Human) {
             for (revealedResource in getRuleset().tileResources.values.filter { techName == it.revealedBy }) {
-                civInfo.gameInfo.notifyExploredResources(civInfo, revealedResource.name, 5, false)
+                civInfo.gameInfo.notifyExploredResources(civInfo, revealedResource.name, 5) {
+                    it.getOwner() == null || it.getOwner() == civInfo
+                }
             }
         }
 

@@ -15,6 +15,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.CivilizationInfoPreview
 import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
@@ -437,18 +438,37 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         }
     }
 
-    /** Generate a notification pointing out resources.
+    /** Generate and show a notification pointing out resources.
      *  Used by [addTechnology][TechManager.addTechnology] and [ResourcesOverviewTab][com.unciv.ui.screens.overviewscreen.ResourcesOverviewTab]
      * @param maxDistance from next City, 0 removes distance limitation.
-     * @param showForeign Disables filter to exclude foreign territory.
+     * @param filter optional tile filter predicate, e.g. to exclude foreign territory.
      * @return `false` if no resources were found and no notification was added.
+     * @see getExploredResourcesNotification
      */
     fun notifyExploredResources(
         civInfo: Civilization,
         resourceName: String,
-        maxDistance: Int,
-        showForeign: Boolean
+        maxDistance: Int = Int.MAX_VALUE,
+        filter: (Tile) -> Boolean = { true }
     ): Boolean {
+        val notification = getExploredResourcesNotification(civInfo, resourceName, maxDistance, filter)
+            ?: return false
+        civInfo.notifications.add(notification)
+        return true
+    }
+
+    /** Generate a notification pointing out resources.
+     * @param maxDistance from next City, default removes distance limitation.
+     * @param filter optional tile filter predicate, e.g. to exclude foreign territory.
+     * @return `null` if no resources were found, otherwise a Notification instance.
+     * @see notifyExploredResources
+     */
+    fun getExploredResourcesNotification(
+        civInfo: Civilization,
+        resourceName: String,
+        maxDistance: Int = Int.MAX_VALUE,
+        filter: (Tile) -> Boolean = { true }
+    ): Notification? {
         data class CityTileAndDistance(val city: City, val tile: Tile, val distance: Int)
 
         val exploredRevealTiles: Sequence<Tile> =
@@ -476,11 +496,12 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
                         CityTileAndDistance(city, tile, tile.aerialDistanceTo(city.getCenterTile()))
                     }
             }
-            .filter { (maxDistance == 0 || it.distance <= maxDistance) && (showForeign || it.tile.getOwner() == null || it.tile.getOwner() == civInfo) }
+            .filter { it.distance <= maxDistance && filter(it.tile) }
             .sortedWith(compareBy { it.distance })
             .distinctBy { it.tile }
 
-        val chosenCity = exploredRevealInfo.firstOrNull()?.city ?: return false
+        val chosenCity = exploredRevealInfo.firstOrNull()?.city
+            ?: return null
         val positions = exploredRevealInfo
             // re-sort to a more pleasant display order
             .sortedWith(compareBy { it.tile.aerialDistanceTo(chosenCity.getCenterTile()) })
@@ -492,13 +513,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         else
             "[$positionsCount] sources of [$resourceName] revealed, e.g. near [${chosenCity.name}]"
 
-        civInfo.addNotification(
-            text,
-            LocationAction(positions),
-            NotificationCategory.General,
-            "ResourceIcons/$resourceName"
-        )
-        return true
+        return Notification(text, arrayListOf("ResourceIcons/$resourceName"),
+            LocationAction(positions), NotificationCategory.General)
     }
 
     // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)

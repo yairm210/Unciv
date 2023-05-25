@@ -86,7 +86,7 @@ class ResourcesOverviewTab(
     private fun getResourceImage(name: String) =
         ImageGetter.getResourcePortrait(name, iconSize).apply {
             onClick {
-                if (viewingPlayer.gameInfo.notifyExploredResources(viewingPlayer, name, 0, true))
+                if (viewingPlayer.gameInfo.notifyExploredResources(viewingPlayer, name))
                     overviewScreen.game.popScreen()
             }
         }
