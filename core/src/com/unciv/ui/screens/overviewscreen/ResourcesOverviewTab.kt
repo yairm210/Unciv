@@ -86,10 +86,9 @@ class ResourcesOverviewTab(
     }
     private fun getResourceImage(name: String) =
         ImageGetter.getResourcePortrait(name, iconSize).apply {
-            onClick {
-                if (viewingPlayer.gameInfo.notifyExploredResources(viewingPlayer, name))
-                    overviewScreen.game.popScreen()
-            }
+            onClick { showOneTimeNotification(
+                gameInfo.getExploredResourcesNotification(viewingPlayer, name)
+            ) }
         }
     private fun TileResource.getLabel() = name.toLabel().apply {
         onClick {
