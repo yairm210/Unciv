@@ -76,8 +76,15 @@ class ResourcesOverviewTab(
 
     private fun ResourceSupplyList.getLabel(resource: TileResource, origin: String): Label? {
         val amount = get(resource, origin)?.amount ?: return null
-        return if (resource.isStockpiled() && amount > 0) "+$amount".toLabel()
-        else amount.toLabel()
+        val label = if (resource.isStockpiled() && amount > 0) "+$amount".toLabel()
+            else amount.toLabel()
+        if (origin == ExtraInfoOrigin.Unimproved.name)
+            label.onClick { showOneTimeNotification(
+                gameInfo.getExploredResourcesNotification(viewingPlayer, resource.name) {
+                    it.getOwner() == viewingPlayer && it.countAsUnimproved()
+                }
+            ) }
+        return label
     }
     private fun ResourceSupplyList.getTotalLabel(resource: TileResource): Label {
         val total = filter { it.resource == resource }.sumOf { it.amount }
