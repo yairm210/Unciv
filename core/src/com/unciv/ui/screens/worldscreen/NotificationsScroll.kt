@@ -110,6 +110,8 @@ class NotificationsScroll(
         height = worldScreen.stage.height * inverseScaleFactor
     }
 
+    override fun getMouseWheelX() = 0f
+
     /** Access to hidden "state" - writing it will ensure this is fully visible or hidden and the
      *  restore button shown as needed - with animation. */
     @Suppress("MemberVisibilityCanBePrivate")  // API for future use
