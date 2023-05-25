@@ -1,0 +1,9 @@
+Automated workers no longer stay on unimprovable tile if another tile is improvable
+
+Solved rare concurrency bug for explored tiles
+
+Songhai Civilian units no longer gain Amphibious promotion
+
+Fixed 'enhance religion' crash
+
+Improperly configured mod conditionals do not cause crash

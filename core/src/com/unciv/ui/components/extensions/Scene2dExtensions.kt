@@ -40,7 +40,7 @@ import com.unciv.ui.components.extensions.GdxKeyCodeFixes.valueOf
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.Concurrency
 
 /**
  * Collection of extension functions mostly for libGdx widgets

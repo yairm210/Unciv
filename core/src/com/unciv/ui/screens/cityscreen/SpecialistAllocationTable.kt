@@ -16,7 +16,7 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 
-class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.skin) {
+class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin) {
     val cityInfo = cityScreen.city
 
     fun update() {
@@ -44,7 +44,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.s
             if (!cityInfo.getRuleset().specialists.containsKey(specialistName)) // specialist doesn't exist in this ruleset, probably a mod
                 continue
             val newSpecialists = cityInfo.population.getNewSpecialists()
-            val assignedSpecialists = newSpecialists[specialistName]!!
+            val assignedSpecialists = newSpecialists[specialistName]
 
             if (cityScreen.canChangeState) add(getUnassignButton(assignedSpecialists, specialistName))
             add(getAllocationTable(assignedSpecialists, maxSpecialists, specialistName)).pad(10f)
@@ -56,7 +56,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen) : Table(BaseScreen.s
     }
 
 
-    fun getAllocationTable(assignedSpecialists: Int, maxSpecialists: Int, specialistName: String): Table {
+    private fun getAllocationTable(assignedSpecialists: Int, maxSpecialists: Int, specialistName: String): Table {
 
         val specialistIconTable = Table()
         val specialistObject = cityInfo.getRuleset().specialists[specialistName]!!

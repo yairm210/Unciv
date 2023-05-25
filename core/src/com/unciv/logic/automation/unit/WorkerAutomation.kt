@@ -86,7 +86,7 @@ class WorkerAutomation(
             if (result.isEmpty())
                 debug("\tempty")
             else result.forEach {
-                debug("\t$it")    //  ${it.getCity()?.name} included in Tile toString()
+                debug("\t$it")
             }
         }
         result
@@ -108,8 +108,8 @@ class WorkerAutomation(
 
     companion object {
         /** Maps to instance [WorkerAutomation.automateWorkerAction] knowing only the MapUnit */
-        fun automateWorkerAction(unit: MapUnit) {
-            unit.civ.getWorkerAutomation().automateWorkerAction(unit)
+        fun automateWorkerAction(unit: MapUnit, tilesWhereWeWillBeCaptured: Set<Tile>) {
+            unit.civ.getWorkerAutomation().automateWorkerAction(unit, tilesWhereWeWillBeCaptured)
         }
 
         /** Convenience shortcut supports old calling syntax for [WorkerAutomation.getPriority] */
@@ -131,9 +131,9 @@ class WorkerAutomation(
     /**
      * Automate one Worker - decide what to do and where, move, start or continue work.
      */
-    fun automateWorkerAction(unit: MapUnit) {
+    fun automateWorkerAction(unit: MapUnit, tilesWhereWeWillBeCaptured: Set<Tile>) {
         val currentTile = unit.getTile()
-        val tileToWork = findTileToWork(unit)
+        val tileToWork = findTileToWork(unit, tilesWhereWeWillBeCaptured)
 
         if (getPriority(tileToWork, civInfo) < 3) { // building roads is more important
             if (tryConnectingCities(unit)) return
@@ -201,7 +201,7 @@ class WorkerAutomation(
 
         // Idle CS units should wander so they don't obstruct players so much
         if (unit.civ.isCityState())
-            wander(unit, stayInTerritory = true)
+            wander(unit, stayInTerritory = true, tilesToAvoid = tilesWhereWeWillBeCaptured)
     }
 
     /**
@@ -220,7 +220,7 @@ class WorkerAutomation(
         }
         if (candidateCities.none()) return false // do nothing.
 
-        val isCandidateTilePredicate = { it: Tile -> it.isLand && unit.movement.canPassThrough(it) }
+        val isCandidateTilePredicate: (Tile) -> Boolean = { it.isLand && unit.movement.canPassThrough(it) }
         val currentTile = unit.getTile()
         val cityTilesToSeek = ArrayList(tilesOfConnectedCities.sortedBy { it.aerialDistanceTo(currentTile) })
 
@@ -279,16 +279,17 @@ class WorkerAutomation(
      * Looks for a worthwhile tile to improve
      * @return The current tile if no tile to work was found
      */
-    private fun findTileToWork(unit: MapUnit): Tile {
+    private fun findTileToWork(unit: MapUnit, tilesToAvoid: Set<Tile>): Tile {
         val currentTile = unit.getTile()
         val workableTiles = currentTile.getTilesInDistance(4)
                 .filter {
-                    (it.civilianUnit == null || it == currentTile)
-                            && (it.owningCity == null || it.getOwner()==civInfo)
-                            && getPriority(it) > 1
-                            && it.getTilesInDistance(2)  // don't work in range of enemy cities
+                    it !in tilesToAvoid
+                    && (it.civilianUnit == null || it == currentTile)
+                    && (it.owningCity == null || it.getOwner()==civInfo)
+                    && getPriority(it) > 1
+                    && it.getTilesInDistance(2)  // don't work in range of enemy cities
                         .none { tile -> tile.isCityCenter() && tile.getCity()!!.civ.isAtWarWith(civInfo) }
-                            && it.getTilesInDistance(3)  // don't work in range of enemy units
+                    && it.getTilesInDistance(3)  // don't work in range of enemy units
                         .none { tile -> tile.militaryUnit != null && tile.militaryUnit!!.civ.isAtWarWith(civInfo)}
                 }
                 .sortedByDescending { getPriority(it) }
@@ -297,8 +298,9 @@ class WorkerAutomation(
         val selectedTile = workableTiles.firstOrNull { unit.movement.canReach(it) && (tileCanBeImproved(unit, it) || it.isPillaged()) }
 
         return if (selectedTile != null
-                && (!workableTiles.contains(currentTile)
-                    || getPriority(selectedTile) > getPriority(currentTile)))
+                && ((!tileCanBeImproved(unit, currentTile) && !currentTile.isPillaged()) // current tile is unimprovable
+                    || !workableTiles.contains(currentTile) // current tile is unworkable by city
+                    || getPriority(selectedTile) > getPriority(currentTile)))  // current tile is less important
             selectedTile
         else currentTile
     }

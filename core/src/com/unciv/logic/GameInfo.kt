@@ -3,12 +3,14 @@ package com.unciv.logic
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.UncivGame.Version
+import com.unciv.logic.BackwardCompatibility.convertEncampmentData
 import com.unciv.logic.BackwardCompatibility.convertFortify
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
 import com.unciv.logic.BackwardCompatibility.migrateToTileHistory
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.GameInfo.Companion.CURRENT_COMPATIBILITY_NUMBER
 import com.unciv.logic.GameInfo.Companion.FIRST_WITHOUT
+import com.unciv.logic.automation.civilization.BarbarianManager
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.CivilizationInfoPreview
@@ -32,11 +34,10 @@ import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
+import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
 import java.util.UUID
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 
 /**
@@ -277,7 +278,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     fun isSimulation(): Boolean = turns < DebugUtils.SIMULATE_UNTIL_TURN
             || turns < simulateMaxTurns && simulateUntilWin
 
-    fun nextTurn() {
+    fun nextTurn(progressBar: NextTurnProgress? = null) {
 
         var player = currentPlayerCiv
         var playerIndex = civilizations.indexOf(player)
@@ -299,7 +300,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         //  would skip a turn if an AI civ calls nextTurn
         //  this happens when resigning a multiplayer game)
         if (player.isHuman()) {
-            TurnManager(player).endTurn()
+            TurnManager(player).endTurn(progressBar)
             setNextPlayer()
         }
 
@@ -314,7 +315,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         {
 
             // Starting preparations
-            TurnManager(player).startTurn()
+            TurnManager(player).startTurn(progressBar)
 
             // Automation done here
             TurnManager(player).automateTurn()
@@ -326,7 +327,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             }
 
             // Clean up
-            TurnManager(player).endTurn()
+            TurnManager(player).endTurn(progressBar)
 
             // To the next player
             setNextPlayer()
@@ -341,7 +342,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         currentPlayerCiv = getCivilization(currentPlayer)
 
         // Starting his turn
-        TurnManager(player).startTurn()
+        TurnManager(player).startTurn(progressBar)
 
         // No popups for spectators
         if (currentPlayerCiv.isSpectator())
@@ -506,11 +507,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         tileMap.gameInfo = this
 
         // [TEMPORARY] Convert old saves to newer ones by moving base rulesets from the mod list to the base ruleset field
-        val baseRulesetInMods = gameParameters.mods.firstOrNull { RulesetCache[it]?.modOptions?.isBaseRuleset == true }
-        if (baseRulesetInMods != null) {
-            gameParameters.baseRuleset = baseRulesetInMods
-            gameParameters.mods = LinkedHashSet(gameParameters.mods.filter { it != baseRulesetInMods })
-        }
+        convertOldSavesToNewSaves()
 
         ruleset = RulesetCache.getComplexRuleset(gameParameters)
 
@@ -562,6 +559,24 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         convertFortify()
 
+        updateCivilizationState()
+
+        spaceResources.clear()
+        spaceResources.addAll(ruleset.buildings.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
+            .flatMap { it.getResourceRequirementsPerTurn().keys })
+        spaceResources.addAll(ruleset.victories.values.flatMap { it.requiredSpaceshipParts })
+
+        convertEncampmentData()
+        barbarians.setTransients(this)
+
+        cityDistances.game = this
+
+        guaranteeUnitPromotions()
+
+        migrateToTileHistory()
+    }
+
+    private fun updateCivilizationState() {
         for (civInfo in civilizations.asSequence()
             // update city-state resource first since the happiness of major civ depends on it.
             // See issue: https://github.com/yairm210/Unciv/issues/7781
@@ -604,19 +619,14 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
                 cityInfo.cityStats.update()
             }
         }
+    }
 
-        spaceResources.clear()
-        spaceResources.addAll(ruleset.buildings.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
-            .flatMap { it.getResourceRequirementsPerTurn().keys })
-        spaceResources.addAll(ruleset.victories.values.flatMap { it.requiredSpaceshipParts })
-
-        barbarians.setTransients(this)
-
-        cityDistances.game = this
-
-        guaranteeUnitPromotions()
-
-        migrateToTileHistory()
+    private fun convertOldSavesToNewSaves() {
+        val baseRulesetInMods = gameParameters.mods.firstOrNull { RulesetCache[it]?.modOptions?.isBaseRuleset == true }
+        if (baseRulesetInMods != null) {
+            gameParameters.baseRuleset = baseRulesetInMods
+            gameParameters.mods = LinkedHashSet(gameParameters.mods.filter { it != baseRulesetInMods })
+        }
     }
 
     //endregion

@@ -8,11 +8,11 @@ import com.unciv.logic.multiplayer.GameUpdateResult.Type.CHANGED
 import com.unciv.logic.multiplayer.GameUpdateResult.Type.FAILURE
 import com.unciv.logic.multiplayer.GameUpdateResult.Type.UNCHANGED
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
-import com.unciv.logic.multiplayer.storage.OnlineMultiplayerFiles
+import com.unciv.logic.multiplayer.storage.OnlineMultiplayerServer
 import com.unciv.ui.components.extensions.isLargerThan
-import com.unciv.utils.concurrency.launchOnGLThread
-import com.unciv.utils.concurrency.withGLContext
 import com.unciv.utils.debug
+import com.unciv.utils.launchOnGLThread
+import com.unciv.utils.withGLContext
 import kotlinx.coroutines.coroutineScope
 import java.time.Duration
 import java.time.Instant
@@ -65,7 +65,7 @@ class OnlineMultiplayerGame(
      * Fires: [MultiplayerGameUpdateStarted], [MultiplayerGameUpdated], [MultiplayerGameUpdateUnchanged], [MultiplayerGameUpdateFailed]
      *
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
-     * @throws MultiplayerFileNotFoundException if the file can't be found
+     * @throws  MultiplayerFileNotFoundException if the file can't be found
      */
     suspend fun requestUpdate(forceUpdate: Boolean = false) = coroutineScope {
         val onUnchanged = { GameUpdateResult(UNCHANGED, preview!!) }
@@ -97,7 +97,7 @@ class OnlineMultiplayerGame(
                 error = null
                 MultiplayerGameUpdateUnchanged(name, updateResult.status)
             }
-            else -> throw IllegalStateException()
+            else -> error("Unknown update event")
         }
         launchOnGLThread {
             EventBus.send(updateEvent)
@@ -106,7 +106,8 @@ class OnlineMultiplayerGame(
 
     private suspend fun update(): GameUpdateResult {
         val curPreview = if (preview != null) preview!! else loadPreviewFromFile()
-        val newPreview = OnlineMultiplayerFiles().tryDownloadGamePreview(curPreview.gameId)
+        val serverIdentifier = curPreview.gameParameters.multiplayerServerUrl
+        val newPreview = OnlineMultiplayerServer(serverIdentifier).tryDownloadGamePreview(curPreview.gameId)
         if (newPreview.turns == curPreview.turns && newPreview.currentPlayer == curPreview.currentPlayer) return GameUpdateResult(UNCHANGED, newPreview)
         UncivGame.Current.files.saveGame(newPreview, fileHandle)
         preview = newPreview

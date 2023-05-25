@@ -158,6 +158,8 @@ class MapEditorLoadTab(
             Gdx.app.postRunnable {
                 popup?.close()
                 Log.error("Error loading map \"$chosenMap\"", ex)
+
+                @Suppress("InstanceOfCheckForException") // looks cleaner like this than having 2 catch statements
                 ToastPopup("{Error loading map!}" +
                         (if (ex is UncivShowableException) "\n{${ex.message}}" else ""), editorScreen)
             }

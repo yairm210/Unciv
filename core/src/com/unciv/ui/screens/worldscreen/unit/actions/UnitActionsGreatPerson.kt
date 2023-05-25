@@ -88,7 +88,8 @@ object UnitActionsGreatPerson {
             }
             UniqueType.CanTradeWithCityStateForGoldAndInfluence -> {
                 val canConductTradeMission = tile.owningCity?.civ?.isCityState() == true
-                        && tile.owningCity?.civ?.isAtWarWith(unit.civ) == false
+                    && tile.owningCity?.civ != unit.civ
+                    && tile.owningCity?.civ?.isAtWarWith(unit.civ) == false
                 val influenceEarned = unique.params[0].toFloat()
                 actionList += UnitAction(
                     UnitActionType.ConductTradeMission,
@@ -98,9 +99,11 @@ object UnitActionsGreatPerson {
                         for (goldUnique in unit.civ.getMatchingUniques(UniqueType.PercentGoldFromTradeMissions))
                             goldEarned *= goldUnique.params[0].toPercent()
                         unit.civ.addGold(goldEarned.toInt())
-                        tile.owningCity!!.civ.getDiplomacyManager(unit.civ).addInfluence(influenceEarned)
-                        unit.civ.addNotification("Your trade mission to [${tile.owningCity!!.civ}] has earned you [${goldEarned}] gold and [$influenceEarned] influence!",
-                            NotificationCategory.General, tile.owningCity!!.civ.civName, NotificationIcon.Gold, NotificationIcon.Culture)
+                        val tileOwningCiv = tile.owningCity!!.civ
+
+                        tileOwningCiv.getDiplomacyManager(unit.civ).addInfluence(influenceEarned)
+                        unit.civ.addNotification("Your trade mission to [$tileOwningCiv] has earned you [$goldEarned] gold and [$influenceEarned] influence!",
+                            NotificationCategory.General, tileOwningCiv.civName, NotificationIcon.Gold, NotificationIcon.Culture)
                         unit.consume()
                     }.takeIf { canConductTradeMission }
                 )

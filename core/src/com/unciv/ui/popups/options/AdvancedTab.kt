@@ -25,7 +25,6 @@ import com.unciv.ui.components.FontFamilyData
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
-import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.keyShortcuts
 import com.unciv.ui.components.extensions.onActivation
@@ -38,12 +37,12 @@ import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.extensions.withoutItem
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenOrientation
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.launchOnGLThread
+import com.unciv.utils.Concurrency
+import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.*
+import java.util.UUID
 import java.util.zip.Deflater
 
 fun advancedTab(
@@ -335,7 +334,7 @@ private fun addSetUserId(table: Table, settings: GameSettings) {
                     idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!".tr())
                 }.open(true)
                 idSetLabel.isVisible = true
-            } catch (ex: Exception) {
+            } catch (_: Exception) {
                 idSetLabel.isVisible = true
                 idSetLabel.setFontColor(Color.RED).setText("Invalid ID!".tr())
             }

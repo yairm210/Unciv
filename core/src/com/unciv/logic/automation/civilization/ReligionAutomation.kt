@@ -2,7 +2,7 @@ package com.unciv.logic.automation.civilization
 
 import com.unciv.Constants
 import com.unciv.logic.city.City
-import com.unciv.logic.city.INonPerpetualConstruction
+import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.tile.Tile

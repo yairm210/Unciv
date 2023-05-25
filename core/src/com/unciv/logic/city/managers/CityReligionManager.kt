@@ -17,7 +17,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
 
     // This needs to be kept track of for the
     // "[Stats] when a city adopts this religion for the first time" unique
-    val religionsAtSomePointAdopted: HashSet<String> = hashSetOf()
+    private val religionsAtSomePointAdopted: HashSet<String> = hashSetOf()
 
     private val pressures: Counter<String> = Counter()
     // Cached because using `updateNumberOfFollowers` to get this value resulted in many calls
@@ -79,18 +79,16 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         if (!city.civ.gameInfo.isReligionEnabled()) return // No religion, no pressures
         pressures.add(religionName, amount)
 
-        if (shouldUpdateFollowers) {
-            updateNumberOfFollowers(shouldUpdateFollowers)
-        }
+        if (shouldUpdateFollowers) updateNumberOfFollowers()
     }
 
     fun removeAllPressuresExceptFor(religion: String) {
-        val pressureFromThisReligion = pressures[religion]!!
+        val pressureFromThisReligion = pressures[religion]
         // Atheism is never removed
         val pressureFromAtheism = pressures[Constants.noReligionName]
         clearAllPressures()
         pressures.add(religion, pressureFromThisReligion)
-        if (pressureFromAtheism != null) pressures[Constants.noReligionName] = pressureFromAtheism
+        if (pressureFromAtheism != 0) pressures[Constants.noReligionName] = pressureFromAtheism
         updateNumberOfFollowers()
     }
 
@@ -192,13 +190,13 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         return followers.clone()
     }
 
-    fun getFollowersOf(religion: String): Int? {
+    fun getFollowersOf(religion: String): Int {
         return followers[religion]
     }
 
     fun getFollowersOfMajorityReligion(): Int {
         val majorityReligion = getMajorityReligionName() ?: return 0
-        return followers[majorityReligion]!!
+        return followers[majorityReligion]
     }
 
     fun getFollowersOfOtherReligionsThan(religion: String): Int {
@@ -226,7 +224,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         val religionWithMaxPressure = pressures.maxByOrNull { it.value }!!.key
         return when {
             religionWithMaxPressure == Constants.noReligionName -> null
-            followers[religionWithMaxPressure]!! >= city.population.population / 2 -> religionWithMaxPressure
+            followers[religionWithMaxPressure] >= city.population.population / 2 -> religionWithMaxPressure
             else -> null
         }
     }

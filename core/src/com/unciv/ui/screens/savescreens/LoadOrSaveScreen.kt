@@ -22,9 +22,9 @@ import com.unciv.ui.components.extensions.onDoubleClick
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.launchOnGLThread
-import java.util.*
+import com.unciv.utils.Concurrency
+import com.unciv.utils.launchOnGLThread
+import java.util.Date
 
 
 abstract class LoadOrSaveScreen(
@@ -89,9 +89,9 @@ abstract class LoadOrSaveScreen(
                 } else {
                     "Failed to delete [$name]."
                 }
-            } catch (ex: SecurityException) {
+            } catch (_: SecurityException) {
                 "Insufficient permissions to delete [$name]."
-            } catch (ex: Throwable) {
+            } catch (_: Throwable) {
                 "Failed to delete [$name]."
             }
             descriptionLabel.setText(result.tr())
@@ -126,7 +126,7 @@ abstract class LoadOrSaveScreen(
                 "${saveGameFile.name()}\n{Saved at}: ${savedAt.formatDate()}\n" +
                 "$playerCivNames, ${game.difficulty.tr()}, ${Fonts.turn}${game.turns}\n" +
                 "{Base ruleset:} ${game.gameParameters.baseRuleset}$mods"
-            } catch (ex: Exception) {
+            } catch (_: Exception) {
                 "\n{Could not load game}!"
             }
 

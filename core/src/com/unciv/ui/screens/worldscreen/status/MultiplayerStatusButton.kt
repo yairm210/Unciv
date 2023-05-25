@@ -25,8 +25,8 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.setSize
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.launchOnGLThread
+import com.unciv.utils.Concurrency
+import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import java.time.Duration
@@ -82,7 +82,7 @@ class MultiplayerStatusButton(
 
         if (UncivGame.Current.settings.continuousRendering) {
             loadingImage.clearActions()
-            loadingImage.addAction(Actions.repeat(RepeatAction.FOREVER,Actions.rotateBy(-90f, 1f)))
+            loadingImage.addAction(Actions.forever(Actions.rotateBy(-90f, 1f)))
         }
 
         loadingImage.isVisible = true

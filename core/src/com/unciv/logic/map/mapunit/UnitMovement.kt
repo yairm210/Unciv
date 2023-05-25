@@ -454,6 +454,8 @@ class UnitMovement(val unit: MapUnit) {
         var allowedTile: Tile? = null
         var distance = 0
         // When we didn't limit the allowed distance the game would sometimes spend a whole minute looking for a suitable tile.
+
+        if (canPassThrough(unit.getTile())) return // This unit can stay here - e.g. it has "May enter foreign tiles without open borders"
         while (allowedTile == null && distance < 5) {
             distance++
             allowedTile = unit.getTile().getTilesAtDistance(distance)

@@ -15,7 +15,7 @@ import com.unciv.utils.Display
 import com.unciv.utils.ScreenOrientation
 import java.text.Collator
 import java.time.Duration
-import java.util.*
+import java.util.Locale
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty0
 
@@ -154,7 +154,7 @@ class GameSettings {
         locale = try {
             val code = LocaleCode.valueOf(languageName)
             Locale(code.language, code.country)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Locale.getDefault()
         }
     }

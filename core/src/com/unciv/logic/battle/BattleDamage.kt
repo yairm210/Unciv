@@ -9,11 +9,11 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
-import java.util.*
 import kotlin.collections.set
 import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.roundToInt
+import kotlin.random.Random
 
 object BattleDamage {
 
@@ -261,7 +261,7 @@ object BattleDamage {
         defender: ICombatant,
         tileToAttackFrom: Tile = defender.getTile(),
         /** Between 0 and 1.  Defaults to turn and location-based random to avoid save scumming */
-        randomnessFactor: Float = Random(attacker.getCivInfo().gameInfo.turns * attacker.getTile().position.hashCode().toLong()).nextFloat()
+        randomnessFactor: Float = Random(defender.getCivInfo().gameInfo.turns * defender.getTile().position.hashCode().toLong()).nextFloat()
         ,
     ): Int {
         if (defender.isCivilian()) return 40

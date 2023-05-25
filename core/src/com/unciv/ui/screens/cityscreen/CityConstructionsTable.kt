@@ -10,11 +10,11 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
-import com.unciv.logic.city.IConstruction
-import com.unciv.logic.city.INonPerpetualConstruction
-import com.unciv.logic.city.PerpetualConstruction
-import com.unciv.logic.city.RejectionReason
-import com.unciv.logic.city.RejectionReasonType
+import com.unciv.models.ruleset.IConstruction
+import com.unciv.models.ruleset.INonPerpetualConstruction
+import com.unciv.models.ruleset.PerpetualConstruction
+import com.unciv.models.ruleset.RejectionReason
+import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
@@ -46,8 +46,8 @@ import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.launchOnGLThread
+import com.unciv.utils.Concurrency
+import com.unciv.utils.launchOnGLThread
 import kotlin.math.max
 import kotlin.math.min
 import com.unciv.ui.components.AutoScrollPane as ScrollPane

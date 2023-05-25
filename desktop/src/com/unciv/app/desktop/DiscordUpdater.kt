@@ -5,7 +5,7 @@ import club.minnced.discord.rpc.DiscordRPC
 import club.minnced.discord.rpc.DiscordRichPresence
 import com.sun.jna.Native
 import com.unciv.utils.debug
-import java.util.*
+import java.util.Timer
 import kotlin.concurrent.timer
 
 class DiscordGameInfo(
@@ -43,7 +43,7 @@ class DiscordUpdater {
                     debug("Exception while updating Discord Rich Presence", ex)
                 }
             }
-        } catch (ex: Throwable) {
+        } catch (_: Throwable) {
             // This needs to be a Throwable because if we can't find the discord_rpc library, we'll get a UnsatisfiedLinkError, which is NOT an exception.
             debug("Could not initialize Discord")
         }

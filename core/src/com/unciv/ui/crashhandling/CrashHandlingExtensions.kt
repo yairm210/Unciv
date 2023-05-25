@@ -1,7 +1,7 @@
 package com.unciv.ui.crashhandling
 
 import com.unciv.UncivGame
-import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.Concurrency
 
 
 /**

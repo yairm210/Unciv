@@ -13,6 +13,10 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.multiplayer.isUsersTurn
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.IConstruction
+import com.unciv.models.ruleset.INonPerpetualConstruction
+import com.unciv.models.ruleset.PerpetualConstruction
+import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals

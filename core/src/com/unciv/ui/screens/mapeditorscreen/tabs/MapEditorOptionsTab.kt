@@ -20,6 +20,7 @@ import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.utils.Log
 
 class MapEditorOptionsTab(
     private val editorScreen: MapEditorScreen
@@ -79,6 +80,7 @@ class MapEditorOptionsTab(
             val loadedMap = MapSaver.mapFromSavedString(clipboardContentsString)
             editorScreen.loadMap(loadedMap)
         } catch (ex: Exception) {
+            Log.error("Could not load map", ex)
             ToastPopup("Could not load map!", editorScreen)
         }
     }

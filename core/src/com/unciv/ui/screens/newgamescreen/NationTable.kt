@@ -23,7 +23,7 @@ class NationTable(val nation: Nation, width: Float, minHeight: Float, ruleset: R
     init {
         val innerColor = nation.getInnerColor()
         val outerColor = nation.getOuterColor()
-        val textBackgroundColor = Color(0x002042ff) // getBlue().lerp(Black,0.5).apply { a = 1 }
+        val textBackgroundColor = Color(0x002042ff)
         val borderWidth = 5f
         val totalPadding = 10f + 4 * borderWidth // pad*2 + innerTable.pad*2 + borderTable.pad*2
         val internalWidth = width - totalPadding

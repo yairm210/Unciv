@@ -27,7 +27,6 @@ import com.unciv.ui.components.extensions.isNarrowerThan4to3
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.activePopup
 import com.unciv.ui.popups.options.OptionsPopup
-import com.unciv.ui.tutorials.TutorialController
 
 abstract class BaseScreen : Screen {
 
