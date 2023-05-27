@@ -69,7 +69,7 @@ class GlobalPoliticsOverviewTable (
 
     private fun updatePoliticsTable() {
         clear()
-        getFixedContent().clear()
+        fixedContent.clear()
 
         val diagramButton = "Show diagram".toTextButton().onClick(::updateDiagram)
 
@@ -85,18 +85,14 @@ class GlobalPoliticsOverviewTable (
             add("Relations".toLabel()).row()
             add(diagramButton).pad(10f)
         })
-        row()
-        addSeparator(Color.GRAY)
 
         createGlobalPoliticsTable()
     }
 
     private fun createGlobalPoliticsTable() {
-        val civilizations = mutableListOf<Civilization>()
-        civilizations.add(viewingPlayer)
-        civilizations.addAll(viewingPlayer.getKnownCivs())
-        civilizations.removeAll(civilizations.filter { it.isBarbarian() || it.isCityState() || it.isSpectator() })
-        for (civ in civilizations) {
+        for (civ in viewingPlayer.diplomacyFunctions.getKnownCivsSorted(includeCityStates = false)) {
+            addSeparator(Color.GRAY)
+
             // civ image
             add(ImageGetter.getNationPortrait(civ.nation, 100f)).pad(20f)
 
@@ -119,9 +115,6 @@ class GlobalPoliticsOverviewTable (
 
             //politics
             add(getPoliticsOfCivTable(civ)).pad(20f)
-
-            if (civilizations.indexOf(civ) != civilizations.lastIndex)
-                addSeparator(Color.GRAY)
         }
     }
 
@@ -325,6 +318,7 @@ class GlobalPoliticsOverviewTable (
             .pad(5f).colspan(columns).row()
         if (count == 0) return
         addSeparator()
+
         var currentColumn = 0
         var lastCivWasMajor = false
         fun advanceCols(delta: Int) {
@@ -335,6 +329,7 @@ class GlobalPoliticsOverviewTable (
             }
             lastCivWasMajor = delta == 2
         }
+
         for (civ in civs) {
             if (lastCivWasMajor && civ.isCityState())
                 advanceCols(columns)
