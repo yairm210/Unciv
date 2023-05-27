@@ -22,12 +22,15 @@ import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.KeyboardPanningListener
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.worldscreen.ZoomButtonPair
+import com.unciv.utils.Concurrency
+import com.unciv.utils.Dispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 
 
 //todo normalize properly
 
 //todo Remove "Area: [amount] tiles, [amount2] continents/islands = " after 2022-07-01
-//todo Direct Strategic Resource abundance control
 //todo functional Tab for Units (empty Tab is prepared but commented out in MapEditorEditTab.AllEditSubTabs)
 //todo copy/paste tile areas? (As tool tab, brush sized, floodfill forbidden, tab displays copied area)
 //todo Synergy with Civilopedia for drawing loose tiles / terrain icons
@@ -72,6 +75,9 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen(), RecreateOnResize {
     private var zoomController: ZoomButtonPair? = null
 
     private val highlightedTileGroups = mutableListOf<TileGroup>()
+
+    // Control of background jobs - make them cancel on context changes like exit editor or resize screen
+    private val jobs = ArrayDeque<Job>(3)
 
     init {
         if (map == null) {
@@ -189,6 +195,7 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen(), RecreateOnResize {
             "Do you want to leave without saving the recent changes?",
             "Leave"
         ) {
+            cancelJobs()
             game.popScreen()
         }
     }
@@ -216,5 +223,32 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen(), RecreateOnResize {
         highlightTile(tile, color)
     }
 
-    override fun recreate(): BaseScreen = MapEditorScreen(tileMap)
+    override fun recreate(): BaseScreen {
+        cancelJobs()
+        return MapEditorScreen(tileMap)
+    }
+
+    override fun dispose() {
+        cancelJobs()
+        super.dispose()
+    }
+
+    fun startBackgroundJob(
+        name: String,
+        isDaemon: Boolean = true,
+        block: suspend CoroutineScope.() -> Unit
+    ) {
+        val scope = CoroutineScope(if (isDaemon) Dispatcher.DAEMON else Dispatcher.NON_DAEMON)
+        val newJob = Concurrency.run(name, scope, block)
+        jobs.add(newJob)
+        newJob.invokeOnCompletion {
+            jobs.remove(newJob)
+        }
+    }
+
+    private fun cancelJobs() {
+        for (job in jobs)
+            job.cancel()
+        jobs.clear()
+    }
 }
