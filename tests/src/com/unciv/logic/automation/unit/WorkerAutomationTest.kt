@@ -16,20 +16,16 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.GdxTestRunner
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/*
-https://github.com/yairm210/Unciv/issues/9328
-Worker will not replace improvement to enable strategy resources
- */
-
 @RunWith(GdxTestRunner::class)
 internal class WorkerAutomationTest {
     private val testCivilizationNames = arrayListOf("America", "Germany", "Greece","Hanoi", "Genoa")
-    private lateinit var sut: WorkerAutomation
+    private lateinit var workerAutomation: WorkerAutomation
     private lateinit var civInfo: Civilization
     private lateinit var gameInfo: GameInfo
     private lateinit var ruleset: Ruleset
@@ -63,28 +59,30 @@ internal class WorkerAutomationTest {
         gameInfo.setTransients()
         civInfo = gameInfo.civilizations.first()
 
-        sut = WorkerAutomation(civInfo, 3)
+        workerAutomation = WorkerAutomation(civInfo, 3)
     }
 
     @Test
-    fun `should replace existing improvement`() {
-        // Arrange
-        civInfo.tech.techsResearched.add(ruleset.tileImprovements[RoadStatus.Road.name]!!.techRequired!!)
-        civInfo.tech.techsResearched.add(ruleset.tileImprovements["Farm"]!!.techRequired!!)
-        civInfo.tech.techsResearched.add(ruleset.tileImprovements["Mine"]!!.techRequired!!)
-        civInfo.tech.techsResearched.add("Iron Working")
+    fun `should replace already existing improvement to enable resource`() {
+        // Add the needed tech to construct the improvements below
+        for (improvement in listOf(RoadStatus.Road.name, "Farm", "Mine")) {
+            civInfo.tech.techsResearched.add(ruleset.tileImprovements[improvement]!!.techRequired!!)
+        }
+        civInfo.tech.techsResearched.add(ruleset.tileResources["Iron"]!!.revealedBy!!)
+
         civInfo.cities = listOf(createCity(civInfo, Vector2(0f, 0f), "Capital", true))
         val currentTile = gameInfo.tileMap[1,1]
         currentTile.setOwningCity(civInfo.cities.first())
-        currentTile.resource = "Iron"
-        currentTile.improvement = "Farm"
+        currentTile.improvement = "Farm" // Set existing improvement
+        currentTile.resource = "Iron" // This tile also has a resource needs to be enabled by a building a Mine
         val mapUnit = addUnit("Worker", civInfo, currentTile)
 
         // Act
-        sut.automateWorkerAction(mapUnit, setOf())
+        workerAutomation.automateWorkerAction(mapUnit, setOf())
 
         // Assert
-        assertEquals("Should have replaced 'Farm' with 'Mine'","Mine", currentTile.improvementInProgress)
+        assertEquals("Worker should have replaced already existing improvement 'Farm' with 'Mine' to enable 'Iron' resource",
+            "Mine", currentTile.improvementInProgress)
         assertTrue(currentTile.turnsToImprovement > 0)
     }
 
