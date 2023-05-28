@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
@@ -75,20 +76,28 @@ class ResourcesOverviewTab(
 
     private fun ResourceSupplyList.getLabel(resource: TileResource, origin: String): Label? {
         val amount = get(resource, origin)?.amount ?: return null
-        return if (resource.isStockpiled() && amount > 0) "+$amount".toLabel()
-        else amount.toLabel()
+        val label = if (resource.isStockpiled() && amount > 0) "+$amount".toLabel()
+            else amount.toLabel()
+        if (origin == ExtraInfoOrigin.Unimproved.name)
+            label.onClick { showOneTimeNotification(
+                gameInfo.getExploredResourcesNotification(viewingPlayer, resource.name) {
+                    it.getOwner() == viewingPlayer && it.countAsUnimproved()
+                }
+            ) }
+        return label
     }
+
     private fun ResourceSupplyList.getTotalLabel(resource: TileResource): Label {
         val total = filter { it.resource == resource }.sumOf { it.amount }
         return if (resource.isStockpiled() && total > 0) "+$total".toLabel()
         else total.toLabel()
     }
+
     private fun getResourceImage(name: String) =
         ImageGetter.getResourcePortrait(name, iconSize).apply {
-            onClick {
-                if (viewingPlayer.gameInfo.notifyExploredResources(viewingPlayer, name, 0, true))
-                    overviewScreen.game.popScreen()
-            }
+            onClick { showOneTimeNotification(
+                gameInfo.getExploredResourcesNotification(viewingPlayer, name)
+            ) }
         }
     private fun TileResource.getLabel() = name.toLabel().apply {
         onClick {
@@ -228,10 +237,15 @@ class ResourcesOverviewTab(
         overviewScreen.resizePage(this)  // Without the height is miscalculated - shouldn't be
     }
 
+    private fun Tile.countAsUnimproved(): Boolean = resource != null &&
+            tileResource.resourceType != ResourceType.Bonus &&
+            hasViewableResource(viewingPlayer) &&
+            !providesResources(viewingPlayer)
+
     private fun getExtraDrilldown(): ResourceSupplyList {
         val newResourceSupplyList = ResourceSupplyList()
         for (city in viewingPlayer.cities) {
-            if (!city.demandedResource.isEmpty()) {
+            if (city.demandedResource.isNotEmpty()) {
                 val wltkResource = gameInfo.ruleset.tileResources[city.demandedResource]!!
                 if (city.isWeLoveTheKingDayActive()) {
                     newResourceSupplyList.add(wltkResource, ExtraInfoOrigin.CelebratingWLKT.name)
@@ -239,15 +253,9 @@ class ResourcesOverviewTab(
                     newResourceSupplyList.add(wltkResource, ExtraInfoOrigin.DemandingWLTK.name)
                 }
             }
-            for (tile in city.getTiles()) {
-                if (tile.isCityCenter()) continue
-                if (!tile.hasViewableResource(viewingPlayer)) continue
-                val tileResource = tile.tileResource
-                if (tileResource.resourceType == ResourceType.Bonus) continue
-                if (tile.getUnpillagedImprovement() != null && tileResource.isImprovedBy(tile.improvement!!)) continue
-                if (tileResource.resourceType == ResourceType.Strategic && tile.getTileImprovement()?.isGreatImprovement() == true) continue
-                newResourceSupplyList.add(tileResource, ExtraInfoOrigin.Unimproved.name)
-            }
+            for (tile in city.getTiles())
+                if (tile.countAsUnimproved())
+                    newResourceSupplyList.add(tile.tileResource, ExtraInfoOrigin.Unimproved.name)
         }
 
         for (otherCiv in viewingPlayer.getKnownCivs())
