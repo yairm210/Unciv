@@ -137,10 +137,14 @@ class WorkerV2(appContext: Context, private val params: WorkerParameters) : Coro
             Log.d(LOG_TAG, "Starting doWork for WorkerV2: $this")
             enqueue(applicationContext, params.inputData, params.inputData.getLong(CONFIGURED_DELAY, 600L))
 
-            onlineMultiplayer?.api?.ensureConnectedWebSocket {
+            val ping = onlineMultiplayer?.api?.ensureConnectedWebSocket {
                 Log.d(LOG_TAG, "WebSocket job $websocketJob, completed ${websocketJob?.isCompleted}, cancelled ${websocketJob?.isCancelled}, active ${websocketJob?.isActive}\nNew Job: $it")
                 websocketJob = it
             }
+            if (ping != null) {
+                Log.d(LOG_TAG, "WebSocket ping took $ping ms")
+            }
+
             if (eventJob == null || eventJob?.isActive == false || eventJob?.isCancelled == true) {
                 val job = Concurrency.runOnNonDaemonThreadPool { checkTurns() }
                 Log.d(LOG_TAG, "Added event job $job from $this (overwrite previous $eventJob)")

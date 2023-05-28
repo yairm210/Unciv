@@ -59,6 +59,10 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
     /** List of channel that extend the usage of the [EventBus] system, see [getWebSocketEventChannel] */
     private val eventChannelList = mutableListOf<SendChannel<Event>>()
 
+    /** Map of waiting receivers of pongs (answers to pings) via a channel that gets null
+     * or any thrown exception; access is synchronized on the [ApiV2] instance */
+    private val pongReceivers: MutableMap<String, Channel<Exception?>> = mutableMapOf()
+
     /**
      * Get a receiver channel for WebSocket [Event]s that is decoupled from the [EventBus] system
      *
@@ -281,13 +285,103 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
      */
     private suspend fun sendPing(size: Int = 0): Boolean {
         val body = ByteArray(size)
+        Random().nextBytes(body)
+        return sendPing(body)
+    }
+
+    /**
+     * Send a [FrameType.PING] frame with the specified content to the server, without awaiting a response
+     *
+     * This operation might fail with some exception, e.g. network exceptions.
+     * It returns true when sending worked as expected, false when there's no
+     * send channel available and an exception otherwise.
+     */
+    private suspend fun sendPing(content: ByteArray): Boolean {
         val channel = sendChannel
         return if (channel == null) {
             false
         } else {
-            channel.send(Frame.Ping(body))
+            channel.send(Frame.Ping(content))
             true
         }
+    }
+
+    /**
+     * Send a [FrameType.PONG] frame with the specified content to the server
+     *
+     * This operation might fail with some exception, e.g. network exceptions.
+     * It returns true when sending worked as expected, false when there's no
+     * send channel available and an exception otherwise.
+     */
+    private suspend fun sendPong(content: ByteArray): Boolean {
+        val channel = sendChannel
+        return if (channel == null) {
+            false
+        } else {
+            channel.send(Frame.Pong(content))
+            true
+        }
+    }
+
+    /**
+     * Send a [FrameType.PING] and await the response of a [FrameType.PONG]
+     *
+     * The function returns the delay between Ping and Pong in milliseconds.
+     * Note that the function may never return if the Ping or Pong packets are lost on
+     * the way, unless [timeout] is set. It will then return `null` if the [timeout]
+     * of milliseconds was reached or the sending of the ping failed. Note that ensuring
+     * this limit is on a best effort basis and may not be reliable, since it uses
+     * [delay] internally to quit waiting for the result of the operation.
+     * This function may also throw arbitrary exceptions for network failures.
+     */
+    suspend fun awaitPing(size: Int = 2, timeout: Long? = null): Double? {
+        if (size < 2) {
+            throw IllegalArgumentException("Size too small to identify ping responses uniquely")
+        }
+        val body = ByteArray(size)
+        Random().nextBytes(body)
+
+        val key = body.toHex()
+        val channel = Channel<Exception?>(capacity = Channel.RENDEZVOUS)
+        synchronized(this) {
+            pongReceivers[key] = channel
+        }
+
+        var job: Job? = null
+        if (timeout != null) {
+            job = Concurrency.run {
+                delay(timeout)
+                channel.close()
+            }
+        }
+
+        try {
+            return kotlin.system.measureNanoTime {
+                if (!sendPing(body)) {
+                    return null
+                }
+                val exception = runBlocking { channel.receive() }
+                job?.cancel()
+                channel.close()
+                if (exception != null) {
+                    throw exception
+                }
+            }.toDouble() / 10e6
+        } catch (c: ClosedReceiveChannelException) {
+            return null
+        } finally {
+            synchronized(this) {
+                pongReceivers.remove(key)
+            }
+        }
+    }
+
+    /**
+     * Handler for incoming [FrameType.PONG] frames to make [awaitPing] work properly
+     */
+    private suspend fun onPong(content: ByteArray) {
+        val receiver = synchronized(this) { pongReceivers[content.toHex()] }
+        receiver?.send(null)
     }
 
     /**
@@ -319,12 +413,17 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
             while (true) {
                 val incomingFrame = session.incoming.receive()
                 when (incomingFrame.frameType) {
-                    FrameType.CLOSE, FrameType.PING, FrameType.PONG -> {
-                        // This WebSocket handler won't handle control frames
-                        Log.debug("Received CLOSE, PING or PONG as message")
+                    FrameType.PING -> {
+                        sendPong(incomingFrame.data)
+                    }
+                    FrameType.PONG -> {
+                        onPong(incomingFrame.data)
+                    }
+                    FrameType.CLOSE -> {
+                        throw ClosedReceiveChannelException("Received CLOSE frame via WebSocket")
                     }
                     FrameType.BINARY -> {
-                        Log.debug("Received binary packet which can't be parsed at the moment")
+                        Log.debug("Received binary packet of size %s which can't be parsed at the moment", incomingFrame.data.size)
                     }
                     FrameType.TEXT -> {
                         try {
@@ -397,17 +496,19 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
      *
      * Use [jobCallback] to receive the newly created job handling the WS connection.
      * Note that this callback might not get called if no new WS connection was created.
+     * It returns the measured round trip time in milliseconds if everything was fine.
      */
-    suspend fun ensureConnectedWebSocket(jobCallback: ((Job) -> Unit)? = null) {
-        val shouldRecreateConnection = try {
-            !sendPing()
+    suspend fun ensureConnectedWebSocket(timeout: Long = DEFAULT_WEBSOCKET_PING_TIMEOUT, jobCallback: ((Job) -> Unit)? = null): Double? {
+        val pingMeasurement = try {
+            awaitPing(timeout = timeout)
         } catch (e: Exception) {
             Log.debug("Error %s while ensuring connected WebSocket: %s", e, e.localizedMessage)
-            true
+            null
         }
-        if (shouldRecreateConnection) {
+        if (pingMeasurement == null) {
             websocket(::handleWebSocket, jobCallback)
         }
+        return pingMeasurement
     }
 
     // ---------------- SESSION FUNCTIONALITY ----------------
@@ -503,4 +604,11 @@ data class GameDetails(val gameUUID: UUID, val chatRoomUUID: UUID, val dataID: L
  */
 private data class TimedGameDetails(val refreshed: Instant, val gameUUID: UUID, val chatRoomUUID: UUID, val dataID: Long, val name: String) {
     fun to() = GameDetails(gameUUID, chatRoomUUID, dataID, name)
+}
+
+/**
+ * Convert a byte array to a hex string
+ */
+private fun ByteArray.toHex(): String {
+    return this.joinToString("") { it.toUByte().toString(16).padStart(2, '0') }
 }

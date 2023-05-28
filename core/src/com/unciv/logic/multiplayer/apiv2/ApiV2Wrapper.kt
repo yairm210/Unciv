@@ -2,14 +2,15 @@ package com.unciv.logic.multiplayer.apiv2
 
 import com.unciv.UncivGame
 import com.unciv.logic.UncivShowableException
-import com.unciv.utils.Log
 import com.unciv.utils.Concurrency
+import com.unciv.utils.Log
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.websocket.*
+import io.ktor.client.plugins.websocket.cio.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.*
@@ -72,15 +73,19 @@ open class ApiV2Wrapper(baseUrl: String) {
     init {
         client.plugin(HttpSend).intercept { request ->
             request.userAgent("Unciv/${UncivGame.VERSION.toNiceString()}-GNU-Terry-Pratchett")
-            val clientCall = execute(request)
+            val clientCall = try {
+                execute(request)
+            } catch (t: Throwable) {
+                Log.error("Failed to query API: %s %s\nURL: %s\nError %s:\n%s", request.method.value, request.url.encodedPath, request.url, t.localizedMessage, t.stackTraceToString())
+                throw t
+            }
             Log.debug(
-                "'%s %s%s%s': %s (%d ms)",
+                "'%s %s': %s (%d ms%s)",
                 request.method.value,
-                baseServer,
-                if (baseServer.endsWith("/") or request.url.encodedPath.startsWith("/")) "" else "/",
-                request.url.encodedPath,
+                request.url.toString(),
                 clientCall.response.status,
-                clientCall.response.responseTime.timestamp - clientCall.response.requestTime.timestamp
+                clientCall.response.responseTime.timestamp - clientCall.response.requestTime.timestamp,
+                if (!request.url.protocol.isSecure()) ", insecure!" else ""
             )
             clientCall
         }
@@ -154,10 +159,11 @@ open class ApiV2Wrapper(baseUrl: String) {
 
         coroutineScope {
             try {
-                val session = client.webSocketSession {
-                    method = HttpMethod.Get
+                val session = client.webSocketRawSession {
                     authHelper.add(this)
                     url {
+                        protocol = if (Url(baseServer).protocol.isSecure()) URLProtocol.WSS else URLProtocol.WS
+                        port = Url(baseServer).specifiedPort.takeUnless { it == DEFAULT_PORT } ?: protocol.defaultPort
                         appendPathSegments("api/v2/ws")
                     }
                 }
