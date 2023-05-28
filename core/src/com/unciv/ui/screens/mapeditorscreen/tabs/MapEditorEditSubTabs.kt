@@ -156,6 +156,7 @@ class MapEditorEditResourcesTab(
         add(eraser.render(0f).apply { onClick {
             editTab.setBrush("Remove resource", eraserIcon, true) { tile ->
                 tile.resource = null
+                tile.resourceAmount = 0
             }
         } }).padBottom(0f).row()
         add(
@@ -165,7 +166,10 @@ class MapEditorEditResourcesTab(
         ) { resourceName ->
             val resource = ruleset.tileResources[resourceName]!!
             editTab.setBrush(resourceName, resource.makeLink()) {
-                it.setTileResource(resource, rng = editTab.randomness.RNG)
+                if (it.resource == resourceName && resource.resourceType == ResourceType.Strategic)
+                    it.resourceAmount = (it.resourceAmount + 1).coerceAtMost(42)
+                else
+                    it.setTileResource(resource, rng = editTab.randomness.RNG)
             }
         }).padTop(0f).row()
     }

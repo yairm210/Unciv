@@ -8,9 +8,11 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.HexMath
+import com.unciv.logic.map.MapParameters  // Kdoc only
 import com.unciv.logic.map.MapResources
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.mapunit.UnitMovement  // Kdoc only
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
@@ -675,7 +677,7 @@ open class Tile : IsPartOfGameInfoSerialization {
 
     /**
      * @returns whether units of [civInfo] can pass through this tile, considering only civ-wide filters.
-     * Use [UnitMovementAlgorithms.canPassThrough] to check whether a specific unit can pass through a tile.
+     * Use [UnitMovement.canPassThrough] to check whether a specific unit can pass through a tile.
      */
     fun canCivPassThrough(civInfo: Civilization): Boolean {
         val tileOwner = getOwner()
@@ -784,7 +786,10 @@ open class Tile : IsPartOfGameInfoSerialization {
     fun setTileResource(newResource: TileResource, majorDeposit: Boolean? = null, rng: Random = Random.Default) {
         resource = newResource.name
 
-        if (newResource.resourceType != ResourceType.Strategic) return
+        if (newResource.resourceType != ResourceType.Strategic) {
+            resourceAmount = 0
+            return
+        }
 
         for (unique in newResource.getMatchingUniques(UniqueType.ResourceAmountOnTiles, StateForConditionals(tile = this))) {
             if (matchesTerrainFilter(unique.params[0])) {

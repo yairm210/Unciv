@@ -83,6 +83,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
     private var hexOutlineIcon: Actor? = null
 
     private var resourceName: String? = null
+    private var resourceAmount: Int = -1
     private var resourceIcon: Actor? = null
 
     private var workedIcon: Actor? = null
@@ -168,15 +169,16 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         }
 
         // If resource has changed (e.g. tech researched) - force new icon next time it's needed
-        if (resourceName != tile().resource) {
+        if (resourceName != tile().resource || resourceAmount != tile().resourceAmount) {
             resourceName = tile().resource
+            resourceAmount = tile().resourceAmount
             resourceIcon?.remove()
             resourceIcon = null
         }
 
         // Get a fresh Icon if and only if necessary
         if (resourceName != null && effectiveVisible && resourceIcon == null) {
-            val icon = ImageGetter.getResourcePortrait(resourceName!!, 20f,  tile().resourceAmount)
+            val icon = ImageGetter.getResourcePortrait(resourceName!!, 20f, resourceAmount)
             icon.center(tileGroup)
             icon.x -= 22 // left
             icon.y += 10 // top

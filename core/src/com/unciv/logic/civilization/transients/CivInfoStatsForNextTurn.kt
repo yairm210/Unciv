@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
@@ -92,37 +93,34 @@ class CivInfoStatsForNextTurn(val civInfo: Civilization) {
                 .map { it.params[0] }.toHashSet() // needs to be .toHashSet()ed,
         // Because we go over every tile in every city and check if it's in this list, which can get real heavy.
 
+        fun addMaintenanceUniques(road: TileImprovement, type: UniqueType, state: StateForConditionals) {
+            for (unique in road.getMatchingUniques(type, state))
+                transportationUpkeep.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+        }
+
         for (city in civInfo.cities) {
             for (tile in city.getTiles()) {
                 if (tile.isCityCenter()) continue
                 if (tile.getUnpillagedRoad() == RoadStatus.None) continue // Cheap checks before pricey checks
                 if (ignoredTileTypes.any { tile.matchesFilter(it, civInfo) }) continue
-                val road = tile.getUnpillagedRoadImprovement()
-                if (road!!.hasUnique(UniqueType.ImprovementMaintenance, StateForConditionals(civInfo, tile = tile))) {
-                    for(unique in road.getMatchingUniques(UniqueType.ImprovementMaintenance)) {
-                        transportationUpkeep.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
-                    }
-                }
-                if (road.hasUnique(UniqueType.ImprovementAllMaintenance, StateForConditionals(civInfo, tile = tile))) {
-                    for(unique in road.getMatchingUniques(UniqueType.ImprovementAllMaintenance)) {
-                        transportationUpkeep.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
-                    }
-                }
+                val road = tile.getUnpillagedRoadImprovement()!!  // covered by RoadStatus.None test
+                val stateForConditionals = StateForConditionals(civInfo, tile = tile)
+                addMaintenanceUniques(road, UniqueType.ImprovementMaintenance, stateForConditionals)
+                addMaintenanceUniques(road, UniqueType.ImprovementAllMaintenance, stateForConditionals)
             }
         }
+
         // tabulate neutral roads
         for (position in civInfo.neutralRoads) {
             val tile = civInfo.gameInfo.tileMap[position]
             if (tile.getUnpillagedRoad() == RoadStatus.None) continue // Cheap checks before pricey checks
-            val road = tile.getUnpillagedRoadImprovement()
-            if (road!!.hasUnique(UniqueType.ImprovementAllMaintenance, StateForConditionals(civInfo, tile = tile))) {
-                for(unique in road.getMatchingUniques(UniqueType.ImprovementAllMaintenance)) {
-                    transportationUpkeep.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
-                }
-            }
+            val road = tile.getUnpillagedRoadImprovement()!!  // covered by RoadStatus.None test
+            val stateForConditionals = StateForConditionals(civInfo, tile = tile)
+            addMaintenanceUniques(road, UniqueType.ImprovementAllMaintenance, stateForConditionals)
         }
+
         for (unique in civInfo.getMatchingUniques(UniqueType.RoadMaintenance))
-            transportationUpkeep.times(unique.params[0].toPercent())
+            transportationUpkeep.timesInPlace(unique.params[0].toPercent())
 
         return transportationUpkeep
     }
