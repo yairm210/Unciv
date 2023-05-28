@@ -1,32 +1,19 @@
 ## 4.6.15
 
-Modding: units can transform without limit on destination unit
+'Crop yield' chart displays correct data
 
-4.6.14-patch1
-
-4.6.14-patch1
-
-Resolve  - update dockerfile
-
-Unpurchaseable units are properly unpurchaseable
-
-Migrated Linux JRE to latest Adoptium Temurin
-
-Resolved  - Crop yield chart no longer displays score data
-
-Fixed policy branch finishers overriding branches - oops!
-
-Fixed softlock for mod policies overriding existing policy locations
+Modding:
+- Units can transform to any unit
+- Fixed policy softlock from conflicting mod policies
+- 'Unpurchaseable' units are properly unpurchaseable
 
 By SomeTroglodyte:
-- Map editor update - concurrency, resource amounts, file double-click 
-- Fix UniqueType.RoadMaintenance being ignored 
-- Fix mouse wheel on NotificationsScroll 
-- Unit overview remembers scroll position after promoting 
+- Map editor update - concurrency, resource amounts, file double-click
+- Fix road maintenance unique being ignored
+- Fix mouse wheel on Notifications scroll
+- Unit overview remembers scroll position after promoting
 
-By alexban011:
-- feat: allow loading of games if there are no saved games 
-- docs: added documentation for running detekt 
+Allow game loading even when no saved games exist - By alexban011
 
 ## 4.6.14
 
