@@ -1,11 +1,21 @@
 package com.unciv.ui.screens.newgamescreen
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.BitmapFont
+import com.badlogic.gdx.graphics.g2d.GlyphLayout
+import com.badlogic.gdx.math.Rectangle
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
+import com.badlogic.gdx.scenes.scene2d.ui.List
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter.DigitsOnlyFilter
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.utils.Align
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapGeneratedMainType
 import com.unciv.logic.map.MapParameters
@@ -15,6 +25,7 @@ import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.mapgenerator.MapGenerationRandomness
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.UncivTextField
@@ -23,6 +34,7 @@ import com.unciv.ui.components.extensions.onChange
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toCheckBox
+import com.unciv.ui.components.extensions.toGdxArray
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -408,11 +420,120 @@ class MapParametersTable(
         addSlider("Water level", { mapParameters.waterThreshold }, -0.1f, 0.1f)
             { mapParameters.waterThreshold = it }
 
-        addTextButton("Reset to defaults", true) {
-            mapParameters.resetAdvancedSettings()
-            seedTextField.text = mapParameters.seed.toString()
-            for (entry in advancedSliders)
-                entry.key.value = entry.value()
+        table.add(AdvancedSettingsMenu(mapParameters, ::loadAdvancedSettings))
+            .colspan(table.columns).fill(false).center().row()
+    }
+
+    private class AdvancedSettingsMenu(
+        mapParameters: MapParameters,
+        loadAdvancedSettings: (MapParameters.Advanced) -> Unit
+    ) : SelectBox<AdvancedSettingsMenu.MenuEntry>(BaseScreen.skin) {
+
+        class MenuEntry(val label: String, val checkDisabled: ()->Boolean, val action: ()->Unit) {
+            var disabled = false  // used as cache set from a checkDisabled call
+            override fun toString() = label.tr()
         }
+
+        init {
+            // Fix Gdx bug https://github.com/libgdx/libgdx/pull/6930
+            val fld = javaClass.superclass.getDeclaredField("scrollPane")
+            fld.isAccessible = true
+            fld.set(this, newScrollPane())
+
+            val lastSetup = GUI.getSettings().lastGameSetup
+
+            items = listOf(
+                MenuEntry("―Choose―", { true }, {}),  // that's 'em dash' U+2014
+                MenuEntry("Reset to defaults",
+                    checkDisabled = { mapParameters.advanced.isDefault() },
+                    action = {
+                        loadAdvancedSettings(MapParameters.Advanced.default)
+                    }),
+                MenuEntry("Last new game",
+                    checkDisabled = {
+                        lastSetup == null || lastSetup.mapParameters.advanced == mapParameters.advanced
+                    },
+                    action = {
+                        loadAdvancedSettings(lastSetup!!.mapParameters.advanced)
+                    }),
+                MenuEntry("Copy to clipboard", { false }, { mapParameters.advanced.toClipboard() }),
+                MenuEntry("Paste from clipboard",
+                    checkDisabled = { !Gdx.app.clipboard.contents.startsWith("{") },
+                    action = {
+                        try {
+                            val pasted = MapParameters.Advanced.fromClipboard()
+                            loadAdvancedSettings(pasted)
+                        } catch (_: Throwable) {}
+                    }),
+            ).toGdxArray()
+
+            onChange {
+                if (!selected.checkDisabled())
+                    selected.action.invoke()
+                selectedIndex = 0
+            }
+        }
+
+        override fun onShow(scrollPane: Actor?, below: Boolean) {
+            // Cache checkDisabled results while dropdown is open, otherwise those lambdas are all
+            // permanently hit at the game's refresh rate. Cute when it reacts immediately to a
+            // clipboard change, but better save those cycles.
+            for (item in items)
+                item.disabled = item.checkDisabled()
+            super.onShow(scrollPane, below)
+        }
+
+        val saveColor = Color()
+        @Suppress("UsePropertyAccessSyntax")
+        /** This draws on the "closed" part of the SelectBox - gray it out */
+        override fun drawItem(batch: Batch, font: BitmapFont, item: MenuEntry, x: Float, y: Float, width: Float): GlyphLayout {
+            // Notes: font is the same instance as style.font, but font.color is *not* the same
+            // instance as style.fontColor. To modify on-the-fly, only copy the rgba values around,
+            // no new instance creation please here.
+            // Also note, simply setting to GRAY including alpha will hinder fade actions -
+            // see List subclass below, where we need to respect premultiplied alpha.
+            saveColor.set(font.color)
+            font.setColor(Color.GRAY)
+            val layout = super.drawItem(batch, font, item, x, y, width)
+            font.setColor(saveColor)
+            return layout
+        }
+
+        override fun newScrollPane() = Pane(this)
+
+        private class Pane(box: SelectBox<MenuEntry>) : SelectBoxScrollPane<MenuEntry>(box) {
+            override fun newList() = Drop()
+        }
+
+        private class Drop : List<MenuEntry>(BaseScreen.skin) {
+            var selectedDrawable: Drawable? = null
+            val selectedRect = Rectangle()
+            val saveColor = Color()
+            override fun drawSelection(batch: Batch, drawable: Drawable?, x: Float, y: Float, width: Float, height: Float) {
+                selectedDrawable = drawable
+                selectedRect.set(x, y, width, height)
+            }
+            /** This draws the items on the dropdown - hide index 0 entirely, draw disabled as needed */
+            override fun drawItem(batch: Batch, font: BitmapFont, index: Int, item: MenuEntry, x: Float, y: Float, width: Float): GlyphLayout {
+                if (!item.disabled)
+                    selectedRect.also { super.drawSelection(batch, selectedDrawable, it.x, it.y, it.width, it.height) }
+                saveColor.set(font.color)
+                val alpha = if (index == 0) 0f else if (item.disabled) 0.5f else 1f
+                font.setColor(saveColor.r, saveColor.g, saveColor.b, saveColor.a * alpha )
+                val layout = super.drawItem(batch, font, index, item, x, y, width)
+                @Suppress("UsePropertyAccessSyntax")
+                font.setColor(saveColor)
+                return layout
+            }
+        }
+    }
+
+    private fun loadAdvancedSettings(newValue: MapParameters.Advanced) {
+        mapParameters.reseed()
+        seedTextField.text = mapParameters.seed.toString()
+
+        mapParameters.advanced = newValue.clone()
+        for (entry in advancedSliders)
+            entry.key.value = entry.value()
     }
 }
