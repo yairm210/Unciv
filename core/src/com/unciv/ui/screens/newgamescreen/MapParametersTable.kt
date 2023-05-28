@@ -66,8 +66,8 @@ class MapParametersTable(
 
     // Keep references (in the key) and settings value getters (in the value) of the 'advanced' sliders
     // in a HashMap for reuse later - in the reset to defaults button. Better here as field than as closure.
-    // A HashMap indexed on a Widget is problematic, as it does not define its own hashCode and equals
-    // overrides nor is a Widget a data class. Seems to work anyway.
+    // A HashMap indexed on a Widget without its own hashCode and equals overrides means the map uses
+    // identity equality, which is fine here.
     private val advancedSliders = HashMap<UncivSlider, ()->Float>()
 
     init {
@@ -362,21 +362,15 @@ class MapParametersTable(
         table.add("RNG Seed".toLabel()).left()
         table.add(seedTextField).fillX().padBottom(10f).row()
 
-        fun addSlider(text: String, getValue:()->Float, min: Float, max: Float, onChange: (value: Float)->Unit): UncivSlider {
-            val slider = UncivSlider(min, max, (max - min) / 20, onChange = onChange, initial = getValue())
-            table.add(text.toLabel()).left()
-            table.add(slider).fillX().row()
-            advancedSliders[slider] = getValue
-            return slider
-        }
-
-        fun addSlider(text: String, getValue:()->Float, min: Float, max: Float, step: Float, onChange: (value: Float)->Unit): UncivSlider {
+        fun addSlider(text: String, getValue: ()->Float, min: Float, max: Float, step: Float, onChange: (value: Float)->Unit): UncivSlider {
             val slider = UncivSlider(min, max, step, onChange = onChange, initial = getValue())
             table.add(text.toLabel()).left()
             table.add(slider).fillX().row()
             advancedSliders[slider] = getValue
             return slider
         }
+        fun addSlider(text: String, getValue: ()->Float, min: Float, max: Float, onChange: (value: Float)->Unit): UncivSlider =
+            addSlider(text, getValue, min, max, (max - min) / 20, onChange)
 
         fun addTextButton(text: String, shouldAddToTable: Boolean = false, action: ((Boolean) -> Unit)) {
             val button = text.toTextButton()
@@ -385,34 +379,34 @@ class MapParametersTable(
                 table.add(button).colspan(2).padTop(10f).row()
         }
 
-        addSlider("Map Elevation", {mapParameters.elevationExponent}, 0.6f, 0.8f)
-        { mapParameters.elevationExponent = it }
+        addSlider("Map Elevation", { mapParameters.elevationExponent }, 0.6f, 0.8f)
+            { mapParameters.elevationExponent = it }
 
-        addSlider("Temperature extremeness", {mapParameters.temperatureExtremeness}, 0.4f, 0.8f)
-        { mapParameters.temperatureExtremeness = it }
+        addSlider("Temperature extremeness", { mapParameters.temperatureExtremeness }, 0.4f, 0.8f)
+            { mapParameters.temperatureExtremeness = it }
 
-        addSlider("Temperature shift", {mapParameters.temperatureShift}, -0.4f, 0.4f, 0.1f)
-        { mapParameters.temperatureShift = it }
+        addSlider("Temperature shift", { mapParameters.temperatureShift }, -0.4f, 0.4f, 0.1f)
+            { mapParameters.temperatureShift = it }
 
         if (forMapEditor) {
             addSlider("Resource richness", { mapParameters.resourceRichness }, 0f, 0.5f)
-            { mapParameters.resourceRichness = it }
+                { mapParameters.resourceRichness = it }
         }
 
-        addSlider("Vegetation richness", {mapParameters.vegetationRichness}, 0f, 1f)
-        { mapParameters.vegetationRichness = it }
+        addSlider("Vegetation richness", { mapParameters.vegetationRichness }, 0f, 1f)
+            { mapParameters.vegetationRichness = it }
 
-        addSlider("Rare features richness", {mapParameters.rareFeaturesRichness}, 0f, 0.5f)
-        { mapParameters.rareFeaturesRichness = it }
+        addSlider("Rare features richness", { mapParameters.rareFeaturesRichness }, 0f, 0.5f)
+            { mapParameters.rareFeaturesRichness = it }
 
-        addSlider("Max Coast extension", {mapParameters.maxCoastExtension.toFloat()}, 0f, 5f)
-        { mapParameters.maxCoastExtension = it.toInt() }.apply { stepSize = 1f }
+        addSlider("Max Coast extension", { mapParameters.maxCoastExtension.toFloat() }, 0f, 5f)
+            { mapParameters.maxCoastExtension = it.toInt() }.apply { stepSize = 1f }
 
-        addSlider("Biome areas extension", {mapParameters.tilesPerBiomeArea.toFloat()}, 1f, 15f)
-        { mapParameters.tilesPerBiomeArea = it.toInt() }.apply { stepSize = 1f }
+        addSlider("Biome areas extension", { mapParameters.tilesPerBiomeArea.toFloat() }, 1f, 15f)
+            { mapParameters.tilesPerBiomeArea = it.toInt() }.apply { stepSize = 1f }
 
-        addSlider("Water level", {mapParameters.waterThreshold}, -0.1f, 0.1f)
-        { mapParameters.waterThreshold = it }
+        addSlider("Water level", { mapParameters.waterThreshold }, -0.1f, 0.1f)
+            { mapParameters.waterThreshold = it }
 
         addTextButton("Reset to defaults", true) {
             mapParameters.resetAdvancedSettings()

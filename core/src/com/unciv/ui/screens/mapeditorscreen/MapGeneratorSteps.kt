@@ -14,6 +14,7 @@ private object MapGeneratorStepsHelpers {
     val applyHumidityAndTemperature = fun(newParameters: MapParameters, actualParameters: MapParameters) {
         actualParameters.temperatureExtremeness = newParameters.temperatureExtremeness
         actualParameters.temperatureShift = newParameters.temperatureShift
+        actualParameters.tilesPerBiomeArea = newParameters.tilesPerBiomeArea
     }
     val applyLakesAndCoast = fun(newParameters: MapParameters, actualParameters: MapParameters) {
         actualParameters.maxCoastExtension = newParameters.maxCoastExtension

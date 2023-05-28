@@ -326,7 +326,8 @@ class MapParameters : IsPartOfGameInfoSerialization {
         worldWrap && mapSize.width % 2 != 0 -> (mapSize.width - 1) * mapSize.height
         else -> mapSize.width * mapSize.height
     }
-    fun displayMapDimensions() = mapSize.run {
+
+    private fun displayMapDimensions() = mapSize.run {
         (if (shape == MapShape.hexagonal || shape == MapShape.flatEarth) "R$radius" else "${width}x$height") +
         (if (worldWrap) "w" else "")
     }
@@ -339,7 +340,7 @@ class MapParameters : IsPartOfGameInfoSerialization {
         if (worldWrap) yield("{World Wrap} ")
         yield("{$shape}")
         yield(" " + displayMapDimensions() + ")")
-        if(mapResources != MapResources.default) yield(" {Resource Setting}: {$mapResources}")
+        if (mapResources != MapResources.default) yield(" {Resource Setting}: {$mapResources}")
         if (name.isEmpty()) return@sequence
         yield("\n")
         if (type != MapGeneratedMainType.custom && type != MapType.empty) yield("{Map Generation Type}: {$type}, ")

@@ -672,7 +672,9 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
     }
 
     /**
-     * [MapParameters.temperatureExtremeness] as in [applyHumidityAndTemperature]
+     * Uses [MapParameters.temperatureExtremeness],
+     * [MapParameters.temperatureShift] and
+     * [MapParameters.tilesPerBiomeArea] as in [applyHumidityAndTemperature]
      */
     private fun spawnIce(tileMap: TileMap) {
         val waterTerrain: Set<String> =
