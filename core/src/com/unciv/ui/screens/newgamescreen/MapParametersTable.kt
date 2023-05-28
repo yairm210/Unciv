@@ -384,13 +384,6 @@ class MapParametersTable(
         fun addSlider(text: String, getValue: ()->Float, min: Float, max: Float, onChange: (value: Float)->Unit): UncivSlider =
             addSlider(text, getValue, min, max, (max - min) / 20, onChange)
 
-        fun addTextButton(text: String, shouldAddToTable: Boolean = false, action: ((Boolean) -> Unit)) {
-            val button = text.toTextButton()
-            button.onClick { action.invoke(true) }
-            if (shouldAddToTable)
-                table.add(button).colspan(2).padTop(10f).row()
-        }
-
         addSlider("Map Elevation", { mapParameters.elevationExponent }, 0.6f, 0.8f)
             { mapParameters.elevationExponent = it }
 
