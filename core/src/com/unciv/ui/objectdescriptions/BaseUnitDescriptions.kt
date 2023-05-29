@@ -308,12 +308,10 @@ object BaseUnitDescriptions {
 
     private fun getUpgradeTooltipActor(topLines: Sequence<FormattedLine>, unitUpgrading: BaseUnit, unitToUpgradeTo: BaseUnit): WidgetGroup {
         val ruleset = unitToUpgradeTo.ruleset
-        val info = (
-                topLines +
+        val info = topLines +
                 getDifferences(ruleset, unitUpgrading, unitToUpgradeTo)
                     .map { FormattedLine(it.first, icon = it.second ?: "") }
-            ).toList()
-        val infoTable = MarkupRenderer.render(info, 400f)
+        val infoTable = MarkupRenderer.render(info.asIterable(), 400f)
         infoTable.background = BaseScreen.skinStrings.getUiBackground("General/Tooltip", BaseScreen.skinStrings.roundedEdgeRectangleShape, Color.DARK_GRAY)
         return ScrollPane(infoTable).apply {
             touchable = Touchable.disabled
