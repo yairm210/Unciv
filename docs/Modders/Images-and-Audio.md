@@ -70,6 +70,28 @@ The Unit Types as defined in [UnitTypes.json](Mod-file-structure/4-Unit-related-
 The individual Beliefs - as opposed to Belief types, as defined in [Beliefs.json](Mod-file-structure/2-Civilization-related-JSON-files.md#beliefsjson) have no icons in the base game, but Civilopedia can decorate their entries if you supply images named 'Images/ReligionIcons/<Belief>.png'.
 Civilopedia falls back to the icon for the Belief type - as you can see in the base game, but individual icons have precedence if they exist.
 
+### Adding Victory illustrations
+
+You can enable pictures for each of the Victories, illustrating their progress. That could be a Spaceship under construction, showing the parts you've added, or cultural progress as you complete Policy branches. They will be shown on a new tab of the Victory Screen.
+
+For this, you need to create a number of images. In the following, `<>` denote names as they appear in [VictoryTypes.json](../Other/Miscellaneous-JSON-files.md#victorytypes-json), untranslated, and these file names (like any other in Unciv) are case-sensitive. All files are optional, except Background as noted:
+* `VictoryIllustrations/<name>/Background.png` - this determines overall dimensions, the others must not exceed its size and should ideally have identical size. Mandatory, if this file is missing, no illustrations will be shown for this Victory Type.
+* `VictoryIllustrations/<name>/Won.png` - shown if _you_ (the viewing player) won this Victory.
+* `VictoryIllustrations/<name>/Lost.png` - shown if a competitor won this Victory - or you have completed this Victory, but have won a different one before.
+* `VictoryIllustrations/<name>/<milestone>.png` - One image for each entry in the `milestones` field without an `[amount]`, name taken verbatim but _without_ square brackets, spaces preserved.
+* `VictoryIllustrations/<name>/<milestone> <index>.png` - For entries in the `milestones` field with an `[amount]`, one image per step, starting at index 1.
+* `VictoryIllustrations/<name>/<component>.png` - One image for each unique entry in the `requiredSpaceshipParts` field, that is, for parts that can only be built once. Spaces in unit names must be preserved.
+* `VictoryIllustrations/<name>/<component> <index>.png` - For parts in the `requiredSpaceshipParts` field that must be built several times, one per instance. Spaces in unit names must be preserved, and there must be one space between the name and the index. Indexes start at 1.
+
+Remember - these are logical names as they are indexed in your atlas file, if you let Unciv pack for you, the `VictoryIllustrations` folder should be placed under `<mod>/Images` - or maybe `<mod>/Images.Victories` if you want these images to occupy a separate `Victories.atlas` (Do not omit the `Images` folder even if left empty, the texture packer needs it as marker to do its task).
+
+That's almost all there is - no json needed, and works as ['Permanent audiovisual mod'](#permanent-audiovisual-mods). The Background image is the trigger, and if it's present all part images must be present too, or your spaceship crashes before takeoff, taking Unciv along with it. That was a joke, all other images are optional, it could just look boring if you omit the wrong ones.
+
+As for "almost" - all images are overlaid one by one over the Background one, so they must all be the same size. Except for Won and Lost - those, if their condition is met, _replace_ the entire rest, so they can be different sizes than the background. The part images are overlaid over the background image in no guaranteeed order, therefore they should use _transparency_ to not hide parts of each other.
+
+One way to create a set is to take one final image, select all parts that should be the centerpiece itself not background (use lasso, magic wand or similar tools, use antialiasing and feathering as you see fit), copy and paste as new layer. Then apply desaturation and/or curves to the selection on the background layer to only leave a hint of how the completed victory will look like. Now take apart the centerpiece - do a selection fitting one part name, copy and paste as new layer (in place), then delete the selected part from the original centerpiece layer. Rinse and repeat, then export each layer separately as png with the appropriate filenames.
+There's no suggested size, but keep in mind textures are a maximum of 2048x2048 pixels, and if you want them packed properly, several should fit into one texture. They will be scaled down if needed to no more than 80% screen size, preserving aspect ratio.
+
 ## Sounds
 
 Standard values are below. The sounds themselves can be found [here](/sounds).
