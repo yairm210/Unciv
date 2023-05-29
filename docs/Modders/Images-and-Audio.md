@@ -62,6 +62,25 @@ For example, [here](https://github.com/vegeta1k95/Civ-5-Icons) is mod showing ho
 The Unit Types as defined in [UnitTypes.json](../Other/Unit-related-JSON-files#unittypesjson) have no icons in the base game, but Civilopedia can decorate their entries if you supply images named 'Images/UnitTypeIcons/<UnitType>.png'.
 (while you're at it, you may override the default icon for the Unit Type _category header_ - it's 'UnitTypes.png' in the same folder, or the icons used for the movement domains - 'DomainLand', 'DomainWater', 'DomainAir')
 
+### Adding a Spaceship picture
+
+You can enable a picture of the Spaceship under construction, showing the parts you've added, on the Victory Screen.
+
+For this, you need to create a number of images:
+* One `SpaceshipMosaic/Background.png` - this determines overall dimensions, the others must not exceed its size and should ideally have identical size.
+* One `SpaceshipMosaic/_<PartName>_.png` - for parts that can only be built once. Spaces in unit names must be preserved.
+* One `SpaceshipMosaic/_<PartName> <index>_.png` - for parts that be built several times, one per instance. Spaces in unit names must be preserved, and there must be one space between the name and the index. Indexes start at 1.
+
+Remember - these are logical names as they are indexed in your atlas file, if you let Unciv pack for you, the `SpaceshipMosaic` folder should be placed under `<mod>/Images` - or maybe `<mod>/Images.spaceship` if you want these images to occupy a separate `spaceship.atlas` (Do not omit the `Images` folder even if left empty, the texture packer needs it as marker to do its task).
+
+That's all there is - no json needed, and works as ['Permanent audiovisual mod'](#permanent-audiovisual-mods). The Background image is the trigger, and if it's present all part images must be present too (or your spaceship crashes before takeoff, taking Unciv along with it).
+
+The part images are overlaid over the background image in no guaranteeed order, therefore they should use transparency to not hide parts of each other.
+
+One way to create a set is to take one final image, select all parts that should be the spaceship itself not background (use lasso, magic wand or similar tools, use antialiasing and feathering as you see fit), copy and paste as new layer. Then apply desaturation and/or curves to the selection on the background layer to only leave a hint of how the completed spaceship will look like. Now take apart the spaceship - do a selection fitting one part name, copy and paste as new layer (in place), then delete the selected part from the original spaceship layer. Rinse and repeat, then export each layer separately as png with the appropriate filenames.
+
+When testing, remember the background appears as soon as Apollo Project is build, not before.
+
 ## Sounds
 
 Standard values are below. The sounds themselves can be found [here](/sounds).
