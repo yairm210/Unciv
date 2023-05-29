@@ -10,8 +10,8 @@ import java.util.zip.GZIPOutputStream
 
 object Gzip {
 
-    fun zip(data:String):String = encoder(compress(data))
-    fun unzip(data:String):String  = decompress(decoder(data))
+    fun zip(data:String):String = encode(compress(data))
+    fun unzip(data:String):String  = decompress(decode(data))
 
     private fun compress(data: String): ByteArray {
         val bos = ByteArrayOutputStream(data.length)
@@ -40,11 +40,11 @@ object Gzip {
     }
 
 
-    private fun encoder(bytes:ByteArray): String{
+    fun encode(bytes:ByteArray): String{
         return String(Base64Coder.encode(bytes))
     }
 
-    private fun decoder(base64Str: String): ByteArray{
+    private fun decode(base64Str: String): ByteArray{
         return Base64Coder.decode(base64Str)
     }
 }

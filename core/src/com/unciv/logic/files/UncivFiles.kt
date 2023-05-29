@@ -18,8 +18,8 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.doMigrations
 import com.unciv.models.metadata.isMigrationNecessary
 import com.unciv.ui.screens.savescreens.Gzip
-import com.unciv.utils.Log
 import com.unciv.utils.Concurrency
+import com.unciv.utils.Log
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
 import java.io.File
@@ -366,8 +366,10 @@ class UncivFiles(
         }
 
         /** Returns gzipped serialization of [game], optionally gzipped ([forceZip] overrides [saveZipped]) */
-        fun gameInfoToString(game: GameInfo, forceZip: Boolean? = null): String {
+        fun gameInfoToString(game: GameInfo, forceZip: Boolean? = null, updateChecksum:Boolean=true): String {
             game.version = GameInfo.CURRENT_COMPATIBILITY_VERSION
+
+            if (updateChecksum) game.checksum = game.calculateChecksum()
             val plainJson = json().toJson(game)
             return if (forceZip ?: saveZipped) Gzip.zip(plainJson) else plainJson
         }
