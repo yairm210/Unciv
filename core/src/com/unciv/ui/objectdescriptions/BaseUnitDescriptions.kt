@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.unciv.logic.city.City
-import com.unciv.models.UnitAction
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueFlag
@@ -253,15 +252,24 @@ object BaseUnitDescriptions {
     fun getDifferences(ruleset: Ruleset, originalUnit: BaseUnit, betterUnit: BaseUnit):
             Sequence<Pair<String, String?>> = sequence {
         if (betterUnit.strength != originalUnit.strength)
-            yield("${Fonts.strength} " + "[${betterUnit.strength}] vs [${originalUnit.strength}]" to null)
-        if (betterUnit.rangedStrength != originalUnit.rangedStrength)
-            yield("${Fonts.rangedStrength} " + "[${betterUnit.rangedStrength}] vs [${originalUnit.rangedStrength}]" to null)
-        if (betterUnit.range != originalUnit.range)
-            yield("${Fonts.range} " + "[${betterUnit.range}] vs [${originalUnit.range}]" to null)
+            yield("${Fonts.strength} {[${betterUnit.strength}] vs [${originalUnit.strength}]}" to null)
+
+        if (betterUnit.rangedStrength > 0 && originalUnit.rangedStrength == 0)
+            yield("[Gained] ${Fonts.rangedStrength} [${betterUnit.rangedStrength}] ${Fonts.range} [${betterUnit.range}]" to null)
+        else if (betterUnit.rangedStrength == 0 && originalUnit.rangedStrength > 0)
+            yield("[Lost] ${Fonts.rangedStrength} [${originalUnit.rangedStrength}] ${Fonts.range} [${originalUnit.range}]" to null)
+        else {
+            if (betterUnit.rangedStrength != originalUnit.rangedStrength)
+                yield("${Fonts.rangedStrength} " + "[${betterUnit.rangedStrength}] vs [${originalUnit.rangedStrength}]" to null)
+            if (betterUnit.range != originalUnit.range)
+                yield("${Fonts.range} {[${betterUnit.range}] vs [${originalUnit.range}]}" to null)
+        }
+
         if (betterUnit.movement != originalUnit.movement)
-            yield("${Fonts.movement} " + "[${betterUnit.movement}] vs [${originalUnit.movement}]" to null)
-        for (resource in originalUnit.getResourceRequirements().keys)
-            if (!betterUnit.getResourceRequirements().containsKey(resource)) {
+            yield("${Fonts.movement} {[${betterUnit.movement}] vs [${originalUnit.movement}]}" to null)
+
+        for (resource in originalUnit.getResourceRequirementsPerTurn().keys)
+            if (!betterUnit.getResourceRequirementsPerTurn().containsKey(resource)) {
                 yield("[$resource] not required" to "Resource/$resource")
             }
         // We return the unique text directly, so Nation.getUniqueUnitsText will not use the

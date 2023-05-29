@@ -31,7 +31,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         for (unitAction in UnitActions.getUnitActions(unit)) {
             val button = getUnitActionButton(unit, unitAction)
             if (unitAction is UpgradeUnitAction) {
-                val tipTitle = "⟦RED⟧${unitAction.type.key}⟦⟧: {Upgrade}"
+                val tipTitle = "«RED»${unitAction.type.key}«»: {Upgrade}"
                 val tipActor = BaseUnitDescriptions.getUpgradeTooltipActor(tipTitle, unit.baseUnit, unitAction.unitToUpgradeTo)
                 button.addListener(UncivTooltip(button, tipActor
                     , offset = Vector2(0f, tipActor.packIfNeeded().height * 0.333f) // scaling fails to express size in parent coordinates
