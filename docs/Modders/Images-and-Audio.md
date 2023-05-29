@@ -73,13 +73,14 @@ For this, you need to create a number of images:
 
 Remember - these are logical names as they are indexed in your atlas file, if you let Unciv pack for you, the `SpaceshipMosaic` folder should be placed under `<mod>/Images` - or maybe `<mod>/Images.spaceship` if you want these images to occupy a separate `spaceship.atlas` (Do not omit the `Images` folder even if left empty, the texture packer needs it as marker to do its task).
 
-That's all there is - no json needed, and works as ['Permanent audiovisual mod'](#permanent-audiovisual-mods). The Background image is the trigger, and if it's present all part images must be present too (or your spaceship crashes before takeoff, taking Unciv along with it).
+That's almost all there is - no json needed, and works as ['Permanent audiovisual mod'](#permanent-audiovisual-mods). The Background image is the trigger, and if it's present all part images must be present too (or your spaceship crashes before takeoff, taking Unciv along with it).
+As for almost - you can optionally supply a SpaceshipMosaic/PlayerWon and/or SpaceshipMosaic/PlayerLost images. These will replace the entire picture (no individual parts overlaid) on the appropriate conditions. These can be different sizes than the background.
 
 The part images are overlaid over the background image in no guaranteeed order, therefore they should use transparency to not hide parts of each other.
-
 One way to create a set is to take one final image, select all parts that should be the spaceship itself not background (use lasso, magic wand or similar tools, use antialiasing and feathering as you see fit), copy and paste as new layer. Then apply desaturation and/or curves to the selection on the background layer to only leave a hint of how the completed spaceship will look like. Now take apart the spaceship - do a selection fitting one part name, copy and paste as new layer (in place), then delete the selected part from the original spaceship layer. Rinse and repeat, then export each layer separately as png with the appropriate filenames.
+Suggested size is no more than a few hundred pixels, as they will be scaled down if needed to a max of 1/4 screen width, preserving aspect ratio. Don't do them too tall either, as the individual spaceship part buttons will be pushed to below the image, possibly hiding them.
 
-When testing, remember the background appears as soon as Apollo Project is build, not before.
+When testing, remember the background appears as soon as Apollo Project is built, not before.
 
 ## Sounds
 

@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.victoryscreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Stack
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -73,7 +74,21 @@ class VictoryScreenOurVictory(
 
     private fun addSpaceshipMosaic(table: Table, victory: Victory, civ: Civilization) {
         val holder = Stack()
-        val background = ImageGetter.getImage("SpaceshipMosaic/Background")
+
+        val victoryData = civ.gameInfo.victoryData
+        val background: Image
+        val showParts: Boolean
+        if (victoryData?.winningCiv == civ.civName && ImageGetter.imageExists("SpaceshipMosaic/PlayerWon")) {
+            background = ImageGetter.getImage("SpaceshipMosaic/PlayerWon")
+            showParts = false
+        } else if (victoryData != null && victoryData.winningCiv != civ.civName && ImageGetter.imageExists("SpaceshipMosaic/PlayerLost")) {
+            background = ImageGetter.getImage("SpaceshipMosaic/PlayerLost")
+            showParts = false
+        } else {
+            background = ImageGetter.getImage("SpaceshipMosaic/Background")
+            showParts = true
+        }
+
         val (width, height) = background.run {
             if (prefWidth > stageWidth / 4)
                 stageWidth / 4 to prefHeight / prefWidth * stageWidth / 4
@@ -81,12 +96,14 @@ class VictoryScreenOurVictory(
         }
         holder.add(background)
 
-        val completedSpaceshipParts = civ.victoryManager.currentsSpaceshipParts
-        for ((name, count) in completedSpaceshipParts) {
-            val max = victory.requiredSpaceshipPartsAsCounter[name]
-            for (index in 1..count) {
-                val imageName = "SpaceshipMosaic/$name${if (max == 1) "" else " $index"}"
-                holder.add(ImageGetter.getImage(imageName))
+        if (showParts) {
+            val completedSpaceshipParts = civ.victoryManager.currentsSpaceshipParts
+            for ((name, count) in completedSpaceshipParts) {
+                val max = victory.requiredSpaceshipPartsAsCounter[name]
+                for (index in 1..count) {
+                    val imageName = "SpaceshipMosaic/$name${if (max == 1) "" else " $index"}"
+                    holder.add(ImageGetter.getImage(imageName))
+                }
             }
         }
 
