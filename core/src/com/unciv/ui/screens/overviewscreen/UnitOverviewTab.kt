@@ -1,12 +1,18 @@
 package com.unciv.ui.screens.overviewscreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.GUI
@@ -19,21 +25,26 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.KeyboardBinding
 import com.unciv.ui.components.TabbedPager
-import com.unciv.ui.components.UncivTooltip
 import com.unciv.ui.components.UnitGroup
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.darken
+import com.unciv.ui.components.extensions.keyShortcuts
+import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.onClick
-import com.unciv.ui.components.extensions.packIfNeeded
+import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toPrettyString
+import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
+import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
@@ -275,16 +286,12 @@ class UnitOverviewTab(
                 val upgradeIcon = ImageGetter.getUnitIcon(unitToUpgradeTo.name,
                     if (enable) Color.GREEN else Color.GREEN.darken(0.5f))
                 if (enable) upgradeIcon.onClick {
-                    SoundPlayer.play(unitAction.uncivSound)
-                    unitAction.action!!()
-                    unitListTable.updateUnitListTable()
-                    select(selectKey)
+                    val pos = upgradeIcon.localToStageCoordinates(Vector2(upgradeIcon.width/2, upgradeIcon.height/2))
+                    UnitUpgradeMenu(overviewScreen.stage, pos, unit, unitAction) {
+                        unitListTable.updateUnitListTable()
+                        select(selectKey)
+                    }
                 }
-                val tipActor = BaseUnitDescriptions.getUpgradeTooltipActor(unitAction.title, unit.baseUnit, unitToUpgradeTo)
-                val toolTip = UncivTooltip(upgradeIcon, tipActor
-                    , offset = Vector2(0f, tipActor.packIfNeeded().height * 0.333f) // scaling fails to express size in parent coordinates
-                    , tipAlign = Align.topLeft, targetAlign = Align.topLeft)
-                upgradeIcon.addListener(toolTip)
                 add(upgradeIcon).size(28f)
             } else add()
 
@@ -319,5 +326,142 @@ class UnitOverviewTab(
         blinkActor = button
         button.addAction(blinkAction)
         return scrollY
+    }
+
+    private class UnitUpgradeMenu(
+        stage: Stage,
+        position: Vector2,
+        unit: MapUnit,
+        private val unitAction: UpgradeUnitAction,
+        val onButtonClicked: () -> Unit
+    ) : Popup(stage, scrollable = false) {
+        private val container: Container<Table>
+        private val allUpgradableUnits: Sequence<MapUnit>
+        private val animationDuration = 0.33f
+        private val backgroundColor = (background as NinePatchDrawable).patch.color
+
+        init {
+            innerTable.remove()
+            val newInnerTable = BaseUnitDescriptions.getUpgradeInfoTable(
+                unitAction.title, unit.baseUnit, unitAction.unitToUpgradeTo
+            )
+
+            newInnerTable.row()
+            val smallButtonStyle = SmallButtonStyle()
+            val upgradeButton = "Upgrade".toTextButton(smallButtonStyle)
+            upgradeButton.onActivation(::doUpgrade)
+            upgradeButton.keyShortcuts.add(KeyboardBinding.Confirm)
+            newInnerTable.add(upgradeButton).pad(2f, 15f).growX().row()
+
+            allUpgradableUnits = unit.civ.units.getCivUnits()
+                .filter {
+                    it.baseUnit.name == unit.baseUnit.name
+                        && it.currentMovement > 0f
+                        && it.currentTile.getOwner() == unit.civ
+                        && !it.isEmbarked()
+                        && it.upgrade.canUpgrade(unitAction.unitToUpgradeTo, ignoreResources = true)
+                }
+            val allCount = allUpgradableUnits.count()
+
+            if (allCount > 1) {
+                // Note - all same-baseunit units cost the same to upgrade? What if a mod says e.g. 50% discount on Oasis?
+                // - As far as I can see the rest of the upgrading code doesn't support such conditions at the moment.
+                val allCost = unitAction.goldCostOfUpgrade * allCount
+                val allResources = unitAction.newResourceRequirements * allCount
+                val upgradeAllButton =
+                    "Upgrade all [$allCount] [${unit.name}] ([$allCost] gold)".toTextButton(
+                        smallButtonStyle
+                    )
+                upgradeAllButton.isDisabled = unit.civ.gold < allCost ||
+                    allResources.isNotEmpty() &&
+                    unit.civ.getCivResourcesByName().run {
+                        allResources.any {
+                            it.value > (this[it.key] ?: 0)
+                        }
+                    }
+                upgradeAllButton.onActivation(::doAllUpgrade)
+                newInnerTable.add(upgradeAllButton).pad(2f, 15f).growX().row()
+            }
+
+            clickBehindToClose = true
+            keyShortcuts.add(KeyCharAndCode.BACK) { close() }
+
+            newInnerTable.pack()
+            container = Container(newInnerTable)
+            container.touchable = Touchable.childrenOnly
+            container.isTransform = true
+            container.setScale(0.05f)
+            container.color.a = 0f
+
+            open(true)  // this only does the screen-covering "click-behind" portion
+
+            container.setPosition(
+                position.x.coerceAtMost(stage.width - newInnerTable.width / 2),
+                position.y.coerceAtLeast(newInnerTable.height / 2)
+            )
+            addActor(container)
+
+            container.addAction(Actions.parallel(
+                Actions.scaleTo(1f, 1f, animationDuration, Interpolation.fade),
+                Actions.fadeIn(animationDuration, Interpolation.fade)
+            ))
+
+            backgroundColor.set(0)
+            addAction(Actions.alpha(0.35f, animationDuration, Interpolation.fade).apply {
+                color = backgroundColor
+            })
+        }
+
+        private fun doUpgrade() {
+            SoundPlayer.play(unitAction.uncivSound)
+            unitAction.action!!()
+            onButtonClicked()
+            close()
+        }
+
+        private fun doAllUpgrade() {
+            stage.addAction(Actions.sequence(
+                Actions.run { SoundPlayer.play(unitAction.uncivSound) },
+                Actions.delay(0.2f),
+                Actions.run { SoundPlayer.play(unitAction.uncivSound) }
+            ))
+            for (unit in allUpgradableUnits) {
+                val otherAction = UnitActionsUpgrade.getUpgradeAction(unit)
+                otherAction?.action?.invoke()
+            }
+            onButtonClicked()
+            close()
+        }
+
+        override fun close() {
+            addAction(Actions.alpha(0f, animationDuration, Interpolation.fade).apply {
+                color = backgroundColor
+            })
+            container.addAction(Actions.sequence(
+                Actions.parallel(
+                    Actions.scaleTo(0.05f, 0.05f, animationDuration, Interpolation.fade),
+                    Actions.fadeOut(animationDuration, Interpolation.fade)
+                ),
+                Actions.run {
+                    container.remove()
+                    super.close()
+                }
+            ))
+        }
+
+        class SmallButtonStyle : TextButton.TextButtonStyle(BaseScreen.skin[TextButton.TextButtonStyle::class.java]) {
+            init {
+                val upColor = BaseScreen.skin.getColor("color")
+                val downColor = BaseScreen.skin.getColor("pressed")
+                val overColor = BaseScreen.skin.getColor("highlight")
+                val disabledColor = BaseScreen.skin.getColor("disabled")
+                val shapeName = BaseScreen.skinStrings.roundedEdgeRectangleSmallShape
+                up = BaseScreen.skinStrings.getUiBackground("", shapeName, upColor)
+                down = BaseScreen.skinStrings.getUiBackground("", shapeName, downColor)
+                over = BaseScreen.skinStrings.getUiBackground("", shapeName, overColor)
+                disabled = BaseScreen.skinStrings.getUiBackground("", shapeName, disabledColor)
+                disabledFontColor = Color.GRAY
+            }
+        }
     }
 }

@@ -47,8 +47,9 @@ object UnitActionsUpgrade {
             resourceRequirementsDelta.add(resource, -amount)
         for ((resource, amount) in upgradedUnit.getResourceRequirementsPerTurn())
             resourceRequirementsDelta.add(resource, amount)
+        for ((resource, _) in resourceRequirementsDelta.filter { it.value < 0 })  // filter copies, so no CCM
+            resourceRequirementsDelta[resource] = 0
         val newResourceRequirementsString = resourceRequirementsDelta.entries
-            .filter { it.value > 0 }
             .joinToString { "${it.value} {${it.key}}".tr() }
 
         val goldCostOfUpgrade = if (isFree) 0 else unit.upgrade.getCostOfUpgrade(upgradedUnit)
@@ -62,6 +63,8 @@ object UnitActionsUpgrade {
         return UpgradeUnitAction(
             title = title,
             unitToUpgradeTo = upgradedUnit,
+            goldCostOfUpgrade = goldCostOfUpgrade,
+            newResourceRequirements = resourceRequirementsDelta,
             action = {
                 unit.destroy(destroyTransportedUnit = false)
                 val newUnit = civInfo.units.placeUnitNearTile(unitTile.position, upgradedUnit.name)

@@ -2,7 +2,8 @@ package com.unciv.ui.objectdescriptions
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.Container
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.unciv.logic.city.City
 import com.unciv.models.ruleset.Ruleset
@@ -203,6 +204,7 @@ object BaseUnitDescriptions {
         return textList
     }
 
+    @Suppress("RemoveExplicitTypeArguments")  // for faster IDE - inferring sequence types can be slow
     fun UnitType.getUnitTypeCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         fun getDomainLines() = sequence<FormattedLine> {
             yield(FormattedLine("{Unit types}:", header = 4))
@@ -297,25 +299,25 @@ object BaseUnitDescriptions {
 
     /** Prepares a WidgetGroup for display as tooltip to an upgrade
      *  Specialized to the WorldScreen UnitAction button and Unit Overview upgrade icon -
-     *  in both cases the [unitAction] and [unitToUpgradeTo] have already been evaluated.
+     *  in both cases the [UnitAction][com.unciv.models.UnitAction] and [unitToUpgradeTo] have already been evaluated.
      */
-    fun getUpgradeTooltipActor(title: String, unitUpgrading: BaseUnit, unitToUpgradeTo: BaseUnit): WidgetGroup {
-        val topLine = sequence {
-            yield(FormattedLine(title, color = "#FDA", icon = unitToUpgradeTo.makeLink(), header = 5))
-        }
-        return getUpgradeTooltipActor(topLine, unitUpgrading, unitToUpgradeTo)
-    }
+    fun getUpgradeTooltipActor(title: String, unitUpgrading: BaseUnit, unitToUpgradeTo: BaseUnit) =
+        getUpgradeInfoTable(title, unitUpgrading, unitToUpgradeTo).wrapScaled(0.667f)
 
-    private fun getUpgradeTooltipActor(topLines: Sequence<FormattedLine>, unitUpgrading: BaseUnit, unitToUpgradeTo: BaseUnit): WidgetGroup {
+    fun getUpgradeInfoTable(title: String, unitUpgrading: BaseUnit, unitToUpgradeTo: BaseUnit): Table {
         val ruleset = unitToUpgradeTo.ruleset
-        val info = topLines +
-                getDifferences(ruleset, unitUpgrading, unitToUpgradeTo)
-                    .map { FormattedLine(it.first, icon = it.second ?: "") }
+        val info = sequenceOf(FormattedLine(title, color = "#FDA", icon = unitToUpgradeTo.makeLink(), header = 5)) +
+            getDifferences(ruleset, unitUpgrading, unitToUpgradeTo)
+                .map { FormattedLine(it.first, icon = it.second ?: "") }
         val infoTable = MarkupRenderer.render(info.asIterable(), 400f)
         infoTable.background = BaseScreen.skinStrings.getUiBackground("General/Tooltip", BaseScreen.skinStrings.roundedEdgeRectangleShape, Color.DARK_GRAY)
-        return ScrollPane(infoTable).apply {
-            touchable = Touchable.disabled
-            setScale(0.667f)
-        }
+        return infoTable
     }
+
+    private fun Table.wrapScaled(scale: Float): WidgetGroup =
+        Container(this).apply {
+            touchable = Touchable.disabled
+            isTransform = true
+            setScale(scale)
+        }
 }

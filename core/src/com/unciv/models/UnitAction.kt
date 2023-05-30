@@ -72,6 +72,8 @@ open class UnitAction(
 class UpgradeUnitAction(
     title: String,
     val unitToUpgradeTo: BaseUnit,
+    val goldCostOfUpgrade: Int,
+    val newResourceRequirements: Counter<String>,
     action: (() -> Unit)?
 ) : UnitAction(UnitActionType.Upgrade, title, action = action)
 
