@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
@@ -207,21 +206,25 @@ class UnitOverviewTab(
             add(editIcon)
 
             // Column: action
-            fun getWorkerActionLabel(unit: MapUnit): Label? = when {
+            fun getWorkerActionText(unit: MapUnit): String? = when {
                 // See UnitTurnManager.endTurn, if..workOnImprovement or UnitGroup.getActionImage: similar logic
                 !unit.cache.hasUniqueToBuildImprovements -> null
                 unit.currentMovement == 0f -> null
                 unit.currentTile.improvementInProgress == null -> null
                 !unit.canBuildImprovement(unit.getTile().getTileImprovementInProgress()!!) -> null
-                else -> unit.currentTile.improvementInProgress!!.toLabel()
+                else -> unit.currentTile.improvementInProgress
             }
-            fun getActionLabel(unit: MapUnit): Label? = when {
-                unit.action == null -> getWorkerActionLabel(unit)
-                unit.isFortified() -> UnitActionType.Fortify.value.toLabel()
-                unit.isMoving() -> "Moving".toLabel()
-                else -> unit.action!!.toLabel()
+            fun getActionText(unit: MapUnit): String? {
+                val workerText by lazy { getWorkerActionText(unit) }
+                return when {
+                    unit.action == null -> workerText
+                    unit.isFortified() -> UnitActionType.Fortify.value
+                    unit.isMoving() -> "Moving"
+                    unit.isAutomated() && workerText != null -> "[$workerText] ${Fonts.automate}"
+                    else -> unit.action
+                }
             }
-            add(getActionLabel(unit))
+            add(getActionText(unit)?.toLabel())
 
             // Columns: strength, ranged
             if (baseUnit.strength > 0) add(baseUnit.strength.toLabel()) else add()
