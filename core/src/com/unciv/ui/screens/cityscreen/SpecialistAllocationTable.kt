@@ -27,7 +27,7 @@ class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(Base
         if (cityScreen.canCityBeChanged()) {
             if (cityInfo.manualSpecialists) {
                 val manualSpecialists = "Manual Specialists".toLabel()
-                    .addBorder(5f, BaseScreen.skin.get("color", Color::class.java))
+                    .addBorder(5f, BaseScreen.skin.getColor("color"))
                 manualSpecialists.onClick {
                     cityInfo.manualSpecialists = false
                     cityInfo.reassignPopulation(); cityScreen.update()
@@ -35,7 +35,7 @@ class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(Base
                 add(manualSpecialists).colspan(5).row()
             } else {
                 val autoSpecialists = "Auto Specialists".toLabel()
-                    .addBorder(5f, BaseScreen.skin.get("color", Color::class.java))
+                    .addBorder(5f, BaseScreen.skin.getColor("color"))
                 autoSpecialists.onClick { cityInfo.manualSpecialists = true; update() }
                 add(autoSpecialists).colspan(5).row()
             }
