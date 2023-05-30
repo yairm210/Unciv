@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.overviewscreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Action
@@ -351,7 +352,7 @@ class UnitOverviewTab(
             val upgradeButton = "Upgrade".toTextButton(smallButtonStyle)
             upgradeButton.onActivation(::doUpgrade)
             upgradeButton.keyShortcuts.add(KeyboardBinding.Confirm)
-            newInnerTable.add(upgradeButton).pad(2f, 15f).growX().row()
+            newInnerTable.add(upgradeButton).pad(15f, 15f, 5f, 15f).growX().row()
 
             allUpgradableUnits = unit.civ.units.getCivUnits()
                 .filter {
@@ -450,16 +451,25 @@ class UnitOverviewTab(
         }
 
         class SmallButtonStyle : TextButton.TextButtonStyle(BaseScreen.skin[TextButton.TextButtonStyle::class.java]) {
+            private fun NinePatchDrawable.reduce(): NinePatchDrawable {
+                val patch = NinePatch(this.patch)
+                patch.padTop = 10f
+                patch.padBottom = 10f
+                patch.topHeight = 10f
+                patch.bottomHeight = 10f
+                return NinePatchDrawable(this).also { it.patch = patch }
+            }
+
             init {
                 val upColor = BaseScreen.skin.getColor("color")
                 val downColor = BaseScreen.skin.getColor("pressed")
                 val overColor = BaseScreen.skin.getColor("highlight")
                 val disabledColor = BaseScreen.skin.getColor("disabled")
-                val shapeName = BaseScreen.skinStrings.roundedEdgeRectangleSmallShape
-                up = BaseScreen.skinStrings.getUiBackground("", shapeName, upColor)
-                down = BaseScreen.skinStrings.getUiBackground("", shapeName, downColor)
-                over = BaseScreen.skinStrings.getUiBackground("", shapeName, overColor)
-                disabled = BaseScreen.skinStrings.getUiBackground("", shapeName, disabledColor)
+                val shapeName = BaseScreen.skinStrings.roundedEdgeRectangleMidShape
+                up = BaseScreen.skinStrings.getUiBackground("", shapeName, upColor).reduce()
+                down = BaseScreen.skinStrings.getUiBackground("", shapeName, downColor).reduce()
+                over = BaseScreen.skinStrings.getUiBackground("", shapeName, overColor).reduce()
+                disabled = BaseScreen.skinStrings.getUiBackground("", shapeName, disabledColor).reduce()
                 disabledFontColor = Color.GRAY
             }
         }
