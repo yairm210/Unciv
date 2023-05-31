@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Stack
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Disposable
 import com.unciv.UncivGame
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.HasMultiplayerGameName
 import com.unciv.logic.multiplayer.MultiplayerGameNameChanged
@@ -30,12 +31,11 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.multiplayerscreens.ChatRoomType
-import com.unciv.ui.screens.multiplayerscreens.SocialMenuScreen
+import com.unciv.ui.screens.multiplayerscreens.MultiplayerGameScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import java.time.Duration
 import java.time.Instant
 import java.util.UUID
@@ -212,8 +212,8 @@ private class TurnIndicator : HorizontalGroup(), Disposable {
  *
  * It shows a completely different user interfaces than the previous V1 buttons above.
  */
-class MultiplayerStatusButtonV2(screen: BaseScreen, private val gameUUID: UUID) : MultiplayerStatusButton() {
-    constructor(screen: BaseScreen, gameId: String) : this(screen, UUID.fromString(gameId))
+class MultiplayerStatusButtonV2(screen: BaseScreen, private val gameUUID: UUID, private val civilizations: List<Civilization>) : MultiplayerStatusButton() {
+    constructor(screen: BaseScreen, gameId: String, civilizations: List<Civilization>) : this(screen, UUID.fromString(gameId), civilizations)
 
     private var me: AccountResponse? = null
     private var gameDetails: GameOverviewResponse? = null
@@ -238,18 +238,16 @@ class MultiplayerStatusButtonV2(screen: BaseScreen, private val gameUUID: UUID) 
             var details = gameDetails
             // Retrying in case the cache was broken somehow
             if (details == null) {
-                runBlocking {
-                    details = InfoPopup.wrap(screen.stage) {
-                        screen.game.onlineMultiplayer.api.game.head(gameUUID)
-                    }
+                details = InfoPopup.load(screen.stage) {
+                    screen.game.onlineMultiplayer.api.game.head(gameUUID)
                 }
             }
             // If there are no details after the retry, the game is most likely not played on that server
             if (details == null) {
-                screen.game.pushScreen(SocialMenuScreen(me?.uuid, null))
+                screen.game.pushScreen(MultiplayerGameScreen(me!!.uuid, null, civilizations))
             } else {
                 gameDetails = details
-                screen.game.pushScreen(SocialMenuScreen(me?.uuid, Triple(details!!.chatRoomUUID, ChatRoomType.Game, details!!.name)))
+                screen.game.pushScreen(MultiplayerGameScreen(me!!.uuid, Triple(details.chatRoomUUID, ChatRoomType.Game, details.name), civilizations))
             }
         }
     }
