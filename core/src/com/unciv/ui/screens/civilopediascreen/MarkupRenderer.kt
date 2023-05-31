@@ -28,7 +28,7 @@ object MarkupRenderer {
      *  @param linkAction       Delegate to call for internal links. Leave null to suppress linking.
      */
     fun render(
-        lines: Collection<FormattedLine>,
+        lines: Iterable<FormattedLine>,
         labelWidth: Float = 0f,
         padding: Float = defaultPadding,
         iconDisplay: FormattedLine.IconDisplay = FormattedLine.IconDisplay.All,

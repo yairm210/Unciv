@@ -3,11 +3,11 @@ package com.unciv.ui.screens.worldscreen.unit.actions
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.Counter
 import com.unciv.models.UnitAction
-import com.unciv.models.UnitActionType
+import com.unciv.models.UpgradeUnitAction
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 
-object UnitActionsUpgrade{
+object UnitActionsUpgrade {
 
     internal fun addUnitUpgradeAction(
         unit: MapUnit,
@@ -21,13 +21,14 @@ object UnitActionsUpgrade{
     private fun getUpgradeAction(
         unit: MapUnit,
         isFree: Boolean,
-        isSpecial: Boolean
+        isSpecial: Boolean,
+        isAnywhere: Boolean
     ): UnitAction? {
         val specialUpgradesTo = unit.baseUnit().getMatchingUniques(UniqueType.RuinsUpgrade).map { it.params[0] }.firstOrNull()
         if (unit.baseUnit().upgradesTo == null && specialUpgradesTo == null) return null // can't upgrade to anything
         val unitTile = unit.getTile()
         val civInfo = unit.civ
-        if (!isFree && unitTile.getOwner() != civInfo) return null
+        if (!isAnywhere && unitTile.getOwner() != civInfo) return null
 
         val upgradesTo = unit.baseUnit().upgradesTo
         val upgradedUnit = when {
@@ -46,8 +47,9 @@ object UnitActionsUpgrade{
             resourceRequirementsDelta.add(resource, -amount)
         for ((resource, amount) in upgradedUnit.getResourceRequirementsPerTurn())
             resourceRequirementsDelta.add(resource, amount)
+        for ((resource, _) in resourceRequirementsDelta.filter { it.value < 0 })  // filter copies, so no CCM
+            resourceRequirementsDelta[resource] = 0
         val newResourceRequirementsString = resourceRequirementsDelta.entries
-            .filter { it.value > 0 }
             .joinToString { "${it.value} {${it.key}}".tr() }
 
         val goldCostOfUpgrade = if (isFree) 0 else unit.upgrade.getCostOfUpgrade(upgradedUnit)
@@ -58,12 +60,18 @@ object UnitActionsUpgrade{
             "Upgrade to [${upgradedUnit.name}] ([$goldCostOfUpgrade] gold)"
         else "Upgrade to [${upgradedUnit.name}]\n([$goldCostOfUpgrade] gold, [$newResourceRequirementsString])"
 
-        return UnitAction(
-            UnitActionType.Upgrade,
+        return UpgradeUnitAction(
             title = title,
+            unitToUpgradeTo = upgradedUnit,
+            goldCostOfUpgrade = goldCostOfUpgrade,
+            newResourceRequirements = resourceRequirementsDelta,
             action = {
                 unit.destroy(destroyTransportedUnit = false)
                 val newUnit = civInfo.units.placeUnitNearTile(unitTile.position, upgradedUnit.name)
+
+                /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
+                 * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
+                 */
 
                 /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
                  * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
@@ -80,6 +88,7 @@ object UnitActionsUpgrade{
                 isFree || (
                         unit.civ.gold >= goldCostOfUpgrade
                                 && unit.currentMovement > 0
+                                && unitTile.getOwner() == civInfo
                                 && !unit.isEmbarked()
                                 && unit.upgrade.canUpgrade(unitToUpgradeTo = upgradedUnit)
                         )
@@ -88,10 +97,11 @@ object UnitActionsUpgrade{
     }
 
     fun getUpgradeAction(unit: MapUnit) =
-            getUpgradeAction(unit, isFree = false, isSpecial = false)
+            getUpgradeAction(unit, isFree = false, isSpecial = false, isAnywhere = false)
     fun getFreeUpgradeAction(unit: MapUnit) =
-            getUpgradeAction(unit,  isFree = true, isSpecial = false)
+            getUpgradeAction(unit, isFree = true, isSpecial = false, isAnywhere = true)
     fun getAncientRuinsUpgradeAction(unit: MapUnit) =
-            getUpgradeAction(unit,  isFree = true, isSpecial = true)
-
+            getUpgradeAction(unit, isFree = true, isSpecial = true, isAnywhere = true)
+    fun getUpgradeActionAnywhere(unit: MapUnit) =
+            getUpgradeAction(unit, isFree = false, isSpecial = false, isAnywhere = true)
 }

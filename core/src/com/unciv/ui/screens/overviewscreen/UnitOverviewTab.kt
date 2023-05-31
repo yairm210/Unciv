@@ -14,7 +14,8 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
-import com.unciv.ui.audio.SoundPlayer
+import com.unciv.models.UpgradeUnitAction
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.TabbedPager
@@ -273,16 +274,20 @@ class UnitOverviewTab(
             add(promotionsTable)
 
             // Upgrade column
-            if (unit.upgrade.canUpgrade()) {
-                val unitAction = UnitActionsUpgrade.getUpgradeAction(unit)
-                val enable = unitAction?.action != null && viewingPlayer.isCurrentPlayer() &&
+            val unitAction = UnitActionsUpgrade.getUpgradeActionAnywhere(unit)
+            if (unitAction != null) {
+                val enable = unitAction.action != null && viewingPlayer.isCurrentPlayer() &&
                     GUI.isAllowedChangeState()
-                val upgradeIcon = ImageGetter.getUnitIcon(unit.upgrade.getUnitToUpgradeTo().name,
+                val unitToUpgradeTo = (unitAction as UpgradeUnitAction).unitToUpgradeTo
+                val selectKey = getUnitIdentifier(unit, unitToUpgradeTo)
+                val upgradeIcon = ImageGetter.getUnitIcon(unitToUpgradeTo.name,
                     if (enable) Color.GREEN else Color.GREEN.darken(0.5f))
                 if (enable) upgradeIcon.onClick {
-                    SoundPlayer.play(unitAction!!.uncivSound)
-                    unitAction.action!!()
-                    unitListTable.updateUnitListTable()
+                    val pos = upgradeIcon.localToStageCoordinates(Vector2(upgradeIcon.width/2, upgradeIcon.height/2))
+                    UnitUpgradeMenu(overviewScreen.stage, pos, unit, unitAction) {
+                        unitListTable.updateUnitListTable()
+                        select(selectKey)
+                    }
                 }
                 add(upgradeIcon).size(28f)
             } else add()
@@ -295,7 +300,10 @@ class UnitOverviewTab(
     }
 
     companion object {
-        fun getUnitIdentifier(unit: MapUnit) = unit.run { "$name@${getTile().position.toPrettyString()}" }
+        fun getUnitIdentifier(unit: MapUnit, unitToUpgradeTo: BaseUnit? = null): String {
+            val name = unitToUpgradeTo?.name ?: unit.name
+            return "$name@${unit.getTile().position.toPrettyString()}"
+        }
     }
 
     override fun select(selection: String): Float? {
@@ -316,4 +324,5 @@ class UnitOverviewTab(
         button.addAction(blinkAction)
         return scrollY
     }
+
 }

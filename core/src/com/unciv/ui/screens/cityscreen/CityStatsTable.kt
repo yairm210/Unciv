@@ -77,7 +77,7 @@ class CityStatsTable(private val cityScreen: CityScreen): Table() {
         lowerTable.clear()
 
         val miniStatsTable = Table()
-        val selected = BaseScreen.skin.get("selection", Color::class.java)
+        val selected = BaseScreen.skin.getColor("selection")
         for ((stat, amount) in cityInfo.cityStats.currentCityStats) {
             if (stat == Stat.Faith && !cityInfo.civ.gameInfo.isReligionEnabled()) continue
             val icon = Table()
