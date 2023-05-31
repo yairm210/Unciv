@@ -8,8 +8,8 @@ import com.unciv.logic.UncivShowableException
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.worldscreen.WorldScreen
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.launchOnGLThread
+import com.unciv.utils.Concurrency
+import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.Log
 
 
@@ -70,7 +70,7 @@ object QuickSave {
             val savedGame: GameInfo
             try {
                 savedGame = screen.game.files.loadLatestAutosave()
-            } catch (oom: OutOfMemoryError) {
+            } catch (_: OutOfMemoryError) {
                 outOfMemory()
                 return@run
             } catch (ex: Exception) {
@@ -89,7 +89,7 @@ object QuickSave {
             if (savedGame.gameParameters.isOnlineMultiplayer) {
                 try {
                     screen.game.onlineMultiplayer.loadGame(savedGame)
-                } catch (oom: OutOfMemoryError) {
+                } catch (_: OutOfMemoryError) {
                     outOfMemory()
                 } catch (notAPlayer: UncivShowableException) {
                     val (message) = LoadGameScreen.getLoadExceptionMessage(notAPlayer)
@@ -108,7 +108,7 @@ object QuickSave {
             } else {
                 try {
                     screen.game.loadGame(savedGame)
-                } catch (oom: OutOfMemoryError) {
+                } catch (_: OutOfMemoryError) {
                     outOfMemory()
                 } catch (ex: Exception) {
                     launchOnGLThread {

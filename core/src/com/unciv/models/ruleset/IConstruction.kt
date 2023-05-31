@@ -1,6 +1,9 @@
-package com.unciv.logic.city
+package com.unciv.models.ruleset
 
+import com.unciv.logic.city.City
+import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.Civilization
+import com.unciv.models.Counter
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
@@ -16,7 +19,7 @@ interface IConstruction : INamed {
     fun isBuildable(cityConstructions: CityConstructions): Boolean
     fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean
     /** Gets *per turn* resource requirements - does not include immediate costs for stockpiled resources */
-    fun getResourceRequirementsPerTurn(): HashMap<String,Int>
+    fun getResourceRequirementsPerTurn(): Counter<String>
     fun requiresResource(resource: String): Boolean
     /** We can't call this getMatchingUniques because then it would conflict with IHasUniques */
     fun getMatchingUniquesNotConflicting(uniqueType: UniqueType) = sequenceOf<Unique>()
@@ -94,8 +97,8 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
 
 
 class RejectionReason(val type: RejectionReasonType,
-                           val errorMessage: String = type.errorMessage,
-                           val shouldShow: Boolean = type.shouldShow) {
+                      val errorMessage: String = type.errorMessage,
+                      val shouldShow: Boolean = type.shouldShow) {
 
     fun techPolicyEraWonderRequirements(): Boolean = type in techPolicyEraWonderRequirements
 
@@ -174,6 +177,7 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
 
     RequiresBuildingInThisCity(true, "Requires a specific building in this city!"),
     RequiresBuildingInAllCities(true, "Requires a specific building in all cities!"),
+    RequiresBuildingInSomeCities(true, "Requires a specific building in more cities!"),
     RequiresBuildingInSomeCity(true, "Requires a specific building anywhere in your empire!"),
 
     WonderAlreadyBuilt(false, "Wonder already built"),
@@ -198,7 +202,8 @@ enum class RejectionReasonType(val shouldShow: Boolean, val errorMessage: String
 }
 
 
-open class PerpetualConstruction(override var name: String, val description: String) : IConstruction {
+open class PerpetualConstruction(override var name: String, val description: String) :
+    IConstruction {
 
     override fun shouldBeDisplayed(cityConstructions: CityConstructions) = isBuildable(cityConstructions)
     open fun getProductionTooltip(city: City, withIcon: Boolean = false) : String = ""
@@ -219,7 +224,7 @@ open class PerpetualConstruction(override var name: String, val description: Str
     override fun isBuildable(cityConstructions: CityConstructions): Boolean =
             throw Exception("Impossible!")
 
-    override fun getResourceRequirementsPerTurn(): HashMap<String, Int> = hashMapOf()
+    override fun getResourceRequirementsPerTurn() = Counter.ZERO
 
     override fun requiresResource(resource: String) = false
 

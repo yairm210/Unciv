@@ -33,7 +33,7 @@ import kotlin.math.ceil
 import kotlin.math.round
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
 
-class CityStatsTable(val cityScreen: CityScreen): Table() {
+class CityStatsTable(private val cityScreen: CityScreen): Table() {
     private val innerTable = Table() // table within this Table. Slightly smaller creates border
     private val upperTable = Table() // fixed position table
     private val lowerTable = Table() // table that will be in the ScrollPane
@@ -77,7 +77,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         lowerTable.clear()
 
         val miniStatsTable = Table()
-        val selected = BaseScreen.skin.get("selection", Color::class.java)
+        val selected = BaseScreen.skin.getColor("selection")
         for ((stat, amount) in cityInfo.cityStats.currentCityStats) {
             if (stat == Stat.Faith && !cityInfo.civ.gameInfo.isReligionEnabled()) continue
             val icon = Table()
@@ -287,8 +287,8 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         for ((specialistName, amount) in building.newSpecialists()) {
             val specialist = cityInfo.getRuleset().specialists[specialistName]
                 ?: continue // probably a mod that doesn't have the specialist defined yet
-            for (i in 0 until amount) {
-                if (assignedSpec[specialistName]!! > 0) {
+            repeat(amount) {
+                if (assignedSpec[specialistName] > 0) {
                     specialistIcons.add(ImageGetter.getSpecialistIcon(specialist.colorObject))
                         .size(20f)
                     assignedSpec.add(specialistName, -1)
@@ -342,7 +342,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
             var gppPerTurn = 0
 
             for ((_, gppCounter) in greatPersonPoints) {
-                val gppPointsFromSource = gppCounter[greatPersonName]!!
+                val gppPointsFromSource = gppCounter[greatPersonName]
                 if (gppPointsFromSource == 0) continue
                 gppPerTurn += gppPointsFromSource
             }
@@ -356,7 +356,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
             val gppCurrent = city.civ.greatPeople.greatPersonPointsCounter[greatPersonName]
             val gppNeeded = city.civ.greatPeople.getPointsRequiredForGreatPerson()
 
-            val percent = gppCurrent!! / gppNeeded.toFloat()
+            val percent = gppCurrent / gppNeeded.toFloat()
 
             val progressBar = ImageGetter.ProgressBar(300f, 25f, false)
             progressBar.setBackground(Color.BLACK.cpy().apply { a = 0.8f })

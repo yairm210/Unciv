@@ -1,6 +1,9 @@
 import com.unciv.build.BuildConfig.gdxVersion
 import com.unciv.build.BuildConfig.roboVMVersion
 
+plugins {
+    id("io.gitlab.arturbosch.detekt").version("1.23.0-RC3")
+}
 
 // You'll still get kotlin-reflect-1.3.70.jar in your classpath, but will no longer be used
 configurations.all { resolutionStrategy {

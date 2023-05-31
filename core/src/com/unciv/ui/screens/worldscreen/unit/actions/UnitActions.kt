@@ -201,6 +201,7 @@ object UnitActions {
 
             if (hasActionModifiers) activateSideEffects(unit, unique)
             else unit.destroy()
+            GUI.setUpdateWorldOnNextRender() // Set manually, since this could be triggered from the ConfirmPopup and not from the UnitActionsTable
         }
 
         if (unit.civ.playerType == PlayerType.AI)
@@ -326,30 +327,32 @@ object UnitActions {
         val transformList = ArrayList<UnitAction>()
         for (unique in unit.baseUnit().getMatchingUniques(UniqueType.CanTransform,
             StateForConditionals(unit = unit, civInfo = civInfo, tile = unitTile))) {
-            val upgradedUnit = civInfo.getEquivalentUnit(unique.params[0])
-            // don't show if haven't researched/is obsolete
-            if (!unit.upgrade.canUpgrade(unitToUpgradeTo = upgradedUnit)) continue
+            val unitToTransformTo = civInfo.getEquivalentUnit(unique.params[0])
+
+            val stateForConditionals = StateForConditionals(unit.civ, unit = unit)
+            if (unitToTransformTo.getMatchingUniques(UniqueType.OnlyAvailableWhen).any { !it.conditionalsApply(stateForConditionals) })
+                continue
 
             // Check _new_ resource requirements
             // Using Counter to aggregate is a bit exaggerated, but - respect the mad modder.
             val resourceRequirementsDelta = Counter<String>()
             for ((resource, amount) in unit.baseUnit().getResourceRequirementsPerTurn())
                 resourceRequirementsDelta.add(resource, -amount)
-            for ((resource, amount) in upgradedUnit.getResourceRequirementsPerTurn())
+            for ((resource, amount) in unitToTransformTo.getResourceRequirementsPerTurn())
                 resourceRequirementsDelta.add(resource, amount)
             val newResourceRequirementsString = resourceRequirementsDelta.entries
                 .filter { it.value > 0 }
                 .joinToString { "${it.value} {${it.key}}".tr() }
 
             val title = if (newResourceRequirementsString.isEmpty())
-                "Transform to [${upgradedUnit.name}]"
-            else "Transform to [${upgradedUnit.name}]\n([$newResourceRequirementsString])"
+                "Transform to [${unitToTransformTo.name}]"
+            else "Transform to [${unitToTransformTo.name}]\n([$newResourceRequirementsString])"
 
             transformList.add(UnitAction(UnitActionType.Transform,
                 title = title,
                 action = {
                     unit.destroy()
-                    val newUnit = civInfo.units.placeUnitNearTile(unitTile.position, upgradedUnit.name)
+                    val newUnit = civInfo.units.placeUnitNearTile(unitTile.position, unitToTransformTo.name)
 
                     /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
                      * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
@@ -362,9 +365,7 @@ object UnitActions {
                         newUnit.currentMovement = 0f
                     }
                 }.takeIf {
-                    unit.currentMovement > 0
-                            && !unit.isEmbarked()
-                            && unit.upgrade.canUpgrade(unitToUpgradeTo = upgradedUnit)
+                    unit.currentMovement > 0 && !unit.isEmbarked()
                 }
             ) )
         }

@@ -2,9 +2,6 @@ package com.unciv.models.ruleset
 
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
-import com.unciv.logic.city.INonPerpetualConstruction
-import com.unciv.logic.city.RejectionReason
-import com.unciv.logic.city.RejectionReasonType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.tile.ResourceType
@@ -184,7 +181,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         // Calls the clone function of the NamedStats this class is derived from, not a clone function of this class
         val stats = cloneStats()
 
-        for (unique in localUniqueCache.get("StatsFromObject", city.getMatchingUniques(UniqueType.StatsFromObject))) {
+        for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromObject)) {
             if (!matchesFilter(unique.params[1])) continue
             stats.add(unique.stats)
         }
@@ -193,7 +190,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             stats.add(unique.stats)
 
         if (!isWonder)
-            for (unique in localUniqueCache.get("StatsFromBuildings", city.getMatchingUniques(UniqueType.StatsFromBuildings))) {
+            for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromBuildings)) {
                 if (matchesFilter(unique.params[1]))
                     stats.add(unique.stats)
             }
@@ -204,12 +201,12 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         val stats = percentStatBonus?.clone() ?: Stats()
         val civInfo = city?.civ ?: return stats  // initial stats
 
-        for (unique in localUniqueCache.get("StatPercentFromObject", civInfo.getMatchingUniques(UniqueType.StatPercentFromObject))) {
+        for (unique in localUniqueCache.forCivGetMatchingUniques(civInfo, UniqueType.StatPercentFromObject)) {
             if (matchesFilter(unique.params[2]))
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
 
-        for (unique in localUniqueCache.get("AllStatsPercentFromObject", civInfo.getMatchingUniques(UniqueType.AllStatsPercentFromObject))) {
+        for (unique in localUniqueCache.forCivGetMatchingUniques(civInfo, UniqueType.AllStatsPercentFromObject)) {
             if (!matchesFilter(unique.params[1])) continue
             for (stat in Stat.values()) {
                 stats.add(stat, unique.params[0].toFloat())
@@ -360,7 +357,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     override fun canBePurchasedWithStat(city: City?, stat: Stat): Boolean {
         if (stat == Stat.Gold && isAnyWonder()) return false
-        if (city == null) return super.canBePurchasedWithStat(city, stat)
+        if (city == null) return super.canBePurchasedWithStat(null, stat)
 
         val conditionalState = StateForConditionals(civInfo = city.civ, city = city)
         return (
@@ -405,7 +402,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     getCostForConstructionsIncreasingInPrice(
                         it.params[1].toInt(),
                         it.params[4].toInt(),
-                        city.civ.civConstructions.boughtItemsWithIncreasingPrice[name] ?: 0
+                        city.civ.civConstructions.boughtItemsWithIncreasingPrice[name]
                     )
                 }
             )
@@ -456,11 +453,14 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
 
         val rejectionReasons = getRejectionReasons(cityConstructions)
-        return rejectionReasons.none { !it.shouldShow }
-            || (
-                canBePurchasedWithAnyStat(cityConstructions.city)
+
+        if (rejectionReasons.any { it.type == RejectionReasonType.RequiresBuildingInSomeCities }
+                && cityConstructions.city.civ.gameInfo.gameParameters.oneCityChallenge)
+            return false // You will never be able to get more cities, this building is effectively disabled
+
+        if (rejectionReasons.none { !it.shouldShow }) return true
+        return canBePurchasedWithAnyStat(cityConstructions.city)
                 && rejectionReasons.all { it.type == RejectionReasonType.Unbuildable }
-            )
     }
 
     override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> = sequence {
@@ -539,7 +539,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                         val equivalentBuildingName = civ.getEquivalentBuilding(buildingName).name
                         yield(
                                 // replace with civ-specific building for user
-                                RejectionReasonType.RequiresBuildingInAllCities.toInstance(
+                                RejectionReasonType.RequiresBuildingInSomeCities.toInstance(
                                     unique.text.fillPlaceholders(equivalentBuildingName, numberOfCitiesRequired.toString()) +
                                             " ($numberOfCitiesWithBuilding/$numberOfCitiesRequired)"
                                 ) )
@@ -689,6 +689,13 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (isStatRelated(Stat.Science) && civInfo.hasUnique(UniqueType.TechBoostWhenScientificBuildingsBuiltInCapital))
             civInfo.tech.addScience(civInfo.tech.scienceOfLast8Turns.sum() / 8)
 
+        // Happiness change _may_ invalidate best worked tiles (#9238), but if the building
+        // isn't bought then reassignPopulation will run later in startTurn anyway
+        if (boughtWith != null && isStatRelated(Stat.Happiness)) {
+            cityConstructions.city.reassignPopulation()
+            cityConstructions.city.updateCitizens = false
+        }
+
         cityConstructions.city.cityStats.update() // new building, new stats
         civInfo.cache.updateCivResources() // this building/unit could be a resource-requiring one
         civInfo.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
@@ -721,6 +728,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (getMatchingUniques(UniqueType.Stats).any { it.stats[stat] > 0 }) return true
         if (getMatchingUniques(UniqueType.StatsFromTiles).any { it.stats[stat] > 0 }) return true
         if (getMatchingUniques(UniqueType.StatsPerPopulation).any { it.stats[stat] > 0 }) return true
+        if (stat == Stat.Happiness && hasUnique(UniqueType.RemoveAnnexUnhappiness)) return true
         return false
     }
 
@@ -742,10 +750,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     fun isSellable() = !isAnyWonder() && !hasUnique(UniqueType.Unsellable)
 
-    override fun getResourceRequirementsPerTurn(): HashMap<String, Int> = resourceRequirementsInternal
+    override fun getResourceRequirementsPerTurn(): Counter<String> = resourceRequirementsInternal
 
-    private val resourceRequirementsInternal: HashMap<String, Int> by lazy {
-        val resourceRequirements = HashMap<String, Int>()
+    private val resourceRequirementsInternal: Counter<String> by lazy {
+        val resourceRequirements = Counter<String>()
         if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
         for (unique in uniqueObjects)
             if (unique.isOfType(UniqueType.ConsumesResources))

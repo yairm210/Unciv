@@ -154,42 +154,37 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
                 specialistFoodBonus *= unique.params[0].toPercent()
         specialistFoodBonus = 2f - specialistFoodBonus
 
-        val currentCiv = city.civ
-
-        val tilesToEvaluate = city.getCenterTile().getTilesInDistance(3)
-            .filter { it.getOwner() == currentCiv && !it.isBlockaded() }.toList().asSequence()
+        val tilesToEvaluate = city.getWorkableTiles()
+            .filter { !it.isBlockaded() }.toList().asSequence()
 
         val localUniqueCache = LocalUniqueCache()
-        for (i in 1..getFreePopulation()) {
+        repeat(getFreePopulation()) {
             //evaluate tiles
-            val (bestTile, valueBestTile) = tilesToEvaluate
+            val bestTileAndRank = tilesToEvaluate
                     .filterNot { it.providesYield() }
                     .associateWith { Automation.rankTileForCityWork(it, city, cityStats, localUniqueCache) }
                     .maxByOrNull { it.value }
-                    ?: object : Map.Entry<Tile?, Float> {
-                        override val key: Tile? = null
-                        override val value = 0f
-                    }
+            val bestTile = bestTileAndRank?.key
+            val valueBestTile = bestTileAndRank?.value ?: 0f
 
-            val bestJob: String? = if (city.manualSpecialists) null else getMaxSpecialists()
+            val bestJobAndRank = if (city.manualSpecialists) null
+                else getMaxSpecialists().asSequence()
                     .filter { specialistAllocations[it.key]!! < it.value }
                     .map { it.key }
-                    .maxByOrNull { Automation.rankSpecialist(it, city, cityStats, localUniqueCache) }
-
-            var valueBestSpecialist = 0f
-            if (bestJob != null) {
-                valueBestSpecialist = Automation.rankSpecialist(bestJob, city, cityStats, localUniqueCache)
-            }
+                    .associateWith { Automation.rankSpecialist(it, city, cityStats, localUniqueCache) }
+                    .maxByOrNull { it.value }
+            val bestJob = bestJobAndRank?.key
+            val valueBestSpecialist = bestJobAndRank?.value ?: 0f
 
             //assign population
             if (valueBestTile > valueBestSpecialist) {
                 if (bestTile != null) {
                     city.workedTiles = city.workedTiles.withItem(bestTile.position)
-                    cityStats[Stat.Food] += bestTile.stats.getTileStats(city, city.civ, localUniqueCache)[Stat.Food]
+                    cityStats.food += bestTile.stats.getTileStats(city, city.civ, localUniqueCache).food
                 }
             } else if (bestJob != null) {
                 specialistAllocations.add(bestJob, 1)
-                cityStats[Stat.Food] += specialistFoodBonus
+                cityStats.food += specialistFoodBonus
             }
         }
         city.cityStats.update()
@@ -208,11 +203,9 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         }
 
         // unassign specialists that cannot be (e.g. the city was captured and one of the specialist buildings was destroyed)
-        val maxSpecialists = getMaxSpecialists()
-        val specialistsHashmap = specialistAllocations
-        for ((specialistName, amount) in specialistsHashmap)
-            if (amount > maxSpecialists[specialistName]!!)
-                specialistAllocations[specialistName] = maxSpecialists[specialistName]!!
+        for ((specialistName, maxAmount) in getMaxSpecialists())
+            if (specialistAllocations[specialistName] > maxAmount)
+                specialistAllocations[specialistName] = maxAmount
 
         val localUniqueCache = LocalUniqueCache()
 

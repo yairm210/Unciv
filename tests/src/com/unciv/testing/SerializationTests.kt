@@ -17,6 +17,7 @@ import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.utils.Log
 import com.unciv.utils.debug
 import org.junit.After
 import org.junit.Assert
@@ -88,7 +89,7 @@ class SerializationTests {
     fun canSerializeGame() {
         val json = try {
             json().toJson(game)
-        } catch (ex: Exception) {
+        } catch (_: Exception) {
             ""
         }
         Assert.assertTrue("This test will only pass when a game can be serialized", json.isNotEmpty())
@@ -105,7 +106,7 @@ class SerializationTests {
         val json = try {
             jsonSerializer.toJson(game)
         } catch (ex: Throwable) {
-            ex.printStackTrace()
+            Log.error("Failed to serialize game", ex)
             return
         }
 

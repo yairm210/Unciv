@@ -33,8 +33,8 @@ class TileImprovement : RulesetStatsObject() {
     fun getTurnsToBuild(civInfo: Civilization, unit: MapUnit): Int {
         val state = StateForConditionals(civInfo, unit = unit)
         return unit.getMatchingUniques(UniqueType.TileImprovementTime, state, checkCivInfoUniques = true)
-            .fold(turnsToBuild.toFloat() * civInfo.gameInfo.speed.improvementBuildLengthModifier) { it, unique ->
-                it * unique.params[0].toPercent()
+            .fold(turnsToBuild.toFloat() * civInfo.gameInfo.speed.improvementBuildLengthModifier) { calculatedTurnsToBuild, unique ->
+                calculatedTurnsToBuild * unique.params[0].toPercent()
             }.roundToInt()
             .coerceAtLeast(1)
         // In some weird cases it was possible for something to take 0 turns, leading to it instead never finishing

@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.multiplayerscreens
 
-import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.multiplayer.FriendList
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.popups.Popup

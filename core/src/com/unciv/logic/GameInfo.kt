@@ -3,16 +3,20 @@ package com.unciv.logic
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.UncivGame.Version
+import com.unciv.json.json
+import com.unciv.logic.BackwardCompatibility.convertEncampmentData
 import com.unciv.logic.BackwardCompatibility.convertFortify
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
 import com.unciv.logic.BackwardCompatibility.migrateToTileHistory
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.GameInfo.Companion.CURRENT_COMPATIBILITY_NUMBER
 import com.unciv.logic.GameInfo.Companion.FIRST_WITHOUT
+import com.unciv.logic.automation.civilization.BarbarianManager
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.CivilizationInfoPreview
 import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
@@ -32,9 +36,12 @@ import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
+import com.unciv.ui.screens.savescreens.Gzip
+import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
-import java.util.*
+import java.security.MessageDigest
+import java.util.UUID
 
 
 /**
@@ -96,6 +103,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var currentPlayer = ""
     var currentTurnStartTime = 0L
     var gameId = UUID.randomUUID().toString() // random string
+    var checksum = ""
 
     var victoryData:VictoryData? = null
 
@@ -163,9 +171,11 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     fun clone(): GameInfo {
         val toReturn = GameInfo()
         toReturn.tileMap = tileMap.clone()
-        toReturn.civilizations.addAll(civilizations.map { it.clone() })
+        toReturn.civilizations = civilizations.asSequence()
+            .map { it.clone() }
+            .toCollection(ArrayList(civilizations.size))
         toReturn.barbarians = barbarians.clone()
-        toReturn.religions.putAll(religions.map { Pair(it.key, it.value.clone()) })
+        toReturn.religions.putAll(religions.asSequence().map { it.key to it.value.clone() })
         toReturn.currentPlayer = currentPlayer
         toReturn.currentTurnStartTime = currentTurnStartTime
         toReturn.turns = turns
@@ -175,7 +185,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         toReturn.diplomaticVictoryVotesCast.putAll(diplomaticVictoryVotesCast)
         toReturn.oneMoreTurnMode = oneMoreTurnMode
         toReturn.customSaveLocation = customSaveLocation
-        toReturn.victoryData = victoryData
+        toReturn.victoryData = victoryData?.copy()
         toReturn.historyStartTurn = historyStartTurn
 
         return toReturn
@@ -266,6 +276,16 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         return year.toInt()
     }
 
+    fun calculateChecksum():String {
+        val oldChecksum = checksum
+        checksum = "" // Checksum calculation cannot include old checksum, obvs
+        val bytes = MessageDigest
+            .getInstance("SHA-1")
+            .digest(json().toJson(this).toByteArray())
+        checksum = oldChecksum
+        return Gzip.encode(bytes)
+    }
+
     //endregion
     //region State changing functions
 
@@ -273,7 +293,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     fun isSimulation(): Boolean = turns < DebugUtils.SIMULATE_UNTIL_TURN
             || turns < simulateMaxTurns && simulateUntilWin
 
-    fun nextTurn() {
+    fun nextTurn(progressBar: NextTurnProgress? = null) {
 
         var player = currentPlayerCiv
         var playerIndex = civilizations.indexOf(player)
@@ -295,7 +315,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         //  would skip a turn if an AI civ calls nextTurn
         //  this happens when resigning a multiplayer game)
         if (player.isHuman()) {
-            TurnManager(player).endTurn()
+            TurnManager(player).endTurn(progressBar)
             setNextPlayer()
         }
 
@@ -310,7 +330,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         {
 
             // Starting preparations
-            TurnManager(player).startTurn()
+            TurnManager(player).startTurn(progressBar)
 
             // Automation done here
             TurnManager(player).automateTurn()
@@ -322,7 +342,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             }
 
             // Clean up
-            TurnManager(player).endTurn()
+            TurnManager(player).endTurn(progressBar)
 
             // To the next player
             setNextPlayer()
@@ -337,7 +357,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         currentPlayerCiv = getCivilization(currentPlayer)
 
         // Starting his turn
-        TurnManager(player).startTurn()
+        TurnManager(player).startTurn(progressBar)
 
         // No popups for spectators
         if (currentPlayerCiv.isSpectator())
@@ -432,18 +452,37 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         }
     }
 
-    /** Generate a notification pointing out resources.
+    /** Generate and show a notification pointing out resources.
      *  Used by [addTechnology][TechManager.addTechnology] and [ResourcesOverviewTab][com.unciv.ui.screens.overviewscreen.ResourcesOverviewTab]
      * @param maxDistance from next City, 0 removes distance limitation.
-     * @param showForeign Disables filter to exclude foreign territory.
+     * @param filter optional tile filter predicate, e.g. to exclude foreign territory.
      * @return `false` if no resources were found and no notification was added.
+     * @see getExploredResourcesNotification
      */
     fun notifyExploredResources(
         civInfo: Civilization,
         resourceName: String,
-        maxDistance: Int,
-        showForeign: Boolean
+        maxDistance: Int = Int.MAX_VALUE,
+        filter: (Tile) -> Boolean = { true }
     ): Boolean {
+        val notification = getExploredResourcesNotification(civInfo, resourceName, maxDistance, filter)
+            ?: return false
+        civInfo.notifications.add(notification)
+        return true
+    }
+
+    /** Generate a notification pointing out resources.
+     * @param maxDistance from next City, default removes distance limitation.
+     * @param filter optional tile filter predicate, e.g. to exclude foreign territory.
+     * @return `null` if no resources were found, otherwise a Notification instance.
+     * @see notifyExploredResources
+     */
+    fun getExploredResourcesNotification(
+        civInfo: Civilization,
+        resourceName: String,
+        maxDistance: Int = Int.MAX_VALUE,
+        filter: (Tile) -> Boolean = { true }
+    ): Notification? {
         data class CityTileAndDistance(val city: City, val tile: Tile, val distance: Int)
 
         val exploredRevealTiles: Sequence<Tile> =
@@ -471,11 +510,12 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
                         CityTileAndDistance(city, tile, tile.aerialDistanceTo(city.getCenterTile()))
                     }
             }
-            .filter { (maxDistance == 0 || it.distance <= maxDistance) && (showForeign || it.tile.getOwner() == null || it.tile.getOwner() == civInfo) }
+            .filter { it.distance <= maxDistance && filter(it.tile) }
             .sortedWith(compareBy { it.distance })
             .distinctBy { it.tile }
 
-        val chosenCity = exploredRevealInfo.firstOrNull()?.city ?: return false
+        val chosenCity = exploredRevealInfo.firstOrNull()?.city
+            ?: return null
         val positions = exploredRevealInfo
             // re-sort to a more pleasant display order
             .sortedWith(compareBy { it.tile.aerialDistanceTo(chosenCity.getCenterTile()) })
@@ -487,13 +527,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         else
             "[$positionsCount] sources of [$resourceName] revealed, e.g. near [${chosenCity.name}]"
 
-        civInfo.addNotification(
-            text,
-            LocationAction(positions),
-            NotificationCategory.General,
-            "ResourceIcons/$resourceName"
-        )
-        return true
+        return Notification(text, arrayListOf("ResourceIcons/$resourceName"),
+            LocationAction(positions), NotificationCategory.General)
     }
 
     // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)
@@ -502,11 +537,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         tileMap.gameInfo = this
 
         // [TEMPORARY] Convert old saves to newer ones by moving base rulesets from the mod list to the base ruleset field
-        val baseRulesetInMods = gameParameters.mods.firstOrNull { RulesetCache[it]?.modOptions?.isBaseRuleset == true }
-        if (baseRulesetInMods != null) {
-            gameParameters.baseRuleset = baseRulesetInMods
-            gameParameters.mods = LinkedHashSet(gameParameters.mods.filter { it != baseRulesetInMods })
-        }
+        convertOldSavesToNewSaves()
 
         ruleset = RulesetCache.getComplexRuleset(gameParameters)
 
@@ -558,6 +589,24 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         convertFortify()
 
+        updateCivilizationState()
+
+        spaceResources.clear()
+        spaceResources.addAll(ruleset.buildings.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
+            .flatMap { it.getResourceRequirementsPerTurn().keys })
+        spaceResources.addAll(ruleset.victories.values.flatMap { it.requiredSpaceshipParts })
+
+        convertEncampmentData()
+        barbarians.setTransients(this)
+
+        cityDistances.game = this
+
+        guaranteeUnitPromotions()
+
+        migrateToTileHistory()
+    }
+
+    private fun updateCivilizationState() {
         for (civInfo in civilizations.asSequence()
             // update city-state resource first since the happiness of major civ depends on it.
             // See issue: https://github.com/yairm210/Unciv/issues/7781
@@ -600,19 +649,14 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
                 cityInfo.cityStats.update()
             }
         }
+    }
 
-        spaceResources.clear()
-        spaceResources.addAll(ruleset.buildings.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
-            .flatMap { it.getResourceRequirementsPerTurn().keys })
-        spaceResources.addAll(ruleset.victories.values.flatMap { it.requiredSpaceshipParts })
-
-        barbarians.setTransients(this)
-
-        cityDistances.game = this
-
-        guaranteeUnitPromotions()
-
-        migrateToTileHistory()
+    private fun convertOldSavesToNewSaves() {
+        val baseRulesetInMods = gameParameters.mods.firstOrNull { RulesetCache[it]?.modOptions?.isBaseRuleset == true }
+        if (baseRulesetInMods != null) {
+            gameParameters.baseRuleset = baseRulesetInMods
+            gameParameters.mods = LinkedHashSet(gameParameters.mods.filter { it != baseRulesetInMods })
+        }
     }
 
     //endregion

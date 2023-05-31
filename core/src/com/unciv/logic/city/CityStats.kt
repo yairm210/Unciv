@@ -5,6 +5,8 @@ import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.GlobalUniques
+import com.unciv.models.ruleset.IConstruction
+import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
@@ -182,10 +184,10 @@ class CityStats(val city: City) {
         val specialist = city.getRuleset().specialists[specialistName]
             ?: return Stats()
         val stats = specialist.cloneStats()
-        for (unique in localUniqueCache.get(UniqueType.StatsFromSpecialist.name, city.getMatchingUniques(UniqueType.StatsFromSpecialist)))
+        for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromSpecialist))
             if (city.matchesFilter(unique.params[1]))
                 stats.add(unique.stats)
-        for (unique in localUniqueCache.get(UniqueType.StatsFromObject.name, city.civ.getMatchingUniques(UniqueType.StatsFromObject)))
+        for (unique in localUniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromObject))
             if (unique.params[1] == specialistName)
                 stats.add(unique.stats)
         return stats
@@ -476,7 +478,7 @@ class CityStats(val city: City) {
 
     fun update(currentConstruction: IConstruction = city.cityConstructions.getCurrentConstruction(),
                updateTileStats:Boolean = true,
-                updateCivStats:Boolean = true) {
+               updateCivStats:Boolean = true) {
         if (updateTileStats) updateTileStats()
 
         // We need to compute Tile yields before happiness

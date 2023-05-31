@@ -22,6 +22,10 @@ class VictoryScreenDemographics(
         buildDemographicsHeaders()
 
         for (rankLabel in RankLabels.values())   {
+            if (rankLabel == RankLabels.Value) {
+                // playerCiv is not necessarily alive nor major, and the `first` below would throw
+                if (playerCiv.isDefeated() || !playerCiv.isMajorCiv()) continue
+            }
             row()
             add(rankLabel.name.toLabel())
 

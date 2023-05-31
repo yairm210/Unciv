@@ -20,10 +20,10 @@ class AuthPopup(stage: Stage, authSuccessful: ((Boolean) -> Unit)? = null)
 
         button.onClick {
             try {
-                UncivGame.Current.onlineMultiplayer.authenticate(passwordField.text)
+                UncivGame.Current.onlineMultiplayer.multiplayerServer.authenticate(passwordField.text)
                 authSuccessful?.invoke(true)
                 close()
-            } catch (ex: Exception) {
+            } catch (_: Exception) {
                 innerTable.clear()
                 addGoodSizedLabel("Authentication failed").colspan(2).row()
                 add(passwordField).colspan(2).growX().pad(16f, 0f, 16f, 0f).row()

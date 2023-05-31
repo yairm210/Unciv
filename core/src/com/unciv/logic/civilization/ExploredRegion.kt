@@ -12,7 +12,7 @@ import com.unciv.ui.components.tilegroups.TileGroupMap
 import kotlin.math.abs
 import kotlin.math.sqrt
 
-class ExploredRegion () : IsPartOfGameInfoSerialization {
+class ExploredRegion : IsPartOfGameInfoSerialization {
 
     @Transient
     private var worldWrap = false

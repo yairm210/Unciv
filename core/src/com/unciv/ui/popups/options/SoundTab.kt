@@ -16,8 +16,8 @@ import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.extensions.toImageButton
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.launchOnGLThread
+import com.unciv.utils.Concurrency
+import com.unciv.utils.launchOnGLThread
 import kotlin.math.floor
 
 fun soundTab(
@@ -59,7 +59,7 @@ private fun addDownloadMusic(table: Table, optionsPopup: OptionsPopup) {
                     optionsPopup.tabs.replacePage("Sound", soundTab(optionsPopup))
                     UncivGame.Current.musicController.chooseTrack(flags = MusicTrackChooserFlags.setPlayDefault)
                 }
-            } catch (ex: Exception) {
+            } catch (_: Exception) {
                 launchOnGLThread {
                     errorTable.clear()
                     errorTable.add("Could not download music!".toLabel(Color.RED))

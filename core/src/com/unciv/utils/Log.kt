@@ -232,6 +232,7 @@ private fun replaceLambdasWithValues(params: Array<out Any?>): Array<out Any?> {
 
 
 private fun getTag(): Tag {
+    @Suppress("ThrowingExceptionsWithoutMessageOrCause")
     val firstOutsideStacktrace = Throwable().stackTrace.filter { "com.unciv.utils.Log" !in it.className }.first()
     val simpleClassName = firstOutsideStacktrace.className.substringAfterLast('.')
     return Tag(removeAnonymousSuffix(simpleClassName))

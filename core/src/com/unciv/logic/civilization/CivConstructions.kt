@@ -1,7 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
-import com.unciv.logic.city.INonPerpetualConstruction
+import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unique.UniqueType
@@ -123,7 +123,7 @@ class CivConstructions : IsPartOfGameInfoSerialization {
     }
 
     fun countConstructedObjects(objectToCount: INonPerpetualConstruction): Int {
-        val amountInSpaceShip = civInfo.victoryManager.currentsSpaceshipParts[objectToCount.name] ?: 0
+        val amountInSpaceShip = civInfo.victoryManager.currentsSpaceshipParts[objectToCount.name]
 
         return amountInSpaceShip + when (objectToCount) {
             is Building -> civInfo.cities.count {

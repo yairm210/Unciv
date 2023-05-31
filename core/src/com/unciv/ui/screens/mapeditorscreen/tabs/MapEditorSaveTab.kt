@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.mapeditorscreen.tabs
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -25,7 +24,10 @@ import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.onChange
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toTextButton
-import kotlin.concurrent.thread
+import com.unciv.utils.Concurrency
+import com.unciv.utils.Log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.isActive
 
 class MapEditorSaveTab(
     private val editorScreen: MapEditorScreen,
@@ -34,7 +36,9 @@ class MapEditorSaveTab(
     private val mapFiles = MapEditorFilesTable(
         initWidth = editorScreen.getToolsWidth() - 40f,
         includeMods = false,
-        this::selectFile)
+        this::selectFile,
+        this::saveHandler
+    )
 
     private val saveButton = "Save map".toTextButton()
     private val deleteButton = "Delete map".toTextButton()
@@ -75,11 +79,17 @@ class MapEditorSaveTab(
         add(buttonTable).row()
     }
 
+    private fun setSaveButton(enabled: Boolean) {
+        saveButton.isEnabled = enabled
+        saveButton.setText((if (enabled) "Save map" else "Working...").tr())
+    }
+
     private fun saveHandler() {
         if (mapNameTextField.text.isBlank()) return
         editorScreen.tileMap.mapParameters.name = mapNameTextField.text
         editorScreen.tileMap.mapParameters.type = MapGeneratedMainType.custom
-        thread(name = "MapSaver", block = this::saverThread)
+        setSaveButton(false)
+        editorScreen.startBackgroundJob("MapSaver", false) { saverThread() }
     }
 
     private fun deleteHandler() {
@@ -105,7 +115,7 @@ class MapEditorSaveTab(
         stage.keyboardFocus = null
     }
 
-    fun selectFile(file: FileHandle?) {
+    private fun selectFile(file: FileHandle?) {
         chosenMap = file
         mapNameTextField.text = file?.name() ?: editorScreen.tileMap.mapParameters.name
         if (mapNameTextField.text.isBlank()) mapNameTextField.text = "My new map".tr()
@@ -116,22 +126,26 @@ class MapEditorSaveTab(
         deleteButton.color = if (file != null) Color.SCARLET else Color.BROWN
     }
 
-    private fun saverThread() {
+    private fun CoroutineScope.saverThread() {
         try {
             val mapToSave = editorScreen.getMapCloneForSave()
+            if (!isActive) return
             mapToSave.assignContinents(TileMap.AssignContinentsMode.Reassign)
+            if (!isActive) return
             MapSaver.saveMap(mapNameTextField.text, mapToSave)
-            Gdx.app.postRunnable {
+            Concurrency.runOnGLThread {
                 ToastPopup("Map saved successfully!", editorScreen)
             }
             editorScreen.isDirty = false
+            setSaveButton(true)
         } catch (ex: Exception) {
-            ex.printStackTrace()
-            Gdx.app.postRunnable {
+            Log.error("Failed to save map", ex)
+            Concurrency.runOnGLThread {
                 val cantLoadGamePopup = Popup(editorScreen)
                 cantLoadGamePopup.addGoodSizedLabel("It looks like your map can't be saved!").row()
                 cantLoadGamePopup.addCloseButton()
                 cantLoadGamePopup.open(force = true)
+                setSaveButton(true)
             }
         }
     }

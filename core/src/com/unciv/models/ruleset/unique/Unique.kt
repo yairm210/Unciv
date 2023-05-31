@@ -109,8 +109,10 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         // filter out possible replacements that are obviously wrong
         val uniquesWithNoErrors = finalPossibleUniques.filter {
             val unique = Unique(it)
-            val errors = RulesetValidator(ruleset).checkUnique(unique, true, "",
-                UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific, unique.type!!.targetTypes.first())
+            val errors = RulesetValidator(ruleset).checkUnique(
+                unique, true, "",
+                UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+            )
             errors.isEmpty()
         }
         if (uniquesWithNoErrors.size == 1) return uniquesWithNoErrors.first()
@@ -125,7 +127,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     ): Boolean {
 
         val nonConditionalConditionTypes = setOf(UniqueTarget.TriggerCondition, UniqueTarget.UnitTriggerCondition, UniqueTarget.UnitActionModifier)
-        if (condition.type!!.targetTypes.any { it in nonConditionalConditionTypes })
+        if (condition.type?.targetTypes?.any { it in nonConditionalConditionTypes } == true)
             return true // not a filtering condition
 
         fun ruleset() = state.civInfo!!.gameInfo.ruleset
@@ -301,8 +303,35 @@ class LocalUniqueCache(val cache:Boolean = true) {
     // This stores sequences *that iterate directly on a list* - that is, pre-resolved
     private val keyToUniques = HashMap<String, Sequence<Unique>>()
 
+    fun forCityGetMatchingUniques(
+        city: City,
+        uniqueType: UniqueType,
+        stateForConditionals: StateForConditionals = StateForConditionals(
+            city.civ,
+            city
+        )
+    ): Sequence<Unique> {
+        return get(
+            "city-${city.id}-${uniqueType.name}-${stateForConditionals}",
+            city.getMatchingUniques(uniqueType, stateForConditionals)
+        )
+    }
+
+    fun forCivGetMatchingUniques(
+        civ: Civilization,
+        uniqueType: UniqueType,
+        stateForConditionals: StateForConditionals = StateForConditionals(
+            civ
+        )
+    ): Sequence<Unique> {
+        return get(
+            "civ-${civ.civName}-${uniqueType.name}-${stateForConditionals}",
+            civ.getMatchingUniques(uniqueType, stateForConditionals)
+        )
+    }
+
     /** Get cached results as a sequence */
-    fun get(key: String, sequence: Sequence<Unique>): Sequence<Unique> {
+    private fun get(key: String, sequence: Sequence<Unique>): Sequence<Unique> {
         if (!cache) return sequence
         if (keyToUniques.containsKey(key)) return keyToUniques[key]!!
         // Iterate the sequence, save actual results as a list, as return a sequence to that

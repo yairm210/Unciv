@@ -16,8 +16,8 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
     fun update() {
         clear()
 
-        val colorSelected = BaseScreen.skin.get("selection", Color::class.java)
-        val colorButton = BaseScreen.skin.get("color", Color::class.java)
+        val colorSelected = BaseScreen.skin.getColor("selection")
+        val colorButton = BaseScreen.skin.getColor("color")
         // effectively a button, but didn't want to rewrite TextButton style
         // and much more compact and can control backgrounds easily based on settings
         val resetLabel = "Reset Citizens".toLabel()

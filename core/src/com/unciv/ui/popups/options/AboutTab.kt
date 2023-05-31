@@ -14,5 +14,5 @@ fun aboutTab(): Table {
         yield(FormattedLine("See online Readme", link = "https://github.com/yairm210/Unciv/blob/master/README.md#unciv---foss-civ-v-for-androiddesktop"))
         yield(FormattedLine("Visit repository", link = "https://github.com/yairm210/Unciv"))
     }
-    return MarkupRenderer.render(lines.toList()).pad(20f)
+    return MarkupRenderer.render(lines.asIterable()).pad(20f)
 }

@@ -26,8 +26,8 @@ import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.utils.Log
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.launchOnGLThread
+import com.unciv.utils.Concurrency
+import com.unciv.utils.launchOnGLThread
 import java.io.FileNotFoundException
 
 class LoadGameScreen : LoadOrSaveScreen() {
@@ -142,6 +142,8 @@ class LoadGameScreen : LoadOrSaveScreen() {
     private fun getLoadFromClipboardButton(): TextButton {
         val pasteButton = loadFromClipboard.toTextButton()
         pasteButton.onActivation {
+            pasteButton.setText("Working...".tr())
+            pasteButton.disable()
             Concurrency.run(loadFromClipboard) {
                 try {
                     val clipboardContentsString = Gdx.app.clipboard.contents.trim()
@@ -149,6 +151,11 @@ class LoadGameScreen : LoadOrSaveScreen() {
                     game.loadGame(loadedGame, true)
                 } catch (ex: Exception) {
                     launchOnGLThread { handleLoadGameException(ex, "Could not load game from clipboard!") }
+                } finally {
+                    launchOnGLThread {
+                        pasteButton.setText(loadFromClipboard.tr())
+                        pasteButton.enable()
+                    }
                 }
             }
         }
@@ -249,7 +256,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
                         repo,
                         Gdx.files.local("mods")
                     )
-                        ?: throw Exception() // downloadAndExtract returns null for 404 errors and the like -> display something!
+                        ?: throw Exception("downloadAndExtract returns null for 404 errors and the like") // downloadAndExtract returns null for 404 errors and the like -> display something!
                     Github.rewriteModOptions(repo, modFolder)
                     val labelText = descriptionLabel.text // Surprise - a StringBuilder
                     labelText.appendLine()

@@ -547,6 +547,7 @@ private class RandomNationPickerPopup(
         closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
         closeButton.setPosition(buttonsOffsetFromEdge, buttonsOffsetFromEdge, Align.bottomLeft)
         innerTable.addActor(closeButton)
+        clickBehindToClose = true
 
         val okButton = "OtherIcons/Checkmark".toImageButton(Color.LIME)
         okButton.onClick { returnSelected() }

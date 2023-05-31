@@ -1,3 +1,153 @@
+## 4.6.16
+
+By SomeTroglodyte:
+- Unit Overview: Improving a tile is also "what the unit is doing"
+- Replacement PlatformSaverLoader for Linux X11 systems
+- All notifications from Overview are now temporary
+- Politics overview no longer discloses random number of players
+
+Worker will now replace improvements to get resources - By janarvid
+
+Spectators do not get natural wonder discovery notifications
+
+Added checksum to be added to uploaded multiplayer games
+
+Policy adoption triggers resource recalculation
+
+## 4.6.15
+
+'Crop yield' chart displays correct data
+
+Modding:
+- Units can transform to any unit
+- Fixed policy softlock from conflicting mod policies
+- 'Unpurchaseable' units are properly unpurchaseable
+
+By SomeTroglodyte:
+- Map editor update - concurrency, resource amounts, file double-click
+- Fix road maintenance unique being ignored
+- Fix mouse wheel on Notifications scroll
+- Unit overview remembers scroll position after promoting
+
+Allow game loading even when no saved games exist - By alexban011
+
+## 4.6.14
+
+By SomeTroglodyte:
+- Next-Turn Progressbar
+- Fixed crash when puppeting city
+
+Population icon gets locked with doubleclick, clicks cycle assigned-unassigned
+
+Resolved crashes when clicking mod in mod management
+
+AI civilian improvement: keep working in tiles where enemy units can't reach
+
+Prophets are not expelled on open borders end
+
+City-state-owned great merchants can no longer 'conduct trade mission' on their own tiles
+
+Game saves are regular json, not libgdx-specific format
+
+## 4.6.13
+
+Failure to get mod preview image no longer causes crash
+
+Modding: Added 'upon adopting [belief]' trigger, allowed belief adoption to trigger uniques
+
+Added turn number to victory replay
+
+Clicking locally-added mods no longer crashes
+
+By SomeTroglodyte:
+- Fix off-by-one error in autoAssignPopulation
+- Happiness change from bought buildings can reapply citizen focus
+- Local and jpg mod previews
+- Fix UnitTable layout
+
+## 4.6.12
+
+Animate battle damage numbers - By SomeTroglodyte
+
+When picking custom map: Display map ruleset, don't show unloadable maps
+
+Modding: Allow mods to contain a "preview.png" file for visual indication
+
+Multi-server preparations :)
+
+## 4.6.11
+
+Update UI after founding city when breaking promise
+
+By SomeTroglodyte:
+- Fixed 4.6.10 no longer loading some older games
+- Prevent some state changing actions during next-turn
+- Policy images in red text, policy branch icons in pedia
+
+Added a fix for multiplayer with 1 human player  - By CrsiX
+
+Add `May not annex cities` unique  - By Skekdog
+
+## 4.6.10
+
+Automated workers no longer stay on unimprovable tile if another tile is improvable
+
+Solved rare concurrency bug for explored tiles
+
+Songhai Civilian units no longer gain Amphibious promotion
+
+Fixed 'enhance religion' crash
+
+Improperly configured mod conditionals do not cause crash
+
+## 4.6.9
+
+Hide buildings requiring multiple cities in one city challenge
+
+Show Strategic resources you have by trade even if you have not researched tech for it yet
+
+Scale down unit overlays on zoom in to allow selecting bombard target above city
+
+Added Policy icons in text
+
+Solved AI 'found religion' crash
+
+Solved "get vanilla ruleset" errors after downloading mods
+
+AbsoluteUnits - Hussar, Cossack, Panzer  - By letstalkaboutdune
+
+Close the friend selection in NewGameScreen by outside click/ESC/BACK  - By CrsiX
+
+By SomeTroglodyte:
+- Fix memory leak from repeatedly resetting the font
+- Limit saved window size to available desktop
+- Show preview of custom maps on new game screen
+- Allow closing Popup by clicking outside its area
+
+## 4.6.8
+
+Reduce a few memory allocations  - By SomeTroglodyte
+
+AbsoluteUnits - Norwegian Ski Infantry, Mehal Sefari, Carolean, Foreign Legion  - By letstalkaboutdune
+
+Various performance improvements  - By WhoIsJohannes
+
+## 4.6.7
+
+Modding: terrainFilter now accommodates nationFilter for tile owner
+
+Minor UI improvements
+
+Performance improvements  - By WhoIsJohannes
+
+Allow to reveal explored resources from a city's demanding resources in `CityOverviewTab`  - By chr56
+
+By SomeTroglodyte:
+- Visual clue a load game from clipboard is underway
+- Allow modders to use culture/faith conversion without providing the icons
+- "can be promoted" notification only when it's actually new
+- Fix wrapping for promotions in unit overview
+
 ## 4.6.6
 
 Testing: Damage animations on damaged units

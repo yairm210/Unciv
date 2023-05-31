@@ -3,6 +3,7 @@ package com.unciv.json
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Json
+import com.badlogic.gdx.utils.JsonWriter
 import com.badlogic.gdx.utils.SerializationException
 import com.unciv.logic.civilization.CivRankingHistory
 import com.unciv.logic.map.tile.TileHistory
@@ -14,7 +15,7 @@ import java.time.Duration
 /**
  * [Json] is not thread-safe. Use a new one for each parse.
  */
-fun json() = Json().apply {
+fun json() = Json(JsonWriter.OutputType.json).apply {
     setIgnoreDeprecated(true)
     ignoreUnknownFields = true
 

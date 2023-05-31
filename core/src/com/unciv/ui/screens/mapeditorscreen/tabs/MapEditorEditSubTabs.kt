@@ -1,4 +1,4 @@
-package com.unciv.ui.screens.mapeditorscreen
+package com.unciv.ui.screens.mapeditorscreen.tabs
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -28,7 +28,6 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
-import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorEditTab
 import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorEditTab.BrushHandlerType
 
 internal interface IMapEditorEditSubTabs {
@@ -60,7 +59,7 @@ class MapEditorEditTerrainTab(
         .filter { it.type.isBaseTerrain }
     private fun getTerrains() = allTerrains()
         .map { FormattedLine(it.name, it.name, "Terrain/${it.name}", size = 32) }
-        .toList()
+        .asIterable()
 
     override fun isDisabled() = false // allTerrains().none() // wanna see _that_ mod...
 }
@@ -101,7 +100,7 @@ class MapEditorEditFeaturesTab(
         .filter { it.type == TerrainType.TerrainFeature }
     private fun getFeatures() = allowedFeatures()
         .map { FormattedLine(it.name, it.name, "Terrain/${it.name}", size = 32) }
-        .toList()
+        .asIterable()
 
     override fun isDisabled() = allowedFeatures().none()
 }
@@ -134,7 +133,7 @@ class MapEditorEditWondersTab(
         .filter { it.type == TerrainType.NaturalWonder }
     private fun getWonders() = allowedWonders()
         .map { FormattedLine(it.name, it.name, "Terrain/${it.name}", size = 32) }
-        .toList()
+        .asIterable()
 
     override fun isDisabled() = allowedWonders().none()
 }
@@ -157,6 +156,7 @@ class MapEditorEditResourcesTab(
         add(eraser.render(0f).apply { onClick {
             editTab.setBrush("Remove resource", eraserIcon, true) { tile ->
                 tile.resource = null
+                tile.resourceAmount = 0
             }
         } }).padBottom(0f).row()
         add(
@@ -166,14 +166,17 @@ class MapEditorEditResourcesTab(
         ) { resourceName ->
             val resource = ruleset.tileResources[resourceName]!!
             editTab.setBrush(resourceName, resource.makeLink()) {
-                it.setTileResource(resource, rng = editTab.randomness.RNG)
+                if (it.resource == resourceName && resource.resourceType == ResourceType.Strategic)
+                    it.resourceAmount = (it.resourceAmount + 1).coerceAtMost(42)
+                else
+                    it.setTileResource(resource, rng = editTab.randomness.RNG)
             }
         }).padTop(0f).row()
     }
 
     private fun allowedResources() = ruleset.tileResources.values.asSequence()
         .filter { !it.hasUnique(UniqueType.CityStateOnlyResource) }
-    private fun getResources(): List<FormattedLine> = sequence {
+    private fun getResources(): Iterable<FormattedLine> = sequence {
         var lastGroup = ResourceType.Bonus
         for (resource in allowedResources()) {
             val name = resource.name
@@ -183,7 +186,7 @@ class MapEditorEditResourcesTab(
             }
             yield (FormattedLine(name, name, "Resource/$name", size = 32))
         }
-    }.toList()
+    }.asIterable()
 
     override fun isDisabled() = allowedResources().none()
 }
@@ -230,7 +233,7 @@ class MapEditorEditImprovementsTab(
         .filter { improvement ->
             disallowImprovements.none { improvement.name.startsWith(it) }
         }
-    private fun getImprovements(): List<FormattedLine> = sequence {
+    private fun getImprovements(): Iterable<FormattedLine> = sequence {
         var lastGroup = 0
         for (improvement in allowedImprovements()) {
             val name = improvement.name
@@ -241,7 +244,7 @@ class MapEditorEditImprovementsTab(
             }
             yield (FormattedLine(name, name, "Improvement/$name", size = 32))
         }
-    }.toList()
+    }.asIterable()
 
     override fun isDisabled() = allowedImprovements().none()
 
@@ -303,7 +306,7 @@ class MapEditorEditStartsTab(
     private fun getNations() = allowedNations()
         .sortedWith(compareBy<Nation>{ it.isCityState }.thenBy(collator) { it.name.tr() })
         .map { FormattedLine("[${it.name}] starting location", it.name, "Nation/${it.name}", size = 24) }
-        .toList()
+        .asIterable()
 
     override fun isDisabled() = allowedNations().none()
 
@@ -352,7 +355,9 @@ class MapEditorEditRiversTab(
             add(getRiverIcon(RiverEdge.Left)).padRight(10f)
             add("Bottom left river".toLabel(fontSize = 32))
             onClick {
-                editTab.setBrush(BrushHandlerType.Direct,"Bottom left river", getTileGroupWithRivers(RiverEdge.Left)) { tile ->
+                editTab.setBrush(BrushHandlerType.Direct,"Bottom left river", getTileGroupWithRivers(
+                    RiverEdge.Left
+                )) { tile ->
                     tile.hasBottomLeftRiver = !tile.hasBottomLeftRiver
                 }
             }
@@ -363,7 +368,9 @@ class MapEditorEditRiversTab(
             add(getRiverIcon(RiverEdge.Bottom)).padRight(10f)
             add("Bottom river".toLabel(fontSize = 32))
             onClick {
-                editTab.setBrush(BrushHandlerType.Direct,"Bottom river", getTileGroupWithRivers(RiverEdge.Bottom)) { tile ->
+                editTab.setBrush(BrushHandlerType.Direct,"Bottom river", getTileGroupWithRivers(
+                    RiverEdge.Bottom
+                )) { tile ->
                     tile.hasBottomRiver = !tile.hasBottomRiver
                 }
             }
@@ -374,7 +381,9 @@ class MapEditorEditRiversTab(
             add(getRiverIcon(RiverEdge.Right)).padRight(10f)
             add("Bottom right river".toLabel(fontSize = 32))
             onClick {
-                editTab.setBrush(BrushHandlerType.Direct,"Bottom right river", getTileGroupWithRivers(RiverEdge.Right)) { tile ->
+                editTab.setBrush(BrushHandlerType.Direct,"Bottom right river", getTileGroupWithRivers(
+                    RiverEdge.Right
+                )) { tile ->
                     tile.hasBottomRightRiver = !tile.hasBottomRightRiver
                 }
             }

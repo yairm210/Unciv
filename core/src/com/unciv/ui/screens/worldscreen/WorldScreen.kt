@@ -12,6 +12,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.map.MapVisualization
@@ -56,13 +57,14 @@ import com.unciv.ui.screens.worldscreen.bottombar.TileInfoTable
 import com.unciv.ui.screens.worldscreen.minimap.MinimapHolder
 import com.unciv.ui.screens.worldscreen.status.MultiplayerStatusButton
 import com.unciv.ui.screens.worldscreen.status.NextTurnButton
+import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.ui.screens.worldscreen.status.StatusButtons
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsTable
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.launchOnGLThread
-import com.unciv.utils.concurrency.launchOnThreadPool
-import com.unciv.utils.concurrency.withGLContext
+import com.unciv.utils.Concurrency
+import com.unciv.utils.launchOnGLThread
+import com.unciv.utils.launchOnThreadPool
+import com.unciv.utils.withGLContext
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
@@ -307,7 +309,7 @@ class WorldScreen(
         } catch (ex: Throwable) {
             launchOnGLThread {
                 val (message) = LoadGameScreen.getLoadExceptionMessage(ex, "Couldn't download the latest game state!")
-                loadingGamePopup.innerTable.clear()
+                loadingGamePopup.clear()
                 loadingGamePopup.addGoodSizedLabel(message).colspan(2).row()
                 loadingGamePopup.addButton("Retry") {
                     launchOnThreadPool("Load latest multiplayer state after error") {
@@ -561,6 +563,8 @@ class WorldScreen(
     fun nextTurn() {
         isPlayersTurn = false
         shouldUpdate = true
+        val progressBar = NextTurnProgress(nextTurnButton)
+        progressBar.start(this)
 
         // on a separate thread so the user can explore their world while we're passing the turn
         nextTurnUpdateJob = Concurrency.runOnNonDaemonThreadPool("NextTurn") {
@@ -570,28 +574,39 @@ class WorldScreen(
             val gameInfoClone = originalGameInfo.clone()
             gameInfoClone.setTransients()  // this can get expensive on large games, not the clone itself
 
-            gameInfoClone.nextTurn()
+            progressBar.increment()
+
+            gameInfoClone.nextTurn(progressBar)
 
             if (originalGameInfo.gameParameters.isOnlineMultiplayer) {
                 try {
                     game.onlineMultiplayer.updateGame(gameInfoClone)
-                } catch (ex: Exception) {
-                    if (ex is MultiplayerAuthException) {
-                        launchOnGLThread {
-                            AuthPopup(this@WorldScreen) {
-                                success -> if (success) nextTurn()
-                            }.open(true)
+                }catch (ex: Exception) {
+                    when (ex) {
+                        is MultiplayerAuthException -> {
+                            launchOnGLThread {
+                                AuthPopup(this@WorldScreen) {
+                                        success -> if (success) nextTurn()
+                                }.open(true)
+                            }
                         }
-                    } else {
-                        val message = when (ex) {
-                            is FileStorageRateLimitReached -> "Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds"
-                            else -> "Could not upload game!"
+                        is FileStorageRateLimitReached -> {
+                            val message = "Server limit reached! Please wait for [${ex.limitRemainingSeconds}] seconds"
+                            launchOnGLThread {
+                                val cantUploadNewGamePopup = Popup(this@WorldScreen)
+                                cantUploadNewGamePopup.addGoodSizedLabel(message).row()
+                                cantUploadNewGamePopup.addCloseButton()
+                                cantUploadNewGamePopup.open()
+                            }
                         }
-                        launchOnGLThread { // Since we're changing the UI, that should be done on the main thread
-                            val cantUploadNewGamePopup = Popup(this@WorldScreen)
-                            cantUploadNewGamePopup.addGoodSizedLabel(message).row()
-                            cantUploadNewGamePopup.addCloseButton()
-                            cantUploadNewGamePopup.open()
+                        else -> {
+                            val message = "Could not upload game!"
+                            launchOnGLThread {
+                                val cantUploadNewGamePopup = Popup(this@WorldScreen)
+                                cantUploadNewGamePopup.addGoodSizedLabel(message).row()
+                                cantUploadNewGamePopup.addCloseButton()
+                                cantUploadNewGamePopup.open()
+                            }
                         }
                     }
 
@@ -599,12 +614,20 @@ class WorldScreen(
                     this@WorldScreen.shouldUpdate = true
                     return@runOnNonDaemonThreadPool
                 }
+
             }
 
             if (game.gameInfo != originalGameInfo) // while this was turning we loaded another game
                 return@runOnNonDaemonThreadPool
 
             debug("Next turn took %sms", System.currentTimeMillis() - startTime)
+
+            // Special case: when you are the only human player, the game will always be up to date
+            if (gameInfo.gameParameters.isOnlineMultiplayer && gameInfoClone.civilizations.filter { it.playerType == PlayerType.Human }.size == 1) {
+                gameInfoClone.isUpToDate = true
+            }
+
+            progressBar.increment()
 
             startNewScreenJob(gameInfoClone)
         }
@@ -702,7 +725,7 @@ class WorldScreen(
         displayTutorial(TutorialTrigger.LuxuryResource) { resources.any { it.resource.resourceType == ResourceType.Luxury } }
         displayTutorial(TutorialTrigger.StrategicResource) { resources.any { it.resource.resourceType == ResourceType.Strategic } }
         displayTutorial(TutorialTrigger.EnemyCity) {
-            viewingCiv.getKnownCivs().asSequence().filter { viewingCiv.isAtWarWith(it) }
+            viewingCiv.getKnownCivs().filter { viewingCiv.isAtWarWith(it) }
                     .flatMap { it.cities.asSequence() }.any { viewingCiv.hasExplored(it.getCenterTile()) }
         }
         displayTutorial(TutorialTrigger.ApolloProgram) { viewingCiv.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts) }
@@ -756,7 +779,7 @@ private fun startNewScreenJob(gameInfo: GameInfo, autosaveDisabled:Boolean = fal
                 ToastPopup(message, mainMenu)
             }
             return@run
-        } catch (oom: OutOfMemoryError) {
+        } catch (_: OutOfMemoryError) {
             withGLContext {
                 val mainMenu = UncivGame.Current.goToMainMenu()
                 ToastPopup("Not enough memory on phone to load game!", mainMenu)

@@ -6,6 +6,7 @@ import com.unciv.json.json
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.TileMap
 import com.unciv.ui.screens.savescreens.Gzip
+import com.unciv.utils.Log
 
 object MapSaver {
 
@@ -17,7 +18,7 @@ object MapSaver {
     fun mapFromSavedString(mapString: String): TileMap {
         val unzippedJson = try {
             Gzip.unzip(mapString.trim())
-        } catch (ex: Exception) {
+        } catch (_: Exception) {
             mapString
         }
         return mapFromJson(unzippedJson)
@@ -53,7 +54,7 @@ object MapSaver {
     fun mapParametersFromSavedString(mapString: String): MapParameters {
         val unzippedJson = try {
             Gzip.unzip(mapString.trim())
-        } catch (ex: Exception) {
+        } catch (_: Exception) {
             mapString
         }
         return json().fromJson(TileMapPreview::class.java, unzippedJson).mapParameters

@@ -9,7 +9,6 @@ import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stats
@@ -406,8 +405,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                     unique,
                     tryFixUnknownUniques,
                     cityStateType.name,
-                    rulesetSpecific,
-                    UniqueTarget.CityState
+                    rulesetSpecific
                 )
                 lines.addAll(errors)
             }
@@ -430,8 +428,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                 unique,
                 tryFixUnknownUniques,
                 name,
-                severityToReport,
-                uniqueContainer.getUniqueTarget()
+                severityToReport
             )
             lines.addAll(errors)
         }
@@ -441,8 +438,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         unique: Unique,
         tryFixUnknownUniques: Boolean,
         name: String,
-        severityToReport: UniqueType.UniqueComplianceErrorSeverity,
-        uniqueTarget: UniqueTarget
+        severityToReport: UniqueType.UniqueComplianceErrorSeverity
     ): List<RulesetError> {
         if (unique.type == null) {
             if (!tryFixUnknownUniques) return emptyList()

@@ -135,7 +135,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         return if (techsToResearch.isEmpty()) null else techsToResearch[0]
     }
 
-    fun researchOfTech(TechName: String?) = techsInProgress[TechName] ?: 0
+    fun researchOfTech(techName: String?) = techsInProgress[techName] ?: 0
     // Was once duplicated as fun scienceSpentOnTech(tech: String): Int
 
     fun remainingScienceToTech(techName: String): Int {
@@ -196,10 +196,10 @@ class TechManager : IsPartOfGameInfoSerialization {
     private fun addCurrentScienceToScienceOfLast8Turns() {
         // The Science the Great Scientist generates does not include Science from Policies, Trade routes and City-States.
         var allCitiesScience = 0f
-        civInfo.cities.forEach { it ->
+        civInfo.cities.forEach {
             val totalBaseScience = it.cityStats.baseStatTree.totalStats.science
             val totalBonusPercents = it.cityStats.statPercentBonusTree.children.asSequence()
-                .filter { it.key != "Policies" }.map { it.value.totalStats.science }.sum()
+                .filter { it2 -> it2.key != "Policies" }.map { it2 ->  it2.value.totalStats.science }.sum()
             allCitiesScience += totalBaseScience * totalBonusPercents.toPercent()
         }
         scienceOfLast8Turns[civInfo.gameInfo.turns % 8] = allCitiesScience.toInt()
@@ -312,11 +312,22 @@ class TechManager : IsPartOfGameInfoSerialization {
         if (isNewTech)
             civInfo.popupAlerts.add(PopupAlert(AlertType.TechResearched, techName))
 
+        val revealedResources = getRuleset().tileResources.values.filter { techName == it.revealedBy }
+        var mayNeedUpdateResources = revealedResources.isNotEmpty()  // default for AI
         if (civInfo.playerType == PlayerType.Human) {
-            for (revealedResource in getRuleset().tileResources.values.filter { techName == it.revealedBy }) {
-                civInfo.gameInfo.notifyExploredResources(civInfo, revealedResource.name, 5, false)
+            mayNeedUpdateResources = false
+            for (revealedResource in revealedResources) {
+                // notifyExploredResources scans the player's owned tiles and returns false if none
+                // found with a revealed resource - keep this knowledge to avoid the update call.
+                mayNeedUpdateResources = mayNeedUpdateResources ||
+                    civInfo.gameInfo.notifyExploredResources(civInfo, revealedResource.name, 5)
             }
         }
+        // At least in the case of a human player hurrying research, this civ's resource availability
+        // may now be out of date - e.g. when an owned tile by luck already has an appropriate improvement.
+        // That can be seen on WorldScreenTopBar, so better update unless we know there's no resource change.
+        if (mayNeedUpdateResources)
+            civInfo.cache.updateCivResources()
 
         obsoleteOldUnits(techName)
 

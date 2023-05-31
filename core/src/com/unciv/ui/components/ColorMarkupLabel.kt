@@ -12,7 +12,8 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 
 /** A Label allowing Gdx markup
  *
- * See also [Color Markup Language](https://libgdx.com/wiki/graphics/2d/fonts/color-markup-language)
+ *  This constructor does _not_ auto-translate or otherwise preprocess [text]
+ *  See also [Color Markup Language](https://libgdx.com/wiki/graphics/2d/fonts/color-markup-language)
  */
 class ColorMarkupLabel private constructor(
     fontSize: Int,  // inverted order so it can be differentiated from the translating constructor
@@ -22,18 +23,31 @@ class ColorMarkupLabel private constructor(
     /** A Label allowing Gdx markup, auto-translated.
      *
      *  Since Gdx markup markers are interpreted and removed by translation, use «» instead.
+     *
+     *  @param defaultColor the color text starts with - will be converted to markup, not actor tint
+     *  @param hideIcons passed to translation to prevent auto-insertion of symbols for gameplay names
      */
-    constructor(text: String, fontSize: Int = Constants.defaultFontSize)
-        : this(fontSize, mapMarkup(text))
+    constructor(
+        text: String,
+        fontSize: Int = Constants.defaultFontSize,
+        defaultColor: Color = Color.WHITE,
+        hideIcons: Boolean = false
+    ) : this(fontSize, mapMarkup(text, defaultColor, hideIcons))
 
-    /** A Label automatically applying Gdx markup colors to symbols and rest of text separately
-     *  - _after_ translating [text].
+    /** A Label automatically applying Gdx markup colors to symbols and rest of text separately -
+     *  _**after**_ translating [text].
+     *
+     *  Use to easily color text without also coloring the icons which translation inserts as
+     *  characters for recognized gameplay names.
+     *
+     *  @see Fonts.charToRulesetImageActor
      */
-    constructor(text: String,
-                textColor: Color,
-                symbolColor: Color = Color.WHITE,
-                fontSize: Int = Constants.defaultFontSize)
-        : this (fontSize, prepareText(text, textColor, symbolColor))
+    constructor(
+        text: String,
+        textColor: Color,
+        symbolColor: Color = Color.WHITE,
+        fontSize: Int = Constants.defaultFontSize
+    ) : this (fontSize, prepareText(text, textColor, symbolColor))
 
     /** Only if wrap was turned on, this is the prefWidth before.
      *  Used for getMaxWidth as better estimate than the default 0. */
@@ -88,12 +102,6 @@ class ColorMarkupLabel private constructor(
     override fun getMaxWidth() = unwrappedPrefWidth  // If unwrapped, we return 0 same as super
 
     companion object {
-        private fun mapMarkup(text: String): String {
-            val translated = text.tr()
-            if ('«' !in translated) return translated
-            return translated.replace('«', '[').replace('»', ']')
-        }
-
         private val inverseColorMap = Colors.getColors().associate { it.value to it.key }
         private fun Color.toMarkup(): String {
             val mapEntry = inverseColorMap[this]
@@ -102,9 +110,16 @@ class ColorMarkupLabel private constructor(
             return "#" + toString().substring(0,6)
         }
 
+        private fun mapMarkup(text: String, defaultColor: Color, hideIcons: Boolean): String {
+            val translated = if (defaultColor == Color.WHITE) text.tr(hideIcons)
+                else "[${defaultColor.toMarkup()}]${text.tr(hideIcons)}[]"
+            if ('«' !in translated) return translated
+            return translated.replace('«', '[').replace('»', ']')
+        }
+
         private fun prepareText(text: String, textColor: Color, symbolColor: Color): String {
             val translated = text.tr()
-            if (textColor == Color.WHITE && symbolColor == Color.WHITE || translated.isBlank())
+            if ((textColor == Color.WHITE && symbolColor == Color.WHITE) || translated.isBlank())
                 return translated
             val tc = textColor.toMarkup()
             if (textColor == symbolColor)

@@ -65,8 +65,10 @@ class TradesOverviewTab(
             if (!offerText.contains("\n")) offerText += "\n"
             table.add(offerText.toLabel(civ.nation.getInnerColor())).row()
         }
-        for (i in 1..numberOfOtherSidesOffers - offersList.size)
-            table.add("\n".toLabel()).row() // we want both sides of the general table to have the same number of rows
+        repeat(numberOfOtherSidesOffers - offersList.size) {
+            table.add("\n".toLabel())
+                .row() // we want both sides of the general table to have the same number of rows
+        }
         return table
     }
 }

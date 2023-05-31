@@ -313,7 +313,12 @@ class Civilization : IsPartOfGameInfoSerialization {
     @Suppress("MemberVisibilityCanBePrivate")  // same visibility for overloads
     fun getProximity(civName: String) = proximity[civName] ?: Proximity.None
 
-    /** Returns only undefeated civs, aka the ones we care about */
+    /** Returns only undefeated civs, aka the ones we care about
+     *
+     *  Note: Currently the implementation of `updateAllyCivForCityState` will cause the diplomacy map of
+     *  city-states to contain the barbarians. Therefore, [getKnownCivs] will **not** list the barbarians
+     *  for major civs, but **will** do so for city-states after some gameplay.
+     */
     fun getKnownCivs() = diplomacy.values.asSequence().map { it.otherCiv() }.filter { !it.isDefeated() }
     fun knows(otherCivName: String) = diplomacy.containsKey(otherCivName)
     fun knows(otherCiv: Civilization) = knows(otherCiv.civName)
@@ -441,7 +446,11 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     // Does not return local uniques, only global ones.
     /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
-    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(this), cityToIgnore: City? = null) = sequence {
+    fun getMatchingUniques(
+        uniqueType: UniqueType,
+        stateForConditionals: StateForConditionals = StateForConditionals(this),
+        cityToIgnore: City? = null
+    ): Sequence<Unique> = sequence {
         yieldAll(nation.getMatchingUniques(uniqueType, stateForConditionals))
         yieldAll(cities.asSequence()
             .filter { it != cityToIgnore }
@@ -464,7 +473,10 @@ class Civilization : IsPartOfGameInfoSerialization {
         yieldAll(gameInfo.ruleset.globalUniques.getMatchingUniques(uniqueType, stateForConditionals))
     }
 
-    fun getTriggeredUniques(trigger: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(this)) : Sequence<Unique> = sequence{
+    fun getTriggeredUniques(
+        trigger: UniqueType,
+        stateForConditionals: StateForConditionals = StateForConditionals(this)
+    ) : Sequence<Unique> = sequence {
         yieldAll(nation.uniqueMap.getTriggeredUniques(trigger, stateForConditionals))
         yieldAll(cities.asSequence()
             .flatMap { city -> city.cityConstructions.builtBuildingUniqueMap.getTriggeredUniques(trigger, stateForConditionals) }

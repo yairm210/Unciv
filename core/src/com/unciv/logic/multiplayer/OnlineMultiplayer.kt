@@ -3,7 +3,6 @@ package com.unciv.logic.multiplayer
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.json.json
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.civilization.NotificationCategory
@@ -12,15 +11,13 @@ import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
-import com.unciv.logic.multiplayer.storage.OnlineMultiplayerFiles
+import com.unciv.logic.multiplayer.storage.OnlineMultiplayerServer
 import com.unciv.ui.components.extensions.isLargerThan
-import com.unciv.logic.multiplayer.storage.SimpleHttp
-import com.unciv.utils.Log
-import com.unciv.utils.concurrency.Concurrency
-import com.unciv.utils.concurrency.Dispatcher
-import com.unciv.utils.concurrency.launchOnThreadPool
-import com.unciv.utils.concurrency.withGLContext
+import com.unciv.utils.Concurrency
+import com.unciv.utils.Dispatcher
 import com.unciv.utils.debug
+import com.unciv.utils.launchOnThreadPool
+import com.unciv.utils.withGLContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -28,7 +25,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import java.time.Duration
 import java.time.Instant
-import java.util.*
+import java.util.Collections
 import java.util.concurrent.atomic.AtomicReference
 
 
@@ -45,8 +42,7 @@ private val FILE_UPDATE_THROTTLE_PERIOD = Duration.ofSeconds(60)
  */
 class OnlineMultiplayer {
     private val files = UncivGame.Current.files
-    private val multiplayerFiles = OnlineMultiplayerFiles()
-    private var featureSet = ServerFeatureSet()
+    val multiplayerServer = OnlineMultiplayerServer()
 
     private val savedGames: MutableMap<FileHandle, OnlineMultiplayerGame> = Collections.synchronizedMap(mutableMapOf())
 
@@ -55,7 +51,6 @@ class OnlineMultiplayer {
     private val lastCurGameRefresh: AtomicReference<Instant?> = AtomicReference()
 
     val games: Set<OnlineMultiplayerGame> get() = savedGames.values.toSet()
-    val serverFeatureSet: ServerFeatureSet get() = featureSet
 
     init {
         flow<Unit> {
@@ -125,7 +120,7 @@ class OnlineMultiplayer {
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      */
     suspend fun createGame(newGame: GameInfo) {
-        multiplayerFiles.tryUploadGame(newGame, withPreview = true)
+        multiplayerServer.tryUploadGame(newGame, withPreview = true)
         addGame(newGame)
     }
 
@@ -140,11 +135,11 @@ class OnlineMultiplayer {
     suspend fun addGame(gameId: String, gameName: String? = null) {
         val saveFileName = if (gameName.isNullOrBlank()) gameId else gameName
         var gamePreview: GameInfoPreview
-        try {
-            gamePreview = multiplayerFiles.tryDownloadGamePreview(gameId)
-        } catch (ex: MultiplayerFileNotFoundException) {
+        gamePreview = try {
+            multiplayerServer.tryDownloadGamePreview(gameId)
+        } catch (_: MultiplayerFileNotFoundException) {
             // Game is so old that a preview could not be found on dropbox lets try the real gameInfo instead
-            gamePreview = multiplayerFiles.tryDownloadGame(gameId).asPreview()
+            multiplayerServer.tryDownloadGame(gameId).asPreview()
         }
         addGame(gamePreview, saveFileName)
     }
@@ -190,7 +185,7 @@ class OnlineMultiplayer {
     suspend fun resign(game: OnlineMultiplayerGame): Boolean {
         val preview = game.preview ?: throw game.error!!
         // download to work with the latest game state
-        val gameInfo = multiplayerFiles.tryDownloadGame(preview.gameId)
+        val gameInfo = multiplayerServer.tryDownloadGame(preview.gameId)
         val playerCiv = gameInfo.getCurrentPlayerCivilization()
 
         if (!gameInfo.isUsersTurn()) {
@@ -213,7 +208,7 @@ class OnlineMultiplayer {
 
         val newPreview = gameInfo.asPreview()
         files.saveGame(newPreview, game.fileHandle)
-        multiplayerFiles.tryUploadGame(gameInfo, withPreview = true)
+        multiplayerServer.tryUploadGame(gameInfo, withPreview = true)
         game.doManualUpdate(newPreview)
         return true
     }
@@ -249,7 +244,7 @@ class OnlineMultiplayer {
      */
     suspend fun loadGame(gameInfo: GameInfo) = coroutineScope {
         val gameId = gameInfo.gameId
-        val preview = multiplayerFiles.tryDownloadGamePreview(gameId)
+        val preview = multiplayerServer.tryDownloadGamePreview(gameId)
         if (hasLatestGameState(gameInfo, preview)) {
             gameInfo.isUpToDate = true
             UncivGame.Current.loadGame(gameInfo)
@@ -263,7 +258,7 @@ class OnlineMultiplayer {
      * @throws MultiplayerFileNotFoundException if the file can't be found
      */
     suspend fun downloadGame(gameId: String): GameInfo {
-        val latestGame = multiplayerFiles.tryDownloadGame(gameId)
+        val latestGame = multiplayerServer.tryDownloadGame(gameId)
         latestGame.isUpToDate = true
         return latestGame
     }
@@ -312,7 +307,7 @@ class OnlineMultiplayer {
      */
     suspend fun updateGame(gameInfo: GameInfo) {
         debug("Updating remote game %s", gameInfo.gameId)
-        multiplayerFiles.tryUploadGame(gameInfo, withPreview = true)
+        multiplayerServer.tryUploadGame(gameInfo, withPreview = true)
         val game = getGameByGameId(gameInfo.gameId)
         debug("Existing OnlineMultiplayerGame: %s", game)
         if (game == null) {
@@ -331,66 +326,6 @@ class OnlineMultiplayer {
                 && gameInfo.turns == preview.turns
     }
 
-    /**
-     * Checks if the server is alive and sets the [serverFeatureSet] accordingly.
-     * @return true if the server is alive, false otherwise
-     */
-    fun checkServerStatus(): Boolean {
-        var statusOk = false
-        SimpleHttp.sendGetRequest("${UncivGame.Current.settings.multiplayer.server}/isalive") { success, result, _ ->
-            statusOk = success
-            if (result.isNotEmpty()) {
-                featureSet = try {
-                    json().fromJson(ServerFeatureSet::class.java, result)
-                } catch (ex: Exception) {
-                    Log.error("${UncivGame.Current.settings.multiplayer.server} does not support server feature set")
-                    ServerFeatureSet()
-                }
-            }
-        }
-        return statusOk
-    }
-
-    /**
-     * @return true if the authentication was successful or the server does not support authentication.
-     * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
-     * @throws MultiplayerAuthException if the authentication failed
-     */
-    fun authenticate(password: String?): Boolean {
-        if (featureSet.authVersion == 0) {
-            return true
-        }
-
-
-        val settings = UncivGame.Current.settings.multiplayer
-
-        val success = multiplayerFiles.fileStorage().authenticate(
-            userId=settings.userId,
-            password=password ?: settings.passwords[settings.server] ?: ""
-        )
-        if (password != null && success) {
-            settings.passwords[settings.server] = password
-        }
-        return success
-    }
-
-    /**
-     * @return true if setting the password was successful, false otherwise.
-     * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
-     * @throws MultiplayerAuthException if the authentication failed
-     */
-    fun setPassword(password: String): Boolean {
-        if (
-            featureSet.authVersion > 0 &&
-            multiplayerFiles.fileStorage().setPassword(newPassword = password)
-        ) {
-            val settings = UncivGame.Current.settings.multiplayer
-            settings.passwords[settings.server] = password
-            return true
-        }
-
-        return false
-    }
 
     /**
      * Checks if [preview1] has a more recent game state than [preview2]
@@ -459,4 +394,3 @@ suspend fun <T> attemptAction(
 
 fun GameInfoPreview.isUsersTurn() = getCivilization(currentPlayer).playerId == UncivGame.Current.settings.multiplayer.userId
 fun GameInfo.isUsersTurn() = getCivilization(currentPlayer).playerId == UncivGame.Current.settings.multiplayer.userId
-

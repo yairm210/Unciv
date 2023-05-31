@@ -14,7 +14,8 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
-import com.unciv.ui.audio.SoundPlayer
+import com.unciv.models.UpgradeUnitAction
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.TabbedPager
@@ -34,7 +35,6 @@ import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.abs
-import kotlin.math.ceil
 
 /**
  * Supplies the Unit sub-table for the Empire Overview
@@ -154,7 +154,7 @@ class UnitOverviewTab(
     private fun Table.updateUnitHeaderTable(): Table {
         defaults().pad(5f)
         add("Name".toLabel())
-        add()
+        add()  // Column: edit-name
         add("Action".toLabel())
         add(Fonts.strength.toString().toLabel())
         add(Fonts.rangedStrength.toString().toLabel())
@@ -183,8 +183,8 @@ class UnitOverviewTab(
             // Unit button column - name, health, fortified, sleeping, embarked are visible here
             val button = IconTextButton(
                     unit.displayName(),
-                    UnitGroup(unit, 20f),
-                    fontColor = if (unit.due && unit.isIdle()) Color.WHITE else Color.LIGHT_GRAY
+                    UnitGroup(unit, 20f).apply { if (!unit.isIdle()) color.a = 0.5f },
+                    fontColor = if (unit.isIdle()) Color.WHITE else Color.LIGHT_GRAY
                 )
             button.name = getUnitIdentifier(unit)  // Marker to find a unit in select()
             button.onClick {
@@ -207,13 +207,25 @@ class UnitOverviewTab(
             add(editIcon)
 
             // Column: action
-            fun getActionLabel(unit: MapUnit) = when {
-                unit.action == null -> ""
-                unit.isFortified() -> UnitActionType.Fortify.value
-                unit.isMoving() -> "Moving"
-                else -> unit.action!!
+            fun getWorkerActionText(unit: MapUnit): String? = when {
+                // See UnitTurnManager.endTurn, if..workOnImprovement or UnitGroup.getActionImage: similar logic
+                !unit.cache.hasUniqueToBuildImprovements -> null
+                unit.currentMovement == 0f -> null
+                unit.currentTile.improvementInProgress == null -> null
+                !unit.canBuildImprovement(unit.getTile().getTileImprovementInProgress()!!) -> null
+                else -> unit.currentTile.improvementInProgress
             }
-            if (unit.action == null) add() else add(getActionLabel(unit).toLabel())
+            fun getActionText(unit: MapUnit): String? {
+                val workerText by lazy { getWorkerActionText(unit) }
+                return when {
+                    unit.action == null -> workerText
+                    unit.isFortified() -> UnitActionType.Fortify.value
+                    unit.isMoving() -> "Moving"
+                    unit.isAutomated() && workerText != null -> "[$workerText] ${Fonts.automate}"
+                    else -> unit.action
+                }
+            }
+            add(getActionText(unit)?.toLabel())
 
             // Columns: strength, ranged
             if (baseUnit.strength > 0) add(baseUnit.strength.toLabel()) else add()
@@ -235,13 +247,14 @@ class UnitOverviewTab(
             // getPromotions goes by json order on demand, so this is same sorting as on picker
             val promotions = unit.promotions.getPromotions(true)
             if (promotions.any()) {
-                val numberOfLines = ceil(promotions.count() / 8f).toInt()
-                val promotionsPerLine = promotions.count() / numberOfLines
-                var promotionsThisLine = 0
-                for (promotion in promotions) {
-                    promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name))
-                    promotionsThisLine++
-                    if (promotionsThisLine == promotionsPerLine && numberOfLines>1) promotionsTable.row()
+                val iconCount = promotions.count() + (if (unit.promotions.canBePromoted()) 1 else 0)
+                val numberOfLines = (iconCount - 1) / 8 + 1
+                val promotionsPerLine = (iconCount - 1) / numberOfLines + 1
+                for (linePromotions in promotions.chunked(promotionsPerLine)) {
+                    for (promotion in linePromotions) {
+                        promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name))
+                    }
+                    if (linePromotions.size == promotionsPerLine) promotionsTable.row()
                 }
             }
 
@@ -261,15 +274,20 @@ class UnitOverviewTab(
             add(promotionsTable)
 
             // Upgrade column
-            if (unit.upgrade.canUpgrade()) {
-                val unitAction = UnitActionsUpgrade.getUpgradeAction(unit)
-                val enable = unitAction?.action != null && viewingPlayer.isCurrentPlayer()
-                val upgradeIcon = ImageGetter.getUnitIcon(unit.upgrade.getUnitToUpgradeTo().name,
+            val unitAction = UnitActionsUpgrade.getUpgradeActionAnywhere(unit)
+            if (unitAction != null) {
+                val enable = unitAction.action != null && viewingPlayer.isCurrentPlayer() &&
+                    GUI.isAllowedChangeState()
+                val unitToUpgradeTo = (unitAction as UpgradeUnitAction).unitToUpgradeTo
+                val selectKey = getUnitIdentifier(unit, unitToUpgradeTo)
+                val upgradeIcon = ImageGetter.getUnitIcon(unitToUpgradeTo.name,
                     if (enable) Color.GREEN else Color.GREEN.darken(0.5f))
                 if (enable) upgradeIcon.onClick {
-                    SoundPlayer.play(unitAction!!.uncivSound)
-                    unitAction.action!!()
-                    unitListTable.updateUnitListTable()
+                    val pos = upgradeIcon.localToStageCoordinates(Vector2(upgradeIcon.width/2, upgradeIcon.height/2))
+                    UnitUpgradeMenu(overviewScreen.stage, pos, unit, unitAction) {
+                        unitListTable.updateUnitListTable()
+                        select(selectKey)
+                    }
                 }
                 add(upgradeIcon).size(28f)
             } else add()
@@ -282,7 +300,10 @@ class UnitOverviewTab(
     }
 
     companion object {
-        fun getUnitIdentifier(unit: MapUnit) = unit.run { "$name@${getTile().position.toPrettyString()}" }
+        fun getUnitIdentifier(unit: MapUnit, unitToUpgradeTo: BaseUnit? = null): String {
+            val name = unitToUpgradeTo?.name ?: unit.name
+            return "$name@${unit.getTile().position.toPrettyString()}"
+        }
     }
 
     override fun select(selection: String): Float? {
@@ -303,4 +324,5 @@ class UnitOverviewTab(
         button.addAction(blinkAction)
         return scrollY
     }
+
 }

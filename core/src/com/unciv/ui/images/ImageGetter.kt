@@ -19,13 +19,22 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.json.json
-import com.unciv.logic.city.PerpetualConstruction
+import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.skins.SkinCache
 import com.unciv.models.tilesets.TileSetCache
-import com.unciv.ui.components.*
-import com.unciv.ui.components.extensions.*
+import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.extensions.center
+import com.unciv.ui.components.extensions.centerX
+import com.unciv.ui.components.extensions.centerY
+import com.unciv.ui.components.extensions.setFontColor
+import com.unciv.ui.components.extensions.setFontSize
+import com.unciv.ui.components.extensions.setSize
+import com.unciv.ui.components.extensions.surroundWithCircle
+import com.unciv.ui.components.extensions.surroundWithThinCircle
+import com.unciv.ui.components.extensions.toGroup
+import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.debug
 import kotlin.math.atan2
@@ -75,7 +84,7 @@ object ImageGetter {
         TileSetCache.assembleTileSetConfigs(ruleset.mods)
         SkinCache.assembleSkinConfigs(ruleset.mods)
 
-        Fonts.resetFont()
+        BaseScreen.setSkin()
         Fonts.addRulesetImages(ruleset)
     }
 
@@ -275,9 +284,6 @@ object ImageGetter {
     }
 
     fun religionIconExists(iconName: String) = imageExists("ReligionIcons/$iconName")
-
-    @Deprecated("Use skin defined base color instead", ReplaceWith("BaseScreen.skinStrings.skinConfig.baseColor", "com.unciv.ui.screens.basescreen.BaseScreen"))
-    fun getBlue() = Color(0x004085bf)
 
     fun getCircle() = getImage("OtherIcons/Circle")
     fun getTriangle() = getImage("OtherIcons/Triangle")

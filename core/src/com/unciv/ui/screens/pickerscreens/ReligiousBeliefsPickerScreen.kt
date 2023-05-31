@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.models.Counter
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
@@ -75,7 +76,9 @@ class ReligiousBeliefsPickerScreen (
             if (pickIconAndName) "Choose a Religion"
             else "Enhance [${currentReligion.getReligionDisplayName()}]"
         ) {
-            chooseBeliefs(beliefsToChoose.map { it.belief!! }, displayName, religionName, usingFreeBeliefs())
+            if (civInfo.religionManager.religionState == ReligionState.FoundingReligion)
+                civInfo.religionManager.foundReligion(displayName!!, religionName!!)
+            chooseBeliefs(beliefsToChoose.map { it.belief!! }, usingFreeBeliefs())
         }
     }
 

@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Timer
 import com.unciv.models.UncivSound
+import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.YearTextUtil
@@ -51,7 +52,7 @@ class VictoryScreenReplay(
             gameInfo.tileMap,
             worldScreen.viewingCiv,
             worldScreen.stage.width - 50,
-            worldScreen.stage.height - 250
+            worldScreen.stage.height - 250  // Empiric: `stage.height - pager.contentScroll_field.height` after init is 244.
         )
 
         playImage.setSize(24f)
@@ -113,7 +114,7 @@ class VictoryScreenReplay(
         yearLabel.setText(
             YearTextUtil.toYearText(
                 year, gameInfo.currentPlayerCiv.isLongCountDisplay()
-            )
+            ) + " / " + turn+ Fonts.turn
         )
         slider.value = turn.toFloat()
         replayMap.update(turn)

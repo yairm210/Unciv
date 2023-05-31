@@ -8,9 +8,11 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.HexMath
+import com.unciv.logic.map.MapParameters  // Kdoc only
 import com.unciv.logic.map.MapResources
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.mapunit.UnitMovement  // Kdoc only
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
@@ -21,6 +23,8 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.components.extensions.withItem
+import com.unciv.ui.components.extensions.withoutItem
 import com.unciv.utils.DebugUtils
 import kotlin.math.abs
 import kotlin.math.min
@@ -53,11 +57,9 @@ open class Tile : IsPartOfGameInfoSerialization {
                 getRoadOwner()!!.neutralRoads.remove(this.position)
             }
             roadOwner = city.civ.civName // only when taking control, otherwise last owner
-        } else {
-            if (roadStatus != RoadStatus.None && owningCity != null) {
-                // previous tile owner still owns road, add to tracker
-                owningCity!!.civ.neutralRoads.add(this.position)
-            }
+        } else if (roadStatus != RoadStatus.None && owningCity != null) {
+            // previous tile owner still owns road, add to tracker
+            owningCity!!.civ.neutralRoads.add(this.position)
         }
         owningCity = city
         isCityCenterInternal = getCity()?.location == position
@@ -85,6 +87,7 @@ open class Tile : IsPartOfGameInfoSerialization {
     var terrainFeatures: List<String> = listOf()
         private set
 
+    /** Should be immutable - never be altered in-place, instead replaced */
     var exploredBy = HashSet<String>()
 
     @Transient
@@ -174,7 +177,7 @@ open class Tile : IsPartOfGameInfoSerialization {
         toReturn.hasBottomRightRiver = hasBottomRightRiver
         toReturn.hasBottomRiver = hasBottomRiver
         toReturn.continent = continent
-        toReturn.exploredBy.addAll(exploredBy)
+        toReturn.exploredBy = exploredBy
         toReturn.history = history.clone()
         return toReturn
     }
@@ -232,7 +235,7 @@ open class Tile : IsPartOfGameInfoSerialization {
     }
 
     fun isExplored(player: Civilization): Boolean {
-        if (DebugUtils.VISIBLE_MAP || player.isSpectator())
+        if (DebugUtils.VISIBLE_MAP || player.civName == Constants.spectator)
             return true
         return exploredBy.contains(player.civName)
     }
@@ -240,15 +243,18 @@ open class Tile : IsPartOfGameInfoSerialization {
     fun setExplored(player: Civilization, isExplored: Boolean, explorerPosition: Vector2? = null) {
         if (isExplored) {
             // Disable the undo button if a new tile has been explored
-            if (exploredBy.add(player.civName) && GUI.isWorldLoaded()) {
-                val worldScreen = GUI.getWorldScreen()
-                worldScreen.preActionGameInfo = worldScreen.gameInfo
+            if (!exploredBy.contains(player.civName)) {
+                if (GUI.isWorldLoaded()) {
+                    val worldScreen = GUI.getWorldScreen()
+                    worldScreen.preActionGameInfo = worldScreen.gameInfo
+                }
+                exploredBy = exploredBy.withItem(player.civName)
             }
 
             if (player.playerType == PlayerType.Human)
                 player.exploredRegion.checkTilePosition(position, explorerPosition)
         } else {
-            exploredBy.remove(player.civName)
+            exploredBy = exploredBy.withoutItem(player.civName)
         }
     }
 
@@ -491,13 +497,12 @@ open class Tile : IsPartOfGameInfoSerialization {
         if (isCityCenter()) return true
         val improvement = getUnpillagedTileImprovement()
         if (improvement != null && improvement.name in tileResource.getImprovements()
-                && (improvement.techRequired==null || civInfo.tech.isResearched(improvement.techRequired!!))) return true
+                && (improvement.techRequired == null || civInfo.tech.isResearched(improvement.techRequired!!))
+            ) return true
         // TODO: Generic-ify to unique
-        if (tileResource.resourceType==ResourceType.Strategic
-                && improvement!=null
-                && improvement.isGreatImprovement())
-            return true
-        return false
+        return (tileResource.resourceType == ResourceType.Strategic
+            && improvement != null
+            && improvement.isGreatImprovement())
     }
 
     // This should be the only adjacency function
@@ -535,9 +540,11 @@ open class Tile : IsPartOfGameInfoSerialization {
             "Natural Wonder" -> naturalWonder != null
             "Featureless" -> terrainFeatures.isEmpty()
             Constants.freshWaterFilter -> isAdjacentTo(Constants.freshWater)
+
+            in terrainFeatures -> true
             else -> {
-                if (terrainFeatures.contains(filter)) return true
                 if (terrainUniqueMap.getUniques(filter).any()) return true
+                if (getOwner()?.nation?.matchesFilter(filter) == true) return true
 
                 // Resource type check is last - cannot succeed if no resource here
                 if (resource == null) return false
@@ -670,7 +677,7 @@ open class Tile : IsPartOfGameInfoSerialization {
 
     /**
      * @returns whether units of [civInfo] can pass through this tile, considering only civ-wide filters.
-     * Use [UnitMovementAlgorithms.canPassThrough] to check whether a specific unit can pass through a tile.
+     * Use [UnitMovement.canPassThrough] to check whether a specific unit can pass through a tile.
      */
     fun canCivPassThrough(civInfo: Civilization): Boolean {
         val tileOwner = getOwner()
@@ -779,7 +786,10 @@ open class Tile : IsPartOfGameInfoSerialization {
     fun setTileResource(newResource: TileResource, majorDeposit: Boolean? = null, rng: Random = Random.Default) {
         resource = newResource.name
 
-        if (newResource.resourceType != ResourceType.Strategic) return
+        if (newResource.resourceType != ResourceType.Strategic) {
+            resourceAmount = 0
+            return
+        }
 
         for (unique in newResource.getMatchingUniques(UniqueType.ResourceAmountOnTiles, StateForConditionals(tile = this))) {
             if (matchesTerrainFilter(unique.params[0])) {

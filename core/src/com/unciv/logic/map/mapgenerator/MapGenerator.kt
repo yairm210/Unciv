@@ -346,7 +346,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             val possibleResources = resourcesOfType
                     .filter { it.terrainsCanBeFoundOn.contains(tile.lastTerrain.name) }
             if (possibleResources.isEmpty()) continue
-            val resourceWithLeastAssignments = possibleResources.minByOrNull { resourceToNumber[it.name]!! }!!
+            val resourceWithLeastAssignments = possibleResources.minByOrNull { resourceToNumber[it.name] }!!
             resourceToNumber.add(resourceWithLeastAssignments.name, 1)
             tile.setTileResource(resourceWithLeastAssignments, rng = randomness.RNG)
         }
@@ -964,6 +964,6 @@ class MapGenerationRandomness {
             }
         }
         // unreachable due to last loop iteration always returning and initialDistance >= 1
-        throw Exception()
+        throw Exception("Unreachable code reached!")
     }
 }

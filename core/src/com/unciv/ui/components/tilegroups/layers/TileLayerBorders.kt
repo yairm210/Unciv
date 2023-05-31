@@ -4,6 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.tilegroups.TileGroup
 import kotlin.math.PI
@@ -105,7 +106,7 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
                     !borderSegment.isLeftConcave && !borderSegment.isRightConcave -> "Convex"
                     !borderSegment.isLeftConcave && borderSegment.isRightConcave -> "ConvexConcave"
                     borderSegment.isLeftConcave && !borderSegment.isRightConcave -> "ConcaveConvex"
-                    else -> throw IllegalStateException("This shouldn't happen?")
+                    else -> error("This shouldn't happen?")
                 }
 
                 val relativeWorldPosition = tile.tileMap.getNeighborTilePositionAsWorldCoords(tile, neighbor)
@@ -135,7 +136,7 @@ class TileLayerBorders(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup,
 
     }
 
-    override fun doUpdate(viewingCiv: Civilization?) {
+    override fun doUpdate(viewingCiv: Civilization?, localUniqueCache: LocalUniqueCache) {
         updateBorders()
     }
 

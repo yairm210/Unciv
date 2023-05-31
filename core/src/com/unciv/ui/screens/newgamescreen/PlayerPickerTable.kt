@@ -39,7 +39,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.multiplayerscreens.FriendPickerList
 import com.unciv.ui.screens.pickerscreens.PickerPane
 import com.unciv.ui.screens.pickerscreens.PickerScreen
-import java.util.*
+import java.util.UUID
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
 
 /**
@@ -130,8 +130,17 @@ class PlayerPickerTable(
 
     fun updateRandomNumberLabel() {
         randomNumberLabel?.run {
-            val text = "These [${gameParameters.players.size}] players will be adjusted to [${gameParameters.minNumberOfPlayers}" +
-                "]-[${gameParameters.maxNumberOfPlayers}] actual players by adding random AI's or by randomly omitting AI's."
+            val playerRange = if (gameParameters.minNumberOfPlayers == gameParameters.maxNumberOfPlayers) {
+                gameParameters.minNumberOfPlayers.toString()
+            } else {
+                "${gameParameters.minNumberOfPlayers} - ${gameParameters.maxNumberOfPlayers}"
+            }
+            val numberOfExplicitPlayersText = if (gameParameters.players.size == 1) {
+                "The number of players will be adjusted"
+            } else {
+                "These [${gameParameters.players.size}] players will be adjusted"
+            }
+            val text = "[$numberOfExplicitPlayersText] to [$playerRange] actual players by adding random AI's or by randomly omitting AI's."
             wrap = false
             align(Align.center)
             setText(text.tr())
@@ -235,7 +244,7 @@ class PlayerPickerTable(
                 UUID.fromString(IdChecker.checkAndReturnPlayerUuid(playerIdTextField.text))
                 player.playerId = playerIdTextField.text.trim()
                 errorLabel.apply { setText("✔");setFontColor(Color.GREEN) }
-            } catch (ex: Exception) {
+            } catch (_: Exception) {
                 errorLabel.apply { setText("✘");setFontColor(Color.RED) }
             }
         }
@@ -258,7 +267,7 @@ class PlayerPickerTable(
         add(copyFromClipboardButton).right().colspan(3).fillX().pad(5f).row()
 
         //check if friends list is empty before adding the select friend button
-        if (friendList.friendList.isNotEmpty()) {
+        if (friendList.listOfFriends.isNotEmpty()) {
             val selectPlayerFromFriendsList = "Player ID from friends list".toTextButton()
             selectPlayerFromFriendsList.onClick {
                 popupFriendPicker(player)
@@ -328,7 +337,7 @@ class PlayerPickerTable(
      * @return [Sequence] of available [FriendList.Friend]s
      */
     internal fun getAvailableFriends(): Sequence<FriendList.Friend> {
-        val friendListWithRemovedFriends = friendList.friendList.toMutableList()
+        val friendListWithRemovedFriends = friendList.listOfFriends.toMutableList()
         for (index in gameParameters.players.indices) {
             val currentFriendId = previousScreen.gameSetupInfo.gameParameters.players[index].playerId
             friendListWithRemovedFriends.remove(friendList.getFriendById(currentFriendId))
@@ -355,7 +364,8 @@ class FriendSelectionPopup(
         val friendList = FriendPickerList(playerPicker, ::friendSelected)
         pickerPane.topTable.add(friendList)
         pickerPane.rightSideButton.setText("Select friend".tr())
-        pickerPane.closeButton.onClick(::close)
+        pickerPane.closeButton.onActivation(::close)
+        pickerPane.closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
         pickerCell.setActor<PickerPane>(pickerPane)
         pickerPane.rightSideButton.onClick {
             close()
@@ -366,6 +376,8 @@ class FriendSelectionPopup(
                 playerPicker.update()
             }
         }
+
+        clickBehindToClose = true
     }
 
     private fun friendSelected(friendName: String) {
@@ -425,7 +437,7 @@ private class NationPickerPopup(
                 yield(spectator)
         } + playerPicker.getAvailablePlayerCivs(player.chosenCiv)
             .sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.name.tr() })
-        val nations = nationSequence.toCollection(ArrayList<Nation>(previousScreen.ruleset.nations.size))
+        val nations = nationSequence.toCollection(ArrayList(previousScreen.ruleset.nations.size))
 
         var nationListScrollY = 0f
         var currentY = 0f
@@ -460,6 +472,7 @@ private class NationPickerPopup(
         closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
         closeButton.setPosition(buttonsOffsetFromEdge, buttonsOffsetFromEdge, Align.bottomLeft)
         innerTable.addActor(closeButton)
+        clickBehindToClose = true
 
         val okButton = "OtherIcons/Checkmark".toImageButton(Color.LIME)
         okButton.onClick { returnSelected() }

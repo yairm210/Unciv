@@ -8,8 +8,8 @@ import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
-import com.unciv.logic.city.INonPerpetualConstruction
-import com.unciv.logic.city.PerpetualConstruction
+import com.unciv.models.ruleset.INonPerpetualConstruction
+import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
@@ -45,7 +45,8 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.victoryscreen.RankingType
-import java.util.*
+import java.util.SortedMap
+import java.util.TreeMap
 import kotlin.math.min
 
 object NextTurnAutomation {
@@ -652,12 +653,16 @@ object NextTurnAutomation {
         if (civInfo.religionManager.religionState != ReligionState.FoundingReligion) return
         val availableReligionIcons = civInfo.gameInfo.ruleset.religions
             .filterNot { civInfo.gameInfo.religions.values.map { religion -> religion.name }.contains(it) }
+        val favoredReligion = civInfo.nation.favoredReligion
         val religionIcon =
-            if (civInfo.nation.favoredReligion in availableReligionIcons) civInfo.nation.favoredReligion
+            if (favoredReligion != null && favoredReligion in availableReligionIcons) favoredReligion
             else availableReligionIcons.randomOrNull()
                 ?: return // Wait what? How did we pass the checking when using a great prophet but not this?
+
+        civInfo.religionManager.foundReligion(religionIcon, religionIcon)
+
         val chosenBeliefs = chooseBeliefs(civInfo, civInfo.religionManager.getBeliefsToChooseAtFounding()).toList()
-        civInfo.religionManager.chooseBeliefs(chosenBeliefs, religionIcon, religionIcon)
+        civInfo.religionManager.chooseBeliefs(chosenBeliefs)
     }
 
     private fun enhanceReligion(civInfo: Civilization) {
@@ -683,10 +688,11 @@ object NextTurnAutomation {
         // not have used a great prophet to found/enhance our religion.
         for (belief in BeliefType.values()) {
             if (belief == BeliefType.None) continue
-            for (counter in 0 until (beliefsToChoose[belief] ?: 0))
+            repeat(beliefsToChoose[belief]) {
                 chosenBeliefs.add(
-                    chooseBeliefOfType(civInfo, belief, chosenBeliefs) ?: continue
+                    chooseBeliefOfType(civInfo, belief, chosenBeliefs) ?: return@repeat
                 )
+            }
         }
         return chosenBeliefs
     }
@@ -697,7 +703,7 @@ object NextTurnAutomation {
                 (it.type == beliefType || beliefType == BeliefType.Any)
                 && !additionalBeliefsToExclude.contains(it)
                 && civInfo.religionManager.getReligionWithBelief(it) == null
-                && it.getMatchingUniques(UniqueType.OnlyAvailableWhen).none { !it.conditionalsApply(civInfo) }
+                && it.getMatchingUniques(UniqueType.OnlyAvailableWhen).none { unique -> !unique.conditionalsApply(civInfo) }
             }
             .maxByOrNull { ReligionAutomation.rateBelief(civInfo, it) }
     }
@@ -758,7 +764,6 @@ object NextTurnAutomation {
     @Suppress("unused")  //todo: Work in Progress?
     private fun offerDeclarationOfFriendship(civInfo: Civilization) {
         val civsThatWeCanDeclareFriendshipWith = civInfo.getKnownCivs()
-                .asSequence()
                 .filter {
                     it.isMajorCiv() && !it.isAtWarWith(civInfo)
                             && it.getDiplomacyManager(civInfo).isRelationshipLevelGT(RelationshipLevel.Neutral)
@@ -777,7 +782,6 @@ object NextTurnAutomation {
         if (!civInfo.diplomacyFunctions.canSignResearchAgreement()) return // don't waste your time
 
         val canSignResearchAgreementCiv = civInfo.getKnownCivs()
-                .asSequence()
                 .filter {
                     civInfo.diplomacyFunctions.canSignResearchAgreementsWith(it)
                             && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedResearchAgreement)
@@ -817,15 +821,18 @@ object NextTurnAutomation {
 
         if (enemyCivs.none()) return
 
+        val minMotivationToAttack = 20
         val civWithBestMotivationToAttack = enemyCivs
-                .map { Pair(it, motivationToAttack(civInfo, it)) }
+                .map { Pair(it, hasAtLeastMotivationToAttack(civInfo, it, minMotivationToAttack)) }
                 .maxByOrNull { it.second }!!
 
-        if (civWithBestMotivationToAttack.second >= 20)
+        if (civWithBestMotivationToAttack.second >= minMotivationToAttack)
             civInfo.getDiplomacyManager(civWithBestMotivationToAttack.first).declareWar()
     }
 
-    private fun motivationToAttack(civInfo: Civilization, otherCiv: Civilization): Int {
+    /** Will return the motivation to attack, but might short circuit if the value is guaranteed to
+     * be lower than `atLeast`. So any values below `atLeast` should not be used for comparison. */
+    private fun hasAtLeastMotivationToAttack(civInfo: Civilization, otherCiv: Civilization, atLeast: Int): Int {
         val closestCities = getClosestCities(civInfo, otherCiv) ?: return 0
         val baseForce = 30f
 
@@ -859,12 +866,6 @@ object NextTurnAutomation {
                     && (owner == otherCiv || owner == null || civInfo.diplomacyFunctions.canPassThroughTiles(owner))
         }
 
-        val reachableEnemyCitiesBfs = BFS(civInfo.getCapital()!!.getCenterTile()) { isTileCanMoveThrough(it) }
-        reachableEnemyCitiesBfs.stepToEnd()
-        val reachableEnemyCities = otherCiv.cities.filter { reachableEnemyCitiesBfs.hasReachedTile(it.getCenterTile()) }
-        if (reachableEnemyCities.isEmpty()) return 0 // Can't even reach the enemy city, no point in war.
-
-
         val modifierMap = HashMap<String, Int>()
         val combatStrengthRatio = ourCombatStrength / theirCombatStrength
         val combatStrengthModifier = when {
@@ -879,14 +880,6 @@ object NextTurnAutomation {
 
         if (closestCities.aerialDistance > 7)
             modifierMap["Far away cities"] = -10
-
-        val landPathBFS = BFS(ourCity.getCenterTile()) {
-            it.isLand && isTileCanMoveThrough(it)
-        }
-
-        landPathBFS.stepUntilDestination(theirCity.getCenterTile())
-        if (!landPathBFS.hasReachedTile(theirCity.getCenterTile()))
-            modifierMap["No land path"] = -10
 
         val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
         if (diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement))
@@ -924,7 +917,35 @@ object NextTurnAutomation {
                 modifierMap["About to win"] = 15
         }
 
-        return modifierMap.values.sum()
+        var motivationSoFar = modifierMap.values.sum()
+
+        // We don't need to execute the expensive BFSs below if we're below the threshold here
+        // anyways, since it won't get better from those, only worse.
+        if (motivationSoFar < atLeast) {
+            return motivationSoFar
+        }
+
+
+        val landPathBFS = BFS(ourCity.getCenterTile()) {
+            it.isLand && isTileCanMoveThrough(it)
+        }
+
+        landPathBFS.stepUntilDestination(theirCity.getCenterTile())
+        if (!landPathBFS.hasReachedTile(theirCity.getCenterTile()))
+            motivationSoFar -= -10
+
+        // We don't need to execute the expensive BFSs below if we're below the threshold here
+        // anyways, since it won't get better from those, only worse.
+        if (motivationSoFar < atLeast) {
+            return motivationSoFar
+        }
+
+        val reachableEnemyCitiesBfs = BFS(civInfo.getCapital()!!.getCenterTile()) { isTileCanMoveThrough(it) }
+        reachableEnemyCitiesBfs.stepToEnd()
+        val reachableEnemyCities = otherCiv.cities.filter { reachableEnemyCitiesBfs.hasReachedTile(it.getCenterTile()) }
+        if (reachableEnemyCities.isEmpty()) return 0 // Can't even reach the enemy city, no point in war.
+
+        return motivationSoFar
     }
 
 
@@ -941,8 +962,10 @@ object NextTurnAutomation {
                 .filter { it.tradeRequests.none { tradeRequest -> tradeRequest.requestingCiv == civInfo.civName && tradeRequest.trade.isPeaceTreaty() } }
 
         for (enemy in enemiesCiv) {
-            val motivationToAttack = motivationToAttack(civInfo, enemy)
-            if (motivationToAttack >= 10) continue // We can still fight. Refuse peace.
+            if(hasAtLeastMotivationToAttack(civInfo, enemy, 10) >= 10) {
+                // We can still fight. Refuse peace.
+                continue
+            }
 
             // pay for peace
             val tradeLogic = TradeLogic(civInfo, enemy)
@@ -993,7 +1016,7 @@ object NextTurnAutomation {
                 ownMilitaryStrength < sumOfEnemiesMilitaryStrength * 0.66f
         for (city in civInfo.cities) {
             if (city.isPuppet && city.population.population > 9
-                    && !city.isInResistance()
+                    && !city.isInResistance() && !civInfo.hasUnique(UniqueType.MayNotAnnexCities)
             ) {
                 city.annexCity()
             }
@@ -1101,7 +1124,7 @@ object NextTurnAutomation {
         if ((city.population.population < 4 || civInfo.isCityState())
                 && city.foundingCiv != civInfo.civName && city.canBeDestroyed(justCaptured = true)) {
             // raze if attacker is a city state
-            city.annexCity()
+            if (!civInfo.hasUnique(UniqueType.MayNotAnnexCities)) { city.annexCity() }
             city.isBeingRazed = true
         }
     }

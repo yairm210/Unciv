@@ -2,7 +2,7 @@ package com.unciv.models.ruleset.tile
 
 import com.unciv.Constants
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.logic.city.IConstruction  // Kdoc only
+import com.unciv.models.ruleset.IConstruction  // Kdoc only
 
 /** Container helps aggregating supply and demand of [resources][ResourceSupply.resource], categorized by [origin][ResourceSupply.origin].
  *

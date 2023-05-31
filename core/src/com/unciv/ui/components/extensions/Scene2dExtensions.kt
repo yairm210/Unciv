@@ -40,7 +40,7 @@ import com.unciv.ui.components.extensions.GdxKeyCodeFixes.valueOf
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.utils.concurrency.Concurrency
+import com.unciv.utils.Concurrency
 
 /**
  * Collection of extension functions mostly for libGdx widgets
@@ -429,7 +429,7 @@ fun Group.addBorderAllowOpacity(size:Float, color: Color): Group {
 
 /** get background Image for a new separator */
 private fun getSeparatorImage(color: Color) = ImageGetter.getDot(
-    if (color.a != 0f) color else BaseScreen.skin.get("color", Color::class.java) //0x334d80
+    if (color.a != 0f) color else BaseScreen.skin.getColor("color") //0x334d80
 )
 
 /**

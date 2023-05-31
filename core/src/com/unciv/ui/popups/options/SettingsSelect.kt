@@ -40,7 +40,7 @@ open class SettingsSelect<T : Any>(
 
     private val settingsProperty: KMutableProperty0<T> = setting.getProperty(settings)
     private val label = createLabel(labelText)
-    private val refreshSelectBox = createSelectBox(items.toGdxArray(), settings)
+    private val refreshSelectBox = createSelectBox(items.toGdxArray())
     @Suppress("HasPlatformType")  // Compiler problem
     // Explicit type Array<SelectItem<T>> as suggested crashes the compiler, except if one
     // replaces `by x::` with `get() = x.` which according to docs should be entirely equivalent
@@ -52,7 +52,7 @@ open class SettingsSelect<T : Any>(
         return selectLabel
     }
 
-    private fun createSelectBox(initialItems: Array<SelectItem<T>>, settings: GameSettings): SelectBox<SelectItem<T>> {
+    private fun createSelectBox(initialItems: Array<SelectItem<T>>): SelectBox<SelectItem<T>> {
         val selectBox = SelectBox<SelectItem<T>>(BaseScreen.skin)
         selectBox.items = initialItems
 
