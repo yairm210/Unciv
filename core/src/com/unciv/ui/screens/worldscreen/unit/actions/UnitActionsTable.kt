@@ -32,7 +32,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         for (unitAction in UnitActions.getUnitActions(unit)) {
             val button = getUnitActionButton(unit, unitAction)
             if (unitAction is UpgradeUnitAction) {
-                val tipTitle = "«RED»${unitAction.type.key}«»: {Upgrade}"
+                val tipTitle = "«RED»${KeyboardBindings[unitAction.type.binding]}«»: {Upgrade}"
                 val tipActor = BaseUnitDescriptions.getUpgradeTooltipActor(tipTitle, unit.baseUnit, unitAction.unitToUpgradeTo)
                 button.addListener(UncivTooltip(button, tipActor
                     , offset = Vector2(0f, tipActor.packIfNeeded().height * 0.333f) // scaling fails to express size in parent coordinates
@@ -48,7 +48,6 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         val icon = unitAction.getIcon()
         // If peripheral keyboard not detected, hotkeys will not be displayed
         val binding = unitAction.type.binding
-        val key = if (GUI.keyboardAvailable) KeyboardBindings[binding] else KeyCharAndCode.UNKNOWN
 
         val fontColor = if (unitAction.isCurrentAction) Color.YELLOW else Color.WHITE
         val actionButton = IconTextButton(unitAction.title, icon, fontColor = fontColor)
@@ -57,7 +56,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
             actionButton.color = Color.GREEN.cpy().lerp(Color.WHITE, 0.5f)
 
         if (unitAction !is UpgradeUnitAction)  // Does its own toolTip
-            actionButton.addTooltip(key)
+            actionButton.addTooltip(KeyboardBindings[binding])
         actionButton.pack()
         if (unitAction.action == null) {
             actionButton.disable()
