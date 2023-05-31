@@ -320,7 +320,12 @@ class UncivFiles(
         /**
          * Platform dependent saver-loader to custom system locations
          */
-        lateinit var saverLoader: PlatformSaverLoader
+        var saverLoader: PlatformSaverLoader = PlatformSaverLoader.None
+            get() {
+                if (field.javaClass.simpleName == "DesktopSaverLoader" && LinuxX11SaverLoader.isRequired())
+                    field = LinuxX11SaverLoader()
+                return field
+            }
 
         /** Specialized function to access settings before Gdx is initialized.
          *
