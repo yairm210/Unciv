@@ -48,7 +48,7 @@ class FontFamilyData(
     val filePath: String? = null
 ) {
 
-    // For serialization
+    @Suppress("unused") // For serialization
     constructor() : this(default.localName, default.invariantName)
 
     // Implement kotlin equality contract such that _only_ the invariantName field is compared.
@@ -138,29 +138,7 @@ class NativeBitmapFontData(
     private fun getPixmapFromChar(ch: Char): Pixmap {
         // Images must be 50*50px so they're rendered at the same height as the text - see Fonts.ORIGINAL_FONT_SIZE
         return when (ch) {
-            Fonts.strength -> getPixmap("StatIcons/Strength")
-            Fonts.rangedStrength -> getPixmap("StatIcons/RangedStrength")
-            Fonts.range -> getPixmap("StatIcons/Range")
-            Fonts.movement -> getPixmap("StatIcons/Movement")
-            Fonts.turn -> getPixmap("EmojiIcons/Turn")
-            Fonts.production -> getPixmap("EmojiIcons/Production")
-            Fonts.gold -> getPixmap("EmojiIcons/Gold")
-            Fonts.food -> getPixmap("EmojiIcons/Food")
-            Fonts.science -> getPixmap("EmojiIcons/Science")
-            Fonts.culture -> getPixmap("EmojiIcons/Culture")
-            Fonts.faith -> getPixmap("EmojiIcons/Faith")
-            Fonts.happiness -> getPixmap("EmojiIcons/Happiness")
-            Fonts.greatArtist -> getPixmap("EmojiIcons/Great Artist")
-            Fonts.greatEngineer -> getPixmap("EmojiIcons/Great Engineer")
-            Fonts.greatGeneral -> getPixmap("EmojiIcons/Great General")
-            Fonts.greatMerchant -> getPixmap("EmojiIcons/Great Merchant")
-            Fonts.greatScientist -> getPixmap("EmojiIcons/Great Scientist")
-            Fonts.death -> getPixmap("EmojiIcons/Death")
-
-            MayaCalendar.tun -> getPixmap(MayaCalendar.tunIcon)
-            MayaCalendar.katun -> getPixmap(MayaCalendar.katunIcon)
-            MayaCalendar.baktun -> getPixmap(MayaCalendar.baktunIcon)
-            in MayaCalendar.digits -> getPixmap(MayaCalendar.digitIcon(ch))
+            in Fonts.allSymbols -> getPixmap(Fonts.allSymbols[ch]!!)
             in Fonts.charToRulesetImageActor ->
                 try {
                     // This sometimes fails with a "Frame buffer couldn't be constructed: incomplete attachment" error, unclear why
@@ -249,7 +227,7 @@ object Fonts {
     val rulesetObjectNameToChar =HashMap<String, Char>()
     val charToRulesetImageActor = HashMap<Char, Actor>()
     // See https://en.wikipedia.org/wiki/Private_Use_Areas - char encodings 57344 63743 are not assigned
-    var nextUnusedCharacterNumber = 57344
+    private var nextUnusedCharacterNumber = 57344
     fun addRulesetImages(ruleset:Ruleset) {
         rulesetObjectNameToChar.clear()
         charToRulesetImageActor.clear()
@@ -290,8 +268,8 @@ object Fonts {
         }
     }
 
-    val frameBuffer by lazy { FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.width, Gdx.graphics.height, false) }
-    val spriteBatch by lazy { SpriteBatch() }
+    private val frameBuffer by lazy { FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.width, Gdx.graphics.height, false) }
+    private val spriteBatch by lazy { SpriteBatch() }
 
     fun getPixmapFromActor(actor: Actor): Pixmap {
 
@@ -336,19 +314,39 @@ object Fonts {
     const val culture = '♪'             // U+266A 'eighth note' (🎵 U+1F3B5 'musical note')
     const val happiness = '⌣'           // U+2323 'smile' (😀 U+1F600 'grinning face')
     const val faith = '☮'               // U+262E 'peace symbol' (🕊 U+1F54A 'dove of peace')
-    const val greatArtist = '♬'          // U+266C 'sixteenth note'
+    @Suppress("MemberVisibilityCanBePrivate") // offer for mods
+    const val greatArtist = '♬'         // U+266C 'sixteenth note'
+    @Suppress("MemberVisibilityCanBePrivate") // offer for mods
     const val greatEngineer = '⚒'       // U+2692 'hammer'
-    const val greatGeneral = '⛤'       // U+26E4 'pentagram'
-    const val greatMerchant = '⚖'      // U+2696 'scale'
+    @Suppress("MemberVisibilityCanBePrivate") // offer for mods
+    const val greatGeneral = '⛤'        // U+26E4 'pentagram'
+    @Suppress("MemberVisibilityCanBePrivate") // offer for mods
+    const val greatMerchant = '⚖'       // U+2696 'scale'
+    @Suppress("MemberVisibilityCanBePrivate") // offer for mods
     const val greatScientist = '⚛'      // U+269B 'atom'
-    const val death = '☠' // U+2620 'skull and crossbones'
+    const val death = '☠'               // U+2620 'skull and crossbones'
+    const val automate = '⛏'            // U+26CF 'pick'
 
-    val allSymbols = arrayOf<Char>(
-        turn,
-        strength, rangedStrength, range, movement,
-        production, gold, food, science, culture, happiness, faith,
-        greatArtist, greatEngineer, greatGeneral, greatMerchant, greatScientist,
-        death,
+    val allSymbols = mapOf(
+        turn to "EmojiIcons/Turn",
+        strength to "StatIcons/Strength",
+        rangedStrength to "StatIcons/RangedStrength",
+        range to "StatIcons/Range",
+        movement to "StatIcons/Movement",
+        production to "EmojiIcons/Production",
+        gold to "EmojiIcons/Gold",
+        food to "EmojiIcons/Food",
+        science to "EmojiIcons/Science",
+        culture to "EmojiIcons/Culture",
+        happiness to "EmojiIcons/Happiness",
+        faith to "EmojiIcons/Faith",
+        greatArtist to "EmojiIcons/Great Artist",
+        greatEngineer to "EmojiIcons/Great Engineer",
+        greatGeneral to "EmojiIcons/Great General",
+        greatMerchant to "EmojiIcons/Great Merchant",
+        greatScientist to "EmojiIcons/Great Scientist",
+        death to "EmojiIcons/Death",
+        automate to "EmojiIcons/Automate",
         *MayaCalendar.allSymbols
     )
 }

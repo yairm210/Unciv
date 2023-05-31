@@ -13,6 +13,7 @@ import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.screens.basescreen.BaseScreen
 import kotlin.math.abs
 
+@Suppress("MemberVisibilityCanBePrivate")  // stuff only accessed through allSymbols looks cleaner with same visibility
 object MayaCalendar {
     // Glyphs / icons
     private const val iconFolder = "MayaCalendar/"
@@ -31,12 +32,12 @@ object MayaCalendar {
     fun digitIcon(ch: Char) = iconFolder + (ch.toCode() - zero.toCode()).toString()
 
     val allSymbols = sequence {
-        yield(tun)
-        yield(katun)
-        yield(baktun)
-        yieldAll(digits)
+        yield(tun to tunIcon)
+        yield(katun to katunIcon)
+        yield(baktun to baktunIcon)
+        yieldAll(digits.map {it to digitIcon(it)})
     }.iterator().run {
-        Array<Char>(23) { next() }
+        Array(23) { next() }
     }
 
     // Calculation

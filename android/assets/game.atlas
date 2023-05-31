@@ -39,100 +39,107 @@ CityStateIcons/Religious
   orig: 100, 100
   offset: 0, 0
   index: -1
-EmojiIcons/Culture
+EmojiIcons/Automate
   rotate: false
-  xy: 436, 316
+  xy: 436, 432
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-EmojiIcons/Death
+EmojiIcons/Culture
   rotate: false
   xy: 436, 258
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-EmojiIcons/Faith
+EmojiIcons/Death
   rotate: false
   xy: 436, 200
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-EmojiIcons/Food
+EmojiIcons/Faith
   rotate: false
   xy: 436, 142
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-EmojiIcons/Gold
+EmojiIcons/Food
   rotate: false
-  xy: 436, 26
+  xy: 436, 84
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-EmojiIcons/Great Artist
+EmojiIcons/Gold
   rotate: false
   xy: 494, 432
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-EmojiIcons/Great Engineer
+EmojiIcons/Great Artist
   rotate: false
   xy: 494, 374
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-EmojiIcons/Great General
+EmojiIcons/Great Engineer
   rotate: false
   xy: 494, 316
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-EmojiIcons/Great Merchant
+EmojiIcons/Great General
   rotate: false
   xy: 494, 258
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-EmojiIcons/Great Scientist
+EmojiIcons/Great Merchant
   rotate: false
   xy: 494, 200
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-EmojiIcons/Happiness
+EmojiIcons/Great Scientist
   rotate: false
   xy: 494, 142
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
+EmojiIcons/Happiness
+  rotate: false
+  xy: 494, 84
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
 EmojiIcons/Production
   rotate: false
-  xy: 552, 273
+  xy: 552, 215
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Science
   rotate: false
-  xy: 552, 99
+  xy: 552, 41
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 EmojiIcons/Turn
   rotate: false
-  xy: 544, 1087
+  xy: 544, 1029
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -503,7 +510,7 @@ StatIcons/Movement
   index: -1
 OtherIcons/BackArrow
   rotate: false
-  xy: 436, 432
+  xy: 436, 374
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -580,7 +587,7 @@ OtherIcons/Cities
   index: -1
 OtherIcons/CityState
   rotate: false
-  xy: 436, 374
+  xy: 436, 316
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -636,7 +643,7 @@ OtherIcons/Fire
   index: -1
 OtherIcons/ForwardArrow
   rotate: false
-  xy: 436, 84
+  xy: 436, 26
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -657,7 +664,7 @@ OtherIcons/HexagonOutline
   index: -1
 OtherIcons/Improvements
   rotate: false
-  xy: 494, 84
+  xy: 494, 26
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -671,7 +678,7 @@ OtherIcons/Keyboard
   index: -1
 OtherIcons/Link
   rotate: false
-  xy: 527, 505
+  xy: 552, 447
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -706,7 +713,7 @@ NotificationIcons/Working
   index: -1
 OtherIcons/LockSmall
   rotate: false
-  xy: 552, 447
+  xy: 552, 389
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -748,7 +755,7 @@ OtherIcons/NationSwap
   index: -1
 OtherIcons/Nations
   rotate: false
-  xy: 552, 389
+  xy: 552, 331
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -776,7 +783,7 @@ OtherIcons/Options
   index: -1
 OtherIcons/Pause
   rotate: false
-  xy: 552, 331
+  xy: 552, 273
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1287,7 +1294,7 @@ StatIcons/Happiness
   index: -1
 StatIcons/InterceptRange
   rotate: false
-  xy: 494, 26
+  xy: 527, 505
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1315,14 +1322,14 @@ TileIcons/Worked
   index: -1
 StatIcons/Range
   rotate: false
-  xy: 552, 215
+  xy: 552, 157
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 StatIcons/RangedStrength
   rotate: false
-  xy: 552, 157
+  xy: 552, 99
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1350,7 +1357,7 @@ StatIcons/Specialist
   index: -1
 StatIcons/Strength
   rotate: false
-  xy: 552, 41
+  xy: 544, 1087
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
