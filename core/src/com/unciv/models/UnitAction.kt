@@ -60,7 +60,7 @@ open class UnitAction(
     }
 
     override fun toString(): String {
-        return "UnitAction(title='$title', isCurrentAction=$isCurrentAction)"
+        return "UnitAction(type=$type, title='$title', isCurrentAction=$isCurrentAction)"
     }
 }
 
