@@ -1,0 +1,10 @@
+
+
+Spectators do not get natural wonder discovery notifications
+
+By SomeTroglodyte:
+- Unit Overview: Improving a tile is also "what the unit is doing" 
+- Replacement PlatformSaverLoader for Linux X11 systems 
+- All notifications from Overview are now temporary 
+
+Fix bug worker will not replace improvement to enable strategy resour…  - By janarvid
