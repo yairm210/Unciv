@@ -44,6 +44,7 @@ enum class EmpireOverviewCategories(
     Politics("OtherIcons/Politics", 'P', Align.top) {
         override fun createTab(viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?) =
                 GlobalPoliticsOverviewTable(viewingPlayer, overviewScreen, persistedData)
+        override fun showDisabled(viewingPlayer: Civilization) = viewingPlayer.diplomacy.isEmpty()
     },
     Resources("StatIcons/Happiness", 'R', Align.topLeft) {
         override fun createTab(viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?) =
