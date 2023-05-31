@@ -18,8 +18,8 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.doMigrations
 import com.unciv.models.metadata.isMigrationNecessary
 import com.unciv.ui.screens.savescreens.Gzip
-import com.unciv.utils.Log
 import com.unciv.utils.Concurrency
+import com.unciv.utils.Log
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
 import java.io.File
@@ -320,7 +320,12 @@ class UncivFiles(
         /**
          * Platform dependent saver-loader to custom system locations
          */
-        lateinit var saverLoader: PlatformSaverLoader
+        var saverLoader: PlatformSaverLoader = PlatformSaverLoader.None
+            get() {
+                if (field.javaClass.simpleName == "DesktopSaverLoader" && LinuxX11SaverLoader.isRequired())
+                    field = LinuxX11SaverLoader()
+                return field
+            }
 
         /** Specialized function to access settings before Gdx is initialized.
          *
@@ -366,8 +371,10 @@ class UncivFiles(
         }
 
         /** Returns gzipped serialization of [game], optionally gzipped ([forceZip] overrides [saveZipped]) */
-        fun gameInfoToString(game: GameInfo, forceZip: Boolean? = null): String {
+        fun gameInfoToString(game: GameInfo, forceZip: Boolean? = null, updateChecksum:Boolean=true): String {
             game.version = GameInfo.CURRENT_COMPATIBILITY_VERSION
+
+            if (updateChecksum) game.checksum = game.calculateChecksum()
             val plainJson = json().toJson(game)
             return if (forceZip ?: saveZipped) Gzip.zip(plainJson) else plainJson
         }

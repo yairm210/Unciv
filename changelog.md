@@ -1,3 +1,19 @@
+## 4.6.16
+
+By SomeTroglodyte:
+- Unit Overview: Improving a tile is also "what the unit is doing"
+- Replacement PlatformSaverLoader for Linux X11 systems
+- All notifications from Overview are now temporary
+- Politics overview no longer discloses random number of players
+
+Worker will now replace improvements to get resources - By janarvid
+
+Spectators do not get natural wonder discovery notifications
+
+Added checksum to be added to uploaded multiplayer games
+
+Policy adoption triggers resource recalculation
+
 ## 4.6.15
 
 'Crop yield' chart displays correct data

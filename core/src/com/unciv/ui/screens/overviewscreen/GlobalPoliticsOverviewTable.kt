@@ -15,6 +15,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.HexMath
 import com.unciv.models.ruleset.Policy.PolicyBranchType
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.AutoScrollPane
 import com.unciv.ui.components.ColorMarkupLabel
 import com.unciv.ui.components.Fonts
@@ -38,9 +39,10 @@ class GlobalPoliticsOverviewTable (
 ) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
 
     class DiplomacyTabPersistableData(
+        var showDiagram: Boolean = false,
         var includeCityStates: Boolean = false
     ) : EmpireOverviewTabPersistableData() {
-        override fun isEmpty() = !includeCityStates
+        override fun isEmpty() = !showDiagram && !includeCityStates
     }
     override val persistableData = (persistedData as? DiplomacyTabPersistableData) ?: DiplomacyTabPersistableData()
 
@@ -58,18 +60,20 @@ class GlobalPoliticsOverviewTable (
     private var undefeatedCivs = sequenceOf<Civilization>()
     private var defeatedCivs = sequenceOf<Civilization>()
 
-    private var relevantCivsCount = 0  // includes unknown civs
+    private var relevantCivsCount = "?"  // includes unknown civs if player allowed to know
     private var showDiplomacyGroup = false
     private var portraitMode = false
 
 
     init {
-        updatePoliticsTable()
+        if (persistableData.showDiagram) updateDiagram()
+        else updatePoliticsTable()
     }
 
     private fun updatePoliticsTable() {
+        persistableData.showDiagram = false
         clear()
-        getFixedContent().clear()
+        fixedContent.clear()
 
         val diagramButton = "Show diagram".toTextButton().onClick(::updateDiagram)
 
@@ -85,18 +89,14 @@ class GlobalPoliticsOverviewTable (
             add("Relations".toLabel()).row()
             add(diagramButton).pad(10f)
         })
-        row()
-        addSeparator(Color.GRAY)
 
         createGlobalPoliticsTable()
     }
 
     private fun createGlobalPoliticsTable() {
-        val civilizations = mutableListOf<Civilization>()
-        civilizations.add(viewingPlayer)
-        civilizations.addAll(viewingPlayer.getKnownCivs())
-        civilizations.removeAll(civilizations.filter { it.isBarbarian() || it.isCityState() || it.isSpectator() })
-        for (civ in civilizations) {
+        for (civ in viewingPlayer.diplomacyFunctions.getKnownCivsSorted(includeCityStates = false)) {
+            addSeparator(Color.GRAY)
+
             // civ image
             add(ImageGetter.getNationPortrait(civ.nation, 100f)).pad(20f)
 
@@ -119,9 +119,6 @@ class GlobalPoliticsOverviewTable (
 
             //politics
             add(getPoliticsOfCivTable(civ)).pad(20f)
-
-            if (civilizations.indexOf(civ) != civilizations.lastIndex)
-                addSeparator(Color.GRAY)
         }
     }
 
@@ -227,6 +224,7 @@ class GlobalPoliticsOverviewTable (
 
     // Refresh content and determine landscape/portrait layout
     private fun updateDiagram() {
+        persistableData.showDiagram = true
         val politicsButton = "Show global politics".toTextButton().onClick(::updatePoliticsTable)
 
         val toggleCityStatesButton: TextButton = Constants.cityStates.toTextButton().apply {
@@ -245,9 +243,12 @@ class GlobalPoliticsOverviewTable (
             add(civTableScroll.addBorder(2f, Color.WHITE)).pad(10f)
         }
 
-        relevantCivsCount = gameInfo.civilizations.count {
-            !it.isSpectator() && !it.isBarbarian() && (persistableData.includeCityStates || !it.isCityState())
-        }
+        val hideCivsCount = viewingPlayer.hideCivCount() ||
+            persistableData.includeCityStates && viewingPlayer.hideCityStateCount()
+        relevantCivsCount = if (hideCivsCount) "?"
+            else gameInfo.civilizations.count {
+                !it.isSpectator() && !it.isBarbarian() && (persistableData.includeCityStates || !it.isCityState())
+            }.toString()
         undefeatedCivs = sequenceOf(viewingPlayer) +
                 viewingPlayer.diplomacyFunctions.getKnownCivsSorted(persistableData.includeCityStates)
         defeatedCivs = viewingPlayer.diplomacyFunctions.getKnownCivsSorted(persistableData.includeCityStates, true)
@@ -289,6 +290,15 @@ class GlobalPoliticsOverviewTable (
         civTableScroll.setScrollingDisabled(portraitMode, portraitMode)
     }
 
+    /** Same as [Civilization.hideCivCount] but for City-States instead of Major Civs */
+    private fun Civilization.hideCityStateCount(): Boolean {
+        if (!gameInfo.gameParameters.randomNumberOfCityStates) return false
+        val knownCivs = 1 + getKnownCivs().count { it.isCityState() }
+        if (knownCivs >= gameInfo.gameParameters.maxNumberOfCityStates) return false
+        if (hasUnique(UniqueType.OneTimeRevealEntireMap)) return false
+        return true
+    }
+
     private fun updateCivTable(columns: Int) = civTable.apply {
         clear()
         addTitleInfo(columns)
@@ -325,6 +335,7 @@ class GlobalPoliticsOverviewTable (
             .pad(5f).colspan(columns).row()
         if (count == 0) return
         addSeparator()
+
         var currentColumn = 0
         var lastCivWasMajor = false
         fun advanceCols(delta: Int) {
@@ -335,6 +346,7 @@ class GlobalPoliticsOverviewTable (
             }
             lastCivWasMajor = delta == 2
         }
+
         for (civ in civs) {
             if (lastCivWasMajor && civ.isCityState())
                 advanceCols(columns)

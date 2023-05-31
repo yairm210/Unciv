@@ -154,7 +154,7 @@ class UnitOverviewTab(
     private fun Table.updateUnitHeaderTable(): Table {
         defaults().pad(5f)
         add("Name".toLabel())
-        add()
+        add()  // Column: edit-name
         add("Action".toLabel())
         add(Fonts.strength.toString().toLabel())
         add(Fonts.rangedStrength.toString().toLabel())
@@ -207,13 +207,25 @@ class UnitOverviewTab(
             add(editIcon)
 
             // Column: action
-            fun getActionLabel(unit: MapUnit) = when {
-                unit.action == null -> ""
-                unit.isFortified() -> UnitActionType.Fortify.value
-                unit.isMoving() -> "Moving"
-                else -> unit.action!!
+            fun getWorkerActionText(unit: MapUnit): String? = when {
+                // See UnitTurnManager.endTurn, if..workOnImprovement or UnitGroup.getActionImage: similar logic
+                !unit.cache.hasUniqueToBuildImprovements -> null
+                unit.currentMovement == 0f -> null
+                unit.currentTile.improvementInProgress == null -> null
+                !unit.canBuildImprovement(unit.getTile().getTileImprovementInProgress()!!) -> null
+                else -> unit.currentTile.improvementInProgress
             }
-            if (unit.action == null) add() else add(getActionLabel(unit).toLabel())
+            fun getActionText(unit: MapUnit): String? {
+                val workerText by lazy { getWorkerActionText(unit) }
+                return when {
+                    unit.action == null -> workerText
+                    unit.isFortified() -> UnitActionType.Fortify.value
+                    unit.isMoving() -> "Moving"
+                    unit.isAutomated() && workerText != null -> "[$workerText] ${Fonts.automate}"
+                    else -> unit.action
+                }
+            }
+            add(getActionText(unit)?.toLabel())
 
             // Columns: strength, ranged
             if (baseUnit.strength > 0) add(baseUnit.strength.toLabel()) else add()

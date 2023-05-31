@@ -3,6 +3,7 @@ package com.unciv.logic
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.UncivGame.Version
+import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.convertEncampmentData
 import com.unciv.logic.BackwardCompatibility.convertFortify
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
@@ -35,9 +36,11 @@ import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
+import com.unciv.ui.screens.savescreens.Gzip
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
+import java.security.MessageDigest
 import java.util.UUID
 
 
@@ -100,6 +103,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     var currentPlayer = ""
     var currentTurnStartTime = 0L
     var gameId = UUID.randomUUID().toString() // random string
+    var checksum = ""
 
     var victoryData:VictoryData? = null
 
@@ -270,6 +274,16 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         }
 
         return year.toInt()
+    }
+
+    fun calculateChecksum():String {
+        val oldChecksum = checksum
+        checksum = "" // Checksum calculation cannot include old checksum, obvs
+        val bytes = MessageDigest
+            .getInstance("SHA-1")
+            .digest(json().toJson(this).toByteArray())
+        checksum = oldChecksum
+        return Gzip.encode(bytes)
     }
 
     //endregion
