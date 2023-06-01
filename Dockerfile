@@ -29,3 +29,4 @@ COPY --chown=1001:1001 --from=build /src/desktop/build/libs/Unciv.jar /usr/share
 COPY --chown=1001:1001 --from=build /src/desktop/linuxFilesForJar/* /home/headless/Desktop/
 RUN chmod +x Unciv.sh
 USER 1001
+CMD [ "/home/headless/Desktop/Unciv.sh" ]
