@@ -724,7 +724,7 @@ class WorldScreen(
         if (gameInfo.gameParameters.isOnlineMultiplayer || game.settings.multiplayer.statusButtonInSinglePlayer) {
             if (statusButtons.multiplayerStatusButton != null) return
             if (game.onlineMultiplayer.isInitialized() && game.onlineMultiplayer.apiVersion == ApiVersion.APIv2) {
-                statusButtons.multiplayerStatusButton = MultiplayerStatusButtonV2(this, gameInfo.gameId)
+                statusButtons.multiplayerStatusButton = MultiplayerStatusButtonV2(this, gameInfo.gameId, gameInfo.getAliveMajorCivs())
             } else {
                 statusButtons.multiplayerStatusButton = MultiplayerStatusButtonV1(this, game.onlineMultiplayer.getGameByGameId(gameInfo.gameId))
             }

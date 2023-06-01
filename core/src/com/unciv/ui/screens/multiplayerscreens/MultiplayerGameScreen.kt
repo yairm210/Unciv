@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Disposable
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.multiplayer.apiv2.AccountResponse
+import com.unciv.logic.multiplayer.apiv2.GameOverviewResponse
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.ArrowButton
 import com.unciv.ui.components.ChatButton
@@ -41,6 +42,13 @@ class MultiplayerGameScreen(private val me: UUID, initialChatRoom: Triple<UUID, 
         helpPopup.addCloseButton()
         helpPopup.open()
     }
+    private val gameList = GameListV2(this, ::loadGame)
+    private val gameListButton = "Games".toTextButton().onClick {
+        val gameListPopup = Popup(this)
+        gameListPopup.add(gameList).row()
+        gameListPopup.addCloseButton()
+        gameListPopup.open()
+    }
 
     init {
         Concurrency.run {
@@ -64,10 +72,11 @@ class MultiplayerGameScreen(private val me: UUID, initialChatRoom: Triple<UUID, 
         rightSideButton.enable()
         rightSideButton.onClick {
             val popup = Popup(this)
-            popup.add(friendList).growX().minWidth(this.stage.width * 0.5f)
+            popup.add(friendList).growX().minWidth(this.stage.width * 0.5f).row()
             popup.addCloseButton()
             popup.open()
         }
+        rightSideGroup.addActor(Container(gameListButton).padRight(5f).padLeft(5f))
         rightSideGroup.addActor(Container(helpButton).padRight(5f).padLeft(5f))
     }
 
@@ -77,7 +86,7 @@ class MultiplayerGameScreen(private val me: UUID, initialChatRoom: Triple<UUID, 
             ChatTable(
                 ChatMessageList(true, Pair(ChatRoomType.Friend, name), chatRoom, this.game.onlineMultiplayer)
             )
-        )
+        ).row()
         popup.addCloseButton()
         popup.open(force = true)
     }
@@ -113,13 +122,13 @@ class MultiplayerGameScreen(private val me: UUID, initialChatRoom: Triple<UUID, 
 
                 val identifiactionTable = Table(skin)
                 identifiactionTable.add(civ.civName).padBottom(5f).padLeft(15f).padRight(15f).colspan(2).row()
-                identifiactionTable.add(playerAccount.displayName).padLeft(15f).padRight(10f)
+                val playerNameCell = identifiactionTable.add(playerAccount.displayName).padLeft(15f).padRight(10f)
                 if (friendsOnline != null && UUID.fromString(civ.playerId) in friendsOnline.filter { it.friend.online }.map { it.friend.uuid }) {
                     identifiactionTable.add("Online").padRight(15f)
                 } else if (friendsOnline != null && UUID.fromString(civ.playerId) in friendsOnline.filter { !it.friend.online }.map { it.friend.uuid }) {
                     identifiactionTable.add("Offline").padRight(15f)
                 } else {
-                    identifiactionTable.add().padRight(15f)
+                    playerNameCell.colspan(2).padRight(15f)
                 }
 
                 playerTable.add(ImageGetter.getNationPortrait(civ.nation, 50f)).padLeft(30f).padRight(5f)
@@ -163,5 +172,21 @@ class MultiplayerGameScreen(private val me: UUID, initialChatRoom: Triple<UUID, 
                 }
             }
         }
+    }
+
+    private fun loadGame(gameOverview: GameOverviewResponse) {
+        val gameInfo = InfoPopup.load(stage) {
+            game.onlineMultiplayer.downloadGame(gameOverview.gameUUID.toString())
+        }
+        if (gameInfo != null) {
+            Concurrency.runOnNonDaemonThreadPool {
+                game.loadGame(gameInfo)
+            }
+        }
+    }
+
+    override fun dispose() {
+        gameList.dispose()
+        super.dispose()
     }
 }

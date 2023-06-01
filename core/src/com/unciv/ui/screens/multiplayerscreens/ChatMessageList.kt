@@ -106,24 +106,22 @@ class ChatMessageList(private val showHeading: Boolean, private val type: Pair<C
      * Use [suppress] to avoid showing an [InfoPopup] for any failures.
      */
     fun triggerRefresh(stage: Stage, suppress: Boolean = false) {
-        Concurrency.runOnGLThread {
-            Concurrency.run {
-                if (suppress) {
-                    val chatInfo = mp.api.chat.get(chatRoomUUID, true)
+        Concurrency.run {
+            if (suppress) {
+                val chatInfo = mp.api.chat.get(chatRoomUUID, true)
+                if (chatInfo != null) {
+                    Concurrency.runOnGLThread {
+                        messageCache = chatInfo.messages.toMutableList()
+                        recreate(chatInfo.messages)
+                    }
+                }
+            } else {
+                InfoPopup.wrap(stage) {
+                    val chatInfo = mp.api.chat.get(chatRoomUUID, false)
                     if (chatInfo != null) {
                         Concurrency.runOnGLThread {
                             messageCache = chatInfo.messages.toMutableList()
                             recreate(chatInfo.messages)
-                        }
-                    }
-                } else {
-                    InfoPopup.wrap(stage) {
-                        val chatInfo = mp.api.chat.get(chatRoomUUID, false)
-                        if (chatInfo != null) {
-                            Concurrency.runOnGLThread {
-                                messageCache = chatInfo.messages.toMutableList()
-                                recreate(chatInfo.messages)
-                            }
                         }
                     }
                 }
