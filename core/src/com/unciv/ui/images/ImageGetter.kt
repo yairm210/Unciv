@@ -172,6 +172,7 @@ object ImageGetter {
     }
 
     fun getWhiteDot() = getImage(whiteDotLocation).apply { setSize(1f) }
+    fun getWhiteDotDrawable() = textureRegionDrawables[whiteDotLocation]!!
     fun getDot(dotColor: Color) = getWhiteDot().apply { color = dotColor }
 
     fun getExternalImage(fileName: String): Image {
