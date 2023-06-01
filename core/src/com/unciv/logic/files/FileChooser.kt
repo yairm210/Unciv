@@ -123,6 +123,7 @@ open class FileChooser(
 
     init {
         innerTable.top().left()
+        innerTable.touchable = Touchable.enabled
 
         fileList.selection.setProgrammaticChangeEvents(false)
         fileNameInput.setTextFieldListener { textField, _ -> result = textField.text }
