@@ -16,7 +16,7 @@ import io.ktor.http.*
 import io.ktor.util.network.*
 import java.io.IOException
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 /**
  * List of HTTP status codes which are considered to [ApiErrorResponse]s by the specification
@@ -550,17 +550,12 @@ class ChatApi(private val client: HttpClient, private val authHelper: AuthHelper
      * @throws UncivNetworkException: thrown for any kind of network error or de-serialization problems
      */
     suspend fun list(suppress: Boolean = false): GetAllChatsResponse? {
-        val response = request(
+        return request(
             HttpMethod.Get, "api/v2/chats",
             client, authHelper,
             suppress = suppress,
             retry = getDefaultRetry(client, authHelper)
-        )
-        if (response != null) {
-            val body: GetAllChatsResponseImpl = response.body()
-            return body.to()
-        }
-        return null
+        )?.body()
     }
 
     /**
