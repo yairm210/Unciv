@@ -118,14 +118,13 @@ If anyone has any real legal sources, or can shed some light on the limits of wh
 |---	|---	|---	|---	|
 
 ## Run with Docker
-
-If you have docker and docker-compose installed, you can:
-
-* Run ```$ docker-compose build && docker-compose up```
-* Open http://localhost:6901/vnc.html?password=headless
-
-And if you are using docker desktop:
+If you have docker compose installed:
 * ```$ docker compose build && docker compose up```
 * http://localhost:6901/vnc.html?password=headless
+If just docker:
+* ```$ docker build . -t unciv && docker run -d -p 6901:6901 -p 5901:5901  /home/headless/Desktop/Unciv.sh  ```
+Or just use our already built one:
+* ```$ docker run -d -p 6901:6901 -p 5901:5901 ghcr.io/yairm210/Unciv /home/headless/Desktop/Unciv.sh  ```
 
+* http://localhost:6901/vnc.html?password=headless
 ## [Credits and 3rd parties](docs/Credits.md)
