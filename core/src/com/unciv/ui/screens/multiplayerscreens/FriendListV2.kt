@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.multiplayerscreens
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.logic.multiplayer.apiv2.AccountResponse
@@ -17,9 +18,12 @@ import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.OptionsButton
 import com.unciv.ui.components.SearchButton
 import com.unciv.ui.components.UncivTextField
+import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
 import com.unciv.ui.components.extensions.keyShortcuts
 import com.unciv.ui.components.extensions.onActivation
+import com.unciv.ui.components.extensions.setFontColor
+import com.unciv.ui.components.extensions.setFontSize
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.InfoPopup
@@ -146,6 +150,7 @@ internal class FriendListV2(
             if (searchString == "") {
                 return@onActivation
             }
+
             Log.debug("Searching for player '%s'", searchString)
             Concurrency.run {
                 val response = InfoPopup.wrap(base.stage) {
@@ -210,6 +215,17 @@ internal class FriendListV2(
                 }
             } }).padBottom(5f).padLeft(5f)
             table.row()
+        }
+
+        if (friendRequests.any { it.from.uuid == me }) {
+            table.addSeparator(color = Color.LIGHT_GRAY).pad(15f).row()
+            val infoLine = Label("Awaiting response:", BaseScreen.skin)
+            infoLine.setFontColor(Color.GRAY)
+            infoLine.setFontSize(Constants.smallFontSize)
+            table.add(infoLine).colspan(3).padBottom(5f).row()
+        }
+        for (request in friendRequests.filter { it.from.uuid == me }) {
+            table.add("${request.to.displayName} (${request.to.username})").colspan(3).padBottom(5f).row()
         }
         return table
     }

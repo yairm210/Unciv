@@ -1,5 +1,6 @@
 package com.unciv.ui.screens.multiplayerscreens
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -71,6 +72,9 @@ class MultiplayerGameScreen(private val me: UUID, initialChatRoom: Triple<UUID, 
         rightSideButton.setText("Friends".tr())
         rightSideButton.enable()
         rightSideButton.onClick {
+            Concurrency.run {
+                friendList.triggerUpdate(true)
+            }
             val popup = Popup(this)
             popup.add(friendList).growX().minWidth(this.stage.width * 0.5f).row()
             popup.addCloseButton()
@@ -116,7 +120,7 @@ class MultiplayerGameScreen(private val me: UUID, initialChatRoom: Triple<UUID, 
                 }
                 val playerAccount = playerMap[civ.playerId] ?: throw RuntimeException("Player ID ${civ.playerId} not found")
                 if (firstDone) {
-                    playerTable.addSeparator().colspan(4).padLeft(60f).padRight(60f).padTop(10f).padBottom(10f).row()
+                    playerTable.addSeparator(color = Color.LIGHT_GRAY).colspan(4).padLeft(30f).padRight(30f).padTop(10f).padBottom(10f).row()
                 }
                 firstDone = true
 
@@ -131,7 +135,7 @@ class MultiplayerGameScreen(private val me: UUID, initialChatRoom: Triple<UUID, 
                     playerNameCell.colspan(2).padRight(15f)
                 }
 
-                playerTable.add(ImageGetter.getNationPortrait(civ.nation, 50f)).padLeft(30f).padRight(5f)
+                playerTable.add(ImageGetter.getNationPortrait(civ.nation, 50f)).padLeft(20f).padRight(5f)
                 playerTable.add(identifiactionTable).padRight(5f)
                 if (civ.playerId != me.toString()) {
                     playerTable.add(ChatButton().apply {
@@ -147,7 +151,7 @@ class MultiplayerGameScreen(private val me: UUID, initialChatRoom: Triple<UUID, 
                                 val friend = friendsOnline.filter { it.friend.uuid == UUID.fromString(civ.playerId) }[0]
                                 startFriendChatting(friend.chatUUID, friend.friend.displayName)
                             }
-                        }).padRight(30f).row()
+                        }).padRight(20f).row()
                     } else if (friendsOnline != null) {
                         playerTable.add(NewButton().apply {
                             onClick {
@@ -162,9 +166,9 @@ class MultiplayerGameScreen(private val me: UUID, initialChatRoom: Triple<UUID, 
                                     }
                                 }.open(force = true)
                             }
-                        }).padRight(30f).row()
+                        }).padRight(20f).row()
                     } else {
-                        playerTable.add().padRight(30f).row()
+                        playerTable.add().padRight(20f).row()
                     }
                 } else {
                     playerTable.add()

@@ -24,7 +24,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import java.time.Duration
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 /** Interval to redraw the chat message list in milliseconds */
 private const val REDRAW_INTERVAL = 5000L

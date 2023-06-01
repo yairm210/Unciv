@@ -117,6 +117,18 @@ data class ChatMessage(
 )
 
 /**
+ * The small representation of a chatroom
+ */
+@Serializable
+data class ChatSmall(
+    @Serializable(with = UUIDSerializer::class)
+    val uuid: UUID,
+    @SerialName("last_message_uuid")
+    @Serializable(with = UUIDSerializer::class)
+    val lastMessageUUID: UUID? = null
+)
+
+/**
  * The response of a create lobby request, which contains the [lobbyUUID] and [lobbyChatRoomUUID]
  */
 @Serializable
@@ -218,31 +230,16 @@ data class GameUploadResponse(
 )
 
 /**
- * Internal wrapper around [GetAllChatsResponse] that prevents serialization issues of lists of [UUID]s
- */
-@Serializable
-internal class GetAllChatsResponseImpl(
-    @SerialName("friend_chat_rooms")
-    val friendChatRooms: List<String>,
-    @SerialName("game_chat_rooms")
-    val gameChatRooms: List<String>,
-    @SerialName("lobby_chat_rooms")
-    val lobbyChatRooms: List<String>
-) {
-    internal fun to() = GetAllChatsResponse(
-        friendChatRooms.map { UUID.fromString(it) },
-        gameChatRooms.map { UUID.fromString(it) },
-        lobbyChatRooms.map { UUID.fromString(it) }
-    )
-}
-
-/**
  * All chat rooms your user has access to
  */
+@Serializable
 data class GetAllChatsResponse(
-    val friendChatRooms: List<UUID>,
-    val gameChatRooms: List<UUID>,
-    val lobbyChatRooms: List<UUID>
+    @SerialName("friend_chat_rooms")
+    val friendChatRooms: List<ChatSmall>,
+    @SerialName("game_chat_rooms")
+    val gameChatRooms: List<ChatSmall>,
+    @SerialName("lobby_chat_rooms")
+    val lobbyChatRooms: List<ChatSmall>
 )
 
 /**
