@@ -118,6 +118,7 @@ If anyone has any real legal sources, or can shed some light on the limits of wh
 |---	|---	|---	|---	|
 
 ## Run with Docker
+[![Docker](https://github.com/haimlm/Unciv/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/haimlm/Unciv/actions/workflows/docker-publish.yml)
 If you have docker compose installed:
 * ```$ docker compose build && docker compose up```
 * http://localhost:6901/vnc.html?password=headless
