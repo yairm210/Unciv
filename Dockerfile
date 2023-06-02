@@ -3,7 +3,7 @@ FROM $ARG_COMPILE_BASE_IMAGE as build
 USER root
 RUN  apt update && \
         apt upgrade -y && \
-        apt install --fix-broken -y wget curl default-jre default-jdk
+        apt install --fix-broken -y wget curl default-jre default-jdk unzip
 WORKDIR /src
 # Get dependencies
 RUN wget -q -O packr-all-4.0.0.jar https://github.com/libgdx/packr/releases/download/4.0.0/packr-all-4.0.0.jar && \
@@ -20,6 +20,7 @@ RUN ./gradlew --version
 COPY . /src/
 RUN ./gradlew desktop:classes
 RUN ./gradlew desktop:packrLinux64 --stacktrace --info --daemon --scan
+RUN ./gradlew desktop:dist
 RUN ./gradlew desktop:zipLinuxFilesForJar
 
 FROM accetto/ubuntu-vnc-xfce-opengl-g3 as run
