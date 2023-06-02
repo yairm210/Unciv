@@ -117,8 +117,8 @@ If anyone has any real legal sources, or can shed some light on the limits of wh
 | [![](https://static.itch.io/images/badge.svg)](https://yairm210.itch.io/unciv)    |    [![](https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png)](https://play.google.com/store/apps/details?id=com.unciv.app)   |    [![](https://fdroid.gitlab.io/artwork/badge/get-it-on.png)](https://f-droid.org/en/packages/com.unciv.app/)	| [![](https://flathub.org/assets/badges/flathub-badge-en.svg)](https://flathub.org/apps/details/io.github.yairm210.unciv)
 |---	|---	|---	|---	|
 
-## Run with Docker
-[![Docker](https://github.com/haimlm/Unciv/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/haimlm/Unciv/actions/workflows/docker-publish.yml)
+## Run with Docker [![Docker](https://github.com/haimlm/Unciv/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/haimlm/Unciv/actions/workflows/docker-publish.yml)
+
 If you have docker compose installed:
 * ```$ docker compose build && docker compose up```
 * http://localhost:6901/vnc.html?password=headless
