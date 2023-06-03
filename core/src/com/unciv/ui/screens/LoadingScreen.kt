@@ -5,12 +5,10 @@ import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.unciv.Constants
 import com.unciv.ui.images.ImageWithCustomSize
-import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.popups
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.popups.LoadingPopup
 
 /** A loading screen that creates a screenshot of the current screen and adds a "Loading..." popup on top of that */
 class LoadingScreen(
@@ -34,9 +32,7 @@ class LoadingScreen(
         stage.addAction(Actions.sequence(
             Actions.delay(1000f),
             Actions.run {
-                val popup = Popup(stage)
-                popup.add(Constants.loading.toLabel())
-                popup.open()
+                LoadingPopup(this)
             }
         ))
     }
