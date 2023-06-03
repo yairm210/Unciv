@@ -123,9 +123,9 @@ If you have docker compose installed:
 * ```$ docker compose build && docker compose up```
 * http://localhost:6901/vnc.html?password=headless
 If just docker:
-* ```$ docker build . -t unciv && docker run -d -p 6901:6901 -p 5901:5901  /home/headless/Desktop/Unciv.sh  ```
+* ```$ docker build . -t unciv && docker run -d -p 6901:6901 -p 5901:5901 unciv  ```
 Or just use our already built one:
-* ```$ docker run -d -p 6901:6901 -p 5901:5901 ghcr.io/yairm210/Unciv /home/headless/Desktop/Unciv.sh  ```
+* ```$ docker run -d -p 6901:6901 -p 5901:5901 ghcr.io/yairm210/Unciv ```
 
 * http://localhost:6901/vnc.html?password=headless
 ## [Credits and 3rd parties](docs/Credits.md)
