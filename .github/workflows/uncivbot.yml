@@ -18,22 +18,22 @@ jobs:
           npm i @octokit/rest
 
           node .github/workflows/incrementVersionAndChangelog.js
-          
+
           rm -rf node_modules # Now we need to remove extraneous node.js parts before commit
           rm package-lock.json
           rm package.json
-          
+
       - name: Create new branch with changes
-        uses: EndBug/add-and-commit@v8 # You can change this to use a specific version.
+        uses: EndBug/add-and-commit@v9 # You can change this to use a specific version.
         with:
           new_branch: version_rollout
           message: 'Bump version and create initial changelog entry'
 
       - name: Add translation PRs to the new branch, and PR the new branch to master
-        run: | 
+        run: |
           npm i @octokit/rest
           node .github/workflows/mergeTranslations.js ${{ secrets.ACTIONS_ACCESS_TOKEN }} ${{ github.event.issue.number }} version_rollout
- 
+
 
   merge_translations:
     if: github.event_name == 'workflow_dispatch' || (github.event.comment.body == 'merge translations' && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association))
@@ -49,6 +49,6 @@ jobs:
           # To get around this, we created a Personal Access Token,
           #  put it as one of the secrets in the repo settings (https://github.com/yairm210/Unciv/settings/secrets/actions),
           #  and use that instead.
-        run: | 
+        run: |
           npm i @octokit/rest
           node .github/workflows/mergeTranslations.js ${{ secrets.ACTIONS_ACCESS_TOKEN }} ${{ github.event.issue.number }} translations
