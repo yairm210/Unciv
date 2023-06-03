@@ -19,9 +19,9 @@ RUN chmod +x ./gradlew && ./gradlew --version
 # Build unciv
 COPY . /src/
 RUN chmod +x ./gradlew && ./gradlew desktop:classes
-RUN chmod +x ./gradlew && ./gradlew desktop:dist
-RUN chmod +x ./gradlew && ./gradlew desktop:zipLinuxFilesForJar
-RUN chmod +x ./gradlew && ./gradlew desktop:packrLinux64 --stacktrace --info --daemon --scan
+RUN ./gradlew desktop:dist
+RUN ./gradlew desktop:zipLinuxFilesForJar
+RUN ./gradlew desktop:packrLinux64 --stacktrace --info --daemon --scan
 RUN cd /src/deploy && unzip Unciv-Linux64.zip
 
 FROM accetto/ubuntu-vnc-xfce-opengl-g3 as run
