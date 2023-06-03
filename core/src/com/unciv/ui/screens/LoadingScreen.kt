@@ -14,7 +14,7 @@ import com.unciv.ui.popups.LoadingPopup
 class LoadingScreen(
     previousScreen: BaseScreen? = null
 ) : BaseScreen() {
-    val screenshot: Texture
+    private val screenshot: Texture
     init {
         screenshot = takeScreenshot(previousScreen)
         val image = ImageWithCustomSize(
@@ -40,7 +40,7 @@ class LoadingScreen(
     private fun takeScreenshot(previousScreen: BaseScreen?): Texture {
         if (previousScreen != null) {
             for (popup in previousScreen.popups) popup.isVisible = false
-            previousScreen.render(Gdx.graphics.getDeltaTime())
+            previousScreen.render(Gdx.graphics.deltaTime)
         }
         val pixmap = Pixmap.createFromFrameBuffer(0, 0, Gdx.graphics.backBufferWidth, Gdx.graphics.backBufferHeight)
         val screenshot = Texture(pixmap)
