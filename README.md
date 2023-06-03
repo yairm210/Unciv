@@ -120,12 +120,18 @@ If anyone has any real legal sources, or can shed some light on the limits of wh
 ## Run with Docker [![Docker](https://github.com/haimlm/Unciv/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/haimlm/Unciv/actions/workflows/docker-publish.yml)
 
 If you have docker compose installed:
-* ```$ docker compose build && docker compose up```
-* http://localhost:6901/vnc.html?password=headless
-* If just docker:
-* ```$ docker build . -t unciv && docker run -d -p 6901:6901 -p 5901:5901 unciv  ```
-* Or just use our already built one:
-* ```$ docker run -d -p 6901:6901 -p 5901:5901 ghcr.io/yairm210/Unciv ```
 
-* http://localhost:6901/vnc.html?password=headless
+ ```$ docker compose build && docker compose up```
+
+and then goto http://localhost:6901/vnc.html?password=headless
+
+If just docker:
+
+```$ docker build . -t unciv && docker run -d -p 6901:6901 -p 5901:5901 unciv  ```
+
+Or just use our already built one:
+
+```$ docker run -d -p 6901:6901 -p 5901:5901 ghcr.io/yairm210/Unciv ```
+
+and then goto http://localhost:6901/vnc.html?password=headless
 ## [Credits and 3rd parties](docs/Credits.md)
