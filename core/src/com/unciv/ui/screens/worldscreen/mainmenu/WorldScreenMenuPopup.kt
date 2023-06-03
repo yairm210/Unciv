@@ -12,7 +12,7 @@ import com.unciv.ui.screens.savescreens.SaveGameScreen
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
-class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
+class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen, scrollable = Scrollability.All) {
     init {
         defaults().fillX()
 

@@ -51,7 +51,7 @@ class UnitUpgradeMenu(
     private val unit: MapUnit,
     private val unitAction: UpgradeUnitAction,
     private val onButtonClicked: () -> Unit
-) : Popup(stage, scrollable = false) {
+) : Popup(stage, Scrollability.None) {
     private val container: Container<Table>
     private val allUpgradableUnits: Sequence<MapUnit>
     private val animationDuration = 0.33f

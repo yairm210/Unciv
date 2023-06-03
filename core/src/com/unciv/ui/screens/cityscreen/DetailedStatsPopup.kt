@@ -29,7 +29,7 @@ import kotlin.math.max
 
 class DetailedStatsPopup(
     private val cityScreen: CityScreen
-) : Popup(stageToShowOn = cityScreen.stage, scrollable = false) {
+) : Popup(cityScreen, Scrollability.None) {
     private val headerTable = Table()
     private val totalTable = Table()
 
