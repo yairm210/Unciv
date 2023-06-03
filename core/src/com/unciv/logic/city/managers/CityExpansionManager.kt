@@ -73,6 +73,9 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
             throw NotEnoughGoldToBuyTileException()
         city.civ.addGold(-goldCost)
         takeOwnership(tile)
+
+        // Reapply worked tiles optimization (aka CityFocus) - doing it here means AI profits too
+        city.reassignPopulationDeferred()
     }
 
     fun getGoldCostOfTile(tile: Tile): Int {
