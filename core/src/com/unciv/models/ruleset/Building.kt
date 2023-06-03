@@ -23,6 +23,7 @@ import com.unciv.ui.components.extensions.getConsumesAmountString
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.utils.Concurrency
 import kotlin.math.pow
 
 
@@ -690,10 +691,22 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             civInfo.tech.addScience(civInfo.tech.scienceOfLast8Turns.sum() / 8)
 
         // Happiness change _may_ invalidate best worked tiles (#9238), but if the building
-        // isn't bought then reassignPopulation will run later in startTurn anyway
+        // isn't bought (or the AI bought it) then reassignPopulation will run later in startTurn anyway
         if (boughtWith != null && isStatRelated(Stat.Happiness)) {
-            cityConstructions.city.reassignPopulation()
-            cityConstructions.city.updateCitizens = false
+            // Happiness is global, so it could affect all cities
+            Concurrency.runOnNonDaemonThreadPool("reassignPopulationAllCities") {
+                for (city in civInfo.cities)
+                    city.reassignPopulationDeferred()
+            }
+        }
+
+        // Buying a building influencing tile yield may change CityFocus decisions
+        val uniqueTypesModifyingYields = listOf(
+            UniqueType.StatsFromTiles, UniqueType.StatsFromTilesWithout, UniqueType.StatsFromObject,
+            UniqueType.StatPercentFromObject, UniqueType.AllStatsPercentFromObject
+        )
+        if (boughtWith != null && uniqueTypesModifyingYields.any { hasUnique(it) }) {
+            cityConstructions.city.reassignPopulationDeferred()
         }
 
         cityConstructions.city.cityStats.update() // new building, new stats
