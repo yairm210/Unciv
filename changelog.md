@@ -1,20 +1,19 @@
 ## 4.6.17
 
-Resolved  - badly configured era conditional no longer causes crashes
+More efficient use of the charts space  - By JackRainy
+
+By SomeTroglodyte:
+- Allow image overlay and changing world wrap in map editor
+- Reapply 'city focus' on yield changes
+- Upgrading from Unit overview improved
 
 Remove "does not support server feature set" error for uncivserver.xyz
 
 Trigger resource recalculation upon gaining a unit that requires resources
 
-Guard against '><' causing translation recursion
+Guard against '><' text causing translation recursion
 
-By SomeTroglodyte:
-- More reapply CityFocus on yield changes 
-- Allow image overlay and changing world wrap in map editor 
-- Small File Chooser and Separator fixes 
-- Upgrading from Unit overview improved 
-
-More efficient use of the charts space  - By JackRainy
+Badly configured era conditional no longer causes crashes
 
 ## 4.6.16
 
