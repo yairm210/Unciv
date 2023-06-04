@@ -62,8 +62,10 @@ class RulesetValidator(val ruleset: Ruleset) {
                         UniqueType.Unbuildable))
                 lines += "${building.name} is buildable and therefore must either have an explicit cost or reference an existing tech!"
 
-            checkUniques(building, lines, rulesetInvariant, tryFixUnknownUniques)
+            if (building.hasUnique(UniqueType.IndicatesCapital) && !building.isAnyWonder() && !building.hasUnique(UniqueType.Unsellable))
+                lines += "${building.name} is a Capital indicator and therefore must either be a wonder or explicitly marked 'Unsellable'!'"
 
+            checkUniques(building, lines, rulesetInvariant, tryFixUnknownUniques)
         }
 
         for (nation in ruleset.nations.values) {
@@ -179,6 +181,12 @@ class RulesetValidator(val ruleset: Ruleset) {
             }
 
             checkUniques(unit, lines, rulesetSpecific, tryFixUnknownUniques)
+        }
+
+        when (ruleset.buildings.values.count { it.hasUnique(UniqueType.IndicatesCapital) }) {
+            0 -> lines += "No building indicating the Capital in ruleset!"
+            1 -> Unit
+            else -> lines.add("There is more than one building indicating the Capital in the ruleset!", RulesetErrorSeverity.Warning)
         }
 
         for (building in ruleset.buildings.values) {
@@ -336,7 +344,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         for (nation in ruleset.nations.values) {
             checkUniques(nation, lines, rulesetSpecific, tryFixUnknownUniques)
 
-            if (nation.cityStateType!=null && nation.cityStateType !in ruleset.cityStateTypes)
+            if (nation.cityStateType != null && nation.cityStateType !in ruleset.cityStateTypes)
                 lines += "${nation.name} is of city-state type ${nation.cityStateType} which does not exist!"
             if (nation.favoredReligion != null && nation.favoredReligion !in ruleset.religions)
                 lines += "${nation.name} has ${nation.favoredReligion} as their favored religion, which does not exist!"
