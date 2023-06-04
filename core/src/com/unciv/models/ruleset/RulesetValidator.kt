@@ -63,7 +63,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                 lines += "${building.name} is buildable and therefore must either have an explicit cost or reference an existing tech!"
 
             if (building.hasUnique(UniqueType.IndicatesCapital) && !building.isAnyWonder() && !building.hasUnique(UniqueType.Unsellable))
-                lines += "${building.name} is a Capital indicator and therefore must either be a wonder or explicitly marked 'Unsellable'!'"
+                lines += "${building.name} is a Capital indicator and therefore must either be a wonder or explicitly marked 'Unsellable'!"
 
             checkUniques(building, lines, rulesetInvariant, tryFixUnknownUniques)
         }
