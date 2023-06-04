@@ -25,6 +25,7 @@ import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.popups.LoadingPopup
 import com.unciv.utils.Log
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
@@ -116,9 +117,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
 
     private fun onLoadGame() {
         if (selectedSave == null) return
-        val loadingPopup = Popup( this)
-        loadingPopup.addGoodSizedLabel(Constants.loading)
-        loadingPopup.open()
+        val loadingPopup = LoadingPopup(this)
         Concurrency.run(loadGame) {
             try {
                 // This is what can lead to ANRs - reading the file and setting the transients, that's why this is in another thread
