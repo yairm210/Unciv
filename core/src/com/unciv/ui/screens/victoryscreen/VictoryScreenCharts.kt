@@ -92,15 +92,13 @@ class VictoryScreenCharts(
         if (lineChart == null)
         {
             lineChart = LineChart(
-                getLineChartData(rankingType),
                 viewingCiv,
-                selectedCiv,
                 parent.width - getColumnWidth(0) - 60f,
                 parent.height - 60f
             )
             chartHolder.actor = lineChart
-        } else
-            lineChart?.update(getLineChartData(rankingType), selectedCiv)
+        }
+        lineChart?.update(getLineChartData(rankingType), selectedCiv)
         chartHolder.invalidateHierarchy()
     }
 

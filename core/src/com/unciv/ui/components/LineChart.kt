@@ -23,9 +23,7 @@ import kotlin.math.sqrt
 data class DataPoint<T>(val x: T, val y: T, val civ: Civilization)
 
 class LineChart(
-    private var dataPoints: List<DataPoint<Int>>,
     private val viewingCiv: Civilization,
-    private var selectedCiv: Civilization,
     private val chartWidth: Float,
     private val chartHeight: Float
 ) : Widget() {
@@ -45,28 +43,29 @@ class LineChart(
      * as `0` is not counted. */
     private val maxLabels = 10
 
-    private var xLabels: List<Int>
-    private var yLabels: List<Int>
+    private var xLabels = emptyList<Int>()
+    private var yLabels = emptyList<Int>()
 
-    private var hasNegativeYValues: Boolean
-    private var negativeYLabel: Int
+    private var hasNegativeYValues: Boolean = false
+    private var negativeYLabel: Int = 0
 
-    init {
-        hasNegativeYValues = dataPoints.any { it.y < 0 }
-        xLabels = generateLabels(dataPoints.maxOf { it.x })
-        yLabels = generateLabels(dataPoints.maxOf { it.y })
-        val lowestValue = dataPoints.minOf { it.y }
-        negativeYLabel = if (hasNegativeYValues) -getNextNumberDivisibleByPowOfTen(-lowestValue) else 0
-    }
+    private var dataPoints = emptyList<DataPoint<Int>>()
+    private var selectedCiv = Civilization()
+
+
 
     fun update(newData: List<DataPoint<Int>>, newSelectedCiv: Civilization) {
-        dataPoints = newData
         selectedCiv = newSelectedCiv
 
-        hasNegativeYValues = dataPoints.any { it.y < 0 }
-        xLabels = generateLabels(dataPoints.maxOf { it.x })
-        yLabels = generateLabels(dataPoints.maxOf { it.y })
-        val lowestValue = dataPoints.minOf { it.y }
+        dataPoints = newData
+        updateLabels(dataPoints)
+    }
+
+    private fun updateLabels(newData: List<DataPoint<Int>>) {
+        hasNegativeYValues = newData.any { it.y < 0 }
+        xLabels = generateLabels(newData.maxOf { it.x })
+        yLabels = generateLabels(newData.maxOf { it.y })
+        val lowestValue = newData.minOf { it.y }
         negativeYLabel = if (hasNegativeYValues) -getNextNumberDivisibleByPowOfTen(-lowestValue) else 0
     }
 
@@ -93,6 +92,7 @@ class LineChart(
 
     override fun draw(batch: Batch, parentAlpha: Float) {
         super.draw(batch, parentAlpha)
+        if (xLabels.isEmpty() || yLabels.isEmpty()) return
 
         // Save the current batch transformation matrix
         val oldTransformMatrix = batch.transformMatrix.cpy()
