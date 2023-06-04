@@ -121,11 +121,9 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
             item.demandedResource.isNotEmpty() -> {
                 ImageGetter.getResourcePortrait(item.demandedResource, iconSize * 0.7f).apply {
                     addTooltip("Demanding [${item.demandedResource}]", 18f, tipAlign = Align.topLeft)
-                    onClick {
-                        if (item.civ.gameInfo.notifyExploredResources(item.civ, item.demandedResource, 0, true)) {
-                            actionContext.game.popScreen()
-                        }
-                    }
+                    onClick { actionContext.showOneTimeNotification(
+                        item.civ.gameInfo.getExploredResourcesNotification(item.civ, item.demandedResource)
+                    ) }
                 }
             }
             else -> null

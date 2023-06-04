@@ -89,7 +89,7 @@ class NotificationsOverviewTable(
                 notificationTable.background = BaseScreen.skinStrings.getUiBackground("OverviewScreen/NotificationOverviewTable/Notification", BaseScreen.skinStrings.roundedEdgeRectangleShape)
                 notificationTable.touchable = Touchable.enabled
                 if (notification.action != null)
-                    notificationTable.onClick { showOneTimeNotification(notification) }
+                    notificationTable.onClick { overviewScreen.showOneTimeNotification(notification) }
 
                 notification.addNotificationIconsTo(notificationTable, gameInfo.ruleset, iconSize)
 
