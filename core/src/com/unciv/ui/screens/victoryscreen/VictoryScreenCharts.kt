@@ -5,8 +5,8 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.components.AutoScrollPane
+import com.unciv.ui.components.DataPoint
 import com.unciv.ui.components.LineChart
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.input.onChange
@@ -36,7 +36,8 @@ class VictoryScreenCharts(
         align = Align.center
     }
 
-    private val chartHolder = Container<LineChart?>(null)
+    private var lineChart : LineChart? = null
+    private val chartHolder = Container(lineChart)
 
     init {
         civButtonsScroll.setScrollingDisabled(true, false)
@@ -88,19 +89,22 @@ class VictoryScreenCharts(
         // LineChart does not "cooperate" in Layout - the size we set here is final.
         // These values seem to fit the cell it'll be in - we subtract padding and some extra manually
         packIfNeeded()
-        chartHolder.actor = LineChart(
-            getLineChartData(rankingType),
-            viewingCiv,
-            selectedCiv,
-            parent.width - getColumnWidth(0) - 60f,
-            parent.height - 60f
-        )
+        if (lineChart == null)
+        {
+            lineChart = LineChart(
+                getLineChartData(rankingType),
+                viewingCiv,
+                selectedCiv,
+                parent.width - getColumnWidth(0) - 60f,
+                parent.height - 60f
+            )
+            chartHolder.actor = lineChart
+        } else
+            lineChart?.update(getLineChartData(rankingType), selectedCiv)
         chartHolder.invalidateHierarchy()
     }
 
-    private fun getLineChartData(
-        rankingType: RankingType
-    ): Map<Int, Map<Civilization, Int>> {
+    private fun getLineChartData(rankingType: RankingType): List<DataPoint<Int>> {
         return gameInfo.civilizations.asSequence()
             .filter { it.isMajorCiv() }
             .flatMap { civ ->
@@ -110,6 +114,9 @@ class VictoryScreenCharts(
             }
             .groupBy({ it.first }, { it.second })
             .mapValues { group -> group.value.toMap() }
+            .flatMap { turn ->
+                turn.value.map { (civ, value) -> DataPoint(turn.key, value, civ) }
+            }
     }
 
     override fun activated(index: Int, caption: String, pager: TabbedPager) {
