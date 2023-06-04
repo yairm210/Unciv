@@ -33,7 +33,6 @@ class CityTurnManager(val city: City) {
             city.reassignAllPopulation()
         } else if (city.updateCitizens) {
             city.reassignPopulation()  // includes cityStats.update
-            city.updateCitizens = false
         } else
             city.cityStats.update()
 

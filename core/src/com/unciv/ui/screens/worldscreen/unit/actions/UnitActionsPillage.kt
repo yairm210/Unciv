@@ -59,9 +59,8 @@ object UnitActionsPillage {
                 )
 
                 pillageLooting(tile, unit)
-                tile.setPillaged()
+                tile.setPillaged()  // Also triggers reassignPopulation
                 if (tile.resource != null) tile.getOwner()?.cache?.updateCivResources()    // this might take away a resource
-                tile.getCity()?.updateCitizens = true
 
                 val freePillage = unit.hasUnique(UniqueType.NoMovementToPillage, checkCivInfoUniques = true)
                 if (!freePillage) unit.useMovementPoints(1f)
