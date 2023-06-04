@@ -428,9 +428,9 @@ fun Group.addBorderAllowOpacity(size:Float, color: Color): Group {
 
 
 /** get background Image for a new separator */
-private fun getSeparatorImage(color: Color) = ImageGetter.getDot(
-    if (color.a != 0f) color else BaseScreen.skin.get("color", Color::class.java) //0x334d80
-)
+private fun getSeparatorImage(color: Color) = Image(ImageGetter.getWhiteDotDrawable().tint(
+    if (color.a != 0f) color else BaseScreen.skin.getColor("color") //0x334d80
+))
 
 /**
  * Create a horizontal separator as an empty Container with a colored background.
@@ -441,7 +441,7 @@ fun Table.addSeparator(color: Color = Color.WHITE, colSpan: Int = 0, height: Flo
     val separator = getSeparatorImage(color)
     val cell = add(separator)
         .colspan(if (colSpan == 0) columns else colSpan)
-        .minHeight(height).fillX()
+        .height(height).fillX()
     row()
     return cell
 }

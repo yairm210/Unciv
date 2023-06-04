@@ -213,9 +213,10 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             if (civInfo.naturalWonders.contains(tile.naturalWonder))
                 continue
             civInfo.naturalWonders.add(tile.naturalWonder!!)
-            if(!civInfo.isSpectator())
-                civInfo.addNotification("We have discovered [${tile.naturalWonder}]!",
-                    tile.position, NotificationCategory.General, "StatIcons/Happiness")
+            if (civInfo.isSpectator()) continue // don't trigger anything
+
+            civInfo.addNotification("We have discovered [${tile.naturalWonder}]!",
+                tile.position, NotificationCategory.General, "StatIcons/Happiness")
 
             var goldGained = 0
             val discoveredNaturalWonders = civInfo.gameInfo.civilizations.filter { it != civInfo && it.isMajorCiv() }
@@ -240,8 +241,6 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 StateForConditionals(civInfo, tile = tile)
             ))
                 UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, tile=tile, triggerNotificationText = "due to discovering a Natural Wonder")
-
-
         }
     }
 
@@ -279,7 +278,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         for (city in civInfo.cities) newDetailedCivResources.add(city.getCityResources())
 
         for (resourceSupply in newDetailedCivResources)
-            if(resourceSupply.amount > 0)
+            if (resourceSupply.amount > 0)
                 resourceSupply.amount = (resourceSupply.amount * civInfo.getResourceModifier(resourceSupply.resource)).toInt()
 
         if (!civInfo.isCityState()) {

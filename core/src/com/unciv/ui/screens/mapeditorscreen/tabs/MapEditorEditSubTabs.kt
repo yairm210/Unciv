@@ -59,7 +59,7 @@ class MapEditorEditTerrainTab(
         .filter { it.type.isBaseTerrain }
     private fun getTerrains() = allTerrains()
         .map { FormattedLine(it.name, it.name, "Terrain/${it.name}", size = 32) }
-        .toList()
+        .asIterable()
 
     override fun isDisabled() = false // allTerrains().none() // wanna see _that_ mod...
 }
@@ -100,7 +100,7 @@ class MapEditorEditFeaturesTab(
         .filter { it.type == TerrainType.TerrainFeature }
     private fun getFeatures() = allowedFeatures()
         .map { FormattedLine(it.name, it.name, "Terrain/${it.name}", size = 32) }
-        .toList()
+        .asIterable()
 
     override fun isDisabled() = allowedFeatures().none()
 }
@@ -133,7 +133,7 @@ class MapEditorEditWondersTab(
         .filter { it.type == TerrainType.NaturalWonder }
     private fun getWonders() = allowedWonders()
         .map { FormattedLine(it.name, it.name, "Terrain/${it.name}", size = 32) }
-        .toList()
+        .asIterable()
 
     override fun isDisabled() = allowedWonders().none()
 }
@@ -156,6 +156,7 @@ class MapEditorEditResourcesTab(
         add(eraser.render(0f).apply { onClick {
             editTab.setBrush("Remove resource", eraserIcon, true) { tile ->
                 tile.resource = null
+                tile.resourceAmount = 0
             }
         } }).padBottom(0f).row()
         add(
@@ -165,14 +166,17 @@ class MapEditorEditResourcesTab(
         ) { resourceName ->
             val resource = ruleset.tileResources[resourceName]!!
             editTab.setBrush(resourceName, resource.makeLink()) {
-                it.setTileResource(resource, rng = editTab.randomness.RNG)
+                if (it.resource == resourceName && resource.resourceType == ResourceType.Strategic)
+                    it.resourceAmount = (it.resourceAmount + 1).coerceAtMost(42)
+                else
+                    it.setTileResource(resource, rng = editTab.randomness.RNG)
             }
         }).padTop(0f).row()
     }
 
     private fun allowedResources() = ruleset.tileResources.values.asSequence()
         .filter { !it.hasUnique(UniqueType.CityStateOnlyResource) }
-    private fun getResources(): List<FormattedLine> = sequence {
+    private fun getResources(): Iterable<FormattedLine> = sequence {
         var lastGroup = ResourceType.Bonus
         for (resource in allowedResources()) {
             val name = resource.name
@@ -182,7 +186,7 @@ class MapEditorEditResourcesTab(
             }
             yield (FormattedLine(name, name, "Resource/$name", size = 32))
         }
-    }.toList()
+    }.asIterable()
 
     override fun isDisabled() = allowedResources().none()
 }
@@ -229,7 +233,7 @@ class MapEditorEditImprovementsTab(
         .filter { improvement ->
             disallowImprovements.none { improvement.name.startsWith(it) }
         }
-    private fun getImprovements(): List<FormattedLine> = sequence {
+    private fun getImprovements(): Iterable<FormattedLine> = sequence {
         var lastGroup = 0
         for (improvement in allowedImprovements()) {
             val name = improvement.name
@@ -240,7 +244,7 @@ class MapEditorEditImprovementsTab(
             }
             yield (FormattedLine(name, name, "Improvement/$name", size = 32))
         }
-    }.toList()
+    }.asIterable()
 
     override fun isDisabled() = allowedImprovements().none()
 
@@ -302,7 +306,7 @@ class MapEditorEditStartsTab(
     private fun getNations() = allowedNations()
         .sortedWith(compareBy<Nation>{ it.isCityState }.thenBy(collator) { it.name.tr() })
         .map { FormattedLine("[${it.name}] starting location", it.name, "Nation/${it.name}", size = 24) }
-        .toList()
+        .asIterable()
 
     override fun isDisabled() = allowedNations().none()
 

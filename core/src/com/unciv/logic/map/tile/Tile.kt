@@ -8,9 +8,11 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.HexMath
+import com.unciv.logic.map.MapParameters  // Kdoc only
 import com.unciv.logic.map.MapResources
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.mapunit.UnitMovement  // Kdoc only
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
@@ -495,13 +497,12 @@ open class Tile : IsPartOfGameInfoSerialization {
         if (isCityCenter()) return true
         val improvement = getUnpillagedTileImprovement()
         if (improvement != null && improvement.name in tileResource.getImprovements()
-                && (improvement.techRequired==null || civInfo.tech.isResearched(improvement.techRequired!!))) return true
+                && (improvement.techRequired == null || civInfo.tech.isResearched(improvement.techRequired!!))
+            ) return true
         // TODO: Generic-ify to unique
-        if (tileResource.resourceType==ResourceType.Strategic
-                && improvement!=null
-                && improvement.isGreatImprovement())
-            return true
-        return false
+        return (tileResource.resourceType == ResourceType.Strategic
+            && improvement != null
+            && improvement.isGreatImprovement())
     }
 
     // This should be the only adjacency function
@@ -676,7 +677,7 @@ open class Tile : IsPartOfGameInfoSerialization {
 
     /**
      * @returns whether units of [civInfo] can pass through this tile, considering only civ-wide filters.
-     * Use [UnitMovementAlgorithms.canPassThrough] to check whether a specific unit can pass through a tile.
+     * Use [UnitMovement.canPassThrough] to check whether a specific unit can pass through a tile.
      */
     fun canCivPassThrough(civInfo: Civilization): Boolean {
         val tileOwner = getOwner()
@@ -785,7 +786,10 @@ open class Tile : IsPartOfGameInfoSerialization {
     fun setTileResource(newResource: TileResource, majorDeposit: Boolean? = null, rng: Random = Random.Default) {
         resource = newResource.name
 
-        if (newResource.resourceType != ResourceType.Strategic) return
+        if (newResource.resourceType != ResourceType.Strategic) {
+            resourceAmount = 0
+            return
+        }
 
         for (unique in newResource.getMatchingUniques(UniqueType.ResourceAmountOnTiles, StateForConditionals(tile = this))) {
             if (matchesTerrainFilter(unique.params[0])) {
@@ -879,7 +883,11 @@ open class Tile : IsPartOfGameInfoSerialization {
             return
         // http://well-of-souls.com/civ/civ5_improvements.html says that naval improvements are destroyed upon pillage
         //    and I can't find any other sources so I'll go with that
-        if (!isLand) { changeImprovement(null); return }
+        if (!isLand) {
+            changeImprovement(null)
+            owningCity?.reassignPopulationDeferred()
+            return
+        }
 
         // Setting turnsToImprovement might interfere with UniqueType.CreatesOneImprovement
         improvementFunctions.removeCreatesOneImprovementMarker()
@@ -898,6 +906,8 @@ open class Tile : IsPartOfGameInfoSerialization {
             else
                 roadIsPillaged = true
         }
+
+        owningCity?.reassignPopulationDeferred()
     }
 
     fun isPillaged(): Boolean {
@@ -911,6 +921,8 @@ open class Tile : IsPartOfGameInfoSerialization {
             improvementIsPillaged = false
         else
             roadIsPillaged = false
+
+        owningCity?.reassignPopulationDeferred()
     }
 
 

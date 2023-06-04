@@ -176,11 +176,14 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalWLTKD ->
                 state.city != null && state.city.isWeLoveTheKingDayActive()
             UniqueType.ConditionalBeforeEra ->
-                state.civInfo != null && state.civInfo.getEraNumber() < ruleset().eras[condition.params[0]]!!.eraNumber
+                state.civInfo != null && ruleset().eras.containsKey(condition.params[0])
+                    && state.civInfo.getEraNumber() < ruleset().eras[condition.params[0]]!!.eraNumber
             UniqueType.ConditionalStartingFromEra ->
-                state.civInfo != null && state.civInfo.getEraNumber() >= ruleset().eras[condition.params[0]]!!.eraNumber
+                state.civInfo != null && ruleset().eras.containsKey(condition.params[0])
+                    &&  state.civInfo.getEraNumber() >= ruleset().eras[condition.params[0]]!!.eraNumber
             UniqueType.ConditionalDuringEra ->
-                state.civInfo != null && state.civInfo.getEraNumber() == ruleset().eras[condition.params[0]]!!.eraNumber
+                state.civInfo != null && ruleset().eras.containsKey(condition.params[0])
+                    &&  state.civInfo.getEraNumber() == ruleset().eras[condition.params[0]]!!.eraNumber
             UniqueType.ConditionalIfStartingInEra ->
                 state.civInfo != null && state.civInfo.gameInfo.gameParameters.startingEra == condition.params[0]
             UniqueType.ConditionalTech ->

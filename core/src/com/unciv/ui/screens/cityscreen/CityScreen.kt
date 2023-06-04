@@ -39,6 +39,7 @@ import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
+import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 class CityScreen(
@@ -358,23 +359,37 @@ class CityScreen(
             update()
 
         } else if (tileGroup.tileState == CityTileState.PURCHASABLE) {
-
-            val price = city.expansion.getGoldCostOfTile(tile)
-            val purchasePrompt = "Currently you have [${city.civ.gold}] [Gold].".tr() + "\n\n" +
-                "Would you like to purchase [Tile] for [$price] [${Stat.Gold.character}]?".tr()
-            ConfirmPopup(
-                this,
-                purchasePrompt,
-                "Purchase",
-                true,
-                restoreDefault = { update() }
-            ) {
-                SoundPlayer.play(UncivSound.Coin)
-                city.expansion.buyTile(tile)
-                // preselect the next tile on city screen rebuild so bulk buying can go faster
-                UncivGame.Current.replaceCurrentScreen(CityScreen(city, initSelectedTile = city.expansion.chooseNewTileToOwn()))
-            }.open()
+            askToBuyTile(tile)
         }
+    }
+
+    /** Ask whether user wants to buy [selectedTile] for gold.
+     *
+     * Used from onClick and keyboard dispatch, thus only minimal parameters are passed,
+     * and it needs to do all checks and the sound as appropriate.
+     */
+    internal fun askToBuyTile(selectedTile: Tile) {
+        // These checks are redundant for the onClick action, but not for the keyboard binding
+        if (!canChangeState || !city.expansion.canBuyTile(selectedTile)) return
+        val goldCostOfTile = city.expansion.getGoldCostOfTile(selectedTile)
+        if (!city.civ.hasStatToBuy(Stat.Gold, goldCostOfTile)) return
+
+        closeAllPopups()
+
+        val purchasePrompt = "Currently you have [${city.civ.gold}] [Gold].".tr() + "\n\n" +
+            "Would you like to purchase [Tile] for [$goldCostOfTile] [${Stat.Gold.character}]?".tr()
+        ConfirmPopup(
+            this,
+            purchasePrompt,
+            "Purchase",
+            true,
+            restoreDefault = { update() }
+        ) {
+            SoundPlayer.play(UncivSound.Coin)
+            city.expansion.buyTile(selectedTile)
+            // preselect the next tile on city screen rebuild so bulk buying can go faster
+            UncivGame.Current.replaceCurrentScreen(CityScreen(city, initSelectedTile = city.expansion.chooseNewTileToOwn()))
+        }.open()
     }
 
 

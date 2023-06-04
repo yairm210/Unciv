@@ -208,7 +208,8 @@
             "font": "button",
             "fontColor": "color",
             "downFontColor": "pressed",
-            "overFontColor": "highlight"
+            "overFontColor": "highlight",
+            "disabledFontColor": "gray"
         }
     },
     "com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle": {

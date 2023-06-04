@@ -313,7 +313,12 @@ class Civilization : IsPartOfGameInfoSerialization {
     @Suppress("MemberVisibilityCanBePrivate")  // same visibility for overloads
     fun getProximity(civName: String) = proximity[civName] ?: Proximity.None
 
-    /** Returns only undefeated civs, aka the ones we care about */
+    /** Returns only undefeated civs, aka the ones we care about
+     *
+     *  Note: Currently the implementation of `updateAllyCivForCityState` will cause the diplomacy map of
+     *  city-states to contain the barbarians. Therefore, [getKnownCivs] will **not** list the barbarians
+     *  for major civs, but **will** do so for city-states after some gameplay.
+     */
     fun getKnownCivs() = diplomacy.values.asSequence().map { it.otherCiv() }.filter { !it.isDefeated() }
     fun knows(otherCivName: String) = diplomacy.containsKey(otherCivName)
     fun knows(otherCiv: Civilization) = knows(otherCiv.civName)

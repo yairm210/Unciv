@@ -12,13 +12,15 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.keyShortcuts
 import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.extensions.onDoubleClick
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toLabel
 
 class MapEditorFilesTable(
     initWidth: Float,
     private val includeMods: Boolean = false,
-    private val onSelect: (FileHandle) -> Unit
+    private val onSelect: (FileHandle) -> Unit,
+    private val onDoubleClick: () -> Unit
 ): Table(BaseScreen.skin) {
     private var selectedIndex = -1
 
@@ -41,7 +43,7 @@ class MapEditorFilesTable(
         onSelect(sortedFiles[row].file)
     }
 
-    fun moveSelection(delta: Int) {
+    private fun moveSelection(delta: Int) {
         selectedIndex = when {
             selectedIndex + delta in sortedFiles.indices ->
                 selectedIndex + delta
@@ -91,6 +93,10 @@ class MapEditorFilesTable(
             val mapButton = TextButton(mapFile.name(), BaseScreen.skin)
             mapButton.onClick {
                 markSelection(mapButton, index)
+            }
+            mapButton.onDoubleClick {
+                markSelection(mapButton, index)
+                onDoubleClick()
             }
             add(mapButton).row()
         }

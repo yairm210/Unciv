@@ -13,7 +13,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 
-class DiplomacyFunctions(val civInfo:Civilization){
+class DiplomacyFunctions(val civInfo: Civilization){
 
     /** A sorted Sequence of all other civs we know (excluding barbarians and spectators) */
     fun getKnownCivsSorted(includeCityStates: Boolean = true, includeDefeated: Boolean = false) =
@@ -59,7 +59,7 @@ class DiplomacyFunctions(val civInfo:Civilization){
             // For now, it might be overkill though.
             var meetString = "[${civInfo.civName}] has given us [${giftAmount}] as a token of goodwill for meeting us"
             val religionMeetString = "[${civInfo.civName}] has also given us [${faithAmount}]"
-            if (civInfo.diplomacy.filter { it.value.otherCiv().isMajorCiv() }.size == 1) {
+            if (civInfo.diplomacy.count { it.value.otherCiv().isMajorCiv() } == 1) {
                 giftAmount.timesInPlace(2f)
                 meetString = "[${civInfo.civName}] has given us [${giftAmount}] as we are the first major civ to meet them"
             }
