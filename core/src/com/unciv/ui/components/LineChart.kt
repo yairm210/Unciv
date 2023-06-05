@@ -46,9 +46,14 @@ class LineChart(
 
     private var xLabels = emptyList<Int>()
     private var yLabels = emptyList<Int>()
+    private var xLabelsAsLabels = emptyList<Label>()
+    private var yLabelsAsLabels = emptyList<Label>()
+
 
     private var hasNegativeYValues: Boolean = false
     private var negativeYLabel: Int = 0
+    private var negativeYLabelAsLabel = Label("0", Label.LabelStyle(Fonts.font, axisLabelColor))
+
 
     private var dataPoints = emptyList<DataPoint<Int>>()
     private var selectedCiv = Civilization()
@@ -66,8 +71,16 @@ class LineChart(
         hasNegativeYValues = newData.any { it.y < 0 }
         xLabels = generateLabels(newData.maxOf { it.x })
         yLabels = generateLabels(newData.maxOf { it.y })
+
+        xLabelsAsLabels =
+            xLabels.map { Label(it.toString(), Label.LabelStyle(Fonts.font, axisLabelColor)) }
+        yLabelsAsLabels =
+            yLabels.map { Label(it.toString(), Label.LabelStyle(Fonts.font, axisLabelColor)) }
+
         val lowestValue = newData.minOf { it.y }
         negativeYLabel = if (hasNegativeYValues) -getNextNumberDivisibleByPowOfTen(-lowestValue) else 0
+        negativeYLabelAsLabel =
+            Label(negativeYLabel.toString(), Label.LabelStyle(Fonts.font, axisLabelColor))
     }
 
     private fun generateLabels(maxValue: Int): List<Int> {
@@ -103,11 +116,7 @@ class LineChart(
 
         val lastTurnDataPoints = getLastTurnDataPoints()
 
-        val labelHeight = Label("123", Label.LabelStyle(Fonts.font, axisLabelColor)).height
-        val yLabelsAsLabels =
-                yLabels.map { Label(it.toString(), Label.LabelStyle(Fonts.font, axisLabelColor)) }
-        val negativeYLabelAsLabel =
-                Label(negativeYLabel.toString(), Label.LabelStyle(Fonts.font, axisLabelColor))
+        val labelHeight = yLabelsAsLabels.first().height
         val widestYLabelWidth = max(yLabelsAsLabels.maxOf { it.width }, negativeYLabelAsLabel.width)
         // We assume here that all labels have the same height. We need to deduct the height of
         // a label from the available height, because otherwise the label on the top would
@@ -148,15 +157,12 @@ class LineChart(
         }
 
         // Draw x-axis labels
-        val xLabelsAsLabels =
-                xLabels.map { Label(it.toString(), Label.LabelStyle(Fonts.font, axisLabelColor)) }
         val lastXAxisLabelWidth = xLabelsAsLabels[xLabelsAsLabels.size - 1].width
         val xAxisLabelMinX =
                 widestYLabelWidth + axisToLabelPadding + axisLineWidth / 2
         val xAxisLabelMaxX = chartWidth - lastXAxisLabelWidth / 2
         val xAxisLabelXRange = xAxisLabelMaxX - xAxisLabelMinX
-        xLabels.forEachIndexed { index, labelAsInt ->
-            val label = Label(labelAsInt.toString(), Label.LabelStyle(Fonts.font, axisLabelColor))
+        xLabelsAsLabels.forEachIndexed { index, label ->
             val xPos = xAxisLabelMinX + index * (xAxisLabelXRange / (xLabels.size - 1))
             label.setPosition(xPos - label.width / 2, 0f)
             label.draw(batch, 1f)
