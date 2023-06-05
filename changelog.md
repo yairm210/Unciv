@@ -1,23 +1,21 @@
 ## 4.6.18
 
-Resolved  - Pillaged improvements have a visual indication on the icon
+Pillaged improvements have a visual indication on the icon
 
 Fixed great engineer automation trying to reach cities it can't
 
 Fixed later civs not getting any CS quests
 
 By SomeTroglodyte:
-- Mod checks against sellable, missing or multiple Palace(s) 
-- Fix tooltips on Android with physical keyboard detected 
-- Upgraded music player popup 
-- Popups get the ability to scroll only the content without the buttons 
-- Fix translation templates / use as per  
+- Mod checks against sellable, missing or multiple Palace(s)
+- Fix tooltips on Android with keyboard detected
+- Upgraded music player popup
+- Popups can scroll the content without the buttons
+- Translation fixes
 
-upgrade cosign-installer to latest release  - By bobcallaway
+Winning player can continue MP game - By CrsiX
 
-Fixed special case to allow winning player to continue the MP game  - By CrsiX
-
-Adding docker build and push workflow, fixing docker build  - By haimlm
+Added docker build and push workflow  - By haimlm
 
 ## 4.6.17
 
