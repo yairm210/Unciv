@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.actions.TemporalAction
 import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -49,6 +49,11 @@ class UncivTooltip <T: Actor>(
     /** current visibility state of the Tooltip */
     var state: TipState = TipState.Hidden
         private set
+
+    // Needed for Android with physical keyboard detected, to avoid tips staying on-screen after
+    // touching buttons (exit fires, sometimes very late, with "to" actor being the label of the button)
+    private var touchDownSeen = false
+
     private val contentWidth: Float
     private val contentHeight: Float
 
@@ -82,8 +87,8 @@ class UncivTooltip <T: Actor>(
             setPosition(pos.x - originX, pos.y - originY)
             if (useAnimation) {
                 isTransform = true
-                color.a = 0.2f
-                setScale(0.05f)
+                color.a = 0.1f
+                setScale(0.1f)
             } else {
                 isTransform = false
                 color.a = 1f
@@ -93,14 +98,7 @@ class UncivTooltip <T: Actor>(
         target.stage.addActor(container)
 
         if (useAnimation) {
-            state = TipState.Showing
-            container.addAction(Actions.sequence(
-                Actions.parallel(
-                    Actions.fadeIn(tipAnimationDuration, Interpolation.fade),
-                    Actions.scaleTo(1f, 1f, tipAnimationDuration, Interpolation.fade)
-                ),
-                Actions.run { if (state == TipState.Showing) state = TipState.Shown }
-            ))
+            startShowAction(TipState.Shown)
         } else
             state = TipState.Shown
     }
@@ -114,15 +112,7 @@ class UncivTooltip <T: Actor>(
             state = TipState.Shown  // edge case. may actually only be partially 'shown' - animate hide anyway
         }
         if (useAnimation) {
-            state = TipState.Hiding
-            container.addAction(Actions.sequence(
-                Actions.parallel(
-                    Actions.alpha(0.2f, tipAnimationDuration, Interpolation.fade),
-                    Actions.scaleTo(0.05f, 0.05f, tipAnimationDuration, Interpolation.fade)
-                ),
-                Actions.removeActor(),
-                Actions.run { if (state == TipState.Hiding) state = TipState.Hidden }
-            ))
+            startShowAction(TipState.Hidden)
         } else {
             container.remove()
             state = TipState.Hidden
@@ -142,6 +132,46 @@ class UncivTooltip <T: Actor>(
     private fun Actor.getEdgePoint(align: Int) =
         Vector2(getOriginX(width,align),getOriginY(height,align))
 
+    private fun startShowAction(endState: TipState) {
+        container.clearActions()
+        container.addAction(ShowAction(endState))
+    }
+
+    private inner class ShowAction(
+        private val endState: TipState
+    ) : TemporalAction(tipAnimationDuration, Interpolation.fade) {
+        private val transitionState: TipState
+        private val valueAdd: Float
+        private val valueMul: Float
+
+        init {
+            if (endState == TipState.Shown) {
+                transitionState = TipState.Showing
+                valueAdd = 0.1f
+                valueMul = 0.9f
+            } else {
+                transitionState = TipState.Hiding
+                valueAdd = 1f
+                valueMul = -0.9f
+            }
+            state = transitionState
+        }
+
+        override fun update(percent: Float) {
+            if (!target.hasParent()) {
+                hide(true)
+                finish()
+            }
+            val value = percent * valueMul + valueAdd
+            target.color.a = value
+            target.setScale(value)
+        }
+        override fun end() {
+            if (state == transitionState) state = endState
+            if (endState == TipState.Hidden) target.remove()
+        }
+    }
+
     //endregion
     //region events
 
@@ -152,11 +182,13 @@ class UncivTooltip <T: Actor>(
     }
 
     override fun exit(event: InputEvent?, x: Float, y: Float, pointer: Int, toActor: Actor?) {
-        if (toActor != null && toActor.isDescendantOf(target)) return
+        if (!touchDownSeen && toActor != null && toActor.isDescendantOf(target)) return
+        touchDownSeen = false
         hide()
     }
 
     override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int ): Boolean {
+        touchDownSeen = true
         container.toFront()     // this is a no-op if it has no parent
         return super.touchDown(event, x, y, pointer, button)
     }
