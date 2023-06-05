@@ -88,7 +88,7 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
 
     private var workedIcon: Actor? = null
 
-    private var improvementName: String? = null
+    private var improvementPlusPillagedID: String? = null
     var improvementIcon: Actor? = null
         private set  // Getter public for BattleTable to display as City Combatant
 
@@ -140,15 +140,19 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
     private fun updateImprovementIcon(viewingCiv: Civilization?, show: Boolean) {
         // If improvement has changed, force new icon next time it is needed
         val improvementToShow = tile().getShownImprovement(viewingCiv)
-        if (improvementName != improvementToShow) {
-            improvementName = improvementToShow
+        val newImprovementPlusPillagedID = if (improvementToShow==null) null
+        else if (tile().improvementIsPillaged) "$improvementToShow-Pillaged"
+        else improvementToShow
+
+        if (improvementPlusPillagedID != newImprovementPlusPillagedID) {
+            improvementPlusPillagedID = newImprovementPlusPillagedID
             improvementIcon?.remove()
             improvementIcon = null
         }
 
         // Get new icon when needed
-        if (improvementName != null && show && improvementIcon == null) {
-            val icon = ImageGetter.getImprovementPortrait(improvementName!!, dim = false)
+        if (improvementPlusPillagedID != null && show && improvementIcon == null) {
+            val icon = ImageGetter.getImprovementPortrait(improvementToShow!!, dim = false, isPillaged = tile().improvementIsPillaged)
             icon.center(tileGroup)
             icon.x -= 22 // left
             icon.y -= 12 // bottom

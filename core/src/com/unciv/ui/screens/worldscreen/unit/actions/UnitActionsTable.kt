@@ -30,7 +30,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         if (!worldScreen.canChangeState) return // No actions when it's not your turn or spectator!
         for (unitAction in UnitActions.getUnitActions(unit)) {
             val button = getUnitActionButton(unit, unitAction)
-            if (unitAction is UpgradeUnitAction) {
+            if (unitAction is UpgradeUnitAction && GUI.keyboardAvailable) {
                 val tipTitle = "«RED»${unitAction.type.key}«»: {Upgrade}"
                 val tipActor = BaseUnitDescriptions.getUpgradeTooltipActor(tipTitle, unit.baseUnit, unitAction.unitToUpgradeTo)
                 button.addListener(UncivTooltip(button, tipActor
