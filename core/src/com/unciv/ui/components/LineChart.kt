@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Widget
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.components.extensions.surroundWithCircle
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.victoryscreen.VictoryScreenCivGroup
 import com.unciv.ui.screens.victoryscreen.VictoryScreenCivGroup.DefeatedPlayerStyle
 import kotlin.math.min
@@ -223,16 +224,7 @@ class LineChart(
 
                 // Draw the selected Civ icon on its last datapoint
                 if (i == simplifiedScaledPoints.size - 1 && selectedCiv == civ && selectedCiv in lastTurnDataPoints) {
-                    val selectedCivIcon =
-                            VictoryScreenCivGroup(
-                                selectedCiv,
-                                "",
-                                viewingCiv,
-                                DefeatedPlayerStyle.REGULAR
-                            ).children[0].run {
-                                (this as? Image)?.surroundWithCircle(30f, color = Color.LIGHT_GRAY)
-                                    ?: this
-                            }
+                    val selectedCivIcon = VictoryScreenCivGroup.getCivImageAndColors(selectedCiv, viewingCiv, DefeatedPlayerStyle.REGULAR).first
                     selectedCivIcon.run {
                         setPosition(b.x, b.y, Align.center)
                         setSize(33f, 33f) // Dead Civs need this
