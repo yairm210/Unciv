@@ -96,6 +96,7 @@ class CityReligionInfoTable(
 
     fun asExpander(onChange: (()->Unit)?): ExpanderTab {
         val (icon, label) = getIconAndLabel(religionManager.getMajorityReligion())
+        defaults().center().pad(5f)
         return ExpanderTab(
                 title = "Majority Religion: [$label]",
                 fontSize = Constants.defaultFontSize,
@@ -103,10 +104,8 @@ class CityReligionInfoTable(
                 defaultPad = 0f,
                 persistenceID = "CityStatsTable.Religion",
                 startsOutOpened = false,
+                content = this,
                 onChange = onChange
-            ) {
-                defaults().center().pad(5f)
-                it.add(this)
-            }
+            )
     }
 }

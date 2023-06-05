@@ -19,33 +19,82 @@ import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 
-/**
- * A widget with a header that when clicked shows/hides a sub-Table.
- *
- * @param title The header text, automatically translated.
- * @param fontSize Size applied to header text (only)
- * @param icon Optional icon - please use [Image] or [IconCircleGroup] and make sure size is set
- * @param defaultPad Padding between content and wrapper.
- * @param headerPad Default padding for the header Table.
- * @param expanderWidth If set initializes header width
- * @param maxContentHeight If set and content measures higher, the wrapper will be a ScrollPane set to this height
- * @param persistenceID If specified, the ExpanderTab will remember its open/closed state for the duration of one app run
- * @param onChange If specified, this will be called after the visual change for a change in [isOpen] completes (e.g. to react to changed size)
- * @param initContent Optional lambda with [innerTable] as parameter, to help initialize content. Will be `pack()`ed when done!
- */
-class ExpanderTab(
+/** A widget with a header that when clicked shows/hides a sub-Table. */
+class ExpanderTab private constructor(
     title: String,
-    fontSize: Int = Constants.headingFontSize,
-    icon: Actor? = null,
-    startsOutOpened: Boolean = true,
-    defaultPad: Float = 10f,
-    headerPad: Float = 10f,
-    expanderWidth: Float = 0f,
-    private val persistenceID: String? = null,
-    maxContentHeight: Float = 0f,
-    private val onChange: (() -> Unit)? = null,
-    initContent: ((Table) -> Unit)? = null
+    fontSize: Int,
+    icon: Actor?,
+    startsOutOpened: Boolean,
+    defaultPad: Float,
+    headerPad: Float,
+    expanderWidth: Float,
+    private val persistenceID: String?,
+    maxContentHeight: Float,
+    content: Table,
+    initContent: ((Table) -> Unit),
+    private val onChange: (() -> Unit)?
 ): Table(BaseScreen.skin) {
+    /**
+     * A widget with a header that when clicked shows/hides a sub-Table.
+     * Alternate constructor that creates an empty [innerTable] and calls [initContent] to let the client fill it.
+     *
+     * @param title The header text, automatically translated.
+     * @param fontSize Size applied to header text (only)
+     * @param icon Optional icon - please use [Image] or [IconCircleGroup] and make sure size is set
+     * @param defaultPad Padding between content and wrapper.
+     * @param headerPad Default padding for the header Table.
+     * @param expanderWidth If set initializes header width
+     * @param maxContentHeight If set and content measures higher, the wrapper will be a ScrollPane set to this height
+     * @param persistenceID If specified, the ExpanderTab will remember its open/closed state for the duration of one app run
+     * @param onChange If specified, this will be called after the visual change for a change in [isOpen] completes (e.g. to react to changed size)
+     * @param initContent A lambda with [innerTable] as parameter, to help initialize content. Will be `pack()`ed when done!
+     */
+    constructor(
+        title: String,
+        fontSize: Int = Constants.headingFontSize,
+        icon: Actor? = null,
+        startsOutOpened: Boolean = true,
+        defaultPad: Float = 10f,
+        headerPad: Float = 10f,
+        expanderWidth: Float = 0f,
+        persistenceID: String? = null,
+        maxContentHeight: Float = 0f,
+        onChange: (() -> Unit)? = null,
+        initContent: ((Table) -> Unit)
+    ) : this(title, fontSize, icon, startsOutOpened, defaultPad, headerPad, expanderWidth,
+        persistenceID, maxContentHeight, getDefaultInnerTable(), initContent, onChange
+    )
+    /**
+     * A widget with a header that when clicked shows/hides a sub-Table.
+     * Constructor that uses a pre-filled content Table.
+     *
+     * @param title The header text, automatically translated.
+     * @param fontSize Size applied to header text (only)
+     * @param icon Optional icon - please use [Image] or [IconCircleGroup] and make sure size is set
+     * @param defaultPad Padding between content and wrapper.
+     * @param headerPad Default padding for the header Table.
+     * @param expanderWidth If set initializes header width
+     * @param maxContentHeight If set and content measures higher, the wrapper will be a ScrollPane set to this height
+     * @param persistenceID If specified, the ExpanderTab will remember its open/closed state for the duration of one app run
+     * @param content A Table with final content in place to display in expanded state. Will be `pack()`ed _and measured_ by the constructor!
+     * @param onChange If specified, this will be called after the visual change for a change in [isOpen] completes (e.g. to react to changed size)
+     */
+    constructor(
+        title: String,
+        fontSize: Int = Constants.headingFontSize,
+        icon: Actor? = null,
+        startsOutOpened: Boolean = true,
+        defaultPad: Float = 10f,
+        headerPad: Float = 10f,
+        expanderWidth: Float = 0f,
+        persistenceID: String? = null,
+        maxContentHeight: Float = 0f,
+        content: Table,
+        onChange: (() -> Unit)? = null
+    ) : this(title, fontSize, icon, startsOutOpened, defaultPad, headerPad, expanderWidth,
+        persistenceID, maxContentHeight, content, {}, onChange
+    )
+
     private companion object {
         const val arrowSize = 18f
         const val arrowImage = "OtherIcons/BackArrow"
@@ -55,6 +104,10 @@ class ExpanderTab(
         const val forceScroll = false
 
         val persistedStates = HashMap<String, Boolean>()
+
+        fun getDefaultInnerTable() = Table().apply {
+            defaults().growX()
+        }
     }
 
     val header = Table(skin)  // Header with label and icon, touchable to show/hide
@@ -71,7 +124,7 @@ class ExpanderTab(
     private var savedScrollY = 0f
 
     /** The container where the client should add the content to toggle */
-    val innerTable = Table()
+    val innerTable: Table = content
 
     /** Indicates whether the contents are currently shown, changing this will animate the widget */
     // This works because a HashMap _could_ store an entry for the null key but we cannot actually store one when declaring as HashMap<String, Boolean>
@@ -103,9 +156,8 @@ class ExpanderTab(
         if (expanderWidth != 0f)
             defaults().minWidth(expanderWidth)
         defaults().growX()
-        innerTable.defaults().growX()
-        initContent?.invoke(innerTable)
 
+        initContent(innerTable)
         innerTable.pack()
         val contentWidth = innerTable.width
         val contentHeight = innerTable.height
@@ -114,6 +166,10 @@ class ExpanderTab(
             expanderWidth else contentWidth
         wrapperHeight = if (maxContentHeight > 0f && contentHeight > maxContentHeight)
             maxContentHeight else contentHeight
+
+        if (wrapperHeight == 0f)
+            // Sorry, can't deal with that
+            throw IllegalStateException("ExpanderTab created with empty content")
 
         wrapper = if (contentHeight > wrapperHeight || contentWidth > wrapperWidth || forceScroll)
                 AutoScrollPane(innerTable, skin).apply {

@@ -172,9 +172,8 @@ class ModManagementScreen(
 
         topTable.add().expandY().row() // helps with top() being ignored
 
-        topTable.add(ExpanderTab("Mod info and options", expanderWidth = stage.width) {
-            it.add(modActionTable).growX()
-        }).bottom().padTop(10f).growX().row()
+        topTable.add(ExpanderTab("Mod info and options", expanderWidth = stage.width, content = modActionTable))
+            .bottom().padTop(10f).growX().row()
     }
 
     private fun initLandscape() {
