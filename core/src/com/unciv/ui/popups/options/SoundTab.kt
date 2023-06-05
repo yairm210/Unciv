@@ -16,6 +16,7 @@ import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.extensions.toImageButton
+import com.unciv.ui.popups.Popup
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
 import kotlin.math.floor
@@ -154,9 +155,10 @@ private fun addMusicCurrentlyPlaying(table: Table, music: MusicController) {
     label.wrap = true
     table.add(label).padTop(20f).colspan(2).fillX().row()
     music.onChange {
-        Concurrency.runOnGLThread {
-            label.setText("Currently playing: [$it]".tr())
-        }
+        label.setText("Currently playing: [$it]".tr())
+    }
+    table.firstAscendant(Popup::class.java)?.run {
+        closeListeners.add { music.onChange(null) }
     }
 }
 

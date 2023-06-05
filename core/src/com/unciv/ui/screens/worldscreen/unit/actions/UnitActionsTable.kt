@@ -11,7 +11,6 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.UpgradeUnitAction
-import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.UncivTooltip
 import com.unciv.ui.components.KeyboardBindings
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
@@ -31,7 +30,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         if (!worldScreen.canChangeState) return // No actions when it's not your turn or spectator!
         for (unitAction in UnitActions.getUnitActions(unit)) {
             val button = getUnitActionButton(unit, unitAction)
-            if (unitAction is UpgradeUnitAction) {
+            if (unitAction is UpgradeUnitAction && GUI.keyboardAvailable) {
                 val tipTitle = "«RED»${KeyboardBindings[unitAction.type.binding]}«»: {Upgrade}"
                 val tipActor = BaseUnitDescriptions.getUpgradeTooltipActor(tipTitle, unit.baseUnit, unitAction.unitToUpgradeTo)
                 button.addListener(UncivTooltip(button, tipActor

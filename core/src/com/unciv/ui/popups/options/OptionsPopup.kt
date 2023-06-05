@@ -29,7 +29,7 @@ class OptionsPopup(
     screen: BaseScreen,
     private val selectPage: Int = defaultPage,
     private val onClose: () -> Unit = {}
-) : Popup(screen.stage, /** [TabbedPager] handles scrolling */ scrollable = false ) {
+) : Popup(screen.stage, /** [TabbedPager] handles scrolling */ scrollable = Scrollability.None) {
 
     val game = screen.game
     val settings = screen.game.settings

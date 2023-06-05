@@ -22,6 +22,7 @@ import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.keyShortcuts
 import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.popups.LoadingPopup
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import kotlinx.coroutines.CoroutineScope
@@ -105,10 +106,7 @@ class MapEditorLoadTab(
         var needPopup = true    // loadMap can fail faster than postRunnable runs
         Concurrency.runOnGLThread {
             if (!needPopup) return@runOnGLThread
-            popup = Popup(editorScreen).apply {
-                addGoodSizedLabel(Constants.loading)
-                open()
-            }
+            popup = LoadingPopup(editorScreen)
         }
         try {
             val map = MapSaver.loadMap(chosenMap!!)

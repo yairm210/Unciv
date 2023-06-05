@@ -135,7 +135,7 @@ class MapEditorOptionsTab(
 
     private fun showOverlayFileName() = overlayFileButton.run {
         if (editorScreen.overlayFile == null) {
-            setText("Click to choose a file")
+            setText("Click to choose a file".tr())
             style.fontColor.a = 0.5f
         } else {
             setText(editorScreen.overlayFile!!.path())

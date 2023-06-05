@@ -24,10 +24,10 @@ class AuthPopup(stage: Stage, authSuccessful: ((Boolean) -> Unit)? = null)
                 authSuccessful?.invoke(true)
                 close()
             } catch (_: Exception) {
-                innerTable.clear()
+                clear()
                 addGoodSizedLabel("Authentication failed").colspan(2).row()
                 add(passwordField).colspan(2).growX().pad(16f, 0f, 16f, 0f).row()
-                addCloseButton(style=negativeButtonStyle) { authSuccessful?.invoke(false) }.growX().padRight(8f)
+                addCloseButton(style = negativeButtonStyle) { authSuccessful?.invoke(false) }.growX().padRight(8f)
                 add(button).growX().padLeft(8f)
                 return@onClick
             }
@@ -35,7 +35,7 @@ class AuthPopup(stage: Stage, authSuccessful: ((Boolean) -> Unit)? = null)
 
         addGoodSizedLabel("Please enter your server password").colspan(2).row()
         add(passwordField).colspan(2).growX().pad(16f, 0f, 16f, 0f).row()
-        addCloseButton(style=negativeButtonStyle) { authSuccessful?.invoke(false) }.growX().padRight(8f)
+        addCloseButton(style = negativeButtonStyle) { authSuccessful?.invoke(false) }.growX().padRight(8f)
         add(button).growX().padLeft(8f)
     }
 }
