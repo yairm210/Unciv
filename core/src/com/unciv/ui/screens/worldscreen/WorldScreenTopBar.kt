@@ -15,6 +15,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.KeyboardBinding
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.YearTextUtil
@@ -180,7 +181,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
             }
 
             val overviewButton = "Overview".toTextButton()
-            overviewButton.addTooltip('e')
+            overviewButton.addTooltip(KeyboardBinding.EmpireOverview)
             overviewButton.onClick { worldScreen.openEmpireOverview() }
 
             unitSupplyCell = add()

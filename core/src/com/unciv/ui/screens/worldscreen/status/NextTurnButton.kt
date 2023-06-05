@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.isEnabled
@@ -45,6 +46,8 @@ class NextTurnButton : IconTextButton("", null, 30) {
 
         isEnabled = !worldScreen.hasOpenPopups() && worldScreen.isPlayersTurn
                 && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning()
+
+        if (isEnabled) addTooltip(KeyboardBinding.NextTurn)
     }
     internal fun updateButton(nextTurnAction: NextTurnAction) {
         label.setText(nextTurnAction.text.tr())
