@@ -121,6 +121,7 @@ project(":core") {
         "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
         "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
         "implementation"("org.jetbrains.kotlin:kotlin-reflect:${com.unciv.build.BuildConfig.kotlinVersion}")
+
     }
 
 

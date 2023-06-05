@@ -264,8 +264,8 @@ object ImageGetter {
         return PortraitTech(techName, circleSize)
     }
 
-    fun getImprovementPortrait(improvementName: String, size: Float = 20f, dim: Boolean = false): Portrait {
-        return PortraitImprovement(improvementName, size, dim)
+    fun getImprovementPortrait(improvementName: String, size: Float = 20f, dim: Boolean = false, isPillaged: Boolean = false): Portrait {
+        return PortraitImprovement(improvementName, size, dim, isPillaged)
     }
 
     fun getUnitActionPortrait(actionName: String, size: Float = 20f): Portrait {

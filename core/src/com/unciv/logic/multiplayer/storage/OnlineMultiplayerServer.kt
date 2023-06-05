@@ -7,7 +7,6 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.ServerFeatureSet
-import com.unciv.utils.Log
 
 /**
  * Allows access to games stored on a server for multiplayer purposes.
@@ -52,7 +51,7 @@ class OnlineMultiplayerServer(
                 featureSet = try {
                     json().fromJson(ServerFeatureSet::class.java, result)
                 } catch (ex: Exception) {
-                    Log.error("${UncivGame.Current.settings.multiplayer.server} does not support server feature set", ex)
+                    // The server does not support server feature set - not an error!
                     ServerFeatureSet()
                 }
             }

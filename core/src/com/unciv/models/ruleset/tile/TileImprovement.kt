@@ -75,8 +75,10 @@ class TileImprovement : RulesetStatsObject() {
 
     fun handleImprovementCompletion(builder: MapUnit) {
         val tile = builder.getTile()
+
         if (hasUnique(UniqueType.TakesOverAdjacentTiles))
             UnitActions.takeOverTilesAround(builder)
+
         if (tile.resource != null) {
             val city = builder.getTile().getCity()
             if (city != null) {
@@ -85,6 +87,7 @@ class TileImprovement : RulesetStatsObject() {
                 city.civ.cache.updateCivResources()
             }
         }
+
         if (hasUnique(UniqueType.RemovesFeaturesIfBuilt)) {
             // Remove terrainFeatures that a Worker can remove
             // and that aren't explicitly allowed under the improvement
@@ -100,6 +103,8 @@ class TileImprovement : RulesetStatsObject() {
 
             tile.setTerrainFeatures(tile.terrainFeatures.filterNot { it in removableTerrainFeatures })
         }
+
+        tile.owningCity?.reassignPopulationDeferred()
     }
 
     /**
