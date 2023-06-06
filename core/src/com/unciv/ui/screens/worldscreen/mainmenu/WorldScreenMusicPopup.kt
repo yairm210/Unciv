@@ -60,7 +60,13 @@ class WorldScreenMusicPopup(
         addMusicMods(settings)
         addHistory()
         addMusicControls(bottomTable, settings, musicController)
-        addCloseButton().colspan(2)
+        addCloseButton().padTop(10f).padBottom(0f).colspan(2)
+
+        getScrollPane()?.run {
+            fadeScrollBars = false
+            if (bottomTable.prefWidth < prefWidth)
+                bottomTable.width = prefWidth
+        }
 
         musicController.onChange {
             historyTable.clear()
