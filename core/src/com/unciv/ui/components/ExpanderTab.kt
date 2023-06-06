@@ -13,15 +13,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.Layout
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import kotlin.math.abs
-
-// Todo: Call onChange during animation??
-// Todo: DisableAnimation parameter
 
 /**
  * A widget with a header that when clicked shows/hides a sub-Table.
@@ -32,10 +30,12 @@ import kotlin.math.abs
  * @param startsOutOpened Default initial "open" state if no [persistenceID] set or no persistes state found
  * @param defaultPad Padding between content and wrapper.
  * @param headerPad Default padding for the header Table.
+ * @param headerAlign How the header content aligns - use [Align] constants.
  * @param expanderWidth If set initializes cell minWidth and wrapper width
  * @param persistenceID If specified, the ExpanderTab will remember its open/closed state for the duration of one app run
+ * @param animated Controls whether opening/closing is animated, defaults to the [continuousRendering][GameSettings.continuousRendering] setting.
  * @param content An [Actor] supporting [Layout] with the content to display in expanded state. Will be `pack()`ed!
- * @param onChange If specified, this will be called after the visual change for a change in [isOpen] completes (e.g. to react to changed size)
+ * @param onChange If specified, this will be called on any visual change: repeatedly during animation if enabled, otherwise once after each change to [isOpen]. (e.g. to react to changed size)
  */
 class ExpanderTab(
     title: String,
@@ -44,8 +44,10 @@ class ExpanderTab(
     startsOutOpened: Boolean = true,
     defaultPad: Float = 10f,
     headerPad: Float = 10f,
+    headerAlign: Int = Align.center,
     private val expanderWidth: Float = 0f,
     private val persistenceID: String? = null,
+    animated: Boolean? = null,
     private val content: WidgetGroup,
     private val onChange: (() -> Unit)? = null
 ) : Table(BaseScreen.skin) {
@@ -60,13 +62,15 @@ class ExpanderTab(
         startsOutOpened: Boolean = true,
         defaultPad: Float = 10f,
         headerPad: Float = 10f,
+        headerAlign: Int = Align.center,
         expanderWidth: Float = 0f,
         persistenceID: String? = null,
+        animated: Boolean? = null,
         onChange: (() -> Unit)? = null,
         initContent: ((Table) -> Unit)
     ) : this (
-        title, fontSize, icon, startsOutOpened,
-        defaultPad, headerPad, expanderWidth, persistenceID,
+        title, fontSize, icon, startsOutOpened, defaultPad,
+        headerPad, headerAlign, expanderWidth, persistenceID, animated,
         Table(BaseScreen.skin).apply {
             defaults().growX()
             initContent(this)
@@ -89,8 +93,10 @@ class ExpanderTab(
         private val persistedStates = HashMap<String, Boolean>()
     }
 
-    //todo this is accessed _only_ by ModCheckTab to set alignment - rework header style control?
-    val header = Table(skin)  // Header with label and icon, touchable to show/hide
+    // _Please_ don't make header, wrapper or content public. Makes tweaking this widget harder.
+    // If more control is needed and the parameter count gets too high, consider using a Style class
+    // or open class / protected fun createHeader() or dedicated setters instead.
+    private val header = Table(skin)  // Header with label and icon, touchable to show/hide
     private val headerLabel = title.toLabel(fontSize = fontSize)
     private val arrowIcon = ImageGetter.getImage(arrowImage)
     private val headerCell: Cell<Table>
@@ -101,7 +107,7 @@ class ExpanderTab(
     private var wrapperHeight: Float = 0f
 
     private var currentPercent = 0f
-    private val noAnimation = !UncivGame.Current.settings.continuousRendering
+    private val noAnimation = !(animated ?: UncivGame.Current.settings.continuousRendering)
 
     /** Indicates whether the contents are currently shown, changing this will animate the widget */
     // This works because a HashMap _could_ store an entry for the null key but we cannot actually store one when declaring as HashMap<String, Boolean>
@@ -115,6 +121,7 @@ class ExpanderTab(
     init {
         setLayoutEnabled(false)
 
+        header.align(headerAlign)
         header.defaults().pad(headerPad)
         arrowIcon.setSize(arrowSize, arrowSize)
         arrowIcon.setOrigin(Align.center)
@@ -233,12 +240,12 @@ class ExpanderTab(
         override fun update(percent: Float) {
             super.update(percent)
             updateContentVisibility(value)
+            onChange?.invoke()
         }
 
         override fun end() {
             (wrapper as? Container<*>)?.clip(false)
             wrapper.isVisible = isOpen   // allows turning clip off in closed state
-            onChange?.invoke()
         }
     }
 }
