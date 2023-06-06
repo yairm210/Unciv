@@ -51,9 +51,9 @@ class ExpanderTab(
     private val content: WidgetGroup,
     private val onChange: (() -> Unit)? = null
 ) : Table(BaseScreen.skin) {
-    /**
+    /** Alternate builder-style constructor for an [ExpanderTab]
+     *
      * @param initContent A lambda with the future [content] as parameter, to help initialize. Will be `pack()`ed when done!
-     * @see ExpanderTab
      */
     constructor(
         title: String,
@@ -78,12 +78,6 @@ class ExpanderTab(
         onChange
     )
 
-    /**
-     * A widget with a header that when clicked shows/hides a sub-Table.
-     *
-     * Alternate construction method that creates an empty Table and calls a builder to let the client fill it.
-     * @see invoke
-     */
     companion object {
         private const val arrowSize = 18f
         private const val arrowImage = "OtherIcons/BackArrow"
@@ -219,7 +213,7 @@ class ExpanderTab(
         headerLabel.setText(text)
     }
 
-    inner class ExpandAction : FloatAction() {
+    private inner class ExpandAction : FloatAction() {
         init {
             start = currentPercent  // start from wherever we were if turned around midway
             end = if (isOpen) 1f else 0f
@@ -233,7 +227,7 @@ class ExpanderTab(
 
         override fun begin() {
             super.begin()
-            (wrapper as? Container<*>)?.clip(true)
+            wrapper.clip(true)
             wrapper.isVisible = true
         }
 
@@ -244,7 +238,7 @@ class ExpanderTab(
         }
 
         override fun end() {
-            (wrapper as? Container<*>)?.clip(false)
+            wrapper.clip(false)
             wrapper.isVisible = isOpen   // allows turning clip off in closed state
         }
     }
