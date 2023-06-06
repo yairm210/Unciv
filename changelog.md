@@ -1,3 +1,22 @@
+## 4.6.18
+
+Pillaged improvements have a visual indication on the icon
+
+Fixed great engineer automation trying to reach cities it can't
+
+Fixed later civs not getting any CS quests
+
+By SomeTroglodyte:
+- Mod checks against sellable, missing or multiple Palace(s)
+- Fix tooltips on Android with keyboard detected
+- Upgraded music player popup
+- Popups can scroll the content without the buttons
+- Translation fixes
+
+Winning player can continue MP game - By CrsiX
+
+Added docker build and push workflow  - By haimlm
+
 ## 4.6.17
 
 More efficient use of the charts space  - By JackRainy
