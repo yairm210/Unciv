@@ -160,14 +160,10 @@ class ModManagementScreen(
 
         topTable.add(optionsManager.expander).top().growX().row()
 
-        installedExpanderTab = ExpanderTab(optionsManager.getInstalledHeader(), expanderWidth = stage.width) {
-            it.add(scrollInstalledMods).growX()
-        }
+        installedExpanderTab = ExpanderTab(optionsManager.getInstalledHeader(), expanderWidth = stage.width, content = scrollInstalledMods)
         topTable.add(installedExpanderTab).top().growX().row()
 
-        onlineExpanderTab = ExpanderTab(optionsManager.getOnlineHeader(), expanderWidth = stage.width) {
-            it.add(scrollOnlineMods).growX()
-        }
+        onlineExpanderTab = ExpanderTab(optionsManager.getOnlineHeader(), expanderWidth = stage.width, content = scrollOnlineMods)
         topTable.add(onlineExpanderTab).top().padTop(10f).growX().row()
 
         topTable.add().expandY().row() // helps with top() being ignored

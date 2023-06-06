@@ -34,7 +34,7 @@ class WorldScreenMusicPopup(
 
     private val musicController = UncivGame.Current.musicController
     private val trackStyle: TextButton.TextButtonStyle
-    private val historyExpander: ExpanderTab
+    private val historyTable = Table()
     private val visualMods = worldScreen.game.settings.visualMods
     private val mods = worldScreen.gameInfo.gameParameters.mods
 
@@ -58,13 +58,13 @@ class WorldScreenMusicPopup(
         trackStyle.disabledFontColor = Color.LIGHT_GRAY
 
         addMusicMods(settings)
-        historyExpander = addHistory()
+        addHistory()
         addMusicControls(bottomTable, settings, musicController)
         addCloseButton().colspan(2)
 
         musicController.onChange {
-            historyExpander.innerTable.clear()
-            historyExpander.innerTable.updateTrackList(musicController.getHistory())
+            historyTable.clear()
+            historyTable.updateTrackList(musicController.getHistory())
         }
     }
 
@@ -88,24 +88,24 @@ class WorldScreenMusicPopup(
         }
     }
 
-    private fun addHistory() = addTrackList("—History—", musicController.getHistory())
+    private fun addHistory() = addTrackList("—History—", musicController.getHistory(), historyTable)
 
-    private fun addTrackList(title: String, tracks: Sequence<MusicController.MusicTrackInfo>): ExpanderTab {
+    private fun addTrackList(title: String, tracks: Sequence<MusicController.MusicTrackInfo>, table: Table? = null) {
         // Note title is either a mod name or something that cannot be a mod name (thanks to the em-dashes)
         val icon = when (title) {
             in mods -> "OtherIcons/Mods"
             in visualMods -> "UnitPromotionIcons/Scouting"
             else -> null
         }?.let { ImageGetter.getImage(it).apply { setSize(18f) } }
+        val content = table ?: Table()
+        content.defaults().growX()
+        content.updateTrackList(tracks)
         val expander = ExpanderTab(title, Constants.defaultFontSize, icon,
             startsOutOpened = false, defaultPad = 0f, headerPad = 5f,
             persistenceID = "MusicPopup.$title",
-        ) {
-            it.updateTrackList(tracks)
-        }
+            content = content
+        )
         add(expander).colspan(2).growX().row()
-
-        return expander
     }
 
     private fun Table.updateTrackList(tracks: Sequence<MusicController.MusicTrackInfo>) {

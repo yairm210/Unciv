@@ -313,13 +313,12 @@ class CityStatsTable(private val cityScreen: CityScreen): Table() {
         destinationTable.add(button).pad(1f).padBottom(2f).padTop(2f).expandX().right().row()
     }
 
-    private fun Table.addCategory(category: String, showHideTable: Table, startsOpened: Boolean = true, innerPadding: Float = 10f) : ExpanderTab {
+    private fun Table.addCategory(category: String, showHideTable: Table, startsOpened: Boolean = true) : ExpanderTab {
         val expanderTab = ExpanderTab(
             title = category,
             fontSize = Constants.defaultFontSize,
             persistenceID = "CityInfo.$category",
             startsOutOpened = startsOpened,
-            defaultPad = innerPadding,
             content = showHideTable,
             onChange = { onContentResize() }
         )
