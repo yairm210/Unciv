@@ -546,7 +546,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         // Player's fault, so better complain early:
         val missingMods = (gameParameters.mods + gameParameters.baseRuleset)
             .filterNot { it in ruleset.mods }
-            .joinToString(limit = 120) { it }
+            .joinToString(limit = 5) { it }
         if (missingMods.isNotEmpty()) {
             throw MissingModsException(missingMods)
         }
