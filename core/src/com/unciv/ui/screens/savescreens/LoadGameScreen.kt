@@ -35,7 +35,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
     private val copySavedGameToClipboardButton = getCopyExistingSaveToClipboardButton()
     private val errorLabel = "".toLabel(Color.RED).apply { isVisible = false }
     private val loadMissingModsButton = getLoadMissingModsButton()
-    private var missingModsToLoad = ""
+    private var missingModsToLoad: Iterable<String> = emptyList()
 
     companion object {
         private const val loadGame = "Load game"
@@ -245,8 +245,8 @@ class LoadGameScreen : LoadOrSaveScreen() {
         descriptionLabel.setText(Constants.loading.tr())
         Concurrency.runOnNonDaemonThreadPool(downloadMissingMods) {
             try {
-                val mods = missingModsToLoad.replace(' ', '-').lowercase().splitToSequence(",-")
-                for (modName in mods) {
+                for (rawName in missingModsToLoad) {
+                    val modName = rawName.replace(' ', '-').lowercase()
                     val repos = Github.tryGetGithubReposWithTopic(10, 1, modName)
                         ?: throw UncivShowableException("Could not download mod list.")
                     val repo = repos.items.firstOrNull { it.name.lowercase() == modName }
@@ -264,7 +264,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
                 }
                 launchOnGLThread {
                     RulesetCache.loadRulesets()
-                    missingModsToLoad = ""
+                    missingModsToLoad = emptyList()
                     loadMissingModsButton.isVisible = false
                     errorLabel.isVisible = false
                     rightSideTable.pack()
