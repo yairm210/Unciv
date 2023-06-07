@@ -1,6 +1,8 @@
 package com.unciv.uniques
 
 import com.badlogic.gdx.math.Vector2
+import com.sun.source.tree.AssertTree
+import com.unciv.logic.map.mapunit.UnitTurnManager
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.testing.GdxTestRunner
@@ -10,6 +12,7 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.math.roundToInt
 
 @RunWith(GdxTestRunner::class)
 class UnitUniquesTests {
@@ -42,6 +45,7 @@ class UnitUniquesTests {
 
         Assert.assertNotNull("Great Person should have a gift action", giftAction)
     }
+
     @Test
     fun CanConstructResourceRequiringImprovement() {
         // Do this early so the uniqueObjects lazy is still un-triggered
@@ -86,5 +90,26 @@ class UnitUniquesTests {
             .filter { it.action != null }
         Assert.assertFalse("Great Engineer SHOULD be able to create a Manufactory modded to require Iron once Iron is available",
             actionsWithIron.isEmpty())
+    }
+
+    @Test
+    fun `Check Hakkapeliitta TransferMovement ability`() {
+        val civ = game.addCiv(isPlayer = true)
+        val centerTile = game.getTile(Vector2.Zero)
+
+        // Hardcoded names mean test *must* run under G&K ruleset, not Vanilla, which the TestGame class ensures
+        val general = game.addUnit("Great General", civ, centerTile)
+        val boostingUnit = game.addUnit("Hakkapeliitta", civ, centerTile)
+        boostingUnit.baseUnit.promotions.forEach { boostingUnit.promotions.addPromotion(it, true) }
+        boostingUnit.updateUniques()
+
+        val baseMovement = general.baseUnit.movement
+        UnitTurnManager(general).startTurn()
+        val actualMovement = general.currentMovement.roundToInt()
+        val boosterMovement = boostingUnit.baseUnit.movement
+
+        Assert.assertEquals("Great General stacked with a Hakkapeliitta should have increased movement points.", boosterMovement, actualMovement)
+        // This effectively tests whether the G&K rules have not been tampered with, but won't hurt
+        Assert.assertNotEquals("Great General stacked with a Hakkapeliitta should NOT have its normal movement points.", baseMovement, actualMovement)
     }
 }
