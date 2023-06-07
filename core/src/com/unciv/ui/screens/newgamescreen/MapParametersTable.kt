@@ -24,19 +24,16 @@ import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapType
-import com.unciv.logic.map.mapgenerator.MapGenerationRandomness
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.WrappableLabel
 import com.unciv.ui.components.extensions.onChange
-import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toGdxArray
 import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.screens.basescreen.BaseScreen
 
 /** Table for editing [mapParameters]
@@ -58,8 +55,6 @@ class MapParametersTable(
     lateinit var customMapSizeRadius: TextField
     lateinit var customMapWidth: TextField
     lateinit var customMapHeight: TextField
-
-    private val randomness = MapGenerationRandomness()
 
     private lateinit var worldSizeSelectBox: TranslatedSelectBox
     private var customWorldSizeTable = Table ()
@@ -123,9 +118,9 @@ class MapParametersTable(
             mapShapesOptionsValues = mapShapes.toHashSet()
             val optionsTable = MultiCheckboxTable("{Enabled Map Shapes}", "NewGameMapShapes", mapShapesOptionsValues) {
                 if (mapShapesOptionsValues.isEmpty()) {
-                    mapParameters.shape = mapShapes.random(randomness.RNG)
+                    mapParameters.shape = mapShapes.random()
                 } else {
-                    mapParameters.shape = mapShapesOptionsValues.random(randomness.RNG)
+                    mapParameters.shape = mapShapesOptionsValues.random()
                 }
             }
             add(optionsTable).colspan(2).grow().row()
@@ -160,9 +155,9 @@ class MapParametersTable(
             mapTypesOptionsValues = mapTypes.toHashSet()
             val optionsTable = MultiCheckboxTable("{Enabled Map Generation Types}", "NewGameMapGenerationTypes", mapTypesOptionsValues) {
                 if (mapTypesOptionsValues.isEmpty()) {
-                    mapParameters.type = mapTypes.random(randomness.RNG)
+                    mapParameters.type = mapTypes.random()
                 } else {
-                    mapParameters.type = mapTypesOptionsValues.random(randomness.RNG)
+                    mapParameters.type = mapTypesOptionsValues.random()
                 }
             }
             add(optionsTable).colspan(2).grow().row()
@@ -188,9 +183,9 @@ class MapParametersTable(
             mapSizesOptionsValues = mapSizes.toHashSet()
             val optionsTable = MultiCheckboxTable("{Enabled World Sizes}", "NewGameWorldSizes", mapSizesOptionsValues) {
                 if (mapSizesOptionsValues.isEmpty()) {
-                    mapParameters.mapSize = MapSizeNew(mapSizes.random(randomness.RNG))
+                    mapParameters.mapSize = MapSizeNew(mapSizes.random())
                 } else {
-                    mapParameters.mapSize = MapSizeNew(mapSizesOptionsValues.random(randomness.RNG))
+                    mapParameters.mapSize = MapSizeNew(mapSizesOptionsValues.random())
                 }
             }
             add(optionsTable).colspan(2).grow().row()
@@ -281,9 +276,9 @@ class MapParametersTable(
             mapResourcesOptionsValues = mapResources.toHashSet()
             val optionsTable = MultiCheckboxTable("{Enabled Resource Settings}", "NewGameResourceSettings", mapResourcesOptionsValues) {
                 if (mapResourcesOptionsValues.isEmpty()) {
-                    mapParameters.mapResources = mapResources.random(randomness.RNG)
+                    mapParameters.mapResources = mapResources.random()
                 } else {
-                    mapParameters.mapResources = mapResourcesOptionsValues.random(randomness.RNG)
+                    mapParameters.mapResources = mapResourcesOptionsValues.random()
                 }
             }
             add(optionsTable).colspan(2).grow().row()

@@ -138,7 +138,7 @@ class MapEditorViewTab(
                 startsOutOpened = false,
                 headerPad = 5f
             ) {
-                it.add(MarkupRenderer.render(lines.toList(), iconDisplay = IconDisplay.NoLink) { name ->
+                it.add(MarkupRenderer.render(lines.asIterable(), iconDisplay = IconDisplay.NoLink) { name ->
                     scrollToStartOfNation(name)
                 })
             }).row()

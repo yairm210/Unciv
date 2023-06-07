@@ -172,6 +172,7 @@ object ImageGetter {
     }
 
     fun getWhiteDot() = getImage(whiteDotLocation).apply { setSize(1f) }
+    fun getWhiteDotDrawable() = textureRegionDrawables[whiteDotLocation]!!
     fun getDot(dotColor: Color) = getWhiteDot().apply { color = dotColor }
 
     fun getExternalImage(fileName: String): Image {
@@ -263,8 +264,8 @@ object ImageGetter {
         return PortraitTech(techName, circleSize)
     }
 
-    fun getImprovementPortrait(improvementName: String, size: Float = 20f, dim: Boolean = false): Portrait {
-        return PortraitImprovement(improvementName, size, dim)
+    fun getImprovementPortrait(improvementName: String, size: Float = 20f, dim: Boolean = false, isPillaged: Boolean = false): Portrait {
+        return PortraitImprovement(improvementName, size, dim, isPillaged)
     }
 
     fun getUnitActionPortrait(actionName: String, size: Float = 20f): Portrait {

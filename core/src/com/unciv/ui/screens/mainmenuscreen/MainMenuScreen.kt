@@ -279,7 +279,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
                 QuickSave.autoLoadGame(this)
             } else {
                 GUI.resetToWorldScreen()
-                GUI.getWorldScreen().popups.filterIsInstance(WorldScreenMenuPopup::class.java).forEach(Popup::close)
+                GUI.getWorldScreen().popups.filterIsInstance<WorldScreenMenuPopup>().forEach(Popup::close)
                 ImageGetter.ruleset = game.gameInfo!!.ruleset
             }
         } else {

@@ -13,6 +13,7 @@ import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showReligionInCivilopedia
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
 import kotlin.math.pow
 
 class Nation : RulesetObject() {
@@ -230,42 +231,10 @@ class Nation : RulesetObject() {
                 yield(FormattedLine("Replaces [${originalUnit.name}]", link="Unit/${originalUnit.name}", indent=1))
                 if (unit.cost != originalUnit.cost)
                     yield(FormattedLine("{Cost} ".tr() + "[${unit.cost}] vs [${originalUnit.cost}]".tr(), indent=1))
-                if (unit.strength != originalUnit.strength)
-                    yield(FormattedLine("${Fonts.strength} " + "[${unit.strength}] vs [${originalUnit.strength}]".tr(), indent=1))
-                if (unit.rangedStrength != originalUnit.rangedStrength)
-                    yield(FormattedLine("${Fonts.rangedStrength} " + "[${unit.rangedStrength}] vs [${originalUnit.rangedStrength}]".tr(), indent=1))
-                if (unit.range != originalUnit.range)
-                    yield(FormattedLine("${Fonts.range} " + "[${unit.range}] vs [${originalUnit.range}]".tr(), indent=1))
-                if (unit.movement != originalUnit.movement)
-                    yield(FormattedLine("${Fonts.movement} " + "[${unit.movement}] vs [${originalUnit.movement}]".tr(), indent=1))
-                for (resource in originalUnit.getResourceRequirementsPerTurn().keys)
-                    if (!unit.getResourceRequirementsPerTurn().containsKey(resource)) {
-                        yield(FormattedLine("[$resource] not required", link="Resource/$resource", indent=1))
-                    }
-                // This does not use the auto-linking FormattedLine(Unique) for two reasons:
-                // would look a little chaotic as unit uniques unlike most uniques are a HashSet and thus do not preserve order
-                // No .copy() factory on FormattedLine and no FormattedLine(Unique, all other val's) constructor either
-                if (unit.replacementTextForUniques.isNotEmpty()) {
-                    yield(FormattedLine(unit.replacementTextForUniques))
-                }
-                else for (unique in unit.uniqueObjects.filterNot { it.text in originalUnit.uniques || it.hasFlag(UniqueFlag.HiddenToUsers) }) {
-                    yield(FormattedLine(unique.text.tr(), indent = 1))
-                }
-                for (unique in originalUnit.uniqueObjects.filterNot { it.text in unit.uniques || it.hasFlag(UniqueFlag.HiddenToUsers) }) {
-                    yield(
-                        FormattedLine("Lost ability".tr() + " (" + "vs [${originalUnit.name}]".tr() + "): " +
-                            unique.text.tr(), indent = 1)
-                    )
-                }
-                for (promotion in unit.promotions.filter { it !in originalUnit.promotions }) {
-                    val effect = ruleset.unitPromotions[promotion]!!.uniques
-                    // "{$promotion} ({$effect})" won't work as effect may contain [] and tr() does not support that kind of nesting
-                    yield(
-                        FormattedLine(
-                        "${promotion.tr(true)} (${effect.joinToString(",") { it.tr() }})",
-                        link = "Promotion/$promotion", indent = 1 )
-                    )
-                }
+                yieldAll(
+                    BaseUnitDescriptions.getDifferences(ruleset, originalUnit, unit)
+                    .map { (text, link) -> FormattedLine(text, link = link ?: "", indent = 1) }
+                )
             } else if (unit.replaces != null) {
                 yield(FormattedLine("Replaces [${unit.replaces}], which is not found in the ruleset!", indent = 1))
             } else {

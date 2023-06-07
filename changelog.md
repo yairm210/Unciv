@@ -1,3 +1,55 @@
+## 4.6.18
+
+Pillaged improvements have a visual indication on the icon
+
+Fixed great engineer automation trying to reach cities it can't
+
+Fixed later civs not getting any CS quests
+
+By SomeTroglodyte:
+- Mod checks against sellable, missing or multiple Palace(s)
+- Fix tooltips on Android with keyboard detected
+- Upgraded music player popup
+- Popups can scroll the content without the buttons
+- Translation fixes
+
+Winning player can continue MP game - By CrsiX
+
+Added docker build and push workflow  - By haimlm
+
+## 4.6.17
+
+More efficient use of the charts space  - By JackRainy
+
+By SomeTroglodyte:
+- Allow image overlay and changing world wrap in map editor
+- Reapply 'city focus' on yield changes
+- Upgrading from Unit overview improved
+
+Remove "does not support server feature set" error for uncivserver.xyz
+
+Trigger resource recalculation upon gaining a unit that requires resources
+
+Guard against '><' text causing translation recursion
+
+Badly configured era conditional no longer causes crashes
+
+## 4.6.16
+
+By SomeTroglodyte:
+- Unit Overview: Improving a tile is also "what the unit is doing"
+- Replacement PlatformSaverLoader for Linux X11 systems
+- All notifications from Overview are now temporary
+- Politics overview no longer discloses random number of players
+
+Worker will now replace improvements to get resources - By janarvid
+
+Spectators do not get natural wonder discovery notifications
+
+Added checksum to be added to uploaded multiplayer games
+
+Policy adoption triggers resource recalculation
+
 ## 4.6.15
 
 'Crop yield' chart displays correct data

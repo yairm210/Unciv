@@ -299,7 +299,9 @@ object TranslationActiveModsCache {
  */
 fun String.tr(hideIcons:Boolean = false): String {
     val language:String = UncivGame.Current.settings.language
-    if (contains('<') && contains('>')) { // Conditionals!
+
+    // '<' and '>' checks for quick 'no' answer, regex to ensure that no one accidentally put '><' and ruined things
+    if (contains('<') && contains('>') && pointyBraceRegex.containsMatchIn(this)) { // Conditionals!
         /**
          * So conditionals can contain placeholders, such as <vs [unitFilter] units>, which themselves
          * can contain multiple filters, such as <vs [{Military} {Water}] units>.

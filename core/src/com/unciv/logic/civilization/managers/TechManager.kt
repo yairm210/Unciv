@@ -320,7 +320,7 @@ class TechManager : IsPartOfGameInfoSerialization {
                 // notifyExploredResources scans the player's owned tiles and returns false if none
                 // found with a revealed resource - keep this knowledge to avoid the update call.
                 mayNeedUpdateResources = mayNeedUpdateResources ||
-                    civInfo.gameInfo.notifyExploredResources(civInfo, revealedResource.name, 5, false)
+                    civInfo.gameInfo.notifyExploredResources(civInfo, revealedResource.name, 5)
             }
         }
         // At least in the case of a human player hurrying research, this civ's resource availability

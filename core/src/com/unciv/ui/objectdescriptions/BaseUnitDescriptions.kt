@@ -1,7 +1,13 @@
 package com.unciv.ui.objectdescriptions
 
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.ui.Container
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.unciv.logic.city.City
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -13,6 +19,8 @@ import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.getConsumesAmountString
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 import kotlin.math.pow
 
 object BaseUnitDescriptions {
@@ -196,6 +204,7 @@ object BaseUnitDescriptions {
         return textList
     }
 
+    @Suppress("RemoveExplicitTypeArguments")  // for faster IDE - inferring sequence types can be slow
     fun UnitType.getUnitTypeCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         fun getDomainLines() = sequence<FormattedLine> {
             yield(FormattedLine("{Unit types}:", header = 4))
@@ -231,4 +240,84 @@ object BaseUnitDescriptions {
         }
         return (if (name.startsWith("Domain: ")) getDomainLines() else getUnitTypeLines()).toList()
     }
+
+    /**
+     * Lists differences e.g. for help on an upgrade, or how a nation-unique compares to its replacement.
+     *
+     * Cost is **not** included.
+     * Result lines are **not** translated.
+     *
+     * @param originalUnit The "older" unit
+     * @param betterUnit The "newer" unit
+     * @return Sequence of Pairs - first is the actual text, second is an optional link for Civilopedia use
+     */
+    fun getDifferences(ruleset: Ruleset, originalUnit: BaseUnit, betterUnit: BaseUnit):
+            Sequence<Pair<String, String?>> = sequence {
+        if (betterUnit.strength != originalUnit.strength)
+            yield("${Fonts.strength} {[${betterUnit.strength}] vs [${originalUnit.strength}]}" to null)
+
+        if (betterUnit.rangedStrength > 0 && originalUnit.rangedStrength == 0)
+            yield("[Gained] ${Fonts.rangedStrength} [${betterUnit.rangedStrength}] ${Fonts.range} [${betterUnit.range}]" to null)
+        else if (betterUnit.rangedStrength == 0 && originalUnit.rangedStrength > 0)
+            yield("[Lost] ${Fonts.rangedStrength} [${originalUnit.rangedStrength}] ${Fonts.range} [${originalUnit.range}]" to null)
+        else {
+            if (betterUnit.rangedStrength != originalUnit.rangedStrength)
+                yield("${Fonts.rangedStrength} " + "[${betterUnit.rangedStrength}] vs [${originalUnit.rangedStrength}]" to null)
+            if (betterUnit.range != originalUnit.range)
+                yield("${Fonts.range} {[${betterUnit.range}] vs [${originalUnit.range}]}" to null)
+        }
+
+        if (betterUnit.movement != originalUnit.movement)
+            yield("${Fonts.movement} {[${betterUnit.movement}] vs [${originalUnit.movement}]}" to null)
+
+        for (resource in originalUnit.getResourceRequirementsPerTurn().keys)
+            if (!betterUnit.getResourceRequirementsPerTurn().containsKey(resource)) {
+                yield("[$resource] not required" to "Resource/$resource")
+            }
+        // We return the unique text directly, so Nation.getUniqueUnitsText will not use the
+        // auto-linking FormattedLine(Unique) - two reasons in favor:
+        // would look a little chaotic as unit uniques unlike most uniques are a HashSet and thus do not preserve order
+        // No .copy() factory on FormattedLine and no (Unique, all other val's) constructor either
+        if (betterUnit.replacementTextForUniques.isNotEmpty()) {
+            yield(betterUnit.replacementTextForUniques to null)
+        } else {
+            val newAbilityPredicate: (Unique)->Boolean = { it.text in originalUnit.uniques || it.hasFlag(UniqueFlag.HiddenToUsers) }
+            for (unique in betterUnit.uniqueObjects.filterNot(newAbilityPredicate))
+                yield(unique.text to null)
+        }
+
+        val lostAbilityPredicate: (Unique)->Boolean = { it.text in betterUnit.uniques || it.hasFlag(UniqueFlag.HiddenToUsers) }
+        for (unique in originalUnit.uniqueObjects.filterNot(lostAbilityPredicate)) {
+            yield("Lost ability (vs [${originalUnit.name}]): [${unique.text}]" to null)
+        }
+        for (promotion in betterUnit.promotions.filter { it !in originalUnit.promotions }) {
+            val effects = ruleset.unitPromotions[promotion]!!.uniques
+                .joinToString(",") { "{$it}" }  // {} for individual translations, default separator would have extra blank
+            yield("{$promotion} ($effects)" to "Promotion/$promotion")
+        }
+    }
+
+    /** Prepares a WidgetGroup for display as tooltip to an upgrade
+     *  Specialized to the WorldScreen UnitAction button and Unit Overview upgrade icon -
+     *  in both cases the [UnitAction][com.unciv.models.UnitAction] and [unitToUpgradeTo] have already been evaluated.
+     */
+    fun getUpgradeTooltipActor(title: String, unitUpgrading: BaseUnit, unitToUpgradeTo: BaseUnit) =
+        getUpgradeInfoTable(title, unitUpgrading, unitToUpgradeTo).wrapScaled(0.667f)
+
+    fun getUpgradeInfoTable(title: String, unitUpgrading: BaseUnit, unitToUpgradeTo: BaseUnit): Table {
+        val ruleset = unitToUpgradeTo.ruleset
+        val info = sequenceOf(FormattedLine(title, color = "#FDA", icon = unitToUpgradeTo.makeLink(), header = 5)) +
+            getDifferences(ruleset, unitUpgrading, unitToUpgradeTo)
+                .map { FormattedLine(it.first, icon = it.second ?: "") }
+        val infoTable = MarkupRenderer.render(info.asIterable(), 400f)
+        infoTable.background = BaseScreen.skinStrings.getUiBackground("General/Tooltip", BaseScreen.skinStrings.roundedEdgeRectangleShape, Color.DARK_GRAY)
+        return infoTable
+    }
+
+    private fun Table.wrapScaled(scale: Float): WidgetGroup =
+        Container(this).apply {
+            touchable = Touchable.disabled
+            isTransform = true
+            setScale(scale)
+        }
 }

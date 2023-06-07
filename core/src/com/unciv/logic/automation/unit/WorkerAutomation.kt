@@ -312,9 +312,11 @@ class WorkerAutomation(
     private fun tileCanBeImproved(unit: MapUnit, tile: Tile): Boolean {
         if (!tile.isLand || tile.isImpassible() || tile.isCityCenter())
             return false
+
         val city = tile.getCity()
         if (city == null || city.civ != civInfo)
             return false
+
         if (!city.tilesInRange.contains(tile)
                 && !tile.hasViewableResource(civInfo)
                 && civInfo.cities.none { it.getCenterTile().aerialDistanceTo(tile) <= 3 })
@@ -326,17 +328,16 @@ class WorkerAutomation(
                 && unit.civ.isHuman())
             return false
 
-
-
         if (tile.improvement == null || junkImprovement == true) {
             if (tile.improvementInProgress != null && unit.canBuildImprovement(tile.getTileImprovementInProgress()!!, tile)) return true
             val chosenImprovement = chooseImprovement(unit, tile)
             if (chosenImprovement != null && tile.improvementFunctions.canBuildImprovement(chosenImprovement, civInfo) && unit.canBuildImprovement(chosenImprovement, tile)) return true
         } else if (!tile.containsGreatImprovement() && tile.hasViewableResource(civInfo)
-            && tile.tileResource.isImprovedBy(tile.improvement!!)
+            && !tile.tileResource.isImprovedBy(tile.improvement!!)
             && (chooseImprovement(unit, tile) // if the chosen improvement is not null and buildable
                 .let { it != null && tile.improvementFunctions.canBuildImprovement(it, civInfo) && unit.canBuildImprovement(it, tile)}))
             return true
+
         return false // couldn't find anything to construct here
     }
 

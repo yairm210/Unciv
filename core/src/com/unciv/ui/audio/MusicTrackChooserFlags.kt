@@ -17,6 +17,7 @@ enum class MusicTrackChooserFlags {
 
     companion object {
         // EnumSet factories
+        val default: EnumSet<MusicTrackChooserFlags> = EnumSet.of(SuffixMustMatch)
         /** EnumSet.of([PlayDefaultFile], [PlaySingle]) */
         val setPlayDefault: EnumSet<MusicTrackChooserFlags> = EnumSet.of(PlayDefaultFile, PlaySingle)
         /** EnumSet.of([PrefixMustMatch], [PlaySingle]) */

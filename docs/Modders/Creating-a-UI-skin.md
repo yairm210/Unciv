@@ -96,6 +96,7 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | TechPickerScreen/ | ResearchedFutureTechColor | 127, 50, 0 | |
 | TechPickerScreen/ | ResearchedTechColor | 255, 215, 0 | |
 | TechPickerScreen/ | TechButtonIconsOutline | roundedEdgeRectangleSmall | |
+| UnitUpgradeMenu/ | Button | roundedEdgeRectangleMid | |
 | VictoryScreen/ | CivGroup | roundedEdgeRectangle | |
 | WorldScreen/ | AirUnitTable | null | |
 | WorldScreen/ | BattleTable | null | |
@@ -113,6 +114,9 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | WorldScreen/TopBar/ | ResourceTable | null | |
 | WorldScreen/TopBar/ | RightAttachment | roundedEdgeRectangle | |
 | WorldScreen/TopBar/ | StatsTable | null | |
+| WorldScreenMusicPopup/TrackList/ | Down", tintColor = skin.getColor("positive | null | |
+| WorldScreenMusicPopup/TrackList/ | Over", tintColor = skin.getColor("highlight | null | |
+| WorldScreenMusicPopup/TrackList/ | Up", tintColor = skin.getColor("color | null | |
 <!--- DO NOT REMOVE OR MODIFY THIS LINE UI_ELEMENT_TABLE_REGION_END -->
 
 ## SkinConfig
