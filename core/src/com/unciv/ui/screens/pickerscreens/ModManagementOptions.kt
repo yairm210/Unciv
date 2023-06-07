@@ -20,8 +20,10 @@ import com.unciv.ui.components.extensions.keyShortcuts
 import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.onChange
 import com.unciv.ui.components.extensions.surroundWithCircle
+import com.unciv.ui.components.extensions.toGdxArray
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.utils.Concurrency
 import kotlin.math.sign
 
 /**
@@ -72,23 +74,41 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
         }
     }
 
-    enum class Category(
+    class Category(
         val label: String,
         val topic: String
     ) {
-        All("All mods", "unciv-mod"),
-        Rulesets("Rulesets", "unciv-mod-rulesets"),
-        Expansions("Expansions", "unciv-mod-expansions"),
-        Graphics("Graphics", "unciv-mod-graphics"),
-        Audio("Audio", "unciv-mod-audio"),
-        Maps("Maps", "unciv-mod-maps"),
-        Fun("Fun", "unciv-mod-fun"),
-        ModsOfMods("Mods of mods", "unciv-mod-modsofmods");
-
         companion object {
+            val All = Category("All mods", "unciv-mod")
+            val Rulesets = Category("Rulesets", "unciv-mod-rulesets")
+            val Expansions = Category("Expansions", "unciv-mod-expansions")
+            val Graphics = Category("Graphics", "unciv-mod-graphics")
+            val Audio = Category("Audio", "unciv-mod-audio")
+            val Maps = Category("Maps", "unciv-mod-maps")
+            val Fun = Category("Fun", "unciv-mod-fun")
+            @Suppress("MemberVisibilityCanBePrivate")  // Inspection is wrong
+            val ModsOfMods = Category("Mods of mods", "unciv-mod-modsofmods")
+
+            private val values = mutableListOf(All, Rulesets, Expansions, Graphics, Audio, Maps, Fun, ModsOfMods)
+            private var queried = false
+
+            fun values(includeOnline: Boolean = false): List<Category> {
+                if (queried || !includeOnline) return values
+                val topics = Github.tryGetGithubTopics() ?: return values
+                queried = true
+                // Note: Yes imperfect sorting, and they do get translated - but no translation template.
+                for (topic in topics.items.sortedBy { it.name }) {
+                    if (values.any { it.topic == topic.name }) continue
+                    val label = topic.display_name?.takeUnless { it.isBlank() }
+                        ?: topic.name.removePrefix("unciv-mod-").replaceFirstChar(Char::titlecase)
+                    values += Category(label, topic.name)
+                }
+                return values
+            }
+
             fun fromSelectBox(selectBox: TranslatedSelectBox): Category {
                 val selected = selectBox.selected.value
-                return values().firstOrNull { it.label == selected } ?: All
+                return values.firstOrNull { it.label == selected } ?: All
             }
         }
     }
@@ -189,6 +209,18 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
         }
         searchIcon.keyShortcuts.add(KeyCharAndCode.RETURN)
         searchIcon.addTooltip(KeyCharAndCode.RETURN, 18f)
+
+        Concurrency.run("OnlineModCategories") {
+            val newCategories = Category.values(true)
+            if (newCategories.size == categorySelect.items.size) return@run
+            val newItems = newCategories
+                .map { TranslatedSelectBox.TranslatedString(it.label) }
+                .toGdxArray()
+            Concurrency.runOnGLThread {
+                categorySelect.items = newItems
+            }
+        }
+
     }
 
     fun getInstalledHeader() = installedHeaderText.tr() + " " + sortInstalled.symbols
@@ -225,8 +257,11 @@ private fun getTextButton(nameString:String, topics: List<String>): TextButton {
     return button
 }
 
-/** Helper class holds combined mod info for ModManagementScreen, used for both installed and online lists */
-class ModUIData(
+/** Helper class holds combined mod info for ModManagementScreen, used for both installed and online lists
+ *
+ *  Note it is guaranteed either ruleset or repo are non-null, never both.
+ */
+class ModUIData private constructor(
     val name: String,
     val description: String,
     val ruleset: Ruleset?,
@@ -270,12 +305,10 @@ class ModUIData(
     }
 
     private fun matchesCategory(filter: ModManagementOptions.Filter): Boolean {
-        val modTopic = repo?.topics ?: ruleset?.modOptions?.topics!!
         if (filter.topic == ModManagementOptions.Category.All.topic)
             return true
-        if (modTopic.size < 2) return false
-        if (modTopic[1] == filter.topic) return true
-        return false
+        val modTopics = repo?.topics ?: ruleset?.modOptions?.topics!!
+        return filter.topic in modTopics
     }
 }
 
