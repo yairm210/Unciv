@@ -821,7 +821,7 @@ open class Tile : IsPartOfGameInfoSerialization {
             else probability
     }
 
-    fun setTerrainFeatures(terrainFeatureList:List<String>) {
+    fun setTerrainFeatures(terrainFeatureList: List<String>) {
         terrainFeatures = terrainFeatureList
         terrainFeatureObjects = terrainFeatureList.mapNotNull { ruleset.terrains[it] }
         allTerrains = sequence {
@@ -843,7 +843,7 @@ open class Tile : IsPartOfGameInfoSerialization {
         terrainUniqueMap = newUniqueMap
     }
 
-    fun addTerrainFeature(terrainFeature:String) =
+    fun addTerrainFeature(terrainFeature: String) =
         setTerrainFeatures(ArrayList(terrainFeatures).apply { add(terrainFeature) })
 
     fun removeTerrainFeature(terrainFeature: String) =

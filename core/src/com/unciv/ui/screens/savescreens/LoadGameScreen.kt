@@ -61,11 +61,11 @@ class LoadGameScreen : LoadOrSaveScreen() {
                     isUserFixable = false
                 }
                 is FileNotFoundException -> {
-                    if (ex.cause?.message?.contains("Permission denied") == true) {
+                    isUserFixable = if (ex.cause?.message?.contains("Permission denied") == true) {
                         errorText.append("You do not have sufficient permissions to access the file.".tr())
-                        isUserFixable = true
+                        true
                     } else {
-                        isUserFixable = false
+                        false
                     }
                 }
                 else -> {
