@@ -26,7 +26,9 @@ import com.unciv.utils.launchOnGLThread
  * Popup that asks for a username and password that should be used to login/register to APIv2 servers
  *
  * [UncivGame.Current.onlineMultiplayer] must be set to a [ApiVersion.APIv2] server,
- * otherwise this pop-up will not work.
+ * otherwise this pop-up will not work. It includes a popup window notifying the
+ * user that his/her player ID will be overwritten by the game, so that it's
+ * possible for the player to save the previous player ID somewhere to restore it.
  */
 class RegisterLoginPopup(private val base: BaseScreen, confirmUsage: Boolean = false, private val authSuccessful: ((Boolean) -> Unit)? = null) : Popup(base.stage) {
 

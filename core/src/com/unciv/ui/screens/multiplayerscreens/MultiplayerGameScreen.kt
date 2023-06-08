@@ -3,7 +3,9 @@ package com.unciv.ui.screens.multiplayerscreens
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Container
+import com.badlogic.gdx.scenes.scene2d.ui.Stack
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Disposable
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
@@ -16,6 +18,7 @@ import com.unciv.ui.components.NewButton
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.images.ImageGetter
@@ -24,10 +27,24 @@ import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.pickerscreens.PickerScreen
+import com.unciv.ui.screens.worldscreen.status.MultiplayerStatusButtonV2
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import java.util.UUID
 
+/**
+ * Screen holding an overview of the current game's multiplayer functionality
+ *
+ * It's mainly used in the [MultiplayerStatusButtonV2], but could be embedded
+ * somewhere else as well. It requires the [UUID] of the currently playing user,
+ * the initially shown chat room, which should be the game's chat room, and
+ * the list of playing major civilisations in the game. Note that this list
+ * should include the fallen major civilisations, because it allows
+ * communication even with players who already lost the game. Those players
+ * will still receive game updates, but won't be able to perform any moves
+ * and aren't required to perform turns, i.e. the game will silently continue
+ * without them properly.
+ */
 class MultiplayerGameScreen(private val me: UUID, initialChatRoom: Triple<UUID, ChatRoomType, String>? = null, civilizations: List<Civilization>) : PickerScreen(horizontally = true), Disposable {
     private val playerTable = Table()
     private val friendList = FriendListV2(
@@ -135,8 +152,18 @@ class MultiplayerGameScreen(private val me: UUID, initialChatRoom: Triple<UUID, 
                     playerNameCell.colspan(2).padRight(15f)
                 }
 
-                playerTable.add(ImageGetter.getNationPortrait(civ.nation, 50f)).padLeft(20f).padRight(5f)
+                val civImage = Stack()
+                civImage.addActor(ImageGetter.getNationPortrait(civ.nation, 50f))
+                if (!civ.isAlive()) {
+                    civImage.addActor(ImageGetter.getImage("OtherIcons/Close").apply {
+                        setOrigin(Align.center)
+                        setSize(50f)
+                        color = Color.RED
+                    })
+                }
+                playerTable.add(civImage).padLeft(20f).padRight(5f)
                 playerTable.add(identifiactionTable).padRight(5f)
+
                 if (civ.playerId != me.toString()) {
                     playerTable.add(ChatButton().apply {
                         onClick {

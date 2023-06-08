@@ -671,8 +671,8 @@ class WorldScreen(
 
             debug("Next turn took %sms", System.currentTimeMillis() - startTime)
 
-            // Special case: when you are the only human player, the game will always be up to date
-            if (gameInfo.gameParameters.isOnlineMultiplayer && gameInfoClone.civilizations.filter { it.playerType == PlayerType.Human }.size == 1) {
+            // Special case: when you are the only alive human player, the game will always be up to date
+            if (gameInfo.gameParameters.isOnlineMultiplayer && gameInfoClone.civilizations.filter { it.isAlive() && it.playerType == PlayerType.Human }.size == 1) {
                 gameInfoClone.isUpToDate = true
             }
             startNewScreenJob(gameInfoClone)
@@ -724,7 +724,7 @@ class WorldScreen(
         if (gameInfo.gameParameters.isOnlineMultiplayer || game.settings.multiplayer.statusButtonInSinglePlayer) {
             if (statusButtons.multiplayerStatusButton != null) return
             if (game.onlineMultiplayer.isInitialized() && game.onlineMultiplayer.apiVersion == ApiVersion.APIv2) {
-                statusButtons.multiplayerStatusButton = MultiplayerStatusButtonV2(this, gameInfo.gameId, gameInfo.getAliveMajorCivs())
+                statusButtons.multiplayerStatusButton = MultiplayerStatusButtonV2(this, gameInfo.gameId, gameInfo.civilizations.filter { it.isMajorCiv() })
             } else {
                 statusButtons.multiplayerStatusButton = MultiplayerStatusButtonV1(this, game.onlineMultiplayer.getGameByGameId(gameInfo.gameId))
             }
