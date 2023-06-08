@@ -206,7 +206,7 @@ class NewGameScreen(
         }
 
         rightSideButton.disable()
-        rightSideButton.setText("Working...".tr())
+        rightSideButton.setText(Constants.working.tr())
 
         setSkin()
         // Creating a new game can take a while and we don't want ANRs
@@ -280,7 +280,7 @@ class NewGameScreen(
     private suspend fun startNewGame() = coroutineScope {
         val popup = Popup(this@NewGameScreen)
         launchOnGLThread {
-            popup.addGoodSizedLabel("Working...").row()
+            popup.addGoodSizedLabel(Constants.working).row()
             popup.open()
         }
 
