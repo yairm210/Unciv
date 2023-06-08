@@ -544,12 +544,10 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         // any mod the saved game lists that is currently not installed causes null pointer
         // exceptions in this routine unless it contained no new objects or was very simple.
         // Player's fault, so better complain early:
-        val missingMods = (gameParameters.mods + gameParameters.baseRuleset)
+        val missingMods = (listOf(gameParameters.baseRuleset) + gameParameters.mods)
             .filterNot { it in ruleset.mods }
-            .joinToString(limit = 5) { it }
-        if (missingMods.isNotEmpty()) {
+        if (missingMods.isNotEmpty())
             throw MissingModsException(missingMods)
-        }
 
         removeMissingModReferences()
 

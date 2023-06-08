@@ -464,16 +464,13 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     }
 
     fun removeMissingTerrainModReferences(ruleSet: Ruleset) {
+        // This will run before setTransients, so do not rely e.g. on Tile.ruleset being available.
+        // That rules out Tile.removeTerrainFeature, which refreshes object/unique caches
         for (tile in this.values) {
-            for (terrainFeature in tile.terrainFeatures.filter { !ruleSet.terrains.containsKey(it) })
-                tile.removeTerrainFeature(terrainFeature)
-            if (tile.resource != null && !ruleSet.tileResources.containsKey(tile.resource!!))
-                tile.resource = null
-            if (tile.improvement != null && !ruleSet.tileImprovements.containsKey(tile.improvement!!))
-                tile.changeImprovement(null)
+            tile.removeMissingTerrainModReferences(ruleSet)
         }
         for (startingLocation in startingLocations.toList())
-            if (startingLocation.nation !in ruleSet.nations.keys)
+            if (startingLocation.nation !in ruleSet.nations)
                 startingLocations.remove(startingLocation)
     }
 
