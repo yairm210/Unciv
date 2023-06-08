@@ -17,6 +17,7 @@ import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
+import com.unciv.models.metadata.ModCategories
 import com.unciv.models.metadata.ScreenSize
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.tr
@@ -251,6 +252,19 @@ private fun addTranslationGeneration(table: Table, optionsPopup: OptionsPopup) {
     generateTranslationsButton.addTooltip("F12", 18f)
     table.add(generateTranslationsButton).colspan(2).row()
 
+    val updateModCategoriesButton = "Update Mod categories".toTextButton()
+    updateModCategoriesButton.onActivation {
+        updateModCategoriesButton.setText(Constants.working.tr())
+        Concurrency.run("GithubTopicQuery") {
+            val result = ModCategories.mergeOnline()
+            launchOnGLThread {
+                updateModCategoriesButton.setText(result)
+            }
+        }
+    }
+    table.add(updateModCategoriesButton).colspan(2).row()
+
+    if (!UncivGame.Current.files.getSave("ScreenshotGenerationGame").exists()) return
 
     val generateScreenshotsButton = "Generate screenshots".toTextButton()
 
@@ -267,8 +281,8 @@ private fun addTranslationGeneration(table: Table, optionsPopup: OptionsPopup) {
             ))
         }
     }
-//     table.add(generateScreenshotsButton).colspan(2).row()
 
+    table.add(generateScreenshotsButton).colspan(2).row()
 }
 
 data class ScreenshotConfig(val width: Int, val height: Int, val screenSize: ScreenSize, var fileLocation:String, var centerTile:Vector2, var attackCity:Boolean=true)
