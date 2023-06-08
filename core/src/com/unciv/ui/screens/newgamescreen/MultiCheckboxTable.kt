@@ -3,7 +3,7 @@ package com.unciv.ui.screens.newgamescreen
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.ui.components.ExpanderTab
-import com.unciv.ui.components.extensions.onChange
+import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toCheckBox
 

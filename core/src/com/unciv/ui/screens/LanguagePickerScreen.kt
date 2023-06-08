@@ -7,7 +7,7 @@ import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.components.LanguageTable
 import com.unciv.ui.components.LanguageTable.Companion.addLanguageTables
 import com.unciv.ui.components.extensions.enable
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 
 /** A [PickerScreen] to select a language, used once on the initial run after a fresh install.

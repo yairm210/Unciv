@@ -7,8 +7,8 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.extensions.isEnabled
-import com.unciv.ui.components.extensions.onClick
-import com.unciv.ui.components.extensions.onDoubleClick
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.input.onDoubleClick
 
 class GreatPersonPickerScreen(val civInfo:Civilization) : PickerScreen() {
     private var theChosenOne: BaseUnit? = null
@@ -53,4 +53,3 @@ class GreatPersonPickerScreen(val civInfo:Civilization) : PickerScreen() {
         UncivGame.Current.popScreen()
     }
 }
-

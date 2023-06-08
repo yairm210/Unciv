@@ -6,7 +6,7 @@ import com.unciv.Constants
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.components.Fonts
-import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.images.ImageGetter
 
 

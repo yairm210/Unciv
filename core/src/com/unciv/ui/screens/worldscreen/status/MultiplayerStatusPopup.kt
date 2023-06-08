@@ -8,7 +8,7 @@ import com.unciv.ui.screens.multiplayerscreens.MultiplayerHelpers
 import com.unciv.ui.screens.pickerscreens.PickerPane
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onClick
 
 class MultiplayerStatusPopup(
     screen: BaseScreen,

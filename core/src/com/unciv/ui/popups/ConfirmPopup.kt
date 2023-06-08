@@ -4,7 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
 import com.badlogic.gdx.utils.Align
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.KeyboardBinding
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.extensions.toLabel
 
 /** Variant of [Popup] pre-populated with one label, plus confirm and cancel buttons

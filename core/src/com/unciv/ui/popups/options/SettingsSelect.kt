@@ -12,7 +12,7 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.SettingsPropertyChanged
 import com.unciv.models.metadata.SettingsPropertyUncivSoundChanged
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.extensions.onChange
+import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.extensions.toGdxArray
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.screens.basescreen.BaseScreen
