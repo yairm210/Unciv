@@ -16,13 +16,12 @@ import java.time.Duration
  * [Json] is not thread-safe. Use a new one for each parse.
  */
 fun json() = Json(JsonWriter.OutputType.json).apply {
+    // Gdx default output type is JsonWriter.OutputType.minimal, which generates invalid Json - e.g. most quotes removed.
+    // The constructor parameter above changes that to valid Json
+    // Note an instance set to json can read minimal and vice versa
+
     setIgnoreDeprecated(true)
     ignoreUnknownFields = true
-
-    // Default output type is JsonWriter.OutputType.minimal, which generates invalid Json - e.g. most quotes removed.
-    // To get better Json, use:
-    // setOutputType(JsonWriter.OutputType.json)
-    // Note an instance set to json can read minimal and vice versa
 
     setSerializer(HashMapVector2.getSerializerClass(), HashMapVector2.createSerializer())
     setSerializer(Duration::class.java, DurationSerializer())

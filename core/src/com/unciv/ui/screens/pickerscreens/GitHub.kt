@@ -423,7 +423,7 @@ object Github {
     /** Topic search response */
     @Suppress("PropertyName")
     class TopicSearchResponse {
-        // Commented out: Github returns then, but we're not interested
+        // Commented out: Github returns them, but we're not interested
 //         var total_count = 0
 //         var incomplete_results = false
         var items = ArrayList<Topic>()
@@ -432,8 +432,8 @@ object Github {
             var display_name: String? = null  // Would need to be curated, which is alottawork
 //             var featured = false
 //             var curated = false
-//             var created_at = "" // iso datetime with "Z" timezone
-//             var updated_at = "" // iso datetime with "Z" timezone
+            var created_at = "" // iso datetime with "Z" timezone
+            var updated_at = "" // iso datetime with "Z" timezone
         }
     }
 

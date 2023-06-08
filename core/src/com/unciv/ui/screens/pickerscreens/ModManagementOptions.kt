@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.models.metadata.ModCategories
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
@@ -20,10 +21,8 @@ import com.unciv.ui.components.extensions.keyShortcuts
 import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.onChange
 import com.unciv.ui.components.extensions.surroundWithCircle
-import com.unciv.ui.components.extensions.toGdxArray
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
-import com.unciv.utils.Concurrency
 import kotlin.math.sign
 
 /**
@@ -74,45 +73,6 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
         }
     }
 
-    class Category(
-        val label: String,
-        val topic: String
-    ) {
-        companion object {
-            val All = Category("All mods", "unciv-mod")
-            val Rulesets = Category("Rulesets", "unciv-mod-rulesets")
-            val Expansions = Category("Expansions", "unciv-mod-expansions")
-            val Graphics = Category("Graphics", "unciv-mod-graphics")
-            val Audio = Category("Audio", "unciv-mod-audio")
-            val Maps = Category("Maps", "unciv-mod-maps")
-            val Fun = Category("Fun", "unciv-mod-fun")
-            @Suppress("MemberVisibilityCanBePrivate")  // Inspection is wrong
-            val ModsOfMods = Category("Mods of mods", "unciv-mod-modsofmods")
-
-            private val values = mutableListOf(All, Rulesets, Expansions, Graphics, Audio, Maps, Fun, ModsOfMods)
-            private var queried = false
-
-            fun values(includeOnline: Boolean = false): List<Category> {
-                if (queried || !includeOnline) return values
-                val topics = Github.tryGetGithubTopics() ?: return values
-                queried = true
-                // Note: Yes imperfect sorting, and they do get translated - but no translation template.
-                for (topic in topics.items.sortedBy { it.name }) {
-                    if (values.any { it.topic == topic.name }) continue
-                    val label = topic.display_name?.takeUnless { it.isBlank() }
-                        ?: topic.name.removePrefix("unciv-mod-").replaceFirstChar(Char::titlecase)
-                    values += Category(label, topic.name)
-                }
-                return values
-            }
-
-            fun fromSelectBox(selectBox: TranslatedSelectBox): Category {
-                val selected = selectBox.selected.value
-                return values.firstOrNull { it.label == selected } ?: All
-            }
-        }
-    }
-
     class Filter(
         val text: String,
         val topic: String
@@ -124,7 +84,8 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
 
     private val textField = UncivTextField.create("Enter search text")
 
-    var category = Category.All
+    var category = ModCategories.default()
+
     var sortInstalled = SortType.Name
     var sortOnline = SortType.Stars
 
@@ -160,12 +121,12 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
         }
 
         categorySelect = TranslatedSelectBox(
-            Category.values().map { category -> category.label },
+            ModCategories.asSequence().map { it.label }.toList(),
             category.label,
             BaseScreen.skin
         )
         categorySelect.onChange {
-            category = Category.fromSelectBox(categorySelect)
+            category = ModCategories.fromSelectBox(categorySelect)
             modManagementScreen.refreshInstalledModTable()
             modManagementScreen.refreshOnlineModTable()
         }
@@ -209,18 +170,6 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
         }
         searchIcon.keyShortcuts.add(KeyCharAndCode.RETURN)
         searchIcon.addTooltip(KeyCharAndCode.RETURN, 18f)
-
-        Concurrency.run("OnlineModCategories") {
-            val newCategories = Category.values(true)
-            if (newCategories.size == categorySelect.items.size) return@run
-            val newItems = newCategories
-                .map { TranslatedSelectBox.TranslatedString(it.label) }
-                .toGdxArray()
-            Concurrency.runOnGLThread {
-                categorySelect.items = newItems
-            }
-        }
-
     }
 
     fun getInstalledHeader() = installedHeaderText.tr() + " " + sortInstalled.symbols
@@ -241,10 +190,10 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
     }
 }
 
-private fun getTextButton(nameString:String, topics: List<String>): TextButton {
-    val categories = ArrayList<ModManagementOptions.Category>()
-    for (category in ModManagementOptions.Category.values()) {
-        if (category== ModManagementOptions.Category.All) continue
+private fun getTextButton(nameString: String, topics: List<String>): TextButton {
+    val categories = ArrayList<ModCategories.Category>()
+    for (category in ModCategories) {
+        if (category == ModCategories.default()) continue
         if (topics.contains(category.topic)) categories += category
     }
 
@@ -305,7 +254,7 @@ class ModUIData private constructor(
     }
 
     private fun matchesCategory(filter: ModManagementOptions.Filter): Boolean {
-        if (filter.topic == ModManagementOptions.Category.All.topic)
+        if (filter.topic == ModCategories.default().topic)
             return true
         val modTopics = repo?.topics ?: ruleset?.modOptions?.topics!!
         return filter.topic in modTopics
