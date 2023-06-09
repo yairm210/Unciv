@@ -1,7 +1,6 @@
 import com.unciv.build.BuildConfig.gdxVersion
+import com.unciv.build.BuildConfig.ktorVersion
 import com.unciv.build.BuildConfig.roboVMVersion
-
-val ktorVersion: String by project
 
 
 // You'll still get kotlin-reflect-1.3.70.jar in your classpath, but will no longer be used

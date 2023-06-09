@@ -7,5 +7,6 @@ object BuildConfig {
     const val appVersion = "4.6.12-patch1"
 
     const val gdxVersion = "1.11.0"
+    const val ktorVersion = "2.2.3"
     const val roboVMVersion = "2.3.1"
 }
