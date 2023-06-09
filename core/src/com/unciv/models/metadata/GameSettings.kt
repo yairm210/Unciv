@@ -121,6 +121,10 @@ class GameSettings {
     /** If on, selected notifications are drawn enlarged with wider padding */
     var enlargeSelectedNotification = true
 
+    /** Whether the Nation Picker shows icons only or the horizontal "civBlocks" with leader/nation name */
+    enum class NationPickerListMode { Icons, List }
+    var nationPickerListMode = NationPickerListMode.List
+
     /** used to migrate from older versions of the settings */
     var version: Int? = null
 
