@@ -186,6 +186,7 @@ internal class NationPickerPopup(
                 val nationGroup = Container(nationIcon).apply {
                     isTransform = false
                     touchable = Touchable.enabled
+                    setRound(false)
                     center()
                 }
                 currentSelectInfo = SelectInfo(nation, currentY, nationGroup)
