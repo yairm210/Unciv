@@ -229,7 +229,7 @@ object ImageGetter {
     }
 
     fun getRandomNationPortrait(size: Float): Portrait {
-        return PortraitNation("Random", size)
+        return PortraitNation(Constants.random, size)
     }
 
     fun getUnitIcon(unitName: String, color: Color = Color.BLACK): Image {
