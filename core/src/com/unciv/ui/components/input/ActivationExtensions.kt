@@ -85,6 +85,7 @@ fun Actor.onRightClick(sound: UncivSound = UncivSound.Click, action: ActivationA
  *  A [sound] will be played (concurrently) on activation unless you specify [UncivSound.Silent].
  *  @return `this` to allow chaining
  */
+@Suppress("unused")  // Just in case - for now, only onRightClick is used
 fun Actor.onLongPress(sound: UncivSound = UncivSound.Click, action: ActivationAction): Actor =
     onActivation(ActivationTypes.Longpress, sound, noEquivalence = true, action)
 

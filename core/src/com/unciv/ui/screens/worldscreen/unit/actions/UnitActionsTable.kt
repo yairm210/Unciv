@@ -57,6 +57,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         if (unitAction !is UpgradeUnitAction)  // Does its own toolTip
             actionButton.addTooltip(key)
         actionButton.pack()
+
         if (unitAction.action == null) {
             actionButton.disable()
         } else {
