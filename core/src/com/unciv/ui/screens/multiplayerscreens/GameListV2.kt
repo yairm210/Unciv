@@ -2,6 +2,7 @@ package com.unciv.ui.screens.multiplayerscreens
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Disposable
+import com.unciv.Constants
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.MultiplayerGameCanBeLoaded
 import com.unciv.logic.multiplayer.apiv2.GameOverviewResponse
@@ -9,6 +10,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.ChatButton
 import com.unciv.ui.components.PencilButton
 import com.unciv.ui.components.extensions.formatShort
+import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
@@ -52,14 +54,8 @@ class GameListV2(private val screen: BaseScreen, private val onSelected: (GameOv
 
     private fun addGame(game: GameOverviewResponse) {
         add(game.name.toTextButton().onClick { onSelected(game) }).padRight(10f).padBottom(5f)
-        val time = "[${Duration.between(game.lastActivity, Instant.now()).formatShort()}] ago".tr()
-        add(time).padRight(10f).padBottom(5f)
-        add(game.lastPlayer.username).padRight(10f).padBottom(5f)
-        add(game.gameDataID.toString()).padRight(10f).padBottom(5f)
+        add(convertTime(game.lastActivity)).padRight(10f).padBottom(5f)
 
-        add(PencilButton().apply { onClick {
-            ToastPopup("Renaming game ${game.gameUUID} not implemented yet", screen.stage)
-        } }).padRight(5f).padBottom(5f)
         add(ChatButton().apply { onClick {
             Log.debug("Opening chat room ${game.chatRoomUUID} from game list")
             val popup = Popup(screen.stage)
@@ -74,6 +70,15 @@ class GameListV2(private val screen: BaseScreen, private val onSelected: (GameOv
             popup.addCloseButton()
             popup.open(force = true)
         } }).padBottom(5f)
+        add(PencilButton().apply { onClick {
+            GameEditPopup(screen, game).open()
+        } }).padRight(5f).padBottom(5f)
+    }
+
+    companion object {
+        private fun convertTime(time: Instant): String {
+            return "[${Duration.between(time, Instant.now()).formatShort()}] ago".tr()
+        }
     }
 
     /**
@@ -112,11 +117,26 @@ class GameListV2(private val screen: BaseScreen, private val onSelected: (GameOv
         }
     }
 
+    private class GameEditPopup(screen: BaseScreen, game: GameOverviewResponse) : Popup(screen) {
+        init {
+            add(game.name.toLabel(fontSize = Constants.headingFontSize)).colspan(2).padBottom(5f).row()
+            add("Last played")
+            add(convertTime(game.lastActivity)).padBottom(5f).row()
+            add("Last player")
+            add(game.lastPlayer.displayName).padBottom(5f).row()
+            add("Max players")
+            add(game.maxPlayers.toString()).padBottom(5f).row()
+            add("Remove / Resign".toTextButton().apply { onActivation {
+                ToastPopup("This functionality is not implemented yet.", screen).open(force = true)
+            } }).colspan(2).row()
+            addCloseButton().colspan(2).row()
+        }
+    }
+
     /**
      * Dispose children who need to be cleaned up properly
      */
     override fun dispose() {
         disposables.forEach { it.dispose() }
     }
-
 }
