@@ -343,7 +343,7 @@ open class Popup(
     }
 
     /** Overload of [addCloseButton] accepting a bindable key definition as [additionalKey] */
-    fun addCloseButton(text: String, additionalKey: KeyboardBinding, action: () -> Unit) =
+    fun addCloseButton(text: String, additionalKey: KeyboardBinding, action: (() -> Unit)? = null) =
         addCloseButton(text, KeyboardBindings[additionalKey], action = action)
     /** Overload of [addOKButton] accepting a bindable key definition as [additionalKey] */
     fun addOKButton(text: String, additionalKey: KeyboardBinding, style: TextButtonStyle? = null, action: () -> Unit) =
