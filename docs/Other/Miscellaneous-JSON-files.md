@@ -151,6 +151,8 @@ and city distance in another. In case of conflicts, there is no guarantee which 
 | maxRiverLength                           | Int    | 666       | [^I]  |
 | religionLimitBase                        | Int    | 1         | [^K]  |
 | religionLimitMultiplier                  | Float  | 0.5       | [^K]  |
+| pantheonBase                             | Int    | 10        | [^L]  |
+| pantheonGrowth                           | Int    | 10        | [^L]  |
 
 
 Legend:
@@ -179,6 +181,7 @@ Legend:
 - [^I]: RiverGenerator: river frequency and length bounds
 - [^J]: A [UnitUpgradeCost](#UnitUpgradeCost) sub-structure.
 - [^K]: Maximum foundable Religions = religionLimitBase + floor(MajorCivCount * religionLimitMultiplier)
+- [^L]: Cost of pantheon = pantheonBase + CivsWithReligion * pantheonGrowth
 
 #### UnitUpgradeCost
 
