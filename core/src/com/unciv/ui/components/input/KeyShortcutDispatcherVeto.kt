@@ -1,6 +1,8 @@
 package com.unciv.ui.components.input
 
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.unciv.ui.components.tilegroups.TileGroupMap
+import com.unciv.ui.screens.basescreen.BaseScreen
 
 /**
  * A lambda testing for a given *associatedActor* whether the shortcuts in *keyDispatcher*
@@ -26,4 +28,13 @@ object KeyShortcutDispatcherVeto {
             }
         }
     }
+
+    /** Return this from [BaseScreen.getShortcutDispatcherVetoer] for Screens containing a [TileGroupMap] */
+    fun createTileGroupMapDispatcherVetoer(): DispatcherVetoer {
+        return { associatedActor: Actor?, _: KeyShortcutDispatcher? ->
+            if (associatedActor is TileGroupMap<*>) DispatcherVetoResult.SkipWithChildren
+            else DispatcherVetoResult.Accept
+        }
+    }
+
 }

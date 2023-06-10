@@ -99,13 +99,17 @@ fun Actor.clearActivationActions(type: ActivationTypes, noEquivalence: Boolean =
 
 /**
  * Install shortcut dispatcher for this stage. It activates all actions associated with the
- * pressed key in [additionalShortcuts] (if specified) and all actors in the stage. It is
- * possible to temporarily disable or veto some shortcut dispatchers by passing an appropriate
+ * pressed key in [additionalShortcuts] (if specified) and **all** actors in the stage - recursively.
+ *
+ * It is possible to temporarily disable or veto some shortcut dispatchers by passing an appropriate
  * [dispatcherVetoerCreator] function. This function may return a [DispatcherVetoer], which
  * will then be used to evaluate all shortcut sources in the stage. This two-step vetoing
  * mechanism allows the callback ([dispatcherVetoerCreator]) to perform expensive preparations
  * only once per keypress (doing them in the returned [DispatcherVetoer] would instead be once
  * per keypress/actor combination).
+ *
+ * Note - screens containing a TileGroupMap **should** supply a vetoer skipping that actor, or else
+ * the scanning Deque will be several thousand entries deep.
  */
 fun Stage.installShortcutDispatcher(additionalShortcuts: KeyShortcutDispatcher? = null, dispatcherVetoerCreator: () -> DispatcherVetoer?) {
     addListener(KeyShortcutListener(actors.asSequence(), additionalShortcuts, dispatcherVetoerCreator))

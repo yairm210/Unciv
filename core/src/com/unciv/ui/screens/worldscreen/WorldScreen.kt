@@ -33,6 +33,7 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.setFontSize
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.AuthPopup
 import com.unciv.ui.popups.Popup
@@ -278,6 +279,9 @@ class WorldScreen(
     private fun addKeyboardListener() {
         stage.addListener(KeyboardPanningListener(mapHolder, allowWASD = true))
     }
+
+    // We contain a map...
+    override fun getShortcutDispatcherVetoer() = KeyShortcutDispatcherVeto.createTileGroupMapDispatcherVetoer()
 
     private suspend fun loadLatestMultiplayerState(): Unit = coroutineScope {
         if (game.screen != this@WorldScreen) return@coroutineScope // User already went somewhere else

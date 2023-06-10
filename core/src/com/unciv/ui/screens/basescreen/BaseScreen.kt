@@ -26,6 +26,7 @@ import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.extensions.isNarrowerThan4to3
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.activePopup
 import com.unciv.ui.popups.options.OptionsPopup
 
@@ -59,9 +60,15 @@ abstract class BaseScreen : Screen {
         stage.installShortcutDispatcher(globalShortcuts, this::createDispatcherVetoer)
     }
 
+    /** Hook allowing derived Screens to supply a key shortcut vetoer that can exclude parts of the
+     *  Stage Actor hierarchy from the search. Only called if no [Popup] is active.
+     *  @see installShortcutDispatcher
+     */
+    open fun getShortcutDispatcherVetoer(): DispatcherVetoer? = null
+
     private fun createDispatcherVetoer(): DispatcherVetoer? {
         val activePopup = this.activePopup
-            ?: return null
+            ?: return getShortcutDispatcherVetoer()
         return KeyShortcutDispatcherVeto.createPopupBasedDispatcherVetoer(activePopup)
     }
 
