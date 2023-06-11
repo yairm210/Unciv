@@ -152,7 +152,7 @@ and city distance in another. In case of conflicts, there is no guarantee which 
 | religionLimitBase                        | Int    | 1         | [^K]  |
 | religionLimitMultiplier                  | Float  | 0.5       | [^K]  |
 | pantheonBase                             | Int    | 10        | [^L]  |
-| pantheonGrowth                           | Int    | 10        | [^L]  |
+| pantheonGrowth                           | Int    | 5         | [^L]  |
 
 
 Legend:
