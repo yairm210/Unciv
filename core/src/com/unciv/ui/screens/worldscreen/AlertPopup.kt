@@ -19,7 +19,7 @@ import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
-import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
