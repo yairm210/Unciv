@@ -58,7 +58,6 @@ import com.unciv.ui.components.AutoScrollPane as ScrollPane
  * When [selectCiv] and [selectTrade] are supplied, that Trade for that Civilization is selected, used for the counter-offer option from `TradePopup`.
  * Note calling this with [selectCiv] a City State and [selectTrade] supplied is **not allowed**.
  */
-@Suppress("KDocUnresolvedReference")  // Mentioning non-field parameters is flagged, but they work anyway
 class DiplomacyScreen(
     private val viewingCiv: Civilization,
     private val selectCiv: Civilization? = null,
