@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.addSeparator
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onClick
 
 
 /** Makes [renderer][render] available outside [ICivilopediaText] */

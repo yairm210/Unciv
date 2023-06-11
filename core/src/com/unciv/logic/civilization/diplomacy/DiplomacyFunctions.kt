@@ -28,7 +28,7 @@ class DiplomacyFunctions(val civInfo: Civilization){
                 }
                 .sortedWith(
                     compareByDescending<Civilization> { it.isMajorCiv() }
-                        .thenBy (UncivGame.Current.settings.getCollatorFromLocale()) { it.civName.tr() }
+                        .thenBy (UncivGame.Current.settings.getCollatorFromLocale()) { it.civName.tr(hideIcons = true) }
                 )
 
 

@@ -1,9 +1,9 @@
 package com.unciv.ui.screens.pickerscreens
 
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.KeyCharAndCode
-import com.unciv.ui.components.extensions.keyShortcuts
-import com.unciv.ui.components.extensions.onActivation
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
 
 open class PickerScreen(disableScroll: Boolean = false) : BaseScreen() {
 

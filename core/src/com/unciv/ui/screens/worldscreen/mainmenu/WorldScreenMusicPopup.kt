@@ -11,7 +11,7 @@ import com.unciv.models.metadata.ScreenSize
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.Fonts
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup

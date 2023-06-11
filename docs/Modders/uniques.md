@@ -1758,12 +1758,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;after adopting [policy]&gt;"
+??? example  "&lt;after adopting [policy/belief]&gt;"
 	Example: "&lt;after adopting [Oligarchy]&gt;"
 
 	Applicable to: Conditional
 
-??? example  "&lt;before adopting [policy]&gt;"
+??? example  "&lt;before adopting [policy/belief]&gt;"
 	Example: "&lt;before adopting [Oligarchy]&gt;"
 
 	Applicable to: Conditional
