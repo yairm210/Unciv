@@ -10,7 +10,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.ExpanderTab
-import com.unciv.ui.components.extensions.onChange
+import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toCheckBox
 

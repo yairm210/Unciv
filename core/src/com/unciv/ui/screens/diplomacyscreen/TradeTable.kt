@@ -7,7 +7,7 @@ import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.isEnabled
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toTextButton
 
 class TradeTable(

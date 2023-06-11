@@ -34,7 +34,6 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 <!--- DO NOT REMOVE OR MODIFY THIS LINE UI_ELEMENT_TABLE_REGION -->
 | Directory | Name | Default shape | Image |
 |---|:---:|:---:|---|
-|  | Border | null | |
 | CityScreen/ | CityPickerTable | roundedEdgeRectangle | |
 | CityScreen/CitizenManagementTable/ | AvoidCell | null | |
 | CityScreen/CitizenManagementTable/ | FocusCell | null | |
@@ -56,7 +55,7 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | General/ | Border | null | |
 | General/ | ExpanderTab | null | |
 | General/ | HealthBar | null | |
-| General/ | KeyCapturingButton | null | |
+| General/ | KeyCapturingButton | roundedEdgeRectangleSmall | |
 | General/ | TabbedPager | null | |
 | General/ | Tooltip | roundedEdgeRectangle | |
 | General/Popup/ | Background | null | |
@@ -88,6 +87,14 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | OverviewScreen/TradesOverviewTab/ | OffersTable | null | |
 | OverviewScreen/UnitOverviewTab/ | UnitSupplyTable | null | |
 | PlayerReadyScreen/ | Background | null | |
+| PolicyScreen/ | PolicyBranchAdoptButton | roundedEdgeRectangleSmall | |
+| PolicyScreen/ | PolicyBranchAdoptButtonBorder | roundedEdgeRectangleSmall | |
+| PolicyScreen/ | PolicyBranchBackground | rectangleWithOutline | |
+| PolicyScreen/ | PolicyBranchBackgroundBorder | rectangleWithOutline | |
+| PolicyScreen/ | PolicyBranchHeader | rectangleWithOutline | |
+| PolicyScreen/ | PolicyBranchHeaderBorder | rectangleWithOutline | |
+| PromotionScreen/ | PromotionButton | roundedEdgeRectangleMid | |
+| PromotionScreen/ | PromotionButtonBorder | roundedEdgeRectangleMidBorder | |
 | TechPickerScreen/ | Background | null | |
 | TechPickerScreen/ | BottomTable | null | |
 | TechPickerScreen/ | CurrentTechColor | 72, 147, 175 | |
@@ -105,6 +112,12 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | WorldScreen/ | TileInfoTable | null | |
 | WorldScreen/ | TutorialTaskTable | null | |
 | WorldScreen/ | UnitTable | roundedEdgeRectangleMid | |
+| WorldScreen/CityButton/ | AirUnitTable | roundedEdgeRectangleSmall | |
+| WorldScreen/CityButton/ | AirUnitTableBorder | roundedEdgeRectangleSmall | |
+| WorldScreen/CityButton/ | DefenceTable | roundedTopEdgeRectangleSmall | |
+| WorldScreen/CityButton/ | DefenceTableBorder | roundedTopEdgeRectangleSmallBorder | |
+| WorldScreen/CityButton/ | IconTable | roundedEdgeRectangleMid | |
+| WorldScreen/CityButton/ | IconTableBorder | roundedEdgeRectangleMidBorder | |
 | WorldScreen/CityButton/ | InfluenceBar | null | |
 | WorldScreen/Minimap/ | Background | null | |
 | WorldScreen/Minimap/ | Border | null | |

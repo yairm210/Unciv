@@ -22,7 +22,7 @@ import com.unciv.Constants
 import com.unciv.models.UncivSound
 import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.images.IconCircleGroup
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.screens.basescreen.BaseScreen

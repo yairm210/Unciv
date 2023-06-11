@@ -1,3 +1,23 @@
+## 4.6.19
+
+Modding:
+- "before adopting / after adopting" conditionals accept beliefs
+- 'Transform' and 'double movement' uniques accept conditionals
+- AI evaluation of BuyItemsDiscount no longer crashes
+
+'random generated map type' is actually random
+
+By WhoIsJohannes:
+- Show line color in more cases
+- AI aircraft only consider *visible* attackable enemies
+-
+By SomeTroglodyte:
+- Fixed Hakkapeliitta ability
+- Fix translated sorting
+- Fix 'missing mod' display
+
+Pantheon Mod fix - By SeventhM
+
 ## 4.6.18
 
 Pillaged improvements have a visual indication on the icon

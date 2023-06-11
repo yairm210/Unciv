@@ -9,7 +9,7 @@ import com.unciv.logic.multiplayer.FriendList
 import com.unciv.models.UncivSound
 import com.unciv.ui.components.FontFamilyData
 import com.unciv.ui.components.Fonts
-import com.unciv.ui.components.KeyboardBindings
+import com.unciv.ui.components.input.KeyboardBindings
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenOrientation

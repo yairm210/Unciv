@@ -11,8 +11,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
 import com.unciv.ui.screens.diplomacyscreen.LeaderIntroTable
-import com.unciv.ui.components.KeyCharAndCode
-import com.unciv.ui.components.extensions.addSeparator
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toLabel
 import kotlin.math.max
