@@ -66,6 +66,10 @@ class ModConstants {
     var religionLimitBase = 1
     var religionLimitMultiplier = 0.5f
 
+    //Factors in formula for pantheon cost
+    var pantheonBase = 10
+    var pantheonGrowth = 5
+
     fun merge(other: ModConstants) {
         if (other.maxXPfromBarbarians != defaults.maxXPfromBarbarians) maxXPfromBarbarians = other.maxXPfromBarbarians
         if (other.cityStrengthBase != defaults.cityStrengthBase) cityStrengthBase = other.cityStrengthBase
@@ -88,6 +92,8 @@ class ModConstants {
         if (other.maxRiverLength != defaults.maxRiverLength) maxRiverLength = other.maxRiverLength
         if (other.religionLimitBase != defaults.religionLimitBase) religionLimitBase = other.religionLimitBase
         if (other.religionLimitMultiplier != defaults.religionLimitMultiplier) religionLimitMultiplier = other.religionLimitMultiplier
+        if (other.pantheonBase != defaults.pantheonBase) pantheonBase = other.pantheonBase
+        if (other.pantheonGrowth != defaults.pantheonGrowth) pantheonGrowth = other.pantheonGrowth
     }
 
     companion object {
