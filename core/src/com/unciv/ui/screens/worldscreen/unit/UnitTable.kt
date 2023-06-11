@@ -66,8 +66,8 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
     private var bg = Image(
         BaseScreen.skinStrings.getUiBackground("WorldScreen/UnitTable",
-            BaseScreen.skinStrings.roundedEdgeRectangleMidShape,
-            BaseScreen.skinStrings.skinConfig.baseColor.darken(0.5f)))
+        BaseScreen.skinStrings.roundedEdgeRectangleMidShape,
+        BaseScreen.skinStrings.skinConfig.baseColor.darken(0.5f)))
 
 
     init {
@@ -233,7 +233,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
             unitNameLabel.clearListeners()
             unitNameLabel.onClick {
-                if (!worldScreen.canChangeState) return@onClick
+            if (!worldScreen.canChangeState) return@onClick
                 CityRenamePopup(
                     screen = worldScreen,
                     city = city,
@@ -318,7 +318,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         if (selectedUnit != null && selectedUnit!!.isPreparingAirSweep()) return
 
         fun MapUnit.isEligible(): Boolean = (this.civ == worldScreen.viewingCiv
-            || worldScreen.viewingCiv.isSpectator()) && this !in selectedUnits
+                || worldScreen.viewingCiv.isSpectator()) && this !in selectedUnits
 
         // This is the Civ 5 Order of selection:
         // 1. City
@@ -346,18 +346,18 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
         }
 
         nextUnit = when {
-            curUnit == null -> priorityUnit
-            curUnit == civUnit && milUnit != null && milUnit.isEligible() -> null
-            curUnit == milUnit && civUnit != null && civUnit.isEligible() -> civUnit
-            else -> priorityUnit
-        }
+                curUnit == null -> priorityUnit
+                curUnit == civUnit && milUnit != null && milUnit.isEligible() -> null
+                curUnit == milUnit && civUnit != null && civUnit.isEligible() -> civUnit
+                else -> priorityUnit
+            }
 
 
         when {
             forceSelectUnit != null ->
                 selectUnit(forceSelectUnit)
             selectedTile.isCityCenter() &&
-                (selectedTile.getOwner() == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator()) ->
+                    (selectedTile.getOwner() == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator()) ->
                 citySelected(selectedTile.getCity()!!)
             nextUnit != null -> selectUnit(nextUnit, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
             selectedTile == previouslySelectedUnit?.currentTile -> {
