@@ -594,7 +594,28 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             "Purchase",
             true,
             restoreDefault = { cityScreen.update() }
-        ) { purchaseConstruction(construction, stat, tile) }.open()
+        ) {
+            val isBuyingWithFaithForForeignReligion =
+                construction.canBePurchasedWithStat(city, Stat.Faith) &&
+                    city.religion.getMajorityReligion()?.getFounder() != city.civ
+            if (isBuyingWithFaithForForeignReligion) {
+                val reallySurePrompt =
+                    "You are buying a religious unit in a city that\ndoesn't follow a religion " +
+                        "founded by you.\nThis means that the unit is tied to that " +
+                        "foreign religion.\nAre you sure you want to purchase this unit?".tr()
+                ConfirmPopup(
+                    cityScreen,
+                    reallySurePrompt,
+                    "Purchase",
+                    true,
+                    restoreDefault = { cityScreen.update() }
+                ) {
+                    purchaseConstruction(construction, stat, tile)
+                }.open()
+            } else {
+                purchaseConstruction(construction, stat, tile)
+            }
+        }.open()
     }
 
     /** This tests whether the buy button should be _shown_ */
