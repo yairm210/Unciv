@@ -20,8 +20,8 @@ import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.colorFromRGB
-import com.unciv.ui.components.extensions.onActivation
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toGroup
 import com.unciv.ui.components.extensions.toLabel

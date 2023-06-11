@@ -10,7 +10,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.screens.basescreen.BaseScreen
 

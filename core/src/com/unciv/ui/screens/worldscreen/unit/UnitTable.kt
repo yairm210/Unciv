@@ -18,7 +18,7 @@ import com.unciv.ui.components.UnitGroup
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.darken
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen

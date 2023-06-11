@@ -3,7 +3,7 @@ package com.unciv.ui.screens.overviewscreen
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
-import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen

@@ -16,7 +16,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.disable
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
