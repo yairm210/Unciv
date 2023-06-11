@@ -1,34 +1,22 @@
 ## 4.6.19
 
-chore: Android Gradle Plugin upgrade (7.3.1 -> 7.4.2) 
-
-Resolved  - Transform uniques accept conditionals correctly
-
-bugfix: AI evaluation of ButItemsDiscount no longer crashes
-
-Resolves  - double movement unique accepts conditionals 
-
-"before adopting / after adopting" uniques accept belief as well as policy - 
+Modding:
+- "before adopting / after adopting" conditionals accept beliefs
+- 'Transform' and 'double movement' uniques accept conditionals
+- AI evaluation of BuyItemsDiscount no longer crashes
 
 'random generated map type' is actually random
 
-Resolved  - only display first 5 missing mods
-
-4.6.18-patch1
-
-Revert "Mod checks against sellable, missing or multiple Palace(s) "
-
 By WhoIsJohannes:
-- Show line color in more cases 
-- Only consider attackable enemies within visible tiles. 
-
+- Show line color in more cases
+- AI aircraft only consider *visible* attackable enemies
+-
 By SomeTroglodyte:
-- Fix translated sorting 
-- Refactor input-related components into own package 
-- Only *display* first 5 missing mods but auto-download all 
-- Fix and unit-test Hakkapeliitta TransferMovement ability 
+- Fixed Hakkapeliitta ability
+- Fix translated sorting
+- Fix 'missing mod' display
 
-Pantheon Mod Constants  - By SeventhM
+Pantheon Mod fix - By SeventhM
 
 ## 4.6.18
 
