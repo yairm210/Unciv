@@ -516,7 +516,7 @@ private class RandomNationPickerPopup(
     init {
         val sortedNations = previousScreen.ruleset.nations.values
                 .filter { it.isMajorCiv }
-                .sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.name.tr() })
+                .sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.name.tr(hideIcons = true) })
         allNationTables = ArrayList(
             sortedNations.map { NationTable(it, civBlocksWidth, 0f) }  // no need for min height
         )
