@@ -112,7 +112,7 @@ class DiplomacyScreen(
 
         var selectCivY = 0f
 
-        for (civ in viewingCiv.diplomacyFunctions.getKnownCivsSorted()) {
+        for (civ in viewingCiv.diplomacyFunctions.getKnownCivsSorted(includeSelf = false)) {
             if (civ == selectCiv) {
                 selectCivY = leftSideTable.prefHeight
             }
