@@ -106,7 +106,7 @@ class MapEditorViewTab(
             naturalWonders.clear()
             tileMap.values.asSequence()
                 .mapNotNull { it.naturalWonder }
-                .sortedWith(compareBy(collator) { it.tr() })
+                .sortedWith(compareBy(collator) { it.tr(hideIcons = true) })
                 .forEach {
                     naturalWonders.add(it, 1)
                 }
@@ -260,11 +260,11 @@ class MapEditorViewTab(
         startingLocationsByNation.asSequence()
         .filter { tile == null || tile in it.value }
         .mapNotNull { ruleset!!.nations[it.key] }
-        .sortedWith(compareBy<Nation>{ it.isCityState }.thenBy(collator) { it.name.tr() })
+        .sortedWith(compareBy<Nation>{ it.isCityState }.thenBy(collator) { it.name.tr(hideIcons = true) })
 
     private fun TileMap.getStartingLocationSummary() =
         startingLocationsByNation.asSequence()
         .mapNotNull { if (it.key in ruleset!!.nations) ruleset!!.nations[it.key]!! to it.value.size else null }
-        .sortedWith(compareBy<Pair<Nation,Int>>{ it.first.isCityState }.thenBy(collator) { it.first.name.tr() })
+        .sortedWith(compareBy<Pair<Nation,Int>>{ it.first.isCityState }.thenBy(collator) { it.first.name.tr(hideIcons = true) })
         .map { it.first.name to it.second }
 }

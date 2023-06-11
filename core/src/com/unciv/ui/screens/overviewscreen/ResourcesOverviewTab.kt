@@ -66,7 +66,7 @@ class ResourcesOverviewTab(
         .distinct()
         .sortedWith(
             compareBy<TileResource> { it.resourceType }
-                .thenBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.name.tr() }
+                .thenBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.name.tr(hideIcons = true) }
         )
         .toList()
     private val origins: List<String> = resourceDrilldown.asSequence()
