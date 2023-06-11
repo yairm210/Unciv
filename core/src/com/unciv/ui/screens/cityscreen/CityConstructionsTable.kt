@@ -596,7 +596,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             restoreDefault = { cityScreen.update() }
         ) {
             val isBuyingWithFaithForForeignReligion =
-                construction.canBePurchasedWithStat(city, Stat.Faith) &&
+                construction.hasUnique(UniqueType.ReligiousUnit) &&
                     city.religion.getMajorityReligion()?.getFounder() != city.civ
             if (isBuyingWithFaithForForeignReligion) {
                 val reallySurePrompt =
