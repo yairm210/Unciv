@@ -12,10 +12,10 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.ISortableGridContentProvider
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
-import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.cityscreen.CityScreen
 import kotlin.math.roundToInt
@@ -33,7 +33,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override val fillX = true
         override val defaultDescending = false
         override fun getComparator() = Comparator { city2: City, city1: City ->
-            collator.compare(city2.name.tr(), city1.name.tr())
+            collator.compare(city2.name.tr(hideIcons = true), city1.name.tr(hideIcons = true))
         }
         override fun getHeaderIcon(iconSize: Float) =
                 ImageGetter.getUnitIcon("Settler")
@@ -68,8 +68,8 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override val defaultDescending = false
         override fun getComparator() = Comparator { city2: City, city1: City ->
             collator.compare(
-                city2.cityConstructions.currentConstructionFromQueue.tr(),
-                city1.cityConstructions.currentConstructionFromQueue.tr()
+                city2.cityConstructions.currentConstructionFromQueue.tr(hideIcons = true),
+                city1.cityConstructions.currentConstructionFromQueue.tr(hideIcons = true)
             )
         }
         override fun getHeaderIcon(iconSize: Float) =
@@ -135,8 +135,8 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override val defaultDescending = false
         override fun getComparator() = Comparator { city2: City, city1: City ->
             collator.compare(
-                city2.getCenterTile().militaryUnit?.name?.tr() ?: "",
-                city1.getCenterTile().militaryUnit?.name?.tr() ?: ""
+                city2.getCenterTile().militaryUnit?.name?.tr(hideIcons = true) ?: "",
+                city1.getCenterTile().militaryUnit?.name?.tr(hideIcons = true) ?: ""
             )
         }
         override fun getHeaderIcon(iconSize: Float) =
