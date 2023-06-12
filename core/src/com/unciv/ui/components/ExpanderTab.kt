@@ -69,9 +69,10 @@ class ExpanderTab(
         onChange: (() -> Unit)? = null,
         initContent: ((Table) -> Unit)
     ) : this (
-        title, fontSize, icon, startsOutOpened, defaultPad,
+        title, fontSize, icon, startsOutOpened, 0f,
         headerPad, headerAlign, expanderWidth, persistenceID, animated,
         Table(BaseScreen.skin).apply {
+            pad(defaultPad)
             defaults().growX()
             initContent(this)
         },
@@ -115,6 +116,7 @@ class ExpanderTab(
     init {
         setLayoutEnabled(false)
 
+        this.name = "${javaClass.simpleName} ($title)"
         header.align(headerAlign)
         header.defaults().pad(headerPad)
         arrowIcon.setSize(arrowSize, arrowSize)
@@ -133,19 +135,19 @@ class ExpanderTab(
         header.touchable= Touchable.enabled
         header.onClick { toggle() }
 
-        content.pack()
-        measureContent()
+        measureContent(defaultPad)
 
         wrapper = Container(content).apply {
                 setRound(false)
                 bottom()  // controls what is seen first on opening!
+                pad(defaultPad)
                 setSize(wrapperWidth, 0f)
             }
 
         defaults().growX()
         headerCell = add(header).minWidth(wrapperWidth)
         row()
-        wrapperCell = add(wrapper).size(wrapperWidth, 0f).pad(defaultPad)
+        wrapperCell = add(wrapper).size(wrapperWidth, 0f)
 
         setLayoutEnabled(true)
         update(fromInit = true)
@@ -166,17 +168,32 @@ class ExpanderTab(
     private fun contentHasChanged() {
         val oldWidth = wrapperWidth
         val oldHeight = wrapperHeight
-        content.pack()
-        measureContent()
+        measureContent(wrapper.padTop)  // that was the constructor's defaultPad
         if (wrapperWidth == oldWidth && wrapperHeight == oldHeight) return
         headerCell.minWidth(wrapperWidth)
         currentPercent *= oldHeight / wrapperHeight  // to animate smoothly to new height, >1f should work too
         update()
     }
 
-    private fun measureContent() {
-        wrapperWidth = if (expanderWidth > 0f) expanderWidth else content.width
-        wrapperHeight = content.height
+    private fun measureContent(pad: Float) {
+        content.packWithWidth(expanderWidth - 2 * pad)
+        header.validate()
+        wrapperWidth = content.width + 2 * pad
+        wrapperHeight = content.height + 2 * pad
+        if (header.minWidth > wrapperWidth) {
+            wrapperWidth = header.minWidth
+        }
+    }
+
+    private fun WidgetGroup.packWithWidth(fixedWidth: Float) {
+        // like WidgetGroup.pack() but don't use prefWidth if it's predefined
+        fun once() {
+            if (!needsLayout()) return
+            setSize(if (fixedWidth > 0f) fixedWidth else prefWidth, prefHeight)
+            validate()
+        }
+        once()
+        once()  // First may have invalidated - e.g. wrapped Label changing prefHeight
     }
 
     private fun update(fromInit: Boolean = false) {
