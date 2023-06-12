@@ -21,13 +21,13 @@ import com.unciv.Constants
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.AutoScrollPane
-import com.unciv.ui.components.KeyboardBinding
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.isEnabled
-import com.unciv.ui.components.extensions.onChange
-import com.unciv.ui.components.extensions.onClick
-import com.unciv.ui.components.extensions.onDoubleClick
+import com.unciv.ui.components.input.onChange
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.popups.Popup
 import java.io.File
@@ -47,7 +47,7 @@ open class FileChooser(
     title: String?,
     startFile: FileHandle? = null,
     private val resultListener: ResultListener? = null
-) : Popup(stageToShowOn, false) {
+) : Popup(stageToShowOn, Scrollability.None) {
     // config
     var filter = FileFilter { true }
         set(value) { field = value; resetList() }
@@ -123,21 +123,20 @@ open class FileChooser(
 
     init {
         innerTable.top().left()
-        innerTable.touchable = Touchable.enabled
 
         fileList.selection.setProgrammaticChangeEvents(false)
         fileNameInput.setTextFieldListener { textField, _ -> result = textField.text }
 
         if (title != null) {
             addGoodSizedLabel(title).colspan(2).center().row()
-            innerTable.addSeparator(height = 1f)
+            addSeparator(height = 1f)
         }
         add(pathLabelWrapper).colspan(2).fillX().row()
-        innerTable.addSeparator(Color.GRAY, height = 1f)
+        addSeparator(Color.GRAY, height = 1f)
         add(fileScroll).colspan(2).fill().row()
-        innerTable.addSeparator(height = 1f)
-        fileNameCell = innerTable.add().colspan(2).growX()
-        innerTable.row()
+        addSeparator(height = 1f)
+        fileNameCell = add().colspan(2).growX()
+        row()
 
         addCloseButton("Cancel", KeyboardBinding.Cancel) {
             reportResult(false)

@@ -13,14 +13,14 @@ import com.unciv.logic.files.MapSaver
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.isEnabled
-import com.unciv.ui.components.extensions.keyShortcuts
-import com.unciv.ui.components.extensions.onActivation
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
@@ -135,7 +135,7 @@ class MapEditorOptionsTab(
 
     private fun showOverlayFileName() = overlayFileButton.run {
         if (editorScreen.overlayFile == null) {
-            setText("Click to choose a file")
+            setText("Click to choose a file".tr())
             style.fontColor.a = 0.5f
         } else {
             setText(editorScreen.overlayFile!!.path())

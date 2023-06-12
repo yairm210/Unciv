@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.Constants
+import com.unciv.logic.MissingModsException
 import com.unciv.logic.files.MapSaver
 import com.unciv.logic.UncivShowableException
 import com.unciv.models.ruleset.RulesetCache
@@ -16,12 +16,13 @@ import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.components.AutoScrollPane
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.extensions.isEnabled
-import com.unciv.ui.components.extensions.keyShortcuts
-import com.unciv.ui.components.extensions.onActivation
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.popups.LoadingPopup
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import kotlinx.coroutines.CoroutineScope
@@ -105,38 +106,27 @@ class MapEditorLoadTab(
         var needPopup = true    // loadMap can fail faster than postRunnable runs
         Concurrency.runOnGLThread {
             if (!needPopup) return@runOnGLThread
-            popup = Popup(editorScreen).apply {
-                addGoodSizedLabel(Constants.loading)
-                open()
-            }
+            popup = LoadingPopup(editorScreen)
         }
         try {
             val map = MapSaver.loadMap(chosenMap!!)
             if (!isActive) return
 
-            val missingMods = map.mapParameters.mods.filter { it !in RulesetCache }.toMutableList()
-            // [TEMPORARY] conversion of old maps with a base ruleset contained in the mods
-            val newBaseRuleset = map.mapParameters.mods.filter { it !in missingMods }.firstOrNull { RulesetCache[it]!!.modOptions.isBaseRuleset }
-            if (newBaseRuleset != null) map.mapParameters.baseRuleset = newBaseRuleset
-            //
-            if (map.mapParameters.baseRuleset !in RulesetCache) missingMods += map.mapParameters.baseRuleset
+            // For deprecated maps, set the base ruleset field if it's still saved in the mods field
+            val modBaseRuleset = map.mapParameters.mods.firstOrNull { RulesetCache[it]?.modOptions?.isBaseRuleset == true }
+            if (modBaseRuleset != null) {
+                map.mapParameters.baseRuleset = modBaseRuleset
+                map.mapParameters.mods -= modBaseRuleset
+            }
 
-            if (missingMods.isNotEmpty()) {
-                Concurrency.runOnGLThread {
-                    needPopup = false
-                    popup?.close()
-                    ToastPopup("Missing mods: [${missingMods.joinToString()}]", editorScreen)
-                }
-            } else Concurrency.runOnGLThread {
+            val missingMods = (setOf(map.mapParameters.baseRuleset) + map.mapParameters.mods)
+                .filterNot { it in RulesetCache }
+            if (missingMods.isNotEmpty())
+                throw MissingModsException(missingMods)
+
+            Concurrency.runOnGLThread {
                 Gdx.input.inputProcessor = null // This is to stop ANRs happening here, until the map editor screen sets up.
                 try {
-                    // For deprecated maps, set the base ruleset field if it's still saved in the mods field
-                    val modBaseRuleset = map.mapParameters.mods.firstOrNull { RulesetCache[it]!!.modOptions.isBaseRuleset }
-                    if (modBaseRuleset != null) {
-                        map.mapParameters.baseRuleset = modBaseRuleset
-                        map.mapParameters.mods -= modBaseRuleset
-                    }
-
                     val ruleset = RulesetCache.getComplexRuleset(map.mapParameters)
                     val rulesetIncompatibilities = map.getRulesetIncompatibility(ruleset)
                     if (rulesetIncompatibilities.isNotEmpty()) {

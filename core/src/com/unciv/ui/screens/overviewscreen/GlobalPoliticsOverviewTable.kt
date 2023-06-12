@@ -24,9 +24,9 @@ import com.unciv.ui.components.extensions.addBorder
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
 import com.unciv.ui.components.extensions.center
-import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
@@ -94,7 +94,7 @@ class GlobalPoliticsOverviewTable (
     }
 
     private fun createGlobalPoliticsTable() {
-        for (civ in viewingPlayer.diplomacyFunctions.getKnownCivsSorted(includeCityStates = false)) {
+        for (civ in viewingPlayer.diplomacyFunctions.getKnownCivsSorted(includeSelf = true, includeCityStates = false)) {
             addSeparator(Color.GRAY)
 
             // civ image
@@ -249,9 +249,8 @@ class GlobalPoliticsOverviewTable (
             else gameInfo.civilizations.count {
                 !it.isSpectator() && !it.isBarbarian() && (persistableData.includeCityStates || !it.isCityState())
             }.toString()
-        undefeatedCivs = sequenceOf(viewingPlayer) +
-                viewingPlayer.diplomacyFunctions.getKnownCivsSorted(persistableData.includeCityStates)
-        defeatedCivs = viewingPlayer.diplomacyFunctions.getKnownCivsSorted(persistableData.includeCityStates, true)
+        undefeatedCivs = viewingPlayer.diplomacyFunctions.getKnownCivsSorted(includeSelf = true, persistableData.includeCityStates)
+        defeatedCivs = viewingPlayer.diplomacyFunctions.getKnownCivsSorted(includeSelf = true, persistableData.includeCityStates, true)
             .filter { it.isDefeated() }
 
         clear()

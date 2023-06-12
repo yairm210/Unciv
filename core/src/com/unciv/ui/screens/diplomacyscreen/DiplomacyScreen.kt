@@ -30,13 +30,13 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.components.ColorMarkupLabel
 import com.unciv.ui.components.Fonts
-import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.disable
-import com.unciv.ui.components.extensions.keyShortcuts
-import com.unciv.ui.components.extensions.onActivation
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.setFontSize
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
@@ -58,7 +58,6 @@ import com.unciv.ui.components.AutoScrollPane as ScrollPane
  * When [selectCiv] and [selectTrade] are supplied, that Trade for that Civilization is selected, used for the counter-offer option from `TradePopup`.
  * Note calling this with [selectCiv] a City State and [selectTrade] supplied is **not allowed**.
  */
-@Suppress("KDocUnresolvedReference")  // Mentioning non-field parameters is flagged, but they work anyway
 class DiplomacyScreen(
     private val viewingCiv: Civilization,
     private val selectCiv: Civilization? = null,
@@ -113,7 +112,7 @@ class DiplomacyScreen(
 
         var selectCivY = 0f
 
-        for (civ in viewingCiv.diplomacyFunctions.getKnownCivsSorted()) {
+        for (civ in viewingCiv.diplomacyFunctions.getKnownCivsSorted(includeSelf = false)) {
             if (civ == selectCiv) {
                 selectCivY = leftSideTable.prefHeight
             }

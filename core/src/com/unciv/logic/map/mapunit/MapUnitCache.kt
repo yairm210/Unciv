@@ -3,6 +3,7 @@ package com.unciv.logic.map.mapunit
 import com.unciv.Constants
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 
 class MapUnitCache(val mapUnit: MapUnit) {
@@ -47,9 +48,10 @@ class MapUnitCache(val mapUnit: MapUnit) {
 
     /** Used for getMovementCostBetweenAdjacentTiles only, based on order of testing */
     enum class DoubleMovementTerrainTarget { Feature, Base, Hill, Filter }
+    class DoubleMovement(val terrainTarget: DoubleMovementTerrainTarget, val unique: Unique)
     /** Mod-friendly cache of double-movement terrains */
     @Transient
-    val doubleMovementInTerrain = HashMap<String, DoubleMovementTerrainTarget>()
+    val doubleMovementInTerrain = HashMap<String, DoubleMovement>()
 
     @Transient
     var canEnterIceTiles = false
@@ -86,24 +88,25 @@ class MapUnitCache(val mapUnit: MapUnit) {
         roughTerrainPenalty = mapUnit.hasUnique(UniqueType.RoughTerrainPenalty)
 
         doubleMovementInTerrain.clear()
-        for (unique in mapUnit.getMatchingUniques(UniqueType.DoubleMovementOnTerrain)) {
+        for (unique in mapUnit.getMatchingUniques(UniqueType.DoubleMovementOnTerrain, stateForConditionals = StateForConditionals.IgnoreConditionals)) {
             val param = unique.params[0]
             val terrain = mapUnit.civ.gameInfo.ruleset.terrains[param]
-            doubleMovementInTerrain[param] = when {
-                terrain == null -> DoubleMovementTerrainTarget.Filter
-                terrain.name == Constants.hill -> DoubleMovementTerrainTarget.Hill
-                terrain.type == TerrainType.TerrainFeature -> DoubleMovementTerrainTarget.Feature
-                terrain.type.isBaseTerrain -> DoubleMovementTerrainTarget.Base
-                else -> DoubleMovementTerrainTarget.Filter
-            }
+            doubleMovementInTerrain[param] = DoubleMovement(unique = unique,
+                terrainTarget =  when {
+                    terrain == null -> DoubleMovementTerrainTarget.Filter
+                    terrain.name == Constants.hill -> DoubleMovementTerrainTarget.Hill
+                    terrain.type == TerrainType.TerrainFeature -> DoubleMovementTerrainTarget.Feature
+                    terrain.type.isBaseTerrain -> DoubleMovementTerrainTarget.Base
+                    else -> DoubleMovementTerrainTarget.Filter
+                })
         }
         // Init shortcut flags
         noTerrainMovementUniques = doubleMovementInTerrain.isEmpty() &&
                 !roughTerrainPenalty && !mapUnit.civ.nation.ignoreHillMovementCost
         noBaseTerrainOrHillDoubleMovementUniques = doubleMovementInTerrain
-            .none { it.value != DoubleMovementTerrainTarget.Feature }
+            .none { it.value.terrainTarget != DoubleMovementTerrainTarget.Feature }
         noFilteredDoubleMovementUniques = doubleMovementInTerrain
-            .none { it.value == DoubleMovementTerrainTarget.Filter }
+            .none { it.value.terrainTarget == DoubleMovementTerrainTarget.Filter }
         costToDisembark = (mapUnit.getMatchingUniques(UniqueType.ReducedDisembarkCost, checkCivInfoUniques = true))
             .minOfOrNull { it.params[0].toFloat() }
         costToEmbark = mapUnit.getMatchingUniques(UniqueType.ReducedEmbarkCost, checkCivInfoUniques = true)

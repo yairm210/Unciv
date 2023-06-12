@@ -821,7 +821,7 @@ open class Tile : IsPartOfGameInfoSerialization {
             else probability
     }
 
-    fun setTerrainFeatures(terrainFeatureList:List<String>) {
+    fun setTerrainFeatures(terrainFeatureList: List<String>) {
         terrainFeatures = terrainFeatureList
         terrainFeatureObjects = terrainFeatureList.mapNotNull { ruleset.terrains[it] }
         allTerrains = sequence {
@@ -843,7 +843,7 @@ open class Tile : IsPartOfGameInfoSerialization {
         terrainUniqueMap = newUniqueMap
     }
 
-    fun addTerrainFeature(terrainFeature:String) =
+    fun addTerrainFeature(terrainFeature: String) =
         setTerrainFeatures(ArrayList(terrainFeatures).apply { add(terrainFeature) })
 
     fun removeTerrainFeature(terrainFeature: String) =
@@ -852,6 +852,16 @@ open class Tile : IsPartOfGameInfoSerialization {
     fun removeTerrainFeatures() =
         setTerrainFeatures(listOf())
 
+    /** Clean stuff missing in [ruleset] - called from [TileMap.removeMissingTerrainModReferences]
+     *  Must be able to run before [setTransients] - and does not need to fix transients.
+     */
+    fun removeMissingTerrainModReferences(ruleset: Ruleset) {
+        terrainFeatures = terrainFeatures.filter { it in ruleset.terrains }
+        if (resource != null && resource !in ruleset.tileResources)
+            resource = null
+        if (improvement != null && improvement !in ruleset.tileImprovements)
+            changeImprovement(null)
+    }
 
     /** If the unit isn't in the ruleset we can't even know what type of unit this is! So check each place
      * This works with no transients so can be called from gameInfo.setTransients with no fear

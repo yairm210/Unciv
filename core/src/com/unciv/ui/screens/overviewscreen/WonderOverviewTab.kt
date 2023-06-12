@@ -13,8 +13,8 @@ import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.equalizeColumns
-import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
@@ -185,7 +185,7 @@ class WonderInfo {
                 ruleSet.buildings.values.asSequence()
                     .filter { it.isWonder }
                         // 100 is so wonders with no era get displayed after all eras, not before
-                    .sortedWith(compareBy<Building> { wonderEraMap[it.name]?.eraNumber ?: 100 }.thenBy(collator) { it.name.tr() })
+                    .sortedWith(compareBy<Building> { wonderEraMap[it.name]?.eraNumber ?: 100 }.thenBy(collator) { it.name.tr(hideIcons = true) })
                     .withIndex()
                     .associate { it.index to it.value.name }
         val wonderCount = allWonderMap.size

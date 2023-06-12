@@ -6,10 +6,21 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.unciv.ui.screens.basescreen.BaseScreen
 
+/**
+ * Attention: UiElementDocsWriter parses source for usages of this, and is limited to recognize
+ * string literals for the [path] parameter. No other expressions please, or your skinnable element
+ * will not be documented.
+ */
 open class BorderedTable(
-    val path: String = "",
+    val path: String,
     defaultBgShape: String = BaseScreen.skinStrings.rectangleWithOutlineShape,
-    defaultBgBorder: String = BaseScreen.skinStrings.rectangleWithOutlineShape) : Table() {
+    defaultBgBorder: String = BaseScreen.skinStrings.rectangleWithOutlineShape
+) : Table() {
+
+    /** Note: **This class breaks automatic getUiBackground recognition in UiElementDocsWriter**,
+     *  and therefore gets its own parser there. Any significant changes here **must** check whether
+     *  that parser still works!
+     */
 
     var bgColor: Color = Color.BLACK
     var bgBorderColor: Color = Color.WHITE

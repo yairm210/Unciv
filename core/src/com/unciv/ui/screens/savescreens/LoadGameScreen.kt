@@ -15,16 +15,17 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.screens.pickerscreens.Github
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
-import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.isEnabled
-import com.unciv.ui.components.extensions.keyShortcuts
-import com.unciv.ui.components.extensions.onActivation
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.popups.LoadingPopup
 import com.unciv.utils.Log
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
@@ -34,7 +35,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
     private val copySavedGameToClipboardButton = getCopyExistingSaveToClipboardButton()
     private val errorLabel = "".toLabel(Color.RED).apply { isVisible = false }
     private val loadMissingModsButton = getLoadMissingModsButton()
-    private var missingModsToLoad = ""
+    private var missingModsToLoad: Iterable<String> = emptyList()
 
     companion object {
         private const val loadGame = "Load game"
@@ -60,11 +61,11 @@ class LoadGameScreen : LoadOrSaveScreen() {
                     isUserFixable = false
                 }
                 is FileNotFoundException -> {
-                    if (ex.cause?.message?.contains("Permission denied") == true) {
+                    isUserFixable = if (ex.cause?.message?.contains("Permission denied") == true) {
                         errorText.append("You do not have sufficient permissions to access the file.".tr())
-                        isUserFixable = true
+                        true
                     } else {
-                        isUserFixable = false
+                        false
                     }
                 }
                 else -> {
@@ -116,9 +117,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
 
     private fun onLoadGame() {
         if (selectedSave == null) return
-        val loadingPopup = Popup( this)
-        loadingPopup.addGoodSizedLabel(Constants.loading)
-        loadingPopup.open()
+        val loadingPopup = LoadingPopup(this)
         Concurrency.run(loadGame) {
             try {
                 // This is what can lead to ANRs - reading the file and setting the transients, that's why this is in another thread
@@ -246,8 +245,8 @@ class LoadGameScreen : LoadOrSaveScreen() {
         descriptionLabel.setText(Constants.loading.tr())
         Concurrency.runOnNonDaemonThreadPool(downloadMissingMods) {
             try {
-                val mods = missingModsToLoad.replace(' ', '-').lowercase().splitToSequence(",-")
-                for (modName in mods) {
+                for (rawName in missingModsToLoad) {
+                    val modName = rawName.replace(' ', '-').lowercase()
                     val repos = Github.tryGetGithubReposWithTopic(10, 1, modName)
                         ?: throw UncivShowableException("Could not download mod list.")
                     val repo = repos.items.firstOrNull { it.name.lowercase() == modName }
@@ -265,7 +264,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
                 }
                 launchOnGLThread {
                     RulesetCache.loadRulesets()
-                    missingModsToLoad = ""
+                    missingModsToLoad = emptyList()
                     loadMissingModsButton.isVisible = false
                     errorLabel.isVisible = false
                     rightSideTable.pack()

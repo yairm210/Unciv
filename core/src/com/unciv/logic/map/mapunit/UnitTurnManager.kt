@@ -140,16 +140,14 @@ class UnitTurnManager(val unit: MapUnit) {
         unit.due = true
 
         // Hakkapeliitta movement boost
-        if (unit.getTile().getUnits().count() > 1) {
-            // For every double-stacked tile, check if our cohabitant can boost our speed
-            for (tileUnit in unit.getTile().getUnits())
-            {
-                if (tileUnit == unit) continue
+        // For every double-stacked tile, check if our cohabitant can boost our speed
+        // (a test `count() > 1` is no optimization - two iterations of a sequence instead of one)
+        for (boostingUnit in unit.getTile().getUnits()) {
+            if (boostingUnit == unit) continue
 
-                if (tileUnit.getMatchingUniques(UniqueType.TransferMovement)
-                            .any { tileUnit.matchesFilter(it.params[0]) } )
-                    tileUnit.currentMovement = maxOf(tileUnit.getMaxMovement().toFloat(), tileUnit.getMaxMovement().toFloat())
-            }
+            if (boostingUnit.getMatchingUniques(UniqueType.TransferMovement)
+                        .none { unit.matchesFilter(it.params[0]) } ) continue
+            unit.currentMovement = unit.currentMovement.coerceAtLeast(boostingUnit.getMaxMovement().toFloat())
         }
 
         // Wake sleeping units if there's an enemy in vision range:

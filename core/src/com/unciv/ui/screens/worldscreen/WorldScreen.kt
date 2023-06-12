@@ -23,13 +23,13 @@ import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.components.KeyCharAndCode
-import com.unciv.ui.components.KeyboardBinding
-import com.unciv.ui.components.KeyboardPanningListener
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.KeyboardPanningListener
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.isEnabled
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.setFontSize
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
@@ -617,8 +617,8 @@ class WorldScreen(
 
             debug("Next turn took %sms", System.currentTimeMillis() - startTime)
 
-            // Special case: when you are the only human player, the game will always be up to date
-            if (gameInfo.gameParameters.isOnlineMultiplayer && gameInfoClone.civilizations.filter { it.playerType == PlayerType.Human }.size == 1) {
+            // Special case: when you are the only alive human player, the game will always be up to date
+            if (gameInfo.gameParameters.isOnlineMultiplayer && gameInfoClone.civilizations.filter { it.isAlive() && it.playerType == PlayerType.Human }.size == 1) {
                 gameInfoClone.isUpToDate = true
             }
 

@@ -264,8 +264,8 @@ object ImageGetter {
         return PortraitTech(techName, circleSize)
     }
 
-    fun getImprovementPortrait(improvementName: String, size: Float = 20f, dim: Boolean = false): Portrait {
-        return PortraitImprovement(improvementName, size, dim)
+    fun getImprovementPortrait(improvementName: String, size: Float = 20f, dim: Boolean = false, isPillaged: Boolean = false): Portrait {
+        return PortraitImprovement(improvementName, size, dim, isPillaged)
     }
 
     fun getUnitActionPortrait(actionName: String, size: Float = 20f): Portrait {
@@ -274,13 +274,11 @@ object ImageGetter {
 
     fun getReligionIcon(iconName: String): Image { return getImage("ReligionIcons/$iconName") }
     fun getReligionPortrait(iconName: String, size: Float): Portrait {
-        if (religionIconExists(iconName)) {
+        if (religionIconExists(iconName))
             return PortraitReligion(iconName, size)
-        } else {
-            val typeName = ruleset.beliefs[iconName]?.type?.name
-            if (typeName != null && religionIconExists(typeName))
-                return PortraitReligion(typeName, size)
-        }
+        val typeName = ruleset.beliefs[iconName]?.type?.name
+        if (typeName != null && religionIconExists(typeName))
+            return PortraitReligion(typeName, size)
         return PortraitReligion(iconName, size)
     }
 

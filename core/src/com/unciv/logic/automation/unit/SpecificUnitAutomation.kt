@@ -296,18 +296,15 @@ object SpecificUnitAutomation {
      * of `false` can be interpreted as: the unit doesn't know where to go or is stuck. */
     fun speedupWonderConstruction(unit: MapUnit): Boolean {
         val nearbyCityWithAvailableWonders = unit.civ.cities.filter { city ->
-            // Maybe it would be nice to make space in the city if there's already some
-            // other civilian unit in there for whatever reason, but again that seems a lot of
-            // additional complexity for questionable gain.
+            // Don't speed up construction in small cities. There's a risk the great
+            // engineer can't get it done entirely and then it takes forever for the small
+            // city to finish the rest.
+            city.population.population >= 3 &&
             (unit.movement.canMoveTo(city.getCenterTile()) || unit.currentTile == city.getCenterTile())
-                    // Don't speed up construction in small cities. There's a risk the great
-                    // engineer can't get it done entirely and then it takes forever for the small
-                    // city to finish the rest.
-                    && city.population.population >= 3
                     && getWonderThatWouldBenefitFromBeingSpedUp(city) != null
         }.mapNotNull { city ->
             val path = unit.movement.getShortestPath(city.getCenterTile())
-            if (path.size <= 5) city to path.size else null
+            if (path.any() && path.size <= 5) city to path.size else null
         }.minByOrNull { it.second }?.first
 
         if (nearbyCityWithAvailableWonders == null) {
@@ -580,6 +577,7 @@ object SpecificUnitAutomation {
         for (city in immediatelyReachableCitiesAndCarriers) {
             if (city.getTilesInDistance(unit.getRange())
                             .any {
+                                it.isVisible(unit.civ) &&
                                 BattleHelper.containsAttackableEnemy(
                                     it,
                                     MapUnitCombatant(unit)
