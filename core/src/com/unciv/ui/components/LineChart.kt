@@ -138,25 +138,24 @@ class LineChart(
         // We draw the y-axis labels first. They will take away some space on the left of the
         // widget which we need to consider when drawing the rest of the graph.
         var yAxisYPosition = 0f
-        val negativeOrientationLineYPosition = yAxisLabelMinY + labelHeight / 2
-        val yLabelsToDraw = yLabelsAsLabels
-        yLabelsToDraw.forEachIndexed { index, label ->
-            val yPos = yAxisLabelMinY + index * (yAxisLabelYRange / (yLabelsToDraw.size - 1))
+        yLabels.forEachIndexed { index, value ->
+            val label = yLabelsAsLabels[index] // we assume yLabels.size == yLabelsAsLabels.size
+            val yPos = yAxisLabelMinY + index * (yAxisLabelYRange / (yLabels.size - 1))
             label.setPosition((widestYLabelWidth - label.width) / 2, yPos)
             label.draw(batch, 1f)
 
             // Draw y-axis orientation lines and x-axis
-            val zeroIndex = 0
+            val zeroIndex = value == 0
             drawLine(
                 batch,
                 widestYLabelWidth + axisToLabelPadding + axisLineWidth,
                 yPos + labelHeight / 2,
                 chartWidth,
                 yPos + labelHeight / 2,
-                if (index != zeroIndex) orientationLineColor else axisColor,
-                if (index != zeroIndex) orientationLineWidth else axisLineWidth
+                if (zeroIndex) axisColor else orientationLineColor,
+                if (zeroIndex) axisLineWidth else orientationLineWidth
             )
-            if (index == zeroIndex) {
+            if (zeroIndex) {
                 yAxisYPosition = yPos + labelHeight / 2
             }
         }
@@ -180,7 +179,7 @@ class LineChart(
                 xPos,
                 chartHeight,
                 if (index > 0) orientationLineColor else axisColor,
-                if (index >0) orientationLineWidth else axisLineWidth
+                if (index > 0) orientationLineWidth else axisLineWidth
             )
         }
 
