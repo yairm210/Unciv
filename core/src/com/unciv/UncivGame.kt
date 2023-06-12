@@ -446,8 +446,6 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         val curGameInfo = gameInfo
         if (curGameInfo != null) files.requestAutoSave(curGameInfo)
         if (::musicController.isInitialized) musicController.pause()
-        // We stop the *in-game* multiplayer update, so that when we resume(), it doesn't keep working and A. we'll have errors and B. we'll have multiple updaters active
-        if (::onlineMultiplayer.isInitialized) onlineMultiplayer.multiplayerGameUpdater.cancel()
         super.pause()
     }
 
@@ -461,6 +459,8 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         Gdx.input.inputProcessor = null // don't allow ANRs when shutting down, that's silly
         SoundPlayer.clearCache()
         if (::musicController.isInitialized) musicController.gracefulShutdown()  // Do allow fade-out
+        // We stop the *in-game* multiplayer update, so that it doesn't keep working and A. we'll have errors and B. we'll have multiple updaters active
+        if (::onlineMultiplayer.isInitialized) onlineMultiplayer.multiplayerGameUpdater.cancel()
 
         val curGameInfo = gameInfo
         if (curGameInfo != null) {
