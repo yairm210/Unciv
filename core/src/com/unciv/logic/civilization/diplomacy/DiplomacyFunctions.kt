@@ -16,10 +16,10 @@ import com.unciv.models.translations.tr
 class DiplomacyFunctions(val civInfo: Civilization){
 
     /** A sorted Sequence of all other civs we know (excluding barbarians and spectators) */
-    fun getKnownCivsSorted(includeCityStates: Boolean = true, includeDefeated: Boolean = false) =
+    fun getKnownCivsSorted(includeSelf:Boolean, includeCityStates: Boolean = true, includeDefeated: Boolean = false) =
             civInfo.gameInfo.civilizations.asSequence()
                 .filterNot {
-                    it == civInfo ||
+                    (!includeSelf && it == civInfo) ||
                             it.isBarbarian() ||
                             it.isSpectator() ||
                             !civInfo.knows(it) ||
@@ -28,7 +28,7 @@ class DiplomacyFunctions(val civInfo: Civilization){
                 }
                 .sortedWith(
                     compareByDescending<Civilization> { it.isMajorCiv() }
-                        .thenBy (UncivGame.Current.settings.getCollatorFromLocale()) { it.civName.tr() }
+                        .thenBy (UncivGame.Current.settings.getCollatorFromLocale()) { it.civName.tr(hideIcons = true) }
                 )
 
 

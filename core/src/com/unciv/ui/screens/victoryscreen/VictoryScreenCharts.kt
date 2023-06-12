@@ -9,8 +9,8 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.components.AutoScrollPane
 import com.unciv.ui.components.LineChart
 import com.unciv.ui.components.TabbedPager
-import com.unciv.ui.components.extensions.onChange
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onChange
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen

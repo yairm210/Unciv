@@ -35,7 +35,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
-import com.unciv.ui.components.KeyboardBinding
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import java.io.File

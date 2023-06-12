@@ -1,4 +1,4 @@
-package com.unciv.ui.components
+package com.unciv.ui.components.input
 
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue

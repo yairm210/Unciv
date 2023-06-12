@@ -15,7 +15,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
@@ -66,7 +66,7 @@ class ResourcesOverviewTab(
         .distinct()
         .sortedWith(
             compareBy<TileResource> { it.resourceType }
-                .thenBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.name.tr() }
+                .thenBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.name.tr(hideIcons = true) }
         )
         .toList()
     private val origins: List<String> = resourceDrilldown.asSequence()

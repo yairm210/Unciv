@@ -13,7 +13,7 @@ import com.unciv.models.ruleset.unit.UnitMovementType
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.TileSetStrings
-import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.images.IconCircleGroup
@@ -111,11 +111,11 @@ object CivilopediaImageGetters {
  * @param label Translatable caption for the Civilopedia button
  */
 enum class CivilopediaCategories (
-        val label: String,
-        val hide: Boolean,      // Omitted on CivilopediaScreen
-        val getImage: ((name: String, size: Float) -> Actor?)?,
-        val key: KeyCharAndCode = KeyCharAndCode.UNKNOWN,
-        val headerIcon: String
+    val label: String,
+    val hide: Boolean,      // Omitted on CivilopediaScreen
+    val getImage: ((name: String, size: Float) -> Actor?)?,
+    val key: KeyCharAndCode = KeyCharAndCode.UNKNOWN,
+    val headerIcon: String
     ) {
     Building ("Buildings", false,
         CivilopediaImageGetters.construction,

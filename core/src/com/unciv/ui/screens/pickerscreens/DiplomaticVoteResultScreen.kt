@@ -7,7 +7,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.extensions.enable
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
 
 class DiplomaticVoteResultScreen(val votesCast: HashMap<String, String>, val viewingCiv: Civilization) : PickerScreen() {

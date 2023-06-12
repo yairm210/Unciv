@@ -577,6 +577,7 @@ object SpecificUnitAutomation {
         for (city in immediatelyReachableCitiesAndCarriers) {
             if (city.getTilesInDistance(unit.getRange())
                             .any {
+                                it.isVisible(unit.civ) &&
                                 BattleHelper.containsAttackableEnemy(
                                     it,
                                     MapUnitCombatant(unit)

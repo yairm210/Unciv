@@ -203,8 +203,7 @@ class LineChart(
                     val a = simplifiedScaledPoints[i - 1]
                     val b = simplifiedScaledPoints[i]
                     val selectedCivBackgroundColor =
-                            if (viewingCiv == civ || viewingCiv.knows(civ)) civ.nation.getInnerColor()
-                            else Color.LIGHT_GRAY
+                        if (useActualColor(civ)) civ.nation.getInnerColor() else Color.LIGHT_GRAY
                     drawLine(
                         batch, a.x, a.y, b.x, b.y,
                         selectedCivBackgroundColor, chartLineWidth * 3
@@ -214,9 +213,7 @@ class LineChart(
             for (i in 1 until simplifiedScaledPoints.size) {
                 val a = simplifiedScaledPoints[i - 1]
                 val b = simplifiedScaledPoints[i]
-                val civLineColor =
-                        if (viewingCiv == civ || viewingCiv.knows(civ)) civ.nation.getOuterColor()
-                        else Color.DARK_GRAY
+                val civLineColor = if (useActualColor(civ)) civ.nation.getOuterColor() else Color.DARK_GRAY
                 drawLine(batch, a.x, a.y, b.x, b.y, civLineColor, chartLineWidth)
 
                 // Draw the selected Civ icon on its last datapoint
@@ -242,6 +239,15 @@ class LineChart(
 
         // Restore the previous batch transformation matrix
         batch.transformMatrix = oldTransformMatrix
+    }
+
+    private fun useActualColor(civ: Civilization) : Boolean {
+        return viewingCiv.isSpectator() ||
+            viewingCiv.isDefeated() ||
+            viewingCiv.victoryManager.hasWon() ||
+            viewingCiv == civ ||
+            viewingCiv.knows(civ) ||
+            civ.isDefeated()
     }
 
     private fun getLastTurnDataPoints(): MutableMap<Civilization, DataPoint<Int>> {

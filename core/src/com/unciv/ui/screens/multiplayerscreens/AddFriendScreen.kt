@@ -10,7 +10,7 @@ import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.extensions.enable
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import java.util.UUID
