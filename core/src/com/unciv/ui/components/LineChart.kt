@@ -5,17 +5,16 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Widget
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Civilization
-import com.unciv.ui.components.extensions.surroundWithCircle
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.victoryscreen.VictoryScreenCivGroup
 import com.unciv.ui.screens.victoryscreen.VictoryScreenCivGroup.DefeatedPlayerStyle
+import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.ceil
+import kotlin.math.floor
 import kotlin.math.log10
 import kotlin.math.max
 import kotlin.math.pow
@@ -49,12 +48,6 @@ class LineChart(
     private var xLabelsAsLabels = emptyList<Label>()
     private var yLabelsAsLabels = emptyList<Label>()
 
-
-    private var hasNegativeYValues: Boolean = false
-    private var negativeYLabel: Int = 0
-    private var negativeYLabelAsLabel = Label("0", Label.LabelStyle(Fonts.font, axisLabelColor))
-
-
     private var dataPoints = emptyList<DataPoint<Int>>()
     private var selectedCiv = Civilization()
 
@@ -68,26 +61,24 @@ class LineChart(
     }
 
     private fun updateLabels(newData: List<DataPoint<Int>>) {
-        hasNegativeYValues = newData.any { it.y < 0 }
-        xLabels = generateLabels(newData.maxOf { it.x })
-        yLabels = generateLabels(newData.maxOf { it.y })
+        xLabels = generateLabels(newData, false)
+        yLabels = generateLabels(newData, true)
 
         xLabelsAsLabels =
             xLabels.map { Label(it.toString(), Label.LabelStyle(Fonts.font, axisLabelColor)) }
         yLabelsAsLabels =
             yLabels.map { Label(it.toString(), Label.LabelStyle(Fonts.font, axisLabelColor)) }
-
-        val lowestValue = newData.minOf { it.y }
-        negativeYLabel = if (hasNegativeYValues) -getNextNumberDivisibleByPowOfTen(-lowestValue) else 0
-        negativeYLabelAsLabel =
-            Label(negativeYLabel.toString(), Label.LabelStyle(Fonts.font, axisLabelColor))
     }
 
-    private fun generateLabels(maxValue: Int): List<Int> {
-        val maxLabelValue = getNextNumberDivisibleByPowOfTen(maxValue)
+    private fun generateLabels(value: List<DataPoint<Int>>, yAxis: Boolean): List<Int> {
+        val minLabelValue = getPrevNumberDivisibleByPowOfTen(value.minOf { if (yAxis) it.y else it.x })
+        val maxLabelValue = getNextNumberDivisibleByPowOfTen(value.maxOf { if (yAxis) it.y else it.x })
         val stepSize = ceil(maxLabelValue.toFloat() / maxLabels).toInt()
         // `maxLabels + 1` because we want to end at `maxLabels * stepSize`.
-        return (0 until maxLabels + 1).map { (it * stepSize) }
+        val result = (0 until maxLabels + 1).map { (it * stepSize) }
+        return if (maxLabelValue * minLabelValue < 0)
+            listOf(minLabelValue) + result // if the chart cross the X axis, add a negative value
+        else result
     }
 
     /**
@@ -96,12 +87,26 @@ class LineChart(
      */
     private fun getNextNumberDivisibleByPowOfTen(value: Int): Int {
         if (value == 0) return 0
-        val numberOfDigits = min(ceil(log10(value.toDouble())).toInt(), 3)
+        val numberOfDigits = max(2, min(ceil(log10(abs(value).toDouble())).toInt(), 3))
         val oneWithZeros = 10.0.pow(numberOfDigits - 1)
         // E.g., 3 => 10^(2-1) = 10 ; ceil(3 / 10) * 10 = 10
         //     567 => 10^(3-1) = 100 ; ceil(567 / 100) * 100 = 600
         //  123321 => 10^(3-1) = 100 ; ceil(123321 / 100) * 100 = 123400
         return (ceil(value / oneWithZeros) * oneWithZeros).toInt()
+    }
+
+    /**
+     *  Returns the previous number of power 10, with maximal step <= 100.
+     *  Examples: 0 => 0, -3 => -10, 97 => 90, 567 => 500, 123321 => 123300
+     */
+    private fun getPrevNumberDivisibleByPowOfTen(value: Int): Int {
+        if (value == 0) return 0
+        val numberOfDigits = max(2 , min(ceil(log10(abs(value).toDouble())).toInt(), 3))
+        val oneWithZeros = 10.0.pow(numberOfDigits - 1)
+        // E.g., 3 => 10^(2-1) = 10 ; floor(3 / 10) * 10 = 0
+        //     567 => 10^(3-1) = 100 ; floor(567 / 100) * 100 = 500
+        //  123321 => 10^(3-1) = 100 ; floor(123321 / 100) * 100 = 123300
+        return (floor(value / oneWithZeros) * oneWithZeros).toInt()
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
@@ -117,7 +122,7 @@ class LineChart(
         val lastTurnDataPoints = getLastTurnDataPoints()
 
         val labelHeight = yLabelsAsLabels.first().height
-        val widestYLabelWidth = max(yLabelsAsLabels.maxOf { it.width }, negativeYLabelAsLabel.width)
+        val widestYLabelWidth = yLabelsAsLabels.maxOf { it.width }
         // We assume here that all labels have the same height. We need to deduct the height of
         // a label from the available height, because otherwise the label on the top would
         // overrun the height since the (x,y) coordinates define the bottom left corner of the
@@ -134,14 +139,14 @@ class LineChart(
         // widget which we need to consider when drawing the rest of the graph.
         var yAxisYPosition = 0f
         val negativeOrientationLineYPosition = yAxisLabelMinY + labelHeight / 2
-        val yLabelsToDraw = if (hasNegativeYValues) listOf(negativeYLabelAsLabel) + yLabelsAsLabels else yLabelsAsLabels
+        val yLabelsToDraw = yLabelsAsLabels
         yLabelsToDraw.forEachIndexed { index, label ->
             val yPos = yAxisLabelMinY + index * (yAxisLabelYRange / (yLabelsToDraw.size - 1))
             label.setPosition((widestYLabelWidth - label.width) / 2, yPos)
             label.draw(batch, 1f)
 
             // Draw y-axis orientation lines and x-axis
-            val zeroIndex = if (hasNegativeYValues) 1 else 0
+            val zeroIndex = 0
             drawLine(
                 batch,
                 widestYLabelWidth + axisToLabelPadding + axisLineWidth,
@@ -186,7 +191,6 @@ class LineChart(
         val linesMaxY = chartHeight - labelHeight / 2
         val scaleX = (linesMaxX - linesMinX) / xLabels.max()
         val scaleY = (linesMaxY - linesMinY) / yLabels.max()
-        val negativeScaleY = if (hasNegativeYValues) (linesMinY - negativeOrientationLineYPosition) / -negativeYLabel else 0f
         val sortedPoints = dataPoints.sortedBy { it.x }
         val pointsByCiv = sortedPoints.groupBy { it.civ }
         // We want the current player civ to be drawn last, so it is never overlapped by another player.
@@ -203,8 +207,7 @@ class LineChart(
         for (civ in civIterationOrder) {
             val points = pointsByCiv[civ]!!
             val scaledPoints : List<DataPoint<Float>> = points.map {
-                val yScale = if (it.y < 0f) negativeScaleY else scaleY
-                DataPoint(linesMinX + it.x * scaleX, linesMinY + it.y * yScale, it.civ)
+                DataPoint(linesMinX + it.x * scaleX, linesMinY + it.y * scaleY, it.civ)
             }
             // Probably nobody can tell the difference of one pixel, so that seems like a reasonable epsilon.
             val simplifiedScaledPoints = douglasPeucker(scaledPoints, 1f)
