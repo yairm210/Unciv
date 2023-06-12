@@ -1,33 +1,24 @@
-## 4.6.20
+## 4.7.0
 
-Don't kill the multiplayer updater on *pause*, instead on destroy() "exit early"
+AI:
+- Improved AI city location picking
+- AI more willing to risk happiness to create a new city
+- AI doesn't construct Settler before Worker
+- AI Workers remove fallout
 
-Fixed user-invisible crash on multiplayer updating thread when resuming game
+Global politics table includes current civ
 
-Fixed crash when resuming EmpireOverviewScreen
+Fixed crash when resuming Overview screen
 
-AI more willing to take happiness risk to create a new city
-
-AI only constructs Settler if it already has worker / improvements
-
-Improved AI city location picking
-
-Global politics table includes current civ (GOOD version)
-
-Revert "Global politics overview table includes current civ"
-
-Resolved  - AI Workers remove fallout
-
-Global politics overview table includes current civ
+Fixed background errors
 
 By SomeTroglodyte:
-- Key bindings - unit actions, world screen and grouped UI 
-- Nation picker gets an Icon View, keyboard selection, and fixed sort 
-- Improve connected to / disconnected from Capital handling 
-- Make ExpanderTab "expand" properly 
-- UiElementDocsWriter improvement to cope with BorderedTable 
+- Nation picker - Icon View & improvements
+- Expander tab animations :)
+- Key bindings options
+- Improved "connected to Capital" handling
 
-Always select military unit first, don't select great people or settl…  - By WhoIsJohannes
+Always select military unit first - By WhoIsJohannes
 
 ## 4.6.19
 
