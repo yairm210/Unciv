@@ -253,24 +253,33 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     fun updateCitiesConnectedToCapital(initialSetup: Boolean = false) {
         if (civInfo.cities.isEmpty() || civInfo.getCapital() == null) return // eg barbarians
 
-        val citiesReachedToMediums = CapitalConnectionsFinder(civInfo).find()
+        val oldConnectedCities = if (initialSetup)
+            civInfo.cities.filter { it.connectedToCapitalStatus == City.ConnectedToCapitalStatus.`true` }
+            else citiesConnectedToCapitalToMediums.keys
+        val oldMaybeConnectedCities = if (initialSetup)
+            civInfo.cities.filter { it.connectedToCapitalStatus != City.ConnectedToCapitalStatus.`false` }
+        else citiesConnectedToCapitalToMediums.keys
 
-        if (!initialSetup) { // In the initial setup we're loading an old game state, so it doesn't really count
-            for (city in citiesReachedToMediums.keys)
-                if (city !in citiesConnectedToCapitalToMediums && city.civ == civInfo && city != civInfo.getCapital()!!)
-                    civInfo.addNotification("[${city.name}] has been connected to your capital!",
-                        city.location, NotificationCategory.Cities, NotificationIcon.Gold
-                    )
+        citiesConnectedToCapitalToMediums = CapitalConnectionsFinder(civInfo).find()
 
-            // This may still contain cities that have just been destroyed by razing - thus the population test
-            for (city in citiesConnectedToCapitalToMediums.keys)
-                if (!citiesReachedToMediums.containsKey(city) && city.civ == civInfo && city.population.population > 0)
-                    civInfo.addNotification("[${city.name}] has been disconnected from your capital!",
-                        city.location, NotificationCategory.Cities, NotificationIcon.Gold
-                    )
-        }
+        val newConnectedCities = citiesConnectedToCapitalToMediums.keys
 
-        citiesConnectedToCapitalToMediums = citiesReachedToMediums
+        for (city in newConnectedCities)
+            if (city !in oldMaybeConnectedCities && city.civ == civInfo && city != civInfo.getCapital()!!)
+                civInfo.addNotification("[${city.name}] has been connected to your capital!",
+                    city.location, NotificationCategory.Cities, NotificationIcon.Gold
+                )
+
+        // This may still contain cities that have just been destroyed by razing - thus the population test
+        for (city in oldConnectedCities)
+            if (city !in newConnectedCities && city.civ == civInfo && city.population.population > 0)
+                civInfo.addNotification("[${city.name}] has been disconnected from your capital!",
+                    city.location, NotificationCategory.Cities, NotificationIcon.Gold
+                )
+
+        for (city in civInfo.cities)
+            city.connectedToCapitalStatus = if (city in newConnectedCities)
+                City.ConnectedToCapitalStatus.`true` else City.ConnectedToCapitalStatus.`false`
     }
 
     fun updateCivResources() {
