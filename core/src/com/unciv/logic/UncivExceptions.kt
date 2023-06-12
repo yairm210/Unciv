@@ -19,6 +19,14 @@ open class UncivShowableException(
     override fun getLocalizedMessage() = message.tr()
 }
 
+/** An [Exception] indicating a game or map cannot be loaded because [mods][com.unciv.models.metadata.GameParameters.mods] are missing.
+ *  @param missingMods Any [Iterable] or [Collection] of Strings - will be stored entirely,
+ *      but be included in the Exception's message only up to its five first elements.
+ */
 class MissingModsException(
-    val missingMods: String
-) : UncivShowableException("Missing mods: [$missingMods]")
+    val missingMods: Iterable<String>
+) : UncivShowableException("Missing mods: [${shorten(missingMods)}]") {
+    companion object {
+        private fun shorten(missingMods: Iterable<String>) = missingMods.joinToString(limit = 5) { it }
+    }
+}

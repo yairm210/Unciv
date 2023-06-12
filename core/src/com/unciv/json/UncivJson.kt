@@ -7,8 +7,8 @@ import com.badlogic.gdx.utils.JsonWriter
 import com.badlogic.gdx.utils.SerializationException
 import com.unciv.logic.civilization.CivRankingHistory
 import com.unciv.logic.map.tile.TileHistory
-import com.unciv.ui.components.KeyCharAndCode
-import com.unciv.ui.components.KeyboardBindings
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.KeyboardBindings
 import java.time.Duration
 
 

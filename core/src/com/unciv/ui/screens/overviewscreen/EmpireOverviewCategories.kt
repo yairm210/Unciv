@@ -4,7 +4,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewTab.EmpireOverviewTabPersistableData
-import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.input.KeyCharAndCode
 
 
 /** This controls which Tabs for the [EmpireOverviewScreen] exist and their order.

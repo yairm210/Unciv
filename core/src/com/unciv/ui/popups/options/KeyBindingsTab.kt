@@ -4,7 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.components.KeyCapturingButton
-import com.unciv.ui.components.KeyboardBinding
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.screens.basescreen.BaseScreen

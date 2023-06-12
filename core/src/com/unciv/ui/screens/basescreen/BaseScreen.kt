@@ -19,10 +19,10 @@ import com.unciv.UncivGame
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.skins.SkinStrings
 import com.unciv.ui.components.Fonts
-import com.unciv.ui.components.KeyShortcutDispatcher
-import com.unciv.ui.components.extensions.DispatcherVetoResult
-import com.unciv.ui.components.extensions.DispatcherVetoer
-import com.unciv.ui.components.extensions.installShortcutDispatcher
+import com.unciv.ui.components.input.KeyShortcutDispatcher
+import com.unciv.ui.components.input.DispatcherVetoResult
+import com.unciv.ui.components.input.DispatcherVetoer
+import com.unciv.ui.components.input.installShortcutDispatcher
 import com.unciv.ui.components.extensions.isNarrowerThan4to3
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.activePopup

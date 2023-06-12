@@ -42,7 +42,7 @@ object UnitActions {
         val actionList = ArrayList<UnitAction>()
 
         // Determined by unit uniques
-        addTransformAction(unit, actionList)
+        addTransformActions(unit, actionList)
         addParadropAction(unit, actionList)
         addAirSweepAction(unit, actionList)
         addSetupAction(unit, actionList)
@@ -309,28 +309,27 @@ object UnitActions {
         }
     }
 
-    private fun addTransformAction(
+    private fun addTransformActions(
         unit: MapUnit,
         actionList: ArrayList<UnitAction>
     ) {
-        val upgradeAction = getTransformAction(unit)
-        if (upgradeAction != null) actionList += upgradeAction
+        val upgradeAction = getTransformActions(unit)
+        actionList += upgradeAction
     }
 
     /**  */
-    private fun getTransformAction(
+    private fun getTransformActions(
         unit: MapUnit
-    ): ArrayList<UnitAction>? {
-        if (!unit.baseUnit().hasUnique(UniqueType.CanTransform)) return null // can't upgrade to anything
+    ): ArrayList<UnitAction> {
         val unitTile = unit.getTile()
         val civInfo = unit.civ
+        val stateForConditionals = StateForConditionals(unit = unit, civInfo = civInfo, tile = unitTile)
         val transformList = ArrayList<UnitAction>()
-        for (unique in unit.baseUnit().getMatchingUniques(UniqueType.CanTransform,
-            StateForConditionals(unit = unit, civInfo = civInfo, tile = unitTile))) {
+        for (unique in unit.baseUnit().getMatchingUniques(UniqueType.CanTransform, stateForConditionals)) {
             val unitToTransformTo = civInfo.getEquivalentUnit(unique.params[0])
 
-            val stateForConditionals = StateForConditionals(unit.civ, unit = unit)
-            if (unitToTransformTo.getMatchingUniques(UniqueType.OnlyAvailableWhen).any { !it.conditionalsApply(stateForConditionals) })
+            if (unitToTransformTo.getMatchingUniques(UniqueType.OnlyAvailableWhen)
+                    .any { !it.conditionalsApply(stateForConditionals) })
                 continue
 
             // Check _new_ resource requirements

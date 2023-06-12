@@ -21,13 +21,13 @@ import com.unciv.Constants
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.AutoScrollPane
-import com.unciv.ui.components.KeyboardBinding
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.isEnabled
-import com.unciv.ui.components.extensions.onChange
-import com.unciv.ui.components.extensions.onClick
-import com.unciv.ui.components.extensions.onDoubleClick
+import com.unciv.ui.components.input.onChange
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.popups.Popup
 import java.io.File

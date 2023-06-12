@@ -382,8 +382,10 @@ object ReligionAutomation {
                     unique.params[0].toFloat() * goodLateModifier / 5f
                 UniqueType.FaithCostOfGreatProphetChange ->
                     -unique.params[0].toFloat() * goodLateModifier / 2f
-                UniqueType.BuyBuildingsDiscount, UniqueType.BuyItemsDiscount, UniqueType.BuyUnitsDiscount ->
+                UniqueType.BuyBuildingsDiscount, UniqueType.BuyUnitsDiscount ->
                     -unique.params[2].toFloat() * goodLateModifier / 5f
+                UniqueType.BuyItemsDiscount ->
+                    -unique.params[1].toFloat() * goodLateModifier / 5f
                 else -> 0f
             }
         }

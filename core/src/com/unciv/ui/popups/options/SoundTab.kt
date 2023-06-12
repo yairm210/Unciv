@@ -12,7 +12,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.WrappableLabel
 import com.unciv.ui.components.extensions.disable
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.extensions.toImageButton

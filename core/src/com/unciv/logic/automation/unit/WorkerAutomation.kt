@@ -295,12 +295,13 @@ class WorkerAutomation(
                 .sortedByDescending { getPriority(it) }
 
         // These are the expensive calculations (tileCanBeImproved, canReach), so we only apply these filters after everything else it done.
-        val selectedTile = workableTiles.firstOrNull { unit.movement.canReach(it) && (tileCanBeImproved(unit, it) || it.isPillaged()) }
+        val selectedTile =
+            workableTiles.firstOrNull { unit.movement.canReach(it) && (tileCanBeImproved(unit, it) || it.isPillaged()) }
+                ?: return currentTile
 
-        return if (selectedTile != null
-                && ((!tileCanBeImproved(unit, currentTile) && !currentTile.isPillaged()) // current tile is unimprovable
+        return if ((!tileCanBeImproved(unit, currentTile) && !currentTile.isPillaged()) // current tile is unimprovable
                     || !workableTiles.contains(currentTile) // current tile is unworkable by city
-                    || getPriority(selectedTile) > getPriority(currentTile)))  // current tile is less important
+                    || getPriority(selectedTile) > getPriority(currentTile))  // current tile is less important
             selectedTile
         else currentTile
     }
@@ -389,16 +390,15 @@ class WorkerAutomation(
 
         val lastTerrain = tile.lastTerrain
 
-        fun isUnbuildableAndRemovable(terrain: Terrain): Boolean = terrain.unbuildable
-                && ruleSet.tileImprovements.containsKey(Constants.remove + terrain.name)
-
+        fun isRemovable(terrain: Terrain): Boolean = ruleSet.tileImprovements.containsKey(Constants.remove + terrain.name)
 
         val improvementStringForResource: String? = when {
             tile.resource == null || !tile.hasViewableResource(civInfo) -> null
             tile.terrainFeatures.isNotEmpty()
-                    && isUnbuildableAndRemovable(lastTerrain)
-                    && !tile.providesResources(civInfo)
-                    && !isResourceImprovementAllowedOnFeature(tile, potentialTileImprovements) -> Constants.remove + lastTerrain.name
+                && lastTerrain.unbuildable
+                && isRemovable(lastTerrain)
+                && !tile.providesResources(civInfo)
+                && !isResourceImprovementAllowedOnFeature(tile, potentialTileImprovements) -> Constants.remove + lastTerrain.name
             else -> tile.tileResource.getImprovements().filter { it in potentialTileImprovements || it==tile.improvement }
                 .maxByOrNull { getRankingWithImprovement(it) }
         }
@@ -411,12 +411,14 @@ class WorkerAutomation(
             tile.resource != null && tile.tileResource.getImprovements().any() -> return null
             bestBuildableImprovement == null -> null
 
-            tile.improvement!=null && getRankingWithImprovement(tile.improvement!!) > getRankingWithImprovement(bestBuildableImprovement.name)
+            tile.improvement != null &&
+                    getRankingWithImprovement(tile.improvement!!) > getRankingWithImprovement(bestBuildableImprovement.name)
                 -> null // What we have is better, even if it's pillaged we should repair it
 
             lastTerrain.let {
-                isUnbuildableAndRemovable(it) &&
-                        (Automation.rankStatsValue(it, civInfo) < 0 || it.hasUnique(UniqueType.NullifyYields) )
+                isRemovable(it) &&
+                    (Automation.rankStatsValue(it, civInfo) < 0
+                        || it.hasUnique(UniqueType.NullifyYields))
             } -> Constants.remove + lastTerrain.name
 
             else -> bestBuildableImprovement.name

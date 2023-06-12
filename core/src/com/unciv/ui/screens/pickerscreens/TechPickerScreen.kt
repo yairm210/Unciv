@@ -19,8 +19,8 @@ import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.disable
-import com.unciv.ui.components.extensions.onClick
-import com.unciv.ui.components.extensions.onDoubleClick
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
