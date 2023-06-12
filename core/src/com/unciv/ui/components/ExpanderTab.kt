@@ -14,8 +14,8 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
