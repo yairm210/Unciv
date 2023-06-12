@@ -99,22 +99,18 @@ class GlobalPoliticsOverviewTable (
 
             // civ image
             add(ImageGetter.getNationPortrait(civ.nation, 100f)).pad(20f)
-
             addSeparatorVertical(Color.GRAY)
 
             // info about civ
             add(getCivInfoTable(civ)).pad(20f)
-
             addSeparatorVertical(Color.GRAY)
 
             // policies
             add(getPoliciesTable(civ)).pad(20f)
-
             addSeparatorVertical(Color.GRAY)
 
             // wonders
             add(getWondersOfCivTable(civ)).pad(20f)
-
             addSeparatorVertical(Color.GRAY)
 
             //politics

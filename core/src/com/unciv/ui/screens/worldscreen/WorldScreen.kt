@@ -23,16 +23,16 @@ import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.components.input.KeyCharAndCode
-import com.unciv.ui.components.input.KeyboardBinding
-import com.unciv.ui.components.input.KeyboardPanningListener
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.isEnabled
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.setFontSize
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.KeyboardPanningListener
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.AuthPopup
 import com.unciv.ui.popups.Popup
@@ -62,10 +62,10 @@ import com.unciv.ui.screens.worldscreen.status.StatusButtons
 import com.unciv.ui.screens.worldscreen.unit.UnitTable
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsTable
 import com.unciv.utils.Concurrency
+import com.unciv.utils.debug
 import com.unciv.utils.launchOnGLThread
 import com.unciv.utils.launchOnThreadPool
 import com.unciv.utils.withGLContext
-import com.unciv.utils.debug
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 
@@ -280,7 +280,13 @@ class WorldScreen(
     }
 
     private suspend fun loadLatestMultiplayerState(): Unit = coroutineScope {
-        if (game.screen != this@WorldScreen) return@coroutineScope // User already went somewhere else
+        if ((game.screen !is WorldScreen // User left this game for the main menu/mods/map editor
+                && game.screen !is CityScreen
+                && game.screen !is PolicyPickerScreen
+                && game.screen !is EmpireOverviewScreen
+                && game.screen !is VictoryScreen
+                && game.screen !is TechPickerScreen)
+            || game.worldScreen != this@WorldScreen) return@coroutineScope // User already entered a new game
 
         val loadingGamePopup = Popup(this@WorldScreen)
         launchOnGLThread {
