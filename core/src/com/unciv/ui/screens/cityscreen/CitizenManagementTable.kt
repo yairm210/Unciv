@@ -85,7 +85,7 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
     fun asExpander(onChange: (() -> Unit)?): ExpanderTab {
         update()
         return ExpanderTab(
-            title = "{Citizen Management}",
+            title = "Citizen Management",
             fontSize = Constants.defaultFontSize,
             persistenceID = "CityStatsTable.CitizenManagement",
             startsOutOpened = false,

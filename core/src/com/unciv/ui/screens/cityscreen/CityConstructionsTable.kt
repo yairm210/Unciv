@@ -710,14 +710,14 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         lowerTable.pack()
     }
 
-    private fun Table.addCategory(title: String, list: ArrayList<Table>, prefWidth: Float) {
+    private fun Table.addCategory(title: String, list: ArrayList<Table>, desiredWidth: Float) {
         if (list.isEmpty()) return
 
         if (rows > 0) addSeparator()
         val expander = ExpanderTab(
             title,
             defaultPad = 0f,
-            expanderWidth = prefWidth,
+            expanderWidth = desiredWidth,
             persistenceID = "CityConstruction.$title",
             onChange = { resizeAvailableConstructionsScrollPane() }
         ) {
