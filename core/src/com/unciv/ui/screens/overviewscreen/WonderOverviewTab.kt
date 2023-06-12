@@ -184,7 +184,7 @@ class WonderInfo {
                 ruleSet.buildings.values.asSequence()
                     .filter { it.isWonder }
                         // 100 is so wonders with no era get displayed after all eras, not before
-                    .sortedWith(compareBy<Building> { wonderEraMap[it.name]?.eraNumber ?: 100 }.thenBy(collator) { it.name.tr() })
+                    .sortedWith(compareBy<Building> { wonderEraMap[it.name]?.eraNumber ?: 100 }.thenBy(collator) { it.name.tr(hideIcons = true) })
                     .withIndex()
                     .associate { it.index to it.value.name }
         val wonderCount = allWonderMap.size

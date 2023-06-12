@@ -71,7 +71,7 @@ class Belief() : RulesetObject() {
             name = "Religions"
             val lines = ArrayList<FormattedLine>()
             lines += FormattedLine(separator = true)
-            ruleset.religions.sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.tr() }).forEach {
+            ruleset.religions.sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.tr(hideIcons = true) }).forEach {
                 lines += FormattedLine(it, icon = "Belief/$it")
             }
             civilopediaText = lines

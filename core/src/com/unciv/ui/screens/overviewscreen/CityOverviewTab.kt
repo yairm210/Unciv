@@ -119,15 +119,15 @@ class CityOverviewTab(
 
     private fun getComparator() = Comparator { city2: City, city1: City ->
         when(persistableData.sortedBy) {
-            CITY -> collator.compare(city2.name.tr(), city1.name.tr())
+            CITY -> collator.compare(city2.name.tr(hideIcons = true), city1.name.tr(hideIcons = true))
             CONSTRUCTION -> collator.compare(
-                city2.cityConstructions.currentConstructionFromQueue.tr(),
-                city1.cityConstructions.currentConstructionFromQueue.tr())
+                city2.cityConstructions.currentConstructionFromQueue.tr(hideIcons = true),
+                city1.cityConstructions.currentConstructionFromQueue.tr(hideIcons = true))
             "Population" -> city2.population.population - city1.population.population
             WLTK -> city2.isWeLoveTheKingDayActive().compareTo(city1.isWeLoveTheKingDayActive())
             GARRISON -> collator.compare(
-                    city2.getGarrison()?.name?.tr() ?: "",
-                    city1.getGarrison()?.name?.tr() ?: "",
+                    city2.getGarrison()?.name?.tr(hideIcons = true) ?: "",
+                    city1.getGarrison()?.name?.tr(hideIcons = true) ?: "",
                 )
             else -> {
                 val stat = Stat.safeValueOf(persistableData.sortedBy)!!

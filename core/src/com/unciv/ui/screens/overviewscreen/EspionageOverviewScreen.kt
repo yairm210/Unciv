@@ -128,9 +128,9 @@ class EspionageOverviewScreen(val civInfo: Civilization) : PickerScreen(true) {
                 }.thenBy {
                     it.civ.isCityState()
                 }.thenBy(collator) {
-                    it.civ.civName.tr()
+                    it.civ.civName.tr(hideIcons = true)
                 }.thenBy(collator) {
-                    it.name.tr()
+                    it.name.tr(hideIcons = true)
                 }
             )
         for (city in sortedCities) {
