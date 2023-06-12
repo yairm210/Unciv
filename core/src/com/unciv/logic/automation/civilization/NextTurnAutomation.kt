@@ -1037,7 +1037,8 @@ object NextTurnAutomation {
         if (civInfo.isCityState()) return
         if (civInfo.isAtWar()) return // don't train settlers when you could be training troops.
         if (civInfo.wantsToFocusOn(Victory.Focus.Culture) && civInfo.cities.size > 3) return
-        if (civInfo.cities.none() || civInfo.getHappiness() <= civInfo.cities.size + 5) return
+        if (civInfo.cities.none()) return
+        if (civInfo.getHappiness() <= civInfo.cities.size) return
 
         val settlerUnits = civInfo.gameInfo.ruleset.units.values
                 .filter { it.hasUnique(UniqueType.FoundCity) && it.isBuildable(civInfo) }
