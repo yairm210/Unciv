@@ -446,6 +446,8 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         val curGameInfo = gameInfo
         if (curGameInfo != null) files.requestAutoSave(curGameInfo)
         if (::musicController.isInitialized) musicController.pause()
+        // We stop the *in-game* multiplayer update, so that when we resume(), it doesn't keep working and A. we'll have errors and B. we'll have multiple updaters active
+        if (::onlineMultiplayer.isInitialized) onlineMultiplayer.multiplayerGameUpdater.cancel()
         super.pause()
     }
 
