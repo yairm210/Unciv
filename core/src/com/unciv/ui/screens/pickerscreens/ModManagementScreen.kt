@@ -158,16 +158,21 @@ class ModManagementScreen(
 
         topTable.add(optionsManager.expander).top().growX().row()
 
-        installedExpanderTab = ExpanderTab(optionsManager.getInstalledHeader(), expanderWidth = stage.width, content = scrollInstalledMods)
+        installedExpanderTab = ExpanderTab(optionsManager.getInstalledHeader(), expanderWidth = stage.width) {
+            it.add(scrollInstalledMods).growX()
+        }
         topTable.add(installedExpanderTab).top().growX().row()
 
-        onlineExpanderTab = ExpanderTab(optionsManager.getOnlineHeader(), expanderWidth = stage.width, content = scrollOnlineMods)
+        onlineExpanderTab = ExpanderTab(optionsManager.getOnlineHeader(), expanderWidth = stage.width) {
+            it.add(scrollOnlineMods).growX()
+        }
         topTable.add(onlineExpanderTab).top().padTop(10f).growX().row()
 
         topTable.add().expandY().row() // helps with top() being ignored
 
-        topTable.add(ExpanderTab("Mod info and options", expanderWidth = stage.width, content = modActionTable))
-            .bottom().padTop(10f).growX().row()
+        topTable.add(ExpanderTab("Mod info and options", expanderWidth = stage.width) {
+            it.add(modActionTable).growX()
+        }).bottom().padTop(10f).growX().row()
     }
 
     private fun initLandscape() {

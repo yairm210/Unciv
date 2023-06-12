@@ -120,11 +120,12 @@ class MapEditorViewTab(
                 "{Natural Wonders} (${naturalWonders.size})",
                 fontSize = 21,
                 startsOutOpened = false,
-                headerPad = 5f,
-                content = MarkupRenderer.render(lines, iconDisplay = IconDisplay.NoLink) {
-                    scrollToWonder(it)
-                }
-            )).row()
+                headerPad = 5f
+            ) {
+                it.add(MarkupRenderer.render(lines, iconDisplay = IconDisplay.NoLink) { name->
+                    scrollToWonder(name)
+                })
+            }).row()
         }
 
         // Starting locations not cached like natural wonders - storage is already compact
@@ -135,11 +136,12 @@ class MapEditorViewTab(
                 "{Starting locations} (${tileMap.startingLocationsByNation.size})",
                 fontSize = 21,
                 startsOutOpened = false,
-                headerPad = 5f,
-                content = MarkupRenderer.render(lines.asIterable(), iconDisplay = IconDisplay.NoLink) {
-                    scrollToStartOfNation(it)
-                }
-            )).row()
+                headerPad = 5f
+            ) {
+                it.add(MarkupRenderer.render(lines.asIterable(), iconDisplay = IconDisplay.NoLink) { name ->
+                    scrollToStartOfNation(name)
+                })
+            }).row()
         }
 
         addSeparator()

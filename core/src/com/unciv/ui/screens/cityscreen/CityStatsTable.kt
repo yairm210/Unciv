@@ -232,6 +232,7 @@ class CityStatsTable(private val cityScreen: CityScreen): Table() {
         otherBuildings.sortBy { it.name }
 
         val totalTable = Table()
+        lowerTable.addCategory("Buildings", totalTable, false)
 
         if (specialistBuildings.isNotEmpty()) {
             val specialistBuildingsTable = Table()
@@ -260,8 +261,6 @@ class CityStatsTable(private val cityScreen: CityScreen): Table() {
             for (building in otherBuildings) addBuildingButton(building, regularBuildingsTable)
             totalTable.add(regularBuildingsTable).growX().right().row()
         }
-
-        lowerTable.addCategory("Buildings", totalTable, false)
     }
 
     private fun addBuildingButton(building: Building, destinationTable: Table) {
@@ -313,15 +312,17 @@ class CityStatsTable(private val cityScreen: CityScreen): Table() {
         destinationTable.add(button).pad(1f).padBottom(2f).padTop(2f).expandX().right().row()
     }
 
-    private fun Table.addCategory(category: String, showHideTable: Table, startsOpened: Boolean = true) : ExpanderTab {
+    private fun Table.addCategory(category: String, showHideTable: Table, startsOpened: Boolean = true, innerPadding: Float = 10f) : ExpanderTab {
         val expanderTab = ExpanderTab(
             title = category,
             fontSize = Constants.defaultFontSize,
             persistenceID = "CityInfo.$category",
             startsOutOpened = startsOpened,
-            content = showHideTable,
+            defaultPad = innerPadding,
             onChange = { onContentResize() }
-        )
+        ) {
+            it.add(showHideTable).fillX().right()
+        }
         add(expanderTab).growX().row()
         return expanderTab
     }

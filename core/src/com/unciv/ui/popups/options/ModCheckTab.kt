@@ -123,7 +123,7 @@ class ModCheckTab(
                         .apply { color = Color.BLACK }
                         .surroundWithCircle(30f, color = iconColor)
 
-                    val expanderTab = ExpanderTab(mod.name, icon = icon, startsOutOpened = false, headerAlign = Align.left) {
+                    val expanderTab = ExpanderTab(mod.name, icon = icon, startsOutOpened = false) {
                         it.defaults().align(Align.left)
                         if (!noProblem && mod.folderLocation != null) {
                             val replaceableUniques = getDeprecatedReplaceableUniques(mod)
@@ -143,6 +143,7 @@ class ModCheckTab(
                                     .joinToString("\n") { line -> line.text }
                             }).row()
                     }
+                    expanderTab.header.left()
 
                     val loadingLabel = modCheckResultTable.children.last()
                     modCheckResultTable.removeActor(loadingLabel)

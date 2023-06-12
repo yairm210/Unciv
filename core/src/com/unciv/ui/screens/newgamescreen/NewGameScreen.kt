@@ -244,20 +244,23 @@ class NewGameScreen(
     private fun initPortrait() {
         scrollPane.setScrollingDisabled(false,false)
 
-        topTable.add(ExpanderTab("Game Options", content = newGameOptionsTable))
-            .expandX().fillX().row()
+        topTable.add(ExpanderTab("Game Options") {
+            it.add(newGameOptionsTable).row()
+        }).expandX().fillX().row()
         topTable.addSeparator(Color.DARK_GRAY, height = 1f)
 
         topTable.add(newGameOptionsTable.modCheckboxes).expandX().fillX().row()
         topTable.addSeparator(Color.DARK_GRAY, height = 1f)
 
-        topTable.add(ExpanderTab("Map Options", content = mapOptionsTable))
-            .expandX().fillX().row()
+        topTable.add(ExpanderTab("Map Options") {
+            it.add(mapOptionsTable).row()
+        }).expandX().fillX().row()
         topTable.addSeparator(Color.DARK_GRAY, height = 1f)
 
         (playerPickerTable.playerListTable.parent as ScrollPane).setScrollingDisabled(true,true)
-        topTable.add(ExpanderTab("Civilizations", content = playerPickerTable))
-            .expandX().fillX().row()
+        topTable.add(ExpanderTab("Civilizations") {
+            it.add(playerPickerTable).row()
+        }).expandX().fillX().row()
     }
 
     private fun checkConnectionToMultiplayerServer(): Boolean {
