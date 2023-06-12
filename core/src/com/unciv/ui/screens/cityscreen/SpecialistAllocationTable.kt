@@ -136,16 +136,15 @@ class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(Base
 
 
     fun asExpander(onChange: (() -> Unit)?): ExpanderTab {
+        update()
         return ExpanderTab(
             title = "{Specialists}:",
             fontSize = Constants.defaultFontSize,
             persistenceID = "CityStatsTable.Specialists",
             startsOutOpened = true,
+            content = this,
             onChange = onChange
-        ) {
-            it.add(this)
-            update()
-        }
+        )
     }
 
 }

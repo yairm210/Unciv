@@ -23,6 +23,7 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.extensions.disable
+import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
@@ -41,8 +42,11 @@ class OffersListScroll(
 ) : ScrollPane(null) {
     val table = Table(BaseScreen.skin).apply { defaults().pad(5f) }
 
-
-    private val expanderTabs = HashMap<TradeType, ExpanderTab>()
+    private data class ExpanderData(
+        val label: String,
+        val content: Table = Table().apply { defaults().pad(5f) }
+    )
+    private val expanderContents = HashMap<TradeType, ExpanderData>()
 
     /**
      * @param offersToDisplay The offers which should be displayed as buttons
@@ -55,10 +59,10 @@ class OffersListScroll(
         untradableOffers: ResourceSupplyList = ResourceSupplyList.emptyList
     ) {
         table.clear()
-        expanderTabs.clear()
+        expanderContents.clear()
 
         for (offerType in values()) {
-            val labelName = when(offerType){
+            val labelName = when(offerType) {
                 Gold, Gold_Per_Turn, Treaty, Agreement, Introduction -> ""
                 Luxury_Resource -> "Luxury resources"
                 Strategic_Resource -> "Strategic resources"
@@ -68,11 +72,12 @@ class OffersListScroll(
             }
             val offersOfType = offersToDisplay.filter { it.type == offerType }
             if (labelName.isNotEmpty() && offersOfType.any()) {
-                expanderTabs[offerType] = ExpanderTab(labelName, persistenceID = "Trade.$persistenceID.$offerType") {
-                    it.defaults().pad(5f)
-                }
+                expanderContents[offerType] = ExpanderData(labelName)
             }
         }
+        val expanderWidth = (expanderContents.values.maxByOrNull { it.label.length }
+            ?.run { label.toLabel(fontSize = Constants.headingFontSize).prefWidth }
+            ?: 0f) + 50f  // 50 for Expander header pad and arrow
 
         for (offerType in values()) {
             val offersOfType = offersToDisplay.filter { it.type == offerType }
@@ -80,11 +85,6 @@ class OffersListScroll(
                     { if (UncivGame.Current.settings.orderTradeOffersByAmount) -it.amount else 0 },
                     { if (it.type==City) it.getOfferText() else it.name.tr() }
                 ))
-
-            if (expanderTabs.containsKey(offerType)) {
-                expanderTabs[offerType]!!.innerTable.clear()
-                table.add(expanderTabs[offerType]!!).row()
-            }
 
             for (offer in offersOfType) {
                 val tradeLabel = offer.getOfferText(untradableOffers.sumBy(offer.name))
@@ -122,10 +122,17 @@ class OffersListScroll(
                 else tradeButton.disable()  // for instance we have negative gold
 
 
-                if (expanderTabs.containsKey(offerType))
-                    expanderTabs[offerType]!!.innerTable.add(tradeButton).row()
+                if (expanderContents.containsKey(offerType))
+                    expanderContents[offerType]!!.content.add(tradeButton).row()
                 else
                     table.add(tradeButton).row()
+            }
+
+            expanderContents[offerType]?.run {
+                table.add(
+                    ExpanderTab(label, expanderWidth = expanderWidth,
+                        persistenceID = "Trade.$persistenceID.$offerType", content = content)
+                ).row()
             }
         }
         actor = table
