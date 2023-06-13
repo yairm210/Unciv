@@ -11,32 +11,32 @@ open class KeyShortcutDispatcher {
         override fun toString() = if (binding.hidden) "$key@$priority" else "$binding@$priority"
     }
 
-    private data class ShortcutAction(val shortcut: KeyShortcut, val action: () -> Unit)
+    private data class ShortcutAction(val shortcut: KeyShortcut, val action: ActivationAction)
     private val shortcuts: MutableList<ShortcutAction> = mutableListOf()
 
     fun clear() = shortcuts.clear()
 
-    fun add(shortcut: KeyShortcut?, action: (() -> Unit)?) {
+    fun add(shortcut: KeyShortcut?, action: ActivationAction?) {
         if (action == null || shortcut == null) return
         shortcuts.removeIf { it.shortcut == shortcut }
         shortcuts.add(ShortcutAction(shortcut, action))
     }
 
-    fun add(binding: KeyboardBinding, priority: Int = 1, action: (() -> Unit)?) {
+    fun add(binding: KeyboardBinding, priority: Int = 1, action: ActivationAction?) {
         add(KeyShortcut(binding, KeyCharAndCode.UNKNOWN, priority), action)
     }
 
-    fun add(key: KeyCharAndCode?, action: (() -> Unit)?) {
+    fun add(key: KeyCharAndCode?, action: ActivationAction?) {
         if (key != null)
             add(KeyShortcut(KeyboardBinding.None, key), action)
     }
 
-    fun add(char: Char?, action: (() -> Unit)?) {
+    fun add(char: Char?, action: ActivationAction?) {
         if (char != null)
             add(KeyCharAndCode(char), action)
     }
 
-    fun add(keyCode: Int?, action: (() -> Unit)?) {
+    fun add(keyCode: Int?, action: ActivationAction?) {
         if (keyCode != null)
             add(KeyCharAndCode(keyCode), action)
     }
@@ -66,7 +66,7 @@ open class KeyShortcutDispatcher {
 
     class Resolver(val key: KeyCharAndCode) {
         private var priority = Int.MIN_VALUE
-        val triggeredActions: MutableList<() -> Unit> = mutableListOf()
+        val triggeredActions: MutableList<ActivationAction> = mutableListOf()
 
         fun updateFor(dispatcher: KeyShortcutDispatcher) {
             if (!dispatcher.isActive()) return

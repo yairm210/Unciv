@@ -35,7 +35,7 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
  *  Meant to animate "in" at a given position - unlike other [Popup]s which are always stage-centered.
  *  No close button - use "click-behind".
  *  The "click-behind" semi-transparent covering of the rest of the stage is much darker than a normal
- *  Popup (geve the impression to take away illumination and spotlight the menu) and fades in together
+ *  Popup (give the impression to take away illumination and spotlight the menu) and fades in together
  *  with the UnitUpgradeMenu itself. Closing the menu in any of the four ways will fade out everything
  *  inverting the fade-and-scale-in.
  *
@@ -43,6 +43,7 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
  *  @param position stage coortinates to show this centered over - clamped so that nothing is clipped outside the [stage]
  *  @param unit Who is ready to upgrade?
  *  @param unitAction Holds pre-calculated info like unitToUpgradeTo, cost or resource requirements. Its action is mapped to the Upgrade button.
+ *  @param callbackAfterAnimation If true the following will be delayed until the Popup is actually closed (Stage.hasOpenPopups returns false).
  *  @param onButtonClicked A callback after one or several upgrades have been performed (and the menu is about to close)
  */
 class UnitUpgradeMenu(
@@ -50,12 +51,14 @@ class UnitUpgradeMenu(
     position: Vector2,
     private val unit: MapUnit,
     private val unitAction: UpgradeUnitAction,
+    private val callbackAfterAnimation: Boolean = false,
     private val onButtonClicked: () -> Unit
 ) : Popup(stage, Scrollability.None) {
     private val container: Container<Table>
     private val allUpgradableUnits: Sequence<MapUnit>
     private val animationDuration = 0.33f
     private val backgroundColor = (background as NinePatchDrawable).patch.color
+    private var afterCloseCallback: (() -> Unit)? = null
 
     init {
         innerTable.remove()
@@ -136,8 +139,7 @@ class UnitUpgradeMenu(
     private fun doUpgrade() {
         SoundPlayer.play(unitAction.uncivSound)
         unitAction.action!!()
-        onButtonClicked()
-        close()
+        launchCallbackAndClose()
     }
 
     private fun doAllUpgrade() {
@@ -151,7 +153,12 @@ class UnitUpgradeMenu(
             val otherAction = UnitActionsUpgrade.getUpgradeAction(unit)
             otherAction?.action?.invoke()
         }
-        onButtonClicked()
+        launchCallbackAndClose()
+    }
+
+    private fun launchCallbackAndClose() {
+        if (callbackAfterAnimation) afterCloseCallback = onButtonClicked
+        else onButtonClicked()
         close()
     }
 
@@ -168,6 +175,7 @@ class UnitUpgradeMenu(
             Actions.run {
                 container.remove()
                 super.close()
+                afterCloseCallback?.invoke()
             }
         ))
     }
