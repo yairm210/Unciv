@@ -43,31 +43,34 @@ class VictoryScreen(
 
     private enum class VictoryTabs(
         val key: Char,
-        val iconName: String = "",
         val caption: String? = null,
         val allowAsSecret: Boolean = false
     ) {
-        OurStatus('O', "StatIcons/Specialist", caption = "Our status") {
+        OurStatus('O', caption = "Our status") {
             override fun getContent(worldScreen: WorldScreen) = VictoryScreenOurVictory(worldScreen)
             override fun isHidden(playerCiv: Civilization) = playerCiv.isSpectator()
         },
-        Global('G', "OtherIcons/Nations", caption = "Global status") {
+        Global('G', caption = "Global status") {
             override fun getContent(worldScreen: WorldScreen) = VictoryScreenGlobalVictory(worldScreen)
         },
-        Demographics('D', "CityStateIcons/Cultured", allowAsSecret = true) {
+        Illustration('I', allowAsSecret = true) {
+            override fun getContent(worldScreen: WorldScreen) = VictoryScreenIllustrations(worldScreen)
+            override fun isHidden(playerCiv: Civilization) = !VictoryScreenIllustrations.enablePage(playerCiv.gameInfo)
+        },
+        Demographics('D', allowAsSecret = true) {
             override fun getContent(worldScreen: WorldScreen) = VictoryScreenDemographics(worldScreen)
             override fun isHidden(playerCiv: Civilization) = !UncivGame.Current.settings.useDemographics
         },
-        Rankings('R', "CityStateIcons/Cultured", allowAsSecret = true) {
+        Rankings('R', allowAsSecret = true) {
             override fun getContent(worldScreen: WorldScreen) = VictoryScreenCivRankings(worldScreen)
             override fun isHidden(playerCiv: Civilization) = UncivGame.Current.settings.useDemographics
         },
-        Charts('C', "OtherIcons/Charts") {
+        Charts('C') {
             override fun getContent(worldScreen: WorldScreen) = VictoryScreenCharts(worldScreen)
             override fun isHidden(playerCiv: Civilization) =
                 !playerCiv.isSpectator() && playerCiv.statsHistory.size < 2
         },
-        Replay('P', "OtherIcons/Load", allowAsSecret = true) {
+        Replay('P', allowAsSecret = true) {
             override fun getContent(worldScreen: WorldScreen) = VictoryScreenReplay(worldScreen)
             override fun isHidden(playerCiv: Civilization) =
                 !playerCiv.isSpectator()
@@ -90,7 +93,7 @@ class VictoryScreen(
             val tabHidden = tab.isHidden(playerCiv)
             if (tabHidden && !(tab.allowAsSecret && Gdx.input.areSecretKeysPressed()))
                 continue
-            val icon = if (tab.iconName.isEmpty()) null else ImageGetter.getImage(tab.iconName)
+            val icon = ImageGetter.getImage("VictoryScreenIcons/${tab.name}")
             tabs.addPage(
                 tab.caption ?: tab.name,
                 tab.getContent(worldScreen),

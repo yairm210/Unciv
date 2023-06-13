@@ -6,266 +6,350 @@ filter: MipMapLinearLinear, MipMapLinearLinear
 repeat: none
 NationIcons/America
   rotate: false
-  xy: 4, 328
+  xy: 4, 278
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Arabia
   rotate: false
-  xy: 4, 220
+  xy: 127, 401
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Austria
   rotate: false
-  xy: 112, 328
+  xy: 4, 170
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Aztecs
   rotate: false
-  xy: 4, 112
+  xy: 235, 401
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Babylon
   rotate: false
-  xy: 112, 220
+  xy: 4, 62
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Barbarians
   rotate: false
-  xy: 220, 328
+  xy: 343, 401
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Byzantium
   rotate: false
-  xy: 4, 4
+  xy: 451, 401
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Carthage
   rotate: false
-  xy: 112, 112
+  xy: 559, 401
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Celts
   rotate: false
-  xy: 220, 220
+  xy: 667, 401
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/China
   rotate: false
-  xy: 328, 328
+  xy: 883, 401
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/CityState
   rotate: false
-  xy: 112, 4
+  xy: 991, 401
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Denmark
   rotate: false
-  xy: 220, 112
+  xy: 1315, 401
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Egypt
   rotate: false
-  xy: 328, 220
+  xy: 1531, 401
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/England
   rotate: false
-  xy: 436, 328
+  xy: 1639, 401
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Ethiopia
   rotate: false
-  xy: 220, 4
+  xy: 1747, 401
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/France
   rotate: false
-  xy: 328, 112
+  xy: 1855, 401
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Germany
   rotate: false
-  xy: 436, 220
+  xy: 112, 278
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Greece
   rotate: false
-  xy: 544, 328
+  xy: 112, 170
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Inca
   rotate: false
-  xy: 328, 4
+  xy: 220, 293
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/India
   rotate: false
-  xy: 436, 112
+  xy: 220, 185
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Iroquois
   rotate: false
-  xy: 544, 220
+  xy: 328, 293
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Japan
   rotate: false
-  xy: 652, 328
+  xy: 220, 77
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Korea
   rotate: false
-  xy: 436, 4
+  xy: 328, 185
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Mongolia
   rotate: false
-  xy: 544, 112
+  xy: 436, 293
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Persia
   rotate: false
-  xy: 652, 220
+  xy: 436, 185
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Polynesia
   rotate: false
-  xy: 760, 328
+  xy: 544, 293
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Random
   rotate: false
-  xy: 544, 4
+  xy: 436, 77
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Rome
   rotate: false
-  xy: 652, 112
+  xy: 652, 293
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Russia
   rotate: false
-  xy: 760, 220
+  xy: 544, 77
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Siam
   rotate: false
-  xy: 868, 328
+  xy: 760, 293
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Songhai
   rotate: false
-  xy: 652, 4
+  xy: 652, 77
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Spain
   rotate: false
-  xy: 760, 112
+  xy: 760, 185
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Spectator
   rotate: false
-  xy: 868, 220
+  xy: 868, 293
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Sweden
   rotate: false
-  xy: 976, 328
+  xy: 760, 77
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/The Huns
   rotate: false
-  xy: 760, 4
+  xy: 868, 185
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/The Maya
   rotate: false
-  xy: 868, 112
+  xy: 976, 293
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/The Netherlands
   rotate: false
-  xy: 976, 220
+  xy: 868, 77
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/The Ottomans
   rotate: false
-  xy: 1084, 328
+  xy: 976, 185
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+VictoryScreenIcons/Charts
+  rotate: false
+  xy: 775, 401
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+VictoryScreenIcons/Demographics
+  rotate: false
+  xy: 1207, 401
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+VictoryScreenIcons/Rankings
+  rotate: false
+  xy: 1207, 401
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+VictoryScreenIcons/Global
+  rotate: false
+  xy: 4, 4
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+VictoryScreenIcons/Illustration
+  rotate: false
+  xy: 112, 62
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+VictoryScreenIcons/OurStatus
+  rotate: false
+  xy: 328, 77
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+VictoryScreenIcons/Replay
+  rotate: false
+  xy: 544, 185
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+VictoryTypeIcons/Cultural
+  rotate: false
+  xy: 1099, 401
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+VictoryTypeIcons/Diplomatic
+  rotate: false
+  xy: 1423, 401
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+VictoryTypeIcons/Domination
+  rotate: false
+  xy: 4, 386
+  size: 115, 115
+  orig: 115, 115
+  offset: 0, 0
+  index: -1
+VictoryTypeIcons/Scientific
+  rotate: false
+  xy: 652, 185
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+VictoryTypeIcons/Time
+  rotate: false
+  xy: 1084, 293
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
