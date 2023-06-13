@@ -557,6 +557,20 @@ class RulesetErrorList : ArrayList<RulesetError>() {
         add(RulesetError(text, errorSeverityToReport))
     }
 
+    override fun add(element: RulesetError): Boolean {
+        // Suppress duplicates due to the double run of some checks for invariant/specific,
+        // Without changing collection type or making RulesetError obey the equality contract
+        if (any { it.text == element.text && it.errorSeverityToReport == element.errorSeverityToReport }) return false
+        return super.add(element)
+    }
+
+    override fun addAll(elements: Collection<RulesetError>): Boolean {
+        var result = false
+        for (element in elements)
+            if (add(element)) result = true
+        return result
+    }
+
     fun getFinalSeverity(): RulesetErrorSeverity {
         if (isEmpty()) return RulesetErrorSeverity.OK
         return this.maxOf { it.errorSeverityToReport }
@@ -574,5 +588,10 @@ class RulesetErrorList : ArrayList<RulesetError>() {
     fun getErrorText(filter: (RulesetError)->Boolean) =
             filter(filter)
                 .sortedByDescending { it.errorSeverityToReport }
-                .joinToString("\n") { it.errorSeverityToReport.name + ": " + it.text }
+                .joinToString("\n") {
+                    it.errorSeverityToReport.name + ": " +
+                        // This will go through tr(), unavoidably, which will move the conditionals
+                        // out of place. Prevent via kludge:
+                        it.text.replace('<','〈').replace('>','〉')
+                }
 }
