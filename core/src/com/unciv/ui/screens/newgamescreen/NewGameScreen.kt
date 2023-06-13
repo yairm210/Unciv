@@ -20,17 +20,17 @@ import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.ExpanderTab
-import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
-import com.unciv.ui.components.input.keyShortcuts
-import com.unciv.ui.components.input.onActivation
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
@@ -38,8 +38,8 @@ import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.pickerscreens.PickerScreen
-import com.unciv.utils.Log
 import com.unciv.utils.Concurrency
+import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.coroutineScope
 import java.net.URL
@@ -163,6 +163,20 @@ class NewGameScreen(
             noVictoryTypesPopup.addGoodSizedLabel("No victory conditions were selected!".tr()).row()
             noVictoryTypesPopup.addCloseButton()
             noVictoryTypesPopup.open()
+            return
+        }
+
+        val modCheckResult = newGameOptionsTable.modCheckboxes?.savedModcheckResult
+        newGameOptionsTable.modCheckboxes?.savedModcheckResult = null
+        if (modCheckResult != null) {
+            AcceptModErrorsPopup(
+                this, modCheckResult,
+                restoreDefault = { newGameOptionsTable.resetRuleset() },
+                action = {
+                    gameSetupInfo.gameParameters.acceptedModCheckErrors = modCheckResult
+                    onStartGameClicked()
+                }
+            )
             return
         }
 
