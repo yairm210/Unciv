@@ -398,7 +398,6 @@
             {"text":"This is a work in progress.","color":"#b22222","starred":true},
             {"text":"For technical reasons, only direct keys or Ctrl-Letter combinations can be used.","starred":true},
             {"text":"The Escape key is intentionally excluded from being reassigned.","starred":true},
-            {"text":"Currently, there are no checks to prevent conflicting assignments.","starred":true},
             {},
             {"text":"Using the Keys page","header":3},
             {"text":"Each binding has a button with an image looking like this:"},
@@ -407,6 +406,7 @@
             {"text":"Double-click the image to reset the binding to default."},
             {},
             {"text":"Bindings mapped to their default keys are displayed in gray, those reassigned by you in white."},
+            {"text":"Conflicting assignments are marked red. Conflicts can exist across categories, like World Screen / Unit Actions. Note that at the moment, the game does not prevent saving conflicting assignments, though the result may be unexpected."},
             {},
             {"text":"For discussion about missing entries, see the linked github issue.","link":"https://github.com/yairm210/Unciv/issues/8862"}
         ]

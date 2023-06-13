@@ -7,6 +7,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.KeyCapturingButton
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.extensions.toLabel
@@ -47,7 +48,7 @@ class KeyBindingsTab(
                 .map { (category, bindings) ->
                     category to bindings.asSequence()
                         .sortedWith(compareBy(collator) { it.label.tr() })
-                        .map { it to KeyCapturingButton(it.defaultKey) }  // associate would materialize a map
+                        .map { it to KeyCapturingButton(it.defaultKey) { onKeyHit() } }  // associate would materialize a map
                         .toMap(LinkedHashMap())
                 }
                 .sortedBy { it.first.name.tr() }
@@ -78,6 +79,33 @@ class KeyBindingsTab(
             it.add(binding.label.toLabel()).padRight(10f).minWidth(labelWidth / 2)
             it.add(widget).row()
             widget.current = keyBindings[binding]
+        }
+    }
+
+    private fun onKeyHit() {
+        for ((category, bindings) in groupedWidgets) {
+            val scope = category.checkConflictsIn()
+            if (scope.none()) continue
+
+            val usedKeys = mutableSetOf<KeyCharAndCode>()
+            val conflictingKeys = mutableSetOf<KeyCharAndCode>()
+            val widgetsInScope = scope
+                .mapNotNull { groupedWidgets[it] }
+                .flatMap { scopeMap -> scopeMap.map { it.key.category to it.value } }
+
+            for ((scopeCategory ,widget) in widgetsInScope) {
+                val key = widget.current
+                // We shall not use any key of a different category in scope,
+                // nor use a key within this category twice - if this category _is_ in scope.
+                if (key in usedKeys || scopeCategory != category)
+                    conflictingKeys += key
+                else
+                    usedKeys += key
+            }
+
+            for (widget in bindings.values) {
+                widget.markConflict = widget.current in conflictingKeys
+            }
         }
     }
 
