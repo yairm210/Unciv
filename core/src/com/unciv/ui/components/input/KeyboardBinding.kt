@@ -12,6 +12,8 @@ enum class KeyboardBinding(
     label: String? = null,
     key: KeyCharAndCode? = null
 ) {
+    //region Enum Instances
+
     /** Used by [KeyShortcutDispatcher.KeyShortcut] to mark an old-style shortcut with a hardcoded key */
     None(Category.None, KeyCharAndCode.UNKNOWN),
 
@@ -89,10 +91,22 @@ enum class KeyboardBinding(
     Confirm(Category.Popups, "Confirm Dialog", 'y'),
     Cancel(Category.Popups, "Cancel Dialog", 'n'),
     ;
+    //endregion
 
     enum class Category {
-        None, WorldScreen, UnitActions, Popups;
+        None,
+        WorldScreen {
+            // Conflict checking within group plus keys assigned to UnitActions are a problem
+            override fun checkConflictsIn() = sequenceOf(this, UnitActions)
+        },
+        UnitActions {
+            // Conflict checking within group disabled, but any key assigned on WorldScreen is a problem
+            override fun checkConflictsIn() = sequenceOf(WorldScreen)
+        },
+        Popups
+        ;
         val label = unCamelCase(name)
+        open fun checkConflictsIn() = sequenceOf(this)
     }
 
     val label: String
@@ -104,12 +118,13 @@ enum class KeyboardBinding(
         this.defaultKey = key ?: KeyCharAndCode(name[0])
     }
 
-    // Helpers to make enum instance initializations shorter
+    //region Helper constructors
     constructor(category: Category, label: String, key: Char) : this(category, label, KeyCharAndCode(key))
     constructor(category: Category, label: String, key: Int) : this(category, label, KeyCharAndCode(key))
     constructor(category: Category, key: KeyCharAndCode) : this(category, null, key)
     constructor(category: Category, key: Char) : this(category, KeyCharAndCode(key))
     constructor(category: Category, key: Int) : this(category, KeyCharAndCode(key))
+    //endregion
 
     /** Debug helper */
     override fun toString() = "$category.$name($defaultKey)"
