@@ -19,6 +19,7 @@ import com.unciv.utils.debug
 import com.unciv.utils.launchOnThreadPool
 import com.unciv.utils.withGLContext
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
@@ -51,9 +52,15 @@ class OnlineMultiplayer {
     private val lastCurGameRefresh: AtomicReference<Instant?> = AtomicReference()
 
     val games: Set<OnlineMultiplayerGame> get() = savedGames.values.toSet()
+    val multiplayerGameUpdater: Job
 
     init {
-        flow<Unit> {
+        /** We have 2 'async processes' that update the multiplayer games:
+         * A. This one, which as part of *this process* runs refreshes for all OS's
+         * B. MultiplayerTurnCheckWorker, which *as an Android worker* runs refreshes *even when the game is closed*.
+         *    Only for Android, obviously
+         */
+        multiplayerGameUpdater = flow<Unit> {
             while (true) {
                 delay(500)
 
@@ -134,8 +141,7 @@ class OnlineMultiplayer {
      */
     suspend fun addGame(gameId: String, gameName: String? = null) {
         val saveFileName = if (gameName.isNullOrBlank()) gameId else gameName
-        var gamePreview: GameInfoPreview
-        gamePreview = try {
+        val gamePreview: GameInfoPreview = try {
             multiplayerServer.tryDownloadGamePreview(gameId)
         } catch (_: MultiplayerFileNotFoundException) {
             // Game is so old that a preview could not be found on dropbox lets try the real gameInfo instead

@@ -8,8 +8,6 @@ import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
-import com.unciv.models.ruleset.INonPerpetualConstruction
-import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
@@ -33,8 +31,10 @@ import com.unciv.models.Counter
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.ModOptionsConstants
+import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.Victory
@@ -1037,21 +1037,38 @@ object NextTurnAutomation {
         if (civInfo.isCityState()) return
         if (civInfo.isAtWar()) return // don't train settlers when you could be training troops.
         if (civInfo.wantsToFocusOn(Victory.Focus.Culture) && civInfo.cities.size > 3) return
-        if (civInfo.cities.none() || civInfo.getHappiness() <= civInfo.cities.size + 5) return
+        if (civInfo.cities.none()) return
+        if (civInfo.getHappiness() <= civInfo.cities.size) return
 
         val settlerUnits = civInfo.gameInfo.ruleset.units.values
                 .filter { it.hasUnique(UniqueType.FoundCity) && it.isBuildable(civInfo) }
         if (settlerUnits.isEmpty()) return
-        if (civInfo.units.getCivUnits().none { it.hasUnique(UniqueType.FoundCity) }
-                && civInfo.cities.none {
-                    val currentConstruction = it.cityConstructions.getCurrentConstruction()
-                    currentConstruction is BaseUnit && currentConstruction.hasUnique(UniqueType.FoundCity)
-                }) {
+        if (!civInfo.units.getCivUnits().none { it.hasUnique(UniqueType.FoundCity) }) return
 
-            val bestCity = civInfo.cities.filterNot { it.isPuppet }.maxByOrNull { it.cityStats.currentCityStats.production }!!
-            if (bestCity.cityConstructions.builtBuildings.size > 1) // 2 buildings or more, otherwise focus on self first
-                bestCity.cityConstructions.currentConstructionFromQueue = settlerUnits.minByOrNull { it.cost }!!.name
+        if (civInfo.cities.any {
+                val currentConstruction = it.cityConstructions.getCurrentConstruction()
+                currentConstruction is BaseUnit && currentConstruction.hasUnique(UniqueType.FoundCity)
+            }) return
+
+        if (civInfo.units.getCivUnits().none { it.isMilitary() }) return // We need someone to defend him first
+
+        val workersBuildableForThisCiv = civInfo.gameInfo.ruleset.units.values.any {
+            it.hasUnique(UniqueType.BuildImprovements)
+                && it.isBuildable(civInfo)
         }
+
+        val bestCity = civInfo.cities.filterNot { it.isPuppet }
+            // If we can build workers, then we want AT LEAST 2 improvements, OR a worker nearby.
+            // Otherwise, AI tries to produce settlers when it can hardly sustain itself
+            .filter {
+                !workersBuildableForThisCiv
+                    || it.getCenterTile().getTilesInDistance(2).count { it.improvement!=null } > 1
+                    || it.getCenterTile().getTilesInDistance(3).any { it.civilianUnit?.hasUnique(UniqueType.BuildImprovements)==true }
+            }
+            .maxByOrNull { it.cityStats.currentCityStats.production }
+            ?: return
+        if (bestCity.cityConstructions.builtBuildings.size > 1) // 2 buildings or more, otherwise focus on self first
+            bestCity.cityConstructions.currentConstructionFromQueue = settlerUnits.minByOrNull { it.cost }!!.name
     }
 
     // Technically, this function should also check for civs that have liberated one or more cities

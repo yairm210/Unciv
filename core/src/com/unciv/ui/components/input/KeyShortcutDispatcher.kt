@@ -14,6 +14,8 @@ open class KeyShortcutDispatcher {
     private data class ShortcutAction(val shortcut: KeyShortcut, val action: ActivationAction)
     private val shortcuts: MutableList<ShortcutAction> = mutableListOf()
 
+    fun clear() = shortcuts.clear()
+
     fun add(shortcut: KeyShortcut?, action: ActivationAction?) {
         if (action == null || shortcut == null) return
         shortcuts.removeIf { it.shortcut == shortcut }

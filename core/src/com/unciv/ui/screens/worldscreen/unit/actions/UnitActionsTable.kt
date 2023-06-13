@@ -12,7 +12,7 @@ import com.unciv.models.UnitActionType
 import com.unciv.models.UpgradeUnitAction
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
-import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.KeyboardBindings
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onRightClick
@@ -45,7 +45,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
     private fun getUnitActionButton(unit: MapUnit, unitAction: UnitAction): Button {
         val icon = unitAction.getIcon()
         // If peripheral keyboard not detected, hotkeys will not be displayed
-        val key = if (GUI.keyboardAvailable) unitAction.type.key else KeyCharAndCode.UNKNOWN
+        val binding = unitAction.type.binding
 
         val fontColor = if (unitAction.isCurrentAction) Color.YELLOW else Color.WHITE
         val actionButton = IconTextButton(unitAction.title, icon, fontColor = fontColor)
@@ -53,7 +53,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         if (unitAction.type == UnitActionType.Promote && unitAction.action != null)
             actionButton.color = Color.GREEN.cpy().lerp(Color.WHITE, 0.5f)
 
-        actionButton.addTooltip(key)
+        actionButton.addTooltip(KeyboardBindings[binding])
         actionButton.pack()
 
         if (unitAction.action == null) {
@@ -71,7 +71,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
                     worldScreen.switchToNextUnit()
                 }
             }
-            actionButton.keyShortcuts.add(key)
+            actionButton.keyShortcuts.add(binding)
         }
 
         return actionButton

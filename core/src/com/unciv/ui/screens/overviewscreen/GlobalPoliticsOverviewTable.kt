@@ -94,7 +94,7 @@ class GlobalPoliticsOverviewTable (
     }
 
     private fun createGlobalPoliticsTable() {
-        for (civ in viewingPlayer.diplomacyFunctions.getKnownCivsSorted(includeSelf = true, includeCityStates = false)) {
+        for (civ in sequenceOf(viewingPlayer) + viewingPlayer.diplomacyFunctions.getKnownCivsSorted(includeCityStates = false)) {
             addSeparator(Color.GRAY)
 
             // civ image
@@ -249,8 +249,9 @@ class GlobalPoliticsOverviewTable (
             else gameInfo.civilizations.count {
                 !it.isSpectator() && !it.isBarbarian() && (persistableData.includeCityStates || !it.isCityState())
             }.toString()
-        undefeatedCivs = viewingPlayer.diplomacyFunctions.getKnownCivsSorted(includeSelf = true, persistableData.includeCityStates)
-        defeatedCivs = viewingPlayer.diplomacyFunctions.getKnownCivsSorted(includeSelf = true, persistableData.includeCityStates, true)
+        undefeatedCivs = sequenceOf(viewingPlayer) +
+                viewingPlayer.diplomacyFunctions.getKnownCivsSorted(persistableData.includeCityStates)
+        defeatedCivs = viewingPlayer.diplomacyFunctions.getKnownCivsSorted(persistableData.includeCityStates, true)
             .filter { it.isDefeated() }
 
         clear()

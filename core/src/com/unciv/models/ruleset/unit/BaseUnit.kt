@@ -301,8 +301,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             "Nuclear Weapon" -> isNuclearWeapon()
             "Great Person" -> isGreatPerson()
             "Religious" -> hasUnique(UniqueType.ReligiousUnit)
+
             else -> {
                 if (type.matchesFilter(filter)) return true
+                if (requiredTech != null && ruleset.technologies[requiredTech]?.matchesFilter(filter)==true) return true
                 if (
                     // Uniques using these kinds of filters should be deprecated and replaced with adjective-only parameters
                     filter.endsWith(" units")
