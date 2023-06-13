@@ -125,12 +125,12 @@ enum class UniqueParameterType(
         override fun getTranslationWriterStringsForOutput() = knownValues
     },
 
-    /** Only used by [BaseUnitFilter] */
+    /** Used by [BaseUnitFilter] and e.g. [UniqueType.OneTimeFreeUnit] */
     UnitName("unit", "Musketman") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (ruleset.units.containsKey(parameterText)) return null
-            return UniqueType.UniqueComplianceErrorSeverity.WarningOnly
+            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific  // OneTimeFreeUnitRuins crashes with a bad parameter
         }
     },
 
@@ -250,7 +250,7 @@ enum class UniqueParameterType(
             parameterText != "All" && getErrorSeverity(parameterText, ruleset) == null
     },
 
-    /** Implemented by [PopulationManager.getPopulationFilterAmount][com.unciv.logic.city.CityPopulationManager.getPopulationFilterAmount] */
+    /** Implemented by [PopulationManager.getPopulationFilterAmount][com.unciv.logic.city.managers.CityPopulationManager.getPopulationFilterAmount] */
     PopulationFilter("populationFilter", "Followers of this Religion", null, "Population Filters") {
         private val knownValues = setOf("Population", "Specialists", "Unemployed", "Followers of the Majority Religion", "Followers of this Religion")
         override fun getErrorSeverity(

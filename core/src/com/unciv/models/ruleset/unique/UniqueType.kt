@@ -2,6 +2,7 @@ package com.unciv.models.ruleset.unique
 
 import com.unciv.Constants
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetErrorSeverity
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 
@@ -715,9 +716,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ///////////////////////////////////////// region TRIGGERED ONE-TIME /////////////////////////////////////////
 
 
-    OneTimeFreeUnit("Free [baseUnitFilter] appears", UniqueTarget.Triggerable),  // used in Policies, Buildings
-    OneTimeAmountFreeUnits("[amount] free [baseUnitFilter] units appear", UniqueTarget.Triggerable), // used in Buildings
-    OneTimeFreeUnitRuins("Free [baseUnitFilter] found in the ruins", UniqueTarget.Ruins), // Differs from "Free [] appears" in that it spawns near the ruins instead of in a city
+    OneTimeFreeUnit("Free [unit] appears", UniqueTarget.Triggerable),  // used in Policies, Buildings
+    OneTimeAmountFreeUnits("[amount] free [unit] units appear", UniqueTarget.Triggerable), // used in Buildings
+    OneTimeFreeUnitRuins("Free [unit] found in the ruins", UniqueTarget.Ruins), // Differs from "Free [] appears" in that it spawns near the ruins instead of in a city
     OneTimeFreePolicy("Free Social Policy", UniqueTarget.Triggerable), // used in Buildings
     OneTimeAmountFreePolicies("[amount] Free Social Policies", UniqueTarget.Triggerable),  // Not used in Vanilla
     OneTimeEnterGoldenAge("Empire enters golden age", UniqueTarget.Triggerable),  // used in Policies, Buildings
@@ -1181,17 +1182,17 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     val placeholderText = text.getPlaceholderText()
 
     /** Ordinal determines severity - ordered from least to most severe, so we can use Severity >=  */
-    enum class UniqueComplianceErrorSeverity {
+    enum class UniqueComplianceErrorSeverity(val correspondingRulesetErrorSeverity: RulesetErrorSeverity) {
 
         /** This is for filters that can also potentially accept free text, like UnitFilter and TileFilter */
-        WarningOnly,
+        WarningOnly(RulesetErrorSeverity.Warning),
 
         /** This is a problem like "unit/resource/tech name doesn't exist in ruleset" - definite bug */
-        RulesetSpecific,
+        RulesetSpecific(RulesetErrorSeverity.Error),
 
 
         /** This is a problem like "numbers don't parse", "stat isn't stat", "city filter not applicable" */
-        RulesetInvariant
+        RulesetInvariant(RulesetErrorSeverity.Error)
 
     }
 

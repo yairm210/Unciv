@@ -31,6 +31,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         val lines = RulesetErrorList()
 
+        /********************** Ruleset Invariant Part **********************/
         // Checks for all mods - only those that can succeed without loading a base ruleset
         // When not checking the entire ruleset, we can only really detect ruleset-invariant errors in uniques
 
@@ -127,6 +128,8 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         // Quit here when no base ruleset is loaded - references cannot be checked
         if (!ruleset.modOptions.isBaseRuleset) return lines
+
+        /********************** Ruleset Specific Part **********************/
 
         val vanillaRuleset = RulesetCache.getVanillaRuleset()  // for UnitTypes fallback
 
@@ -485,12 +488,11 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         val typeComplianceErrors = unique.type.getComplianceErrors(unique, ruleset)
         for (complianceError in typeComplianceErrors) {
-            // TODO: Make this Error eventually, this is Not Good
             if (complianceError.errorSeverity <= severityToReport)
                 rulesetErrors.add(RulesetError("$name's unique \"${unique.text}\" contains parameter ${complianceError.parameterName}," +
                         " which does not fit parameter type" +
                         " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
-                    RulesetErrorSeverity.Warning
+                    complianceError.errorSeverity.correspondingRulesetErrorSeverity
                 ))
         }
 
