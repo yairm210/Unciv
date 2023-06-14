@@ -19,13 +19,13 @@ import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
-import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.extensions.disable
-import com.unciv.ui.components.input.keyShortcuts
-import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.diplomacyscreen.LeaderIntroTable
@@ -65,6 +65,12 @@ class AlertPopup(
     //endregion
 
     init {
+        // This makes the buttons fill up available width. See comments in #9559.
+        // To implement a middle ground, I would either simply replace growX() with minWidth(240f) or so,
+        // or replace the Popup.equalizeLastTwoButtonWidths() function with something intelligent not
+        // limited to two buttons.
+        bottomTable.defaults().growX()
+
         when (popupAlert.type) {
             AlertType.WarDeclaration -> addWarDeclaration()
             AlertType.Defeated -> addDefeated()
@@ -367,23 +373,6 @@ class AlertPopup(
 
     //endregion
     //region Helpers
-
-//     private fun getCloseButton(text: String, key: Char = Char.MIN_VALUE, action: (() -> Unit)? = null): TextButton {
-//         // Popup.addCloseButton is close but AlertPopup needs the flexibility to add these inside a wrapper
-//         val button = text.toTextButton()
-//         button.onActivation {
-//             if (action != null) action()
-//             worldScreen.shouldUpdate = true
-//             close()
-//         }
-//         if (key == Char.MIN_VALUE) {
-//             button.keyShortcuts.add(KeyCharAndCode.BACK)
-//             button.keyShortcuts.add(KeyCharAndCode.SPACE)
-//         } else {
-//             button.keyShortcuts.add(key)
-//         }
-//         return button
-//     }
 
     private fun addLeaderName(civInfo: Civilization) {
         add(LeaderIntroTable(civInfo))
