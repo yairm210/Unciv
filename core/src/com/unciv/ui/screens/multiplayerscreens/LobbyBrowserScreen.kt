@@ -59,7 +59,7 @@ class LobbyBrowserScreen : BaseScreen() {
 
         val lobbyButtons = Table()
         newLobbyButton.onClick {
-            CreateLobbyPopup(this as BaseScreen, me)
+            CreateLobbyPopup(this as BaseScreen, me).open()
         }
         updateButton.onClick {
             lobbyBrowserTable.triggerUpdate()

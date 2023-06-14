@@ -13,7 +13,7 @@ import com.unciv.utils.Log
 /**
  * Variant of [Popup] used to ask the questions related to opening a new [ApiVersion.APIv2] multiplayer lobby
  */
-class CreateLobbyPopup(private val base: BaseScreen, me: AccountResponse) : Popup(base.stage) {
+class CreateLobbyPopup(private val base: BaseScreen, me: AccountResponse) : Popup(base.stage, Scrollability.None) {
     private var requirePassword: Boolean = false
     private val nameField = UncivTextField.create("Lobby name", "${me.displayName}'s game").apply { this.maxLength = 64 }
     private val passwordField = UncivTextField.create("Password", "").apply { this.maxLength = 64 }
@@ -27,7 +27,6 @@ class CreateLobbyPopup(private val base: BaseScreen, me: AccountResponse) : Popu
             Log.error("Popup to create a new lobby without a valid APIv2 server! This is not supported!")
         }
         recreate()
-        open()
     }
 
     private fun recreate() {
@@ -49,7 +48,6 @@ class CreateLobbyPopup(private val base: BaseScreen, me: AccountResponse) : Popu
         addCloseButton()
         addOKButton(action = ::onClose).row()
         equalizeLastTwoButtonWidths()
-        open()
     }
 
     private fun onClose() {

@@ -2,6 +2,8 @@ package com.unciv.ui.screens.multiplayerscreens
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.logic.multiplayer.apiv2.ApiException
+import com.unciv.logic.multiplayer.apiv2.ApiStatusCode
 import com.unciv.logic.multiplayer.apiv2.LobbyResponse
 import com.unciv.ui.components.ArrowButton
 import com.unciv.ui.components.LockButton
@@ -11,6 +13,7 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.AskTextPopup
 import com.unciv.ui.popups.InfoPopup
+import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
@@ -44,10 +47,22 @@ internal class LobbyBrowserTable(private val screen: BaseScreen, private val lob
                 maxLength = 120
             ) {
                 InfoPopup.load(stage) {
-                    screen.game.onlineMultiplayer.api.lobby.join(lobby.uuid, it)
-                    Concurrency.runOnGLThread {
-                        lobbyJoinCallback()
-                        screen.game.pushScreen(LobbyScreen(lobby))
+                    try {
+                        screen.game.onlineMultiplayer.api.lobby.join(lobby.uuid, it)
+                        Concurrency.runOnGLThread {
+                            lobbyJoinCallback()
+                            screen.game.pushScreen(LobbyScreen(lobby))
+                        }
+                    } catch (e: ApiException) {
+                        if (e.error.statusCode != ApiStatusCode.MissingPrivileges) {
+                            throw e
+                        }
+                        Concurrency.runOnGLThread {
+                            Popup(stage).apply {
+                                addGoodSizedLabel("Invalid password")
+                                addCloseButton()
+                            }.open(force = true)
+                        }
                     }
                 }
             }
