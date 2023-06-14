@@ -4,6 +4,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.unciv.Constants
 import com.unciv.logic.files.MapSaver
 import com.unciv.logic.map.MapGeneratedMainType
 import com.unciv.logic.map.TileMap
@@ -81,7 +82,7 @@ class MapEditorSaveTab(
 
     private fun setSaveButton(enabled: Boolean) {
         saveButton.isEnabled = enabled
-        saveButton.setText((if (enabled) "Save map" else "Working...").tr())
+        saveButton.setText((if (enabled) "Save map" else Constants.working).tr())
     }
 
     private fun saveHandler() {

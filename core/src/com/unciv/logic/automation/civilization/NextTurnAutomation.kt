@@ -384,7 +384,10 @@ object NextTurnAutomation {
             val cityWithLeastCostToBuy = highlyDesirableTile.value.minBy {
                 it.getCenterTile().aerialDistanceTo(highlyDesirableTile.key)
             }
-            val bfs = BFS(cityWithLeastCostToBuy.getCenterTile()) {
+            val bfs = BFS(cityWithLeastCostToBuy.getCenterTile(),
+                // Give higher priority on the way to intermediate tiles with higher ranking stats
+                { Automation.rankStatsValue(it.stats.getTileStats(cityWithLeastCostToBuy, civInfo), civInfo).toInt() })
+            {
                 it.getOwner() == null || it.getOwner() == civInfo
             }
             bfs.stepUntilDestination(highlyDesirableTile.key)

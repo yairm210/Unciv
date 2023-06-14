@@ -1,14 +1,15 @@
 package com.unciv.logic.map
 
 import com.unciv.logic.map.tile.Tile
-import kotlin.collections.ArrayDeque
 
 /**
  * Defines intermediate steps of a breadth-first search, for use in either get shortest path or get connected tiles.
  */
 class BFS(
     val startingPoint: Tile,
-    private val predicate : (Tile) -> Boolean
+    /** The *higher* the number, the *greater* the priority */
+    private val priorityFunction: ((Tile) -> Int)? = null,
+    private val predicate : (Tile) -> Boolean,
 ) {
     /** Maximum number of tiles to search */
     var maxSize = Int.MAX_VALUE
@@ -50,7 +51,11 @@ class BFS(
     fun nextStep() {
         if (tilesReached.size >= maxSize) { tilesToCheck.clear(); return }
         val current = tilesToCheck.removeFirstOrNull() ?: return
-        for (neighbor in current.neighbors) {
+
+        val sortedNeighbors = if (priorityFunction==null) current.neighbors
+        else current.neighbors.sortedByDescending(priorityFunction)
+
+        for (neighbor in sortedNeighbors) {
             if (neighbor !in tilesReached && predicate(neighbor)) {
                 tilesReached[neighbor] = current
                 tilesToCheck.add(neighbor)

@@ -230,7 +230,7 @@ internal class NationPickerPopup(
             }
 
             // Keyboard: Fist letter of each "word" - "The Ottomans" get T _and_ O
-            val keys = element.translatedName.split(' ').map { it.first() }.toSet()
+            val keys = element.translatedName.split(' ').mapNotNull { it.firstOrNull() }.toSet()
             for (key in keys) {
                 if (key in keySelectMap) {
                     keySelectMap[key]!! += currentSelectInfo

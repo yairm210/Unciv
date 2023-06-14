@@ -95,10 +95,10 @@ class PolicyButton(viewingCiv: Civilization, canChangeState: Boolean, val policy
     }
 
     fun onClick(function: () -> Unit): PolicyButton {
-        (this as Actor).onClick(function = {
+        (this as Actor).onClick {
             function()
             updateState()
-        })
+        }
         return this
     }
 
