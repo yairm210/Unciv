@@ -492,7 +492,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                 rulesetErrors.add(RulesetError("$name's unique \"${unique.text}\" contains parameter ${complianceError.parameterName}," +
                         " which does not fit parameter type" +
                         " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
-                    complianceError.errorSeverity.correspondingRulesetErrorSeverity
+                    complianceError.errorSeverity.getRulesetErrorSeverity(severityToReport)
                 ))
         }
 
@@ -508,9 +508,11 @@ class RulesetValidator(val ruleset: Ruleset) {
                         conditional.type.getComplianceErrors(conditional, ruleset)
                 for (complianceError in conditionalComplianceErrors) {
                     if (complianceError.errorSeverity == severityToReport)
-                        rulesetErrors += "$name's unique \"${unique.text}\" contains the conditional \"${conditional.text}\"." +
+                        rulesetErrors.add(RulesetError( "$name's unique \"${unique.text}\" contains the conditional \"${conditional.text}\"." +
                                 " This contains the parameter ${complianceError.parameterName} which does not fit parameter type" +
-                                " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"
+                                " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
+                            complianceError.errorSeverity.getRulesetErrorSeverity(severityToReport)
+                        ))
                 }
             }
         }
@@ -541,6 +543,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
 
 class RulesetError(val text:String, val errorSeverityToReport: RulesetErrorSeverity)
+
 enum class RulesetErrorSeverity(val color: Color) {
     OK(Color.GREEN),
     WarningOptionsOnly(Color.YELLOW),
@@ -560,7 +563,10 @@ class RulesetErrorList : ArrayList<RulesetError>() {
     override fun add(element: RulesetError): Boolean {
         // Suppress duplicates due to the double run of some checks for invariant/specific,
         // Without changing collection type or making RulesetError obey the equality contract
-        if (any { it.text == element.text && it.errorSeverityToReport == element.errorSeverityToReport }) return false
+        val existing = firstOrNull { it.text == element.text }
+            ?: return super.add(element)
+        if (existing.errorSeverityToReport >= element.errorSeverityToReport) return false
+        remove(existing)
         return super.add(element)
     }
 

@@ -1182,18 +1182,35 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     val placeholderText = text.getPlaceholderText()
 
     /** Ordinal determines severity - ordered from least to most severe, so we can use Severity >=  */
-    enum class UniqueComplianceErrorSeverity(val correspondingRulesetErrorSeverity: RulesetErrorSeverity) {
+    enum class UniqueComplianceErrorSeverity {
 
         /** This is for filters that can also potentially accept free text, like UnitFilter and TileFilter */
-        WarningOnly(RulesetErrorSeverity.Warning),
+        WarningOnly {
+            override fun getRulesetErrorSeverity(severityToReport: UniqueComplianceErrorSeverity) =
+                RulesetErrorSeverity.WarningOptionsOnly
+        },
 
         /** This is a problem like "unit/resource/tech name doesn't exist in ruleset" - definite bug */
-        RulesetSpecific(RulesetErrorSeverity.Error),
-
+        RulesetSpecific {
+            // Report Warning on the first pass of RulesetValidator only, where mods are checked standalone
+            // but upgrade to error when the econd pass asks, which runs only for combined or base rulesets.
+            override fun getRulesetErrorSeverity(severityToReport: UniqueComplianceErrorSeverity) =
+                RulesetErrorSeverity.Warning
+        },
 
         /** This is a problem like "numbers don't parse", "stat isn't stat", "city filter not applicable" */
-        RulesetInvariant(RulesetErrorSeverity.Error)
+        RulesetInvariant {
+            override fun getRulesetErrorSeverity(severityToReport: UniqueComplianceErrorSeverity) =
+                RulesetErrorSeverity.Error
+        },
+        ;
 
+        /** Done as function instead of property so we can in the future upgrade severities depending
+         *  on the [RulesetValidator] "pass": [severityToReport]==[RulesetInvariant] means it's the
+         *  first pass that also runs for extension mods without a base mixed in; the complex check
+         *  runs with [severityToReport]==[RulesetSpecific].
+         */
+        abstract fun getRulesetErrorSeverity(severityToReport: UniqueComplianceErrorSeverity): RulesetErrorSeverity
     }
 
     /** Maps uncompliant parameters to their required types */

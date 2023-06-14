@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.translations.tr
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toCheckBox
@@ -30,14 +29,19 @@ class ModCheckboxTable(
     isPortrait: Boolean = false,
     private val onUpdate: (String) -> Unit
 ): Table() {
-    private val modRulesets = RulesetCache.values.filter { it.name != "" && !it.modOptions.isBaseRuleset}
-    private var lastToast: ToastPopup? = null
     private val extensionRulesetModButtons = ArrayList<CheckBox>()
+
+    /** Saved result from any complex mod check unless the causing selection has already been reverted.
+     *  In other words, this can contain the text for an "Error" level check only if the Widget was
+     *  initialized with such an invalid mod combination.
+     *  This Widget reverts User changes that cause an Error severity immediately and this field is nulled.
+     */
     var savedModcheckResult: String? = null
+
     private var disableChangeEvents = false
 
     init {
-
+        val modRulesets = RulesetCache.values.filter { it.name != "" && !it.modOptions.isBaseRuleset}
         for (mod in modRulesets.sortedBy { it.name }) {
             val checkBox = mod.name.toCheckBox(mod.name in mods)
             checkBox.onChange {
@@ -79,15 +83,7 @@ class ModCheckboxTable(
         val complexModLinkCheck = RulesetCache.checkCombinedModLinks(mods, baseRuleset)
         if (!complexModLinkCheck.isWarnUser()) return false
         savedModcheckResult = complexModLinkCheck.getErrorText()
-
-        val initialText =
-            if (complexModLinkCheck.isError()) "The mod combination you selected is «RED»incorrectly defined!«»".tr()
-            else "{The mod combination you selected «GOLD»has problems«».}\n{You can play it, but «GOLDENROD»don't expect everything to work!«»}".tr()
-        val toastMessage =  "$initialText\n\n$savedModcheckResult"
-
-        lastToast?.close()
-        lastToast = ToastPopup(toastMessage, screen, 5000L)
-
+        complexModLinkCheck.showWarnOrErrorToast(screen)
         return complexModLinkCheck.isError()
     }
 
@@ -102,10 +98,7 @@ class ModCheckboxTable(
             // First the quick standalone check
             val modLinkErrors = mod.checkModLinks()
             if (modLinkErrors.isError()) {
-                lastToast?.close()
-                val toastMessage =
-                    "The mod you selected is «RED»incorrectly defined!«»".tr() + "\n\n${modLinkErrors.getErrorText()}"
-                lastToast = ToastPopup(toastMessage, screen, 5000L)
+                modLinkErrors.showWarnOrErrorToast(screen)
                 changeEvent.cancel() // Cancel event to reset to previous state - see Button.setChecked()
                 return false
             }
@@ -116,6 +109,7 @@ class ModCheckboxTable(
             if (runComplexModCheck()) {
                 changeEvent.cancel() // Cancel event to reset to previous state - see Button.setChecked()
                 mods.remove(mod.name)
+                savedModcheckResult = null  // we just fixed it
                 return false
             }
 
@@ -130,6 +124,7 @@ class ModCheckboxTable(
             if (runComplexModCheck()) {
                 changeEvent.cancel() // Cancel event to reset to previous state - see Button.setChecked()
                 mods.add(mod.name)
+                savedModcheckResult = null  // we just fixed it
                 return false
             }
 

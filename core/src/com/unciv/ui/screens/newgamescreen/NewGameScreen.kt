@@ -79,17 +79,17 @@ class NewGameScreen(
             updatePlayerPickerRandomLabel = { playerPickerTable.updateRandomNumberLabel() }
         )
         mapOptionsTable = MapOptionsTable(this)
-        pickerPane.closeButton.onActivation {
+        closeButton.onActivation {
             mapOptionsTable.cancelBackgroundJobs()
             game.popScreen()
         }
-        pickerPane.closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
+        closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
 
         if (isPortrait) initPortrait()
         else initLandscape()
 
-        pickerPane.bottomTable.background = skinStrings.getUiBackground("NewGameScreen/BottomTable", tintColor = skinStrings.skinConfig.clearColor)
-        pickerPane.topTable.background = skinStrings.getUiBackground("NewGameScreen/TopTable", tintColor = skinStrings.skinConfig.clearColor)
+        bottomTable.background = skinStrings.getUiBackground("NewGameScreen/BottomTable", tintColor = skinStrings.skinConfig.clearColor)
+        topTable.background = skinStrings.getUiBackground("NewGameScreen/TopTable", tintColor = skinStrings.skinConfig.clearColor)
 
         if (UncivGame.Current.settings.lastGameSetup != null) {
             rightSideGroup.addActorAt(0, VerticalGroup().padBottom(5f))
@@ -166,8 +166,8 @@ class NewGameScreen(
             return
         }
 
-        val modCheckResult = newGameOptionsTable.modCheckboxes?.savedModcheckResult
-        newGameOptionsTable.modCheckboxes?.savedModcheckResult = null
+        val modCheckResult = newGameOptionsTable.modCheckboxes.savedModcheckResult
+        newGameOptionsTable.modCheckboxes.savedModcheckResult = null
         if (modCheckResult != null) {
             AcceptModErrorsPopup(
                 this, modCheckResult,
