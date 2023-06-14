@@ -110,10 +110,14 @@ object UnitAutomation {
     }
 
     @JvmStatic
-    fun wander(unit: MapUnit, stayInTerritory: Boolean = false) {
+    fun wander(unit: MapUnit, stayInTerritory: Boolean = false, tilesToAvoid:Set<Tile> = setOf()) {
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         val reachableTiles = unitDistanceToTiles
-                .filter { unit.movement.canMoveTo(it.key) && unit.movement.canReach(it.key) }
+                .filter {
+                    it.key !in tilesToAvoid
+                    && unit.movement.canMoveTo(it.key)
+                    && unit.movement.canReach(it.key)
+                }
 
         val reachableTilesMaxWalkingDistance = reachableTiles
                 .filter { it.value.totalDistance == unit.currentMovement
@@ -141,8 +145,7 @@ object UnitAutomation {
     }
 
     fun automateUnitMoves(unit: MapUnit) {
-        if (unit.civ.isBarbarian())
-            throw IllegalStateException("Barbarians is not allowed here.")
+        check(!unit.civ.isBarbarian()) { "Barbarians is not allowed here." }
 
         // Might die next turn - move!
         if (unit.health <= unit.getDamageFromTerrain() && tryHealUnit(unit)) return
@@ -235,11 +238,18 @@ object UnitAutomation {
                 unit.movement.moveToTile(tilesCanMoveTo.minByOrNull { it.value.totalDistance }!!.key)
         }
 
+        val tilesWhereWeWillBeCaptured = unit.currentTile.getTilesInDistance(5)
+            .mapNotNull { it.militaryUnit }
+            .filter { it.civ.isAtWarWith(unit.civ) }
+            .flatMap { it.movement.getReachableTilesInCurrentTurn() }
+            .filter { it.militaryUnit?.civ != unit.civ }
+            .toSet()
+
         if (unit.hasUnique(UniqueType.FoundCity))
-            return SpecificUnitAutomation.automateSettlerActions(unit)
+            return SpecificUnitAutomation.automateSettlerActions(unit, tilesWhereWeWillBeCaptured)
 
         if (unit.cache.hasUniqueToBuildImprovements)
-            return WorkerAutomation.automateWorkerAction(unit)
+            return WorkerAutomation.automateWorkerAction(unit, tilesWhereWeWillBeCaptured)
 
         if (unit.hasUnique(UniqueType.MayFoundReligion)
                 && unit.civ.religionManager.religionState < ReligionState.Religion
@@ -345,7 +355,7 @@ object UnitAutomation {
 
     /** @return true only if the unit has 0 movement left */
     private fun tryAttacking(unit: MapUnit): Boolean {
-        for (attackNumber in unit.attacksThisTurn until unit.maxAttacksPerTurn()) {
+        repeat(unit.maxAttacksPerTurn() - unit.attacksThisTurn) {
             if (BattleHelper.tryAttackNearbyEnemy(unit)) return true
         }
         return false
@@ -763,14 +773,12 @@ object UnitAutomation {
     private fun tryRunAwayIfNeccessary(unit: MapUnit): Boolean {
         // This is a little 'Bugblatter Beast of Traal': Run if we can attack an enemy
         // Cheaper than determining which enemies could attack us next turn
-        //todo - stay when we're stacked with a good military unit???
         val enemyUnitsInWalkingDistance = unit.movement.getDistanceToTiles().keys
             .filter { containsEnemyMilitaryUnit(unit, it) }
 
-        if (enemyUnitsInWalkingDistance.isNotEmpty() && !unit.baseUnit.isMilitary()) {
-            if (unit.getTile().militaryUnit == null && !unit.getTile().isCityCenter())
-                runAway(unit)
-
+        if (enemyUnitsInWalkingDistance.isNotEmpty() && !unit.baseUnit.isMilitary()
+            && unit.getTile().militaryUnit == null && !unit.getTile().isCityCenter()) {
+            runAway(unit)
             return true
         }
 

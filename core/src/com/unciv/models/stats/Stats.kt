@@ -45,7 +45,7 @@ open class Stats(
     /** Compares two instances. Not callable via `==`. */
     // This is an overload, not an override conforming to the kotlin conventions of `equals(Any?)`,
     // so do not rely on it to be called for the `==` operator! A tad more efficient, though.
-    @Suppress("CovariantEquals")    // historical reasons to keep this function signature
+    @Suppress("CovariantEquals", "WrongEqualsTypeParameter")    // historical reasons to keep this function signature
     fun equals(otherStats: Stats): Boolean {
         return production == otherStats.production
                 && food == otherStats.food

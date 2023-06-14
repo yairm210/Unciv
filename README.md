@@ -67,6 +67,10 @@ If not, you can help by spreading the word - vote for Unciv where you can, menti
 I'm not planning on it. It means paying money to Apple, yet another release path,
  and since I don't have an IOS device it means I can't test it properly.
  
+### Steam release?
+
+Steam has decided that they don't want to host Unciv, they probably don't want to risk legal issues with Firaxis (although those should be non-existant, see below)
+ 
 ### Will you implement {feature}?
 
 If it's in the original Civ V, then yes!
@@ -117,15 +121,21 @@ If anyone has any real legal sources, or can shed some light on the limits of wh
 | [![](https://static.itch.io/images/badge.svg)](https://yairm210.itch.io/unciv)    |    [![](https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png)](https://play.google.com/store/apps/details?id=com.unciv.app)   |    [![](https://fdroid.gitlab.io/artwork/badge/get-it-on.png)](https://f-droid.org/en/packages/com.unciv.app/)	| [![](https://flathub.org/assets/badges/flathub-badge-en.svg)](https://flathub.org/apps/details/io.github.yairm210.unciv)
 |---	|---	|---	|---	|
 
-## Run with Docker
+## Run with Docker [![Docker](https://github.com/haimlm/Unciv/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/haimlm/Unciv/actions/workflows/docker-publish.yml)
 
-If you have docker and docker-compose installed, you can:
+If you have docker compose installed:
 
-* Run ```$ docker-compose build && docker-compose up```
-* Open http://localhost:6901/vnc.html?password=headless
+ ```$ docker compose build && docker compose up```
 
-And if you are using docker desktop:
-* ```$ docker compose build && docker compose up```
-* http://localhost:6901/vnc.html?password=headless
+and then goto http://localhost:6901/vnc.html?password=headless
 
+If just docker:
+
+```$ docker build . -t unciv && docker run -d -p 6901:6901 -p 5901:5901 unciv  ```
+
+Or just use our already built one:
+
+```$ docker run -d -p 6901:6901 -p 5901:5901 ghcr.io/yairm210/Unciv ```
+
+and then goto http://localhost:6901/vnc.html?password=headless
 ## [Credits and 3rd parties](docs/Credits.md)

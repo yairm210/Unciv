@@ -11,8 +11,8 @@ import com.unciv.logic.files.UncivFiles
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.AutoScrollPane
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.extensions.keyShortcuts
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onClick
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
 
@@ -60,7 +60,7 @@ class VerticalFileListScrollPane(
         val loadImage = ImageGetter.getImage("OtherIcons/Load")
         loadImage.setSize(50f, 50f) // So the origin sets correctly
         loadImage.setOrigin(Align.center)
-        val loadAnimation = Actions.repeat(Int.MAX_VALUE, Actions.rotateBy(360f, 2f))
+        val loadAnimation = Actions.forever(Actions.rotateBy(360f, 2f))
         loadImage.addAction(loadAnimation)
         existingSavesTable.add(loadImage).size(50f).center()
 

@@ -20,14 +20,14 @@ import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.ExpanderTab
-import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
-import com.unciv.ui.components.extensions.keyShortcuts
-import com.unciv.ui.components.extensions.onActivation
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
@@ -125,7 +125,7 @@ class NewGameScreen(
             for (player in gameSetupInfo.gameParameters.players.filter { it.playerType == PlayerType.Human }) {
                 try {
                     UUID.fromString(IdChecker.checkAndReturnPlayerUuid(player.playerId))
-                } catch (ex: Exception) {
+                } catch (_: Exception) {
                     val invalidPlayerIdPopup = Popup(this)
                     invalidPlayerIdPopup.addGoodSizedLabel("Invalid player ID!".tr()).row()
                     invalidPlayerIdPopup.addCloseButton()
@@ -206,7 +206,7 @@ class NewGameScreen(
         }
 
         rightSideButton.disable()
-        rightSideButton.setText("Working...".tr())
+        rightSideButton.setText(Constants.working.tr())
 
         setSkin()
         // Creating a new game can take a while and we don't want ANRs
@@ -272,7 +272,7 @@ class NewGameScreen(
             con.connect()
 
             true
-        } catch(ex: Throwable) {
+        } catch(_: Throwable) {
             false
         }
     }
@@ -280,7 +280,7 @@ class NewGameScreen(
     private suspend fun startNewGame() = coroutineScope {
         val popup = Popup(this@NewGameScreen)
         launchOnGLThread {
-            popup.addGoodSizedLabel("Working...").row()
+            popup.addGoodSizedLabel(Constants.working).row()
             popup.open()
         }
 

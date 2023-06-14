@@ -1,6 +1,7 @@
 package com.unciv.logic.city
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.GUI
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.managers.CityEspionageManager
 import com.unciv.logic.city.managers.CityExpansionManager
@@ -100,6 +101,13 @@ class City : IsPartOfGameInfoSerialization {
 
     internal var flagsCountdown = HashMap<String, Int>()
 
+    /** Persisted connected-to-capital (by any medium) to allow "disconnected" notifications after loading */
+    // Unknown only exists to support older saves, so those do not generate spurious connected/disconnected messages.
+    // The other names are chosen so serialization is compatible with a Boolean to allow easy replacement in the future.
+    @Suppress("EnumEntryName")
+    enum class ConnectedToCapitalStatus { Unknown, `false`, `true` }
+    var connectedToCapitalStatus = ConnectedToCapitalStatus.Unknown
+
     fun hasDiplomaticMarriage(): Boolean = foundingCiv == ""
 
     //region pure functions
@@ -128,6 +136,7 @@ class City : IsPartOfGameInfoSerialization {
         toReturn.cityAIFocus = cityAIFocus
         toReturn.avoidGrowth = avoidGrowth
         toReturn.manualSpecialists = manualSpecialists
+        toReturn.connectedToCapitalStatus = connectedToCapitalStatus
         return toReturn
     }
 
@@ -244,7 +253,7 @@ class City : IsPartOfGameInfoSerialization {
         return cityResources
     }
 
-    fun getTileResourceAmount(tile: Tile): Int {
+    private fun getTileResourceAmount(tile: Tile): Int {
         if (tile.resource == null) return 0
         if (!tile.providesResources(civ)) return 0
 
@@ -308,13 +317,13 @@ class City : IsPartOfGameInfoSerialization {
             for (unique in civ.getMatchingUniques(UniqueType.GreatPersonEarnedFaster, stateForConditionals)) {
                 val unitName = unique.params[0]
                 if (!gppCounter.containsKey(unitName)) continue
-                gppCounter.add(unitName, gppCounter[unitName]!! * unique.params[1].toInt() / 100)
+                gppCounter.add(unitName, gppCounter[unitName] * unique.params[1].toInt() / 100)
             }
 
             val allGppPercentageBonus = getGreatPersonPercentageBonus()
 
             for (unitName in gppCounter.keys)
-                gppCounter.add(unitName, gppCounter[unitName]!! * allGppPercentageBonus / 100)
+                gppCounter.add(unitName, gppCounter[unitName] * allGppPercentageBonus / 100)
         }
 
         return sourceToGPP
@@ -403,6 +412,10 @@ class City : IsPartOfGameInfoSerialization {
         reassignPopulation(resetLocked = true)
     }
 
+    /** Apply worked tiles optimization (aka CityFocus) - Expensive!
+     *
+     *  If the next City.startTurn is soon enough, then use [reassignPopulationDeferred] instead.
+     */
     fun reassignPopulation(resetLocked: Boolean = false) {
         if (resetLocked) {
             workedTiles = hashSetOf()
@@ -412,9 +425,20 @@ class City : IsPartOfGameInfoSerialization {
         }
         if (!manualSpecialists)
             population.specialistAllocations.clear()
+        updateCitizens = false
         population.autoAssignPopulation()
     }
 
+    /** Apply worked tiles optimization (aka CityFocus) -
+     *  immediately for a human player whoes turn it is (interactive),
+     *  or deferred to the next startTurn while nextTurn is running (for AI)
+     *  @see reassignPopulation
+     */
+    fun reassignPopulationDeferred() {
+        // TODO - is this the best (or even correct) way to detect "interactive" UI calls?
+        if (GUI.isMyTurn() && GUI.getViewingPlayer() == civ) reassignPopulation()
+        else updateCitizens = true
+    }
 
     fun destroyCity(overrideSafeties: Boolean = false) {
         // Original capitals and holy cities cannot be destroyed,

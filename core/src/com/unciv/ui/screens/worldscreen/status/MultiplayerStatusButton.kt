@@ -3,7 +3,6 @@ package com.unciv.ui.screens.worldscreen.status
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup
@@ -24,9 +23,9 @@ import com.unciv.logic.multiplayer.OnlineMultiplayerGame
 import com.unciv.logic.multiplayer.apiv2.AccountResponse
 import com.unciv.logic.multiplayer.apiv2.GameOverviewResponse
 import com.unciv.logic.multiplayer.isUsersTurn
-import com.unciv.ui.components.extensions.onActivation
-import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.setSize
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -106,7 +105,7 @@ class MultiplayerStatusButtonV1(
 
         if (UncivGame.Current.settings.continuousRendering) {
             loadingImage.clearActions()
-            loadingImage.addAction(Actions.repeat(RepeatAction.FOREVER,Actions.rotateBy(-90f, 1f)))
+            loadingImage.addAction(Actions.forever(Actions.rotateBy(-90f, 1f)))
         }
 
         loadingImage.isVisible = true

@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.Constants
+import com.unciv.logic.MissingModsException
 import com.unciv.logic.files.MapSaver
 import com.unciv.logic.UncivShowableException
 import com.unciv.models.ruleset.RulesetCache
@@ -16,14 +16,17 @@ import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.components.AutoScrollPane
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.extensions.isEnabled
-import com.unciv.ui.components.extensions.keyShortcuts
-import com.unciv.ui.components.extensions.onActivation
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.popups.LoadingPopup
+import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
-import kotlin.concurrent.thread
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.isActive
 
 class MapEditorLoadTab(
     private val editorScreen: MapEditorScreen,
@@ -32,7 +35,9 @@ class MapEditorLoadTab(
     private val mapFiles = MapEditorFilesTable(
         initWidth = editorScreen.getToolsWidth() - 20f,
         includeMods = true,
-        this::selectFile)
+        this::selectFile,
+        this::loadHandler
+    )
 
     private val loadButton = "Load map".toTextButton()
     private val deleteButton = "Delete map".toTextButton()
@@ -53,7 +58,7 @@ class MapEditorLoadTab(
         val fileTableHeight = editorScreen.stage.height - headerHeight - buttonTable.height - 2f
         val scrollPane = AutoScrollPane(mapFiles, skin)
         scrollPane.setOverscroll(false, true)
-        add(scrollPane).height(fileTableHeight).width(editorScreen.getToolsWidth() - 20f).row()
+        add(scrollPane).size(editorScreen.getToolsWidth() - 20f, fileTableHeight).padTop(10f).row()
         add(buttonTable).row()
     }
 
@@ -63,7 +68,7 @@ class MapEditorLoadTab(
             "Do you want to load another map without saving the recent changes?",
             "Load map"
         ) {
-            thread(name = "MapLoader", isDaemon = true, block = this::loaderThread)
+            editorScreen.startBackgroundJob("MapLoader") { loaderThread() }
         }
     }
 
@@ -89,49 +94,39 @@ class MapEditorLoadTab(
         pager.setScrollDisabled(false)
     }
 
-    fun selectFile(file: FileHandle?) {
+    private fun selectFile(file: FileHandle?) {
         chosenMap = file
         loadButton.isEnabled = (file != null)
         deleteButton.isEnabled = (file != null)
         deleteButton.color = if (file != null) Color.SCARLET else Color.BROWN
     }
 
-    fun loaderThread() {
+    private fun CoroutineScope.loaderThread() {
         var popup: Popup? = null
         var needPopup = true    // loadMap can fail faster than postRunnable runs
-        Gdx.app.postRunnable {
-            if (!needPopup) return@postRunnable
-            popup = Popup(editorScreen).apply {
-                addGoodSizedLabel(Constants.loading)
-                open()
-            }
+        Concurrency.runOnGLThread {
+            if (!needPopup) return@runOnGLThread
+            popup = LoadingPopup(editorScreen)
         }
         try {
             val map = MapSaver.loadMap(chosenMap!!)
+            if (!isActive) return
 
-            val missingMods = map.mapParameters.mods.filter { it !in RulesetCache }.toMutableList()
-            // [TEMPORARY] conversion of old maps with a base ruleset contained in the mods
-            val newBaseRuleset = map.mapParameters.mods.filter { it !in missingMods }.firstOrNull { RulesetCache[it]!!.modOptions.isBaseRuleset }
-            if (newBaseRuleset != null) map.mapParameters.baseRuleset = newBaseRuleset
-            //
-            if (map.mapParameters.baseRuleset !in RulesetCache) missingMods += map.mapParameters.baseRuleset
+            // For deprecated maps, set the base ruleset field if it's still saved in the mods field
+            val modBaseRuleset = map.mapParameters.mods.firstOrNull { RulesetCache[it]?.modOptions?.isBaseRuleset == true }
+            if (modBaseRuleset != null) {
+                map.mapParameters.baseRuleset = modBaseRuleset
+                map.mapParameters.mods -= modBaseRuleset
+            }
 
-            if (missingMods.isNotEmpty()) {
-                Gdx.app.postRunnable {
-                    needPopup = false
-                    popup?.close()
-                    ToastPopup("Missing mods: [${missingMods.joinToString()}]", editorScreen)
-                }
-            } else Gdx.app.postRunnable {
+            val missingMods = (setOf(map.mapParameters.baseRuleset) + map.mapParameters.mods)
+                .filterNot { it in RulesetCache }
+            if (missingMods.isNotEmpty())
+                throw MissingModsException(missingMods)
+
+            Concurrency.runOnGLThread {
                 Gdx.input.inputProcessor = null // This is to stop ANRs happening here, until the map editor screen sets up.
                 try {
-                    // For deprecated maps, set the base ruleset field if it's still saved in the mods field
-                    val modBaseRuleset = map.mapParameters.mods.firstOrNull { RulesetCache[it]!!.modOptions.isBaseRuleset }
-                    if (modBaseRuleset != null) {
-                        map.mapParameters.baseRuleset = modBaseRuleset
-                        map.mapParameters.mods -= modBaseRuleset
-                    }
-
                     val ruleset = RulesetCache.getComplexRuleset(map.mapParameters)
                     val rulesetIncompatibilities = map.getRulesetIncompatibility(ruleset)
                     if (rulesetIncompatibilities.isNotEmpty()) {
@@ -155,9 +150,11 @@ class MapEditorLoadTab(
             }
         } catch (ex: Throwable) {
             needPopup = false
-            Gdx.app.postRunnable {
+            Concurrency.runOnGLThread {
                 popup?.close()
                 Log.error("Error loading map \"$chosenMap\"", ex)
+
+                @Suppress("InstanceOfCheckForException") // looks cleaner like this than having 2 catch statements
                 ToastPopup("{Error loading map!}" +
                         (if (ex is UncivShowableException) "\n{${ex.message}}" else ""), editorScreen)
             }

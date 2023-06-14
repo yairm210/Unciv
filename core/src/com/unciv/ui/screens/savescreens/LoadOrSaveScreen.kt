@@ -10,15 +10,15 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.components.Fonts
-import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.UncivDateFormat.formatDate
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
-import com.unciv.ui.components.extensions.keyShortcuts
-import com.unciv.ui.components.extensions.onActivation
-import com.unciv.ui.components.extensions.onChange
-import com.unciv.ui.components.extensions.onDoubleClick
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onChange
+import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
@@ -89,9 +89,9 @@ abstract class LoadOrSaveScreen(
                 } else {
                     "Failed to delete [$name]."
                 }
-            } catch (ex: SecurityException) {
+            } catch (_: SecurityException) {
                 "Insufficient permissions to delete [$name]."
-            } catch (ex: Throwable) {
+            } catch (_: Throwable) {
                 "Failed to delete [$name]."
             }
             descriptionLabel.setText(result.tr())
@@ -126,7 +126,7 @@ abstract class LoadOrSaveScreen(
                 "${saveGameFile.name()}\n{Saved at}: ${savedAt.formatDate()}\n" +
                 "$playerCivNames, ${game.difficulty.tr()}, ${Fonts.turn}${game.turns}\n" +
                 "{Base ruleset:} ${game.gameParameters.baseRuleset}$mods"
-            } catch (ex: Exception) {
+            } catch (_: Exception) {
                 "\n{Could not load game}!"
             }
 

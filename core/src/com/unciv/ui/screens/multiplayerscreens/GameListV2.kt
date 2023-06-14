@@ -10,10 +10,10 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.ChatButton
 import com.unciv.ui.components.PencilButton
 import com.unciv.ui.components.extensions.formatShort
-import com.unciv.ui.components.extensions.onActivation
-import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup

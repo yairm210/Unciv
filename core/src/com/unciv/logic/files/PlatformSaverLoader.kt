@@ -20,4 +20,20 @@ interface PlatformSaverLoader {
         onLoaded: (data: String, location: String) -> Unit,  // On-load-complete callback
         onError: (Exception) -> Unit = {}                    // On-load-error callback
     )
+
+    companion object {
+        val None = object : PlatformSaverLoader {
+            override fun saveGame(
+                data: String,
+                suggestedLocation: String,
+                onSaved: (location: String) -> Unit,
+                onError: (ex: Exception) -> Unit
+            ) {}
+
+            override fun loadGame(
+                onLoaded: (data: String, location: String) -> Unit,
+                onError: (Exception) -> Unit
+            ) {}
+        }
+    }
 }

@@ -19,8 +19,8 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.doMigrations
 import com.unciv.models.metadata.isMigrationNecessary
 import com.unciv.ui.screens.savescreens.Gzip
-import com.unciv.utils.Log
 import com.unciv.utils.Concurrency
+import com.unciv.utils.Log
 import com.unciv.utils.debug
 import kotlinx.coroutines.Job
 import java.io.File
@@ -321,7 +321,12 @@ class UncivFiles(
         /**
          * Platform dependent saver-loader to custom system locations
          */
-        lateinit var saverLoader: PlatformSaverLoader
+        var saverLoader: PlatformSaverLoader = PlatformSaverLoader.None
+            get() {
+                if (field.javaClass.simpleName == "DesktopSaverLoader" && LinuxX11SaverLoader.isRequired())
+                    field = LinuxX11SaverLoader()
+                return field
+            }
 
         /** Specialized function to access settings before Gdx is initialized.
          *
@@ -339,7 +344,7 @@ class UncivFiles(
         fun gameInfoFromString(gameData: String): GameInfo {
             val unzippedJson = try {
                 Gzip.unzip(gameData.trim())
-            } catch (ex: Exception) {
+            } catch (_: Exception) {
                 gameData.trim()
             }
             val gameInfo = try {
@@ -375,8 +380,10 @@ class UncivFiles(
         }
 
         /** Returns gzipped serialization of [game], optionally gzipped ([forceZip] overrides [saveZipped]) */
-        fun gameInfoToString(game: GameInfo, forceZip: Boolean? = null): String {
+        fun gameInfoToString(game: GameInfo, forceZip: Boolean? = null, updateChecksum:Boolean=true): String {
             game.version = GameInfo.CURRENT_COMPATIBILITY_VERSION
+
+            if (updateChecksum) game.checksum = game.calculateChecksum()
             val plainJson = json().toJson(game)
             return if (forceZip ?: saveZipped) Gzip.zip(plainJson) else plainJson
         }
@@ -442,14 +449,14 @@ class UncivFiles(
     }
 
     fun loadLatestAutosave(): GameInfo {
-        try {
-            return loadGameByName(AUTOSAVE_FILE_NAME)
-        } catch (ex: Exception) {
+        return try {
+            loadGameByName(AUTOSAVE_FILE_NAME)
+        } catch (_: Exception) {
             // silent fail if we can't read the autosave for any reason - try to load the last autosave by turn number first
             val autosaves = getSaves().filter { it.name() != AUTOSAVE_FILE_NAME && it.name().startsWith(
                 AUTOSAVE_FILE_NAME
             ) }
-            return loadGameFromFile(autosaves.maxByOrNull { it.lastModified() }!!)
+            loadGameFromFile(autosaves.maxByOrNull { it.lastModified() }!!)
         }
     }
 

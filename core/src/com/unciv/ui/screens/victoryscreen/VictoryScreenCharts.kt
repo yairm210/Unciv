@@ -9,8 +9,8 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.components.AutoScrollPane
 import com.unciv.ui.components.LineChart
 import com.unciv.ui.components.TabbedPager
-import com.unciv.ui.components.extensions.onChange
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onChange
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -50,7 +50,7 @@ class VictoryScreenCharts(
 
         rankingTypeSelect.onChange {
             rankingType = RankingType.values()
-                .firstOrNull { it.name == rankingTypeSelect.selected.value }
+                .firstOrNull { it.label == rankingTypeSelect.selected.value }
                 ?: RankingType.Score
             update()
         }
@@ -107,7 +107,8 @@ class VictoryScreenCharts(
                 civ.statsHistory
                     .filterValues { it.containsKey(rankingType) }
                     .map { (turn, data) -> Pair(turn, Pair(civ, data.getValue(rankingType))) }
-            }.groupBy({ it.first }, { it.second })
+            }
+            .groupBy({ it.first }, { it.second })
             .mapValues { group -> group.value.toMap() }
     }
 

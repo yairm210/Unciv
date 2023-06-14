@@ -283,7 +283,7 @@ exceptions:
   ThrowingNewInstanceOfSameException:
     active: true
   TooGenericExceptionCaught:
-    active: true
+    active: false
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**']
     exceptionNames:
       - 'ArrayIndexOutOfBoundsException'
@@ -296,7 +296,7 @@ exceptions:
       - 'Throwable'
     allowedExceptionNameRegex: '_|(ignore|expected).*'
   TooGenericExceptionThrown:
-    active: true
+    active: false
     exceptionNames:
       - 'Error'
       - 'Exception'
@@ -390,7 +390,7 @@ performance:
     active: true
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**']
   SpreadOperator:
-    active: true
+    active: false # not considered a performance issue as of Kotlin 1.1.60 and 1.2-Beta2
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**']
   UnnecessaryPartOfBinaryExpression:
     active: false
@@ -569,7 +569,7 @@ style:
       - reason: 'Kotlin does not support @Inherited annotation, see https://youtrack.jetbrains.com/issue/KT-22265'
         value: 'java.lang.annotation.Inherited'
   ForbiddenComment:
-    active: true
+    active: false
     values:
       - 'FIXME:'
       - 'STOPSHIP:'

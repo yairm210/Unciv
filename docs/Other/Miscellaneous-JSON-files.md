@@ -151,6 +151,8 @@ and city distance in another. In case of conflicts, there is no guarantee which 
 | maxRiverLength                           | Int    | 666       | [^I]  |
 | religionLimitBase                        | Int    | 1         | [^K]  |
 | religionLimitMultiplier                  | Float  | 0.5       | [^K]  |
+| pantheonBase                             | Int    | 10        | [^L]  |
+| pantheonGrowth                           | Int    | 5         | [^L]  |
 
 
 Legend:
@@ -179,6 +181,7 @@ Legend:
 - [^I]: RiverGenerator: river frequency and length bounds
 - [^J]: A [UnitUpgradeCost](#UnitUpgradeCost) sub-structure.
 - [^K]: Maximum foundable Religions = religionLimitBase + floor(MajorCivCount * religionLimitMultiplier)
+- [^L]: Cost of pantheon = pantheonBase + CivsWithReligion * pantheonGrowth
 
 #### UnitUpgradeCost
 
@@ -294,3 +297,6 @@ List of attributes - note not all combinations are valid:
 |`centered`|Boolean|Centers the line (and turns off automatic wrap).|
 
 The lines from json will 'surround' the automatically generated lines such that the latter are inserted just above the first json line carrying a link, if any. If no json lines have links, they will be inserted between the automatic title and the automatic info. This method may, however, change in the future.
+
+Note: `text` now also supports inline color markup. Insert `«color»` to start coloring text, `«»` to stop. `color` can be a name or 6/8-digit hex notation like `#ffa040` (different from the `color` attribute notation only by not allowing 3-digit codes, but allowing the alpha channel).
+Effectively, the `«»` markers are replaced with `[]` _after_ translation and then passed to [Gdx markup language](https://libgdx.com/wiki/graphics/2d/fonts/color-markup-language).

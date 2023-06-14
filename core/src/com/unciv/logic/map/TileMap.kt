@@ -387,7 +387,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         // All the rest is to find missing nations
         try { // This can fail if the map contains a resource that isn't in the ruleset, in Tile.tileResource
             setTransients(ruleset)
-        } catch (ex: Exception) {
+        } catch (_: Exception) {
             return rulesetIncompatibilities
         }
         setStartingLocationsTransients()
@@ -415,7 +415,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      */
     fun setTransients(ruleset: Ruleset? = null, setUnitCivTransients: Boolean = true) {
         if (ruleset != null) this.ruleset = ruleset
-        if (this.ruleset == null) throw(IllegalStateException("TileMap.setTransients called without ruleset"))
+        check(this.ruleset != null) { "TileMap.setTransients called without ruleset" }
 
         if (tileMatrix.isEmpty()) {
             val topY = tileList.asSequence().map { it.position.y.toInt() }.maxOrNull()!!
@@ -434,8 +434,9 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         } else {
             // Yes the map generator calls this repeatedly, and we don't want to end up with an oversized tileMatrix
             // rightX is -leftX or -leftX + 1 or -leftX + 2
-            if (tileMatrix.size !in (1 - 2 * leftX)..(3 - 2 * leftX))
-                throw(IllegalStateException("TileMap.setTransients called on existing tileMatrix of different size"))
+            check(tileMatrix.size in (1 - 2 * leftX)..(3 - 2 * leftX)) {
+                "TileMap.setTransients called on existing tileMatrix of different size"
+            }
         }
 
         for (tileInfo in values) {
@@ -463,16 +464,13 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     }
 
     fun removeMissingTerrainModReferences(ruleSet: Ruleset) {
+        // This will run before setTransients, so do not rely e.g. on Tile.ruleset being available.
+        // That rules out Tile.removeTerrainFeature, which refreshes object/unique caches
         for (tile in this.values) {
-            for (terrainFeature in tile.terrainFeatures.filter { !ruleSet.terrains.containsKey(it) })
-                tile.removeTerrainFeature(terrainFeature)
-            if (tile.resource != null && !ruleSet.tileResources.containsKey(tile.resource!!))
-                tile.resource = null
-            if (tile.improvement != null && !ruleSet.tileImprovements.containsKey(tile.improvement!!))
-                tile.changeImprovement(null)
+            tile.removeMissingTerrainModReferences(ruleSet)
         }
         for (startingLocation in startingLocations.toList())
-            if (startingLocation.nation !in ruleSet.nations.keys)
+            if (startingLocation.nation !in ruleSet.nations)
                 startingLocations.remove(startingLocation)
     }
 

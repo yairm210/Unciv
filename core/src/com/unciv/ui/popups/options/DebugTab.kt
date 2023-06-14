@@ -10,7 +10,7 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.UncivTextField
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton

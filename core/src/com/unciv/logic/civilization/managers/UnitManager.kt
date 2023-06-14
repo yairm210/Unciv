@@ -70,10 +70,13 @@ class UnitManager(val civInfo:Civilization) {
     fun placeUnitNearTile(location: Vector2, unitName: String): MapUnit? {
         val unit = civInfo.gameInfo.tileMap.placeUnitNearTile(location, unitName, civInfo)
 
-        if (unit != null)
+        if (unit != null) {
             for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponGainingUnit))
                 if (unit.matchesFilter(unique.params[0]))
                     UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+            if (unit.baseUnit.getResourceRequirementsPerTurn().isNotEmpty())
+                civInfo.cache.updateCivResources()
+        }
         return unit
     }
     fun getCivUnitsSize(): Int = unitList.size

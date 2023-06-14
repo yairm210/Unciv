@@ -16,7 +16,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
 import com.unciv.ui.components.ColorMarkupLabel
 import com.unciv.ui.components.WrappableLabel
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.images.IconCircleGroup
@@ -109,6 +109,16 @@ class NotificationsScroll(
         setScale(scaleFactor)
         height = worldScreen.stage.height * inverseScaleFactor
     }
+
+    /**
+     * If a Gdx ScrollPane has content larger than its size on both dimensions (if only one axis is
+     * scrollable, the wheel will always scroll that axis), it will prefer mapping the mouse wheel
+     * to *horizontal* scrolling, which is not quite the best choice for our notifications.
+     *
+     * The intuitive approach might be to change the listener (by overriding [addScrollListener]),
+     * but luckily this works too.
+     */
+    override fun getMouseWheelX() = 0f
 
     /** Access to hidden "state" - writing it will ensure this is fully visible or hidden and the
      *  restore button shown as needed - with animation. */

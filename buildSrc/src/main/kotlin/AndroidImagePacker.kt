@@ -1,3 +1,4 @@
+@file:Suppress("InvalidPackageDeclaration")
 package com.unciv.build
 
 import com.badlogic.gdx.graphics.Texture
@@ -62,14 +63,15 @@ object AndroidImagePacker {
 
         // pack for mods
         val modDirectory = File("mods")
-        if (modDirectory.exists()) {
-            for (mod in modDirectory.listFiles()!!) {
-                if (!mod.isHidden) {
-                    try {
-                        packImagesPerMod(mod.path, mod.path, defaultSettings)
-                    } catch (ex: Throwable) {
-                    }
-                }
+        if (!modDirectory.exists())
+            return
+        for (mod in modDirectory.listFiles()!!) {
+            if (mod.isHidden)
+                continue
+            try {
+                packImagesPerMod(mod.path, mod.path, defaultSettings)
+            } catch (ex: Throwable) {
+                ex.printStackTrace()
             }
         }
     }

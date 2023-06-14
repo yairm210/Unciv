@@ -8,6 +8,7 @@ import com.unciv.logic.map.HexMath.getDistance
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.helpers.UnitMovementMemoryType
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 
 class UnitMovement(val unit: MapUnit) {
@@ -60,7 +61,8 @@ class UnitMovement(val unit: MapUnit) {
         // when entering territory of a city state
         val areConnectedByRoad = from.hasConnection(civInfo) && to.hasConnection(civInfo)
 
-        val areConnectedByRiver = from.isAdjacentToRiver() && to.isAdjacentToRiver() && from.isConnectedByRiver(to)
+        val areConnectedByRiver =
+            from.isAdjacentToRiver() && to.isAdjacentToRiver() && from.isConnectedByRiver(to)
 
         if (areConnectedByRoad && (!areConnectedByRiver || civInfo.tech.roadsConnectAcrossRivers))
             return unit.civ.tech.movementSpeedOnRoads + extraCost
@@ -73,7 +75,29 @@ class UnitMovement(val unit: MapUnit) {
         if (unit.cache.noTerrainMovementUniques)
             return terrainCost + extraCost
 
-        if (to.terrainFeatures.any { unit.cache.doubleMovementInTerrain[it] == MapUnitCache.DoubleMovementTerrainTarget.Feature })
+        val stateForConditionals = StateForConditionals(unit.civ, unit = unit, tile = to)
+        fun matchesTerrainTarget(
+            doubleMovement: MapUnitCache.DoubleMovement,
+            target: MapUnitCache.DoubleMovementTerrainTarget
+        ): Boolean {
+            if (doubleMovement.terrainTarget != target) return false
+            if (doubleMovement.unique.conditionals.isNotEmpty()) {
+                if (!doubleMovement.unique.conditionalsApply(stateForConditionals)) return false
+            }
+
+            return true
+        }
+
+        fun matchesTerrainTarget(
+            terrainName: String,
+            target: MapUnitCache.DoubleMovementTerrainTarget
+        ): Boolean {
+            val doubleMovement = unit.cache.doubleMovementInTerrain[terrainName] ?: return false
+            return matchesTerrainTarget(doubleMovement, target)
+        }
+
+
+        if (to.terrainFeatures.any { matchesTerrainTarget(it, MapUnitCache.DoubleMovementTerrainTarget.Feature) })
             return terrainCost * 0.5f + extraCost
 
         if (unit.cache.roughTerrainPenalty && to.isRoughTerrain())
@@ -86,17 +110,18 @@ class UnitMovement(val unit: MapUnit) {
         if (unit.cache.noBaseTerrainOrHillDoubleMovementUniques)
             return terrainCost + extraCost
 
-        if (unit.cache.doubleMovementInTerrain[to.baseTerrain] == MapUnitCache.DoubleMovementTerrainTarget.Base)
+        if (matchesTerrainTarget(to.baseTerrain, MapUnitCache.DoubleMovementTerrainTarget.Base))
             return terrainCost * 0.5f + extraCost
-        if (unit.cache.doubleMovementInTerrain[Constants.hill] == MapUnitCache.DoubleMovementTerrainTarget.Hill && to.isHill())
+        if (matchesTerrainTarget(Constants.hill, MapUnitCache.DoubleMovementTerrainTarget.Hill)
+            && to.isHill())
             return terrainCost * 0.5f + extraCost
 
         if (unit.cache.noFilteredDoubleMovementUniques)
             return terrainCost + extraCost
         if (unit.cache.doubleMovementInTerrain.any {
-            it.value == MapUnitCache.DoubleMovementTerrainTarget.Filter &&
-                to.matchesFilter(it.key)
-        })
+                matchesTerrainTarget(it.value, MapUnitCache.DoubleMovementTerrainTarget.Filter)
+                    && to.matchesFilter(it.key)
+            })
             return terrainCost * 0.5f + extraCost
 
         return terrainCost + extraCost // no road or other movement cost reduction
@@ -454,6 +479,8 @@ class UnitMovement(val unit: MapUnit) {
         var allowedTile: Tile? = null
         var distance = 0
         // When we didn't limit the allowed distance the game would sometimes spend a whole minute looking for a suitable tile.
+
+        if (canPassThrough(unit.getTile())) return // This unit can stay here - e.g. it has "May enter foreign tiles without open borders"
         while (allowedTile == null && distance < 5) {
             distance++
             allowedTile = unit.getTile().getTilesAtDistance(distance)

@@ -1,7 +1,10 @@
 package com.unciv.ui.screens.overviewscreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.GUI
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.Notification
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.screens.basescreen.BaseScreen
 
@@ -26,4 +29,13 @@ abstract class EmpireOverviewTab (
 
     val gameInfo = viewingPlayer.gameInfo
 
+    /** Helper to show the world screen with a temporary "one-time" notification */
+    // Here because it's common to notification history and resource finder
+    internal fun showOneTimeNotification(notification: Notification?) {
+        if (notification == null) return  // Convenience - easier than a return@lambda for a caller
+        val worldScreen = GUI.getWorldScreen()
+        worldScreen.notificationsScroll.oneTimeNotification = notification
+        UncivGame.Current.resetToWorldScreen()
+        notification.action?.execute(worldScreen)
+    }
 }

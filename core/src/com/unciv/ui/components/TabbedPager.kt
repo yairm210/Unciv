@@ -21,11 +21,12 @@ import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.isEnabled
-import com.unciv.ui.components.extensions.keyShortcuts
-import com.unciv.ui.components.extensions.onActivation
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -119,8 +120,10 @@ open class TabbedPager(
             for (table in tables)
                 table.packIfNeeded()
             val columns = tables.first().columns
-            if (tables.any { it.columns < columns })
-                throw IllegalStateException("IPageExtensions.equalizeColumns needs all tables to have at least the same number of columns as the first one")
+            check(tables.all { it.columns >= columns }) {
+                "IPageExtensions.equalizeColumns needs all tables to have at least the same number of columns as the first one"
+            }
+
             val widths = (0 until columns)
                 .mapTo(ArrayList(columns)) { column ->
                     tables.maxOf { it.getColumnWidth(column) }
@@ -353,7 +356,7 @@ open class TabbedPager(
     override fun getPrefWidth() = dimW.pref
     fun setPrefWidth(width: Float) {
         if (dimW.growMax && width > dimW.max) dimW.max = width
-        if (width !in dimW.min..dimW.max) throw IllegalArgumentException("Width is not in the required range")
+        require(width in dimW.min..dimW.max) { "Width is not in the required range" }
         dimW.pref = width
         invalidateHierarchy()
     }
@@ -361,7 +364,7 @@ open class TabbedPager(
     fun setPrefHeight(height: Float) {
         val contentHeight = (height - headerHeight).coerceIn(0f..dimH.limit)
         if (dimH.growMax && contentHeight > dimH.max) dimH.max = contentHeight
-        if (contentHeight !in dimH.min..dimH.max) throw IllegalArgumentException("Content height is not in the required range")
+        require(contentHeight in dimH.min..dimH.max) { "Content height is not in the required range" }
         dimH.pref = contentHeight
         invalidateHierarchy()
     }

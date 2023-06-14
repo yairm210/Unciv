@@ -2,6 +2,7 @@ package com.unciv.ui.screens.multiplayerscreens
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.Constants
 import com.unciv.logic.IdChecker
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.pickerscreens.PickerScreen
@@ -10,7 +11,7 @@ import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.extensions.enable
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.utils.Concurrency
@@ -47,13 +48,13 @@ class AddMultiplayerGameScreen : PickerScreen() {
         rightSideButton.onClick {
             try {
                 UUID.fromString(IdChecker.checkAndReturnGameUuid(gameIDTextField.text))
-            } catch (ex: Exception) {
+            } catch (_: Exception) {
                 ToastPopup("Invalid game ID!", this)
                 return@onClick
             }
 
             val popup = Popup(this)
-            popup.addGoodSizedLabel("Working...")
+            popup.addGoodSizedLabel(Constants.working)
             popup.open()
 
             Concurrency.run("AddMultiplayerGame") {

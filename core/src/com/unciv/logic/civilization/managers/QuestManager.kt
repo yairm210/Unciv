@@ -62,7 +62,8 @@ class QuestManager : IsPartOfGameInfoSerialization {
     /**  Number of turns left before starting new global quest */
     private var globalQuestCountdown: Int = UNSET
 
-    /** Number of turns left before this city state can start a new individual quest */
+    /** Number of turns left before this city state can start a new individual quest.
+     * Key is major civ name, value is turns to quest */
     private var individualQuestCountdown: HashMap<String, Int> = HashMap()
 
     /** Target number of units to kill for this war, for war with major pseudo-quest */
@@ -209,10 +210,10 @@ class QuestManager : IsPartOfGameInfoSerialization {
             val challenger = civInfo.gameInfo.getCivilization(challengerName)
 
             if (countdown != 0)
-                return
+                continue
 
             if (assignedQuests.count { it.assignee == challenger.civName && it.isIndividual() } >= INDIVIDUAL_QUEST_MAX_ACTIVE)
-                return
+                continue
 
             val assignableQuests = civInfo.gameInfo.ruleset.quests.values.filter { it.isIndividual() && isQuestValid(it, challenger) }
             val weights = assignableQuests.map { getQuestWeight(it.name) }
@@ -222,7 +223,6 @@ class QuestManager : IsPartOfGameInfoSerialization {
                 val assignees = arrayListOf(challenger)
 
                 assignNewQuest(quest, assignees)
-                break
             }
         }
     }

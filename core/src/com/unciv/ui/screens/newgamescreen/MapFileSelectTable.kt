@@ -11,7 +11,7 @@ import com.unciv.logic.UncivShowableException
 import com.unciv.logic.files.MapSaver
 import com.unciv.logic.map.MapParameters
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.ui.components.extensions.onChange
+import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.popups.Popup

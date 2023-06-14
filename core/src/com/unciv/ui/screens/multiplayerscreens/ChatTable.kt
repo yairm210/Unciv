@@ -4,11 +4,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Disposable
 import com.unciv.ui.components.ArrowButton
 import com.unciv.ui.components.AutoScrollPane
-import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.UncivTextField
-import com.unciv.ui.components.extensions.keyShortcuts
-import com.unciv.ui.components.extensions.onActivation
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency

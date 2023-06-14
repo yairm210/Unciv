@@ -83,11 +83,12 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
     private var hexOutlineIcon: Actor? = null
 
     private var resourceName: String? = null
+    private var resourceAmount: Int = -1
     private var resourceIcon: Actor? = null
 
     private var workedIcon: Actor? = null
 
-    private var improvementName: String? = null
+    private var improvementPlusPillagedID: String? = null
     var improvementIcon: Actor? = null
         private set  // Getter public for BattleTable to display as City Combatant
 
@@ -139,15 +140,19 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
     private fun updateImprovementIcon(viewingCiv: Civilization?, show: Boolean) {
         // If improvement has changed, force new icon next time it is needed
         val improvementToShow = tile().getShownImprovement(viewingCiv)
-        if (improvementName != improvementToShow) {
-            improvementName = improvementToShow
+        val newImprovementPlusPillagedID = if (improvementToShow==null) null
+        else if (tile().improvementIsPillaged) "$improvementToShow-Pillaged"
+        else improvementToShow
+
+        if (improvementPlusPillagedID != newImprovementPlusPillagedID) {
+            improvementPlusPillagedID = newImprovementPlusPillagedID
             improvementIcon?.remove()
             improvementIcon = null
         }
 
         // Get new icon when needed
-        if (improvementName != null && show && improvementIcon == null) {
-            val icon = ImageGetter.getImprovementPortrait(improvementName!!, dim = false)
+        if (improvementPlusPillagedID != null && show && improvementIcon == null) {
+            val icon = ImageGetter.getImprovementPortrait(improvementToShow!!, dim = false, isPillaged = tile().improvementIsPillaged)
             icon.center(tileGroup)
             icon.x -= 22 // left
             icon.y -= 12 // bottom
@@ -168,15 +173,16 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         }
 
         // If resource has changed (e.g. tech researched) - force new icon next time it's needed
-        if (resourceName != tile().resource) {
+        if (resourceName != tile().resource || resourceAmount != tile().resourceAmount) {
             resourceName = tile().resource
+            resourceAmount = tile().resourceAmount
             resourceIcon?.remove()
             resourceIcon = null
         }
 
         // Get a fresh Icon if and only if necessary
         if (resourceName != null && effectiveVisible && resourceIcon == null) {
-            val icon = ImageGetter.getResourcePortrait(resourceName!!, 20f,  tile().resourceAmount)
+            val icon = ImageGetter.getResourcePortrait(resourceName!!, 20f, resourceAmount)
             icon.center(tileGroup)
             icon.x -= 22 // left
             icon.y += 10 // top

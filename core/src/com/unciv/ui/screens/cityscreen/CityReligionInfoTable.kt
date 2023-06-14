@@ -17,7 +17,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
 
 class CityReligionInfoTable(
@@ -66,7 +66,7 @@ class CityReligionInfoTable(
                 add(followerCount.toLabel()).pad(5f)
                 addSeparatorVertical(gridColor)
                 if (futurePressures.containsKey(religion))
-                    add(("+ [${futurePressures[religion]!!}] pressure").toLabel()).pad(5f)
+                    add(("+ [${futurePressures[religion]}] pressure").toLabel()).pad(5f)
                 else
                     add()
                 row()

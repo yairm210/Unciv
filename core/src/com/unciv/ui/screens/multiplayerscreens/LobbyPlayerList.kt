@@ -9,9 +9,9 @@ import com.unciv.Constants
 import com.unciv.logic.multiplayer.apiv2.AccountResponse
 import com.unciv.logic.multiplayer.apiv2.ApiV2
 import com.unciv.ui.components.extensions.addSeparator
-import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -21,7 +21,7 @@ import com.unciv.utils.Log
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import java.util.*
+import java.util.UUID
 
 /**
  * List of players in an APIv2 lobby screen
@@ -236,7 +236,7 @@ class LobbyPlayerList(
             .filter { it.name == player.chosenCiv || players.none { player -> player.chosenCiv == it.name } }
         nationTable.onClick {
             val p = player.to()
-            NationPickerPopup(p, 0.45f * stage.width, base as BaseScreen, base, false, availableCivilisations) {
+            NationPickerPopup(p, 0.45f * stage.width, base as BaseScreen, base, false, { availableCivilisations }) {
                 players[index].chosenCiv = p.chosenCiv
                 updateParameters()
                 recreate()

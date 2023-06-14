@@ -172,6 +172,7 @@ object ImageGetter {
     }
 
     fun getWhiteDot() = getImage(whiteDotLocation).apply { setSize(1f) }
+    fun getWhiteDotDrawable() = textureRegionDrawables[whiteDotLocation]!!
     fun getDot(dotColor: Color) = getWhiteDot().apply { color = dotColor }
 
     fun getExternalImage(fileName: String): Image {
@@ -228,7 +229,7 @@ object ImageGetter {
     }
 
     fun getRandomNationPortrait(size: Float): Portrait {
-        return PortraitNation("Random", size)
+        return PortraitNation(Constants.random, size)
     }
 
     fun getUnitIcon(unitName: String, color: Color = Color.BLACK): Image {
@@ -263,8 +264,8 @@ object ImageGetter {
         return PortraitTech(techName, circleSize)
     }
 
-    fun getImprovementPortrait(improvementName: String, size: Float = 20f, dim: Boolean = false): Portrait {
-        return PortraitImprovement(improvementName, size, dim)
+    fun getImprovementPortrait(improvementName: String, size: Float = 20f, dim: Boolean = false, isPillaged: Boolean = false): Portrait {
+        return PortraitImprovement(improvementName, size, dim, isPillaged)
     }
 
     fun getUnitActionPortrait(actionName: String, size: Float = 20f): Portrait {
@@ -273,20 +274,15 @@ object ImageGetter {
 
     fun getReligionIcon(iconName: String): Image { return getImage("ReligionIcons/$iconName") }
     fun getReligionPortrait(iconName: String, size: Float): Portrait {
-        if (religionIconExists(iconName)) {
+        if (religionIconExists(iconName))
             return PortraitReligion(iconName, size)
-        } else {
-            val typeName = ruleset.beliefs[iconName]?.type?.name
-            if (typeName != null && religionIconExists(typeName))
-                return PortraitReligion(typeName, size)
-        }
+        val typeName = ruleset.beliefs[iconName]?.type?.name
+        if (typeName != null && religionIconExists(typeName))
+            return PortraitReligion(typeName, size)
         return PortraitReligion(iconName, size)
     }
 
     fun religionIconExists(iconName: String) = imageExists("ReligionIcons/$iconName")
-
-    @Deprecated("Use skin defined base color instead", ReplaceWith("BaseScreen.skinStrings.skinConfig.baseColor", "com.unciv.ui.screens.basescreen.BaseScreen"))
-    fun getBlue() = Color(0x004085bf)
 
     fun getCircle() = getImage("OtherIcons/Circle")
     fun getTriangle() = getImage("OtherIcons/Triangle")

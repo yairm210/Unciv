@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.Constants
 import com.unciv.logic.map.MapGeneratedMainType
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapType
@@ -19,18 +20,18 @@ import com.unciv.ui.screens.newgamescreen.MapParametersTable
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.isEnabled
-import com.unciv.ui.components.extensions.onChange
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onChange
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
-import kotlin.concurrent.thread
 
 class MapEditorGenerateTab(
     private val editorScreen: MapEditorScreen
@@ -59,9 +60,9 @@ class MapEditorGenerateTab(
 
     private fun setButtonsEnabled(enable: Boolean) {
         newTab.generateButton.isEnabled = enable
-        newTab.generateButton.setText( (if(enable) "Create" else "Working...").tr())
+        newTab.generateButton.setText( (if(enable) "Create" else Constants.working).tr())
         partialTab.generateButton.isEnabled = enable
-        partialTab.generateButton.setText( (if(enable) "Generate" else "Working...").tr())
+        partialTab.generateButton.setText( (if(enable) "Generate" else Constants.working).tr())
     }
 
     private fun generate(step: MapGeneratorSteps) {
@@ -73,7 +74,7 @@ class MapEditorGenerateTab(
         val mapParameters = editorScreen.newMapParameters.clone()  // this clone is very important here
         val message = mapParameters.mapSize.fixUndesiredSizes(mapParameters.worldWrap)
         if (message != null) {
-            Gdx.app.postRunnable {
+            Concurrency.runOnGLThread {
                 ToastPopup( message, editorScreen, 4000 )
                 newTab.mapParametersTable.run { mapParameters.mapSize.also {
                     customMapSizeRadius.text = it.radius.toString()
@@ -113,7 +114,7 @@ class MapEditorGenerateTab(
         }
 
         // Map generation can take a while and we don't want ANRs
-        thread(name = "MapGenerator", isDaemon = true) {
+        editorScreen.startBackgroundJob("MapEditor.MapGenerator") {
             try {
                 val (newRuleset, generator) = if (step > MapGeneratorSteps.Landmass) null to null
                     else {
@@ -124,7 +125,7 @@ class MapEditorGenerateTab(
                     MapGeneratorSteps.All -> {
                         val generatedMap = generator!!.generateMap(mapParameters)
                         val savedScale = editorScreen.mapHolder.scaleX
-                        Gdx.app.postRunnable {
+                        Concurrency.runOnGLThread {
                             freshMapCompleted(generatedMap, mapParameters, newRuleset!!, selectPage = 0)
                             editorScreen.mapHolder.zoom(savedScale)
                         }
@@ -136,7 +137,7 @@ class MapEditorGenerateTab(
                         mapParameters.type = editorScreen.newMapParameters.type
                         generator.generateSingleStep(generatedMap, step)
                         val savedScale = editorScreen.mapHolder.scaleX
-                        Gdx.app.postRunnable {
+                        Concurrency.runOnGLThread {
                             freshMapCompleted(generatedMap, mapParameters, newRuleset!!, selectPage = 1)
                             editorScreen.mapHolder.zoom(savedScale)
                         }
@@ -144,14 +145,14 @@ class MapEditorGenerateTab(
                     else -> {
                         editorScreen.tileMap.mapParameters.seed = mapParameters.seed
                         MapGenerator(editorScreen.ruleset).generateSingleStep(editorScreen.tileMap, step)
-                        Gdx.app.postRunnable {
+                        Concurrency.runOnGLThread {
                             stepCompleted(step)
                         }
                     }
                 }
             } catch (exception: Exception) {
                 Log.error("Exception while generating map", exception)
-                Gdx.app.postRunnable {
+                Concurrency.runOnGLThread {
                     setButtonsEnabled(true)
                     Gdx.input.inputProcessor = editorScreen.stage
                     Popup(editorScreen).apply {

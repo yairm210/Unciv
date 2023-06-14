@@ -94,7 +94,7 @@ open class Policy : RulesetObject() {
 
         fun isEnabledByPolicy(rulesetObject: IRulesetObject) =
                 rulesetObject.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals).any { it.conditionals.any {
-                    it.type == UniqueType.ConditionalAfterPolicy && it.params[0] == name
+                    it.type == UniqueType.ConditionalAfterPolicyOrBelief && it.params[0] == name
                 } }
 
         val enabledBuildings = ruleset.buildings.values.filter { isEnabledByPolicy(it) }
@@ -111,7 +111,7 @@ open class Policy : RulesetObject() {
 
         fun isDisabledByPolicy(rulesetObject: IRulesetObject) =
                 rulesetObject.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals).any { it.conditionals.any {
-                    it.type == UniqueType.ConditionalBeforePolicy && it.params[0] == name
+                    it.type == UniqueType.ConditionalBeforePolicyOrBelief && it.params[0] == name
                 } }
 
 

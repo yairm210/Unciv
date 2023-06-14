@@ -195,12 +195,18 @@ class PortraitUnitAction(name: String, size: Float) : Portrait(Type.UnitAction, 
     }
 }
 
-class PortraitImprovement(name: String, size: Float, dim: Boolean = false) : Portrait(Type.Improvement, name, size) {
+class PortraitImprovement(name: String, size: Float, dim: Boolean = false, isPillaged: Boolean = false) : Portrait(Type.Improvement, name, size) {
 
     init {
         if (dim) {
             image.color.a = 0.7f
             background.color.a = 0.7f
+        }
+        if (isPillaged){
+            val pillagedIcon = ImageGetter.getImage("OtherIcons/Fire")
+            pillagedIcon.setSize(width/2, height/2)
+            pillagedIcon.setPosition(width, 0f, Align.bottomRight)
+            addActor(pillagedIcon)
         }
     }
 
@@ -256,8 +262,9 @@ class PortraitPromotion(name: String, size: Float) : Portrait(Type.Promotion, na
         if (level > 0) {
             val padding = if (level == 3) 0.5f else 2f
             val starTable = Table().apply { defaults().pad(padding) }
-            for (i in 1..level)
+            repeat(level) {
                 starTable.add(ImageGetter.getImage("OtherIcons/Star")).size(size / 4f)
+            }
             starTable.centerX(this)
             starTable.y = size / 6f
             addActor(starTable)

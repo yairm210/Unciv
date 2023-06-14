@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Stack
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
@@ -24,13 +25,14 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.ui.components.AutoScrollPane
-import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.center
-import com.unciv.ui.components.extensions.keyShortcuts
-import com.unciv.ui.components.extensions.onActivation
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
@@ -156,11 +158,9 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             { game.pushScreen(NewGameScreen()) }
         column1.add(newGameButton).row()
 
-        if (game.files.getSaves().any()) {
-            val loadGameTable = getMenuButton("Load game", "OtherIcons/Load", 'l')
-                { game.pushScreen(LoadGameScreen()) }
-            column1.add(loadGameTable).row()
-        }
+        val loadGameTable = getMenuButton("Load game", "OtherIcons/Load", 'l')
+            { game.pushScreen(LoadGameScreen()) }
+        column1.add(loadGameTable).row()
 
         val multiplayerTable = getMenuButton("Multiplayer", "OtherIcons/Multiplayer", 'm') {
             // Awaiting an initialized multiplayer instance here makes later usage in the multiplayer screen easier
@@ -348,7 +348,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
                 QuickSave.autoLoadGame(this)
             } else {
                 GUI.resetToWorldScreen()
-                GUI.getWorldScreen().popups.filterIsInstance(WorldScreenMenuPopup::class.java).forEach(Popup::close)
+                GUI.getWorldScreen().popups.filterIsInstance<WorldScreenMenuPopup>().forEach(Popup::close)
                 ImageGetter.ruleset = game.gameInfo!!.ruleset
             }
         } else {
@@ -357,7 +357,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
     }
 
     private fun quickstartNewGame() {
-        ToastPopup("Working...", this)
+        ToastPopup(Constants.working, this)
         val errorText = "Cannot start game with the default new game parameters!"
         Concurrency.run("QuickStart") {
             val newGame: GameInfo
@@ -374,7 +374,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
                 val (message) = LoadGameScreen.getLoadExceptionMessage(notAPlayer)
                 launchOnGLThread { ToastPopup(message, this@MainMenuScreen) }
                 return@run
-            } catch (ex: Exception) {
+            } catch (_: Exception) {
                 launchOnGLThread { ToastPopup(errorText, this@MainMenuScreen) }
                 return@run
             }
@@ -382,7 +382,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
             // ...or when loading the game
             try {
                 game.loadGame(newGame)
-            } catch (outOfMemory: OutOfMemoryError) {
+            } catch (_: OutOfMemoryError) {
                 launchOnGLThread {
                     ToastPopup("Not enough memory on phone to load game!", this@MainMenuScreen)
                 }
@@ -391,7 +391,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
                 launchOnGLThread {
                     ToastPopup(message, this@MainMenuScreen)
                 }
-            } catch (ex: Exception) {
+            } catch (_: Exception) {
                 launchOnGLThread {
                     ToastPopup(errorText, this@MainMenuScreen)
                 }
@@ -416,4 +416,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         stopBackgroundMapGeneration()
         return MainMenuScreen()
     }
+
+    // We contain a map...
+    override fun getShortcutDispatcherVetoer() = KeyShortcutDispatcherVeto.createTileGroupMapDispatcherVetoer()
 }

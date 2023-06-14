@@ -11,7 +11,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.tile.TileHistory.TileHistoryState.CityCenterType
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.utils.DebugUtils
 import kotlin.math.PI

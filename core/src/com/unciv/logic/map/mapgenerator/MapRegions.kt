@@ -117,7 +117,7 @@ class MapRegions (val ruleset: Ruleset){
         }
 
         // Assign regions to the best continents, giving half value for region #2 etc
-        for (regionToAssign in 1..numRegions) {
+        repeat(numRegions) {
             val bestContinent = continents
                     .maxByOrNull { continentFertility[it]!! / (1 + (civsAddedToContinent[it] ?: 0)) }!!
             civsAddedToContinent[bestContinent] = (civsAddedToContinent[bestContinent] ?: 0) + 1
@@ -949,12 +949,12 @@ class MapRegions (val ruleset: Ruleset){
         }
 
         // Assign luxuries to City States
-        for (i in 1..targetCityStateLuxuries) {
+        repeat(targetCityStateLuxuries) {
             val candidateLuxuries = assignableLuxuries.filter {
                 amountRegionsWithLuxury[it.name] == 0 &&
-                (fallbackWeightings || it.hasUnique(UniqueType.LuxuryWeightingForCityStates))
+                    (fallbackWeightings || it.hasUnique(UniqueType.LuxuryWeightingForCityStates))
             }
-            if (candidateLuxuries.isEmpty()) continue
+            if (candidateLuxuries.isEmpty()) return@repeat
 
             val weights = candidateLuxuries.map {
                 val weightingUnique = it.getMatchingUniques(UniqueType.LuxuryWeightingForCityStates).firstOrNull()

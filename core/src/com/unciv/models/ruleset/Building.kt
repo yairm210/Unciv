@@ -23,6 +23,7 @@ import com.unciv.ui.components.extensions.getConsumesAmountString
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.utils.Concurrency
 import kotlin.math.pow
 
 
@@ -357,7 +358,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     override fun canBePurchasedWithStat(city: City?, stat: Stat): Boolean {
         if (stat == Stat.Gold && isAnyWonder()) return false
-        if (city == null) return super.canBePurchasedWithStat(city, stat)
+        if (city == null) return super.canBePurchasedWithStat(null, stat)
 
         val conditionalState = StateForConditionals(civInfo = city.civ, city = city)
         return (
@@ -402,7 +403,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     getCostForConstructionsIncreasingInPrice(
                         it.params[1].toInt(),
                         it.params[4].toInt(),
-                        city.civ.civConstructions.boughtItemsWithIncreasingPrice[name] ?: 0
+                        city.civ.civConstructions.boughtItemsWithIncreasingPrice[name]
                     )
                 }
             )
@@ -689,6 +690,25 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (isStatRelated(Stat.Science) && civInfo.hasUnique(UniqueType.TechBoostWhenScientificBuildingsBuiltInCapital))
             civInfo.tech.addScience(civInfo.tech.scienceOfLast8Turns.sum() / 8)
 
+        // Happiness change _may_ invalidate best worked tiles (#9238), but if the building
+        // isn't bought (or the AI bought it) then reassignPopulation will run later in startTurn anyway
+        if (boughtWith != null && isStatRelated(Stat.Happiness)) {
+            // Happiness is global, so it could affect all cities
+            Concurrency.runOnNonDaemonThreadPool("reassignPopulationAllCities") {
+                for (city in civInfo.cities)
+                    city.reassignPopulationDeferred()
+            }
+        }
+
+        // Buying a building influencing tile yield may change CityFocus decisions
+        val uniqueTypesModifyingYields = listOf(
+            UniqueType.StatsFromTiles, UniqueType.StatsFromTilesWithout, UniqueType.StatsFromObject,
+            UniqueType.StatPercentFromObject, UniqueType.AllStatsPercentFromObject
+        )
+        if (boughtWith != null && uniqueTypesModifyingYields.any { hasUnique(it) }) {
+            cityConstructions.city.reassignPopulationDeferred()
+        }
+
         cityConstructions.city.cityStats.update() // new building, new stats
         civInfo.cache.updateCivResources() // this building/unit could be a resource-requiring one
         civInfo.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
@@ -721,6 +741,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (getMatchingUniques(UniqueType.Stats).any { it.stats[stat] > 0 }) return true
         if (getMatchingUniques(UniqueType.StatsFromTiles).any { it.stats[stat] > 0 }) return true
         if (getMatchingUniques(UniqueType.StatsPerPopulation).any { it.stats[stat] > 0 }) return true
+        if (stat == Stat.Happiness && hasUnique(UniqueType.RemoveAnnexUnhappiness)) return true
         return false
     }
 
@@ -742,10 +763,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     fun isSellable() = !isAnyWonder() && !hasUnique(UniqueType.Unsellable)
 
-    override fun getResourceRequirementsPerTurn(): HashMap<String, Int> = resourceRequirementsInternal
+    override fun getResourceRequirementsPerTurn(): Counter<String> = resourceRequirementsInternal
 
-    private val resourceRequirementsInternal: HashMap<String, Int> by lazy {
-        val resourceRequirements = HashMap<String, Int>()
+    private val resourceRequirementsInternal: Counter<String> by lazy {
+        val resourceRequirements = Counter<String>()
         if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
         for (unique in uniqueObjects)
             if (unique.isOfType(UniqueType.ConsumesResources))

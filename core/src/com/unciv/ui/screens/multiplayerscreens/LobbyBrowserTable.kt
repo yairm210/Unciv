@@ -5,9 +5,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.multiplayer.apiv2.LobbyResponse
 import com.unciv.ui.components.ArrowButton
 import com.unciv.ui.components.LockButton
-import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.AskTextPopup
 import com.unciv.ui.popups.InfoPopup

@@ -84,23 +84,25 @@ In order to do this, all you need to do is:
 -   Click the gear icon next to the About (top-right part of the page)
 -   In 'Topics', add "unciv-mod"
 
-Optionally add one of the following topics (make sure this topic is added afer "unciv-mod"):
+Optionally add one or more of the following topics to mark your mod as belonging to specific categories:
 
--   unciv-mod-rulesets
--   unciv-mod-expansions
--   unciv-mod-graphics
--   unciv-mod-audio
--   unciv-mod-maps
--   unciv-mod-fun
--   unciv-mod-modsofmods
+-   unciv-mod-rulesets (for base ruleset mods)
+-   unciv-mod-expansions (for mods extending vanilla rulesets - please use this, **not** unciv-mod-expansion)
+-   unciv-mod-graphics (for mods altering graphics - icons, portraits, tilesets)
+-   unciv-mod-audio (for mods supplying music or modifying sounds)
+-   unciv-mod-maps (for mods containing maps)
+-   unciv-mod-fun (for mods mainly tweaking mechanics or other gameplay aspects)
+-   unciv-mod-modsofmods (for mods extending another mod's ruleset)
 
-When you open your app, it will query Github's [list of repos with that topic](https://github.com/topics/unciv-mod), and now YOUR repo will appear there!
+When you open Unciv's Mod Manager, it will query Github's [list of repos with that topic](https://github.com/topics/unciv-mod), and now YOUR repo will appear there!
+The categories will appear als annotations on the mod buttons, and the user can filter for them. They are not required for the game to use the content - e.g. you can still load maps from mods lacking the unciv-mod-maps topic.
+If you want new categories, github will accept any topic, but you'll have to ask the Unciv team to enable them in the game.
 
 ## I have the mod, now what?
 
 The primary use of mods is to add them when starting a new game, or configuring a map. This will mean that both the ruleset of the mod, and the images, will be in use for that specific game/map.
 
-For mods which are primarily visual or audio, there is a second use - through the mod manager, you can enable them as **permanent audiovisual mods**. This means that the images, sounds (or upcoming: music) from the mod will replace the original media everywhere in the game.
+For mods which are primarily visual or audio, there is a second use - through the mod manager, you can enable them as **permanent audiovisual mods**. This means that the images and/or sounds from the mod will replace the original media everywhere in the game, and contained music will be available - [see here](Images-and-Audio.md#supply-additional-music).
 
 ## Mod location for manual loading of mods
 
@@ -115,7 +117,7 @@ When loading a mod, it needs to be in its own folder in `/mods` - this is how yo
 
 ## Other
 
-You can add an image that will be displayed to users in the mod management by adding a "preview.png" file.
+You can add an image that will be displayed to users in the mod management by adding a "preview.jpg" _or_ "preview.png" file.
 
 Existing mods can be found [here](https://github.com/topics/unciv-mod)!
 

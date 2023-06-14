@@ -462,7 +462,9 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         Gdx.input.inputProcessor = null // don't allow ANRs when shutting down, that's silly
         SoundPlayer.clearCache()
         if (::musicController.isInitialized) musicController.gracefulShutdown()  // Do allow fade-out
+        // We stop the *in-game* multiplayer update, so that it doesn't keep working and A. we'll have errors and B. we'll have multiple updaters active
         if (::onlineMultiplayer.isInitialized) {
+            onlineMultiplayer.multiplayerGameUpdater.cancel()
             onlineMultiplayer.dispose()
         }
 
@@ -507,7 +509,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
             PrintWriter(files.fileWriter("lasterror.txt")).use {
                 ex.printStackTrace(it)
             }
-        } catch (ex: Exception) {
+        } catch (_: Exception) {
             // ignore
         }
         Gdx.app.postRunnable {
@@ -537,7 +539,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.6.12-patch1", 868)
+        val VERSION = Version("4.7.0-patch1", 879)
         //endregion
 
         lateinit var Current: UncivGame

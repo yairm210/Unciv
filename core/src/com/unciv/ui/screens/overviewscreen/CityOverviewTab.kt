@@ -17,7 +17,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
@@ -119,15 +119,15 @@ class CityOverviewTab(
 
     private fun getComparator() = Comparator { city2: City, city1: City ->
         when(persistableData.sortedBy) {
-            CITY -> collator.compare(city2.name.tr(), city1.name.tr())
+            CITY -> collator.compare(city2.name.tr(hideIcons = true), city1.name.tr(hideIcons = true))
             CONSTRUCTION -> collator.compare(
-                city2.cityConstructions.currentConstructionFromQueue.tr(),
-                city1.cityConstructions.currentConstructionFromQueue.tr())
+                city2.cityConstructions.currentConstructionFromQueue.tr(hideIcons = true),
+                city1.cityConstructions.currentConstructionFromQueue.tr(hideIcons = true))
             "Population" -> city2.population.population - city1.population.population
             WLTK -> city2.isWeLoveTheKingDayActive().compareTo(city1.isWeLoveTheKingDayActive())
             GARRISON -> collator.compare(
-                    city2.getGarrison()?.name?.tr() ?: "",
-                    city1.getGarrison()?.name?.tr() ?: "",
+                    city2.getGarrison()?.name?.tr(hideIcons = true) ?: "",
+                    city1.getGarrison()?.name?.tr(hideIcons = true) ?: "",
                 )
             else -> {
                 val stat = Stat.safeValueOf(persistableData.sortedBy)!!
@@ -231,11 +231,9 @@ class CityOverviewTab(
                 city.demandedResource.isNotEmpty() -> {
                     val image = ImageGetter.getResourcePortrait(city.demandedResource, iconSize *0.7f).apply {
                         addTooltip("Demanding [${city.demandedResource}]", 18f, tipAlign = Align.topLeft)
-                        onClick {
-                            if (gameInfo.notifyExploredResources(viewingPlayer, city.demandedResource, 0, true)) {
-                                overviewScreen.game.popScreen()
-                            }
-                        }
+                        onClick { showOneTimeNotification(
+                            gameInfo.getExploredResourcesNotification(viewingPlayer, city.demandedResource)
+                        ) }
                     }
                     cityInfoTableDetails.add(image)
                 }

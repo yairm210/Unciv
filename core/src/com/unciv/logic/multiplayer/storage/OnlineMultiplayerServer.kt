@@ -67,7 +67,7 @@ class OnlineMultiplayerServer(
                 featureSet = try {
                     json().fromJson(ServerFeatureSet::class.java, result)
                 } catch (ex: Exception) {
-                    Log.error("${UncivGame.Current.settings.multiplayer.server} does not support server feature set", ex)
+                    // The server does not support server feature set - not an error!
                     ServerFeatureSet()
                 }
             }
@@ -121,7 +121,7 @@ class OnlineMultiplayerServer(
         val zippedGameInfo = if (UncivGame.Current.onlineMultiplayer.apiVersion == ApiVersion.APIv2) {
             UncivFiles.gameInfoToPrettyString(gameInfo, useZip = true)
         } else {
-            UncivFiles.gameInfoToString(gameInfo, forceZip = true)
+            UncivFiles.gameInfoToString(gameInfo, forceZip = true, updateChecksum = true)
         }
         fileStorage().saveGameData(gameInfo.gameId, zippedGameInfo)
 

@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.badlogic.gdx.scenes.scene2d.utils.Cullable
 import com.unciv.models.metadata.GameSettings
 import com.unciv.UncivGame
+import com.unciv.ui.components.input.KeyboardPanningListener
 import java.lang.Float.max
 import java.lang.Float.min
 import kotlin.math.sqrt

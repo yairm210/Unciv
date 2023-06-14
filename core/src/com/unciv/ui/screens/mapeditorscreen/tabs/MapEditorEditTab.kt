@@ -11,26 +11,19 @@ import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorEditFeaturesTab
-import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorEditImprovementsTab
-import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorEditResourcesTab
-import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorEditRiversTab
-import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorEditStartsTab
-import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorEditTerrainTab
-import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorEditWondersTab
-import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
-import com.unciv.ui.screens.mapeditorscreen.TileInfoNormalizer
-import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorOptionsTab.TileMatchFuzziness
-import com.unciv.ui.popups.ToastPopup
-import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.extensions.addSeparator
-import com.unciv.ui.components.extensions.keyShortcuts
+import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
+import com.unciv.ui.screens.mapeditorscreen.TileInfoNormalizer
+import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorOptionsTab.TileMatchFuzziness
 import com.unciv.utils.Log
 
 class MapEditorEditTab(
@@ -190,7 +183,7 @@ class MapEditorEditTab(
         editorScreen.tileClickHandler = null
     }
 
-    fun tileClickHandler(tile: Tile) {
+    private fun tileClickHandler(tile: Tile) {
         if (brushSize < -1 || brushSize > 5 || brushHandlerType == BrushHandlerType.None) return
         if (editorScreen.mapHolder.isPanning || editorScreen.mapHolder.isZooming()) return
         editorScreen.hideSelection()

@@ -6,7 +6,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.multiplayer.ApiVersion
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewTab.EmpireOverviewTabPersistableData
-import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.input.KeyCharAndCode
 
 
 /** This controls which Tabs for the [EmpireOverviewScreen] exist and their order.
@@ -46,6 +46,7 @@ enum class EmpireOverviewCategories(
     Politics("OtherIcons/Politics", 'P', Align.top) {
         override fun createTab(viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?) =
                 GlobalPoliticsOverviewTable(viewingPlayer, overviewScreen, persistedData)
+        override fun showDisabled(viewingPlayer: Civilization) = viewingPlayer.diplomacy.isEmpty()
     },
     Resources("StatIcons/Happiness", 'R', Align.topLeft) {
         override fun createTab(viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?) =

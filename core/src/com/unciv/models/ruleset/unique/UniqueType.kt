@@ -654,8 +654,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ConditionalTech("after discovering [tech]", UniqueTarget.Conditional),
     ConditionalNoTech("before discovering [tech]", UniqueTarget.Conditional),
 
-    ConditionalAfterPolicy("after adopting [policy]", UniqueTarget.Conditional),
-    ConditionalBeforePolicy("before adopting [policy]", UniqueTarget.Conditional),
+    ConditionalAfterPolicyOrBelief("after adopting [policy/belief]", UniqueTarget.Conditional),
+    ConditionalBeforePolicyOrBelief("before adopting [policy/belief]", UniqueTarget.Conditional),
 
     ConditionalBeforePantheon("before founding a Pantheon", UniqueTarget.Conditional),
     ConditionalAfterPantheon("after founding a Pantheon", UniqueTarget.Conditional),
@@ -766,7 +766,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     TriggerUponResearch("upon discovering [tech]", UniqueTarget.TriggerCondition),
     TriggerUponEnteringEra("upon entering the [era]", UniqueTarget.TriggerCondition),
-    TriggerUponAdoptingPolicy("upon adopting [policy]", UniqueTarget.TriggerCondition),
+    TriggerUponAdoptingPolicyOrBelief("upon adopting [policy/belief]", UniqueTarget.TriggerCondition),
     TriggerUponDeclaringWar("upon declaring war with a major Civilization", UniqueTarget.TriggerCondition),
     TriggerUponDeclaringFriendship("upon declaring friendship", UniqueTarget.TriggerCondition),
     TriggerUponEnteringGoldenAge("upon entering a Golden Age", UniqueTarget.TriggerCondition),

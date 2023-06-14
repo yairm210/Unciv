@@ -92,7 +92,7 @@ class WorkerV1(appContext: Context, workerParams: WorkerParameters) : Worker(app
                     gameIds[count] = gamePreview.gameId
                     gameNames[count] = gameFile.name()
                     count++
-                } catch (ex: Throwable) {
+                } catch (_: Throwable) {
                     //only loadGamePreviewFromFile can throw an exception
                     //nothing will be added to the arrays if it fails
                     //just skip one file

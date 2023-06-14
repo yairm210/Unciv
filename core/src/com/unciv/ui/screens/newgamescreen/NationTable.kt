@@ -23,7 +23,7 @@ class NationTable(val nation: Nation, width: Float, minHeight: Float, ruleset: R
     init {
         val innerColor = nation.getInnerColor()
         val outerColor = nation.getOuterColor()
-        val textBackgroundColor = Color(0x002042ff) // getBlue().lerp(Black,0.5).apply { a = 1 }
+        val textBackgroundColor = Color(0x002042ff)
         val borderWidth = 5f
         val totalPadding = 10f + 4 * borderWidth // pad*2 + innerTable.pad*2 + borderTable.pad*2
         val internalWidth = width - totalPadding
@@ -32,9 +32,7 @@ class NationTable(val nation: Nation, width: Float, minHeight: Float, ruleset: R
         titleTable.background = BaseScreen.skinStrings.getUiBackground(
             "NewGameScreen/NationTable/Title", tintColor = outerColor
         )
-        val nationIndicator: Actor =
-            if (nation.name == Constants.random) ImageGetter.getRandomNationPortrait(50f)
-            else ImageGetter.getNationPortrait(nation, 50f)
+        val nationIndicator = ImageGetter.getNationPortrait(nation, 50f)  // Works for Random too
         titleTable.add(nationIndicator).pad(10f).padLeft(0f)  // left 0 for centering _with_ label
 
         val titleText = if (ruleset == null || nation.name == Constants.random || nation.name == Constants.spectator)

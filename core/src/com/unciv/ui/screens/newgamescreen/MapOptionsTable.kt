@@ -2,7 +2,7 @@ package com.unciv.ui.screens.newgamescreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.MapGeneratedMainType
-import com.unciv.ui.components.extensions.onChange
+import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.screens.basescreen.BaseScreen
 

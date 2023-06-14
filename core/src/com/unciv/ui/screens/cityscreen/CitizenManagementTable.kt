@@ -1,13 +1,12 @@
 package com.unciv.ui.screens.cityscreen
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.logic.city.CityFocus
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.ExpanderTab
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
 
 class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin) {
@@ -16,8 +15,8 @@ class CitizenManagementTable(val cityScreen: CityScreen) : Table(BaseScreen.skin
     fun update() {
         clear()
 
-        val colorSelected = BaseScreen.skin.get("selection", Color::class.java)
-        val colorButton = BaseScreen.skin.get("color", Color::class.java)
+        val colorSelected = BaseScreen.skin.getColor("selection")
+        val colorButton = BaseScreen.skin.getColor("color")
         // effectively a button, but didn't want to rewrite TextButton style
         // and much more compact and can control backgrounds easily based on settings
         val resetLabel = "Reset Citizens".toLabel()

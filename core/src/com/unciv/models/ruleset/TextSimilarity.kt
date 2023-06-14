@@ -63,7 +63,7 @@ fun getTextDistance(text1: String, text2: String): Int {
                     i1++
                     i2 = firstMatchIndex2 + 1
                 }
-                else -> throw IllegalStateException("Can't compare Strings:\n\t${text1}\n\t${text2}")
+                else -> error("Can't compare Strings:\n\t${text1}\n\t${text2}")
             }
         }
     }

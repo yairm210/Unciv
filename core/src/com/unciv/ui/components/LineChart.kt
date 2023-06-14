@@ -13,6 +13,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.screens.victoryscreen.VictoryScreenCivGroup
 import com.unciv.ui.screens.victoryscreen.VictoryScreenCivGroup.DefeatedPlayerStyle
+import kotlin.math.min
 import kotlin.math.ceil
 import kotlin.math.log10
 import kotlin.math.max
@@ -71,19 +72,18 @@ class LineChart(
         return (0 until maxLabels + 1).map { (it * stepSize) }
     }
 
-    private fun getNextNumberDivisibleByPowOfTen(maxValue: Int): Int {
-        val numberOfDigits = ceil(log10(maxValue.toDouble())).toInt()
-        val maxLabelValue = when {
-            numberOfDigits <= 0 -> 1
-            else -> {
-                // Some examples:
-                // If `maxValue = 97` => `oneWithZeros = 10^(2-1) = 10 => ceil(97/10) * 10 = 100
-                // If `maxValue = 567` => `oneWithZeros = 10^(3-1) = 100 => ceil(567/100) * 100 = 600
-                val oneWithZeros = 10.0.pow(numberOfDigits - 1)
-                ceil(maxValue.toDouble() / oneWithZeros).toInt() * oneWithZeros.toInt()
-            }
-        }
-        return maxLabelValue
+    /**
+     *  Returns the next number of power 10, with maximal step <= 100.
+     *  Examples: 0 => 0, 3 => 10, 97 => 100, 567 => 600, 123321 => 123400
+     */
+    private fun getNextNumberDivisibleByPowOfTen(value: Int): Int {
+        if (value == 0) return 0
+        val numberOfDigits = min(ceil(log10(value.toDouble())).toInt(), 3)
+        val oneWithZeros = 10.0.pow(numberOfDigits - 1)
+        // E.g., 3 => 10^(2-1) = 10 ; ceil(3 / 10) * 10 = 10
+        //     567 => 10^(3-1) = 100 ; ceil(567 / 100) * 100 = 600
+        //  123321 => 10^(3-1) = 100 ; ceil(123321 / 100) * 100 = 123400
+        return (ceil(value / oneWithZeros) * oneWithZeros).toInt()
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
@@ -203,8 +203,7 @@ class LineChart(
                     val a = simplifiedScaledPoints[i - 1]
                     val b = simplifiedScaledPoints[i]
                     val selectedCivBackgroundColor =
-                            if (viewingCiv == civ || viewingCiv.knows(civ)) civ.nation.getInnerColor()
-                            else Color.LIGHT_GRAY
+                        if (useActualColor(civ)) civ.nation.getInnerColor() else Color.LIGHT_GRAY
                     drawLine(
                         batch, a.x, a.y, b.x, b.y,
                         selectedCivBackgroundColor, chartLineWidth * 3
@@ -214,9 +213,7 @@ class LineChart(
             for (i in 1 until simplifiedScaledPoints.size) {
                 val a = simplifiedScaledPoints[i - 1]
                 val b = simplifiedScaledPoints[i]
-                val civLineColor =
-                        if (viewingCiv == civ || viewingCiv.knows(civ)) civ.nation.getOuterColor()
-                        else Color.DARK_GRAY
+                val civLineColor = if (useActualColor(civ)) civ.nation.getOuterColor() else Color.DARK_GRAY
                 drawLine(batch, a.x, a.y, b.x, b.y, civLineColor, chartLineWidth)
 
                 // Draw the selected Civ icon on its last datapoint
@@ -242,6 +239,15 @@ class LineChart(
 
         // Restore the previous batch transformation matrix
         batch.transformMatrix = oldTransformMatrix
+    }
+
+    private fun useActualColor(civ: Civilization) : Boolean {
+        return viewingCiv.isSpectator() ||
+            viewingCiv.isDefeated() ||
+            viewingCiv.victoryManager.hasWon() ||
+            viewingCiv == civ ||
+            viewingCiv.knows(civ) ||
+            civ.isDefeated()
     }
 
     private fun getLastTurnDataPoints(): MutableMap<Civilization, DataPoint<Int>> {

@@ -1,11 +1,10 @@
 package com.unciv.ui.screens.savescreens
 
-import com.unciv.Constants
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
-import com.unciv.ui.popups.Popup
+import com.unciv.ui.popups.LoadingPopup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.worldscreen.WorldScreen
 import com.unciv.utils.Concurrency
@@ -55,9 +54,7 @@ object QuickSave {
     }
 
     fun autoLoadGame(screen: MainMenuScreen) {
-        val loadingPopup = Popup(screen)
-        loadingPopup.addGoodSizedLabel(Constants.loading)
-        loadingPopup.open()
+        val loadingPopup = LoadingPopup(screen)
         Concurrency.run("autoLoadGame") {
             // Load game from file to class on separate thread to avoid ANR...
             fun outOfMemory() {
@@ -70,7 +67,7 @@ object QuickSave {
             val savedGame: GameInfo
             try {
                 savedGame = screen.game.files.loadLatestAutosave()
-            } catch (oom: OutOfMemoryError) {
+            } catch (_: OutOfMemoryError) {
                 outOfMemory()
                 return@run
             } catch (ex: Exception) {
@@ -89,7 +86,7 @@ object QuickSave {
             if (savedGame.gameParameters.isOnlineMultiplayer) {
                 try {
                     screen.game.onlineMultiplayer.loadGame(savedGame)
-                } catch (oom: OutOfMemoryError) {
+                } catch (_: OutOfMemoryError) {
                     outOfMemory()
                 } catch (notAPlayer: UncivShowableException) {
                     val (message) = LoadGameScreen.getLoadExceptionMessage(notAPlayer)
@@ -108,7 +105,7 @@ object QuickSave {
             } else {
                 try {
                     screen.game.loadGame(savedGame)
-                } catch (oom: OutOfMemoryError) {
+                } catch (_: OutOfMemoryError) {
                     outOfMemory()
                 } catch (ex: Exception) {
                     launchOnGLThread {

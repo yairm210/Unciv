@@ -17,10 +17,10 @@ import com.unciv.ui.components.ChatButton
 import com.unciv.ui.components.NewButton
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.enable
-import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.InfoPopup

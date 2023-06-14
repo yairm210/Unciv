@@ -83,11 +83,33 @@ class OnlineMultiplayer: Disposable {
     private val lastCurGameRefresh: AtomicReference<Instant?> = AtomicReference()
 
     val games: Set<OnlineMultiplayerGame> get() = savedGames.values.toSet()
+    val multiplayerGameUpdater: Job
 
     /** Server API auto-detection happens in the coroutine [initialize] */
     lateinit var apiVersion: ApiVersion
 
     init {
+        /** We have 2 'async processes' that update the multiplayer games:
+         * A. This one, which as part of *this process* runs refreshes for all OS's
+         * B. MultiplayerTurnCheckWorker, which *as an Android worker* runs refreshes *even when the game is closed*.
+         *    Only for Android, obviously
+         */
+        multiplayerGameUpdater = flow<Unit> {
+            while (true) {
+                delay(500)
+
+                val currentGame = getCurrentGame()
+                val multiplayerSettings = UncivGame.Current.settings.multiplayer
+                val preview = currentGame?.preview
+                if (currentGame != null && (usesCustomServer() || preview == null || !preview.isUsersTurn())) {
+                    throttle(lastCurGameRefresh, multiplayerSettings.currentGameRefreshDelay, {}) { currentGame.requestUpdate() }
+                }
+
+                val doNotUpdate = if (currentGame == null) listOf() else listOf(currentGame)
+                throttle(lastAllGamesRefresh, multiplayerSettings.allGameRefreshDelay, {}) { requestUpdate(doNotUpdate = doNotUpdate) }
+            }
+        }.launchIn(CoroutineScope(Dispatcher.DAEMON))
+
         events.receive(UpdateGameData::class, null) {
             Concurrency.runOnNonDaemonThreadPool {
                 try {
@@ -220,12 +242,11 @@ class OnlineMultiplayer: Disposable {
      */
     suspend fun addGame(gameId: String, gameName: String? = null) {
         val saveFileName = if (gameName.isNullOrBlank()) gameId else gameName
-        var gamePreview: GameInfoPreview
-        try {
-            gamePreview = multiplayerServer.tryDownloadGamePreview(gameId)
-        } catch (ex: MultiplayerFileNotFoundException) {
+        val gamePreview: GameInfoPreview = try {
+            multiplayerServer.tryDownloadGamePreview(gameId)
+        } catch (_: MultiplayerFileNotFoundException) {
             // Game is so old that a preview could not be found on dropbox lets try the real gameInfo instead
-            gamePreview = multiplayerServer.tryDownloadGame(gameId).asPreview()
+            multiplayerServer.tryDownloadGame(gameId).asPreview()
         }
         addGame(gamePreview, saveFileName)
     }

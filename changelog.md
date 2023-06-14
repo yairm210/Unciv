@@ -1,3 +1,148 @@
+## 4.7.0
+
+AI:
+- Improved AI city location picking
+- AI more willing to risk happiness to create a new city
+- AI doesn't construct Settler before Worker
+- AI Workers remove fallout
+
+Global politics table includes current civ
+
+Fixed crash when resuming Overview screen
+
+Fixed background errors
+
+By SomeTroglodyte:
+- Nation picker - Icon View & improvements
+- Expander tab animations :)
+- Key bindings options
+- Improved "connected to Capital" handling
+
+Always select military unit first - By WhoIsJohannes
+
+## 4.6.19
+
+Modding:
+- "before adopting / after adopting" conditionals accept beliefs
+- 'Transform' and 'double movement' uniques accept conditionals
+- AI evaluation of BuyItemsDiscount no longer crashes
+
+'random generated map type' is actually random
+
+By WhoIsJohannes:
+- Show line color in more cases
+- AI aircraft only consider *visible* attackable enemies
+-
+By SomeTroglodyte:
+- Fixed Hakkapeliitta ability
+- Fix translated sorting
+- Fix 'missing mod' display
+
+Pantheon Mod fix - By SeventhM
+
+## 4.6.18
+
+Pillaged improvements have a visual indication on the icon
+
+Fixed great engineer automation trying to reach cities it can't
+
+Fixed later civs not getting any CS quests
+
+By SomeTroglodyte:
+- Mod checks against sellable, missing or multiple Palace(s)
+- Fix tooltips on Android with keyboard detected
+- Upgraded music player popup
+- Popups can scroll the content without the buttons
+- Translation fixes
+
+Winning player can continue MP game - By CrsiX
+
+Added docker build and push workflow  - By haimlm
+
+## 4.6.17
+
+More efficient use of the charts space  - By JackRainy
+
+By SomeTroglodyte:
+- Allow image overlay and changing world wrap in map editor
+- Reapply 'city focus' on yield changes
+- Upgrading from Unit overview improved
+
+Remove "does not support server feature set" error for uncivserver.xyz
+
+Trigger resource recalculation upon gaining a unit that requires resources
+
+Guard against '><' text causing translation recursion
+
+Badly configured era conditional no longer causes crashes
+
+## 4.6.16
+
+By SomeTroglodyte:
+- Unit Overview: Improving a tile is also "what the unit is doing"
+- Replacement PlatformSaverLoader for Linux X11 systems
+- All notifications from Overview are now temporary
+- Politics overview no longer discloses random number of players
+
+Worker will now replace improvements to get resources - By janarvid
+
+Spectators do not get natural wonder discovery notifications
+
+Added checksum to be added to uploaded multiplayer games
+
+Policy adoption triggers resource recalculation
+
+## 4.6.15
+
+'Crop yield' chart displays correct data
+
+Modding:
+- Units can transform to any unit
+- Fixed policy softlock from conflicting mod policies
+- 'Unpurchaseable' units are properly unpurchaseable
+
+By SomeTroglodyte:
+- Map editor update - concurrency, resource amounts, file double-click
+- Fix road maintenance unique being ignored
+- Fix mouse wheel on Notifications scroll
+- Unit overview remembers scroll position after promoting
+
+Allow game loading even when no saved games exist - By alexban011
+
+## 4.6.14
+
+By SomeTroglodyte:
+- Next-Turn Progressbar
+- Fixed crash when puppeting city
+
+Population icon gets locked with doubleclick, clicks cycle assigned-unassigned
+
+Resolved crashes when clicking mod in mod management
+
+AI civilian improvement: keep working in tiles where enemy units can't reach
+
+Prophets are not expelled on open borders end
+
+City-state-owned great merchants can no longer 'conduct trade mission' on their own tiles
+
+Game saves are regular json, not libgdx-specific format
+
+## 4.6.13
+
+Failure to get mod preview image no longer causes crash
+
+Modding: Added 'upon adopting [belief]' trigger, allowed belief adoption to trigger uniques
+
+Added turn number to victory replay
+
+Clicking locally-added mods no longer crashes
+
+By SomeTroglodyte:
+- Fix off-by-one error in autoAssignPopulation
+- Happiness change from bought buildings can reapply citizen focus
+- Local and jpg mod previews
+- Fix UnitTable layout
+
 ## 4.6.12
 
 Animate battle damage numbers - By SomeTroglodyte

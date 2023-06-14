@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.multiplayer.apiv2.GameOverviewResponse
-import com.unciv.ui.components.KeyCharAndCode
 import com.unciv.ui.components.MultiplayerButton
 import com.unciv.ui.components.NewButton
 import com.unciv.ui.components.RefreshButton
@@ -13,11 +12,12 @@ import com.unciv.ui.components.SettingsButton
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
 import com.unciv.ui.components.extensions.brighten
-import com.unciv.ui.components.extensions.keyShortcuts
-import com.unciv.ui.components.extensions.onActivation
-import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.popups.CreateLobbyPopup
 import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.popups.Popup

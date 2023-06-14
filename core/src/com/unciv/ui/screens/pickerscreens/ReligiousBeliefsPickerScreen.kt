@@ -18,7 +18,7 @@ import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.images.ImageGetter

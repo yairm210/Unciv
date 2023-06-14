@@ -6,14 +6,14 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
-import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.mapunit.UnitMovement
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 
-class DiplomacyFunctions(val civInfo:Civilization){
+class DiplomacyFunctions(val civInfo: Civilization){
 
     /** A sorted Sequence of all other civs we know (excluding barbarians and spectators) */
     fun getKnownCivsSorted(includeCityStates: Boolean = true, includeDefeated: Boolean = false) =
@@ -28,7 +28,7 @@ class DiplomacyFunctions(val civInfo:Civilization){
                 }
                 .sortedWith(
                     compareByDescending<Civilization> { it.isMajorCiv() }
-                        .thenBy (UncivGame.Current.settings.getCollatorFromLocale()) { it.civName.tr() }
+                        .thenBy (UncivGame.Current.settings.getCollatorFromLocale()) { it.civName.tr(hideIcons = true) }
                 )
 
 
@@ -37,7 +37,7 @@ class DiplomacyFunctions(val civInfo:Civilization){
         otherCiv.diplomacyFunctions.meetCiv(civInfo, warOnContact)
     }
 
-    fun meetCiv(otherCiv: Civilization, warOnContact: Boolean = false) {
+    private fun meetCiv(otherCiv: Civilization, warOnContact: Boolean = false) {
         civInfo.diplomacy[otherCiv.civName] = DiplomacyManager(civInfo, otherCiv.civName)
             .apply { diplomaticStatus = DiplomaticStatus.Peace }
 
@@ -59,7 +59,7 @@ class DiplomacyFunctions(val civInfo:Civilization){
             // For now, it might be overkill though.
             var meetString = "[${civInfo.civName}] has given us [${giftAmount}] as a token of goodwill for meeting us"
             val religionMeetString = "[${civInfo.civName}] has also given us [${faithAmount}]"
-            if (civInfo.diplomacy.filter { it.value.otherCiv().isMajorCiv() }.size == 1) {
+            if (civInfo.diplomacy.count { it.value.otherCiv().isMajorCiv() } == 1) {
                 giftAmount.timesInPlace(2f)
                 meetString = "[${civInfo.civName}] has given us [${giftAmount}] as we are the first major civ to meet them"
             }

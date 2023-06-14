@@ -3,6 +3,7 @@ package com.unciv.ui.screens.mapeditorscreen.tabs
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.Civilization
@@ -12,15 +13,18 @@ import com.unciv.logic.map.tile.TileDescription
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
+import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.TabbedPager
+import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.WrappableLabel
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.darken
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.pad
+import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -43,6 +47,8 @@ class MapEditorViewTab(
 
     init {
         top()
+        // Note on width: max expander content width + 2 * expander.defaultPad + 2 * the following horizontal pad
+        // should not exceed editorScreen.getToolsWidth() or the page will scroll horizontally!
         defaults().pad(5f, 20f)
         update()
     }
@@ -72,7 +78,8 @@ class MapEditorViewTab(
         val headerText = tileMap.mapParameters.name.ifEmpty { "New map" }
         add(ExpanderTab(
             headerText,
-            startsOutOpened = false
+            startsOutOpened = false,
+            defaultPad = 0f  // See note in init
         ) {
             val mapParameterText = tileMap.mapParameters.toString()
                 .replace("\"${tileMap.mapParameters.name}\" ", "")
@@ -99,7 +106,7 @@ class MapEditorViewTab(
             naturalWonders.clear()
             tileMap.values.asSequence()
                 .mapNotNull { it.naturalWonder }
-                .sortedWith(compareBy(collator) { it.tr() })
+                .sortedWith(compareBy(collator) { it.tr(hideIcons = true) })
                 .forEach {
                     naturalWonders.add(it, 1)
                 }
@@ -131,7 +138,7 @@ class MapEditorViewTab(
                 startsOutOpened = false,
                 headerPad = 5f
             ) {
-                it.add(MarkupRenderer.render(lines.toList(), iconDisplay = IconDisplay.NoLink) { name ->
+                it.add(MarkupRenderer.render(lines.asIterable(), iconDisplay = IconDisplay.NoLink) { name ->
                     scrollToStartOfNation(name)
                 })
             }).row()
@@ -196,7 +203,7 @@ class MapEditorViewTab(
             lines += FormattedLine("Continent: [$continent] ([${tile.tileMap.continentSizes[continent]}] tiles)", link = "continent")
         }
 
-        tileDataCell?.setActor(MarkupRenderer.render(lines, labelWidth) {
+        val renderedInfo = MarkupRenderer.render(lines, labelWidth) {
             if (it == "continent") {
                 // Visualize the continent this tile is on
                 editorScreen.hideSelection()
@@ -209,7 +216,25 @@ class MapEditorViewTab(
                 // This needs CivilopediaScreen to be able to work without a GameInfo!
                 UncivGame.Current.pushScreen(CivilopediaScreen(tile.ruleset, link = it))
             }
-        })
+        }
+
+        if (tile.resource != null && (tile.resourceAmount > 0 || tile.tileResource.resourceType == ResourceType.Strategic)) {
+            renderedInfo.addSeparator(Color.GRAY)
+            renderedInfo.add(Table().apply {
+                add("Resource abundance".toLabel(alignment = Align.left)).left().growX()
+                val slider = UncivSlider(0f, 42f, 1f,
+                    initial = tile.resourceAmount.toFloat()
+                ) {
+                    tile.resourceAmount = it.toInt()
+                    editorScreen.updateTile(tile)
+                    editorScreen.isDirty = true
+                }
+                slider.setSnapToValues(floatArrayOf(0f,1f,2f,3f,4f,5f,6f,7f,8f,9f,10f,12f,15f,20f,30f,40f), 5f)
+                add(slider).right().minWidth(80f).fillX().padTop(15f)
+            }).fillX()
+        }
+
+        tileDataCell?.setActor(renderedInfo)
 
         editorScreen.hideSelection()
         editorScreen.highlightTile(tile, Color.CORAL)
@@ -235,11 +260,11 @@ class MapEditorViewTab(
         startingLocationsByNation.asSequence()
         .filter { tile == null || tile in it.value }
         .mapNotNull { ruleset!!.nations[it.key] }
-        .sortedWith(compareBy<Nation>{ it.isCityState }.thenBy(collator) { it.name.tr() })
+        .sortedWith(compareBy<Nation>{ it.isCityState }.thenBy(collator) { it.name.tr(hideIcons = true) })
 
     private fun TileMap.getStartingLocationSummary() =
         startingLocationsByNation.asSequence()
         .mapNotNull { if (it.key in ruleset!!.nations) ruleset!!.nations[it.key]!! to it.value.size else null }
-        .sortedWith(compareBy<Pair<Nation,Int>>{ it.first.isCityState }.thenBy(collator) { it.first.name.tr() })
+        .sortedWith(compareBy<Pair<Nation,Int>>{ it.first.isCityState }.thenBy(collator) { it.first.name.tr(hideIcons = true) })
         .map { it.first.name to it.second }
 }

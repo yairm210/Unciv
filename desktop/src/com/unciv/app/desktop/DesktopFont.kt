@@ -48,7 +48,7 @@ class DesktopFont : FontImplementation {
             font = Font.createFont(Font.TRUETYPE_FONT, fontFile).deriveFont(size.toFloat())
             ge.registerFont(font)
         }
-        catch (e: Exception)
+        catch (_: Exception)
         {
             // Fallback to default, if failed.
             font = Font(Fonts.DEFAULT_FONT_FAMILY, Font.PLAIN, size)
