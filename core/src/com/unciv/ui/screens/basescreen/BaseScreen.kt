@@ -19,16 +19,21 @@ import com.unciv.UncivGame
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.skins.SkinStrings
 import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.extensions.isNarrowerThan4to3
 import com.unciv.ui.components.input.KeyShortcutDispatcher
+import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.input.DispatcherVetoer
 import com.unciv.ui.components.input.installShortcutDispatcher
 import com.unciv.ui.components.input.keyShortcuts
-import com.unciv.ui.components.extensions.isNarrowerThan4to3
-import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
+import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.activePopup
 import com.unciv.ui.popups.options.OptionsPopup
+
+// Both `this is CrashScreen` and `this::createPopupBasedDispatcherVetoer` are flagged.
+// First - not a leak; second - passes out a pure function
+@Suppress("LeakingThis")
 
 abstract class BaseScreen : Screen {
 
@@ -50,10 +55,11 @@ abstract class BaseScreen : Screen {
         /** The ExtendViewport sets the _minimum_(!) world size - the actual world size will be larger, fitted to screen/window aspect ratio. */
         stage = UncivStage(ExtendViewport(height, height))
 
-        if (enableSceneDebug) {
+        if (enableSceneDebug && this !is CrashScreen) {
             stage.setDebugUnderMouse(true)
             stage.setDebugTableUnderMouse(true)
             stage.setDebugParentUnderMouse(true)
+            stage.mouseOverDebug = true
         }
 
         @Suppress("LeakingThis")
