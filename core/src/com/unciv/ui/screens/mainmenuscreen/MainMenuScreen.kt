@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Stack
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
@@ -30,6 +31,7 @@ import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
@@ -288,7 +290,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
     }
 
     private fun quickstartNewGame() {
-        ToastPopup("Working...", this)
+        ToastPopup(Constants.working, this)
         val errorText = "Cannot start game with the default new game parameters!"
         Concurrency.run("QuickStart") {
             val newGame: GameInfo
@@ -347,4 +349,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
         stopBackgroundMapGeneration()
         return MainMenuScreen()
     }
+
+    // We contain a map...
+    override fun getShortcutDispatcherVetoer() = KeyShortcutDispatcherVeto.createTileGroupMapDispatcherVetoer()
 }

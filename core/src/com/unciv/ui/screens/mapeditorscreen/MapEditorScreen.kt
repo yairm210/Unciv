@@ -27,6 +27,7 @@ import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.input.KeyboardPanningListener
 import com.unciv.ui.images.ImageWithCustomSize
 import com.unciv.ui.popups.ToastPopup
@@ -205,6 +206,9 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen(), RecreateOnResize {
 
         return newHolder
     }
+
+    // We contain a map...
+    override fun getShortcutDispatcherVetoer() = KeyShortcutDispatcherVeto.createTileGroupMapDispatcherVetoer()
 
     fun loadMap(map: TileMap, newRuleset: Ruleset? = null, selectPage: Int = 0) {
         clearOverlayImages()

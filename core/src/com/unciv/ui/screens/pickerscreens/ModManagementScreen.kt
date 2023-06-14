@@ -718,7 +718,10 @@ class ModManagementScreen(
     }
 
     internal fun refreshOnlineModTable() {
-        if (runningSearchJob != null) return  // cowardice: prevent concurrent modification, avoid a manager layer
+        if (runningSearchJob != null) {
+            ToastPopup("Sorting and filtering needs to wait until the online query finishes", this)
+            return  // cowardice: prevent concurrent modification, avoid a manager layer
+        }
 
         val newHeaderText = optionsManager.getOnlineHeader()
         onlineHeaderLabel?.setText(newHeaderText)

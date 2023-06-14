@@ -29,6 +29,13 @@ class UncivStage(viewport: Viewport) : Stage(viewport, getBatch()) {
     var lastKnownVisibleArea: Rectangle
         private set
 
+    var mouseOverDebug: Boolean
+        get() = mouseOverDebugImpl != null
+        set(value) {
+            mouseOverDebugImpl = if (value) StageMouseOverDebug() else null
+        }
+    private var mouseOverDebugImpl: StageMouseOverDebug? = null
+
     private val events = EventBus.EventReceiver()
 
     init {
@@ -49,8 +56,10 @@ class UncivStage(viewport: Viewport) : Stage(viewport, getBatch()) {
         super.act()
     }
 
-    override fun draw() =
-            { super.draw() }.wrapCrashHandlingUnit()()
+    override fun draw() {
+        { super.draw() }.wrapCrashHandlingUnit()()
+        mouseOverDebugImpl?.draw(this)
+    }
 
     /** libGDX has no built-in way to disable/enable pointer enter/exit events. It is simply being done in [Stage.act]. So to disable this, we have
      * to replicate the [Stage.act] method without the code for pointer enter/exit events. This is of course inherently brittle, but the only way. */

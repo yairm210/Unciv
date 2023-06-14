@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.Constants
 import com.unciv.logic.map.MapGeneratedMainType
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapType
@@ -59,9 +60,9 @@ class MapEditorGenerateTab(
 
     private fun setButtonsEnabled(enable: Boolean) {
         newTab.generateButton.isEnabled = enable
-        newTab.generateButton.setText( (if(enable) "Create" else "Working...").tr())
+        newTab.generateButton.setText( (if(enable) "Create" else Constants.working).tr())
         partialTab.generateButton.isEnabled = enable
-        partialTab.generateButton.setText( (if(enable) "Generate" else "Working...").tr())
+        partialTab.generateButton.setText( (if(enable) "Generate" else Constants.working).tr())
     }
 
     private fun generate(step: MapGeneratorSteps) {
