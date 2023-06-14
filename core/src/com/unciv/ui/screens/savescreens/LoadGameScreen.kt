@@ -141,7 +141,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
     private fun getLoadFromClipboardButton(): TextButton {
         val pasteButton = loadFromClipboard.toTextButton()
         pasteButton.onActivation {
-            pasteButton.setText("Working...".tr())
+            pasteButton.setText(Constants.working.tr())
             pasteButton.disable()
             Concurrency.run(loadFromClipboard) {
                 try {

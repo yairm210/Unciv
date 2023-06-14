@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Stack
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
@@ -289,7 +290,7 @@ class MainMenuScreen: BaseScreen(), RecreateOnResize {
     }
 
     private fun quickstartNewGame() {
-        ToastPopup("Working...", this)
+        ToastPopup(Constants.working, this)
         val errorText = "Cannot start game with the default new game parameters!"
         Concurrency.run("QuickStart") {
             val newGame: GameInfo

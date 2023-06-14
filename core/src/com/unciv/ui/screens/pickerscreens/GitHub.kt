@@ -395,6 +395,48 @@ object Github {
         var avatar_url: String? = null
     }
 
+    /**
+     * Query GitHub for topics named "unciv-mod*"
+     * @return              Parsed [TopicSearchResponse] json on success, `null` on failure.
+     */
+    fun tryGetGithubTopics(): TopicSearchResponse? {
+        // `+repositories:>1` means ignore unused or practically unused topics
+        val link = "https://api.github.com/search/topics?q=unciv-mod+repositories:%3E1&sort=name&order=asc"
+        var retries = 2
+        while (retries > 0) {
+            retries--
+            // obey rate limit
+            if (RateLimit.waitForLimit()) return null
+            // try download
+            val inputStream = download(link) {
+                if (it.responseCode == 403 || it.responseCode == 200 && retries == 1) {
+                    // Pass the response headers to the rate limit handler so it can process the rate limit headers
+                    RateLimit.notifyHttpResponse(it)
+                    retries++   // An extra retry so the 403 is ignored in the retry count
+                }
+            } ?: continue
+            return json().fromJson(TopicSearchResponse::class.java, inputStream.bufferedReader().readText())
+        }
+        return null
+    }
+
+    /** Topic search response */
+    @Suppress("PropertyName")
+    class TopicSearchResponse {
+        // Commented out: Github returns them, but we're not interested
+//         var total_count = 0
+//         var incomplete_results = false
+        var items = ArrayList<Topic>()
+        class Topic {
+            var name = ""
+            var display_name: String? = null  // Would need to be curated, which is alottawork
+//             var featured = false
+//             var curated = false
+            var created_at = "" // iso datetime with "Z" timezone
+            var updated_at = "" // iso datetime with "Z" timezone
+        }
+    }
+
     /** Rewrite modOptions file for a mod we just installed to include metadata we got from the GitHub api
      *
      *  (called on background thread)

@@ -192,7 +192,7 @@ class NextTurnButton : IconTextButton("", null, 30) {
 class NextTurnAction(val text: String, val color: Color, val icon: String? = null, val action: () -> Unit) {
     companion object Prefabs {
         val Default = NextTurnAction("", Color.BLACK) {}
-        val Working = NextTurnAction("Working...", Color.GRAY, "NotificationIcons/Working") {}
+        val Working = NextTurnAction(Constants.working, Color.GRAY, "NotificationIcons/Working") {}
         val Waiting = NextTurnAction("Waiting for other players...",Color.GRAY, "NotificationIcons/Waiting") {}
     }
 }

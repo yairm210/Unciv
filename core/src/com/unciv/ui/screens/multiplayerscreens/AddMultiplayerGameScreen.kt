@@ -2,6 +2,7 @@ package com.unciv.ui.screens.multiplayerscreens
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.Constants
 import com.unciv.logic.IdChecker
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.pickerscreens.PickerScreen
@@ -53,7 +54,7 @@ class AddMultiplayerGameScreen : PickerScreen() {
             }
 
             val popup = Popup(this)
-            popup.addGoodSizedLabel("Working...")
+            popup.addGoodSizedLabel(Constants.working)
             popup.open()
 
             Concurrency.run("AddMultiplayerGame") {
