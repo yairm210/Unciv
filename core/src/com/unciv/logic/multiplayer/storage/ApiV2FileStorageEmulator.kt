@@ -3,7 +3,7 @@ package com.unciv.logic.multiplayer.storage
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.apiv2.ApiV2
 import com.unciv.utils.Log
-import java.util.*
+import java.util.UUID
 
 /**
  * Transition helper that emulates file storage behavior using the API v2

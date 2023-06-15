@@ -11,11 +11,14 @@ import com.unciv.logic.multiplayer.storage.ApiV2FileStorageWrapper
 import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
-import io.ktor.client.call.*
-import io.ktor.client.plugins.websocket.*
-import io.ktor.client.request.*
-import io.ktor.http.*
-import io.ktor.websocket.*
+import io.ktor.client.call.body
+import io.ktor.client.plugins.websocket.ClientWebSocketSession
+import io.ktor.client.request.get
+import io.ktor.http.isSuccess
+import io.ktor.websocket.Frame
+import io.ktor.websocket.FrameType
+import io.ktor.websocket.close
+import io.ktor.websocket.readText
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
@@ -29,7 +32,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import java.time.Instant
-import java.util.*
+import java.util.Random
+import java.util.UUID
 import java.util.concurrent.atomic.AtomicReference
 
 /**

@@ -1,8 +1,11 @@
 package com.unciv.logic.multiplayer.apiv2
 
 import com.unciv.utils.Log
-import io.ktor.client.request.*
-import io.ktor.http.*
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.header
+import io.ktor.http.CookieEncoding
+import io.ktor.http.HttpHeaders
+import io.ktor.http.encodeCookieValue
 import java.time.Instant
 import java.util.concurrent.atomic.AtomicReference
 

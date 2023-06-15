@@ -11,7 +11,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 /**
  * Serializer for the ApiStatusCode enum to make encoding/decoding as integer work

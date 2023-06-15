@@ -7,7 +7,7 @@ package com.unciv.logic.multiplayer.apiv2
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 /**
  * The account data

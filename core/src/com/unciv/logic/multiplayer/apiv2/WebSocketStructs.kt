@@ -3,7 +3,7 @@ package com.unciv.logic.multiplayer.apiv2
 import com.unciv.logic.event.Event
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.util.*
+import java.util.UUID
 
 /**
  * Enum of all events that can happen in a friendship
