@@ -20,27 +20,39 @@ enum class KeyboardBinding(
     // Worldscreen
     NextTurn(Category.WorldScreen),
     NextTurnAlternate(Category.WorldScreen, KeyCharAndCode.SPACE),
-    Civilopedia(Category.WorldScreen, Input.Keys.F1),
     EmpireOverview(Category.WorldScreen),
-    EmpireOverviewTrades(Category.WorldScreen, Input.Keys.F2),
-    EmpireOverviewUnits(Category.WorldScreen, Input.Keys.F3),
-    EmpireOverviewPolitics(Category.WorldScreen, Input.Keys.F4),
-    SocialPolicies(Category.WorldScreen, Input.Keys.F5),
-    TechnologyTree(Category.WorldScreen, Input.Keys.F6),
-    EmpireOverviewNotifications(Category.WorldScreen, Input.Keys.F7),
-    VictoryScreen(Category.WorldScreen, "Victory status", Input.Keys.F8),
-    EmpireOverviewStats(Category.WorldScreen, Input.Keys.F9),
-    EmpireOverviewResources(Category.WorldScreen, Input.Keys.F10),
-    QuickSave(Category.WorldScreen, Input.Keys.F11),
-    QuickLoad(Category.WorldScreen, Input.Keys.F12),
-    ViewCapitalCity(Category.WorldScreen, Input.Keys.HOME),
-    Options(Category.WorldScreen, KeyCharAndCode.ctrl('o')),
-    SaveGame(Category.WorldScreen, KeyCharAndCode.ctrl('s')),
-    LoadGame(Category.WorldScreen, KeyCharAndCode.ctrl('l')),
+
+    /*
+     * These try to be faithful to default Civ5 key bindings as found in several places online
+     * Some are a little arbitrary, e.g. Economic info, Military info
+     * Some are very much so as Unciv *is* Strategic View.
+     * The comments show a description like found in the mentioned sources for comparison.
+     * @see http://gaming.stackexchange.com/questions/8122/ddg#8125
+     */
+    Civilopedia(Category.WorldScreen, Input.Keys.F1),                 // Civilopedia
+    EmpireOverviewTrades(Category.WorldScreen, Input.Keys.F2),        // Economic info
+    EmpireOverviewUnits(Category.WorldScreen, Input.Keys.F3),         // Military info
+    EmpireOverviewPolitics(Category.WorldScreen, Input.Keys.F4),      // Diplomacy info
+    SocialPolicies(Category.WorldScreen, Input.Keys.F5),              // Social Policies Screen
+    TechnologyTree(Category.WorldScreen, Input.Keys.F6),              // Tech Screen
+    EmpireOverviewNotifications(Category.WorldScreen, Input.Keys.F7), // Notification Log
+    VictoryScreen(Category.WorldScreen, "Victory status", Input.Keys.F8),    // Victory Progress
+    EmpireOverviewStats(Category.WorldScreen, Input.Keys.F9),         // Demographics
+    EmpireOverviewResources(Category.WorldScreen, Input.Keys.F10),    // originally Strategic View
+    QuickSave(Category.WorldScreen, Input.Keys.F11),                  // Quick Save
+    QuickLoad(Category.WorldScreen, Input.Keys.F12),                  // Quick Load
+    ViewCapitalCity(Category.WorldScreen, Input.Keys.HOME),           // Capital City View
+    Options(Category.WorldScreen, KeyCharAndCode.ctrl('o')),    // Game Options
+    SaveGame(Category.WorldScreen, KeyCharAndCode.ctrl('s')),   // Save
+    LoadGame(Category.WorldScreen, KeyCharAndCode.ctrl('l')),   // Load
+    ToggleResourceDisplay(Category.WorldScreen, KeyCharAndCode.ctrl('r')),  // Show Resources Icons
+    ToggleYieldDisplay(Category.WorldScreen, KeyCharAndCode.ctrl('y')),  // Yield Icons, originally just "Y"
+    // End of Civ5-inspired bindings
     QuitGame(Category.WorldScreen, KeyCharAndCode.ctrl('q')),
+    Diplomacy(Category.WorldScreen, KeyCharAndCode.UNKNOWN),
+    Espionage(Category.WorldScreen, KeyCharAndCode.UNKNOWN),
+    Undo(Category.WorldScreen, KeyCharAndCode.ctrl('z')),
     ToggleUI(Category.WorldScreen, "Toggle UI", KeyCharAndCode.ctrl('u')),
-    ToggleResourceDisplay(Category.WorldScreen, KeyCharAndCode.ctrl('r')),
-    ToggleYieldDisplay(Category.WorldScreen, KeyCharAndCode.ctrl('y')),
     ToggleWorkedTilesDisplay(Category.WorldScreen, KeyCharAndCode.UNKNOWN),
     ToggleMovementDisplay(Category.WorldScreen, KeyCharAndCode.UNKNOWN),
     ZoomIn(Category.WorldScreen, Input.Keys.NUMPAD_ADD),

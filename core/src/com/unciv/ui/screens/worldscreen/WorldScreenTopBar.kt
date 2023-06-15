@@ -15,18 +15,18 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.Fonts
-import com.unciv.ui.components.KeyboardBinding
 import com.unciv.ui.components.MayaCalendar
-import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.YearTextUtil
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.darken
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.setFontColor
 import com.unciv.ui.components.extensions.setFontSize
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toStringSigned
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.popups
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -181,8 +181,9 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
             }
 
             val overviewButton = "Overview".toTextButton()
-            overviewButton.addTooltip(KeyboardBinding.EmpireOverview)
-            overviewButton.onClick { worldScreen.openEmpireOverview() }
+            overviewButton.onActivation(binding = KeyboardBinding.EmpireOverview) {
+                worldScreen.openEmpireOverview()
+            }
 
             unitSupplyCell = add()
             add(overviewButton).pad(10f)

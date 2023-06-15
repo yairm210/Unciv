@@ -5,14 +5,14 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.isEnabled
+import com.unciv.ui.components.extensions.setSize
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
-import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
@@ -47,7 +47,7 @@ class NextTurnButton : IconTextButton("", null, 30) {
         isEnabled = !worldScreen.hasOpenPopups() && worldScreen.isPlayersTurn
                 && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning()
 
-        if (isEnabled) addTooltip(KeyboardBinding.NextTurn)
+        if (isEnabled) addTooltip(KeyboardBinding.NextTurn) else addTooltip("")
     }
     internal fun updateButton(nextTurnAction: NextTurnAction) {
         label.setText(nextTurnAction.text.tr())

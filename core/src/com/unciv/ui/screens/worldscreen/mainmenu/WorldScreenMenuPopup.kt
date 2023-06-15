@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.worldscreen.mainmenu
 
 import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.newgamescreen.NewGameScreen
