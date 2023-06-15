@@ -271,6 +271,16 @@ class WorldScreen(
         globalShortcuts.add(KeyboardBinding.ToggleMovementDisplay) { minimapWrapper.movementsImageButton.toggle() }
     }
 
+    // Handle disabling and re-enabling WASD listener while Options are open
+    override fun openOptionsPopup(startingPage: Int, onClose: () -> Unit) {
+        val oldListener = stage.root.listeners.filterIsInstance<KeyboardPanningListener>().firstOrNull()
+        if (oldListener != null) stage.removeListener(oldListener)
+        super.openOptionsPopup(startingPage) {
+            addKeyboardListener()
+            onClose()
+        }
+    }
+
     private fun toggleUI() {
         uiEnabled = !uiEnabled
         topBar.isVisible = uiEnabled

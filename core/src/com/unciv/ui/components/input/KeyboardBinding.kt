@@ -62,6 +62,16 @@ enum class KeyboardBinding(
     ZoomIn(Category.WorldScreen, Input.Keys.NUMPAD_ADD),
     ZoomOut(Category.WorldScreen, Input.Keys.NUMPAD_SUBTRACT),
 
+    // Map Panning - separate to get own expander. Map editor use will need to check this - it's arrows only
+    PanUp(Category.MapPanning, Input.Keys.UP),
+    PanLeft(Category.MapPanning, Input.Keys.LEFT),
+    PanDown(Category.MapPanning, Input.Keys.DOWN),
+    PanRight(Category.MapPanning, Input.Keys.RIGHT),
+    PanUpAlternate(Category.MapPanning, 'W'),
+    PanLeftAlternate(Category.MapPanning, 'A'),
+    PanDownAlternate(Category.MapPanning, 'S'),
+    PanRightAlternate(Category.MapPanning, 'D'),
+
     // Unit actions - name MUST correspond to UnitActionType.name because the shorthand constructor
     // there looks up bindings here by name - which also means we must not use UnitActionType
     // here as it will not be guaranteed to already be fully initialized.
@@ -113,7 +123,10 @@ enum class KeyboardBinding(
         None,
         WorldScreen {
             // Conflict checking within group plus keys assigned to UnitActions are a problem
-            override fun checkConflictsIn() = sequenceOf(this, UnitActions)
+            override fun checkConflictsIn() = sequenceOf(this, MapPanning, UnitActions)
+        },
+        MapPanning {
+            override fun checkConflictsIn() = sequenceOf(this, WorldScreen)
         },
         UnitActions {
             // Conflict checking within group disabled, but any key assigned on WorldScreen is a problem
