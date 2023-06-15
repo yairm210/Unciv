@@ -12,6 +12,7 @@ import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
@@ -905,9 +906,11 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             thirdCiv.getDiplomacyManager(civInfo).setFriendshipBasedModifier()
         }
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringFriendship))
+        // Ignore contitionals as triggerCivwideUnique will check again, and that would break
+        // UniqueType.ConditionalChance - 25% declared chance would work as 6% actual chance
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringFriendship, StateForConditionals.IgnoreConditionals))
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
-        for (unique in otherCiv().getTriggeredUniques(UniqueType.TriggerUponDeclaringFriendship))
+        for (unique in otherCiv().getTriggeredUniques(UniqueType.TriggerUponDeclaringFriendship, StateForConditionals.IgnoreConditionals))
             UniqueTriggerActivation.triggerCivwideUnique(unique, otherCiv())
     }
 
