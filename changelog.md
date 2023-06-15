@@ -1,3 +1,25 @@
+## 4.7.1
+
+AI prioritizes its path to buying highly desirable tiles
+
+AI prioritizes work boats, and creates work boats for close non-contiguous cities
+
+Workers try to build roads utilizing existing roads, and railroads overriding existing roads
+
+UnitFilter also matches TechFilter for that unit
+
+4.7.0-patch1
+
+Revert "Make ExpanderTab "expand" properly "
+
+By SomeTroglodyte:
+- Improve Alert Popup scrolling 
+- Make mod categories curated in Json 
+- Scene2D debug tool 
+- Fix vulnerability of new NationPickerPopup icon view 
+- Long press support 
+- Keyboard bindings - collision check 
+
 ## 4.7.0
 
 AI:
