@@ -1,10 +1,7 @@
 package com.unciv.ui.objectdescriptions
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.unciv.logic.city.City
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.Unique
@@ -18,8 +15,8 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.getConsumesAmountString
 import com.unciv.ui.components.extensions.toPercent
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
 import kotlin.math.pow
 
@@ -291,19 +288,16 @@ object BaseUnitDescriptions {
             yield("Lost ability (vs [${originalUnit.name}]): [${unique.text}]" to null)
         }
         for (promotion in betterUnit.promotions.filter { it !in originalUnit.promotions }) {
+            // Needs tr for **individual** translations (no bracket nesting), default separator would have extra blank
             val effects = ruleset.unitPromotions[promotion]!!.uniques
-                .joinToString(",") { "{$it}" }  // {} for individual translations, default separator would have extra blank
+                .joinToString(",") { it.tr() }
             yield("{$promotion} ($effects)" to "Promotion/$promotion")
         }
     }
 
-    /** Prepares a WidgetGroup for display as tooltip to an upgrade
-     *  Specialized to the WorldScreen UnitAction button and Unit Overview upgrade icon -
-     *  in both cases the [UnitAction][com.unciv.models.UnitAction] and [unitToUpgradeTo] have already been evaluated.
+    /** Prepares a Widget with [information about the differences][getDifferences] between units.
+     *  Used by UnitUpgradeMenu (but formerly also for a tooltip).
      */
-    fun getUpgradeTooltipActor(title: String, unitUpgrading: BaseUnit, unitToUpgradeTo: BaseUnit) =
-        getUpgradeInfoTable(title, unitUpgrading, unitToUpgradeTo).wrapScaled(0.667f)
-
     fun getUpgradeInfoTable(title: String, unitUpgrading: BaseUnit, unitToUpgradeTo: BaseUnit): Table {
         val ruleset = unitToUpgradeTo.ruleset
         val info = sequenceOf(FormattedLine(title, color = "#FDA", icon = unitToUpgradeTo.makeLink(), header = 5)) +
@@ -313,11 +307,4 @@ object BaseUnitDescriptions {
         infoTable.background = BaseScreen.skinStrings.getUiBackground("General/Tooltip", BaseScreen.skinStrings.roundedEdgeRectangleShape, Color.DARK_GRAY)
         return infoTable
     }
-
-    private fun Table.wrapScaled(scale: Float): WidgetGroup =
-        Container(this).apply {
-            touchable = Touchable.disabled
-            isTransform = true
-            setScale(scale)
-        }
 }
