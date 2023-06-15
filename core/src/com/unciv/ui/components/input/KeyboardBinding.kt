@@ -18,9 +18,11 @@ enum class KeyboardBinding(
     None(Category.None, KeyCharAndCode.UNKNOWN),
 
     // Worldscreen
+    Menu(Category.WorldScreen, KeyCharAndCode.TAB),
     NextTurn(Category.WorldScreen),
     NextTurnAlternate(Category.WorldScreen, KeyCharAndCode.SPACE),
     EmpireOverview(Category.WorldScreen),
+    MusicPlayer(Category.WorldScreen, KeyCharAndCode.ctrl('m')),
 
     /*
      * These try to be faithful to default Civ5 key bindings as found in several places online
@@ -48,7 +50,9 @@ enum class KeyboardBinding(
     ToggleResourceDisplay(Category.WorldScreen, KeyCharAndCode.ctrl('r')),  // Show Resources Icons
     ToggleYieldDisplay(Category.WorldScreen, KeyCharAndCode.ctrl('y')),  // Yield Icons, originally just "Y"
     // End of Civ5-inspired bindings
+
     QuitGame(Category.WorldScreen, KeyCharAndCode.ctrl('q')),
+    NewGame(Category.WorldScreen, KeyCharAndCode.ctrl('n')),
     Diplomacy(Category.WorldScreen, KeyCharAndCode.UNKNOWN),
     Espionage(Category.WorldScreen, KeyCharAndCode.UNKNOWN),
     Undo(Category.WorldScreen, KeyCharAndCode.ctrl('z')),

@@ -28,7 +28,6 @@ import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popups.popups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
@@ -211,10 +210,8 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
             defaults().pad(10f)
 
             menuButton.color = Color.WHITE
-            menuButton.onClick {
-                val worldScreenMenuPopup = worldScreen.popups.firstOrNull { it is WorldScreenMenuPopup }
-                if (worldScreenMenuPopup != null) worldScreenMenuPopup.close()
-                else WorldScreenMenuPopup(worldScreen).open(force = true)
+            menuButton.onActivation(binding = KeyboardBinding.Menu) {
+                WorldScreenMenuPopup(worldScreen).open(force = true)
             }
 
             selectedCivLabel.setFontSize(25)

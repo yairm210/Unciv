@@ -21,6 +21,7 @@ import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.TutorialTrigger
+import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.centerX
@@ -43,6 +44,7 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
+import com.unciv.ui.screens.newgamescreen.NewGameScreen
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.screens.pickerscreens.DiplomaticVoteResultScreen
@@ -53,6 +55,7 @@ import com.unciv.ui.screens.savescreens.SaveGameScreen
 import com.unciv.ui.screens.victoryscreen.VictoryScreen
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTable
 import com.unciv.ui.screens.worldscreen.bottombar.TileInfoTable
+import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMusicPopup
 import com.unciv.ui.screens.worldscreen.minimap.MinimapHolder
 import com.unciv.ui.screens.worldscreen.status.MultiplayerStatusButton
 import com.unciv.ui.screens.worldscreen.status.NextTurnButton
@@ -222,6 +225,13 @@ class WorldScreen(
         game.pushScreen(EmpireOverviewScreen(selectedCiv, category))
     }
 
+    fun openNewGameScreen() {
+        val newGameSetupInfo = GameSetupInfo(gameInfo)
+        newGameSetupInfo.mapParameters.reseed()
+        val newGameScreen = NewGameScreen(newGameSetupInfo)
+        game.pushScreen(newGameScreen)
+    }
+
     private fun addKeyboardPresses() {
         // Space and N are assigned in NextTurnButton constructor
         // Functions that have a big button are assigned there (WorldScreenTopBar, TechPolicyDiplomacyButtons..)
@@ -248,6 +258,10 @@ class WorldScreen(
         globalShortcuts.add(KeyboardBinding.SaveGame) { game.pushScreen(SaveGameScreen(gameInfo)) }    //   Save
         globalShortcuts.add(KeyboardBinding.LoadGame) { game.pushScreen(LoadGameScreen()) }    //   Load
         globalShortcuts.add(KeyboardBinding.QuitGame) { game.popScreen() }    //   WorldScreen is the last screen, so this quits
+        globalShortcuts.add(KeyboardBinding.NewGame) { openNewGameScreen() }
+        globalShortcuts.add(KeyboardBinding.MusicPlayer) {
+            WorldScreenMusicPopup(this).open(force = true)
+        }
         globalShortcuts.add(Input.Keys.NUMPAD_ADD) { this.mapHolder.zoomIn() }    //   '+' Zoom
         globalShortcuts.add(Input.Keys.NUMPAD_SUBTRACT) { this.mapHolder.zoomOut() }    //   '-' Zoom
         globalShortcuts.add(KeyboardBinding.ToggleUI) { toggleUI() }
