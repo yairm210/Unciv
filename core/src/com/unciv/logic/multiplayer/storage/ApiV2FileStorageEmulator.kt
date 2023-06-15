@@ -4,7 +4,7 @@ import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.apiv2.ApiV2
 import com.unciv.utils.Log
 import kotlinx.coroutines.runBlocking
-import java.util.*
+import java.util.UUID
 
 private const val PREVIEW_SUFFIX = "_Preview"
 
