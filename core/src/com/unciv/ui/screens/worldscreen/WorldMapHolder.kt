@@ -663,7 +663,7 @@ class WorldMapHolder(
         }
 
         // Add back in the red markers for Air Unit Attack range since they can't move, but can still attack
-        if (unit.hasUnique(UniqueType.CannotMove) && isAirUnit && !unit.isPreparingAirSweep()) {
+        if (unit.cache.cannotMove && isAirUnit && !unit.isPreparingAirSweep()) {
             val tilesInAttackRange = unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getRange()))
             for (tile in tilesInAttackRange) {
                 // The tile is within attack range
