@@ -98,6 +98,13 @@ When you open Unciv's Mod Manager, it will query Github's [list of repos with th
 The categories will appear als annotations on the mod buttons, and the user can filter for them. They are not required for the game to use the content - e.g. you can still load maps from mods lacking the unciv-mod-maps topic.
 If you want new categories, github will accept any topic, but you'll have to ask the Unciv team to enable them in the game.
 
+If you feel there should be additional topics supported in-game, then the course of action is as follows:
+
+-    You can add topics to your repository as you please, subject to github's terms, but if you whish them to become Unciv-supported they must begin with "unciv-mod-".
+-    Once done, you can either:
+     - Wait at least one release, check that your topic appeared in [ModCategories.json](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/ModCategories.json), and open a change PR for that file, removing the "hidden" attribute, telling us exactly why that topic would benefit the entire community.
+     - Or, open an issue pointing us to your Mod with the new topics, asking us to do the above for you, again telling us why.
+
 ## I have the mod, now what?
 
 The primary use of mods is to add them when starting a new game, or configuring a map. This will mean that both the ruleset of the mod, and the images, will be in use for that specific game/map.
