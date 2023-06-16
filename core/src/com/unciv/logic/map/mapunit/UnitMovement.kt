@@ -7,6 +7,7 @@ import com.unciv.logic.map.BFS
 import com.unciv.logic.map.HexMath.getDistance
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.UnitActionType
 import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
@@ -528,7 +529,7 @@ class UnitMovement(val unit: MapUnit) {
 
 
         if (unit.baseUnit.movesLikeAirUnits()) { // air units move differently from all other units
-            unit.action = null
+            if (unit.action != UnitActionType.Automate.value) unit.action = null
             unit.removeFromTile()
             unit.isTransported = false // it has left the carrier by own means
             unit.putInTile(destination)
