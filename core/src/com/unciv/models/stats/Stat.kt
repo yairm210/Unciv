@@ -7,7 +7,7 @@ import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.colorFromHex
 
 enum class Stat(
-    val notificationIcon: String,
+    val notificationIcon: NotificationIcon,
     val purchaseSound: UncivSound,
     val character: Char,
     val color:Color

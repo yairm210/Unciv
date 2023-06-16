@@ -19,6 +19,7 @@ import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.OtherNotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.managers.TechManager
 import com.unciv.logic.civilization.managers.TurnManager
@@ -527,8 +528,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         else
             "[$positionsCount] sources of [$resourceName] revealed, e.g. near [${chosenCity.name}]"
 
-        return Notification(text, arrayListOf("ResourceIcons/$resourceName"),
-            LocationAction(positions), NotificationCategory.General)
+        return Notification(text, arrayListOf(OtherNotificationIcon("ResourceIcons/$resourceName")),
+            LocationAction(positions).asIterable(), NotificationCategory.General)
     }
 
     // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)

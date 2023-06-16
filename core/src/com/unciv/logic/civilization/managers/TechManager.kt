@@ -382,7 +382,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         // Add notifications for obsolete units/constructions
         for ((unit, cities) in unitUpgrades) {
             if (cities.isEmpty()) continue
-            val locationAction = LocationAction(cities.mapTo(ArrayList(cities.size)) { it.location })
+            val locationAction = LocationAction(cities.asSequence().map { it.location })
             val cityText = if (cities.size == 1) "[${cities.first().name}]"
                 else "[${cities.size}] cities"
             val newUnit = obsoleteUnits[unit]?.name

@@ -73,7 +73,7 @@ class NotificationsOverviewTable(
         }).row()
 
         for (category in NotificationCategory.values()){
-            val categoryNotifications = notifications.filter { it.category == category.name }
+            val categoryNotifications = notifications.filter { it.category == category }
             if (categoryNotifications.isEmpty()) continue
 
             if (category != NotificationCategory.General)
@@ -88,10 +88,10 @@ class NotificationsOverviewTable(
                 notificationTable.add(label).width(stageWidth / 2 - iconSize * notification.icons.size)
                 notificationTable.background = BaseScreen.skinStrings.getUiBackground("OverviewScreen/NotificationOverviewTable/Notification", BaseScreen.skinStrings.roundedEdgeRectangleShape)
                 notificationTable.touchable = Touchable.enabled
-                if (notification.action != null)
+                if (notification.actions.isNotEmpty())
                     notificationTable.onClick { showOneTimeNotification(notification) }
 
-                notification.addNotificationIconsTo(notificationTable, gameInfo.ruleset, iconSize)
+                notification.addNotificationIconsTo(notificationTable, iconSize)
 
                 turnTable.add(notificationTable).padTop(5f)
                 turnTable.padTop(20f).row()
