@@ -371,7 +371,7 @@ enum class UniqueParameterType(
             }
     },
 
-    /** For [UniqueType.ConstructImprovementConsumingUnit], [UniqueType.CreatesOneImprovement] */
+    /** For [UniqueType.CreatesOneImprovement] */
     ImprovementName("improvementName", "Trading Post", "The name of any improvement"){
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {

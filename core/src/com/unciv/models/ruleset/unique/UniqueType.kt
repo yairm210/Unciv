@@ -357,8 +357,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     FoundCity("Founds a new city", UniqueTarget.Unit),
 
     ConstructImprovementInstantly("Can instantly construct a [improvementFilter] improvement", UniqueTarget.Unit),
-    @Deprecated("as of 4.5.2", ReplaceWith("Can instantly construct a [improvementName] improvement <by consuming this unit>"))
-    ConstructImprovementConsumingUnit("Can construct [improvementName]", UniqueTarget.Unit),
     BuildImprovements("Can build [improvementFilter/terrainFilter] improvements on tiles", UniqueTarget.Unit),
     CreateWaterImprovements("May create improvements on water resources", UniqueTarget.Unit),
 
@@ -809,6 +807,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     // region DEPRECATED AND REMOVED
 
+    @Deprecated("as of 4.5.2", ReplaceWith("Can instantly construct a [improvementName] improvement <by consuming this unit>"), DeprecationLevel.ERROR)
+    ConstructImprovementConsumingUnit("Can construct [improvementName]", UniqueTarget.Unit),
     @Deprecated("as of 4.3.9", ReplaceWith("Costs [amount] [stats] per turn when in your territory"), DeprecationLevel.ERROR)
     OldImprovementMaintenance("Costs [amount] gold per turn when in your territory", UniqueTarget.Improvement),
     @Deprecated("as of 4.3.4", ReplaceWith("[+1 Happiness] per [2] social policies adopted"), DeprecationLevel.ERROR)

@@ -470,8 +470,7 @@ object UnitActions {
 
     fun getImprovementConstructionActions(unit: MapUnit, tile: Tile): ArrayList<UnitAction> {
         val finalActions = ArrayList<UnitAction>()
-        val uniquesToCheck = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit) +
-                unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)
+        val uniquesToCheck = unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)
         val civResources = unit.civ.getCivResourcesByName()
 
         for (unique in uniquesToCheck) {
@@ -501,8 +500,7 @@ object UnitActions {
                     // without this the world screen won't show the improvement because it isn't the 'last seen improvement'
                     unit.civ.cache.updateViewableTiles()
 
-                    if (unique.type == UniqueType.ConstructImprovementConsumingUnit) unit.consume()
-                    else activateSideEffects(unit, unique)
+                    activateSideEffects(unit, unique)
                 }.takeIf {
                     resourcesAvailable
                     && unit.currentMovement > 0f
