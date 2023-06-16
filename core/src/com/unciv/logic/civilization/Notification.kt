@@ -1,14 +1,13 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
-import com.unciv.UncivGame
 import com.unciv.logic.IsPartOfGameInfoSerialization
-import com.unciv.models.metadata.BaseRuleset
-import com.unciv.models.ruleset.RulesetCache
-
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 
@@ -24,18 +23,24 @@ open class Notification() : IsPartOfGameInfoSerialization {
         private set
 
     /** Icons to be shown */
-    var icons: ArrayList<INotificationIcon> = ArrayList() // Must be ArrayList and not List so it can be deserialized
+    var icons: ArrayList<String> = ArrayList() // Must be ArrayList and not List so it can be deserialized
         private set
 
     /** Actions on clicking a Notification - will be activated round-robin style */
     var actions: ArrayList<NotificationAction> = ArrayList()
         private set
 
-    constructor(text: String, notificationIcons: ArrayList<INotificationIcon>?, actions: Iterable<NotificationAction>?, category: NotificationCategory) : this() {
+    constructor(
+        text: String,
+        notificationIcons: Array<out String>,
+        actions: Iterable<NotificationAction>?,
+        category: NotificationCategory = NotificationCategory.General
+    ) : this() {
         this.category = category
         this.text = text
-        if (notificationIcons != null)
-            this.icons = notificationIcons
+        if (notificationIcons.isNotEmpty()) {
+            this.icons = notificationIcons.toCollection(ArrayList())
+        }
         actions?.toCollection(this.actions)
     }
 
@@ -56,12 +61,22 @@ open class Notification() : IsPartOfGameInfoSerialization {
     }
 
     @Transient
+    /** For round-robin activation in [execute] */
     private var index = 0
 
-    fun addNotificationIconsTo(table: Table, iconSize: Float) {
+    fun addNotificationIconsTo(table: Table, ruleset: Ruleset, iconSize: Float) {
         if (icons.isEmpty()) return
         for (icon in icons.reversed()) {
-            val image = icon.getImage(iconSize)
+            val image: Actor = when {
+                ruleset.technologies.containsKey(icon) ->
+                    ImageGetter.getTechIconPortrait(icon, iconSize)
+                ruleset.nations.containsKey(icon) ->
+                    ImageGetter.getNationPortrait(ruleset.nations[icon]!!, iconSize)
+                ruleset.units.containsKey(icon) ->
+                    ImageGetter.getUnitIcon(icon)
+                else ->
+                    ImageGetter.getImage(icon)
+            }
             table.add(image).size(iconSize).padRight(5f)
         }
     }
@@ -73,10 +88,6 @@ open class Notification() : IsPartOfGameInfoSerialization {
     }
 
     class Serializer : Json.Serializer<Notification> {
-        val ruleset by lazy {
-            UncivGame.Current.gameInfo?.ruleset
-                ?: RulesetCache[BaseRuleset.Civ_V_GnK.fullName]
-        }
 
         override fun write(json: Json, notification: Notification, knownType: Class<*>?) {
             json.writeObjectStart()
@@ -85,14 +96,7 @@ open class Notification() : IsPartOfGameInfoSerialization {
             if (notification.text.isNotEmpty())
                 json.writeValue("text", notification.text)
             if (notification.icons.isNotEmpty()) {
-                json.writeArrayStart("icons")
-                for (icon in notification.icons) {
-                    json.writeObjectStart()
-                    json.writer.name(icon.type.name)
-                    json.writeValue(icon.getValueForJson() as Any, String::class.java)
-                    json.writeObjectEnd()
-                }
-                json.writeArrayEnd()
+                json.writeValue("icons", notification.icons, null, String::class.java)
             }
             if (notification.actions.isNotEmpty()) {
                 json.writeArrayStart("actions")
@@ -109,20 +113,16 @@ open class Notification() : IsPartOfGameInfoSerialization {
         }
 
         override fun read(json: Json, jsonData: JsonValue, type: Class<*>?): Notification {
-            // **Cannot** be distinguished by field name action exists / actions doesn't alone
-            val hasIcons = jsonData.hasChild("icons")
-            val hasAction = jsonData.hasChild("action")
-            val hasActions = jsonData.hasChild("actions")
-            val iconIsString = hasIcons && jsonData.get("icons").run { isArray && child.isString }
-            if (hasAction || !hasActions && hasIcons && iconIsString)
+            // Cannot be distinguished 100% certain by field names but if neither action / actions exist then both formats are compatible
+            if (jsonData.hasChild("action"))
                 return readOldFormat(json, jsonData)
             return readNewFormat(json, jsonData)
         }
 
         private fun readNewFormat(json: Json, jsonData: JsonValue) = Notification().apply {
             // New format looks like this: "notifications":[
-            //      {"category":"Cities","text":"[Stockholm] has expanded its borders!","icons":[{"Other":"Culture"}],"actions":[{"LocationAction":{"location":{"x":7,"y":1}}},{"LocationAction":{"location":{"x":9,"y":3}}}]},
-            //      {"category":"Production","text":"[Nobel Foundation] has been built in [Stockholm]","icons":[{"Other":"BuildingIcons/Nobel Foundation"}],"actions":[{"LocationAction":{"location":{"x":9,"y":3}}}]}
+            //      {"category":"Cities","text":"[Stockholm] has expanded its borders!","icons":["StatIcons/Culture"],"actions":[{"LocationAction":{"location":{"x":7,"y":1}}},{"LocationAction":{"location":{"x":9,"y":3}}}]},
+            //      {"category":"Production","text":"[Nobel Foundation] has been built in [Stockholm]","icons":["BuildingIcons/Nobel Foundation"],"actions":[{"LocationAction":{"location":{"x":9,"y":3}}}]}
             //  ]
             json.readField(this, "category", jsonData)
             json.readField(this, "text", jsonData)
@@ -133,14 +133,7 @@ open class Notification() : IsPartOfGameInfoSerialization {
                     entry = entry.next
                 }
             }
-            if (jsonData.hasChild("icons")) {
-                var entry = jsonData.get("icons").child
-                while (entry != null) {
-                    val icon = NotificationIcon.parseJson(entry) ?: continue
-                    icons += icon
-                    entry = entry.next
-                }
-            }
+            json.readField(this, "icons", jsonData)
         }
 
         private fun readOldFormat(json: Json, jsonData: JsonValue) = Notification().apply {
@@ -162,13 +155,7 @@ open class Notification() : IsPartOfGameInfoSerialization {
                     "MayaLongCountAction" -> actions += MayaLongCountAction()
                 }
             }
-            if (jsonData.hasChild("icons")) {
-                for (icon in json.readValue("icons", Array<String>::class.java, jsonData)) {
-                    val notificationIcon = NotificationIcon.parseOldFormat(ruleset, icon)
-                        ?: continue
-                    icons += notificationIcon
-                }
-            }
+            json.readField(this, "icons", jsonData)
         }
 
         private fun getOldFormatLocations(json: Json, actionData: JsonValue): Sequence<LocationAction> {

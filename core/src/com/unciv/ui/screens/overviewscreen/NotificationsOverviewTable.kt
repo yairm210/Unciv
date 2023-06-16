@@ -91,7 +91,7 @@ class NotificationsOverviewTable(
                 if (notification.actions.isNotEmpty())
                     notificationTable.onClick { showOneTimeNotification(notification) }
 
-                notification.addNotificationIconsTo(notificationTable, iconSize)
+                notification.addNotificationIconsTo(notificationTable, gameInfo.ruleset, iconSize)
 
                 turnTable.add(notificationTable).padTop(5f)
                 turnTable.padTop(20f).row()

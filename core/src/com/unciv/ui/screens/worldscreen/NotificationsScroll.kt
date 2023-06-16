@@ -342,7 +342,7 @@ class NotificationsScroll(
                 listItem.add(label).padRight(10f)
             }
 
-            notification.addNotificationIconsTo(listItem, itemIconSize)
+            notification.addNotificationIconsTo(listItem, worldScreen.gameInfo.ruleset, itemIconSize)
 
             itemWidth = listItem.prefWidth  // includes the background NinePatch's leftWidth+rightWidth
 

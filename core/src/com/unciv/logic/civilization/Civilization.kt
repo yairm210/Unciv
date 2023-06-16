@@ -760,76 +760,22 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
 
     // region addNotification
-
-    // Todo Interim compatibility proxies - remove and replace all strings on caller side
-
-    // The first four only exist because the next four would otherwise provoke overload ambiguity when no varargs type is seen
-    fun addNotification(text: String, category: NotificationCategory) =
-        addNotification(text, null, category)
-
-    fun addNotification(text: String, location: Vector2, category: NotificationCategory) =
-        addNotification(text, LocationAction(location), category)
-
-    fun addNotification(text: String, action: NotificationAction, category: NotificationCategory) {
-        if (playerType == PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
-        notifications.add(Notification(text, null, listOf(action), category))
-    }
-
-    fun addNotification(text: String, actions: Iterable<NotificationAction>?, category: NotificationCategory) {
-        if (playerType == PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
-        notifications.add(Notification(text, null, actions, category))
-    }
-
-    fun addNotification(text: String, category: NotificationCategory, vararg notificationIcons: Any) =
+    fun addNotification(text: String, category: NotificationCategory, vararg notificationIcons: String) =
         addNotification(text, null, category, *notificationIcons)
 
-    fun addNotification(text: String, location: Vector2, category: NotificationCategory, vararg notificationIcons: Any) =
+    fun addNotification(text: String, location: Vector2, category: NotificationCategory, vararg notificationIcons: String) =
         addNotification(text, LocationAction(location), category, *notificationIcons)
 
-    fun addNotification(text: String, action: NotificationAction, category: NotificationCategory, vararg notificationIcons: Any) {
+    fun addNotification(text: String, action: NotificationAction, category: NotificationCategory, vararg notificationIcons: String) =
+        addNotification(text, listOf(action), category, *notificationIcons)
+
+    fun addNotification(text: String, actions: Sequence<NotificationAction>, category:NotificationCategory, vararg notificationIcons: String) =
+        addNotification(text, actions.asIterable(), category, *notificationIcons)
+
+    fun addNotification(text: String, actions: Iterable<NotificationAction>?, category: NotificationCategory, vararg notificationIcons: String) {
         if (playerType == PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
-        val arrayList = NotificationIcon.convertToTyped(notificationIcons, gameInfo.ruleset)
-        notifications.add(Notification(text, arrayList, listOf(action), category))
+        notifications.add(Notification(text, notificationIcons, actions, category))
     }
-
-    fun addNotification(text: String, actions: Iterable<NotificationAction>?, category: NotificationCategory, vararg notificationIcons: Any) {
-        if (playerType == PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
-        val arrayList = NotificationIcon.convertToTyped(notificationIcons, gameInfo.ruleset)
-        notifications.add(Notification(text, arrayList, actions, category))
-    }
-
-    fun addNotification(text: String, actions: Sequence<NotificationAction>, category:NotificationCategory, vararg notificationIcons: Any) {
-        if (playerType == PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
-        val arrayList = NotificationIcon.convertToTyped(notificationIcons, gameInfo.ruleset)
-        notifications.add(Notification(text, arrayList, actions.asIterable(), category))
-    }
-
-    // Todo -- End of compatibility proxies
-
-    fun addNotification(text: String, category: NotificationCategory, vararg notificationIcons: INotificationIcon) =
-        addNotification(text, null, category, *notificationIcons)
-
-    fun addNotification(text: String, location: Vector2, category: NotificationCategory, vararg notificationIcons: INotificationIcon) =
-        addNotification(text, LocationAction(location), category, *notificationIcons)
-
-    fun addNotification(text: String, action: NotificationAction, category: NotificationCategory, vararg notificationIcons: INotificationIcon) {
-        if (playerType == PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
-        val arrayList = notificationIcons.toCollection(ArrayList())
-        notifications.add(Notification(text, arrayList, listOf(action), category))
-    }
-
-    fun addNotification(text: String, actions: Iterable<NotificationAction>?, category: NotificationCategory, vararg notificationIcons: INotificationIcon) {
-        if (playerType == PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
-        val arrayList = notificationIcons.toCollection(ArrayList())
-        notifications.add(Notification(text, arrayList, actions, category))
-    }
-
-    fun addNotification(text: String, actions: Sequence<NotificationAction>, category:NotificationCategory, vararg notificationIcons: INotificationIcon) {
-        if (playerType == PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
-        val arrayList = notificationIcons.toCollection(ArrayList())
-        notifications.add(Notification(text, arrayList, actions.asIterable(), category))
-    }
-
     // endregion
 
     fun addCity(location: Vector2) {
