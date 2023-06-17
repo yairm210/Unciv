@@ -775,10 +775,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     }
 
     override fun requiresResource(resource: String): Boolean {
-        if (requiredResource == resource) return true
-        for (unique in getMatchingUniques(UniqueType.ConsumesResources)) {
-            if (unique.params[1] == resource) return true
-        }
+        if (resourceRequirementsInternal.contains(resource)) return true
         for (unique in getMatchingUniques(UniqueType.CostsResources)) {
             if (unique.params[1] == resource) return true
         }
