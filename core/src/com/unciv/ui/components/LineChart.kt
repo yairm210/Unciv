@@ -54,14 +54,15 @@ class LineChart(
 
 
 
-    fun getTurnAt(x: Float): Int {
-        if (xLabels.isEmpty() || xLabelsAsLabels.isEmpty()) return -1
-        val startPoint = xLabelsAsLabels.first().x
-        val endPoint = xLabelsAsLabels.last().x
-        if (startPoint.compareTo(endPoint) == 0) return xLabels.last()
-        val ratio = (x - startPoint) / (endPoint - startPoint)
-        val turn = lerp(xLabels.first().toFloat(), xLabels.last().toFloat(), ratio)
-        return ceil(turn).toInt()
+    fun getTurnAt(x: Float): IntRange? {
+        if (xLabels.isEmpty() || xLabelsAsLabels.isEmpty() || yLabelsAsLabels.isEmpty()) return null
+        val widestYLabelWidth = yLabelsAsLabels.maxOf { it.width }
+        val linesMinX = widestYLabelWidth + axisToLabelPadding + axisLineWidth
+        val linesMaxX = chartWidth - xLabelsAsLabels.last().width / 2
+        if (linesMinX.compareTo(linesMaxX) == 0) return (xLabels.first()..xLabels.last())
+        val ratio = (x - linesMinX) / (linesMaxX - linesMinX)
+        val turn = max(1, lerp(xLabels.first().toFloat(), xLabels.last().toFloat(), ratio).toInt())
+        return (getPrevNumberDivisibleByPowOfTen(turn-1)..getNextNumberDivisibleByPowOfTen(turn+1))
     }
 
     fun update(newData: List<DataPoint<Int>>, newSelectedCiv: Civilization) {
@@ -194,7 +195,7 @@ class LineChart(
         }
 
         // Draw x-axis labels
-        val lastXAxisLabelWidth = xLabelsAsLabels[xLabelsAsLabels.size - 1].width
+        val lastXAxisLabelWidth = xLabelsAsLabels.last().width
         val xAxisLabelMinX =
                 widestYLabelWidth + axisToLabelPadding + axisLineWidth / 2
         val xAxisLabelMaxX = chartWidth - lastXAxisLabelWidth / 2
@@ -221,9 +222,10 @@ class LineChart(
         val linesMaxX = chartWidth - lastXAxisLabelWidth / 2
         val linesMinY = yAxisYPosition
         val linesMaxY = chartHeight - labelHeight / 2
-        val scaleX = (linesMaxX - linesMinX) / xLabels.max()
+        val scaleX = (linesMaxX - linesMinX) / (xLabels.max() - xLabels.min())
         val scaleY = (linesMaxY - linesMinY) / (yLabels.max() - yLabels.min())
         val negativeOrientationLineYPosition = yAxisLabelMinY + labelHeight / 2
+        val minXLabel = xLabels.min()
         val minYLabel = yLabels.min()
         val negativeScaleY = (negativeOrientationLineYPosition - linesMinY) / if (minYLabel < 0) minYLabel else 1
         val sortedPoints = dataPoints.sortedBy { it.x }
@@ -243,9 +245,9 @@ class LineChart(
             val points = pointsByCiv[civ]!!
             val scaledPoints : List<DataPoint<Float>> = points.map {
                 if (it.y < 0f)
-                    DataPoint(linesMinX + it.x * scaleX, linesMinY + it.y * negativeScaleY, it.civ)
+                    DataPoint(linesMinX + (it.x - minXLabel) * scaleX, linesMinY + it.y * negativeScaleY, it.civ)
                 else
-                    DataPoint(linesMinX + it.x * scaleX, linesMinY + (it.y - minYLabel) * scaleY, it.civ)
+                    DataPoint(linesMinX + (it.x - minXLabel) * scaleX, linesMinY + (it.y - minYLabel) * scaleY, it.civ)
             }
             // Probably nobody can tell the difference of one pixel, so that seems like a reasonable epsilon.
             val simplifiedScaledPoints = douglasPeucker(scaledPoints, 1f)

@@ -41,7 +41,7 @@ class VictoryScreenCharts(
     private var lineChart : LineChart? = null
     private val chartHolder = Container(lineChart)
     // if it is negative - no zoom, if positive - zoom at turn X
-    private var zoomAtX : Int = -1
+    private var zoomAtX : IntRange? = null
     private val zoomSize = 10
 
     init {
@@ -103,7 +103,7 @@ class VictoryScreenCharts(
             )
             chartHolder.actor = lineChart
             val onChartClick = OnClickListener(function = { _ , x, _ ->
-                zoomAtX = if (zoomAtX < 0) lineChart!!.getTurnAt(x) else -1
+                zoomAtX = if (zoomAtX == null) lineChart!!.getTurnAt(x) else null
                 updateChart()
             })
             lineChart?.addListener(onChartClick)
@@ -117,7 +117,7 @@ class VictoryScreenCharts(
             .filter { it.isMajorCiv() }
             .flatMap { civ ->
                 civ.statsHistory
-                    .filterKeys { zoomAtX < 0 || abs(it - zoomAtX) <= zoomSize  }
+                    .filterKeys { zoomAtX == null || it in zoomAtX!!  }
                     .filterValues { it.containsKey(rankingType) }
                     .map { (turn, data) -> Pair(turn, Pair(civ, data.getValue(rankingType))) }
             }
