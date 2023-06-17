@@ -311,7 +311,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                     // "military units" --> "Military", using invariant locale
                     && matchesFilter(filter.removeSuffix(" units").lowercase().replaceFirstChar { it.uppercaseChar() })
                 ) return true
-                return uniques.contains(filter)
+                return uniqueMap.contains(filter)
             }
         }
     }
