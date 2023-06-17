@@ -316,7 +316,7 @@ class LocalUniqueCache(val cache:Boolean = true) {
         val stateForConditionals = if (ignoreConditionals) StateForConditionals.IgnoreConditionals
         else StateForConditionals(city.civ, city)
         return get(
-            "city-${city.id}-${uniqueType.name}-${stateForConditionals}",
+            "city-${city.id}-${uniqueType.name}-${ignoreConditionals}",
             city.getMatchingUniques(uniqueType, stateForConditionals)
         )
     }
@@ -328,9 +328,11 @@ class LocalUniqueCache(val cache:Boolean = true) {
             civ
         )
     ): Sequence<Unique> {
+        val sequence = civ.getMatchingUniques(uniqueType, stateForConditionals)
+        if (!cache) return sequence // So we don't need to toString the stateForConditionals
         return get(
             "civ-${civ.civName}-${uniqueType.name}-${stateForConditionals}",
-            civ.getMatchingUniques(uniqueType, stateForConditionals)
+            sequence
         )
     }
 
