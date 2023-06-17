@@ -245,9 +245,9 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     }
 
     fun updateHasActiveEnemyMovementPenalty() {
-        civInfo.hasActiveEnemyMovementPenalty = civInfo.hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement)
+        civInfo.hasActiveEnemyMovementPenalty = civInfo.hasUnique(UniqueType.EnemyUnitsSpendExtraMovement)
         civInfo.enemyMovementPenaltyUniques =
-                civInfo.getMatchingUniques(UniqueType.EnemyLandUnitsSpendExtraMovement)
+                civInfo.getMatchingUniques(UniqueType.EnemyUnitsSpendExtraMovement)
     }
 
     fun updateCitiesConnectedToCapital(initialSetup: Boolean = false) {

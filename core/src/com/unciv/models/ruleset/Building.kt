@@ -683,7 +683,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                             && cityInfo.matchesFilter(it.params[1])})
                 UniqueTriggerActivation.triggerCivwideUnique(unique, cityInfo.civ, cityInfo, triggerNotificationText = triggerNotificationText)
 
-        if (hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement))
+        if (hasUnique(UniqueType.EnemyUnitsSpendExtraMovement))
             civInfo.cache.updateHasActiveEnemyMovementPenalty()
 
         // Korean unique - apparently gives the same as the research agreement

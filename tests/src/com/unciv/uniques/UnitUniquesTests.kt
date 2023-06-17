@@ -55,6 +55,7 @@ class UnitUniquesTests {
         Assert.assertFalse("Test preparation failed to add ConsumesResources to Manufactory",
             improvement.uniqueObjects.none { it.type == UniqueType.ConsumesResources })
 
+        game.makeHexagonalMap(1)
         val civ = game.addCiv(isPlayer = true)
         val centerTile = game.getTile(Vector2.Zero)
         val capital = game.addCity(civ, centerTile)
