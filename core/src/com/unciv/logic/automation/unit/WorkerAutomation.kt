@@ -221,15 +221,13 @@ class WorkerAutomation(
         if (candidateCities.none()) return false // do nothing.
 
         val isCandidateTilePredicate: (Tile) -> Boolean = { it.isLand && unit.movement.canPassThrough(it) }
-        val getTilePriority: (Tile) -> Int = { it.roadStatus.ordinal }
         val currentTile = unit.getTile()
         val cityTilesToSeek = ArrayList(tilesOfConnectedCities.sortedBy { it.aerialDistanceTo(currentTile) })
 
         for (toConnectCity in candidateCities) {
             val toConnectTile = toConnectCity.getCenterTile()
-
             val bfs: BFS = bfsCache[toConnectTile.position] ?:
-                BFS(toConnectTile, getTilePriority, isCandidateTilePredicate).apply {
+                BFS(toConnectTile, isCandidateTilePredicate).apply {
                     maxSize = HexMath.getNumberOfTilesInHexagon(
                         WorkerAutomationConst.maxBfsReachPadding +
                             tilesOfConnectedCities.minOf { it.aerialDistanceTo(toConnectTile) }
@@ -240,7 +238,6 @@ class WorkerAutomation(
             while (true) {
                 for (cityTile in cityTilesToSeek.toList()) { // copy since we change while running
                     if (!bfs.hasReachedTile(cityTile)) continue
-
                     // we have a winner!
                     val pathToCity = bfs.getPathTo(cityTile)
                     val roadableTiles = pathToCity.filter { it.getUnpillagedRoad() < bestRoadAvailable }
