@@ -311,11 +311,10 @@ class LocalUniqueCache(val cache:Boolean = true) {
     fun forCityGetMatchingUniques(
         city: City,
         uniqueType: UniqueType,
-        stateForConditionals: StateForConditionals = StateForConditionals(
-            city.civ,
-            city
-        )
+        ignoreConditionals: Boolean = false
     ): Sequence<Unique> {
+        val stateForConditionals = if (ignoreConditionals) StateForConditionals.IgnoreConditionals
+        else StateForConditionals(city.civ, city)
         return get(
             "city-${city.id}-${uniqueType.name}-${stateForConditionals}",
             city.getMatchingUniques(uniqueType, stateForConditionals)
