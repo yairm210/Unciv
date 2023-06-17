@@ -12,11 +12,13 @@ import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.packIfNeeded
+import com.unciv.ui.components.input.OnClickListener
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.newgamescreen.TranslatedSelectBox
 import com.unciv.ui.screens.victoryscreen.VictoryScreenCivGroup.DefeatedPlayerStyle
 import com.unciv.ui.screens.worldscreen.WorldScreen
+import kotlin.math.abs
 
 class VictoryScreenCharts(
     worldScreen: WorldScreen
@@ -38,6 +40,9 @@ class VictoryScreenCharts(
 
     private var lineChart : LineChart? = null
     private val chartHolder = Container(lineChart)
+    // if it is negative - no zoom, if positive - zoom at turn X
+    private var zoomAtX : Int = -1
+    private val zoomSize = 10
 
     init {
         civButtonsScroll.setScrollingDisabled(true, false)
@@ -97,6 +102,11 @@ class VictoryScreenCharts(
                 parent.height - 60f
             )
             chartHolder.actor = lineChart
+            val onChartClick = OnClickListener(function = { _ , x, _ ->
+                zoomAtX = if (zoomAtX < 0) lineChart!!.getTurnAt(x) else -1
+                updateChart()
+            })
+            lineChart?.addListener(onChartClick)
         }
         lineChart?.update(getLineChartData(rankingType), selectedCiv)
         chartHolder.invalidateHierarchy()
@@ -107,6 +117,7 @@ class VictoryScreenCharts(
             .filter { it.isMajorCiv() }
             .flatMap { civ ->
                 civ.statsHistory
+                    .filterKeys { zoomAtX < 0 || abs(it - zoomAtX) <= zoomSize  }
                     .filterValues { it.containsKey(rankingType) }
                     .map { (turn, data) -> Pair(turn, Pair(civ, data.getValue(rankingType))) }
             }

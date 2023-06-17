@@ -3,6 +3,7 @@ package com.unciv.ui.components
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import com.badlogic.gdx.math.MathUtils.lerp
 import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -53,6 +54,16 @@ class LineChart(
 
 
 
+    fun getTurnAt(x: Float): Int {
+        if (xLabels.isEmpty() || xLabelsAsLabels.isEmpty()) return -1
+        val startPoint = xLabelsAsLabels.first().x
+        val endPoint = xLabelsAsLabels.last().x
+        if (startPoint.compareTo(endPoint) == 0) return xLabels.last()
+        val ratio = (x - startPoint) / (endPoint - startPoint)
+        val turn = lerp(xLabels.first().toFloat(), xLabels.last().toFloat(), ratio)
+        return ceil(turn).toInt()
+    }
+
     fun update(newData: List<DataPoint<Int>>, newSelectedCiv: Civilization) {
         selectedCiv = newSelectedCiv
 
@@ -71,6 +82,7 @@ class LineChart(
     }
 
     private fun generateLabels(value: List<DataPoint<Int>>, yAxis: Boolean): List<Int> {
+        if (value.isEmpty()) return listOf(0)
         val minLabelValue = getPrevNumberDivisibleByPowOfTen(value.minOf { if (yAxis) it.y else it.x })
         val maxLabelValue = getNextNumberDivisibleByPowOfTen(value.maxOf { if (yAxis) it.y else it.x })
         var stepSizePositive = ceil(maxLabelValue.toFloat() / maxLabels).toInt()
