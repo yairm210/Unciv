@@ -2,6 +2,7 @@ package com.unciv.ui.screens.multiplayerscreens
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
+import com.unciv.Constants
 import com.unciv.logic.multiplayer.OnlineMultiplayerGame
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.models.translations.tr
@@ -13,7 +14,7 @@ import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.popups.AuthPopup
@@ -103,7 +104,7 @@ class EditMultiplayerGameInfoScreen(val multiplayerGame: OnlineMultiplayerGame) 
     private fun resign(multiplayerGame: OnlineMultiplayerGame) {
         //Create a popup
         val popup = Popup(this)
-        popup.addGoodSizedLabel("Working...").row()
+        popup.addGoodSizedLabel(Constants.working).row()
         popup.open()
 
         Concurrency.runOnNonDaemonThreadPool("Resign") {

@@ -7,18 +7,19 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.models.metadata.ModCategories
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.newgamescreen.TranslatedSelectBox
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.ExpanderTab
-import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
-import com.unciv.ui.components.extensions.keyShortcuts
-import com.unciv.ui.components.extensions.onActivation
-import com.unciv.ui.components.extensions.onChange
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
@@ -72,27 +73,6 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
         }
     }
 
-    enum class Category(
-        val label: String,
-        val topic: String
-    ) {
-        All("All mods", "unciv-mod"),
-        Rulesets("Rulesets", "unciv-mod-rulesets"),
-        Expansions("Expansions", "unciv-mod-expansions"),
-        Graphics("Graphics", "unciv-mod-graphics"),
-        Audio("Audio", "unciv-mod-audio"),
-        Maps("Maps", "unciv-mod-maps"),
-        Fun("Fun", "unciv-mod-fun"),
-        ModsOfMods("Mods of mods", "unciv-mod-modsofmods");
-
-        companion object {
-            fun fromSelectBox(selectBox: TranslatedSelectBox): Category {
-                val selected = selectBox.selected.value
-                return values().firstOrNull { it.label == selected } ?: All
-            }
-        }
-    }
-
     class Filter(
         val text: String,
         val topic: String
@@ -104,7 +84,8 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
 
     private val textField = UncivTextField.create("Enter search text")
 
-    var category = Category.All
+    var category = ModCategories.default()
+
     var sortInstalled = SortType.Name
     var sortOnline = SortType.Stars
 
@@ -140,12 +121,12 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
         }
 
         categorySelect = TranslatedSelectBox(
-            Category.values().map { category -> category.label },
+            ModCategories.asSequence().map { it.label }.toList(),
             category.label,
             BaseScreen.skin
         )
         categorySelect.onChange {
-            category = Category.fromSelectBox(categorySelect)
+            category = ModCategories.fromSelectBox(categorySelect)
             modManagementScreen.refreshInstalledModTable()
             modManagementScreen.refreshOnlineModTable()
         }
@@ -209,10 +190,10 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
     }
 }
 
-private fun getTextButton(nameString:String, topics: List<String>): TextButton {
-    val categories = ArrayList<ModManagementOptions.Category>()
-    for (category in ModManagementOptions.Category.values()) {
-        if (category== ModManagementOptions.Category.All) continue
+private fun getTextButton(nameString: String, topics: List<String>): TextButton {
+    val categories = ArrayList<ModCategories.Category>()
+    for (category in ModCategories) {
+        if (category == ModCategories.default()) continue
         if (topics.contains(category.topic)) categories += category
     }
 
@@ -225,8 +206,11 @@ private fun getTextButton(nameString:String, topics: List<String>): TextButton {
     return button
 }
 
-/** Helper class holds combined mod info for ModManagementScreen, used for both installed and online lists */
-class ModUIData(
+/** Helper class holds combined mod info for ModManagementScreen, used for both installed and online lists
+ *
+ *  Note it is guaranteed either ruleset or repo are non-null, never both.
+ */
+class ModUIData private constructor(
     val name: String,
     val description: String,
     val ruleset: Ruleset?,
@@ -270,12 +254,10 @@ class ModUIData(
     }
 
     private fun matchesCategory(filter: ModManagementOptions.Filter): Boolean {
-        val modTopic = repo?.topics ?: ruleset?.modOptions?.topics!!
-        if (filter.topic == ModManagementOptions.Category.All.topic)
+        if (filter.topic == ModCategories.default().topic)
             return true
-        if (modTopic.size < 2) return false
-        if (modTopic[1] == filter.topic) return true
-        return false
+        val modTopics = repo?.topics ?: ruleset?.modOptions?.topics!!
+        return filter.topic in modTopics
     }
 }
 

@@ -101,6 +101,13 @@ class City : IsPartOfGameInfoSerialization {
 
     internal var flagsCountdown = HashMap<String, Int>()
 
+    /** Persisted connected-to-capital (by any medium) to allow "disconnected" notifications after loading */
+    // Unknown only exists to support older saves, so those do not generate spurious connected/disconnected messages.
+    // The other names are chosen so serialization is compatible with a Boolean to allow easy replacement in the future.
+    @Suppress("EnumEntryName")
+    enum class ConnectedToCapitalStatus { Unknown, `false`, `true` }
+    var connectedToCapitalStatus = ConnectedToCapitalStatus.Unknown
+
     fun hasDiplomaticMarriage(): Boolean = foundingCiv == ""
 
     //region pure functions
@@ -129,6 +136,7 @@ class City : IsPartOfGameInfoSerialization {
         toReturn.cityAIFocus = cityAIFocus
         toReturn.avoidGrowth = avoidGrowth
         toReturn.manualSpecialists = manualSpecialists
+        toReturn.connectedToCapitalStatus = connectedToCapitalStatus
         return toReturn
     }
 
@@ -266,7 +274,7 @@ class City : IsPartOfGameInfoSerialization {
 
 
     fun containsBuildingUnique(uniqueType: UniqueType) =
-        cityConstructions.getBuiltBuildings().flatMap { it.uniqueObjects }.any { it.isOfType(uniqueType) }
+        cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).any()
 
     fun getGreatPersonPercentageBonus(): Int{
         var allGppPercentageBonus = 0
@@ -526,8 +534,8 @@ class City : IsPartOfGameInfoSerialization {
     /** Implements [UniqueParameterType.CityFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CityFilter] */
     fun matchesFilter(filter: String, viewingCiv: Civilization = civ): Boolean {
         return when (filter) {
-            "in this city" -> true
-            "in all cities" -> true // Filtered by the way uniques are found
+            "in this city" -> true // Filtered by the way uniques are found
+            "in all cities" -> true
             "in other cities" -> true // Filtered by the way uniques are found
             "in all coastal cities" -> isCoastal()
             "in capital" -> isCapital()

@@ -12,14 +12,13 @@ import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.UnitGroup
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.darken
-import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
@@ -320,12 +319,18 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
         fun MapUnit.isEligible(): Boolean = (this.civ == worldScreen.viewingCiv
                 || worldScreen.viewingCiv.isSpectator()) && this !in selectedUnits
-        fun MapUnit.isPrioritized(): Boolean = this.isGreatPerson() || this.hasUnique(UniqueType.FoundCity)
 
-        // Civ 5 Order of selection:
+        // This is the Civ 5 Order of selection:
         // 1. City
         // 2. GP + Settlers
         // 3. Military
+        // 4. Other civilian (Workers)
+        // 5. None (Deselect)
+        // However we deviate from it because there was a poll on Discord that clearly showed that
+        // people would prefer the military unit to always be preferred over GP, so we use this:
+        // 1. City
+        // 2. Military
+        // 3. GP + Settlers
         // 4. Other civilian (Workers)
         // 5. None (Deselect)
 
@@ -335,7 +340,6 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
         val nextUnit: MapUnit?
         val priorityUnit = when {
-            civUnit != null && civUnit.isEligible() && civUnit.isPrioritized() -> civUnit
             milUnit != null && milUnit.isEligible() -> milUnit
             civUnit != null && civUnit.isEligible() -> civUnit
             else -> null
@@ -343,8 +347,8 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
         nextUnit = when {
                 curUnit == null -> priorityUnit
-                curUnit == civUnit && milUnit != null && milUnit.isEligible() -> {if (civUnit.isPrioritized()) milUnit else null}
-                curUnit == milUnit && civUnit != null && civUnit.isEligible() -> {if (civUnit.isPrioritized()) null else civUnit}
+                curUnit == civUnit && milUnit != null && milUnit.isEligible() -> null
+                curUnit == milUnit && civUnit != null && civUnit.isEligible() -> civUnit
                 else -> priorityUnit
             }
 

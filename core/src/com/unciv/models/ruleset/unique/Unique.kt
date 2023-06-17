@@ -311,13 +311,12 @@ class LocalUniqueCache(val cache:Boolean = true) {
     fun forCityGetMatchingUniques(
         city: City,
         uniqueType: UniqueType,
-        stateForConditionals: StateForConditionals = StateForConditionals(
-            city.civ,
-            city
-        )
+        ignoreConditionals: Boolean = false
     ): Sequence<Unique> {
+        val stateForConditionals = if (ignoreConditionals) StateForConditionals.IgnoreConditionals
+        else StateForConditionals(city.civ, city)
         return get(
-            "city-${city.id}-${uniqueType.name}-${stateForConditionals}",
+            "city-${city.id}-${uniqueType.name}-${ignoreConditionals}",
             city.getMatchingUniques(uniqueType, stateForConditionals)
         )
     }
@@ -329,9 +328,11 @@ class LocalUniqueCache(val cache:Boolean = true) {
             civ
         )
     ): Sequence<Unique> {
+        val sequence = civ.getMatchingUniques(uniqueType, stateForConditionals)
+        if (!cache) return sequence // So we don't need to toString the stateForConditionals
         return get(
             "civ-${civ.civName}-${uniqueType.name}-${stateForConditionals}",
-            civ.getMatchingUniques(uniqueType, stateForConditionals)
+            sequence
         )
     }
 
@@ -354,8 +355,10 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
     /** Adds one [unique] unless it has a ConditionalTimedUnique conditional */
     fun addUnique(unique: Unique) {
         if (unique.conditionals.any { it.type == UniqueType.ConditionalTimedUnique }) return
-        if (!containsKey(unique.placeholderText)) this[unique.placeholderText] = ArrayList()
-        this[unique.placeholderText]!!.add(unique)
+
+        val existingArrayList = get(unique.placeholderText)
+        if (existingArrayList != null) existingArrayList.add(unique)
+        else this[unique.placeholderText] = arrayListOf(unique)
     }
 
     /** Calls [addUnique] on each item from [uniques] */

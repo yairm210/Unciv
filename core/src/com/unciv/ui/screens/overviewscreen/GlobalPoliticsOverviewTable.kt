@@ -24,9 +24,9 @@ import com.unciv.ui.components.extensions.addBorder
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
 import com.unciv.ui.components.extensions.center
-import com.unciv.ui.components.extensions.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
@@ -94,7 +94,7 @@ class GlobalPoliticsOverviewTable (
     }
 
     private fun createGlobalPoliticsTable() {
-        for (civ in viewingPlayer.diplomacyFunctions.getKnownCivsSorted(includeCityStates = false)) {
+        for (civ in sequenceOf(viewingPlayer) + viewingPlayer.diplomacyFunctions.getKnownCivsSorted(includeCityStates = false)) {
             addSeparator(Color.GRAY)
 
             // civ image

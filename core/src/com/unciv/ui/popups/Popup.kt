@@ -20,14 +20,14 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.event.EventBus
 import com.unciv.ui.components.AutoScrollPane
-import com.unciv.ui.components.KeyCharAndCode
-import com.unciv.ui.components.KeyboardBinding
-import com.unciv.ui.components.KeyboardBindings
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.KeyboardBindings
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.darken
-import com.unciv.ui.components.extensions.keyShortcuts
-import com.unciv.ui.components.extensions.onActivation
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -343,7 +343,7 @@ open class Popup(
     }
 
     /** Overload of [addCloseButton] accepting a bindable key definition as [additionalKey] */
-    fun addCloseButton(text: String, additionalKey: KeyboardBinding, action: () -> Unit) =
+    fun addCloseButton(text: String, additionalKey: KeyboardBinding, action: (() -> Unit)? = null) =
         addCloseButton(text, KeyboardBindings[additionalKey], action = action)
     /** Overload of [addOKButton] accepting a bindable key definition as [additionalKey] */
     fun addOKButton(text: String, additionalKey: KeyboardBinding, style: TextButtonStyle? = null, action: () -> Unit) =

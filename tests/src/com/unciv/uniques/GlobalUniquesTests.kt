@@ -524,6 +524,56 @@ class GlobalUniquesTests {
 
     //endregion
 
+    // region Other Global Uniques
+
+    // region growth
+
+    @Test
+    fun growthPercentBonusTest() {
+        val civInfo = game.addCiv()
+        val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
+        val cityInfo = game.addCity(civInfo, tile, true)
+        val building = game.createBuilding("[+100]% growth [in all cities]")
+        cityInfo.cityConstructions.addBuilding(building.name)
+
+        cityInfo.cityStats.update()
+        Assert.assertTrue(cityInfo.cityStats.finalStatList["[Buildings] ([Growth])"]!!.equals(Stats(food=2f)))
+    }
+
+    @Test
+    fun carryOverFoodTest() {
+        val civInfo = game.addCiv("[50]% Food is carried over after population increases [in all cities]")
+        val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
+        val cityInfo = game.addCity(civInfo, tile, true)
+
+        val foodNecessary = cityInfo.population.getFoodToNextPopulation()
+        cityInfo.population.nextTurn(foodNecessary)
+
+        Assert.assertTrue(cityInfo.population.foodStored == (foodNecessary * 0.5f).toInt())
+    }
+
+
+    @Test
+    fun foodConsumptionBySpecialistsTest() {
+        val civInfo = game.addCiv("[-50]% Food consumption by specialists [in all cities]")
+        val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
+        val cityInfo = game.addCity(civInfo, tile, true, initialPopulation = 1)
+
+        val building = game.createBuilding()
+        val specialistName = game.createSpecialist()
+        building.specialistSlots.add(specialistName, 1)
+        cityInfo.population.specialistAllocations[specialistName] = 1
+
+        cityInfo.cityStats.update()
+        print(cityInfo.cityStats.finalStatList)
+        Assert.assertTrue(cityInfo.cityStats.finalStatList["Population"]!!.food == -1f)
+    }
+
+    // endregion growth
+
+
+
+    // region Great Persons
     @Test
     fun statsSpendingGreatPeople() {
         val civInfo = game.addCiv()
@@ -538,27 +588,8 @@ class GlobalUniquesTests {
         unit.consume()
         Assert.assertTrue(civInfo.gold == 250)
     }
+    // endregion
 
-    @Test
-    fun pillageYieldTest() {
-        game.makeHexagonalMap(2)
-        val civInfo = game.addCiv()
-
-        val tile = game.setTileFeatures(Vector2(0f, 0f), Constants.grassland)
-        val cityTile = game.setTileFeatures(Vector2(2f,0f), Constants.grassland)
-        val cityInfo = game.addCity(civInfo, cityTile, true)
-        cityInfo.population.foodStored = 0 // just to be sure
-        civInfo.addGold(-civInfo.gold) // reset gold just to be sure
-
-        val testImprovement = game.createTileImprovement("Pillaging this improvement yields [+20 Gold, +11 Food]")
-        tile.changeImprovement(testImprovement.name)
-        val unit = game.addUnit("Warrior", civInfo, tile)
-        unit.currentMovement = 2f
-
-        val pillageAction = UnitActionsPillage.getPillageAction(unit)
-        pillageAction?.action?.invoke()
-        Assert.assertTrue("Pillaging should transfer gold to the civ", civInfo.gold == 20)
-        Assert.assertTrue("Pillaging should transfer food to the nearest city", cityInfo.population.foodStored == 11)
-    }
+    // endregion
 
 }

@@ -15,11 +15,11 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.components.AutoScrollPane
 import com.unciv.ui.components.Fonts
-import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.extensions.addSeparatorVertical
-import com.unciv.ui.components.extensions.keyShortcuts
-import com.unciv.ui.components.extensions.onActivation
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
@@ -128,9 +128,9 @@ class EspionageOverviewScreen(val civInfo: Civilization) : PickerScreen(true) {
                 }.thenBy {
                     it.civ.isCityState()
                 }.thenBy(collator) {
-                    it.civ.civName.tr()
+                    it.civ.civName.tr(hideIcons = true)
                 }.thenBy(collator) {
-                    it.name.tr()
+                    it.name.tr(hideIcons = true)
                 }
             )
         for (city in sortedCities) {

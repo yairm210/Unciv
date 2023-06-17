@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 
@@ -67,9 +68,16 @@ class KeyCapturingButton(
             updateLabel()
         }
 
+    var markConflict = false
+        set(value) {
+            field = value
+            updateStyle()
+        }
+
     private var savedFocus: Actor? = null
     private val normalStyle: ImageTextButtonStyle
     private val defaultStyle: ImageTextButtonStyle
+    private val conflictStyle: ImageTextButtonStyle
 
     init {
         imageCell.size((style as KeyCapturingButtonStyle).imageSize)
@@ -79,13 +87,23 @@ class KeyCapturingButton(
         normalStyle = style
         defaultStyle = ImageTextButtonStyle(normalStyle)
         defaultStyle.fontColor = Color.GRAY.cpy()
+        conflictStyle = ImageTextButtonStyle(normalStyle)
+        conflictStyle.fontColor = Color.RED.cpy()
         addListener(ButtonListener(this))
     }
 
     private fun updateLabel() {
         label.setText(if (current == KeyCharAndCode.UNKNOWN) "" else current.toString())
-        style = if (current == default) defaultStyle else normalStyle
+        updateStyle()
     }
+    private fun updateStyle() {
+        style = when {
+            markConflict -> conflictStyle
+            current == default -> defaultStyle
+            else -> normalStyle
+        }
+    }
+
     private fun handleKey(code: Int, control: Boolean) {
         current = if (control) KeyCharAndCode.ctrlFromCode(code) else KeyCharAndCode(code)
         onKeyHit?.invoke(current)

@@ -2,7 +2,6 @@ package com.unciv.ui.screens.pickerscreens
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
@@ -24,7 +23,7 @@ import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.AutoScrollPane
 import com.unciv.ui.components.ExpanderTab
-import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.WrappableLabel
 import com.unciv.ui.components.extensions.UncivDateFormat.formatDate
@@ -33,9 +32,9 @@ import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.isEnabled
-import com.unciv.ui.components.extensions.keyShortcuts
-import com.unciv.ui.components.extensions.onActivation
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
@@ -53,7 +52,6 @@ import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import java.io.IOException
-import java.nio.ByteBuffer
 import kotlin.math.max
 
 /**
@@ -720,7 +718,10 @@ class ModManagementScreen(
     }
 
     internal fun refreshOnlineModTable() {
-        if (runningSearchJob != null) return  // cowardice: prevent concurrent modification, avoid a manager layer
+        if (runningSearchJob != null) {
+            ToastPopup("Sorting and filtering needs to wait until the online query finishes", this)
+            return  // cowardice: prevent concurrent modification, avoid a manager layer
+        }
 
         val newHeaderText = optionsManager.getOnlineHeader()
         onlineHeaderLabel?.setText(newHeaderText)

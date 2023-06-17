@@ -229,7 +229,7 @@ object ImageGetter {
     }
 
     fun getRandomNationPortrait(size: Float): Portrait {
-        return PortraitNation("Random", size)
+        return PortraitNation(Constants.random, size)
     }
 
     fun getUnitIcon(unitName: String, color: Color = Color.BLACK): Image {
@@ -274,13 +274,11 @@ object ImageGetter {
 
     fun getReligionIcon(iconName: String): Image { return getImage("ReligionIcons/$iconName") }
     fun getReligionPortrait(iconName: String, size: Float): Portrait {
-        if (religionIconExists(iconName)) {
+        if (religionIconExists(iconName))
             return PortraitReligion(iconName, size)
-        } else {
-            val typeName = ruleset.beliefs[iconName]?.type?.name
-            if (typeName != null && religionIconExists(typeName))
-                return PortraitReligion(typeName, size)
-        }
+        val typeName = ruleset.beliefs[iconName]?.type?.name
+        if (typeName != null && religionIconExists(typeName))
+            return PortraitReligion(typeName, size)
         return PortraitReligion(iconName, size)
     }
 

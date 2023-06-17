@@ -15,9 +15,9 @@ object CityLocationTileRanker {
             for (city in unit.civ.gameInfo.getCities()) {
                 val center = city.getCenterTile()
                 if (unit.civ.knows(city.civ) &&
-                        // If the CITY OWNER knows that the UNIT OWNER agreed not to settle near them
-                        city.civ.getDiplomacyManager(unit.civ)
-                            .hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)
+                    // If the CITY OWNER knows that the UNIT OWNER agreed not to settle near them
+                    city.civ.getDiplomacyManager(unit.civ)
+                        .hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)
                 ) {
                     yieldAll(
                         center.getTilesInDistance(6)
@@ -42,33 +42,29 @@ object CityLocationTileRanker {
 
         val distanceFromHome = if (unit.civ.cities.isEmpty()) 0
         else unit.civ.cities.minOf { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
-        val range = (8 - distanceFromHome).coerceIn(
-            1,
-            5
-        ) // Restrict vision when far from home to avoid death marches
+        val range = (8 - distanceFromHome).coerceIn(1, 5) // Restrict vision when far from home to avoid death marches
 
         val possibleCityLocations = unit.getTile().getTilesInDistance(range)
             .filter { canUseTileForRanking(it, unit.civ) }
             .filter {
                 val tileOwner = it.getOwner()
                 it.isLand && !it.isImpassible() && (tileOwner == null || tileOwner == unit.civ) // don't allow settler to settle inside other civ's territory
-                        && (unit.currentTile == it || unit.movement.canMoveTo(it))
-                        && it !in tilesNearCities
+                    && (unit.currentTile == it || unit.movement.canMoveTo(it))
+                    && it !in tilesNearCities
             }
 
         val luxuryResourcesInCivArea = getLuxuryResourcesInCivArea(unit.civ)
 
         return possibleCityLocations
             .map {
-                Pair(
-                    it,
+                it to
                     rankTileAsCityCenterWithCachedValues(
                         it,
                         nearbyTileRankings,
                         luxuryResourcesInCivArea,
                         unit.civ
-                    ),
-                )
+                    )
+
             }
             .sortedByDescending { it.second }
     }
@@ -88,8 +84,10 @@ object CityLocationTileRanker {
         tile: Tile,
         civ: Civilization
     ) =
-            // The AI is allowed to cheat and act like it knows the whole map.
-            tile.isExplored(civ) || civ.isAI()
+
+        (tile.isExplored(civ) || civ.isAI()) // The AI is allowed to cheat and act like it knows the whole map.
+            && (tile.getOwner() == null ||
+                tile.getOwner() == civ && tile.getTilesInDistance(3).none { it.isCityCenter() })
 
     private fun getNearbyTileRankings(
         tile: Tile,

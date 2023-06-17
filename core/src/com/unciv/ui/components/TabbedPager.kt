@@ -21,11 +21,12 @@ import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.isEnabled
-import com.unciv.ui.components.extensions.keyShortcuts
-import com.unciv.ui.components.extensions.onActivation
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen

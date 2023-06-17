@@ -42,7 +42,7 @@ object UnitActions {
         val actionList = ArrayList<UnitAction>()
 
         // Determined by unit uniques
-        addTransformAction(unit, actionList)
+        addTransformActions(unit, actionList)
         addParadropAction(unit, actionList)
         addAirSweepAction(unit, actionList)
         addSetupAction(unit, actionList)
@@ -309,28 +309,27 @@ object UnitActions {
         }
     }
 
-    private fun addTransformAction(
+    private fun addTransformActions(
         unit: MapUnit,
         actionList: ArrayList<UnitAction>
     ) {
-        val upgradeAction = getTransformAction(unit)
-        if (upgradeAction != null) actionList += upgradeAction
+        val upgradeAction = getTransformActions(unit)
+        actionList += upgradeAction
     }
 
     /**  */
-    private fun getTransformAction(
+    private fun getTransformActions(
         unit: MapUnit
-    ): ArrayList<UnitAction>? {
-        if (!unit.baseUnit().hasUnique(UniqueType.CanTransform)) return null // can't upgrade to anything
+    ): ArrayList<UnitAction> {
         val unitTile = unit.getTile()
         val civInfo = unit.civ
+        val stateForConditionals = StateForConditionals(unit = unit, civInfo = civInfo, tile = unitTile)
         val transformList = ArrayList<UnitAction>()
-        for (unique in unit.baseUnit().getMatchingUniques(UniqueType.CanTransform,
-            StateForConditionals(unit = unit, civInfo = civInfo, tile = unitTile))) {
+        for (unique in unit.baseUnit().getMatchingUniques(UniqueType.CanTransform, stateForConditionals)) {
             val unitToTransformTo = civInfo.getEquivalentUnit(unique.params[0])
 
-            val stateForConditionals = StateForConditionals(unit.civ, unit = unit)
-            if (unitToTransformTo.getMatchingUniques(UniqueType.OnlyAvailableWhen).any { !it.conditionalsApply(stateForConditionals) })
+            if (unitToTransformTo.getMatchingUniques(UniqueType.OnlyAvailableWhen)
+                    .any { !it.conditionalsApply(stateForConditionals) })
                 continue
 
             // Check _new_ resource requirements
@@ -471,8 +470,7 @@ object UnitActions {
 
     fun getImprovementConstructionActions(unit: MapUnit, tile: Tile): ArrayList<UnitAction> {
         val finalActions = ArrayList<UnitAction>()
-        val uniquesToCheck = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit) +
-                unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)
+        val uniquesToCheck = unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)
         val civResources = unit.civ.getCivResourcesByName()
 
         for (unique in uniquesToCheck) {
@@ -502,8 +500,7 @@ object UnitActions {
                     // without this the world screen won't show the improvement because it isn't the 'last seen improvement'
                     unit.civ.cache.updateViewableTiles()
 
-                    if (unique.type == UniqueType.ConstructImprovementConsumingUnit) unit.consume()
-                    else activateSideEffects(unit, unique)
+                    activateSideEffects(unit, unique)
                 }.takeIf {
                     resourcesAvailable
                     && unit.currentMovement > 0f

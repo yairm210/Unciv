@@ -1,3 +1,60 @@
+## 4.7.1
+
+AI:
+- AI prioritizes purchace path to highly desirable tiles
+- AI prioritizes work boats, and creates work boats for close non-contiguous cities
+- Workers try to build roads utilizing existing roads, and railroads overriding existing roads
+
+Modding: UnitFilter allows TechFilter for unit's required tech
+
+By SomeTroglodyte:
+- Long press support
+- Improve Alert Popup scrolling
+- Fix vulnerability of new NationPickerPopup icon view
+- Keyboard bindings - collision check
+
+## 4.7.0
+
+AI:
+- Improved AI city location picking
+- AI more willing to risk happiness to create a new city
+- AI doesn't construct Settler before Worker
+- AI Workers remove fallout
+
+Global politics table includes current civ
+
+Fixed crash when resuming Overview screen
+
+Fixed background errors
+
+By SomeTroglodyte:
+- Nation picker - Icon View & improvements
+- Expander tab animations :)
+- Key bindings options
+- Improved "connected to Capital" handling
+
+Always select military unit first - By WhoIsJohannes
+
+## 4.6.19
+
+Modding:
+- "before adopting / after adopting" conditionals accept beliefs
+- 'Transform' and 'double movement' uniques accept conditionals
+- AI evaluation of BuyItemsDiscount no longer crashes
+
+'random generated map type' is actually random
+
+By WhoIsJohannes:
+- Show line color in more cases
+- AI aircraft only consider *visible* attackable enemies
+-
+By SomeTroglodyte:
+- Fixed Hakkapeliitta ability
+- Fix translated sorting
+- Fix 'missing mod' display
+
+Pantheon Mod fix - By SeventhM
+
 ## 4.6.18
 
 Pillaged improvements have a visual indication on the icon

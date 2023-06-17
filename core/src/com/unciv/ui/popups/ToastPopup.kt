@@ -1,7 +1,7 @@
 package com.unciv.ui.popups
 
 import com.badlogic.gdx.scenes.scene2d.Stage
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread

@@ -18,8 +18,8 @@ import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.WrappableLabel
-import com.unciv.ui.components.extensions.onChange
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onChange
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel

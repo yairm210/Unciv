@@ -35,7 +35,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
-import com.unciv.ui.components.KeyboardBinding
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import java.io.File
@@ -135,6 +135,9 @@ object TranslationFileWriter {
                 linesToTranslate += "${diplomaticModifier.text} = "
 
             linesToTranslate += "\n\n#################### Lines from key bindings #######################\n"
+            for (category in KeyboardBinding.Category.values()) {
+                linesToTranslate += "${category.label} = "
+            }
             for (binding in KeyboardBinding.values()) {
                 linesToTranslate += "${binding.label} = "
             }

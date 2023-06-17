@@ -29,10 +29,10 @@ class TileStatFunctions(val tile: Tile) {
         if (city != null) {
             var tileUniques =
                     localUniqueCache.forCityGetMatchingUniques(
-                            city, UniqueType.StatsFromTiles, StateForConditionals.IgnoreConditionals)
+                            city, UniqueType.StatsFromTiles, true)
                         .filter { city.matchesFilter(it.params[2]) }
             tileUniques += localUniqueCache.forCityGetMatchingUniques(
-                city, UniqueType.StatsFromObject, StateForConditionals.IgnoreConditionals)
+                city, UniqueType.StatsFromObject, true)
             for (unique in tileUniques) {
                 if (!unique.conditionalsApply(stateForConditionals)) continue
                 val tileType = unique.params[1]
@@ -41,7 +41,7 @@ class TileStatFunctions(val tile: Tile) {
             }
 
             for (unique in localUniqueCache.forCityGetMatchingUniques(
-                    city, UniqueType.StatsFromTilesWithout, StateForConditionals.IgnoreConditionals)) {
+                    city, UniqueType.StatsFromTilesWithout, true)) {
                 if (
                         unique.conditionalsApply(stateForConditionals) &&
                         tile.matchesTerrainFilter(unique.params[1]) &&
@@ -118,7 +118,7 @@ class TileStatFunctions(val tile: Tile) {
         if (city != null) {
             // Since the tile changes every time, we cache all uniques, and filter by conditional state only when iterating
             val cachedStatPercentFromObjectCityUniques = uniqueCache.forCityGetMatchingUniques(
-                city, UniqueType.StatPercentFromObject, StateForConditionals.IgnoreConditionals)
+                city, UniqueType.StatPercentFromObject, true)
 
             for (unique in cachedStatPercentFromObjectCityUniques) {
                 if (!unique.conditionalsApply(stateForConditionals)) continue
@@ -128,7 +128,7 @@ class TileStatFunctions(val tile: Tile) {
             }
 
             val cachedAllStatPercentFromObjectCityUniques = uniqueCache.forCityGetMatchingUniques(
-                city, UniqueType.AllStatsPercentFromObject, StateForConditionals.IgnoreConditionals)
+                city, UniqueType.AllStatsPercentFromObject, true)
             for (unique in cachedAllStatPercentFromObjectCityUniques) {
                 if (!unique.conditionalsApply(stateForConditionals)) continue
                 val tileFilter = unique.params[1]
@@ -243,7 +243,7 @@ class TileStatFunctions(val tile: Tile) {
             //  therefore if we want the cache to be useful it needs to hold the pre-filtered uniques,
             //  and then for each improvement we'll filter the uniques locally.
             //  This is still a MASSIVE save of RAM!
-            val tileUniques = uniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromTiles, StateForConditionals.IgnoreConditionals)
+            val tileUniques = uniqueCache.forCityGetMatchingUniques(city, UniqueType.StatsFromTiles, true)
                 .filter { city.matchesFilter(it.params[2]) } // These are the uniques for all improvements for this city,
                 .filter { it.conditionalsApply(conditionalState) } // ...and this is those with applicable conditions
             val improvementUniques =
@@ -264,7 +264,7 @@ class TileStatFunctions(val tile: Tile) {
             val uniques = uniqueCache.forCityGetMatchingUniques(
                     city,
                     UniqueType.StatsFromObject,
-                    StateForConditionals.IgnoreConditionals
+                    true
                 ).filter { it.conditionalsApply(conditionalState) }
             for (unique in uniques) {
                 if (improvement.matchesFilter(unique.params[1])) {
@@ -296,7 +296,7 @@ class TileStatFunctions(val tile: Tile) {
             val allStatPercentUniques = cityUniqueCache.forCityGetMatchingUniques(
                     city,
                     UniqueType.AllStatsPercentFromObject,
-                    StateForConditionals.IgnoreConditionals
+                    true
                 ).filter { it.conditionalsApply(conditionalState) }
             for (unique in allStatPercentUniques) {
                 if (!improvement.matchesFilter(unique.params[1])) continue
@@ -309,7 +309,7 @@ class TileStatFunctions(val tile: Tile) {
             val statPercentUniques = cityUniqueCache.forCityGetMatchingUniques(
                     city,
                     UniqueType.StatPercentFromObject,
-                    StateForConditionals.IgnoreConditionals
+                    true
                 ).filter { it.conditionalsApply(conditionalState) }
 
             for (unique in statPercentUniques) {

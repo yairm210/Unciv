@@ -21,15 +21,16 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.CityAmbiencePlayer
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.components.KeyCharAndCode
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.disable
-import com.unciv.ui.components.extensions.keyShortcuts
-import com.unciv.ui.components.extensions.onActivation
-import com.unciv.ui.components.extensions.onClick
-import com.unciv.ui.components.extensions.onDoubleClick
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.tilegroups.CityTileGroup
 import com.unciv.ui.components.tilegroups.CityTileState
 import com.unciv.ui.components.tilegroups.TileGroupMap
@@ -340,6 +341,9 @@ class CityScreen(
         mapScrollPane.scrollPercentY = 0.5f
         mapScrollPane.updateVisualScroll()
     }
+
+    // We contain a map...
+    override fun getShortcutDispatcherVetoer() = KeyShortcutDispatcherVeto.createTileGroupMapDispatcherVetoer()
 
     private fun tileWorkedIconOnClick(tileGroup: CityTileGroup, city: City) {
 

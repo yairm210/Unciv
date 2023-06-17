@@ -26,16 +26,6 @@ object UnitActionsGreatPerson {
                             && !unit.civ.tech.currentTechnology()!!.hasUnique(UniqueType.CannotBeHurried) }
                 )
             }
-            UniqueType.StartGoldenAge -> {
-                val turnsToGoldenAge = unique.params[0].toInt()
-                actionList += UnitAction(
-                    UnitActionType.StartGoldenAge,
-                    action = {
-                        unit.civ.goldenAges.enterGoldenAge(turnsToGoldenAge)
-                        unit.consume()
-                    }.takeIf { unit.currentTile.getOwner() != null && unit.currentTile.getOwner() == unit.civ }
-                )
-            }
             UniqueType.CanSpeedupWonderConstruction -> {
                 val canHurryWonder =
                         if (!tile.isCityCenter()) false

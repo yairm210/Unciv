@@ -126,7 +126,7 @@ class TileImprovement : RulesetStatsObject() {
             "All" -> true
             "All Road" -> isRoad()
             "Great Improvement", "Great" -> isGreatImprovement()
-            in uniques -> true
+            in uniqueMap -> true
             else -> false
         }
     }
@@ -280,8 +280,7 @@ class TileImprovement : RulesetStatsObject() {
     private fun getCreatingUnits(ruleset: Ruleset): List<BaseUnit> {
         return ruleset.units.values.asSequence()
             .filter { unit ->
-                (unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit, StateForConditionals.IgnoreConditionals)
-                        + unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly))
+                unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly, StateForConditionals.IgnoreConditionals)
                     .any { it.params[0] == name }
             }.toList()
     }

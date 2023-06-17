@@ -7,7 +7,7 @@ import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
-import com.unciv.ui.components.extensions.onClick
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
 
