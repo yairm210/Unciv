@@ -274,7 +274,7 @@ class City : IsPartOfGameInfoSerialization {
 
 
     fun containsBuildingUnique(uniqueType: UniqueType) =
-        cityConstructions.getBuiltBuildings().flatMap { it.uniqueObjects }.any { it.isOfType(uniqueType) }
+        cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).any()
 
     fun getGreatPersonPercentageBonus(): Int{
         var allGppPercentageBonus = 0
