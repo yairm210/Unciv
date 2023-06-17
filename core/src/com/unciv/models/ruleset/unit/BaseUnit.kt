@@ -36,6 +36,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var range: Int = 2
     var interceptRange = 0
     var unitType: String = ""
+    var greatType: String = ""
 
     val type by lazy { ruleset.unitTypes[unitType]!! }
     override var requiredTech: String? = null

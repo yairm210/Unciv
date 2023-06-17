@@ -16,9 +16,8 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
     lateinit var civInfo: Civilization
 
     /** Base points, without speed modifier */
-    private var pointsForNextGreatPerson = 100
     var pointsForNextGreatGeneral = 200
-
+    private var pointsForNextGreatPerson = Counter<String>()
     var greatPersonPointsCounter = Counter<String>()
     var greatGeneralPoints = 0
     var freeGreatPeople = 0
@@ -31,7 +30,7 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         val toReturn = GreatPersonManager()
         toReturn.freeGreatPeople = freeGreatPeople
         toReturn.greatPersonPointsCounter = greatPersonPointsCounter.clone()
-        toReturn.pointsForNextGreatPerson = pointsForNextGreatPerson
+        toReturn.pointsForNextGreatPerson = pointsForNextGreatPerson.clone()
         toReturn.pointsForNextGreatGeneral = pointsForNextGreatGeneral
         toReturn.greatGeneralPoints = greatGeneralPoints
         toReturn.mayaLimitedFreeGP = mayaLimitedFreeGP
@@ -39,7 +38,14 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    fun getPointsRequiredForGreatPerson() = (pointsForNextGreatPerson * civInfo.gameInfo.speed.modifier).toInt()
+    fun getPointsRequiredForGreatPerson(greatPerson:String):Int
+    {
+        val greatType = civInfo.getEquivalentUnit(greatPerson).greatType
+        if (pointsForNextGreatPerson[greatType] == 0) {
+            pointsForNextGreatPerson.add(greatType,100)
+        }
+        return (pointsForNextGreatPerson[greatType] * civInfo.gameInfo.speed.modifier).toInt()
+    }
 
     fun getNewGreatPerson(): String? {
         if (greatGeneralPoints > pointsForNextGreatGeneral) {
@@ -49,10 +55,10 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         }
 
         for ((key, value) in greatPersonPointsCounter) {
-            val requiredPoints = getPointsRequiredForGreatPerson()
+            val requiredPoints = getPointsRequiredForGreatPerson(key)
             if (value >= requiredPoints) {
                 greatPersonPointsCounter.add(key, -requiredPoints)
-                pointsForNextGreatPerson *= 2
+                pointsForNextGreatPerson[civInfo.getEquivalentUnit(key).greatType] *= 2
                 return key
             }
         }
