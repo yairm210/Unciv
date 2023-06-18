@@ -1,32 +1,11 @@
+Resolved performance problem
 
-
-Reverted BFS changes, since they caused significant performance degradation
-
-Revert "Workers try to build roads utilizing existing roads, and railroads overriding existing roads"
-
-Performance improvements
-
-Performance improvements
-
-Performance improvements
-
-Performance improvements
-
-Performance improvements
+Performance improvements!
 
 Automated air units no longer lose "automated" state after moving between cities
 
-Deprecated "Can start an [amount]-turn golden age" unique
-
-Deprecated "Can construct [improvementName]" unique
-
 By SomeTroglodyte:
-- Fix conditionals for trigger upon declaring friendship running twice 
-- Publish new mod category workflow 
-- More keyboard binding work - World, World Menu Popup, WASD 
-- Fix and cache CannotMove unique 
-- Fix translation problems due to nested brackets in getDifferences 
-
-By xlenstra:
-- Small comment changes in UniqueType.kt 
-- Reordered the region of other global uniques and wrote a few unique tests 
+- Fix conditionals for trigger upon declaring friendship running twice
+- More keyboard binding work - World, World Menu Popup, WASD
+- Fixed CannotMove unique
+- Fix translation problems due to nested brackets in getDifferences
