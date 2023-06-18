@@ -20,9 +20,19 @@ class KeyboardPanningListener(
 
     private val pressedKeys = mutableSetOf<Int>()
     private var infiniteAction: RepeatAction? = null
+
+    private val keycodeUp = KeyboardBindings[KeyboardBinding.PanUp].code
+    private val keycodeLeft = KeyboardBindings[KeyboardBinding.PanLeft].code
+    private val keycodeDown = KeyboardBindings[KeyboardBinding.PanDown].code
+    private val keycodeRight = KeyboardBindings[KeyboardBinding.PanRight].code
+    private val keycodeUpAlt = KeyboardBindings[KeyboardBinding.PanUpAlternate].code
+    private val keycodeLeftAlt = KeyboardBindings[KeyboardBinding.PanLeftAlternate].code
+    private val keycodeDownAlt = KeyboardBindings[KeyboardBinding.PanDownAlternate].code
+    private val keycodeRightAlt = KeyboardBindings[KeyboardBinding.PanRightAlternate].code
+
     private val allowedKeys =
-            setOf(Input.Keys.UP, Input.Keys.DOWN, Input.Keys.LEFT, Input.Keys.RIGHT) + (
-                if (allowWASD) setOf(Input.Keys.W, Input.Keys.S, Input.Keys.A, Input.Keys.D)
+            setOf(keycodeUp, keycodeLeft, keycodeDown, keycodeRight) + (
+                if (allowWASD) setOf(keycodeUpAlt, keycodeLeftAlt, keycodeDownAlt, keycodeRightAlt)
                 else setOf()
             )
 
@@ -70,10 +80,10 @@ class KeyboardPanningListener(
         var deltaY = 0f
         for (keycode in pressedKeys) {
             when (keycode) {
-                Input.Keys.W, Input.Keys.UP -> deltaY -= 1f
-                Input.Keys.S, Input.Keys.DOWN -> deltaY += 1f
-                Input.Keys.A, Input.Keys.LEFT -> deltaX += 1f
-                Input.Keys.D, Input.Keys.RIGHT -> deltaX -= 1f
+                keycodeUp, keycodeUpAlt -> deltaY -= 1f
+                keycodeDown, keycodeDownAlt -> deltaY += 1f
+                keycodeLeft, keycodeLeftAlt -> deltaX += 1f
+                keycodeRight, keycodeRightAlt -> deltaX -= 1f
             }
         }
         mapHolder.doKeyOrMousePanning(deltaX, deltaY)
