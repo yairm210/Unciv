@@ -15,7 +15,6 @@ configurations.all { resolutionStrategy {
 buildscript {
 
     repositories {
-        maven { url = uri("https://jitpack.io") }
         // Chinese mirrors for quicker loading for chinese devs - uncomment if you're chinese
         // maven{ url = uri("https://maven.aliyun.com/repository/central") }
         // maven{ url = uri("https://maven.aliyun.com/repository/google") }
@@ -24,6 +23,7 @@ buildscript {
         google()  // needed for com.android.tools.build:gradle
         maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
         gradlePluginPortal()
+        maven { url = uri("https://jitpack.io") }
     }
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${com.unciv.build.BuildConfig.kotlinVersion}")
@@ -41,7 +41,6 @@ allprojects {
     version = "1.0.1"
 
     repositories {
-        maven { url = uri("https://jitpack.io") } // for java-discord-rpc
         // Chinese mirrors for quicker loading for chinese devs - uncomment if you're chinese
         // maven{ url = uri("https://maven.aliyun.com/repository/central") }
         // maven{ url = uri("https://maven.aliyun.com/repository/google") }
@@ -49,6 +48,7 @@ allprojects {
         google()
         maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
         maven { url = uri("https://oss.sonatype.org/content/repositories/releases/") }
+        maven { url = uri("https://jitpack.io") } // for java-discord-rpc
     }
 }
 
@@ -69,7 +69,7 @@ project(":desktop") {
         "implementation"("net.java.dev.jna:jna:5.11.0")
         "implementation"("net.java.dev.jna:jna-platform:5.11.0")
 
-        //Add Gradle features supporting projects using libGDX building GraalVM native-image
+        //Add Gradle features supporting projects using libGDX in building GraalVM native-image
         IMPLEMENTATION("com.github.berstanio:gdx-graalhelper:master-SNAPSHOT"){
             exclude(group = "com.github.berstanio.gdx-graalhelper", module = "gdx-svmhelper-backend-moe")
         }
