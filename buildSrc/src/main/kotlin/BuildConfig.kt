@@ -7,6 +7,6 @@ object BuildConfig {
     const val appCodeNumber = 880
     const val appVersion = "4.7.1"
 
-    const val gdxVersion = "1.11.0"
+    const val gdxVersion = "1.11.1-SNAPSHOT"
     const val roboVMVersion = "2.3.1"
 }

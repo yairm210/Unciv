@@ -12,6 +12,8 @@ import com.unciv.models.metadata.WindowState
 import com.unciv.ui.components.Fonts
 import com.unciv.utils.Display
 import com.unciv.utils.Log
+import org.lwjgl.system.Library
+import org.lwjgl.system.ThreadLocalUtil
 import java.awt.GraphicsEnvironment
 import kotlin.math.max
 
@@ -19,6 +21,11 @@ internal object DesktopLauncher {
 
     @JvmStatic
     fun main(arg: Array<String>) {
+        // Solve the problem 'java.home property not set'
+        System.setProperty("java.home",System.getenv("JAVA_HOME"))
+        // To avoid segfault
+        Library.initialize()
+        ThreadLocalUtil.setupEnvData()
 
         // Setup Desktop logging
         Log.backend = DesktopLogBackend()
