@@ -7,10 +7,10 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.KeyCapturingButton
-import com.unciv.ui.components.input.KeyCharAndCode
-import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
@@ -109,7 +109,7 @@ class KeyBindingsTab(
         }
     }
 
-    fun save () {
+    fun save() {
         for ((binding, widget) in groupedWidgets.asSequence().flatMap { it.value.entries }) {
             keyBindings[binding] = widget.current
         }

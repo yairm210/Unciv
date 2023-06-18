@@ -324,8 +324,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "[relativeAmount]% Food is carried over after population increases [cityFilter]"
-	Example: "[+20]% Food is carried over after population increases [in all cities]"
+??? example  "[amount]% Food is carried over after population increases [cityFilter]"
+	Example: "[3]% Food is carried over after population increases [in all cities]"
 
 	Applicable to: Global, FollowerBelief
 

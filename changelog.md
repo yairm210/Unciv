@@ -1,3 +1,17 @@
+## 4.7.2
+
+Resolved performance problem
+
+Performance improvements!
+
+Automated air units no longer lose "automated" state after moving between cities
+
+By SomeTroglodyte:
+- Fix conditionals for trigger upon declaring friendship running twice
+- More keyboard binding work - World, World Menu Popup, WASD
+- Fixed CannotMove unique
+- Fix translation problems due to nested brackets in getDifferences
+
 ## 4.7.1
 
 AI:
