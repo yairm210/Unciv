@@ -3,6 +3,7 @@ package com.unciv.logic.civilization.managers
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Counter
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 
@@ -40,7 +41,9 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
 
     fun getPointsRequiredForGreatPerson(greatPerson:String):Int
     {
-        val greatType = civInfo.getEquivalentUnit(greatPerson).greatType
+        var greatType = ""
+        for (unique in civInfo.getEquivalentUnit(greatPerson).getMatchingUniques(UniqueType.GreatType, stateForConditionals = StateForConditionals.IgnoreConditionals))
+            greatType=unique.params[0]
         if (pointsForNextGreatPerson[greatType] == 0) {
             pointsForNextGreatPerson.add(greatType,100)
         }
@@ -58,7 +61,12 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
             val requiredPoints = getPointsRequiredForGreatPerson(key)
             if (value >= requiredPoints) {
                 greatPersonPointsCounter.add(key, -requiredPoints)
-                pointsForNextGreatPerson[civInfo.getEquivalentUnit(key).greatType] *= 2
+                for (unique in civInfo.getEquivalentUnit(key).getMatchingUniques(UniqueType.GreatType, stateForConditionals = StateForConditionals.IgnoreConditionals))
+                {
+                    pointsForNextGreatPerson[unique.params[0]] *= 2
+                    return key
+                }
+                pointsForNextGreatPerson[""] *= 2
                 return key
             }
         }
