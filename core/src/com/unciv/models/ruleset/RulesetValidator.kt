@@ -58,7 +58,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         }
 
         for (building in ruleset.buildings.values) {
-            if (building.requiredTech == null && building.cost == 0 && !building.hasUnique(
+            if (building.requiredTech == null && building.cost == -1 && !building.hasUnique(
                         UniqueType.Unbuildable))
                 lines += "${building.name} is buildable and therefore must either have an explicit cost or reference an existing tech!"
 
