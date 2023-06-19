@@ -119,7 +119,7 @@ object BattleDamage {
                 modifiers["Landing"] = -50
 
             // Land Melee Unit attacking to Water
-            if (attacker.unit.type.isLandUnit() && !attacker.unit.isEmbarked() && !attacker.getTile().isWater && attacker.isMelee() && defender.getTile().isWater
+            if (attacker.unit.type.isLandUnit() && !attacker.getTile().isWater && attacker.isMelee() && defender.getTile().isWater
                     && !attacker.unit.hasUnique(UniqueType.AttackAcrossCoast))
                 modifiers["Boarding"] = -50
             // Melee Unit on water attacking to Land (not City) unit
