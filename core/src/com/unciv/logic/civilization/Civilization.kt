@@ -759,13 +759,13 @@ class Civilization : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun addNotification(text: String, location: Vector2, category:NotificationCategory, vararg notificationIcons: String) {
+    fun addNotification(text: String, location: Vector2, category: NotificationCategory, vararg notificationIcons: String) {
         addNotification(text, LocationAction(location), category, *notificationIcons)
     }
 
-    fun addNotification(text: String, category:NotificationCategory, vararg notificationIcons: String) = addNotification(text, null, category, *notificationIcons)
+    fun addNotification(text: String, category: NotificationCategory, vararg notificationIcons: String) = addNotification(text, null, category, *notificationIcons)
 
-    fun addNotification(text: String, action: NotificationAction?, category:NotificationCategory, vararg notificationIcons: String) {
+    fun addNotification(text: String, action: NotificationAction?, category: NotificationCategory, vararg notificationIcons: String) {
         if (playerType == PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
         val arrayList = notificationIcons.toCollection(ArrayList())
         notifications.add(Notification(text, arrayList,

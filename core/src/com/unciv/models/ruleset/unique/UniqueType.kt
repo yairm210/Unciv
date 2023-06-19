@@ -224,8 +224,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     UnitSupplyPerCity("[amount] Unit Supply per city", UniqueTarget.Global),
     FreeUnits("[amount] units cost no maintenance", UniqueTarget.Global),
     UnitsInCitiesNoMaintenance("Units in cities cost no Maintenance", UniqueTarget.Global),
-    // Acts as a trigger - this should be generalized somehow but the current setup does not allow this
-    // It would currently mean cycling through EVERY unique type to find ones with a specific conditional...
+    // ToDo: Replace with "Free [unit] appears <upon discovering [tech]>"
     ReceiveFreeUnitWhenDiscoveringTech("Receive free [unit] when you discover [tech]", UniqueTarget.Global),
 
     // Units entering Tiles
