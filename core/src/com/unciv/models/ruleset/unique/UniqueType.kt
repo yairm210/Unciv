@@ -364,6 +364,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     RemoveAnnexUnhappiness("Remove extra unhappiness from annexed cities", UniqueTarget.Building),
     ConnectTradeRoutes("Connects trade routes over water", UniqueTarget.Building),
+    GainBuildingWhereBuildable("Automatically built in all cities where it is buildable", UniqueTarget.Building),
 
     CreatesOneImprovement("Creates a [improvementName] improvement on a specific tile", UniqueTarget.Building),
     //endregion

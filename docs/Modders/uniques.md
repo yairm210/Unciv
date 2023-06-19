@@ -1046,6 +1046,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Connects trade routes over water"
 	Applicable to: Building
 
+??? example  "Automatically built in all cities where it is buildable"
+	Applicable to: Building
+
 ??? example  "Creates a [improvementName] improvement on a specific tile"
 	Example: "Creates a [Trading Post] improvement on a specific tile"
 
