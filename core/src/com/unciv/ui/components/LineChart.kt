@@ -82,7 +82,7 @@ class LineChart(
             yLabels.map { Label(it.toString(), Label.LabelStyle(Fonts.font, axisLabelColor)) }
     }
 
-    private fun generateLabels(value: List<DataPoint<Int>>, yAxis: Boolean): List<Int> {
+    fun generateLabels(value: List<DataPoint<Int>>, yAxis: Boolean): List<Int> {
         if (value.isEmpty()) return listOf(0)
         val minLabelValue = getPrevNumberDivisibleByPowOfTen(value.minOf { if (yAxis) it.y else it.x })
         val maxLabelValue = getNextNumberDivisibleByPowOfTen(value.maxOf { if (yAxis) it.y else it.x })
