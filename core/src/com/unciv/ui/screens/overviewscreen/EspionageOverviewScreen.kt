@@ -71,8 +71,12 @@ class EspionageOverviewScreen(val civInfo: Civilization) : PickerScreen(true) {
             spySelectionTable.add(spy.name.toLabel()).pad(10f)
             spySelectionTable.add(spy.getLocationName().toLabel()).pad(10f)
             val actionString =
-                if (spy.action == SpyAction.None) SpyAction.None.stringName
-                else "[${spy.action.stringName}] ${spy.timeTillActionFinish}${Fonts.turn}"
+                when (spy.action) {
+                    SpyAction.None, SpyAction.StealingTech, SpyAction.Surveillance -> spy.action.stringName
+                    SpyAction.Moving, SpyAction.EstablishNetwork -> "[${spy.action.stringName}] ${spy.timeTillActionFinish}${Fonts.turn}"
+                    SpyAction.RiggingElections -> TODO()
+                    SpyAction.CounterIntelligence -> TODO()
+                }
             spySelectionTable.add(actionString.toLabel()).pad(10f)
 
             val moveSpyButton = "Move".toTextButton()

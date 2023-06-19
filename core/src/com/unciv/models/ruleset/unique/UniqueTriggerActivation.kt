@@ -622,9 +622,9 @@ object UniqueTriggerActivation {
                         otherCiv.espionageManager.erasSpyEarnedFor.add(currentEra)
                         if (otherCiv == civInfo || otherCiv.knows(civInfo))
                             // We don't tell which civilization entered the new era, as that is done in the notification directly above this one
-                            otherCiv.addNotification("We have recruited [${spyName}] as a spy!", NotificationCategory.General, NotificationIcon.Spy)
+                            otherCiv.addNotification("We have recruited [${spyName}] as a spy!", NotificationCategory.Espionage, NotificationIcon.Spy)
                         else
-                            otherCiv.addNotification("After an unknown civilization entered the [${currentEra}], we have recruited [${spyName}] as a spy!", NotificationCategory.General, NotificationIcon.Spy)
+                            otherCiv.addNotification("After an unknown civilization entered the [${currentEra}], we have recruited [${spyName}] as a spy!", NotificationCategory.Espionage, NotificationIcon.Spy)
                     }
                 }
                 return true
