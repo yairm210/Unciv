@@ -2,14 +2,12 @@ package com.unciv.ui.components
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.MathUtils.lerp
-import com.badlogic.gdx.math.Matrix4
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.Widget
+import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.Civilization
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.victoryscreen.VictoryScreenCivGroup
 import com.unciv.ui.screens.victoryscreen.VictoryScreenCivGroup.DefeatedPlayerStyle
 import kotlin.math.abs
@@ -24,12 +22,8 @@ import kotlin.math.sqrt
 data class DataPoint<T>(val x: T, val y: T, val civ: Civilization)
 
 class LineChart(
-    private val viewingCiv: Civilization,
-    private val chartWidth: Float,
-    private val chartHeight: Float
-) : Widget() {
-
-    private val shapeRenderer = ShapeRenderer()
+    private val viewingCiv: Civilization
+) : WidgetGroup() {
 
     private val axisLineWidth = 2f
     private val axisColor = Color.WHITE
@@ -58,7 +52,7 @@ class LineChart(
         if (xLabels.isEmpty() || xLabelsAsLabels.isEmpty() || yLabelsAsLabels.isEmpty()) return null
         val widestYLabelWidth = yLabelsAsLabels.maxOf { it.width }
         val linesMinX = widestYLabelWidth + axisToLabelPadding + axisLineWidth
-        val linesMaxX = chartWidth - xLabelsAsLabels.last().width / 2
+        val linesMaxX = width - xLabelsAsLabels.last().width / 2
         if (linesMinX.compareTo(linesMaxX) == 0) return (xLabels.first()..xLabels.last())
         val ratio = (x - linesMinX) / (linesMaxX - linesMinX)
         val turn = max(1, lerp(xLabels.first().toFloat(), xLabels.last().toFloat(), ratio).toInt())
@@ -70,6 +64,7 @@ class LineChart(
 
         dataPoints = newData
         updateLabels(dataPoints)
+        prepareForDraw()
     }
 
     private fun updateLabels(newData: List<DataPoint<Int>>) {
@@ -145,13 +140,13 @@ class LineChart(
 
     override fun draw(batch: Batch, parentAlpha: Float) {
         super.draw(batch, parentAlpha)
-        if (xLabels.isEmpty() || yLabels.isEmpty()) return
+    }
 
-        // Save the current batch transformation matrix
-        val oldTransformMatrix = batch.transformMatrix.cpy()
-        // Set the batch transformation matrix to the local coordinates of the LineChart widget
-        val stageCoords = localToStageCoordinates(Vector2(0f, 0f))
-        batch.transformMatrix = Matrix4().translate(stageCoords.x, stageCoords.y, 0f)
+    private fun prepareForDraw() {
+
+        clearChildren()
+
+        if (xLabels.isEmpty() || yLabels.isEmpty()) return
 
         val lastTurnDataPoints = getLastTurnDataPoints()
 
@@ -161,7 +156,7 @@ class LineChart(
         // a label from the available height, because otherwise the label on the top would
         // overrun the height since the (x,y) coordinates define the bottom left corner of the
         // Label.
-        val yAxisLabelMaxY = chartHeight - labelHeight
+        val yAxisLabelMaxY = height - labelHeight
         // This is to account for the x axis and its labels which are below the lowest point
         val xAxisLabelsHeight = labelHeight
         val zeroYAxisLabelHeight = labelHeight
@@ -176,15 +171,14 @@ class LineChart(
             val label = yLabelsAsLabels[index] // we assume yLabels.size == yLabelsAsLabels.size
             val yPos = yAxisLabelMinY + index * (yAxisLabelYRange / (yLabels.size - 1))
             label.setPosition((widestYLabelWidth - label.width) / 2, yPos)
-            label.draw(batch, 1f)
+            addActor(label)
 
             // Draw y-axis orientation lines and x-axis
             val zeroIndex = value == 0
             drawLine(
-                batch,
                 widestYLabelWidth + axisToLabelPadding + axisLineWidth,
                 yPos + labelHeight / 2,
-                chartWidth,
+                width,
                 yPos + labelHeight / 2,
                 if (zeroIndex) axisColor else orientationLineColor,
                 if (zeroIndex) axisLineWidth else orientationLineWidth
@@ -198,20 +192,19 @@ class LineChart(
         val lastXAxisLabelWidth = xLabelsAsLabels.last().width
         val xAxisLabelMinX =
                 widestYLabelWidth + axisToLabelPadding + axisLineWidth / 2
-        val xAxisLabelMaxX = chartWidth - lastXAxisLabelWidth / 2
+        val xAxisLabelMaxX = width - lastXAxisLabelWidth / 2
         val xAxisLabelXRange = xAxisLabelMaxX - xAxisLabelMinX
         xLabelsAsLabels.forEachIndexed { index, label ->
             val xPos = xAxisLabelMinX + index * (xAxisLabelXRange / (xLabels.size - 1))
             label.setPosition(xPos - label.width / 2, 0f)
-            label.draw(batch, 1f)
+            addActor(label)
 
             // Draw x-axis orientation lines and y-axis
             drawLine(
-                batch,
                 xPos,
                 labelHeight + axisToLabelPadding + axisLineWidth,
                 xPos,
-                chartHeight,
+                height,
                 if (index > 0) orientationLineColor else axisColor,
                 if (index > 0) orientationLineWidth else axisLineWidth
             )
@@ -219,9 +212,9 @@ class LineChart(
 
         // Draw line charts for each color
         val linesMinX = widestYLabelWidth + axisToLabelPadding + axisLineWidth
-        val linesMaxX = chartWidth - lastXAxisLabelWidth / 2
+        val linesMaxX = width - lastXAxisLabelWidth / 2
         val linesMinY = yAxisYPosition
-        val linesMaxY = chartHeight - labelHeight / 2
+        val linesMaxY = height - labelHeight / 2
         val scaleX = (linesMaxX - linesMinX) / (xLabels.max() - xLabels.min())
         val scaleY = (linesMaxY - linesMinY) / (yLabels.max() - yLabels.min())
         val negativeOrientationLineYPosition = yAxisLabelMinY + labelHeight / 2
@@ -260,7 +253,7 @@ class LineChart(
                     val selectedCivBackgroundColor =
                         if (useActualColor(civ)) civ.nation.getInnerColor() else Color.LIGHT_GRAY
                     drawLine(
-                        batch, a.x, a.y, b.x, b.y,
+                        a.x, a.y, b.x, b.y,
                         selectedCivBackgroundColor, chartLineWidth * 3
                     )
                 }
@@ -269,22 +262,19 @@ class LineChart(
                 val a = simplifiedScaledPoints[i - 1]
                 val b = simplifiedScaledPoints[i]
                 val civLineColor = if (useActualColor(civ)) civ.nation.getOuterColor() else Color.DARK_GRAY
-                drawLine(batch, a.x, a.y, b.x, b.y, civLineColor, chartLineWidth)
+                drawLine(a.x, a.y, b.x, b.y, civLineColor, chartLineWidth)
 
                 // Draw the selected Civ icon on its last datapoint
                 if (i == simplifiedScaledPoints.size - 1 && selectedCiv == civ && selectedCiv in lastTurnDataPoints) {
                     val selectedCivIcon = VictoryScreenCivGroup.getCivImageAndColors(selectedCiv, viewingCiv, DefeatedPlayerStyle.REGULAR).first
-                    selectedCivIcon.run {
+                    selectedCivIcon.apply {
                         setPosition(b.x, b.y, Align.center)
                         setSize(33f, 33f) // Dead Civs need this
-                        draw(batch, parentAlpha)
                     }
+                    addActor(selectedCivIcon)
                 }
             }
         }
-
-        // Restore the previous batch transformation matrix
-        batch.transformMatrix = oldTransformMatrix
     }
 
     private fun useActualColor(civ: Civilization) : Boolean {
@@ -306,29 +296,18 @@ class LineChart(
         return lastDataPoints
     }
 
-    private fun drawLine(
-        batch: Batch,
-        x1: Float,
-        y1: Float,
-        x2: Float,
-        y2: Float,
-        color: Color,
-        width: Float
-    ) {
-        shapeRenderer.projectionMatrix = batch.projectionMatrix
-        shapeRenderer.transformMatrix = batch.transformMatrix
-        batch.end()
+    private fun drawLine(x1: Float, y1: Float, x2: Float, y2: Float, lineColor: Color, width: Float) {
 
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
-        shapeRenderer.color = color
-        shapeRenderer.rectLine(x1, y1, x2, y2, width)
-        // Draw a circle at the beginning and end points of the line to make consecutive lines
-        // (which might point in different directions) connect nicely.
-        shapeRenderer.circle(x1, y1, width / 2)
-        shapeRenderer.circle(x2, y2, width / 2)
-        shapeRenderer.end()
+        val line = ImageGetter.getLine(x1, y1, x2, y2, width)
+        line.color = lineColor
+        addActor(line)
 
-        batch.begin()
+        val edgeRounding = ImageGetter.getCircle().apply {
+            setSize(width, width)
+            color = lineColor
+            setPosition(x1 - width / 2f, y1 - width / 2f)
+        }
+        addActor(edgeRounding)
     }
 
     private fun douglasPeucker(points: List<DataPoint<Float>>, epsilon: Float): List<DataPoint<Float>> {
@@ -398,10 +377,4 @@ class LineChart(
         return sqrt((dx * dx + dy * dy).toDouble()).toFloat()
     }
 
-    override fun getMinWidth() = chartWidth
-    override fun getMinHeight() = chartHeight
-    override fun getPrefWidth() = chartWidth
-    override fun getPrefHeight() = chartHeight
-    override fun getMaxWidth() = chartWidth
-    override fun getMaxHeight() = chartHeight
 }

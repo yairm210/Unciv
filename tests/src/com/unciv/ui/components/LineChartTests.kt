@@ -7,7 +7,7 @@ import org.junit.Test
 class LineChartTests {
 
     private val civ = Civilization("My civ")
-    private val lineChart = LineChart(Civilization(civ.civName), 200f, 100f)
+    private val lineChart = LineChart(Civilization(civ.civName))
 
     @Test
     fun `labels for an empty list are just 0 label`() {
