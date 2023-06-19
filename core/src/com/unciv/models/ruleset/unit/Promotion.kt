@@ -88,18 +88,21 @@ class Promotion : RulesetObject() {
             val types = unitTypes.partition { it in ruleset.units }
             if (unitTypes.size == 1) {
                 if (types.first.isNotEmpty())
-                    types.first.first().let {
-                        textList += FormattedLine("Available for [${it.tr()}]", link = "Unit/$it")
+                    unitTypes.first().let {
+                        textList += FormattedLine("Available for [$it]", link = "Unit/$it")
                     }
                 else
-                    textList += FormattedLine("Available for [${types.second.first().tr()}]")
+                    unitTypes.first().let {
+                        textList += FormattedLine("Available for [$it]", link = "UnitType/$it")
+                    }
+
             } else {
                 textList += FormattedLine("Available for:")
                 types.first.forEach {
                     textList += FormattedLine(it, indent = 1, link = "Unit/$it")
                 }
                 types.second.forEach {
-                    textList += FormattedLine(it, indent = 1)
+                    textList += FormattedLine(it, indent = 1, link = "UnitType/$it")
                 }
             }
         }
