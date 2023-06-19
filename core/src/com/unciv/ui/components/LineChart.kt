@@ -73,12 +73,26 @@ class LineChart(
     private fun generateLabels(value: List<DataPoint<Int>>, yAxis: Boolean): List<Int> {
         val minLabelValue = getPrevNumberDivisibleByPowOfTen(value.minOf { if (yAxis) it.y else it.x })
         val maxLabelValue = getNextNumberDivisibleByPowOfTen(value.maxOf { if (yAxis) it.y else it.x })
-        val stepSize = ceil(maxLabelValue.toFloat() / maxLabels).toInt()
-        // `maxLabels + 1` because we want to end at `maxLabels * stepSize`.
-        val result = (0 until maxLabels + 1).map { (it * stepSize) }
-        return if (maxLabelValue * minLabelValue < 0)
-            listOf(minLabelValue) + result // if the chart cross the X axis, add a negative value
-        else result
+        var stepSizePositive = ceil(maxLabelValue.toFloat() / maxLabels).toInt()
+
+        return when {
+            minLabelValue < 0 -> {
+                var stepSizeNegative = ceil(-minLabelValue.toFloat() / maxLabels).toInt()
+                val maxStep = max(stepSizePositive, stepSizeNegative)
+                val stepCountNegative = floor(minLabelValue / maxStep.toDouble()).toInt()
+                stepSizeNegative = if (abs(stepCountNegative) < 2) abs(minLabelValue) else maxStep
+                val stepCountPositive = ceil(maxLabelValue / maxStep.toDouble()).toInt()
+                stepSizePositive = if (abs(stepCountPositive) < 2) abs(maxLabelValue) else maxStep
+
+                (stepCountNegative until 0).map { (it * stepSizeNegative) } +
+                    if (maxLabelValue != 0)
+                    (0 until stepCountPositive + 1).map { (it * stepSizePositive) }
+                    else listOf(0)
+            }
+            // `maxLabels + 1` because we want to end at `maxLabels * stepSize`.
+            maxLabelValue != 0 -> (0 until maxLabels + 1).map { (it * stepSizePositive) }
+            else -> listOf(0)
+        }
     }
 
     /**
@@ -190,6 +204,9 @@ class LineChart(
         val linesMaxY = chartHeight - labelHeight / 2
         val scaleX = (linesMaxX - linesMinX) / xLabels.max()
         val scaleY = (linesMaxY - linesMinY) / yLabels.max()
+        val negativeOrientationLineYPosition = yAxisLabelMinY + labelHeight / 2
+        val negativeYLabel = yLabels.min()
+        val negativeScaleY = (negativeOrientationLineYPosition - linesMinY) / if (negativeYLabel != 0) negativeYLabel else 1
         val sortedPoints = dataPoints.sortedBy { it.x }
         val pointsByCiv = sortedPoints.groupBy { it.civ }
         // We want the current player civ to be drawn last, so it is never overlapped by another player.
@@ -206,7 +223,8 @@ class LineChart(
         for (civ in civIterationOrder) {
             val points = pointsByCiv[civ]!!
             val scaledPoints : List<DataPoint<Float>> = points.map {
-                DataPoint(linesMinX + it.x * scaleX, linesMinY + it.y * scaleY, it.civ)
+                val yScale = if (it.y < 0f) negativeScaleY else scaleY
+                DataPoint(linesMinX + it.x * scaleX, linesMinY + it.y * yScale, it.civ)
             }
             // Probably nobody can tell the difference of one pixel, so that seems like a reasonable epsilon.
             val simplifiedScaledPoints = douglasPeucker(scaledPoints, 1f)
