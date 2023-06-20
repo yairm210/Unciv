@@ -3,9 +3,9 @@ package com.unciv.logic.civilization.managers
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Counter
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
+
 
 // todo: Great Admiral?
 // todo: Free GP from policies and wonders should increase threshold according to the wiki
@@ -17,8 +17,9 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
     lateinit var civInfo: Civilization
 
     /** Base points, without speed modifier */
+    private var pointsForNextGreatPerson = 100
     var pointsForNextGreatGeneral = 200
-    private var pointsForNextGreatPerson = Counter<String>()
+    private var uniquePointsForNextGreatPerson = Counter<String>()
     var greatPersonPointsCounter = Counter<String>()
     var greatGeneralPoints = 0
     var freeGreatPeople = 0
@@ -31,7 +32,8 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         val toReturn = GreatPersonManager()
         toReturn.freeGreatPeople = freeGreatPeople
         toReturn.greatPersonPointsCounter = greatPersonPointsCounter.clone()
-        toReturn.pointsForNextGreatPerson = pointsForNextGreatPerson.clone()
+        toReturn.pointsForNextGreatPerson = pointsForNextGreatPerson
+        toReturn.uniquePointsForNextGreatPerson = uniquePointsForNextGreatPerson.clone()
         toReturn.pointsForNextGreatGeneral = pointsForNextGreatGeneral
         toReturn.greatGeneralPoints = greatGeneralPoints
         toReturn.mayaLimitedFreeGP = mayaLimitedFreeGP
@@ -39,15 +41,17 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    fun getPointsRequiredForGreatPerson(greatPerson:String):Int
-    {
-        var greatType = ""
-        for (unique in civInfo.getEquivalentUnit(greatPerson).getMatchingUniques(UniqueType.GreatType, stateForConditionals = StateForConditionals.IgnoreConditionals))
-            greatType=unique.params[0]
-        if (pointsForNextGreatPerson[greatType] == 0) {
-            pointsForNextGreatPerson.add(greatType,100)
+    fun getPointsRequiredForGreatPerson(greatPerson: String): Int {
+        //An empty string is used to indicate the Unique wasn't found
+        val greatPersonPool = civInfo.getEquivalentUnit(greatPerson).getMatchingUniques(UniqueType.GPPointPool)
+                .firstOrNull()?.params?.get(0) ?: ""
+        if(greatPersonPool != "") {
+            if (uniquePointsForNextGreatPerson[greatPersonPool] == 0) {
+                uniquePointsForNextGreatPerson.add(greatPersonPool, 100)
+            }
+            return (uniquePointsForNextGreatPerson[greatPersonPool] * civInfo.gameInfo.speed.modifier).toInt()
         }
-        return (pointsForNextGreatPerson[greatType] * civInfo.gameInfo.speed.modifier).toInt()
+        return (pointsForNextGreatPerson * civInfo.gameInfo.speed.modifier).toInt()
     }
 
     fun getNewGreatPerson(): String? {
@@ -61,12 +65,15 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
             val requiredPoints = getPointsRequiredForGreatPerson(key)
             if (value >= requiredPoints) {
                 greatPersonPointsCounter.add(key, -requiredPoints)
-                for (unique in civInfo.getEquivalentUnit(key).getMatchingUniques(UniqueType.GreatType, stateForConditionals = StateForConditionals.IgnoreConditionals))
+                val greatPersonPool = civInfo.getEquivalentUnit(key).getMatchingUniques(UniqueType.GPPointPool)
+                    .firstOrNull()?.params?.get(0) ?: ""
+                if(greatPersonPool != "")
                 {
-                    pointsForNextGreatPerson[unique.params[0]] *= 2
-                    return key
+                    uniquePointsForNextGreatPerson[greatPersonPool] *= 2
                 }
-                pointsForNextGreatPerson[""] *= 2
+                else {
+                    pointsForNextGreatPerson *= 2
+                }
                 return key
             }
         }
