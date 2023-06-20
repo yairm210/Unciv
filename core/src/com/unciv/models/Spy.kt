@@ -27,7 +27,7 @@ class Spy() : IsPartOfGameInfoSerialization {
     lateinit var name: String
     var action = SpyAction.None
         private set
-    var timeTillActionFinish = 0
+    var turnsRemainingForAction = 0
         private set
     private var progressTowardsStealingTech = 0
 
@@ -45,7 +45,7 @@ class Spy() : IsPartOfGameInfoSerialization {
         val toReturn = Spy(name)
         toReturn.location = location
         toReturn.action = action
-        toReturn.timeTillActionFinish = timeTillActionFinish
+        toReturn.turnsRemainingForAction = turnsRemainingForAction
         toReturn.progressTowardsStealingTech = progressTowardsStealingTech
         return toReturn
     }
@@ -59,15 +59,15 @@ class Spy() : IsPartOfGameInfoSerialization {
         when (action) {
             SpyAction.None -> return
             SpyAction.Moving -> {
-                --timeTillActionFinish
-                if (timeTillActionFinish > 0) return
+                --turnsRemainingForAction
+                if (turnsRemainingForAction > 0) return
 
                 action = SpyAction.EstablishNetwork
-                timeTillActionFinish = 3 // Depending on cultural familiarity level if that is ever implemented
+                turnsRemainingForAction = 3 // Depending on cultural familiarity level if that is ever implemented
             }
             SpyAction.EstablishNetwork -> {
-                --timeTillActionFinish
-                if (timeTillActionFinish > 0) return
+                --turnsRemainingForAction
+                if (turnsRemainingForAction > 0) return
 
                 val location = getLocation()!! // This should never throw an exception, as going to the hideout sets your action to None.
                 if (location.civ.isCityState()) {
@@ -89,7 +89,7 @@ class Spy() : IsPartOfGameInfoSerialization {
                 val stealableTechs = espionageManager.getTechsToSteal(getLocation()!!.civ)
                 if (stealableTechs.isEmpty()) {
                     action = SpyAction.Surveillance
-                    timeTillActionFinish = 0
+                    turnsRemainingForAction = 0
                     val notificationString = "Your spy [$name] cannot steal any more techs from [${getLocation()!!.civ}] as we've already researched all the technology they know!"
                     civInfo.addNotification(notificationString, getLocation()!!.location, NotificationCategory.Espionage, NotificationIcon.Spy)
                     return
@@ -107,7 +107,7 @@ class Spy() : IsPartOfGameInfoSerialization {
 
     fun startStealingTech() {
         action = SpyAction.StealingTech
-        timeTillActionFinish = 0
+        turnsRemainingForAction = 0
         progressTowardsStealingTech = 0
     }
 
@@ -145,11 +145,11 @@ class Spy() : IsPartOfGameInfoSerialization {
         location = city?.id
         if (city == null) { // Moving to spy hideout
             action = SpyAction.None
-            timeTillActionFinish = 0
+            turnsRemainingForAction = 0
             return
         }
         action = SpyAction.Moving
-        timeTillActionFinish = 1
+        turnsRemainingForAction = 1
     }
 
     fun isSetUp() = action !in listOf(SpyAction.Moving, SpyAction.None, SpyAction.EstablishNetwork)

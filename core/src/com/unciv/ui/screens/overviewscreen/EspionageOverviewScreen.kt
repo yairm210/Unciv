@@ -73,7 +73,7 @@ class EspionageOverviewScreen(val civInfo: Civilization) : PickerScreen(true) {
             val actionString =
                 when (spy.action) {
                     SpyAction.None, SpyAction.StealingTech, SpyAction.Surveillance -> spy.action.displayString
-                    SpyAction.Moving, SpyAction.EstablishNetwork -> "[${spy.action.displayString}] ${spy.timeTillActionFinish}${Fonts.turn}"
+                    SpyAction.Moving, SpyAction.EstablishNetwork -> "[${spy.action.displayString}] ${spy.turnsRemainingForAction}${Fonts.turn}"
                     SpyAction.RiggingElections -> TODO()
                     SpyAction.CounterIntelligence -> TODO()
                 }
