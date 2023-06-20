@@ -1,18 +1,20 @@
 # Building Locally
 
-This is a guide to editing, building, running and deploying Unciv from code
-
-So first things first - the initial "No assumptions" setup to have Unciv run from-code on your computer!
+By the end of this guide, you will have Unciv running locally from code, so you can make changes and test them locally.
 
 ## With Android Studio
 
--   Install Android Studio - it's free and awesome! Be aware that it's a long download!
+-   Install [Android Studio](https://developer.android.com/studio) - it's free and awesome! Be aware that it's a long download!
 -   Install Git, it's the way for us to work together on this project. UI is optional, Android Studio has good Git tools built in :)
 -   Getting the code
-    -   Create a Github account, if you don't already have one
-    -   Fork the repo (click the "Fork" button on the top-right corner of https://github.com/yairm210/Unciv) - this will create a "copy" of the code on your account, at https://github.com/YourUsername/Unciv
-    -   Clone your fork with git - the location will be https://github.com/YourUsername/Unciv.git, visible from the green "Clone or download" button at https://github.com/YourUsername/Unciv
--   Load the project in Android Studio, Gradle will attempt the initial sync. If this is your first time with Android Studio, this may require you to accept the Android Build-tools licenses, which works differently on every device, so search for your OS-specific solution.
+    -   Create a [Github account](https://github.com/join), if you don't already have one
+    -   [Fork the repo](https://github.com/yairm210/Unciv/fork) - this will create a "copy" of the code on your account, at `https://github.com/<YourUsername>/Unciv`
+    -   Clone your fork with git - go to `https://github.com/<YourUsername>/Unciv` and click the green "Clone or download" button
+-   Load the project in Android Studio
+    - File -> New -> Project from Version Control -> GitHub
+    - Enter your GitHub username and password
+    - Select the repository and hit clone - The GitHub repo will be created as a new project in Android Studio.
+-   Gradle will attempt the initial sync. If this is your first time with Android Studio, this may require you to accept the Android Build-tools licenses, which works differently on every device, so search for your OS-specific solution.
     -   A new install may not be able to do the initial sync - this comes in the form of `Unable to find method ''void org.apache.commons.compress.archivers.zip.ZipFile.<init>(java.nio.channels.SeekableByteChannel)''` errors when you try to sync. If you have this problem go into File > Settings > Appearance & Behavior > System Settings > Android SDK
         - Click "SDK Platforms"
         - Click "Android 12L (Sv2)"
@@ -46,11 +48,13 @@ Unciv uses Gradle to specify dependencies and how to run. In the background, the
 
 Unciv uses Gradle 7.5 and the Android Gradle Plugin 7.3.1. Can check in File > Project Structure > Project
 
-Note advanced build commands as described in the next paragraph, specifically the `gradlew desktop:dist` one to build a jar, run just fine in Android Studio's terminal (Alt+F12), with most dependencies already taken care of.
+> Note: advanced build commands (as described in the next paragraph), specifically `gradlew desktop:dist` to build a jar, run just fine in Android Studio's terminal (Alt+F12), with most dependencies already taken care of.
 
 ## Without Android Studio
 
-If you also have JDK 11 installed, you can compile Unciv on your own by cloning (or downloading and unzipping) the project, opening a terminal in the Unciv folder and run the following commands:
+- Ensure you have JDK 11 or higher installed
+- Clone the project (see above initial steps)
+- Open a terminal in the Unciv folder and run the following commands
 
 ### Windows
 
@@ -64,22 +68,49 @@ If you also have JDK 11 installed, you can compile Unciv on your own by cloning 
 
 If the terminal returns `Permission denied` or `Command not found` on Mac/Linux, run `chmod +x ./gradlew` first. *This is a one-time procedure.*
 
-If you get an error that Android SDK folder wasn't found, firstly install it by doing in terminal:
+If you get an error that Android SDK folder wasn't found, install it by running:
 
 `sudo apt update && sudo apt install android-sdk` (Debian, Ubuntu, Mint etc.)
 
-After that you should put its folder to the file `local.properties` by adding this line:
+Then, set the SDK location in the `local.properties` file by adding:
 
-`sdk.dir = /path/to/android/sdk` which can be `/usr/lib/android-sdk` or something other.
+`sdk.dir = /path/to/android/sdk` - for example, `/usr/lib/android-sdk`
 
-If during the first launch it throws an error that the JDK version is wrong try to install JDK from [here](https://adoptium.net/temurin/releases/).
+If during initial launch you get an error that the JDK version is wrong, install the JDK from [here](https://adoptium.net/temurin/releases/).
 
-Gradle may take up to several minutes to download files. Be patient.
-After building, the output .JAR file should be in /desktop/build/libs/Unciv.jar
+> Note: Gradle may take up to several minutes to download files
+After building, the output .JAR file should be in `/desktop/build/libs/Unciv.jar`
 
-For actual development, you'll probably need to download Android Studio and build it yourself - see Contributing :)
+For actual development, you'll probably need to download Android Studio and build it yourself - see above :)
 
-## UncivServer
+## Next steps
+
+Congratulations! Unciv should now be running on your computer! Now we can start changing some code, and later we'll see how your changes make it into the main repository!
+
+Now would be a good time to get to know the project in general at [the Project Structure overview!](Project-structure-and-major-classes.md)
+
+### Unit Tests
+
+You can (and in some cases _should_) run and even debug the unit tests locally.
+
+-   In Android Studio, Run > Edit configurations.
+    -   Click "+" to add a new configuration
+    -   Choose "Gradle" and name the config, e.g. "Unit Tests"
+    -   Under "Gradle Project", choose "Unciv" from the dropdown (or type it), set "Tasks" to `:tests:test` and "Arguments" to `--tests "com.unciv.*"`, OK to close the window.
+-   Select the "Unit Tests" configuration and click the green arrow button to run! Or start a debug session as above.
+
+### Linting
+
+Detekt checks for code smells and other linting issues. 
+To generate Detekt reports:
+
+- Download [detekt-cli](https://github.com/detekt/detekt/releases/latest) (the zip file) and unzip it
+- Open a terminal in the Unciv root directory and run one of the following commands to generate the report. NOTE: If you're using Windows, replace `detekt-cli` with `detekt-cli.bat`.
+    - For warnings: `PATH/TO/DETEKT/detekt-cli --parallel --report html:detekt/reports.html --config detekt/config/detekt-warnings.yml`
+    - For errors: `PATH/TO/DETEKT/detekt-cli --parallel --report html:detekt/reports.html --config detekt/config/detekt-errors.yml`
+- The report will be generated in `detekt/reports.html`
+
+### UncivServer
 
 The simple multiplayer host included in the sources can be set up to debug or run analogously to the main game:
 -   In Android Studio, Run > Edit configurations.
@@ -89,28 +120,3 @@ The simple multiplayer host included in the sources can be set up to debug or ru
 -   Select the UncivServer configuration and click the green arrow button to run! Or start a debug session as above.
 
 To build a jar file, refer to [Without Android Studio](#Without-Android-Studio) and replace 'desktop' with 'server'. That is, run `./gradlew server:dist` and when it's done look for /server/build/libs/UncivServer.jar
-
-## Unit Tests
-
-You can (and in some cases _should_) run and even debug the unit tests locally.
--   In Android Studio, Run > Edit configurations.
-    -   Click "+" to add a new configuration
-    -   Choose "Gradle" and name the config, e.g. "Unit Tests"
-    -   Under "Gradle Project", choose "Unciv" from the dropdown (or type it), set "Tasks" to `:tests:test` and "Arguments" to `--tests "com.unciv.*"`, OK to close the window.
--   Select the "Unit Tests" configuration and click the green arrow button to run! Or start a debug session as above.
-
-## Code Smells
-
-You can run `detekt` to check for code smells and other linting issues. To do so download [detekt-cli](https://github.com/detekt/detekt/releases/latest) (the zip file) and unzip it. Then to generate the reports go to the Unciv top directory and run one of the following commands to generate the report. NOTE: If you're using windows, replace `detekt-cli` with `detekt-cli.bat`.
-- For detecting warnings: `PATH/TO/DETEKT/detekt-cli --parallel --report html:detekt/reports.html --config detekt/config/detekt-warnings.yml
-  `
-- For detecting errors: `PATH/TO/DETEKT/detekt-cli --parallel --report html:detekt/reports.html --config detekt/config/detekt-errors.yml
-  `
-
-Then you can find the report in detekt/reports.html
-
-## Next steps
-
-Congratulations! Unciv should now be running on your computer! Now we can start changing some code, and later we'll see how your changes make it into the main repository!
-
-Now would be a good time to get to know the project in general at [the Project Structure overview!](Project-structure-and-major-classes.md)
