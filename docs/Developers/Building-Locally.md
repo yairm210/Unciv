@@ -9,7 +9,6 @@ By the end of this guide, you will have Unciv running locally from code, so you 
 -   Getting the code
     -   Create a [Github account](https://github.com/join), if you don't already have one
     -   [Fork the repo](https://github.com/yairm210/Unciv/fork) - this will create a "copy" of the code on your account, at `https://github.com/<YourUsername>/Unciv`
-    -   Clone your fork with git - go to `https://github.com/<YourUsername>/Unciv` and click the green "Clone or download" button
 -   Load the project in Android Studio
     - File -> New -> Project from Version Control -> GitHub
     - Enter your GitHub username and password
