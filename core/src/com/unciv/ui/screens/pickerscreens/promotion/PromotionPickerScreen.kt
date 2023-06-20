@@ -1,133 +1,29 @@
-package com.unciv.ui.screens.pickerscreens
+package com.unciv.ui.screens.pickerscreens.promotion
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.BorderedTable
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onDoubleClick
-import com.unciv.ui.components.extensions.setFontColor
-import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
-import java.lang.Integer.max
+import com.unciv.ui.screens.pickerscreens.PickerScreen
 import kotlin.math.abs
 
-class PromotionNode(val promotion: Promotion) {
-    var maxDepth = 0
-
-    /** How many level this promotion has */
-    var levels = 1
-
-    val successors: ArrayList<PromotionNode> = ArrayList()
-    val predecessors: ArrayList<PromotionNode> = ArrayList()
-
-    val baseName = getBasePromotionName()
-
-    fun isRoot() : Boolean {
-        return predecessors.isEmpty()
-    }
-
-    fun calculateDepth(excludeNodes: ArrayList<PromotionNode>, currentDepth: Int) {
-        maxDepth = max(maxDepth, currentDepth)
-        excludeNodes.add(this)
-        successors.filter { !excludeNodes.contains(it) }.forEach { it.calculateDepth(excludeNodes,currentDepth+1) }
-    }
-
-    private fun getBasePromotionName(): String {
-        val nameWithoutBrackets = promotion.name.replace("[", "").replace("]", "")
-        val level = when {
-            nameWithoutBrackets.endsWith(" I") -> 1
-            nameWithoutBrackets.endsWith(" II") -> 2
-            nameWithoutBrackets.endsWith(" III") -> 3
-            else -> 0
-        }
-        return nameWithoutBrackets.dropLast(if (level == 0) 0 else level + 1)
-    }
-
-    class CustomComparator(
-        private val baseNode: PromotionNode
-    ) : Comparator<PromotionNode> {
-        override fun compare(a: PromotionNode, b: PromotionNode): Int {
-            val baseName = baseNode.baseName
-            val aName = a.baseName
-            val bName = b.baseName
-            return when (aName) {
-                baseName -> -1
-                bName -> 0
-                else -> 1
-            }
-        }
-    }
-
-}
-
-private class PromotionButton(
-    val node: PromotionNode,
-    val isPickable: Boolean = true,
-    val isPromoted: Boolean = false
-) : BorderedTable(
-    path="PromotionScreen/PromotionButton",
-    defaultBgShape = BaseScreen.skinStrings.roundedEdgeRectangleMidShape,
-    defaultBgBorder = BaseScreen.skinStrings.roundedEdgeRectangleMidBorderShape
-) {
-
-    var isSelected = false
-    val label = node.promotion.name.toLabel(hideIcons = true).apply {
-        wrap = false
-        setAlignment(Align.left)
-        setEllipsis(true)
-    }
-
-    init {
-
-        touchable = Touchable.enabled
-        borderSize = 5f
-
-        pad(5f)
-        align(Align.left)
-        add(ImageGetter.getPromotionPortrait(node.promotion.name)).padRight(10f)
-        add(label).left().maxWidth(130f)
-
-        updateColor()
-    }
-
-    fun updateColor() {
-
-        val color = when {
-            isSelected -> PromotionPickerScreen.Selected
-            isPickable -> PromotionPickerScreen.Pickable
-            isPromoted -> PromotionPickerScreen.Promoted
-            else -> PromotionPickerScreen.Default
-        }
-
-        bgColor = color
-
-        val textColor = when {
-            isSelected -> Color.WHITE
-            isPromoted -> PromotionPickerScreen.Promoted.cpy().darken(0.8f)
-            else -> Color.WHITE
-        }
-        label.setFontColor(textColor)
-    }
-
-}
 
 class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResize {
 
@@ -185,7 +81,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
         displayTutorial(TutorialTrigger.Experience)
     }
 
-    private fun acceptPromotion(node: PromotionNode?) {
+    private fun acceptPromotion(node: PromotionNodeOld?) {
         // if user managed to click disabled button, still do nothing
         if (node == null) return
 
@@ -199,14 +95,14 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
             it.unitTypes.contains(unitType.name) || unit.promotions.promotions.contains(it.name)
         }
 
-        val map = LinkedHashMap<String, PromotionNode>()
+        val map = LinkedHashMap<String, PromotionNodeOld>()
 
-        val availablePromotions = unit.promotions.getAvailablePromotions()
+        val availablePromotions = unit.promotions.getAvailablePromotions().toSet()  // toSet because we get a Sequence, and it's checked repeatedly with contains()
 
         // Create nodes
         // Pass 1 - create nodes for all promotions
         for (promotion in promotionsForUnitType)
-            map[promotion.name] = PromotionNode(promotion)
+            map[promotion.name] = PromotionNodeOld(promotion)
 
         // Pass 2 - remove nodes which are unreachable (dependent only on absent promotions)
         for (promotion in promotionsForUnitType) {
@@ -242,7 +138,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
                 continue
 
             // Choose best predecessor - the one with less depth
-            var best: PromotionNode? = null
+            var best: PromotionNodeOld? = null
             for (predecessor in node.predecessors) {
                 if (best == null || predecessor.maxDepth < best.maxDepth)
                     best = predecessor
@@ -258,7 +154,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
 
         // Sort nodes successors so promotions with same base name go first
         for (node in map.values) {
-            node.successors.sortWith(PromotionNode.CustomComparator(node))
+            node.successors.sortWith(PromotionNodeOld.CustomComparator(node))
         }
 
         // Create cell matrix
@@ -285,7 +181,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
         }
 
         /** Recursively place buttons for node and its successors into free cells */
-        fun placeButton(col: Int, row: Int, node: PromotionNode) : Int {
+        fun placeButton(col: Int, row: Int, node: PromotionNodeOld) : Int {
             val name = node.promotion.name
             // If promotion button not yet placed
             if (promotionToButton[name] == null) {
@@ -332,7 +228,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
 
     }
 
-    private fun getButton(allPromotions: Collection<Promotion>, node: PromotionNode,
+    private fun getButton(allPromotions: Collection<Promotion>, node: PromotionNodeOld,
                           isPickable: Boolean = true, isPromoted: Boolean = false) : PromotionButton {
 
         val button = PromotionButton(
@@ -343,10 +239,10 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
 
         button.onClick {
             selectedPromotion?.isSelected = false
-            selectedPromotion?.updateColor()
+            //selectedPromotion?.updateColor()
             selectedPromotion = button
             button.isSelected = true
-            button.updateColor()
+            //button.updateColor()
 
             for (btn in promotionToButton.values)
                 btn.updateColor()

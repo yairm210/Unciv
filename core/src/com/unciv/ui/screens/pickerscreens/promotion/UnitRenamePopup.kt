@@ -1,4 +1,4 @@
-package com.unciv.ui.screens.pickerscreens
+package com.unciv.ui.screens.pickerscreens.promotion
 
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.translations.tr
@@ -24,4 +24,3 @@ class UnitRenamePopup(val screen: BaseScreen, val unit: MapUnit, val actionOnClo
     }
 
 }
-

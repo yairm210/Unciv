@@ -31,8 +31,8 @@ import com.unciv.ui.components.extensions.toPrettyString
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
-import com.unciv.ui.screens.pickerscreens.UnitRenamePopup
+import com.unciv.ui.screens.pickerscreens.promotion.PromotionPickerScreen
+import com.unciv.ui.screens.pickerscreens.promotion.UnitRenamePopup
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 import kotlin.math.abs
 
