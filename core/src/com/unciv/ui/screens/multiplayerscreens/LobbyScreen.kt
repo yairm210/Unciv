@@ -261,7 +261,7 @@ class LobbyScreen(
 
     private class WrapPopup(stage: Stage, other: Actor, action: (() -> Unit)? = null) : Popup(stage) {
         init {
-            innerTable.add(other).center().expandX().row()
+            add(other).center().expandX().row()
             addCloseButton(action = action)
             open()
         }

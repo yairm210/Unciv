@@ -21,7 +21,8 @@ class PickerPane(
     disableScroll: Boolean = false,
     horizontally: Boolean = false,  // use a horizontal group instead of a vertical group for layout
 ) : Table() {
-    /** The close button on the lower left of [bottomTable], see [setDefaultCloseAction] */
+    /** The close button on the lower left of [bottomTable], see [PickerScreen.setDefaultCloseAction].
+     *  Note if you don't use that helper, you'll need to do both click and keyboard support yourself. */
     val closeButton = Constants.close.toTextButton()
     /** A scrollable wrapped Label you can use to show descriptions in the [bottomTable], starts empty */
     val descriptionLabel = "".toLabel()

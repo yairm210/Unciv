@@ -54,7 +54,7 @@ class TestGame {
         gameInfo.currentPlayerCiv = Civilization()  // Will be uninitialized, do not build on for tests
 
         // Create a tilemap, needed for city centers
-        gameInfo.tileMap = TileMap(1, ruleset, false)
+        gameInfo.tileMap = TileMap(0, ruleset, false)
         tileMap.mapParameters.mapSize = MapSizeNew(0, 0)
         tileMap.ruleset = ruleset
         tileMap.gameInfo = gameInfo

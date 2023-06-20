@@ -6,43 +6,40 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 
-class MapUnitCache(val mapUnit: MapUnit) {
+// Note: Single use in MapUnit and it's @Transient there, so no need for that here
+class MapUnitCache(private val mapUnit: MapUnit) {
     // These are for performance improvements to getMovementCostBetweenAdjacentTiles,
     // a major component of getDistanceToTilesWithinTurn,
     // which in turn is a component of getShortestPath and canReach
-    @Transient
     var ignoresTerrainCost = false
         private set
 
-    @Transient
     var ignoresZoneOfControl = false
         private set
 
-    @Transient
     var allTilesCosts1 = false
         private set
 
-    @Transient
     var canPassThroughImpassableTiles = false
         private set
 
-    @Transient
     var roughTerrainPenalty = false
+        private set
+
+    /** `true` if movement 0 _or_ has CannotMove unique */
+    var cannotMove = false
         private set
 
     /** If set causes an early exit in getMovementCostBetweenAdjacentTiles
      *  - means no double movement uniques, roughTerrainPenalty or ignoreHillMovementCost */
-    @Transient
     var noTerrainMovementUniques = false
         private set
 
     /** If set causes a second early exit in getMovementCostBetweenAdjacentTiles */
-    @Transient
     var noBaseTerrainOrHillDoubleMovementUniques = false
         private set
 
     /** If set skips tile.matchesFilter tests for double movement in getMovementCostBetweenAdjacentTiles */
-    @Transient
     var noFilteredDoubleMovementUniques = false
         private set
 
@@ -50,33 +47,24 @@ class MapUnitCache(val mapUnit: MapUnit) {
     enum class DoubleMovementTerrainTarget { Feature, Base, Hill, Filter }
     class DoubleMovement(val terrainTarget: DoubleMovementTerrainTarget, val unique: Unique)
     /** Mod-friendly cache of double-movement terrains */
-    @Transient
     val doubleMovementInTerrain = HashMap<String, DoubleMovement>()
 
-    @Transient
     var canEnterIceTiles = false
 
-    @Transient
     var cannotEnterOceanTiles = false
 
-    @Transient
     var canEnterForeignTerrain: Boolean = false
 
-    @Transient
     var costToDisembark: Float? = null
 
-    @Transient
     var costToEmbark: Float? = null
 
-    @Transient
     var paradropRange = 0
 
-    @Transient
     var hasUniqueToBuildImprovements = false    // not canBuildImprovements to avoid confusion
 
-    @Transient
     var hasStrengthBonusInRadiusUnique = false
-    @Transient
+
     var hasCitadelPlacementUnique = false
 
     fun updateUniques(){
@@ -86,6 +74,7 @@ class MapUnitCache(val mapUnit: MapUnit) {
         ignoresTerrainCost = mapUnit.hasUnique(UniqueType.IgnoresTerrainCost)
         ignoresZoneOfControl = mapUnit.hasUnique(UniqueType.IgnoresZOC)
         roughTerrainPenalty = mapUnit.hasUnique(UniqueType.RoughTerrainPenalty)
+        cannotMove = mapUnit.hasUnique(UniqueType.CannotMove) || mapUnit.baseUnit.movement == 0
 
         doubleMovementInTerrain.clear()
         for (unique in mapUnit.getMatchingUniques(UniqueType.DoubleMovementOnTerrain, stateForConditionals = StateForConditionals.IgnoreConditionals)) {
@@ -124,10 +113,7 @@ class MapUnitCache(val mapUnit: MapUnit) {
                 || mapUnit.hasUnique(UniqueType.CanEnterForeignTilesButLosesReligiousStrength)
 
         hasStrengthBonusInRadiusUnique = mapUnit.hasUnique(UniqueType.StrengthBonusInRadius)
-        hasCitadelPlacementUnique = (
-                mapUnit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
-                + mapUnit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)
-                )
+        hasCitadelPlacementUnique = mapUnit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)
             .mapNotNull { mapUnit.civ.gameInfo.ruleset.tileImprovements[it.params[0]] }
             .any { it.hasUnique(UniqueType.TakesOverAdjacentTiles) }
     }

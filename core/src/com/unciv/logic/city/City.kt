@@ -274,7 +274,7 @@ class City : IsPartOfGameInfoSerialization {
 
 
     fun containsBuildingUnique(uniqueType: UniqueType) =
-        cityConstructions.getBuiltBuildings().flatMap { it.uniqueObjects }.any { it.isOfType(uniqueType) }
+        cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).any()
 
     fun getGreatPersonPercentageBonus(): Int{
         var allGppPercentageBonus = 0
@@ -534,8 +534,8 @@ class City : IsPartOfGameInfoSerialization {
     /** Implements [UniqueParameterType.CityFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CityFilter] */
     fun matchesFilter(filter: String, viewingCiv: Civilization = civ): Boolean {
         return when (filter) {
-            "in this city" -> true
-            "in all cities" -> true // Filtered by the way uniques are found
+            "in this city" -> true // Filtered by the way uniques are found
+            "in all cities" -> true
             "in other cities" -> true // Filtered by the way uniques are found
             "in all coastal cities" -> isCoastal()
             "in capital" -> isCapital()

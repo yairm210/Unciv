@@ -3,7 +3,10 @@ package com.unciv.logic.multiplayer.storage
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.apiv2.ApiV2
 import com.unciv.utils.Log
+import kotlinx.coroutines.runBlocking
 import java.util.UUID
+
+private const val PREVIEW_SUFFIX = "_Preview"
 
 /**
  * Transition helper that emulates file storage behavior using the API v2
@@ -32,8 +35,28 @@ class ApiV2FileStorageEmulator(private val api: ApiV2): FileStorage {
         return UncivFiles.gameInfoToString(UncivFiles.gameInfoFromString(loadGameData(gameId)).asPreview())
     }
 
+    fun loadFileData(fileName: String): String {
+        return runBlocking {
+            if (fileName.endsWith(PREVIEW_SUFFIX)) {
+                loadPreviewData(fileName.dropLast(8))
+            } else {
+                loadGameData(fileName)
+            }
+        }
+    }
+
     override suspend fun getFileMetaData(fileName: String): FileMetaData {
-        TODO("Not implemented for this API")
+        TODO("Not yet implemented")
+    }
+
+    fun deleteFile(fileName: String) {
+        return runBlocking {
+            if (fileName.endsWith(PREVIEW_SUFFIX)) {
+                deletePreviewData(fileName.dropLast(8))
+            } else {
+                deleteGameData(fileName)
+            }
+        }
     }
 
     override suspend fun deleteGameData(gameId: String) {
@@ -46,14 +69,12 @@ class ApiV2FileStorageEmulator(private val api: ApiV2): FileStorage {
         deleteGameData(gameId)
     }
 
-    override suspend fun authenticate(userId: String, password: String): Boolean {
-        return api.auth.loginOnly(userId, password)
+    override fun authenticate(userId: String, password: String): Boolean {
+        return runBlocking { api.auth.loginOnly(userId, password) }
     }
 
-    override suspend fun setPassword(newPassword: String): Boolean {
-        api.account.setPassword(newPassword, suppress = true)
-        // TODO: Not yet implemented
-        return false
+    override fun setPassword(newPassword: String): Boolean {
+        return runBlocking { api.account.setPassword(newPassword, suppress = true) }
     }
 
 }

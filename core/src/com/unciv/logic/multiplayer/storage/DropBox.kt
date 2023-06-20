@@ -126,11 +126,11 @@ object DropBox: FileStorage {
         return BufferedReader(InputStreamReader(inputStream)).readText()
     }
 
-    override suspend fun authenticate(userId: String, password: String): Boolean {
+    override fun authenticate(userId: String, password: String): Boolean {
         throw NotImplementedError()
     }
 
-    override suspend fun setPassword(newPassword: String): Boolean {
+    override fun setPassword(newPassword: String): Boolean {
         throw NotImplementedError()
     }
 

@@ -12,7 +12,6 @@ import com.unciv.models.UnitActionType
 import com.unciv.models.UpgradeUnitAction
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
-import com.unciv.ui.components.input.KeyboardBindings
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onRightClick
@@ -53,7 +52,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         if (unitAction.type == UnitActionType.Promote && unitAction.action != null)
             actionButton.color = Color.GREEN.cpy().lerp(Color.WHITE, 0.5f)
 
-        actionButton.addTooltip(KeyboardBindings[binding])
+        actionButton.addTooltip(binding)
         actionButton.pack()
 
         if (unitAction.action == null) {

@@ -31,6 +31,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         val lines = RulesetErrorList()
 
+        /********************** Ruleset Invariant Part **********************/
         // Checks for all mods - only those that can succeed without loading a base ruleset
         // When not checking the entire ruleset, we can only really detect ruleset-invariant errors in uniques
 
@@ -58,7 +59,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         }
 
         for (building in ruleset.buildings.values) {
-            if (building.requiredTech == null && building.cost == 0 && !building.hasUnique(
+            if (building.requiredTech == null && building.cost == -1 && !building.hasUnique(
                         UniqueType.Unbuildable))
                 lines += "${building.name} is buildable and therefore must either have an explicit cost or reference an existing tech!"
 
@@ -128,6 +129,8 @@ class RulesetValidator(val ruleset: Ruleset) {
         // Quit here when no base ruleset is loaded - references cannot be checked
         if (!ruleset.modOptions.isBaseRuleset) return lines
 
+        /********************** Ruleset Specific Part **********************/
+
         val vanillaRuleset = RulesetCache.getVanillaRuleset()  // for UnitTypes fallback
 
 
@@ -166,8 +169,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                     lines += "${unit.name} contains promotion $promotion which does not exist!"
             if (!ruleset.unitTypes.containsKey(unit.unitType) && (ruleset.unitTypes.isNotEmpty() || !vanillaRuleset.unitTypes.containsKey(unit.unitType)))
                 lines += "${unit.name} is of type ${unit.unitType}, which does not exist!"
-            for (unique in unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
-                + unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)) {
+            for (unique in unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)) {
                 val improvementName = unique.params[0]
                 if (ruleset.tileImprovements[improvementName]==null) continue // this will be caught in the checkUniques
                 if ((ruleset.tileImprovements[improvementName] as Stats).none() &&
@@ -485,12 +487,11 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         val typeComplianceErrors = unique.type.getComplianceErrors(unique, ruleset)
         for (complianceError in typeComplianceErrors) {
-            // TODO: Make this Error eventually, this is Not Good
             if (complianceError.errorSeverity <= severityToReport)
                 rulesetErrors.add(RulesetError("$name's unique \"${unique.text}\" contains parameter ${complianceError.parameterName}," +
                         " which does not fit parameter type" +
                         " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
-                    RulesetErrorSeverity.Warning
+                    complianceError.errorSeverity.getRulesetErrorSeverity(severityToReport)
                 ))
         }
 
@@ -506,9 +507,11 @@ class RulesetValidator(val ruleset: Ruleset) {
                         conditional.type.getComplianceErrors(conditional, ruleset)
                 for (complianceError in conditionalComplianceErrors) {
                     if (complianceError.errorSeverity == severityToReport)
-                        rulesetErrors += "$name's unique \"${unique.text}\" contains the conditional \"${conditional.text}\"." +
+                        rulesetErrors.add(RulesetError( "$name's unique \"${unique.text}\" contains the conditional \"${conditional.text}\"." +
                                 " This contains the parameter ${complianceError.parameterName} which does not fit parameter type" +
-                                " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"
+                                " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
+                            complianceError.errorSeverity.getRulesetErrorSeverity(severityToReport)
+                        ))
                 }
             }
         }
@@ -539,6 +542,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
 
 class RulesetError(val text:String, val errorSeverityToReport: RulesetErrorSeverity)
+
 enum class RulesetErrorSeverity(val color: Color) {
     OK(Color.GREEN),
     WarningOptionsOnly(Color.YELLOW),
@@ -553,6 +557,23 @@ class RulesetErrorList : ArrayList<RulesetError>() {
 
     fun add(text: String, errorSeverityToReport: RulesetErrorSeverity) {
         add(RulesetError(text, errorSeverityToReport))
+    }
+
+    override fun add(element: RulesetError): Boolean {
+        // Suppress duplicates due to the double run of some checks for invariant/specific,
+        // Without changing collection type or making RulesetError obey the equality contract
+        val existing = firstOrNull { it.text == element.text }
+            ?: return super.add(element)
+        if (existing.errorSeverityToReport >= element.errorSeverityToReport) return false
+        remove(existing)
+        return super.add(element)
+    }
+
+    override fun addAll(elements: Collection<RulesetError>): Boolean {
+        var result = false
+        for (element in elements)
+            if (add(element)) result = true
+        return result
     }
 
     fun getFinalSeverity(): RulesetErrorSeverity {
@@ -572,5 +593,10 @@ class RulesetErrorList : ArrayList<RulesetError>() {
     fun getErrorText(filter: (RulesetError)->Boolean) =
             filter(filter)
                 .sortedByDescending { it.errorSeverityToReport }
-                .joinToString("\n") { it.errorSeverityToReport.name + ": " + it.text }
+                .joinToString("\n") {
+                    it.errorSeverityToReport.name + ": " +
+                        // This will go through tr(), unavoidably, which will move the conditionals
+                        // out of place. Prevent via kludge:
+                        it.text.replace('<','〈').replace('>','〉')
+                }
 }

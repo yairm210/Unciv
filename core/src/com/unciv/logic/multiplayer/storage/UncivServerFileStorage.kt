@@ -68,7 +68,7 @@ object UncivServerFileStorage : FileStorage {
         return deleteGameData(gameId + PREVIEW_FILE_SUFFIX)
     }
 
-    override suspend fun authenticate(userId: String, password: String): Boolean {
+    override fun authenticate(userId: String, password: String): Boolean {
         var authenticated = false
         val preEncodedAuthValue = "$userId:$password"
         authHeader = mapOf("Authorization" to "Basic ${Base64Coder.encodeString(preEncodedAuthValue)}")
@@ -88,7 +88,7 @@ object UncivServerFileStorage : FileStorage {
         return authenticated
     }
 
-    override suspend fun setPassword(newPassword: String): Boolean {
+    override fun setPassword(newPassword: String): Boolean {
         if (authHeader == null)
             return false
 

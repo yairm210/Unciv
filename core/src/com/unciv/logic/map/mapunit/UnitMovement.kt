@@ -7,6 +7,7 @@ import com.unciv.logic.map.BFS
 import com.unciv.logic.map.HexMath.getDistance
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.UnitActionType
 import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
@@ -18,7 +19,7 @@ class UnitMovement(val unit: MapUnit) {
     fun getEnemyMovementPenalty(civInfo:Civilization, enemyUnit: MapUnit): Float {
         if (civInfo.enemyMovementPenaltyUniques != null && civInfo.enemyMovementPenaltyUniques!!.any()) {
             return civInfo.enemyMovementPenaltyUniques!!.sumOf {
-                if (it.type!! == UniqueType.EnemyLandUnitsSpendExtraMovement
+                if (it.type!! == UniqueType.EnemyUnitsSpendExtraMovement
                         && enemyUnit.matchesFilter(it.params[0]))
                     it.params[1].toInt()
                 else 0
@@ -34,6 +35,7 @@ class UnitMovement(val unit: MapUnit) {
         civInfo: Civilization,
         considerZoneOfControl: Boolean = true
     ): Float {
+        if (unit.cache.cannotMove) return 100f
 
         if (from.isLand != to.isLand && unit.baseUnit.isLandUnit())
             return if (from.isWater && to.isLand) unit.cache.costToDisembark ?: 100f
@@ -187,12 +189,15 @@ class UnitMovement(val unit: MapUnit) {
                 movementCostCache: HashMap<Pair<Tile, Tile>, Float> = HashMap()
             ): PathsToTilesWithinTurn {
         val distanceToTiles = PathsToTilesWithinTurn()
-        if (unitMovement == 0f) return distanceToTiles
 
         val currentUnitTile = unit.currentTile
         // This is for performance, because this is called all the time
         val unitTile = if (origin == currentUnitTile.position) currentUnitTile else currentUnitTile.tileMap[origin]
         distanceToTiles[unitTile] = ParentTileAndTotalDistance(unitTile, unitTile, 0f)
+
+        // If I can't move my only option is to stay...
+        if (unitMovement == 0f || unit.cache.cannotMove) return distanceToTiles
+
         var tilesToCheck = listOf(unitTile)
 
         while (tilesToCheck.isNotEmpty()) {
@@ -240,7 +245,8 @@ class UnitMovement(val unit: MapUnit) {
      * Returns an empty list if there's no way to get to the destination.
      */
     fun getShortestPath(destination: Tile, avoidDamagingTerrain: Boolean = false): List<Tile> {
-        if (unit.hasUnique(UniqueType.CannotMove)) return listOf()
+        if (unit.cache.cannotMove) return listOf()
+
         // First try and find a path without damaging terrain
         if (!avoidDamagingTerrain && unit.civ.passThroughImpassableUnlocked && unit.baseUnit.isLandUnit()) {
             val damageFreePath = getShortestPath(destination, true)
@@ -392,14 +398,14 @@ class UnitMovement(val unit: MapUnit) {
     /** This is performance-heavy - use as last resort, only after checking everything else!
      * Also note that REACHABLE tiles are not necessarily tiles that the unit CAN ENTER */
     fun canReach(destination: Tile): Boolean {
-        if (unit.hasUnique(UniqueType.CannotMove)) return false
+        if (unit.cache.cannotMove) return destination == unit.getTile()
         if (unit.baseUnit.movesLikeAirUnits() || unit.isPreparingParadrop())
             return canReachInCurrentTurn(destination)
         return getShortestPath(destination).any()
     }
 
     private fun canReachInCurrentTurn(destination: Tile): Boolean {
-        if (unit.hasUnique(UniqueType.CannotMove)) return false
+        if (unit.cache.cannotMove) return destination == unit.getTile()
         if (unit.baseUnit.movesLikeAirUnits())
             return unit.currentTile.aerialDistanceTo(destination) <= unit.getMaxMovementForAirUnits()
         if (unit.isPreparingParadrop())
@@ -409,7 +415,7 @@ class UnitMovement(val unit: MapUnit) {
 
     fun getReachableTilesInCurrentTurn(): Sequence<Tile> {
         return when {
-            unit.hasUnique(UniqueType.CannotMove) -> emptySequence()
+            unit.cache.cannotMove -> sequenceOf(unit.getTile())
             unit.baseUnit.movesLikeAirUnits() ->
                 unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getMaxMovementForAirUnits()))
             unit.isPreparingParadrop() ->
@@ -439,7 +445,7 @@ class UnitMovement(val unit: MapUnit) {
         if (unit.baseUnit.movesLikeAirUnits()) return false
         // We can't swap with ourself
         if (reachableTile == unit.getTile()) return false
-        if (unit.hasUnique(UniqueType.CannotMove)) return false
+        if (unit.cache.cannotMove) return false
         // Check whether the tile contains a unit of the same type as us that we own and that can
         // also reach our tile in its current turn.
         val otherUnit = (
@@ -450,7 +456,7 @@ class UnitMovement(val unit: MapUnit) {
         ) ?: return false
         val ourPosition = unit.getTile()
         if (otherUnit.owner != unit.owner
-                || otherUnit.hasUnique(UniqueType.CannotMove)
+                || otherUnit.cache.cannotMove  // redundant, line below would cover it too
                 || !otherUnit.movement.canReachInCurrentTurn(ourPosition)) return false
         // Check if we could enter their tile if they wouldn't be there
         otherUnit.removeFromTile()
@@ -523,7 +529,7 @@ class UnitMovement(val unit: MapUnit) {
 
 
         if (unit.baseUnit.movesLikeAirUnits()) { // air units move differently from all other units
-            unit.action = null
+            if (unit.action != UnitActionType.Automate.value) unit.action = null
             unit.removeFromTile()
             unit.isTransported = false // it has left the carrier by own means
             unit.putInTile(destination)
@@ -728,7 +734,7 @@ class UnitMovement(val unit: MapUnit) {
 
     // Can a paratrooper land at this tile?
     fun canParadropOn(destination: Tile): Boolean {
-        if (unit.hasUnique(UniqueType.CannotMove)) return false
+        if (unit.cache.cannotMove) return false
         // Can only move to land tiles within range that are visible and not impassible
         // Based on some testing done in the base game
         if (!destination.isLand || destination.isImpassible() || !unit.civ.viewableTiles.contains(destination)) return false

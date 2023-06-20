@@ -325,8 +325,7 @@ object UnitAutomation {
 
         // This has to come after the individual abilities for the great people that can also place
         // instant improvements (e.g. great scientist).
-        if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit)
-                || unit.hasUnique(UniqueType.ConstructImprovementInstantly)
+        if (unit.hasUnique(UniqueType.ConstructImprovementInstantly)
         ) {
             // catch great prophet for civs who can't found/enhance/spread religion
             // includes great people plus moddable units

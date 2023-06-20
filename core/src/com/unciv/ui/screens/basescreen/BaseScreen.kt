@@ -26,9 +26,9 @@ import com.unciv.models.TutorialTrigger
 import com.unciv.models.skins.SkinStrings
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.isNarrowerThan4to3
+import com.unciv.ui.components.input.DispatcherVetoer
 import com.unciv.ui.components.input.KeyShortcutDispatcher
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
-import com.unciv.ui.components.input.DispatcherVetoer
 import com.unciv.ui.components.input.installShortcutDispatcher
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.crashhandling.CrashScreen
@@ -216,7 +216,7 @@ abstract class BaseScreen : Screen {
     /** @return `true` if the screen is narrower than 4:3 landscape */
     fun isNarrowerThan4to3() = stage.isNarrowerThan4to3()
 
-    fun openOptionsPopup(startingPage: Int = OptionsPopup.defaultPage, onClose: () -> Unit = {}) {
+    open fun openOptionsPopup(startingPage: Int = OptionsPopup.defaultPage, onClose: () -> Unit = {}) {
         OptionsPopup(this, startingPage, onClose).open(force = true)
     }
 }

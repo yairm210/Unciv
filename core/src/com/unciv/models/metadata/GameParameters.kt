@@ -50,6 +50,8 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
 
     var maxTurns = 500
 
+    var acceptedModCheckErrors = ""
+
     fun clone(): GameParameters {
         val parameters = GameParameters()
         parameters.difficulty = difficulty
@@ -80,6 +82,7 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
         parameters.baseRuleset = baseRuleset
         parameters.mods = LinkedHashSet(mods)
         parameters.maxTurns = maxTurns
+        parameters.acceptedModCheckErrors = acceptedModCheckErrors
         return parameters
     }
 

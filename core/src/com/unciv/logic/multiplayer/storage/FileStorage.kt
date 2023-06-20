@@ -62,12 +62,12 @@ interface FileStorage {
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      * @throws MultiplayerAuthException if the authentication failed
      */
-    suspend fun authenticate(userId: String, password: String): Boolean
+    fun authenticate(userId: String, password: String): Boolean
 
     /**
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      * @throws MultiplayerAuthException if the authentication failed
      */
-    suspend fun setPassword(newPassword: String): Boolean
+    fun setPassword(newPassword: String): Boolean
 
 }
