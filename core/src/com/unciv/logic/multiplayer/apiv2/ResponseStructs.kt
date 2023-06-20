@@ -46,38 +46,39 @@ data class ApiErrorResponse(
  * The status code represents a unique identifier for an error.
  * Error codes in the range of 1000..2000 represent client errors that could be handled
  * by the client. Error codes in the range of 2000..3000 represent server errors.
+ * The [message] is a user-showable default string for every possible status code.
  */
 @Serializable(with = ApiStatusCodeSerializer::class)
-enum class ApiStatusCode(val value: Int) {
-    Unauthenticated(1000),
-    NotFound(1001),
-    InvalidContentType(1002),
-    InvalidJson(1003),
-    PayloadOverflow(1004),
+enum class ApiStatusCode(val value: Int, val message: String) {
+    Unauthenticated(1000, "You are not logged in. Please login first."),
+    NotFound(1001, "The operation couldn't be completed, since the resource was not found."),
+    InvalidContentType(1002, "The media content type was invalid. Please report this as a bug."),
+    InvalidJson(1003, "The server didn't understand the sent data. Please report this as a bug."),
+    PayloadOverflow(1004, "The amount of data sent to the server was too large. Please report this as a bug."),
 
-    LoginFailed(1005),
-    UsernameAlreadyOccupied(1006),
-    InvalidPassword(1007),
-    EmptyJson(1008),
-    InvalidUsername(1009),
-    InvalidDisplayName(1010),
-    FriendshipAlreadyRequested(1011),
-    AlreadyFriends(1012),
-    MissingPrivileges(1013),
-    InvalidMaxPlayersCount(1014),
-    AlreadyInALobby(1015),
-    InvalidUuid(1016),
-    InvalidLobbyUuid(1017),
-    InvalidFriendUuid(1018),
-    GameNotFound(1019),
-    InvalidMessage(1020),
-    WsNotConnected(1021),
-    LobbyFull(1022),
-    InvalidPlayerUUID(1023),
+    LoginFailed(1005, "The login failed. Is the username and password correct?"),
+    UsernameAlreadyOccupied(1006, "The selected username is already taken. Please choose another name."),
+    InvalidPassword(1007, "This password is not valid. Please choose another password."),
+    EmptyJson(1008, "The server encountered an empty JSON problem. Please report this as a bug."),
+    InvalidUsername(1009, "The username is not valid. Please choose another one."),
+    InvalidDisplayName(1010, "The display name is not valid. Please choose another one."),
+    FriendshipAlreadyRequested(1011, "You have already requested friendship with this player. Please wait until the request is accepted."),
+    AlreadyFriends(1012, "You are already friends, you can't request it again."),
+    MissingPrivileges(1013, "You don't have the required privileges to perform this operation."),
+    InvalidMaxPlayersCount(1014, "The maximum number of players for this lobby is out of the supported range for this server. Please adjust the number. Two players should always work."),
+    AlreadyInALobby(1015, "You are already in another lobby. You need to close or leave the other lobby before."),
+    InvalidUuid(1016, "The operation could not be completed, since an invalid UUID was given. Please retry later or restart the game. If the problem persists, please report this as a bug."),
+    InvalidLobbyUuid(1017, "The lobby was not found. Maybe it has already been closed?"),
+    InvalidFriendUuid(1018, "You must be friends with the other player before this action can be completed. Try again later."),
+    GameNotFound(1019, "The game was not found on the server. Try again later. If the problem persists, the game was probably already removed from the server, sorry."),
+    InvalidMessage(1020, "This message could not be sent, since it was invalid. Remove any invalid characters and try again."),
+    WsNotConnected(1021, "The WebSocket is not available. Please restart the game and try again. If the problem persists, please report this as a bug."),
+    LobbyFull(1022, "The lobby is currently full. You can't join right now."),
+    InvalidPlayerUUID(1023, "The ID of the player was invalid. Does the player exist? Please try again. If the problem persists, please report this as a bug."),
 
-    InternalServerError(2000),
-    DatabaseError(2001),
-    SessionError(2002);
+    InternalServerError(2000, "Internal server error. Please report this as a bug."),
+    DatabaseError(2001, "Internal server database error. Please report this as a bug."),
+    SessionError(2002, "Internal session error. Please report this as a bug.");
 
     companion object {
         private val VALUES = values()
