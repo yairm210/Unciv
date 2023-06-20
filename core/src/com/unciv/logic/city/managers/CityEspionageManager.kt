@@ -4,7 +4,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 
-class CityEspionageManager : IsPartOfGameInfoSerialization{
+class CityEspionageManager : IsPartOfGameInfoSerialization {
     @Transient
     lateinit var city: City
 

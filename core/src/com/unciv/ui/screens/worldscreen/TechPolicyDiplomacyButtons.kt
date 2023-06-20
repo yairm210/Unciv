@@ -154,7 +154,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
     }
 
     private fun updateEspionageButton() {
-        if (viewingCiv.espionageManager.spyCount == 0) {
+        if (viewingCiv.espionageManager.spyList.isEmpty()) {
             espionageButtonHolder.touchable = Touchable.disabled
             espionageButtonHolder.actor = null
         } else {

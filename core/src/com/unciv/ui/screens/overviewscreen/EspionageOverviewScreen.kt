@@ -8,8 +8,8 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.civilization.managers.Spy
-import com.unciv.logic.civilization.managers.SpyAction
+import com.unciv.models.Spy
+import com.unciv.models.SpyAction
 import com.unciv.models.translations.tr
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.pickerscreens.PickerScreen
@@ -72,8 +72,8 @@ class EspionageOverviewScreen(val civInfo: Civilization) : PickerScreen(true) {
             spySelectionTable.add(spy.getLocationName().toLabel()).pad(10f)
             val actionString =
                 when (spy.action) {
-                    SpyAction.None, SpyAction.StealingTech, SpyAction.Surveillance -> spy.action.stringName
-                    SpyAction.Moving, SpyAction.EstablishNetwork -> "[${spy.action.stringName}] ${spy.timeTillActionFinish}${Fonts.turn}"
+                    SpyAction.None, SpyAction.StealingTech, SpyAction.Surveillance -> spy.action.displayString
+                    SpyAction.Moving, SpyAction.EstablishNetwork -> "[${spy.action.displayString}] ${spy.timeTillActionFinish}${Fonts.turn}"
                     SpyAction.RiggingElections -> TODO()
                     SpyAction.CounterIntelligence -> TODO()
                 }
