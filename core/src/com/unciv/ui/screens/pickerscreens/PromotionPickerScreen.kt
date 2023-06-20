@@ -165,31 +165,22 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
 
         descriptionLabel.setText(updateDescriptionLabel())
 
-        val availablePromotionsGroup = Table()
-        availablePromotionsGroup.defaults().pad(5f)
-
-        val unitType = unit.type
-        val promotionsForUnitType = unit.civ.gameInfo.ruleset.unitPromotions.values.filter {
-            it.unitTypes.contains(unitType.name) || unit.promotions.promotions.contains(it.name)
+        if (canChangeState) {
+            //Always allow the user to rename the unit as many times as they like.
+            val renameButton = "Choose name for [${unit.name}]".toTextButton()
+            renameButton.onClick {
+                UnitRenamePopup(
+                    screen = this,
+                    unit = unit,
+                    actionOnClose = {
+                        game.replaceCurrentScreen(recreate())
+                    }
+                )
+            }
+            topTable.add(renameButton).pad(5f).row()
         }
-        //Always allow the user to rename the unit as many times as they like.
-        val renameButton = "Choose name for [${unit.name}]".toTextButton()
-        renameButton.isEnabled = true
 
-        renameButton.onClick {
-            if (!canChangeState) return@onClick
-            UnitRenamePopup(
-                screen = this,
-                unit = unit,
-                actionOnClose = {
-                    game.replaceCurrentScreen(PromotionPickerScreen(unit))
-                }
-            )
-        }
-        availablePromotionsGroup.add(renameButton)
-
-        topTable.add(availablePromotionsGroup).row()
-        fillTable(promotionsForUnitType)
+        fillTable()
 
         displayTutorial(TutorialTrigger.Experience)
     }
@@ -202,18 +193,23 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
         game.replaceCurrentScreen(recreate())
     }
 
-    private fun fillTable(promotions: Collection<Promotion>) {
+    private fun fillTable() {
+        val unitType = unit.type
+        val promotionsForUnitType = unit.civ.gameInfo.ruleset.unitPromotions.values.filter {
+            it.unitTypes.contains(unitType.name) || unit.promotions.promotions.contains(it.name)
+        }
+
         val map = LinkedHashMap<String, PromotionNode>()
 
         val availablePromotions = unit.promotions.getAvailablePromotions()
 
         // Create nodes
         // Pass 1 - create nodes for all promotions
-        for (promotion in promotions)
+        for (promotion in promotionsForUnitType)
             map[promotion.name] = PromotionNode(promotion)
 
         // Pass 2 - remove nodes which are unreachable (dependent only on absent promotions)
-        for (promotion in promotions) {
+        for (promotion in promotionsForUnitType) {
             if (promotion.prerequisites.isNotEmpty()) {
                 val isReachable = promotion.prerequisites.any { map.containsKey(it) }
                 if (!isReachable)
@@ -224,14 +220,12 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
         // Pass 3 - fill nodes successors/predecessors, based on promotions prerequisites
         for (node in map.values) {
             for (prerequisiteName in node.promotion.prerequisites) {
-                val prerequisiteNode = map[prerequisiteName]
-                if (prerequisiteNode != null) {
-                    node.predecessors.add(prerequisiteNode)
-                    prerequisiteNode.successors.add(node)
-                    // Prerequisite has the same base name -> +1 more level
-                    if (prerequisiteNode.baseName == node.baseName)
-                        prerequisiteNode.levels += 1
-                }
+                val prerequisiteNode = map[prerequisiteName] ?: continue
+                node.predecessors.add(prerequisiteNode)
+                prerequisiteNode.successors.add(node)
+                // Prerequisite has the same base name -> +1 more level
+                if (prerequisiteNode.baseName == node.baseName)
+                    prerequisiteNode.levels += 1
             }
         }
 
@@ -290,7 +284,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
             return true
         }
 
-        /** Recursively place buttons for node and it's successors into free cells */
+        /** Recursively place buttons for node and its successors into free cells */
         fun placeButton(col: Int, row: Int, node: PromotionNode) : Int {
             val name = node.promotion.name
             // If promotion button not yet placed
@@ -301,13 +295,10 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
                     val isPromotionAvailable = node.promotion in availablePromotions
                     val hasPromotion = unit.promotions.promotions.contains(name)
                     val isPickable = canPromoteNow && isPromotionAvailable && !hasPromotion
-                    val button = getButton(promotions, node, isPickable, hasPromotion)
+                    val button = getButton(promotionsForUnitType, node, isPickable, hasPromotion)
                     promotionToButton[name] = button
                     cell.setActor(button)
-                    cell.pad(5f)
-                    cell.padRight(20f)
-                    cell.minWidth(190f)
-                    cell.maxWidth(190f)
+                        .pad(5f).padRight(20f).minWidth(190f).maxWidth(190f)
                 }
                 // If place is not free - try to find another in the next row
                 else {
