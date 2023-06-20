@@ -3,6 +3,9 @@ package com.unciv.logic.city.managers
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.managers.Spy
 
 class CityEspionageManager : IsPartOfGameInfoSerialization{
     @Transient
@@ -20,4 +23,22 @@ class CityEspionageManager : IsPartOfGameInfoSerialization{
         return civInfo.espionageManager.spyList.any { it.location == city.id }
     }
 
+    private fun getAllStationedSpies(): List<Spy> {
+        return city.civ.gameInfo.civilizations.flatMap { civ ->
+            civ.espionageManager.spyList.filter { it.location == city.id }
+        }
+    }
+
+    fun removeAllPresentSpies(reason: String) {
+        for (spy in getAllStationedSpies()) {
+            val owningCiv = spy.civInfo
+            val notificationString = when (reason) {
+                "destroyed" -> "After the city of [${city.name}] was destroyed, your spy [${spy.name}] has fled back to our hideout."
+                "conquered" -> "After the city of [${city.name}] was conquered, your spy [${spy.name}] has fled back to our hideout."
+                else -> "Due to the chaos ensuing in [${city.name}], your spy [${spy.name}] has fled back to our hideout."
+            }
+            owningCiv.addNotification(notificationString, city.location, NotificationCategory.Espionage, NotificationIcon.Spy)
+            spy.location = null
+        }
+    }
 }
