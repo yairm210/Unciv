@@ -17,9 +17,11 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
     lateinit var civInfo: Civilization
 
     /** Base points, without speed modifier */
-    private var pointsForNextGreatPerson = 100
+    @Deprecated("Values are now maintaned in pointsForNextGreatPersonCounter", ReplaceWith("pointsForNextGreatPersonCounter[\"\"]"))
+    var pointsForNextGreatPerson = 100
++   var pointsForNextGreatPersonCounter = Counter<String>()  // Initial values assigned in getPointsRequiredForGreatPerson as needed
     var pointsForNextGreatGeneral = 200
-    private var uniquePointsForNextGreatPerson = Counter<String>()
+
     var greatPersonPointsCounter = Counter<String>()
     var greatGeneralPoints = 0
     var freeGreatPeople = 0
@@ -32,8 +34,7 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         val toReturn = GreatPersonManager()
         toReturn.freeGreatPeople = freeGreatPeople
         toReturn.greatPersonPointsCounter = greatPersonPointsCounter.clone()
-        toReturn.pointsForNextGreatPerson = pointsForNextGreatPerson
-        toReturn.uniquePointsForNextGreatPerson = uniquePointsForNextGreatPerson.clone()
+        toReturn.pointsForNextGreatPersonCounter = pointsForNextGreatPersonCounter.clone()
         toReturn.pointsForNextGreatGeneral = pointsForNextGreatGeneral
         toReturn.greatGeneralPoints = greatGeneralPoints
         toReturn.mayaLimitedFreeGP = mayaLimitedFreeGP
@@ -41,17 +42,17 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
+    private fun getPoolKey(greatPerson: String) = civInfo.getEquivalentUnit(greatPerson)
+        .getMatchingUniques(UniqueType.GPPointPool)
+        // An empty string is used to indicate the Unique wasn't found
+        .firstOrNull()?.params?.get(0) ?: ""
+
     fun getPointsRequiredForGreatPerson(greatPerson: String): Int {
-        //An empty string is used to indicate the Unique wasn't found
-        val greatPersonPool = civInfo.getEquivalentUnit(greatPerson).getMatchingUniques(UniqueType.GPPointPool)
-                .firstOrNull()?.params?.get(0) ?: ""
-        if(greatPersonPool != "") {
-            if (uniquePointsForNextGreatPerson[greatPersonPool] == 0) {
-                uniquePointsForNextGreatPerson.add(greatPersonPool, 100)
-            }
-            return (uniquePointsForNextGreatPerson[greatPersonPool] * civInfo.gameInfo.speed.modifier).toInt()
+        val key = getPoolKey(greatPerson)
+        if (pointsForNextGreatPersonCounter[key] == 0) {
+            pointsForNextGreatPersonCounter[key] = 100
         }
-        return (pointsForNextGreatPerson * civInfo.gameInfo.speed.modifier).toInt()
+        return (pointsForNextGreatPersonCounter[key] * civInfo.gameInfo.speed.modifier).toInt()
     }
 
     fun getNewGreatPerson(): String? {
@@ -61,19 +62,11 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
             return "Great General"
         }
 
-        for ((key, value) in greatPersonPointsCounter) {
-            val requiredPoints = getPointsRequiredForGreatPerson(key)
+        for ((greatPerson, value) in greatPersonPointsCounter) {
+            val requiredPoints = getPointsRequiredForGreatPerson(greatPerson)
             if (value >= requiredPoints) {
-                greatPersonPointsCounter.add(key, -requiredPoints)
-                val greatPersonPool = civInfo.getEquivalentUnit(key).getMatchingUniques(UniqueType.GPPointPool)
-                    .firstOrNull()?.params?.get(0) ?: ""
-                if(greatPersonPool != "")
-                {
-                    uniquePointsForNextGreatPerson[greatPersonPool] *= 2
-                }
-                else {
-                    pointsForNextGreatPerson *= 2
-                }
+                greatPersonPointsCounter.add(greatPerson, -requiredPoints)
+                pointsForNextGreatPersonCounter[getPoolKey(greatPerson)] *= 2
                 return key
             }
         }
