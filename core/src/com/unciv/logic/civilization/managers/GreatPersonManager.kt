@@ -19,7 +19,7 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
     /** Base points, without speed modifier */
     @Deprecated("Values are now maintaned in pointsForNextGreatPersonCounter", ReplaceWith("pointsForNextGreatPersonCounter[\"\"]"))
     var pointsForNextGreatPerson = 100
-+   var pointsForNextGreatPersonCounter = Counter<String>()  // Initial values assigned in getPointsRequiredForGreatPerson as needed
+    var pointsForNextGreatPersonCounter = Counter<String>()  // Initial values assigned in getPointsRequiredForGreatPerson as needed
     var pointsForNextGreatGeneral = 200
 
     var greatPersonPointsCounter = Counter<String>()
@@ -67,7 +67,7 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
             if (value >= requiredPoints) {
                 greatPersonPointsCounter.add(greatPerson, -requiredPoints)
                 pointsForNextGreatPersonCounter[getPoolKey(greatPerson)] *= 2
-                return key
+                return greatPerson
             }
         }
         return null
