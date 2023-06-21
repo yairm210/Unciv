@@ -203,13 +203,13 @@ object BackwardCompatibility {
         historyStartTurn = turns
 
     fun GameInfo.migrateGreatPersonPools() {
-+        for (civ in civilizations) civ.greatPeople.run {
-+            if (pointsForNextGreatPerson >= pointsForNextGreatPersonCounter[""]) {
-+                pointsForNextGreatPersonCounter[""] = pointsForNextGreatPerson
-+            }
+        for (civ in civilizations) civ.greatPeople.run {
+            if (pointsForNextGreatPerson >= pointsForNextGreatPersonCounter[""]) {
+                pointsForNextGreatPersonCounter[""] = pointsForNextGreatPerson
+            }
              else {
                  pointsForNextGreatPerson = pointsForNextGreatPersonCounter[""]
              }
-+        }
-+    }
+        }
+    }
 }
