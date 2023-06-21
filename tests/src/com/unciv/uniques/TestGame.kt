@@ -49,6 +49,7 @@ class TestGame {
         RulesetCache.loadRulesets(noMods = true)
         ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
         gameInfo.ruleset = ruleset
+        gameInfo.difficulty = "Prince"
         gameInfo.difficultyObject = ruleset.difficulties["Prince"]!!
         gameInfo.speed = ruleset.speeds[Speed.DEFAULTFORSIMULATION]!!
         gameInfo.currentPlayerCiv = Civilization()  // Will be uninitialized, do not build on for tests
