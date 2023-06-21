@@ -7,6 +7,12 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.managers.Spy
 
+enum class SpyFleeReason {
+    CityDestroyed,
+    CityCaptured,
+    Other
+}
+
 class CityEspionageManager : IsPartOfGameInfoSerialization{
     @Transient
     lateinit var city: City
@@ -29,12 +35,12 @@ class CityEspionageManager : IsPartOfGameInfoSerialization{
         }
     }
 
-    fun removeAllPresentSpies(reason: String) {
+    fun removeAllPresentSpies(reason: SpyFleeReason) {
         for (spy in getAllStationedSpies()) {
             val owningCiv = spy.civInfo
             val notificationString = when (reason) {
-                "destroyed" -> "After the city of [${city.name}] was destroyed, your spy [${spy.name}] has fled back to our hideout."
-                "conquered" -> "After the city of [${city.name}] was conquered, your spy [${spy.name}] has fled back to our hideout."
+                SpyFleeReason.CityDestroyed -> "After the city of [${city.name}] was destroyed, your spy [${spy.name}] has fled back to our hideout."
+                SpyFleeReason.CityCaptured -> "After the city of [${city.name}] was conquered, your spy [${spy.name}] has fled back to our hideout."
                 else -> "Due to the chaos ensuing in [${city.name}], your spy [${spy.name}] has fled back to our hideout."
             }
             owningCiv.addNotification(notificationString, city.location, NotificationCategory.Espionage, NotificationIcon.Spy)

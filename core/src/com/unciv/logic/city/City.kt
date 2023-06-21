@@ -8,6 +8,7 @@ import com.unciv.logic.city.managers.CityExpansionManager
 import com.unciv.logic.city.managers.CityInfoConquestFunctions
 import com.unciv.logic.city.managers.CityPopulationManager
 import com.unciv.logic.city.managers.CityReligionManager
+import com.unciv.logic.city.managers.SpyFleeReason
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.TileMap
@@ -470,7 +471,7 @@ class City : IsPartOfGameInfoSerialization {
                 unit.movement.teleportToClosestMoveableTile()
         }
 
-        espionage.removeAllPresentSpies("destroyed")
+        espionage.removeAllPresentSpies(SpyFleeReason.CityDestroyed)
 
         // Update proximity rankings for all civs
         for (otherCiv in civ.gameInfo.getAliveMajorCivs()) {

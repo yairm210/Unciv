@@ -124,7 +124,7 @@ class CityInfoConquestFunctions(val city: City){
                 removeFlag(CityFlags.Resistance)
             }
 
-            espionage.removeAllPresentSpies("conquered")
+            espionage.removeAllPresentSpies(SpyFleeReason.CityCaptured)
         }
     }
 
