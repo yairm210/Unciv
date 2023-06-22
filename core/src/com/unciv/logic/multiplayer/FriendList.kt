@@ -1,7 +1,7 @@
 package com.unciv.logic.multiplayer
 
 import com.unciv.UncivGame
-import java.util.*
+import java.util.UUID
 
 class FriendList {
     private val settings = UncivGame.Current.settings

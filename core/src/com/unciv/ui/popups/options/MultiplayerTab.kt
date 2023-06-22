@@ -20,22 +20,22 @@ import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.format
 import com.unciv.ui.components.extensions.isEnabled
-import com.unciv.ui.components.input.onChange
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toGdxArray
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.onChange
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.popups.AuthPopup
 import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.options.SettingsSelect.SelectItem
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.utils.Log
 import com.unciv.utils.Concurrency
+import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
 import java.time.Duration
 import java.time.temporal.ChronoUnit
-import java.util.*
+import java.util.UUID
 
 fun multiplayerTab(
     optionsPopup: OptionsPopup
