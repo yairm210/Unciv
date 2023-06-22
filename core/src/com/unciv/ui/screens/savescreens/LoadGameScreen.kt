@@ -144,6 +144,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
     private fun getLoadFromClipboardButton(): TextButton {
         val pasteButton = loadFromClipboard.toTextButton()
         pasteButton.onActivation {
+            if (!Gdx.app.clipboard.hasContents()) return@onActivation
             pasteButton.setText(Constants.working.tr())
             pasteButton.disable()
             Concurrency.run(loadFromClipboard) {
@@ -258,7 +259,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
                         repo,
                         Gdx.files.local("mods")
                     )
-                        ?: throw Exception("downloadAndExtract returns null for 404 errors and the like") // downloadAndExtract returns null for 404 errors and the like -> display something!
+                        ?: throw Exception("Unexpected 404 error") // downloadAndExtract returns null for 404 errors and the like -> display something!
                     Github.rewriteModOptions(repo, modFolder)
                     val labelText = descriptionLabel.text // Surprise - a StringBuilder
                     labelText.appendLine()
