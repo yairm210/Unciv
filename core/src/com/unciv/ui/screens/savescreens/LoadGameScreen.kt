@@ -26,6 +26,7 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.popups.LoadingPopup
+import com.unciv.ui.screens.pickerscreens.Github.folderNameToRepoName
 import com.unciv.utils.Log
 import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
@@ -250,7 +251,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
         Concurrency.runOnNonDaemonThreadPool(downloadMissingMods) {
             try {
                 for (rawName in missingModsToLoad) {
-                    val modName = rawName.replace(' ', '-').lowercase()
+                    val modName = rawName.folderNameToRepoName().lowercase()
                     val repos = Github.tryGetGithubReposWithTopic(10, 1, modName)
                         ?: throw UncivShowableException("Could not download mod list.")
                     val repo = repos.items.firstOrNull { it.name.lowercase() == modName }
