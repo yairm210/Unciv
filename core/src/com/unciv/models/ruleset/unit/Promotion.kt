@@ -18,7 +18,7 @@ class Promotion : RulesetObject() {
     var row = -1
     var column = 0
 
-    fun clone():Promotion {
+    fun clone(): Promotion {
         val newPromotion = Promotion()
 
         // RulesetObject fields
@@ -145,5 +145,28 @@ class Promotion : RulesetObject() {
         }
 
         return textList
+    }
+
+    companion object {
+        data class PromotionBaseNameAndLevel(
+            val nameWithoutBrackets: String,
+            val level: Int,
+            val basePromotionName: String
+        )
+        /** Split a promotion name into base and level, e.g. "Drill II" -> 2 to "Drill"
+         *
+         *  Used by Portrait (where it only has the string, the Promotion object is forgotten) and
+         *  PromotionPickerScreen. Here to allow clear "Promotion.getBaseNameAndLevel" signature.
+         */
+        fun getBaseNameAndLevel(promotionName: String): PromotionBaseNameAndLevel {
+            val nameWithoutBrackets = promotionName.replace("[", "").replace("]", "")
+            val level = when {
+                nameWithoutBrackets.endsWith(" I") -> 1
+                nameWithoutBrackets.endsWith(" II") -> 2
+                nameWithoutBrackets.endsWith(" III") -> 3
+                else -> 0
+            }
+            return PromotionBaseNameAndLevel(nameWithoutBrackets, level, nameWithoutBrackets.dropLast(if (level == 0) 0 else level + 1))
+        }
     }
 }

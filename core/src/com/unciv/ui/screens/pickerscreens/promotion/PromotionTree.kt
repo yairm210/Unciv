@@ -7,9 +7,11 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.translations.tr
 import com.unciv.utils.Log
+import java.util.SortedSet
 
 internal class PromotionTree(val unit: MapUnit) {
     val nodes: LinkedHashMap<String, PromotionNode>
+    val possiblePromotions: SortedSet<Promotion>
 
     class PromotionNode(
         val promotion: Promotion,
@@ -25,9 +27,19 @@ internal class PromotionTree(val unit: MapUnit) {
         var pathIsUnique = true
         var unreachable = false
 
+        val baseName: String
+        val level: Int
+
         val isRoot get() = parents.isEmpty()
+        val canAdopt get() = distanceToAdopted in 1..100
 
         override fun toString() = promotion.name
+
+        init {
+            val (_, level, basePromotionName) = Promotion.getBaseNameAndLevel(promotion.name)
+            this.level = level
+            this.baseName = basePromotionName
+        }
     }
 
     init {
@@ -38,11 +50,13 @@ internal class PromotionTree(val unit: MapUnit) {
 
         // The following sort is mostly redundant with our vanilla rulesets. Still, want to make sure
         // processing will be left to right, top to bottom.
-        val possiblePromotions = rulesetPromotions.asSequence()
+        possiblePromotions = rulesetPromotions.asSequence()
             .filter {
                 unitType in it.unitTypes || it.name in adoptedPromotions
             }
             .toSortedSet(
+                // Remember to make sure row=0/col=0 stays on top while those without explicit pos go to the end
+                // But: the latter did not keep their definition!
                 compareBy<Promotion> { if (it.row >= 0) it.column else Int.MAX_VALUE }
                     .thenBy { it.row }
                     .thenBy(collator) { it.name.tr() }
@@ -91,7 +105,7 @@ internal class PromotionTree(val unit: MapUnit) {
                     complete = false
                     continue
                 }
-                if (node.depth < depth) continue
+                if (node.depth != depth) continue
                 for (child in node.children) {
                     val distance = if (node.distanceToAdopted == Int.MAX_VALUE) Int.MAX_VALUE
                         else if (child.isAdopted) 0 else node.distanceToAdopted + 1
@@ -100,6 +114,7 @@ internal class PromotionTree(val unit: MapUnit) {
                         child.distanceToAdopted < distance -> continue  // Already reached a better way
                         child.distanceToAdopted == distance -> {  // Already reached same distance
                             child.pathIsUnique = false
+                            child.preferredParent = null
                             continue
                         }
                         // else: Already reached, but a worse way - overwrite fully
@@ -120,9 +135,25 @@ internal class PromotionTree(val unit: MapUnit) {
 
     fun allRoots() = nodes.values.asSequence().filter { it.isRoot }
 
+    private fun getReachableNode(promotion: Promotion): PromotionNode? =
+        nodes[promotion.name]?.takeUnless { it.distanceToAdopted == Int.MAX_VALUE }
+
     fun canBuyUpTo(promotion: Promotion): Boolean = unit.promotions.run {
-        val node = nodes[promotion.name] ?: return false
-        if (node.unreachable || node.distanceToAdopted == Int.MAX_VALUE) return false
+        val node = getReachableNode(promotion) ?: return false
         return XP >= xpForNextNPromotions(node.distanceToAdopted)
     }
+
+    fun getPathTo(promotion: Promotion): List<Promotion> {
+        var node = getReachableNode(promotion) ?: return emptyList()
+        val result = mutableListOf(node.promotion)
+        while (true) {
+            node = node.preferredParent ?: break
+            if (node.isAdopted) break
+            result.add(node.promotion)
+        }
+        return result.asReversed()
+    }
+
+    fun getMaxRows() = allRoots().count().coerceAtLeast(nodes.values.maxOf { it.promotion.column })
+    fun getMaxColumns() = nodes.values.maxOf { it.promotion.row.coerceAtLeast(it.depth) }
 }

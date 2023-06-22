@@ -11,9 +11,9 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 
 internal class PromotionButton(
-    val node: PromotionNodeOld,
-    val isPickable: Boolean = true,
-    val isPromoted: Boolean = false
+    val node: PromotionTree.PromotionNode,
+    val isPickable: Boolean = node.canAdopt,
+    val isPromoted: Boolean = node.isAdopted
 ) : BorderedTable(
     path="PromotionScreen/PromotionButton",
     defaultBgShape = BaseScreen.skinStrings.roundedEdgeRectangleMidShape,

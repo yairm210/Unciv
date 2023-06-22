@@ -46,6 +46,8 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
     private val canPromoteNow = canChangeState && canBePromoted &&
             unit.currentMovement > 0 && unit.attacksThisTurn == 0
 
+    private val tree = PromotionTree(unit)
+
     init {
         setDefaultCloseAction()
 
@@ -81,7 +83,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
         displayTutorial(TutorialTrigger.Experience)
     }
 
-    private fun acceptPromotion(node: PromotionNodeOld?) {
+    private fun acceptPromotion(node: PromotionTree.PromotionNode?) {
         // if user managed to click disabled button, still do nothing
         if (node == null) return
 
@@ -90,76 +92,9 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
     }
 
     private fun fillTable() {
-        val unitType = unit.type
-        val promotionsForUnitType = unit.civ.gameInfo.ruleset.unitPromotions.values.filter {
-            it.unitTypes.contains(unitType.name) || unit.promotions.promotions.contains(it.name)
-        }
-
-        val map = LinkedHashMap<String, PromotionNodeOld>()
-
-        val availablePromotions = unit.promotions.getAvailablePromotions().toSet()  // toSet because we get a Sequence, and it's checked repeatedly with contains()
-
-        // Create nodes
-        // Pass 1 - create nodes for all promotions
-        for (promotion in promotionsForUnitType)
-            map[promotion.name] = PromotionNodeOld(promotion)
-
-        // Pass 2 - remove nodes which are unreachable (dependent only on absent promotions)
-        for (promotion in promotionsForUnitType) {
-            if (promotion.prerequisites.isNotEmpty()) {
-                val isReachable = promotion.prerequisites.any { map.containsKey(it) }
-                if (!isReachable)
-                    map.remove(promotion.name)
-            }
-        }
-
-        // Pass 3 - fill nodes successors/predecessors, based on promotions prerequisites
-        for (node in map.values) {
-            for (prerequisiteName in node.promotion.prerequisites) {
-                val prerequisiteNode = map[prerequisiteName] ?: continue
-                node.predecessors.add(prerequisiteNode)
-                prerequisiteNode.successors.add(node)
-                // Prerequisite has the same base name -> +1 more level
-                if (prerequisiteNode.baseName == node.baseName)
-                    prerequisiteNode.levels += 1
-            }
-        }
-
-        // Traverse each root node tree and calculate max possible depths of each node
-        for (node in map.values) {
-            if (node.isRoot())
-                node.calculateDepth(arrayListOf(node), 0)
-        }
-
-        // For each non-root node remove all predecessors except the one with the least max depth.
-        // This is needed to compactify trees and remove circular dependencies (A -> B -> C -> A)
-        for (node in map.values) {
-            if (node.isRoot())
-                continue
-
-            // Choose best predecessor - the one with less depth
-            var best: PromotionNodeOld? = null
-            for (predecessor in node.predecessors) {
-                if (best == null || predecessor.maxDepth < best.maxDepth)
-                    best = predecessor
-            }
-
-            // Remove everything else, leave only best
-            for (predecessor in node.predecessors)
-                predecessor.successors.remove(node)
-            node.predecessors.clear()
-            node.predecessors.add(best!!)
-            best.successors.add(node)
-        }
-
-        // Sort nodes successors so promotions with same base name go first
-        for (node in map.values) {
-            node.successors.sortWith(PromotionNodeOld.CustomComparator(node))
-        }
-
         // Create cell matrix
-        val maxColumns = map.size + 1
-        val maxRows = map.size + 1
+        val maxColumns = tree.getMaxColumns()
+        val maxRows = tree.getMaxRows()
 
         val cellMatrix = ArrayList<ArrayList<Cell<Actor>>>()
         for (y in 0..maxRows) {
@@ -181,17 +116,14 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
         }
 
         /** Recursively place buttons for node and its successors into free cells */
-        fun placeButton(col: Int, row: Int, node: PromotionNodeOld) : Int {
+        fun placeButton(col: Int, row: Int, node: PromotionTree.PromotionNode) : Int {
             val name = node.promotion.name
             // If promotion button not yet placed
             if (promotionToButton[name] == null) {
                 // If place is free - we place button
-                if (isTherePlace(row, col, node.levels)) {
+                if (isTherePlace(row, col, node.depth)) {
                     val cell = cellMatrix[row][col]
-                    val isPromotionAvailable = node.promotion in availablePromotions
-                    val hasPromotion = unit.promotions.promotions.contains(name)
-                    val isPickable = canPromoteNow && isPromotionAvailable && !hasPromotion
-                    val button = getButton(promotionsForUnitType, node, isPickable, hasPromotion)
+                    val button = getButton(tree.possiblePromotions, node, node.canAdopt, node.isAdopted)
                     promotionToButton[name] = button
                     cell.setActor(button)
                         .pad(5f).padRight(20f).minWidth(190f).maxWidth(190f)
@@ -205,7 +137,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
             // Filter successors who haven't been placed yet (to avoid circular dependencies)
             // and try to place them in the next column.
             // Return the max row this whole tree ever reached.
-            return node.successors.filter {
+            return node.children.filter {
                 !promotionToButton.containsKey(it.promotion.name)
             }.map {
                 placeButton(col+1, row, it)
@@ -214,12 +146,10 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
 
         // Build each tree starting from root nodes
         var row = 0
-        for (node in map.values) {
-            if (node.isRoot()) {
-                row = placeButton(0, row, node)
-                // Each root tree should start from a completely empty row.
-                row += 1
-            }
+        for (node in tree.allRoots()) {
+            row = placeButton(0, row, node)
+            // Each root tree should start from a completely empty row.
+            row += 1
         }
 
         topTable.add(promotionsTable)
@@ -228,7 +158,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
 
     }
 
-    private fun getButton(allPromotions: Collection<Promotion>, node: PromotionNodeOld,
+    private fun getButton(allPromotions: Collection<Promotion>, node: PromotionTree.PromotionNode,
                           isPickable: Boolean = true, isPromoted: Boolean = false) : PromotionButton {
 
         val button = PromotionButton(
