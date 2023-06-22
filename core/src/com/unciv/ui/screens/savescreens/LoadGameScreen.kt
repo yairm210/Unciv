@@ -33,7 +33,7 @@ import java.io.FileNotFoundException
 
 class LoadGameScreen : LoadOrSaveScreen() {
     private val copySavedGameToClipboardButton = getCopyExistingSaveToClipboardButton()
-    private val errorLabel = "".toLabel(Color.RED).apply { isVisible = false }
+    private val errorLabel = "".toLabel(Color.RED)
     private val loadMissingModsButton = getLoadMissingModsButton()
     private var missingModsToLoad: Iterable<String> = emptyList()
 
@@ -78,6 +78,9 @@ class LoadGameScreen : LoadOrSaveScreen() {
     }
 
     init {
+        errorLabel.isVisible = false
+        errorLabel.wrap = true
+
         setDefaultCloseAction()
         rightSideTable.initRightSideTable()
         rightSideButton.onActivation { onLoadGame() }
@@ -108,7 +111,7 @@ class LoadGameScreen : LoadOrSaveScreen() {
     private fun Table.initRightSideTable() {
         add(getLoadFromClipboardButton()).row()
         addLoadFromCustomLocationButton()
-        add(errorLabel).row()
+        add(errorLabel).width(stage.width / 2).row()
         add(loadMissingModsButton).row()
         add(deleteSaveButton).row()
         add(copySavedGameToClipboardButton).row()
