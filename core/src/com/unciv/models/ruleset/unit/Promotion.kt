@@ -36,7 +36,7 @@ class Promotion : RulesetObject() {
     override fun getUniqueTarget() = UniqueTarget.Promotion
 
 
-    /** Used to describe a Promotion on the PromotionPickerScreen */
+    /** Used to describe a Promotion on the PromotionPickerScreen - fully translated */
     fun getDescription(promotionsForUnitType: Collection<Promotion>):String {
         val textList = ArrayList<String>()
 

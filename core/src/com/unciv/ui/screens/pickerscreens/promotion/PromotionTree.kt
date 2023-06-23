@@ -17,21 +17,33 @@ internal class PromotionTree(val unit: MapUnit) {
         val promotion: Promotion,
         val isAdopted: Boolean
     ) {
+        /** How many prerequisite steps are needed to reach a [isRoot] promotion */
         var depth = Int.MIN_VALUE
+        /** How many unit-promoting steps are needed to reach this node */
         var distanceToAdopted = Int.MAX_VALUE
 
+        /** The nodes for direct prerequisites of this one
+         *  Note this is not necessarily cover all prerequisites of the node's promotion - see [unreachable] */
         val parents = mutableSetOf<PromotionNode>()
+        /** Follow this to get an unambiguous path to a root */
         var preferredParent: PromotionNode? = null
+        /** All nodes having this one as direct prerequisite */
         val children = mutableSetOf<PromotionNode>()
 
+        /** On if there is only one "best" path of equal cost to adopt this node's promotion */
         var pathIsUnique = true
+        /** On for promotions having unavailable prerequisites (missing in ruleset, or not allowed for the unit's
+         *  UnitType, and not already adopted either); or currently disabled by a [UniqueType.OnlyAvailableWhen] unique.
+         *  (should never be on with a vanilla ruleset) */
         var unreachable = false
 
+        /** Name of this node's promotion with [level] suffixes removed, and [] brackets removed */
         val baseName: String
+        /** "Level" of this node's promotion (e.g. Drill I: 1, Drill III: 3 - 0 for promotions without such a suffix) */
         val level: Int
 
+        /** `true` if this node's promotion has no prerequisites */
         val isRoot get() = parents.isEmpty()
-        val canAdopt get() = distanceToAdopted in 1..100
 
         override fun toString() = promotion.name
 
@@ -48,8 +60,8 @@ internal class PromotionTree(val unit: MapUnit) {
         val unitType = unit.baseUnit.unitType
         val adoptedPromotions = unit.promotions.promotions
 
-        // The following sort is mostly redundant with our vanilla rulesets. Still, want to make sure
-        // processing will be left to right, top to bottom.
+        // The following sort is mostly redundant with our vanilla rulesets.
+        // Still, want to make sure processing will be left to right, top to bottom.
         possiblePromotions = rulesetPromotions.asSequence()
             .filter {
                 unitType in it.unitTypes || it.name in adoptedPromotions
