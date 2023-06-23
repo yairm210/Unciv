@@ -13,7 +13,7 @@ enum class SpyFleeReason {
     Other
 }
 
-class CityEspionageManager : IsPartOfGameInfoSerialization{
+class CityEspionageManager : IsPartOfGameInfoSerialization {
     @Transient
     lateinit var city: City
 
