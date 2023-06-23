@@ -70,7 +70,7 @@ open class AndroidLauncher : AndroidApplication() {
 
     override fun onPause() {
         val game = this.game!!
-        if (game.isInitialized
+        if (game.isInitialized()
                 && game.gameInfo != null
                 && game.settings.multiplayer.turnCheckerEnabled
                 && game.files.getMultiplayerSaves().any()

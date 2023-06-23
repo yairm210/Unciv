@@ -137,7 +137,9 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     var worldScreen: WorldScreen? = null
         private set
 
-    var isInitialized = false
+    /** Flag used only during initialization until the end of [create] */
+    protected var isInitialized = false
+        private set
 
     /** A wrapped render() method that crashes to [CrashScreen] on a unhandled exception or error. */
     private val wrappedCrashHandlingRender = { super.render() }.wrapCrashHandlingUnit()
