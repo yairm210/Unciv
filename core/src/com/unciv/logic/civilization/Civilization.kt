@@ -2,7 +2,6 @@ package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.json.HashMapVector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
@@ -32,7 +31,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.Counter
-import com.unciv.models.metadata.GameParameters // Kdoc only
+import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Victory
@@ -74,9 +73,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     /** Returns an instance of WorkerAutomation valid for the duration of the current turn
      * This instance carries cached data common for all Workers of this civ */
     fun getWorkerAutomation(): WorkerAutomation {
-        val currentTurn = if (UncivGame.Current.isInitialized && UncivGame.Current.gameInfo != null) {
-            UncivGame.Current.gameInfo!!.turns
-        } else 0
+        val currentTurn = gameInfo.turns
         if (workerAutomationCache == null || workerAutomationCache!!.cachedForTurn != currentTurn)
             workerAutomationCache = WorkerAutomation(this, currentTurn)
         return workerAutomationCache!!

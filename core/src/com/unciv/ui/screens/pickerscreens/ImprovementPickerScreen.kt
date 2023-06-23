@@ -89,7 +89,7 @@ class ImprovementPickerScreen(
         for (improvement in ruleSet.tileImprovements.values) {
             var suggestRemoval = false
             // canBuildImprovement() would allow e.g. great improvements thus we need to exclude them - except cancel
-            if (improvement.turnsToBuild == 0 && improvement.name != Constants.cancelImprovementOrder) continue
+            if (improvement.turnsToBuild == -1 && improvement.name != Constants.cancelImprovementOrder) continue
             if (improvement.name == tile.improvement) continue // also checked by canImprovementBeBuiltHere, but after more expensive tests
             if (!unit.canBuildImprovement(improvement)) continue
 

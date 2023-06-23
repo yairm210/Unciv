@@ -59,11 +59,11 @@ object SpecificUnitAutomation {
         // try to revenge and capture their tiles
         val enemyCities = unit.civ.getKnownCivs()
                 .filter { unit.civ.getDiplomacyManager(it).hasModifier(DiplomaticModifiers.StealingTerritory) }
-                .flatMap { it.cities }.asSequence()
+                .flatMap { it.cities }
         // find the suitable tiles (or their neighbours)
         val tileToSteal = enemyCities.flatMap { it.getTiles() } // City tiles
                 .filter { it.neighbors.any { tile -> tile.getOwner() != unit.civ } } // Edge city tiles
-                .flatMap { it.neighbors.asSequence() } // Neighbors of edge city tiles
+                .flatMap { it.neighbors } // Neighbors of edge city tiles
                 .filter {
                     it in unit.civ.viewableTiles // we can see them
                             && it.neighbors.any { tile -> tile.getOwner() == unit.civ }// they are close to our borders
@@ -74,7 +74,7 @@ object SpecificUnitAutomation {
                     // ...also get priorities to steal the most valuable for them
                     val owner = it.getOwner()
                     if (owner != null)
-                        distance - WorkerAutomation.getPriority(it, owner)
+                        distance - owner.getWorkerAutomation().getPriority(it)
                     else distance
                 }
                 .firstOrNull { unit.movement.canReach(it) } // canReach is performance-heavy and always a last resort
@@ -87,7 +87,7 @@ object SpecificUnitAutomation {
         }
 
         // try to build a citadel for defensive purposes
-        if (WorkerAutomation.evaluateFortPlacement(unit.currentTile, unit.civ, true)) {
+        if (unit.civ.getWorkerAutomation().evaluateFortPlacement(unit.currentTile, true)) {
             UnitActions.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
             return true
         }
@@ -114,7 +114,7 @@ object SpecificUnitAutomation {
         val tileForCitadel = cityToGarrison.getTilesInDistanceRange(3..4)
             .firstOrNull {
                 reachableTest(it) &&
-                        WorkerAutomation.evaluateFortPlacement(it, unit.civ, true)
+                    unit.civ.getWorkerAutomation().evaluateFortPlacement(it, true)
             }
         if (tileForCitadel == null) {
             unit.movement.headTowards(cityToGarrison)
@@ -360,14 +360,14 @@ object SpecificUnitAutomation {
         val city =
             if (ourCitiesWithoutReligion.any())
                 ourCitiesWithoutReligion.minByOrNull { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
-            else unit.civ.gameInfo.getCities().asSequence()
+            else unit.civ.gameInfo.getCities()
                 .filter { it.religion.getMajorityReligion() != unit.civ.religionManager.religion }
                 .filter { it.civ.knows(unit.civ) && !it.civ.isAtWarWith(unit.civ) }
                 .filterNot { it.religion.isProtectedByInquisitor(unit.religion) }
                 .minByOrNull { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
 
         if (city == null) return
-        val destination = city.getTiles().asSequence()
+        val destination = city.getTiles()
             .filter { unit.movement.canMoveTo(it) || it == unit.getTile() }
             .sortedBy { it.aerialDistanceTo(unit.getTile()) }
             .firstOrNull { unit.movement.canReach(it) } ?: return
@@ -421,7 +421,7 @@ object SpecificUnitAutomation {
         if (destination == null) return
 
         if (!unit.movement.canReach(destination)) {
-            destination = destination.neighbors.asSequence()
+            destination = destination.neighbors
                 .filter { unit.movement.canMoveTo(it) || it == unit.getTile() }
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                 .firstOrNull { unit.movement.canReach(it) }

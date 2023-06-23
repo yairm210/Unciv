@@ -42,6 +42,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
 
     fun setTransients(){
         val ruleset = civInfo.gameInfo.ruleset
+
         for (resource in ruleset.tileResources.values.asSequence().filter { it.resourceType == ResourceType.Strategic }.map { it.name }) {
             val applicableBuildings = ruleset.buildings.values.filter { it.requiresResource(resource) && civInfo.getEquivalentBuilding(it) == it }
             val applicableUnits = ruleset.units.values.filter { it.requiresResource(resource) && civInfo.getEquivalentUnit(it) == it }
@@ -181,11 +182,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             }
         }
 
-        for (spy in civInfo.espionageManager.spyList) {
-            val spyCity = spy.getLocation() ?: continue
-            if (!spy.isSetUp()) continue // Can't see cities when you haven't set up yet
-            newViewableTiles.addAll(spyCity.getCenterTile().getTilesInDistance(1))
-        }
+        newViewableTiles.addAll(civInfo.espionageManager.getTilesVisibleViaSpies())
 
         civInfo.viewableTiles = newViewableTiles // to avoid concurrent modification problems
     }
@@ -245,9 +242,9 @@ class CivInfoTransientCache(val civInfo: Civilization) {
     }
 
     fun updateHasActiveEnemyMovementPenalty() {
-        civInfo.hasActiveEnemyMovementPenalty = civInfo.hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement)
+        civInfo.hasActiveEnemyMovementPenalty = civInfo.hasUnique(UniqueType.EnemyUnitsSpendExtraMovement)
         civInfo.enemyMovementPenaltyUniques =
-                civInfo.getMatchingUniques(UniqueType.EnemyLandUnitsSpendExtraMovement)
+                civInfo.getMatchingUniques(UniqueType.EnemyUnitsSpendExtraMovement)
     }
 
     fun updateCitiesConnectedToCapital(initialSetup: Boolean = false) {

@@ -42,9 +42,8 @@ class UnitType() : RulesetObject() {
             "Land" -> isLandUnit()
             "Water" -> isWaterUnit()
             "Air" -> isAirUnit()
-            else -> {
-                uniques.contains(filter)
-            }
+            in uniqueMap -> true
+            else -> false
         }
     }
 

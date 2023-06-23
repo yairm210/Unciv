@@ -19,7 +19,7 @@ class UnitMovement(val unit: MapUnit) {
     fun getEnemyMovementPenalty(civInfo:Civilization, enemyUnit: MapUnit): Float {
         if (civInfo.enemyMovementPenaltyUniques != null && civInfo.enemyMovementPenaltyUniques!!.any()) {
             return civInfo.enemyMovementPenaltyUniques!!.sumOf {
-                if (it.type!! == UniqueType.EnemyLandUnitsSpendExtraMovement
+                if (it.type!! == UniqueType.EnemyUnitsSpendExtraMovement
                         && enemyUnit.matchesFilter(it.params[0]))
                     it.params[1].toInt()
                 else 0
@@ -37,7 +37,7 @@ class UnitMovement(val unit: MapUnit) {
     ): Float {
         if (unit.cache.cannotMove) return 100f
 
-        if (from.isLand != to.isLand && unit.baseUnit.isLandUnit())
+        if (from.isLand != to.isLand && unit.baseUnit.isLandUnit() && !unit.cache.canMoveOnWater)
             return if (from.isWater && to.isLand) unit.cache.costToDisembark ?: 100f
             else unit.cache.costToEmbark ?: 100f
 

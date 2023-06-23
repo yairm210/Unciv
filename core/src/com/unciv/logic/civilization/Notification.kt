@@ -52,8 +52,10 @@ open class Notification() : IsPartOfGameInfoSerialization {
         Units,
         War,
         Religion,
+        Espionage,
         Cities
         ;
+
         companion object {
             fun safeValueOf(name: String): NotificationCategory? =
                 values().firstOrNull { it.name == name }

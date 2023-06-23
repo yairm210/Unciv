@@ -30,7 +30,7 @@ import kotlin.math.pow
 class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     override var requiredTech: String? = null
-    override var cost: Int = 0
+    override var cost: Int = -1
 
     var maintenance = 0
     private var percentStatBonus: Stats? = null
@@ -683,7 +683,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                             && cityInfo.matchesFilter(it.params[1])})
                 UniqueTriggerActivation.triggerCivwideUnique(unique, cityInfo.civ, cityInfo, triggerNotificationText = triggerNotificationText)
 
-        if (hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement))
+        if (hasUnique(UniqueType.EnemyUnitsSpendExtraMovement))
             civInfo.cache.updateHasActiveEnemyMovementPenalty()
 
         // Korean unique - apparently gives the same as the research agreement
@@ -775,10 +775,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     }
 
     override fun requiresResource(resource: String): Boolean {
-        if (requiredResource == resource) return true
-        for (unique in getMatchingUniques(UniqueType.ConsumesResources)) {
-            if (unique.params[1] == resource) return true
-        }
+        if (resourceRequirementsInternal.contains(resource)) return true
         for (unique in getMatchingUniques(UniqueType.CostsResources)) {
             if (unique.params[1] == resource) return true
         }

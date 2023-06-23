@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.scenes.scene2d.utils.Disableable
 import com.unciv.models.UncivSound
+import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 
 /** Used to stop activation events if this returns `true`. */
 internal fun Actor.isActive(): Boolean = isVisible && ((this as? Disableable)?.isDisabled != true)
@@ -35,6 +36,18 @@ fun Actor.onActivation(
     action: ActivationAction
 ): Actor {
     ActorAttachments.get(this).addActivationAction(type, sound, noEquivalence, action)
+    return this
+}
+
+/** Assigns an activation [handler][action] to your Widget, which reacts to clicks and a [key stroke][binding].
+ *  A tooltip is attached automatically, if there is a keyboard and the [binding] has a mapping.
+ *  A [sound] will be played (concurrently) on activation unless you specify [UncivSound.Silent].
+ *  @return `this` to allow chaining
+ */
+fun Actor.onActivation(sound: UncivSound = UncivSound.Click, binding: KeyboardBinding, action: ActivationAction): Actor {
+    onActivation(ActivationTypes.Tap, sound, action = action)
+    keyShortcuts.add(binding)
+    addTooltip(binding)
     return this
 }
 

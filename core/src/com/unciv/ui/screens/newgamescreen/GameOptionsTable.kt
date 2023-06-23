@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
@@ -18,20 +19,19 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.components.AutoScrollPane
 import com.unciv.ui.components.ExpanderTab
-import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.UncivSlider
-import com.unciv.ui.components.input.keyShortcuts
-import com.unciv.ui.components.input.onActivation
-import com.unciv.ui.components.input.onChange
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toImageButton
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onChange
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
-import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.multiplayerscreens.MultiplayerHelpers
 import kotlin.reflect.KMutableProperty0
@@ -45,30 +45,31 @@ class GameOptionsTable(
     var gameParameters = previousScreen.gameSetupInfo.gameParameters
     val ruleset = previousScreen.ruleset
     var locked = false
-    var modCheckboxes: ModCheckboxTable? = null
-        private set
+
+    /** Holds the UI for the Extension Mods
+     *
+     *  Attention: This Widget is a little tricky due to the UI changes to support portrait mode:
+     *  *  With `isPortrait==false`, this Table will **contain** `modCheckboxes`
+     *  *  With `isPortrait==true`, this Table will **only initialize** `modCheckboxes` and [NewGameScreen] will fetch and place it.
+     *
+     *  The second reason this is public: [NewGameScreen] accesses [ModCheckboxTable.savedModcheckResult] for display.
+     */
+    val modCheckboxes = getModCheckboxes(isPortrait = isPortrait)
+
     // Remember this so we can unselect it when the pool dialog returns an empty pool
     private var randomNationsPoolCheckbox: CheckBox? = null
+    // Allow resetting base ruleset from outside
+    private var baseRulesetSelectBox: TranslatedSelectBox? = null
 
     init {
-        getGameOptionsTable()
         background = BaseScreen.skinStrings.getUiBackground("NewGameScreen/GameOptionsTable", tintColor = BaseScreen.skinStrings.skinConfig.clearColor)
+        top()
+        defaults().pad(5f)
+        update()
     }
 
     fun update() {
         clear()
-        getGameOptionsTable()
-    }
-
-    private fun getGameOptionsTable() {
-        top()
-        defaults().pad(5f)
-
-        // We assign this first to make sure addBaseRulesetSelectBox doesn't reference a null object
-        modCheckboxes =
-            if (isPortrait)
-                getModCheckboxes(isPortrait = true)
-            else getModCheckboxes()
 
         add(Table().apply {
             defaults().pad(5f)
@@ -271,7 +272,6 @@ class GameOptionsTable(
     ) {
         if (maxValue < minValue) return
 
-        @Suppress("JoinDeclarationAndAssignment")  // it's a forward declaration!
         lateinit var maxSlider: UncivSlider  // lateinit safe because the closure won't use it until the user operates a slider
         val minSlider = UncivSlider(minValue.toFloat(), maxValue.toFloat(), 1f, initial = minField.get().toFloat()) {
             val newMin = it.toInt()
@@ -341,7 +341,7 @@ class GameOptionsTable(
         return slider
     }
 
-    private fun Table.addSelectBox(text: String, values: Collection<String>, initialState: String, onChange: (newValue: String) -> String?) {
+    private fun Table.addSelectBox(text: String, values: Collection<String>, initialState: String, onChange: (newValue: String) -> String?): TranslatedSelectBox {
         add(text.toLabel(hideIcons = true)).left()
         val selectBox = TranslatedSelectBox(values, initialState, BaseScreen.skin)
         selectBox.isDisabled = locked
@@ -351,6 +351,7 @@ class GameOptionsTable(
         }
         onChange(selectBox.selected.value)
         add(selectBox).fillX().row()
+        return selectBox
     }
 
     private fun Table.addDifficultySelectBox() {
@@ -359,50 +360,36 @@ class GameOptionsTable(
     }
 
     private fun Table.addBaseRulesetSelectBox() {
-        val sortedBaseRulesets = RulesetCache.getSortedBaseRulesets()
-        if (sortedBaseRulesets.size < 2) return
-
-        addSelectBox(
-            "{Base Ruleset}:",
-            sortedBaseRulesets,
-            gameParameters.baseRuleset
-        ) { newBaseRuleset ->
+        fun onBaseRulesetSelected(newBaseRuleset: String): String? {
             val previousSelection = gameParameters.baseRuleset
-            if (newBaseRuleset == gameParameters.baseRuleset) return@addSelectBox null
+            if (newBaseRuleset == previousSelection) return null
 
             // Check if this mod is well-defined
             val baseRulesetErrors = RulesetCache[newBaseRuleset]!!.checkModLinks()
             if (baseRulesetErrors.isError()) {
-                val toastMessage = "The mod you selected is incorrectly defined!".tr() + "\n\n${baseRulesetErrors.getErrorText()}"
-                ToastPopup(toastMessage, previousScreen as BaseScreen, 5000L)
-                return@addSelectBox previousSelection
+                baseRulesetErrors.showWarnOrErrorToast(previousScreen as BaseScreen)
+                return previousSelection
             }
 
             // If so, add it to the current ruleset
             gameParameters.baseRuleset = newBaseRuleset
             onChooseMod(newBaseRuleset)
 
-            // Check if the ruleset in it's entirety is still well-defined
+            // Check if the ruleset in its entirety is still well-defined
             val modLinkErrors = ruleset.checkModLinks()
             if (modLinkErrors.isError()) {
-                gameParameters.mods.clear()
+                modCheckboxes.disableAllCheckboxes()  // also clears gameParameters.mods
                 reloadRuleset()
-                val toastMessage =
-                    "This base ruleset is not compatible with the previously selected\nextension mods. They have been disabled.".tr()
-                ToastPopup(toastMessage, previousScreen as BaseScreen, 5000L)
-
-                modCheckboxes!!.disableAllCheckboxes()
-            } else if (modLinkErrors.isWarnUser()) {
-                val toastMessage =
-                    "{The mod combination you selected has problems.}\n{You can play it, but don't expect everything to work!}".tr() +
-                    "\n\n${modLinkErrors.getErrorText()}"
-                ToastPopup(toastMessage, previousScreen as BaseScreen, 5000L)
             }
+            modLinkErrors.showWarnOrErrorToast(previousScreen as BaseScreen)
 
-            modCheckboxes!!.setBaseRuleset(newBaseRuleset)
-
-            null
+            modCheckboxes.setBaseRuleset(newBaseRuleset)
+            return null
         }
+
+        val sortedBaseRulesets = RulesetCache.getSortedBaseRulesets()
+        if (sortedBaseRulesets.size < 2) return
+        baseRulesetSelectBox = addSelectBox("{Base Ruleset}:", sortedBaseRulesets, gameParameters.baseRuleset, ::onBaseRulesetSelected)
     }
 
     private fun Table.addGameSpeedSelectBox() {
@@ -440,6 +427,15 @@ class GameOptionsTable(
             if ((i + 1) % 2 == 0) victoryConditionsTable.row()
         }
         add(victoryConditionsTable).colspan(2).row()
+    }
+
+    fun resetRuleset() {
+        val rulesetName = BaseRuleset.Civ_V_GnK.fullName
+        gameParameters.baseRuleset = rulesetName
+        modCheckboxes.setBaseRuleset(rulesetName)
+        modCheckboxes.disableAllCheckboxes()
+        baseRulesetSelectBox?.setSelected(rulesetName)
+        reloadRuleset()
     }
 
     private fun reloadRuleset() {
