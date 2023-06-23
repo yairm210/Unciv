@@ -30,7 +30,7 @@ import kotlin.math.pow
 class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     override var requiredTech: String? = null
-    override var cost: Int = 0
+    override var cost: Int = -1
 
     var maintenance = 0
     private var percentStatBonus: Stats? = null

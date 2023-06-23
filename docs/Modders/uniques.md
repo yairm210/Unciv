@@ -1,13 +1,13 @@
 # Uniques
 Simple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](../Unique-parameters)
 ## Triggerable uniques
-??? example  "Free [baseUnitFilter] appears"
-	Example: "Free [Melee] appears"
+??? example  "Free [unit] appears"
+	Example: "Free [Musketman] appears"
 
 	Applicable to: Triggerable
 
-??? example  "[amount] free [baseUnitFilter] units appear"
-	Example: "[3] free [Melee] units appear"
+??? example  "[amount] free [unit] units appear"
+	Example: "[3] free [Musketman] units appear"
 
 	Applicable to: Triggerable
 
@@ -1046,6 +1046,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Connects trade routes over water"
 	Applicable to: Building
 
+??? example  "Automatically built in all cities where it is buildable"
+	Applicable to: Building
+
 ??? example  "Creates a [improvementName] improvement on a specific tile"
 	Example: "Creates a [Trading Post] improvement on a specific tile"
 
@@ -1304,6 +1307,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "All tiles cost 1 movement"
+	Applicable to: Unit
+
+??? example  "May travel on Water tiles without embarking"
 	Applicable to: Unit
 
 ??? example  "Can pass through impassable tiles"
@@ -1652,8 +1658,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Resource
 
 ## Ruins uniques
-??? example  "Free [baseUnitFilter] found in the ruins"
-	Example: "Free [Melee] found in the ruins"
+??? example  "Free [unit] found in the ruins"
+	Example: "Free [Musketman] found in the ruins"
 
 	Applicable to: Ruins
 

@@ -249,7 +249,7 @@ object UnitAutomation {
             return SpecificUnitAutomation.automateSettlerActions(unit, tilesWhereWeWillBeCaptured)
 
         if (unit.cache.hasUniqueToBuildImprovements)
-            return WorkerAutomation.automateWorkerAction(unit, tilesWhereWeWillBeCaptured)
+            return unit.civ.getWorkerAutomation().automateWorkerAction(unit, tilesWhereWeWillBeCaptured)
 
         if (unit.hasUnique(UniqueType.MayFoundReligion)
                 && unit.civ.religionManager.religionState < ReligionState.Religion

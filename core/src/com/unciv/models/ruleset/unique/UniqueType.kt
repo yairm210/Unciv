@@ -2,6 +2,7 @@ package com.unciv.models.ruleset.unique
 
 import com.unciv.Constants
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetErrorSeverity
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 
@@ -224,8 +225,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     UnitSupplyPerCity("[amount] Unit Supply per city", UniqueTarget.Global),
     FreeUnits("[amount] units cost no maintenance", UniqueTarget.Global),
     UnitsInCitiesNoMaintenance("Units in cities cost no Maintenance", UniqueTarget.Global),
-    // Acts as a trigger - this should be generalized somehow but the current setup does not allow this
-    // It would currently mean cycling through EVERY unique type to find ones with a specific conditional...
+    // ToDo: Replace with "Free [unit] appears <upon discovering [tech]>"
     ReceiveFreeUnitWhenDiscoveringTech("Receive free [unit] when you discover [tech]", UniqueTarget.Global),
 
     // Units entering Tiles
@@ -364,6 +364,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     RemoveAnnexUnhappiness("Remove extra unhappiness from annexed cities", UniqueTarget.Building),
     ConnectTradeRoutes("Connects trade routes over water", UniqueTarget.Building),
+    GainBuildingWhereBuildable("Automatically built in all cities where it is buildable", UniqueTarget.Building),
 
     CreatesOneImprovement("Creates a [improvementName] improvement on a specific tile", UniqueTarget.Building),
     //endregion
@@ -505,6 +506,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     CannotMove("Cannot move", UniqueTarget.Unit),
     DoubleMovementOnTerrain("Double movement in [terrainFilter]", UniqueTarget.Unit),
     AllTilesCost1Move("All tiles cost 1 movement", UniqueTarget.Unit),
+    CanMoveOnWater("May travel on Water tiles without embarking", UniqueTarget.Unit),
     CanPassImpassable("Can pass through impassable tiles", UniqueTarget.Unit),
     IgnoresTerrainCost("Ignores terrain cost", UniqueTarget.Unit),
     IgnoresZOC("Ignores Zone of Control", UniqueTarget.Unit),
@@ -731,9 +733,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ///////////////////////////////////////// region TRIGGERED ONE-TIME /////////////////////////////////////////
 
 
-    OneTimeFreeUnit("Free [baseUnitFilter] appears", UniqueTarget.Triggerable),  // used in Policies, Buildings
-    OneTimeAmountFreeUnits("[amount] free [baseUnitFilter] units appear", UniqueTarget.Triggerable), // used in Buildings
-    OneTimeFreeUnitRuins("Free [baseUnitFilter] found in the ruins", UniqueTarget.Ruins), // Differs from "Free [] appears" in that it spawns near the ruins instead of in a city
+    OneTimeFreeUnit("Free [unit] appears", UniqueTarget.Triggerable),  // used in Policies, Buildings
+    OneTimeAmountFreeUnits("[amount] free [unit] units appear", UniqueTarget.Triggerable), // used in Buildings
+    OneTimeFreeUnitRuins("Free [unit] found in the ruins", UniqueTarget.Ruins), // Differs from "Free [] appears" in that it spawns near the ruins instead of in a city
     OneTimeFreePolicy("Free Social Policy", UniqueTarget.Triggerable), // used in Buildings
     OneTimeAmountFreePolicies("[amount] Free Social Policies", UniqueTarget.Triggerable),  // Not used in Vanilla
     OneTimeEnterGoldenAge("Empire enters golden age", UniqueTarget.Triggerable),  // used in Policies, Buildings
@@ -1204,15 +1206,32 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     enum class UniqueComplianceErrorSeverity {
 
         /** This is for filters that can also potentially accept free text, like UnitFilter and TileFilter */
-        WarningOnly,
+        WarningOnly {
+            override fun getRulesetErrorSeverity(severityToReport: UniqueComplianceErrorSeverity) =
+                RulesetErrorSeverity.WarningOptionsOnly
+        },
 
         /** This is a problem like "unit/resource/tech name doesn't exist in ruleset" - definite bug */
-        RulesetSpecific,
-
+        RulesetSpecific {
+            // Report Warning on the first pass of RulesetValidator only, where mods are checked standalone
+            // but upgrade to error when the econd pass asks, which runs only for combined or base rulesets.
+            override fun getRulesetErrorSeverity(severityToReport: UniqueComplianceErrorSeverity) =
+                RulesetErrorSeverity.Warning
+        },
 
         /** This is a problem like "numbers don't parse", "stat isn't stat", "city filter not applicable" */
-        RulesetInvariant
+        RulesetInvariant {
+            override fun getRulesetErrorSeverity(severityToReport: UniqueComplianceErrorSeverity) =
+                RulesetErrorSeverity.Error
+        },
+        ;
 
+        /** Done as function instead of property so we can in the future upgrade severities depending
+         *  on the [RulesetValidator] "pass": [severityToReport]==[RulesetInvariant] means it's the
+         *  first pass that also runs for extension mods without a base mixed in; the complex check
+         *  runs with [severityToReport]==[RulesetSpecific].
+         */
+        abstract fun getRulesetErrorSeverity(severityToReport: UniqueComplianceErrorSeverity): RulesetErrorSeverity
     }
 
     /** Maps uncompliant parameters to their required types */
