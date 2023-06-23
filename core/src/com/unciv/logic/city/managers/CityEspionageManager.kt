@@ -5,7 +5,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.logic.civilization.managers.Spy
+import com.unciv.models.Spy
 
 enum class SpyFleeReason {
     CityDestroyed,

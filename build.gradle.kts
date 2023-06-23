@@ -22,7 +22,6 @@ buildscript {
     }
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${com.unciv.build.BuildConfig.kotlinVersion}")
-//         classpath("de.richsource.gradle.plugins:gwt-gradle-plugin:0.6")
         classpath("com.android.tools.build:gradle:7.4.2")
         classpath("com.mobidevelop.robovm:robovm-gradle-plugin:2.3.1")
     }
