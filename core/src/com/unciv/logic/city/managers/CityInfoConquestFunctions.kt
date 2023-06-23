@@ -289,15 +289,15 @@ class CityInfoConquestFunctions(val city: City){
             // Stop WLTKD if it's still going
             resetWLTKD()
 
-            // Remove their free buildings from this city and remove free buildings provided by the city from their cities
-            removeBuildingsOnMoveToCiv(oldCiv)
-
-            // Place palace for newCiv if this is the only city they have
-            // This needs to happen _before_ free buildings are added, as sometimes these should
-            // only be placed in the capital, and then there needs to be a capital.
+            // Place palace for newCiv if this is the only city they have.
+            // This needs to happen _before_ buildings are added or removed,
+            // as any building change triggers a reevaluation of stats which assumes there to be a capital
             if (newCiv.cities.size == 1) {
                 newCiv.moveCapitalTo(this)
             }
+
+            // Remove their free buildings from this city and remove free buildings provided by the city from their cities
+            removeBuildingsOnMoveToCiv(oldCiv)
 
             // Add our free buildings to this city and add free buildings provided by the city to other cities
             civ.civConstructions.tryAddFreeBuildings()
