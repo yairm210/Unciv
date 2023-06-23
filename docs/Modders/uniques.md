@@ -1309,6 +1309,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "All tiles cost 1 movement"
 	Applicable to: Unit
 
+??? example  "May travel on Water tiles without embarking"
+	Applicable to: Unit
+
 ??? example  "Can pass through impassable tiles"
 	Applicable to: Unit
 
