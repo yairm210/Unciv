@@ -3,8 +3,10 @@ package com.unciv.ui.screens.pickerscreens.promotion
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
 import com.unciv.logic.map.mapunit.MapUnit
@@ -12,12 +14,11 @@ import com.unciv.models.TutorialTrigger
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.extensions.colorFromRGB
-import com.unciv.ui.components.extensions.darken
+import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.extensions.isEnabled
+import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onDoubleClick
-import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
@@ -26,13 +27,9 @@ import kotlin.math.abs
 
 
 class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResize {
-
-    companion object Colors {
-        val Default: Color = Color.BLACK
-        val Selected: Color = colorFromRGB(72, 147, 175)
-        val Promoted: Color = colorFromRGB(255, 215, 0).darken(0.2f)
-        val Pickable: Color = colorFromRGB(28, 80, 0)
-        val Prerequisite: Color = colorFromRGB(14, 92, 86)
+    private val buttonColors = skin[PromotionButton.PromotionButtonColors::class.java]
+    private val promotedLabelStyle = Label.LabelStyle(skin[Label.LabelStyle::class.java]).apply {
+        fontColor = buttonColors.promotedText
     }
 
     private val promotionsTable = Table()
@@ -53,27 +50,22 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
 
         if (canPromoteNow) {
             rightSideButton.setText("Pick promotion".tr())
-            rightSideButton.onClick(UncivSound.Promote) {
-                if (selectedPromotion?.isPickable == true)
-                    acceptPromotion(selectedPromotion?.node)
+            rightSideButton.onClick(UncivSound.Silent) {
+                acceptPromotion(selectedPromotion)
             }
         } else {
             rightSideButton.isVisible = false
         }
 
-        descriptionLabel.setText(updateDescriptionLabel())
+        updateDescriptionLabel()
 
         if (canChangeState) {
             //Always allow the user to rename the unit as many times as they like.
             val renameButton = "Choose name for [${unit.name}]".toTextButton()
             renameButton.onClick {
-                UnitRenamePopup(
-                    screen = this,
-                    unit = unit,
-                    actionOnClose = {
-                        game.replaceCurrentScreen(recreate())
-                    }
-                )
+                UnitRenamePopup(this, unit) {
+                    game.replaceCurrentScreen(recreate())
+                }
             }
             topTable.add(renameButton).pad(5f).row()
         }
@@ -83,11 +75,19 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
         displayTutorial(TutorialTrigger.Experience)
     }
 
-    private fun acceptPromotion(node: PromotionTree.PromotionNode?) {
+    private fun acceptPromotion(button: PromotionButton?) {
         // if user managed to click disabled button, still do nothing
-        if (node == null) return
+        if (button == null || !button.isPickable) return
 
-        unit.promotions.addPromotion(node.promotion.name)
+        val path = tree.getPathTo(button.node.promotion)
+        val oneSound = Actions.run { SoundPlayer.play(UncivSound.Promote) }
+        stage.addAction(
+            if (path.size == 1) oneSound
+            else Actions.sequence(oneSound, Actions.delay(0.2f), oneSound )
+        )
+
+        for (promotion in path)
+            unit.promotions.addPromotion(promotion.name)
         game.replaceCurrentScreen(recreate())
     }
 
@@ -123,7 +123,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
                 // If place is free - we place button
                 if (isTherePlace(row, col, node.depth)) {
                     val cell = cellMatrix[row][col]
-                    val button = getButton(tree.possiblePromotions, node, node.canAdopt, node.isAdopted)
+                    val button = getButton(tree, node)
                     promotionToButton[name] = button
                     cell.setActor(button)
                         .pad(5f).padRight(20f).minWidth(190f).maxWidth(190f)
@@ -158,38 +158,31 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
 
     }
 
-    private fun getButton(allPromotions: Collection<Promotion>, node: PromotionTree.PromotionNode,
-                          isPickable: Boolean = true, isPromoted: Boolean = false) : PromotionButton {
+    private fun getButton(tree: PromotionTree, node: PromotionTree.PromotionNode) : PromotionButton {
+        val isPickable = node.pathIsUnique && tree.canBuyUpTo(node.promotion)
 
-        val button = PromotionButton(
-            node = node,
-            isPromoted = isPromoted,
-            isPickable = isPickable
-        )
+        val button = PromotionButton(node, isPickable, promotedLabelStyle)
 
         button.onClick {
-            selectedPromotion?.isSelected = false
-            //selectedPromotion?.updateColor()
             selectedPromotion = button
-            button.isSelected = true
-            //button.updateColor()
+
+            val path = tree.getPathTo(button.node.promotion)
+            val pathAsSet = path.toSet()
+            val prerequisites = button.node.parents
 
             for (btn in promotionToButton.values)
-                btn.updateColor()
-            button.node.promotion.prerequisites.forEach { promotionToButton[it]?.apply {
-                if (!this.isPromoted)
-                    bgColor = Prerequisite }}
+                btn.updateColor(btn == selectedPromotion, pathAsSet, prerequisites)
 
             rightSideButton.isEnabled = isPickable
             rightSideButton.setText(node.promotion.name.tr())
-            descriptionLabel.setText(updateDescriptionLabel(node.promotion.getDescription(allPromotions)))
+            updateDescriptionLabel(isPickable, tree, node, path)
 
             addConnectingLines()
         }
 
         if (isPickable)
-            button.onDoubleClick(UncivSound.Promote) {
-                acceptPromotion(node)
+            button.onDoubleClick(UncivSound.Silent) {
+                acceptPromotion(button)
             }
 
         return button
@@ -215,14 +208,11 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
                 promotionsTable.stageToLocalCoordinates(prerequisiteCoords)
 
                 val lineColor = when {
-                    button.isSelected -> Selected
+                    button == selectedPromotion -> buttonColors.selected
                     prerequisiteButton.node.baseName == button.node.baseName -> Color.WHITE.cpy()
                     else -> Color.CLEAR
                 }
-                val lineSize = when {
-                    button.isSelected -> 4f
-                    else -> 2f
-                }
+                val lineSize = if (button == selectedPromotion) 4f else 2f
 
                 if (buttonCoords.x < prerequisiteCoords.x) {
                     val temp = buttonCoords.cpy()
@@ -290,7 +280,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
         }
 
         for (line in lines) {
-            if (line.color == Selected)
+            if (line.color == buttonColors.selected)
                 line.zIndex = lines.size
         }
     }
@@ -301,14 +291,25 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
         scrollPane.updateVisualScroll()
     }
 
-    private fun updateDescriptionLabel(): String {
-        return unit.displayName().tr()
+    private fun updateDescriptionLabel() {
+        descriptionLabel.setText(unit.displayName().tr())
     }
 
-    private fun updateDescriptionLabel(promotionDescription: String): String {
-        var newDescriptionText = unit.displayName().tr()
-        newDescriptionText += "\n" + promotionDescription
-        return newDescriptionText
+    private fun updateDescriptionLabel(
+        isPickable: Boolean,
+        tree: PromotionTree,
+        node: PromotionTree.PromotionNode,
+        path: List<Promotion>
+    ) {
+        val isAmbiguous = tree.canBuyUpTo(node.promotion) && !node.pathIsUnique
+        val topLine = unit.displayName().tr() + when {
+            node.isAdopted -> ""
+            isAmbiguous -> "{ }{- Path to [${node.promotion.name}] is ambiguous}".tr()
+            !isPickable -> ""
+            else -> path.joinToString(" → ", ": ") { it.name.tr() }
+        }
+        val promotionText = node.promotion.getDescription(tree.possiblePromotions)
+        descriptionLabel.setText("$topLine\n$promotionText")
     }
 
     override fun recreate(): BaseScreen {

@@ -140,6 +140,7 @@ internal class PromotionTree(val unit: MapUnit) {
 
     fun canBuyUpTo(promotion: Promotion): Boolean = unit.promotions.run {
         val node = getReachableNode(promotion) ?: return false
+        if (node.isAdopted) return false
         return XP >= xpForNextNPromotions(node.distanceToAdopted)
     }
 
@@ -154,6 +155,7 @@ internal class PromotionTree(val unit: MapUnit) {
         return result.asReversed()
     }
 
-    fun getMaxRows() = allRoots().count().coerceAtLeast(nodes.values.maxOf { it.promotion.column })
-    fun getMaxColumns() = nodes.values.maxOf { it.promotion.row.coerceAtLeast(it.depth) }
+    // These exist to allow future optimization - this is safe, but far more than actually needed
+    fun getMaxRows() = nodes.size
+    fun getMaxColumns() = nodes.size
 }
