@@ -506,6 +506,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     CannotMove("Cannot move", UniqueTarget.Unit),
     DoubleMovementOnTerrain("Double movement in [terrainFilter]", UniqueTarget.Unit),
     AllTilesCost1Move("All tiles cost 1 movement", UniqueTarget.Unit),
+    CanMoveOnWater("May travel on Water tiles without embarking", UniqueTarget.Unit),
     CanPassImpassable("Can pass through impassable tiles", UniqueTarget.Unit),
     IgnoresTerrainCost("Ignores terrain cost", UniqueTarget.Unit),
     IgnoresZOC("Ignores Zone of Control", UniqueTarget.Unit),
