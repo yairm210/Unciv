@@ -93,7 +93,7 @@ class CityInfoConquestFunctions(val city: City){
 
     /** Function for stuff that should happen on any capture, be it puppet, annex or liberate.
      * Stuff that should happen any time a city is moved between civs, so also when trading,
-     * should go in `this.moveToCiv()`, which this function also calls.
+     * should go in `this.moveToCiv()`, which is called by `this.conquerCity()`.
      */
     private fun conquerCity(conqueringCiv: Civilization, conqueredCiv: Civilization, receivingCiv: Civilization) {
         val goldPlundered = getGoldForCapturingCity(conqueringCiv)
@@ -111,20 +111,20 @@ class CityInfoConquestFunctions(val city: City){
             Battle.destroyIfDefeated(conqueredCiv, conqueringCiv)
 
             health = getMaxHealth() / 2 // I think that cities recover to half health when conquered?
-            if (population.population > 1) population.addPopulation(-1 - population.population / 4) // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
+            if (population.population > 1)
+                population.addPopulation(-1 - population.population / 4) // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
             reassignAllPopulation()
 
             if (!reconqueredCityWhileStillInResistance && foundingCiv != receivingCiv.civName) {
                 // add resistance
-                setFlag(
-                    CityFlags.Resistance,
-                    population.population // I checked, and even if you puppet there's resistance for conquering
-                )
+                // I checked, and even if you puppet there's resistance for conquering
+                setFlag(CityFlags.Resistance, population.population)
             } else {
                 // reconquering or liberating city in resistance so eliminate it
                 removeFlag(CityFlags.Resistance)
             }
 
+            espionage.removeAllPresentSpies(SpyFleeReason.CityCaptured)
         }
     }
 

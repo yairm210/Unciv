@@ -48,6 +48,7 @@ enum class NotificationCategory{
     Units,
     War,
     Religion,
+    Espionage,
     Cities
     ;
     companion object {
