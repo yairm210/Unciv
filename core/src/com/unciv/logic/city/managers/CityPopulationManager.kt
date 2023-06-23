@@ -10,7 +10,6 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.stats.Stat
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.components.extensions.withItem
 import com.unciv.ui.components.extensions.withoutItem
@@ -169,7 +168,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
 
             val bestJobAndRank = if (city.manualSpecialists) null
                 else getMaxSpecialists().asSequence()
-                    .filter { specialistAllocations[it.key]!! < it.value }
+                    .filter { specialistAllocations[it.key] < it.value }
                     .map { it.key }
                     .associateWith { Automation.rankSpecialist(it, city, cityStats, localUniqueCache) }
                     .maxByOrNull { it.value }

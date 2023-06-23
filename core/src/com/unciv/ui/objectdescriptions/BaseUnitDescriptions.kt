@@ -227,6 +227,13 @@ object BaseUnitDescriptions {
                 if (unit.unitType != name) continue
                 yield(FormattedLine(unit.name, unit.makeLink()))
             }
+
+            val relevantPromotions = ruleset.unitPromotions.values.filter { it.unitTypes.contains(name) }
+            if (relevantPromotions.isNotEmpty()) {
+                yield(FormattedLine("Promotions", header = 4))
+                for (promotion in relevantPromotions)
+                    yield(FormattedLine(promotion.name, promotion.makeLink()))
+            }
             if (uniqueObjects.isNotEmpty()) {
                 yield(FormattedLine(separator = true))
                 for (unique in uniqueObjects) {

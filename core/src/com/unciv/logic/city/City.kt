@@ -8,6 +8,7 @@ import com.unciv.logic.city.managers.CityExpansionManager
 import com.unciv.logic.city.managers.CityInfoConquestFunctions
 import com.unciv.logic.city.managers.CityPopulationManager
 import com.unciv.logic.city.managers.CityReligionManager
+import com.unciv.logic.city.managers.SpyFleeReason
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.TileMap
@@ -445,7 +446,8 @@ class City : IsPartOfGameInfoSerialization {
         // unless, of course, they are captured by a one-city-challenger.
         if (!canBeDestroyed() && !overrideSafeties) return
 
-        for (airUnit in getCenterTile().airUnits.toList()) airUnit.destroy() //Destroy planes stationed in city
+        // Destroy planes stationed in city
+        for (airUnit in getCenterTile().airUnits.toList()) airUnit.destroy()
 
         // The relinquish ownership MUST come before removing the city,
         // because it updates the city stats which assumes there is a capital, so if you remove the capital it crashes
@@ -469,6 +471,7 @@ class City : IsPartOfGameInfoSerialization {
                 unit.movement.teleportToClosestMoveableTile()
         }
 
+        espionage.removeAllPresentSpies(SpyFleeReason.CityDestroyed)
 
         // Update proximity rankings for all civs
         for (otherCiv in civ.gameInfo.getAliveMajorCivs()) {

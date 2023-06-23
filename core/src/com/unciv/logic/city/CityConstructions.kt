@@ -532,6 +532,14 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                     addBuilding(freeBuildingName)
             }
         }
+
+
+        val autoGrantedBuildings = city.getRuleset().buildings.values
+            .filter { it.hasUnique(UniqueType.GainBuildingWhereBuildable) }
+
+        for (building in autoGrantedBuildings)
+            if (building.isBuildable(city.cityConstructions))
+                addBuilding(building.name)
     }
 
     /**
