@@ -66,6 +66,8 @@ class RulesetValidator(val ruleset: Ruleset) {
                     break
                 }
             }
+            if (techColumn.columnNumber < 0)
+                lines+= "Tech Column number ${techColumn.columnNumber} is negative"
             if (techColumn.buildingCost == -1)
                 lines.add("Tech Column number ${techColumn.columnNumber} has no explicit building cost", RulesetErrorSeverity.Warning)
             if (techColumn.wonderCost == -1)
