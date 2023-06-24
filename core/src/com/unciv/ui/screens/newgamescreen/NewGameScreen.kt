@@ -11,12 +11,15 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
 import com.unciv.logic.IdChecker
+import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.files.MapSaver
 import com.unciv.logic.map.MapGeneratedMainType
 import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.ExpanderTab
@@ -44,14 +47,15 @@ import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.coroutineScope
 import java.net.URL
 import java.util.UUID
+import kotlin.math.floor
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
 
 class NewGameScreen(
-    _gameSetupInfo: GameSetupInfo? = null
+    defaultGameSetupInfo: GameSetupInfo? = null
 ): IPreviousScreen, PickerScreen(), RecreateOnResize {
 
-    override val gameSetupInfo = _gameSetupInfo ?: GameSetupInfo.fromSettings()
-    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters) // needs to be set because the GameOptionsTable etc. depend on this
+    override var gameSetupInfo = defaultGameSetupInfo ?: GameSetupInfo.fromSettings()
+    override val ruleset = Ruleset()  // updateRuleset will clear and add
     private val newGameOptionsTable: GameOptionsTable
     private val playerPickerTable: PlayerPickerTable
     private val mapOptionsTable: MapOptionsTable
@@ -60,7 +64,6 @@ class NewGameScreen(
         val isPortrait = isNarrowerThan4to3()
 
         updateRuleset()  // must come before playerPickerTable so mod nations from fromSettings
-        // Has to be initialized before the mapOptionsTable, since the mapOptionsTable refers to it on init
 
         // remove the victory types which are not in the rule set (e.g. were in the recently disabled mod)
         gameSetupInfo.gameParameters.victoryTypes.removeAll { it !in ruleset.victories.keys }
@@ -354,11 +357,37 @@ class NewGameScreen(
         }
     }
 
-    fun updateRuleset() {
+    /** Updates our local [ruleset] from [gameSetupInfo], guarding against exceptions.
+     *
+     *  Note: The options reset on failure is not propagated automatically to the Widgets -
+     *  the caller must ensure that.
+     *
+     *  @return Success - failure means gameSetupInfo was reset to defaults and the Ruleset was reverted to G&K
+     */
+    fun updateRuleset(): Boolean {
+        var success = true
+        fun handleFailure(message: String): Ruleset {
+            success = false
+            gameSetupInfo = GameSetupInfo()
+            ToastPopup(message, this, 5000)
+            return RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
+        }
+
+        val newRuleset = try {
+            // this can throw with non-default gameSetupInfo, e.g. when Mods change or we change the impact of Mod errors
+            RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters)
+        } catch (ex: UncivShowableException) {
+            handleFailure("«YELLOW»{Your previous options needed to be reset to defaults.}«»\n\n${ex.localizedMessage}")
+        } catch (ex: Throwable) {
+            Log.debug("updateRuleset failed", ex)
+            handleFailure("«RED»{Your previous options needed to be reset to defaults.}«»")
+        }
+
         ruleset.clear()
-        ruleset.add(RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters))
+        ruleset.add(newRuleset)
         ImageGetter.setNewRuleset(ruleset)
         game.musicController.setModList(gameSetupInfo.gameParameters.getModsAndBaseRuleset())
+        return success
     }
 
     fun lockTables() {

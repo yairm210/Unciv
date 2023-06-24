@@ -111,10 +111,20 @@ class MapFileSelectTable(
         newGameScreen.gameSetupInfo.gameParameters.mods = LinkedHashSet(mapMods.second)
         newGameScreen.gameSetupInfo.gameParameters.baseRuleset = mapMods.first.firstOrNull()
             ?: mapFileSelectBox.selected.mapParameters.baseRuleset
-        newGameScreen.updateRuleset()
+        val success = newGameScreen.updateRuleset()
         newGameScreen.updateTables()
         hideMiniMap()
-        startMapPreview(mapFile)
+        if (success) {
+            startMapPreview(mapFile)
+        } else {
+            // Mod error - the options have been reset by updateRuleset
+            // Note SelectBox doesn't react sensibly to _any_ clear - Group, Selection or items
+            val items = mapFileSelectBox.items
+            items.removeIndex(mapFileSelectBox.selectedIndex)
+            // Changing the array itself is not enough, SelectBox gets out of sync, need to call setItems()
+            mapFileSelectBox.items = items
+            // Note - this will have triggered a nested onSelectBoxChange()!
+        }
     }
 
     private fun startMapPreview(mapFile: FileHandle) {
