@@ -281,7 +281,7 @@ class WorkerAutomation(
      */
     private fun findTileToWork(unit: MapUnit, tilesToAvoid: Set<Tile>): Tile {
         val currentTile = unit.getTile()
-        val workableTiles = currentTile.getTilesInDistance(4)
+        var workableTiles = currentTile.getTilesInDistance(4)
                 .filter {
                     it !in tilesToAvoid
                     && (it.civilianUnit == null || it == currentTile)
@@ -293,6 +293,13 @@ class WorkerAutomation(
                         .none { tile -> tile.militaryUnit != null && tile.militaryUnit!!.civ.isAtWarWith(civInfo)}
                 }
                 .sortedByDescending { getPriority(it) }
+
+        // Carthage can move through mountains, special case
+        val mountainWorkableTiles = workableTiles.filter{tile -> tile.isMountain()}
+        // If there is a non-mountain tile available, remove all available mountain tiles and don't take them into consideration later
+        if (mountainWorkableTiles.count() < workableTiles.count())
+            workableTiles = workableTiles.filter{tile -> !tile.isMountain()}
+        // else if all available tiles are mountains, move to the mountain tile
 
         // These are the expensive calculations (tileCanBeImproved, canReach), so we only apply these filters after everything else it done.
         val selectedTile =
