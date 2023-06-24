@@ -51,7 +51,8 @@ import kotlin.math.floor
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
 
 class NewGameScreen(
-    defaultGameSetupInfo: GameSetupInfo? = null
+    defaultGameSetupInfo: GameSetupInfo? = null,
+    isReset: Boolean = false
 ): IPreviousScreen, PickerScreen(), RecreateOnResize {
 
     override var gameSetupInfo = defaultGameSetupInfo ?: GameSetupInfo.fromSettings()
@@ -81,7 +82,7 @@ class NewGameScreen(
             updatePlayerPickerTable = { desiredCiv -> playerPickerTable.update(desiredCiv) },
             updatePlayerPickerRandomLabel = { playerPickerTable.updateRandomNumberLabel() }
         )
-        mapOptionsTable = MapOptionsTable(this)
+        mapOptionsTable = MapOptionsTable(this, isReset)
         closeButton.onActivation {
             mapOptionsTable.cancelBackgroundJobs()
             game.popScreen()
@@ -104,7 +105,7 @@ class NewGameScreen(
                     "Are you sure you want to reset all game options to defaults?",
                     "Reset to defaults",
                 ) {
-                    game.replaceCurrentScreen(NewGameScreen(GameSetupInfo()))
+                    game.replaceCurrentScreen(NewGameScreen(GameSetupInfo(), isReset = true))
                 }.open(true)
             }
         }
@@ -234,7 +235,7 @@ class NewGameScreen(
 
     /** Subtables may need an upper limit to their width - they can ask this function. */
     // In sync with isPortrait in init, here so UI details need not know about 3-column vs 1-column layout
-    internal fun getColumnWidth() = stage.width / (if (isNarrowerThan4to3()) 1 else 3)
+    internal fun getColumnWidth() = floor(stage.width / (if (isNarrowerThan4to3()) 1 else 3))
 
     private fun initLandscape() {
         scrollPane.setScrollingDisabled(true,true)
