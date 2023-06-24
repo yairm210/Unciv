@@ -221,6 +221,7 @@ class PromotionPickerScreen(
         lines.clear()
 
         fun addLine(x: Float, y: Float, width: Float, height: Float, color: Color) {
+            if (color.a == 0f) return
             val line = ImageGetter.getWhiteDot()
             line.setBounds(x, y, width, height)
             line.color = color
