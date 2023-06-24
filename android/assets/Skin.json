@@ -124,6 +124,18 @@
             "g": 0.506,
             "b": 0.81,
             "a": 1
+        },
+        "promotion-grouplines": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 1
+        },
+        "promotion-otherlines": {
+            "r": 1,
+            "g": 0.7,
+            "b": 0,
+            "a": 0
         }
     },
     "com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable": {
@@ -362,7 +374,7 @@
             "selection": "selection"
         }
     },
-    "com.unciv.ui.screens.pickerscreens.promotion.PromotionButton$PromotionButtonColors": {
+    "com.unciv.ui.screens.pickerscreens.promotion.PromotionScreenColors": {
         "default": {
             "default": "promotion-default",
             "selected": "promotion-selected",
@@ -370,7 +382,9 @@
             "promoted": "promotion-promoted",
             "promotedText": "promotion-promoted-text",
             "pickable": "promotion-pickable",
-            "prerequisite": "promotion-prerequisite"
+            "prerequisite": "promotion-prerequisite",
+            "groupLines": "promotion-grouplines",
+            "otherLines": "promotion-otherlines"
         }
     }
 }

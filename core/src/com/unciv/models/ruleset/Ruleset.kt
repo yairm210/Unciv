@@ -160,7 +160,7 @@ class Ruleset {
         cityStateTypes.putAll(ruleset.cityStateTypes)
         ruleset.modOptions.unitsToRemove
             .flatMap { unitToRemove ->
-                units.filter { it.apply { value.ruleset=this@Ruleset }.value.matchesFilter(unitToRemove) }.keys
+                units.filter { it.apply { value.ruleset = this@Ruleset }.value.matchesFilter(unitToRemove) }.keys
             }.toSet().forEach {
                 units.remove(it)
             }
@@ -168,30 +168,7 @@ class Ruleset {
         modOptions.uniques.addAll(ruleset.modOptions.uniques)
         modOptions.constants.merge(ruleset.modOptions.constants)
 
-        // Allow each mod to define their own columns, and if there's a conflict, later mods will be shifted right
-        // We should never be editing the original ruleset objects, only copies
-        val addRulesetUnitPromotionClones = ruleset.unitPromotions.values.map { it.clone() }
-        val existingPromotionLocations =
-                unitPromotions.values.map { "${it.row}/${it.column}" }.toHashSet()
-        val promotionsWithConflictingLocations = addRulesetUnitPromotionClones.filter {
-            existingPromotionLocations.contains("${it.row}/${it.column}")
-        }
-        val columnsWithConflictingLocations =
-                promotionsWithConflictingLocations.map { it.column }.distinct()
-
-        if (columnsWithConflictingLocations.isNotEmpty()) {
-            var highestExistingColumn = unitPromotions.values.maxOf { it.column }
-            for (conflictingColumn in columnsWithConflictingLocations) {
-                highestExistingColumn += 1
-                val newColumn = highestExistingColumn
-                for (promotion in addRulesetUnitPromotionClones)
-                    if (promotion.column == conflictingColumn)
-                        promotion.column = newColumn
-            }
-        }
-        val finalModUnitPromotionsMap = addRulesetUnitPromotionClones.associateBy { it.name }
-
-        unitPromotions.putAll(finalModUnitPromotionsMap)
+        unitPromotions.putAll(ruleset.unitPromotions)
 
         mods += ruleset.mods
     }

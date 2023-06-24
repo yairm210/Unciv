@@ -7,15 +7,20 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
-
+import com.unciv.ui.screens.pickerscreens.promotion.PromotionPickerScreen
 
 class Promotion : RulesetObject() {
     var prerequisites = listOf<String>()
 
     var unitTypes = listOf<String>() // The json parser wouldn't agree to deserialize this as a list of UnitTypes. =(
 
-    /** Row of -1 determines that the modder has not set a position */
+    /** Used as **column** hint in the current [PromotionPickerScreen]
+     *  This is no longer a direct position, it is used to sort before an automatic distribution.
+     *  -1 determines that the modder has not set a position */
     var row = -1
+    /** Used as **row** hint in the current [PromotionPickerScreen]
+     *  This is no longer a direct position, it is used to sort before an automatic distribution.
+     */
     var column = 0
 
     fun clone(): Promotion {

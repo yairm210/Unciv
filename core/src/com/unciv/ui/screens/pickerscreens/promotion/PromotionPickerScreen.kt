@@ -25,13 +25,19 @@ import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import kotlin.math.abs
 
-
-class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResize {
-    private val buttonColors = skin[PromotionButton.PromotionButtonColors::class.java]
+class PromotionPickerScreen(
+    val unit: MapUnit,
+    private val onChange: (() -> Unit)? = null
+) : PickerScreen(), RecreateOnResize {
+    // Style stuff
+    private val colors = skin[PromotionScreenColors::class.java]
     private val promotedLabelStyle = Label.LabelStyle(skin[Label.LabelStyle::class.java]).apply {
-        fontColor = buttonColors.promotedText
+        fontColor = colors.promotedText
     }
+    private val buttonCellMaxWidth: Float
+    private val buttonCellMinWidth: Float
 
+    // Widgets
     private val promotionsTable = Table()
     private val promotionToButton = LinkedHashMap<String, PromotionButton>()
     private var selectedPromotion: PromotionButton? = null
@@ -43,7 +49,9 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
     private val canPromoteNow = canChangeState && canBePromoted &&
             unit.currentMovement > 0 && unit.attacksThisTurn == 0
 
+    // Logic
     private val tree = PromotionTree(unit)
+
 
     init {
         setDefaultCloseAction()
@@ -70,6 +78,14 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
             topTable.add(renameButton).pad(5f).row()
         }
 
+        // Create all buttons without placing them yet, measure
+        buttonCellMaxWidth = ((stage.width - 80f) / tree.getMaxColumns())
+            .coerceIn(190f, 300f)
+        for (node in tree.allNodes())
+            promotionToButton[node.promotion.name] = getButton(tree, node)
+        buttonCellMinWidth = (promotionToButton.values.maxOfOrNull { it.prefWidth + 10f } ?: 0f)
+            .coerceIn(190f, buttonCellMaxWidth)
+
         fillTable()
 
         displayTutorial(TutorialTrigger.Experience)
@@ -88,25 +104,26 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
 
         for (promotion in path)
             unit.promotions.addPromotion(promotion.name)
+
+        onChange?.invoke()
         game.replaceCurrentScreen(recreate())
     }
 
     private fun fillTable() {
+        val placedButtons = mutableSetOf<String>()
+
         // Create cell matrix
         val maxColumns = tree.getMaxColumns()
         val maxRows = tree.getMaxRows()
-
-        val cellMatrix = ArrayList<ArrayList<Cell<Actor>>>()
-        for (y in 0..maxRows) {
-            cellMatrix.add(ArrayList())
-            for (x in 0..maxColumns) {
-                val cell = promotionsTable.add()
-                cellMatrix[y].add(cell)
+        val cellMatrix = Array(maxRows + 1) {
+            Array(maxColumns + 1) {
+                promotionsTable.add() as Cell<Actor?>
+            }.also {
+                promotionsTable.row()
             }
-            promotionsTable.row()
         }
 
-        /** Check whether cell is inhabited by actor already */
+        /** Check whether a horizontal range of cells is inhabited by any actor already */
         fun isTherePlace(row: Int, col: Int, levels: Int) : Boolean {
             for (i in 0 until levels) {
                 if (cellMatrix[row][col+i].actor != null)
@@ -119,14 +136,13 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
         fun placeButton(col: Int, row: Int, node: PromotionTree.PromotionNode) : Int {
             val name = node.promotion.name
             // If promotion button not yet placed
-            if (promotionToButton[name] == null) {
+            if (name !in placedButtons) {
                 // If place is free - we place button
-                if (isTherePlace(row, col, node.depth)) {
-                    val cell = cellMatrix[row][col]
-                    val button = getButton(tree, node)
-                    promotionToButton[name] = button
-                    cell.setActor(button)
-                        .pad(5f).padRight(20f).minWidth(190f).maxWidth(190f)
+                if (isTherePlace(row, col, node.levels)) {
+                    cellMatrix[row][col].setActor(promotionToButton[name])
+                        .pad(5f).padRight(20f)
+                        .minWidth(buttonCellMinWidth).maxWidth(buttonCellMaxWidth)
+                    placedButtons += name
                 }
                 // If place is not free - try to find another in the next row
                 else {
@@ -134,14 +150,17 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
                 }
             }
 
-            // Filter successors who haven't been placed yet (to avoid circular dependencies)
+            // Filter children who haven't been placed yet (to avoid circular dependencies)
             // and try to place them in the next column.
+            // Note this materializes all intermediaries as Lists, but they're small
+            // Also note having placeButton with nointrivial side effecths in a chain isn't good practice,
+            // But the alternative is coding the max manually.
             // Return the max row this whole tree ever reached.
-            return node.children.filter {
-                !promotionToButton.containsKey(it.promotion.name)
-            }.map {
-                placeButton(col+1, row, it)
-            }.maxOfOrNull { it }?: row
+            return node.children
+                .filter { it.promotion.name !in placedButtons }
+                .sortedBy { it.baseName != node.baseName }  // Prioritize getting groups in a row - relying on sensible json "column" isn't enough
+                .maxOfOrNull { placeButton(col + 1, row, it) }
+                ?: row
         }
 
         // Build each tree starting from root nodes
@@ -153,15 +172,13 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
         }
 
         topTable.add(promotionsTable)
-
-        addConnectingLines()
-
+        addConnectingLines(emptySet())
     }
 
     private fun getButton(tree: PromotionTree, node: PromotionTree.PromotionNode) : PromotionButton {
-        val isPickable = node.pathIsUnique && tree.canBuyUpTo(node.promotion)
+        val isPickable = (!node.pathIsAmbiguous || node.distanceToAdopted == 1) && tree.canBuyUpTo(node.promotion)
 
-        val button = PromotionButton(node, isPickable, promotedLabelStyle)
+        val button = PromotionButton(node, isPickable, promotedLabelStyle, buttonCellMaxWidth - 60f)
 
         button.onClick {
             selectedPromotion = button
@@ -177,7 +194,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
             rightSideButton.setText(node.promotion.name.tr())
             updateDescriptionLabel(isPickable, tree, node, path)
 
-            addConnectingLines()
+            addConnectingLines(pathAsSet)
         }
 
         if (isPickable)
@@ -188,12 +205,20 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
         return button
     }
 
-    private fun addConnectingLines() {
+    private fun addConnectingLines(path: Set<Promotion>) {
         promotionsTable.pack()
         scrollPane.updateVisualScroll()
 
         for (line in lines) line.remove()
         lines.clear()
+
+        fun addLine(x: Float, y: Float, width: Float, height: Float, color: Color) {
+            val line = ImageGetter.getWhiteDot()
+            line.setBounds(x, y, width, height)
+            line.color = color
+            promotionsTable.addActorAt(0, line)
+            lines.add(line)
+        }
 
         for (button in promotionToButton.values) {
             for (prerequisite in button.node.promotion.prerequisites) {
@@ -207,12 +232,14 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
                 prerequisiteButton.localToStageCoordinates(prerequisiteCoords)
                 promotionsTable.stageToLocalCoordinates(prerequisiteCoords)
 
+                val isSelectionPath = button.node.promotion in path
                 val lineColor = when {
-                    button == selectedPromotion -> buttonColors.selected
-                    prerequisiteButton.node.baseName == button.node.baseName -> Color.WHITE.cpy()
-                    else -> Color.CLEAR
+                    button == selectedPromotion -> colors.selected
+                    isSelectionPath -> colors.pathToSelection
+                    prerequisiteButton.node.baseName == button.node.baseName -> colors.groupLines
+                    else -> colors.otherLines
                 }
-                val lineSize = if (button == selectedPromotion) 4f else 2f
+                val lineSize = if (isSelectionPath) 4f else 2f
 
                 if (buttonCoords.x < prerequisiteCoords.x) {
                     val temp = buttonCoords.cpy()
@@ -220,67 +247,48 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
                     prerequisiteCoords = temp
                 }
 
-
+                val halfLineSize = lineSize / 2
                 if (buttonCoords.y != prerequisiteCoords.y) {
 
                     val deltaX = buttonCoords.x - prerequisiteCoords.x
                     val deltaY = buttonCoords.y - prerequisiteCoords.y
-                    val halfLength = deltaX / 2f
+                    val halfLength = deltaX / 2f + halfLineSize
 
-                    val line = ImageGetter.getWhiteDot().apply {
-                        width = halfLength+lineSize/2
-                        height = lineSize
-                        x = prerequisiteCoords.x
-                        y = prerequisiteCoords.y - lineSize / 2
-                    }
-                    val line1 = ImageGetter.getWhiteDot().apply {
-                        width = halfLength + lineSize/2
-                        height = lineSize
-                        x = buttonCoords.x - width
-                        y = buttonCoords.y - lineSize / 2
-                    }
-                    val line2 = ImageGetter.getWhiteDot().apply {
-                        width = lineSize
-                        height = abs(deltaY)
-                        x = buttonCoords.x - halfLength - lineSize / 2
-                        y = buttonCoords.y + (if (deltaY > 0f) -height-lineSize/2 else lineSize/2)
-                    }
-
-                    line.color = lineColor
-                    line1.color = lineColor
-                    line2.color = lineColor
-
-                    promotionsTable.addActor(line)
-                    promotionsTable.addActor(line1)
-                    promotionsTable.addActor(line2)
-
-                    line.toBack()
-                    line1.toBack()
-                    line2.toBack()
-
-                    lines.add(line)
-                    lines.add(line1)
-                    lines.add(line2)
-
+                    addLine(
+                        width = halfLength,
+                        height = lineSize,
+                        x = prerequisiteCoords.x,
+                        y = prerequisiteCoords.y - halfLineSize,
+                        color = lineColor
+                    )
+                    addLine(
+                        width = halfLength,
+                        height = lineSize,
+                        x = buttonCoords.x - halfLength,
+                        y = buttonCoords.y - halfLineSize,
+                        color = lineColor
+                    )
+                    addLine(
+                        width = lineSize,
+                        height = abs(deltaY),
+                        x = buttonCoords.x - halfLength,
+                        y = buttonCoords.y + (if (deltaY > 0f) -deltaY - halfLineSize else halfLineSize),
+                        color = lineColor
+                    )
                 } else {
-
-                    val line = ImageGetter.getWhiteDot().apply {
-                        width = buttonCoords.x - prerequisiteCoords.x
-                        height = lineSize
-                        x = prerequisiteCoords.x
-                        y = prerequisiteCoords.y - lineSize / 2
-                    }
-                    line.color = lineColor
-                    promotionsTable.addActor(line)
-                    line.toBack()
-                    lines.add(line)
-
+                    addLine(
+                        width = buttonCoords.x - prerequisiteCoords.x,
+                        height = lineSize,
+                        x = prerequisiteCoords.x,
+                        y = prerequisiteCoords.y - halfLineSize,
+                        color = lineColor
+                    )
                 }
             }
         }
 
         for (line in lines) {
-            if (line.color == buttonColors.selected)
+            if (line.color == colors.selected || line.color == colors.pathToSelection)
                 line.zIndex = lines.size
         }
     }
@@ -301,7 +309,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
         node: PromotionTree.PromotionNode,
         path: List<Promotion>
     ) {
-        val isAmbiguous = tree.canBuyUpTo(node.promotion) && !node.pathIsUnique
+        val isAmbiguous = node.pathIsAmbiguous && node.distanceToAdopted > 1 && tree.canBuyUpTo(node.promotion)
         val topLine = unit.displayName().tr() + when {
             node.isAdopted -> ""
             isAmbiguous -> "{ }{- Path to [${node.promotion.name}] is ambiguous}".tr()
@@ -313,7 +321,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
     }
 
     override fun recreate(): BaseScreen {
-        val newScreen = PromotionPickerScreen(unit)
+        val newScreen = PromotionPickerScreen(unit, onChange)
         newScreen.setScrollY(scrollPane.scrollY)
         return newScreen
     }

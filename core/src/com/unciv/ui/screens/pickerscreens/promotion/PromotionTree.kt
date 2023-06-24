@@ -7,11 +7,13 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.translations.tr
 import com.unciv.utils.Log
-import java.util.SortedSet
 
 internal class PromotionTree(val unit: MapUnit) {
-    val nodes: LinkedHashMap<String, PromotionNode>
-    val possiblePromotions: SortedSet<Promotion>
+    /** Ordered set of Promotions to show - by Json column/row and translated name */
+    // Not using SortedSet - that uses needlessly complex implementations that remember the comparator
+    val possiblePromotions: LinkedHashSet<Promotion>
+    /** Ordered map, key is the Promotion name, same order as [possiblePromotions] */
+    private val nodes: LinkedHashMap<String, PromotionNode>
 
     class PromotionNode(
         val promotion: Promotion,
@@ -22,16 +24,16 @@ internal class PromotionTree(val unit: MapUnit) {
         /** How many unit-promoting steps are needed to reach this node */
         var distanceToAdopted = Int.MAX_VALUE
 
-        /** The nodes for direct prerequisites of this one
+        /** The nodes for direct prerequisites of this one (unordered)
          *  Note this is not necessarily cover all prerequisites of the node's promotion - see [unreachable] */
         val parents = mutableSetOf<PromotionNode>()
         /** Follow this to get an unambiguous path to a root */
         var preferredParent: PromotionNode? = null
-        /** All nodes having this one as direct prerequisite */
-        val children = mutableSetOf<PromotionNode>()
+        /** All nodes having this one as direct prerequisite - must preserve order as UI uses it */
+        val children = linkedSetOf<PromotionNode>()
 
-        /** On if there is only one "best" path of equal cost to adopt this node's promotion */
-        var pathIsUnique = true
+        /** Off if there is only one "best" path of equal cost to adopt this node's promotion */
+        var pathIsAmbiguous = false
         /** On for promotions having unavailable prerequisites (missing in ruleset, or not allowed for the unit's
          *  UnitType, and not already adopted either); or currently disabled by a [UniqueType.OnlyAvailableWhen] unique.
          *  (should never be on with a vanilla ruleset) */
@@ -41,6 +43,8 @@ internal class PromotionTree(val unit: MapUnit) {
         val baseName: String
         /** "Level" of this node's promotion (e.g. Drill I: 1, Drill III: 3 - 0 for promotions without such a suffix) */
         val level: Int
+        /** How many levels of this promotion there are below (including this), minimum 1 (Drill I: 3 / Drill III: 1) */
+        var levels = 1
 
         /** `true` if this node's promotion has no prerequisites */
         val isRoot get() = parents.isEmpty()
@@ -48,9 +52,9 @@ internal class PromotionTree(val unit: MapUnit) {
         override fun toString() = promotion.name
 
         init {
-            val (_, level, basePromotionName) = Promotion.getBaseNameAndLevel(promotion.name)
-            this.level = level
-            this.baseName = basePromotionName
+            val splitName = Promotion.getBaseNameAndLevel(promotion.name)
+            this.level = splitName.level
+            this.baseName = splitName.basePromotionName
         }
     }
 
@@ -61,18 +65,23 @@ internal class PromotionTree(val unit: MapUnit) {
         val adoptedPromotions = unit.promotions.promotions
 
         // The following sort is mostly redundant with our vanilla rulesets.
-        // Still, want to make sure processing will be left to right, top to bottom.
+        // Still, want to make sure processing left to right, top to bottom will be usable.
         possiblePromotions = rulesetPromotions.asSequence()
             .filter {
                 unitType in it.unitTypes || it.name in adoptedPromotions
             }
-            .toSortedSet(
+            .sortedWith(
                 // Remember to make sure row=0/col=0 stays on top while those without explicit pos go to the end
-                // But: the latter did not keep their definition!
-                compareBy<Promotion> { if (it.row >= 0) it.column else Int.MAX_VALUE }
-                    .thenBy { it.row }
-                    .thenBy(collator) { it.name.tr() }
+                // Also remember the names are historical, row means column on our current screen design.
+                compareBy<Promotion> {
+                    if (it.row < 0) Int.MAX_VALUE
+                    else if (it.row == 0) Int.MIN_VALUE + it.column
+                    else it.column
+                }
+                .thenBy { it.row }
+                .thenBy(collator) { it.name.tr() }
             )
+            .toCollection(linkedSetOf())
 
         // Create incomplete node objects
         nodes = possiblePromotions.asSequence()
@@ -89,6 +98,8 @@ internal class PromotionTree(val unit: MapUnit) {
                 }
                 node.parents += parent
                 parent.children += node
+                if (node.level > 0 && node.baseName == parent.baseName)
+                    parent.levels++
             }
         }
 
@@ -104,8 +115,7 @@ internal class PromotionTree(val unit: MapUnit) {
         }
 
         // Calculate depth and distanceToAdopted - nonrecursively, shallows first.
-        // Also determine preferredParent / pathIsUnique by weighing distanceToAdopted
-        // Could be done in one nested loop, but - lazy
+        // Also determine preferredParent / pathIsAmbiguous by weighing distanceToAdopted
         for (node in allRoots()) {
             node.depth = 0
             node.distanceToAdopted = if (node.unreachable) Int.MAX_VALUE else if (node.isAdopted) 0 else 1
@@ -125,7 +135,7 @@ internal class PromotionTree(val unit: MapUnit) {
                         child.depth == Int.MIN_VALUE -> Unit // "New" node / first reached
                         child.distanceToAdopted < distance -> continue  // Already reached a better way
                         child.distanceToAdopted == distance -> {  // Already reached same distance
-                            child.pathIsUnique = false
+                            child.pathIsAmbiguous = true
                             child.preferredParent = null
                             continue
                         }
@@ -133,19 +143,19 @@ internal class PromotionTree(val unit: MapUnit) {
                     }
                     child.depth = depth + 1
                     child.distanceToAdopted = distance
-                    child.preferredParent = node
-                    child.pathIsUnique = true
+                    child.pathIsAmbiguous = node.pathIsAmbiguous
+                    child.preferredParent = node.takeUnless { node.pathIsAmbiguous }
                 }
             }
             if (complete) break
         }
     }
 
-    fun allChildren(node: PromotionNode): Sequence<PromotionNode> {
+    fun allNodes() = nodes.values.asSequence()
+    fun allRoots() = allNodes().filter { it.isRoot }
+    private fun allChildren(node: PromotionNode): Sequence<PromotionNode> {
         return sequenceOf(node) + node.children.flatMap { allChildren(it) }
     }
-
-    fun allRoots() = nodes.values.asSequence().filter { it.isRoot }
 
     private fun getReachableNode(promotion: Promotion): PromotionNode? =
         nodes[promotion.name]?.takeUnless { it.distanceToAdopted == Int.MAX_VALUE }
@@ -167,7 +177,7 @@ internal class PromotionTree(val unit: MapUnit) {
         return result.asReversed()
     }
 
-    // These exist to allow future optimization - this is safe, but far more than actually needed
+    // These exist to allow future optimization - this is safe, but more than actually needed
     fun getMaxRows() = nodes.size
-    fun getMaxColumns() = nodes.size
+    fun getMaxColumns() = nodes.values.maxOf { it.promotion.row.coerceAtLeast(it.depth + 1) }
 }
