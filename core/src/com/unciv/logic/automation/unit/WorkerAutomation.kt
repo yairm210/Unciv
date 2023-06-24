@@ -270,7 +270,7 @@ class WorkerAutomation(
                 .filter {
                     it !in tilesToAvoid
                     && (it.civilianUnit == null || it == currentTile)
-                    && (it.owningCity == null || it.getOwner()==civInfo)
+                    && (it.owningCity == null || it.getOwner() == civInfo)
                     && getPriority(it) > 1
                     && it.getTilesInDistance(2)  // don't work in range of enemy cities
                         .none { tile -> tile.isCityCenter() && tile.getCity()!!.civ.isAtWarWith(civInfo) }
@@ -280,11 +280,11 @@ class WorkerAutomation(
                 .sortedByDescending { getPriority(it) }
 
         // Carthage can move through mountains, special case
-        val mountainWorkableTiles = workableTiles.filter{tile -> tile.isMountain()}
-        // If there is a non-mountain tile available, remove all available mountain tiles and don't take them into consideration later
-        if (mountainWorkableTiles.count() < workableTiles.count())
-            workableTiles = workableTiles.filter{tile -> !tile.isMountain()}
-        // else if all available tiles are mountains, move to the mountain tile
+        val workableTilesDealingDamage = workableTiles.filter{ tile -> unit.getDamageFromTerrain(tile) > 0 }
+        // If there is a non-mountain (damage dealing) tile available, remove all available mountain tiles and don't take them into consideration later
+        if (workableTilesDealingDamage.count() < workableTiles.count())
+            workableTiles = workableTiles.filter{ tile -> unit.getDamageFromTerrain(tile) <= 0 }
+        // else if all available tiles are mountains (damage dealing tiles), move to the mountain tile
 
         // These are the expensive calculations (tileCanBeImproved, canReach), so we only apply these filters after everything else it done.
         val selectedTile =
