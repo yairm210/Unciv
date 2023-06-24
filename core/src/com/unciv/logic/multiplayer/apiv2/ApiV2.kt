@@ -29,7 +29,6 @@ import kotlinx.coroutines.channels.ClosedSendChannelException
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import java.time.Instant
 import java.util.Random
@@ -147,7 +146,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
             job.cancel()
         }
         for (job in websocketJobs) {
-            runBlocking {
+            Concurrency.runBlocking {
                 job.join()
             }
         }
@@ -336,7 +335,9 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
      * of milliseconds was reached or the sending of the ping failed. Note that ensuring
      * this limit is on a best effort basis and may not be reliable, since it uses
      * [delay] internally to quit waiting for the result of the operation.
-     * This function may also throw arbitrary exceptions for network failures.
+     *
+     * This function may also throw arbitrary exceptions for network failures,
+     * cancelled channels or other unexpected interruptions.
      */
     suspend fun awaitPing(size: Int = 2, timeout: Long? = null): Double? {
         if (size < 2) {
@@ -353,7 +354,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
 
         var job: Job? = null
         if (timeout != null) {
-            job = Concurrency.run {
+            job = Concurrency.runOnNonDaemonThreadPool {
                 delay(timeout)
                 channel.close()
             }
@@ -364,7 +365,9 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
                 if (!sendPing(body)) {
                     return null
                 }
-                val exception = runBlocking { channel.receive() }
+                // Using kotlinx.coroutines.runBlocking is fine here, since the caller should check for any
+                // exceptions, as written in the docs -- i.e., no suppressing of exceptions is expected here
+                val exception = kotlinx.coroutines.runBlocking { channel.receive() }
                 job?.cancel()
                 channel.close()
                 if (exception != null) {

@@ -33,7 +33,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.runBlocking
 import java.time.Duration
 import java.time.Instant
 import java.util.Collections
@@ -63,7 +62,7 @@ class OnlineMultiplayer: Disposable {
     private val apiImpl = ApiV2(baseUrl)
     val api: ApiV2
         get() {
-            if (runBlocking { apiImpl.isCompatible() }) {
+            if (Concurrency.runBlocking { apiImpl.isCompatible() } == true) {
                 return apiImpl
             }
             throw UncivShowableException("Unsupported server API")

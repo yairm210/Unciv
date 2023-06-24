@@ -3,7 +3,6 @@ package com.unciv.ui.popups
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.unciv.logic.UncivShowableException
 import com.unciv.utils.Concurrency
-import kotlinx.coroutines.runBlocking
 
 /** Variant of [Popup] with one label and a cancel button
  * @param stageToShowOn Parent [Stage], see [Popup.stageToShowOn]
@@ -62,7 +61,7 @@ class InfoPopup(
                     }
                 }
             }
-            runBlocking { job.join() }
+            Concurrency.runBlocking { job.join() }
             return result
         }
     }

@@ -4,7 +4,6 @@ import com.unciv.logic.multiplayer.apiv2.IncomingInvite
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.runBlocking
 
 /**
  * Popup that handles an [IncomingInvite] to a lobby
@@ -36,7 +35,7 @@ class LobbyInvitationPopup(
     }
 
     override fun open(force: Boolean) {
-        runBlocking { setupJob.join() }
+        Concurrency.runBlocking { setupJob.join() }
         super.open(force)
     }
 }

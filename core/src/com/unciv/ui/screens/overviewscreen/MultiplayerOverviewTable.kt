@@ -14,7 +14,6 @@ import com.unciv.ui.screens.multiplayerscreens.ChatTable
 import com.unciv.ui.screens.multiplayerscreens.FriendListV2
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
-import kotlinx.coroutines.runBlocking
 import java.util.UUID
 
 class MultiplayerOverviewTable(
@@ -31,16 +30,19 @@ class MultiplayerOverviewTable(
                 else ChatMessageList(true, Pair(ChatRoomType.Game, gameName), chatRoomUUID, UncivGame.Current.onlineMultiplayer),
         val disposables: MutableList<Disposable> = mutableListOf()
     ) : EmpireOverviewTabPersistableData() {
-        constructor(overview: GameOverviewResponse) : this(overview.chatRoomUUID, overview.name)
+        constructor(overview: GameOverviewResponse?) : this(overview?.chatRoomUUID, overview?.name ?: "failed to load multiplayer game")
         override fun isEmpty() = false
     }
 
     override val persistableData = (persistedData as? MultiplayerTabPersistableData) ?: MultiplayerTabPersistableData(
-        runBlocking {
-            // This operation shouldn't fail; however, this wraps into an InfoPopup before crashing the game
-            InfoPopup.wrap(overviewScreen.stage) {
+        Concurrency.runBlocking {
+            val result = InfoPopup.wrap(overviewScreen.stage) {
                 overviewScreen.game.onlineMultiplayer.api.game.head(UUID.fromString(gameInfo.gameId))
-            }!!
+            }
+            if (result == null) {
+                Log.debug("Failed to fetch multiplayer game details for ${gameInfo.gameId}")
+            }
+            result
         }
     )
 

@@ -177,7 +177,6 @@ class LobbyScreen(
         events.receive(LobbyLeave::class, { it.lobbyUUID == lobbyUUID }) {
             Log.debug("Player %s left lobby %s", it.player, lobbyUUID)
             lobbyPlayerList.removePlayer(it.player.uuid)
-            recreate()
             ToastPopup("${it.player.username} has left the lobby", stage)
         }
         events.receive(LobbyKick::class, { it.lobbyUUID == lobbyUUID }) {

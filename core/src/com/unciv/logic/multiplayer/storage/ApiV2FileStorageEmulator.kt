@@ -2,8 +2,8 @@ package com.unciv.logic.multiplayer.storage
 
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.apiv2.ApiV2
+import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
-import kotlinx.coroutines.runBlocking
 import java.util.UUID
 
 private const val PREVIEW_SUFFIX = "_Preview"
@@ -36,13 +36,13 @@ class ApiV2FileStorageEmulator(private val api: ApiV2): FileStorage {
     }
 
     fun loadFileData(fileName: String): String {
-        return runBlocking {
+        return Concurrency.runBlocking {
             if (fileName.endsWith(PREVIEW_SUFFIX)) {
                 loadPreviewData(fileName.dropLast(8))
             } else {
                 loadGameData(fileName)
             }
-        }
+        }!!
     }
 
     override suspend fun getFileMetaData(fileName: String): FileMetaData {
@@ -50,13 +50,13 @@ class ApiV2FileStorageEmulator(private val api: ApiV2): FileStorage {
     }
 
     fun deleteFile(fileName: String) {
-        return runBlocking {
+        return Concurrency.runBlocking {
             if (fileName.endsWith(PREVIEW_SUFFIX)) {
                 deletePreviewData(fileName.dropLast(8))
             } else {
                 deleteGameData(fileName)
             }
-        }
+        }!!
     }
 
     override suspend fun deleteGameData(gameId: String) {
@@ -70,11 +70,11 @@ class ApiV2FileStorageEmulator(private val api: ApiV2): FileStorage {
     }
 
     override fun authenticate(userId: String, password: String): Boolean {
-        return runBlocking { api.auth.loginOnly(userId, password) }
+        return Concurrency.runBlocking { api.auth.loginOnly(userId, password) }!!
     }
 
     override fun setPassword(newPassword: String): Boolean {
-        return runBlocking { api.account.setPassword(newPassword, suppress = true) }
+        return Concurrency.runBlocking { api.account.setPassword(newPassword, suppress = true) }!!
     }
 
 }

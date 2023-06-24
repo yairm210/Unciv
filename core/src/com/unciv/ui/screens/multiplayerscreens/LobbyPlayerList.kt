@@ -17,8 +17,8 @@ import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.newgamescreen.MapOptionsInterface
 import com.unciv.ui.screens.newgamescreen.NationPickerPopup
+import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.util.UUID
@@ -42,7 +42,7 @@ class LobbyPlayerList(
         .apply { this.setAlignment(Align.center) }
         .surroundWithCircle(50f, color = Color.GRAY)
         .onClick {
-            runBlocking {
+            Concurrency.runBlocking {
                 mutex.withLock {
                     players.add(LobbyPlayer(null, Constants.random))
                 }
@@ -60,7 +60,7 @@ class LobbyPlayerList(
      * Add the specified player to the player list and recreate the view
      */
     internal fun addPlayer(player: AccountResponse): Boolean {
-        runBlocking {
+        Concurrency.runBlocking {
             mutex.withLock {
                 players.add(LobbyPlayer(player))
             }
@@ -73,8 +73,8 @@ class LobbyPlayerList(
      * Remove the specified player from the player list and recreate the view
      */
     internal fun removePlayer(player: UUID): Boolean {
-        var modified: Boolean
-        runBlocking {
+        var modified = false  // the default will always be overwritten
+        Concurrency.runBlocking {
             mutex.withLock {
                 modified = players.removeAll { it.account?.uuid == player }
             }
@@ -99,14 +99,14 @@ class LobbyPlayerList(
             return
         }
 
-        runBlocking {
+        Concurrency.runBlocking {
             mutex.withLock {
                 for (i in players.indices) {
                     row()
                     val movements = VerticalGroup()
                     movements.space(5f)
                     movements.addActor("↑".toLabel(fontSize = Constants.headingFontSize).onClick {
-                        if (runBlocking {
+                        if (Concurrency.runBlocking {
                             var changed = false
                             mutex.withLock {
                                 if (i > 0) {
@@ -117,12 +117,12 @@ class LobbyPlayerList(
                                 }
                             }
                             changed
-                        }) {
+                        } == true) {
                             recreate()
                         }
                     })
                     movements.addActor("↓".toLabel(fontSize = Constants.headingFontSize).onClick {
-                        if (runBlocking {
+                        if (Concurrency.runBlocking {
                             var changed = false
                             mutex.withLock {
                                 if (i < players.size - 1) {
@@ -134,7 +134,7 @@ class LobbyPlayerList(
                                 }
                             }
                             changed
-                        }) {
+                        } == true) {
                             recreate()
                         }
                     })
@@ -155,14 +155,14 @@ class LobbyPlayerList(
                     kickButton.onClick {
                         var success = true
                         if (!player.isAI) {
-                            runBlocking {
+                            Concurrency.runBlocking {
                                 success = true == InfoPopup.wrap(stage) {
                                     api.lobby.kick(lobbyUUID, player.account!!.uuid)
                                 }
                             }
                         }
                         if (success) {
-                            runBlocking {
+                            Concurrency.runBlocking {
                                 mutex.withLock {
                                     success = players.remove(player)
                                 }
@@ -208,7 +208,7 @@ class LobbyPlayerList(
     }
 
     private fun reassignRemovedModReferences() {
-        runBlocking {
+        Concurrency.runBlocking {
             mutex.withLock {
                 for (player in players) {
                     if (!base.ruleset.nations.containsKey(player.chosenCiv) || base.ruleset.nations[player.chosenCiv]!!.isCityState)
@@ -249,7 +249,7 @@ class LobbyPlayerList(
      * Refresh the view of the human players based on the [currentPlayers] response from the server
      */
     internal fun updateCurrentPlayers(currentPlayers: List<AccountResponse>) {
-        runBlocking {
+        Concurrency.runBlocking {
             mutex.withLock {
                 val humanPlayers = players.filter { !it.isAI }.map { it.account!! }
                 val toBeRemoved = mutableListOf<LobbyPlayer>()
