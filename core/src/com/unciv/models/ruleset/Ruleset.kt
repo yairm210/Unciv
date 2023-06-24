@@ -91,6 +91,7 @@ class Ruleset {
     val quests = LinkedHashMap<String, Quest>()
     val specialists = LinkedHashMap<String, Specialist>()
     val technologies = LinkedHashMap<String, Technology>()
+    val techColumns = ArrayList<TechColumn>()
     val terrains = LinkedHashMap<String, Terrain>()
     val tileImprovements = LinkedHashMap<String, TileImprovement>()
     val tileResources = LinkedHashMap<String, TileResource>()
@@ -264,6 +265,7 @@ class Ruleset {
         if (techFile.exists()) {
             val techColumns = json().fromJsonFile(Array<TechColumn>::class.java, techFile)
             for (techColumn in techColumns) {
+                this.techColumns.add(techColumn)
                 for (tech in techColumn.techs) {
                     if (tech.cost == 0) tech.cost = techColumn.techCost
                     tech.column = techColumn
@@ -458,8 +460,9 @@ class Ruleset {
         for (building in buildings.values) {
             if (building.cost == -1 && building.getMatchingUniques(UniqueType.Unbuildable).none { it.conditionals.isEmpty() }) {
                 val column = technologies[building.requiredTech]?.column
-                        ?: throw UncivShowableException("Building '[${building.name}]' is buildable and therefore must either have an explicit cost or reference an existing tech.")
-                building.cost = if (building.isAnyWonder()) column.wonderCost else column.buildingCost
+                if (column != null) {
+                    building.cost = if (building.isAnyWonder()) column.wonderCost else column.buildingCost
+                }
             }
         }
     }
