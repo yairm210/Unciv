@@ -39,8 +39,8 @@ import java.util.Collections
 import java.util.concurrent.atomic.AtomicReference
 
 /**
- * How often files can be checked for new multiplayer games (could be that the user modified their file system directly). More checks within this time period
- * will do nothing.
+ * How often files can be checked for new multiplayer games (could be that the user modified
+ * their file system directly). More checks within this time period will do nothing.
  */
 private val FILE_UPDATE_THROTTLE_PERIOD = Duration.ofSeconds(60)
 
@@ -49,9 +49,25 @@ private val FILE_UPDATE_THROTTLE_PERIOD = Duration.ofSeconds(60)
  *
  * You need to call [initialize] as soon as possible, to bootstrap API detection
  * and first network connectivity. A later version may enforce that no network
- * traffic is generated before [initialize] gets called.
+ * traffic is generated before [initialize] gets called, but this is not yet the case.
+ * You should wait for the completion of this initialization process, otherwise
+ * certain more complex functionality may be unavailable, especially event handling
+ * features of the [ApiVersion.APIv2]. You may use [awaitInitialized] for that.
  *
- * See the file of [com.unciv.logic.multiplayer.MultiplayerGameAdded] for all available [EventBus] events.
+ * After initialization, this class can be used to access multiplayer features via
+ * methods such as [downloadGame] or [updateGame]. Use the [api] instance to access
+ * functionality of the new APIv2 implementations (e.g. lobbies, friends, in-game
+ * chats and more). You must ensure that the access to that [api] property is properly
+ * guarded: the API must be V2 and the initialization must be completed. Otherwise,
+ * accessing that property may yield [UncivShowableException] or trigger race conditions.
+ * The recommended way to do this is checking the [apiVersion] of this instance, which
+ * is also set after initialization. After usage, you should [dispose] this instance
+ * properly to close network connections gracefully. Changing the server URL is only
+ * possible by [disposing][dispose] this instance and creating a new one.
+ *
+ * Certain features (for example the poll checker, see [startPollChecker], or the WebSocket
+ * handlers, see [ApiV2.handleWebSocket]) send certain events on the [EventBus]. See the
+ * source file of [MultiplayerGameAdded] and [IncomingChatMessage] for an overview of them.
  */
 class OnlineMultiplayer: Disposable {
     private val settings
@@ -65,7 +81,7 @@ class OnlineMultiplayer: Disposable {
             if (Concurrency.runBlocking { apiImpl.isCompatible() } == true) {
                 return apiImpl
             }
-            throw UncivShowableException("Unsupported server API")
+            throw UncivShowableException("Unsupported server API: $baseUrl")
         }
 
     private val files = UncivGame.Current.files
@@ -130,6 +146,7 @@ class OnlineMultiplayer: Disposable {
      * Initialize this instance and detect the API version of the server automatically
      *
      * This should be called as early as possible to configure other depending attributes.
+     * You must await its completion before using the [api] and its related functionality.
      */
     suspend fun initialize() {
         apiVersion = determineServerAPI()
@@ -144,11 +161,12 @@ class OnlineMultiplayer: Disposable {
             } else {
                 apiImpl.initialize()
             }
+            ApiV2FileStorage.setApi(apiImpl)
         }
     }
 
     /**
-     * Determine whether the object has been initialized
+     * Determine whether the instance has been initialized
      */
     fun isInitialized(): Boolean {
         return (this::featureSet.isInitialized) && (this::apiVersion.isInitialized) && (apiVersion != ApiVersion.APIv2 || apiImpl.isInitialized())
@@ -457,7 +475,7 @@ class OnlineMultiplayer: Disposable {
      *
      * Only use this method for APIv1 servers. This method doesn't check the API version, though.
      *
-     * This is a blocking method.
+     * This is a blocking method doing network operations.
      */
     private fun isAliveAPIv1(): Boolean {
         var statusOk = false
@@ -543,6 +561,7 @@ class OnlineMultiplayer: Disposable {
      * Dispose this [OnlineMultiplayer] instance by closing its background jobs and connections
      */
     override fun dispose() {
+        ApiV2FileStorage.unsetApi()
         pollChecker?.cancel()
         events.stopReceiving()
         if (isInitialized() && apiVersion == ApiVersion.APIv2) {

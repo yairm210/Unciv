@@ -13,7 +13,7 @@ import java.io.FileNotFoundException
 
 /**
  * Allows access to games stored on a server for multiplayer purposes.
- * Defaults to using UncivGame.Current.settings.multiplayerServer if fileStorageIdentifier is not given.
+ * Defaults to using [UncivGame.Current.settings.multiplayerServer] if `fileStorageIdentifier` is not given.
  *
  * For low-level access only, use [UncivGame.onlineMultiplayer] on [UncivGame.Current] if you're looking to load/save a game.
  *
@@ -45,7 +45,7 @@ class OnlineMultiplayerServer(
                 if (!UncivGame.Current.onlineMultiplayer.hasAuthentication() && !UncivGame.Current.onlineMultiplayer.api.isAuthenticated()) {
                     Log.error("User credentials not available, further execution may result in errors!")
                 }
-                return ApiV2FileStorageWrapper.storage!!
+                return ApiV2FileStorage
             }
             UncivServerFileStorage.apply {
                 serverUrl = this@OnlineMultiplayerServer.serverUrl
@@ -74,7 +74,6 @@ class OnlineMultiplayerServer(
         }
         return statusOk
     }
-
 
     /**
      * @return true if the authentication was successful or the server does not support authentication.
