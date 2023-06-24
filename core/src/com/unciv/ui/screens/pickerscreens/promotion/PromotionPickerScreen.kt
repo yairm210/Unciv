@@ -3,7 +3,6 @@ package com.unciv.ui.screens.pickerscreens.promotion
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -23,6 +22,8 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.pickerscreens.PickerScreen
+import com.unciv.utils.Concurrency
+import kotlinx.coroutines.delay
 import kotlin.math.abs
 
 class PromotionPickerScreen(
@@ -95,12 +96,19 @@ class PromotionPickerScreen(
         // if user managed to click disabled button, still do nothing
         if (button == null || !button.isPickable) return
 
+        // Can't use stage.addAction as the screen is going to die immediately
         val path = tree.getPathTo(button.node.promotion)
-        val oneSound = Actions.run { SoundPlayer.play(UncivSound.Promote) }
-        stage.addAction(
-            if (path.size == 1) oneSound
-            else Actions.sequence(oneSound, Actions.delay(0.2f), oneSound )
-        )
+        if (path.size == 1) {
+            Concurrency.runOnGLThread { SoundPlayer.play(UncivSound.Promote) }
+        } else {
+            Concurrency.runOnGLThread {
+                SoundPlayer.play(UncivSound.Promote)
+                Concurrency.run {
+                    delay(200)
+                    Concurrency.runOnGLThread { SoundPlayer.play(UncivSound.Promote) }
+                }
+            }
+        }
 
         for (promotion in path)
             unit.promotions.addPromotion(promotion.name)
