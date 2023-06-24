@@ -107,21 +107,6 @@ class WorkerAutomation(
     ///////////////////////////////////////// Helpers /////////////////////////////////////////
 
     companion object {
-        /** Maps to instance [WorkerAutomation.automateWorkerAction] knowing only the MapUnit */
-        fun automateWorkerAction(unit: MapUnit, tilesWhereWeWillBeCaptured: Set<Tile>) {
-            unit.civ.getWorkerAutomation().automateWorkerAction(unit, tilesWhereWeWillBeCaptured)
-        }
-
-        /** Convenience shortcut supports old calling syntax for [WorkerAutomation.getPriority] */
-        fun getPriority(tile: Tile, civInfo: Civilization): Int {
-            return civInfo.getWorkerAutomation().getPriority(tile)
-        }
-
-        /** Convenience shortcut supports old calling syntax for [WorkerAutomation.evaluateFortPlacement] */
-        fun evaluateFortPlacement(tile: Tile, civInfo: Civilization, isCitadel: Boolean): Boolean {
-            return civInfo.getWorkerAutomation().evaluateFortPlacement(tile, isCitadel)
-        }
-
         /** For console logging only */
         private fun MapUnit.label() = toString() + " " + getTile().position.toString()
     }
@@ -135,7 +120,7 @@ class WorkerAutomation(
         val currentTile = unit.getTile()
         val tileToWork = findTileToWork(unit, tilesWhereWeWillBeCaptured)
 
-        if (getPriority(tileToWork, civInfo) < 3) { // building roads is more important
+        if (civInfo.getWorkerAutomation().getPriority(tileToWork) < 3) { // building roads is more important
             if (tryConnectingCities(unit)) return
         }
 
@@ -352,7 +337,7 @@ class WorkerAutomation(
     /**
      * Calculate a priority for improving a tile
      */
-    private fun getPriority(tile: Tile): Int {
+    fun getPriority(tile: Tile): Int {
         var priority = 0
         if (tile.getOwner() == civInfo) {
             priority += 2
@@ -472,7 +457,7 @@ class WorkerAutomation(
      * @param  isCitadel Controls within borders check - true also allows 1 tile outside borders
      * @return Yes please build a Fort here
      */
-    private fun evaluateFortPlacement(tile: Tile, isCitadel: Boolean): Boolean {
+    fun evaluateFortPlacement(tile: Tile, isCitadel: Boolean): Boolean {
         //todo Is the Citadel code dead anyway? If not - why does the nearestTiles check not respect the param?
 
         // build on our land only

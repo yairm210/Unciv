@@ -40,7 +40,7 @@ object NotificationIcon {
     const val War = "OtherIcons/Pillage"
 }
 
-enum class NotificationCategory{
+enum class NotificationCategory {
     General,
     Trade,
     Diplomacy,
@@ -48,6 +48,7 @@ enum class NotificationCategory{
     Units,
     War,
     Religion,
+    Espionage,
     Cities
     ;
     companion object {
@@ -68,7 +69,7 @@ open class Notification() : IsPartOfGameInfoSerialization {
     var action: NotificationAction? = null
     var category: String = NotificationCategory.General.name
 
-    constructor(text: String, notificationIcons: ArrayList<String>, action: NotificationAction?, category:NotificationCategory) : this() {
+    constructor(text: String, notificationIcons: ArrayList<String>, action: NotificationAction?, category: NotificationCategory) : this() {
         this.text = text
         this.icons = notificationIcons
         this.action = action

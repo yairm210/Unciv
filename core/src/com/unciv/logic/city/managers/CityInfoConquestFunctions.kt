@@ -93,7 +93,7 @@ class CityInfoConquestFunctions(val city: City){
 
     /** Function for stuff that should happen on any capture, be it puppet, annex or liberate.
      * Stuff that should happen any time a city is moved between civs, so also when trading,
-     * should go in `this.moveToCiv()`, which this function also calls.
+     * should go in `this.moveToCiv()`, which is called by `this.conquerCity()`.
      */
     private fun conquerCity(conqueringCiv: Civilization, conqueredCiv: Civilization, receivingCiv: Civilization) {
         val goldPlundered = getGoldForCapturingCity(conqueringCiv)
@@ -111,20 +111,20 @@ class CityInfoConquestFunctions(val city: City){
             Battle.destroyIfDefeated(conqueredCiv, conqueringCiv)
 
             health = getMaxHealth() / 2 // I think that cities recover to half health when conquered?
-            if (population.population > 1) population.addPopulation(-1 - population.population / 4) // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
+            if (population.population > 1)
+                population.addPopulation(-1 - population.population / 4) // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
             reassignAllPopulation()
 
             if (!reconqueredCityWhileStillInResistance && foundingCiv != receivingCiv.civName) {
                 // add resistance
-                setFlag(
-                    CityFlags.Resistance,
-                    population.population // I checked, and even if you puppet there's resistance for conquering
-                )
+                // I checked, and even if you puppet there's resistance for conquering
+                setFlag(CityFlags.Resistance, population.population)
             } else {
                 // reconquering or liberating city in resistance so eliminate it
                 removeFlag(CityFlags.Resistance)
             }
 
+            espionage.removeAllPresentSpies(SpyFleeReason.CityCaptured)
         }
     }
 
@@ -225,7 +225,7 @@ class CityInfoConquestFunctions(val city: City){
             cityStats.update()
 
             // Move units out of the city when liberated
-            for (unit in getCenterTile().getUnits())
+            for (unit in getCenterTile().getUnits().toList())
                 unit.movement.teleportToClosestMoveableTile()
             for (unit in getTiles().flatMap { it.getUnits() }.toList())
                 if (!unit.movement.canPassThrough(unit.currentTile))
@@ -289,15 +289,15 @@ class CityInfoConquestFunctions(val city: City){
             // Stop WLTKD if it's still going
             resetWLTKD()
 
-            // Remove their free buildings from this city and remove free buildings provided by the city from their cities
-            removeBuildingsOnMoveToCiv(oldCiv)
-
-            // Place palace for newCiv if this is the only city they have
-            // This needs to happen _before_ free buildings are added, as sometimes these should
-            // only be placed in the capital, and then there needs to be a capital.
+            // Place palace for newCiv if this is the only city they have.
+            // This needs to happen _before_ buildings are added or removed,
+            // as any building change triggers a reevaluation of stats which assumes there to be a capital
             if (newCiv.cities.size == 1) {
                 newCiv.moveCapitalTo(this)
             }
+
+            // Remove their free buildings from this city and remove free buildings provided by the city from their cities
+            removeBuildingsOnMoveToCiv(oldCiv)
 
             // Add our free buildings to this city and add free buildings provided by the city to other cities
             civ.civConstructions.tryAddFreeBuildings()

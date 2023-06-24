@@ -378,6 +378,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun isEmbarked(): Boolean {
         if (!baseUnit.isLandUnit()) return false
+        if (cache.canMoveOnWater) return false
         return currentTile.isWater
     }
 

@@ -182,11 +182,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
             }
         }
 
-        for (spy in civInfo.espionageManager.spyList) {
-            val spyCity = spy.getLocation() ?: continue
-            if (!spy.isSetUp()) continue // Can't see cities when you haven't set up yet
-            newViewableTiles.addAll(spyCity.getCenterTile().getTilesInDistance(1))
-        }
+        newViewableTiles.addAll(civInfo.espionageManager.getTilesVisibleViaSpies())
 
         civInfo.viewableTiles = newViewableTiles // to avoid concurrent modification problems
     }
