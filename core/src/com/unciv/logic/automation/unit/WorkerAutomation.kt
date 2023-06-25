@@ -280,15 +280,16 @@ class WorkerAutomation(
                 .sortedByDescending { getPriority(it) }
 
         // Carthage can move through mountains, special case
-        val workableTilesDealingDamage = workableTiles.filter{ tile -> unit.getDamageFromTerrain(tile) > 0 }
-        // If there is a non-mountain (damage dealing) tile available, remove all available mountain tiles and don't take them into consideration later
-        if (workableTilesDealingDamage.count() < workableTiles.count())
-            workableTiles = workableTiles.filter{ tile -> unit.getDamageFromTerrain(tile) <= 0 }
-        // else if all available tiles are mountains (damage dealing tiles), move to the mountain tile
-
+        val workableTilesNotDealingDamage = workableTiles.filter{ tile -> unit.getDamageFromTerrain(tile) <= 0 }
+        lateinit var selectedTile: Tile
+        // If there is a non-damage dealing tile available, remove all available damage dealing tiles and don't take them into consideration later
         // These are the expensive calculations (tileCanBeImproved, canReach), so we only apply these filters after everything else it done.
-        val selectedTile =
-            workableTiles.firstOrNull { unit.movement.canReach(it) && (tileCanBeImproved(unit, it) || it.isPillaged()) }
+        if (workableTilesNotDealingDamage.count() > 0)
+            selectedTile = workableTilesNotDealingDamage.firstOrNull { unit.movement.canReach(it) && (tileCanBeImproved(unit, it) || it.isPillaged()) }
+                ?: return currentTile
+        // else if all available tiles are damage dealing tiles, move to the damage dealing tile
+        else
+            selectedTile = workableTiles.firstOrNull { unit.movement.canReach(it) && (tileCanBeImproved(unit, it) || it.isPillaged()) }
                 ?: return currentTile
 
         return if ((!tileCanBeImproved(unit, currentTile) && !currentTile.isPillaged()) // current tile is unimprovable
