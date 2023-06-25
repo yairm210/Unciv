@@ -51,7 +51,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         for (tech in ruleset.technologies.values) {
             for (otherTech in ruleset.technologies.values) {
-                if (tech != otherTech && otherTech.column.columnNumber == tech.column.columnNumber && otherTech.row == tech.row)
+                if (tech != otherTech && otherTech.column?.columnNumber == tech.column?.columnNumber && otherTech.row == tech.row)
                     lines += "${tech.name} is in the same row and column as ${otherTech.name}!"
             }
 
