@@ -79,7 +79,7 @@ internal class PromotionTree(val unit: MapUnit) {
                     else it.column
                 }
                 .thenBy { it.row }
-                .thenBy(collator) { it.name.tr() }
+                .thenBy(collator) { it.name.tr(hideIcons = true) }
             )
             .toCollection(linkedSetOf())
 
