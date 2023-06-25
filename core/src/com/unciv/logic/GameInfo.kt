@@ -529,8 +529,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         else
             "[$positionsCount] sources of [$resourceName] revealed, e.g. near [${chosenCity.name}]"
 
-        return Notification(text, arrayListOf("ResourceIcons/$resourceName"),
-            LocationAction(positions), NotificationCategory.General)
+        return Notification(text, arrayOf("ResourceIcons/$resourceName"),
+            LocationAction(positions).asIterable(), NotificationCategory.General)
     }
 
     // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)
