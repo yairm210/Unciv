@@ -230,8 +230,10 @@ class PromotionPickerScreen(
         }
 
         for (button in promotionToButton.values) {
-            for (prerequisite in button.node.promotion.prerequisites) {
+            val currentNode = button.node
+            for (prerequisite in currentNode.promotion.prerequisites) {
                 val prerequisiteButton = promotionToButton[prerequisite] ?: continue
+                val prerequisiteNode = prerequisiteButton.node
 
                 var buttonCoords = Vector2(0f, button.height / 2)
                 button.localToStageCoordinates(buttonCoords)
@@ -241,11 +243,13 @@ class PromotionPickerScreen(
                 prerequisiteButton.localToStageCoordinates(prerequisiteCoords)
                 promotionsTable.stageToLocalCoordinates(prerequisiteCoords)
 
-                val isSelectionPath = button.node.promotion in path
+                val isNodeInPath = currentNode.promotion in path
+                val isSelectionPath = isNodeInPath &&
+                    (prerequisiteNode.isAdopted || prerequisiteNode.promotion in path)
                 val lineColor = when {
-                    button == selectedPromotion -> colors.selected
-                    isSelectionPath -> colors.pathToSelection
-                    prerequisiteButton.node.baseName == button.node.baseName -> colors.groupLines
+                    isSelectionPath -> colors.selected
+                    isNodeInPath -> colors.pathToSelection
+                    prerequisiteNode.baseName == currentNode.baseName -> colors.groupLines
                     else -> colors.otherLines
                 }
                 val lineSize = if (isSelectionPath) 4f else 2f
