@@ -266,7 +266,7 @@ class WorkerAutomation(
      */
     private fun findTileToWork(unit: MapUnit, tilesToAvoid: Set<Tile>): Tile {
         val currentTile = unit.getTile()
-        var workableTiles = currentTile.getTilesInDistance(4)
+        val workableTiles = currentTile.getTilesInDistance(4)
                 .filter {
                     it !in tilesToAvoid
                     && (it.civilianUnit == null || it == currentTile)
