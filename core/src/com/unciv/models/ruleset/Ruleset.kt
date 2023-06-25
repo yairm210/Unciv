@@ -153,6 +153,7 @@ class Ruleset {
                 technologies.remove(it)
             }
         technologies.putAll(ruleset.technologies)
+        techColumns.addAll(ruleset.techColumns)
         terrains.putAll(ruleset.terrains)
         tileImprovements.putAll(ruleset.tileImprovements)
         tileResources.putAll(ruleset.tileResources)
@@ -213,6 +214,7 @@ class Ruleset {
         ruinRewards.clear()
         specialists.clear()
         technologies.clear()
+        techColumns.clear()
         terrains.clear()
         tileImprovements.clear()
         tileResources.clear()
