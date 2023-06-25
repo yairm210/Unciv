@@ -11,11 +11,11 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.victoryscreen.VictoryScreenCivGroup
 import com.unciv.ui.screens.victoryscreen.VictoryScreenCivGroup.DefeatedPlayerStyle
 import kotlin.math.abs
-import kotlin.math.min
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.log10
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -130,7 +130,7 @@ class LineChart(
      */
     private fun getPrevNumberDivisibleByPowOfTen(value: Int): Int {
         if (value == 0) return 0
-        val numberOfDigits = max(2 , min(ceil(log10(abs(value).toDouble())).toInt(), 3))
+        val numberOfDigits = ceil(log10(abs(value).toDouble())).toInt().coerceIn(2,3)
         val oneWithZeros = 10.0.pow(numberOfDigits - 1)
         // E.g., 3 => 10^(2-1) = 10 ; floor(3 / 10) * 10 = 0
         //     567 => 10^(3-1) = 100 ; floor(567 / 100) * 100 = 500

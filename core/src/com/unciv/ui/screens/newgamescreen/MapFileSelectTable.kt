@@ -123,7 +123,7 @@ class MapFileSelectTable(
         newGameScreen.gameSetupInfo.gameParameters.mods = LinkedHashSet(mapMods.second)
         newGameScreen.gameSetupInfo.gameParameters.baseRuleset = mapMods.first.firstOrNull()
             ?: mapFileSelectBox.selected.mapParameters.baseRuleset
-        val success = newGameScreen.updateRuleset()
+        val success = newGameScreen.tryUpdateRuleset()
         newGameScreen.updateTables()
         hideMiniMap()
         if (success) {

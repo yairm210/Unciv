@@ -1,24 +1,21 @@
 ## 4.7.4
 
-Resolved  - Removing old buildings on enemy capital (when not last city) no longer crashes
+Zoom in/out of history charts  - By JackRainy
 
-Resolved  - Concurrent modification fix for liberated city with multiple units in it
+Removing old buildings on enemy capital (when not last city) no longer crashes
 
-Resolved  - Removed static wrapper functions from WorkerAutomation
+Liberating city with multiple units in it no longer errors
 
 By SomeTroglodyte:
-- Notifications architectural update 
-- Fix ruleset error crash 
-- Mod name defense attempt II 
-- Make UncivGame.isInitialized inaccessible outside of the class hierarchy 
-
-Zoom in/out of the history charts  - By JackRainy
-
+- Fixed ruleset error crashes
+- Fixed loading of mods with unconventional names
+-
 By SeventhM:
-- Adding field for great person type 
-- Tech column validation and removing crashes from undefined building costs 
+- Modding: Allow Great People to have different counters
+- Tech column validation for mods
+- Solved crashes from undefined building costs
 
-More unit unique tests  - By xlenstra
+Ensure more unit uniques work - By xlenstra
 
 ## 4.7.3
 
