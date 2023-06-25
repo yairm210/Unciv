@@ -41,7 +41,6 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.roundToInt
 
-
 /**
  * Table consisting of the menu button, current civ, some stats and the overview button for the top of [WorldScreen]
  */
@@ -71,7 +70,6 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private val overviewButton = OverviewAndSupplyTable(worldScreen)
     private val leftFillerCell: Cell<BackgroundActor>
     private val rightFillerCell: Cell<BackgroundActor>
-
     //endregion
 
     init {

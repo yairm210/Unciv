@@ -1,20 +1,33 @@
 package com.unciv.logic.multiplayer
 
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.utils.Disposable
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.json.json
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
+import com.unciv.logic.UncivShowableException
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.event.EventBus
+import com.unciv.logic.files.IncompatibleGameInfoVersionException
+import com.unciv.logic.files.UncivFiles
+import com.unciv.logic.multiplayer.apiv2.ApiV2
+import com.unciv.logic.multiplayer.apiv2.DEFAULT_REQUEST_TIMEOUT
+import com.unciv.logic.multiplayer.apiv2.IncomingChatMessage
+import com.unciv.logic.multiplayer.apiv2.UncivNetworkException
+import com.unciv.logic.multiplayer.apiv2.UpdateGameData
+import com.unciv.logic.multiplayer.storage.ApiV2FileStorage
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
 import com.unciv.logic.multiplayer.storage.OnlineMultiplayerServer
+import com.unciv.logic.multiplayer.storage.SimpleHttp
 import com.unciv.ui.components.extensions.isLargerThan
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Dispatcher
+import com.unciv.utils.Log
 import com.unciv.utils.debug
 import com.unciv.utils.launchOnThreadPool
 import com.unciv.utils.withGLContext
@@ -29,21 +42,65 @@ import java.time.Instant
 import java.util.Collections
 import java.util.concurrent.atomic.AtomicReference
 
-
 /**
- * How often files can be checked for new multiplayer games (could be that the user modified their file system directly). More checks within this time period
- * will do nothing.
+ * How often files can be checked for new multiplayer games (could be that the user modified
+ * their file system directly). More checks within this time period will do nothing.
  */
 private val FILE_UPDATE_THROTTLE_PERIOD = Duration.ofSeconds(60)
 
 /**
- * Provides multiplayer functionality to the rest of the game.
+ * Provides multiplayer functionality to the rest of the game
  *
- * See the file of [com.unciv.logic.multiplayer.MultiplayerGameAdded] for all available [EventBus] events.
+ * You need to call [initialize] as soon as possible, to bootstrap API detection
+ * and first network connectivity. A later version may enforce that no network
+ * traffic is generated before [initialize] gets called, but this is not yet the case.
+ * You should wait for the completion of this initialization process, otherwise
+ * certain more complex functionality may be unavailable, especially event handling
+ * features of the [ApiVersion.APIv2]. You may use [awaitInitialized] for that.
+ *
+ * After initialization, this class can be used to access multiplayer features via
+ * methods such as [downloadGame] or [updateGame]. Use the [api] instance to access
+ * functionality of the new APIv2 implementations (e.g. lobbies, friends, in-game
+ * chats and more). You must ensure that the access to that [api] property is properly
+ * guarded: the API must be V2 and the initialization must be completed. Otherwise,
+ * accessing that property may yield [UncivShowableException] or trigger race conditions.
+ * The recommended way to do this is checking the [apiVersion] of this instance, which
+ * is also set after initialization. After usage, you should [dispose] this instance
+ * properly to close network connections gracefully. Changing the server URL is only
+ * possible by [disposing][dispose] this instance and creating a new one.
+ *
+ * Certain features (for example the poll checker, see [startPollChecker], or the WebSocket
+ * handlers, see [ApiV2.handleWebSocket]) send certain events on the [EventBus]. See the
+ * source file of [MultiplayerGameAdded] and [IncomingChatMessage] for an overview of them.
  */
-class OnlineMultiplayer {
+class OnlineMultiplayer: Disposable {
+    private val settings
+        get() = UncivGame.Current.settings
+
+    // Updating the multiplayer server URL in the Api is out of scope, just drop this class and create a new one
+    val baseUrl = UncivGame.Current.settings.multiplayer.server
+
+    /**
+     * Access the [ApiV2] instance only after [initialize] has been completed, otherwise
+     * it will block until [initialize] has finished (which may take very long for high
+     * latency networks). Accessing this property when the [apiVersion] is **not**
+     * [ApiVersion.APIv2] will yield an [UncivShowableException] that the it's not supported.
+     */
+    val api: ApiV2
+        get() {
+            if (Concurrency.runBlocking { awaitInitialized(); apiImpl.isCompatible() } == true) {
+                return apiImpl
+            }
+            throw UncivShowableException("Unsupported server API: [$baseUrl]")
+        }
+    private val apiImpl = ApiV2(baseUrl)
+
     private val files = UncivGame.Current.files
     val multiplayerServer = OnlineMultiplayerServer()
+    private lateinit var featureSet: ServerFeatureSet
+
+    private var pollChecker: Job? = null
+    private val events = EventBus.EventReceiver()
 
     private val savedGames: MutableMap<FileHandle, OnlineMultiplayerGame> = Collections.synchronizedMap(mutableMapOf())
 
@@ -51,30 +108,117 @@ class OnlineMultiplayer {
     private val lastAllGamesRefresh: AtomicReference<Instant?> = AtomicReference()
     private val lastCurGameRefresh: AtomicReference<Instant?> = AtomicReference()
 
-    val games: Set<OnlineMultiplayerGame> get() = savedGames.values.toSet()
-    val multiplayerGameUpdater: Job
+    val games: Set<OnlineMultiplayerGame>
+        get() = savedGames.values.toSet()
+
+    /** Inspect this property to check the API version of the multiplayer server (the server
+     * API auto-detection happens in the coroutine [initialize], so you need to wait until
+     * this is finished, otherwise this property access will block or ultimatively throw a
+     * [UncivNetworkException] to avoid hanging forever when the network is down/very slow) */
+    val apiVersion: ApiVersion
+        get() {
+            if (apiVersionImpl != null) {
+                return apiVersionImpl!!
+            }
+
+            // Using directly blocking code below is fine, since it's enforced to await [initialize]
+            // anyways -- even though it will be cancelled by the second "timeout fallback" job to
+            // avoid blocking the calling function forever, so that it will "earlier" crash the game instead
+            val waitJob = Concurrency.run {
+                // Using an active sleep loop here is not the best way, but the simplest; it could be improved later
+                while (apiVersionImpl == null) {
+                    delay(20)
+                }
+            }
+            val cancelJob = Concurrency.run {
+                delay(2 * DEFAULT_REQUEST_TIMEOUT)
+                Log.debug("Cancelling the access to apiVersion, since $baseUrl seems to be too slow to respond")
+                waitJob.cancel()
+            }
+            Concurrency.runBlocking { waitJob.join() }
+            if (apiVersionImpl != null) {
+                cancelJob.cancel()
+                return apiVersionImpl!!
+            }
+            throw UncivNetworkException("Unable to detect the API version of [$baseUrl]: please check your network connectivity", null)
+        }
+    private var apiVersionImpl: ApiVersion? = null
 
     init {
-        /** We have 2 'async processes' that update the multiplayer games:
-         * A. This one, which as part of *this process* runs refreshes for all OS's
-         * B. MultiplayerTurnCheckWorker, which *as an Android worker* runs refreshes *even when the game is closed*.
-         *    Only for Android, obviously
-         */
-        multiplayerGameUpdater = flow<Unit> {
-            while (true) {
-                delay(500)
-
-                val currentGame = getCurrentGame()
-                val multiplayerSettings = UncivGame.Current.settings.multiplayer
-                val preview = currentGame?.preview
-                if (currentGame != null && (usesCustomServer() || preview == null || !preview.isUsersTurn())) {
-                    throttle(lastCurGameRefresh, multiplayerSettings.currentGameRefreshDelay, {}) { currentGame.requestUpdate() }
+        // The purpose of handling this event here is to avoid de-serializing the GameInfo
+        // more often than really necessary. Other actors may just listen for MultiplayerGameCanBeLoaded
+        // instead of the "raw" UpdateGameData. Note that the Android turn checker ignores this rule.
+        events.receive(UpdateGameData::class, null) {
+            Concurrency.runOnNonDaemonThreadPool {
+                try {
+                    val gameInfo = UncivFiles.gameInfoFromString(it.gameData)
+                    gameInfo.setTransients()
+                    addGame(gameInfo)
+                    val gameDetails = api.game.head(it.gameUUID, suppress = true)
+                    Concurrency.runOnGLThread {
+                        EventBus.send(MultiplayerGameCanBeLoaded(gameInfo, gameDetails?.name, it.gameDataID))
+                    }
+                } catch (e: IncompatibleGameInfoVersionException) {
+                    Log.debug("Failed to load GameInfo from incoming event: %s", e.localizedMessage)
                 }
-
-                val doNotUpdate = if (currentGame == null) listOf() else listOf(currentGame)
-                throttle(lastAllGamesRefresh, multiplayerSettings.allGameRefreshDelay, {}) { requestUpdate(doNotUpdate = doNotUpdate) }
             }
-        }.launchIn(CoroutineScope(Dispatcher.DAEMON))
+        }
+    }
+
+    /**
+     * Initialize this instance and detect the API version of the server automatically
+     *
+     * This should be called as early as possible to configure other depending attributes.
+     * You must await its completion before using the [api] and its related functionality.
+     */
+    suspend fun initialize() {
+        apiVersionImpl = ApiVersion.detect(baseUrl)
+        Log.debug("Server at '$baseUrl' detected API version: $apiVersionImpl")
+        startPollChecker()
+        featureSet = ServerFeatureSet()  // setting this here to fix problems for non-network games
+        if (apiVersionImpl == ApiVersion.APIv1) {
+            isAliveAPIv1()
+        }
+        if (apiVersionImpl == ApiVersion.APIv2) {
+            if (hasAuthentication()) {
+                apiImpl.initialize(Pair(settings.multiplayer.userName, settings.multiplayer.passwords[baseUrl] ?: ""))
+            } else {
+                apiImpl.initialize()
+            }
+            ApiV2FileStorage.setApi(apiImpl)
+        }
+    }
+
+    /**
+     * Determine whether the instance has been initialized
+     */
+    fun isInitialized(): Boolean {
+        return (this::featureSet.isInitialized) && (apiVersionImpl != null) && (apiVersionImpl != ApiVersion.APIv2 || apiImpl.isInitialized())
+    }
+
+    /**
+     * Actively sleeping loop that awaits [isInitialized]
+     */
+    suspend fun awaitInitialized() {
+        while (!isInitialized()) {
+            // Using an active sleep loop here is not the best way, but the simplest; it could be improved later
+            delay(20)
+        }
+    }
+
+    /**
+     * Determine the server API version of the remote server
+     *
+     * Check precedence: [ApiVersion.APIv0] > [ApiVersion.APIv2] > [ApiVersion.APIv1]
+     */
+    private suspend fun determineServerAPI(): ApiVersion {
+        return if (usesDropbox()) {
+            ApiVersion.APIv0
+        } else if (apiImpl.isCompatible()) {
+            ApiVersion.APIv2
+        } else {
+            ApiVersion.APIv1
+        }
     }
 
     private fun getCurrentGame(): OnlineMultiplayerGame? {
@@ -119,7 +263,6 @@ class OnlineMultiplayer {
             addGame(saveFile)
         }
     }
-
 
     /**
      * Fires [MultiplayerGameAdded]
@@ -332,12 +475,129 @@ class OnlineMultiplayer {
                 && gameInfo.turns == preview.turns
     }
 
+    /**
+     * Checks if the server is alive and sets the [featureSet] accordingly.
+     * @return true if the server is alive, false otherwise
+     */
+    suspend fun checkServerStatus(): Boolean {
+        if (apiImpl.isCompatible()) {
+            try {
+                apiImpl.version()
+            } catch (e: Throwable) {
+                Log.error("Unexpected error during server status query: ${e.localizedMessage}")
+                return false
+            }
+            return true
+        }
+
+        return isAliveAPIv1()
+    }
+
+    /**
+     * Check if the server is reachable by getting the /isalive endpoint
+     *
+     * This will also update/set the [featureSet] implicitly.
+     *
+     * Only use this method for APIv1 servers. This method doesn't check the API version, though.
+     *
+     * This is a blocking method doing network operations.
+     */
+    private fun isAliveAPIv1(): Boolean {
+        var statusOk = false
+        try {
+            SimpleHttp.sendGetRequest("${UncivGame.Current.settings.multiplayer.server}/isalive") { success, result, _ ->
+                statusOk = success
+                if (result.isNotEmpty()) {
+                    featureSet = try {
+                        json().fromJson(ServerFeatureSet::class.java, result)
+                    } catch (ex: Exception) {
+                        Log.error("${UncivGame.Current.settings.multiplayer.server} does not support server feature set")
+                        ServerFeatureSet()
+                    }
+                }
+            }
+        } catch (e: Throwable) {
+            Log.error("Error while checking server '$baseUrl' isAlive for $apiVersion: $e")
+            statusOk = false
+        }
+        return statusOk
+    }
+
+    /**
+     * @return true if the authentication was successful or the server does not support authentication.
+     * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
+     * @throws MultiplayerAuthException if the authentication failed
+     */
+    suspend fun authenticate(password: String?): Boolean {
+        if (featureSet.authVersion == 0) {
+            return true
+        }
+
+        val success = multiplayerServer.fileStorage().authenticate(
+            userId=settings.multiplayer.userId,
+            password=password ?: settings.multiplayer.passwords[settings.multiplayer.server] ?: ""
+        )
+        if (password != null && success) {
+            settings.multiplayer.passwords[settings.multiplayer.server] = password
+        }
+        return success
+    }
+
+    /**
+     * Determine if there are any known credentials for the current server (the credentials might be invalid!)
+     */
+    fun hasAuthentication(): Boolean {
+        val settings = UncivGame.Current.settings.multiplayer
+        return settings.passwords.containsKey(settings.server)
+    }
 
     /**
      * Checks if [preview1] has a more recent game state than [preview2]
      */
     private fun hasNewerGameState(preview1: GameInfoPreview, preview2: GameInfoPreview): Boolean {
         return preview1.turns > preview2.turns
+    }
+
+    /**
+     * Start a background runner that periodically checks for new game updates
+     * ([ApiVersion.APIv0] and [ApiVersion.APIv1] only)
+     *
+     * We have 2 'async processes' that update the multiplayer games:
+     * A. This one, which runs as part of *this process* and refreshes for all OS's
+     * B. MultiplayerTurnCheckWorker, which runs *as an Android worker* and refreshes
+     *   *even when the game is paused*. Only for Android, obviously.
+     */
+    private fun startPollChecker() {
+        if (apiVersion in listOf(ApiVersion.APIv0, ApiVersion.APIv1)) {
+            Log.debug("Starting poll service for remote games ...")
+            pollChecker = flow<Unit> {
+                while (true) {
+                    delay(500)
+
+                    val currentGame = getCurrentGame()
+                    val multiplayerSettings = UncivGame.Current.settings.multiplayer
+                    val preview = currentGame?.preview
+                    if (currentGame != null && (usesCustomServer() || preview == null || !preview.isUsersTurn())) {
+                        throttle(lastCurGameRefresh, multiplayerSettings.currentGameRefreshDelay, {}) { currentGame.requestUpdate() }
+                    }
+
+                    val doNotUpdate = if (currentGame == null) listOf() else listOf(currentGame)
+                    throttle(lastAllGamesRefresh, multiplayerSettings.allGameRefreshDelay, {}) { requestUpdate(doNotUpdate = doNotUpdate) }
+                }
+            }.launchIn(CoroutineScope(Dispatcher.DAEMON))
+        }
+    }
+
+    /**
+     * Dispose this [OnlineMultiplayer] instance by closing its background jobs and connections
+     */
+    override fun dispose() {
+        ApiV2FileStorage.unsetApi()
+        pollChecker?.cancel()
+        events.stopReceiving()
+        if (isInitialized() && apiVersion == ApiVersion.APIv2) {
+            api.dispose()
+        }
     }
 
     companion object {

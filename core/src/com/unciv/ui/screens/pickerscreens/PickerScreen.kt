@@ -5,9 +5,9 @@ import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 
-open class PickerScreen(disableScroll: Boolean = false) : BaseScreen() {
+open class PickerScreen(disableScroll: Boolean = false, horizontally: Boolean = false) : BaseScreen() {
 
-    val pickerPane = PickerPane(disableScroll = disableScroll)
+    val pickerPane = PickerPane(disableScroll = disableScroll, horizontally = horizontally)
 
     /** @see PickerPane.closeButton */
     val closeButton by pickerPane::closeButton

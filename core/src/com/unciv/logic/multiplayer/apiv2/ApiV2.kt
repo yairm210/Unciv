@@ -6,8 +6,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.event.Event
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.ApiVersion
-import com.unciv.logic.multiplayer.storage.ApiV2FileStorageEmulator
-import com.unciv.logic.multiplayer.storage.ApiV2FileStorageWrapper
+import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
@@ -29,7 +28,6 @@ import kotlinx.coroutines.channels.ClosedSendChannelException
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import java.time.Instant
 import java.util.Random
@@ -38,6 +36,11 @@ import java.util.concurrent.atomic.AtomicReference
 
 /**
  * Main class to interact with multiplayer servers implementing [ApiVersion.ApiV2]
+ *
+ * Do not directly initialize this class, but use [OnlineMultiplayer] instead,
+ * which will provide access via [OnlineMultiplayer.api] if everything has been set up.
+ *
+ *
  */
 class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
 
@@ -111,8 +114,6 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
                 }
             }
         }
-        ApiV2FileStorageWrapper.storage = ApiV2FileStorageEmulator(this)
-        ApiV2FileStorageWrapper.api = this
         initialized = true
     }
 
@@ -147,7 +148,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
             job.cancel()
         }
         for (job in websocketJobs) {
-            runBlocking {
+            Concurrency.runBlocking {
                 job.join()
             }
         }
@@ -159,7 +160,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
     /**
      * Determine if the remote server is compatible with this API implementation
      *
-     * This currently only checks the endpoints /api/version and /api/v2/ws.
+     * This currently only checks the endpoints `/api/version` and `/api/v2/ws`.
      * If the first returns a valid [VersionResponse] and the second a valid
      * [ApiErrorResponse] for being not authenticated, then the server API
      * is most likely compatible. Otherwise, if 404 errors or other unexpected
@@ -336,7 +337,9 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
      * of milliseconds was reached or the sending of the ping failed. Note that ensuring
      * this limit is on a best effort basis and may not be reliable, since it uses
      * [delay] internally to quit waiting for the result of the operation.
-     * This function may also throw arbitrary exceptions for network failures.
+     *
+     * This function may also throw arbitrary exceptions for network failures,
+     * cancelled channels or other unexpected interruptions.
      */
     suspend fun awaitPing(size: Int = 2, timeout: Long? = null): Double? {
         if (size < 2) {
@@ -353,7 +356,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
 
         var job: Job? = null
         if (timeout != null) {
-            job = Concurrency.run {
+            job = Concurrency.runOnNonDaemonThreadPool {
                 delay(timeout)
                 channel.close()
             }
@@ -364,7 +367,9 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
                 if (!sendPing(body)) {
                     return null
                 }
-                val exception = runBlocking { channel.receive() }
+                // Using kotlinx.coroutines.runBlocking is fine here, since the caller should check for any
+                // exceptions, as written in the docs -- i.e., no suppressing of exceptions is expected here
+                val exception = kotlinx.coroutines.runBlocking { channel.receive() }
                 job?.cancel()
                 channel.close()
                 if (exception != null) {

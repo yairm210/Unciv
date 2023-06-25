@@ -7,12 +7,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
+import com.unciv.logic.UncivShowableException
 import com.unciv.logic.files.MapSaver
 import com.unciv.logic.map.MapParameters
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.victoryscreen.LoadMapPreview
 import com.unciv.utils.Concurrency
@@ -21,7 +23,7 @@ import kotlinx.coroutines.isActive
 import com.badlogic.gdx.utils.Array as GdxArray
 
 class MapFileSelectTable(
-    private val newGameScreen: NewGameScreen,
+    private val newGameScreen: MapOptionsInterface,
     private val mapParameters: MapParameters
 ) : Table() {
 
@@ -105,6 +107,19 @@ class MapFileSelectTable(
     private fun onSelectBoxChange() {
         cancelBackgroundJobs()
         val mapFile = mapFileSelectBox.selected.fileHandle
+        val mapParams = try {
+            MapSaver.loadMapParameters(mapFile)
+        } catch (ex:Exception){
+            ex.printStackTrace()
+            Popup(stage).apply {
+                addGoodSizedLabel("Could not load map!").row()
+                if (ex is UncivShowableException)
+                    addGoodSizedLabel(ex.message).row()
+                addCloseButton()
+                open()
+            }
+            return
+        }
         mapParameters.name = mapFile.name()
         newGameScreen.gameSetupInfo.mapFile = mapFile
         val mapMods = mapFileSelectBox.selected.mapParameters.mods.partition { RulesetCache[it]?.modOptions?.isBaseRuleset == true }

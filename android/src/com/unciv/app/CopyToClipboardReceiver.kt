@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import com.badlogic.gdx.backends.android.AndroidApplication
+import com.unciv.app.turncheck.Common
 
 /**
  * This Receiver can be called from an Action on the error Notification shown by MultiplayerTurnCheckWorker.
@@ -16,7 +17,7 @@ import com.badlogic.gdx.backends.android.AndroidApplication
 class CopyToClipboardReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val clipboard: ClipboardManager = context.getSystemService(AndroidApplication.CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = ClipData.newPlainText("exception", intent.getStringExtra(MultiplayerTurnCheckWorker.CLIPBOARD_EXTRA))
+        val clip = ClipData.newPlainText("exception", intent.getStringExtra(Common.CLIPBOARD_EXTRA))
         clipboard.setPrimaryClip(clip)
         Toast.makeText(context, context.resources.getString(R.string.Notify_Error_StackTrace_Toast), Toast.LENGTH_SHORT).show()
     }

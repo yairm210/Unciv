@@ -72,15 +72,23 @@ object DropBox: FileStorage {
     // This is the location in Dropbox only
     private fun getLocalGameLocation(fileName: String) = "/MultiplayerGames/$fileName"
 
-    override fun deleteFile(fileName: String){
+    override suspend fun deleteGameData(gameId: String){
         dropboxApi(
             url="https://api.dropboxapi.com/2/files/delete_v2",
-            data="{\"path\":\"${getLocalGameLocation(fileName)}\"}",
+            data="{\"path\":\"${getLocalGameLocation(gameId)}\"}",
             contentType="application/json"
         )
     }
 
-    override fun getFileMetaData(fileName: String): FileMetaData {
+    override suspend fun deletePreviewData(gameId: String){
+        dropboxApi(
+            url="https://api.dropboxapi.com/2/files/delete_v2",
+            data="{\"path\":\"${getLocalGameLocation(gameId + PREVIEW_FILE_SUFFIX)}\"}",
+            contentType="application/json"
+        )
+    }
+
+    override suspend fun getFileMetaData(fileName: String): FileMetaData {
         val stream = dropboxApi(
             url="https://api.dropboxapi.com/2/files/get_metadata",
             data="{\"path\":\"${getLocalGameLocation(fileName)}\"}",
@@ -90,17 +98,31 @@ object DropBox: FileStorage {
         return json().fromJson(MetaData::class.java, reader.readText())
     }
 
-    override fun saveFileData(fileName: String, data: String) {
+    override suspend fun saveGameData(gameId: String, data: String) {
         dropboxApi(
             url="https://content.dropboxapi.com/2/files/upload",
             data=data,
             contentType="application/octet-stream",
-            dropboxApiArg = """{"path":"${getLocalGameLocation(fileName)}","mode":{".tag":"overwrite"}}"""
+            dropboxApiArg = """{"path":"${getLocalGameLocation(gameId)}","mode":{".tag":"overwrite"}}"""
         )!!
     }
 
-    override fun loadFileData(fileName: String): String {
-        val inputStream = downloadFile(getLocalGameLocation(fileName))
+    override suspend fun savePreviewData(gameId: String, data: String) {
+        dropboxApi(
+            url="https://content.dropboxapi.com/2/files/upload",
+            data=data,
+            contentType="application/octet-stream",
+            dropboxApiArg = """{"path":"${getLocalGameLocation(gameId + PREVIEW_FILE_SUFFIX)}","mode":{".tag":"overwrite"}}"""
+        )
+    }
+
+    override suspend fun loadGameData(gameId: String): String {
+        val inputStream = downloadFile(getLocalGameLocation(gameId))
+        return BufferedReader(InputStreamReader(inputStream)).readText()
+    }
+
+    override suspend fun loadPreviewData(gameId: String): String {
+        val inputStream = downloadFile(getLocalGameLocation(gameId + PREVIEW_FILE_SUFFIX))
         return BufferedReader(InputStreamReader(inputStream)).readText()
     }
 

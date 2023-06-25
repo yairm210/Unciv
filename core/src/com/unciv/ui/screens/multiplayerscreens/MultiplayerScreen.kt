@@ -7,13 +7,13 @@ import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.MultiplayerGameDeleted
 import com.unciv.logic.multiplayer.OnlineMultiplayerGame
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.pickerscreens.PickerScreen
-import com.unciv.ui.popups.Popup
-import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.popups.Popup
+import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.ui.components.AutoScrollPane as ScrollPane
 
 class MultiplayerScreen : PickerScreen() {
@@ -82,13 +82,13 @@ class MultiplayerScreen : PickerScreen() {
         return table
     }
 
-    fun createRefreshButton(): TextButton {
+    private fun createRefreshButton(): TextButton {
         val btn = refreshText.toTextButton()
         btn.onClick { game.onlineMultiplayer.requestUpdate() }
         return btn
     }
 
-    fun createAddGameButton(): TextButton {
+    private fun createAddGameButton(): TextButton {
         val btn = addGameText.toTextButton()
         btn.onClick {
             game.pushScreen(AddMultiplayerGameScreen())
@@ -96,7 +96,7 @@ class MultiplayerScreen : PickerScreen() {
         return btn
     }
 
-    fun createEditButton(): TextButton {
+    private fun createEditButton(): TextButton {
         val btn = editButtonText.toTextButton().apply { disable() }
         btn.onClick {
             game.pushScreen(EditMultiplayerGameInfoScreen(selectedGame!!))
@@ -104,7 +104,7 @@ class MultiplayerScreen : PickerScreen() {
         return btn
     }
 
-    fun createCopyGameIdButton(): TextButton {
+    private fun createCopyGameIdButton(): TextButton {
         val btn = copyGameIdText.toTextButton().apply { disable() }
         btn.onClick {
             val gameInfo = selectedGame?.preview
@@ -116,7 +116,7 @@ class MultiplayerScreen : PickerScreen() {
         return btn
     }
 
-    fun createFriendsListButton(): TextButton {
+    private fun createFriendsListButton(): TextButton {
         val btn = friendsListText.toTextButton()
         btn.onClick {
             game.pushScreen(ViewFriendsListScreen())

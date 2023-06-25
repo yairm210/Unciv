@@ -33,11 +33,18 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import kotlin.math.PI
 import kotlin.math.cos
 
+/**
+ * Popup that lets the user choose a nation for a player (human or AI)
+ */
 internal class NationPickerPopup(
-    private val playerPicker: PlayerPickerTable,
     private val player: Player,
-    private val noRandom: Boolean
-) : Popup(playerPicker.previousScreen as BaseScreen, Scrollability.None) {
+    private val civBlocksWidth: Float,
+    baseScreen: BaseScreen,
+    private val previousScreen: IPreviousScreen,
+    private val noRandom: Boolean,
+    private val getAvailablePlayerCivs: (String) -> Sequence<Nation>,
+    private val update: () -> Unit
+) : Popup(baseScreen, Scrollability.None) {
     companion object {
         // Note - innerTable has pad(20f) and defaults().pad(5f), so content bottomLeft is at x=25/y=25
         // These are used for the Close/OK buttons in the lower left/right corners:
@@ -55,14 +62,12 @@ internal class NationPickerPopup(
         const val iconViewPadHorz = iconViewSpacing / 2  // a little empiric
     }
 
-    private val previousScreen = playerPicker.previousScreen
     private val ruleset = previousScreen.ruleset
     private val settings = GUI.getSettings()
 
     // This Popup's body has two halves of same size, either side by side or arranged vertically
     // depending on screen proportions - determine height for one of those
     private val partHeight = stageToShowOn.height * (if (stageToShowOn.isNarrowerThan4to3()) 0.45f else 0.8f)
-    private val civBlocksWidth = playerPicker.civBlocksWidth
 
     private val nationListTable = Table()
     private val nationListScroll = AutoScrollPane(nationListTable)
@@ -143,7 +148,7 @@ internal class NationPickerPopup(
 
         player.chosenCiv = selectedNation
         close()
-        playerPicker.update()
+        update()
     }
 
     private data class NationIterationElement(
@@ -262,8 +267,8 @@ internal class NationPickerPopup(
             if (spectator != null && player.playerType != PlayerType.AI)  // only humans can spectate, sorry robots
                 yield(NationIterationElement(spectator))
         }
-        // Then what PlayerPickerTable says we should display - see its doc
-        val part2 = playerPicker.getAvailablePlayerCivs(player.chosenCiv)
+        // Then whatever player civs are available
+        val part2 = getAvailablePlayerCivs(player.chosenCiv)
             .map { NationIterationElement(it) }
         // Combine and Sort
         return part1 +

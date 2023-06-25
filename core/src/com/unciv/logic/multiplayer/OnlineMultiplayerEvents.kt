@@ -1,7 +1,9 @@
 package com.unciv.logic.multiplayer
 
+import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.event.Event
+import com.unciv.logic.multiplayer.apiv2.UpdateGameData
 
 interface HasMultiplayerGameName {
     val name: String
@@ -62,3 +64,12 @@ class MultiplayerGameNameChanged(
 class MultiplayerGameDeleted(
     override val name: String
 ) : Event, HasMultiplayerGameName
+
+/**
+ * Gets sent when [UpdateGameData] has been processed by [OnlineMultiplayer], used to auto-load a game state
+ */
+class MultiplayerGameCanBeLoaded(
+    val gameInfo: GameInfo,
+    val gameName: String?, // optionally, the name of the game
+    val gameDataID: Long // server data ID for the game state
+): Event

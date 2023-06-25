@@ -16,6 +16,8 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.map.MapVisualization
+import com.unciv.logic.multiplayer.ApiVersion
+import com.unciv.logic.multiplayer.MultiplayerGameCanBeLoaded
 import com.unciv.logic.multiplayer.MultiplayerGameUpdated
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
@@ -37,6 +39,7 @@ import com.unciv.ui.components.input.KeyboardPanningListener
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.AuthPopup
+import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.popups.hasOpenPopups
@@ -57,7 +60,8 @@ import com.unciv.ui.screens.worldscreen.bottombar.BattleTable
 import com.unciv.ui.screens.worldscreen.bottombar.TileInfoTable
 import com.unciv.ui.screens.worldscreen.mainmenu.WorldScreenMusicPopup
 import com.unciv.ui.screens.worldscreen.minimap.MinimapHolder
-import com.unciv.ui.screens.worldscreen.status.MultiplayerStatusButton
+import com.unciv.ui.screens.worldscreen.status.MultiplayerStatusButtonV1
+import com.unciv.ui.screens.worldscreen.status.MultiplayerStatusButtonV2
 import com.unciv.ui.screens.worldscreen.status.NextTurnButton
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.ui.screens.worldscreen.status.StatusButtons
@@ -205,6 +209,71 @@ class WorldScreen(
                 Concurrency.run("Load latest multiplayer state") {
                     loadLatestMultiplayerState()
                 }
+            }
+
+            // APIv2-based online multiplayer games use this event to notify about changes for the game
+            events.receive(MultiplayerGameCanBeLoaded::class, { it.gameInfo.gameId == gameId }) {
+                if (it.gameInfo.gameId == UncivGame.Current.gameInfo?.gameId) {
+                    val currentScreen = UncivGame.Current.screen
+                    // Reload instantly if the WorldScreen is shown, otherwise ask whether to continue when the WorldScreen
+                    // is in the screen stack. If neither of them holds true, another or no game is currently played.
+                    if (currentScreen == this) {
+                        it.gameInfo.isUpToDate = true
+                        Concurrency.run {
+                            UncivGame.Current.loadGame(it.gameInfo)
+                            Concurrency.runOnGLThread {
+                                UncivGame.Current.notifyTurnStarted()
+                            }
+                        }
+                    } else if (this in UncivGame.Current.screenStack && currentScreen != null) {
+                        val popup = Popup(currentScreen)
+                        if (it.gameName == null) {
+                            popup.addGoodSizedLabel("It's your turn in game '${it.gameInfo.gameId}' now!").colspan(2).row()
+                        } else {
+                            popup.addGoodSizedLabel("It's your turn in game '${it.gameName}' now!").colspan(2).row()
+                        }
+                        popup.addCloseButton {
+                            val updateNotification = Popup(this)
+                            updateNotification.addGoodSizedLabel("Another player just completed their turn.").colspan(2).row()
+                            updateNotification.addCloseButton()
+                            updateNotification.addOKButton("Reload game") {
+                                updateNotification.reuseWith("Working...")
+                                updateNotification.open(force = true)
+                                val updatedGameInfo = InfoPopup.load(this.stage) {
+                                    game.onlineMultiplayer.downloadGame(it.gameInfo.gameId)
+                                }
+                                if (updatedGameInfo != null) {
+                                    Concurrency.runOnNonDaemonThreadPool {
+                                        game.loadGame(updatedGameInfo)
+                                        Concurrency.runOnGLThread {
+                                            UncivGame.Current.notifyTurnStarted()
+                                        }
+                                    }
+                                }
+                            }
+                            updateNotification.equalizeLastTwoButtonWidths()
+                            updateNotification.open()
+                        }
+                        popup.addOKButton("Switch to game") {
+                            popup.reuseWith("Working...")
+                            popup.open(force = true)
+                            it.gameInfo.isUpToDate = true
+                            Concurrency.run {
+                                UncivGame.Current.loadGame(it.gameInfo)
+                                Concurrency.runOnGLThread {
+                                    UncivGame.Current.notifyTurnStarted()
+                                }
+                            }
+                        }
+                        popup.equalizeLastTwoButtonWidths()
+                        popup.open(force = true)
+                    }
+                }
+            }
+
+            // Ensure a WebSocket connection is established for APIv2 games
+            if (game.onlineMultiplayer.isInitialized() && game.onlineMultiplayer.hasAuthentication() && game.onlineMultiplayer.apiVersion == ApiVersion.APIv2) {
+                Concurrency.run { game.onlineMultiplayer.api.ensureConnectedWebSocket() }
             }
         }
 
@@ -696,7 +765,11 @@ class WorldScreen(
     private fun updateMultiplayerStatusButton() {
         if (gameInfo.gameParameters.isOnlineMultiplayer || game.settings.multiplayer.statusButtonInSinglePlayer) {
             if (statusButtons.multiplayerStatusButton != null) return
-            statusButtons.multiplayerStatusButton = MultiplayerStatusButton(this, game.onlineMultiplayer.getGameByGameId(gameInfo.gameId))
+            if (game.onlineMultiplayer.isInitialized() && game.onlineMultiplayer.apiVersion == ApiVersion.APIv2) {
+                statusButtons.multiplayerStatusButton = MultiplayerStatusButtonV2(this, gameInfo.gameId, gameInfo.civilizations.filter { it.isMajorCiv() })
+            } else {
+                statusButtons.multiplayerStatusButton = MultiplayerStatusButtonV1(this, game.onlineMultiplayer.getGameByGameId(gameInfo.gameId))
+            }
         } else {
             if (statusButtons.multiplayerStatusButton == null) return
             statusButtons.multiplayerStatusButton = null

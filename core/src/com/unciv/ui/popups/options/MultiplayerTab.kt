@@ -5,31 +5,37 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.UncivGame
+import com.unciv.logic.multiplayer.ApiVersion
 import com.unciv.logic.multiplayer.OnlineMultiplayer
+import com.unciv.logic.multiplayer.apiv2.ApiException
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.models.UncivSound
 import com.unciv.models.metadata.GameSetting
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.format
 import com.unciv.ui.components.extensions.isEnabled
-import com.unciv.ui.components.input.onChange
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toGdxArray
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.onChange
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.popups.AuthPopup
+import com.unciv.ui.popups.InfoPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.options.SettingsSelect.SelectItem
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Concurrency
+import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
 import java.time.Duration
 import java.time.temporal.ChronoUnit
+import java.util.UUID
 
 fun multiplayerTab(
     optionsPopup: OptionsPopup
@@ -147,9 +153,23 @@ private fun addMultiplayerServerOptions(
     multiplayerServerTextField.programmaticChangeEvents = true
     val serverIpTable = Table()
 
+    if (UncivGame.Current.onlineMultiplayer.apiVersion == ApiVersion.APIv2) {
+        val multiplayerUsernameTextField = UncivTextField.create("Multiplayer username")
+        multiplayerUsernameTextField.text = settings.multiplayer.userName
+        multiplayerUsernameTextField.setTextFieldFilter { _, c -> c !in " \r\n\t\\" }
+        serverIpTable.add("Multiplayer username".toLabel()).colspan(2).row()
+        serverIpTable.add(multiplayerUsernameTextField)
+            .minWidth(optionsPopup.stageToShowOn.width / 2.5f)
+            .growX().padBottom(8f)
+        serverIpTable.add("Save username".toTextButton().onClick {
+            settings.multiplayer.userName = multiplayerUsernameTextField.text
+            settings.save()
+        }).padBottom(8f).row()
+    }
+
     serverIpTable.add("Server address".toLabel().onClick {
         multiplayerServerTextField.text = Gdx.app.clipboard.contents
-        }).colspan(2).row()
+    }).colspan(2).row()
     multiplayerServerTextField.onChange {
         val isCustomServer = OnlineMultiplayer.usesCustomServer()
         connectionToServerButton.isEnabled = isCustomServer
@@ -174,23 +194,90 @@ private fun addMultiplayerServerOptions(
             addGoodSizedLabel("Awaiting response...").row()
             open(true)
         }
-
-        successfullyConnectedToServer { connectionSuccess, authSuccess ->
-            if (connectionSuccess && authSuccess) {
-                popup.reuseWith("Success!", true)
-            } else if (connectionSuccess) {
-                popup.close()
-                AuthPopup(optionsPopup.stageToShowOn) {
-                    success -> popup.apply{
-                        reuseWith(if (success) "Success!" else "Failed!", true)
-                        open(true)
+        Concurrency.runOnNonDaemonThreadPool {
+            try {
+                val apiVersion = ApiVersion.detect(multiplayerServerTextField.text, suppress = false)
+                if (apiVersion == ApiVersion.APIv1) {
+                    val authSuccess = try {
+                        UncivGame.Current.onlineMultiplayer.authenticate(null)
+                    } catch (e: Exception) {
+                        Log.debug("Failed to authenticate: %s", e.localizedMessage)
+                        false
                     }
-                }.open(true)
-            } else {
-                popup.reuseWith("Failed!", true)
+                    if (!authSuccess) {
+                        Concurrency.runOnGLThread {
+                            popup.close()
+                            AuthPopup(optionsPopup.stageToShowOn) { success ->
+                                if (success) {
+                                    popup.reuseWith("Success! Detected $apiVersion!\nPlease wait...", false)
+                                    Concurrency.runOnNonDaemonThreadPool {
+                                        UncivGame.refreshOnlineMultiplayer()
+                                        Concurrency.runOnGLThread {
+                                            popup.reuseWith("Success! Detected $apiVersion!", true)
+                                        }
+                                    }
+                                } else {
+                                    popup.reuseWith("Failed!", true)
+                                }
+                                popup.open(true)
+                            }.open(true)
+                        }
+                    } else {
+                        Concurrency.runOnGLThread {
+                            popup.reuseWith("Success! Detected $apiVersion!\nPlease wait...", false)
+                        }
+                        Concurrency.runOnNonDaemonThreadPool {
+                            UncivGame.refreshOnlineMultiplayer()
+                            Concurrency.runOnGLThread {
+                                popup.reuseWith("Success! Detected $apiVersion!", true)
+                            }
+                        }
+                    }
+                } else if (apiVersion != null) {
+                    Concurrency.runOnGLThread {
+                        popup.reuseWith("Success! Detected $apiVersion!\nPlease wait...", false)
+                    }
+                    Concurrency.runOnNonDaemonThreadPool {
+                        UncivGame.refreshOnlineMultiplayer()
+                        Concurrency.runOnGLThread {
+                            popup.reuseWith("Success! Detected $apiVersion!", true)
+                        }
+                    }
+                } else {
+                    Log.debug("Api version detection: null")
+                    Concurrency.runOnGLThread {
+                        popup.reuseWith("Failed!", true)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.debug("Connectivity exception: %s", e.localizedMessage)
+                Concurrency.runOnGLThread {
+                    popup.reuseWith("Failed!", true)
+                }
             }
+            /*
+            successfullyConnectedToServer { connectionSuccess, authSuccess ->
+                if (connectionSuccess && authSuccess) {
+                    popup.reuseWith("Success!", true)
+                } else if (connectionSuccess) {
+                    if (UncivGame.Current.onlineMultiplayer.apiVersion != ApiVersion.APIv2) {
+                        popup.close()
+                        AuthPopup(optionsPopup.stageToShowOn) {
+                                success -> popup.apply{
+                            reuseWith(if (success) "Success!" else "Failed!", true)
+                            open(true)
+                        }
+                        }.open(true)
+                    } else {
+                        popup.reuseWith("Success!", true)
+                    }
+                } else {
+                    popup.reuseWith("Failed!", true)
+                }
+            }
+             */
         }
-    }).row()
+    }).colspan(2).row()
 
     if (UncivGame.Current.onlineMultiplayer.multiplayerServer.featureSet.authVersion > 0) {
         val passwordTextField = UncivTextField.create(
@@ -215,6 +302,65 @@ private fun addMultiplayerServerOptions(
         }
 
         serverIpTable.add(passwordStatusTable).colspan(2).row()
+    }
+
+    if (UncivGame.Current.onlineMultiplayer.apiVersion == ApiVersion.APIv2) {
+        val logoutButton = "Logout".toTextButton()
+        logoutButton.onClick {
+            // Setting the button text as user response isn't the most beautiful way, but the easiest
+            logoutButton.setText("Loading...".tr())
+            settings.multiplayer.passwords.remove(settings.multiplayer.server)
+            settings.save()
+            Concurrency.run {
+                try {
+                    UncivGame.Current.onlineMultiplayer.api.auth.logout()
+                    Concurrency.runOnGLThread {
+                        // Since logging out is not possible anyways afterwards, just disable the button action
+                        logoutButton.setText("Logout successfully".tr())
+                        logoutButton.onClick {  }
+                    }
+                } catch (e: ApiException) {
+                    Concurrency.runOnGLThread {
+                        logoutButton.setText(e.localizedMessage)
+                    }
+                }
+            }
+        }
+
+        val setUserIdButton = "Set user ID".toTextButton()
+        setUserIdButton.onClick {
+            val popup = Popup(optionsPopup.stageToShowOn)
+            popup.addGoodSizedLabel("You can restore a previous user ID here if you want to change back to another multiplayer server. Just insert your old user ID below or copy it from your clipboard. Note that changing the user ID has no effect for newer multiplayer servers, because it would be overwritten by login.").colspan(4).row()
+
+            val inputField = UncivTextField.create("User ID")
+            popup.add(inputField).growX().colspan(3)
+            popup.add("From clipboard".toTextButton().onClick {
+                inputField.text = Gdx.app.clipboard.contents
+            }).padLeft(10f).row()
+
+            popup.addCloseButton().colspan(2)
+            popup.addOKButton {
+                val newUserID = inputField.text
+                try {
+                    UUID.fromString(newUserID)
+                    Log.debug("Writing new user ID '%s'", newUserID)
+                    UncivGame.Current.settings.multiplayer.userId = newUserID
+                    UncivGame.Current.settings.save()
+                } catch (_: IllegalArgumentException) {
+                    InfoPopup(optionsPopup.stageToShowOn, "This user ID seems to be invalid.")
+                }
+            }.colspan(2).row()
+            popup.open(force = true)
+        }
+
+        val wrapper = Table()
+        if (UncivGame.Current.onlineMultiplayer.hasAuthentication()) {
+            wrapper.add(logoutButton).padRight(8f)
+            wrapper.add(setUserIdButton)
+        } else {
+            wrapper.add(setUserIdButton)
+        }
+        serverIpTable.add(wrapper).colspan(2).padTop(8f).row()
     }
 
     tab.add(serverIpTable).colspan(2).fillX().row()
@@ -252,6 +398,7 @@ private fun addTurnCheckerOptions(
     return turnCheckerSelect
 }
 
+/*
 private fun successfullyConnectedToServer(action: (Boolean, Boolean) -> Unit) {
     Concurrency.run("TestIsAlive") {
         try {
@@ -274,6 +421,7 @@ private fun successfullyConnectedToServer(action: (Boolean, Boolean) -> Unit) {
         }
     }
 }
+ */
 
 private fun setPassword(password: String, optionsPopup: OptionsPopup) {
     if (password.isBlank())

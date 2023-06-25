@@ -1,7 +1,9 @@
 package com.unciv.ui.screens.overviewscreen
 
 import com.badlogic.gdx.utils.Align
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.multiplayer.ApiVersion
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewTab.EmpireOverviewTabPersistableData
 import com.unciv.ui.components.input.KeyCharAndCode
@@ -69,6 +71,13 @@ enum class EmpireOverviewCategories(
         override fun createTab(viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?) =
                 NotificationsOverviewTable(viewingPlayer, overviewScreen, persistedData)
         override fun showDisabled(viewingPlayer: Civilization) = viewingPlayer.notifications.isEmpty() && viewingPlayer.notificationsLog.isEmpty()
+    },
+    Multiplayer("OtherIcons/Multiplayer", 'M', Align.top) {
+        override fun createTab(viewingPlayer: Civilization, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?) =
+                MultiplayerOverviewTable(viewingPlayer, overviewScreen, persistedData)
+        override fun testState(viewingPlayer: Civilization) =
+                if (UncivGame.Current.gameInfo?.gameParameters?.isOnlineMultiplayer == true && UncivGame.Current.onlineMultiplayer.apiVersion == ApiVersion.APIv2) EmpireOverviewTabState.Normal
+                else EmpireOverviewTabState.Hidden
     }
 
     ;

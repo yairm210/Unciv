@@ -16,18 +16,18 @@ import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.WrappableLabel
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.isEnabled
-import com.unciv.ui.components.input.keyShortcuts
-import com.unciv.ui.components.input.onActivation
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.setFontColor
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -307,7 +307,14 @@ class PlayerPickerTable(
      * @param player current player
      */
     private fun popupNationPicker(player: Player, noRandom: Boolean) {
-        NationPickerPopup(this, player, noRandom).open()
+        NationPickerPopup(
+            player,
+            civBlocksWidth,
+            previousScreen as BaseScreen,
+            previousScreen,
+            noRandom,
+            { getAvailablePlayerCivs(player.chosenCiv) }
+        ) { update() }.open()
         update()
     }
 

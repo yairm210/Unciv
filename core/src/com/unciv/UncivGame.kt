@@ -178,10 +178,12 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
         onlineMultiplayer = OnlineMultiplayer()
 
-        Concurrency.run {
+        Concurrency.runOnNonDaemonThreadPool {
+            onlineMultiplayer.initialize()  // actually produces first network traffic
+
             // Check if the server is available in case the feature set has changed
             try {
-                onlineMultiplayer.multiplayerServer.checkServerStatus()
+                onlineMultiplayer.checkServerStatus()
             } catch (ex: Exception) {
                 debug("Couldn't connect to server: " + ex.message)
             }
@@ -456,11 +458,14 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     override fun render() = wrappedCrashHandlingRender()
 
     override fun dispose() {
+        Log.debug("Disposing application")
         Gdx.input.inputProcessor = null // don't allow ANRs when shutting down, that's silly
         SoundPlayer.clearCache()
         if (::musicController.isInitialized) musicController.gracefulShutdown()  // Do allow fade-out
         // We stop the *in-game* multiplayer update, so that it doesn't keep working and A. we'll have errors and B. we'll have multiple updaters active
-        if (::onlineMultiplayer.isInitialized) onlineMultiplayer.multiplayerGameUpdater.cancel()
+        if (::onlineMultiplayer.isInitialized) {
+            onlineMultiplayer.dispose()
+        }
 
         val curGameInfo = gameInfo
         if (curGameInfo != null) {
@@ -540,6 +545,24 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         fun isCurrentInitialized() = this::Current.isInitialized
         fun isCurrentGame(gameId: String): Boolean = isCurrentInitialized() && Current.gameInfo != null && Current.gameInfo!!.gameId == gameId
         fun isDeepLinkedGameLoading() = isCurrentInitialized() && Current.deepLinkedMultiplayerGame != null
+
+        /**
+         * Replace the [onlineMultiplayer] instance in-place
+         *
+         * This might be useful if the server URL or other core values got changed.
+         * It will setup the new instance, replace the reference of [onlineMultiplayer]
+         * and dispose the old instance if everything went smoothly. Do not call
+         * this function from the GL thread, since it performs network operations.
+         */
+        suspend fun refreshOnlineMultiplayer() {
+            val oldMultiplayer = Current.onlineMultiplayer
+            val newMultiplayer = OnlineMultiplayer()
+            newMultiplayer.initialize()
+            oldMultiplayer.dispose()
+            Concurrency.runOnGLThread {
+                Current.onlineMultiplayer = newMultiplayer
+            }.join()
+        }
     }
 
     data class Version(

@@ -1,6 +1,7 @@
 package com.unciv.logic.multiplayer
 
 import com.unciv.UncivGame
+import java.util.UUID
 
 class FriendList {
     private val settings = UncivGame.Current.settings
@@ -18,6 +19,7 @@ class FriendList {
 
     data class Friend(val name: String, val playerID: String) {
         constructor() : this("", "")
+        constructor(name: String, playerUUID: UUID) : this(name, playerUUID.toString())
     }
 
     fun add(friendName: String, playerID: String): ErrorType {

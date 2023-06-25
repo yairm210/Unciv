@@ -6,15 +6,18 @@ import com.unciv.json.json
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.files.UncivFiles
+import com.unciv.logic.multiplayer.ApiVersion
 import com.unciv.logic.multiplayer.ServerFeatureSet
+import com.unciv.utils.Log
+import java.io.FileNotFoundException
 
 /**
  * Allows access to games stored on a server for multiplayer purposes.
- * Defaults to using UncivGame.Current.settings.multiplayerServer if fileStorageIdentifier is not given.
+ * Defaults to using [UncivGame.Current.settings.multiplayerServer] if `fileStorageIdentifier` is not given.
  *
  * For low-level access only, use [UncivGame.onlineMultiplayer] on [UncivGame.Current] if you're looking to load/save a game.
  *
- * @param fileStorageIdentifier must be given if UncivGame.Current might not be initialized
+ * @param fileStorageIdentifier is a server base URL and must be given if UncivGame.Current might not be initialized
  * @see FileStorage
  * @see UncivGame.Current.settings.multiplayerServer
  */
@@ -32,10 +35,22 @@ class OnlineMultiplayerServer(
             mapOf("Authorization" to settings.getAuthHeader())
         } else authenticationHeader
 
-        return if (serverUrl == Constants.dropboxMultiplayerServer) DropBox
-        else UncivServerFileStorage.apply {
-            serverUrl = this@OnlineMultiplayerServer.serverUrl
-            this.authHeader = authHeader
+        return if (serverUrl == Constants.dropboxMultiplayerServer) {
+            DropBox
+        } else {
+            if (!UncivGame.Current.onlineMultiplayer.isInitialized()) {
+                Log.debug("Uninitialized online multiplayer instance might result in errors later")
+            }
+            if (UncivGame.Current.onlineMultiplayer.apiVersion == ApiVersion.APIv2) {
+                if (!UncivGame.Current.onlineMultiplayer.hasAuthentication() && !UncivGame.Current.onlineMultiplayer.api.isAuthenticated()) {
+                    Log.error("User credentials not available, further execution may result in errors!")
+                }
+                return ApiV2FileStorage
+            }
+            UncivServerFileStorage.apply {
+                serverUrl = this@OnlineMultiplayerServer.serverUrl
+                this.authHeader = authHeader
+            }
         }
     }
 
@@ -59,13 +74,12 @@ class OnlineMultiplayerServer(
         return statusOk
     }
 
-
     /**
      * @return true if the authentication was successful or the server does not support authentication.
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      * @throws MultiplayerAuthException if the authentication failed
      */
-    fun authenticate(password: String?): Boolean {
+    suspend fun authenticate(password: String?): Boolean {
         if (featureSet.authVersion == 0) return true
 
         val settings = UncivGame.Current.settings.multiplayer
@@ -85,7 +99,7 @@ class OnlineMultiplayerServer(
      * @throws FileStorageRateLimitReached if the file storage backend can't handle any additional actions for a time
      * @throws MultiplayerAuthException if the authentication failed
      */
-    fun setPassword(password: String): Boolean {
+    suspend fun setPassword(password: String): Boolean {
         if (featureSet.authVersion > 0 && fileStorage().setPassword(newPassword = password)) {
             val settings = UncivGame.Current.settings.multiplayer
             settings.passwords[settings.server] = password
@@ -101,8 +115,13 @@ class OnlineMultiplayerServer(
      * @throws MultiplayerAuthException if the authentication failed
      */
     suspend fun tryUploadGame(gameInfo: GameInfo, withPreview: Boolean) {
-        val zippedGameInfo = UncivFiles.gameInfoToString(gameInfo, forceZip = true, updateChecksum = true)
-        fileStorage().saveFileData(gameInfo.gameId, zippedGameInfo)
+        // For APIv2 games, the JSON data needs to be valid JSON instead of minimal
+        val zippedGameInfo = if (UncivGame.Current.onlineMultiplayer.apiVersion == ApiVersion.APIv2) {
+            UncivFiles.gameInfoToPrettyString(gameInfo, useZip = true)
+        } else {
+            UncivFiles.gameInfoToString(gameInfo, forceZip = true, updateChecksum = true)
+        }
+        fileStorage().saveGameData(gameInfo.gameId, zippedGameInfo)
 
         // We upload the preview after the game because otherwise the following race condition will happen:
         // Current player ends turn -> Uploads Game Preview
@@ -128,7 +147,7 @@ class OnlineMultiplayerServer(
      */
     suspend fun tryUploadGamePreview(gameInfo: GameInfoPreview) {
         val zippedGameInfo = UncivFiles.gameInfoToString(gameInfo)
-        fileStorage().saveFileData("${gameInfo.gameId}_Preview", zippedGameInfo)
+        fileStorage().savePreviewData(gameInfo.gameId, zippedGameInfo)
     }
 
     /**
@@ -136,7 +155,7 @@ class OnlineMultiplayerServer(
      * @throws FileNotFoundException if the file can't be found
      */
     suspend fun tryDownloadGame(gameId: String): GameInfo {
-        val zippedGameInfo = fileStorage().loadFileData(gameId)
+        val zippedGameInfo = fileStorage().loadGameData(gameId)
         val gameInfo = UncivFiles.gameInfoFromString(zippedGameInfo)
         gameInfo.gameParameters.multiplayerServerUrl = UncivGame.Current.settings.multiplayer.server
         return gameInfo
@@ -147,7 +166,7 @@ class OnlineMultiplayerServer(
      * @throws FileNotFoundException if the file can't be found
      */
     suspend fun tryDownloadGamePreview(gameId: String): GameInfoPreview {
-        val zippedGameInfo = fileStorage().loadFileData("${gameId}_Preview")
+        val zippedGameInfo = fileStorage().loadPreviewData(gameId)
         return UncivFiles.gameInfoPreviewFromString(zippedGameInfo)
     }
 }

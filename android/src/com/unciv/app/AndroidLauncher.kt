@@ -6,7 +6,11 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.WorkManager
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
+import com.unciv.app.turncheck.Common
+import com.unciv.app.turncheck.WorkerV1
+import com.unciv.app.turncheck.WorkerV2
 import com.unciv.logic.files.UncivFiles
+import com.unciv.logic.multiplayer.ApiVersion
 import com.unciv.ui.components.Fonts
 import com.unciv.utils.Display
 import com.unciv.utils.Log
@@ -33,7 +37,7 @@ open class AndroidLauncher : AndroidApplication() {
         UncivFiles.preferExternalStorage = true
 
         // Create notification channels for Multiplayer notificator
-        MultiplayerTurnCheckWorker.createNotificationChannels(applicationContext)
+        Common.createNotificationChannels(applicationContext)
 
         copyMods()
 
@@ -70,23 +74,32 @@ open class AndroidLauncher : AndroidApplication() {
 
     override fun onPause() {
         val game = this.game!!
-        if (game.isInitialized
-                && game.gameInfo != null
-                && game.settings.multiplayer.turnCheckerEnabled
-                && game.files.getMultiplayerSaves().any()
-        ) {
-            MultiplayerTurnCheckWorker.startTurnChecker(
-                applicationContext, game.files, game.gameInfo!!, game.settings.multiplayer)
+        if (game.isInitialized) {
+            if (game.onlineMultiplayer.isInitialized() && game.onlineMultiplayer.apiVersion == ApiVersion.APIv2) {
+                try {
+                    WorkerV2.start(applicationContext, game.files, game.gameInfo, game.onlineMultiplayer, game.settings.multiplayer)
+                } catch (e: Exception) {
+                    android.util.Log.e(Common.LOG_TAG, "Error during WorkverV2.start of $this: $e\nMessage: ${e.localizedMessage}\n${e.stackTraceToString()}")
+                }
+            } else if (game.gameInfo != null && game.settings.multiplayer.turnCheckerEnabled && game.files.getMultiplayerSaves().any()) {
+                WorkerV1.startTurnChecker(applicationContext, game.files, game.gameInfo!!, game.settings.multiplayer)
+            }
+        }
+        if (game.onlineMultiplayer.isInitialized() && game.onlineMultiplayer.apiVersion == ApiVersion.APIv2) {
+            game.onlineMultiplayer.api.disableReconnecting()
         }
         super.onPause()
     }
 
     override fun onResume() {
+        if (game?.onlineMultiplayer?.isInitialized() == true && game?.onlineMultiplayer?.apiVersion == ApiVersion.APIv2) {
+            game?.onlineMultiplayer?.api?.enableReconnecting()
+        }
         try {
-            WorkManager.getInstance(applicationContext).cancelAllWorkByTag(MultiplayerTurnCheckWorker.WORK_TAG)
+            WorkManager.getInstance(applicationContext).cancelAllWorkByTag(Common.WORK_TAG)
             with(NotificationManagerCompat.from(this)) {
-                cancel(MultiplayerTurnCheckWorker.NOTIFICATION_ID_INFO)
-                cancel(MultiplayerTurnCheckWorker.NOTIFICATION_ID_SERVICE)
+                cancel(Common.NOTIFICATION_ID_INFO)
+                cancel(Common.NOTIFICATION_ID_SERVICE)
             }
         } catch (ignore: Exception) {
             /* Sometimes this fails for no apparent reason - the multiplayer checker failing to
