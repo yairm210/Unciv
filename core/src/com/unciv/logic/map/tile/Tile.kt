@@ -133,9 +133,6 @@ open class Tile : IsPartOfGameInfoSerialization {
 
     fun isHill() = baseTerrain == Constants.hill || terrainFeatures.contains(Constants.hill)
 
-    fun isMountain() = baseTerrain == Constants.mountain || terrainFeatures.contains(Constants.mountain)
-
-
     var hasBottomRightRiver = false
     var hasBottomRiver = false
     var hasBottomLeftRiver = false
