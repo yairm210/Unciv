@@ -1,3 +1,25 @@
+## 4.7.4
+
+Resolved  - Removing old buildings on enemy capital (when not last city) no longer crashes
+
+Resolved  - Concurrent modification fix for liberated city with multiple units in it
+
+Resolved  - Removed static wrapper functions from WorkerAutomation
+
+By SomeTroglodyte:
+- Notifications architectural update 
+- Fix ruleset error crash 
+- Mod name defense attempt II 
+- Make UncivGame.isInitialized inaccessible outside of the class hierarchy 
+
+Zoom in/out of the history charts  - By JackRainy
+
+By SeventhM:
+- Adding field for great person type 
+- Tech column validation and removing crashes from undefined building costs 
+
+More unit unique tests  - By xlenstra
+
 ## 4.7.3
 
 Linked Unit Types and Promotions in Civilopedia
