@@ -51,17 +51,27 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         for (tech in ruleset.technologies.values) {
             for (otherTech in ruleset.technologies.values) {
-                if (tech != otherTech && otherTech.column == tech.column && otherTech.row == tech.row)
-                    lines += "${tech.name} is in the same row as ${otherTech.name}!"
+                if (tech != otherTech && otherTech.column?.columnNumber == tech.column?.columnNumber && otherTech.row == tech.row)
+                    lines += "${tech.name} is in the same row and column as ${otherTech.name}!"
             }
 
             checkUniques(tech, lines, rulesetInvariant, tryFixUnknownUniques)
         }
 
+        for (techColumn in ruleset.techColumns){
+            if (techColumn.columnNumber < 0)
+                lines+= "Tech Column number ${techColumn.columnNumber} is negative"
+            if (techColumn.buildingCost == -1)
+                lines.add("Tech Column number ${techColumn.columnNumber} has no explicit building cost", RulesetErrorSeverity.Warning)
+            if (techColumn.wonderCost == -1)
+                lines.add("Tech Column number ${techColumn.columnNumber} has no explicit wonder cost", RulesetErrorSeverity.Warning)
+        }
+
         for (building in ruleset.buildings.values) {
             if (building.requiredTech == null && building.cost == -1 && !building.hasUnique(
                         UniqueType.Unbuildable))
-                lines += "${building.name} is buildable and therefore must either have an explicit cost or reference an existing tech!"
+                lines.add("${building.name} is buildable and therefore should either have an explicit cost or reference an existing tech!",
+                    RulesetErrorSeverity.Warning)
 
             checkUniques(building, lines, rulesetInvariant, tryFixUnknownUniques)
 
