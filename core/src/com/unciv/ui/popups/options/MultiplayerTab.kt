@@ -209,10 +209,13 @@ private fun addMultiplayerServerOptions(
                             popup.close()
                             AuthPopup(optionsPopup.stageToShowOn) { success ->
                                 if (success) {
+                                    popup.reuseWith("Success! Detected $apiVersion!\nPlease wait...", false)
                                     Concurrency.runOnNonDaemonThreadPool {
                                         UncivGame.refreshOnlineMultiplayer()
+                                        Concurrency.runOnGLThread {
+                                            popup.reuseWith("Success! Detected $apiVersion!", true)
+                                        }
                                     }
-                                    popup.reuseWith("Success! Detected $apiVersion!", true)
                                 } else {
                                     popup.reuseWith("Failed!", true)
                                 }
@@ -220,19 +223,25 @@ private fun addMultiplayerServerOptions(
                             }.open(true)
                         }
                     } else {
+                        Concurrency.runOnGLThread {
+                            popup.reuseWith("Success! Detected $apiVersion!\nPlease wait...", false)
+                        }
                         Concurrency.runOnNonDaemonThreadPool {
                             UncivGame.refreshOnlineMultiplayer()
-                        }
-                        Concurrency.runOnGLThread {
-                            popup.reuseWith("Success! Detected $apiVersion!", true)
+                            Concurrency.runOnGLThread {
+                                popup.reuseWith("Success! Detected $apiVersion!", true)
+                            }
                         }
                     }
                 } else if (apiVersion != null) {
                     Concurrency.runOnGLThread {
-                        popup.reuseWith("Success! Detected $apiVersion!", true)
+                        popup.reuseWith("Success! Detected $apiVersion!\nPlease wait...", false)
                     }
                     Concurrency.runOnNonDaemonThreadPool {
                         UncivGame.refreshOnlineMultiplayer()
+                        Concurrency.runOnGLThread {
+                            popup.reuseWith("Success! Detected $apiVersion!", true)
+                        }
                     }
                 } else {
                     Log.debug("Api version detection: null")

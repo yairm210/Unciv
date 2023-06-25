@@ -108,34 +108,46 @@ class OnlineMultiplayer: Disposable {
     private val lastAllGamesRefresh: AtomicReference<Instant?> = AtomicReference()
     private val lastCurGameRefresh: AtomicReference<Instant?> = AtomicReference()
 
-    val games: Set<OnlineMultiplayerGame> get() = savedGames.values.toSet()
-    val multiplayerGameUpdater: Job
+    val games: Set<OnlineMultiplayerGame>
+        get() = savedGames.values.toSet()
 
-    /** Server API auto-detection happens in the coroutine [initialize] */
-    lateinit var apiVersion: ApiVersion
+    /** Inspect this property to check the API version of the multiplayer server (the server
+     * API auto-detection happens in the coroutine [initialize], so you need to wait until
+     * this is finished, otherwise this property access will block or ultimatively throw a
+     * [UncivNetworkException] to avoid hanging forever when the network is down/very slow) */
+    val apiVersion: ApiVersion
+        get() {
+            if (apiVersionImpl != null) {
+                return apiVersionImpl!!
+            }
+
+            // Using directly blocking code below is fine, since it's enforced to await [initialize]
+            // anyways -- even though it will be cancelled by the second "timeout fallback" job to
+            // avoid blocking the calling function forever, so that it will "earlier" crash the game instead
+            val waitJob = Concurrency.run {
+                // Using an active sleep loop here is not the best way, but the simplest; it could be improved later
+                while (apiVersionImpl == null) {
+                    delay(20)
+                }
+            }
+            val cancelJob = Concurrency.run {
+                delay(2 * DEFAULT_REQUEST_TIMEOUT)
+                Log.debug("Cancelling the access to apiVersion, since $baseUrl seems to be too slow to respond")
+                waitJob.cancel()
+            }
+            Concurrency.runBlocking { waitJob.join() }
+            if (apiVersionImpl != null) {
+                cancelJob.cancel()
+                return apiVersionImpl!!
+            }
+            throw UncivNetworkException("Unable to detect the API version of [$baseUrl]: please check your network connectivity", null)
+        }
+    private var apiVersionImpl: ApiVersion? = null
 
     init {
-        /** We have 2 'async processes' that update the multiplayer games:
-         * A. This one, which as part of *this process* runs refreshes for all OS's
-         * B. MultiplayerTurnCheckWorker, which *as an Android worker* runs refreshes *even when the game is closed*.
-         *    Only for Android, obviously
-         */
-        multiplayerGameUpdater = flow<Unit> {
-            while (true) {
-                delay(500)
-
-                val currentGame = getCurrentGame()
-                val multiplayerSettings = UncivGame.Current.settings.multiplayer
-                val preview = currentGame?.preview
-                if (currentGame != null && (usesCustomServer() || preview == null || !preview.isUsersTurn())) {
-                    throttle(lastCurGameRefresh, multiplayerSettings.currentGameRefreshDelay, {}) { currentGame.requestUpdate() }
-                }
-
-                val doNotUpdate = if (currentGame == null) listOf() else listOf(currentGame)
-                throttle(lastAllGamesRefresh, multiplayerSettings.allGameRefreshDelay, {}) { requestUpdate(doNotUpdate = doNotUpdate) }
-            }
-        }.launchIn(CoroutineScope(Dispatcher.DAEMON))
-
+        // The purpose of handling this event here is to avoid de-serializing the GameInfo
+        // more often than really necessary. Other actors may just listen for MultiplayerGameCanBeLoaded
+        // instead of the "raw" UpdateGameData. Note that the Android turn checker ignores this rule.
         events.receive(UpdateGameData::class, null) {
             Concurrency.runOnNonDaemonThreadPool {
                 try {
@@ -160,15 +172,16 @@ class OnlineMultiplayer: Disposable {
      * You must await its completion before using the [api] and its related functionality.
      */
     suspend fun initialize() {
-        apiVersion = determineServerAPI()
-        Log.debug("Server at '$baseUrl' detected API version: $apiVersion")
-        checkServerStatus()
+        apiVersionImpl = ApiVersion.detect(baseUrl)
+        Log.debug("Server at '$baseUrl' detected API version: $apiVersionImpl")
         startPollChecker()
         featureSet = ServerFeatureSet()  // setting this here to fix problems for non-network games
-        isAliveAPIv1()  // this is called for any API version since it updates the featureSet implicitly
-        if (apiVersion == ApiVersion.APIv2) {
+        if (apiVersionImpl == ApiVersion.APIv1) {
+            isAliveAPIv1()
+        }
+        if (apiVersionImpl == ApiVersion.APIv2) {
             if (hasAuthentication()) {
-                apiImpl.initialize(Pair(settings.multiplayer.userName, settings.multiplayer.passwords[baseUrl]?:""))
+                apiImpl.initialize(Pair(settings.multiplayer.userName, settings.multiplayer.passwords[baseUrl] ?: ""))
             } else {
                 apiImpl.initialize()
             }
@@ -180,7 +193,7 @@ class OnlineMultiplayer: Disposable {
      * Determine whether the instance has been initialized
      */
     fun isInitialized(): Boolean {
-        return (this::featureSet.isInitialized) && (this::apiVersion.isInitialized) && (apiVersion != ApiVersion.APIv2 || apiImpl.isInitialized())
+        return (this::featureSet.isInitialized) && (apiVersionImpl != null) && (apiVersionImpl != ApiVersion.APIv2 || apiImpl.isInitialized())
     }
 
     /**
@@ -188,7 +201,8 @@ class OnlineMultiplayer: Disposable {
      */
     suspend fun awaitInitialized() {
         while (!isInitialized()) {
-            delay(1)
+            // Using an active sleep loop here is not the best way, but the simplest; it could be improved later
+            delay(20)
         }
     }
 
@@ -545,7 +559,13 @@ class OnlineMultiplayer: Disposable {
     }
 
     /**
-     * Start a background runner that periodically checks for new game updates ([ApiVersion.APIv0] and [ApiVersion.APIv1] only)
+     * Start a background runner that periodically checks for new game updates
+     * ([ApiVersion.APIv0] and [ApiVersion.APIv1] only)
+     *
+     * We have 2 'async processes' that update the multiplayer games:
+     * A. This one, which runs as part of *this process* and refreshes for all OS's
+     * B. MultiplayerTurnCheckWorker, which runs *as an Android worker* and refreshes
+     *   *even when the game is paused*. Only for Android, obviously.
      */
     private fun startPollChecker() {
         if (apiVersion in listOf(ApiVersion.APIv0, ApiVersion.APIv1)) {
