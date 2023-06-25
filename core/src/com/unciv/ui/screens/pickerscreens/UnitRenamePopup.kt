@@ -1,4 +1,4 @@
-package com.unciv.ui.screens.pickerscreens.promotion
+package com.unciv.ui.screens.pickerscreens
 
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.translations.tr

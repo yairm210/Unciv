@@ -1,4 +1,4 @@
-package com.unciv.ui.screens.pickerscreens.promotion
+package com.unciv.ui.screens.pickerscreens
 
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label

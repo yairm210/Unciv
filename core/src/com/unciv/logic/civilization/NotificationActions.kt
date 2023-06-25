@@ -9,7 +9,7 @@ import com.unciv.ui.screens.cityscreen.CityScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
-import com.unciv.ui.screens.pickerscreens.promotion.PromotionPickerScreen
+import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 

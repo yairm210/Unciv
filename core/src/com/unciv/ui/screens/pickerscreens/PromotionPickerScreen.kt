@@ -1,4 +1,4 @@
-package com.unciv.ui.screens.pickerscreens.promotion
+package com.unciv.ui.screens.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
@@ -21,7 +21,6 @@ import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
-import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.Concurrency
 import kotlinx.coroutines.delay
 import kotlin.math.abs
@@ -325,7 +324,7 @@ class PromotionPickerScreen(
         val isAmbiguous = node.pathIsAmbiguous && node.distanceToAdopted > 1 && tree.canBuyUpTo(node.promotion)
         val topLine = unit.displayName().tr() + when {
             node.isAdopted -> ""
-            isAmbiguous -> "{ }{- Path to [${node.promotion.name}] is ambiguous}".tr()
+            isAmbiguous -> " - {Path to [${node.promotion.name}] is ambiguous}".tr()
             !isPickable -> ""
             else -> path.joinToString(" → ", ": ") { it.name.tr() }
         }

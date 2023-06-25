@@ -28,7 +28,7 @@ import com.unciv.ui.components.Fonts
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.pickerscreens.ImprovementPickerScreen
-import com.unciv.ui.screens.pickerscreens.promotion.PromotionPickerScreen
+import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 
 object UnitActions {
 

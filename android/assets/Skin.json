@@ -374,7 +374,7 @@
             "selection": "selection"
         }
     },
-    "com.unciv.ui.screens.pickerscreens.promotion.PromotionScreenColors": {
+    "com.unciv.ui.screens.pickerscreens.PromotionScreenColors": {
         "default": {
             "default": "promotion-default",
             "selected": "promotion-selected",
