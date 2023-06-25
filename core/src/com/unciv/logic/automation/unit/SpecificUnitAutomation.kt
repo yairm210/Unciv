@@ -304,11 +304,8 @@ object SpecificUnitAutomation {
         }.mapNotNull { city ->
             val path = unit.movement.getShortestPath(city.getCenterTile())
             if (path.any() && path.size <= 5) city to path.size else null
-        }.minByOrNull { it.second }?.first
-
-        if (nearbyCityWithAvailableWonders == null) {
-            return false
-        }
+        }.minByOrNull { it.second }
+            ?.first ?: return false
 
         if (unit.currentTile == nearbyCityWithAvailableWonders.getCenterTile()) {
             val wonderToHurry =
@@ -317,11 +314,12 @@ object SpecificUnitAutomation {
                 0,
                 wonderToHurry.name
             )
-            UnitActions.getUnitActions(unit)
-                .first {
-                    it.type == UnitActionType.HurryBuilding
-                            || it.type == UnitActionType.HurryWonder }
-                .action!!.invoke()
+            unit.showAdditionalActions = false  // make sure getUnitActions doesn't skip the important ones
+            val unitAction = UnitActions.getUnitActions(unit).firstOrNull {
+                    it.type == UnitActionType.HurryBuilding || it.type == UnitActionType.HurryWonder
+                } ?: return false
+            if (unitAction.action == null) return false
+            unitAction.action.invoke()
             return true
         }
 
