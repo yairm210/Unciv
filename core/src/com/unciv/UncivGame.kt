@@ -137,7 +137,9 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     var worldScreen: WorldScreen? = null
         private set
 
-    var isInitialized = false
+    /** Flag used only during initialization until the end of [create] */
+    protected var isInitialized = false
+        private set
 
     /** A wrapped render() method that crashes to [CrashScreen] on a unhandled exception or error. */
     private val wrappedCrashHandlingRender = { super.render() }.wrapCrashHandlingUnit()
@@ -533,7 +535,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.7.3", 882)
+        val VERSION = Version("4.7.4", 883)
         //endregion
 
         lateinit var Current: UncivGame

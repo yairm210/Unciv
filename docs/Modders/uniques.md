@@ -334,7 +334,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "Unhappiness from number of Cities doubled"
+??? example  "[relativeAmount]% unhappiness from the number of cities"
+	Example: "[+20]% unhappiness from the number of cities"
+
 	Applicable to: Global
 
 ??? example  "[relativeAmount]% Unhappiness from [populationFilter] [cityFilter]"
@@ -342,8 +344,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "[relativeAmount]% of excess happiness converted to [stat]"
-	Example: "[+20]% of excess happiness converted to [Culture]"
+??? example  "[amount] Happiness from each type of luxury resource"
+	Example: "[3] Happiness from each type of luxury resource"
 
 	Applicable to: Global
 
@@ -352,8 +354,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "[amount] Happiness from each type of luxury resource"
-	Example: "[3] Happiness from each type of luxury resource"
+??? example  "[relativeAmount]% of excess happiness converted to [stat]"
+	Example: "[+20]% of excess happiness converted to [Culture]"
 
 	Applicable to: Global
 
@@ -1349,6 +1351,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Great Person - [comment]"
 	Example: "Great Person - [comment]"
+
+	Applicable to: Unit
+
+??? example  "Is part of Great Person group [comment]"
+	Example: "Is part of Great Person group [comment]"
 
 	Applicable to: Unit
 

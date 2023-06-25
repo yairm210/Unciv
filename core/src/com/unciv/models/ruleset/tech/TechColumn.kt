@@ -5,6 +5,6 @@ class TechColumn {
     lateinit var era: String
     var techs = ArrayList<Technology>()
     var techCost: Int = 0
-    var buildingCost: Int = 0
-    var wonderCost: Int = 0
+    var buildingCost: Int = -1
+    var wonderCost: Int = -1
 }

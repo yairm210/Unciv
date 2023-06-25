@@ -756,18 +756,24 @@ class Civilization : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun addNotification(text: String, location: Vector2, category: NotificationCategory, vararg notificationIcons: String) {
+    // region addNotification
+    fun addNotification(text: String, category: NotificationCategory, vararg notificationIcons: String) =
+        addNotification(text, null, category, *notificationIcons)
+
+    fun addNotification(text: String, location: Vector2, category: NotificationCategory, vararg notificationIcons: String) =
         addNotification(text, LocationAction(location), category, *notificationIcons)
-    }
 
-    fun addNotification(text: String, category: NotificationCategory, vararg notificationIcons: String) = addNotification(text, null, category, *notificationIcons)
+    fun addNotification(text: String, action: NotificationAction, category: NotificationCategory, vararg notificationIcons: String) =
+        addNotification(text, listOf(action), category, *notificationIcons)
 
-    fun addNotification(text: String, action: NotificationAction?, category: NotificationCategory, vararg notificationIcons: String) {
+    fun addNotification(text: String, actions: Sequence<NotificationAction>, category:NotificationCategory, vararg notificationIcons: String) =
+        addNotification(text, actions.asIterable(), category, *notificationIcons)
+
+    fun addNotification(text: String, actions: Iterable<NotificationAction>?, category: NotificationCategory, vararg notificationIcons: String) {
         if (playerType == PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
-        val arrayList = notificationIcons.toCollection(ArrayList())
-        notifications.add(Notification(text, arrayList,
-                if (action is LocationAction && action.locations.isEmpty()) null else action, category))
+        notifications.add(Notification(text, notificationIcons, actions, category))
     }
+    // endregion
 
     fun addCity(location: Vector2) {
         val newCity = CityFounder().foundCity(this, location)

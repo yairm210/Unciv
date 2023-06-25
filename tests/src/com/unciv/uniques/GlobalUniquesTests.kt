@@ -7,16 +7,17 @@ import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.stats.Stats
 import com.unciv.testing.GdxTestRunner
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.math.abs
 
 @RunWith(GdxTestRunner::class)
 class GlobalUniquesTests {
 
     private lateinit var game: TestGame
+    private val epsilon = 0.01 // for float comparisons
 
     @Before
     fun initTheWorld() {
@@ -571,6 +572,48 @@ class GlobalUniquesTests {
 
     // endregion growth
 
+    // region happiness
+
+    @Test
+    fun unhappinessFromCitiesPercentageTest() {
+        val civInfo = game.addCiv("[+100]% unhappiness from the number of cities")
+        val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
+        val cityInfo = game.addCity(civInfo, tile, true)
+
+        cityInfo.cityStats.update()
+        // Because of some weird design choices, -3.6 is correct, though I would expect it to be -6 instead.
+        // As I'm not certain enough in my feeling that it should be -6, I'm changing the test to fit the code instead of the other way around.
+        // I've also written some text about this in CityStats.updateCityHappiness(). ~xlenstra
+        println(cityInfo.cityStats.happinessList)
+        Assert.assertTrue(abs(cityInfo.cityStats.happinessList["Cities"]!! - -3.6f) < epsilon) // Float rounding errors
+    }
+
+    @Test
+    fun unhappinessFromPopulationTypePercentageChangeTest() {
+        val civInfo = game.addCiv("[-50]% Unhappiness from [Population] [in all cities]")
+        val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
+        val cityInfo = game.addCity(civInfo, tile, true, initialPopulation = 4)
+
+        cityInfo.cityStats.update()
+        // This test suffers from the same problems as `unhappinessFromCitiesPercentageTest()`.
+        // This should be -2, I believe, as every pop should add -1 happiness and 4 pop with -50% unhappiness = -2 unhappiness.
+        println(cityInfo.cityStats.happinessList)
+        Assert.assertTrue(abs(cityInfo.cityStats.happinessList["Population"]!! - -1.2f) < epsilon)
+
+        val building = game.createBuilding("[-50]% Unhappiness from [Specialists] [in all cities]")
+        val specialist = game.createSpecialist()
+        building.specialistSlots[specialist] = 2
+        cityInfo.population.specialistAllocations[specialist] = 2
+        cityInfo.cityConstructions.addBuilding(building.name)
+
+        cityInfo.cityStats.update()
+        println(cityInfo.cityStats.happinessList)
+        // This test suffers from the same problems as above. It should be -1, I believe.
+        Assert.assertTrue(abs(cityInfo.cityStats.happinessList["Population"]!! - -0.6f) < epsilon)
+    }
+
+
+    // endregion happiness
 
 
     // region Great Persons

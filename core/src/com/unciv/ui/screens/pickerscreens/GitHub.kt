@@ -94,7 +94,7 @@ object Github {
 
         val innerFolder = unzipDestination.list().first()
         // innerFolder should now be "$tempName/$repoName-$defaultBranch/" - use this to get mod name
-        val finalDestinationName = innerFolder.name().replace("-$defaultBranch", "").replace('-', ' ')
+        val finalDestinationName = innerFolder.name().replace("-$defaultBranch", "").repoNameToFolderName()
         // finalDestinationName is now the mod name as we display it. Folder name needs to be identical.
         val finalDestination = folderFileHandle.child(finalDestinationName)
 
@@ -452,6 +452,32 @@ object Github {
         modOptions.topics = repo.topics
         modOptions.updateDeprecations()
         json().toJson(modOptions, modOptionsFile)
+    }
+
+    private const val outerBlankReplacement = '='
+    // Github disallows **any** special chars and replaces them with '-' - so use something ascii the
+    // OS accepts but still is recognizable as non-original, to avoid confusion
+
+    /** Convert a [Repo] name to a local name for both display and folder name
+     *
+     *  Replaces '-' with blanks but ensures no leading or trailing blanks.
+     *  As mad modders know no limits, trailing "-" did indeed happen, causing things to break due to trailing blanks on a folder name.
+     *  As "test-" and "test" are different allowed repository names, trimmed blanks are replaced with one overscore per side.
+     */
+    fun String.repoNameToFolderName(): String {
+        var result = replace('-', ' ')
+        if (result.endsWith(' ')) result = result.trimEnd() + outerBlankReplacement
+        if (result.startsWith(' ')) result = outerBlankReplacement + result.trimStart()
+        return result
+    }
+
+    /** Inverse of [repoNameToFolderName] */
+    // As of this writing, only used for loadMissingMods
+    fun String.folderNameToRepoName(): String {
+        var result = replace(' ', '-')
+        if (result.endsWith(outerBlankReplacement)) result = result.trimEnd(outerBlankReplacement) + '-'
+        if (result.startsWith(outerBlankReplacement)) result = '-' + result.trimStart(outerBlankReplacement)
+        return result
     }
 }
 

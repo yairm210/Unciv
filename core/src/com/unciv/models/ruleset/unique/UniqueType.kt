@@ -156,11 +156,16 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     FoodConsumptionBySpecialists("[relativeAmount]% Food consumption by specialists [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
     /// Happiness
+    @Deprecated("As of 4.7.3", ReplaceWith("[+100]% unhappiness from the number of cities"))
     UnhappinessFromCitiesDoubled("Unhappiness from number of Cities doubled", UniqueTarget.Global),
+    UnhappinessFromCitiesPercentage("[relativeAmount]% unhappiness from the number of cities", UniqueTarget.Global),
+    // Todo: capitalization of 'Unhappiness' -> 'unhappiness'
     UnhappinessFromPopulationTypePercentageChange("[relativeAmount]% Unhappiness from [populationFilter] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    ExcessHappinessToGlobalStat("[relativeAmount]% of excess happiness converted to [stat]", UniqueTarget.Global),
-    RetainHappinessFromLuxury("Retain [relativeAmount]% of the happiness from a luxury after the last copy has been traded away", UniqueTarget.Global),
     BonusHappinessFromLuxury("[amount] Happiness from each type of luxury resource", UniqueTarget.Global),
+    // Todo: capitalization of 'happiness' -> 'Happiness'
+    RetainHappinessFromLuxury("Retain [relativeAmount]% of the happiness from a luxury after the last copy has been traded away", UniqueTarget.Global),
+    // Todo: capitalization of 'happiness' -> 'Happiness'
+    ExcessHappinessToGlobalStat("[relativeAmount]% of excess happiness converted to [stat]", UniqueTarget.Global),
 
     /// Unit Production
     CannotBuildUnits("Cannot build [baseUnitFilter] units", UniqueTarget.Global),
@@ -527,6 +532,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     // Hurried means: sped up using great engineer/scientist ability, so this is in some sense a unit unique that should be here
     CannotBeHurried("Cannot be hurried", UniqueTarget.Building, UniqueTarget.Tech),
     GreatPerson("Great Person - [comment]", UniqueTarget.Unit),
+    GPPointPool("Is part of Great Person group [comment]", UniqueTarget.Unit),
 
     //endregion
 

@@ -78,4 +78,5 @@ class AndroidGame(private val activity: Activity) : UncivGame() {
         }
     }
 
+    fun isInitializedProxy() = super.isInitialized
 }

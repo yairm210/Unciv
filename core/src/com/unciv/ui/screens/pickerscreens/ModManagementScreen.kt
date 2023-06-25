@@ -45,6 +45,7 @@ import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
+import com.unciv.ui.screens.pickerscreens.Github.repoNameToFolderName
 import com.unciv.ui.screens.pickerscreens.ModManagementOptions.SortType
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
@@ -258,7 +259,7 @@ class ModManagementScreen(
 
         for (repo in repoSearch.items) {
             if (stopBackgroundTasks) return
-            repo.name = repo.name.replace('-', ' ')
+            repo.name = repo.name.repoNameToFolderName()
 
             if (onlineModInfo.containsKey(repo.name))
                 continue // we already got this mod in a previous download, since one has been added in between

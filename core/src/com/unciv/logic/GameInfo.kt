@@ -8,6 +8,7 @@ import com.unciv.logic.BackwardCompatibility.convertEncampmentData
 import com.unciv.logic.BackwardCompatibility.convertFortify
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
 import com.unciv.logic.BackwardCompatibility.migrateToTileHistory
+import com.unciv.logic.BackwardCompatibility.migrateGreatPersonPools
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.GameInfo.Companion.CURRENT_COMPATIBILITY_NUMBER
 import com.unciv.logic.GameInfo.Companion.FIRST_WITHOUT
@@ -36,6 +37,7 @@ import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
+import com.unciv.ui.screens.pickerscreens.Github.repoNameToFolderName
 import com.unciv.ui.screens.savescreens.Gzip
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.DebugUtils
@@ -527,8 +529,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         else
             "[$positionsCount] sources of [$resourceName] revealed, e.g. near [${chosenCity.name}]"
 
-        return Notification(text, arrayListOf("ResourceIcons/$resourceName"),
-            LocationAction(positions), NotificationCategory.General)
+        return Notification(text, arrayOf("ResourceIcons/$resourceName"),
+            LocationAction(positions).asIterable(), NotificationCategory.General)
     }
 
     // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)
@@ -538,6 +540,14 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         // [TEMPORARY] Convert old saves to newer ones by moving base rulesets from the mod list to the base ruleset field
         convertOldSavesToNewSaves()
+
+        // Cater for the mad modder using trailing '-' in their repo name - convert the mods list so
+        // it requires our new, Windows-safe local name (no trailing blanks)
+        for ((oldName, newName) in gameParameters.mods.map { it to it.repoNameToFolderName() }) {
+            if (newName == oldName) continue
+            gameParameters.mods.remove(oldName)
+            gameParameters.mods.add(newName)
+        }
 
         ruleset = RulesetCache.getComplexRuleset(gameParameters)
 
@@ -602,6 +612,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         guaranteeUnitPromotions()
 
         migrateToTileHistory()
+
+        migrateGreatPersonPools()
     }
 
     private fun updateCivilizationState() {
