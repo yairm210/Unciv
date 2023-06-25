@@ -14,7 +14,11 @@ import com.unciv.logic.event.EventBus
 import com.unciv.logic.files.IncompatibleGameInfoVersionException
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.apiv2.ApiV2
+import com.unciv.logic.multiplayer.apiv2.DEFAULT_REQUEST_TIMEOUT
+import com.unciv.logic.multiplayer.apiv2.IncomingChatMessage
+import com.unciv.logic.multiplayer.apiv2.UncivNetworkException
 import com.unciv.logic.multiplayer.apiv2.UpdateGameData
+import com.unciv.logic.multiplayer.storage.ApiV2FileStorage
 import com.unciv.logic.multiplayer.storage.FileStorageRateLimitReached
 import com.unciv.logic.multiplayer.storage.MultiplayerAuthException
 import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
@@ -75,14 +79,21 @@ class OnlineMultiplayer: Disposable {
 
     // Updating the multiplayer server URL in the Api is out of scope, just drop this class and create a new one
     val baseUrl = UncivGame.Current.settings.multiplayer.server
-    private val apiImpl = ApiV2(baseUrl)
+
+    /**
+     * Access the [ApiV2] instance only after [initialize] has been completed, otherwise
+     * it will block until [initialize] has finished (which may take very long for high
+     * latency networks). Accessing this property when the [apiVersion] is **not**
+     * [ApiVersion.APIv2] will yield an [UncivShowableException] that the it's not supported.
+     */
     val api: ApiV2
         get() {
-            if (Concurrency.runBlocking { apiImpl.isCompatible() } == true) {
+            if (Concurrency.runBlocking { awaitInitialized(); apiImpl.isCompatible() } == true) {
                 return apiImpl
             }
-            throw UncivShowableException("Unsupported server API: $baseUrl")
+            throw UncivShowableException("Unsupported server API: [$baseUrl]")
         }
+    private val apiImpl = ApiV2(baseUrl)
 
     private val files = UncivGame.Current.files
     val multiplayerServer = OnlineMultiplayerServer()

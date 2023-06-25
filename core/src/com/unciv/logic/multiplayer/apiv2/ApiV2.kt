@@ -6,8 +6,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.event.Event
 import com.unciv.logic.event.EventBus
 import com.unciv.logic.multiplayer.ApiVersion
-import com.unciv.logic.multiplayer.storage.ApiV2FileStorageEmulator
-import com.unciv.logic.multiplayer.storage.ApiV2FileStorageWrapper
+import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.logic.multiplayer.storage.MultiplayerFileNotFoundException
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
@@ -37,6 +36,11 @@ import java.util.concurrent.atomic.AtomicReference
 
 /**
  * Main class to interact with multiplayer servers implementing [ApiVersion.ApiV2]
+ *
+ * Do not directly initialize this class, but use [OnlineMultiplayer] instead,
+ * which will provide access via [OnlineMultiplayer.api] if everything has been set up.
+ *
+ *
  */
 class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
 
@@ -110,8 +114,6 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
                 }
             }
         }
-        ApiV2FileStorageWrapper.storage = ApiV2FileStorageEmulator(this)
-        ApiV2FileStorageWrapper.api = this
         initialized = true
     }
 
@@ -158,7 +160,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
     /**
      * Determine if the remote server is compatible with this API implementation
      *
-     * This currently only checks the endpoints /api/version and /api/v2/ws.
+     * This currently only checks the endpoints `/api/version` and `/api/v2/ws`.
      * If the first returns a valid [VersionResponse] and the second a valid
      * [ApiErrorResponse] for being not authenticated, then the server API
      * is most likely compatible. Otherwise, if 404 errors or other unexpected

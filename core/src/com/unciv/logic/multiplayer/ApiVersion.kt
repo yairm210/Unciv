@@ -17,6 +17,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.URLParserException
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
@@ -64,8 +65,12 @@ enum class ApiVersion {
          * If set, throwing *any* errors is forbidden, so it returns null, otherwise the
          * detected [ApiVersion] is returned or the exception is thrown.
          *
+         * Note that the [baseUrl] must include the protocol (either `http://` or `https://`).
+         *
          * @throws UncivNetworkException: thrown for any kind of network error
-         *   or de-serialization problems (ony when [suppress] is false)
+         *   or de-serialization problems (only when [suppress] is false)
+         * @throws URLParserException: thrown for invalid [baseUrl] which is
+         *   not [Constants.dropboxMultiplayerServer]
          */
         suspend fun detect(baseUrl: String, suppress: Boolean = true, timeout: Long? = null): ApiVersion? {
             if (baseUrl == Constants.dropboxMultiplayerServer) {
@@ -109,7 +114,6 @@ enum class ApiVersion {
                 }
                 try {
                     val serverFeatureSet: ServerFeatureSet = json().fromJson(ServerFeatureSet::class.java, response1.bodyAsText())
-                    // val serverFeatureSet: ServerFeatureSet = response1.body()
                     Log.debug("Detected APIv1 at %s: %s", fixedBaseUrl, serverFeatureSet)
                     client.close()
                     return APIv1
@@ -140,6 +144,7 @@ enum class ApiVersion {
                 }
             }
 
+            Log.debug("Unable to detect the API version at %s", fixedBaseUrl)
             client.close()
             return null
         }

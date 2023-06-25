@@ -52,7 +52,6 @@ class OnlineMultiplayerServer(
                 this.authHeader = authHeader
             }
         }
-
     }
 
     /**

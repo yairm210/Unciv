@@ -183,7 +183,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
             // Check if the server is available in case the feature set has changed
             try {
-                onlineMultiplayer.multiplayerServer.checkServerStatus()
+                onlineMultiplayer.checkServerStatus()
             } catch (ex: Exception) {
                 debug("Couldn't connect to server: " + ex.message)
             }
@@ -464,7 +464,6 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         if (::musicController.isInitialized) musicController.gracefulShutdown()  // Do allow fade-out
         // We stop the *in-game* multiplayer update, so that it doesn't keep working and A. we'll have errors and B. we'll have multiple updaters active
         if (::onlineMultiplayer.isInitialized) {
-            onlineMultiplayer.multiplayerGameUpdater.cancel()
             onlineMultiplayer.dispose()
         }
 
@@ -550,35 +549,19 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         /**
          * Replace the [onlineMultiplayer] instance in-place
          *
-         * This might be useful if the server URL or other core values
-         * got changed. This is a blocking operation.
+         * This might be useful if the server URL or other core values got changed.
+         * It will setup the new instance, replace the reference of [onlineMultiplayer]
+         * and dispose the old instance if everything went smoothly. Do not call
+         * this function from the GL thread, since it performs network operations.
          */
-        fun refreshOnlineMultiplayer() {
-            val mp = Concurrency.runBlocking {
-                val newMultiplayer = OnlineMultiplayer()
-                newMultiplayer.initialize()
-
-                // Check if the server is available in case the feature set has changed
-                try {
-                    newMultiplayer.checkServerStatus()
-                } catch (ex: Exception) {
-                    debug("Couldn't connect to server: " + ex.message)
-                }
-                newMultiplayer
-            }
-            if (mp != null) {
-                Concurrency.runBlocking {
-                    Concurrency.runOnGLThread {
-                        val oldMultiplayer = Current.onlineMultiplayer
-                        Current.onlineMultiplayer = mp
-                        Concurrency.run {
-                            oldMultiplayer.dispose()
-                        }
-                    }
-                }
-            } else {
-                Log.error("Failed to refresh online multiplayer")
-            }
+        suspend fun refreshOnlineMultiplayer() {
+            val oldMultiplayer = Current.onlineMultiplayer
+            val newMultiplayer = OnlineMultiplayer()
+            newMultiplayer.initialize()
+            oldMultiplayer.dispose()
+            Concurrency.runOnGLThread {
+                Current.onlineMultiplayer = newMultiplayer
+            }.join()
         }
     }
 
