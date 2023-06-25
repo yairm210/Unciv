@@ -532,6 +532,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     // Hurried means: sped up using great engineer/scientist ability, so this is in some sense a unit unique that should be here
     CannotBeHurried("Cannot be hurried", UniqueTarget.Building, UniqueTarget.Tech),
     GreatPerson("Great Person - [comment]", UniqueTarget.Unit),
+    GPPointPool("Is part of Great Person group [comment]", UniqueTarget.Unit),
 
     //endregion
 
