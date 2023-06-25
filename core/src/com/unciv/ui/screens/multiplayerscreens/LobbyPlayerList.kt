@@ -19,12 +19,21 @@ import com.unciv.ui.screens.newgamescreen.MapOptionsInterface
 import com.unciv.ui.screens.newgamescreen.NationPickerPopup
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import java.util.UUID
 
 /**
  * List of players in an APIv2 lobby screen
+ *
+ * The instantiation of this class **must** be on the GL thread or lead to undefined behavior and crashes.
+ *
+ * Implementation detail: the access to various internal attributes, e.g. [playersImpl],
+ * is not protected by locking mechanisms, since all accesses to them **must** go through
+ * the GL render thread, which is single-threaded (at least on Desktop; if you encounter
+ * any errors/crashes on other platforms, this means this assumption was probably wrong).
+ *
+ * See https://github.com/libgdx/libgdx/blob/master/backends/gdx-backend-android/src/com/badlogic/gdx/backends/android/AndroidGraphics.java#L496
+ * and https://github.com/libgdx/libgdx/blob/master/backends/gdx-backend-lwjgl3/src/com/badlogic/gdx/backends/lwjgl3/Lwjgl3Application.java#L207
+ * for details why it's certain that the coroutines are executed in-order (even though the order is not strictly defined).
  */
 class LobbyPlayerList(
     private val lobbyUUID: UUID,
@@ -35,18 +44,17 @@ class LobbyPlayerList(
     startPlayers: List<AccountResponse> = listOf(),
     private val base: MapOptionsInterface
 ) : Table() {
-    private val mutex = Mutex()  // used to synchronize changes to the players list
-    internal val players: MutableList<LobbyPlayer> = startPlayers.map { LobbyPlayer(it) }.toMutableList()
+    // Access to this attribute **must** go through the GL render thread for synchronization after init
+    private val playersImpl: MutableList<LobbyPlayer> = startPlayers.map { LobbyPlayer(it) }.toMutableList()
+    /** Don't cache the [players] property, but get it freshly from this class every time */
+    internal val players: List<LobbyPlayer>
+        get() = playersImpl.toList()
 
     private val addBotButton = "+".toLabel(Color.LIGHT_GRAY, 30)
         .apply { this.setAlignment(Align.center) }
         .surroundWithCircle(50f, color = Color.GRAY)
         .onClick {
-            Concurrency.runBlocking {
-                mutex.withLock {
-                    players.add(LobbyPlayer(null, Constants.random))
-                }
-            }
+            playersImpl.add(LobbyPlayer(null, Constants.random))
             recreate()
             update?.invoke()
         }
@@ -58,33 +66,30 @@ class LobbyPlayerList(
 
     /**
      * Add the specified player to the player list and recreate the view
+     *
+     * This method **must** be called on the GL thread or lead to undefined behavior and crashes.
      */
     internal fun addPlayer(player: AccountResponse): Boolean {
-        Concurrency.runBlocking {
-            mutex.withLock {
-                players.add(LobbyPlayer(player))
-            }
-        }
+        playersImpl.add(LobbyPlayer(player))
         recreate()
         return true
     }
 
     /**
      * Remove the specified player from the player list and recreate the view
+     *
+     * This method **must** be called on the GL thread or lead to undefined behavior and crashes.
      */
     internal fun removePlayer(player: UUID): Boolean {
-        var modified = false  // the default will always be overwritten
-        Concurrency.runBlocking {
-            mutex.withLock {
-                modified = players.removeAll { it.account?.uuid == player }
-            }
-        }
+        val modified = playersImpl.removeAll { it.account?.uuid == player }
         recreate()
         return modified
     }
 
     /**
      * Recreate the table of players based on the list of internal player representations
+     *
+     * This method **must** be called on the GL thread or lead to undefined behavior and crashes.
      */
     fun recreate() {
         clearChildren()
@@ -99,74 +104,51 @@ class LobbyPlayerList(
             return
         }
 
-        Concurrency.runBlocking {
-            mutex.withLock {
-                for (i in players.indices) {
-                    row()
-                    val movements = VerticalGroup()
-                    movements.space(5f)
-                    movements.addActor("↑".toLabel(fontSize = Constants.headingFontSize).onClick {
-                        if (Concurrency.runBlocking {
-                            var changed = false
-                            mutex.withLock {
-                                if (i > 0) {
-                                    changed = true
-                                    val above = players[i - 1]
-                                    players[i - 1] = players[i]
-                                    players[i] = above
-                                }
-                            }
-                            changed
-                        } == true) {
-                            recreate()
-                        }
-                    })
-                    movements.addActor("↓".toLabel(fontSize = Constants.headingFontSize).onClick {
-                        if (Concurrency.runBlocking {
-                            var changed = false
-                            mutex.withLock {
-                                if (i < players.size - 1) {
-                                    changed = true
-                                    val below = players[i + 1]
-                                    players[i + 1] = players[i]
-                                    players[i] = below
+        for (i in players.indices) {
+            row()
+            val movements = VerticalGroup()
+            movements.space(5f)
+            movements.addActor("↑".toLabel(fontSize = Constants.headingFontSize).onClick {
+                if (i > 0) {
+                    val above = players[i - 1]
+                    playersImpl[i - 1] = players[i]
+                    playersImpl[i] = above
+                    recreate()
+                }
+            })
+            movements.addActor("↓".toLabel(fontSize = Constants.headingFontSize).onClick {
+                if (i < players.size - 1) {
+                    val below = players[i + 1]
+                    playersImpl[i + 1] = players[i]
+                    playersImpl[i] = below
+                    recreate()
+                }
+            })
+            if (editable) {
+                add(movements)
+            }
 
-                                }
-                            }
-                            changed
-                        } == true) {
-                            recreate()
+            val player = players[i]
+            add(getNationTable(i))
+            if (player.isAI) {
+                add("AI".toLabel())
+            } else {
+                add(player.account!!.username.toLabel())
+            }
+
+            val kickButton = "❌".toLabel(Color.SCARLET, Constants.headingFontSize).apply { this.setAlignment(Align.center) }
+            // kickButton.surroundWithCircle(Constants.headingFontSize.toFloat(), color = color)
+            kickButton.onClick {
+                var success = true
+                Concurrency.run {
+                    if (!player.isAI) {
+                        success = true == InfoPopup.wrap(stage) {
+                            api.lobby.kick(lobbyUUID, player.account!!.uuid)
                         }
-                    })
-                    if (editable) {
-                        add(movements)
                     }
-
-                    val player = players[i]
-                    add(getNationTable(i))
-                    if (player.isAI) {
-                        add("AI".toLabel())
-                    } else {
-                        add(player.account!!.username.toLabel())
-                    }
-
-                    val kickButton = "❌".toLabel(Color.SCARLET, Constants.headingFontSize).apply { this.setAlignment(Align.center) }
-                    // kickButton.surroundWithCircle(Constants.headingFontSize.toFloat(), color = color)
-                    kickButton.onClick {
-                        var success = true
-                        if (!player.isAI) {
-                            Concurrency.runBlocking {
-                                success = true == InfoPopup.wrap(stage) {
-                                    api.lobby.kick(lobbyUUID, player.account!!.uuid)
-                                }
-                            }
-                        }
+                    Concurrency.runOnGLThread {
                         if (success) {
-                            Concurrency.runBlocking {
-                                mutex.withLock {
-                                    success = players.remove(player)
-                                }
-                            }
+                            success = playersImpl.remove(player)
                         } else {
                             base.updateTables()
                         }
@@ -174,15 +156,15 @@ class LobbyPlayerList(
                         recreate()
                         update?.invoke()
                     }
-                    if (editable && me != player.account?.uuid) {
-                        add(kickButton)
-                    }
-
-                    if (i < players.size - 1) {
-                        row()
-                        addSeparator(color = Color.DARK_GRAY).width(0.8f * width).pad(5f)
-                    }
                 }
+            }
+            if (editable && me != player.account?.uuid) {
+                add(kickButton)
+            }
+
+            if (i < players.size - 1) {
+                row()
+                addSeparator(color = Color.DARK_GRAY).width(0.8f * width).pad(5f)
             }
         }
 
@@ -202,24 +184,28 @@ class LobbyPlayerList(
 
     /**
      * Update game parameters to reflect changes in the list of players
+     *
+     * This method **must** be called on the GL thread or lead to undefined behavior and crashes.
      */
-    internal fun updateParameters() {
-        base.gameSetupInfo.gameParameters.players = players.map { it.to() }.toMutableList()
+    private fun updateParameters() {
+        base.gameSetupInfo.gameParameters.players = playersImpl.map { it.to() }.toMutableList()
     }
 
+    /**
+     * This method **must** be called on the GL thread or lead to undefined behavior and crashes.
+     */
     private fun reassignRemovedModReferences() {
-        Concurrency.runBlocking {
-            mutex.withLock {
-                for (player in players) {
-                    if (!base.ruleset.nations.containsKey(player.chosenCiv) || base.ruleset.nations[player.chosenCiv]!!.isCityState)
-                        player.chosenCiv = Constants.random
-                }
+        for (player in players) {
+            if (!base.ruleset.nations.containsKey(player.chosenCiv) || base.ruleset.nations[player.chosenCiv]!!.isCityState) {
+                player.chosenCiv = Constants.random
             }
         }
     }
 
     /**
      * Create clickable icon and nation name for some [LobbyPlayer] based on its index in [players], where clicking creates [NationPickerPopup]
+     *
+     * This method **must** be called on the GL thread or lead to undefined behavior and crashes.
      */
     private fun getNationTable(index: Int): Table {
         val player = players[index]
@@ -247,25 +233,23 @@ class LobbyPlayerList(
 
     /**
      * Refresh the view of the human players based on the [currentPlayers] response from the server
+     *
+     * This method **must** be called on the GL thread or lead to undefined behavior and crashes.
      */
     internal fun updateCurrentPlayers(currentPlayers: List<AccountResponse>) {
-        Concurrency.runBlocking {
-            mutex.withLock {
-                val humanPlayers = players.filter { !it.isAI }.map { it.account!! }
-                val toBeRemoved = mutableListOf<LobbyPlayer>()
-                for (oldPlayer in players) {
-                    if (!oldPlayer.isAI && oldPlayer.account!!.uuid !in currentPlayers.map { it.uuid }) {
-                        toBeRemoved.add(oldPlayer)
-                    }
-                }
-                for (r in toBeRemoved) {
-                    players.remove(r)
-                }
-                for (newPlayer in currentPlayers) {
-                    if (newPlayer !in humanPlayers) {
-                        players.add(LobbyPlayer(newPlayer))
-                    }
-                }
+        val humanPlayers = players.filter { !it.isAI }.map { it.account!! }
+        val toBeRemoved = mutableListOf<LobbyPlayer>()
+        for (oldPlayer in players) {
+            if (!oldPlayer.isAI && oldPlayer.account!!.uuid !in currentPlayers.map { it.uuid }) {
+                toBeRemoved.add(oldPlayer)
+            }
+        }
+        for (r in toBeRemoved) {
+            playersImpl.remove(r)
+        }
+        for (newPlayer in currentPlayers) {
+            if (newPlayer !in humanPlayers) {
+                playersImpl.add(LobbyPlayer(newPlayer))
             }
         }
         recreate()

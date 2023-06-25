@@ -89,6 +89,7 @@ class LobbyScreen(
         get() = "Lobby: [$lobbyName] [${lobbyPlayerList.players.size}]/[$maxPlayers]".toLabel(fontSize = Constants.headingFontSize)
 
     private val lobbyPlayerList: LobbyPlayerList
+    private var lobbyPlayerListInitialized = false
     private val chatMessageList = ChatMessageList(false, Pair(ChatRoomType.Lobby, lobbyName), lobbyChatUUID, game.onlineMultiplayer)
     private val disposables = mutableListOf<Disposable>()
 
@@ -108,9 +109,12 @@ class LobbyScreen(
         }
         gameSetupInfo.gameParameters.isOnlineMultiplayer = true
         lobbyPlayerList = LobbyPlayerList(lobbyUUID, owner == me, me.uuid, game.onlineMultiplayer.api, ::recreate, currentPlayers, this)
+        lobbyPlayerListInitialized = true
         gameOptionsTable = GameOptionsTable(this, multiplayerOnly = true, updatePlayerPickerRandomLabel = {}, updatePlayerPickerTable = { x ->
             Log.error("Updating player picker table with '%s' is not implemented yet.", x)
-            lobbyPlayerList.recreate()
+            Concurrency.runOnGLThread {
+                lobbyPlayerList.recreate()
+            }
         })
 
         changeLobbyNameButton.onActivation {
@@ -282,21 +286,16 @@ class LobbyScreen(
                 refreshedLobbyPlayers.add(owner)
             }
 
-            // This construction prevents null pointer exceptions when `refresh`
+            // This construction prevents later null pointer exceptions when `refresh`
             // is executed concurrently to the constructor of this class, because
-            // `lobbyPlayerList` might be uninitialized when this function is executed
-            while (true) {
-                try {
-                    lobbyPlayerList.removePlayer(owner.uuid)
-                    break
-                } catch (_: NullPointerException) {
-                    delay(1)
-                }
+            // `lobbyPlayerList` might be uninitialized when this point is reached
+            while (!lobbyPlayerListInitialized) {
+                delay(10)
             }
 
-            lobbyPlayerList.updateCurrentPlayers(refreshedLobbyPlayers)
-            lobbyName = lobby.name
             Concurrency.runOnGLThread {
+                lobbyPlayerList.updateCurrentPlayers(refreshedLobbyPlayers)
+                lobbyName = lobby.name
                 recreate()
             }
         }
@@ -361,6 +360,8 @@ class LobbyScreen(
 
     /**
      * Build a new [GameInfo], upload it to the server and start the game
+     *
+     * This function will detach the work and return almost instantly.
      */
     private fun startGame(lobbyStart: StartGameResponse) {
         Log.debug("Starting lobby '%s' (%s) as game %s", lobbyName, lobbyUUID, lobbyStart.gameUUID)
@@ -375,11 +376,11 @@ class LobbyScreen(
                 GameStarter.startNewGame(gameSetupInfo, lobbyStart.gameUUID.toString())
             } catch (exception: Exception) {
                 Log.error(
-                    "Failed to create a new GameInfo for game %s: %s",
+                    "Failed to create a new GameInfo for game %s: %s\n%s",
                     lobbyStart.gameUUID,
-                    exception
+                    exception,
+                    exception.stackTraceToString()
                 )
-                exception.printStackTrace()
                 Concurrency.runOnGLThread {
                     popup.apply {
                         reuseWith("It looks like we can't make a map with the parameters you requested!")
@@ -395,26 +396,32 @@ class LobbyScreen(
             Concurrency.runOnGLThread {
                 popup.reuseWith("Uploading...")
             }
-            runBlocking {
-                InfoPopup.wrap(stage) {
-                    game.onlineMultiplayer.createGame(gameInfo)
-                    true
-                }
-                Log.debug("Uploaded game %s", lobbyStart.gameUUID)
+            val uploadSuccess = InfoPopup.wrap(stage) {
+                game.onlineMultiplayer.createGame(gameInfo)
+                true
             }
-            Concurrency.runOnGLThread {
-                popup.close()
-                game.loadGame(gameInfo)
+            if (uploadSuccess != true) {
+                // If the upload was not successful, there is an InfoPopup behind the popup now,
+                // so we close the popup to show the InfoPopup behind it indicating an error
+                Concurrency.runOnGLThread {
+                    popup.close()
+                }
+            } else {
+                Log.debug("Successfully uploaded game %s", lobbyStart.gameUUID)
+                Concurrency.runOnGLThread {
+                    popup.close()
+                    game.loadGame(gameInfo)
+                }
             }
         }
     }
 
     override fun lockTables() {
-        Log.error("Not yet implemented")
+        Log.error("Not yet implemented: lockTables")
     }
 
     override fun unlockTables() {
-        Log.error("Not yet implemented")
+        Log.error("Not yet implemented: unlockTables")
     }
 
     override fun updateTables() {
