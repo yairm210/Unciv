@@ -102,11 +102,11 @@ class CityInfoConquestFunctions(val city: City){
             conqueringCiv.addNotification("Received [$goldPlundered] Gold for capturing [$name]",
                 getCenterTile().position, NotificationCategory.General, NotificationIcon.Gold)
 
-            val reconqueredCityWhileStillInResistance = previousOwner == conqueringCiv.civName && isInResistance()
+            val reconqueredCityWhileStillInResistance = previousOwner == receivingCiv.civName && isInResistance()
 
             destroyBuildingsOnCapture()
 
-            this@CityInfoConquestFunctions.moveToCiv(receivingCiv)
+            moveToCiv(receivingCiv)
 
             Battle.destroyIfDefeated(conqueredCiv, conqueringCiv)
 
@@ -326,8 +326,7 @@ class CityInfoConquestFunctions(val city: City){
             cityStats.update()
 
             // Update proximity rankings
-            civ.updateProximity(oldCiv,
-                oldCiv.updateProximity(civ))
+            civ.updateProximity(oldCiv, oldCiv.updateProximity(civ))
 
             // Update history
             city.getTiles().forEach { tile ->

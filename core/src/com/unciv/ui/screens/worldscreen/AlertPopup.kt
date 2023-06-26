@@ -381,7 +381,7 @@ class AlertPopup(
 
     private fun addQuestionAboutTheCity(cityName: String) {
         addGoodSizedLabel("What would you like to do with the city of [$cityName]?",
-            Constants.headingFontSize).padBottom(20f).row()
+            Constants.headingFontSize, hideIcons = true).padBottom(20f).row()
     }
 
     private fun addDestroyOption(destroyAction: () -> Unit) {
