@@ -195,6 +195,8 @@ class PolicyManager : IsPartOfGameInfoSerialization {
             if (branch.policies.count { isAdopted(it.name) } == branch.policies.size - 1) { // All done apart from branch completion
                 adopt(branch.policies.last(), true) // add branch completion!
             }
+            for(city in civInfo.cities)
+                city.reassignPopulationDeferred()
         }
 
         // Todo make this a triggerable unique for other objects

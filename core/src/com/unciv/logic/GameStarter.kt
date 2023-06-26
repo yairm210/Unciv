@@ -167,6 +167,18 @@ object GameStarter {
     private fun addCivTechs(gameInfo: GameInfo, ruleset: Ruleset, gameSetupInfo: GameSetupInfo) {
         for (civInfo in gameInfo.civilizations.filter { !it.isBarbarian() }) {
 
+        //Catch uniques from techs that should've triggered already
+            for(tech in civInfo.tech.techsResearched) {
+                for (unique in ruleset.technologies[tech]!!.uniqueObjects)
+                {
+                    if (unique.conditionals.none { it.type!!.targetTypes.contains(UniqueTarget.TriggerCondition) })
+                        UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+                }
+                for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponResearch))
+                    if (unique.conditionals.any { it.type == UniqueType.TriggerUponResearch && it.params[0] == tech })
+                        UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+            }
+
             if (!civInfo.isHuman())
                 for (tech in gameInfo.getDifficulty().aiFreeTechs)
                     civInfo.tech.addTechnology(tech)
@@ -417,6 +429,15 @@ object GameStarter {
 
         for (civ in gameInfo.civilizations.filter { !it.isBarbarian() && !it.isSpectator() }) {
             val startingLocation = startingLocations[civ]!!
+
+            //Trigger any global uniques that should triggered.
+            //We may need the starting location for some uniques, which is why we're doing it now
+            for (unique in ruleset.globalUniques.uniqueObjects)
+                if(unique.isTriggerable)
+                    UniqueTriggerActivation.triggerCivwideUnique(unique,civ, tile = startingLocation)
+            for (unique in civ.nation.uniqueObjects)
+                if(unique.isTriggerable)
+                    UniqueTriggerActivation.triggerCivwideUnique(unique,civ, tile = startingLocation)
 
             removeAncientRuinsNearStartingLocation(startingLocation)
             val startingUnits = getStartingUnitsForEraAndDifficulty(civ, gameInfo, ruleset, startingEra)

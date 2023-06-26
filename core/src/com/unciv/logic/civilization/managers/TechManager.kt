@@ -302,7 +302,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         updateTransientBooleans()
         for (city in civInfo.cities) {
             city.cityStats.update()
-            city.updateCitizens = true
+            city.reassignPopulationDeferred()   
         }
 
         if (!civInfo.isSpectator())
@@ -313,21 +313,15 @@ class TechManager : IsPartOfGameInfoSerialization {
             civInfo.popupAlerts.add(PopupAlert(AlertType.TechResearched, techName))
 
         val revealedResources = getRuleset().tileResources.values.filter { techName == it.revealedBy }
-        var mayNeedUpdateResources = revealedResources.isNotEmpty()  // default for AI
         if (civInfo.playerType == PlayerType.Human) {
-            mayNeedUpdateResources = false
             for (revealedResource in revealedResources) {
-                // notifyExploredResources scans the player's owned tiles and returns false if none
-                // found with a revealed resource - keep this knowledge to avoid the update call.
-                mayNeedUpdateResources = mayNeedUpdateResources ||
-                    civInfo.gameInfo.notifyExploredResources(civInfo, revealedResource.name, 5)
+                civInfo.gameInfo.notifyExploredResources(civInfo, revealedResource.name, 5)
             }
         }
-        // At least in the case of a human player hurrying research, this civ's resource availability
-        // may now be out of date - e.g. when an owned tile by luck already has an appropriate improvement.
-        // That can be seen on WorldScreenTopBar, so better update unless we know there's no resource change.
-        if (mayNeedUpdateResources)
-            civInfo.cache.updateCivResources()
+        // In the case of a player hurrying research, this civ's resource availability may now be out of date
+        // - e.g. when an owned tile by luck already has an appropriate improvement or when a tech provides a resource.
+        // That can be seen on WorldScreenTopBar, so better update.
+        civInfo.cache.updateCivResources()
 
         obsoleteOldUnits(techName)
 
