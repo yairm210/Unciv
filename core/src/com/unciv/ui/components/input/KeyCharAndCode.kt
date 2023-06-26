@@ -34,6 +34,7 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
     //** debug helper, but also used for tooltips */
     override fun toString(): String {
         return when {
+            this == UNKNOWN -> ""  // Makes tooltip code simpler. Sorry, debuggers.
             char == Char.MIN_VALUE -> GdxKeyCodeFixes.toString(code)
             this == ESC -> "ESC"
             char < ' ' -> "Ctrl-" + (char.toCode() + 64).makeChar()
