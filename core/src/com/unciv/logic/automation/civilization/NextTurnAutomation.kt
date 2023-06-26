@@ -391,6 +391,7 @@ object NextTurnAutomation {
             bfs.stepUntilDestination(highlyDesirableTile.key)
             val tilesThatNeedBuying =
                     bfs.getPathTo(highlyDesirableTile.key).filter { it.getOwner() != civInfo }
+                        .toList().reversed() // getPathTo is from destination to source
 
             // We're trying to acquire everything and revert if it fails, because of the difficult
             // way how tile acquisition cost is calculated. Everytime you buy a tile, the next one
