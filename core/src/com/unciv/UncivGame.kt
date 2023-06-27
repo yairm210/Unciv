@@ -79,6 +79,7 @@ object GUI {
     }
 
     fun isMyTurn(): Boolean {
+        if (!UncivGame.isCurrentInitialized() || !isWorldLoaded()) return false
         return UncivGame.Current.worldScreen!!.isPlayersTurn
     }
 

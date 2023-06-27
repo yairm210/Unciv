@@ -276,7 +276,7 @@ class TechManager : IsPartOfGameInfoSerialization {
         addTechnology(techName)
     }
 
-    fun addTechnology(techName: String) {
+    fun addTechnology(techName: String, showNotification: Boolean = true) {
         val isNewTech = techsResearched.add(techName)
 
         // this is to avoid concurrent modification problems
@@ -305,7 +305,7 @@ class TechManager : IsPartOfGameInfoSerialization {
             city.reassignPopulationDeferred()   
         }
 
-        if (!civInfo.isSpectator())
+        if (!civInfo.isSpectator() && showNotification)
             civInfo.addNotification("Research of [$techName] has completed!", TechAction(techName),
                 NotificationCategory.General,
                 NotificationIcon.Science)
@@ -335,7 +335,7 @@ class TechManager : IsPartOfGameInfoSerialization {
                 MayaLongCountAction(), NotificationCategory.General, MayaCalendar.notificationIcon)
         }
 
-        moveToNewEra()
+        moveToNewEra(showNotification)
         updateResearchProgress()
     }
 
@@ -390,34 +390,36 @@ class TechManager : IsPartOfGameInfoSerialization {
         }
     }
 
-    private fun moveToNewEra() {
+    private fun moveToNewEra(showNotification: Boolean = true) {
         val previousEra = civInfo.getEra()
         updateEra()
         val currentEra = civInfo.getEra()
         if (previousEra != currentEra) {
-            if(!civInfo.isSpectator())
-                civInfo.addNotification(
-                    "You have entered the [$currentEra]!",
-                    NotificationCategory.General,
-                    NotificationIcon.Science
-                )
-            if (civInfo.isMajorCiv()) {
-                for (knownCiv in civInfo.getKnownCivs()) {
-                    knownCiv.addNotification(
-                        "[${civInfo.civName}] has entered the [$currentEra]!",
-                        NotificationCategory.General, civInfo.civName, NotificationIcon.Science
-                    )
-                }
-            }
-            for (policyBranch in getRuleset().policyBranches.values.filter {
-                it.era == currentEra.name && civInfo.policies.isAdoptable(it)
-            }) {
-                if (!civInfo.isSpectator())
+            if(showNotification) {
+                if(!civInfo.isSpectator())
                     civInfo.addNotification(
-                        "[${policyBranch.name}] policy branch unlocked!",
+                        "You have entered the [$currentEra]!",
                         NotificationCategory.General,
-                        NotificationIcon.Culture
+                        NotificationIcon.Science
                     )
+                if (civInfo.isMajorCiv()) {
+                    for (knownCiv in civInfo.getKnownCivs()) {
+                        knownCiv.addNotification(
+                            "[${civInfo.civName}] has entered the [$currentEra]!",
+                            NotificationCategory.General, civInfo.civName, NotificationIcon.Science
+                        )
+                    }
+                }
+                for (policyBranch in getRuleset().policyBranches.values.filter {
+                    it.era == currentEra.name && civInfo.policies.isAdoptable(it)
+                }) {
+                    if (!civInfo.isSpectator())
+                        civInfo.addNotification(
+                            "[${policyBranch.name}] policy branch unlocked!",
+                            NotificationCategory.General,
+                            NotificationIcon.Culture
+                        )
+                }
             }
 
             val erasPassed = getRuleset().eras.values

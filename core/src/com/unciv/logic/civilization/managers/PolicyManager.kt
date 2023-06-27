@@ -195,8 +195,6 @@ class PolicyManager : IsPartOfGameInfoSerialization {
             if (branch.policies.count { isAdopted(it.name) } == branch.policies.size - 1) { // All done apart from branch completion
                 adopt(branch.policies.last(), true) // add branch completion!
             }
-            for(city in civInfo.cities)
-                city.reassignPopulationDeferred()
         }
 
         // Todo make this a triggerable unique for other objects
@@ -216,7 +214,10 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         civInfo.cache.updateCivResources()
 
         // This ALSO has the side-effect of updating the CivInfo statForNextTurn so we don't need to call it explicitly
-        for (cityInfo in civInfo.cities) cityInfo.cityStats.update()
+        for (cityInfo in civInfo.cities) {
+            cityInfo.cityStats.update()
+            cityInfo.reassignPopulationDeferred()
+        }
 
         if (!canAdoptPolicy()) shouldOpenPolicyPicker = false
     }
