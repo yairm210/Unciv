@@ -21,8 +21,6 @@ import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
-import com.unciv.utils.Concurrency
-import kotlinx.coroutines.delay
 import kotlin.math.abs
 
 class PromotionPickerScreen(
