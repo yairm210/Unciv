@@ -161,6 +161,12 @@ class WorkerAutomation(
         }
 
         if (currentTile.improvementInProgress != null) return // we're working!
+
+        if (unit.cache.hasUniqueToCreateWaterImprovements) {
+            // Support Alpha Frontier-Style Workers that _also_ have the "May create improvements on water resources" unique
+            if (automateWorkBoats(unit)) return
+        }
+
         if (tryConnectingCities(unit)) return //nothing to do, try again to connect cities
 
         val citiesToNumberOfUnimprovedTiles = HashMap<String, Int>()
