@@ -65,6 +65,7 @@ class MapUnitCache(private val mapUnit: MapUnit) {
     var paradropRange = 0
 
     var hasUniqueToBuildImprovements = false    // not canBuildImprovements to avoid confusion
+    var hasUniqueToCreateWaterImprovements = false
 
     var hasStrengthBonusInRadiusUnique = false
 
@@ -113,6 +114,8 @@ class MapUnitCache(private val mapUnit: MapUnit) {
         )
 
         hasUniqueToBuildImprovements = mapUnit.hasUnique(UniqueType.BuildImprovements)
+        hasUniqueToCreateWaterImprovements = mapUnit.hasUnique(UniqueType.CreateWaterImprovements)
+
         canEnterForeignTerrain = mapUnit.hasUnique(UniqueType.CanEnterForeignTiles)
                 || mapUnit.hasUnique(UniqueType.CanEnterForeignTilesButLosesReligiousStrength)
 
