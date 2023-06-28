@@ -91,12 +91,7 @@ class UnitUpgradeMenu(
     }
 
     private fun doAllUpgrade() {
-        stage.addAction(
-            Actions.sequence(
-            Actions.run { SoundPlayer.play(unitAction.uncivSound) },
-            Actions.delay(0.2f),
-            Actions.run { SoundPlayer.play(unitAction.uncivSound) }
-        ))
+        SoundPlayer.playRepeated(unitAction.uncivSound)
         for (unit in allUpgradableUnits) {
             val otherAction = UnitActionsUpgrade.getUpgradeAction(unit)
             otherAction?.action?.invoke()
