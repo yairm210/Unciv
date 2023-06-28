@@ -120,7 +120,7 @@ class WorkerAutomation(
         val currentTile = unit.getTile()
         val tileToWork = findTileToWork(unit, tilesWhereWeWillBeCaptured)
 
-        if (civInfo.getWorkerAutomation().getPriority(tileToWork) < 3) { // building roads is more important
+        if (getPriority(tileToWork) < 3) { // building roads is more important
             if (tryConnectingCities(unit)) return
         }
 

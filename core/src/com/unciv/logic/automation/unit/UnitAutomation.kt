@@ -693,7 +693,7 @@ object UnitAutomation {
     }
 
     private fun tryTakeBackCapturedCity(unit: MapUnit): Boolean {
-        var capturedCities = unit.civ.getKnownCivs().asSequence()
+        var capturedCities = unit.civ.getKnownCivs() // This is a Sequence
                 .flatMap { it.cities.asSequence() }
                 .filter {
                     unit.civ.isAtWarWith(it.civ) &&
