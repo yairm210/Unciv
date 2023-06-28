@@ -72,7 +72,8 @@ class CityInfoConquestFunctions(val city: City){
 
             for (building in cityConstructions.getBuiltBuildings()) {
                 // Remove national wonders
-                if (building.isNationalWonder && !building.hasUnique(UniqueType.NotDestroyedWhenCityCaptured))
+                if (building.isNationalWonder && !building.hasUnique(UniqueType.NotDestroyedWhenCityCaptured)
+                    && building.name != capitalCityIndicator()) // If we have just made this city the capital, don't remove that
                     cityConstructions.removeBuilding(building.name)
 
                 // Check if we exceed MaxNumberBuildable for any buildings
@@ -292,9 +293,7 @@ class CityInfoConquestFunctions(val city: City){
             // Place palace for newCiv if this is the only city they have.
             // This needs to happen _before_ buildings are added or removed,
             // as any building change triggers a reevaluation of stats which assumes there to be a capital
-            if (newCiv.cities.size == 1) {
-                newCiv.moveCapitalTo(this)
-            }
+            if (newCiv.cities.size == 1) newCiv.moveCapitalTo(this)
 
             // Remove their free buildings from this city and remove free buildings provided by the city from their cities
             removeBuildingsOnMoveToCiv(oldCiv)
