@@ -3,142 +3,41 @@ package com.unciv.ui.screens.pickerscreens
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.BorderedTable
-import com.unciv.ui.components.extensions.colorFromRGB
-import com.unciv.ui.components.extensions.darken
+import com.unciv.ui.audio.SoundPlayer
 import com.unciv.ui.components.extensions.isEnabled
+import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onDoubleClick
-import com.unciv.ui.components.extensions.setFontColor
-import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
-import java.lang.Integer.max
+import com.unciv.utils.Concurrency
+import kotlinx.coroutines.delay
 import kotlin.math.abs
 
-class PromotionNode(val promotion: Promotion) {
-    var maxDepth = 0
-
-    /** How many level this promotion has */
-    var levels = 1
-
-    val successors: ArrayList<PromotionNode> = ArrayList()
-    val predecessors: ArrayList<PromotionNode> = ArrayList()
-
-    val baseName = getBasePromotionName()
-
-    fun isRoot() : Boolean {
-        return predecessors.isEmpty()
+class PromotionPickerScreen(
+    val unit: MapUnit,
+    private val onChange: (() -> Unit)? = null
+) : PickerScreen(), RecreateOnResize {
+    // Style stuff
+    private val colors = skin[PromotionScreenColors::class.java]
+    private val promotedLabelStyle = Label.LabelStyle(skin[Label.LabelStyle::class.java]).apply {
+        fontColor = colors.promotedText
     }
+    private val buttonCellMaxWidth: Float
+    private val buttonCellMinWidth: Float
 
-    fun calculateDepth(excludeNodes: ArrayList<PromotionNode>, currentDepth: Int) {
-        maxDepth = max(maxDepth, currentDepth)
-        excludeNodes.add(this)
-        successors.filter { !excludeNodes.contains(it) }.forEach { it.calculateDepth(excludeNodes,currentDepth+1) }
-    }
-
-    private fun getBasePromotionName(): String {
-        val nameWithoutBrackets = promotion.name.replace("[", "").replace("]", "")
-        val level = when {
-            nameWithoutBrackets.endsWith(" I") -> 1
-            nameWithoutBrackets.endsWith(" II") -> 2
-            nameWithoutBrackets.endsWith(" III") -> 3
-            else -> 0
-        }
-        return nameWithoutBrackets.dropLast(if (level == 0) 0 else level + 1)
-    }
-
-    class CustomComparator(
-        private val baseNode: PromotionNode
-    ) : Comparator<PromotionNode> {
-        override fun compare(a: PromotionNode, b: PromotionNode): Int {
-            val baseName = baseNode.baseName
-            val aName = a.baseName
-            val bName = b.baseName
-            return when (aName) {
-                baseName -> -1
-                bName -> 0
-                else -> 1
-            }
-        }
-    }
-
-}
-
-private class PromotionButton(
-    val node: PromotionNode,
-    val isPickable: Boolean = true,
-    val isPromoted: Boolean = false
-) : BorderedTable(
-    path="PromotionScreen/PromotionButton",
-    defaultBgShape = BaseScreen.skinStrings.roundedEdgeRectangleMidShape,
-    defaultBgBorder = BaseScreen.skinStrings.roundedEdgeRectangleMidBorderShape
-) {
-
-    var isSelected = false
-    val label = node.promotion.name.toLabel(hideIcons = true).apply {
-        wrap = false
-        setAlignment(Align.left)
-        setEllipsis(true)
-    }
-
-    init {
-
-        touchable = Touchable.enabled
-        borderSize = 5f
-
-        pad(5f)
-        align(Align.left)
-        add(ImageGetter.getPromotionPortrait(node.promotion.name)).padRight(10f)
-        add(label).left().maxWidth(130f)
-
-        updateColor()
-    }
-
-    fun updateColor() {
-
-        val color = when {
-            isSelected -> PromotionPickerScreen.Selected
-            isPickable -> PromotionPickerScreen.Pickable
-            isPromoted -> PromotionPickerScreen.Promoted
-            else -> PromotionPickerScreen.Default
-        }
-
-        bgColor = color
-
-        val textColor = when {
-            isSelected -> Color.WHITE
-            isPromoted -> PromotionPickerScreen.Promoted.cpy().darken(0.8f)
-            else -> Color.WHITE
-        }
-        label.setFontColor(textColor)
-    }
-
-}
-
-class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResize {
-
-    companion object Colors {
-        val Default: Color = Color.BLACK
-        val Selected: Color = colorFromRGB(72, 147, 175)
-        val Promoted: Color = colorFromRGB(255, 215, 0).darken(0.2f)
-        val Pickable: Color = colorFromRGB(28, 80, 0)
-        val Prerequisite: Color = colorFromRGB(14, 92, 86)
-    }
-
+    // Widgets
     private val promotionsTable = Table()
     private val promotionToButton = LinkedHashMap<String, PromotionButton>()
     private var selectedPromotion: PromotionButton? = null
@@ -150,138 +49,88 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
     private val canPromoteNow = canChangeState && canBePromoted &&
             unit.currentMovement > 0 && unit.attacksThisTurn == 0
 
+    // Logic
+    private val tree = PromotionTree(unit)
+
+
     init {
         setDefaultCloseAction()
 
         if (canPromoteNow) {
             rightSideButton.setText("Pick promotion".tr())
-            rightSideButton.onClick(UncivSound.Promote) {
-                if (selectedPromotion?.isPickable == true)
-                    acceptPromotion(selectedPromotion?.node)
+            rightSideButton.onClick(UncivSound.Silent) {
+                acceptPromotion(selectedPromotion)
             }
         } else {
             rightSideButton.isVisible = false
         }
 
-        descriptionLabel.setText(updateDescriptionLabel())
+        updateDescriptionLabel()
 
-        val availablePromotionsGroup = Table()
-        availablePromotionsGroup.defaults().pad(5f)
-
-        val unitType = unit.type
-        val promotionsForUnitType = unit.civ.gameInfo.ruleset.unitPromotions.values.filter {
-            it.unitTypes.contains(unitType.name) || unit.promotions.promotions.contains(it.name)
-        }
-        //Always allow the user to rename the unit as many times as they like.
-        val renameButton = "Choose name for [${unit.name}]".toTextButton()
-        renameButton.isEnabled = true
-
-        renameButton.onClick {
-            if (!canChangeState) return@onClick
-            UnitRenamePopup(
-                screen = this,
-                unit = unit,
-                actionOnClose = {
-                    game.replaceCurrentScreen(PromotionPickerScreen(unit))
+        if (canChangeState) {
+            //Always allow the user to rename the unit as many times as they like.
+            val renameButton = "Choose name for [${unit.name}]".toTextButton()
+            renameButton.onClick {
+                UnitRenamePopup(this, unit) {
+                    game.replaceCurrentScreen(recreate())
                 }
-            )
+            }
+            topTable.add(renameButton).pad(5f).row()
         }
-        availablePromotionsGroup.add(renameButton)
 
-        topTable.add(availablePromotionsGroup).row()
-        fillTable(promotionsForUnitType)
+        // Create all buttons without placing them yet, measure
+        buttonCellMaxWidth = ((stage.width - 80f) / tree.getMaxColumns())
+            .coerceIn(190f, 300f)
+        for (node in tree.allNodes())
+            promotionToButton[node.promotion.name] = getButton(tree, node)
+        buttonCellMinWidth = (promotionToButton.values.maxOfOrNull { it.prefWidth + 10f } ?: 0f)
+            .coerceIn(190f, buttonCellMaxWidth)
+
+        fillTable()
 
         displayTutorial(TutorialTrigger.Experience)
     }
 
-    private fun acceptPromotion(node: PromotionNode?) {
+    private fun acceptPromotion(button: PromotionButton?) {
         // if user managed to click disabled button, still do nothing
-        if (node == null) return
+        if (button == null || !button.isPickable) return
 
-        unit.promotions.addPromotion(node.promotion.name)
-        game.replaceCurrentScreen(recreate())
-    }
-
-    private fun fillTable(promotions: Collection<Promotion>) {
-        val map = LinkedHashMap<String, PromotionNode>()
-
-        val availablePromotions = unit.promotions.getAvailablePromotions()
-
-        // Create nodes
-        // Pass 1 - create nodes for all promotions
-        for (promotion in promotions)
-            map[promotion.name] = PromotionNode(promotion)
-
-        // Pass 2 - remove nodes which are unreachable (dependent only on absent promotions)
-        for (promotion in promotions) {
-            if (promotion.prerequisites.isNotEmpty()) {
-                val isReachable = promotion.prerequisites.any { map.containsKey(it) }
-                if (!isReachable)
-                    map.remove(promotion.name)
-            }
-        }
-
-        // Pass 3 - fill nodes successors/predecessors, based on promotions prerequisites
-        for (node in map.values) {
-            for (prerequisiteName in node.promotion.prerequisites) {
-                val prerequisiteNode = map[prerequisiteName]
-                if (prerequisiteNode != null) {
-                    node.predecessors.add(prerequisiteNode)
-                    prerequisiteNode.successors.add(node)
-                    // Prerequisite has the same base name -> +1 more level
-                    if (prerequisiteNode.baseName == node.baseName)
-                        prerequisiteNode.levels += 1
+        // Can't use stage.addAction as the screen is going to die immediately
+        val path = tree.getPathTo(button.node.promotion)
+        if (path.size == 1) {
+            Concurrency.runOnGLThread { SoundPlayer.play(UncivSound.Promote) }
+        } else {
+            Concurrency.runOnGLThread {
+                SoundPlayer.play(UncivSound.Promote)
+                Concurrency.run {
+                    delay(200)
+                    Concurrency.runOnGLThread { SoundPlayer.play(UncivSound.Promote) }
                 }
             }
         }
 
-        // Traverse each root node tree and calculate max possible depths of each node
-        for (node in map.values) {
-            if (node.isRoot())
-                node.calculateDepth(arrayListOf(node), 0)
-        }
+        for (promotion in path)
+            unit.promotions.addPromotion(promotion.name)
 
-        // For each non-root node remove all predecessors except the one with the least max depth.
-        // This is needed to compactify trees and remove circular dependencies (A -> B -> C -> A)
-        for (node in map.values) {
-            if (node.isRoot())
-                continue
+        onChange?.invoke()
+        game.replaceCurrentScreen(recreate())
+    }
 
-            // Choose best predecessor - the one with less depth
-            var best: PromotionNode? = null
-            for (predecessor in node.predecessors) {
-                if (best == null || predecessor.maxDepth < best.maxDepth)
-                    best = predecessor
-            }
-
-            // Remove everything else, leave only best
-            for (predecessor in node.predecessors)
-                predecessor.successors.remove(node)
-            node.predecessors.clear()
-            node.predecessors.add(best!!)
-            best.successors.add(node)
-        }
-
-        // Sort nodes successors so promotions with same base name go first
-        for (node in map.values) {
-            node.successors.sortWith(PromotionNode.CustomComparator(node))
-        }
+    private fun fillTable() {
+        val placedButtons = mutableSetOf<String>()
 
         // Create cell matrix
-        val maxColumns = map.size + 1
-        val maxRows = map.size + 1
-
-        val cellMatrix = ArrayList<ArrayList<Cell<Actor>>>()
-        for (y in 0..maxRows) {
-            cellMatrix.add(ArrayList())
-            for (x in 0..maxColumns) {
-                val cell = promotionsTable.add()
-                cellMatrix[y].add(cell)
+        val maxColumns = tree.getMaxColumns()
+        val maxRows = tree.getMaxRows()
+        val cellMatrix = Array(maxRows + 1) {
+            Array(maxColumns + 1) {
+                promotionsTable.add() as Cell<Actor?>
+            }.also {
+                promotionsTable.row()
             }
-            promotionsTable.row()
         }
 
-        /** Check whether cell is inhabited by actor already */
+        /** Check whether a horizontal range of cells is inhabited by any actor already */
         fun isTherePlace(row: Int, col: Int, levels: Int) : Boolean {
             for (i in 0 until levels) {
                 if (cellMatrix[row][col+i].actor != null)
@@ -290,24 +139,17 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
             return true
         }
 
-        /** Recursively place buttons for node and it's successors into free cells */
-        fun placeButton(col: Int, row: Int, node: PromotionNode) : Int {
+        /** Recursively place buttons for node and its successors into free cells */
+        fun placeButton(col: Int, row: Int, node: PromotionTree.PromotionNode) : Int {
             val name = node.promotion.name
             // If promotion button not yet placed
-            if (promotionToButton[name] == null) {
+            if (name !in placedButtons) {
                 // If place is free - we place button
                 if (isTherePlace(row, col, node.levels)) {
-                    val cell = cellMatrix[row][col]
-                    val isPromotionAvailable = node.promotion in availablePromotions
-                    val hasPromotion = unit.promotions.promotions.contains(name)
-                    val isPickable = canPromoteNow && isPromotionAvailable && !hasPromotion
-                    val button = getButton(promotions, node, isPickable, hasPromotion)
-                    promotionToButton[name] = button
-                    cell.setActor(button)
-                    cell.pad(5f)
-                    cell.padRight(20f)
-                    cell.minWidth(190f)
-                    cell.maxWidth(190f)
+                    cellMatrix[row][col].setActor(promotionToButton[name])
+                        .pad(5f).padRight(20f)
+                        .minWidth(buttonCellMinWidth).maxWidth(buttonCellMaxWidth)
+                    placedButtons += name
                 }
                 // If place is not free - try to find another in the next row
                 else {
@@ -315,79 +157,82 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
                 }
             }
 
-            // Filter successors who haven't been placed yet (to avoid circular dependencies)
+            // Filter children who haven't been placed yet (to avoid circular dependencies)
             // and try to place them in the next column.
+            // Note this materializes all intermediaries as Lists, but they're small
+            // Also note having placeButton with nointrivial side effecths in a chain isn't good practice,
+            // But the alternative is coding the max manually.
             // Return the max row this whole tree ever reached.
-            return node.successors.filter {
-                !promotionToButton.containsKey(it.promotion.name)
-            }.map {
-                placeButton(col+1, row, it)
-            }.maxOfOrNull { it }?: row
+            return node.children
+                .filter { it.promotion.name !in placedButtons }
+                .sortedBy { it.baseName != node.baseName }  // Prioritize getting groups in a row - relying on sensible json "column" isn't enough
+                .maxOfOrNull { placeButton(col + 1, row, it) }
+                ?: row
         }
 
         // Build each tree starting from root nodes
         var row = 0
-        for (node in map.values) {
-            if (node.isRoot()) {
-                row = placeButton(0, row, node)
-                // Each root tree should start from a completely empty row.
-                row += 1
-            }
+        for (node in tree.allRoots()) {
+            row = placeButton(0, row, node)
+            // Each root tree should start from a completely empty row.
+            row += 1
         }
 
         topTable.add(promotionsTable)
-
-        addConnectingLines()
-
+        addConnectingLines(emptySet())
     }
 
-    private fun getButton(allPromotions: Collection<Promotion>, node: PromotionNode,
-                          isPickable: Boolean = true, isPromoted: Boolean = false) : PromotionButton {
+    private fun getButton(tree: PromotionTree, node: PromotionTree.PromotionNode) : PromotionButton {
+        val isPickable = (!node.pathIsAmbiguous || node.distanceToAdopted == 1) && tree.canBuyUpTo(node.promotion)
 
-        val button = PromotionButton(
-            node = node,
-            isPromoted = isPromoted,
-            isPickable = isPickable
-        )
+        val button = PromotionButton(node, isPickable, promotedLabelStyle, buttonCellMaxWidth - 60f)
 
         button.onClick {
-            selectedPromotion?.isSelected = false
-            selectedPromotion?.updateColor()
             selectedPromotion = button
-            button.isSelected = true
-            button.updateColor()
+
+            val path = tree.getPathTo(button.node.promotion)
+            val pathAsSet = path.toSet()
+            val prerequisites = button.node.parents
 
             for (btn in promotionToButton.values)
-                btn.updateColor()
-            button.node.promotion.prerequisites.forEach { promotionToButton[it]?.apply {
-                if (!this.isPromoted)
-                    bgColor = Prerequisite }}
+                btn.updateColor(btn == selectedPromotion, pathAsSet, prerequisites)
 
             rightSideButton.isEnabled = isPickable
             rightSideButton.setText(node.promotion.name.tr())
-            descriptionLabel.setText(updateDescriptionLabel(node.promotion.getDescription(allPromotions)))
+            updateDescriptionLabel(isPickable, tree, node, path)
 
-            addConnectingLines()
+            addConnectingLines(pathAsSet)
         }
 
         if (isPickable)
-            button.onDoubleClick(UncivSound.Promote) {
-                acceptPromotion(node)
+            button.onDoubleClick(UncivSound.Silent) {
+                acceptPromotion(button)
             }
 
         return button
     }
 
-    private fun addConnectingLines() {
+    private fun addConnectingLines(path: Set<Promotion>) {
         promotionsTable.pack()
         scrollPane.updateVisualScroll()
 
         for (line in lines) line.remove()
         lines.clear()
 
+        fun addLine(x: Float, y: Float, width: Float, height: Float, color: Color) {
+            if (color.a == 0f) return
+            val line = ImageGetter.getWhiteDot()
+            line.setBounds(x, y, width, height)
+            line.color = color
+            promotionsTable.addActorAt(0, line)
+            lines.add(line)
+        }
+
         for (button in promotionToButton.values) {
-            for (prerequisite in button.node.promotion.prerequisites) {
+            val currentNode = button.node
+            for (prerequisite in currentNode.promotion.prerequisites) {
                 val prerequisiteButton = promotionToButton[prerequisite] ?: continue
+                val prerequisiteNode = prerequisiteButton.node
 
                 var buttonCoords = Vector2(0f, button.height / 2)
                 button.localToStageCoordinates(buttonCoords)
@@ -397,15 +242,16 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
                 prerequisiteButton.localToStageCoordinates(prerequisiteCoords)
                 promotionsTable.stageToLocalCoordinates(prerequisiteCoords)
 
+                val isNodeInPath = currentNode.promotion in path
+                val isSelectionPath = isNodeInPath &&
+                    (prerequisiteNode.isAdopted || prerequisiteNode.promotion in path)
                 val lineColor = when {
-                    button.isSelected -> Selected
-                    prerequisiteButton.node.baseName == button.node.baseName -> Color.WHITE.cpy()
-                    else -> Color.CLEAR
+                    isSelectionPath -> colors.selected
+                    isNodeInPath -> colors.pathToSelection
+                    prerequisiteNode.baseName == currentNode.baseName -> colors.groupLines
+                    else -> colors.otherLines
                 }
-                val lineSize = when {
-                    button.isSelected -> 4f
-                    else -> 2f
-                }
+                val lineSize = if (isSelectionPath) 4f else 2f
 
                 if (buttonCoords.x < prerequisiteCoords.x) {
                     val temp = buttonCoords.cpy()
@@ -413,67 +259,48 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
                     prerequisiteCoords = temp
                 }
 
-
+                val halfLineSize = lineSize / 2
                 if (buttonCoords.y != prerequisiteCoords.y) {
 
                     val deltaX = buttonCoords.x - prerequisiteCoords.x
                     val deltaY = buttonCoords.y - prerequisiteCoords.y
-                    val halfLength = deltaX / 2f
+                    val halfLength = deltaX / 2f + halfLineSize
 
-                    val line = ImageGetter.getWhiteDot().apply {
-                        width = halfLength+lineSize/2
-                        height = lineSize
-                        x = prerequisiteCoords.x
-                        y = prerequisiteCoords.y - lineSize / 2
-                    }
-                    val line1 = ImageGetter.getWhiteDot().apply {
-                        width = halfLength + lineSize/2
-                        height = lineSize
-                        x = buttonCoords.x - width
-                        y = buttonCoords.y - lineSize / 2
-                    }
-                    val line2 = ImageGetter.getWhiteDot().apply {
-                        width = lineSize
-                        height = abs(deltaY)
-                        x = buttonCoords.x - halfLength - lineSize / 2
-                        y = buttonCoords.y + (if (deltaY > 0f) -height-lineSize/2 else lineSize/2)
-                    }
-
-                    line.color = lineColor
-                    line1.color = lineColor
-                    line2.color = lineColor
-
-                    promotionsTable.addActor(line)
-                    promotionsTable.addActor(line1)
-                    promotionsTable.addActor(line2)
-
-                    line.toBack()
-                    line1.toBack()
-                    line2.toBack()
-
-                    lines.add(line)
-                    lines.add(line1)
-                    lines.add(line2)
-
+                    addLine(
+                        width = halfLength,
+                        height = lineSize,
+                        x = prerequisiteCoords.x,
+                        y = prerequisiteCoords.y - halfLineSize,
+                        color = lineColor
+                    )
+                    addLine(
+                        width = halfLength,
+                        height = lineSize,
+                        x = buttonCoords.x - halfLength,
+                        y = buttonCoords.y - halfLineSize,
+                        color = lineColor
+                    )
+                    addLine(
+                        width = lineSize,
+                        height = abs(deltaY),
+                        x = buttonCoords.x - halfLength,
+                        y = buttonCoords.y + (if (deltaY > 0f) -deltaY - halfLineSize else halfLineSize),
+                        color = lineColor
+                    )
                 } else {
-
-                    val line = ImageGetter.getWhiteDot().apply {
-                        width = buttonCoords.x - prerequisiteCoords.x
-                        height = lineSize
-                        x = prerequisiteCoords.x
-                        y = prerequisiteCoords.y - lineSize / 2
-                    }
-                    line.color = lineColor
-                    promotionsTable.addActor(line)
-                    line.toBack()
-                    lines.add(line)
-
+                    addLine(
+                        width = buttonCoords.x - prerequisiteCoords.x,
+                        height = lineSize,
+                        x = prerequisiteCoords.x,
+                        y = prerequisiteCoords.y - halfLineSize,
+                        color = lineColor
+                    )
                 }
             }
         }
 
         for (line in lines) {
-            if (line.color == Selected)
+            if (line.color == colors.selected || line.color == colors.pathToSelection)
                 line.zIndex = lines.size
         }
     }
@@ -484,18 +311,29 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen(), RecreateOnResiz
         scrollPane.updateVisualScroll()
     }
 
-    private fun updateDescriptionLabel(): String {
-        return unit.displayName().tr()
+    private fun updateDescriptionLabel() {
+        descriptionLabel.setText(unit.displayName().tr())
     }
 
-    private fun updateDescriptionLabel(promotionDescription: String): String {
-        var newDescriptionText = unit.displayName().tr()
-        newDescriptionText += "\n" + promotionDescription
-        return newDescriptionText
+    private fun updateDescriptionLabel(
+        isPickable: Boolean,
+        tree: PromotionTree,
+        node: PromotionTree.PromotionNode,
+        path: List<Promotion>
+    ) {
+        val isAmbiguous = node.pathIsAmbiguous && node.distanceToAdopted > 1 && tree.canBuyUpTo(node.promotion)
+        val topLine = unit.displayName().tr() + when {
+            node.isAdopted -> ""
+            isAmbiguous -> " - {Path to [${node.promotion.name}] is ambiguous}".tr()
+            !isPickable -> ""
+            else -> path.joinToString(" → ", ": ") { it.name.tr() }
+        }
+        val promotionText = node.promotion.getDescription(tree.possiblePromotions)
+        descriptionLabel.setText("$topLine\n$promotionText")
     }
 
     override fun recreate(): BaseScreen {
-        val newScreen = PromotionPickerScreen(unit)
+        val newScreen = PromotionPickerScreen(unit, onChange)
         newScreen.setScrollY(scrollPane.scrollY)
         return newScreen
     }

@@ -44,14 +44,16 @@ Remember, promotions can be "bought" with XP, but also granted by the unit type,
 
 Each promotion can have the following properties:
 
-| Attribute | Type | Optional | Notes |
-| --------- | ---- | -------- | ----- |
-| name | String | Required | See above for "I, II, III" progressions |
-| prerequisites | List | Default empty | Prerequisite promotions |
-| effect | String | Default empty | Deprecated, use uniques instead |
-| unitTypes | List | Default empty | The unit types for which this promotion applies as specified in [UnitTypes.json](#unittypesjson) |
-| uniques | List | Default empty | List of effects, [see here](../Modders/Unique-parameters.md#unit-uniques) |
-| civilopediaText | List | Default empty | see [civilopediaText chapter](Miscellaneous-JSON-files.md#civilopedia-text) |
+| Attribute       | Type   | Optional      | Notes                                                                                                                                                                                                                                                                          |
+|-----------------|--------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| name            | String | Required      | See above for "I, II, III" progressions                                                                                                                                                                                                                                        |
+| prerequisites   | List   | Default empty | Prerequisite promotions                                                                                                                                                                                                                                                        |
+| effect          | String | Default empty | Deprecated and ignored, use uniques instead                                                                                                                                                                                                                                    |
+| column          | Int    | Yes           | Determines placement order on the promotion picker screen. Name is historical, these coordinates no longer control placement directly. Promotions without coordinates are ensured to be placed last.  (…)                                                                      |
+| row             | Int    | Yes           | … In base mods without any coordinates, promotions without prerequisites are sorted alphabetically and placed top down, the rest of the screen will structure the dependencies logically. If your mod has a "Heal instantly", it is suggested to use row=0 to place it on top. |
+| unitTypes       | List   | Default empty | The unit types for which this promotion applies as specified in [UnitTypes.json](#unittypesjson)                                                                                                                                                                               |
+| uniques         | List   | Default empty | List of effects, [see here](../Modders/uniques.md#unit-uniques)                                                                                                                                                                                                                |
+| civilopediaText | List   | Default empty | see [civilopediaText chapter](Miscellaneous-JSON-files.md#civilopedia-text)                                                                                                                                                                                                    |
 
 ## UnitTypes.json
 

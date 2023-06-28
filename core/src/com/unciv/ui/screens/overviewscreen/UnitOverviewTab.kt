@@ -6,6 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
@@ -24,10 +26,10 @@ import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.darken
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toPrettyString
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -258,17 +260,22 @@ class UnitOverviewTab(
                 }
             }
 
-            if (unit.promotions.canBePromoted())
-                promotionsTable.add(
-                    ImageGetter.getImage("OtherIcons/Star").apply {
-                        color = if (GUI.isAllowedChangeState() && unit.currentMovement > 0f && unit.attacksThisTurn == 0)
-                                Color.GOLDENROD
-                            else Color.GOLDENROD.darken(0.25f)
-                    }
-                ).size(24f).padLeft(8f)
+            val canPromoteCell: Cell<Image>? =
+                if (unit.promotions.canBePromoted())
+                    promotionsTable.add(
+                        ImageGetter.getImage("OtherIcons/Star").apply {
+                            color = if (GUI.isAllowedChangeState() && unit.currentMovement > 0f && unit.attacksThisTurn == 0)
+                                    Color.GOLDENROD
+                                else Color.GOLDENROD.darken(0.25f)
+                        }
+                    ).size(24f).padLeft(8f)
+                else null
             promotionsTable.onClick {
                 if (unit.promotions.canBePromoted() || unit.promotions.promotions.isNotEmpty()) {
-                    game.pushScreen(PromotionPickerScreen(unit))
+                    game.pushScreen(PromotionPickerScreen(unit) {
+                        if (canPromoteCell != null && !unit.promotions.canBePromoted())
+                            canPromoteCell.size(0f).pad(0f).setActor(null)
+                    })
                 }
             }
             add(promotionsTable)
