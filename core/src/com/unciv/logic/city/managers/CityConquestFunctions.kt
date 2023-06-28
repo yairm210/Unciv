@@ -21,7 +21,7 @@ import kotlin.math.roundToInt
 import kotlin.random.Random
 
 /** Helper class for containing 200 lines of "how to move cities between civs" */
-class CityInfoConquestFunctions(val city: City){
+class CityConquestFunctions(val city: City){
     private val tileBasedRandom = Random(city.getCenterTile().position.toString().hashCode())
 
     private fun getGoldForCapturingCity(conqueringCiv: Civilization): Int {

@@ -20,12 +20,12 @@ import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.colorFromRGB
-import com.unciv.ui.components.input.onActivation
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toGroup
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
@@ -38,7 +38,7 @@ class CityStatsTable(private val cityScreen: CityScreen): Table() {
     private val upperTable = Table() // fixed position table
     private val lowerTable = Table() // table that will be in the ScrollPane
     private val lowerPane: ScrollPane
-    private val cityInfo = cityScreen.city
+    private val city = cityScreen.city
     private val lowerCell: Cell<ScrollPane>
 
     private val detailedStatsButton = "Stats".toTextButton().apply {
@@ -78,28 +78,28 @@ class CityStatsTable(private val cityScreen: CityScreen): Table() {
 
         val miniStatsTable = Table()
         val selected = BaseScreen.skin.getColor("selection")
-        for ((stat, amount) in cityInfo.cityStats.currentCityStats) {
-            if (stat == Stat.Faith && !cityInfo.civ.gameInfo.isReligionEnabled()) continue
+        for ((stat, amount) in city.cityStats.currentCityStats) {
+            if (stat == Stat.Faith && !city.civ.gameInfo.isReligionEnabled()) continue
             val icon = Table()
-            if (cityInfo.cityAIFocus.stat == stat) {
+            if (city.cityAIFocus.stat == stat) {
                 icon.add(ImageGetter.getStatIcon(stat.name).surroundWithCircle(27f, false, color = selected))
                 if (cityScreen.canCityBeChanged()) {
                     icon.onClick {
-                        cityInfo.cityAIFocus = CityFocus.NoFocus
-                        cityInfo.reassignPopulation(); cityScreen.update()
+                        city.cityAIFocus = CityFocus.NoFocus
+                        city.reassignPopulation(); cityScreen.update()
                     }
                 }
             } else {
                 icon.add(ImageGetter.getStatIcon(stat.name).surroundWithCircle(27f, false, color = Color.CLEAR))
                 if (cityScreen.canCityBeChanged()) {
                     icon.onClick {
-                        cityInfo.cityAIFocus = cityInfo.cityAIFocus.safeValueOf(stat)
-                        cityInfo.reassignPopulation(); cityScreen.update()
+                        city.cityAIFocus = city.cityAIFocus.safeValueOf(stat)
+                        city.reassignPopulation(); cityScreen.update()
                     }
                 }
             }
             miniStatsTable.add(icon).size(27f).padRight(3f)
-            val valueToDisplay = if (stat == Stat.Happiness) cityInfo.cityStats.happinessList.values.sum() else amount
+            val valueToDisplay = if (stat == Stat.Happiness) city.cityStats.happinessList.values.sum() else amount
             miniStatsTable.add(round(valueToDisplay).toInt().toLabel()).padRight(5f)
         }
         upperTable.add(miniStatsTable)
@@ -110,11 +110,11 @@ class CityStatsTable(private val cityScreen: CityScreen): Table() {
 
         // begin lowerTable
         addCitizenManagement()
-        addGreatPersonPointInfo(cityInfo)
-        if (!cityInfo.population.getMaxSpecialists().isEmpty()) {
+        addGreatPersonPointInfo(city)
+        if (!city.population.getMaxSpecialists().isEmpty()) {
             addSpecialistInfo()
         }
-        if (cityInfo.religion.getNumberOfFollowers().isNotEmpty() && cityInfo.civ.gameInfo.isReligionEnabled())
+        if (city.religion.getNumberOfFollowers().isNotEmpty() && city.civ.gameInfo.isReligionEnabled())
             addReligionInfo()
 
         addBuildingsInfo()
@@ -140,32 +140,32 @@ class CityStatsTable(private val cityScreen: CityScreen): Table() {
 
     private fun addText() {
         val unassignedPopString = "{Unassigned population}: ".tr() +
-                cityInfo.population.getFreePopulation().toString() + "/" + cityInfo.population.population
+                city.population.getFreePopulation().toString() + "/" + city.population.population
         val unassignedPopLabel = unassignedPopString.toLabel()
         if (cityScreen.canChangeState)
-            unassignedPopLabel.onClick { cityInfo.reassignPopulation(); cityScreen.update() }
+            unassignedPopLabel.onClick { city.reassignPopulation(); cityScreen.update() }
 
         var turnsToExpansionString =
-                if (cityInfo.cityStats.currentCityStats.culture > 0 && cityInfo.expansion.getChoosableTiles().any()) {
-                    val remainingCulture = cityInfo.expansion.getCultureToNextTile() - cityInfo.expansion.cultureStored
-                    var turnsToExpansion = ceil(remainingCulture / cityInfo.cityStats.currentCityStats.culture).toInt()
+                if (city.cityStats.currentCityStats.culture > 0 && city.expansion.getChoosableTiles().any()) {
+                    val remainingCulture = city.expansion.getCultureToNextTile() - city.expansion.cultureStored
+                    var turnsToExpansion = ceil(remainingCulture / city.cityStats.currentCityStats.culture).toInt()
                     if (turnsToExpansion < 1) turnsToExpansion = 1
                     "[$turnsToExpansion] turns to expansion".tr()
                 } else "Stopped expansion".tr()
-        if (cityInfo.expansion.getChoosableTiles().any())
+        if (city.expansion.getChoosableTiles().any())
             turnsToExpansionString +=
-                    " (${cityInfo.expansion.cultureStored}${Fonts.culture}/${cityInfo.expansion.getCultureToNextTile()}${Fonts.culture})"
+                    " (${city.expansion.cultureStored}${Fonts.culture}/${city.expansion.getCultureToNextTile()}${Fonts.culture})"
 
         var turnsToPopString =
                 when {
-                    cityInfo.isStarving() -> "[${cityInfo.population.getNumTurnsToStarvation()}] turns to lose population"
-                    cityInfo.getRuleset().units[cityInfo.cityConstructions.currentConstructionFromQueue]
+                    city.isStarving() -> "[${city.population.getNumTurnsToStarvation()}] turns to lose population"
+                    city.getRuleset().units[city.cityConstructions.currentConstructionFromQueue]
                         .let { it != null && it.hasUnique(UniqueType.ConvertFoodToProductionWhenConstructed) }
                     -> "Food converts to production"
-                    cityInfo.isGrowing() -> "[${cityInfo.population.getNumTurnsToNewPopulation()}] turns to new population"
+                    city.isGrowing() -> "[${city.population.getNumTurnsToNewPopulation()}] turns to new population"
                     else -> "Stopped population growth"
                 }.tr()
-        turnsToPopString += " (${cityInfo.population.foodStored}${Fonts.food}/${cityInfo.population.getFoodToNextPopulation()}${Fonts.food})"
+        turnsToPopString += " (${city.population.foodStored}${Fonts.food}/${city.population.getFoodToNextPopulation()}${Fonts.food})"
 
         upperTable.add(unassignedPopLabel).row()
         upperTable.add(turnsToExpansionString.toLabel()).row()
@@ -173,24 +173,24 @@ class CityStatsTable(private val cityScreen: CityScreen): Table() {
 
         val tableWithIcons = Table()
         tableWithIcons.defaults().pad(2f)
-        if (cityInfo.isInResistance()) {
+        if (city.isInResistance()) {
             tableWithIcons.add(ImageGetter.getImage("StatIcons/Resistance")).size(20f)
-            tableWithIcons.add("In resistance for another [${cityInfo.getFlag(CityFlags.Resistance)}] turns".toLabel()).row()
+            tableWithIcons.add("In resistance for another [${city.getFlag(CityFlags.Resistance)}] turns".toLabel()).row()
         }
 
         val (wltkIcon: Actor?, wltkLabel: Label?) = when {
-            cityInfo.isWeLoveTheKingDayActive() ->
+            city.isWeLoveTheKingDayActive() ->
                 ImageGetter.getStatIcon("Food") to
-                "We Love The King Day for another [${cityInfo.getFlag(CityFlags.WeLoveTheKing)}] turns".toLabel(Color.LIME)
-            cityInfo.demandedResource.isNotEmpty() ->
-                ImageGetter.getResourcePortrait(cityInfo.demandedResource, 20f) to
-                "Demanding [${cityInfo.demandedResource}]".toLabel(Color.CORAL, hideIcons = true)
+                "We Love The King Day for another [${city.getFlag(CityFlags.WeLoveTheKing)}] turns".toLabel(Color.LIME)
+            city.demandedResource.isNotEmpty() ->
+                ImageGetter.getResourcePortrait(city.demandedResource, 20f) to
+                "Demanding [${city.demandedResource}]".toLabel(Color.CORAL, hideIcons = true)
             else -> null to null
         }
         if (wltkLabel != null) {
             tableWithIcons.add(wltkIcon!!).size(20f).padRight(5f)
             wltkLabel.onClick {
-                UncivGame.Current.pushScreen(CivilopediaScreen(cityInfo.getRuleset(), link = "We Love The King Day"))
+                UncivGame.Current.pushScreen(CivilopediaScreen(city.getRuleset(), link = "We Love The King Day"))
             }
             tableWithIcons.add(wltkLabel).row()
         }
@@ -209,7 +209,7 @@ class CityStatsTable(private val cityScreen: CityScreen): Table() {
     }
 
     private fun addReligionInfo() {
-        val expanderTab = CityReligionInfoTable(cityInfo.religion).asExpander { onContentResize() }
+        val expanderTab = CityReligionInfoTable(city.religion).asExpander { onContentResize() }
         lowerTable.add(expanderTab).growX().row()
     }
 
@@ -218,7 +218,7 @@ class CityStatsTable(private val cityScreen: CityScreen): Table() {
         val specialistBuildings = mutableListOf<Building>()
         val otherBuildings = mutableListOf<Building>()
 
-        for (building in cityInfo.cityConstructions.getBuiltBuildings()) {
+        for (building in city.cityConstructions.getBuiltBuildings()) {
             when {
                 building.isAnyWonder() -> wonders.add(building)
                 !building.newSpecialists().isEmpty() -> specialistBuildings.add(building)
@@ -276,16 +276,16 @@ class CityStatsTable(private val cityScreen: CityScreen): Table() {
 
         info.add(displayName.toLabel(fontSize = Constants.defaultFontSize, hideIcons = true)).padBottom(5f).right().row()
 
-        val stats = building.getStats(cityInfo).joinToString(separator = " ") {
+        val stats = building.getStats(city).joinToString(separator = " ") {
             "" + it.value.toInt() + it.key.character
         }
         statsAndSpecialists.add(stats.toLabel(fontSize = Constants.defaultFontSize)).right()
 
-        val assignedSpec = cityInfo.population.getNewSpecialists().clone()
+        val assignedSpec = city.population.getNewSpecialists().clone()
 
         val specialistIcons = Table()
         for ((specialistName, amount) in building.newSpecialists()) {
-            val specialist = cityInfo.getRuleset().specialists[specialistName]
+            val specialist = city.getRuleset().specialists[specialistName]
                 ?: continue // probably a mod that doesn't have the specialist defined yet
             repeat(amount) {
                 if (assignedSpec[specialistName] > 0) {

@@ -7,8 +7,8 @@ import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.convertEncampmentData
 import com.unciv.logic.BackwardCompatibility.convertFortify
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
-import com.unciv.logic.BackwardCompatibility.migrateToTileHistory
 import com.unciv.logic.BackwardCompatibility.migrateGreatPersonPools
+import com.unciv.logic.BackwardCompatibility.migrateToTileHistory
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.GameInfo.Companion.CURRENT_COMPATIBILITY_NUMBER
 import com.unciv.logic.GameInfo.Companion.FIRST_WITHOUT
@@ -534,7 +534,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     }
 
     // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)
-    // will be done here, and not in CivInfo.setTransients or CityInfo
+    // will be done here, and not in Civilization.setTransients or City
     fun setTransients() {
         tileMap.gameInfo = this
 
@@ -636,27 +636,27 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             civInfo.cache.updateCitiesConnectedToCapital(true)
 
             // We need to determine the GLOBAL happiness state in order to determine the city stats
-            for (cityInfo in civInfo.cities) {
-                cityInfo.cityStats.updateTileStats() // Some nat wonders can give happiness!
-                cityInfo.cityStats.updateCityHappiness(
-                    cityInfo.cityConstructions.getStats()
+            for (city in civInfo.cities) {
+                city.cityStats.updateTileStats() // Some nat wonders can give happiness!
+                city.cityStats.updateCityHappiness(
+                    city.cityConstructions.getStats()
                 )
             }
 
-            for (cityInfo in civInfo.cities) {
+            for (city in civInfo.cities) {
                 /** We remove constructions from the queue that aren't defined in the ruleset.
                  * This can lead to situations where the city is puppeted and had its construction removed, and there's no way to user-set it
                  * So for cities like those, we'll auto-set the construction
                  * Also set construction for human players who have automate production turned on
                  */
-                if (cityInfo.cityConstructions.constructionQueue.isEmpty())
-                    cityInfo.cityConstructions.chooseNextConstruction()
+                if (city.cityConstructions.constructionQueue.isEmpty())
+                    city.cityConstructions.chooseNextConstruction()
 
                 // We also remove resources that the city may be demanding but are no longer in the ruleset
-                if (!ruleset.tileResources.containsKey(cityInfo.demandedResource))
-                    cityInfo.demandedResource = ""
+                if (!ruleset.tileResources.containsKey(city.demandedResource))
+                    city.demandedResource = ""
 
-                cityInfo.cityStats.update()
+                city.cityStats.update()
             }
         }
     }

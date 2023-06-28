@@ -21,16 +21,16 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.CityAmbiencePlayer
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.disable
+import com.unciv.ui.components.extensions.packIfNeeded
+import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onDoubleClick
-import com.unciv.ui.components.extensions.packIfNeeded
-import com.unciv.ui.components.extensions.toTextButton
-import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.tilegroups.CityTileGroup
 import com.unciv.ui.components.tilegroups.CityTileState
 import com.unciv.ui.components.tilegroups.TileGroupMap
@@ -38,9 +38,9 @@ import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
-import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 class CityScreen(
@@ -306,24 +306,22 @@ class CityScreen(
     }
 
     private fun addTiles() {
-        val cityInfo = city
-
         val tileSetStrings = TileSetStrings()
-        val cityTileGroups = cityInfo.getCenterTile().getTilesInDistance(5)
-                .filter { cityInfo.civ.hasExplored(it) }
-                .map { CityTileGroup(cityInfo, it, tileSetStrings) }
+        val cityTileGroups = city.getCenterTile().getTilesInDistance(5)
+                .filter { city.civ.hasExplored(it) }
+                .map { CityTileGroup(city, it, tileSetStrings) }
 
         for (tileGroup in cityTileGroups) {
-            tileGroup.onClick { tileGroupOnClick(tileGroup, cityInfo) }
-            tileGroup.layerMisc.onClick { tileWorkedIconOnClick(tileGroup, cityInfo) }
-            tileGroup.layerMisc.onDoubleClick { tileWorkedIconDoubleClick(tileGroup, cityInfo) }
+            tileGroup.onClick { tileGroupOnClick(tileGroup, city) }
+            tileGroup.layerMisc.onClick { tileWorkedIconOnClick(tileGroup, city) }
+            tileGroup.layerMisc.onDoubleClick { tileWorkedIconDoubleClick(tileGroup, city) }
             tileGroups.add(tileGroup)
         }
 
         val tilesToUnwrap = mutableSetOf<CityTileGroup>()
         for (tileGroup in tileGroups) {
-            val xDifference = cityInfo.getCenterTile().position.x - tileGroup.tile.position.x
-            val yDifference = cityInfo.getCenterTile().position.y - tileGroup.tile.position.y
+            val xDifference = city.getCenterTile().position.x - tileGroup.tile.position.x
+            val yDifference = city.getCenterTile().position.y - tileGroup.tile.position.y
             //if difference is bigger than 5 the tileGroup we are looking for is on the other side of the map
             if (xDifference > 5 || xDifference < -5 || yDifference > 5 || yDifference < -5) {
                 //so we want to unwrap its position

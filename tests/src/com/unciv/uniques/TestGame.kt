@@ -9,9 +9,9 @@ import com.unciv.logic.city.managers.CityFounder
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapSizeNew
+import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.TileMap
 import com.unciv.models.Religion
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
@@ -135,17 +135,17 @@ class TestGame {
         replacePalace: Boolean = false,
         initialPopulation: Int = 0
     ): City {
-        val cityInfo = CityFounder().foundCity(civInfo, tile.position)
+        val city = CityFounder().foundCity(civInfo, tile.position)
         if (initialPopulation != 1)
-            cityInfo.population.addPopulation(initialPopulation - 1) // With defaults this will remove population
+            city.population.addPopulation(initialPopulation - 1) // With defaults this will remove population
 
         if (replacePalace && civInfo.cities.size == 1) {
             // Add a capital indicator without any other stats
             val palaceWithoutStats = createBuilding(UniqueType.IndicatesCapital.text)
-            cityInfo.cityConstructions.removeBuilding("Palace")
-            cityInfo.cityConstructions.addBuilding(palaceWithoutStats.name)
+            city.cityConstructions.removeBuilding("Palace")
+            city.cityConstructions.addBuilding(palaceWithoutStats.name)
         }
-        return cityInfo
+        return city
     }
 
     fun addTileToCity(city: City, tile: Tile) {

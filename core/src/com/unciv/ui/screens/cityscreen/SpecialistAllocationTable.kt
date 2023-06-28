@@ -9,15 +9,15 @@ import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.extensions.addBorder
 import com.unciv.ui.components.extensions.addSeparatorVertical
 import com.unciv.ui.components.extensions.darken
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toGroup
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 
 class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin) {
-    val cityInfo = cityScreen.city
+    val city = cityScreen.city
 
     fun update() {
         clear()
@@ -25,25 +25,25 @@ class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(Base
         // Color of "color" coming from Skin.json that's loaded into BaseScreen
         // 5 columns: unassignButton, AllocationTable, assignButton, SeparatorVertical, SpecialistsStatsTabe
         if (cityScreen.canCityBeChanged()) {
-            if (cityInfo.manualSpecialists) {
+            if (city.manualSpecialists) {
                 val manualSpecialists = "Manual Specialists".toLabel()
                     .addBorder(5f, BaseScreen.skin.getColor("color"))
                 manualSpecialists.onClick {
-                    cityInfo.manualSpecialists = false
-                    cityInfo.reassignPopulation(); cityScreen.update()
+                    city.manualSpecialists = false
+                    city.reassignPopulation(); cityScreen.update()
                 }
                 add(manualSpecialists).colspan(5).row()
             } else {
                 val autoSpecialists = "Auto Specialists".toLabel()
                     .addBorder(5f, BaseScreen.skin.getColor("color"))
-                autoSpecialists.onClick { cityInfo.manualSpecialists = true; update() }
+                autoSpecialists.onClick { city.manualSpecialists = true; update() }
                 add(autoSpecialists).colspan(5).row()
             }
         }
-        for ((specialistName, maxSpecialists) in cityInfo.population.getMaxSpecialists()) {
-            if (!cityInfo.getRuleset().specialists.containsKey(specialistName)) // specialist doesn't exist in this ruleset, probably a mod
+        for ((specialistName, maxSpecialists) in city.population.getMaxSpecialists()) {
+            if (!city.getRuleset().specialists.containsKey(specialistName)) // specialist doesn't exist in this ruleset, probably a mod
                 continue
-            val newSpecialists = cityInfo.population.getNewSpecialists()
+            val newSpecialists = city.population.getNewSpecialists()
             val assignedSpecialists = newSpecialists[specialistName]
 
             if (cityScreen.canChangeState) add(getUnassignButton(assignedSpecialists, specialistName))
@@ -59,7 +59,7 @@ class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(Base
     private fun getAllocationTable(assignedSpecialists: Int, maxSpecialists: Int, specialistName: String): Table {
 
         val specialistIconTable = Table()
-        val specialistObject = cityInfo.getRuleset().specialists[specialistName]!!
+        val specialistObject = city.getRuleset().specialists[specialistName]!!
         for (i in 1..maxSpecialists) {
             val color = if (i <= assignedSpecialists) specialistObject.colorObject
             else Color.GRAY // unassigned
@@ -72,17 +72,17 @@ class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(Base
 
     private fun getAssignButton(assignedSpecialists: Int, maxSpecialists: Int, specialistName: String): Actor {
 
-        if (assignedSpecialists >= maxSpecialists || cityInfo.isPuppet) return Table()
+        if (assignedSpecialists >= maxSpecialists || city.isPuppet) return Table()
         val assignButton = "+".toLabel(Color.BLACK, Constants.headingFontSize)
             .apply { this.setAlignment(Align.center) }
             .surroundWithCircle(30f).apply { circle.color = Color.GREEN.darken(0.2f) }
         assignButton.onClick {
-            cityInfo.population.specialistAllocations.add(specialistName, 1)
-            cityInfo.manualSpecialists = true
-            cityInfo.cityStats.update()
+            city.population.specialistAllocations.add(specialistName, 1)
+            city.manualSpecialists = true
+            city.cityStats.update()
             cityScreen.update()
         }
-        if (cityInfo.population.getFreePopulation() == 0 || !cityScreen.canChangeState)
+        if (city.population.getFreePopulation() == 0 || !cityScreen.canChangeState)
             assignButton.clear()
         return assignButton
     }
@@ -92,13 +92,13 @@ class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(Base
             .apply { this.setAlignment(Align.center) }
             .surroundWithCircle(30f).apply { circle.color = Color.RED.darken(0.1f) }
         unassignButton.onClick {
-            cityInfo.population.specialistAllocations.add(specialistName, -1)
-            cityInfo.manualSpecialists = true
-            cityInfo.cityStats.update()
+            city.population.specialistAllocations.add(specialistName, -1)
+            city.manualSpecialists = true
+            city.cityStats.update()
             cityScreen.update()
         }
 
-        if (assignedSpecialists <= 0 || cityInfo.isPuppet) unassignButton.isVisible = false
+        if (assignedSpecialists <= 0 || city.isPuppet) unassignButton.isVisible = false
         if (!cityScreen.canChangeState) unassignButton.clear()
         return unassignButton
     }
@@ -106,7 +106,7 @@ class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(Base
 
     private fun getSpecialistStatsTable(specialistName: String): Table {
         val specialistStatTable = Table().apply { defaults().padBottom(5f).padTop(5f) }
-        val specialistStats = cityInfo.cityStats.getStatsOfSpecialist(specialistName)
+        val specialistStats = city.cityStats.getStatsOfSpecialist(specialistName)
         var itemsInRow = 0
         fun incrementItemsInRow(){
             itemsInRow++
@@ -123,7 +123,7 @@ class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(Base
             incrementItemsInRow()
         }
 
-        val specialist = cityInfo.getRuleset().specialists[specialistName]!!
+        val specialist = city.getRuleset().specialists[specialistName]!!
 
         for (s in specialist.greatPersonPoints) {
             specialistStatTable.add(s.value.toLabel())
