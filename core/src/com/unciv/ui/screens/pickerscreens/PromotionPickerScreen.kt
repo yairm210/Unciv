@@ -95,19 +95,8 @@ class PromotionPickerScreen(
         // if user managed to click disabled button, still do nothing
         if (button == null || !button.isPickable) return
 
-        // Can't use stage.addAction as the screen is going to die immediately
         val path = tree.getPathTo(button.node.promotion)
-        if (path.size == 1) {
-            Concurrency.runOnGLThread { SoundPlayer.play(UncivSound.Promote) }
-        } else {
-            Concurrency.runOnGLThread {
-                SoundPlayer.play(UncivSound.Promote)
-                Concurrency.run {
-                    delay(200)
-                    Concurrency.runOnGLThread { SoundPlayer.play(UncivSound.Promote) }
-                }
-            }
-        }
+        SoundPlayer.playRepeated(UncivSound.Promote, path.size.coerceAtMost(2))
 
         for (promotion in path)
             unit.promotions.addPromotion(promotion.name)
