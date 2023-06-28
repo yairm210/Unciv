@@ -214,7 +214,10 @@ class PolicyManager : IsPartOfGameInfoSerialization {
         civInfo.cache.updateCivResources()
 
         // This ALSO has the side-effect of updating the CivInfo statForNextTurn so we don't need to call it explicitly
-        for (cityInfo in civInfo.cities) cityInfo.cityStats.update()
+        for (cityInfo in civInfo.cities) {
+            cityInfo.cityStats.update()
+            cityInfo.reassignPopulationDeferred()
+        }
 
         if (!canAdoptPolicy()) shouldOpenPolicyPicker = false
     }
