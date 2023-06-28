@@ -600,7 +600,7 @@ class WorldScreen(
             if (originalGameInfo.gameParameters.isOnlineMultiplayer) {
                 try {
                     game.onlineMultiplayer.updateGame(gameInfoClone)
-                }catch (ex: Exception) {
+                } catch (ex: Exception) {
                     when (ex) {
                         is MultiplayerAuthException -> {
                             launchOnGLThread {
