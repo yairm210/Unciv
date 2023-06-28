@@ -517,4 +517,43 @@ class WorkerAutomation(
         return distanceBetweenCities + 2 > distanceToEnemy + distanceToOurCity
     }
 
+    private fun hasWorkableSeaResource(tile: Tile, civInfo: Civilization): Boolean =
+        tile.isWater && tile.improvement == null && tile.hasViewableResource(civInfo)
+
+    /** Try improving a Water Resource
+     *
+     *  No logic to avoid capture by enemies yet!
+     *
+     *  @return Whether any progress was made (improved a tile or at least moved towards an opportunity)
+     */
+    fun automateWorkBoats(unit: MapUnit): Boolean {
+        val closestReachableResource = unit.civ.cities.asSequence()
+            .flatMap { city -> city.getWorkableTiles() }
+            .filter {
+                hasWorkableSeaResource(it, unit.civ)
+                    && (unit.currentTile == it || unit.movement.canMoveTo(it))
+            }
+            .sortedBy { it.aerialDistanceTo(unit.currentTile) }
+            .firstOrNull { unit.movement.canReach(it) }
+            ?: return false
+
+        // could be either fishing boats or oil well
+        val isImprovable = closestReachableResource.tileResource.getImprovements().any()
+        if (!isImprovable) return false
+
+        unit.movement.headTowards(closestReachableResource)
+        if (unit.currentTile != closestReachableResource) return true // moving counts as progress
+
+        // We know we have the CreateWaterImprovements, but not whether
+        // all conditionals succeed with a current StateForConditionals(civ, unit)
+        // todo: Not necessarily the optimal flow: Be optimistic and head towards,
+        //       then when arrived and the conditionals say "no" do something else instead?
+        val action = UnitActions.getWaterImprovementAction(unit)
+            ?: return false
+
+        // If action.action is null that means only transient reasons prevent the improvement -
+        // report progress and hope next run it will work.
+        action.action?.invoke()
+        return true
+    }
 }

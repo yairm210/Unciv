@@ -251,8 +251,11 @@ object UnitAutomation {
         if (unit.cache.hasUniqueToBuildImprovements)
             return unit.civ.getWorkerAutomation().automateWorkerAction(unit, tilesWhereWeWillBeCaptured)
 
-        if (unit.cache.hasUniqueToCreateWaterImprovements)
-            return SpecificUnitAutomation.automateWorkBoats(unit)
+        if (unit.cache.hasUniqueToCreateWaterImprovements){
+            if (!unit.civ.getWorkerAutomation().automateWorkBoats(unit))
+                tryExplore(unit)
+            return
+        }
 
         if (unit.hasUnique(UniqueType.MayFoundReligion)
                 && unit.civ.religionManager.religionState < ReligionState.Religion
