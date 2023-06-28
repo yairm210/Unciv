@@ -270,7 +270,7 @@ class WorkerAutomation(
                 .filter {
                     it !in tilesToAvoid
                     && (it.civilianUnit == null || it == currentTile)
-                    && (it.owningCity == null || it.getOwner()==civInfo)
+                    && (it.owningCity == null || it.getOwner() == civInfo)
                     && getPriority(it) > 1
                     && it.getTilesInDistance(2)  // don't work in range of enemy cities
                         .none { tile -> tile.isCityCenter() && tile.getCity()!!.civ.isAtWarWith(civInfo) }
@@ -279,9 +279,11 @@ class WorkerAutomation(
                 }
                 .sortedByDescending { getPriority(it) }
 
+        // Carthage can move through mountains, special case
+        // If there is a non-damage dealing tile available, move to that tile, otherwise move to the damage dealing tile
         // These are the expensive calculations (tileCanBeImproved, canReach), so we only apply these filters after everything else it done.
         val selectedTile =
-            workableTiles.firstOrNull { unit.movement.canReach(it) && (tileCanBeImproved(unit, it) || it.isPillaged()) }
+            workableTiles.sortedByDescending { tile -> unit.getDamageFromTerrain(tile) <= 0 }.firstOrNull { unit.movement.canReach(it) && (tileCanBeImproved(unit, it) || it.isPillaged()) }
                 ?: return currentTile
 
         return if ((!tileCanBeImproved(unit, currentTile) && !currentTile.isPillaged()) // current tile is unimprovable
