@@ -35,58 +35,52 @@ class CityInfoConquestFunctions(val city: City){
     }
 
     private fun destroyBuildingsOnCapture() {
-        city.apply {
-            // Possibly remove other buildings
-            for (building in cityConstructions.getBuiltBuildings()) {
-                when {
-                    building.hasUnique(UniqueType.NotDestroyedWhenCityCaptured) || building.isWonder -> continue
-                    building.hasUnique(UniqueType.IndicatesCapital) -> continue // Palace needs to stay a just a bit longer so moveToCiv isn't confused
-                    building.hasUnique(UniqueType.DestroyedWhenCityCaptured) ->
-                        cityConstructions.removeBuilding(building.name)
-                    else -> {
-                        if (tileBasedRandom.nextInt(100) < 34) {
-                            cityConstructions.removeBuilding(building.name)
-                        }
-                    }
-                }
+        // Possibly remove other buildings
+        for (building in city.cityConstructions.getBuiltBuildings()) {
+            when {
+                building.hasUnique(UniqueType.NotDestroyedWhenCityCaptured) || building.isWonder -> continue
+                building.hasUnique(UniqueType.IndicatesCapital) -> continue // Palace needs to stay a just a bit longer so moveToCiv isn't confused
+                building.hasUnique(UniqueType.DestroyedWhenCityCaptured) ->
+                    city.cityConstructions.removeBuilding(building.name)
+                // Regular buildings have a 34% chance of removal
+                tileBasedRandom.nextInt(100) < 34 -> city.cityConstructions.removeBuilding(building.name)
             }
         }
     }
 
     private fun removeBuildingsOnMoveToCiv(oldCiv: Civilization) {
-        city.apply {
-            // Remove all buildings provided for free to this city
-            for (building in civ.civConstructions.getFreeBuildings(id)) {
-                cityConstructions.removeBuilding(building)
+        // Remove all buildings provided for free to this city
+        for (building in city.civ.civConstructions.getFreeBuildings(city.id)) {
+            city.cityConstructions.removeBuilding(building)
+        }
+
+        // Remove all buildings provided for free from here to other cities (e.g. CN Tower)
+        for ((cityId, buildings) in city.cityConstructions.freeBuildingsProvidedFromThisCity) {
+            val city = oldCiv.cities.firstOrNull { it.id == cityId } ?: continue
+            debug("Removing buildings %s from city %s", buildings, city.name)
+            for (building in buildings) {
+                city.cityConstructions.removeBuilding(building)
             }
+        }
+        city.cityConstructions.freeBuildingsProvidedFromThisCity.clear()
 
-            // Remove all buildings provided for free from here to other cities (e.g. CN Tower)
-            for ((cityId, buildings) in cityConstructions.freeBuildingsProvidedFromThisCity) {
-                val city = oldCiv.cities.firstOrNull { it.id == cityId } ?: continue
-                debug("Removing buildings %s from city %s", buildings, city.name)
-                for (building in buildings) {
-                    city.cityConstructions.removeBuilding(building)
-                }
-            }
-            cityConstructions.freeBuildingsProvidedFromThisCity.clear()
+        for (building in city.cityConstructions.getBuiltBuildings()) {
+            // Remove national wonders
+            if (building.isNationalWonder && !building.hasUnique(UniqueType.NotDestroyedWhenCityCaptured)
+                && building.name != city.capitalCityIndicator()
+            ) // If we have just made this city the capital, don't remove that
+                city.cityConstructions.removeBuilding(building.name)
 
-            for (building in cityConstructions.getBuiltBuildings()) {
-                // Remove national wonders
-                if (building.isNationalWonder && !building.hasUnique(UniqueType.NotDestroyedWhenCityCaptured)
-                    && building.name != capitalCityIndicator()) // If we have just made this city the capital, don't remove that
-                    cityConstructions.removeBuilding(building.name)
-
-                // Check if we exceed MaxNumberBuildable for any buildings
-                for (unique in building.getMatchingUniques(UniqueType.MaxNumberBuildable)) {
-                    if (civ.cities
+            // Check if we exceed MaxNumberBuildable for any buildings
+            for (unique in building.getMatchingUniques(UniqueType.MaxNumberBuildable)) {
+                if (city.civ.cities
                         .count {
                             it.cityConstructions.containsBuildingOrEquivalent(building.name)
-                            || it.cityConstructions.isBeingConstructedOrEnqueued(building.name)
+                                || it.cityConstructions.isBeingConstructedOrEnqueued(building.name)
                         } >= unique.params[0].toInt()
-                    ) {
-                        // For now, just destroy in new city. Even if constructing in own cities
-                        city.cityConstructions.removeBuilding(building.name)
-                    }
+                ) {
+                    // For now, just destroy in new city. Even if constructing in own cities
+                    this.city.cityConstructions.removeBuilding(building.name)
                 }
             }
         }
@@ -98,35 +92,33 @@ class CityInfoConquestFunctions(val city: City){
      */
     private fun conquerCity(conqueringCiv: Civilization, conqueredCiv: Civilization, receivingCiv: Civilization) {
         val goldPlundered = getGoldForCapturingCity(conqueringCiv)
-        city.apply {
-            conqueringCiv.addGold(goldPlundered)
-            conqueringCiv.addNotification("Received [$goldPlundered] Gold for capturing [$name]",
-                getCenterTile().position, NotificationCategory.General, NotificationIcon.Gold)
+        conqueringCiv.addGold(goldPlundered)
+        conqueringCiv.addNotification("Received [$goldPlundered] Gold for capturing [${city.name}]",
+            city.getCenterTile().position, NotificationCategory.General, NotificationIcon.Gold)
 
-            val reconqueredCityWhileStillInResistance = previousOwner == receivingCiv.civName && isInResistance()
+        val reconqueredCityWhileStillInResistance = city.previousOwner == receivingCiv.civName && city.isInResistance()
 
-            destroyBuildingsOnCapture()
+        destroyBuildingsOnCapture()
 
-            moveToCiv(receivingCiv)
+        city.moveToCiv(receivingCiv)
 
-            Battle.destroyIfDefeated(conqueredCiv, conqueringCiv)
+        Battle.destroyIfDefeated(conqueredCiv, conqueringCiv)
 
-            health = getMaxHealth() / 2 // I think that cities recover to half health when conquered?
-            if (population.population > 1)
-                population.addPopulation(-1 - population.population / 4) // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
-            reassignAllPopulation()
+        city.health = city.getMaxHealth() / 2 // I think that cities recover to half health when conquered?
+        if (city.population.population > 1)
+            city.population.addPopulation(-1 - city.population.population / 4) // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
+        city.reassignAllPopulation()
 
-            if (!reconqueredCityWhileStillInResistance && foundingCiv != receivingCiv.civName) {
-                // add resistance
-                // I checked, and even if you puppet there's resistance for conquering
-                setFlag(CityFlags.Resistance, population.population)
-            } else {
-                // reconquering or liberating city in resistance so eliminate it
-                removeFlag(CityFlags.Resistance)
-            }
-
-            espionage.removeAllPresentSpies(SpyFleeReason.CityCaptured)
+        if (!reconqueredCityWhileStillInResistance && city.foundingCiv != receivingCiv.civName) {
+            // add resistance
+            // I checked, and even if you puppet there's resistance for conquering
+            city.setFlag(CityFlags.Resistance, city.population.population)
+        } else {
+            // reconquering or liberating city in resistance so eliminate it
+            city.removeFlag(CityFlags.Resistance)
         }
+
+        city.espionage.removeAllPresentSpies(SpyFleeReason.CityCaptured)
     }
 
 
@@ -135,23 +127,20 @@ class CityInfoConquestFunctions(val city: City){
         // Gain gold for plundering city
         @Suppress("UNUSED_VARIABLE")  // todo: use this val
         val goldPlundered = getGoldForCapturingCity(conqueringCiv)
-        city.apply {
+        val oldCiv = city.civ
 
-            val oldCiv = civ
+        // must be before moving the city to the conquering civ,
+        // so the repercussions are properly checked
+        diplomaticRepercussionsForConqueringCity(oldCiv, conqueringCiv)
 
-            // must be before moving the city to the conquering civ,
-            // so the repercussions are properly checked
-            diplomaticRepercussionsForConqueringCity(oldCiv, conqueringCiv)
+        conquerCity(conqueringCiv, oldCiv, conqueringCiv)
 
-            conquerCity(conqueringCiv, oldCiv, conqueringCiv)
-
-            isPuppet = true
-            cityStats.update()
-            // The city could be producing something that puppets shouldn't, like units
-            cityConstructions.currentConstructionIsUserSet = false
-            cityConstructions.constructionQueue.clear()
-            cityConstructions.chooseNextConstruction()
-        }
+        city.isPuppet = true
+        city.cityStats.update()
+        // The city could be producing something that puppets shouldn't, like units
+        city.cityConstructions.currentConstructionIsUserSet = false
+        city.cityConstructions.constructionQueue.clear()
+        city.cityConstructions.chooseNextConstruction()
     }
 
     fun annexCity() {
@@ -187,51 +176,50 @@ class CityInfoConquestFunctions(val city: City){
     }
 
     fun liberateCity(conqueringCiv: Civilization) {
-        city.apply {
-            if (foundingCiv == "") { // this should never happen but just in case...
-                this@CityInfoConquestFunctions.puppetCity(conqueringCiv)
-                this@CityInfoConquestFunctions.annexCity()
-                return
-            }
+        if (city.foundingCiv == "") { // this should never happen but just in case...
+            this.puppetCity(conqueringCiv)
+            this.annexCity()
+            return
+        }
 
-            val foundingCiv = civ.gameInfo.getCivilization(foundingCiv)
-            if (foundingCiv.isDefeated()) // resurrected civ
-                for (diploManager in foundingCiv.diplomacy.values)
-                    if (diploManager.diplomaticStatus == DiplomaticStatus.War)
-                        diploManager.makePeace()
+        val foundingCiv = city.civ.gameInfo.getCivilization(city.foundingCiv)
+        if (foundingCiv.isDefeated()) // resurrected civ
+            for (diploManager in foundingCiv.diplomacy.values)
+                if (diploManager.diplomaticStatus == DiplomaticStatus.War)
+                    diploManager.makePeace()
 
-            val oldCiv = civ
+        val oldCiv = city.civ
 
-            diplomaticRepercussionsForLiberatingCity(conqueringCiv, oldCiv)
+        diplomaticRepercussionsForLiberatingCity(conqueringCiv, oldCiv)
 
-            conquerCity(conqueringCiv, oldCiv, foundingCiv)
+        conquerCity(conqueringCiv, oldCiv, foundingCiv)
 
-            if (foundingCiv.cities.size == 1) {
-                // Resurrection!
-                cityConstructions.addBuilding(capitalCityIndicator())
-                for (civ in civ.gameInfo.civilizations) {
-                    if (civ == foundingCiv || civ == conqueringCiv) continue // don't need to notify these civs
-                    when {
-                        civ.knows(conqueringCiv) && civ.knows(foundingCiv) ->
-                            civ.addNotification("[$conqueringCiv] has liberated [$foundingCiv]", NotificationCategory.Diplomacy, foundingCiv.civName, NotificationIcon.Diplomacy, conqueringCiv.civName)
-                        civ.knows(conqueringCiv) && !civ.knows(foundingCiv) ->
-                            civ.addNotification("[$conqueringCiv] has liberated an unknown civilization", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, conqueringCiv.civName)
-                        !civ.knows(conqueringCiv) && civ.knows(foundingCiv) ->
-                            civ.addNotification("An unknown civilization has liberated [$foundingCiv]", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, foundingCiv.civName)
-                        else -> continue
-                    }
+        if (foundingCiv.cities.size == 1) {
+            // Resurrection!
+            city.cityConstructions.addBuilding(city.capitalCityIndicator())
+            for (civ in city.civ.gameInfo.civilizations) {
+                if (civ == foundingCiv || civ == conqueringCiv) continue // don't need to notify these civs
+                when {
+                    civ.knows(conqueringCiv) && civ.knows(foundingCiv) ->
+                        civ.addNotification("[$conqueringCiv] has liberated [$foundingCiv]", NotificationCategory.Diplomacy, foundingCiv.civName, NotificationIcon.Diplomacy, conqueringCiv.civName)
+                    civ.knows(conqueringCiv) && !civ.knows(foundingCiv) ->
+                        civ.addNotification("[$conqueringCiv] has liberated an unknown civilization", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, conqueringCiv.civName)
+                    !civ.knows(conqueringCiv) && civ.knows(foundingCiv) ->
+                        civ.addNotification("An unknown civilization has liberated [$foundingCiv]", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, foundingCiv.civName)
+                    else -> continue
                 }
             }
-            isPuppet = false
-            cityStats.update()
-
-            // Move units out of the city when liberated
-            for (unit in getCenterTile().getUnits().toList())
-                unit.movement.teleportToClosestMoveableTile()
-            for (unit in getTiles().flatMap { it.getUnits() }.toList())
-                if (!unit.movement.canPassThrough(unit.currentTile))
-                    unit.movement.teleportToClosestMoveableTile()
         }
+        city.isPuppet = false
+        city.cityStats.update()
+
+        // Move units out of the city when liberated
+        for (unit in city.getCenterTile().getUnits().toList())
+            unit.movement.teleportToClosestMoveableTile()
+        for (unit in city.getTiles().flatMap { it.getUnits() }.toList())
+            if (!unit.movement.canPassThrough(unit.currentTile))
+                unit.movement.teleportToClosestMoveableTile()
+
     }
 
 
@@ -269,69 +257,69 @@ class CityInfoConquestFunctions(val city: City){
 
     fun moveToCiv(newCiv: Civilization) {
         val oldCiv = city.civ
-        city.apply {
-            // Remove/relocate palace for old Civ - need to do this BEFORE we move the cities between
-            //  civs so the capitalCityIndicator recognizes the unique buildings of the conquered civ
-            if (oldCiv.getCapital() == this)  oldCiv.moveCapitalToNextLargest()
 
-            oldCiv.cities = oldCiv.cities.toMutableList().apply { remove(city) }
-            newCiv.cities = newCiv.cities.toMutableList().apply { add(city) }
-            civ = newCiv
-            hasJustBeenConquered = false
-            turnAcquired = civ.gameInfo.turns
-            previousOwner = oldCiv.civName
+        // Remove/relocate palace for old Civ - need to do this BEFORE we move the cities between
+        //  civs so the capitalCityIndicator recognizes the unique buildings of the conquered civ
+        if (city.isCapital())  oldCiv.moveCapitalToNextLargest()
 
-            // now that the tiles have changed, we need to reassign population
-            for (workedTile in workedTiles.filterNot { tiles.contains(it) }) {
-                population.stopWorkingTile(workedTile)
-                population.autoAssignPopulation()
-            }
+        oldCiv.cities = oldCiv.cities.toMutableList().apply { remove(city) }
+        newCiv.cities = newCiv.cities.toMutableList().apply { add(city) }
+        city.civ = newCiv
+        city.hasJustBeenConquered = false
+        city.turnAcquired = city.civ.gameInfo.turns
+        city.previousOwner = oldCiv.civName
 
-            // Stop WLTKD if it's still going
-            resetWLTKD()
+        // now that the tiles have changed, we need to reassign population
+        for (workedTile in city.workedTiles.filterNot { city.tiles.contains(it) }) {
+            city.population.stopWorkingTile(workedTile)
+            city.population.autoAssignPopulation()
+        }
 
-            // Place palace for newCiv if this is the only city they have.
-            // This needs to happen _before_ buildings are added or removed,
-            // as any building change triggers a reevaluation of stats which assumes there to be a capital
-            if (newCiv.cities.size == 1) newCiv.moveCapitalTo(this)
+        // Stop WLTKD if it's still going
+        city.resetWLTKD()
 
-            // Remove their free buildings from this city and remove free buildings provided by the city from their cities
-            removeBuildingsOnMoveToCiv(oldCiv)
+        // Place palace for newCiv if this is the only city they have.
+        // This needs to happen _before_ buildings are added or removed,
+        // as any building change triggers a reevaluation of stats which assumes there to be a capital
+        if (newCiv.cities.size == 1) newCiv.moveCapitalTo(city)
 
-            // Add our free buildings to this city and add free buildings provided by the city to other cities
-            civ.civConstructions.tryAddFreeBuildings()
+        // Remove their free buildings from this city and remove free buildings provided by the city from their cities
+        removeBuildingsOnMoveToCiv(oldCiv)
 
-            isBeingRazed = false
+        // Add our free buildings to this city and add free buildings provided by the city to other cities
+        city.civ.civConstructions.tryAddFreeBuildings()
 
-            // Transfer unique buildings
-            for (building in cityConstructions.getBuiltBuildings()) {
-                val civEquivalentBuilding = newCiv.getEquivalentBuilding(building.name)
-                if (building != civEquivalentBuilding) {
-                    cityConstructions.removeBuilding(building.name)
-                    cityConstructions.addBuilding(civEquivalentBuilding.name)
-                }
-            }
+        city.isBeingRazed = false
 
-            if (civ.gameInfo.isReligionEnabled()) religion.removeUnknownPantheons()
-
-            if (newCiv.hasUnique(UniqueType.MayNotAnnexCities)) {
-                isPuppet = true
-                cityConstructions.currentConstructionIsUserSet = false
-                cityConstructions.constructionQueue.clear()
-                cityConstructions.chooseNextConstruction()
-            }
-
-            tryUpdateRoadStatus()
-            cityStats.update()
-
-            // Update proximity rankings
-            civ.updateProximity(oldCiv, oldCiv.updateProximity(civ))
-
-            // Update history
-            city.getTiles().forEach { tile ->
-                tile.history.recordTakeOwnership(tile)
+        // Transfer unique buildings
+        for (building in city.cityConstructions.getBuiltBuildings()) {
+            val civEquivalentBuilding = newCiv.getEquivalentBuilding(building.name)
+            if (building != civEquivalentBuilding) {
+                city.cityConstructions.removeBuilding(building.name)
+                city.cityConstructions.addBuilding(civEquivalentBuilding.name)
             }
         }
+
+        if (city.civ.gameInfo.isReligionEnabled()) city.religion.removeUnknownPantheons()
+
+        if (newCiv.hasUnique(UniqueType.MayNotAnnexCities)) {
+            city.isPuppet = true
+            city.cityConstructions.currentConstructionIsUserSet = false
+            city.cityConstructions.constructionQueue.clear()
+            city.cityConstructions.chooseNextConstruction()
+        }
+
+        city.tryUpdateRoadStatus()
+        city.cityStats.update()
+
+        // Update proximity rankings
+        city.civ.updateProximity(oldCiv, oldCiv.updateProximity(city.civ))
+
+        // Update history
+        city.getTiles().forEach { tile ->
+            tile.history.recordTakeOwnership(tile)
+        }
+
         newCiv.cache.updateOurTiles()
         oldCiv.cache.updateOurTiles()
     }
