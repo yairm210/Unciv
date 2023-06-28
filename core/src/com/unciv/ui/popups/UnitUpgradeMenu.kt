@@ -2,7 +2,6 @@ package com.unciv.ui.popups
 
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Stage
-import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.UpgradeUnitAction

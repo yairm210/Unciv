@@ -16,7 +16,7 @@ import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.images.IconTextButton
-import com.unciv.ui.screens.overviewscreen.UnitUpgradeMenu
+import com.unciv.ui.popups.UnitUpgradeMenu
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
