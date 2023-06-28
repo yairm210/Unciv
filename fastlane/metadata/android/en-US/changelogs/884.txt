@@ -1,19 +1,13 @@
+Solved concurrency crashes due to players keypress-activating disabled buttons
 
-
-Solved strange concurrency crashes due to players keypress-activating disabled buttons
-
-chore: Removed vestigal city.apply{} for CityInfoConquestFunctions, for clarity on what is actually for the city and what is not
-
-Resolved  -  'liberate city and resurrect civ' no longer crashes
+'liberate city and resurrect civ' no longer crashes
 
 AI no longer purchases non-contiguous tiles
 
-Resolved  - city name translation for conquered popup does not get icon
+City name translation for conquered popup does not get icon
 
-By SomeTroglodyte:
-- Promotion picker allowing picking chains in one go 
-- More defensive coding of speedupWonderConstruction 
+Promotion picker allowing picking chains in one go - By SomeTroglodyte
 
-Fixing workers dying in mountains bug for Carthage  - By random271
+Fixing workers dying in mountains bug for Carthage - By random271
 
-Check for trigger uniques when starting and recaluating population  - By SeventhM
+Check for trigger uniques when starting and recaluating population - By SeventhM
