@@ -272,7 +272,7 @@ class WorkerAutomation(
      */
     private fun findTileToWork(unit: MapUnit, tilesToAvoid: Set<Tile>): Tile {
         val currentTile = unit.getTile()
-        val workableTiles = currentTile.getTilesInDistance(4)
+        val workableTilesCenterFirst = currentTile.getTilesInDistance(4)
                 .filter {
                     it !in tilesToAvoid
                     && (it.civilianUnit == null || it == currentTile)
@@ -283,17 +283,27 @@ class WorkerAutomation(
                     && it.getTilesInDistance(3)  // don't work in range of enemy units
                         .none { tile -> tile.militaryUnit != null && tile.militaryUnit!!.civ.isAtWarWith(civInfo)}
                 }
-                .sortedByDescending { getPriority(it) }
 
         // Carthage can move through mountains, special case
-        // If there is a non-damage dealing tile available, move to that tile, otherwise move to the damage dealing tile
-        // These are the expensive calculations (tileCanBeImproved, canReach), so we only apply these filters after everything else it done.
-        val selectedTile =
-            workableTiles.sortedByDescending { tile -> unit.getDamageFromTerrain(tile) <= 0 }.firstOrNull { unit.movement.canReach(it) && (tileCanBeImproved(unit, it) || it.isPillaged()) }
-                ?: return currentTile
+        // If there are non-damage dealing tiles available, move to the best of those, otherwise move to the best damage dealing tile
+        val workableTilesPrioritized = workableTilesCenterFirst
+                .sortedWith(
+                    compareBy<Tile> { unit.getDamageFromTerrain(it) > 0 } // Sort on Boolean puts false first
+                        .thenByDescending { getPriority(it) }
+                )
 
+        // These are the expensive calculations (tileCanBeImproved, canReach), so we only apply these filters after everything else it done.
+        val selectedTile = workableTilesPrioritized
+            .firstOrNull { unit.movement.canReach(it) && (tileCanBeImproved(unit, it) || it.isPillaged()) }
+            ?: return currentTile
+
+        // Note: workableTiles is a Sequence, and we oiginally used workableTiles.contains for the second
+        // test, which looks like a second potentially deep iteration of it, after just being iterated
+        // for selectedTile. But TileMap.getTilesInDistanceRange iterates its range forward, meaning
+        // currentTile is always the very first entry of the _unsorted_ Sequence - if it is still
+        // contained at all and not dropped by the filters - which is the point here.
         return if ((!tileCanBeImproved(unit, currentTile) && !currentTile.isPillaged()) // current tile is unimprovable
-                    || !workableTiles.contains(currentTile) // current tile is unworkable by city
+                    || workableTilesCenterFirst.firstOrNull() != currentTile  // current tile is unworkable by city
                     || getPriority(selectedTile) > getPriority(currentTile))  // current tile is less important
             selectedTile
         else currentTile
