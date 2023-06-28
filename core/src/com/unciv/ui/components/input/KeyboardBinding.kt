@@ -116,6 +116,7 @@ enum class KeyboardBinding(
     // Popups
     Confirm(Category.Popups, "Confirm Dialog", 'y'),
     Cancel(Category.Popups, "Cancel Dialog", 'n'),
+    UpgradeAll(Category.Popups, KeyCharAndCode.ctrl('a')),
     ;
     //endregion
 
