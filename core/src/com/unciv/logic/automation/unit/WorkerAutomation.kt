@@ -154,8 +154,7 @@ class WorkerAutomation(
             return
         }
 
-        if (currentTile.improvementInProgress == null && currentTile.isLand
-            && tileCanBeImproved(unit, currentTile)) {
+        if (currentTile.improvementInProgress == null && tileCanBeImproved(unit, currentTile)) {
             debug("WorkerAutomation: ${unit.label()} -> start improving $currentTile")
             return currentTile.startWorkingOnImprovement(chooseImprovement(unit, currentTile)!!, civInfo, unit)
         }
@@ -302,9 +301,10 @@ class WorkerAutomation(
         // for selectedTile. But TileMap.getTilesInDistanceRange iterates its range forward, meaning
         // currentTile is always the very first entry of the _unsorted_ Sequence - if it is still
         // contained at all and not dropped by the filters - which is the point here.
-        return if ((!tileCanBeImproved(unit, currentTile) && !currentTile.isPillaged()) // current tile is unimprovable
-                    || workableTilesCenterFirst.firstOrNull() != currentTile  // current tile is unworkable by city
-                    || getPriority(selectedTile) > getPriority(currentTile))  // current tile is less important
+        return if ( currentTile == selectedTile  // No choice
+                || (!tileCanBeImproved(unit, currentTile) && !currentTile.isPillaged()) // current tile is unimprovable
+                || workableTilesCenterFirst.firstOrNull() != currentTile  // current tile is unworkable by city
+                || getPriority(selectedTile) > getPriority(currentTile))  // current tile is less important
             selectedTile
         else currentTile
     }
@@ -314,8 +314,12 @@ class WorkerAutomation(
      * (but does not check whether the ruleset contains any unit capable of it)
      */
     private fun tileCanBeImproved(unit: MapUnit, tile: Tile): Boolean {
-        if (!tile.isLand || tile.isImpassible() || tile.isCityCenter())
-            return false
+        //todo This is wrong but works for Alpha Frontier, because the unit has both:
+        // It should test for the build over time ability, but this tests the create and die ability
+        if (!tile.isLand && !unit.cache.hasUniqueToCreateWaterImprovements) return false
+        // Allow outlandish mods having non-road improvements on Mountains
+        if (tile.isImpassible() && !unit.cache.canPassThroughImpassableTiles) return false
+        if (tile.isCityCenter()) return false
 
         val city = tile.getCity()
         if (city == null || city.civ != civInfo)
