@@ -243,6 +243,7 @@ class UnitMovement(val unit: MapUnit) {
     /**
      * Does not consider if the [destination] tile can actually be entered, use [canMoveTo] for that.
      * Returns an empty list if there's no way to get to the destination.
+     * @return a list of "stopovers", not including current tile but including destination - or an empty list if unreachable
      */
     fun getShortestPath(destination: Tile, avoidDamagingTerrain: Boolean = false): List<Tile> {
         if (unit.cache.cannotMove) return listOf()

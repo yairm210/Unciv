@@ -619,19 +619,20 @@ object UnitAutomation {
             return true
         }
 
-        val ourUnitsAroundEnemyCity = closestReachableEnemyCity.getTilesInDistance(6)
-            .flatMap { it.getUnits() }
-            .filter { it.isMilitary() && it.civ == unit.civ }
+        val ourUnitsAroundEnemyCity = closestReachableEnemyCity.getTilesInDistance(expectedDamagePerTurnMaxUnitRange)
+            .mapNotNull { it.militaryUnit }
+            .filter { it.civ == unit.civ }
 
         val city = closestReachableEnemyCity.getCity()!!
         val cityCombatant = CityCombatant(city)
 
         val expectedDamagePerTurn = ourUnitsAroundEnemyCity
-            .map { BattleDamage.calculateDamageToDefender(MapUnitCombatant(it), cityCombatant) }
-            .sum() // City heals 20 per turn
+            .sumOf { BattleDamage.calculateDamageToDefender(MapUnitCombatant(it), cityCombatant, randomnessFactor = 0.5f) }
 
         if (expectedDamagePerTurn < city.health && // If we can take immediately, go for it
-                (expectedDamagePerTurn <= 20 || city.health / (expectedDamagePerTurn-20) > 5)){ // otherwise check if we can take within a couple of turns
+                // otherwise check if we can take within a couple of turns
+                // (city heals 20 per turn - hardcoded near the end of CityTurnManager)
+                (expectedDamagePerTurn <= 20 || city.health / (expectedDamagePerTurn-20) > 5)) {
 
             // We won't be able to take this even with 5 turns of continuous damage!
             // don't head straight to the city, try to head to landing grounds -
@@ -803,15 +804,16 @@ object UnitAutomation {
             unit.movement.moveToTile(defensiveUnit)
             return
         }
-        val tileFurthestFromEnemy = reachableTiles.keys
-            .filter { unit.movement.canMoveTo(it) && unit.getDamageFromTerrain(it) < unit.health }
-            .maxByOrNull { countDistanceToClosestEnemy(unit, it) }
+        val (tileFurthestFromEnemy, _) = reachableTiles.keys.asSequence()
+            .map { it to unit.getDamageFromTerrain(it) } // Not dead cheap, so get it only once per tile
+            .filter { it.second < unit.health && unit.movement.canMoveTo(it.first) }
+            .maxByOrNull { countDistanceToClosestEnemy(unit, it.first) + (if (it.second == 0) 5 else 0) }
             ?: return // can't move anywhere!
         unit.movement.moveToTile(tileFurthestFromEnemy)
     }
 
-
     private fun countDistanceToClosestEnemy(unit: MapUnit, tile: Tile): Int {
+        // This is used only in runAway for prioritizing, so it doesn't need more precision
         for (i in 1..3)
             if (tile.getTilesAtDistance(i).any { containsEnemyMilitaryUnit(unit, it) })
                 return i

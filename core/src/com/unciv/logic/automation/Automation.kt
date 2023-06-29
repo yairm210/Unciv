@@ -2,13 +2,13 @@ package com.unciv.logic.automation
 
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFocus
-import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
@@ -345,7 +345,9 @@ object Automation {
         }
     }
 
-    // Ranks a tile for any purpose except the expansion algorithm of cities
+    /** Ranks a tile for any purpose except the expansion algorithm of cities
+     *  @return a Float in the range 0f .. (maximum tile yield + 3.2f) - very roughly. Larger values mean better tiles.
+     */
     internal fun rankTile(tile: Tile?, civInfo: Civilization): Float {
         if (tile == null) return 0f
         val tileOwner = tile.getOwner()
@@ -363,7 +365,7 @@ object Automation {
         return rank
     }
 
-    // Ranks a tile for the expansion algorithm of cities
+    /** Ranks a tile for the expansion algorithm of cities */
     internal fun rankTileForExpansion(tile: Tile, city: City,
                                       localUniqueCache: LocalUniqueCache): Int {
         // https://github.com/Gedemon/Civ5-DLL/blob/aa29e80751f541ae04858b6d2a2c7dcca454201e/CvGameCoreDLL_Expansion1/CvCity.cpp#L10301

@@ -296,7 +296,7 @@ class WorkerAutomation(
             .firstOrNull { unit.movement.canReach(it) && (tileCanBeImproved(unit, it) || it.isPillaged()) }
             ?: return currentTile
 
-        // Note: workableTiles is a Sequence, and we oiginally used workableTiles.contains for the second
+        // Note: workableTiles is a Sequence, and we originally used workableTiles.contains for the second
         // test, which looks like a second potentially deep iteration of it, after just being iterated
         // for selectedTile. But TileMap.getTilesInDistanceRange iterates its range forward, meaning
         // currentTile is always the very first entry of the _unsorted_ Sequence - if it is still
