@@ -16,10 +16,29 @@ import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
 import kotlin.math.pow
 
+class Leader {
+    private var name: String = ""
+    var gender: String = ""
+
+    var currentTitle: String = ""
+    var titlePlacement: String = ""
+
+    // Merges leader name with their title, depending on where the title placement should be
+    fun getName(): String {
+        return when (titlePlacement) {
+            "front" -> "$currentTitle $name"
+            "end" -> "$name $currentTitle"
+            else -> name // Inbetween?
+        }
+    }
+}
+
 class Nation : RulesetObject() {
-    var leaderName = ""
+    // City-states have "" as leader name and gender, initialized here
+    var leader: Leader = Leader()
+
     fun getLeaderDisplayName() = if (isCityState || isSpectator) name
-        else "[$leaderName] of [$name]"
+    else "[${leader.getName()}] of [$name]"
 
     val style = ""
     fun getStyleOrCivName() = style.ifEmpty { name }
@@ -101,8 +120,8 @@ class Nation : RulesetObject() {
 
         val textList = ArrayList<FormattedLine>()
 
-        if (leaderName.isNotEmpty()) {
-            textList += FormattedLine(extraImage = "LeaderIcons/$leaderName", imageSize = 200f)
+        if (leader.getName().isNotEmpty()) {
+            textList += FormattedLine(extraImage = "LeaderIcons/${leader.getName()}", imageSize = 200f)
             textList += FormattedLine(getLeaderDisplayName(), centered = true, header = 3)
             textList += FormattedLine()
         }

@@ -9,7 +9,10 @@
 	{
 		//nations
 		"name": "Babylon",
-		"leaderName": "Nebuchadnezzar II",
+        "leader": {
+            "name": "Nebuchadnezzar II",
+            "gender": "masculine"
+        },
 		"adjective": ["Babylonian"],
 		"startBias": ["Avoid [Tundra]"],
 		"preferredVictoryType": "Scientific",
@@ -40,7 +43,10 @@
 	},
 	{
 		"name": "Greece",
-		"leaderName": "Alexander",
+        "leader": {
+            "name": "Alexander",
+            "gender": "masculine"
+        },
 		"adjective": ["Greek"],
 		"startBias": ["Coast"],
 		"preferredVictoryType":"Diplomatic",
@@ -72,7 +78,10 @@
     },
 	{
 		"name": "China",
-		"leaderName": "Wu Zetian",
+        "leader": {
+            "name": "Wu Zetian",
+            "gender": "feminine"
+        },
 		"adjective": ["Chinese"],
 		"preferredVictoryType": "Scientific",
 
@@ -102,7 +111,10 @@
     },
 	{
 		"name": "Egypt",
-		"leaderName": "Ramesses II",
+        "leader": {
+            "name": "Ramesses II",
+            "gender": "masculine"
+        },
 		"adjective": ["Egyptian"],
 		"startBias": ["Avoid [Jungle]","Avoid [Forest]"],
 		"preferredVictoryType": "Cultural",
@@ -134,7 +146,10 @@
     },
 	{
 		"name": "England",
-		"leaderName": "Elizabeth",
+        "leader": {
+            "name": "Elizabeth",
+            "gender": "feminine"
+        },
 		"adjective": ["English"],
 		"startBias": ["Coast"],
 		"preferredVictoryType": "Diplomatic",
@@ -162,7 +177,10 @@
     },
 	{
 		"name": "France",
-		"leaderName": "Napoleon",
+        "leader": {
+            "name": "Napoleon",
+            "gender": "masculine"
+        },
 		"adjective": ["French"],
 		"preferredVictoryType": "Cultural",
 
@@ -191,7 +209,10 @@
     },
 	{
 		"name": "Russia",
-		"leaderName": "Catherine",
+        "leader": {
+            "name": "Catherine",
+            "gender": "feminine"
+        },
 		"adjective": ["Russian"],
 		"startBias": ["Tundra"],
 		"preferredVictoryType": "Scientific",
@@ -221,7 +242,10 @@
     },
 	{
 		"name": "Rome",
-		"leaderName": "Augustus Caesar",
+        "leader": {
+            "name": "Augustus Caesar",
+            "gender": "masculine"
+        },
 		"adjective": ["Roman"],
 		"startBias":["Avoid [Tundra]","Avoid [Desert]"],
 		"preferredVictoryType": "Scientific",
@@ -250,7 +274,10 @@
     },
 	{
 		"name": "Arabia",
-		"leaderName": "Harun al-Rashid",
+        "leader": {
+            "name": "Harun al-Rashid",
+            "gender": "masculine"
+        },
 		"adjective": ["Arabian"],
 		"startBias": ["Desert"],
 		"preferredVictoryType": "Scientific",
@@ -278,7 +305,10 @@
     },
 	{
 		"name": "America",
-		"leaderName": "George Washington",
+        "leader": {
+            "name": "George Washington",
+            "gender": "masculine"
+        },
 		"adjective": ["American"],
 		"preferredVictoryType": "Scientific",
 
@@ -309,7 +339,10 @@
 	},
 	{
 		"name": "Japan",
-		"leaderName": "Oda Nobunaga",
+        "leader": {
+            "name": "Oda Nobunaga",
+            "gender": "masculine"
+        },
 		"adjective": ["Japanese"],
 		"startBias": ["Coast"],
 		"preferredVictoryType": "Domination",
@@ -337,7 +370,10 @@
     },
 	{
 		"name": "India",
-		"leaderName": "Gandhi",
+        "leader": {
+            "name": "Gandhi",
+            "gender": "masculine"
+        },
 		"adjective": ["Indian"],
 		"startBias": ["Grassland"],
 		"preferredVictoryType": "Cultural",
@@ -366,7 +402,10 @@
     },
 	{
 		"name": "Germany",
-		"leaderName": "Otto von Bismarck",
+        "leader": {
+            "name": "Otto von Bismarck",
+            "gender": "masculine"
+        },
 		"adjective": ["German"],
 		"preferredVictoryType": "Scientific",
 
@@ -397,7 +436,10 @@
 
 	{
 		"name": "The Ottomans",
-		"leaderName": "Suleiman I",
+        "leader": {
+            "name": "Suleiman I",
+            "gender": "masculine"
+        },
 		"adjective": ["Ottoman"],
 		"startBias": ["Coast"],
 		"preferredVictoryType": "Domination",
@@ -428,7 +470,10 @@
     },
 	{
 		"name": "Korea",
-		"leaderName": "Sejong",
+        "leader": {
+            "name": "Sejong",
+            "gender": "masculine"
+        },
 		"adjective": ["Korean"],
 		"startBias": ["Coast"],
 		"preferredVictoryType": "Scientific",
@@ -457,7 +502,10 @@
 
 	{
 		"name": "Iroquois",
-		"leaderName": "Hiawatha",
+        "leader": {
+            "name": "Hiawatha",
+            "gender": "masculine"
+        },
 		"adjective": ["Iroquoise"],
 		"startBias": ["Forest"],
 		"preferredVictoryType": "Scientific",
@@ -487,7 +535,10 @@
     },
 	{
 		"name": "Persia",
-		"leaderName": "Darius I",
+        "leader": {
+            "name": "Darius I",
+            "gender": "masculine"
+        },
 		"adjective": ["Persian"],
 		"preferredVictoryType": "Scientific",
 
@@ -519,7 +570,10 @@
     },
 	{
 		"name": "Polynesia",
-		"leaderName": "Kamehameha I",
+        "leader": {
+            "name": "Kamehameha I",
+            "gender": "masculine"
+        },
 		"adjective": ["Polynesia"],
 		"startBias": ["Coast"],
 		"preferredVictoryType": "Cultural",
@@ -549,7 +603,10 @@
     },
 	{
 		"name": "Siam",
-		"leaderName": "Ramkhamhaeng",
+        "leader": {
+            "name": "Ramkhamhaeng",
+            "gender": "masculine"
+        },
 		"adjective": ["Siamese"],
 		"startBias": ["Avoid [Forest]"],
 		"preferredVictoryType":"Diplomatic",
@@ -577,7 +634,10 @@
     },
 	{
 		"name": "Spain",
-		"leaderName": "Isabella",
+        "leader": {
+            "name": "Isabella",
+            "gender": "feminine"
+        },
 		"adjective": ["Spanish"],
 		"startBias": ["Coast"],
 		"preferredVictoryType": "Domination",
@@ -606,7 +666,10 @@
     },
 	{
 		"name": "Songhai",
-		"leaderName": "Askia",
+        "leader": {
+            "name": "Askia",
+            "gender": "masculine"
+        },
 		"adjective": ["Songhai"],
 		"startBias": ["Avoid [Tundra]"],
 		"preferredVictoryType": "Domination",
@@ -633,7 +696,10 @@
     },
 	{
 		"name": "Mongolia",
-		"leaderName": "Genghis Khan",
+        "leader": {
+            "name": "Genghis Khan",
+            "gender": "masculine"
+        },
 		"adjective": ["Mongolian"],
 		"startBias": ["Plains"],
 		"preferredVictoryType": "Domination",
@@ -661,7 +727,10 @@
     },
 	{
 		"name": "Aztecs",
-		"leaderName": "Montezuma I",
+        "leader": {
+            "name": "Montezuma I",
+            "gender": "masculine"
+        },
 		"adjective": ["Aztec"],
 		"startBias": ["Jungle"],
 		"preferredVictoryType": "Domination",
@@ -694,7 +763,10 @@
     },
 	{
 		"name": "Inca",
-		"leaderName": "Pachacuti",
+        "leader": {
+            "name": "Pachacuti",
+            "gender": "masculine"
+        },
 		"adjective": ["Incan"],
 		"startBias": ["Hill"],
 		"preferredVictoryType": "Cultural",
@@ -736,7 +808,10 @@
     },
 	{
 		"name": "Denmark",
-		"leaderName": "Harald Bluetooth",
+        "leader": {
+            "name": "Harald Bluetooth",
+            "gender": "masculine"
+        },
 		"adjective": ["Danish"],
 		"startBias": ["Coast"],
 		"preferredVictoryType": "Cultural",
@@ -768,7 +843,10 @@
     },
 	{
 		"name": "The Huns",
-		"leaderName": "Attila the Hun",
+        "leader": {
+            "name": "Attila the Hun",
+            "gender": "masculine"
+        },
 		"adjective": ["Hunnic"],
 		"startBias": ["Avoid [Jungle]", "Avoid [Forest]"],
 		"preferredVictoryType": "Domination",
@@ -795,7 +873,10 @@
     },
 	{
 		"name": "The Netherlands",
-		"leaderName": "William of Orange",
+        "leader": {
+            "name": "William of Orange",
+            "gender": "masculine"
+        },
 		"adjective": ["Dutch"],
 		"startBias": ["Grassland"],
 		"preferredVictoryType": "Cultural",
@@ -821,7 +902,10 @@
 
 	{
 	    "name": "Sweden",
-		"leaderName": "Gustavus Adolphus",
+        "leader": {
+            "name": "Gustavus Adolphus",
+            "gender": "masculine"
+        },
 		"adjective": ["Swedish"],
 		"startBias": ["Tundra"],
 		"preferredVictoryType": "Diplomatic",
@@ -852,7 +936,10 @@
     },
 	{
 		"name": "Austria",
-		"leaderName": "Maria Theresa",
+        "leader": {
+            "name": "Maria Theresa",
+            "gender": "feminine"
+        },
 		"adjective": ["Austrian"],
 		"startBias": ["Hill"],
 		"preferredVictoryType": "Diplomatic",
@@ -884,7 +971,10 @@
     },
 	{
 		"name": "Carthage",
-		"leaderName": "Dido",
+        "leader": {
+            "name": "Dido",
+            "gender": "feminine"
+        },
 		"adjective": ["Carthaginian"],
 		"startBias": ["Coast"],
 		"preferredVictoryType": "Domination",
@@ -913,7 +1003,10 @@
     },
 	{
 		"name": "Byzantium",
-		"leaderName": "Theodora",
+        "leader": {
+            "name": "Theodora",
+            "gender": "feminine"
+        },
 		"adjective": ["Byzantine"],
 		"startBias": ["Coast"],
 		"preferredVictoryType": "Cultural",
@@ -941,7 +1034,10 @@
     },
 	{
 		"name": "Celts",
-		"leaderName": "Boudicca",
+        "leader": {
+            "name": "Boudicca",
+            "gender": "feminine"
+        },
 		"adjective": ["celtic"],
 		"startBias": ["Forest"],
 		"preferredVictoryType": "Domination",
@@ -982,7 +1078,10 @@
     },
 	{
 		"name": "Ethiopia",
-		"leaderName": "Haile Selassie",
+        "leader": {
+            "name": "Haile Selassie",
+            "gender": "masculine"
+        },
 		"adjective": ["ethiopian"],
 		"startBias": ["Jungle"],
 		"preferredVictoryType": "Cultural",
@@ -1021,7 +1120,10 @@
     },
 	{
 		"name": "The Maya",
-		"leaderName": "Pacal",
+        "leader": {
+            "name": "Pacal",
+            "gender": "masculine"
+        },
 		"adjective": ["mayan"],
 		"startBias": ["Jungle"],
 		"preferredVictoryType": "Scientific",

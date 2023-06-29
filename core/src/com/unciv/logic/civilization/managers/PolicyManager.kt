@@ -194,6 +194,11 @@ class PolicyManager : IsPartOfGameInfoSerialization {
             val branch = policy.branch
             if (branch.policies.count { isAdopted(it.name) } == branch.policies.size - 1) { // All done apart from branch completion
                 adopt(branch.policies.last(), true) // add branch completion!
+                // Add [new] title
+                // [Policy] Branch contains title placement (before/after name), loaded from json file
+                civInfo.nation.leader.titlePlacement = branch.title.placement
+                if (civInfo.nation.leader.gender == "feminine") civInfo.nation.leader.currentTitle = branch.title.female
+                else civInfo.nation.leader.currentTitle = branch.title.male
             }
         }
 

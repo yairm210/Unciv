@@ -13,7 +13,6 @@ class DesktopGame(config: Lwjgl3ApplicationConfiguration) : UncivGame() {
         config.setWindowListener(turnNotifier)
 
         discordUpdater.setOnUpdate {
-
             if (!isInitialized)
                 return@setOnUpdate null
 
@@ -22,12 +21,11 @@ class DesktopGame(config: Lwjgl3ApplicationConfiguration) : UncivGame() {
 
             if (game != null) {
                 info.gameTurn = game.turns
-                info.gameLeader = game.getCurrentPlayerCivilization().nation.leaderName
+                info.gameLeader = game.getCurrentPlayerCivilization().nation.leader.getName()
                 info.gameNation = game.getCurrentPlayerCivilization().nation.name
             }
 
             return@setOnUpdate info
-
         }
 
         discordUpdater.startUpdates()

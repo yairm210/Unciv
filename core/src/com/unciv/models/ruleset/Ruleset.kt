@@ -74,7 +74,7 @@ class ModOptions : IHasUniques {
 
 class Ruleset {
 
-    var folderLocation:FileHandle?=null
+    var folderLocation:FileHandle ?= null
 
     var name = ""
     val beliefs = LinkedHashMap<String, Belief>()

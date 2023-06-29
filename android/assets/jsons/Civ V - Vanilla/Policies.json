@@ -2,6 +2,11 @@
     {
         "name": "Tradition",
         "era": "Ancient era",
+        "title": {
+            "male": "Lord",
+            "female": "Lady",
+            "placement": "front"
+        },
         "priorities": {
             "Neutral": 0,
             "Cultural": 10,
@@ -71,6 +76,11 @@
     {
         "name": "Liberty",
         "era": "Ancient era",
+        "title": {
+            "male": "Consul",
+            "female": "Consul",
+            "placement": "front"
+        },
         "priorities": {
             "Neutral": 0,
             "Cultural": 0,
@@ -138,6 +148,11 @@
     {
         "name": "Honor",
         "era": "Ancient era",
+        "title": {
+            "male": "The Great",
+            "female": "The Great",
+            "placement": "end"
+        },
         "priorities": {
             "Neutral": 0,
             "Cultural": 0,
@@ -210,6 +225,11 @@
     {
         "name": "Piety",
         "era": "Classical era",
+        "title": {
+            "male": "The Pious",
+            "female": "The Pious",
+            "placement": "end"
+        },
         "priorities": {
             "Neutral": 0,
             "Cultural": 10,
@@ -278,6 +298,11 @@
     {
         "name": "Patronage",
         "era": "Medieval era",
+        "title": {
+            "male": "the Enlightened",
+            "female": "the Enlightened",
+            "placement": "end"
+        },
         "priorities": {
             "Neutral": 0,
             "Cultural": 0,
@@ -343,6 +368,11 @@
     {
         "name": "Commerce",
         "era": "Medieval era",
+        "title": {
+            "male": "Doge",
+            "female": "Doge",
+            "placement": "front"
+        },
         "priorities": {
             "Neutral": 0,
             "Cultural": 10,
@@ -412,6 +442,11 @@
     {
         "name": "Rationalism",
         "era": "Renaissance era",
+        "title": {
+            "male": "the Wise",
+            "female": "the Wise",
+            "placement": "end"
+        },
         "priorities": {
             "Neutral": 0,
             "Cultural": 10,
@@ -477,6 +512,11 @@
     {
         "name": "Freedom",
         "era": "Renaissance era",
+        "title": {
+            "male": "President",
+            "female": "President",
+            "placement": "front"
+        },
         "priorities": {
             "Neutral": 30,
             "Cultural": 30,
@@ -538,6 +578,11 @@
     {
         "name": "Autocracy",
         "era": "Industrial era",
+        "title": {
+            "male": "the Terrible",
+            "female": "the Terrible",
+            "placement": "end"
+        },
         "priorities": {
             "Neutral": 30,
             "Cultural": 0,
@@ -603,6 +648,11 @@
     {
         "name": "Order",
         "era": "Industrial era",
+        "title": {
+            "male": "Chairman",
+            "female": "Chairman",
+            "placement": "front"
+        },
         "priorities": {
             "Neutral": 30,
             "Cultural": 0,
