@@ -428,11 +428,14 @@ object GameStarter {
 
             //Trigger any global or nation uniques that should triggered.
             //We may need the starting location for some uniques, which is why we're doing it now
-            val startingTriggers=(ruleset.globalUniques.uniqueObjects + civ.nation.uniqueObjects)
-                .filter { !it.conditionals.any { it.type!!.targetTypes.any { it.canAcceptUniqueTarget(UniqueTarget.TriggerCondition) } } }
+            val startingTriggers = (ruleset.globalUniques.uniqueObjects + civ.nation.uniqueObjects)
+                //We don't want uniques with trigger conditionals. Those are called when they are relevant
+                .filter { unique -> unique.conditionals.none {
+                    conditional -> conditional.type!!.targetTypes.any {
+                        it.canAcceptUniqueTarget(UniqueTarget.TriggerCondition) } } }
             for (unique in startingTriggers)
                 if(unique.isTriggerable)
-                    UniqueTriggerActivation.triggerCivwideUnique(unique,civ, tile = startingLocation)
+                    UniqueTriggerActivation.triggerCivwideUnique(unique, civ, tile = startingLocation)
         }
     }
 
