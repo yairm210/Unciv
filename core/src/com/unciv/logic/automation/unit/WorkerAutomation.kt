@@ -34,38 +34,38 @@ private object WorkerAutomationConst {
  *
  * This is instantiated from [Civilization.getWorkerAutomation] and cached there.
  *
- * @param civInfo       The Civilization - data common to all automated workers is cached once per Civ
+ * @param civ       The Civilization - data common to all automated workers is cached once per Civ
  * @param cachedForTurn The turn number this was created for - a recreation of the instance is forced on different turn numbers
  */
 class WorkerAutomation(
-    val civInfo: Civilization,
+    private val civ: Civilization,
     val cachedForTurn: Int,
     cloningSource: WorkerAutomation? = null
 ) {
     ///////////////////////////////////////// Cached data /////////////////////////////////////////
 
-    private val ruleSet = civInfo.gameInfo.ruleset
+    private val ruleSet = civ.gameInfo.ruleset
 
     /** Caches road to build for connecting cities unless option is off or ruleset removed all roads */
     private val bestRoadAvailable: RoadStatus =
         cloningSource?.bestRoadAvailable ?:
         //Player can choose not to auto-build roads & railroads.
-        if (civInfo.isHuman() && !UncivGame.Current.settings.autoBuildingRoads)
+        if (civ.isHuman() && !UncivGame.Current.settings.autoBuildingRoads)
             RoadStatus.None
-        else civInfo.tech.getBestRoadAvailable()
+        else civ.tech.getBestRoadAvailable()
 
     /** Civ-wide list of unconnected Cities, sorted by closest to capital first */
     private val citiesThatNeedConnecting: List<City> by lazy {
-        val result = civInfo.cities.asSequence()
+        val result = civ.cities.asSequence()
             .filter {
                 it.population.population > 3
                         && !it.isCapital() && !it.isBeingRazed // Cities being razed should not be connected.
                         && !it.cityStats.isConnectedToCapital(bestRoadAvailable)
             }.sortedBy {
-                it.getCenterTile().aerialDistanceTo(civInfo.getCapital()!!.getCenterTile())
+                it.getCenterTile().aerialDistanceTo(civ.getCapital()!!.getCenterTile())
             }.toList()
         if (Log.shouldLog()) {
-            debug("WorkerAutomation citiesThatNeedConnecting for ${civInfo.civName} turn $cachedForTurn:")
+            debug("WorkerAutomation citiesThatNeedConnecting for ${civ.civName} turn $cachedForTurn:")
             if (result.isEmpty())
                 debug("\tempty")
             else result.forEach {
@@ -77,12 +77,12 @@ class WorkerAutomation(
 
     /** Civ-wide list of _connected_ Cities, unsorted */
     private val tilesOfConnectedCities: List<Tile> by lazy {
-        val result = civInfo.cities.asSequence()
+        val result = civ.cities.asSequence()
             .filter { it.isCapital() || it.cityStats.isConnectedToCapital(bestRoadAvailable) }
             .map { it.getCenterTile() }
             .toList()
         if (Log.shouldLog()) {
-            debug("WorkerAutomation tilesOfConnectedCities for ${civInfo.civName} turn $cachedForTurn:")
+            debug("WorkerAutomation tilesOfConnectedCities for ${civ.civName} turn $cachedForTurn:")
             if (result.isEmpty())
                 debug("\tempty")
             else result.forEach {
@@ -141,7 +141,7 @@ class WorkerAutomation(
                 ) {
                     debug("WorkerAutomation: ${unit.label()} -> start improving $currentTile")
                     return currentTile.startWorkingOnImprovement(
-                        chooseImprovement(unit, currentTile)!!, civInfo, unit
+                        chooseImprovement(unit, currentTile)!!, civ, unit
                     )
                 }
             }
@@ -156,7 +156,7 @@ class WorkerAutomation(
 
         if (currentTile.improvementInProgress == null && tileCanBeImproved(unit, currentTile)) {
             debug("WorkerAutomation: ${unit.label()} -> start improving $currentTile")
-            return currentTile.startWorkingOnImprovement(chooseImprovement(unit, currentTile)!!, civInfo, unit)
+            return currentTile.startWorkingOnImprovement(chooseImprovement(unit, currentTile)!!, civ, unit)
         }
 
         if (currentTile.improvementInProgress != null) return // we're working!
@@ -250,7 +250,7 @@ class WorkerAutomation(
                     if (unit.currentMovement > 0 && currentTile == tileToConstructRoadOn
                         && currentTile.improvementInProgress != bestRoadAvailable.name) {
                         val improvement = bestRoadAvailable.improvement(ruleSet)!!
-                        tileToConstructRoadOn.startWorkingOnImprovement(improvement, civInfo, unit)
+                        tileToConstructRoadOn.startWorkingOnImprovement(improvement, civ, unit)
                     }
                     debug("WorkerAutomation: %s -> connect city %s to %s on %s",
                         unit.label(), bfs.startingPoint.getCity()?.name, cityTile.getCity()!!.name, tileToConstructRoadOn)
@@ -275,12 +275,12 @@ class WorkerAutomation(
                 .filter {
                     it !in tilesToAvoid
                     && (it.civilianUnit == null || it == currentTile)
-                    && (it.owningCity == null || it.getOwner() == civInfo)
+                    && (it.owningCity == null || it.getOwner() == civ)
                     && getPriority(it) > 1
                     && it.getTilesInDistance(2)  // don't work in range of enemy cities
-                        .none { tile -> tile.isCityCenter() && tile.getCity()!!.civ.isAtWarWith(civInfo) }
+                        .none { tile -> tile.isCityCenter() && tile.getCity()!!.civ.isAtWarWith(civ) }
                     && it.getTilesInDistance(3)  // don't work in range of enemy units
-                        .none { tile -> tile.militaryUnit != null && tile.militaryUnit!!.civ.isAtWarWith(civInfo)}
+                        .none { tile -> tile.militaryUnit != null && tile.militaryUnit!!.civ.isAtWarWith(civ)}
                 }
 
         // Carthage can move through mountains, special case
@@ -322,12 +322,12 @@ class WorkerAutomation(
         if (tile.isCityCenter()) return false
 
         val city = tile.getCity()
-        if (city == null || city.civ != civInfo)
+        if (city == null || city.civ != civ)
             return false
 
         if (!city.tilesInRange.contains(tile)
-                && !tile.hasViewableResource(civInfo)
-                && civInfo.cities.none { it.getCenterTile().aerialDistanceTo(tile) <= 3 })
+                && !tile.hasViewableResource(civ)
+                && civ.cities.none { it.getCenterTile().aerialDistanceTo(tile) <= 3 })
             return false // unworkable tile
 
         val junkImprovement = tile.getTileImprovement()?.hasUnique(UniqueType.AutomatedWorkersWillReplace)
@@ -339,11 +339,11 @@ class WorkerAutomation(
         if (tile.improvement == null || junkImprovement == true) {
             if (tile.improvementInProgress != null && unit.canBuildImprovement(tile.getTileImprovementInProgress()!!, tile)) return true
             val chosenImprovement = chooseImprovement(unit, tile)
-            if (chosenImprovement != null && tile.improvementFunctions.canBuildImprovement(chosenImprovement, civInfo) && unit.canBuildImprovement(chosenImprovement, tile)) return true
-        } else if (!tile.containsGreatImprovement() && tile.hasViewableResource(civInfo)
+            if (chosenImprovement != null && tile.improvementFunctions.canBuildImprovement(chosenImprovement, civ) && unit.canBuildImprovement(chosenImprovement, tile)) return true
+        } else if (!tile.containsGreatImprovement() && tile.hasViewableResource(civ)
             && !tile.tileResource.isImprovedBy(tile.improvement!!)
             && (chooseImprovement(unit, tile) // if the chosen improvement is not null and buildable
-                .let { it != null && tile.improvementFunctions.canBuildImprovement(it, civInfo) && unit.canBuildImprovement(it, tile)}))
+                .let { it != null && tile.improvementFunctions.canBuildImprovement(it, civ) && unit.canBuildImprovement(it, tile)}))
             return true
 
         return false // couldn't find anything to construct here
@@ -354,16 +354,16 @@ class WorkerAutomation(
      */
     fun getPriority(tile: Tile): Int {
         var priority = 0
-        if (tile.getOwner() == civInfo) {
+        if (tile.getOwner() == civ) {
             priority += 2
             if (tile.providesYield()) priority += 3
             if (tile.isPillaged()) priority += 1
         }
         // give a minor priority to tiles that we could expand onto
-        else if (tile.getOwner() == null && tile.neighbors.any { it.getOwner() == civInfo })
+        else if (tile.getOwner() == null && tile.neighbors.any { it.getOwner() == civ })
             priority += 1
 
-        if (priority != 0 && tile.hasViewableResource(civInfo)) priority += 1
+        if (priority != 0 && tile.hasViewableResource(civ)) priority += 1
         return priority
     }
 
@@ -374,7 +374,7 @@ class WorkerAutomation(
 
         val potentialTileImprovements = ruleSet.tileImprovements.filter {
             unit.canBuildImprovement(it.value, tile)
-                    && tile.improvementFunctions.canBuildImprovement(it.value, civInfo)
+                    && tile.improvementFunctions.canBuildImprovement(it.value, civ)
                     && (it.value.uniqueTo == null || it.value.uniqueTo == unit.civ.civName)
         }
         if (potentialTileImprovements.isEmpty()) return null
@@ -386,7 +386,7 @@ class WorkerAutomation(
             val cache =
                     if (city == null) LocalUniqueCache(false)
                     else cityUniqueCaches.getOrPut(city) { LocalUniqueCache() }
-            val stats = tile.stats.getImprovementStats(improvement, civInfo, tile.getCity(), cache)
+            val stats = tile.stats.getImprovementStats(improvement, civ, tile.getCity(), cache)
             return Automation.rankStatsValue(stats, unit.civ)
         }
 
@@ -400,11 +400,11 @@ class WorkerAutomation(
         fun isRemovable(terrain: Terrain): Boolean = ruleSet.tileImprovements.containsKey(Constants.remove + terrain.name)
 
         val improvementStringForResource: String? = when {
-            tile.resource == null || !tile.hasViewableResource(civInfo) -> null
+            tile.resource == null || !tile.hasViewableResource(civ) -> null
             tile.terrainFeatures.isNotEmpty()
                 && lastTerrain.unbuildable
                 && isRemovable(lastTerrain)
-                && !tile.providesResources(civInfo)
+                && !tile.providesResources(civ)
                 && !isResourceImprovementAllowedOnFeature(tile, potentialTileImprovements) -> Constants.remove + lastTerrain.name
             else -> tile.tileResource.getImprovements().filter { it in potentialTileImprovements || it==tile.improvement }
                 .maxByOrNull { getRankingWithImprovement(it) }
@@ -424,7 +424,7 @@ class WorkerAutomation(
 
             lastTerrain.let {
                 isRemovable(it) &&
-                    (Automation.rankStatsValue(it, civInfo) < 0
+                    (Automation.rankStatsValue(it, civ) < 0
                         || it.hasUnique(UniqueType.NullifyYields))
             } -> Constants.remove + lastTerrain.name
 
@@ -460,7 +460,7 @@ class WorkerAutomation(
         if (tile.isCityCenter() // don't build fort in the city
             || !tile.isLand // don't build fort in the water
             || tile.improvement == Constants.fort // don't build fort if it is already here
-            || tile.hasViewableResource(civInfo) // don't build on resource tiles
+            || tile.hasViewableResource(civ) // don't build on resource tiles
             || tile.containsGreatImprovement() // don't build on great improvements (including citadel)
         ) return false
 
@@ -476,13 +476,13 @@ class WorkerAutomation(
         //todo Is the Citadel code dead anyway? If not - why does the nearestTiles check not respect the param?
 
         // build on our land only
-        if (tile.owningCity?.civ != civInfo &&
+        if (tile.owningCity?.civ != civ &&
                     // except citadel which can be built near-by
-                    (!isCitadel || tile.neighbors.all { it.getOwner() != civInfo }) ||
+                    (!isCitadel || tile.neighbors.all { it.getOwner() != civ }) ||
             !isAcceptableTileForFort(tile)) return false
 
         // if this place is not perfect, let's see if there is a better one
-        val nearestTiles = tile.getTilesInDistance(2).filter { it.owningCity?.civ == civInfo }.toList()
+        val nearestTiles = tile.getTilesInDistance(2).filter { it.owningCity?.civ == civ }.toList()
         for (closeTile in nearestTiles) {
             // don't build forts too close to the cities
             if (closeTile.isCityCenter()) return false
@@ -495,16 +495,16 @@ class WorkerAutomation(
                 isAcceptableTileForFort(closeTile)) return false
         }
 
-        val enemyCivs = civInfo.getKnownCivs()
-            .filterNot { it == civInfo || it.cities.isEmpty() || !civInfo.getDiplomacyManager(it).canAttack() }
+        val enemyCivs = civ.getKnownCivs()
+            .filterNot { it == civ || it.cities.isEmpty() || !civ.getDiplomacyManager(it).canAttack() }
         // no potential enemies
         if (enemyCivs.none()) return false
 
         val threatMapping: (Civilization) -> Int = {
             // the war is already a good nudge to build forts
-            (if (civInfo.isAtWarWith(it)) 20 else 0) +
+            (if (civ.isAtWarWith(it)) 20 else 0) +
                     // let's check also the force of the enemy
-                    when (Automation.threatAssessment(civInfo, it)) {
+                    when (Automation.threatAssessment(civ, it)) {
                         ThreatLevel.VeryLow -> 1 // do not build forts
                         ThreatLevel.Low -> 6 // too close, let's build until it is late
                         ThreatLevel.Medium -> 10
@@ -513,7 +513,7 @@ class WorkerAutomation(
                     }
         }
         val enemyCivsIsCloseEnough = enemyCivs.filter { NextTurnAutomation.getMinDistanceBetweenCities(
-            civInfo,
+            civ,
             it) <= threatMapping(it) }
         // no threat, let's not build fort
         if (enemyCivsIsCloseEnough.none()) return false
@@ -527,7 +527,7 @@ class WorkerAutomation(
         val distanceToEnemy = tile.aerialDistanceTo(closestEnemyCity)
 
         // find closest our city to defend from this enemy city
-        val closestOurCity = civInfo.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }!!.getCenterTile()
+        val closestOurCity = civ.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }!!.getCenterTile()
         val distanceToOurCity = tile.aerialDistanceTo(closestOurCity)
 
         val distanceBetweenCities = closestEnemyCity.aerialDistanceTo(closestOurCity)
@@ -537,8 +537,8 @@ class WorkerAutomation(
         return distanceBetweenCities + 2 > distanceToEnemy + distanceToOurCity
     }
 
-    private fun hasWorkableSeaResource(tile: Tile, civInfo: Civilization): Boolean =
-        tile.isWater && tile.improvement == null && tile.hasViewableResource(civInfo)
+    private fun hasWorkableSeaResource(tile: Tile, civ: Civilization): Boolean =
+        tile.isWater && tile.improvement == null && tile.hasViewableResource(civ)
 
     /** Try improving a Water Resource
      *
