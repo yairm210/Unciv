@@ -17,11 +17,11 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.cityscreen.CityScreen
 import kotlin.math.roundToInt
@@ -82,30 +82,30 @@ class CityOverviewTab(
     private val columnsNames = arrayListOf("Population", "Food", "Gold", "Science", "Production", "Culture", "Happiness")
             .apply { if (gameInfo.isReligionEnabled()) add("Faith") }
 
-    private val cityInfoTableHeader = Table(skin)
-    private val cityInfoTableDetails = Table(skin)
-    private val cityInfoTableTotal = Table(skin)
+    private val headerTable = Table(skin)
+    private val detailsTable = Table(skin)
+    private val totalTable = Table(skin)
 
     private val collator = UncivGame.Current.settings.getCollatorFromLocale()
 
     override fun getFixedContent() = Table().apply {
         add("Cities".toLabel(fontSize = Constants.headingFontSize)).padTop(10f).row()
-        add(cityInfoTableHeader).padBottom(paddingVert).row()
+        add(headerTable).padBottom(paddingVert).row()
         addSeparator(Color.GRAY)
     }
 
     init {
-        cityInfoTableHeader.defaults().pad(paddingVert, paddingHorz).minWidth(iconSize)
-        cityInfoTableDetails.defaults().pad(paddingVert, paddingHorz).minWidth(iconSize)
-        cityInfoTableTotal.defaults().pad(paddingVert, paddingHorz).minWidth(iconSize)
+        headerTable.defaults().pad(paddingVert, paddingHorz).minWidth(iconSize)
+        detailsTable.defaults().pad(paddingVert, paddingHorz).minWidth(iconSize)
+        totalTable.defaults().pad(paddingVert, paddingHorz).minWidth(iconSize)
 
         updateTotal()
         update()
 
         top()
-        add(cityInfoTableDetails).row()
+        add(detailsTable).row()
         addSeparator(Color.GRAY).pad(paddingVert, 0f)
-        add(cityInfoTableTotal)
+        add(totalTable)
     }
 
     private fun toggleSort(sortBy: String) {
@@ -141,7 +141,7 @@ class CityOverviewTab(
     private fun update() {
         updateHeader()
         updateCities()
-        equalizeColumns(cityInfoTableDetails, cityInfoTableHeader, cityInfoTableTotal)
+        equalizeColumns(detailsTable, headerTable, totalTable)
         layout()
     }
 
@@ -170,23 +170,23 @@ class CityOverviewTab(
                 icon.addActor(label)
             }
             icon.addActor(image)
-            return cityInfoTableHeader.add(icon).size(iconSize)
+            return headerTable.add(icon).size(iconSize)
         }
 
-        cityInfoTableHeader.clear()
+        headerTable.clear()
         addSortIcon(CITY, citySortIcon).left()
-        cityInfoTableHeader.add()  // construction _icon_ column
+        headerTable.add()  // construction _icon_ column
         addSortIcon(CONSTRUCTION, constructionSortIcon).left()
         for (name in columnsNames) {
             addSortIcon(name)
         }
         addSortIcon(WLTK, wltkSortIcon)
         addSortIcon(GARRISON, garrisonSortIcon)
-        cityInfoTableHeader.pack()
+        headerTable.pack()
     }
 
     private fun updateCities() {
-        cityInfoTableDetails.clear()
+        detailsTable.clear()
         if (viewingPlayer.cities.isEmpty()) return
 
         val sorter = getComparator()
@@ -200,25 +200,25 @@ class CityOverviewTab(
             button.onClick {
                 overviewScreen.game.pushScreen(CityScreen(city))
             }
-            cityInfoTableDetails.add(button).left().fillX()
+            detailsTable.add(button).left().fillX()
 
             val construction = city.cityConstructions.currentConstructionFromQueue
             if (construction.isNotEmpty()) {
-                cityInfoTableDetails.add(ImageGetter.getConstructionPortrait(construction, iconSize *0.8f)).padRight(
+                detailsTable.add(ImageGetter.getConstructionPortrait(construction, iconSize *0.8f)).padRight(
                     paddingHorz
                 )
             } else {
-                cityInfoTableDetails.add()
+                detailsTable.add()
             }
 
-            val cell = cityInfoTableDetails.add(city.cityConstructions.getCityProductionTextForCityButton().toLabel()).left().expandX()
+            val cell = detailsTable.add(city.cityConstructions.getCityProductionTextForCityButton().toLabel()).left().expandX()
             constructionCells.add(cell)
 
-            cityInfoTableDetails.add(city.population.population.toCenteredLabel())
+            detailsTable.add(city.population.population.toCenteredLabel())
 
             for (column in columnsNames) {
                 val stat = Stat.safeValueOf(column) ?: continue
-                cityInfoTableDetails.add(city.getStat(stat).toCenteredLabel())
+                detailsTable.add(city.getStat(stat).toCenteredLabel())
             }
 
             when {
@@ -226,7 +226,7 @@ class CityOverviewTab(
                     val image = ImageGetter.getImage("OtherIcons/WLTK 1").surroundWithCircle(
                         iconSize, color = Color.CLEAR)
                     image.addTooltip("[${city.getFlag(CityFlags.WeLoveTheKing)}] turns", 18f, tipAlign = Align.topLeft)
-                    cityInfoTableDetails.add(image)
+                    detailsTable.add(image)
                 }
                 city.demandedResource.isNotEmpty() -> {
                     val image = ImageGetter.getResourcePortrait(city.demandedResource, iconSize *0.7f).apply {
@@ -235,14 +235,14 @@ class CityOverviewTab(
                             gameInfo.getExploredResourcesNotification(viewingPlayer, city.demandedResource)
                         ) }
                     }
-                    cityInfoTableDetails.add(image)
+                    detailsTable.add(image)
                 }
-                else -> cityInfoTableDetails.add()
+                else -> detailsTable.add()
             }
 
             val garrisonUnit = city.getGarrison()
             if (garrisonUnit == null) {
-                cityInfoTableDetails.add()
+                detailsTable.add()
             } else {
                 val garrisonUnitName = garrisonUnit.displayName()
                 val garrisonUnitIcon = ImageGetter.getConstructionPortrait(garrisonUnit.baseUnit.getIconName(), iconSize * 0.7f)
@@ -250,9 +250,9 @@ class CityOverviewTab(
                 garrisonUnitIcon.onClick {
                     overviewScreen.select(EmpireOverviewCategories.Units, UnitOverviewTab.getUnitIdentifier(garrisonUnit) )
                 }
-                cityInfoTableDetails.add(garrisonUnitIcon)
+                detailsTable.add(garrisonUnitIcon)
             }
-            cityInfoTableDetails.row()
+            detailsTable.row()
         }
 
         // row heights may diverge - fix it by setting minHeight to
@@ -260,21 +260,21 @@ class CityOverviewTab(
         val largestLabelHeight = constructionCells.maxByOrNull{ it.prefHeight }!!.prefHeight
         for (cell in constructionCells) cell.minHeight(largestLabelHeight)
 
-        cityInfoTableDetails.pack()
+        detailsTable.pack()
     }
 
     private fun updateTotal() {
-        cityInfoTableTotal.add("Total".toLabel()).left()
-        cityInfoTableTotal.add()  // construction icon column
-        cityInfoTableTotal.add().expandX()  // construction label column
-        cityInfoTableTotal.add(viewingPlayer.cities.sumOf { it.population.population }.toCenteredLabel())
+        totalTable.add("Total".toLabel()).left()
+        totalTable.add()  // construction icon column
+        totalTable.add().expandX()  // construction label column
+        totalTable.add(viewingPlayer.cities.sumOf { it.population.population }.toCenteredLabel())
         for (column in columnsNames.filter { it.isStat() }) {
             val stat = Stat.valueOf(column)
-            if (stat == Stat.Food || stat == Stat.Production) cityInfoTableTotal.add() // an intended empty space
-            else cityInfoTableTotal.add(viewingPlayer.cities.sumOf { it.getStat(stat) }.toCenteredLabel())
+            if (stat == Stat.Food || stat == Stat.Production) totalTable.add() // an intended empty space
+            else totalTable.add(viewingPlayer.cities.sumOf { it.getStat(stat) }.toCenteredLabel())
         }
-        cityInfoTableTotal.add(viewingPlayer.cities.count { it.isWeLoveTheKingDayActive() }.toCenteredLabel())
-        cityInfoTableTotal.add(viewingPlayer.cities.count { it.isGarrisoned() }.toCenteredLabel())
-        cityInfoTableTotal.pack()
+        totalTable.add(viewingPlayer.cities.count { it.isWeLoveTheKingDayActive() }.toCenteredLabel())
+        totalTable.add(viewingPlayer.cities.count { it.isGarrisoned() }.toCenteredLabel())
+        totalTable.pack()
     }
 }

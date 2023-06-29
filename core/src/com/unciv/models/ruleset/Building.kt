@@ -108,7 +108,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             && filterUniques?.invoke(it) ?: true
         }
 
-    /** used in CityScreen (CityInfoTable and ConstructionInfoTable) */
+    /** used in CityScreen (ConstructionInfoTable) */
     fun getDescription(city: City, showAdditionalInfo: Boolean): String {
         val stats = getStats(city)
         val translatedLines = ArrayList<String>() // Some translations require special handling
@@ -644,8 +644,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             getRejectionReasons(cityConstructions).none()
 
     override fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat?): Boolean {
-        val cityInfo = cityConstructions.city
-        val civInfo = cityInfo.civ
+        val city = cityConstructions.city
+        val civInfo = city.civ
 
         if (civInfo.gameInfo.spaceResources.contains(name)) {
             civInfo.victoryManager.currentsSpaceshipParts.add(name, 1)
@@ -673,15 +673,15 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, cityConstructions.city, triggerNotificationText = triggerNotificationText)
 
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, StateForConditionals(civInfo, cityInfo)))
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, StateForConditionals(civInfo, city)))
             if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuilding && matchesFilter(it.params[0])})
-                UniqueTriggerActivation.triggerCivwideUnique(unique, cityInfo.civ, cityInfo, triggerNotificationText = triggerNotificationText)
+                UniqueTriggerActivation.triggerCivwideUnique(unique, city.civ, city, triggerNotificationText = triggerNotificationText)
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponConstructingBuildingCityFilter, StateForConditionals(cityInfo.civ, cityInfo)))
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponConstructingBuildingCityFilter, StateForConditionals(city.civ, city)))
             if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuildingCityFilter
                             && matchesFilter(it.params[0])
-                            && cityInfo.matchesFilter(it.params[1])})
-                UniqueTriggerActivation.triggerCivwideUnique(unique, cityInfo.civ, cityInfo, triggerNotificationText = triggerNotificationText)
+                            && city.matchesFilter(it.params[1])})
+                UniqueTriggerActivation.triggerCivwideUnique(unique, city.civ, city, triggerNotificationText = triggerNotificationText)
 
         if (hasUnique(UniqueType.EnemyUnitsSpendExtraMovement))
             civInfo.cache.updateHasActiveEnemyMovementPenalty()

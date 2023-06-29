@@ -1,7 +1,6 @@
 package com.unciv.ui.components.input
 
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.unciv.models.UncivSound
 
 internal class ActorAttachments private constructor(actor: Actor) {
@@ -38,7 +37,6 @@ internal class ActorAttachments private constructor(actor: Actor) {
 
     fun activate(type: ActivationTypes): Boolean {
         if (!this::activationActions.isInitialized) return false
-        if (this.actor.touchable != Touchable.enabled) return false
         return activationActions.activate(type)
     }
 

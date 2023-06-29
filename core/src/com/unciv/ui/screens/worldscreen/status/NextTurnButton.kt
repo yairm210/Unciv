@@ -162,8 +162,11 @@ class NextTurnButton : IconTextButton("", null, 30) {
                 .any { it.currentMovement > Constants.minimumMovementEpsilon && (it.isMoving() || it.isAutomated() || it.isExploring()) } ->
                 NextTurnAction("Move automated units", Color.LIGHT_GRAY,
                     "NotificationIcons/MoveAutomatedUnits") {
-                    worldScreen.viewingCiv.hasMovedAutomatedUnits = true
+                    // Don't allow double-click of 'n' to spawn 2 processes trying to automate units
+                    if (!worldScreen.isPlayersTurn) return@NextTurnAction
+
                     worldScreen.isPlayersTurn = false // Disable state changes
+                    worldScreen.viewingCiv.hasMovedAutomatedUnits = true
                     worldScreen.nextTurnButton.disable()
                     Concurrency.run("Move automated units") {
                         for (unit in worldScreen.viewingCiv.units.getCivUnits())

@@ -657,15 +657,15 @@ class Civilization : IsPartOfGameInfoSerialization {
             diplomacyManager.updateHasOpenBorders()
         }
 
-        for (cityInfo in cities) {
-            cityInfo.setTransients(this) // must be before the city's setTransients because it depends on the tilemap, that comes from the currentPlayerCivInfo
+        for (city in cities) {
+            city.setTransients(this) // must be before the city's setTransients because it depends on the tilemap, that comes from the currentPlayerCivInfo
         }
 
         // Now that all tile transients have been updated, clean "worked" tiles that are not under the Civ's control
-        for (cityInfo in cities)
-            for (workedTile in cityInfo.workedTiles.toList())
+        for (city in cities)
+            for (workedTile in city.workedTiles.toList())
                 if (gameInfo.tileMap[workedTile].getOwner() != this)
-                    cityInfo.workedTiles.remove(workedTile)
+                    city.workedTiles.remove(workedTile)
 
         passThroughImpassableUnlocked = passableImpassables.isNotEmpty()
         // Cache whether this civ gets nonstandard terrain damage for performance reasons.

@@ -3,9 +3,9 @@ package com.unciv.logic.city
 import com.badlogic.gdx.math.Vector2
 import com.unciv.GUI
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.city.managers.CityConquestFunctions
 import com.unciv.logic.city.managers.CityEspionageManager
 import com.unciv.logic.city.managers.CityExpansionManager
-import com.unciv.logic.city.managers.CityInfoConquestFunctions
 import com.unciv.logic.city.managers.CityPopulationManager
 import com.unciv.logic.city.managers.CityReligionManager
 import com.unciv.logic.city.managers.SpyFleeReason
@@ -486,18 +486,18 @@ class City : IsPartOfGameInfoSerialization {
         civ.gameInfo.cityDistances.setDirty()
     }
 
-    fun annexCity() = CityInfoConquestFunctions(this).annexCity()
+    fun annexCity() = CityConquestFunctions(this).annexCity()
 
     /** This happens when we either puppet OR annex, basically whenever we conquer a city and don't liberate it */
     fun puppetCity(conqueringCiv: Civilization) =
-        CityInfoConquestFunctions(this).puppetCity(conqueringCiv)
+        CityConquestFunctions(this).puppetCity(conqueringCiv)
 
     /* Liberating is returning a city to its founder - makes you LOSE warmongering points **/
     fun liberateCity(conqueringCiv: Civilization) =
-        CityInfoConquestFunctions(this).liberateCity(conqueringCiv)
+        CityConquestFunctions(this).liberateCity(conqueringCiv)
 
     fun moveToCiv(newCivInfo: Civilization) =
-        CityInfoConquestFunctions(this).moveToCiv(newCivInfo)
+        CityConquestFunctions(this).moveToCiv(newCivInfo)
 
     internal fun tryUpdateRoadStatus() {
         if (getCenterTile().roadStatus == RoadStatus.None) {

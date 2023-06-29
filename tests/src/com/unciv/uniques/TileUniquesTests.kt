@@ -25,8 +25,8 @@ class TileUniquesTests {
 
         val tile = game.setTileFeatures(Vector2(0f, 0f), Constants.grassland)
         val cityTile = game.setTileFeatures(Vector2(2f,0f), Constants.grassland)
-        val cityInfo = game.addCity(civInfo, cityTile, true)
-        cityInfo.population.foodStored = 0 // just to be sure
+        val city = game.addCity(civInfo, cityTile, true)
+        city.population.foodStored = 0 // just to be sure
         civInfo.addGold(-civInfo.gold) // reset gold just to be sure
 
         val testImprovement = game.createTileImprovement("Pillaging this improvement yields [+20 Gold, +11 Food]")
@@ -37,6 +37,6 @@ class TileUniquesTests {
         val pillageAction = UnitActionsPillage.getPillageAction(unit)
         pillageAction?.action?.invoke()
         Assert.assertTrue("Pillaging should transfer gold to the civ", civInfo.gold == 20)
-        Assert.assertTrue("Pillaging should transfer food to the nearest city", cityInfo.population.foodStored == 11)
+        Assert.assertTrue("Pillaging should transfer food to the nearest city", city.population.foodStored == 11)
     }
 }

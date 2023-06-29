@@ -30,12 +30,12 @@ class GlobalUniquesTests {
     fun statsOnBuilding() {
         val civInfo = game.addCiv()
         val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
-        val cityInfo = game.addCity(civInfo, tile, true)
+        val city = game.addCity(civInfo, tile, true)
         val buildingName = game.createBuilding("[+1 Food]").name
 
-        cityInfo.cityConstructions.addBuilding(buildingName)
-        cityInfo.cityStats.update()
-        Assert.assertTrue(cityInfo.cityStats.finalStatList["Buildings"]!!.equals(Stats(food=1f)))
+        city.cityConstructions.addBuilding(buildingName)
+        city.cityStats.update()
+        Assert.assertTrue(city.cityStats.finalStatList["Buildings"]!!.equals(Stats(food=1f)))
     }
 
 
@@ -58,70 +58,70 @@ class GlobalUniquesTests {
     fun statsPerCity() {
         val civInfo = game.addCiv()
         val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
-        val cityInfo = game.addCity(civInfo, tile, true)
+        val city = game.addCity(civInfo, tile, true)
         val buildingName = game.createBuilding("[+1 Production] [in this city]").name
 
-        cityInfo.cityConstructions.addBuilding(buildingName)
-        cityInfo.cityStats.update()
-        Assert.assertTrue(cityInfo.cityStats.finalStatList["Buildings"]!!.equals(Stats(production=1f)))
+        city.cityConstructions.addBuilding(buildingName)
+        city.cityStats.update()
+        Assert.assertTrue(city.cityStats.finalStatList["Buildings"]!!.equals(Stats(production=1f)))
     }
 
     @Test
     fun statsPerSpecialist() {
         val civInfo = game.addCiv()
         val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
-        val cityInfo = game.addCity(civInfo, tile, true, initialPopulation = 2)
+        val city = game.addCity(civInfo, tile, true, initialPopulation = 2)
         val building = game.createBuilding("[+3 Gold] from every specialist [in this city]")
         val specialistName = game.createSpecialist()
         building.specialistSlots.add(specialistName, 2)
-        cityInfo.population.specialistAllocations[specialistName] = 2
+        city.population.specialistAllocations[specialistName] = 2
 
-        cityInfo.cityConstructions.addBuilding(building.name)
-        cityInfo.cityStats.update()
-        Assert.assertTrue(cityInfo.cityStats.finalStatList["Specialists"]!!.equals(Stats(gold=6f)))
+        city.cityConstructions.addBuilding(building.name)
+        city.cityStats.update()
+        Assert.assertTrue(city.cityStats.finalStatList["Specialists"]!!.equals(Stats(gold=6f)))
     }
 
     @Test
     fun statsPerPopulation() {
         val civInfo = game.addCiv()
         val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
-        val cityInfo = game.addCity(civInfo, tile, true, initialPopulation = 4)
+        val city = game.addCity(civInfo, tile, true, initialPopulation = 4)
         val building = game.createBuilding("[+3 Gold] per [2] population [in this city]")
 
-        cityInfo.cityConstructions.addBuilding(building.name)
-        cityInfo.cityStats.update()
-        Assert.assertTrue(cityInfo.cityStats.finalStatList["Buildings"]!!.gold == 6f)
+        city.cityConstructions.addBuilding(building.name)
+        city.cityStats.update()
+        Assert.assertTrue(city.cityStats.finalStatList["Buildings"]!!.gold == 6f)
     }
 
     @Test
     fun statsPerXPopulation() {
         val civInfo = game.addCiv()
         val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
-        val cityInfo = game.addCity(civInfo, tile, true, initialPopulation = 2)
+        val city = game.addCity(civInfo, tile, true, initialPopulation = 2)
         val building = game.createBuilding("[+3 Gold] <in cities with at least [3] [Population]>")
 
-        cityInfo.cityConstructions.addBuilding(building.name)
+        city.cityConstructions.addBuilding(building.name)
 
-        cityInfo.cityStats.update()
-        Assert.assertTrue(cityInfo.cityStats.finalStatList["Buildings"]!!.gold == 0f)
-        cityInfo.population.setPopulation(5)
-        cityInfo.cityStats.update()
-        Assert.assertTrue(cityInfo.cityStats.finalStatList["Buildings"]!!.gold == 3f)
+        city.cityStats.update()
+        Assert.assertTrue(city.cityStats.finalStatList["Buildings"]!!.gold == 0f)
+        city.population.setPopulation(5)
+        city.cityStats.update()
+        Assert.assertTrue(city.cityStats.finalStatList["Buildings"]!!.gold == 3f)
     }
 
     @Test
     fun statsFromCitiesOnSpecificTiles() {
         val civInfo = game.addCiv()
         val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
-        val cityInfo = game.addCity(civInfo, tile, true)
+        val city = game.addCity(civInfo, tile, true)
         val building = game.createBuilding("[+3 Gold] in cities on [${Constants.desert}] tiles")
-        cityInfo.cityConstructions.addBuilding(building.name)
+        city.cityConstructions.addBuilding(building.name)
 
-        cityInfo.cityStats.update()
-        Assert.assertTrue(cityInfo.cityStats.finalStatList["Buildings"]!!.gold == 3f)
+        city.cityStats.update()
+        Assert.assertTrue(city.cityStats.finalStatList["Buildings"]!!.gold == 3f)
         tile.baseTerrain = Constants.grassland
-        cityInfo.cityStats.update()
-        Assert.assertTrue(cityInfo.cityStats.finalStatList["Buildings"]!!.gold == 0f)
+        city.cityStats.update()
+        Assert.assertTrue(city.cityStats.finalStatList["Buildings"]!!.gold == 0f)
     }
 
     @Test
@@ -129,12 +129,12 @@ class GlobalUniquesTests {
         game.makeHexagonalMap(2)
         val civInfo = game.addCiv()
         val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
-        val cityInfo = game.addCity(civInfo, tile, true)
+        val city = game.addCity(civInfo, tile, true)
         val building = game.createBuilding("[+4 Gold] from [${Constants.grassland}] tiles [in all cities]")
-        cityInfo.cityConstructions.addBuilding(building.name)
+        city.cityConstructions.addBuilding(building.name)
 
         val tile2 = game.setTileFeatures(Vector2(0f,1f), Constants.grassland)
-        Assert.assertTrue(tile2.stats.getTileStats(cityInfo, civInfo).gold == 4f)
+        Assert.assertTrue(tile2.stats.getTileStats(city, civInfo).gold == 4f)
     }
 
     @Test
@@ -142,17 +142,17 @@ class GlobalUniquesTests {
         game.makeHexagonalMap(3)
         val civInfo = game.addCiv()
         val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
-        val cityInfo = game.addCity(civInfo, tile, true)
+        val city = game.addCity(civInfo, tile, true)
         val building = game.createBuilding("[+4 Gold] from [${Constants.grassland}] tiles without [${Constants.forest}] [in this city]")
-        cityInfo.cityConstructions.addBuilding(building.name)
+        city.cityConstructions.addBuilding(building.name)
 
         val tile2 = game.setTileFeatures(Vector2(0f,1f), Constants.grassland)
-        game.addTileToCity(cityInfo, tile2)
-        Assert.assertTrue(tile2.stats.getTileStats(cityInfo, civInfo).gold == 4f)
+        game.addTileToCity(city, tile2)
+        Assert.assertTrue(tile2.stats.getTileStats(city, civInfo).gold == 4f)
 
         val tile3 = game.setTileFeatures(Vector2(0f, 2f), Constants.grassland, listOf(Constants.forest))
-        game.addTileToCity(cityInfo, tile3)
-        Assert.assertFalse(tile3.stats.getTileStats(cityInfo, civInfo).gold == 4f)
+        game.addTileToCity(city, tile3)
+        Assert.assertFalse(tile3.stats.getTileStats(city, civInfo).gold == 4f)
     }
 
     @Test
@@ -160,32 +160,32 @@ class GlobalUniquesTests {
         game.makeHexagonalMap(1)
         val civInfo = game.addCiv()
         val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
-        val cityInfo = game.addCity(civInfo, tile, true, initialPopulation = 2)
+        val city = game.addCity(civInfo, tile, true, initialPopulation = 2)
         val specialist = game.createSpecialist()
         val building = game.createBuilding("[+3 Faith] from every [${specialist}]")
 
-        cityInfo.cityConstructions.addBuilding(building.name)
-        cityInfo.population.specialistAllocations[specialist] = 2
+        city.cityConstructions.addBuilding(building.name)
+        city.population.specialistAllocations[specialist] = 2
 
-        cityInfo.cityStats.update()
-        Assert.assertTrue(cityInfo.cityStats.finalStatList["Specialists"]!!.faith == 6f)
+        city.cityStats.update()
+        Assert.assertTrue(city.cityStats.finalStatList["Specialists"]!!.faith == 6f)
 
-        cityInfo.cityConstructions.removeBuilding(building.name)
+        city.cityConstructions.removeBuilding(building.name)
         val building2 = game.createBuilding("[+3 Faith] from every [${Constants.grassland}]")
-        cityInfo.cityConstructions.addBuilding(building2.name)
+        city.cityConstructions.addBuilding(building2.name)
 
         val tile2 = game.setTileFeatures(Vector2(0f,1f), Constants.grassland)
-        Assert.assertTrue(tile2.stats.getTileStats(cityInfo, civInfo).faith == 3f)
+        Assert.assertTrue(tile2.stats.getTileStats(city, civInfo).faith == 3f)
 
-        cityInfo.cityConstructions.removeBuilding(building2.name)
+        city.cityConstructions.removeBuilding(building2.name)
 
         val emptyBuilding = game.createBuilding()
 
         val building3 = game.createBuilding("[+3 Faith] from every [${emptyBuilding.name}]")
-        cityInfo.cityConstructions.addBuilding(emptyBuilding.name)
-        cityInfo.cityConstructions.addBuilding(building3.name)
-        cityInfo.cityStats.update()
-        Assert.assertTrue(cityInfo.cityStats.finalStatList["Buildings"]!!.faith == 3f)
+        city.cityConstructions.addBuilding(emptyBuilding.name)
+        city.cityConstructions.addBuilding(building3.name)
+        city.cityStats.update()
+        Assert.assertTrue(city.cityStats.finalStatList["Buildings"]!!.faith == 3f)
     }
 
     @Test
@@ -533,24 +533,24 @@ class GlobalUniquesTests {
     fun growthPercentBonusTest() {
         val civInfo = game.addCiv()
         val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
-        val cityInfo = game.addCity(civInfo, tile, true)
+        val city = game.addCity(civInfo, tile, true)
         val building = game.createBuilding("[+100]% growth [in all cities]")
-        cityInfo.cityConstructions.addBuilding(building.name)
+        city.cityConstructions.addBuilding(building.name)
 
-        cityInfo.cityStats.update()
-        Assert.assertTrue(cityInfo.cityStats.finalStatList["[Buildings] ([Growth])"]!!.equals(Stats(food=2f)))
+        city.cityStats.update()
+        Assert.assertTrue(city.cityStats.finalStatList["[Buildings] ([Growth])"]!!.equals(Stats(food=2f)))
     }
 
     @Test
     fun carryOverFoodTest() {
         val civInfo = game.addCiv("[50]% Food is carried over after population increases [in all cities]")
         val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
-        val cityInfo = game.addCity(civInfo, tile, true)
+        val city = game.addCity(civInfo, tile, true)
 
-        val foodNecessary = cityInfo.population.getFoodToNextPopulation()
-        cityInfo.population.nextTurn(foodNecessary)
+        val foodNecessary = city.population.getFoodToNextPopulation()
+        city.population.nextTurn(foodNecessary)
 
-        Assert.assertTrue(cityInfo.population.foodStored == (foodNecessary * 0.5f).toInt())
+        Assert.assertTrue(city.population.foodStored == (foodNecessary * 0.5f).toInt())
     }
 
 
@@ -558,16 +558,16 @@ class GlobalUniquesTests {
     fun foodConsumptionBySpecialistsTest() {
         val civInfo = game.addCiv("[-50]% Food consumption by specialists [in all cities]")
         val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
-        val cityInfo = game.addCity(civInfo, tile, true, initialPopulation = 1)
+        val city = game.addCity(civInfo, tile, true, initialPopulation = 1)
 
         val building = game.createBuilding()
         val specialistName = game.createSpecialist()
         building.specialistSlots.add(specialistName, 1)
-        cityInfo.population.specialistAllocations[specialistName] = 1
+        city.population.specialistAllocations[specialistName] = 1
 
-        cityInfo.cityStats.update()
-        print(cityInfo.cityStats.finalStatList)
-        Assert.assertTrue(cityInfo.cityStats.finalStatList["Population"]!!.food == -1f)
+        city.cityStats.update()
+        print(city.cityStats.finalStatList)
+        Assert.assertTrue(city.cityStats.finalStatList["Population"]!!.food == -1f)
     }
 
     // endregion growth
@@ -578,38 +578,38 @@ class GlobalUniquesTests {
     fun unhappinessFromCitiesPercentageTest() {
         val civInfo = game.addCiv("[+100]% unhappiness from the number of cities")
         val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
-        val cityInfo = game.addCity(civInfo, tile, true)
+        val city = game.addCity(civInfo, tile, true)
 
-        cityInfo.cityStats.update()
+        city.cityStats.update()
         // Because of some weird design choices, -3.6 is correct, though I would expect it to be -6 instead.
         // As I'm not certain enough in my feeling that it should be -6, I'm changing the test to fit the code instead of the other way around.
         // I've also written some text about this in CityStats.updateCityHappiness(). ~xlenstra
-        println(cityInfo.cityStats.happinessList)
-        Assert.assertTrue(abs(cityInfo.cityStats.happinessList["Cities"]!! - -3.6f) < epsilon) // Float rounding errors
+        println(city.cityStats.happinessList)
+        Assert.assertTrue(abs(city.cityStats.happinessList["Cities"]!! - -3.6f) < epsilon) // Float rounding errors
     }
 
     @Test
     fun unhappinessFromPopulationTypePercentageChangeTest() {
         val civInfo = game.addCiv("[-50]% Unhappiness from [Population] [in all cities]")
         val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
-        val cityInfo = game.addCity(civInfo, tile, true, initialPopulation = 4)
+        val city = game.addCity(civInfo, tile, true, initialPopulation = 4)
 
-        cityInfo.cityStats.update()
+        city.cityStats.update()
         // This test suffers from the same problems as `unhappinessFromCitiesPercentageTest()`.
         // This should be -2, I believe, as every pop should add -1 happiness and 4 pop with -50% unhappiness = -2 unhappiness.
-        println(cityInfo.cityStats.happinessList)
-        Assert.assertTrue(abs(cityInfo.cityStats.happinessList["Population"]!! - -1.2f) < epsilon)
+        println(city.cityStats.happinessList)
+        Assert.assertTrue(abs(city.cityStats.happinessList["Population"]!! - -1.2f) < epsilon)
 
         val building = game.createBuilding("[-50]% Unhappiness from [Specialists] [in all cities]")
         val specialist = game.createSpecialist()
         building.specialistSlots[specialist] = 2
-        cityInfo.population.specialistAllocations[specialist] = 2
-        cityInfo.cityConstructions.addBuilding(building.name)
+        city.population.specialistAllocations[specialist] = 2
+        city.cityConstructions.addBuilding(building.name)
 
-        cityInfo.cityStats.update()
-        println(cityInfo.cityStats.happinessList)
+        city.cityStats.update()
+        println(city.cityStats.happinessList)
         // This test suffers from the same problems as above. It should be -1, I believe.
-        Assert.assertTrue(abs(cityInfo.cityStats.happinessList["Population"]!! - -0.6f) < epsilon)
+        Assert.assertTrue(abs(city.cityStats.happinessList["Population"]!! - -0.6f) < epsilon)
     }
 
 
@@ -621,10 +621,10 @@ class GlobalUniquesTests {
     fun statsSpendingGreatPeople() {
         val civInfo = game.addCiv()
         val tile = game.setTileFeatures(Vector2(0f,0f), Constants.desert)
-        val cityInfo = game.addCity(civInfo, tile, true)
+        val city = game.addCity(civInfo, tile, true)
         val unit = game.addUnit("Great Engineer", civInfo, tile)
         val building = game.createBuilding("[+250 Gold] whenever a Great Person is expended")
-        cityInfo.cityConstructions.addBuilding(building.name)
+        city.cityConstructions.addBuilding(building.name)
 
         civInfo.addGold(-civInfo.gold) // reset gold just to be sure
 

@@ -286,10 +286,6 @@ class TileStatFunctions(val tile: Tile) {
         val stats = Stats()
         val conditionalState = StateForConditionals(civInfo = observingCiv, city = city, tile = tile)
 
-        // I would love to make an interface 'canCallMatchingUniques'
-        // from which both cityInfo and CivilizationInfo derive, so I don't have to duplicate all this code
-        // But something something too much for this PR.
-
         if (city != null) {
             // As above, since the conditional is tile-dependant,
             //  we save uniques in the cache without conditional filtering, and use only filtered ones
