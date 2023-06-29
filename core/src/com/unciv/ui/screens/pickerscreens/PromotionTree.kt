@@ -6,7 +6,6 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.translations.tr
-import com.unciv.utils.Log
 
 internal class PromotionTree(val unit: MapUnit) {
     /** Ordered set of Promotions to show - by Json column/row and translated name */
@@ -92,10 +91,7 @@ internal class PromotionTree(val unit: MapUnit) {
         for (node in nodes.values) {
             for (prerequisite in node.promotion.prerequisites) {
                 val parent = nodes[prerequisite] ?: continue
-                if (node in allChildren(parent)) {
-                    Log.debug("Ignoring circular reference: %s requires %s", node, parent)
-                    continue
-                }
+                if (detectLoop(node, parent)) continue
                 node.parents += parent
                 parent.children += node
                 if (node.level > 0 && node.baseName == parent.baseName)
@@ -153,8 +149,21 @@ internal class PromotionTree(val unit: MapUnit) {
 
     fun allNodes() = nodes.values.asSequence()
     fun allRoots() = allNodes().filter { it.isRoot }
-    private fun allChildren(node: PromotionNode): Sequence<PromotionNode> {
-        return sequenceOf(node) + node.children.flatMap { allChildren(it) }
+
+    private fun detectLoop(node: PromotionNode, parent: PromotionNode): Boolean {
+        if (parent == node) return true
+        val loopCheck = HashSet<PromotionNode>(nodes.size)
+        loopCheck.add(node)
+        fun detectRecursive(parent: PromotionNode, level: Int): Boolean {
+            if (level > 99) return true
+            if (parent in loopCheck) return true
+            loopCheck.add(parent)
+            for (child in parent.children) {
+                if (detectRecursive(child, level + 1)) return true
+            }
+            return false
+        }
+        return detectRecursive(parent, 0)
     }
 
     private fun getReachableNode(promotion: Promotion): PromotionNode? =

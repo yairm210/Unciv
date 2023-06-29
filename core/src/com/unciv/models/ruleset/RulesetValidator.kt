@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stats
 
@@ -387,6 +388,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                 if (!ruleset.unitTypes.containsKey(unitType) && (ruleset.unitTypes.isNotEmpty() || !vanillaRuleset.unitTypes.containsKey(unitType)))
                     lines.add("${promotion.name} references unit type $unitType, which does not exist!", RulesetErrorSeverity.Warning)
             checkUniques(promotion, lines, rulesetSpecific, tryFixUnknownUniques)
+            checkPromotionCircularReferences(lines)
         }
 
         for (unitType in ruleset.unitTypes.values) {
@@ -424,6 +426,24 @@ class RulesetValidator(val ruleset: Ruleset) {
         }
 
         return lines
+    }
+
+    private fun checkPromotionCircularReferences(lines: RulesetErrorList) {
+        fun recursiveCheck(history: LinkedHashSet<Promotion>, promotion: Promotion, level: Int) {
+            if (promotion in history) {
+                lines.add("Circular Reference in Promotions: ${history.joinToString("→") { it.name }}→${promotion.name}", RulesetErrorSeverity.Warning)
+                return
+            }
+            if (level > 99) return
+            history.add(promotion)
+            for (prerequisiteName in promotion.prerequisites) {
+                val prerequisite = ruleset.unitPromotions[prerequisiteName] ?: continue
+                recursiveCheck(history.toCollection(linkedSetOf()), prerequisite, level + 1)
+            }
+        }
+        for (promotion in ruleset.unitPromotions.values) {
+            recursiveCheck(linkedSetOf(), promotion, 0)
+        }
     }
 
 
