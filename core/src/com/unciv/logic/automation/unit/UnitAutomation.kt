@@ -22,9 +22,40 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
 
 object UnitAutomation {
-
+    /** Range to search for enemy military units, then collect their reachable tiles to form a set of tiles for civilians to avoid */
+    private const val civilianEnemyUnitSearchRange = 5
+    /** Range to try for exploration, from the current position */
+    private const val maxExplorationDistance = 5
+    /** Range to try for fog busting, seen from the current position (not from your borders) */
+    private const val maxFogBustingDistance = 5
+    /** Health less than this means healing is tried before any attack automation */
+    private const val healthThresholdBeforeAttacking = 50
+    /** Health less than this means healing is tried before any advancing toward a battle */
+    private const val healthThresholdBeforeAdvancing = 80
+    /** Health less than this means healing is tried before any exploring, fogbusting or idle wandering - also applies to units doing [UnitActionType.Explore] */
+    private const val healthThresholdBeforeExploring = 100
+    /** Used in [tryHeadTowardsEncampment]: how far from you next city a barbarian encampment can be for your automated military unit to go to it */
+    private const val maxEncampmentDistanceToAttack = 5
+    /** Used in [headTowardsEnemyCity]: If the number of turns to reach the city is greater than... Skip the calculations to choose a best tile to attack from, just move */
+    private const val minDistanceFromCityToConsiderForLandingArea = 3
+    /** Used in [headTowardsEnemyCity]: If the aerial distance to the city is larger than... Skip the calculations to choose a best tile to attack from, just move */
+    private const val maxDistanceFromCityToConsiderForLandingArea = 5
+    /** Range in which to collect units to determine expected total city siege damage per turn */
+    private const val expectedDamagePerTurnMaxUnitRange = 6
+    /** AI will redirect units moving to a siege to a landing area if the expected total damage to the city is too low: Minimum distance to the city */
+    private const val landingAreaRangeFrom = 3
+    /** AI will redirect units moving to a siege to a landing area if the expected total damage to the city is too low: Maximum distance to the city */
+    private const val landingAreaRangeTo = 5
+    private val landingAreaRange = landingAreaRangeFrom..landingAreaRangeTo
+    /** Military units will search for victims within a maximum aerial distance.
+     *  Thus, this refers to the maximum defender position distance for the planned attack. */
     private const val CLOSE_ENEMY_TILES_AWAY_LIMIT = 5
+    /** Military units will search for victims, assuming they can move a maximum of N turns away,
+     * while also assuming their max movement will not change. In other words,
+     * limits attacker position for the planned attack. */
     private const val CLOSE_ENEMY_TURNS_AWAY_LIMIT = 3f
+    /** When deciding whether to garrison, a city is considered in need of defense if there's an enemy city within this distance */
+    private const val garrisonIfEnemyCityWithinDistance = 5
 
     private fun isGoodTileToExplore(unit: MapUnit, tile: Tile): Boolean {
         return (tile.getOwner() == null || !tile.getOwner()!!.isCityState())
@@ -50,7 +81,7 @@ object UnitAutomation {
         }
 
         // Nothing immediate, lets look further. Number increases exponentially with distance - at 10 this took a looong time
-        for (tile in unit.currentTile.getTilesInDistance(5))
+        for (tile in unit.currentTile.getTilesInDistance(maxExplorationDistance))
             if (isGoodTileToExplore(unit, tile)) {
                 unit.movement.headTowards(tile)
                 return true
@@ -79,7 +110,7 @@ object UnitAutomation {
 
         // If everything around this unit is visible, we can stop.
         // Calculations below are quite expensive especially in the late game.
-        if (unit.currentTile.getTilesInDistance(5).any { !it.isVisible(unit.civ) }) {
+        if (unit.currentTile.getTilesInDistance(maxFogBustingDistance).any { !it.isVisible(unit.civ) }) {
             return false
         }
 
@@ -91,7 +122,7 @@ object UnitAutomation {
         }
 
         // Nothing immediate, lets look further. Number increases exponentially with distance - at 10 this took a looong time
-        for (tile in unit.currentTile.getTilesInDistance(5))
+        for (tile in unit.currentTile.getTilesInDistance(maxFogBustingDistance))
             if (isGoodTileForFogBusting(unit, tile)) {
                 unit.movement.headTowards(tile)
                 return true
@@ -109,7 +140,6 @@ object UnitAutomation {
                 && unit.movement.canReach(tile) // expensive, evaluate last
     }
 
-    @JvmStatic
     fun wander(unit: MapUnit, stayInTerritory: Boolean = false, tilesToAvoid:Set<Tile> = setOf()) {
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         val reachableTiles = unitDistanceToTiles
@@ -191,7 +221,7 @@ object UnitAutomation {
 
         if (tryHeadTowardsOurSiegedCity(unit)) return
 
-        if (unit.health < 50 && tryHealUnit(unit)) return // do nothing but heal
+        if (unit.health < healthThresholdBeforeAttacking && tryHealUnit(unit)) return // do nothing but heal
 
         // if a embarked melee unit can land and attack next turn, do not attack from water.
         if (BattleHelper.tryDisembarkUnitToAttackPosition(unit)) return
@@ -206,14 +236,14 @@ object UnitAutomation {
 
         if (tryGarrisoningUnit(unit)) return
 
-        if (unit.health < 80 && tryHealUnit(unit)) return
+        if (unit.health < healthThresholdBeforeAdvancing && tryHealUnit(unit)) return
 
         // move towards the closest reasonably attackable enemy unit within 3 turns of movement (and 5 tiles range)
         if (tryAdvanceTowardsCloseEnemy(unit)) return
 
         if (tryHeadTowardsEncampment(unit)) return
 
-        if (unit.health < 100 && tryHealUnit(unit)) return
+        if (unit.health < healthThresholdBeforeExploring && tryHealUnit(unit)) return
 
         // else, try to go to unreached tiles
         if (tryExplore(unit)) return
@@ -238,7 +268,7 @@ object UnitAutomation {
                 unit.movement.moveToTile(tilesCanMoveTo.minByOrNull { it.value.totalDistance }!!.key)
         }
 
-        val tilesWhereWeWillBeCaptured = unit.currentTile.getTilesInDistance(5)
+        val tilesWhereWeWillBeCaptured = unit.currentTile.getTilesInDistance(civilianEnemyUnitSearchRange)
             .mapNotNull { it.militaryUnit }
             .filter { it.civ.isAtWarWith(unit.civ) }
             .flatMap { it.movement.getReachableTilesInCurrentTurn() }
@@ -369,7 +399,7 @@ object UnitAutomation {
                 .filter { it.improvement == Constants.barbarianEncampment && unit.civ.hasExplored(it) }
         val cities = unit.civ.cities
         val encampmentsCloseToCities = knownEncampments
-            .filter { cities.any { city -> city.getCenterTile().aerialDistanceTo(it) < 6 } }
+            .filter { cities.any { city -> city.getCenterTile().aerialDistanceTo(it) <= maxEncampmentDistanceToAttack } }
             .sortedBy { it.aerialDistanceTo(unit.currentTile) }
         val encampmentToHeadTowards = encampmentsCloseToCities.firstOrNull { unit.movement.canReach(it) }
             ?: return false
@@ -609,8 +639,6 @@ object UnitAutomation {
 
         // None of the stuff below is relevant if we're still quite far away from the city, so we
         // short-circuit here for performance reasons.
-        val minDistanceFromCityToConsiderForLandingArea = 3
-        val maxDistanceFromCityToConsiderForLandingArea = 5
         if (unit.currentTile.aerialDistanceTo(closestReachableEnemyCity) > maxDistanceFromCityToConsiderForLandingArea
                 // Even in the worst case of only being able to move 1 tile per turn, we would still
                 // not overshoot.
@@ -637,7 +665,7 @@ object UnitAutomation {
             // We won't be able to take this even with 5 turns of continuous damage!
             // don't head straight to the city, try to head to landing grounds -
             // this is against tha AI's brilliant plan of having everyone embarked and attacking via sea when unnecessary.
-            val tileToHeadTo = closestReachableEnemyCity.getTilesInDistanceRange(3..5)
+            val tileToHeadTo = closestReachableEnemyCity.getTilesInDistanceRange(landingAreaRange)
                     .filter { it.isLand && unit.getDamageFromTerrain(it) <= 0 } // Don't head for hurty terrain
                     .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                     .firstOrNull { (unit.movement.canMoveTo(it) || it == unit.currentTile) && unit.movement.canReach(it) }
@@ -739,8 +767,13 @@ object UnitAutomation {
             if (city.health < city.getMaxHealth()) return true // this city is under attack!
             for (enemyCivCity in unit.civ.diplomacy.values
                     .filter { it.diplomaticStatus == DiplomaticStatus.War }
-                    .map { it.otherCiv() }.flatMap { it.cities })
-                if (city.getCenterTile().aerialDistanceTo(enemyCivCity.getCenterTile()) <= 5) return true // this is an edge city that needs defending
+                    .map { it.otherCiv() }
+                    .flatMap { it.cities }
+            ) {
+                if (city.getCenterTile().aerialDistanceTo(enemyCivCity.getCenterTile())
+                        <= garrisonIfEnemyCityWithinDistance)
+                    return true // this is an edge city that needs defending
+            }
             return false
         }
 
@@ -766,7 +799,7 @@ object UnitAutomation {
     It also explores, but also has other functions, like healing if necessary. */
     fun automatedExplore(unit: MapUnit) {
         if (tryGoToRuinAndEncampment(unit) && (unit.currentMovement == 0f || unit.isDestroyed)) return
-        if (unit.health < 80 && tryHealUnit(unit)) return
+        if (unit.health < healthThresholdBeforeExploring && tryHealUnit(unit)) return
         if (tryExplore(unit)) return
         unit.civ.addNotification("${unit.shortDisplayName()} finished exploring.", unit.currentTile.position, NotificationCategory.Units, unit.name, "OtherIcons/Sleep")
         unit.action = null

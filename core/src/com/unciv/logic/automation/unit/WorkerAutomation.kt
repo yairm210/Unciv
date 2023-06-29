@@ -7,6 +7,8 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.automation.unit.UnitAutomation.wander
+import com.unciv.logic.automation.unit.WorkerAutomationConst.workerAvoidEnemyCityRange
+import com.unciv.logic.automation.unit.WorkerAutomationConst.workerAvoidEnemyUnitRange
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
@@ -26,7 +28,22 @@ import com.unciv.utils.debug
 private object WorkerAutomationConst {
     /** BFS max size is determined by the aerial distance of two cities to connect, padded with this */
     // two tiles longer than the distance to the nearest connected city should be enough as the 'reach' of a BFS is increased by blocked tiles
-    const val maxBfsReachPadding = 2
+    const val connectCitiesBfsReachPadding = 2
+
+    /** Used within [WorkerAutomation.findTileToWork] to avoid the range of enemy cities */
+    const val workerAvoidEnemyCityRange = 2
+    /** Used within [WorkerAutomation.findTileToWork] to avoid the range of enemy units */
+    const val workerAvoidEnemyUnitRange = 3
+    /** Used for the priority for a Worker to improve a specific tile: When owned */
+    const val priorityForOwned = 2
+    /** Used for the priority for a Worker to improve a specific tile: When it already provides yield */
+    const val priorityForYield = 3
+    /** Used for the priority for a Worker to improve a specific tile: When it's pillaged */
+    const val priorityForPillaged = 1
+    /** Used for the priority for a Worker to improve a specific tile: When it's just ouside our borders */
+    const val priorityForExpansion = 1
+    /** Used for the priority for a Worker to improve a specific tile: When it has a viewable resource */
+    const val priorityForResource = 1
 }
 
 /**
@@ -219,7 +236,7 @@ class WorkerAutomation(
             val bfs: BFS = bfsCache[toConnectTile.position] ?:
                 BFS(toConnectTile, isCandidateTilePredicate).apply {
                     maxSize = HexMath.getNumberOfTilesInHexagon(
-                        WorkerAutomationConst.maxBfsReachPadding +
+                        WorkerAutomationConst.connectCitiesBfsReachPadding +
                             tilesOfConnectedCities.minOf { it.aerialDistanceTo(toConnectTile) }
                     )
                     bfsCache[toConnectTile.position] = this@apply
@@ -277,9 +294,9 @@ class WorkerAutomation(
                     && (it.civilianUnit == null || it == currentTile)
                     && (it.owningCity == null || it.getOwner() == civ)
                     && getPriority(it) > 1
-                    && it.getTilesInDistance(2)  // don't work in range of enemy cities
+                    && it.getTilesInDistance(workerAvoidEnemyCityRange)  // don't work in range of enemy cities
                         .none { tile -> tile.isCityCenter() && tile.getCity()!!.civ.isAtWarWith(civ) }
-                    && it.getTilesInDistance(3)  // don't work in range of enemy units
+                    && it.getTilesInDistance(workerAvoidEnemyUnitRange)  // don't work in range of enemy units
                         .none { tile -> tile.militaryUnit != null && tile.militaryUnit!!.civ.isAtWarWith(civ)}
                 }
 
@@ -355,15 +372,18 @@ class WorkerAutomation(
     fun getPriority(tile: Tile): Int {
         var priority = 0
         if (tile.getOwner() == civ) {
-            priority += 2
-            if (tile.providesYield()) priority += 3
-            if (tile.isPillaged()) priority += 1
+            priority += WorkerAutomationConst.priorityForOwned
+            if (tile.providesYield())
+                priority += WorkerAutomationConst.priorityForYield
+            if (tile.isPillaged())
+                priority += WorkerAutomationConst.priorityForPillaged
         }
         // give a minor priority to tiles that we could expand onto
         else if (tile.getOwner() == null && tile.neighbors.any { it.getOwner() == civ })
-            priority += 1
+            priority += WorkerAutomationConst.priorityForExpansion
 
-        if (priority != 0 && tile.hasViewableResource(civ)) priority += 1
+        if (priority != 0 && tile.hasViewableResource(civ))
+            priority += WorkerAutomationConst.priorityForResource
         return priority
     }
 
