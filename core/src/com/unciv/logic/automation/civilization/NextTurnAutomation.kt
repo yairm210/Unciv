@@ -386,11 +386,11 @@ object NextTurnAutomation {
             }
             val bfs = BFS(cityWithLeastCostToBuy.getCenterTile())
             {
-                it.getOwner() == null || it.getOwner() == civInfo
+                it.getOwner() == null || it.owningCity == cityWithLeastCostToBuy
             }
             bfs.stepUntilDestination(highlyDesirableTile.key)
             val tilesThatNeedBuying =
-                    bfs.getPathTo(highlyDesirableTile.key).filter { it.getOwner() != civInfo }
+                    bfs.getPathTo(highlyDesirableTile.key).filter { it.getOwner() == null }
                         .toList().reversed() // getPathTo is from destination to source
 
             // We're trying to acquire everything and revert if it fails, because of the difficult
