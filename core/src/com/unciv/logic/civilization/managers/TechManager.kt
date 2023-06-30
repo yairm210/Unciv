@@ -8,7 +8,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.MayaLongCountAction
 import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.NotificationIcons
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.TechAction
@@ -234,7 +234,7 @@ class TechManager : IsPartOfGameInfoSerialization {
             scienceFromResearchAgreements = 0
             civInfo.addNotification("We gained [$scienceBoost] Science from Research Agreement",
                 NotificationCategory.General,
-                NotificationIcon.Science)
+                NotificationIcons.Science)
         }
         if (overflowScience != 0) {
             finalScienceToAdd += getOverflowScience(currentTechnologyName()!!)
@@ -302,13 +302,13 @@ class TechManager : IsPartOfGameInfoSerialization {
         updateTransientBooleans()
         for (city in civInfo.cities) {
             city.cityStats.update()
-            city.reassignPopulationDeferred()   
+            city.reassignPopulationDeferred()
         }
 
         if (!civInfo.isSpectator() && showNotification)
             civInfo.addNotification("Research of [$techName] has completed!", TechAction(techName),
                 NotificationCategory.General,
-                NotificationIcon.Science)
+                NotificationIcons.Science)
         if (isNewTech)
             civInfo.popupAlerts.add(PopupAlert(AlertType.TechResearched, techName))
 
@@ -384,8 +384,8 @@ class TechManager : IsPartOfGameInfoSerialization {
                 "[$unit] has become obsolete and was removed from the queue in $cityText!"
                 else "$cityText changed production from [$unit] to [$newUnit]"
             val icons = if (newUnit == null)
-                arrayOf(NotificationIcon.Construction)
-                else arrayOf(unit, NotificationIcon.Construction, newUnit)
+                arrayOf(NotificationIcons.Construction)
+                else arrayOf(unit, NotificationIcons.Construction, newUnit)
             civInfo.addNotification(text, locationAction, NotificationCategory.Production, *icons)
         }
     }
@@ -400,13 +400,13 @@ class TechManager : IsPartOfGameInfoSerialization {
                     civInfo.addNotification(
                         "You have entered the [$currentEra]!",
                         NotificationCategory.General,
-                        NotificationIcon.Science
+                        NotificationIcons.Science
                     )
                 if (civInfo.isMajorCiv()) {
                     for (knownCiv in civInfo.getKnownCivs()) {
                         knownCiv.addNotification(
                             "[${civInfo.civName}] has entered the [$currentEra]!",
-                            NotificationCategory.General, civInfo.civName, NotificationIcon.Science
+                            NotificationCategory.General, civInfo.civName, NotificationIcons.Science
                         )
                     }
                 }
@@ -417,7 +417,7 @@ class TechManager : IsPartOfGameInfoSerialization {
                         civInfo.addNotification(
                             "[${policyBranch.name}] policy branch unlocked!",
                             NotificationCategory.General,
-                            NotificationIcon.Culture
+                            NotificationIcons.Culture
                         )
                 }
             }

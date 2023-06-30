@@ -4,7 +4,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.NotificationIcons
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.map.mapunit.UnitMovement
 import com.unciv.logic.map.tile.Tile
@@ -64,12 +64,12 @@ class DiplomacyFunctions(val civInfo: Civilization){
                 meetString = "[${civInfo.civName}] has given us [${giftAmount}] as we are the first major civ to meet them"
             }
             if (cityStateLocation != null)
-                otherCiv.addNotification(meetString, cityStateLocation, NotificationCategory.Diplomacy, NotificationIcon.Gold)
+                otherCiv.addNotification(meetString, cityStateLocation, NotificationCategory.Diplomacy, NotificationIcons.Gold)
             else
-                otherCiv.addNotification(meetString, NotificationCategory.Diplomacy, NotificationIcon.Gold)
+                otherCiv.addNotification(meetString, NotificationCategory.Diplomacy, NotificationIcons.Gold)
 
             if (otherCiv.isCityState() && otherCiv.cityStateFunctions.canProvideStat(Stat.Faith)){
-                otherCiv.addNotification(religionMeetString, NotificationCategory.Diplomacy, NotificationIcon.Faith)
+                otherCiv.addNotification(religionMeetString, NotificationCategory.Diplomacy, NotificationIcons.Faith)
 
                 for ((key, value) in faithAmount)
                     otherCiv.addStat(key, value.toInt())

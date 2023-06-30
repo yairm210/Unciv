@@ -6,7 +6,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.NotificationIcons
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
@@ -556,7 +556,7 @@ object UnitActions {
 
         for (otherCiv in civsToNotify)
             otherCiv.addNotification("Your territory has been stolen by [${unit.civ}]!",
-                unit.currentTile.position, NotificationCategory.Cities, unit.civ.civName, NotificationIcon.War)
+                unit.currentTile.position, NotificationCategory.Cities, unit.civ.civName, NotificationIcons.War)
     }
 
     private fun addFortifyActions(actionList: ArrayList<UnitAction>, unit: MapUnit, showingAdditionalActions: Boolean) {

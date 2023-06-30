@@ -784,7 +784,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         val destructionText = if (isMajorCiv()) "The civilization of [$civName] has been destroyed!"
         else "The City-State of [$civName] has been destroyed!"
         for (civ in gameInfo.civilizations)
-            civ.addNotification(destructionText, NotificationCategory.General, civName, NotificationIcon.Death)
+            civ.addNotification(destructionText, NotificationCategory.General, civName, NotificationIcons.Death)
         units.getCivUnits().forEach { it.destroy() }
         tradeRequests.clear() // if we don't do this then there could be resources taken by "pending" trades forever
         for (diplomacyManager in diplomacy.values) {

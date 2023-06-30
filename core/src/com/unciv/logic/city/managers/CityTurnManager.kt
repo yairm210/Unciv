@@ -4,7 +4,7 @@ import com.unciv.logic.city.CityFlags
 import com.unciv.logic.city.CityFocus
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.NotificationIcons
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.math.min
@@ -50,7 +50,7 @@ class CityTurnManager(val city: City) {
             city.setFlag(CityFlags.WeLoveTheKing, 20 + 1) // +1 because it will be decremented by 1 in the same startTurn()
             city.civ.addNotification(
                 "Because they have [${city.demandedResource}], the citizens of [${city.name}] are celebrating We Love The King Day!",
-                city.location, NotificationCategory.General, NotificationIcon.City, NotificationIcon.Happiness)
+                city.location, NotificationCategory.General, NotificationIcons.City, NotificationIcons.Happiness)
         }
     }
 
@@ -70,7 +70,7 @@ class CityTurnManager(val city: City) {
                     CityFlags.WeLoveTheKing.name -> {
                         city.civ.addNotification(
                             "We Love The King Day in [${city.name}] has ended.",
-                            city.location, NotificationCategory.General, NotificationIcon.City)
+                            city.location, NotificationCategory.General, NotificationIcons.City)
                         demandNewResource()
                     }
                     CityFlags.Resistance.name -> {
@@ -105,7 +105,7 @@ class CityTurnManager(val city: City) {
             city.setFlag(CityFlags.ResourceDemand, 15 + Random.Default.nextInt(10))
         else
             city.civ.addNotification("[${city.name}] demands [${city.demandedResource}]!",
-                city.location, NotificationCategory.General, NotificationIcon.City, "ResourceIcons/${city.demandedResource}")
+                city.location, NotificationCategory.General, NotificationIcons.City, "ResourceIcons/${city.demandedResource}")
     }
 
 

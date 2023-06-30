@@ -8,7 +8,7 @@ import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.NotificationIcons
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.map.mapunit.UnitTurnManager
@@ -85,7 +85,7 @@ class TurnManager(val civInfo: Civilization) {
             if (offeringCiv.isDefeated() || !TradeEvaluation().isTradeValid(tradeRequest.trade, civInfo, offeringCiv)) {
                 civInfo.tradeRequests.remove(tradeRequest)
                 // Yes, this is the right direction. I checked.
-                offeringCiv.addNotification("Our proposed trade is no longer relevant!", NotificationCategory.Trade, NotificationIcon.Trade)
+                offeringCiv.addNotification("Our proposed trade is no longer relevant!", NotificationCategory.Trade, NotificationIcons.Trade)
             }
         }
 
@@ -261,7 +261,7 @@ class TurnManager(val civInfo: Civilization) {
                     ?: break
                 unitToDisband.disband()
                 val unitName = unitToDisband.shortDisplayName()
-                civInfo.addNotification("Cannot provide unit upkeep for $unitName - unit has been disbanded!", NotificationCategory.Units, unitName, NotificationIcon.Death)
+                civInfo.addNotification("Cannot provide unit upkeep for $unitName - unit has been disbanded!", NotificationCategory.Units, unitName, NotificationIcons.Death)
                 // No need to recalculate unit upkeep, disband did that in UnitManager.removeUnit
                 nextTurnStats = civInfo.stats.statsForNextTurn
             } while (civInfo.gold <= -200 && nextTurnStats.gold.toInt() < 0)

@@ -6,7 +6,7 @@ import com.unciv.json.HashMapVector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.NotificationIcons
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
@@ -161,7 +161,7 @@ class BarbarianManager : IsPartOfGameInfoSerialization {
                     && it.hasExplored(tile)
         }
             .forEach {
-                it.addNotification("A new barbarian encampment has spawned!", tile.position, NotificationCategory.War, NotificationIcon.War)
+                it.addNotification("A new barbarian encampment has spawned!", tile.position, NotificationCategory.War, NotificationIcons.War)
                 it.lastSeenImprovement[tile.position] = Constants.barbarianEncampment
             }
     }

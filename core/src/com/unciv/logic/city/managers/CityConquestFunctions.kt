@@ -7,7 +7,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFlags
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.NotificationIcons
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.trade.TradeLogic
@@ -94,7 +94,7 @@ class CityConquestFunctions(val city: City){
         val goldPlundered = getGoldForCapturingCity(conqueringCiv)
         conqueringCiv.addGold(goldPlundered)
         conqueringCiv.addNotification("Received [$goldPlundered] Gold for capturing [${city.name}]",
-            city.getCenterTile().position, NotificationCategory.General, NotificationIcon.Gold)
+            city.getCenterTile().position, NotificationCategory.General, NotificationIcons.Gold)
 
         val reconqueredCityWhileStillInResistance = city.previousOwner == receivingCiv.civName && city.isInResistance()
 
@@ -201,11 +201,11 @@ class CityConquestFunctions(val city: City){
                 if (civ == foundingCiv || civ == conqueringCiv) continue // don't need to notify these civs
                 when {
                     civ.knows(conqueringCiv) && civ.knows(foundingCiv) ->
-                        civ.addNotification("[$conqueringCiv] has liberated [$foundingCiv]", NotificationCategory.Diplomacy, foundingCiv.civName, NotificationIcon.Diplomacy, conqueringCiv.civName)
+                        civ.addNotification("[$conqueringCiv] has liberated [$foundingCiv]", NotificationCategory.Diplomacy, foundingCiv.civName, NotificationIcons.Diplomacy, conqueringCiv.civName)
                     civ.knows(conqueringCiv) && !civ.knows(foundingCiv) ->
-                        civ.addNotification("[$conqueringCiv] has liberated an unknown civilization", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, conqueringCiv.civName)
+                        civ.addNotification("[$conqueringCiv] has liberated an unknown civilization", NotificationCategory.Diplomacy, NotificationIcons.Diplomacy, conqueringCiv.civName)
                     !civ.knows(conqueringCiv) && civ.knows(foundingCiv) ->
-                        civ.addNotification("An unknown civilization has liberated [$foundingCiv]", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, foundingCiv.civName)
+                        civ.addNotification("An unknown civilization has liberated [$foundingCiv]", NotificationCategory.Diplomacy, NotificationIcons.Diplomacy, foundingCiv.civName)
                     else -> continue
                 }
             }

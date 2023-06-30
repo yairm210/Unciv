@@ -9,7 +9,7 @@ import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.DiplomacyAction
 import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.NotificationIcons
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.civilization.diplomacy.CityStatePersonality
@@ -240,7 +240,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
                 otherCiv.addNotification("[${civInfo.civName}] is being invaded by Barbarians! Destroy Barbarians near their territory to earn Influence.",
                     civInfo.getCapital()!!.location,
                     NotificationCategory.Diplomacy, civInfo.civName,
-                    NotificationIcon.War
+                    NotificationIcons.War
                 )
             }
             civInfo.addFlag(CivFlags.TurnsTillCallForBarbHelp.name, 30)
