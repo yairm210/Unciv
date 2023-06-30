@@ -100,19 +100,19 @@ class PromoteUnitAction(val name: String, val location: Vector2) : NotificationA
 @Suppress("PropertyName")
 internal class NotificationActionsDeserializer {
     // This exists as trick to leverage readFields for Json deserialization
-    var LocationAction: LocationAction? = null
-    var TechAction: TechAction? = null
-    var CityAction: CityAction? = null
-    var DiplomacyAction: DiplomacyAction? = null
-    var MayaLongCountAction: MayaLongCountAction? = null
-    var MapUnitAction: MapUnitAction? = null
-    var WonderAction: WonderAction? = null
-    var PromoteUnitAction: PromoteUnitAction? = null
+    private var locationAction: LocationAction? = null
+    private var techAction: TechAction? = null
+    private var cityAction: CityAction? = null
+    private var diplomacyAction: DiplomacyAction? = null
+    private var mayaLongCountAction: MayaLongCountAction? = null
+    private var mapUnitAction: MapUnitAction? = null
+    private var wonderAction: WonderAction? = null
+    private var promoteUnitAction: PromoteUnitAction? = null
     fun read(json: Json, jsonData: JsonValue): List<NotificationAction> {
         json.readFields(this, jsonData)
         return listOfNotNull(
-            LocationAction, TechAction, CityAction, DiplomacyAction,
-            MayaLongCountAction, MapUnitAction, WonderAction, PromoteUnitAction
+            locationAction, techAction, cityAction, diplomacyAction,
+            mayaLongCountAction, mapUnitAction, wonderAction, promoteUnitAction
         )
     }
 }
