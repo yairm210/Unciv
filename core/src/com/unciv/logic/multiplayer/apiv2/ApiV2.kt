@@ -339,9 +339,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
      * This function may also throw arbitrary exceptions for network failures.
      */
     suspend fun awaitPing(size: Int = 2, timeout: Long? = null): Double? {
-        if (size < 2) {
-            throw IllegalArgumentException("Size too small to identify ping responses uniquely")
-        }
+        require(size < 2) { "Size too small to identify ping responses uniquely" }
         val body = ByteArray(size)
         Random().nextBytes(body)
 
