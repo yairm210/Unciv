@@ -183,7 +183,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
                 val b: VersionResponse = r.body()
                 b.version == 2
             }
-        } catch (e: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
             false
         } catch (e: Throwable) {
             Log.error("Unexpected exception calling version endpoint for '$baseUrl': $e")
@@ -204,7 +204,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
                 val b: ApiErrorResponse = r.body()
                 b.statusCode == ApiStatusCode.Unauthenticated
             }
-        } catch (e: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
             false
         } catch (e: Throwable) {
             Log.error("Unexpected exception calling WebSocket endpoint for '$baseUrl': $e")
@@ -371,7 +371,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
                     throw exception
                 }
             }.toDouble() / 10e6
-        } catch (c: ClosedReceiveChannelException) {
+        } catch (_: ClosedReceiveChannelException) {
             return null
         } finally {
             synchronized(this) {
@@ -448,7 +448,7 @@ class ApiV2(private val baseUrl: String) : ApiV2Wrapper(baseUrl), Disposable {
                                         Concurrency.run {
                                             try {
                                                 c.send((msg as WebSocketMessageWithContent).content)
-                                            } catch (closed: ClosedSendChannelException) {
+                                            } catch (_: ClosedSendChannelException) {
                                                 delay(10)
                                                 eventChannelList.remove(c)
                                             } catch (t: Throwable) {
