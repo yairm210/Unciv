@@ -531,17 +531,19 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 }
 
                 UniqueType.RequiresBuildingInSomeCities -> {
-                    val buildingName = unique.params[0]
+                    val buildingFilter = unique.params[0]
                     val numberOfCitiesRequired = unique.params[1].toInt()
                     val numberOfCitiesWithBuilding = civ.cities.count {
-                        it.cityConstructions.containsBuildingOrEquivalent(buildingName)
+                        it.cityConstructions.containsBuildingOrEquivalent(buildingFilter)
                     }
                     if (numberOfCitiesWithBuilding < numberOfCitiesRequired) {
-                        val equivalentBuildingName = civ.getEquivalentBuilding(buildingName).name
+                        val equivalentBuildingFilter = if (ruleSet.buildings.containsKey(buildingFilter))
+                            civ.getEquivalentBuilding(buildingFilter).name
+                        else buildingFilter
                         yield(
                                 // replace with civ-specific building for user
                                 RejectionReasonType.RequiresBuildingInSomeCities.toInstance(
-                                    unique.text.fillPlaceholders(equivalentBuildingName, numberOfCitiesRequired.toString()) +
+                                    unique.text.fillPlaceholders(equivalentBuildingFilter, numberOfCitiesRequired.toString()) +
                                             " ($numberOfCitiesWithBuilding/$numberOfCitiesRequired)"
                                 ) )
                     }
