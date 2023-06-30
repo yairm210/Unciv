@@ -58,7 +58,8 @@ class WorkerAutomation(
     private val citiesThatNeedConnecting: List<City> by lazy {
         val result = civInfo.cities.asSequence()
             .filter {
-                it.population.population > 3
+                civInfo.getCapital() != null
+                    && it.population.population > 3
                         && !it.isCapital() && !it.isBeingRazed // Cities being razed should not be connected.
                         && !it.cityStats.isConnectedToCapital(bestRoadAvailable)
             }.sortedBy {

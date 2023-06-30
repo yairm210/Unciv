@@ -838,8 +838,10 @@ object NextTurnAutomation {
         val closestCities = getClosestCities(civInfo, otherCiv) ?: return 0
         val baseForce = 30f
 
-        val ourCombatStrength = civInfo.getStatForRanking(RankingType.Force).toFloat() + baseForce + CityCombatant(civInfo.getCapital()!!).getCityStrength()
-        var theirCombatStrength = otherCiv.getStatForRanking(RankingType.Force).toFloat() + baseForce + CityCombatant(otherCiv.getCapital()!!).getCityStrength()
+        var ourCombatStrength = civInfo.getStatForRanking(RankingType.Force).toFloat() + baseForce
+        if (civInfo.getCapital()!= null) ourCombatStrength += CityCombatant(civInfo.getCapital()!!).getCityStrength()
+        var theirCombatStrength = otherCiv.getStatForRanking(RankingType.Force).toFloat() + baseForce
+        if(otherCiv.getCapital() != null) theirCombatStrength += CityCombatant(otherCiv.getCapital()!!).getCityStrength()
 
         //for city-states, also consider their protectors
         if (otherCiv.isCityState() and otherCiv.cityStateFunctions.getProtectorCivs().isNotEmpty()) {
@@ -942,7 +944,7 @@ object NextTurnAutomation {
             return motivationSoFar
         }
 
-        val reachableEnemyCitiesBfs = BFS(civInfo.getCapital()!!.getCenterTile()) { isTileCanMoveThrough(it) }
+        val reachableEnemyCitiesBfs = BFS((civInfo.getCapital() ?: civInfo.cities.firstOrNull())!!.getCenterTile()) { isTileCanMoveThrough(it) }
         reachableEnemyCitiesBfs.stepToEnd()
         val reachableEnemyCities = otherCiv.cities.filter { reachableEnemyCitiesBfs.hasReachedTile(it.getCenterTile()) }
         if (reachableEnemyCities.isEmpty()) return 0 // Can't even reach the enemy city, no point in war.

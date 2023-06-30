@@ -521,7 +521,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         }
 
         if (!civInfo.isDefeated()) { // don't display city state relationship notifications when the city state is currently defeated
-            val civCapitalLocation = if (civInfo.cities.isNotEmpty() || civInfo.getCapital() != null) civInfo.getCapital()!!.location else null
+            val civCapitalLocation = if (civInfo.cities.any() && civInfo.getCapital() != null) civInfo.getCapital()!!.location else null
             if (getTurnsToRelationshipChange() == 1) {
                 val text = "Your relationship with [${civInfo.civName}] is about to degrade"
                 if (civCapitalLocation != null) otherCiv().addNotification(text,
