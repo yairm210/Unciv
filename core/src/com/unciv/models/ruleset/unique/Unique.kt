@@ -42,6 +42,12 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
     fun hasFlag(flag: UniqueFlag) = type != null && type.flags.contains(flag)
 
+    fun hasTriggerConditional(): Boolean {
+        if(conditionals.none()) return false
+        return conditionals.any{ conditional -> conditional.type!!.targetTypes
+            .any{ it.canAcceptUniqueTarget(UniqueTarget.TriggerCondition) } }
+    }
+
     fun isOfType(uniqueType: UniqueType) = uniqueType == type
 
     fun conditionalsApply(civInfo: Civilization? = null, city: City? = null): Boolean {

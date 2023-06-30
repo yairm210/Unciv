@@ -2,7 +2,6 @@ package com.unciv.logic.map.mapunit
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
@@ -93,7 +92,7 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
     private fun doDirectPromotionEffects(promotion: Promotion) {
         for (unique in promotion.uniqueObjects)
             if (unique.conditionalsApply(StateForConditionals(civInfo = unit.civ, unit = unit))
-                    && unique.conditionals.none { it.type?.targetTypes?.contains(UniqueTarget.TriggerCondition) == true })
+                    && !unique.hasTriggerConditional())
                 UniqueTriggerActivation.triggerUnitwideUnique(unique, unit, triggerNotificationText = "due to our [${unit.name}] being promoted")
     }
 

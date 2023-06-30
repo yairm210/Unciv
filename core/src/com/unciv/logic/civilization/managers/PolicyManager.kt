@@ -9,7 +9,6 @@ import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.unique.UniqueMap
-import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
@@ -204,7 +203,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
 
         val triggerNotificationText = "due to adopting [${policy.name}]"
         for (unique in policy.uniqueObjects)
-            if (unique.conditionals.none { it.type!!.targetTypes.contains(UniqueTarget.TriggerCondition) })
+            if (!unique.hasTriggerConditional())
                 UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponAdoptingPolicyOrBelief))
