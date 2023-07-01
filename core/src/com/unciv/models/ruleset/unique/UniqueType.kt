@@ -11,7 +11,7 @@ import com.unciv.models.translations.getPlaceholderText
 enum class UniqueTarget(val documentationString:String = "", val inheritsFrom: UniqueTarget? = null) {
 
     /** Only includes uniques that have immediate effects, caused by UniqueTriggerActivation */
-    Triggerable("Uniques that have immediate, one-time effects." +
+    Triggerable("Uniques that have immediate, one-time effects. " +
         "These can be added to techs to trigger when researched, to policies to trigger when adpoted, " +
         "to eras to trigger when reached, to buildings to trigger when built. " +
         "Alternatively, you can add a TriggerCondition to them to make them into Global uniques that activate upon a specific event." +
@@ -22,8 +22,6 @@ enum class UniqueTarget(val documentationString:String = "", val inheritsFrom: U
         "They can be added to units to grant them the ability to trigger this effect as an action, " +
         "which can be modified with UnitActionModifier and UnitTriggerCondition conditionals.", Triggerable),
 
-    /** Buildings, units, nations, policies, religions, techs etc.
-     * Basically anything caught by CivInfo.getMatchingUniques. */
     Global("Uniques that apply globally. " +
         "Civs gain the abilities of these uniques from nation uniques, reached eras, researched techs, adopted policies, " +
         "built buildings, religion 'founder' uniques, owned resources, and ruleset-wide global uniques.", Triggerable),
@@ -37,10 +35,10 @@ enum class UniqueTarget(val documentationString:String = "", val inheritsFrom: U
     FollowerBelief("Uniques that apply to each city where the religion is the majority religion"),
 
     // City-specific
-    /** This is used as the base when checking buildings */
     Building("Uniques that can only be added to buildings", Global),
     Wonder(inheritsFrom = Building),
 
+    // Unit-specific
     Unit("Uniques that can be added to units, unit types, or promotions", inheritsFrom = UnitTriggerable),
     UnitType(inheritsFrom = Unit),
     Promotion(inheritsFrom = Unit),

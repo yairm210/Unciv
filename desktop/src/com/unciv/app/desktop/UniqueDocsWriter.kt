@@ -65,7 +65,7 @@ class UniqueDocsWriter {
             lines += "## " + targetType.name + " uniques"
 
             if (targetType.documentationString.isNotEmpty())
-                lines += "!!! note \"\"\n\n    ${targetType.documentationString}"
+                lines += "!!! note \"\"\n\n    ${targetType.documentationString}\n"
 
             for (uniqueType in uniqueTypes) {
                 if (uniqueType.getDeprecationAnnotation() != null) continue
