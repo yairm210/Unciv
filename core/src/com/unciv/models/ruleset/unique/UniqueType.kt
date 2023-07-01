@@ -8,54 +8,58 @@ import com.unciv.models.translations.getPlaceholderText
 
 /** inheritsFrom means that all such uniques are acceptable as well.
  * For example, all Global uniques are acceptable for Nations, Eras, etc. */
-enum class UniqueTarget(val inheritsFrom: UniqueTarget? = null) {
+enum class UniqueTarget(val documentationString:String = "", val inheritsFrom: UniqueTarget? = null) {
 
     /** Only includes uniques that have immediate effects, caused by UniqueTriggerActivation */
-    Triggerable,
-    UnitTriggerable(Triggerable),
+    Triggerable("Uniques that have immediate, one-time effects." +
+        "These can be added to techs to trigger when researched, to policies to trigger when adpoted, " +
+        "to eras to trigger when reached, to buildings to trigger when built. " +
+        "Alternatively, you can add a TriggerCondition to them to make them into Global uniques that activate upon a specific event." +
+        "They can also be added to units to grant them the ability to trigger this effect as an action, " +
+        "which can be modified with UnitActionModifier and UnitTriggerCondition conditionals."),
+
+    UnitTriggerable("Uniques that have immediate, one-time effects on a unit." +
+        "They can be added to units to grant them the ability to trigger this effect as an action, " +
+        "which can be modified with UnitActionModifier and UnitTriggerCondition conditionals.", Triggerable),
 
     /** Buildings, units, nations, policies, religions, techs etc.
      * Basically anything caught by CivInfo.getMatchingUniques. */
-    Global(Triggerable),
+    Global("Uniques that apply globally. " +
+        "Civs gain the abilities of these uniques from nation uniques, reached eras, researched techs, adopted policies, " +
+        "built buildings, religion 'founder' uniques, owned resources, and ruleset-wide global uniques.", Triggerable),
 
     // Civilization-specific
-    Nation(Global),
-    Era(Global),
-    Tech(Global),
-    Policy(Global),
-    FounderBelief(Global),
-    /** These apply only to cities where the religion is the majority religion */
-    FollowerBelief,
+    Nation(inheritsFrom = Global),
+    Era(inheritsFrom = Global),
+    Tech(inheritsFrom = Global),
+    Policy(inheritsFrom = Global),
+    FounderBelief("Uniques that apply to the founder of this religion", inheritsFrom = Global),
+    FollowerBelief("Uniques that apply to each city where the religion is the majority religion"),
 
     // City-specific
     /** This is used as the base when checking buildings */
-    Building(Global),
-    Wonder(Building),
+    Building("Uniques that can only be added to buildings", Global),
+    Wonder(inheritsFrom = Building),
 
-    // Unit-specific
-    // These are a bit of a lie. There's no "Promotion only" or "UnitType only" uniques,
-    //  they're all just Unit uniques in different places.
-    //  So there should be no uniqueType that has a Promotion or UnitType target.
-    //  Except meta-level uniques, such as 'incompatible with [promotion]', of course
-    Unit(UnitTriggerable),
-    UnitType(Unit),
-    Promotion(Unit),
+    Unit("Uniques that can be added to units, unit types, or promotions", inheritsFrom = UnitTriggerable),
+    UnitType(inheritsFrom = Unit),
+    Promotion(inheritsFrom = Unit),
 
     // Tile-specific
     Terrain,
     Improvement,
-    Resource(Global),
-    Ruins(UnitTriggerable),
+    Resource(inheritsFrom = Global),
+    Ruins(inheritsFrom = UnitTriggerable),
 
     // Other
     Speed,
     Tutorial,
-    CityState(Global),
+    CityState(inheritsFrom = Global),
     ModOptions,
-    Conditional,
-    TriggerCondition(Global),
-    UnitTriggerCondition(TriggerCondition),
-    UnitActionModifier,
+    Conditional("Modifiers that can be added to other uniques to limit when they will be active"),
+    TriggerCondition("Special conditionals that can be added to Triggerable uniques, to make them activate upon specific actions.", inheritsFrom = Global),
+    UnitTriggerCondition("Special conditionals that can be added to UnitTriggerable uniques, to make them activate upon specific actions.", inheritsFrom = TriggerCondition),
+    UnitActionModifier("Modifiers that can be added to unit action uniques as conditionals"),
     ;
 
     fun canAcceptUniqueTarget(uniqueTarget: UniqueTarget): Boolean {

@@ -642,7 +642,8 @@ class WorldScreen(
             debug("Next turn took %sms", System.currentTimeMillis() - startTime)
 
             // Special case: when you are the only alive human player, the game will always be up to date
-            if (gameInfo.gameParameters.isOnlineMultiplayer && gameInfoClone.civilizations.filter { it.isAlive() && it.playerType == PlayerType.Human }.size == 1) {
+            if (gameInfo.gameParameters.isOnlineMultiplayer
+                    && gameInfoClone.civilizations.count { it.isAlive() && it.playerType == PlayerType.Human } == 1) {
                 gameInfoClone.isUpToDate = true
             }
 

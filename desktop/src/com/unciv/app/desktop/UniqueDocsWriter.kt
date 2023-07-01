@@ -63,6 +63,10 @@ class UniqueDocsWriter {
         for ((targetType, uniqueTypes) in targetTypesToUniques) {
             if (uniqueTypes.isEmpty()) continue
             lines += "## " + targetType.name + " uniques"
+
+            if (targetType.documentationString.isNotEmpty())
+                lines += "!!! note \"\"\n\n    ${targetType.documentationString}"
+
             for (uniqueType in uniqueTypes) {
                 if (uniqueType.getDeprecationAnnotation() != null) continue
 
