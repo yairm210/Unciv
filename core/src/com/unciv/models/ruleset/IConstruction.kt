@@ -41,7 +41,6 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     fun canBePurchasedWithStat(city: City?, stat: Stat): Boolean {
         if (stat == Stat.Production || stat == Stat.Happiness) return false
         if (hasUnique(UniqueType.CannotBePurchased)) return false
-        if (stat == Stat.Gold) return !hasUnique(UniqueType.Unbuildable)
         // Can be purchased with [Stat] [cityFilter]
         if (city != null && getMatchingUniques(UniqueType.CanBePurchasedWithStat)
             .any { it.params[0] == stat.name && city.matchesFilter(it.params[1]) }
@@ -50,6 +49,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         if (city != null && getMatchingUniques(UniqueType.CanBePurchasedForAmountStat)
             .any { it.params[1] == stat.name && city.matchesFilter(it.params[2]) }
         ) return true
+        if (stat == Stat.Gold) return !hasUnique(UniqueType.Unbuildable)
         return false
     }
 
