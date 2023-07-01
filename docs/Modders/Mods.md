@@ -35,8 +35,8 @@ Mods are located in a `/mods` directory, on Desktop that should be next to your 
 
 Mods typically have 2 subfolders:
 
--   jsons - here you should put files that alter the data of game objects, the order of the files is as in [the base json files](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons). More information on these can be found [here](JSON-files-for-mods.md)
--   Images - here you should put game images, as in [the base image files](/Images). Please read the [atlas chapter](#more-on-images-and-the-texture-atlas) for important details.
+-   `jsons` - here you should put files that alter the data of game objects, the order of the files is as in [the base json files](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons). More information on these can be found [here](JSON-files-for-mods.md)
+-   `Images` - here you should put game images, as in [the base image files](/https://github.com/yairm210/Unciv/tree/master/android/Images). Please read [about atlases](#more-on-images-and-the-texture-atlas) for important details.
 
 In order to remove objects from the game, you'll need to create a ModOptions file in the `/jsons` subfolder - there's an example [here](https://github.com/yairm210/Unciv-mod-example/blob/master/Removing%20Things/jsons/ModOptions.json)
 
@@ -48,11 +48,23 @@ If you want to add a new civilization as a mod, you should check out [the Civ ma
 
 ### More on Images and the texture atlas
 
-Images are combined (at runtime) into texture images with an 'atlas', so if you see "game.atlas" and "game.png" files being generated, now you know what for. Most mods will need only one pair of those, the base game has around four.
+When running on Desktop, images are combined on game startup into a large `game.png` file with a corresponding `.atlas` file.
 
-When the game runs from a packaged distribution (android, jar), the texture+atlas files alone are relevant, so you need to include them in your repository and keep them up to date. Actually omitting the original images would work for these uses, but we still recommend including them, so developers running from source can access them.
+This means that if you're developing your mod on an Android version of Unciv (not recommended!) you won't be able to generate these images files - you can ask someone in the Discord server to help you out
 
-If your mod has lots of images (or large ones), the textures might 'spill' into additional texture ".png" files - 2048x2048 is the limit for a single texture pack. This is not good for performance, which is why the base game controls which kinds of images go together into one texture(+atlas). This works for mods, too: Create not only one Images folder, but several, the additional ones named "Images.xyz", where xyz will become the filename of the additional texture file (So don't use both Images and Images.game - those will clash). Look at the Unciv base game to get a better idea how that works. To minimize texture swaps, try to group them by the situation where in the game they are needed. You can distibute by folder, but having the same subfolders under several "Images.xyz" and distributing the images between them will also work.
+For your players, the individual images aren't important - only the combined images actually register to the game, so you need to include them in your repository and keep them up to date.
+
+Actually omitting the original images would work for these uses, but we still recommend including them, so developers running from source can access them.
+
+#### Extremely image-heavy mods
+
+If your mod has lots of images (or large ones), the textures might 'spill' into additional texture ".png" files - 2048x2048 is the limit for a single texture pack.
+
+This is not good for performance, which is why the base game controls which kinds of images go together into one texture(+atlas).
+
+This works for mods, too: Create not only one Images folder, but several, the additional ones named "Images.xyz", where xyz will become the filename of the additional texture file (So don't use both Images and Images.game - those will clash). Look at the Unciv base game to get a better idea how that works.
+
+To minimize texture swaps, try to group them by the situation where in the game they are needed. You can distibute by folder, but having the same subfolders under several "Images.xyz" and distributing the images between them will also work.
 
 ### Adding maps to mods
 

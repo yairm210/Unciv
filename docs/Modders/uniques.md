@@ -134,7 +134,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ## UnitTriggerable uniques
 !!! note ""
 
-    Uniques that have immediate, one-time effects on a unit.They can be added to units to grant them the ability to trigger this effect as an action, which can be modified with UnitActionModifier and UnitTriggerCondition conditionals.
+    Uniques that have immediate, one-time effects on a unit.They can be added to units (on unit, unit type, or promotion) to grant them the ability to trigger this effect as an action, which can be modified with UnitActionModifier and UnitTriggerCondition conditionals.
 
 ??? example  "Heal this unit by [amount] HP"
 	Example: "Heal this unit by [3] HP"
@@ -913,7 +913,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ## FounderBelief uniques
 !!! note ""
 
-    Uniques that apply to the founder of this religion
+    Uniques for Founder and Enhancer type Beliefs, that will apply to the founder of this religion
 
 ??? example  "[stats] for each global city following this religion"
 	Example: "[+1 Gold, +2 Production] for each global city following this religion"
@@ -928,7 +928,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ## FollowerBelief uniques
 !!! note ""
 
-    Uniques that apply to each city where the religion is the majority religion
+    Uniques for Pantheon and Follower type beliefs, that will apply to each city where the religion is the majority religion
 
 ??? example  "[relativeAmount]% [stat] from every follower, up to [relativeAmount]%"
 	Example: "[+20]% [Culture] from every follower, up to [+20]%"
@@ -941,10 +941,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: FollowerBelief
 
 ## Building uniques
-!!! note ""
-
-    Uniques that can only be added to buildings
-
 ??? example  "Consumes [amount] [resource]"
 	Example: "Consumes [3] [Iron]"
 

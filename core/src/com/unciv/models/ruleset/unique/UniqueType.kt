@@ -19,7 +19,7 @@ enum class UniqueTarget(val documentationString:String = "", val inheritsFrom: U
         "which can be modified with UnitActionModifier and UnitTriggerCondition conditionals."),
 
     UnitTriggerable("Uniques that have immediate, one-time effects on a unit." +
-        "They can be added to units to grant them the ability to trigger this effect as an action, " +
+        "They can be added to units (on unit, unit type, or promotion) to grant them the ability to trigger this effect as an action, " +
         "which can be modified with UnitActionModifier and UnitTriggerCondition conditionals.", Triggerable),
 
     Global("Uniques that apply globally. " +
@@ -31,11 +31,11 @@ enum class UniqueTarget(val documentationString:String = "", val inheritsFrom: U
     Era(inheritsFrom = Global),
     Tech(inheritsFrom = Global),
     Policy(inheritsFrom = Global),
-    FounderBelief("Uniques that apply to the founder of this religion", inheritsFrom = Global),
-    FollowerBelief("Uniques that apply to each city where the religion is the majority religion"),
+    FounderBelief("Uniques for Founder and Enhancer type Beliefs, that will apply to the founder of this religion", inheritsFrom = Global),
+    FollowerBelief("Uniques for Pantheon and Follower type beliefs, that will apply to each city where the religion is the majority religion"),
 
     // City-specific
-    Building("Uniques that can only be added to buildings", Global),
+    Building(inheritsFrom = Global),
     Wonder(inheritsFrom = Building),
 
     // Unit-specific
