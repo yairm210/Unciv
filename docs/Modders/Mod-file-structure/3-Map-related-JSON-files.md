@@ -121,14 +121,14 @@ A mod can define new Tilesets or add to existing ones, namely FantasyHex. There 
 
 | Attribute | Type | Default value | Notes |
 | --------- | ---- | -------- | ----- |
-| [useColorAsBaseTerrain](../4-Creating-a-custom-tileset.md#useColorAsBaseTerrain) | Boolean | false | |
-| [useSummaryImages](../4-Creating-a-custom-tileset.md#useSummaryImages) | Boolean | false | |
-| [unexploredTileColor](../4-Creating-a-custom-tileset.md#unexploredTileColor) | Color | Dark Gray | `{"r":0.25,"g":0.25,"b":0.25,"a":1}` |
-| [fogOfWarColor](../4-Creating-a-custom-tileset.md#fogOfWarColor) | Color | Black | `{"r":0,"g":0,"b":0,"a":1}` |
-| [fallbackTileSet](../4-Creating-a-custom-tileset.md#fallbackTileSet) | String | "FantasyHex" | null to disable |
-| [tileScale](../4-Creating-a-custom-tileset.md#tileScale) | Float | 1.0 |  |
-| [tileScales](../4-Creating-a-custom-tileset.md#tileScales) | Dictionary | empty |  |
-| [ruleVariants](../4-Creating-a-custom-tileset.md#ruleVariants) | Dictionary | empty | see below |
+| [useColorAsBaseTerrain](../Creating-a-custom-tileset.md#useColorAsBaseTerrain) | Boolean | false | |
+| [useSummaryImages](../Creating-a-custom-tileset.md#useSummaryImages) | Boolean | false | |
+| [unexploredTileColor](../Creating-a-custom-tileset.md#unexploredTileColor) | Color | Dark Gray | `{"r":0.25,"g":0.25,"b":0.25,"a":1}` |
+| [fogOfWarColor](../Creating-a-custom-tileset.md#fogOfWarColor) | Color | Black | `{"r":0,"g":0,"b":0,"a":1}` |
+| [fallbackTileSet](../Creating-a-custom-tileset.md#fallbackTileSet) | String | "FantasyHex" | null to disable |
+| [tileScale](../Creating-a-custom-tileset.md#tileScale) | Float | 1.0 |  |
+| [tileScales](../Creating-a-custom-tileset.md#tileScales) | Dictionary | empty |  |
+| [ruleVariants](../Creating-a-custom-tileset.md#ruleVariants) | Dictionary | empty | see below |
 
 ruleVariants control substitutions when layering images for a tile, they are list looking like:
 

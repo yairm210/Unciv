@@ -21,7 +21,7 @@ You will need to supply the graphics for new elements - a new unit needs its ico
 
 -   The path and name of the image file need to conform to the rule: `Image[.AtlasName]/Type-specific/Objectname.png` (Type-specific means "TechIcons" for a Technology, "NationIcons" for a Nation and so on. See vanilla game folders. Objectname is the exact name as defined in json, before translation.)
 -   All path parts are case sensitive.
--   Unit Pixel sprites and [Tilesets](4-Creating-a-custom-tileset.md) follow special rules.
+-   Unit Pixel sprites and [Tilesets](Creating-a-custom-tileset.md) follow special rules.
 -   Promotions can be named "`[Unitname] ability`". In such a case, if `UnitIcons/Unitname.png` exists it will fall back to that unit icon when `UnitPromotionIcons/Unitname ability.png` is missing.
 -   Promotions can be named "Something I" (or " II" or " III"). The suffix will be removed and painted as little stars, only the base `UnitPromotionIcons/Something.png` will be loaded.
 -   The special rules for promotions can be combined, e.g. "`[Warrior] ability III`" will fall back to the Warrior unit icon and paint 3 Stars on it.

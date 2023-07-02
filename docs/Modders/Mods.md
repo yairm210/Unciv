@@ -42,9 +42,9 @@ This is done by adding a `"isBaseRuleset":true` configuration to your [modOption
 
 ## Audiovisual components
 
-In addition to changing the rules - or even without doing so - mods can override existing graphics or sounds, or add music tracks. For details, see [Audiovisual Mods](3-Images-and-Audio.md).
+In addition to changing the rules - or even without doing so - mods can override existing graphics or sounds, or add music tracks. For details, see [Audiovisual Mods](Images-and-Audio.md).
 
-Custom tilesets and unitsets are a subgroup of these - see [Creating a custom tileset](4-Creating-a-custom-tileset.md) - as are UI skin mods, see [Creating a UI skin](5-Creating-a-UI-skin.md)
+Custom tilesets and unitsets are a subgroup of these - see [Creating a custom tileset](Creating-a-custom-tileset.md) - as are UI skin mods, see [Creating a UI skin](Creating-a-UI-skin.md)
 
 Such mods are candidates for the "Permanent audiovisual mod" switch available on the Mod Management Screen.
 Note that this feature includes graphics or sounds from the selected mod in _all_ games, even those started before installing the mod.
@@ -126,7 +126,7 @@ If you feel there should be additional topics supported in-game, then the course
 
 The primary use of mods is to add them when starting a new game, or configuring a map. This will mean that both the ruleset of the mod, and the images, will be in use for that specific game/map.
 
-For mods which are primarily visual or audio, there is a second use - through the mod manager, you can enable them as **permanent audiovisual mods**. This means that the images and/or sounds from the mod will replace the original media everywhere in the game, and contained music will be available - [see here](3-Images-and-Audio.md#supply-additional-music).
+For mods which are primarily visual or audio, there is a second use - through the mod manager, you can enable them as **permanent audiovisual mods**. This means that the images and/or sounds from the mod will replace the original media everywhere in the game, and contained music will be available - [see here](Images-and-Audio.md#supply-additional-music).
 
 ## Mod location for manual loading of mods
 
