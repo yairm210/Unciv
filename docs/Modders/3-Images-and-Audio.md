@@ -2,7 +2,10 @@
 
 ## Permanent audiovisual mods
 
-The following chapters describe possibilities that will work while a mod is ***active***. It is either selected for the current game (during new game creation, cannot be changed after that for saved games), meaning all its rules and resources will be used. _Or_ it is marked as 'Permanent audiovisual mod' in the mod manager (you must select it in the 'installed' column to get the checkbox). In that case only graphics and audio will be active, the rule changes will be ignored (if it contains any) unless the first way is _also_ used.
+The following chapters describe possibilities that will work while a mod is ***active***.
+It is either selected for the current game (during new game creation, cannot be changed after that for saved games), meaning all its rules and resources will be used.
+_Or_ it is marked as 'Permanent audiovisual mod' in the mod manager (you must select it in the 'installed' column to get the checkbox).
+In that case only graphics and audio will be active, the rule changes will be ignored (if it contains any) unless the first way is _also_ used.
 
 ## Override built-in graphics
 

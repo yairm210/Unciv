@@ -1,6 +1,6 @@
 # Introduction to Mods
 
-## What's this about?
+## What are mods?
 
 Everyone has that thing they wish could be in the game.
 Unfortunately, the game only understands code, so mods are our way to give a degree of freedom to those of us who don't code.
@@ -10,10 +10,11 @@ Games loaded with these mods will function according to the mod definition.
 
 The game only knows how to recognize existing definitions, so you can't add *new* unique abilities to nations/units/buildings/etc, only play around with existing ones
 
-There are two kinds of mods:
+There are three main kinds of mods:
 
--   Extension mods - these add new nations/units/buildings/resources to a base ruleset - can be either to the default ruleset, or to a base ruleset mod. Easy to do and probably the better place to get started.
--   Base Ruleset mods - these replace the entire existing ruleset - tech tree, units, policies, nations etc - to give an entirely different experience than the base game. These generally require quite a bit of work, but give a whole new experience, and so are the most popular.
+-   **Extension mods** - these add new nations/units/buildings/resources to a base ruleset - can be either to the default ruleset, or to a base ruleset mod. Easy to do and probably the better place to get started.
+-   **Base Ruleset mods** - these replace the entire existing ruleset - tech tree, units, policies, nations etc - to give an entirely different experience than the base game. These generally require quite a bit of work, but give a whole new experience, and so are the most popular.
+-   **Ruleset-agnostic mods** - these do not contain any ruleset-related jsons, but instead contain other affects. Audiovisual mods (including tilesets, unitsets, and UI skins) and map mods are in this category.
 
 Creating and editing mods from your phone is NOT RECOMMENDED - it's *much easier* using a desktop device!
 
@@ -21,13 +22,19 @@ Creating and editing mods from your phone is NOT RECOMMENDED - it's *much easier
 
 In addition to changing the rules - or even without doing so, mods can override existing graphics or sounds, or add music tracks. The game also has the ability to display graphics that are not included in the base game at all, such as leader portrait or wonder splash images, that must be provided by mods. For details, see [Audiovisual Mods](3-Images-and-Audio.md).
 
-Custom tilesets are closely related, see [Creating a custom tileset](4-Creating-a-custom-tileset.md).
+Custom tilesets and unitsets are a subgroup of these - see [Creating a custom tileset](4-Creating-a-custom-tileset.md) - as are UI skin mods, see [Creating a UI skin](5-Creating-a-UI-skin.md)
 
-Such mods are candidates for the "Permanent audiovisual mod" switch available on the Mod Management Screen. Note that this feature includes graphics or sounds from the selected mod in _all_ games, even those started before installing the mod. In case of a mod bringing both changed rules and audiovisuals, the 'permanent' feature will include only the media on all games, to use the rules you will still need to select the mod for a new game.
+Such mods are candidates for the "Permanent audiovisual mod" switch available on the Mod Management Screen.
+Note that this feature includes graphics or sounds from the selected mod in _all_ games, even those started before installing the mod.
+
+In case of a mod bringing both changed rules and audiovisuals, the 'permanent' feature will include only the media on all games, to use the rules you will still need to select the mod for a new game.
 
 ## Mod names
 
-Mods need to conform to github repo naming rules, but best stay simple and use only letters, digits, and dashes `-`. Dashes are _automatically_ converted to spaces for display and use within Unciv. Many punctuation or extended unicode characters _might_ work, but at best potential users won't find them attractive, at worst we'll refuse support when you run into problems :smiling_imp:
+Mods need to conform to github repo naming rules, but best stay simple and use only letters, digits, and dashes `-`.
+Dashes are _automatically_ converted to spaces for display and use within Unciv.
+
+Many punctuation or extended unicode characters _might_ work, but at best potential users won't find them attractive, at worst we'll refuse support when you run into problems :smiling_imp:
 
 ## Mod components
 
@@ -136,7 +143,7 @@ When loading a mod, it needs to be in its own folder in `/mods` - this is how yo
 
 ## Other
 
-You can add an image that will be displayed to users in the mod management by adding a "preview.jpg" _or_ "preview.png" file.
+You can add an image that will be displayed to users in the mod management screen by adding a "preview.jpg" _or_ "preview.png" file.
 
 Existing mods can be found [here](https://github.com/topics/unciv-mod)!
 
