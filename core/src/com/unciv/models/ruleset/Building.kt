@@ -400,11 +400,11 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     && matchesFilter(it.params[0])
                     && city.matchesFilter(it.params[3])
                 }.map {
-                    getCostForConstructionsIncreasingInPrice(
+                    (getCostForConstructionsIncreasingInPrice(
                         it.params[1].toInt(),
                         it.params[4].toInt(),
                         city.civ.civConstructions.boughtItemsWithIncreasingPrice[name]
-                    )
+                    ) * city.civ.gameInfo.speed.statCostModifiers[stat]!!).toInt()
                 }
             )
             yieldAll(city.getMatchingUniques(UniqueType.BuyBuildingsByProductionCost, conditionalState)
@@ -418,14 +418,14 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     && city.matchesFilter(it.params[2])
                 }
             ) {
-                yield(city.civ.getEra().baseUnitBuyCost)
+                yield((city.civ.getEra().baseUnitBuyCost * city.civ.gameInfo.speed.statCostModifiers[stat]!!).toInt())
             }
             yieldAll(city.getMatchingUniques(UniqueType.BuyBuildingsForAmountStat, conditionalState)
                 .filter {
                     it.params[2] == stat.name
                     && matchesFilter(it.params[0])
                     && city.matchesFilter(it.params[3])
-                }.map { it.params[1].toInt() }
+                }.map { (it.params[1].toInt() * city.civ.gameInfo.speed.statCostModifiers[stat]!!).toInt() }
             )
         }.minOrNull()
     }

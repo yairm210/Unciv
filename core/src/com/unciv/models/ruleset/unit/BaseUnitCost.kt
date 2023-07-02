@@ -85,11 +85,11 @@ class BaseUnitCost(val baseUnit: BaseUnit) {
                             && baseUnit.matchesFilter(it.params[0])
                             && city.matchesFilter(it.params[3])
                 }.map {
-                    baseUnit.getCostForConstructionsIncreasingInPrice(
+                    (baseUnit.getCostForConstructionsIncreasingInPrice(
                         it.params[1].toInt(),
                         it.params[4].toInt(),
                         city.civ.civConstructions.boughtItemsWithIncreasingPrice[baseUnit.name]
-                    )
+                    ) * city.civ.gameInfo.speed.statCostModifiers[stat]!!).toInt()
                 }
             )
             yieldAll(city.getMatchingUniques(UniqueType.BuyUnitsByProductionCost, conditionalState)
@@ -103,14 +103,14 @@ class BaseUnitCost(val baseUnit: BaseUnit) {
                                     && baseUnit.matchesFilter(it.params[0])
                                     && city.matchesFilter(it.params[2])
                         }
-            ) yield(city.civ.getEra().baseUnitBuyCost)
+            ) yield((city.civ.getEra().baseUnitBuyCost * city.civ.gameInfo.speed.statCostModifiers[stat]!!).toInt())
 
             yieldAll(city.getMatchingUniques(UniqueType.BuyUnitsForAmountStat, conditionalState)
                 .filter {
                     it.params[2] == stat.name
                             && baseUnit.matchesFilter(it.params[0])
                             && city.matchesFilter(it.params[3])
-                }.map { it.params[1].toInt() }
+                }.map { (it.params[1].toInt() * city.civ.gameInfo.speed.statCostModifiers[stat]!!).toInt() }
             )
         }
     }

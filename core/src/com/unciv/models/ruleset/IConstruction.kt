@@ -77,12 +77,12 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         val lowestCostUnique = getMatchingUniques(UniqueType.CanBePurchasedForAmountStat, conditionalState)
             .filter { it.params[1] == stat.name && city.matchesFilter(it.params[2]) }
             .minByOrNull { it.params[0].toInt() }
-        if (lowestCostUnique != null) return lowestCostUnique.params[0].toInt()
+        if (lowestCostUnique != null) return (lowestCostUnique.params[0].toInt() * city.civ.gameInfo.speed.statCostModifiers[stat]!!).toInt()
 
         // Can be purchased with [Stat] [cityFilter]
         if (getMatchingUniques(UniqueType.CanBePurchasedWithStat, conditionalState)
             .any { it.params[0] == stat.name && city.matchesFilter(it.params[1]) }
-        ) return city.civ.getEra().baseUnitBuyCost
+        ) return (city.civ.getEra().baseUnitBuyCost * city.civ.gameInfo.speed.statCostModifiers[stat]!!).toInt()
         return null
     }
 
