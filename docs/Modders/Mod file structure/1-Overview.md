@@ -1,4 +1,4 @@
-#  1 - Mod file structure Overview
+#  Mod file structure Overview
 
 These pages are a work in progress. Information they contain may be incomplete.
 
@@ -32,7 +32,7 @@ The JSON files that make up mods can have many different fields, and as not all 
     - [ModOptions.json](5-Miscellaneous-JSON-files.md#modoptionsjson)
     - [Tutorials.json](5-Miscellaneous-JSON-files.md#tutorialsjson)
 -   [Stats](3-Map-related-JSON-files.md#stats)
--   [Sounds](../Images-and-Audio.md#sounds)
+-   [Sounds](../3-Images-and-Audio.md#sounds)
 -   [Civilopedia text](5-Miscellaneous-JSON-files.md#civilopedia-text)
 
 ## General Overview of JSON files

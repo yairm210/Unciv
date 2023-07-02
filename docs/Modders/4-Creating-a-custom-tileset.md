@@ -1,6 +1,6 @@
-# 4 - Making a custom tileset
+# Creating a custom2 tileset
 
-**You should read the [Mods](Mods.md) page first before proceeding**
+**You should read the [Mods](1-Mods.md) page first before proceeding**
 
 In order to add a tileset mod (yes, tilesets are just another type of mod), all you need to do is add your images under Images/Tilesets/MyCoolTilesetExample and enable the mod as a permanent visual mod - the game will recognize the tileset, and allow you to pick it in the options menu.
 

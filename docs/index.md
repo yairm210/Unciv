@@ -13,6 +13,6 @@ If you're a developer, you'll probably want to start at the [Getting Started](De
 
 If you're a translator, head over to [Translating!](Other/Translating.md)
 
-If you're a modder, [start here](Modders/Mods.md).
+If you're a modder, [start here](Modders/1-Mods.md).
 
 If not, you can still help by spreading the word - vote for Unciv where you can, mention it on Reddit or Twitter etc, and help us with new ideas of how to get the word out!

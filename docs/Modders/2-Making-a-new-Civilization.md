@@ -1,4 +1,4 @@
-# 2 - 'My first mod' - Making a new Civilization
+# 'My first mod' - Making a new Civilization
 
 So you want to add your favorite civilization?
 
@@ -50,4 +50,4 @@ Icons directly from the base game belong to Firaxis, so I'm not sure we're legal
 
 One source I use constantly is [The Noun Project](https://thenounproject.com) - everything there is Creative Commons or open, so they can all be used!
 
-Credits for icons should go in the [Credits](./Credits.md) page.
+Credits for icons should go in a `Credits.md` page.

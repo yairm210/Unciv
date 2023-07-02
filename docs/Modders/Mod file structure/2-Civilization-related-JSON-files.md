@@ -1,4 +1,4 @@
-# 2 - Civilization-related JSON files
+# Civilization-related JSON files
 
 ## Beliefs.json
 

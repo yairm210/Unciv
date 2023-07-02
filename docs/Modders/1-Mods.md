@@ -1,4 +1,4 @@
-# 1 - Introduction to Mods
+# Introduction to Mods
 
 ## What's this about?
 
@@ -19,9 +19,9 @@ Creating and editing mods from your phone is NOT RECOMMENDED - it's *much easier
 
 ## Audiovisual Mods
 
-In addition to changing the rules - or even without doing so, mods can override existing graphics or sounds, or add music tracks. The game also has the ability to display graphics that are not included in the base game at all, such as leader portrait or wonder splash images, that must be provided by mods. For details, see [Audiovisual Mods](Images-and-Audio.md).
+In addition to changing the rules - or even without doing so, mods can override existing graphics or sounds, or add music tracks. The game also has the ability to display graphics that are not included in the base game at all, such as leader portrait or wonder splash images, that must be provided by mods. For details, see [Audiovisual Mods](3-Images-and-Audio.md).
 
-Custom tilesets are closely related, see [Creating a custom tileset](Creating-a-custom-tileset.md).
+Custom tilesets are closely related, see [Creating a custom tileset](4-Creating-a-custom-tileset.md).
 
 Such mods are candidates for the "Permanent audiovisual mod" switch available on the Mod Management Screen. Note that this feature includes graphics or sounds from the selected mod in _all_ games, even those started before installing the mod. In case of a mod bringing both changed rules and audiovisuals, the 'permanent' feature will include only the media on all games, to use the rules you will still need to select the mod for a new game.
 
@@ -44,7 +44,7 @@ In a base ruleset mod, ALL the original objects are removed - this is done by ad
 
 For an example, you can refer to [the example mod](https://github.com/yairm210/Unciv-mod-example) - just download the Example-Aliens-Mod and put it in a `/mods` folder next to the jar, run Unciv, start a new game, and you'll be able to enable the mod, which will allow to you pick Aliens as a playable civilization!
 
-If you want to add a new civilization as a mod, you should check out [the Civ making instructions](Making-a-new-Civilization.md) to see what's required, or see the example Aliens mod =)
+If you want to add a new civilization as a mod, you should check out [the Civ making instructions](2-Making-a-new-Civilization.md) to see what's required, or see the example Aliens mod =)
 
 ### More on Images and the texture atlas
 
@@ -121,7 +121,7 @@ If you feel there should be additional topics supported in-game, then the course
 
 The primary use of mods is to add them when starting a new game, or configuring a map. This will mean that both the ruleset of the mod, and the images, will be in use for that specific game/map.
 
-For mods which are primarily visual or audio, there is a second use - through the mod manager, you can enable them as **permanent audiovisual mods**. This means that the images and/or sounds from the mod will replace the original media everywhere in the game, and contained music will be available - [see here](Images-and-Audio.md#supply-additional-music).
+For mods which are primarily visual or audio, there is a second use - through the mod manager, you can enable them as **permanent audiovisual mods**. This means that the images and/or sounds from the mod will replace the original media everywhere in the game, and contained music will be available - [see here](3-Images-and-Audio.md#supply-additional-music).
 
 ## Mod location for manual loading of mods
 
@@ -142,4 +142,4 @@ Existing mods can be found [here](https://github.com/topics/unciv-mod)!
 
 A list of uniques and how to use them can be found [here](Unique-parameters.md)!
 
-Some images don't exist at all in the base game, but can be added in mods. For more info, see [Audiovisual Mods](Images-and-Audio.md).
+Some images don't exist at all in the base game, but can be added in mods. For more info, see [Audiovisual Mods](3-Images-and-Audio.md).

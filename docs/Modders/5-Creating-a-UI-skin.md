@@ -1,16 +1,16 @@
-# 5 - Creating a UI skin mod
+# Creating a UI skin
 
-**You should read the [Mods](Mods.md) page first before proceeding**
+**You should read the [Mods](1-Mods.md) page first before proceeding**
 
 In order to add a UI skin mod (yes, UI skins are just another type of mod), all you need to do is add your images under `Images/Skins/MyCoolSkinExample` and enable the mod as a permanent visual mod.
 
 The game will then recognize the skin, and allow you to pick it in the options menu.
 
-Just like [tilesets](Creating-a-custom-tileset.md), UI skins can be used to alter the appearance of Unciv. Please note that UI skins do not support custom icons and fonts and not every UI element can be customized yet too.
+Just like [tilesets](4-Creating-a-custom-tileset.md), UI skins can be used to alter the appearance of Unciv. Please note that UI skins do not support custom icons and fonts and not every UI element can be customized yet too.
 
 We use so called 9.png (or Ninepatch) files for every skin image because UI elements need a way to be resized based on game window size and resolution. Ninepatch files can be created manually by adding black pixels around your custom images in a specific manner or by using [Android Studio's Draw 9-patch tool](https://developer.android.com/studio/write/draw9patch) or [this tool by romannurik](https://romannurik.github.io/AndroidAssetStudio/nine-patches.html) for example. You may also check if your favorite image creation tool supports nine patches itself to generate them more easily.
 
-A skin image can either be gray scale and later be colored in game by modifying the `tint` in the [skinConfig](Creating-a-UI-skin.md#tint) or be colored directly in the image. When coloring the image directly it is important to set the tint of the UI element to white. Please note that tileable ninepatches and ninepatches with multiple stretch areas are not supported because of technical restrictions by libgdx.
+A skin image can either be gray scale and later be colored in game by modifying the `tint` in the [skinConfig](5-Creating-a-UI-skin.md#tint) or be colored directly in the image. When coloring the image directly it is important to set the tint of the UI element to white. Please note that tileable ninepatches and ninepatches with multiple stretch areas are not supported because of technical restrictions by libgdx.
 
 There are 6 basic shapes which can be placed inside the `Images/Skins/MyCoolSkinExample` folder:
  - checkbox
@@ -20,7 +20,7 @@ There are 6 basic shapes which can be placed inside the `Images/Skins/MyCoolSkin
  - select-box
  - select-box-pressed
 
-These shapes are used all over Unciv and can be replaced to make a lot of UI elements change appearance at once. To change just one specific element use the [table](Creating-a-UI-skin.md#Available-UI-elements) below to create an image at the specified directory using the specified name inside `Images/Skins/MyCoolSkinExample`. See the image below for an example file structure. ![skinExample](https://user-images.githubusercontent.com/24532072/198904598-0d298035-5b02-431b-bfb4-7da4b9c821c9.png)
+These shapes are used all over Unciv and can be replaced to make a lot of UI elements change appearance at once. To change just one specific element use the [table](5-Creating-a-UI-skin.md#Available-UI-elements) below to create an image at the specified directory using the specified name inside `Images/Skins/MyCoolSkinExample`. See the image below for an example file structure. ![skinExample](https://user-images.githubusercontent.com/24532072/198904598-0d298035-5b02-431b-bfb4-7da4b9c821c9.png)
 
 ## Limitations
 
@@ -137,7 +137,7 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 
 ## SkinConfig
 
-The skinConfig is similar to the [tilesetConfig](Creating-a-custom-tileset.md#tileset-config) and can be used to define different colors and shapes for unciv to use.
+The skinConfig is similar to the [tilesetConfig](4-Creating-a-custom-tileset.md#tileset-config) and can be used to define different colors and shapes for unciv to use.
 
 To create a config for your skin you just need to create a new .json file under `jsons/Skins/`. Just create a .txt file and rename it to MyCoolSkinExample.json. You only have to add things if you want to change them. Else the default values will be used.
 
@@ -179,7 +179,7 @@ Defines the color unciv uses in most ui elements as default
 
 A dictionary mapping string to a SkinElement. Default value: empty
 
-These variants can be used to define a different image, tint and/or alpha for a specified UI element. The string used to identify the UI element can be taken from the [table](Creating-a-UI-skin.md#Available-UI-elements) above by appending the name to the directory.
+These variants can be used to define a different image, tint and/or alpha for a specified UI element. The string used to identify the UI element can be taken from the [table](5-Creating-a-UI-skin.md#Available-UI-elements) above by appending the name to the directory.
 ```
 | Directory             | Name          |
 |-----------------------|---------------|

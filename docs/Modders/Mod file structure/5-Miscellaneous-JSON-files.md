@@ -1,4 +1,4 @@
-# 5 - Miscellaneous JSON files
+# Miscellaneous JSON files
 
 ## Difficulties.json
 
