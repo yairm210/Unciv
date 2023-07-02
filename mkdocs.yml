@@ -35,6 +35,3 @@ markdown_extensions:
   - abbr
   - pymdownx.snippets
 
-plugins:
-  - search
-  - awesome-pages # For reordering pages so modders have a clear progression for understanding
