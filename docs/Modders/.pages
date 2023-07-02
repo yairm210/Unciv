@@ -1,9 +1,12 @@
 nav:
-    - Mods.md
-    - Making-a-new-Civilization.md
-    - Images-and-Audio.md
-    - Creating-a-custom-tileset.md
-    - Creating-a-UI-skin.md
-    - Unique-parameters.md
-    - uniques.md
-    - Mod-file-structure
+    Tutorial:
+        - Mods.md
+        - Making-a-new-Civilization.md
+        - Images-and-Audio.md
+        - Mod-file-structure
+    Special-Mods:
+        - Creating-a-custom-tileset.md
+        - Creating-a-UI-skin.md
+    Uniques:
+        - Unique-parameters.md
+        - uniques.md
