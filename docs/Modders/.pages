@@ -1,12 +1,12 @@
 nav:
-    Tutorial:
+    - Tutorial:
         - Mods.md
         - Making-a-new-Civilization.md
         - Images-and-Audio.md
         - Mod-file-structure
-    Special-Mods:
+    - Special-Mods:
         - Creating-a-custom-tileset.md
         - Creating-a-UI-skin.md
-    Uniques:
+    - Uniques:
         - Unique-parameters.md
         - uniques.md
