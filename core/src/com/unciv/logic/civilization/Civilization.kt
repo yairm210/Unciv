@@ -815,7 +815,11 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun moveCapitalToNextLargest() {
         val availableCities = cities.filterNot { it.isCapital() }
-        if (availableCities.none()) return
+        if (availableCities.none()) {
+            moveCapitalTo(null)
+            return
+        }
+
         var newCapital = availableCities.filterNot { it.isPuppet }.maxByOrNull { it.population.population }
 
         if (newCapital == null) { // No non-puppets, take largest puppet and annex
