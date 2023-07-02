@@ -1,29 +1,14 @@
+"Requires a [buildingFilter] in at least [amount] cities" works correctly with filters that aren't building names
 
+AI only buys tiles contiguous to the current city tiles
 
-Better image documentation for modders
-
-Actually generated unique type documentation
-
-Added unique type documentation in wiki
-
-Resolves  - "Requires a [buildingFilter] in at least [amount] cities" works correctly with filters that aren't building names
-
-Resolves  - AI only buys tiles contiguous to the current city tiles (was: contiguous to civ tiles)
-
-chore: 'cityInfo' purge (changed to 'city' everywhere)
-
-Resolved  - no city window on citybutton click
-
-Revert "Solved strange concurrency crashes due to players keypress-activating disabled buttons"
-
-Undo Move button moved to far right, so other buttons stay in place
+Undo Move button moved to the right, so other buttons stay in place
 
 By SeventhM:
-- Check for triggers conditions 
-- Fix when units can be purchased 
+- Check for trigger conditions on new game techs
+- Fix when units can be purchased
 
 On City Raze, previous owner doesn't pay Road Maintenance  - By itanasi
 
 By SomeTroglodyte:
-- Defense against circular references in Promotions 
-- Architectural update - Make animated menu reusable 
+- Defense against circular references in Promotions
