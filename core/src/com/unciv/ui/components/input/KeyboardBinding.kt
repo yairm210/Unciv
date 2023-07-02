@@ -17,6 +17,16 @@ enum class KeyboardBinding(
     /** Used by [KeyShortcutDispatcher.KeyShortcut] to mark an old-style shortcut with a hardcoded key */
     None(Category.None, KeyCharAndCode.UNKNOWN),
 
+    // MainMenu
+    Resume(Category.MainMenu),
+    Quickstart(Category.MainMenu),
+    StartNewGame(Category.MainMenu, "Start new game", KeyCharAndCode('N')),  // Not to be confused with NewGame (from World menu, Ctrl-N)
+    MainMenuLoad(Category.MainMenu, "Load game", KeyCharAndCode('L')),
+    Multiplayer(Category.MainMenu),  // Name disambiguation maybe soon, not yet necessary
+    MapEditor(Category.MainMenu, "Map editor", KeyCharAndCode('E')),
+    ModManager(Category.MainMenu, "Mods", KeyCharAndCode('D')),
+    MainMenuOptions(Category.MainMenu, "Options", KeyCharAndCode('O')),  // Separate binding from World where it's Ctrl-O default
+
     // Worldscreen
     Menu(Category.WorldScreen, KeyCharAndCode.TAB),
     NextTurn(Category.WorldScreen),
@@ -122,6 +132,7 @@ enum class KeyboardBinding(
 
     enum class Category {
         None,
+        MainMenu,
         WorldScreen {
             // Conflict checking within group plus keys assigned to UnitActions are a problem
             override fun checkConflictsIn() = sequenceOf(this, MapPanning, UnitActions)
