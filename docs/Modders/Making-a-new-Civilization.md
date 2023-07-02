@@ -87,7 +87,7 @@ Credits for icons should go in a `Credits.md` page.
 
 You have a working mod, now it's time to go wild!
 
-- Add the [atlas files](1-Mods.md#more-on-images-and-the-texture-atlas) to your repo so your users get images
+- Add the [atlas files](Mods.md#more-on-images-and-the-texture-atlas) to your repo so your users get images
 - Install Git locally, so you can change your files on your device and have those changes reflected in your repository
 - Expand the abilities of your civ by adding new [uniques](uniques.md)
 - Add new civs, buildings or units

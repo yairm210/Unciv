@@ -12,7 +12,7 @@ The game only knows how to recognize existing definitions, so you can't add *new
 
 There are three main kinds of mods:
 
--   **Extension mods** - these add new nations/units/buildings/resources to a base ruleset - can be either to the default ruleset, or to a base ruleset mod. Easy to do and probably the better place to get started - for example, [creating a new Civilization](2-Making-a-new-Civilization.md)
+-   **Extension mods** - these add new nations/units/buildings/resources to a base ruleset - can be either to the default ruleset, or to a base ruleset mod. Easy to do and probably the better place to get started - for example, [creating a new Civilization](Making-a-new-Civilization.md)
 -   **Base Ruleset mods** - these replace the entire existing ruleset - tech tree, units, policies, nations etc - to give an entirely different experience than the base game. These generally require quite a bit of work, but give a whole new experience, and so are the most popular.
 -   **Ruleset-agnostic mods** - these do not contain any ruleset-related jsons, but instead contain other affects. Audiovisual mods (including tilesets, unitsets, and UI skins) and map mods are in this category.
 
@@ -149,5 +149,5 @@ Existing mods can be found [here](https://github.com/topics/unciv-mod)!
 
 Now you should try to create your first mod!
 
-We recommend you start off by [adding a new civilization](2-Making-a-new-Civilization.md) as a mod, to get a hang of the process :)
+We recommend you start off by [adding a new civilization](Making-a-new-Civilization.md) as a mod, to get a hang of the process :)
 

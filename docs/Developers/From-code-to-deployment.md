@@ -66,7 +66,7 @@ However, it also imposes a couple of conventions about how links should best be 
 
 | Link type | Format | Example |
 | --------- | ------ | ------- |
-| Inter-wiki | Should begin with "./", and include ".md". | [`./Mods.md#other`](../Modders/1-Mods.md#other) |
+| Inter-wiki | Should begin with "./", and include ".md". | [`./Mods.md#other`](../Modders/Mods.md#other) |
 | Code or asset file | Should begin with "https://github.com/yairm210/Unciv/blob/master/", and be relative to the project root. | [`https://github.com/yairm210/Unciv/blob/master/android/assets/game.png`](https://github.com/yairm210/Unciv/blob/master/android/assets/game.png) |
 
 These formats will allow IDEs like Android studio to resolve these links and check for broken links, while also working on the [Github code browser](https://github.com/yairm210/Unciv/tree/master/docs).

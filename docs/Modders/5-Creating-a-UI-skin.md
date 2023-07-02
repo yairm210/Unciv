@@ -1,6 +1,6 @@
 # Creating a UI skin
 
-**You should read the [Mods](1-Mods.md) page first before proceeding**
+**You should read the [Mods](Mods.md) page first before proceeding**
 
 In order to add a UI skin mod (yes, UI skins are just another type of mod), all you need to do is add your images under `Images/Skins/MyCoolSkinExample` and enable the mod as a permanent visual mod.
 
