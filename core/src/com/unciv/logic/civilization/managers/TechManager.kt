@@ -17,7 +17,6 @@ import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.tech.Era
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unique.UniqueMap
-import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -291,7 +290,7 @@ class TechManager : IsPartOfGameInfoSerialization {
 
         val triggerNotificationText = "due to researching [$techName]"
         for (unique in newTech.uniqueObjects)
-            if (unique.conditionals.none { it.type!!.targetTypes.contains(UniqueTarget.TriggerCondition) })
+            if (!unique.hasTriggerConditional())
                 UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponResearch))
@@ -429,7 +428,7 @@ class TechManager : IsPartOfGameInfoSerialization {
 
             for (era in erasPassed)
                 for (unique in era.uniqueObjects)
-                    if (unique.conditionals.none { it.type!!.targetTypes.contains(UniqueTarget.TriggerCondition) })
+                    if (!unique.hasTriggerConditional())
                         UniqueTriggerActivation.triggerCivwideUnique(
                             unique,
                             civInfo,

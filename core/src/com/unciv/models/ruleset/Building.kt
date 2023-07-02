@@ -671,7 +671,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         val triggerNotificationText ="due to constructing [$name]"
 
         for (unique in uniqueObjects)
-            if (unique.conditionals.none { it.type?.targetTypes?.contains(UniqueTarget.TriggerCondition)==true })
+            if (!unique.hasTriggerConditional())
                 UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, cityConstructions.city, triggerNotificationText = triggerNotificationText)
 
 
