@@ -150,7 +150,7 @@ These can be strung together with ", " between them, for example: `+2 Production
 
 ## technologyFilter
 
-At the moment only implemented for [ModOptions.techsToRemove](../Other/Miscellaneous-JSON-files.md#modoptionsjson).
+At the moment only implemented for [ModOptions.techsToRemove](Mod file structure/5-Miscellaneous-JSON-files.md#modoptionsjson).
 
 Allowed values are:
 

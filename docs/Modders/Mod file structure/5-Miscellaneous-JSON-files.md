@@ -19,7 +19,7 @@ Each difficulty level can have the following attributes:
 | policyCostModifier | Float | Default 1 |
 | unhappinessModifier | Float | Default 1 |
 | barbarianBonus | Float | Default 0 |
-| playerBonusStartingUnits | List of Units | Default empty | Can also be 'Era Starting Unit', maps to `startingMilitaryUnit` of the Eras file. All other units must be in [Units.json](Unit-related-JSON-files.md#Units.json)] |
+| playerBonusStartingUnits | List of Units | Default empty | Can also be 'Era Starting Unit', maps to `startingMilitaryUnit` of the Eras file. All other units must be in [Units.json](4-Unit-related-JSON-files.md#Units.json)] |
 | aiCityGrowthModifier | Float | Default 1 |
 | aiUnitCostModifier | Float | Default 1 |
 | aiBuildingCostModifier | Float | Default 1 |
@@ -49,11 +49,11 @@ Each era can have the following attributes:
 | iconRGB | List of 3 Integers | defaults to [255, 255, 255] | RGB color that icons for technologies of this era should have in the Tech screen |
 | unitBaseBuyCost | Integer (≥0) | defaults to 200 | Base cost of buying units with Faith, Food, Science or Culture when no other cost is provided |
 | startingSettlerCount | Integer (≥0) | defaults to 1 | Amount of settler units that should be spawned when starting a game in this era |
-| startingSettlerUnit | String | defaults to "Settler" | Name of the unit that should be used for the previous field. Must be in [Units.json](Unit-related-JSON-files.md#unitsjson) |
+| startingSettlerUnit | String | defaults to "Settler" | Name of the unit that should be used for the previous field. Must be in [Units.json](4-Unit-related-JSON-files.md#unitsjson) |
 | startingWorkerCount | Integer (≥0) | defaults to 0 | Amount of worker units that should be spawned when starting a game in this era |
-| startingWorkerUnit | String | defaults to "Worker" | Name of the unit that should be used for the previous field. Must be in [Units.json](Unit-related-JSON-files.md#unitsjson) |
+| startingWorkerUnit | String | defaults to "Worker" | Name of the unit that should be used for the previous field. Must be in [Units.json](4-Unit-related-JSON-files.md#unitsjson) |
 | startingMilitaryUnitCount | Integer (≥0) | defaults to 1 | Amount of military units that should be spawned when starting a game in this era |
-| startingMilitaryUnit | String | defaults to "Warrior" | Name of the unit that should be used for the previous field. Must be in [Units.json](Unit-related-JSON-files.md#unitsjson)|
+| startingMilitaryUnit | String | defaults to "Warrior" | Name of the unit that should be used for the previous field. Must be in [Units.json](4-Unit-related-JSON-files.md#unitsjson)|
 | startingGold | Integer (≥0) | defaults to 0 | Amount of gold each civ should receive when starting a game in this era |
 | startingCulture | Integer (≥0) | defaults to 0 | Amount of culture each civ should receive when starting a game in this era |
 | settlerPopulation | Integer (>0) | defaults to 1 | Default amount of population each city should have when settled when starting a game in this era |
@@ -112,11 +112,11 @@ The file can have the following attributes, including the values Unciv sets (no 
 |---------------------|---------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | isBaseRuleset       | Boolean | false    | Differentiates mods that change the vanilla ruleset or replace it                                                                                                                   |
 | maxXPfromBarbarians | Integer | 30       | *Deprecated*, see [constants](#ModConstants)                                                                                                                                        |
-| uniques             | List    | empty    | Mod-wide specials, [see here](../Modders/uniques.md#modoptions-uniques)                                                                                                             |
-| techsToRemove       | List    | empty    | List of [Technologies](Civilization-related-JSON-files.md#techsjson) or [-filters](../Modders/Unique-parameters.md#technologyfilter) to remove (isBaseRuleset=false only)           |
-| buildingsToRemove   | List    | empty    | List of [Buildings or Wonders](Civilization-related-JSON-files.md#buildingsjson) or [-filters](../Modders/Unique-parameters.md#buildingfilter) to remove (isBaseRuleset=false only) |
-| unitsToRemove       | List    | empty    | List of [Units](Unit-related-JSON-files.md#unitsjson) or [-filters](../Modders/Unique-parameters.md#baseunitfilter) to remove (isBaseRuleset=false only)                            |
-| nationsToRemove     | List    | empty    | List of [Nations](Civilization-related-JSON-files.md#nationsjson) or [-filters](../Modders/Unique-parameters.md#nationfilter) to remove (isBaseRuleset=false only)                  |
+| uniques             | List    | empty    | Mod-wide specials, [see here](../uniques.md#modoptions-uniques)                                                                                                             |
+| techsToRemove       | List    | empty    | List of [Technologies](2-Civilization-related-JSON-files.md#techsjson) or [-filters](../Unique-parameters.md#technologyfilter) to remove (isBaseRuleset=false only)           |
+| buildingsToRemove   | List    | empty    | List of [Buildings or Wonders](2-Civilization-related-JSON-files.md#buildingsjson) or [-filters](../Unique-parameters.md#buildingfilter) to remove (isBaseRuleset=false only) |
+| unitsToRemove       | List    | empty    | List of [Units](4-Unit-related-JSON-files.md#unitsjson) or [-filters](../Unique-parameters.md#baseunitfilter) to remove (isBaseRuleset=false only)                            |
+| nationsToRemove     | List    | empty    | List of [Nations](2-Civilization-related-JSON-files.md#nationsjson) or [-filters](../Unique-parameters.md#nationfilter) to remove (isBaseRuleset=false only)                  |
 | lastUpdated         | String  | empty    | Set automatically after download - Last repository update, not necessarily last content change                                                                                      |
 | modUrl              | String  | empty    | Set automatically after download - URL of repository                                                                                                                                |
 | author              | String  | empty    | Set automatically after download - Owner of repository                                                                                                                              |
@@ -199,7 +199,7 @@ The formula for the gold cost of a unit upgrade is (rounded down to a multiple o
         ( max((`base` + `perProduction` * (new_unit_cost - old_unit_cost)), 0)
             * (1 + eraNumber * `eraMultiplier`) * `civModifier`
         ) ^ `exponent`
-With `civModifier` being the multiplicative aggregate of ["\[relativeAmount\]% Gold cost of upgrading"](../Modders/uniques.md#global-uniques) uniques that apply.
+With `civModifier` being the multiplicative aggregate of ["\[relativeAmount\]% Gold cost of upgrading"](../uniques.md#global-uniques) uniques that apply.
 
 ## Tutorials.json
 
@@ -212,7 +212,7 @@ Also, place it under `<mod>/jsons/` normally even if the original is found one l
 | Attribute       | Type         | Optional | Notes                                                    |
 |-----------------|--------------| -------- |----------------------------------------------------------|
 | name            | String       | Required | Entry name                                               |
-| civilopediaText | List         | Optional | [see here](Miscellaneous-JSON-files.md#civilopedia-text) |
+| civilopediaText | List         | Optional | [see here](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 | steps           | List(String) | Optional | Plain text                                               |
 
 If an entry contains both `steps`and `civilopediaText` attributes, the `civilopediaText` is shown first.

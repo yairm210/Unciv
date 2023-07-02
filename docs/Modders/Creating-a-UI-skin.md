@@ -1,8 +1,10 @@
-# How to create a UI skin for Unciv
+# 5 - Creating a UI skin mod
 
 **You should read the [Mods](Mods.md) page first before proceeding**
 
-In order to add a UI skin mod (yes, UI skins are just another type of mod), all you need to do is add your images under `Images/Skins/MyCoolSkinExample` and enable the mod as a permanent visual mod - the game will recognize the skin, and allow you to pick it in the options menu.
+In order to add a UI skin mod (yes, UI skins are just another type of mod), all you need to do is add your images under `Images/Skins/MyCoolSkinExample` and enable the mod as a permanent visual mod.
+
+The game will then recognize the skin, and allow you to pick it in the options menu.
 
 Just like [tilesets](Creating-a-custom-tileset.md), UI skins can be used to alter the appearance of Unciv. Please note that UI skins do not support custom icons and fonts and not every UI element can be customized yet too.
 

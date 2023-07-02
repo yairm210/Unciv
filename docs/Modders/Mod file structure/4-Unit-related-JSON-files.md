@@ -1,4 +1,4 @@
-# Unit-related JSON files
+# 3 - Unit-related JSON files
 
 ## Units.json
 
@@ -18,18 +18,18 @@ Each unit can have the following attributes:
 | rangedStrength | Integer (≥0) | defaults to 0 | The ranged attack strength of the unit. If omitted, the unit cannot ranged attack |
 | range | Integer (≥0) | defaults to 2 | The default range from which ranged attacks can be preformed |
 | interceptRange | Integer (≥0) | defaults to 0 | Air units attacking within in this range will be intercepted |
-| requiredTech | String | defaults to none | The tech required to build this unit. Must be in [Techs.json](Civilization-related-JSON-files.md#techsjson) |
-| obsoleteTech | String | defaults to none | After researching this tech, the unit can no longer be build. Must be in [Techs.json](Civilization-related-JSON-files.md#techsjson) |
-| requiredResource | String | defaults to none | Resource that is consumed by building this unit. Must be in [TileResources.json](Map-related-JSON-files.md#tileresourcesjson) |
+| requiredTech | String | defaults to none | The tech required to build this unit. Must be in [Techs.json](2-Civilization-related-JSON-files.md#techsjson) |
+| obsoleteTech | String | defaults to none | After researching this tech, the unit can no longer be build. Must be in [Techs.json](2-Civilization-related-JSON-files.md#techsjson) |
+| requiredResource | String | defaults to none | Resource that is consumed by building this unit. Must be in [TileResources.json](3-Map-related-JSON-files.md#tileresourcesjson) |
 | upgradesTo | String | defaults to none | Unit that this unit can upgrade to when it is available. Must be in [Units.json](#unitsjson) |
 | replaces | String | defaults to none | If this unit is unique to a nation, this is the unit it replaces. Must be in [Units.json](#unitsjson) |
-| uniqueTo | String | defaults to none | The nation that this unit is unique to. Must be in [Nations.json](Civilization-related-JSON-files.md#nationsjson) |
+| uniqueTo | String | defaults to none | The nation that this unit is unique to. Must be in [Nations.json](2-Civilization-related-JSON-files.md#nationsjson) |
 | hurryCostModifier | Integer | defaults to 0 | If this unit is bought for gold/faith, it's price is increased by so much percent |
 | promotions | List of Strings | defaults to none | A list of all the promotions the unit automatically receives upon being built. Each promotion must be in [UnitPromotions.json](#unitpromotionsjson) |
-| uniques | List of Strings | defaults to none | A list of the unique abilities this unit has. A list of almost all uniques can be found [here](../Modders/Unique-parameters.md#unit-uniques) |
+| uniques | List of Strings | defaults to none | A list of the unique abilities this unit has. A list of almost all uniques can be found [here](../Unique-parameters.md#unit-uniques) |
 | replacementTextForUniques | String | defaults to none | If provided, this will be displayed instead of the list of uniques. Can be used for better formatting. |
 | attackSound | String | defaults to none | The sound that is to be played when this unit attacks. For possible values, see [Sounds](#../Modders/Images-and-Audio.md#sounds)
-| civilopediaText | List | Default empty | see [civilopediaText chapter](Miscellaneous-JSON-files.md#civilopedia-text) |
+| civilopediaText | List | Default empty | see [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
 
 ## UnitPromotions.json
@@ -52,8 +52,8 @@ Each promotion can have the following properties:
 | column          | Int    | Yes           | Determines placement order on the promotion picker screen. Name is historical, these coordinates no longer control placement directly. Promotions without coordinates are ensured to be placed last.  (…)                                                                      |
 | row             | Int    | Yes           | … In base mods without any coordinates, promotions without prerequisites are sorted alphabetically and placed top down, the rest of the screen will structure the dependencies logically. If your mod has a "Heal instantly", it is suggested to use row=0 to place it on top. |
 | unitTypes       | List   | Default empty | The unit types for which this promotion applies as specified in [UnitTypes.json](#unittypesjson)                                                                                                                                                                               |
-| uniques         | List   | Default empty | List of effects, [see here](../Modders/uniques.md#unit-uniques)                                                                                                                                                                                                                |
-| civilopediaText | List   | Default empty | see [civilopediaText chapter](Miscellaneous-JSON-files.md#civilopedia-text)                                                                                                                                                                                                    |
+| uniques         | List   | Default empty | List of effects, [see here](../uniques.md#unit-uniques)                                                                                                                                                                                                                |
+| civilopediaText | List   | Default empty | see [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text)                                                                                                                                                                                                    |
 
 ## UnitTypes.json
 
@@ -66,4 +66,4 @@ Civilian, Melee, Ranged, Scout, Mounted, Armor, Siege, WaterCivilian, WaterMelee
 | --------- | ---- | -------- | ----- |
 | name | String | required | The name of the unit type |
 | movementType | String | required | The domain through which the unit moves. Allowed values: "Water", "Land", "Air" |
-| uniques | List of String | defaults to none | A list of the unique abilities every unit of this type has. A list of almost all uniques can be found [here](../Modders/Unique-parameters.md#unit-uniques) |
+| uniques | List of String | defaults to none | A list of the unique abilities every unit of this type has. A list of almost all uniques can be found [here](../Unique-parameters.md#unit-uniques) |

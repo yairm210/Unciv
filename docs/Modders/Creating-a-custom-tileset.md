@@ -1,4 +1,4 @@
-# How to make Unciv use your custom tileset
+# 4 - Making a custom tileset
 
 **You should read the [Mods](Mods.md) page first before proceeding**
 

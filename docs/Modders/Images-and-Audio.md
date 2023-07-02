@@ -1,4 +1,4 @@
-# Images and Audio
+# 3 - Images and Audio
 
 ## Permanent audiovisual mods
 
@@ -59,12 +59,12 @@ For example, [here](https://github.com/vegeta1k95/Civ-5-Icons) is mod showing ho
 
 ### Adding icons for Unit Types
 
-The Unit Types as defined in [UnitTypes.json](../Other/Unit-related-JSON-files#unittypesjson) have no icons in the base game, but Civilopedia can decorate their entries if you supply images named 'Images/UnitTypeIcons/<UnitType>.png'.
+The Unit Types as defined in [UnitTypes.json](Mod file structure/4-Unit-related-JSON-files.md#unittypesjson) have no icons in the base game, but Civilopedia can decorate their entries if you supply images named 'Images/UnitTypeIcons/<UnitType>.png'.
 (while you're at it, you may override the default icon for the Unit Type _category header_ - it's 'UnitTypes.png' in the same folder, or the icons used for the movement domains - 'DomainLand', 'DomainWater', 'DomainAir')
 
 ### Adding icons for Beliefs
 
-The individual Beliefs - as opposed to Belief types, as defined in [Beliefs.json](../Other/Civilization-related-JSON-files#beliefsjson) have no icons in the base game, but Civilopedia can decorate their entries if you supply images named 'Images/ReligionIcons/<Belief>.png'.
+The individual Beliefs - as opposed to Belief types, as defined in [Beliefs.json](Mod file structure/2-Civilization-related-JSON-files.md#beliefsjson) have no icons in the base game, but Civilopedia can decorate their entries if you supply images named 'Images/ReligionIcons/<Belief>.png'.
 Civilopedia falls back to the icon for the Belief type - as you can see in the base game, but individual icons have precedence if they exist.
 
 ## Sounds
