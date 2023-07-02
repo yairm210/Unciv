@@ -1,4 +1,4 @@
-# Creating a custom2 tileset
+# Creating a custom tileset
 
 **You should read the [Mods](1-Mods.md) page first before proceeding**
 

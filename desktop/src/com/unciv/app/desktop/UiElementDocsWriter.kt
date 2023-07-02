@@ -4,7 +4,7 @@ import java.io.File
 
 class UiElementDocsWriter {
     companion object {
-        private const val docPath = "../../docs/Modders/Creating-a-UI-skin.md"
+        private const val docPath = "../../docs/Modders/5-Creating-a-UI-skin.md"
         private const val startMarker = "<!--- DO NOT REMOVE OR MODIFY THIS LINE UI_ELEMENT_TABLE_REGION -->"
         private const val endMarker = "<!--- DO NOT REMOVE OR MODIFY THIS LINE UI_ELEMENT_TABLE_REGION_END -->"
         private const val srcPath = "../../core/src/com/unciv/"
