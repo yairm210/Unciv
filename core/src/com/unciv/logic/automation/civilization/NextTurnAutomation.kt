@@ -944,7 +944,7 @@ object NextTurnAutomation {
             return motivationSoFar
         }
 
-        val reachableEnemyCitiesBfs = BFS((civInfo.getCapital() ?: civInfo.cities.firstOrNull())!!.getCenterTile()) { isTileCanMoveThrough(it) }
+        val reachableEnemyCitiesBfs = BFS(civInfo.getCapital(true)!!.getCenterTile()) { isTileCanMoveThrough(it) }
         reachableEnemyCitiesBfs.stepToEnd()
         val reachableEnemyCities = otherCiv.cities.filter { reachableEnemyCitiesBfs.hasReachedTile(it.getCenterTile()) }
         if (reachableEnemyCities.isEmpty()) return 0 // Can't even reach the enemy city, no point in war.

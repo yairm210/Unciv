@@ -380,7 +380,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
 
         // Check if different continents (unless already max distance, or water map)
         if (connections > 0 && proximity != Proximity.Distant && !civInfo.gameInfo.tileMap.isWaterMap()
-                && (civInfo.getCapital()?:civInfo.cities.firstOrNull())!!.getCenterTile().getContinent() != (otherCiv.getCapital()?:otherCiv.cities.firstOrNull())!!.getCenterTile().getContinent()
+                && civInfo.getCapital(true)!!.getCenterTile().getContinent() != otherCiv.getCapital(true)!!.getCenterTile().getContinent()
         ) {
             // Different continents - increase separation by one step
             proximity = when (proximity) {
