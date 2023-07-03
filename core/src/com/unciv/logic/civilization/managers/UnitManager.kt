@@ -71,9 +71,13 @@ class UnitManager(val civInfo:Civilization) {
         val unit = civInfo.gameInfo.tileMap.placeUnitNearTile(location, unitName, civInfo)
 
         if (unit != null) {
+            val triggerNotificationText = "due to gaining a [${unit.name}] "
+            for (unique in unit.getUniques())
+                if (!unique.hasTriggerConditional())
+                    UniqueTriggerActivation.triggerUnitwideUnique(unique, unit, triggerNotificationText = triggerNotificationText)
             for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponGainingUnit))
                 if (unit.matchesFilter(unique.params[0]))
-                    UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+                    UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
             if (unit.baseUnit.getResourceRequirementsPerTurn().isNotEmpty())
                 civInfo.cache.updateCivResources()
         }
