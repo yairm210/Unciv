@@ -63,6 +63,11 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         return Stat.values().any { canBePurchasedWithStat(city, it) }
     }
 
+    fun getCivilopediaGoldCost(): Int {
+        // Same as getBaseGoldCost, but without game-specific modifiers
+        return ((30.0 * cost.toFloat()).pow(0.75) * hurryCostModifier.toPercent() / 10).toInt() * 10
+    }
+
     fun getBaseGoldCost(civInfo: Civilization): Double {
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
         return (30.0 * getProductionCost(civInfo)).pow(0.75) * hurryCostModifier.toPercent()
