@@ -810,7 +810,9 @@ class Civilization : IsPartOfGameInfoSerialization {
             city.cityConstructions.addBuilding(city.capitalCityIndicator())
             city.isBeingRazed = false // stop razing the new capital if it was being razed
         }
-        oldCapital?.cityConstructions?.removeBuilding(oldCapital.capitalCityIndicator())
+        // Don't use removeBuilding, since that rebuilds uniques and can generate errors when we have no capital
+        // We're going to recalc the uniques anyway once we move it to the new civ
+        oldCapital?.cityConstructions?.builtBuildings?.remove(oldCapital.capitalCityIndicator())
     }
 
     fun moveCapitalToNextLargest() {
