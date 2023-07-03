@@ -1,8 +1,7 @@
-package com.unciv.logic.civilization.diplomacy
+package com.unciv.logic.civilization
 
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.testing.GdxTestRunner
 import io.mockk.every
