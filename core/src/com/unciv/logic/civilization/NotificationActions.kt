@@ -24,7 +24,8 @@ interface NotificationAction : IsPartOfGameInfoSerialization {
 }
 
 /** A notification action that shows map places. */
-class LocationAction(var location: Vector2) : NotificationAction, IsPartOfGameInfoSerialization {
+// Note location is nonprivate only for writeOldFormatAction
+class LocationAction(internal val location: Vector2) : NotificationAction, IsPartOfGameInfoSerialization {
     override fun execute(worldScreen: WorldScreen) {
         worldScreen.mapHolder.setCenterPosition(location, selectUnit = false)
     }
@@ -39,7 +40,7 @@ class LocationAction(var location: Vector2) : NotificationAction, IsPartOfGameIn
 }
 
 /** show tech screen */
-class TechAction(val techName: String = "") : NotificationAction, IsPartOfGameInfoSerialization {
+class TechAction(private val techName: String = "") : NotificationAction, IsPartOfGameInfoSerialization {
     override fun execute(worldScreen: WorldScreen) {
         val tech = worldScreen.gameInfo.ruleset.technologies[techName]
         worldScreen.game.pushScreen(TechPickerScreen(worldScreen.viewingCiv, tech))
@@ -47,7 +48,7 @@ class TechAction(val techName: String = "") : NotificationAction, IsPartOfGameIn
 }
 
 /** enter city */
-class CityAction(val city: Vector2 = Vector2.Zero): NotificationAction,
+class CityAction(private val city: Vector2 = Vector2.Zero): NotificationAction,
     IsPartOfGameInfoSerialization {
     override fun execute(worldScreen: WorldScreen) {
         val cityObject = worldScreen.mapHolder.tileMap[city].getCity()
@@ -58,7 +59,7 @@ class CityAction(val city: Vector2 = Vector2.Zero): NotificationAction,
 }
 
 /** enter diplomacy screen */
-class DiplomacyAction(val otherCivName: String = ""): NotificationAction,
+class DiplomacyAction(private val otherCivName: String = ""): NotificationAction,
     IsPartOfGameInfoSerialization {
     override fun execute(worldScreen: WorldScreen) {
         val otherCiv = worldScreen.gameInfo.getCivilization(otherCivName)
@@ -74,21 +75,21 @@ class MayaLongCountAction : NotificationAction, IsPartOfGameInfoSerialization {
 }
 
 /** A notification action that shows and selects units on the map. */
-class MapUnitAction(var location: Vector2) : NotificationAction, IsPartOfGameInfoSerialization {
+class MapUnitAction(private val location: Vector2) : NotificationAction, IsPartOfGameInfoSerialization {
     override fun execute(worldScreen: WorldScreen) {
         worldScreen.mapHolder.setCenterPosition(location, selectUnit = true)
     }
 }
 
 /** A notification action that shows the Civilopedia entry for a Wonder. */
-class WonderAction(val wonderName: String) : NotificationAction, IsPartOfGameInfoSerialization {
+class WonderAction(private val wonderName: String) : NotificationAction, IsPartOfGameInfoSerialization {
     override fun execute(worldScreen: WorldScreen) {
         worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleset, CivilopediaCategories.Wonder, wonderName))
     }
 }
 
 /** Show Promotion picker for a MapUnit - by name and location, as they lack a serialized unique ID */
-class PromoteUnitAction(val name: String, val location: Vector2) : NotificationAction, IsPartOfGameInfoSerialization {
+class PromoteUnitAction(private val name: String, private val location: Vector2) : NotificationAction, IsPartOfGameInfoSerialization {
     override fun execute(worldScreen: WorldScreen) {
         val tile = worldScreen.gameInfo.tileMap[location]
         val unit = tile.militaryUnit?.takeIf { it.name == name && it.civ == worldScreen.selectedCiv }
@@ -97,17 +98,27 @@ class PromoteUnitAction(val name: String, val location: Vector2) : NotificationA
     }
 }
 
-@Suppress("PropertyName")
+@Suppress("PrivatePropertyName")  // These names *must* match their class name, see below
 internal class NotificationActionsDeserializer {
-    // This exists as trick to leverage readFields for Json deserialization
-    var LocationAction: LocationAction? = null
-    var TechAction: TechAction? = null
-    var CityAction: CityAction? = null
-    var DiplomacyAction: DiplomacyAction? = null
-    var MayaLongCountAction: MayaLongCountAction? = null
-    var MapUnitAction: MapUnitAction? = null
-    var WonderAction: WonderAction? = null
-    var PromoteUnitAction: PromoteUnitAction? = null
+    /* This exists as trick to leverage readFields for Json deserialization.
+    // The serializer writes each NotificationAction as json object (within the actions array),
+    // containing the class simpleName as subfield name, which carries any (on none) subclass-
+    // specific data as its object value. So, reading this from json data will fill just one of the
+    // fields, and the listOfNotNull will output that field only.
+    // Even though we know there's only one result, no need to first() since it's no advantage to the caller.
+    //
+    // In a way, this is like asking the class loader to resolve the class by compilation
+    // instead of via the reflection API, like Gdx would try unaided.
+    */
+    private val LocationAction: LocationAction? = null
+    private val TechAction: TechAction? = null
+    private val CityAction: CityAction? = null
+    private val DiplomacyAction: DiplomacyAction? = null
+    private val MayaLongCountAction: MayaLongCountAction? = null
+    private val MapUnitAction: MapUnitAction? = null
+    private val WonderAction: WonderAction? = null
+    private val PromoteUnitAction: PromoteUnitAction? = null
+
     fun read(json: Json, jsonData: JsonValue): List<NotificationAction> {
         json.readFields(this, jsonData)
         return listOfNotNull(
