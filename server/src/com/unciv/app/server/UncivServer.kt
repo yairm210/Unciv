@@ -167,7 +167,7 @@ private class UncivServerRunner : CliktCommand() {
                     val file = File(fileFolderName, fileName)
                     if (!file.exists()) {
                         
-                    // If IdentifyOperators is enabled a Operator IP is displayed
+                        // If IdentifyOperators is enabled a Operator IP is displayed
                         if (IdentifyOperators) {
                             log.info("File ${fileName} not found --Operation sourced from ${call.request.local.remoteHost}")
                         }else{
