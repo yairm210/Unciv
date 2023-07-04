@@ -544,6 +544,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         val buildingObject = city.getRuleset().buildings[buildingName]!!
         builtBuildingObjects = builtBuildingObjects.withoutItem(buildingObject)
         builtBuildings.remove(buildingName)
+        city.civ.cache.updateCivResources() // this building could be a resource-requiring one
+        city.civ.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
         updateUniques()
     }
 
