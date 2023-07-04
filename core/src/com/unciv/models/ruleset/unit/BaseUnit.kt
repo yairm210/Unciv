@@ -95,9 +95,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return super.canBePurchasedWithStat(city, stat)
     }
 
-    override fun getBaseBuyCost(city: City, stat: Stat): Int? {
-        if (stat == Stat.Gold) return getBaseGoldCost(city.civ).toInt()
-
+    override fun getBaseBuyCost(city: City, stat: Stat): Float? {
         return sequence {
             val baseCost = super.getBaseBuyCost(city, stat)
             if (baseCost != null)

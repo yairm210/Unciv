@@ -40,6 +40,7 @@ class Speed : RulesetObject(), IsPartOfGameInfoSerialization {
                 Stat.Gold -> goldCostModifier
                 Stat.Science -> scienceCostModifier
                 Stat.Faith -> faithCostModifier
+                Stat.Culture -> cultureCostModifier
                 else -> 1f
             }
             map[stat] = modifier

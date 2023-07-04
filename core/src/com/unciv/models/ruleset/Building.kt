@@ -384,8 +384,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         )
     }
 
-    override fun getBaseBuyCost(city: City, stat: Stat): Int? {
-        if (stat == Stat.Gold) return getBaseGoldCost(city.civ).toInt()
+    override fun getBaseBuyCost(city: City, stat: Stat): Float? {
         val conditionalState = StateForConditionals(civInfo = city.civ, city = city)
 
         return sequence {
@@ -402,12 +401,12 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                         it.params[1].toInt(),
                         it.params[4].toInt(),
                         city.civ.civConstructions.boughtItemsWithIncreasingPrice[name]
-                    )
+                    ) * city.civ.gameInfo.speed.statCostModifiers[stat]!!
                 }
             )
             yieldAll(city.getMatchingUniques(UniqueType.BuyBuildingsByProductionCost, conditionalState)
                 .filter { it.params[1] == stat.name && matchesFilter(it.params[0]) }
-                .map { getProductionCost(city.civ) * it.params[2].toInt() }
+                .map { (getProductionCost(city.civ) * it.params[2].toInt()).toFloat() }
             )
             if (city.getMatchingUniques(UniqueType.BuyBuildingsWithStat, conditionalState)
                 .any {
@@ -416,14 +415,14 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     && city.matchesFilter(it.params[2])
                 }
             ) {
-                yield(city.civ.getEra().baseUnitBuyCost)
+                yield(city.civ.getEra().baseUnitBuyCost * city.civ.gameInfo.speed.statCostModifiers[stat]!!)
             }
             yieldAll(city.getMatchingUniques(UniqueType.BuyBuildingsForAmountStat, conditionalState)
                 .filter {
                     it.params[2] == stat.name
                     && matchesFilter(it.params[0])
                     && city.matchesFilter(it.params[3])
-                }.map { it.params[1].toInt() }
+                }.map { it.params[1].toInt() * city.civ.gameInfo.speed.statCostModifiers[stat]!! }
             )
         }.minOrNull()
     }
