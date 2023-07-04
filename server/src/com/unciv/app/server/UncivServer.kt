@@ -168,11 +168,11 @@ private class UncivServerRunner : CliktCommand() {
                     if (!file.exists()) {
                         
                     // If IdentifyOperators is enabled a Operator IP is displayed
-                    if (IdentifyOperators) {
-                        log.info("File ${fileName} not found --Operation sourced from ${call.request.local.remoteHost}")
-                    }else{
-                        log.info("File $fileName not found")
-                    }
+                        if (IdentifyOperators) {
+                            log.info("File ${fileName} not found --Operation sourced from ${call.request.local.remoteHost}")
+                        }else{
+                            log.info("File $fileName not found")
+                        }
                         call.respond(HttpStatusCode.NotFound, "File does not exist")
                         return@get
                     }
