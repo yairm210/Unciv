@@ -51,7 +51,8 @@ internal class ActivationActionMap : MutableMap<ActivationTypes, ActivationActio
         if (actions.isEmpty()) return false
         if (actions.sound != UncivSound.Silent)
             Concurrency.runOnGLThread("Sound") { SoundPlayer.play(actions.sound) }
-        for (action in actions)
+        // We can't know an activation handler won't redefine activations, so better iterate over a copy
+        for (action in actions.toList())
             action.invoke()
         return true
     }
