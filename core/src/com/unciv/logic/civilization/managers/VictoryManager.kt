@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Milestone
 import com.unciv.models.ruleset.Victory
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 
 class VictoryManager : IsPartOfGameInfoSerialization {
@@ -26,11 +27,25 @@ class VictoryManager : IsPartOfGameInfoSerialization {
 
     private fun calculateDiplomaticVotingResults(votesCast: HashMap<String, String>): Counter<String> {
         val results = Counter<String>()
-        for (castVote in votesCast) {
-            results.add(castVote.value, 1)
+        // UN Owner gets 2 votes in G&K
+        val (_, civOwningUN) = getUNBuildingAndOwnerNames()
+        for ((voter, votedFor) in votesCast) {
+            results.add(votedFor, if (voter == civOwningUN) 2 else 1)
         }
         return results
     }
+
+    /** Finds the Building and Owner of the United Nations (or whatever the Mod called it)
+     *  - if it's built at all and only if the owner is alive
+     *  @return `first`: Building name, `second`: Owner civ name; both null if not found
+     */
+    fun getUNBuildingAndOwnerNames(): Pair<String?, String?> = civInfo.gameInfo.civilizations.asSequence()
+            .filterNot { it.isBarbarian() || it.isSpectator() || it.isDefeated() }
+            .flatMap { civ -> civ.cities.asSequence()
+                .flatMap { it.cityConstructions.getBuiltBuildings() }
+                .filter { it.hasUnique(UniqueType.OneTimeTriggerVoting, stateForConditionals = StateForConditionals.IgnoreConditionals) }
+                .map { it.name to civ.civName }
+            }.firstOrNull() ?: (null to null)
 
     private fun votesNeededForDiplomaticVictory(): Int {
         val civCount = civInfo.gameInfo.civilizations.count { !it.isDefeated() }

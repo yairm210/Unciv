@@ -17,19 +17,9 @@ class DiplomacyFunctions(val civInfo: Civilization){
 
     /** A sorted Sequence of all other civs we know (excluding barbarians and spectators) */
     fun getKnownCivsSorted(includeCityStates: Boolean = true, includeDefeated: Boolean = false) =
-            civInfo.gameInfo.civilizations.asSequence()
-                .filterNot {
-                    it == civInfo ||
-                            it.isBarbarian() ||
-                            it.isSpectator() ||
-                            !civInfo.knows(it) ||
-                            !includeDefeated && it.isDefeated() ||
-                            !includeCityStates && it.isCityState()
-                }
-                .sortedWith(
-                    compareByDescending<Civilization> { it.isMajorCiv() }
-                        .thenBy (UncivGame.Current.settings.getCollatorFromLocale()) { it.civName.tr(hideIcons = true) }
-                )
+        civInfo.gameInfo.getCivsSorted(includeCityStates, includeDefeated) {
+            it != civInfo && civInfo.knows(it)
+        }
 
 
     fun makeCivilizationsMeet(otherCiv: Civilization, warOnContact: Boolean = false) {

@@ -1,6 +1,7 @@
 package com.unciv.logic
 
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.UncivGame.Version
 import com.unciv.json.json
@@ -35,6 +36,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Speed
 import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.screens.pickerscreens.Github.repoNameToFolderName
@@ -227,6 +229,35 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     fun getCities() = civilizations.asSequence().flatMap { it.cities }
     fun getAliveCityStates() = civilizations.filter { it.isAlive() && it.isCityState() }
     fun getAliveMajorCivs() = civilizations.filter { it.isAlive() && it.isMajorCiv() }
+
+    /** Gets civilizations in their commonly used order - City-states last,
+     *  otherwise alphabetically by culture and translation. [civToSortFirst] can be used to force
+     *  a specific Civilization to be listed first.
+     *
+     *  Barbarians and Spectators always excluded, other filter criteria are [includeCityStates],
+     *  [includeDefeated] and optionally an [additionalFilter].
+     */
+    fun getCivsSorted(
+        includeCityStates: Boolean = true,
+        includeDefeated: Boolean = false,
+        civToSortFirst: Civilization? = null,
+        additionalFilter: ((Civilization) -> Boolean)? = null
+    ): Sequence<Civilization> {
+        val collator = GUI.getSettings().getCollatorFromLocale()
+        return civilizations.asSequence()
+            .filterNot {
+                it.isBarbarian() ||
+                it.isSpectator() ||
+                !includeDefeated && it.isDefeated() ||
+                !includeCityStates && it.isCityState() ||
+                additionalFilter?.invoke(it) == false
+            }
+            .sortedWith(
+                compareBy<Civilization> { it != civToSortFirst }
+                    .thenByDescending { it.isMajorCiv() }
+                    .thenBy(collator) { it.civName.tr(hideIcons = true) }
+            )
+    }
 
     /** Returns the first spectator for a [playerId] or creates one if none found */
     fun getSpectator(playerId: String): Civilization {

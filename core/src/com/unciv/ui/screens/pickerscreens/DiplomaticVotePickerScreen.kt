@@ -17,8 +17,7 @@ class DiplomaticVotePickerScreen(private val votingCiv: Civilization) : PickerSc
         descriptionLabel.setText("Choose who should become the world leader and win a Diplomatic Victory!".tr())
 
         val choosableCivs = votingCiv.gameInfo.civilizations.filter { it.isMajorCiv() && it != votingCiv && !it.isDefeated() }
-        for (civ in choosableCivs)
-        {
+        for (civ in choosableCivs) {
             val button = PickerPane.getPickerOptionButton(
                 ImageGetter.getNationPortrait(
                     civ.nation,
