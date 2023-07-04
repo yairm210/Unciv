@@ -496,22 +496,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
         addFreeBuildings()
 
-        val triggerNotificationText ="due to constructing [$buildingName]"
-
-        for (unique in building.uniqueObjects)
-            if (!unique.hasTriggerConditional())
-                UniqueTriggerActivation.triggerCivwideUnique(unique, civ, city, triggerNotificationText = triggerNotificationText)
-
-
-        for (unique in civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, StateForConditionals(civ, city)))
-            if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuilding && building.matchesFilter(it.params[0])})
-                UniqueTriggerActivation.triggerCivwideUnique(unique, civ, city, triggerNotificationText = triggerNotificationText)
-
-        for (unique in civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuildingCityFilter, StateForConditionals(civ, city)))
-            if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuildingCityFilter
-                    && building.matchesFilter(it.params[0])
-                    && city.matchesFilter(it.params[1])})
-                UniqueTriggerActivation.triggerCivwideUnique(unique, civ, city, triggerNotificationText = triggerNotificationText)
+        triggerNewBuildingUniques(building)
 
         if (building.hasUnique(UniqueType.EnemyUnitsSpendExtraMovement))
             civ.cache.updateHasActiveEnemyMovementPenalty()
@@ -538,6 +523,24 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
         civ.cache.updateCivResources() // this building could be a resource-requiring one
         civ.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
+    }
+
+    fun triggerNewBuildingUniques(building: Building) {
+        val triggerNotificationText ="due to constructing [${building.name}]"
+
+        for (unique in building.uniqueObjects)
+            if (!unique.hasTriggerConditional())
+                UniqueTriggerActivation.triggerCivwideUnique(unique, city.civ, city, triggerNotificationText = triggerNotificationText)
+
+            for (unique in civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, StateForConditionals(city.civ, city)))
+                if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuilding && building.matchesFilter(it.params[0])})
+                    UniqueTriggerActivation.triggerCivwideUnique(unique, city.civ, city, triggerNotificationText = triggerNotificationText)
+
+        for (unique in civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuildingCityFilter, StateForConditionals(city.civ, city)))
+            if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuildingCityFilter
+                    && building.matchesFilter(it.params[0])
+                    && city.matchesFilter(it.params[1])})
+                UniqueTriggerActivation.triggerCivwideUnique(unique, city.civ, city, triggerNotificationText = triggerNotificationText)
     }
 
     fun removeBuilding(buildingName: String) {
