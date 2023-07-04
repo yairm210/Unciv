@@ -30,6 +30,13 @@ class LocationAction(internal val location: Vector2) : NotificationAction, IsPar
         worldScreen.mapHolder.setCenterPosition(location, selectUnit = false)
     }
     companion object {
+        /*
+            These are constructor-like factories to simulate the old LocationAction which stored
+            several locations (back then in turn there was only one action per Notification).
+            Example: addNotification("Bob hit alice", LocationAction(bob.position, alice.position), NotificationCategory.War)
+            This maps to the (String, Sequence<NotificationAction>, NotificationCategory, vararg String)
+            overload of addNotification through the last invoke below.
+         */
         operator fun invoke(locations: Sequence<Vector2>): Sequence<LocationAction> =
             locations.map { LocationAction(it) }
         operator fun invoke(locations: Iterable<Vector2>): Sequence<LocationAction> =
