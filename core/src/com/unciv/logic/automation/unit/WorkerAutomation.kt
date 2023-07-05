@@ -121,7 +121,7 @@ class WorkerAutomation(
         val currentTile = unit.getTile()
         val tileToWork = findTileToWork(unit, tilesWhereWeWillBeCaptured)
 
-        if (civInfo.getWorkerAutomation().getPriority(tileToWork) < 3) { // building roads is more important
+        if (getPriority(tileToWork) < 3) { // building roads is more important
             if (tryConnectingCities(unit)) return
         }
 
@@ -155,13 +155,18 @@ class WorkerAutomation(
             return
         }
 
-        if (currentTile.improvementInProgress == null && currentTile.isLand
-            && tileCanBeImproved(unit, currentTile)) {
+        if (currentTile.improvementInProgress == null && tileCanBeImproved(unit, currentTile)) {
             debug("WorkerAutomation: ${unit.label()} -> start improving $currentTile")
             return currentTile.startWorkingOnImprovement(chooseImprovement(unit, currentTile)!!, civInfo, unit)
         }
 
         if (currentTile.improvementInProgress != null) return // we're working!
+
+        if (unit.cache.hasUniqueToCreateWaterImprovements) {
+            // Support Alpha Frontier-Style Workers that _also_ have the "May create improvements on water resources" unique
+            if (automateWorkBoats(unit)) return
+        }
+
         if (tryConnectingCities(unit)) return //nothing to do, try again to connect cities
 
         val citiesToNumberOfUnimprovedTiles = HashMap<String, Int>()
@@ -267,7 +272,7 @@ class WorkerAutomation(
      */
     private fun findTileToWork(unit: MapUnit, tilesToAvoid: Set<Tile>): Tile {
         val currentTile = unit.getTile()
-        val workableTiles = currentTile.getTilesInDistance(4)
+        val workableTilesCenterFirst = currentTile.getTilesInDistance(4)
                 .filter {
                     it !in tilesToAvoid
                     && (it.civilianUnit == null || it == currentTile)
@@ -278,18 +283,29 @@ class WorkerAutomation(
                     && it.getTilesInDistance(3)  // don't work in range of enemy units
                         .none { tile -> tile.militaryUnit != null && tile.militaryUnit!!.civ.isAtWarWith(civInfo)}
                 }
-                .sortedByDescending { getPriority(it) }
 
         // Carthage can move through mountains, special case
-        // If there is a non-damage dealing tile available, move to that tile, otherwise move to the damage dealing tile
-        // These are the expensive calculations (tileCanBeImproved, canReach), so we only apply these filters after everything else it done.
-        val selectedTile =
-            workableTiles.sortedByDescending { tile -> unit.getDamageFromTerrain(tile) <= 0 }.firstOrNull { unit.movement.canReach(it) && (tileCanBeImproved(unit, it) || it.isPillaged()) }
-                ?: return currentTile
+        // If there are non-damage dealing tiles available, move to the best of those, otherwise move to the best damage dealing tile
+        val workableTilesPrioritized = workableTilesCenterFirst
+                .sortedWith(
+                    compareBy<Tile> { unit.getDamageFromTerrain(it) > 0 } // Sort on Boolean puts false first
+                        .thenByDescending { getPriority(it) }
+                )
 
-        return if ((!tileCanBeImproved(unit, currentTile) && !currentTile.isPillaged()) // current tile is unimprovable
-                    || !workableTiles.contains(currentTile) // current tile is unworkable by city
-                    || getPriority(selectedTile) > getPriority(currentTile))  // current tile is less important
+        // These are the expensive calculations (tileCanBeImproved, canReach), so we only apply these filters after everything else it done.
+        val selectedTile = workableTilesPrioritized
+            .firstOrNull { unit.movement.canReach(it) && (tileCanBeImproved(unit, it) || it.isPillaged()) }
+            ?: return currentTile
+
+        // Note: workableTiles is a Sequence, and we oiginally used workableTiles.contains for the second
+        // test, which looks like a second potentially deep iteration of it, after just being iterated
+        // for selectedTile. But TileMap.getTilesInDistanceRange iterates its range forward, meaning
+        // currentTile is always the very first entry of the _unsorted_ Sequence - if it is still
+        // contained at all and not dropped by the filters - which is the point here.
+        return if ( currentTile == selectedTile  // No choice
+                || (!tileCanBeImproved(unit, currentTile) && !currentTile.isPillaged()) // current tile is unimprovable
+                || workableTilesCenterFirst.firstOrNull() != currentTile  // current tile is unworkable by city
+                || getPriority(selectedTile) > getPriority(currentTile))  // current tile is less important
             selectedTile
         else currentTile
     }
@@ -299,8 +315,12 @@ class WorkerAutomation(
      * (but does not check whether the ruleset contains any unit capable of it)
      */
     private fun tileCanBeImproved(unit: MapUnit, tile: Tile): Boolean {
-        if (!tile.isLand || tile.isImpassible() || tile.isCityCenter())
-            return false
+        //todo This is wrong but works for Alpha Frontier, because the unit has both:
+        // It should test for the build over time ability, but this tests the create and die ability
+        if (!tile.isLand && !unit.cache.hasUniqueToCreateWaterImprovements) return false
+        // Allow outlandish mods having non-road improvements on Mountains
+        if (tile.isImpassible() && !unit.cache.canPassThroughImpassableTiles) return false
+        if (tile.isCityCenter()) return false
 
         val city = tile.getCity()
         if (city == null || city.civ != civInfo)
@@ -518,4 +538,43 @@ class WorkerAutomation(
         return distanceBetweenCities + 2 > distanceToEnemy + distanceToOurCity
     }
 
+    private fun hasWorkableSeaResource(tile: Tile, civInfo: Civilization): Boolean =
+        tile.isWater && tile.improvement == null && tile.hasViewableResource(civInfo)
+
+    /** Try improving a Water Resource
+     *
+     *  No logic to avoid capture by enemies yet!
+     *
+     *  @return Whether any progress was made (improved a tile or at least moved towards an opportunity)
+     */
+    fun automateWorkBoats(unit: MapUnit): Boolean {
+        val closestReachableResource = unit.civ.cities.asSequence()
+            .flatMap { city -> city.getWorkableTiles() }
+            .filter {
+                hasWorkableSeaResource(it, unit.civ)
+                    && (unit.currentTile == it || unit.movement.canMoveTo(it))
+            }
+            .sortedBy { it.aerialDistanceTo(unit.currentTile) }
+            .firstOrNull { unit.movement.canReach(it) }
+            ?: return false
+
+        // could be either fishing boats or oil well
+        val isImprovable = closestReachableResource.tileResource.getImprovements().any()
+        if (!isImprovable) return false
+
+        unit.movement.headTowards(closestReachableResource)
+        if (unit.currentTile != closestReachableResource) return true // moving counts as progress
+
+        // We know we have the CreateWaterImprovements, but not whether
+        // all conditionals succeed with a current StateForConditionals(civ, unit)
+        // todo: Not necessarily the optimal flow: Be optimistic and head towards,
+        //       then when arrived and the conditionals say "no" do something else instead?
+        val action = UnitActions.getWaterImprovementAction(unit)
+            ?: return false
+
+        // If action.action is null that means only transient reasons prevent the improvement -
+        // report progress and hope next run it will work.
+        action.action?.invoke()
+        return true
+    }
 }

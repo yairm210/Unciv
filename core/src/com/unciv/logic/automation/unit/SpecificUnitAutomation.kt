@@ -6,7 +6,6 @@ import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.GreatGeneralImplementation
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
-import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
@@ -19,32 +18,6 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsReligion
 
 object SpecificUnitAutomation {
-
-    private fun hasWorkableSeaResource(tile: Tile, civInfo: Civilization): Boolean =
-            tile.isWater && tile.improvement == null && tile.hasViewableResource(civInfo)
-
-    fun automateWorkBoats(unit: MapUnit) {
-        val closestReachableResource = unit.civ.cities.asSequence()
-                .flatMap { city -> city.getWorkableTiles() }
-                .filter {
-                    hasWorkableSeaResource(it, unit.civ)
-                            && (unit.currentTile == it || unit.movement.canMoveTo(it))
-                }
-                .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-                .firstOrNull { unit.movement.canReach(it) }
-
-        when (closestReachableResource) {
-            null -> UnitAutomation.tryExplore(unit)
-            else -> {
-                unit.movement.headTowards(closestReachableResource)
-
-                // could be either fishing boats or oil well
-                val isImprovable = closestReachableResource.tileResource.getImprovements().any()
-                if (isImprovable && unit.currentTile == closestReachableResource)
-                    UnitActions.getWaterImprovementAction(unit)?.action?.invoke()
-            }
-        }
-    }
 
     fun automateGreatGeneral(unit: MapUnit): Boolean {
         //try to follow nearby units. Do not garrison in city if possible

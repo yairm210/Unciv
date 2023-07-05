@@ -180,11 +180,11 @@ object UnitActions {
       */
     fun getFoundCityAction(unit: MapUnit, tile: Tile): UnitAction? {
         val unique = unit.getMatchingUniques(UniqueType.FoundCity)
-            .filter { it.conditionals.none { it.type == UniqueType.UnitActionExtraLimitedTimes } }
+            .filter { unique -> unique.conditionals.none { it.type == UniqueType.UnitActionExtraLimitedTimes } }
             .firstOrNull()
         if (unique == null || tile.isWater || tile.isImpassible()) return null
         // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
-        if (unit.civ.isOneCityChallenger() && unit.civ.hasEverOwnedOriginalCapital == true) return null
+        if (unit.civ.isOneCityChallenger() && unit.civ.hasEverOwnedOriginalCapital) return null
         if (usagesLeft(unit, unique)==0) return null
 
         if (unit.currentMovement <= 0 || !tile.canBeSettled())
@@ -745,7 +745,7 @@ object UnitActions {
     fun getMaxUsages(unit: MapUnit, actionUnique: Unique): Int? {
         val extraTimes = unit.getMatchingUniques(actionUnique.type!!)
             .filter { it.text.removeConditionals() == actionUnique.text.removeConditionals() }
-            .flatMap { it.conditionals.filter { it.type == UniqueType.UnitActionExtraLimitedTimes } }
+            .flatMap { unique -> unique.conditionals.filter { it.type == UniqueType.UnitActionExtraLimitedTimes } }
             .map { it.params[0].toInt() }
             .sum()
 
