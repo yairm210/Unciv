@@ -9,7 +9,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(GdxTestRunner::class)
-class UnitMovementTests {
+class CityMovingTests {
 
     private lateinit var civInfo: Civilization
     private lateinit var enemy: Civilization
