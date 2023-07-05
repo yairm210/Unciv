@@ -418,7 +418,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                 val errors = checkUnique(
                     unique,
                     tryFixUnknownUniques,
-                    cityStateType.name,
+                    cityStateType,
                     rulesetSpecific
                 )
                 lines.addAll(errors)
@@ -453,13 +453,11 @@ class RulesetValidator(val ruleset: Ruleset) {
         severityToReport: UniqueType.UniqueComplianceErrorSeverity,
         tryFixUnknownUniques: Boolean
     ) {
-        val name = if (uniqueContainer is INamed) uniqueContainer.name else ""
-
         for (unique in uniqueContainer.uniqueObjects) {
             val errors = checkUnique(
                 unique,
                 tryFixUnknownUniques,
-                name,
+                uniqueContainer as? INamed,
                 severityToReport
             )
             lines.addAll(errors)
@@ -469,9 +467,11 @@ class RulesetValidator(val ruleset: Ruleset) {
     fun checkUnique(
         unique: Unique,
         tryFixUnknownUniques: Boolean,
-        name: String,
+        namedObj: INamed?,
         severityToReport: UniqueType.UniqueComplianceErrorSeverity
     ): List<RulesetError> {
+        var name = namedObj?.name ?: ""
+        if (namedObj!=null && namedObj is IRulesetObject) name = "${namedObj.originRuleset}: $name"
         if (unique.type == null) {
             if (!tryFixUnknownUniques) return emptyList()
             val similarUniques = UniqueType.values().filter {

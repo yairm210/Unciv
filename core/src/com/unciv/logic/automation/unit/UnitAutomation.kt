@@ -251,6 +251,12 @@ object UnitAutomation {
         if (unit.cache.hasUniqueToBuildImprovements)
             return unit.civ.getWorkerAutomation().automateWorkerAction(unit, tilesWhereWeWillBeCaptured)
 
+        if (unit.cache.hasUniqueToCreateWaterImprovements){
+            if (!unit.civ.getWorkerAutomation().automateWorkBoats(unit))
+                tryExplore(unit)
+            return
+        }
+
         if (unit.hasUnique(UniqueType.MayFoundReligion)
                 && unit.civ.religionManager.religionState < ReligionState.Religion
                 && unit.civ.religionManager.mayFoundReligionAtAll(unit)
@@ -262,9 +268,6 @@ object UnitAutomation {
                 && unit.civ.religionManager.mayEnhanceReligionAtAll(unit)
         )
             return SpecificUnitAutomation.enhanceReligion(unit)
-
-        if (unit.hasUnique(UniqueType.CreateWaterImprovements))
-            return SpecificUnitAutomation.automateWorkBoats(unit)
 
         // We try to add any unit in the capital we can, though that might not always be desirable
         // For now its a simple option to allow AI to win a science victory again
@@ -693,7 +696,7 @@ object UnitAutomation {
     }
 
     private fun tryTakeBackCapturedCity(unit: MapUnit): Boolean {
-        var capturedCities = unit.civ.getKnownCivs().asSequence()
+        var capturedCities = unit.civ.getKnownCivs() // This is a Sequence
                 .flatMap { it.cities.asSequence() }
                 .filter {
                     unit.civ.isAtWarWith(it.civ) &&

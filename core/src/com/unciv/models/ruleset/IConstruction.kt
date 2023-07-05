@@ -73,21 +73,21 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         return (30.0 * getProductionCost(civInfo)).pow(0.75) * hurryCostModifier.toPercent()
     }
 
-    fun getBaseBuyCost(city: City, stat: Stat): Int? {
-        if (stat == Stat.Gold) return getBaseGoldCost(city.civ).toInt()
-
+    fun getBaseBuyCost(city: City, stat: Stat): Float? {
         val conditionalState = StateForConditionals(civInfo = city.civ, city = city)
 
         // Can be purchased for [amount] [Stat] [cityFilter]
         val lowestCostUnique = getMatchingUniques(UniqueType.CanBePurchasedForAmountStat, conditionalState)
             .filter { it.params[1] == stat.name && city.matchesFilter(it.params[2]) }
             .minByOrNull { it.params[0].toInt() }
-        if (lowestCostUnique != null) return lowestCostUnique.params[0].toInt()
+        if (lowestCostUnique != null) return lowestCostUnique.params[0].toInt() * city.civ.gameInfo.speed.statCostModifiers[stat]!!
+
+        if (stat == Stat.Gold) return getBaseGoldCost(city.civ).toFloat()
 
         // Can be purchased with [Stat] [cityFilter]
         if (getMatchingUniques(UniqueType.CanBePurchasedWithStat, conditionalState)
             .any { it.params[0] == stat.name && city.matchesFilter(it.params[1]) }
-        ) return city.civ.getEra().baseUnitBuyCost
+        ) return city.civ.getEra().baseUnitBuyCost * city.civ.gameInfo.speed.statCostModifiers[stat]!!
         return null
     }
 

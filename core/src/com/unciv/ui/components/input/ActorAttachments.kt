@@ -1,6 +1,7 @@
 package com.unciv.ui.components.input
 
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.utils.Disableable
 import com.unciv.models.UncivSound
 
 internal class ActorAttachments private constructor(actor: Actor) {
@@ -37,6 +38,7 @@ internal class ActorAttachments private constructor(actor: Actor) {
 
     fun activate(type: ActivationTypes): Boolean {
         if (!this::activationActions.isInitialized) return false
+        if ((actor as? Disableable)?.isDisabled == true) return false // Skip if disabled - could reach here through key shortcuts
         return activationActions.activate(type)
     }
 

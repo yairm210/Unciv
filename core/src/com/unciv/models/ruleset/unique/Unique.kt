@@ -44,8 +44,10 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
     fun hasTriggerConditional(): Boolean {
         if(conditionals.none()) return false
-        return conditionals.any{ conditional -> conditional.type!!.targetTypes
-            .any{ it.canAcceptUniqueTarget(UniqueTarget.TriggerCondition) || it.canAcceptUniqueTarget(UniqueTarget.UnitActionModifier) } }
+        return conditionals.any{ conditional -> conditional.type?.targetTypes
+            ?.any{ it.canAcceptUniqueTarget(UniqueTarget.TriggerCondition) } 
+                ?: false
+        }
     }
 
     fun isOfType(uniqueType: UniqueType) = uniqueType == type
@@ -116,7 +118,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         val uniquesWithNoErrors = finalPossibleUniques.filter {
             val unique = Unique(it)
             val errors = RulesetValidator(ruleset).checkUnique(
-                unique, true, "",
+                unique, true, null,
                 UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
             )
             errors.isEmpty()

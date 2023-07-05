@@ -112,8 +112,10 @@ class Ruleset {
 
     private fun <T : INamed> createHashmap(items: Array<T>): LinkedHashMap<String, T> {
         val hashMap = LinkedHashMap<String, T>(items.size)
-        for (item in items)
+        for (item in items) {
             hashMap[item.name] = item
+            (item as? IRulesetObject)?.originRuleset = name
+        }
         return hashMap
     }
 
@@ -406,7 +408,7 @@ class Ruleset {
                             RulesetValidator(this@Ruleset).checkUnique(
                                 Unique(it),
                                 false,
-                                "",
+                                cityStateType,
                                 UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
                             ).isEmpty()
                         })
@@ -414,7 +416,7 @@ class Ruleset {
                             RulesetValidator(this@Ruleset).checkUnique(
                                 Unique(it),
                                 false,
-                                "",
+                                cityStateType,
                                 UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
                             ).isEmpty()
                         })
@@ -484,8 +486,8 @@ object RulesetCache : HashMap<String,Ruleset>() {
                 if (consoleMode) FileHandle(fileName)
                 else Gdx.files.internal(fileName)
             newRulesets[ruleset.fullName] = Ruleset().apply {
-                load(fileHandle)
                 name = ruleset.fullName
+                load(fileHandle)
             }
         }
         this.putAll(newRulesets)
@@ -500,8 +502,8 @@ object RulesetCache : HashMap<String,Ruleset>() {
                 if (!modFolder.isDirectory) continue
                 try {
                     val modRuleset = Ruleset()
-                    modRuleset.load(modFolder.child("jsons"))
                     modRuleset.name = modFolder.name()
+                    modRuleset.load(modFolder.child("jsons"))
                     modRuleset.folderLocation = modFolder
                     newRulesets[modRuleset.name] = modRuleset
                     debug("Mod loaded successfully: %s", modRuleset.name)
