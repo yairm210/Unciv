@@ -209,7 +209,6 @@ class CityFounder {
         }
 
         civInfo.civConstructions.tryAddFreeBuildings()
-        city.cityConstructions.addFreeBuildings()
     }
 
 

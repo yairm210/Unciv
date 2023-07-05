@@ -643,75 +643,14 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             getRejectionReasons(cityConstructions).none()
 
     override fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat?): Boolean {
-        val city = cityConstructions.city
-        val civInfo = city.civ
-
+        val civInfo = cityConstructions.city.civ
+        
         if (civInfo.gameInfo.spaceResources.contains(name)) {
             civInfo.victoryManager.currentsSpaceshipParts.add(name, 1)
             return true
         }
 
-        if (cityHealth > 0) {
-            // city built a building that increases health so add a portion of this added health that is
-            // proportional to the city's current health
-            cityConstructions.city.health += (cityHealth.toFloat() * cityConstructions.city.health.toFloat() / cityConstructions.city.getMaxHealth().toFloat()).toInt()
-        }
-
         cityConstructions.addBuilding(name)
-
-        /** Support for [UniqueType.CreatesOneImprovement] */
-        cityConstructions.applyCreateOneImprovement(this)
-
-        // "Provides a free [buildingName] [cityFilter]"
-        cityConstructions.addFreeBuildings()
-
-        val triggerNotificationText ="due to constructing [$name]"
-
-        for (unique in uniqueObjects)
-            if (!unique.hasTriggerConditional())
-                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, cityConstructions.city, triggerNotificationText = triggerNotificationText)
-
-
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, StateForConditionals(civInfo, city)))
-            if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuilding && matchesFilter(it.params[0])})
-                UniqueTriggerActivation.triggerCivwideUnique(unique, city.civ, city, triggerNotificationText = triggerNotificationText)
-
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponConstructingBuildingCityFilter, StateForConditionals(city.civ, city)))
-            if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuildingCityFilter
-                            && matchesFilter(it.params[0])
-                            && city.matchesFilter(it.params[1])})
-                UniqueTriggerActivation.triggerCivwideUnique(unique, city.civ, city, triggerNotificationText = triggerNotificationText)
-
-        if (hasUnique(UniqueType.EnemyUnitsSpendExtraMovement))
-            civInfo.cache.updateHasActiveEnemyMovementPenalty()
-
-        // Korean unique - apparently gives the same as the research agreement
-        if (isStatRelated(Stat.Science) && civInfo.hasUnique(UniqueType.TechBoostWhenScientificBuildingsBuiltInCapital))
-            civInfo.tech.addScience(civInfo.tech.scienceOfLast8Turns.sum() / 8)
-
-        // Happiness change _may_ invalidate best worked tiles (#9238), but if the building
-        // isn't bought (or the AI bought it) then reassignPopulation will run later in startTurn anyway
-        if (boughtWith != null && isStatRelated(Stat.Happiness)) {
-            // Happiness is global, so it could affect all cities
-            Concurrency.runOnNonDaemonThreadPool("reassignPopulationAllCities") {
-                for (city in civInfo.cities)
-                    city.reassignPopulationDeferred()
-            }
-        }
-
-        // Buying a building influencing tile yield may change CityFocus decisions
-        val uniqueTypesModifyingYields = listOf(
-            UniqueType.StatsFromTiles, UniqueType.StatsFromTilesWithout, UniqueType.StatsFromObject,
-            UniqueType.StatPercentFromObject, UniqueType.AllStatsPercentFromObject
-        )
-        if (boughtWith != null && uniqueTypesModifyingYields.any { hasUnique(it) }) {
-            cityConstructions.city.reassignPopulationDeferred()
-        }
-
-        cityConstructions.city.cityStats.update() // new building, new stats
-        civInfo.cache.updateCivResources() // this building/unit could be a resource-requiring one
-        civInfo.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
-
         return true
     }
 
