@@ -48,6 +48,7 @@ import com.unciv.ui.screens.victoryscreen.RankingType
 import java.util.SortedMap
 import java.util.TreeMap
 import kotlin.math.min
+import kotlin.random.Random
 
 object NextTurnAutomation {
 
@@ -1088,7 +1089,9 @@ object NextTurnAutomation {
                     civ.getDiplomacyManager(it).opinionOfOtherCiv()
                 }
 
-            if (highestOpinion == null) null  // Abstain
+            if (highestOpinion == null) null  // Abstain if we know nobody
+            else if (highestOpinion < -80 || highestOpinion < -40 && highestOpinion + Random.Default.nextInt(40) < -40)
+                null // Abstain if we hate everybody (proportional chance in the RelationshipLevel.Enemy range - lesser evil)
             else knownMajorCivs
                 .filter { civ.getDiplomacyManager(it).opinionOfOtherCiv() == highestOpinion }
                 .toList().random().civName
