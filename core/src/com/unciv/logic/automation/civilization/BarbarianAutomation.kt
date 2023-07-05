@@ -13,6 +13,8 @@ class BarbarianAutomation(val civInfo: Civilization) {
         civInfo.units.getCivUnits().filter { it.baseUnit.isRanged() }.forEach { automateUnit(it) }
         civInfo.units.getCivUnits().filter { it.baseUnit.isMelee() }.forEach { automateUnit(it) }
         civInfo.units.getCivUnits().filter { !it.baseUnit.isRanged() && !it.baseUnit.isMelee() }.forEach { automateUnit(it) }
+        // fix buildup of alerts - to shrink saves and ease debugging
+        civInfo.popupAlerts.clear()
     }
 
     private fun automateUnit(unit: MapUnit) {
