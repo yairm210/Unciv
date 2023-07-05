@@ -42,26 +42,26 @@ class DiplomaticVoteResultScreen(
         val civName = civ.civName
 
         topTable.add(ImageGetter.getNationPortrait(civ.nation, 30f)).pad(10f)
-        topTable.add(civName.toLabel()).pad(20f)
+        topTable.add(civName.toLabel(hideIcons = true)).pad(20f)
 
         if (civName == civOwningUN && constructionNameUN != null) {
-            topTable.add(ImageGetter.getConstructionPortrait(constructionNameUN!!, 30f))
+            topTable.add(ImageGetter.getConstructionPortrait(constructionNameUN, 30f))
                 .pad(10f)
+            topTable.add("[2] votes".toLabel())
         } else {
-            topTable.add()
+            topTable.add("[1] vote".toLabel()).colspan(2)
         }
 
-        fun abstained() = topTable.add("Abstained".toLabel()).row()
-        if (civName !in votesCast.keys) return abstained()
+        fun abstained() = topTable.add("Abstained".toLabel()).colspan(3).row()
+        val votedCivName = votesCast[civName]
+            ?: return abstained()
 
-        val votedCiv = gameInfo.getCivilization(votesCast[civName]!!)
+        val votedCiv = gameInfo.getCivilization(votedCivName)
         if (votedCiv.isDefeated()) return abstained()
 
-        topTable.add("Voted for".toLabel()).pad(20f)
+        topTable.add("Voted for".toLabel()).pad(20f).padRight(0f)
         topTable.add(ImageGetter.getNationPortrait(votedCiv.nation, 30f)).pad(10f)
-        topTable.add(votedCiv.civName.toLabel())
-        if (civName == civOwningUN)
-            topTable.add(ImageGetter.getImage(FormattedLine.starImage).apply { color = Color.GOLD }).size(18f)
+        topTable.add(votedCiv.civName.toLabel(hideIcons = true))
         topTable.row()
     }
 }

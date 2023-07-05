@@ -111,8 +111,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
     var victoryData:VictoryData? = null
 
-    // Maps a civ to the civ they voted for
-    var diplomaticVictoryVotesCast = HashMap<String, String>()
+    /** Maps a civ to the civ they voted for - `null` on the value side means they abstained */
+    var diplomaticVictoryVotesCast = HashMap<String, String?>()
     // Set to false whenever the results still need te be processed
     var diplomaticVictoryVotesProcessed = false
 

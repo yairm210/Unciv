@@ -25,11 +25,12 @@ class VictoryManager : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    private fun calculateDiplomaticVotingResults(votesCast: HashMap<String, String>): Counter<String> {
+    private fun calculateDiplomaticVotingResults(votesCast: HashMap<String, String?>): Counter<String> {
         val results = Counter<String>()
         // UN Owner gets 2 votes in G&K
         val (_, civOwningUN) = getUNBuildingAndOwnerNames()
         for ((voter, votedFor) in votesCast) {
+            if (votedFor == null) continue  // null means Abstained
             results.add(votedFor, if (voter == civOwningUN) 2 else 1)
         }
         return results
