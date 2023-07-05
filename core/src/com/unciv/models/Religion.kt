@@ -108,6 +108,6 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
             belief.getMatchingUniques(UniqueType.BuyBuildingsWithStat).map { it.params[0] } +
             belief.getMatchingUniques(UniqueType.BuyBuildingsForAmountStat).map { it.params[0] } +
             belief.getMatchingUniques(UniqueType.BuyBuildingsIncreasingCost).map { it.params[0] }
-        }.toList()
+        }.filter { gameInfo.ruleset.buildings.containsKey(it) }.toList()
     }
 }

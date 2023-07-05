@@ -492,7 +492,12 @@ class Civilization : IsPartOfGameInfoSerialization {
         return tech.currentTechnology() == null && cities.isNotEmpty()
     }
 
-    fun getEquivalentBuilding(buildingName: String) = getEquivalentBuilding(gameInfo.ruleset.buildings[buildingName]!!)
+    fun getEquivalentBuilding(buildingName: String): Building {
+        val building = gameInfo.ruleset.buildings[buildingName]
+            ?: throw Exception("No building by the name of $buildingName exists!")
+        return getEquivalentBuilding(building)
+    }
+
     fun getEquivalentBuilding(baseBuilding: Building): Building {
         if (baseBuilding.replaces != null)
             return getEquivalentBuilding(baseBuilding.replaces!!)
