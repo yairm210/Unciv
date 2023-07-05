@@ -116,7 +116,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         val uniquesWithNoErrors = finalPossibleUniques.filter {
             val unique = Unique(it)
             val errors = RulesetValidator(ruleset).checkUnique(
-                unique, true, "",
+                unique, true, null,
                 UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
             )
             errors.isEmpty()
