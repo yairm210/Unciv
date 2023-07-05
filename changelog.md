@@ -1,3 +1,72 @@
+## 4.7.7
+
+Fixed tile filter for civ-related conditions for "upon ending a turn in a [tileFilter] tile" trigger
+
+Resolved  - incorrect ruleset combos for 'buy building with stat' no longer crash
+
+Keep track of what mod each ruleset object comes from, for debug and civilopedia purposes
+
+Fixed India's 'double unhappiness' unique
+
+chore: Modernized WorkerAutomationTest
+
+chore: Modernized TileImprovementConstructionTests
+
+chore: Modernized VisibilityTest
+
+4.7.6-patch2
+
+Modernized UnitMovementTests to use TestGane
+
+awesome-pages wiki modding folder reorg 5
+
+awesome-pages wiki modding folder reorg 4 - sections as list
+
+awesome-pages wiki modding folder reorg 3 - sections
+
+awesome-pages wiki modding folder reorg 2
+
+awesome-pages wiki modding folder reorg
+
+awesome-pages test 2.1
+
+awesome-pages test 2
+
+Step-by-step instructions to create a new Civilization mod
+
+4.7.6-patch1
+
+Improved mod overview documentation
+
+Remove awesome-pages since it's causing problems
+
+Remove awesome-pages since it's causing problems
+
+More modder documentation clarity
+
+Reorg modding pages
+
+mkdocs awesome-pages plugin
+
+Deleted site files from master branch - they're only used in gh-pages branch anyway
+
+Reorganize modders documentation files
+
+By SeventhM:
+- Fix buildings/units not triggering and golden age stat updates 
+- Avoid crashes with incorrect condtionals 
+- Scaling purchase costs for faith/culture/science/etc. with speed 
+- Better support for lacking a capital 
+
+By SomeTroglodyte:
+- Minimal support for Alpha Frontier-like Workers 
+- Explain the invoke trick as well 
+- Clearer NotificationActions code 
+- Prevent activation of disabled actors via key shortcuts 
+- Keyboard bindings for Main Menu Screen 
+
+Fix civilopedia gold cost  - By Skekdog
+
 ## 4.7.6
 
 "Requires a [buildingFilter] in at least [amount] cities" works correctly with filters that aren't building names
