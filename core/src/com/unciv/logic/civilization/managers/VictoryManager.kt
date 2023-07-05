@@ -8,6 +8,7 @@ import com.unciv.models.ruleset.Milestone
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.tr
 
 class VictoryManager : IsPartOfGameInfoSerialization {
     @Transient
@@ -70,6 +71,29 @@ class VictoryManager : IsPartOfGameInfoSerialization {
 
         // If there's a tie, we haven't won either
         return (results.none { it != bestCiv && it.value == bestCiv.value })
+    }
+
+    fun getDiplomaticVictoryVoteBreakdown(): String {
+        val results = calculateDiplomaticVotingResults(civInfo.gameInfo.diplomaticVictoryVotesCast)
+        val (voteCount, winnerList) = results.asSequence()
+            .groupBy({ it.value }, { it.key }).asSequence()
+            .sortedByDescending { it.key }  // key is vote count here
+            .firstOrNull()
+            ?: return "No valid votes were cast."
+
+        val lines = arrayListOf<String>()
+        val minVotes = votesNeededForDiplomaticVictory()
+        if (voteCount < minVotes)
+            lines += "Minimum votes for electing a world leader: [$minVotes]"
+        if (winnerList.size > 1)
+            lines += "Tied in first position: [${winnerList.joinToString { it.tr() }}]" // Yes with icons
+        val winnerCiv = civInfo.gameInfo.getCivilization(winnerList.first())
+        lines += when {
+            lines.isNotEmpty() -> "No world leader was elected."
+            winnerCiv == civInfo -> "You have been elected world leader!"
+            else -> "${civInfo.nation.getLeaderDisplayName()} has been elected world leader!"
+        }
+        return lines.joinToString("\n") { "{$it}" }
     }
 
     fun getVictoryTypeAchieved(): String? {

@@ -1,19 +1,19 @@
 package com.unciv.ui.screens.pickerscreens
 
-import com.badlogic.gdx.graphics.Color
-import com.unciv.UncivGame
+import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.components.extensions.enable
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.images.ImageGetter
 
 class DiplomaticVoteResultScreen(
-    private val votesCast: HashMap<String, String>,
+    private val votesCast: HashMap<String, String?>,
     viewingCiv: Civilization
 ) : PickerScreen() {
     val gameInfo = viewingCiv.gameInfo
@@ -30,12 +30,19 @@ class DiplomaticVoteResultScreen(
         val orderedCivs = gameInfo.getCivsSorted(civToSortFirst = viewingCiv)
         for (civ in orderedCivs) addVote(civ)
 
-        rightSideButton.onClick(UncivSound.Click) {
+        val result = viewingCiv.victoryManager.getDiplomaticVictoryVoteBreakdown()
+        descriptionLabel.setAlignment(Align.center)
+        descriptionLabel.setText(result.tr())
+
+        rightSideButton.onActivation(UncivSound.Click) {
             viewingCiv.addFlag(CivFlags.ShowDiplomaticVotingResults.name, -1)
-            UncivGame.Current.popScreen()
+            game.popScreen()
         }
+        rightSideButton.keyShortcuts.add(KeyCharAndCode.BACK)
+        rightSideButton.keyShortcuts.add(KeyCharAndCode.SPACE)
         rightSideButton.enable()
         rightSideButton.setText("Continue".tr())
+        bottomTable.cells[0].minWidth(rightSideButton.prefWidth + 20f)  // center descriptionLabel
     }
 
     private fun addVote(civ: Civilization) {
