@@ -92,7 +92,7 @@ open class AndroidLauncher : AndroidApplication() {
     }
 
     override fun onResume() {
-        if (game?.onlineMultiplayer?.isInitialized() == true && game?.onlineMultiplayer?.apiVersion == ApiVersion.APIv2) {
+        if (game != null && game?.isInitialized == true && game?.onlineMultiplayer?.isInitialized() == true && game?.onlineMultiplayer?.apiVersion == ApiVersion.APIv2) {
             game?.onlineMultiplayer?.api?.enableReconnecting()
         }
         try {
