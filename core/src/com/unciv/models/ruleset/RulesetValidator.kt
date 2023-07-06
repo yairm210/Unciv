@@ -472,46 +472,7 @@ class RulesetValidator(val ruleset: Ruleset) {
     ): List<RulesetError> {
         var name = namedObj?.name ?: ""
         if (namedObj!=null && namedObj is IRulesetObject) name = "${namedObj.originRuleset}: $name"
-        if (unique.type == null) {
-            if (!tryFixUnknownUniques) return emptyList()
-            val similarUniques = UniqueType.values().filter {
-                getRelativeTextDistance(
-                    it.placeholderText,
-                    unique.placeholderText
-                ) <= RulesetCache.uniqueMisspellingThreshold
-            }
-            val equalUniques =
-                    similarUniques.filter { it.placeholderText == unique.placeholderText }
-            return when {
-                // Malformed conditional
-                unique.text.count { it=='<' } != unique.text.count { it=='>' } ->listOf(
-                    RulesetError("$name's unique \"${unique.text}\" contains mismatched conditional braces!",
-                        RulesetErrorSeverity.Warning))
-
-                // This should only ever happen if a bug is or has been introduced that prevents Unique.type from being set for a valid UniqueType, I think.\
-                equalUniques.isNotEmpty() -> listOf(RulesetError(
-                    "$name's unique \"${unique.text}\" looks like it should be fine, but for some reason isn't recognized.",
-                    RulesetErrorSeverity.OK))
-
-                similarUniques.isNotEmpty() -> {
-                    val text =
-                            "$name's unique \"${unique.text}\" looks like it may be a misspelling of:\n" +
-                                    similarUniques.joinToString("\n") { uniqueType ->
-                                        var text = "\"${uniqueType.text}"
-                                        if (unique.conditionals.isNotEmpty())
-                                            text += " " + unique.conditionals.joinToString(" ") { "<${it.text}>" }
-                                        text += "\""
-                                        if (uniqueType.getDeprecationAnnotation() != null) text += " (Deprecated)"
-                                        return@joinToString text
-                                    }.prependIndent("\t")
-                    listOf(RulesetError(text, RulesetErrorSeverity.OK))
-                }
-                RulesetCache.modCheckerAllowUntypedUniques -> emptyList()
-                else -> listOf(RulesetError(
-                    "$name's unique \"${unique.text}\" not found in Unciv's unique types.",
-                    RulesetErrorSeverity.OK))
-            }
-        }
+        if (unique.type == null) return checkUntypedUnique(unique, tryFixUnknownUniques, name)
 
         val rulesetErrors = RulesetErrorList()
 
@@ -567,6 +528,57 @@ class RulesetValidator(val ruleset: Ruleset) {
         }
 
         return rulesetErrors
+    }
+
+    private fun checkUntypedUnique(unique: Unique, tryFixUnknownUniques: Boolean, name: String ): List<RulesetError> {
+        // Malformed conditional is always bad
+        if (unique.text.count { it == '<' } != unique.text.count { it == '>' })
+            return listOf(RulesetError(
+                "$name's unique \"${unique.text}\" contains mismatched conditional braces!",
+                    RulesetErrorSeverity.Warning))
+
+        if (tryFixUnknownUniques) {
+            val fixes = tryFixUnknownUnique(unique, name)
+            if (fixes.isNotEmpty()) return fixes
+        }
+
+        if (RulesetCache.modCheckerAllowUntypedUniques) return emptyList()
+
+        return listOf(RulesetError(
+        "$name's unique \"${unique.text}\" not found in Unciv's unique types.",
+            RulesetErrorSeverity.WarningOptionsOnly))
+    }
+
+    private fun tryFixUnknownUnique(unique: Unique, name: String): List<RulesetError> {
+        val similarUniques = UniqueType.values().filter {
+            getRelativeTextDistance(
+                it.placeholderText,
+                unique.placeholderText
+            ) <= RulesetCache.uniqueMisspellingThreshold
+        }
+        val equalUniques =
+            similarUniques.filter { it.placeholderText == unique.placeholderText }
+        return when {
+            // This should only ever happen if a bug is or has been introduced that prevents Unique.type from being set for a valid UniqueType, I think.\
+            equalUniques.isNotEmpty() -> listOf(RulesetError(
+                "$name's unique \"${unique.text}\" looks like it should be fine, but for some reason isn't recognized.",
+                RulesetErrorSeverity.OK))
+
+            similarUniques.isNotEmpty() -> {
+                val text =
+                    "$name's unique \"${unique.text}\" looks like it may be a misspelling of:\n" +
+                        similarUniques.joinToString("\n") { uniqueType ->
+                            var text = "\"${uniqueType.text}"
+                            if (unique.conditionals.isNotEmpty())
+                                text += " " + unique.conditionals.joinToString(" ") { "<${it.text}>" }
+                            text += "\""
+                            if (uniqueType.getDeprecationAnnotation() != null) text += " (Deprecated)"
+                            return@joinToString text
+                        }.prependIndent("\t")
+                listOf(RulesetError(text, RulesetErrorSeverity.OK))
+            }
+            else -> emptyList()
+        }
     }
 }
 
