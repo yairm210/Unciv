@@ -27,7 +27,8 @@ import com.unciv.ui.popups.AskTextPopup
 class ReligiousBeliefsPickerScreen (
     choosingCiv: Civilization,
     numberOfBeliefsCanChoose: Counter<BeliefType>,
-    pickIconAndName: Boolean
+    pickIconAndName: Boolean,
+    usingFreeBeliefs: Boolean
 ): ReligionPickerScreenCommon(choosingCiv, disableScroll = true) {
     // Roughly follows the layout of the original (although I am not very good at UI designing, so please improve this)
 
@@ -78,7 +79,10 @@ class ReligiousBeliefsPickerScreen (
         ) {
             if (civInfo.religionManager.religionState == ReligionState.FoundingReligion)
                 civInfo.religionManager.foundReligion(displayName!!, religionName!!)
-            chooseBeliefs(beliefsToChoose.map { it.belief!! }, usingFreeBeliefs())
+            chooseBeliefs(
+                beliefsToChoose.filter { it.type != BeliefType.Any }.map { it.belief!! },
+                beliefsToChoose.filter { it.type == BeliefType.Any }.map { it.belief!! },
+                usingFreeBeliefs)
         }
     }
 

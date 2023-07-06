@@ -635,6 +635,9 @@ object NextTurnAutomation {
         chooseFreeBeliefs(civInfo)
     }
 
+    // Helper class to remember which choice could've been any choice and which choice couldn't 
+    class BeliefToChoose(val type: BeliefType, var belief: Belief? = null)
+    
     private fun choosePantheon(civInfo: Civilization) {
         if (!civInfo.religionManager.canFoundOrExpandPantheon()) return
         // So looking through the source code of the base game available online,
@@ -646,7 +649,8 @@ object NextTurnAutomation {
         val chosenPantheon = chooseBeliefOfType(civInfo, BeliefType.Pantheon)
             ?: return // panic!
         civInfo.religionManager.chooseBeliefs(
-            listOf(chosenPantheon),
+            listOf(chosenPantheon.belief!!),
+            emptyList(),
             useFreeBeliefs = civInfo.religionManager.usingFreeBeliefs()
         )
     }
@@ -664,20 +668,27 @@ object NextTurnAutomation {
         civInfo.religionManager.foundReligion(religionIcon, religionIcon)
 
         val chosenBeliefs = chooseBeliefs(civInfo, civInfo.religionManager.getBeliefsToChooseAtFounding()).toList()
-        civInfo.religionManager.chooseBeliefs(chosenBeliefs)
+        civInfo.religionManager.chooseBeliefs(
+            chosenBeliefs.filter { it.type != BeliefType.Any }.map { it.belief!! },
+            chosenBeliefs.filter { it.type == BeliefType.Any }.map { it.belief!! }
+        )
     }
 
     private fun enhanceReligion(civInfo: Civilization) {
         if (civInfo.religionManager.religionState != ReligionState.EnhancingReligion) return
+        val chosenBeliefs = chooseBeliefs(civInfo, civInfo.religionManager.getBeliefsToChooseAtEnhancing())
         civInfo.religionManager.chooseBeliefs(
-            chooseBeliefs(civInfo, civInfo.religionManager.getBeliefsToChooseAtEnhancing()).toList()
+            chosenBeliefs.filter { it.type != BeliefType.Any }.map { it.belief!! },
+            chosenBeliefs.filter { it.type == BeliefType.Any }.map { it.belief!! }
         )
     }
 
     private fun chooseFreeBeliefs(civInfo: Civilization) {
         if (!civInfo.religionManager.hasFreeBeliefs()) return
+        val chosenBeliefs = chooseBeliefs(civInfo,civInfo.religionManager.freeBeliefsAsEnums())
         civInfo.religionManager.chooseBeliefs(
-            chooseBeliefs(civInfo, civInfo.religionManager.freeBeliefsAsEnums()).toList(),
+            chosenBeliefs.filter { it.type != BeliefType.Any }.map { it.belief!! },
+            chosenBeliefs.filter { it.type == BeliefType.Any }.map { it.belief!! },
             useFreeBeliefs = true
         )
     }

@@ -340,7 +340,8 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     fun getBeliefsToChooseAtFounding(): Counter<BeliefType> = getBeliefsToChooseAtProphetUse(false)
     fun getBeliefsToChooseAtEnhancing(): Counter<BeliefType> = getBeliefsToChooseAtProphetUse(true)
 
-    fun chooseBeliefs(beliefs: List<Belief>, useFreeBeliefs: Boolean = false) {
+    fun chooseBeliefs(beliefs: List<Belief>, anyBeliefs: List<Belief>, useFreeBeliefs: Boolean = false) {
+        val allBeliefs = beliefs + anyBeliefs
         when (religionState) {
             ReligionState.EnhancingReligion -> {
                 religionState = ReligionState.EnhancedReligion
@@ -354,23 +355,23 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         }
         // add beliefs (religion exists at this point)
         religion!!.followerBeliefs.addAll(
-            beliefs
+            allBeliefs
                 .filter { it.type == BeliefType.Pantheon || it.type == BeliefType.Follower }
                 .map { it.name }
         )
         religion!!.founderBeliefs.addAll(
-            beliefs
+            allBeliefs
                 .filter { it.type == BeliefType.Founder || it.type == BeliefType.Enhancer }
                 .map { it.name }
         )
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponAdoptingPolicyOrBelief))
-            for (belief in beliefs)
+            for (belief in allBeliefs)
                 if (unique.conditionals.any {it.type == UniqueType.TriggerUponAdoptingPolicyOrBelief && it.params[0] == belief.name})
                     UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo,
                         triggerNotificationText = "due to adopting [${belief.name}]")
 
-        for (belief in beliefs)
+        for (belief in allBeliefs)
             for (unique in belief.uniqueObjects)
                 UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
 
@@ -378,6 +379,8 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         if (useFreeBeliefs && hasFreeBeliefs()) {
             for (belief in beliefs) {
                 freeBeliefs[belief.type.name] = max(freeBeliefs[belief.type.name] - 1, 0)
+            for (belief in anyBeliefs)
+                freeBeliefs[BeliefType.Any.name] = max( freeBeliefs[BeliefType.Any.name] - 1, 0)
             }
         }
         // limit the number of free beliefs available to number of remaining beliefs even if player

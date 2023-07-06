@@ -117,7 +117,8 @@ class NextTurnButton : IconTextButton("", null, 30) {
                         ReligiousBeliefsPickerScreen(
                             worldScreen.viewingCiv,
                             worldScreen.viewingCiv.religionManager.getBeliefsToChooseAtFounding(),
-                            pickIconAndName = true
+                            pickIconAndName = true,
+                            usingFreeBeliefs = false
                         )
                     )
                 }
@@ -129,7 +130,8 @@ class NextTurnButton : IconTextButton("", null, 30) {
                         ReligiousBeliefsPickerScreen(
                             worldScreen.viewingCiv,
                             worldScreen.viewingCiv.religionManager.getBeliefsToChooseAtEnhancing(),
-                            pickIconAndName = false
+                            pickIconAndName = false,
+                            usingFreeBeliefs = false
                         )
                     )
                 }
@@ -141,7 +143,8 @@ class NextTurnButton : IconTextButton("", null, 30) {
                         ReligiousBeliefsPickerScreen(
                             worldScreen.viewingCiv,
                             worldScreen.viewingCiv.religionManager.freeBeliefsAsEnums(),
-                            pickIconAndName = false
+                            pickIconAndName = false,
+                            usingFreeBeliefs = true
                         )
                     )
                 }
