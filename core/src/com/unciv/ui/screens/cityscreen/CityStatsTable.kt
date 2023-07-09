@@ -178,6 +178,15 @@ class CityStatsTable(private val cityScreen: CityScreen): Table() {
             tableWithIcons.add("In resistance for another [${city.getFlag(CityFlags.Resistance)}] turns".toLabel()).row()
         }
 
+        val resourceTable = Table()
+        for (resourceSupply in city.getCityResources())
+            if (resourceSupply.resource.hasUnique(UniqueType.CityResource)){
+                resourceTable.add(resourceSupply.amount.toLabel())
+                resourceTable.add(ImageGetter.getResourcePortrait(resourceSupply.resource.name, 20f))
+                    .padRight(5f)
+                }
+        tableWithIcons.add(resourceTable)
+
         val (wltkIcon: Actor?, wltkLabel: Label?) = when {
             city.isWeLoveTheKingDayActive() ->
                 ImageGetter.getStatIcon("Food") to

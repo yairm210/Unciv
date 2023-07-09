@@ -45,7 +45,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     fun hasTriggerConditional(): Boolean {
         if(conditionals.none()) return false
         return conditionals.any{ conditional -> conditional.type?.targetTypes
-            ?.any{ it.canAcceptUniqueTarget(UniqueTarget.TriggerCondition) || it.canAcceptUniqueTarget(UniqueTarget.UnitActionModifier) } 
+            ?.any{ it.canAcceptUniqueTarget(UniqueTarget.TriggerCondition) || it.canAcceptUniqueTarget(UniqueTarget.UnitActionModifier) }
                 ?: false
         }
     }
@@ -153,6 +153,12 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
         val stateBasedRandom by lazy { Random(state.hashCode()) }
 
+        fun getResourceAmount(resourceName:String):Int {
+            if (state.city != null) return state.city.getResourceAmount(resourceName)
+            if (state.civInfo != null) return state.civInfo.getCivResourcesByName()[resourceName]!!
+            return 0
+        }
+
         return when (condition.type) {
             // These are 'what to do' and not 'when to do' conditionals
             UniqueType.ConditionalTimedUnique -> true
@@ -165,12 +171,10 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalNationFilter -> state.civInfo?.nation?.matchesFilter(condition.params[0]) == true
             UniqueType.ConditionalWar -> state.civInfo?.isAtWar() == true
             UniqueType.ConditionalNotWar -> state.civInfo?.isAtWar() == false
-            UniqueType.ConditionalWithResource -> state.civInfo?.hasResource(condition.params[0]) == true
-            UniqueType.ConditionalWithoutResource -> state.civInfo?.hasResource(condition.params[0]) == false
-            UniqueType.ConditionalWhenAboveAmountResource -> state.civInfo != null
-                    && state.civInfo.getCivResourcesByName()[condition.params[1]]!! > condition.params[0].toInt()
-            UniqueType.ConditionalWhenBelowAmountResource -> state.civInfo != null
-                    && state.civInfo.getCivResourcesByName()[condition.params[1]]!! < condition.params[0].toInt()
+            UniqueType.ConditionalWithResource -> getResourceAmount(condition.params[0]) > 0
+            UniqueType.ConditionalWithoutResource -> getResourceAmount(condition.params[0]) <= 0
+            UniqueType.ConditionalWhenAboveAmountResource -> getResourceAmount(condition.params[1]) > condition.params[0].toInt()
+            UniqueType.ConditionalWhenBelowAmountResource -> getResourceAmount(condition.params[1]) < condition.params[0].toInt()
             UniqueType.ConditionalHappy ->
                 state.civInfo != null && state.civInfo.stats.happiness >= 0
             UniqueType.ConditionalBetweenHappiness ->

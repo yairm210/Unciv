@@ -254,6 +254,14 @@ class City : IsPartOfGameInfoSerialization {
         return cityResources
     }
 
+    fun getResourceAmount(resourceName:String): Int {
+        val resource = getRuleset().tileResources[resourceName] ?: return 0
+
+        if (resource.hasUnique(UniqueType.CityResource))
+            return getCityResources().firstOrNull { it.resource == resource }?.amount ?: 0
+        return civ.getCivResourcesByName()[resourceName]!!
+    }
+
     private fun getTileResourceAmount(tile: Tile): Int {
         if (tile.resource == null) return 0
         if (!tile.providesResources(civ)) return 0
