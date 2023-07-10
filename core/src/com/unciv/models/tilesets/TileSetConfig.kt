@@ -8,7 +8,7 @@ class TileSetConfig {
     var unexploredTileColor: Color = Color.DARK_GRAY
     var fogOfWarColor: Color = Color.BLACK
     /** Name of the tileset to use when this one is missing images. Null to disable. */
-    var fallbackTileSet: String? = "FantasyHex"
+    var fallbackTileSet: String? = "HexaRealm"
     /** Scale factor for hex images, with hex center as origin. */
     var tileScale: Float = 1f
     var tileScales: HashMap<String, Float> = HashMap()

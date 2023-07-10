@@ -45,11 +45,11 @@ class TileInfoImprovementFunctions(val tile: Tile) {
             yield(ImprovementBuildingProblem.Obsolete)
 
         if (improvement.getMatchingUniques(UniqueType.ConsumesResources, stateForConditionals)
-                    .any { civInfo.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt() })
+                    .any { civInfo.getResourceAmount(it.params[1]) < it.params[0].toInt() })
             yield(ImprovementBuildingProblem.MissingResources)
 
         if (improvement.getMatchingUniques(UniqueType.CostsResources)
-                    .any { civInfo.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt() })
+                    .any { civInfo.getResourceAmount(it.params[1]) < it.params[0].toInt() })
             yield(ImprovementBuildingProblem.MissingResources)
 
         val knownFeatureRemovals = tile.ruleset.tileImprovements.values

@@ -609,6 +609,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ResourceAmountOnTiles("Deposits in [tileFilter] tiles always provide [amount] resources", UniqueTarget.Resource),
     CityStateOnlyResource("Can only be created by Mercantile City-States", UniqueTarget.Resource),
     Stockpiled("Stockpiled", UniqueTarget.Resource),
+    CityResource("City-level resource", UniqueTarget.Resource),
     CannotBeTraded("Cannot be traded", UniqueTarget.Resource),
     NotShownOnWorldScreen("Not shown on world screen", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
 

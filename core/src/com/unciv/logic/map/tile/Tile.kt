@@ -832,9 +832,7 @@ open class Tile : IsPartOfGameInfoSerialization {
             yieldAll(terrainFeatureObjects)
         }.toList().asSequence() //Save in memory, and return as sequence
 
-        val newUniqueMap = UniqueMap()
-        for (terrain in allTerrains)
-            newUniqueMap.addUniques(terrain.uniqueObjects)
+        updateUniqueMap()
 
         lastTerrain = when {
             terrainFeatures.isNotEmpty() -> ruleset.terrains[terrainFeatures.last()]
@@ -842,7 +840,20 @@ open class Tile : IsPartOfGameInfoSerialization {
             naturalWonder != null -> getNaturalWonder()
             else -> getBaseTerrain()
         }
-        terrainUniqueMap = newUniqueMap
+    }
+
+    private fun updateUniqueMap() {
+        if (!::tileMap.isInitialized) return // This tile is a fake tile, for visual display only (e.g. map editor, civilopedia)
+        val terrainString = allTerrains.joinToString(";") { it.name }
+        val cachedUniqueMap = tileMap.tileUniqueMapCache[terrainString]
+        terrainUniqueMap = if (cachedUniqueMap != null) cachedUniqueMap
+        else {
+            val newUniqueMap = UniqueMap()
+            for (terrain in allTerrains)
+                newUniqueMap.addUniques(terrain.uniqueObjects)
+            tileMap.tileUniqueMapCache[terrainString] = newUniqueMap
+            newUniqueMap
+        }
     }
 
     fun addTerrainFeature(terrainFeature: String) =
