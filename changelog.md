@@ -1,18 +1,14 @@
 ## 4.7.8
 
-Change default fallback to HexaRealm instead - it's been ready for a while :)
-
-City-level resources 
+Modding: City-level resources!
 
 Display resource uniques in civilopedia
 
-Resolved  - memory improvement, cache uniquemap for tiles with identical terrain
+Memory improvements
 
-Little Diplomatic Victory makeover  - By SomeTroglodyte
+Added notification for destruction of tile improvements via unit ability  - By random271
 
-Added notification for destruction of tile improvements [via unit ability]  - By random271
-
-Fix docker image name  - By haimlm
+Translation updates
 
 ## 4.7.7
 
