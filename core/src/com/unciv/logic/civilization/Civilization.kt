@@ -425,7 +425,8 @@ class Civilization : IsPartOfGameInfoSerialization {
     }
 
     /** Gets the number of resources available to this city
-     * Does not include city-wide resources */
+     * Does not include city-wide resources
+     * Returns 0 for undefined resources */
     fun getResourceAmount(resourceName:String): Int {
         return getCivResourcesByName()[resourceName] ?: 0
     }
@@ -443,7 +444,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         return resourceModifier
     }
 
-    fun hasResource(resourceName: String): Boolean = getCivResourcesByName()[resourceName]!! > 0
+    fun hasResource(resourceName: String): Boolean = getResourceAmount(resourceName) > 0
 
     fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals =
         StateForConditionals(this)) = getMatchingUniques(uniqueType, stateForConditionals).any()
