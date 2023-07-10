@@ -254,12 +254,14 @@ class City : IsPartOfGameInfoSerialization {
         return cityResources
     }
 
-    fun getResourceAmount(resourceName:String): Int {
+    /** Gets the number of resources available to this city
+     * Accommodates both city-wide and civ-wide resources */
+    fun getResourceAmount(resourceName: String): Int {
         val resource = getRuleset().tileResources[resourceName] ?: return 0
 
         if (resource.hasUnique(UniqueType.CityResource))
-            return getCityResources().filter { it.resource == resource }.sumOf { it.amount }
-        return civ.getCivResourcesByName()[resourceName]!!
+            return getCityResources().asSequence().filter { it.resource == resource }.sumOf { it.amount }
+        return civ.getResourceAmount(resourceName)
     }
 
     private fun getTileResourceAmount(tile: Tile): Int {

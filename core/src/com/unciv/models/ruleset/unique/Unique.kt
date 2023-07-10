@@ -153,9 +153,9 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
         val stateBasedRandom by lazy { Random(state.hashCode()) }
 
-        fun getResourceAmount(resourceName:String):Int {
+        fun getResourceAmount(resourceName: String): Int {
             if (state.city != null) return state.city.getResourceAmount(resourceName)
-            if (state.civInfo != null) return state.civInfo.getCivResourcesByName()[resourceName]!!
+            if (state.civInfo != null) return state.civInfo.getResourceAmount(resourceName)
             return 0
         }
 
@@ -163,10 +163,10 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             // These are 'what to do' and not 'when to do' conditionals
             UniqueType.ConditionalTimedUnique -> true
 
+            UniqueType.ConditionalChance -> stateBasedRandom.nextFloat() < condition.params[0].toFloat() / 100f
             UniqueType.ConditionalBeforeTurns -> state.civInfo != null && state.civInfo.gameInfo.turns < condition.params[0].toInt()
             UniqueType.ConditionalAfterTurns -> state.civInfo != null && state.civInfo.gameInfo.turns >= condition.params[0].toInt()
 
-            UniqueType.ConditionalChance -> stateBasedRandom.nextFloat() < condition.params[0].toFloat() / 100f
 
             UniqueType.ConditionalNationFilter -> state.civInfo?.nation?.matchesFilter(condition.params[0]) == true
             UniqueType.ConditionalWar -> state.civInfo?.isAtWar() == true
