@@ -1,7 +1,6 @@
 package com.unciv.uniques
 
 import com.badlogic.gdx.math.Vector2
-import com.sun.source.tree.AssertTree
 import com.unciv.logic.map.mapunit.UnitTurnManager
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
@@ -83,7 +82,7 @@ class UnitUniquesTests {
         civ.tech.addTechnology("Iron Working")
         // capital already owns tile, but this relinquishes first - shouldn't require manual setTerrainTransients, updateCivResources called automatically
         capital.expansion.takeOwnership(ironTile)
-        val ironAvailable = civ.getCivResourcesByName()["Iron"] ?: 0
+        val ironAvailable = civ.getResourceAmount("Iron")
         Assert.assertTrue("Test preparation failed to add Iron to Civ resources", ironAvailable >= 3)
 
         // See if that same Engineer could create a Manufactory NOW

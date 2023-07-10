@@ -362,16 +362,17 @@ object NextTurnAutomation {
             val highlyDesirableTilesInCity = city.tilesInRange.filter {
                 val hasNaturalWonder = it.naturalWonder != null
                 val hasLuxuryCivDoesntOwn =
-                        it.hasViewableResource(civInfo) &&
-                                it.tileResource.resourceType == ResourceType.Luxury &&
-                                !civInfo.hasResource(it.resource!!)
+                    it.hasViewableResource(civInfo)
+                        && it.tileResource.resourceType == ResourceType.Luxury
+                        && !civInfo.hasResource(it.resource!!)
                 val hasResourceCivHasNoneOrLittle =
-                        (it.hasViewableResource(civInfo)
-                                && it.tileResource.resourceType == ResourceType.Strategic &&
-                                (civInfo.getCivResourcesByName()[it.resource!!] ?: 0) <= 3)
+                    it.hasViewableResource(civInfo)
+                        && it.tileResource.resourceType == ResourceType.Strategic
+                        && civInfo.getResourceAmount(it.resource!!) <= 3
+
                 it.isVisible(civInfo) && it.getOwner() == null
-                        && it.neighbors.any { neighbor -> neighbor.getCity() == city }
-                        (hasNaturalWonder || hasLuxuryCivDoesntOwn || hasResourceCivHasNoneOrLittle)
+                    && it.neighbors.any { neighbor -> neighbor.getCity() == city }
+                (hasNaturalWonder || hasLuxuryCivDoesntOwn || hasResourceCivHasNoneOrLittle)
             }
             for (highlyDesirableTileInCity in highlyDesirableTilesInCity) {
                 highlyDesirableTiles.getOrPut(highlyDesirableTileInCity) { mutableSetOf() }

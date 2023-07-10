@@ -424,6 +424,12 @@ class Civilization : IsPartOfGameInfoSerialization {
         return hashMap
     }
 
+    /** Gets the number of resources available to this city
+     * Does not include city-wide resources */
+    fun getResourceAmount(resourceName:String): Int {
+        return getCivResourcesByName()[resourceName] ?: 0
+    }
+
     fun getResourceModifier(resource: TileResource): Float {
         var resourceModifier = 1f
         for (unique in getMatchingUniques(UniqueType.DoubleResourceProduced))
