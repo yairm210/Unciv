@@ -703,7 +703,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         && gameInfo.civilizations.any { it.isMajorCiv() && !it.isDefeated() && it != this }
 
     fun diplomaticVoteForCiv(chosenCivName: String?) {
-        if (chosenCivName != null) gameInfo.diplomaticVictoryVotesCast[civName] = chosenCivName
+        gameInfo.diplomaticVictoryVotesCast[civName] = chosenCivName
     }
 
     fun shouldShowDiplomaticVotingResults() =

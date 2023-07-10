@@ -48,6 +48,7 @@ import com.unciv.ui.screens.victoryscreen.RankingType
 import java.util.SortedMap
 import java.util.TreeMap
 import kotlin.math.min
+import kotlin.random.Random
 
 object NextTurnAutomation {
 
@@ -1077,24 +1078,29 @@ object NextTurnAutomation {
 
     // Technically, this function should also check for civs that have liberated one or more cities
     // However, that can be added in another update, this PR is large enough as it is.
-    private fun tryVoteForDiplomaticVictory(civInfo: Civilization) {
-        if (!civInfo.mayVoteForDiplomaticVictory()) return
-        val chosenCiv: String? = if (civInfo.isMajorCiv()) {
+    private fun tryVoteForDiplomaticVictory(civ: Civilization) {
+        if (!civ.mayVoteForDiplomaticVictory()) return
 
-            val knownMajorCivs = civInfo.getKnownCivs().filter { it.isMajorCiv() }
+        val chosenCiv: String? = if (civ.isMajorCiv()) {
+
+            val knownMajorCivs = civ.getKnownCivs().filter { it.isMajorCiv() }
             val highestOpinion = knownMajorCivs
                 .maxOfOrNull {
-                    civInfo.getDiplomacyManager(it).opinionOfOtherCiv()
+                    civ.getDiplomacyManager(it).opinionOfOtherCiv()
                 }
 
-            if (highestOpinion == null) null
-            else knownMajorCivs.filter { civInfo.getDiplomacyManager(it).opinionOfOtherCiv() == highestOpinion}.toList().random().civName
+            if (highestOpinion == null) null  // Abstain if we know nobody
+            else if (highestOpinion < -80 || highestOpinion < -40 && highestOpinion + Random.Default.nextInt(40) < -40)
+                null // Abstain if we hate everybody (proportional chance in the RelationshipLevel.Enemy range - lesser evil)
+            else knownMajorCivs
+                .filter { civ.getDiplomacyManager(it).opinionOfOtherCiv() == highestOpinion }
+                .toList().random().civName
 
         } else {
-            civInfo.getAllyCiv()
+            civ.getAllyCiv()
         }
 
-        civInfo.diplomaticVoteForCiv(chosenCiv)
+        civ.diplomaticVoteForCiv(chosenCiv)
     }
 
     private fun issueRequests(civInfo: Civilization) {
