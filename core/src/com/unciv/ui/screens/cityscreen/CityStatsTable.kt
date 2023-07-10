@@ -11,7 +11,9 @@ import com.unciv.UncivGame
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFlags
 import com.unciv.logic.city.CityFocus
+import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
@@ -179,10 +181,13 @@ class CityStatsTable(private val cityScreen: CityScreen): Table() {
         }
 
         val resourceTable = Table()
-        for (resourceSupply in city.getCityResources())
-            if (resourceSupply.resource.hasUnique(UniqueType.CityResource)){
-                resourceTable.add(resourceSupply.amount.toLabel())
-                resourceTable.add(ImageGetter.getResourcePortrait(resourceSupply.resource.name, 20f))
+
+        val resourceCounter = Counter<TileResource>()
+        for (resourceSupply in city.getCityResources()) resourceCounter.add(resourceSupply.resource, resourceSupply.amount)
+        for ((resource, amount) in resourceCounter)
+            if (resource.hasUnique(UniqueType.CityResource)){
+                resourceTable.add(amount.toLabel())
+                resourceTable.add(ImageGetter.getResourcePortrait(resource.name, 20f))
                     .padRight(5f)
                 }
         tableWithIcons.add(resourceTable)

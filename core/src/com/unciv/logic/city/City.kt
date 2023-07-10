@@ -258,7 +258,7 @@ class City : IsPartOfGameInfoSerialization {
         val resource = getRuleset().tileResources[resourceName] ?: return 0
 
         if (resource.hasUnique(UniqueType.CityResource))
-            return getCityResources().firstOrNull { it.resource == resource }?.amount ?: 0
+            return getCityResources().filter { it.resource == resource }.sumOf { it.amount }
         return civ.getCivResourcesByName()[resourceName]!!
     }
 
