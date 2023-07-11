@@ -72,7 +72,7 @@ class ModConstants {
 
     //factors in policy cost
     var policyBaseCost = 25
-    var numPoliciesmultiplier = 6
+    var numPoliciesCostMultiplier = 6
     var policyCostExponent = 1.7
     
 
@@ -101,7 +101,7 @@ class ModConstants {
         if (other.pantheonBase != defaults.pantheonBase) pantheonBase = other.pantheonBase
         if (other.pantheonGrowth != defaults.pantheonGrowth) pantheonGrowth = other.pantheonGrowth
         if (other.policyBaseCost != defaults.policyBaseCost) policyBaseCost = other.policyBaseCost
-        if (other.numPoliciesmultiplier != defaults.numPoliciesmultiplier) numPoliciesmultiplier = other.numPoliciesmultiplier
+        if (other.numPoliciesCostMultiplier != defaults.numPoliciesCostMultiplier) numPoliciesCostMultiplier = other.numPoliciesCostMultiplier
         if (other.policyCostExponent != defaults.policyCostExponent) policyCostExponent = other.policyCostExponent
     }
 
