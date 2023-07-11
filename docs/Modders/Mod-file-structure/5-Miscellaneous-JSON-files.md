@@ -153,6 +153,9 @@ and city distance in another. In case of conflicts, there is no guarantee which 
 | religionLimitMultiplier                  | Float  | 0.5       | [^K]  |
 | pantheonBase                             | Int    | 10        | [^L]  |
 | pantheonGrowth                           | Int    | 5         | [^L]  |
+| policyBaseCost                           | Int    | 25        | [^M]  |
+| numPoliciesCostMultiplier                | Int    | 5         | [^M]  |
+| policyCostExponent                       | Float  | 1.7       | [^M]  |
 
 
 Legend:
@@ -182,6 +185,7 @@ Legend:
 - [^J]: A [UnitUpgradeCost](#UnitUpgradeCost) sub-structure.
 - [^K]: Maximum foundable Religions = religionLimitBase + floor(MajorCivCount * religionLimitMultiplier)
 - [^L]: Cost of pantheon = pantheonBase + CivsWithReligion * pantheonGrowth
+- [^M]: Cost of policy = basePolicyCost + (numPoliciesAdopted * numPoliciesCostMultiplier) ^ policyCostExponent  
 
 #### UnitUpgradeCost
 
