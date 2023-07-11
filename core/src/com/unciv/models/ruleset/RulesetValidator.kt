@@ -515,7 +515,11 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         val rulesetErrors = RulesetErrorList()
 
-        val typeComplianceErrors = unique.type.getComplianceErrors(unique, ruleset)
+        if (namedObj is IHasUniques && !unique.type.isAllowedOnObject(namedObj)) {
+            rulesetErrors.add(RulesetError("$name's unique \"${unique.text}\" is not allowed on its target type", RulesetErrorSeverity.Warning))
+        }
+
+        val typeComplianceErrors = unique.type.getParameterComplianceErrors(unique, ruleset)
         for (complianceError in typeComplianceErrors) {
             if (complianceError.errorSeverity <= severityToReport)
                 rulesetErrors.add(RulesetError("$name's unique \"${unique.text}\" contains parameter ${complianceError.parameterName}," +
@@ -533,8 +537,12 @@ class RulesetValidator(val ruleset: Ruleset) {
                     RulesetErrorSeverity.Warning
                 )
             } else {
+                if (conditional.type.targetTypes.none { it.isModifier })
+                    rulesetErrors.add("$name's unique \"${unique.text}\" contains the conditional \"${conditional.text}\"," +
+                        " which is a Unique type not allowed as conditional or trigger.",
+                        RulesetErrorSeverity.Warning)
                 val conditionalComplianceErrors =
-                        conditional.type.getComplianceErrors(conditional, ruleset)
+                        conditional.type.getParameterComplianceErrors(conditional, ruleset)
                 for (complianceError in conditionalComplianceErrors) {
                     if (complianceError.errorSeverity == severityToReport)
                         rulesetErrors.add(RulesetError( "$name's unique \"${unique.text}\" contains the conditional \"${conditional.text}\"." +

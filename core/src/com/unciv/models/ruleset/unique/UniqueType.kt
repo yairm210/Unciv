@@ -1173,7 +1173,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     }
 
     /** Maps uncompliant parameters to their required types */
-    fun getComplianceErrors(
+    fun getParameterComplianceErrors(
         unique: Unique,
         ruleset: Ruleset
     ): List<UniqueComplianceError> {
@@ -1193,4 +1193,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     fun getDeprecationAnnotation(): Deprecated? = declaringJavaClass.getField(name)
         .getAnnotation(Deprecated::class.java)
 
+    /** Is `this` [UniqueType] allowed on [target]?
+     *  ([UniqueTarget.isAllowedOnObject] must return `true` for at least one of the listed [targetTypes].) */
+    fun isAllowedOnObject(target: IHasUniques): Boolean {
+        return targetTypes.any { it.isAllowedOnObject(target) }
+    }
 }
