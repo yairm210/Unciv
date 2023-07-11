@@ -1,0 +1,15 @@
+Een herwerking van het meest beroemde spel over beschavingen bouwen ooit - snel, klein, geen advertenties, voor altijd gratis!
+
+Bouw je beschaving, ontdek technologieën, breidt je steden uit en versla je vijanden!
+
+Verzoeken? Bugs? Todo lijst voor de applicatie is https://github.com/yairm210/Unciv/issues, elk beetje help is welkom!
+
+Vragen? Opmerkingen? Gewoon verveeld? Vergezel ons op https://discord.gg/bjrB4Xw.
+
+Wil je helpen het spel in jouw taal te vertalen? Stuur me een email op yairm210@hotmail.com.
+
+Fan van Java of Kotlin? Vergezel ons op https://github.com/yairm210/Unciv.
+
+De wereld wacht! Zal jij je beschaving kunnen uitbreiden tot een rijk dat de tands des tijds zal weerstaan?
+
+De 'have full network access' toegang is vereist voor downloads en de multiplayer mode. Alle andere opgelijste toegangen zijn automatisch inbegrepen in de API die gebruikt wordt voor beurtmeldingen in multiplayer. Netwerktoegangen worden gebruikt om mods op te lijsten en te downloaden, muziek te downloaden en multiplayer spellen te uploaden/downloaden. Geen andere internet communicatie work door Unciv opgezet.
