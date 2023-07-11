@@ -124,8 +124,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     // from https://forums.civfanatics.com/threads/the-number-crunching-thread.389702/
     // round down to nearest 5
     fun getCultureNeededForNextPolicy(): Int {
-        var policyCultureCost = civInfo.gameInfo.ruleset.modOptions.constants.policyBaseCost + (numberOfAdoptedPolicies * civInfo.gameInfo.ruleset.modOptions.constants.numPoliciesCostMultiplier).toDouble().pow(civInfo.gameInfo.ruleset.modOptions.constants.policyCostExponent)
-        // https://civilization.fandom.com/wiki/Map_(Civ5)
+var policyCultureCost = civInfo.gameInfo.ruleset.modOptions.constants.run { policyBaseCost + (numberOfAdoptedPolicies * numPoliciesCostMultiplier).toDouble().pow(policyCostExponent) }        // https://civilization.fandom.com/wiki/Map_(Civ5)
         val worldSizeModifier = with(civInfo.gameInfo.tileMap.mapParameters.mapSize) {
             when {
                 radius >= MapSize.Huge.radius -> 0.05f
