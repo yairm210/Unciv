@@ -471,7 +471,7 @@ class RulesetValidator(val ruleset: Ruleset) {
         severityToReport: UniqueType.UniqueComplianceErrorSeverity
     ): List<RulesetError> {
         var name = namedObj?.name ?: ""
-        if (namedObj!=null && namedObj is IRulesetObject) name = "${namedObj.originRuleset}: $name"
+        if (namedObj != null && namedObj is IRulesetObject) name = "${namedObj.originRuleset}: $name"
         if (unique.type == null) {
             if (!tryFixUnknownUniques) return emptyList()
             val similarUniques = UniqueType.values().filter {

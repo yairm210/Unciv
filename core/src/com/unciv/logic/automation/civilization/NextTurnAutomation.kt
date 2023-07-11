@@ -840,7 +840,7 @@ object NextTurnAutomation {
         val baseForce = 30f
 
         var ourCombatStrength = civInfo.getStatForRanking(RankingType.Force).toFloat() + baseForce
-        if (civInfo.getCapital()!= null) ourCombatStrength += CityCombatant(civInfo.getCapital()!!).getCityStrength()
+        if (civInfo.getCapital() != null) ourCombatStrength += CityCombatant(civInfo.getCapital()!!).getCityStrength()
         var theirCombatStrength = otherCiv.getStatForRanking(RankingType.Force).toFloat() + baseForce
         if(otherCiv.getCapital() != null) theirCombatStrength += CityCombatant(otherCiv.getCapital()!!).getCityStrength()
 
