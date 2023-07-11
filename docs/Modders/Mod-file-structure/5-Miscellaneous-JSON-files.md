@@ -185,7 +185,8 @@ Legend:
 - [^J]: A [UnitUpgradeCost](#UnitUpgradeCost) sub-structure.
 - [^K]: Maximum foundable Religions = religionLimitBase + floor(MajorCivCount * religionLimitMultiplier)
 - [^L]: Cost of pantheon = pantheonBase + CivsWithReligion * pantheonGrowth
-- [^M]: Cost of policy = basePolicyCost + (numPoliciesAdopted * numPoliciesCostMultiplier) ^ policyCostExponent  
+- [^M]: Cost of policy = basePolicyCost + (numPoliciesAdopted * numPoliciesCostMultiplier) ^ policyCostExponent
+
 
 #### UnitUpgradeCost
 
