@@ -15,8 +15,6 @@ import com.unciv.models.ruleset.unit.BaseUnit
  * @param documentationString Copied to uniques.md by `UniqueDocsWriter`
  * @param inheritsFrom means that all such uniques are acceptable as well. For example, all Global uniques are acceptable for Nations, Eras, etc.
  * @param isModifier Marks types that are allowed _exclusively_ in a "<conditional>" style modifier, as standalone it is applicable to nothing.
- *
- * //todo implement "other half" of isModifier -> conditionals and triggers should always have it
  */
 enum class UniqueTarget(
     val documentationString:String = "",
