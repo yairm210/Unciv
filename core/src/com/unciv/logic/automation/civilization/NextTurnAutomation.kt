@@ -635,9 +635,6 @@ object NextTurnAutomation {
         chooseFreeBeliefs(civInfo)
     }
 
-    // Helper class to remember which choice could've been any choice and which choice couldn't 
-    class BeliefToChoose(val type: BeliefType, var belief: Belief? = null)
-
     private fun choosePantheon(civInfo: Civilization) {
         if (!civInfo.religionManager.canFoundOrExpandPantheon()) return
         // So looking through the source code of the base game available online,
@@ -647,6 +644,7 @@ object NextTurnAutomation {
         // This is way too much work for now, so I'll just choose a random pantheon instead.
         // Should probably be changed later, but it works for now.
         val chosenPantheon = chooseBeliefOfType(civInfo, BeliefType.Pantheon)
+            ?: return // panic!
         civInfo.religionManager.chooseBeliefs(
             listOf(chosenPantheon.belief!!),
             emptyList(),
@@ -667,33 +665,27 @@ object NextTurnAutomation {
         civInfo.religionManager.foundReligion(religionIcon, religionIcon)
 
         val chosenBeliefs = chooseBeliefs(civInfo, civInfo.religionManager.getBeliefsToChooseAtFounding()).toList()
-        civInfo.religionManager.chooseBeliefs(
-            chosenBeliefs.filter { it.type != BeliefType.Any }.map { it.belief!! },
-            chosenBeliefs.filter { it.type == BeliefType.Any }.map { it.belief!! }
+        civInfo.religionManager.chooseBeliefs(chosenBeliefs)
         )
     }
 
     private fun enhanceReligion(civInfo: Civilization) {
         if (civInfo.religionManager.religionState != ReligionState.EnhancingReligion) return
-        val chosenBeliefs = chooseBeliefs(civInfo, civInfo.religionManager.getBeliefsToChooseAtEnhancing())
         civInfo.religionManager.chooseBeliefs(
-            chosenBeliefs.filter { it.type != BeliefType.Any }.map { it.belief!! },
-            chosenBeliefs.filter { it.type == BeliefType.Any }.map { it.belief!! }
+            chooseBeliefs(civInfo, civInfo.religionManager.getBeliefsToChooseAtEnhancing()).toList()
         )
     }
 
     private fun chooseFreeBeliefs(civInfo: Civilization) {
         if (!civInfo.religionManager.hasFreeBeliefs()) return
-        val chosenBeliefs = chooseBeliefs(civInfo,civInfo.religionManager.freeBeliefsAsEnums())
         civInfo.religionManager.chooseBeliefs(
-            chosenBeliefs.filter { it.type != BeliefType.Any }.map { it.belief!! },
-            chosenBeliefs.filter { it.type == BeliefType.Any }.map { it.belief!! },
+            chooseBeliefs(civInfo, civInfo.religionManager.freeBeliefsAsEnums()).toList(),
             useFreeBeliefs = true
         )
     }
 
-    private fun chooseBeliefs(civInfo: Civilization, beliefsToChoose: Counter<BeliefType>): HashSet<BeliefToChoose> {
-        val chosenBeliefs = hashSetOf<BeliefToChoose>()
+    private fun chooseBeliefs(civInfo: Civilization, beliefsToChoose: Counter<BeliefType>): HashSet<Belief> {
+        val chosenBeliefs = hashSetOf<Belief>()
         // The `continue`s should never be reached, but just in case I'd rather have the AI have a
         // belief less than make the game crash. The `continue`s should only be reached whenever
         // there are not enough beliefs to choose, but there should be, as otherwise we could
@@ -702,22 +694,22 @@ object NextTurnAutomation {
             if (belief == BeliefType.None) continue
             repeat(beliefsToChoose[belief]) {
                 chosenBeliefs.add(
-                    chooseBeliefOfType(civInfo, belief, chosenBeliefs)
+                    chooseBeliefOfType(civInfo, belief, chosenBeliefs) ?: return@repeat
                 )
             }
         }
         return chosenBeliefs
     }
 
-    private fun chooseBeliefOfType(civInfo: Civilization, beliefType: BeliefType, additionalBeliefsToExclude: HashSet<BeliefToChoose> = hashSetOf()): BeliefToChoose {
-        return BeliefToChoose(beliefType , civInfo.gameInfo.ruleset.beliefs.values
+    private fun chooseBeliefOfType(civInfo: Civilization, beliefType: BeliefType, additionalBeliefsToExclude: HashSet<Belief> = hashSetOf()): Belief {
+        return civInfo.gameInfo.ruleset.beliefs.values
             .filter {
                 (it.type == beliefType || beliefType == BeliefType.Any)
-                && additionalBeliefsToExclude.none { chosenBelief -> chosenBelief.belief == it }
+                && !additionalBeliefsToExclude.contains(it)
                 && civInfo.religionManager.getReligionWithBelief(it) == null
                 && it.getMatchingUniques(UniqueType.OnlyAvailableWhen).none { unique -> !unique.conditionalsApply(civInfo) }
             }
-            .maxByOrNull { ReligionAutomation.rateBelief(civInfo, it) })
+            .maxByOrNull { ReligionAutomation.rateBelief(civInfo, it) }
     }
 
     private fun potentialLuxuryTrades(civInfo: Civilization, otherCivInfo: Civilization): ArrayList<Trade> {
