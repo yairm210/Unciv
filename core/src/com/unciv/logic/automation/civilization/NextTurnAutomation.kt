@@ -646,8 +646,7 @@ object NextTurnAutomation {
         val chosenPantheon = chooseBeliefOfType(civInfo, BeliefType.Pantheon)
             ?: return // panic!
         civInfo.religionManager.chooseBeliefs(
-            listOf(chosenPantheon.belief!!),
-            emptyList(),
+            listOf(chosenPantheon),
             useFreeBeliefs = civInfo.religionManager.usingFreeBeliefs()
         )
     }
@@ -666,7 +665,6 @@ object NextTurnAutomation {
 
         val chosenBeliefs = chooseBeliefs(civInfo, civInfo.religionManager.getBeliefsToChooseAtFounding()).toList()
         civInfo.religionManager.chooseBeliefs(chosenBeliefs)
-        )
     }
 
     private fun enhanceReligion(civInfo: Civilization) {
@@ -701,7 +699,7 @@ object NextTurnAutomation {
         return chosenBeliefs
     }
 
-    private fun chooseBeliefOfType(civInfo: Civilization, beliefType: BeliefType, additionalBeliefsToExclude: HashSet<Belief> = hashSetOf()): Belief {
+    private fun chooseBeliefOfType(civInfo: Civilization, beliefType: BeliefType, additionalBeliefsToExclude: HashSet<Belief> = hashSetOf()): Belief? {
         return civInfo.gameInfo.ruleset.beliefs.values
             .filter {
                 (it.type == beliefType || beliefType == BeliefType.Any)
