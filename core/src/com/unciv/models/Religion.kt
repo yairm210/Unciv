@@ -65,11 +65,9 @@ class Religion() : INamed, IsPartOfGameInfoSerialization {
             return mapToExistingBeliefs((founderBeliefs + followerBeliefs).toHashSet()).asSequence()
 
         val beliefs =
-            when (beliefType) {
-                BeliefType.Pantheon -> followerBeliefs
-                BeliefType.Follower -> followerBeliefs
-                BeliefType.Founder -> founderBeliefs
-                BeliefType.Enhancer -> founderBeliefs
+            when {
+                beliefType.isFollower -> followerBeliefs
+                beliefType.isFounder -> founderBeliefs
                 else -> null!! // This is fine...
             }
 
