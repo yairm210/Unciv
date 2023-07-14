@@ -6,7 +6,11 @@ package com.unciv.models.ruleset.unique
  * @param documentationString Copied to uniques.md by `UniqueDocsWriter`
  * @param inheritsFrom means that all such uniques are acceptable as well. For example, all Global uniques are acceptable for Nations, Eras, etc.
  */
-enum class UniqueTarget(val documentationString:String = "", val inheritsFrom: UniqueTarget? = null) {
+enum class UniqueTarget(
+    val documentationString:String = "",
+    val inheritsFrom: UniqueTarget? = null,
+    val modifierType: ModifierType = ModifierType.None
+) {
 
     /** Only includes uniques that have immediate effects, caused by UniqueTriggerActivation */
     Triggerable("Uniques that have immediate, one-time effects. " +
@@ -54,11 +58,15 @@ enum class UniqueTarget(val documentationString:String = "", val inheritsFrom: U
     ModOptions,
 
     // Modifiers
-    Conditional("Modifiers that can be added to other uniques to limit when they will be active"),
-    TriggerCondition("Special conditionals that can be added to Triggerable uniques, to make them activate upon specific actions.", inheritsFrom = Global),
-    UnitTriggerCondition("Special conditionals that can be added to UnitTriggerable uniques, to make them activate upon specific actions.", inheritsFrom = TriggerCondition),
-    UnitActionModifier("Modifiers that can be added to unit action uniques as conditionals"),
+    Conditional("Modifiers that can be added to other uniques to limit when they will be active", modifierType = ModifierType.Conditional),
+    TriggerCondition("Special conditionals that can be added to Triggerable uniques, to make them activate upon specific actions.", inheritsFrom = Global, modifierType = ModifierType.Other),
+    UnitTriggerCondition("Special conditionals that can be added to UnitTriggerable uniques, to make them activate upon specific actions.", inheritsFrom = TriggerCondition, modifierType = ModifierType.Other),
+    UnitActionModifier("Modifiers that can be added to unit action uniques as conditionals", modifierType = ModifierType.Other),
     ;
+
+    /** Whether a UniqueType is allowed in the `<conditional or trigger>` part - or not.
+     *  [None] ensures use *only* as leading Unique, [Conditional] / [Other] disallow use as leading Unique. */
+    enum class ModifierType { None, Conditional, Other }
 
     /** Checks whether a specific UniqueTarget `this` as e.g. given by [IHasUniques.getUniqueTarget] works with [uniqueTarget] as e.g. declared in UniqueType */
     // Building.canAcceptUniqueTarget(Global) == true

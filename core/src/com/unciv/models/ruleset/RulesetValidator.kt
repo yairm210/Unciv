@@ -9,6 +9,7 @@ import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.INamed
@@ -536,6 +537,11 @@ class RulesetValidator(val ruleset: Ruleset) {
                     RulesetErrorSeverity.Warning
                 )
             } else {
+                if (conditional.type.targetTypes.none { it.modifierType != UniqueTarget.ModifierType.None })
+                    rulesetErrors.add("$name's unique \"${unique.text}\" contains the conditional \"${conditional.text}\"," +
+                        " which is a Unique type not allowed as conditional or trigger.",
+                        RulesetErrorSeverity.Warning)
+
                 val conditionalComplianceErrors =
                         conditional.type.getComplianceErrors(conditional, ruleset)
                 for (complianceError in conditionalComplianceErrors) {

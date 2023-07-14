@@ -136,8 +136,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         state: StateForConditionals
     ): Boolean {
 
-        val nonConditionalConditionTypes = setOf(UniqueTarget.TriggerCondition, UniqueTarget.UnitTriggerCondition, UniqueTarget.UnitActionModifier)
-        if (condition.type?.targetTypes?.any { it in nonConditionalConditionTypes } == true)
+        if (condition.type?.targetTypes?.any { it.modifierType == UniqueTarget.ModifierType.Other } == true)
             return true // not a filtering condition
 
         fun ruleset() = state.civInfo!!.gameInfo.ruleset
