@@ -66,9 +66,7 @@ class CityConquestFunctions(val city: City){
 
         for (building in city.cityConstructions.getBuiltBuildings()) {
             // Remove national wonders
-            if (building.isNationalWonder && !building.hasUnique(UniqueType.NotDestroyedWhenCityCaptured)
-                && building.name != city.capitalCityIndicator()
-            ) // If we have just made this city the capital, don't remove that
+            if (building.isNationalWonder && !building.hasUnique(UniqueType.NotDestroyedWhenCityCaptured))
                 city.cityConstructions.removeBuilding(building.name)
 
             // Check if we exceed MaxNumberBuildable for any buildings
@@ -260,7 +258,7 @@ class CityConquestFunctions(val city: City){
 
         // Remove/relocate palace for old Civ - need to do this BEFORE we move the cities between
         //  civs so the capitalCityIndicator recognizes the unique buildings of the conquered civ
-        if (city.isCapital())  oldCiv.moveCapitalToNextLargest()
+        if (city.isCapital())  oldCiv.moveCapitalToNextLargest(city)
 
         oldCiv.cities = oldCiv.cities.toMutableList().apply { remove(city) }
         newCiv.cities = newCiv.cities.toMutableList().apply { add(city) }
@@ -278,13 +276,11 @@ class CityConquestFunctions(val city: City){
         // Stop WLTKD if it's still going
         city.resetWLTKD()
 
-        // Place palace for newCiv if this is the only city they have.
-        // This needs to happen _before_ buildings are added or removed,
-        // as any building change triggers a reevaluation of stats which assumes there to be a capital
-        if (newCiv.cities.size == 1) newCiv.moveCapitalTo(city)
-
         // Remove their free buildings from this city and remove free buildings provided by the city from their cities
         removeBuildingsOnMoveToCiv(oldCiv)
+
+        // Place palace for newCiv if this is the only city they have.
+        if (newCiv.cities.size == 1) newCiv.moveCapitalTo(city, null)
 
         // Add our free buildings to this city and add free buildings provided by the city to other cities
         city.civ.civConstructions.tryAddFreeBuildings()
