@@ -10,7 +10,7 @@ enum class UniqueTarget(val documentationString:String = "", val inheritsFrom: U
 
     /** Only includes uniques that have immediate effects, caused by UniqueTriggerActivation */
     Triggerable("Uniques that have immediate, one-time effects. " +
-        "These can be added to techs to trigger when researched, to policies to trigger when adpoted, " +
+        "These can be added to techs to trigger when researched, to policies to trigger when adopted, " +
         "to eras to trigger when reached, to buildings to trigger when built. " +
         "Alternatively, you can add a TriggerCondition to them to make them into Global uniques that activate upon a specific event." +
         "They can also be added to units to grant them the ability to trigger this effect as an action, " +
@@ -52,12 +52,17 @@ enum class UniqueTarget(val documentationString:String = "", val inheritsFrom: U
     Tutorial,
     CityState(inheritsFrom = Global),
     ModOptions,
+
+    // Modifiers
     Conditional("Modifiers that can be added to other uniques to limit when they will be active"),
     TriggerCondition("Special conditionals that can be added to Triggerable uniques, to make them activate upon specific actions.", inheritsFrom = Global),
     UnitTriggerCondition("Special conditionals that can be added to UnitTriggerable uniques, to make them activate upon specific actions.", inheritsFrom = TriggerCondition),
     UnitActionModifier("Modifiers that can be added to unit action uniques as conditionals"),
     ;
 
+    /** Checks whether a specific UniqueTarget `this` as e.g. given by [IHasUniques.getUniqueTarget] works with [uniqueTarget] as e.g. declared in UniqueType */
+    // Building.canAcceptUniqueTarget(Global) == true
+    // Global.canAcceptUniqueTarget(Building) == false
     fun canAcceptUniqueTarget(uniqueTarget: UniqueTarget): Boolean {
         if (this == uniqueTarget) return true
         if (inheritsFrom != null) return inheritsFrom.canAcceptUniqueTarget(uniqueTarget)

@@ -7,7 +7,7 @@ import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 
 // I didn't put this in a companion object because APPARENTLY doing that means you can't use it in the init function.
-val numberRegex = Regex("\\d+$") // Any number of trailing digits
+private val numberRegex = Regex("\\d+$") // Any number of trailing digits
 
 enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags: List<UniqueFlag> = emptyList()) {
 
