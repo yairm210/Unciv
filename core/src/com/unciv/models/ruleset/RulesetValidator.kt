@@ -515,6 +515,9 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         val rulesetErrors = RulesetErrorList()
 
+        if (namedObj is IHasUniques && !unique.type.canAcceptUniqueTarget(namedObj.getUniqueTarget()))
+            rulesetErrors.add(RulesetError("$name's unique \"${unique.text}\" is not allowed on its target type", RulesetErrorSeverity.Warning))
+
         val typeComplianceErrors = unique.type.getComplianceErrors(unique, ruleset)
         for (complianceError in typeComplianceErrors) {
             if (complianceError.errorSeverity <= severityToReport)

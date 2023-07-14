@@ -1194,4 +1194,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     fun getDeprecationAnnotation(): Deprecated? = declaringJavaClass.getField(name)
         .getAnnotation(Deprecated::class.java)
 
+    /** Checks whether a specific [uniqueTarget] as e.g. given by [IHasUniques.getUniqueTarget] works with `this` UniqueType */
+    fun canAcceptUniqueTarget(uniqueTarget: UniqueTarget) =
+        targetTypes.any { uniqueTarget.canAcceptUniqueTarget(it) }
 }
