@@ -82,7 +82,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
     fun hasBeenCompletedBy(civInfo: Civilization): Boolean {
         return when (type!!) {
             MilestoneType.BuiltBuilding ->
-                civInfo.cities.any { it.cityConstructions.builtBuildings.contains(params[0])}
+                civInfo.cities.any { it.cityConstructions.isBuilt(params[0])}
             MilestoneType.AddedSSPartsInCapital -> {
                 getIncompleteSpaceshipParts(civInfo).isEmpty()
             }
@@ -93,7 +93,7 @@ class Milestone(val uniqueDescription: String, private val parentVictory: Victor
             MilestoneType.CompletePolicyBranches ->
                 civInfo.policies.completedBranches.size >= params[0].toInt()
             MilestoneType.BuildingBuiltGlobally -> civInfo.gameInfo.getCities().any {
-                it.cityConstructions.builtBuildings.contains(params[0])
+                it.cityConstructions.isBuilt(params[0])
             }
             MilestoneType.WinDiplomaticVote -> civInfo.victoryManager.hasEverWonDiplomaticVote
             MilestoneType.ScoreAfterTimeOut -> {

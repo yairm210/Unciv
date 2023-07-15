@@ -629,8 +629,8 @@ class Civilization : IsPartOfGameInfoSerialization {
         scoreBreakdown["Population"] = cities.sumOf { it.population.population } * 3 * mapSizeModifier
         scoreBreakdown["Tiles"] = cities.sumOf { city -> city.getTiles().filter { !it.isWater}.count() } * 1 * mapSizeModifier
         scoreBreakdown["Wonders"] = 40 * cities
-            .sumOf { city -> city.cityConstructions.builtBuildings
-                .filter { gameInfo.ruleset.buildings[it]!!.isWonder }.size
+            .sumOf { city -> city.cityConstructions.getBuiltBuildings()
+                .filter { it.isWonder }.count()
             }.toDouble()
         scoreBreakdown["Technologies"] = tech.getNumberOfTechsResearched() * 4.toDouble()
         scoreBreakdown["Future Tech"] = tech.repeatingTechsResearched * 10.toDouble()

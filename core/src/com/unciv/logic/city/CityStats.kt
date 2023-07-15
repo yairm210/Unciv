@@ -302,7 +302,7 @@ class CityStats(val city: City) {
         if (currentConstruction is Building
             && city.civ.cities.isNotEmpty()
             && city.civ.getCapital() != null
-            && city.civ.getCapital()!!.cityConstructions.builtBuildings.contains(currentConstruction.name)
+            && city.civ.getCapital()!!.cityConstructions.isBuilt(currentConstruction.name)
         ) {
             for (unique in city.getMatchingUniques(UniqueType.PercentProductionBuildingsInCapital))
                 addUniqueStats(unique, Stat.Production, unique.params[0].toFloat())

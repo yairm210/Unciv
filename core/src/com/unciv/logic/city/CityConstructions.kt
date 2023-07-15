@@ -185,6 +185,15 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     fun getCurrentConstruction(): IConstruction = getConstruction(currentConstructionFromQueue)
 
+    fun isAllBuilt(builingList: List<String>): Boolean {
+        for(building in buildingList)
+        {
+            if (getBuiltBuildings().none { it.name == building })
+                return false
+        }
+        return true
+    }
+
     fun isBuilt(buildingName: String): Boolean = builtBuildings.contains(buildingName)
     @Suppress("MemberVisibilityCanBePrivate")
     fun isBeingConstructed(constructionName: String): Boolean = currentConstructionFromQueue == constructionName
@@ -544,8 +553,10 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     fun removeBuilding(buildingName: String) {
-        val buildingObject = city.getRuleset().buildings[buildingName]!!
-        builtBuildingObjects = builtBuildingObjects.withoutItem(buildingObject)
+        val buildingObject = city.getRuleset().buildings[buildingName]
+        if (buildingObject != null)
+            builtBuildingObjects = builtBuildingObjects.withoutItem(buildingObject)
+        else builtBuildingObjects.removeAll{ it.name == buildingName }
         builtBuildings.remove(buildingName)
         city.civ.cache.updateCivResources() // this building could be a resource-requiring one
         city.civ.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
