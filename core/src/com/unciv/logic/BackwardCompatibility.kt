@@ -112,12 +112,12 @@ object BackwardCompatibility {
         if (ruleSet.buildings.containsKey(oldBuildingName))
             return
         // Replace in built buildings
-        if (cityConstructions.builtBuildings.contains(oldBuildingName)) {
-            cityConstructions.builtBuildings.remove(oldBuildingName)
-            cityConstructions.builtBuildings.add(newBuildingName)
+        if (cityConstructions.isBuilt(oldBuildingName)) {
+            cityConstructions.removeBuilding(oldBuildingName)
+            cityConstructions.addBuilding(newBuildingName)
         }
         // Replace in construction queue
-        if (!cityConstructions.builtBuildings.contains(newBuildingName) && !cityConstructions.constructionQueue.contains(newBuildingName))
+        if (!cityConstructions.isBuilt(newBuildingName) && !cityConstructions.constructionQueue.contains(newBuildingName))
             cityConstructions.constructionQueue = cityConstructions.constructionQueue
                 .map { if (it == oldBuildingName) newBuildingName else it }
                 .toMutableList()
@@ -125,7 +125,7 @@ object BackwardCompatibility {
             cityConstructions.constructionQueue.remove(oldBuildingName)
         // Replace in in-progress constructions
         if (cityConstructions.inProgressConstructions.containsKey(oldBuildingName)) {
-            if (!cityConstructions.builtBuildings.contains(newBuildingName) && !cityConstructions.inProgressConstructions.containsKey(newBuildingName))
+            if (!cityConstructions.isBuilt(newBuildingName) && !cityConstructions.inProgressConstructions.containsKey(newBuildingName))
                 cityConstructions.inProgressConstructions[newBuildingName] = cityConstructions.inProgressConstructions[oldBuildingName]!!
             cityConstructions.inProgressConstructions.remove(oldBuildingName)
         }
