@@ -57,9 +57,6 @@ class UniqueDocsWriter {
         lines += "# Uniques"
         lines += "Simple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](../Unique-parameters)"
 
-        val conditionalLikeUniqueTargets = setOf(UniqueTarget.Conditional, UniqueTarget.TriggerCondition,
-            UniqueTarget.UnitTriggerCondition, UniqueTarget.UnitActionModifier)
-
         for ((targetType, uniqueTypes) in targetTypesToUniques) {
             if (uniqueTypes.isEmpty()) continue
             lines += "## " + targetType.name + " uniques"
@@ -70,7 +67,7 @@ class UniqueDocsWriter {
             for (uniqueType in uniqueTypes) {
                 if (uniqueType.getDeprecationAnnotation() != null) continue
 
-                val uniqueText = if (targetType in conditionalLikeUniqueTargets)
+                val uniqueText = if (targetType.modifierType != UniqueTarget.ModifierType.None)
                     "&lt;${uniqueType.text}&gt;"
                 else uniqueType.text
                 lines += "??? example  \"$uniqueText\"" // collapsable material mkdocs block, see https://squidfunk.github.io/mkdocs-material/reference/admonitions/?h=%3F%3F%3F#collapsible-blocks
