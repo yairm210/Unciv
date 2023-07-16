@@ -616,7 +616,7 @@ object NextTurnAutomation {
                 if (city.hasSoldBuildingThisTurn)
                     continue
                 val buildingToSell = civInfo.gameInfo.ruleset.buildings.values.filter {
-                        it.name in city.cityConstructions.builtBuildings
+                        city.cityConstructions.isBuilt(it.name)
                         && it.requiresResource(resource)
                         && it.isSellable()
                         && it.name !in civInfo.civConstructions.getFreeBuildings(city.id) }
@@ -1072,7 +1072,7 @@ object NextTurnAutomation {
             }
             .maxByOrNull { it.cityStats.currentCityStats.production }
             ?: return
-        if (bestCity.cityConstructions.builtBuildings.size > 1) // 2 buildings or more, otherwise focus on self first
+        if (bestCity.cityConstructions.getBuiltBuildings().count() > 1) // 2 buildings or more, otherwise focus on self first
             bestCity.cityConstructions.currentConstructionFromQueue = settlerUnits.minByOrNull { it.cost }!!.name
     }
 

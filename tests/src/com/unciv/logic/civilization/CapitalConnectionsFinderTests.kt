@@ -71,16 +71,17 @@ class CapitalConnectionsFinderTests {
     }
 
     private fun createCity(civInfo: Civilization, position: Vector2, name: String, capital: Boolean = false, hasHarbor: Boolean = false): City {
-        return City().apply {
+        val city =  City().apply {
             location = position
-            if (capital)
-                cityConstructions.builtBuildings.add(rules.buildings.values.first { it.hasUnique(UniqueType.IndicatesCapital) }.name)
-            if (hasHarbor)
-                cityConstructions.builtBuildings.add(rules.buildings.values.first { it.hasUnique(UniqueType.ConnectTradeRoutes) }.name)
             this.name = name
             setTransients(civInfo)
             gameInfo.tileMap[location].setOwningCity(this)
         }
+        if (capital)
+            city.cityConstructions.addBuilding(rules.buildings.values.first { it.hasUnique(UniqueType.IndicatesCapital) }.name)
+        if (hasHarbor)
+            city.cityConstructions.addBuilding(rules.buildings.values.first { it.hasUnique(UniqueType.ConnectTradeRoutes) }.name)
+        return city
     }
 
     private fun meetCivAndSetBorders(name: String, areBordersOpen: Boolean) {
