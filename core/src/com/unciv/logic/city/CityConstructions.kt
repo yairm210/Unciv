@@ -185,16 +185,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     fun getCurrentConstruction(): IConstruction = getConstruction(currentConstructionFromQueue)
 
-    fun isAllBuilt(buildingList: List<String>): Boolean {
-        for(building in buildingList)
-        {
-            if (getBuiltBuildings().none { it.name == building })
-                return false
-        }
-        return true
-    }
+    fun isAllBuilt(buildingList: List<String>): Boolean = buildingList.all { isBuilt(it) }
 
-    fun isBuilt(buildingName: String): Boolean = builtBuildingObjects.any{ it.name == buildingName }
+    fun isBuilt(buildingName: String): Boolean = builtBuildingObjects.any { it.name == buildingName }
     @Suppress("MemberVisibilityCanBePrivate")
     fun isBeingConstructed(constructionName: String): Boolean = currentConstructionFromQueue == constructionName
     fun isEnqueued(constructionName: String): Boolean = constructionQueue.contains(constructionName)
