@@ -25,6 +25,7 @@ import kotlin.math.abs
 
 class PromotionPickerScreen(
     val unit: MapUnit,
+    private val closeOnPick: Boolean = true,
     private val onChange: (() -> Unit)? = null
 ) : PickerScreen(), RecreateOnResize {
     // Style stuff
@@ -100,7 +101,11 @@ class PromotionPickerScreen(
             unit.promotions.addPromotion(promotion.name)
 
         onChange?.invoke()
-        game.replaceCurrentScreen(recreate())
+
+        if (!closeOnPick || unit.promotions.canBePromoted())
+            game.replaceCurrentScreen(recreate(false))
+        else
+            game.popScreen()
     }
 
     private fun fillTable() {
@@ -321,8 +326,10 @@ class PromotionPickerScreen(
         descriptionLabel.setText("$topLine\n$promotionText")
     }
 
-    override fun recreate(): BaseScreen {
-        val newScreen = PromotionPickerScreen(unit, onChange)
+    override fun recreate() = recreate(closeOnPick)
+
+    fun recreate(closeOnPick: Boolean): BaseScreen {
+        val newScreen = PromotionPickerScreen(unit, closeOnPick, onChange)
         newScreen.setScrollY(scrollPane.scrollY)
         return newScreen
     }
