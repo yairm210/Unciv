@@ -8,15 +8,19 @@ import com.unciv.models.Spy
 
 class EspionageManager : IsPartOfGameInfoSerialization {
 
-    var spyList = mutableListOf<Spy>()
-    val erasSpyEarnedFor = mutableSetOf<String>()
+    var spyList = ArrayList<Spy>()
+    val erasSpyEarnedFor = LinkedHashSet<String>()
+        // mutableSetOf makes the reflection type an interface and that hides the set from Gdx Json,
+        // it will deserialize a List in the jsonData.isArray() -> isAssignableFrom(Collection) branch of readValue:
+        // https://github.com/libgdx/libgdx/blob/75612dae1eeddc9611ed62366858ff1d0ac7898b/gdx/src/com/badlogic/gdx/utils/Json.java#L1111
+        // .. which will crash later (when readFields actually assigns it) unless empty.
 
     @Transient
     lateinit var civInfo: Civilization
 
     fun clone(): EspionageManager {
         val toReturn = EspionageManager()
-        toReturn.spyList.addAll(spyList.map { it.clone() })
+        spyList.mapTo(toReturn.spyList) { it.clone() }
         toReturn.erasSpyEarnedFor.addAll(erasSpyEarnedFor)
         return toReturn
     }
