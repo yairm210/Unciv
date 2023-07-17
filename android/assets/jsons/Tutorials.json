@@ -433,5 +433,36 @@
             {"text":"Letters can select categories, and when there are multiple categories matching the same letter, you can press that repeatedly to cycle between these.","starred":true,"color":"#666"},
             {"text":"The arrow keys allow navigation as well - left/right for categories, up/down for entries.","starred":true,"color":"#666"}
         ]
-    }
+    },
+  {
+    "name": "Defense",
+    "steps": [
+      "When one unit attacks another, the battle takes place on the defender's tile.  Applicable modifiers that are affected by terrain - such as terrain defense bonus or certain promotions - influence the combat accordingly.",
+      "Many land units receive +25% strength when defending on rough terrain.  A defense penalty applies on certain tiles including flood plains, oases, marshes, and nuclear fallout.",
+      "Many land units can also strengthen their defense by choosing to Fortify in place.  Each turn the unit spends fortifying without moving, attacking, or taking other actions, it gains 20% defense bonus up to a maximum of 40%.",
+      "Some units - namely mounted, armored, siege, sea, and helicopter units - do not gain defensive terrain bonuses and cannot fortify.  However, they still receive defense penalties from unfavorable terrain. Air and missile units are unaffected by terrain."
+    ]
+  },
+  {
+    "name": "Garrisons",
+    "steps": [
+      "Stationing units in a City Center tile can provide benefits to the city and the unit. Land and Water military units automatically garrison a city upon entering the city tile. Air units, as well as nuclear weapons and missiles, do not qualify as garrison units.",
+      "A garrisoned unit is immune to damage from attacks until the city loses all its HP.  Nuclear weapons bypass this protection.  All units receive additional healing per turn inside cities.",
+      "Garrisoned cities receive a bonus to strength while defending and bombarding.  The bonus is equal to 20% of the garrison unit strength, adjusted by its current health.  Strength modifiers from promotions, abilities, and underlying terrain do not apply.  Attackers target the city, not the garrison, so attacker modifiers based on defender unit types also do not apply.",
+      "Fortifying a unit in a city offers no benefit.  Garrisoned units with ranged attacks can attack without losing city defense bonus due to losing HP."
+    ]
+  },
+  {
+    "name": "Air Defense",
+    "steps": [
+      "The only real defense against air strikes is Interception. This is an automatic ability which certain units possess, and consists of a bonus attack which is triggered when a hostile airplane enters the effective interception radius of the unit. That unit then automatically attacks the airplane.",
+      "Nuclear Bombs are delivered by plane, and can be intercepted.  Guided Missiles and Nuclear Missiles cannot.",
+      "Each incoming attack may be intercepted by only one unit.  Each unit may only perform one interception attack in a turn, though acquiring certain promotions grant an extra attack. Interceptions don't use the move/action points of the unit; they're an extra attack.",
+      "Interception special abilities are available in all three military domains:",
+      "Land - Anti-Aircraft Guns and Mobile SAMs",
+      "Naval - Destroyers and Missile Cruisers",
+      "Air - Triplanes, Fighters, and Jet Fighters",
+      "Land and Naval units have an interception range of 2.  Air units have longer range, which increases with more advanced units.  Some units have 100% chance to intercept, while others are less reliable."
+    ]
+  }
 ]
