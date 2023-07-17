@@ -43,8 +43,8 @@ class PromotionPickerScreen(
 
     // [acceptPromotion] will [recreate] the screen, so these are constant for this picker's lifetime
     private val canChangeState = GUI.isAllowedChangeState()
-    private val canBePromoted = unit.promotions.canBePromoted()
-    private val canPromoteNow = canChangeState && canBePromoted &&
+    private val canPromoteNow = canChangeState &&
+            unit.promotions.canBePromoted() &&
             unit.currentMovement > 0 && unit.attacksThisTurn == 0
 
     // Logic
@@ -170,7 +170,9 @@ class PromotionPickerScreen(
     }
 
     private fun getButton(tree: PromotionTree, node: PromotionTree.PromotionNode) : PromotionButton {
-        val isPickable = (!node.pathIsAmbiguous || node.distanceToAdopted == 1) && tree.canBuyUpTo(node.promotion)
+        val isPickable = canPromoteNow &&
+            (!node.pathIsAmbiguous || node.distanceToAdopted == 1) &&
+            tree.canBuyUpTo(node.promotion)
 
         val button = PromotionButton(node, isPickable, promotedLabelStyle, buttonCellMaxWidth - 60f)
 
