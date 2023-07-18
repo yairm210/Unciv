@@ -41,6 +41,8 @@ class EspionageOverviewScreen(val civInfo: Civilization) : PickerScreen(true) {
     private var moveSpyHereButtons = hashMapOf<Button, City?>()
 
     init {
+        spySelectionTable.defaults().pad(10f)
+        citySelectionTable.defaults().pad(5f)
         middlePanes.add(spyScrollPane)
         middlePanes.addSeparatorVertical()
         middlePanes.add(cityScrollPane)
@@ -64,12 +66,12 @@ class EspionageOverviewScreen(val civInfo: Civilization) : PickerScreen(true) {
 
     private fun updateSpyList() {
         spySelectionTable.clear()
-        spySelectionTable.add("Spy".toLabel()).pad(10f)
-        spySelectionTable.add("Location".toLabel()).pad(10f)
-        spySelectionTable.add("Action".toLabel()).pad(10f).row()
+        spySelectionTable.add("Spy".toLabel())
+        spySelectionTable.add("Location".toLabel())
+        spySelectionTable.add("Action".toLabel()).row()
         for (spy in civInfo.espionageManager.spyList) {
-            spySelectionTable.add(spy.name.toLabel()).pad(10f)
-            spySelectionTable.add(spy.getLocationName().toLabel()).pad(10f)
+            spySelectionTable.add(spy.name.toLabel())
+            spySelectionTable.add(spy.getLocationName().toLabel())
             val actionString =
                 when (spy.action) {
                     SpyAction.None, SpyAction.StealingTech, SpyAction.Surveillance -> spy.action.displayString
@@ -77,7 +79,7 @@ class EspionageOverviewScreen(val civInfo: Civilization) : PickerScreen(true) {
                     SpyAction.RiggingElections -> TODO()
                     SpyAction.CounterIntelligence -> TODO()
                 }
-            spySelectionTable.add(actionString.toLabel()).pad(10f)
+            spySelectionTable.add(actionString.toLabel())
 
             val moveSpyButton = "Move".toTextButton()
             moveSpyButton.onClick {
@@ -89,36 +91,33 @@ class EspionageOverviewScreen(val civInfo: Civilization) : PickerScreen(true) {
                 selectedSpyButton = moveSpyButton
                 selectedSpy = spy
                 selectedSpyButton!!.label.setText("Cancel".tr())
-                for ((button, city) in moveSpyHereButtons)
-                // For now, only allow spies to be send to cities of other major civs and their hideout
-                // Not own cities as counterintelligence isn't implemented
-                // Not city-state civs as rigging elections isn't implemented
-                // Technically, stealing techs from other civs also isn't implemented, but its the first thing I'll add so this makes the most sense to allow.
-                    if (city == null // hideout
+                for ((button, city) in moveSpyHereButtons) {
+                    // For now, only allow spies to be sent to cities of other major civs and their hideout
+                    // Not own cities as counterintelligence isn't implemented
+                    // Not city-state civs as rigging elections isn't implemented
+                    button.isVisible = city == null // hideout
                         || (city.civ.isMajorCiv()
                             && city.civ != civInfo
                             && !city.espionage.hasSpyOf(civInfo)
                         )
-                    ) {
-                        button.isVisible = true
-                    }
+                }
             }
-            spySelectionTable.add(moveSpyButton).pad(5f).row()
+            spySelectionTable.add(moveSpyButton).pad(5f, 10f, 5f, 20f).row()
         }
     }
 
     private fun updateCityList() {
         citySelectionTable.clear()
         moveSpyHereButtons.clear()
-        citySelectionTable.add().pad(5f)
-        citySelectionTable.add("City".toLabel()).pad(5f)
-        citySelectionTable.add("Spy present".toLabel()).pad(5f).row()
+        citySelectionTable.add()
+        citySelectionTable.add("City".toLabel())
+        citySelectionTable.add("Spy present".toLabel()).row()
 
         // First add the hideout to the table
 
-        citySelectionTable.add().pad(5f)
-        citySelectionTable.add("Spy Hideout".toLabel()).pad(5f)
-        citySelectionTable.add().pad(5f)
+        citySelectionTable.add()
+        citySelectionTable.add("Spy Hideout".toLabel())
+        citySelectionTable.add()
         val moveSpyHereButton = getMoveToCityButton(null)
         citySelectionTable.add(moveSpyHereButton).row()
 
@@ -143,21 +142,22 @@ class EspionageOverviewScreen(val civInfo: Civilization) : PickerScreen(true) {
     }
 
     private fun addCityToSelectionTable(city: City) {
-        citySelectionTable.add(ImageGetter.getNationPortrait(city.civ.nation, 30f)).pad(5f)
-        citySelectionTable.add(city.name.toLabel()).pad(5f)
+        citySelectionTable.add(ImageGetter.getNationPortrait(city.civ.nation, 30f))
+            .padLeft(20f)
+        citySelectionTable.add(city.name.toLabel(hideIcons = true))
         if (city.espionage.hasSpyOf(civInfo)) {
             citySelectionTable.add(
                 ImageGetter.getImage("OtherIcons/Spy_White").apply {
                     setSize(30f)
                     color = Color.WHITE
                 }
-            ).pad(5f)
+            )
         } else {
-            citySelectionTable.add().pad(5f)
+            citySelectionTable.add()
         }
 
         val moveSpyHereButton = getMoveToCityButton(city)
-        citySelectionTable.add(moveSpyHereButton).pad(5f)
+        citySelectionTable.add(moveSpyHereButton)
         citySelectionTable.row()
     }
 
