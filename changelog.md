@@ -1,3 +1,13 @@
+## 4.7.9
+
+4.7.8-patch1
+
+By SomeTroglodyte:
+- Little Promotion UX improvements 
+- Unique target compliance test v2 
+
+Avoid built buildings  - By SeventhM
+
 ## 4.7.8
 
 Modding: City-level resources!
