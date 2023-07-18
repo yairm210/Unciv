@@ -111,7 +111,7 @@ open class Notification() : IsPartOfGameInfoSerialization {
         companion object {
             /** The switch that starts Phase III and dies with Phase V
             *   @see Serializer */
-            private const val compatibilityMode = true
+            private const val compatibilityMode = false
         }
 
         override fun write(json: Json, notification: Notification, knownType: Class<*>?) {
