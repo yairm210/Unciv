@@ -9,10 +9,12 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.civilization.PromoteUnitAction
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.mapunit.MapUnit
@@ -581,7 +583,12 @@ object Battle {
         }
 
         if (!thisCombatant.isDefeated() && !unitCouldAlreadyPromote && promotions.canBePromoted())
-            civ.addNotification("[${thisCombatant.unit.displayName()}] can be promoted!",thisCombatant.getTile().position, NotificationCategory.Units, thisCombatant.unit.name)
+            thisCombatant.run {
+                val pos = getTile().position
+                civ.addNotification("[${unit.displayName()}] can be promoted!",
+                    listOf(MapUnitAction(pos), PromoteUnitAction(getName(), pos)),
+                    NotificationCategory.Units, unit.name)
+            }
     }
 
     private fun conquerCity(city: City, attacker: MapUnitCombatant) {
