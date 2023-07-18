@@ -8,15 +8,15 @@ import com.unciv.models.Spy
 
 class EspionageManager : IsPartOfGameInfoSerialization {
 
-    var spyList = mutableListOf<Spy>()
-    val erasSpyEarnedFor = mutableSetOf<String>()
+    var spyList = ArrayList<Spy>()
+    val erasSpyEarnedFor = LinkedHashSet<String>()
 
     @Transient
     lateinit var civInfo: Civilization
 
     fun clone(): EspionageManager {
         val toReturn = EspionageManager()
-        toReturn.spyList.addAll(spyList.map { it.clone() })
+        spyList.mapTo(toReturn.spyList) { it.clone() }
         toReturn.erasSpyEarnedFor.addAll(erasSpyEarnedFor)
         return toReturn
     }
