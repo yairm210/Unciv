@@ -4,11 +4,13 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.city.City
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.screens.cityscreen.CityScreen
-import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
+import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
+import com.unciv.ui.screens.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
@@ -18,6 +20,12 @@ import com.unciv.ui.screens.worldscreen.WorldScreen
 /*
  * Not realized as lambda, as it would be too easy to introduce references to objects
  * there that should not be serialized to the saved game.
+ *
+ * IsPartOfGameInfoSerialization is just a marker class and not actually tested for, so inheriting it
+ * _indirectly_ is OK (the NotificationAction subclasses need not re-implement, a `is`test would still succeed).
+ *
+ * Also note all implementations need the default no-args constructor for deserialization,
+ * therefore the otherwise unused default initializers.
  */
 interface NotificationAction : IsPartOfGameInfoSerialization {
     fun execute(worldScreen: WorldScreen)
@@ -25,7 +33,7 @@ interface NotificationAction : IsPartOfGameInfoSerialization {
 
 /** A notification action that shows map places. */
 // Note location is nonprivate only for writeOldFormatAction
-class LocationAction(internal val location: Vector2) : NotificationAction, IsPartOfGameInfoSerialization {
+class LocationAction(internal val location: Vector2 = Vector2.Zero) : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         worldScreen.mapHolder.setCenterPosition(location, selectUnit = false)
     }
@@ -47,7 +55,7 @@ class LocationAction(internal val location: Vector2) : NotificationAction, IsPar
 }
 
 /** show tech screen */
-class TechAction(private val techName: String = "") : NotificationAction, IsPartOfGameInfoSerialization {
+class TechAction(private val techName: String = "") : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         val tech = worldScreen.gameInfo.ruleset.technologies[techName]
         worldScreen.game.pushScreen(TechPickerScreen(worldScreen.viewingCiv, tech))
@@ -55,19 +63,20 @@ class TechAction(private val techName: String = "") : NotificationAction, IsPart
 }
 
 /** enter city */
-class CityAction(private val city: Vector2 = Vector2.Zero): NotificationAction,
-    IsPartOfGameInfoSerialization {
+class CityAction(private val city: Vector2 = Vector2.Zero): NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         val cityObject = worldScreen.mapHolder.tileMap[city].getCity()
             ?: return
         if (cityObject.civ == worldScreen.viewingCiv)
             worldScreen.game.pushScreen(CityScreen(cityObject))
     }
+    companion object {
+        fun withLocation(city: City) = listOf(LocationAction(city.location), CityAction(city.location))
+    }
 }
 
 /** enter diplomacy screen */
-class DiplomacyAction(private val otherCivName: String = ""): NotificationAction,
-    IsPartOfGameInfoSerialization {
+class DiplomacyAction(private val otherCivName: String = ""): NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         val otherCiv = worldScreen.gameInfo.getCivilization(otherCivName)
         worldScreen.game.pushScreen(DiplomacyScreen(worldScreen.viewingCiv, otherCiv))
@@ -75,33 +84,43 @@ class DiplomacyAction(private val otherCivName: String = ""): NotificationAction
 }
 
 /** enter Maya Long Count popup */
-class MayaLongCountAction : NotificationAction, IsPartOfGameInfoSerialization {
+class MayaLongCountAction : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         MayaCalendar.openPopup(worldScreen, worldScreen.selectedCiv, worldScreen.gameInfo.getYear())
     }
 }
 
 /** A notification action that shows and selects units on the map. */
-class MapUnitAction(private val location: Vector2) : NotificationAction, IsPartOfGameInfoSerialization {
+class MapUnitAction(private val location: Vector2 = Vector2.Zero) : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         worldScreen.mapHolder.setCenterPosition(location, selectUnit = true)
     }
 }
 
 /** A notification action that shows the Civilopedia entry for a Wonder. */
-class WonderAction(private val wonderName: String) : NotificationAction, IsPartOfGameInfoSerialization {
+class CivilopediaAction(private val link: String = "") : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
-        worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleset, CivilopediaCategories.Wonder, wonderName))
+        worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleset, link = link))
     }
 }
 
 /** Show Promotion picker for a MapUnit - by name and location, as they lack a serialized unique ID */
-class PromoteUnitAction(private val name: String, private val location: Vector2) : NotificationAction, IsPartOfGameInfoSerialization {
+class PromoteUnitAction(private val name: String = "", private val location: Vector2 = Vector2.Zero) : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         val tile = worldScreen.gameInfo.tileMap[location]
         val unit = tile.militaryUnit?.takeIf { it.name == name && it.civ == worldScreen.selectedCiv }
             ?: return
         worldScreen.game.pushScreen(PromotionPickerScreen(unit))
+    }
+}
+
+/** Open the Empire Overview to a specific page, potentially "selecting" some entry */
+class OverviewAction(
+    private val page: EmpireOverviewCategories = EmpireOverviewCategories.Resources,
+    private val select: String = ""
+) : NotificationAction {
+    override fun execute(worldScreen: WorldScreen) {
+        worldScreen.game.pushScreen(EmpireOverviewScreen(worldScreen.selectedCiv, page, select))
     }
 }
 
@@ -123,14 +142,15 @@ internal class NotificationActionsDeserializer {
     private val DiplomacyAction: DiplomacyAction? = null
     private val MayaLongCountAction: MayaLongCountAction? = null
     private val MapUnitAction: MapUnitAction? = null
-    private val WonderAction: WonderAction? = null
+    private val CivilopediaAction: CivilopediaAction? = null
     private val PromoteUnitAction: PromoteUnitAction? = null
+    private val OverviewAction: OverviewAction? = null
 
     fun read(json: Json, jsonData: JsonValue): List<NotificationAction> {
         json.readFields(this, jsonData)
         return listOfNotNull(
-            LocationAction, TechAction, CityAction, DiplomacyAction,
-            MayaLongCountAction, MapUnitAction, WonderAction, PromoteUnitAction
+            LocationAction, TechAction, CityAction, DiplomacyAction, MayaLongCountAction,
+            MapUnitAction, CivilopediaAction, PromoteUnitAction, OverviewAction
         )
     }
 }
