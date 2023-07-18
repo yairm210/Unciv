@@ -1,9 +1,10 @@
-
-
-4.7.8-patch1
+Minor memory improvement
 
 By SomeTroglodyte:
-- Little Promotion UX improvements 
-- Unique target compliance test v2 
+- Little Promotion UX improvements
+- Modding: Better unique-to-object compliance testing
 
-Avoid built buildings  - By SeventhM
+By SeventhM:
+- Fix issues from gaining free beliefs
+- Fix issues when transferring capitals
+- Avoid built buildings
