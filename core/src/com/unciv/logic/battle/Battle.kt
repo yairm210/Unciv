@@ -582,13 +582,12 @@ object Battle {
             civ.greatPeople.greatGeneralPoints += greatGeneralPointsGained
         }
 
-        if (!thisCombatant.isDefeated() && !unitCouldAlreadyPromote && promotions.canBePromoted())
-            thisCombatant.run {
-                val pos = getTile().position
-                civ.addNotification("[${unit.displayName()}] can be promoted!",
-                    listOf(MapUnitAction(pos), PromoteUnitAction(getName(), pos)),
-                    NotificationCategory.Units, unit.name)
-            }
+        if (!thisCombatant.isDefeated() && !unitCouldAlreadyPromote && promotions.canBePromoted()) {
+            val pos = thisCombatant.getTile().position
+            civ.addNotification("[${thisCombatant.unit.displayName()}] can be promoted!",
+                listOf(MapUnitAction(pos), PromoteUnitAction(thisCombatant.getName(), pos)),
+                NotificationCategory.Units, thisCombatant.unit.name)
+        }
     }
 
     private fun conquerCity(city: City, attacker: MapUnitCombatant) {
