@@ -54,7 +54,7 @@ class CityMovingTests {
 
         theirCapital.moveToCiv(civInfo)
         Assert.assertTrue(theirOtherCity.isCapital())
-        Assert.assertTrue(theirCapital.isCapital())
+        Assert.assertTrue(!theirCapital.isCapital())
         Assert.assertTrue(theirCapital.civ == civInfo)
     }
 

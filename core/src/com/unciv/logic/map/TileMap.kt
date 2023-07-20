@@ -63,7 +63,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     var ruleset: Ruleset? = null
 
     @Transient
-    var tileUniqueMapCache = ConcurrentHashMap<String, UniqueMap>()
+    var tileUniqueMapCache = ConcurrentHashMap<List<String>, UniqueMap>()
 
     @Transient
     var tileMatrix = ArrayList<ArrayList<Tile?>>() // this works several times faster than a hashmap, the performance difference is really astounding

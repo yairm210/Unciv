@@ -25,6 +25,7 @@ import kotlin.math.abs
 
 class PromotionPickerScreen(
     val unit: MapUnit,
+    private val closeOnPick: Boolean = true,
     private val onChange: (() -> Unit)? = null
 ) : PickerScreen(), RecreateOnResize {
     // Style stuff
@@ -43,8 +44,8 @@ class PromotionPickerScreen(
 
     // [acceptPromotion] will [recreate] the screen, so these are constant for this picker's lifetime
     private val canChangeState = GUI.isAllowedChangeState()
-    private val canBePromoted = unit.promotions.canBePromoted()
-    private val canPromoteNow = canChangeState && canBePromoted &&
+    private val canPromoteNow = canChangeState &&
+            unit.promotions.canBePromoted() &&
             unit.currentMovement > 0 && unit.attacksThisTurn == 0
 
     // Logic
@@ -100,7 +101,11 @@ class PromotionPickerScreen(
             unit.promotions.addPromotion(promotion.name)
 
         onChange?.invoke()
-        game.replaceCurrentScreen(recreate())
+
+        if (!closeOnPick || unit.promotions.canBePromoted())
+            game.replaceCurrentScreen(recreate(false))
+        else
+            game.popScreen()
     }
 
     private fun fillTable() {
@@ -170,7 +175,9 @@ class PromotionPickerScreen(
     }
 
     private fun getButton(tree: PromotionTree, node: PromotionTree.PromotionNode) : PromotionButton {
-        val isPickable = (!node.pathIsAmbiguous || node.distanceToAdopted == 1) && tree.canBuyUpTo(node.promotion)
+        val isPickable = canPromoteNow &&
+            (!node.pathIsAmbiguous || node.distanceToAdopted == 1) &&
+            tree.canBuyUpTo(node.promotion)
 
         val button = PromotionButton(node, isPickable, promotedLabelStyle, buttonCellMaxWidth - 60f)
 
@@ -319,8 +326,10 @@ class PromotionPickerScreen(
         descriptionLabel.setText("$topLine\n$promotionText")
     }
 
-    override fun recreate(): BaseScreen {
-        val newScreen = PromotionPickerScreen(unit, onChange)
+    override fun recreate() = recreate(closeOnPick)
+
+    fun recreate(closeOnPick: Boolean): BaseScreen {
+        val newScreen = PromotionPickerScreen(unit, closeOnPick, onChange)
         newScreen.setScrollY(scrollPane.scrollY)
         return newScreen
     }

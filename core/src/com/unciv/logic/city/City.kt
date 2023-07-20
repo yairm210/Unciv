@@ -467,7 +467,7 @@ class City : IsPartOfGameInfoSerialization {
 
         // Move the capital if destroyed (by a nuke or by razing)
         // Must be before removing existing capital because we may be annexing a puppet which means city stats update - see #8337
-        if (isCapital()) civ.moveCapitalToNextLargest()
+        if (isCapital()) civ.moveCapitalToNextLargest(null)
 
         civ.cities = civ.cities.toMutableList().apply { remove(this@City) }
         getCenterTile().changeImprovement("City ruins")

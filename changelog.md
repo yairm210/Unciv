@@ -1,3 +1,16 @@
+## 4.7.9
+
+Minor memory improvement
+
+By SomeTroglodyte:
+- Little Promotion UX improvements
+- Modding: Better unique-to-object compliance testing
+
+By SeventhM:
+- Fix issues from gaining free beliefs
+- Fix issues when transferring capitals
+- Avoid built buildings
+
 ## 4.7.8
 
 Modding: City-level resources!

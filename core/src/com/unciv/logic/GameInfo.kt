@@ -56,6 +56,13 @@ import java.util.UUID
  * When you change the structure of any class with this interface in a way which makes it impossible
  * to load the new saves from an older game version, increment [CURRENT_COMPATIBILITY_NUMBER]! And don't forget
  * to add backwards compatibility for the previous format.
+ *
+ * Reminder: In all subclasse, do use only actual Collection types, not abstractions like
+ * `= mutableSetOf<Something>()`. That would make the reflection type of the field an interface, which
+ * hides the actual implementation from Gdx Json, so it will not try to call a no-args constructor but
+ * will instead deserialize a List in the jsonData.isArray() -> isAssignableFrom(Collection) branch of readValue:
+ * https://github.com/libgdx/libgdx/blob/75612dae1eeddc9611ed62366858ff1d0ac7898b/gdx/src/com/badlogic/gdx/utils/Json.java#L1111
+ * .. which will crash later (when readFields actually assigns it) unless empty.
  */
 interface IsPartOfGameInfoSerialization
 
