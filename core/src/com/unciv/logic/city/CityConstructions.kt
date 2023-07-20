@@ -493,6 +493,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         builtBuildingObjects = builtBuildingObjects.withItem(building)
         builtBuildings.add(buildingName)
 
+        city.civ.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
+        city.civ.cache.updateCivResources() // this building could be a resource-requiring one
+
         /** Support for [UniqueType.CreatesOneImprovement] */
         applyCreateOneImprovement(building)
 
@@ -522,9 +525,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             city.reassignPopulationDeferred()
 
         updateUniques()
-
-        civ.cache.updateCivResources() // this building could be a resource-requiring one
-        civ.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
     }
 
     fun triggerNewBuildingUniques(building: Building) {
@@ -551,8 +551,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             builtBuildingObjects = builtBuildingObjects.withoutItem(buildingObject)
         else builtBuildingObjects.removeAll{ it.name == buildingName }
         builtBuildings.remove(buildingName)
-        city.civ.cache.updateCivResources() // this building could be a resource-requiring one
         city.civ.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
+        city.civ.cache.updateCivResources() // this building could be a resource-requiring one
         updateUniques()
     }
 
