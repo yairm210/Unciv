@@ -31,7 +31,7 @@ interface NotificationAction : IsPartOfGameInfoSerialization {
 
 /** A notification action that shows map places. */
 // Note location is nonprivate only for writeOldFormatAction
-class LocationAction(internal val location: Vector2) : NotificationAction, IsPartOfGameInfoSerialization {
+class LocationAction(internal val location: Vector2 = Vector2.Zero) : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         worldScreen.mapHolder.setCenterPosition(location, selectUnit = false)
     }
