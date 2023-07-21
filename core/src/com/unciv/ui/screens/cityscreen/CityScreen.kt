@@ -151,6 +151,19 @@ class CityScreen(
         constructionsTable.isVisible = true
         constructionsTable.update(selectedConstruction)
 
+        updateWithoutConstructionAndMap()
+
+        // Rest of screen: Map of surroundings
+        updateTileGroups()
+        if (isPortrait()) mapScrollPane.apply {
+            // center scrolling so city center sits more to the bottom right
+            scrollX = (maxX - constructionsTable.getLowerWidth() - posFromEdge) / 2
+            scrollY = (maxY - cityStatsTable.packIfNeeded().height - posFromEdge + cityPickerTable.top) / 2
+            updateVisualScroll()
+        }
+    }
+
+    internal fun updateWithoutConstructionAndMap() {
         // Bottom right: Tile or selected construction info
         tileTable.update(selectedTile)
         tileTable.setPosition(stage.width - posFromEdge, posFromEdge, Align.bottomRight)
@@ -186,15 +199,6 @@ class CityScreen(
 
         // Top center: Annex/Raze button
         updateAnnexAndRazeCityButton()
-
-        // Rest of screen: Map of surroundings
-        updateTileGroups()
-        if (isPortrait()) mapScrollPane.apply {
-            // center scrolling so city center sits more to the bottom right
-            scrollX = (maxX - constructionsTable.getLowerWidth() - posFromEdge) / 2
-            scrollY = (maxY - cityStatsTable.packIfNeeded().height - posFromEdge + cityPickerTable.top) / 2
-            updateVisualScroll()
-        }
     }
 
     fun canCityBeChanged(): Boolean {

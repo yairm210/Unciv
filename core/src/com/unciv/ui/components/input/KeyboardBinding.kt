@@ -125,6 +125,9 @@ enum class KeyboardBinding(
     AddInCapital(Category.UnitActions, "Add in capital", 'g'),
 
     // City Screen
+    AddConstruction(Category.CityScreen, "Add to or remove from queue", KeyCharAndCode.RETURN),
+    RaisePriority(Category.CityScreen, "Raise queue priority", Input.Keys.UP),
+    LowerPriority(Category.CityScreen, "Lower queue priority", Input.Keys.DOWN),
     BuyConstruction(Category.CityScreen, 'b'),
     BuyTile(Category.CityScreen, 't'),
     BuildUnits(Category.CityScreen, "Buildable Units", 'u'),

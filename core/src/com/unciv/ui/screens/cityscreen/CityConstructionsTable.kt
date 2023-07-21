@@ -34,7 +34,6 @@ import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.getConsumesAmountString
 import com.unciv.ui.components.extensions.isEnabled
-import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.packIfNeeded
@@ -42,6 +41,7 @@ import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
@@ -130,13 +130,16 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     }
 
     fun update(selectedConstruction: IConstruction?) {
-        updateButtons(selectedConstruction)
+        updateQueueAndButtons(selectedConstruction)
+        updateAvailableConstructions()
+    }
+
+    private fun updateQueueAndButtons(construction: IConstruction?) {
+        updateButtons(construction)
         updateConstructionQueue()
         upperTable.pack()
-        // This should work when set once only in addActorsToStage, but it doesn't (table invisible - why?)
+        // Need to reposition when height changes as setPosition's alignment does not persist, it's just a readability shortcut to calculate bottomLeft
         upperTable.setPosition(posFromEdge, stageHeight - posFromEdge, Align.topLeft)
-
-        updateAvailableConstructions()
         lowerTableScrollCell.maxHeight(stageHeight - upperTable.height - 2 * posFromEdge)
     }
 
@@ -346,6 +349,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             cityScreen.selectConstruction(constructionName)
             selectedQueueEntry = constructionQueueIndex
             cityScreen.update()
+            ensureQueueEntryVisible()
         }
         return table
     }
@@ -465,7 +469,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         if (isSelectedQueueEntry()) {
             button = "Remove from queue".toTextButton()
-            button.onClick {
+            button.onActivation(binding = KeyboardBinding.AddConstruction) {
                 cityConstructions.removeFromQueue(selectedQueueEntry, false)
                 cityScreen.clearSelection()
                 selectedQueueEntry = -1
@@ -477,7 +481,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                     || cannotAddConstructionToQueue(construction, city, cityConstructions)) {
                 button.disable()
             } else {
-                button.onClick(UncivSound.Silent) {
+                button.onActivation(binding = KeyboardBinding.AddConstruction, sound = UncivSound.Silent) {
                     addConstructionToQueue(construction, cityConstructions)
                 }
             }
@@ -650,34 +654,40 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         cityScreen.update()
     }
 
-    private fun getRaisePriorityButton(constructionQueueIndex: Int, name: String, city: City): Table {
-        val tab = Table()
-        tab.add(ImageGetter.getArrowImage(Align.top).apply { color = Color.BLACK }.surroundWithCircle(40f))
-        tab.touchable = Touchable.enabled
-        tab.onClick {
-            tab.touchable = Touchable.disabled
-            city.cityConstructions.raisePriority(constructionQueueIndex)
+    private fun getMovePriorityButton(
+        arrowDirection: Int,
+        binding: KeyboardBinding,
+        constructionQueueIndex: Int,
+        name: String,
+        movePriority: (Int) -> Int
+    ): Table {
+        val button = Table()
+        button.add(ImageGetter.getArrowImage(arrowDirection).apply { color = Color.BLACK }.surroundWithCircle(40f))
+        button.touchable = Touchable.enabled
+        // Don't bind the queue reordering keys here - those should affect only the selected entry, not all of them
+        button.onActivation {
+            button.touchable = Touchable.disabled
+            selectedQueueEntry = movePriority(constructionQueueIndex)
+            // No need to call entire cityScreen.update() as reordering doesn't influence Stat or Map,
+            // nor does it need an expensive rebuild of the available constructions.
+            // Selection display may need to update as I can click the button of a non-selected entry.
             cityScreen.selectConstruction(name)
-            selectedQueueEntry = constructionQueueIndex - 1
-            cityScreen.update()
+            cityScreen.updateWithoutConstructionAndMap()
+            updateQueueAndButtons(cityScreen.selectedConstruction)
+            ensureQueueEntryVisible()  // Not passing current button info - already outdated, our parent is already removed from the stage hierarchy and replaced
         }
-        return tab
+        if (selectedQueueEntry == constructionQueueIndex) {
+            button.keyShortcuts.add(binding)  // This binds without automatic tooltip
+            button.addTooltip(binding)
+        }
+        return button
     }
 
-    private fun getLowerPriorityButton(constructionQueueIndex: Int, name: String, city: City): Table {
-        val tab = Table()
-        tab.add(ImageGetter.getArrowImage(Align.bottom).apply { color = Color.BLACK }.surroundWithCircle(40f))
-        tab.touchable = Touchable.enabled
-        tab.onClick {
-            tab.touchable = Touchable.disabled
-            city.cityConstructions.lowerPriority(constructionQueueIndex)
-            cityScreen.selectConstruction(name)
-            selectedQueueEntry = constructionQueueIndex + 1
-            cityScreen.update()
-        }
+    private fun getRaisePriorityButton(constructionQueueIndex: Int, name: String, city: City) =
+        getMovePriorityButton(Align.top, KeyboardBinding.RaisePriority, constructionQueueIndex, name, city.cityConstructions::raisePriority)
 
-        return tab
-    }
+    private fun getLowerPriorityButton(constructionQueueIndex: Int, name: String, city: City) =
+        getMovePriorityButton(Align.bottom, KeyboardBinding.LowerPriority, constructionQueueIndex, name, city.cityConstructions::lowerPriority)
 
     private fun getRemoveFromQueueButton(constructionQueueIndex: Int, city: City): Table {
         val tab = Table()
@@ -702,6 +712,18 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 )
                 .addCell(title.toLabel(fontSize = Constants.headingFontSize))
                 .pad(4f)
+    }
+
+    private fun ensureQueueEntryVisible() {
+        // Ensure the selected queue entry stays visible, and if moved to the "current" top slot, that the header is visible too
+        // This uses knowledge about how we build constructionsQueueTable without re-evaluating that stuff:
+        // Every odd row is a separator, cells have no padding, and there's one header on top and another between selectedQueueEntries 0 and 1
+        val button = constructionsQueueTable.cells[if (selectedQueueEntry == 0) 2 else 2 * selectedQueueEntry + 4].actor
+        val buttonOrHeader = if (selectedQueueEntry == 0) constructionsQueueTable.cells[0].actor else button
+        // The 4f includes the two separators on top/bottom of the entry/header (the y offset we'd need cancels out with constructionsQueueTable.y being 2f as well):
+        val height = buttonOrHeader.y + buttonOrHeader.height - button.y + 4f
+        // Alternatively, scrollTo(..., true, true) would keep the selection as centered as possible:
+        constructionsQueueScrollPane.scrollTo(2f, button.y, button.width, height)
     }
 
     private fun resizeAvailableConstructionsScrollPane() {

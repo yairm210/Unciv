@@ -749,13 +749,15 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         } else true // we're just continuing the regular queue
     }
 
-    fun raisePriority(constructionQueueIndex: Int) {
+    fun raisePriority(constructionQueueIndex: Int): Int {
         constructionQueue.swap(constructionQueueIndex - 1, constructionQueueIndex)
+        return constructionQueueIndex - 1
     }
 
     // Lowering == Highering next element in queue
-    fun lowerPriority(constructionQueueIndex: Int) {
+    fun lowerPriority(constructionQueueIndex: Int): Int {
         raisePriority(constructionQueueIndex + 1)
+        return constructionQueueIndex + 1
     }
 
     private fun MutableList<String>.swap(idx1: Int, idx2: Int) {
