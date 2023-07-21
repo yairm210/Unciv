@@ -58,7 +58,13 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
     fun canBuyTile(tile: Tile): Boolean {
         return when {
             city.isPuppet || city.isBeingRazed -> false
-            tile.getOwner() != null -> false
+            tile.getOwner() != null -> { 
+                if (uncivInfo.hasUnique(UniqueType.CanPurchaseOtherCivTiles)) {
+                true // If the civilization has the unique ability to purchase other civs' tiles, allow buying owned tiles
+            } else {
+                false // If the tile is already owned and the civ cannot purchase other civs' tiles, disallow buying owned tiles
+            }
+        }
             city.isInResistance() -> false
             tile !in city.tilesInRange -> false
             else -> tile.neighbors.any { it.getCity() == city }
