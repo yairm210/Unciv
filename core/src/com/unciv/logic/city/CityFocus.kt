@@ -42,7 +42,9 @@ enum class CityFocus(val label: String, val tableEnabled: Boolean, val stat: Sta
         }
     }
 
-    fun safeValueOf(stat: Stat): CityFocus {
-        return values().firstOrNull { it.stat == stat } ?: NoFocus
+    companion object {
+        fun safeValueOf(stat: Stat): CityFocus {
+            return values().firstOrNull { it.stat == stat } ?: NoFocus
+        }
     }
 }

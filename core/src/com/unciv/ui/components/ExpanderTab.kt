@@ -166,7 +166,7 @@ class ExpanderTab(
         scrollPane.scrollTo(0f, this.y, header.width, this.y + heightToShow)
     }
 
-    /** Change header label text after initialization */
+    /** Change header label text after initialization (does not auto-translate) */
     fun setText(text: String) {
         headerLabel.setText(text)
     }

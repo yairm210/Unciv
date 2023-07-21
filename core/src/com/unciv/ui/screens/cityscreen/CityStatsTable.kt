@@ -95,7 +95,7 @@ class CityStatsTable(private val cityScreen: CityScreen): Table() {
                 icon.add(ImageGetter.getStatIcon(stat.name).surroundWithCircle(27f, false, color = Color.CLEAR))
                 if (cityScreen.canCityBeChanged()) {
                     icon.onClick {
-                        city.cityAIFocus = city.cityAIFocus.safeValueOf(stat)
+                        city.cityAIFocus = CityFocus.safeValueOf(stat)
                         city.reassignPopulation(); cityScreen.update()
                     }
                 }

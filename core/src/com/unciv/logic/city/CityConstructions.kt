@@ -9,7 +9,7 @@ import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
-import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.mapunit.UnitTurnManager
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.multiplayer.isUsersTurn
 import com.unciv.models.ruleset.Building
@@ -534,9 +534,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             if (!unique.hasTriggerConditional())
                 UniqueTriggerActivation.triggerCivwideUnique(unique, city.civ, city, triggerNotificationText = triggerNotificationText)
 
-            for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, StateForConditionals(city.civ, city)))
-                if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuilding && building.matchesFilter(it.params[0])})
-                    UniqueTriggerActivation.triggerCivwideUnique(unique, city.civ, city, triggerNotificationText = triggerNotificationText)
+        for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, StateForConditionals(city.civ, city)))
+            if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuilding && building.matchesFilter(it.params[0])})
+                UniqueTriggerActivation.triggerCivwideUnique(unique, city.civ, city, triggerNotificationText = triggerNotificationText)
 
         for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuildingCityFilter, StateForConditionals(city.civ, city)))
             if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuildingCityFilter
@@ -775,7 +775,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         val tileForImprovement = getTileForImprovement(improvement.name) ?: return
         tileForImprovement.stopWorkingOnImprovement()  // clears mark
         if (removeOnly) return
-        /**todo unify with [UnitActions.getImprovementConstructionActions] and [MapUnit.workOnImprovement] - this won't allow e.g. a building to place a road */
+        /**todo unify with [UnitActions.getImprovementConstructionActions] and [UnitTurnManager.workOnImprovement] - this won't allow e.g. a building to place a road */
         tileForImprovement.changeImprovement(improvement.name)
         city.civ.lastSeenImprovement[tileForImprovement.position] = improvement.name
         city.cityStats.update()
@@ -791,11 +791,11 @@ class CityConstructions : IsPartOfGameInfoSerialization {
      */
     fun removeCreateOneImprovementConstruction(improvement: String) {
         val ruleset = city.getRuleset()
-        val indexToRemove = constructionQueue.withIndex().mapNotNull {
+        val indexToRemove = constructionQueue.withIndex().firstNotNullOfOrNull {
             val construction = getConstruction(it.value)
             val buildingImprovement = (construction as? Building)?.getImprovementToCreate(ruleset)?.name
             it.index.takeIf { buildingImprovement == improvement }
-        }.firstOrNull() ?: return
+        } ?: return
 
         constructionQueue.removeAt(indexToRemove)
 
