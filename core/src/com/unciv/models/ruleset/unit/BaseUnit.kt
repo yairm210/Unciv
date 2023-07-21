@@ -11,6 +11,7 @@ import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -95,6 +96,15 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return super.canBePurchasedWithStat(city, stat)
     }
 
+    /** Whenever we call .hasUniques() or .getMatchingUniques(), we also want to return the uniques from the unit type
+     * All of the IHasUniques functions converge to getMatchingUniques, so overriding this one function gives us all of them */
+    override fun getMatchingUniques(uniqueTemplate: String, stateForConditionals: StateForConditionals?): Sequence<Unique> {
+        val baseUnitMatchingUniques = super<RulesetObject>.getMatchingUniques(uniqueTemplate, stateForConditionals)
+        return if (::ruleset.isInitialized) baseUnitMatchingUniques +
+                type.getMatchingUniques(uniqueTemplate, stateForConditionals)
+        else baseUnitMatchingUniques // for e.g. Mod Checker, we may chech a BaseUnit's uniques without initializing ruleset
+    }
+
     override fun getBaseBuyCost(city: City, stat: Stat): Float? {
         return sequence {
             val baseCost = super.getBaseBuyCost(city, stat)
@@ -110,11 +120,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
         val rejectionReasons = getRejectionReasons(cityConstructions)
-        return rejectionReasons.none { !it.shouldShow }
-            || (
-                canBePurchasedWithAnyStat(cityConstructions.city)
-                && rejectionReasons.all { it.type == RejectionReasonType.Unbuildable }
-            )
+
+        if (rejectionReasons.none { !it.shouldShow }) return true
+        if (canBePurchasedWithAnyStat(cityConstructions.city)
+            && rejectionReasons.all { it.type == RejectionReasonType.Unbuildable }) return true
+        return false
     }
 
     override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> = sequence {
@@ -160,41 +170,30 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (!civ.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon())
             yield(RejectionReasonType.DisabledBySetting.toInstance())
 
-        for (unique in uniqueObjects.filter { it.conditionalsApply(civ, city) }) {
-            when (unique.type) {
-                UniqueType.Unbuildable ->
-                    yield(RejectionReasonType.Unbuildable.toInstance())
+        val stateForConditionals = StateForConditionals(civ, city)
 
-                UniqueType.FoundCity -> if (civ.isCityState() || civ.isOneCityChallenger())
-                    yield(RejectionReasonType.NoSettlerForOneCityPlayers.toInstance())
+        if (hasUnique(UniqueType.Unbuildable, stateForConditionals))
+            yield(RejectionReasonType.Unbuildable.toInstance())
 
-                UniqueType.MaxNumberBuildable -> if (civ.civConstructions.countConstructedObjects(
-                            this@BaseUnit
-                        ) >= unique.params[0].toInt()
-                )
-                    yield(RejectionReasonType.MaxNumberBuildable.toInstance())
+        if ((civ.isCityState() || civ.isOneCityChallenger()) && hasUnique(UniqueType.FoundCity, stateForConditionals))
+            yield(RejectionReasonType.NoSettlerForOneCityPlayers.toInstance())
 
-                else -> {}
-            }
-        }
+        if (getMatchingUniques(UniqueType.MaxNumberBuildable, stateForConditionals).any {
+                civ.civConstructions.countConstructedObjects(this@BaseUnit) >= it.params[0].toInt()
+            })
+            yield(RejectionReasonType.MaxNumberBuildable.toInstance())
 
         if (!civ.isBarbarian()) { // Barbarians don't need resources
             val civResources = Counter(civ.getCivResourcesByName()) + additionalResources
             for ((resource, requiredAmount) in getResourceRequirementsPerTurn()) {
                 val availableAmount = civResources[resource]
                 if (availableAmount < requiredAmount) {
-                    yield(
-                        RejectionReasonType.ConsumesResources.toInstance(
-                            resource.getNeedMoreAmountString(
-                                requiredAmount - availableAmount
-                            )
-                        )
-                    )
+                    val message = resource.getNeedMoreAmountString(requiredAmount - availableAmount)
+                    yield(RejectionReasonType.ConsumesResources.toInstance(message))
                 }
             }
         }
 
-        val stateForConditionals = StateForConditionals(civ, city)
         for (unique in civ.getMatchingUniques(UniqueType.CannotBuildUnits, stateForConditionals))
             if (this@BaseUnit.matchesFilter(unique.params[0])) {
                 val hasHappinessCondition = unique.conditionals.any {
