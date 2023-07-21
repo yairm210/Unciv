@@ -136,6 +136,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     /// Border growth
     BorderGrowthPercentage("[relativeAmount]% Culture cost of natural border growth [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     TileCostPercentage("[relativeAmount]% Gold cost of acquiring tiles [cityFilter]", UniqueTarget.FollowerBelief, UniqueTarget.Global),
+    CanPurchaseOtherCivTiles("May purchase other Civs Tiles", UniqueTarget.FollowerBelief, UniqueTarget.Global),
+
 
     /// Policy Cost
     LessPolicyCostFromCities("Each city founded increases culture cost of policies [relativeAmount]% less than normal", UniqueTarget.Global),
