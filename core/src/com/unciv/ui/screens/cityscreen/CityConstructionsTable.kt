@@ -41,6 +41,7 @@ import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
@@ -279,11 +280,11 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 availableConstructionsTable.apply {
                     clear()
                     defaults().left().bottom()
-                    addCategory("Units", units, maxButtonWidth)
-                    addCategory("Buildings", buildableBuildings, maxButtonWidth)
-                    addCategory("Wonders", buildableWonders, maxButtonWidth)
-                    addCategory("National Wonders", buildableNationalWonders, maxButtonWidth)
-                    addCategory("Other", specialConstructions, maxButtonWidth)
+                    addCategory("Units", units, maxButtonWidth, KeyboardBinding.BuildUnits)
+                    addCategory("Buildings", buildableBuildings, maxButtonWidth, KeyboardBinding.BuildBuildings)
+                    addCategory("Wonders", buildableWonders, maxButtonWidth, KeyboardBinding.BuildWonders)
+                    addCategory("National Wonders", buildableNationalWonders, maxButtonWidth, KeyboardBinding.BuildNationalWonders)
+                    addCategory("Other", specialConstructions, maxButtonWidth, KeyboardBinding.BuildOther)
                     pack()
                 }
 
@@ -542,13 +543,11 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             val constructionBuyCost = construction.getStatBuyCost(city, stat)!!
             button.setText("Buy".tr() + " " + constructionBuyCost + stat.character)
 
-            button.onActivation {
+            button.onActivation(binding = KeyboardBinding.BuyConstruction) {
                 button.disable()
                 buyButtonOnClick(construction, stat)
             }
             button.isEnabled = isConstructionPurchaseAllowed(construction, stat, constructionBuyCost)
-            button.keyShortcuts.add('B')
-            button.addTooltip('B')  // The key binding is done in CityScreen constructor
             preferredBuyStat = stat  // Not very intelligent, but the least common currency "wins"
         }
 
@@ -710,7 +709,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         lowerTable.pack()
     }
 
-    private fun Table.addCategory(title: String, list: ArrayList<Table>, prefWidth: Float) {
+    private fun Table.addCategory(title: String, list: ArrayList<Table>, prefWidth: Float, toggleKey: KeyboardBinding) {
         if (list.isEmpty()) return
 
         if (rows > 0) addSeparator()
@@ -719,6 +718,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             defaultPad = 0f,
             expanderWidth = prefWidth,
             persistenceID = "CityConstruction.$title",
+            toggleKey = toggleKey,
             onChange = { resizeAvailableConstructionsScrollPane() }
         ) {
             for (table in list) {

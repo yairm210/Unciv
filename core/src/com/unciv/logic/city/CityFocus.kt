@@ -1,12 +1,29 @@
 package com.unciv.logic.city
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.automation.Automation
+import com.unciv.logic.city.managers.CityPopulationManager
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.screens.cityscreen.CitizenManagementTable
 
-// if tableEnabled == true, then Stat != null
-enum class CityFocus(val label: String, val tableEnabled: Boolean, val stat: Stat? = null) :
-    IsPartOfGameInfoSerialization {
+/**
+ *  Controls automatic worker-to-tile assignment
+ *  @param  label Display label, formatted for tr()
+ *  @param  tableEnabled Whether to show or hide in CityScreen's [CitizenManagementTable]
+ *  @param  stat Which stat the default [getStatMultiplier] emphasizes - unused if that is overridden w/o calling super
+ *  @param  binding Bindable keyboard key in UI - this is an override, by default matching enum names in [KeyboardBinding] are assigned automatically
+ *  @see    CityPopulationManager.autoAssignPopulation
+ *  @see    Automation.rankStatsForCityWork
+ */
+enum class CityFocus(
+    val label: String,
+    val tableEnabled: Boolean,
+    val stat: Stat? = null,
+    binding: KeyboardBinding? = null
+) : IsPartOfGameInfoSerialization {
+    // region Enum values
     NoFocus("Default Focus", true, null) {
         override fun getStatMultiplier(stat: Stat) = 1f  // actually redundant, but that's two steps to see
     },
@@ -28,8 +45,16 @@ enum class CityFocus(val label: String, val tableEnabled: Boolean, val stat: Sta
         }
     },
     FaithFocus("[${Stat.Faith.name}] Focus", true, Stat.Faith),
-    HappinessFocus("[${Stat.Happiness.name}] Focus", false, Stat.Happiness);
-    //GreatPersonFocus;
+    HappinessFocus("[${Stat.Happiness.name}] Focus", false, Stat.Happiness),
+    //GreatPersonFocus
+
+    ;
+    // endregion Enum values
+
+    val binding: KeyboardBinding =
+        binding ?:
+        KeyboardBinding.values().firstOrNull { it.name == name } ?:
+        KeyboardBinding.None
 
     open fun getStatMultiplier(stat: Stat) = when (this.stat) {
         stat -> 3f

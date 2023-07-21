@@ -27,6 +27,7 @@ import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
@@ -139,8 +140,8 @@ class CityScreen(
         stage.addActor(exitCityButton)
         update()
 
-        globalShortcuts.add(Input.Keys.LEFT) { page(-1) }
-        globalShortcuts.add(Input.Keys.RIGHT) { page(1) }
+        globalShortcuts.add(KeyboardBinding.PreviousCity) { page(-1) }
+        globalShortcuts.add(KeyboardBinding.NextCity) { page(1) }
     }
 
     internal fun update() {
