@@ -137,17 +137,14 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 yield(RejectionReasonType.NoPlaceToPutUnit.toInstance())
         }
         val civInfo = cityConstructions.city.civ
-        for (unique in uniqueObjects) {
-            when (unique.type) {
-                UniqueType.OnlyAvailableWhen -> if (!unique.conditionalsApply(civInfo, cityConstructions.city))
-                    yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
 
-                UniqueType.RequiresPopulation -> if (unique.params[0].toInt() > cityConstructions.city.population.population)
-                    yield(RejectionReasonType.PopulationRequirement.toInstance(unique.text))
+        for (unique in getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals))
+            if (!unique.conditionalsApply(civInfo, cityConstructions.city))
+                yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
 
-                else -> {}
-            }
-        }
+        for (unique in getMatchingUniques(UniqueType.RequiresPopulation))
+            if (unique.params[0].toInt() > cityConstructions.city.population.population)
+                yield(RejectionReasonType.PopulationRequirement.toInstance(unique.text))
 
         yieldAll(getRejectionReasons(civInfo, cityConstructions.city))
     }
@@ -343,19 +340,15 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     fun isWaterUnit() = type.isWaterUnit()
     fun isAirUnit() = type.isAirUnit()
 
-    fun isProbablySiegeUnit() =
-        (
-            isRanged()
-            && (uniqueObjects + type.uniqueObjects)
-                .any { it.isOfType(UniqueType.Strength)
-                    && it.params[0].toInt() > 0
-                    && it.conditionals.any { conditional -> conditional.isOfType(UniqueType.ConditionalVsCity) }
+    fun isProbablySiegeUnit() = isRanged()
+            && getMatchingUniques(UniqueType.Strength, StateForConditionals.IgnoreConditionals)
+                .any { it.params[0].toInt() > 0
+                    && it.conditionals.any { conditional -> conditional.type == UniqueType.ConditionalVsCity }
                 }
-        )
 
     fun getForceEvaluation(): Int {
-        if (cachedForceEvaluation < 0)    evaluateForce()
-        return  cachedForceEvaluation
+        if (cachedForceEvaluation < 0) evaluateForce()
+        return cachedForceEvaluation
     }
 
     private fun evaluateForce() {
@@ -392,19 +385,18 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         for (unique in allUniques) {
             when (unique.type) {
                 UniqueType.Strength -> {
-                    if (unique.params[0].toInt() > 0) {
-                        if (unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsUnits) }) { // Bonus vs some units - a quarter of the bonus
-                            power *= (unique.params[0].toInt() / 4f).toPercent()
-                        } else if (
-                            unique.conditionals.any {
-                                it.isOfType(UniqueType.ConditionalVsCity) // City Attack - half the bonus
-                                        || it.isOfType(UniqueType.ConditionalAttacking) // Attack - half the bonus
-                                        || it.isOfType(UniqueType.ConditionalDefending) // Defense - half the bonus
-                                        || it.isOfType(UniqueType.ConditionalFightingInTiles)
-                            } // Bonus in terrain or feature - half the bonus
-                        ) {
-                            power *= (unique.params[0].toInt() / 2f).toPercent()
-                        }
+                    if (unique.params[0].toInt() <= 0) continue
+                    if (unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsUnits) }) { // Bonus vs some units - a quarter of the bonus
+                        power *= (unique.params[0].toInt() / 4f).toPercent()
+                    } else if (
+                        unique.conditionals.any {
+                            it.isOfType(UniqueType.ConditionalVsCity) // City Attack - half the bonus
+                                || it.isOfType(UniqueType.ConditionalAttacking) // Attack - half the bonus
+                                || it.isOfType(UniqueType.ConditionalDefending) // Defense - half the bonus
+                                || it.isOfType(UniqueType.ConditionalFightingInTiles)
+                        } // Bonus in terrain or feature - half the bonus
+                    ) {
+                        power *= (unique.params[0].toInt() / 2f).toPercent()
                     }
                 }
                 UniqueType.StrengthNearCapital ->
