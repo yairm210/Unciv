@@ -5,13 +5,17 @@ import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.images.IconCircleGroup
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 
 /**
@@ -36,6 +40,7 @@ class ExpanderTab(
     headerPad: Float = 10f,
     expanderWidth: Float = 0f,
     private val persistenceID: String? = null,
+    toggleKey: KeyboardBinding = KeyboardBinding.None,
     private val onChange: (() -> Unit)? = null,
     initContent: ((Table) -> Unit)? = null
 ): Table(BaseScreen.skin) {
@@ -81,7 +86,8 @@ class ExpanderTab(
         header.add(headerLabel)
         header.add(headerIcon).size(arrowSize).align(Align.center)
         header.touchable= Touchable.enabled
-        header.onClick { toggle() }
+        header.onActivation { toggle() }
+        header.keyShortcuts.add(toggleKey)  // Using the onActivation parameter adds a tooltip, which often does not look too good
         if (expanderWidth != 0f)
             defaults().minWidth(expanderWidth)
         defaults().growX()
@@ -126,6 +132,38 @@ class ExpanderTab(
     /** Toggle [isOpen], animated */
     fun toggle() {
         isOpen = !isOpen
+
+        // In the common case where the expander is hosted in a Table within a ScrollPane...
+        // try scrolling our header so it is visible (when toggled by keyboard)
+        if (parent is Table && parent.parent is ScrollPane)
+            tryAutoScroll(parent.parent as ScrollPane)
+        // But - our Actor.addBorder extension can ruin that, so cater for that special case too...
+        else if (testForBorderedTable())
+            tryAutoScroll(parent.parent.parent as ScrollPane)
+    }
+
+    private fun testForBorderedTable(): Boolean {
+        if (parent !is Table) return false
+        val borderTable = parent.parent as? Table ?: return false
+        if (parent.parent.parent !is ScrollPane) return false
+        return borderTable.cells.size == 1 && borderTable.background != null && borderTable.padTop == 2f
+    }
+
+    private fun tryAutoScroll(scrollPane: ScrollPane) {
+        if (scrollPane.isScrollingDisabledY) return
+
+        // todo this simple approach works, but it might be prettier:
+        // When opening, the content right now is still without our innerTable, which will not be
+        // included until animation ends, and that makes the result not what heightToShow intends.
+        val heightToShow = if (isOpen) scrollPane.height.coerceAtMost(header.height + innerTable.height)
+            else header.height
+
+        // If ever needed - how to check whether scrollTo would not need to scroll:
+//         val relativeY =  scrollPane.actor.height - this.y - scrollPane.scrollY
+//         if (relativeY >= heightToShow && relativeY <= scrollPane.scrollHeight) return
+
+        // scrollTo does the y axis inversion for us, and also will do nothing if the requested area is already fully visible
+        scrollPane.scrollTo(0f, this.y, header.width, this.y + heightToShow)
     }
 
     /** Change header label text after initialization */
