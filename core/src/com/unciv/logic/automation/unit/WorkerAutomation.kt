@@ -131,7 +131,7 @@ class WorkerAutomation(
             if (reachedTile != currentTile) unit.doAction() // otherwise, we get a situation where the worker is automated, so it tries to move but doesn't, then tries to automate, then move, etc, forever. Stack overflow exception!
 
             //If we have reached a fort tile that is in progress and shouldn't be there, cancel it.
-            if (reachedTile == tileToWork && (reachedTile.improvementInProgress == Constants.fort && !evaluateFortSuroundings(currentTile, false))) {
+            if (reachedTile == tileToWork && reachedTile.improvementInProgress == Constants.fort && !evaluateFortSuroundings(currentTile, false)) {
                 debug("Replacing fort in progress with new improvement")
                 reachedTile.stopWorkingOnImprovement()
             }
@@ -163,8 +163,8 @@ class WorkerAutomation(
         }
 
         //If we have reached a fort tile that is in progress and shouldn't be there, cancel it.
-        if ((currentTile.improvementInProgress == Constants.fort
-                && !evaluateFortSuroundings(currentTile, false))) {
+        if (currentTile.improvementInProgress == Constants.fort
+                && !evaluateFortSuroundings(currentTile, false)) {
             debug("Replacing fort in progress with new improvement")
             currentTile.stopWorkingOnImprovement()
         }
