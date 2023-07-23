@@ -114,7 +114,7 @@ object BattleDamage {
         val modifiers = getGeneralModifiers(attacker, defender, CombatAction.Attack, tileToAttackFrom)
 
         if (attacker is MapUnitCombatant) {
-            if (attacker.unit.isEmbarked()
+            if (attacker.unit.isEmbarked() && defender.getTile().isLand
                     && !attacker.unit.hasUnique(UniqueType.AttackAcrossCoast))
                 modifiers["Landing"] = -50
 

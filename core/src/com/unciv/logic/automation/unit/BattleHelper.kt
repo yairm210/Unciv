@@ -121,8 +121,8 @@ object BattleHelper {
         if (tileCombatant is CityCombatant && tileCombatant.city.hasJustBeenConquered) return false
         if (!combatant.getCivInfo().isAtWarWith(tileCombatant.getCivInfo())) return false
 
-        if (combatant is MapUnitCombatant && combatant.isLandUnit() && combatant.isMelee() &&
-            !combatant.hasUnique(UniqueType.LandUnitEmbarkation) && tile.isWater
+        if (combatant is MapUnitCombatant && combatant.isLandUnit() && combatant.isMelee() && tile.isWater &&
+            (!combatant.hasUnique(UniqueType.LandUnitEmbarkation) && !combatant.hasUnique(UniqueType.CanMoveOnWater))
         )
             return false
 
