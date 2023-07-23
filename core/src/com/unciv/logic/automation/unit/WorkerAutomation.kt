@@ -162,13 +162,6 @@ class WorkerAutomation(
             return
         }
 
-        //If we have reached a fort tile that is in progress and shouldn't be there, cancel it.
-        if (currentTile.improvementInProgress == Constants.fort
-                && !evaluateFortSuroundings(currentTile, false)) {
-            debug("Replacing fort in progress with new improvement")
-            currentTile.stopWorkingOnImprovement()
-        }
-
         if (currentTile.improvementInProgress == null && tileCanBeImproved(unit, currentTile)) {
             debug("WorkerAutomation: ${unit.label()} -> start improving $currentTile")
             return currentTile.startWorkingOnImprovement(chooseImprovement(unit, currentTile)!!, civInfo, unit)
