@@ -556,8 +556,8 @@ class WorkerAutomation(
      * @return Yes the location is good for a Fort here
      */
     fun evaluateFortPlacement(tile: Tile, isCitadel: Boolean): Boolean {
-        return evaluateFortSuroundings(tile,isCitadel)
-            && tile.improvement != Constants.fort // don't build fort if it is already here
+        return tile.improvement != Constants.fort // don't build fort if it is already here
+            && evaluateFortSuroundings(tile,isCitadel)
     }
 
     private fun hasWorkableSeaResource(tile: Tile, civInfo: Civilization): Boolean =
