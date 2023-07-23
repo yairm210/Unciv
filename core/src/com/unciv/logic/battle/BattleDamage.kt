@@ -114,9 +114,9 @@ object BattleDamage {
         val modifiers = getGeneralModifiers(attacker, defender, CombatAction.Attack, tileToAttackFrom)
 
         if (attacker is MapUnitCombatant) {
-            if (attacker.unit.isEmbarked() && defender.getTile().isLand
+            if (attacker.unit.isEmbarked()
                     && !attacker.unit.hasUnique(UniqueType.AttackAcrossCoast))
-                modifiers["Landing"] = -50
+                modifiers["Embarked"] = -50
 
             // Land Melee Unit attacking to Water
             if (attacker.unit.type.isLandUnit() && !attacker.getTile().isWater && attacker.isMelee() && defender.getTile().isWater
