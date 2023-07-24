@@ -152,18 +152,21 @@ class ExpanderTab(
     private fun tryAutoScroll(scrollPane: ScrollPane) {
         if (scrollPane.isScrollingDisabledY) return
 
-        // todo this simple approach works, but it might be prettier:
-        // When opening, the content right now is still without our innerTable, which will not be
-        // included until animation ends, and that makes the result not what heightToShow intends.
-        val heightToShow = if (isOpen) scrollPane.height.coerceAtMost(header.height + innerTable.height)
-            else header.height
+        // As the "opening" is animated, and right now the animation has just started,
+        // a scroll-to-visible won't work, so limit it to showing the header for now.
+       val heightToShow = header.height
 
-        // If ever needed - how to check whether scrollTo would not need to scroll:
-//         val relativeY =  scrollPane.actor.height - this.y - scrollPane.scrollY
+        // Coords as seen by "this" expander relative to parent and as seen by scrollPane may differ by the border size
+        // Also make area to show relative to top
+        val yToShow = this.y + this.height - heightToShow +
+            (if (scrollPane.actor == this.parent) 0f else parent.y)
+
+        // If ever needed - how to check whether scrollTo would not need to scroll (without testing for heightToShow > scrollHeight)
+//         val relativeY =  scrollPane.actor.height - yToShow - scrollPane.scrollY
 //         if (relativeY >= heightToShow && relativeY <= scrollPane.scrollHeight) return
 
         // scrollTo does the y axis inversion for us, and also will do nothing if the requested area is already fully visible
-        scrollPane.scrollTo(0f, this.y, header.width, this.y + heightToShow)
+        scrollPane.scrollTo(0f, yToShow, header.width, heightToShow)
     }
 
     /** Change header label text after initialization (does not auto-translate) */
