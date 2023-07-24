@@ -509,7 +509,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         var healing = when {
             tile.isCityCenter() -> 25
             tile.isWater && isFriendlyTerritory && (baseUnit.isWaterUnit() || isTransported) -> 20 // Water unit on friendly water
-            tile.isWater && isFriendlyTerritory && (baseUnit.hasUnique(UniqueType.CanMoveOnWater)) -> 20 // Treated as a water unit on friendly water
+            tile.isWater && isFriendlyTerritory && cache.canMoveOnWater -> 20 // Treated as a water unit on friendly water
             tile.isWater -> 0 // All other water cases
             isFriendlyTerritory -> 20 // Allied territory
             tile.getOwner() == null -> 10 // Neutral territory

@@ -1,5 +1,6 @@
 package com.unciv.logic.battle
 
+import com.unciv.Constants
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.GlobalUniques
@@ -116,7 +117,7 @@ object BattleDamage {
         if (attacker is MapUnitCombatant) {
             if (attacker.unit.isEmbarked()
                     && !attacker.unit.hasUnique(UniqueType.AttackAcrossCoast))
-                modifiers["Embarked"] = -50
+                modifiers[Constants.embarked] = -50
 
             // Land Melee Unit attacking to Water
             if (attacker.unit.type.isLandUnit() && !attacker.getTile().isWater && attacker.isMelee() && defender.getTile().isWater

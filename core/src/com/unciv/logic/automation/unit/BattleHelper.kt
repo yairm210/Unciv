@@ -122,7 +122,7 @@ object BattleHelper {
         if (!combatant.getCivInfo().isAtWarWith(tileCombatant.getCivInfo())) return false
 
         if (combatant is MapUnitCombatant && combatant.isLandUnit() && combatant.isMelee() && tile.isWater &&
-            (!combatant.hasUnique(UniqueType.LandUnitEmbarkation) && !combatant.hasUnique(UniqueType.CanMoveOnWater))
+            (!combatant.getCivInfo().tech.unitsCanEmbark && !combatant.unit.cache.canMoveOnWater)
         )
             return false
 
