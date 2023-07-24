@@ -69,7 +69,7 @@ I'm not planning on it. It means paying money to Apple, yet another release path
  
 ### Steam release?
 
-Steam has decided that they don't want to host Unciv, they probably don't want to risk legal issues with Firaxis (although those should be non-existant, see below)
+Steam has decided that they don't want to host Unciv, they probably don't want to risk legal issues with Firaxis (although those should be non-existent, see below)
  
 ### Will you implement {feature}?
 
