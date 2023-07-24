@@ -1,3 +1,25 @@
+## 4.7.10
+
+Resolved  - targetSdk set to 33
+
+More BaseUnit unique-finding including type uniques
+
+BaseUnit unique-finding always takes Type uniques into account
+
+4.7.9-patch1
+
+Correct declaringWar key / English translation  - By LenaBullens
+
+Fixed automated workers not replacing forts for AI civ.  - By tuvus
+
+Fixed word typo in README.md  - By tali-vitali
+
+By SeventhM:
+- Modernize Connection Tests 
+- Fix issues when adding/removing buildings 
+
+NotificationAction compatibility patch  - By SomeTroglodyte
+
 ## 4.7.9
 
 Minor memory improvement
