@@ -1,24 +1,14 @@
 ## 4.7.10
 
-Resolved  - targetSdk set to 33
-
-More BaseUnit unique-finding including type uniques
-
 BaseUnit unique-finding always takes Type uniques into account
 
-4.7.9-patch1
+Automated AI workers now replace forts - By tuvus
 
-Correct declaringWar key / English translation  - By LenaBullens
-
-Fixed automated workers not replacing forts for AI civ.  - By tuvus
-
-Fixed word typo in README.md  - By tali-vitali
-
-By SeventhM:
-- Modernize Connection Tests 
-- Fix issues when adding/removing buildings 
+Fix issues when adding/removing buildings - By SeventhM
 
 NotificationAction compatibility patch  - By SomeTroglodyte
+
+Text correction for Ottomans war declaration - By LenaBullens
 
 ## 4.7.9
 
