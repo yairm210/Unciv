@@ -581,7 +581,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         // Cater for the mad modder using trailing '-' in their repo name - convert the mods list so
         // it requires our new, Windows-safe local name (no trailing blanks)
-        for ((oldName, newName) in gameParameters.mods.map { it to it.repoNameToFolderName() }) {
+        for ((oldName, newName) in gameParameters.mods.map { it to it.repoNameToFolderName(onlyOuterBlanks = true) }) {
             if (newName == oldName) continue
             gameParameters.mods.remove(oldName)
             gameParameters.mods.add(newName)
