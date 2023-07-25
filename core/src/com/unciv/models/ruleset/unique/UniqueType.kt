@@ -184,7 +184,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     /// Resource production & consumption
     ConsumesResources("Consumes [amount] [resource]", UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit),
-    ProvidesResources("Provides [amount] [resource]", UniqueTarget.Improvement, UniqueTarget.Global),
+    ProvidesResources("Provides [amount] [resource]", UniqueTarget.Global, UniqueTarget.Improvement, UniqueTarget.FollowerBelief),
     CostsResources("Costs [amount] [stockpiledResource]", UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit),
     // Todo: Get rid of forced sign (+[relativeAmount]) and unify these two, e.g.: "[relativeAmount]% [resource/resourceType] production"
     // Note that the parameter type 'resourceType' (strategic, luxury, bonus) currently doesn't exist and should then be added as well
@@ -497,7 +497,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     TerrainGrantsPromotion("Grants [promotion] ([comment]) to adjacent [mapUnitFilter] units for the rest of the game", UniqueTarget.Terrain),
     GrantsCityStrength("[amount] Strength for cities built on this terrain", UniqueTarget.Terrain),
     ProductionBonusWhenRemoved("Provides a one-time Production bonus to the closest city when cut down", UniqueTarget.Terrain),
-    Vegetation("Vegetation", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
+    Vegetation("Vegetation", UniqueTarget.Terrain, UniqueTarget.Improvement, flags = UniqueFlag.setOfHiddenToUsers),  // Improvement included because use as tileFilter works
 
 
     TileProvidesYieldWithoutPopulation("Tile provides yield without assigned population", UniqueTarget.Terrain, UniqueTarget.Improvement),

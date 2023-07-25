@@ -606,7 +606,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Provides [amount] [resource]"
 	Example: "Provides [3] [Iron]"
 
-	Applicable to: Global, Improvement
+	Applicable to: Global, FollowerBelief, Improvement
 
 ??? example  "Quantity of strategic resources produced by the empire +[relativeAmount]%"
 	Example: "Quantity of strategic resources produced by the empire +[+20]%"
@@ -1450,7 +1450,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Terrain
 
 ??? example  "Vegetation"
-	Applicable to: Terrain
+	Applicable to: Terrain, Improvement
 
 ??? example  "Tile provides yield without assigned population"
 	Applicable to: Terrain, Improvement
