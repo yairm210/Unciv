@@ -30,6 +30,7 @@ The JSON files that make up mods can have many different fields, and as not all 
     - [Difficulties.json](5-Miscellaneous-JSON-files.md#difficultiesjson)
     - [Eras.json](5-Miscellaneous-JSON-files.md#erasjson)
     - [ModOptions.json](5-Miscellaneous-JSON-files.md#modoptionsjson)
+    - [GlobalUniques.json](5-Miscellaneous-JSON-files.md#globaluniquesjson)
     - [Tutorials.json](5-Miscellaneous-JSON-files.md#tutorialsjson)
 -   [Stats](3-Map-related-JSON-files.md#stats)
 -   [Sounds](../Images-and-Audio.md#sounds)

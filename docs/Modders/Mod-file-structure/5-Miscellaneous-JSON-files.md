@@ -201,6 +201,14 @@ The formula for the gold cost of a unit upgrade is (rounded down to a multiple o
         ) ^ `exponent`
 With `civModifier` being the multiplicative aggregate of ["\[relativeAmount\]% Gold cost of upgrading"](../uniques.md#global-uniques) uniques that apply.
 
+## GlobalUniques.json
+
+Defines uniques that apply globally. e.g. Vanilla rulesets define the effects of Unhappiness here.
+Only the `uniques` field is used, but a name must still be set (the Ruleset validator might display it).
+When extension rulesets define GlobalUniques, all uniques are merged. At the moment there is no way to change/remove uniques set by a base mod.
+
+[link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/GlobalUniques.json)
+
 ## Tutorials.json
 
 [link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Tutorials.json)
