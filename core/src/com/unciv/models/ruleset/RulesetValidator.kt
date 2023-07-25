@@ -40,6 +40,8 @@ class RulesetValidator(val ruleset: Ruleset) {
         val rulesetInvariant = UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
         val rulesetSpecific = UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
 
+        checkUniques(ruleset.globalUniques, lines, rulesetInvariant, tryFixUnknownUniques)
+
         for (unit in ruleset.units.values) {
             if (unit.upgradesTo == unit.name || (unit.upgradesTo != null && unit.upgradesTo == unit.replaces))
                 lines += "${unit.name} upgrades to itself!"
@@ -145,6 +147,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         val vanillaRuleset = RulesetCache.getVanillaRuleset()  // for UnitTypes fallback
 
+        checkUniques(ruleset.globalUniques, lines, rulesetSpecific, tryFixUnknownUniques)
 
         if (ruleset.units.values.none { it.hasUnique(UniqueType.FoundCity, StateForConditionals.IgnoreConditionals) })
             lines += "No city-founding units in ruleset!"
