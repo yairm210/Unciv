@@ -5,7 +5,7 @@ import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.CityAction
 import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcons
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.BFS
 import com.unciv.models.ruleset.Building
@@ -117,7 +117,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             "Work has started on [$chosenConstruction]",
             CityAction(city.location),
             NotificationCategory.Production,
-            NotificationIcons.Construction
+            NotificationIcon.Construction
         )
         cityConstructions.currentConstructionFromQueue = chosenConstruction
     }

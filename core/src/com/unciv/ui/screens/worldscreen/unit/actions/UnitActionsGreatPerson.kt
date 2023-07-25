@@ -1,7 +1,7 @@
 package com.unciv.ui.screens.worldscreen.unit.actions
 
 import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcons
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitAction
@@ -93,7 +93,7 @@ object UnitActionsGreatPerson {
 
                         tileOwningCiv.getDiplomacyManager(unit.civ).addInfluence(influenceEarned)
                         unit.civ.addNotification("Your trade mission to [$tileOwningCiv] has earned you [$goldEarned] gold and [$influenceEarned] influence!",
-                            NotificationCategory.General, tileOwningCiv.civName, NotificationIcons.Gold, NotificationIcons.Culture)
+                            NotificationCategory.General, tileOwningCiv.civName, NotificationIcon.Gold, NotificationIcon.Culture)
                         unit.consume()
                     }.takeIf { canConductTradeMission }
                 )

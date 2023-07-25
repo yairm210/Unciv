@@ -4,7 +4,7 @@ import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcons
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 
 class Trade : IsPartOfGameInfoSerialization {
@@ -63,7 +63,7 @@ class TradeRequest : IsPartOfGameInfoSerialization {
         if (trade.isPeaceTreaty()) diplomacyManager.setFlag(DiplomacyFlags.DeclinedPeace, 5)
 
         requestingCivInfo.addNotification("[${decliningCiv.civName}] has denied your trade request",
-            NotificationCategory.Trade, decliningCiv.civName, NotificationIcons.Trade)
+            NotificationCategory.Trade, decliningCiv.civName, NotificationIcon.Trade)
     }
 
 

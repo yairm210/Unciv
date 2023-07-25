@@ -1,6 +1,6 @@
 package com.unciv.logic.civilization
 
-object NotificationIcons {
+object NotificationIcon {
     // Remember: The typical white-on-transparency icon will not be visible on Notifications
 
     const val Barbarians = "ImprovementIcons/Barbarian encampment"

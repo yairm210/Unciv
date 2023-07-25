@@ -6,7 +6,7 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcons
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
@@ -195,7 +195,7 @@ class CityExpansionManager : IsPartOfGameInfoSerialization {
             if (location != null) {
                 val locations = LocationAction(location, city.location)
                 city.civ.addNotification("[${city.name}] has expanded its borders!", locations,
-                    NotificationCategory.Cities, NotificationIcons.Culture)
+                    NotificationCategory.Cities, NotificationIcon.Culture)
             }
         }
     }

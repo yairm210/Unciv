@@ -5,7 +5,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcons
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.managers.EspionageManager
 import kotlin.random.Random
 
@@ -91,7 +91,7 @@ class Spy() : IsPartOfGameInfoSerialization {
                     action = SpyAction.Surveillance
                     turnsRemainingForAction = 0
                     val notificationString = "Your spy [$name] cannot steal any more techs from [${getLocation()!!.civ}] as we've already researched all the technology they know!"
-                    civInfo.addNotification(notificationString, getLocation()!!.location, NotificationCategory.Espionage, NotificationIcons.Spy)
+                    civInfo.addNotification(notificationString, getLocation()!!.location, NotificationCategory.Espionage, NotificationIcon.Spy)
                     return
                 }
                 val techStealCost = stealableTechs.maxOfOrNull { civInfo.gameInfo.ruleset.technologies[it]!!.cost }!!
@@ -129,11 +129,11 @@ class Spy() : IsPartOfGameInfoSerialization {
             else -> null // Not detected
         }
         if (detectionString != null)
-            otherCiv.addNotification(detectionString, city.location, NotificationCategory.Espionage, NotificationIcons.Spy)
+            otherCiv.addNotification(detectionString, city.location, NotificationCategory.Espionage, NotificationIcon.Spy)
 
         civInfo.addNotification("Your spy [$name] stole the Technology [$stolenTech] from [$city]!", city.location,
             NotificationCategory.Espionage,
-            NotificationIcons.Spy
+            NotificationIcon.Spy
         )
 
 

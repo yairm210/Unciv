@@ -9,7 +9,7 @@ import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcons
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
 import com.unciv.models.helpers.UnitMovementMemoryType
@@ -664,7 +664,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
             "We have captured a barbarian encampment and recovered [${goldGained.toInt()}] gold!",
             tile.position,
             NotificationCategory.War,
-            NotificationIcons.Gold
+            NotificationIcon.Gold
         )
     }
 

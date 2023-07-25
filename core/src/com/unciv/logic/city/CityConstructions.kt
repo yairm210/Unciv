@@ -7,7 +7,7 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.city.ConstructionAutomation
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcons
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
@@ -396,7 +396,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                             "Excess production for [$constructionName] converted to [$workDone] gold",
                             city.location,
                             NotificationCategory.Production,
-                            NotificationIcons.Gold, "BuildingIcons/${constructionName}")
+                            NotificationIcon.Gold, "BuildingIcons/${constructionName}")
                     }
                 } else if (construction is BaseUnit) {
                     // Production put into upgradable units gets put into upgraded version
@@ -427,12 +427,12 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             when {
                 otherCiv.hasExplored(city.getCenterTile()) ->
                     otherCiv.addNotification("The city of [${city.name}] has started constructing [${construction.name}]!",
-                        city.location, NotificationCategory.General, NotificationIcons.Construction, buildingIcon)
+                        city.location, NotificationCategory.General, NotificationIcon.Construction, buildingIcon)
                 otherCiv.knows(city.civ) ->
                     otherCiv.addNotification("[${city.civ.civName}] has started constructing [${construction.name}]!",
-                        NotificationCategory.General, NotificationIcons.Construction, buildingIcon)
+                        NotificationCategory.General, NotificationIcon.Construction, buildingIcon)
                 else -> otherCiv.addNotification("An unknown civilization has started constructing [${construction.name}]!",
-                    NotificationCategory.General, NotificationIcons.Construction, buildingIcon)
+                    NotificationCategory.General, NotificationIcon.Construction, buildingIcon)
             }
         }
     }
@@ -463,7 +463,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             val icon = if (construction is Building) buildingIcon else construction.name // could be a unit, in which case take the unit name.
             city.civ.addNotification(
                 "[${construction.name}] has been built in [${city.name}]",
-                    city.location, NotificationCategory.Production, NotificationIcons.Construction, icon)
+                    city.location, NotificationCategory.Production, NotificationIcon.Construction, icon)
         }
 
         if (construction is Building && construction.hasUnique(UniqueType.TriggersAlertOnCompletion,
@@ -475,7 +475,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                 val completingCivDescription =
                     if (otherCiv.knows(city.civ)) "[${city.civ.civName}]" else "An unknown civilization"
                 otherCiv.addNotification("$completingCivDescription has completed [${construction.name}]!",
-                    NotificationCategory.General, NotificationIcons.Construction, buildingIcon)
+                    NotificationCategory.General, NotificationIcon.Construction, buildingIcon)
             }
         }
         return true

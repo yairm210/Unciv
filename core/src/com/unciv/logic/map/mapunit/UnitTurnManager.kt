@@ -4,7 +4,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcons
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
@@ -93,20 +93,20 @@ class UnitTurnManager(val unit: MapUnit) {
                 "An enemy [Citadel] has destroyed our [${unit.name}]",
                 locations,
                 NotificationCategory.War,
-                NotificationIcons.Citadel, NotificationIcons.Death, unit.name
+                NotificationIcon.Citadel, NotificationIcon.Death, unit.name
             )
             citadelTile.getOwner()?.addNotification(
                 "Your [Citadel] has destroyed an enemy [${unit.name}]",
                 locations,
                 NotificationCategory.War,
-                NotificationIcons.Citadel, NotificationIcons.Death, unit.name
+                NotificationIcon.Citadel, NotificationIcon.Death, unit.name
             )
             unit.destroy()
         } else unit.civ.addNotification(
             "An enemy [Citadel] has attacked our [${unit.name}]",
             locations,
             NotificationCategory.War,
-            NotificationIcons.Citadel, NotificationIcons.War, unit.name
+            NotificationIcon.Citadel, NotificationIcon.War, unit.name
         )
     }
 
@@ -121,7 +121,7 @@ class UnitTurnManager(val unit: MapUnit) {
                 unit.currentTile.position,
                 NotificationCategory.Units,
                 unit.name,
-                NotificationIcons.Death
+                NotificationIcon.Death
             )
             unit.destroy()
         } else if (tileDamage > 0) unit.civ.addNotification(
@@ -230,7 +230,7 @@ class UnitTurnManager(val unit: MapUnit) {
             val locations = LocationAction(tile.position, closestCity.location)
             unit.civ.addNotification(
                 "Clearing a [$removedTerrainFeature] has created [$productionPointsToAdd] Production for [${closestCity.name}]",
-                locations, NotificationCategory.Production, NotificationIcons.Construction
+                locations, NotificationCategory.Production, NotificationIcon.Construction
             )
         }
     }

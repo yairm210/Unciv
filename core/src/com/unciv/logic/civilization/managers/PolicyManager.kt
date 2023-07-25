@@ -3,7 +3,7 @@ package com.unciv.logic.civilization.managers
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcons
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.MapSize
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Policy.PolicyBranchType
@@ -243,7 +243,7 @@ class PolicyManager : IsPartOfGameInfoSerialization {
             civ.addNotification(
                 "{${defaultNotificationText}} {${extraNotificationText}}",
                 NotificationCategory.General,
-                NotificationIcons.Culture
+                NotificationIcon.Culture
             )
         }
     }

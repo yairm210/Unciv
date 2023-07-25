@@ -5,7 +5,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcons
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.unique.LocalUniqueCache
@@ -96,7 +96,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         foodStored += food
         if (food < 0)
             city.civ.addNotification("[${city.name}] is starving!",
-                city.location, NotificationCategory.Cities, NotificationIcons.Growth, NotificationIcons.Death)
+                city.location, NotificationCategory.Cities, NotificationIcon.Growth, NotificationIcon.Death)
         if (foodStored < 0) {        // starvation!
             if (population > 1) addPopulation(-1)
             foodStored = 0
@@ -120,7 +120,7 @@ class CityPopulationManager : IsPartOfGameInfoSerialization {
         addPopulation(1)
         city.updateCitizens = true
         city.civ.addNotification("[${city.name}] has grown!", city.location,
-            NotificationCategory.Cities, NotificationIcons.Growth)
+            NotificationCategory.Cities, NotificationIcon.Growth)
     }
 
     fun addPopulation(count: Int) {

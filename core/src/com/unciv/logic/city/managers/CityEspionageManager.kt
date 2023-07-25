@@ -4,7 +4,7 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
-import com.unciv.logic.civilization.NotificationIcons
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.Spy
 
 enum class SpyFleeReason {
@@ -43,7 +43,7 @@ class CityEspionageManager : IsPartOfGameInfoSerialization {
                 SpyFleeReason.CityCaptured -> "After the city of [${city.name}] was conquered, your spy [${spy.name}] has fled back to our hideout."
                 else -> "Due to the chaos ensuing in [${city.name}], your spy [${spy.name}] has fled back to our hideout."
             }
-            owningCiv.addNotification(notificationString, city.location, NotificationCategory.Espionage, NotificationIcons.Spy)
+            owningCiv.addNotification(notificationString, city.location, NotificationCategory.Espionage, NotificationIcon.Spy)
             spy.location = null
         }
     }
