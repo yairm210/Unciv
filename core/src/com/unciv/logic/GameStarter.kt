@@ -435,7 +435,7 @@ object GameStarter {
     }
 
     private fun getStartingUnitsForEraAndDifficulty(civ: Civilization, gameInfo: GameInfo, ruleset: Ruleset, startingEra: String): MutableList<String> {
-        val startingUnits = ruleset.eras[startingEra]!!.getStartingUnits().toMutableList()
+        val startingUnits = ruleset.eras[startingEra]!!.getStartingUnits(ruleset)
 
         // Add extra units granted by difficulty
         startingUnits.addAll(when {

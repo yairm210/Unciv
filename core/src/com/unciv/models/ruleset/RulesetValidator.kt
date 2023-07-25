@@ -316,13 +316,14 @@ class RulesetValidator(val ruleset: Ruleset) {
                 if (building !in ruleset.buildings)
                     lines += "Nonexistent building $building built by settlers when starting in ${era.name}"
             // todo the whole 'starting unit' thing needs to be redone, there's no reason we can't have a single list containing all the starting units.
-            if (era.startingSettlerUnit !in ruleset.units && (era.startingSettlerUnit!= Constants.settler || ruleset.units.values.none { it.hasUnique(
-                        UniqueType.FoundCity) }))
+            if (era.startingSettlerUnit !in ruleset.units
+                    && ruleset.units.values.none { it.hasUnique(UniqueType.FoundCity) })
                 lines += "Nonexistent unit ${era.startingSettlerUnit} marked as starting unit when starting in ${era.name}"
-            if (era.startingWorkerCount!=0 && era.startingWorkerUnit !in ruleset.units)
+            if (era.startingWorkerCount != 0 && era.startingWorkerUnit !in ruleset.units
+                    && ruleset.units.values.none { it.hasUnique(UniqueType.BuildImprovements) })
                 lines += "Nonexistent unit ${era.startingWorkerUnit} marked as starting unit when starting in ${era.name}"
 
-            if ((era.startingMilitaryUnitCount !=0 || allDifficultiesStartingUnits.contains(
+            if ((era.startingMilitaryUnitCount != 0 || allDifficultiesStartingUnits.contains(
                         Constants.eraSpecificUnit)) && era.startingMilitaryUnit !in ruleset.units)
                 lines += "Nonexistent unit ${era.startingMilitaryUnit} marked as starting unit when starting in ${era.name}"
             if (era.researchAgreementCost < 0 || era.startingSettlerCount < 0 || era.startingWorkerCount < 0 || era.startingMilitaryUnitCount < 0 || era.startingGold < 0 || era.startingCulture < 0)
