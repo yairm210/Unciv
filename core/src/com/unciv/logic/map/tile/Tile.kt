@@ -844,14 +844,17 @@ open class Tile : IsPartOfGameInfoSerialization {
 
     private fun updateUniqueMap() {
         if (!::tileMap.isInitialized) return // This tile is a fake tile, for visual display only (e.g. map editor, civilopedia)
-        val terrainString = allTerrains.joinToString(";") { it.name }
-        val cachedUniqueMap = tileMap.tileUniqueMapCache[terrainString]
-        terrainUniqueMap = if (cachedUniqueMap != null) cachedUniqueMap
+        val terrainNameList = allTerrains.map { it.name }.toList()
+
+        // List hash is function of all its items, so the same items in the same order will always give the same hash
+        val cachedUniqueMap = tileMap.tileUniqueMapCache[terrainNameList]
+        terrainUniqueMap = if (cachedUniqueMap != null)
+            cachedUniqueMap
         else {
             val newUniqueMap = UniqueMap()
             for (terrain in allTerrains)
                 newUniqueMap.addUniques(terrain.uniqueObjects)
-            tileMap.tileUniqueMapCache[terrainString] = newUniqueMap
+            tileMap.tileUniqueMapCache[terrainNameList] = newUniqueMap
             newUniqueMap
         }
     }

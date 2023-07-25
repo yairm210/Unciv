@@ -185,7 +185,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     fun getCurrentConstruction(): IConstruction = getConstruction(currentConstructionFromQueue)
 
-    fun isBuilt(buildingName: String): Boolean = builtBuildings.contains(buildingName)
+    fun isAllBuilt(buildingList: List<String>): Boolean = buildingList.all { isBuilt(it) }
+
+    fun isBuilt(buildingName: String): Boolean = builtBuildingObjects.any { it.name == buildingName }
     @Suppress("MemberVisibilityCanBePrivate")
     fun isBeingConstructed(constructionName: String): Boolean = currentConstructionFromQueue == constructionName
     fun isEnqueued(constructionName: String): Boolean = constructionQueue.contains(constructionName)
@@ -491,6 +493,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         builtBuildingObjects = builtBuildingObjects.withItem(building)
         builtBuildings.add(buildingName)
 
+        city.civ.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
+        city.civ.cache.updateCivResources() // this building could be a resource-requiring one
+
         /** Support for [UniqueType.CreatesOneImprovement] */
         applyCreateOneImprovement(building)
 
@@ -520,9 +525,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             city.reassignPopulationDeferred()
 
         updateUniques()
-
-        civ.cache.updateCivResources() // this building could be a resource-requiring one
-        civ.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
     }
 
     fun triggerNewBuildingUniques(building: Building) {
@@ -544,11 +546,13 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     fun removeBuilding(buildingName: String) {
-        val buildingObject = city.getRuleset().buildings[buildingName]!!
-        builtBuildingObjects = builtBuildingObjects.withoutItem(buildingObject)
+        val buildingObject = city.getRuleset().buildings[buildingName]
+        if (buildingObject != null)
+            builtBuildingObjects = builtBuildingObjects.withoutItem(buildingObject)
+        else builtBuildingObjects.removeAll{ it.name == buildingName }
         builtBuildings.remove(buildingName)
-        city.civ.cache.updateCivResources() // this building could be a resource-requiring one
         city.civ.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
+        city.civ.cache.updateCivResources() // this building could be a resource-requiring one
         updateUniques()
     }
 

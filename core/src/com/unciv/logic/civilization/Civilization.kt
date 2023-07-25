@@ -629,8 +629,8 @@ class Civilization : IsPartOfGameInfoSerialization {
         scoreBreakdown["Population"] = cities.sumOf { it.population.population } * 3 * mapSizeModifier
         scoreBreakdown["Tiles"] = cities.sumOf { city -> city.getTiles().filter { !it.isWater}.count() } * 1 * mapSizeModifier
         scoreBreakdown["Wonders"] = 40 * cities
-            .sumOf { city -> city.cityConstructions.builtBuildings
-                .filter { gameInfo.ruleset.buildings[it]!!.isWonder }.size
+            .sumOf { city -> city.cityConstructions.getBuiltBuildings()
+                .filter { it.isWonder }.count()
             }.toDouble()
         scoreBreakdown["Technologies"] = tech.getNumberOfTechsResearched() * 4.toDouble()
         scoreBreakdown["Future Tech"] = tech.repeatingTechsResearched * 10.toDouble()
@@ -813,25 +813,20 @@ class Civilization : IsPartOfGameInfoSerialization {
     /**
      * Removes current capital then moves capital to argument city if not null
      */
-    fun moveCapitalTo(city: City?) {
-
-        val oldCapital = getCapital()
-
+    fun moveCapitalTo(city: City?, oldCapital: City?) {
         // Add new capital first so the civ doesn't get stuck in a state where it has cities but no capital
         if (city != null) {
             // move new capital
             city.cityConstructions.addBuilding(city.capitalCityIndicator())
             city.isBeingRazed = false // stop razing the new capital if it was being razed
         }
-        // Don't use removeBuilding, since that rebuilds uniques and can generate errors when we have no capital
-        // We're going to recalc the uniques anyway once we move it to the new civ
-        oldCapital?.cityConstructions?.builtBuildings?.remove(oldCapital.capitalCityIndicator())
+        oldCapital?.cityConstructions?.removeBuilding(oldCapital.capitalCityIndicator())
     }
 
-    fun moveCapitalToNextLargest() {
+    fun moveCapitalToNextLargest(oldCapital: City?) {
         val availableCities = cities.filterNot { it.isCapital() }
         if (availableCities.none()) {
-            moveCapitalTo(null)
+            moveCapitalTo(null, oldCapital)
             return
         }
 
@@ -841,7 +836,7 @@ class Civilization : IsPartOfGameInfoSerialization {
             newCapital = availableCities.maxByOrNull { it.population.population }!!
             newCapital.annexCity()
         }
-        moveCapitalTo(newCapital)
+        moveCapitalTo(newCapital, oldCapital)
     }
 
     fun getAllyCiv() = allyCivName
