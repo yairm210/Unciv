@@ -1,5 +1,6 @@
-import com.unciv.build.BuildConfig
+
 import com.unciv.build.AndroidImagePacker
+import com.unciv.build.BuildConfig
 import java.util.Properties
 
 plugins {
@@ -8,7 +9,7 @@ plugins {
 }
 
 android {
-    compileSdk = 32
+    compileSdk = 33
     sourceSets {
         getByName("main").apply {
             manifest.srcFile("AndroidManifest.xml")
@@ -28,7 +29,7 @@ android {
     defaultConfig {
         applicationId = "com.unciv.app"
         minSdk = 21
-        targetSdk = 32 // See #5044
+        targetSdk = 33 // See #5044
         versionCode = BuildConfig.appCodeNumber
         versionName = BuildConfig.appVersion
 
@@ -73,7 +74,7 @@ android {
         // Don't add local save files and fonts to release, obviously
         ignoreAssetsPattern = "!SaveFiles:!fonts:!maps:!music:!mods"
     }
-    buildToolsVersion = "32.0.0"
+    buildToolsVersion = "33.0.2"
 }
 
 task("texturePacker") {

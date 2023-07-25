@@ -129,20 +129,27 @@ class WorkerAutomation(
             debug("WorkerAutomation: %s -> head towards %s", unit.label(), tileToWork)
             val reachedTile = unit.movement.headTowards(tileToWork)
             if (reachedTile != currentTile) unit.doAction() // otherwise, we get a situation where the worker is automated, so it tries to move but doesn't, then tries to automate, then move, etc, forever. Stack overflow exception!
+
+            //If we have reached a fort tile that is in progress and shouldn't be there, cancel it.
+            if (reachedTile == tileToWork && reachedTile.improvementInProgress == Constants.fort && !evaluateFortSuroundings(currentTile, false)) {
+                debug("Replacing fort in progress with new improvement")
+                reachedTile.stopWorkingOnImprovement()
+            }
+
             // If there's move still left, perform action
             // Unit may stop due to Enemy Unit within walking range during doAction() call
             if (unit.currentMovement > 0 && reachedTile == tileToWork) {
                 if (reachedTile.isPillaged()) {
-                    debug("WorkerAutomation: ${unit.label()} -> repairs $currentTile")
+                    debug("WorkerAutomation: ${unit.label()} -> repairs $reachedTile")
                     UnitActions.getRepairAction(unit).invoke()
                     return
                 }
-                if (currentTile.improvementInProgress == null && currentTile.isLand
-                        && tileCanBeImproved(unit, currentTile)
+                if (reachedTile.improvementInProgress == null && reachedTile.isLand
+                        && tileCanBeImproved(unit, reachedTile)
                 ) {
-                    debug("WorkerAutomation: ${unit.label()} -> start improving $currentTile")
-                    return currentTile.startWorkingOnImprovement(
-                        chooseImprovement(unit, currentTile)!!, civInfo, unit
+                    debug("WorkerAutomation: ${unit.label()} -> start improving $reachedTile")
+                    return reachedTile.startWorkingOnImprovement(
+                        chooseImprovement(unit, reachedTile)!!, civInfo, unit
                     )
                 }
             }
@@ -331,7 +338,10 @@ class WorkerAutomation(
                 && civInfo.cities.none { it.getCenterTile().aerialDistanceTo(tile) <= 3 })
             return false // unworkable tile
 
-        val junkImprovement = tile.getTileImprovement()?.hasUnique(UniqueType.AutomatedWorkersWillReplace)
+        //If the tile is a junk improvement or a fort placed in a bad location.
+        val junkImprovement = tile.getTileImprovement()?.hasUnique(UniqueType.AutomatedWorkersWillReplace) == true
+            || (tile.improvement == Constants.fort && !evaluateFortSuroundings(tile, false) && !civInfo.isHuman())
+
         if (tile.improvement != null && junkImprovement == false
                 && !UncivGame.Current.settings.automatedWorkersReplaceImprovements
                 && unit.civ.isHuman())
@@ -451,7 +461,7 @@ class WorkerAutomation(
     }
 
     /**
-     * Checks whether a given tile allows a Fort and whether a Fort may be undesirable (without checking surroundings).
+     * Checks whether a given tile allows a Fort and whether a Fort may be undesirable (without checking surroundings or if there is a fort already on the tile).
      *
      * -> Checks: city, already built, resource, great improvements.
      * Used only in [evaluateFortPlacement].
@@ -460,7 +470,6 @@ class WorkerAutomation(
         //todo Should this not also check impassable and the fort improvement's terrainsCanBeBuiltOn/uniques?
         if (tile.isCityCenter() // don't build fort in the city
             || !tile.isLand // don't build fort in the water
-            || tile.improvement == Constants.fort // don't build fort if it is already here
             || tile.hasViewableResource(civInfo) // don't build on resource tiles
             || tile.containsGreatImprovement() // don't build on great improvements (including citadel)
         ) return false
@@ -470,10 +479,12 @@ class WorkerAutomation(
 
     /**
      * Do we want a Fort [here][tile] considering surroundings?
+     * (but does not check if if there is already a fort here)
+     *
      * @param  isCitadel Controls within borders check - true also allows 1 tile outside borders
-     * @return Yes please build a Fort here
+     * @return Yes the location is good for a Fort here
      */
-    fun evaluateFortPlacement(tile: Tile, isCitadel: Boolean): Boolean {
+    private fun evaluateFortSuroundings(tile: Tile, isCitadel: Boolean): Boolean {
         //todo Is the Citadel code dead anyway? If not - why does the nearestTiles check not respect the param?
 
         // build on our land only
@@ -536,6 +547,17 @@ class WorkerAutomation(
         // let's build fort on the front line, not behind the city
         // +2 is a acceptable deviation from the straight line between cities
         return distanceBetweenCities + 2 > distanceToEnemy + distanceToOurCity
+    }
+
+    /**
+     * Do we want to build a Fort [here][tile] considering surroundings?
+     *
+     * @param  isCitadel Controls within borders check - true also allows 1 tile outside borders
+     * @return Yes the location is good for a Fort here
+     */
+    fun evaluateFortPlacement(tile: Tile, isCitadel: Boolean): Boolean {
+        return tile.improvement != Constants.fort // don't build fort if it is already here
+            && evaluateFortSuroundings(tile,isCitadel)
     }
 
     private fun hasWorkableSeaResource(tile: Tile, civInfo: Civilization): Boolean =

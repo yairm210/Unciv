@@ -1,3 +1,15 @@
+## 4.7.10
+
+BaseUnit unique-finding always takes Type uniques into account
+
+Automated AI workers now replace forts - By tuvus
+
+Fix issues when adding/removing buildings - By SeventhM
+
+NotificationAction compatibility patch  - By SomeTroglodyte
+
+Text correction for Ottomans war declaration - By LenaBullens
+
 ## 4.7.9
 
 Minor memory improvement
