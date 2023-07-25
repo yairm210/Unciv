@@ -11,7 +11,9 @@ import com.unciv.UncivGame
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFlags
 import com.unciv.logic.city.CityFocus
+import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
@@ -177,6 +179,19 @@ class CityStatsTable(private val cityScreen: CityScreen): Table() {
             tableWithIcons.add(ImageGetter.getImage("StatIcons/Resistance")).size(20f)
             tableWithIcons.add("In resistance for another [${city.getFlag(CityFlags.Resistance)}] turns".toLabel()).row()
         }
+
+        val resourceTable = Table()
+
+        val resourceCounter = Counter<TileResource>()
+        for (resourceSupply in city.getCityResources()) resourceCounter.add(resourceSupply.resource, resourceSupply.amount)
+        for ((resource, amount) in resourceCounter)
+            if (resource.hasUnique(UniqueType.CityResource)){
+                resourceTable.add(amount.toLabel())
+                resourceTable.add(ImageGetter.getResourcePortrait(resource.name, 20f))
+                    .padRight(5f)
+                }
+        if (resourceTable.cells.notEmpty())
+            tableWithIcons.add(resourceTable)
 
         val (wltkIcon: Actor?, wltkLabel: Label?) = when {
             city.isWeLoveTheKingDayActive() ->

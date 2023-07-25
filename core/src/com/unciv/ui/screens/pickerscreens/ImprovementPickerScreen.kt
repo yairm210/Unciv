@@ -15,10 +15,10 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
+import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onDoubleClick
-import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
 import kotlin.math.roundToInt
 
@@ -143,7 +143,7 @@ class ImprovementPickerScreen(
                 proposedSolutions.add("Have this tile inside your empire")
             if (ImprovementBuildingProblem.MissingResources in unbuildableBecause) {
                 proposedSolutions.addAll(improvement.getMatchingUniques(UniqueType.ConsumesResources).filter {
-                    currentPlayerCiv.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt()
+                    currentPlayerCiv.getResourceAmount(it.params[1]) < it.params[0].toInt()
                 }.map { "Acquire more [$it]" })
             }
 

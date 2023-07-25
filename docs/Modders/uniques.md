@@ -1,6 +1,10 @@
 # Uniques
 Simple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](../Unique-parameters)
 ## Triggerable uniques
+!!! note ""
+
+    Uniques that have immediate, one-time effects. These can be added to techs to trigger when researched, to policies to trigger when adopted, to eras to trigger when reached, to buildings to trigger when built. Alternatively, you can add a TriggerCondition to them to make them into Global uniques that activate upon a specific event.They can also be added to units to grant them the ability to trigger this effect as an action, which can be modified with UnitActionModifier and UnitTriggerCondition conditionals.
+
 ??? example  "Free [unit] appears"
 	Example: "Free [Musketman] appears"
 
@@ -128,6 +132,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Triggerable
 
 ## UnitTriggerable uniques
+!!! note ""
+
+    Uniques that have immediate, one-time effects on a unit.They can be added to units (on unit, unit type, or promotion) to grant them the ability to trigger this effect as an action, which can be modified with UnitActionModifier and UnitTriggerCondition conditionals.
+
 ??? example  "Heal this unit by [amount] HP"
 	Example: "Heal this unit by [3] HP"
 
@@ -150,10 +158,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: UnitTriggerable
 
 ## Global uniques
+!!! note ""
+
+    Uniques that apply globally. Civs gain the abilities of these uniques from nation uniques, reached eras, researched techs, adopted policies, built buildings, religion 'founder' uniques, owned resources, and ruleset-wide global uniques.
+
 ??? example  "[stats]"
 	Example: "[+1 Gold, +2 Production]"
 
-	Applicable to: Global, FollowerBelief, Terrain, Improvement
+	Applicable to: Global, Terrain, Improvement
 
 ??? example  "[stats] [cityFilter]"
 	Example: "[+1 Gold, +2 Production] [in all cities]"
@@ -899,6 +911,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Building
 
 ## FounderBelief uniques
+!!! note ""
+
+    Uniques for Founder and Enhancer type Beliefs, that will apply to the founder of this religion
+
 ??? example  "[stats] for each global city following this religion"
 	Example: "[+1 Gold, +2 Production] for each global city following this religion"
 
@@ -910,6 +926,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: FounderBelief
 
 ## FollowerBelief uniques
+!!! note ""
+
+    Uniques for Pantheon and Follower type beliefs, that will apply to each city where the religion is the majority religion
+
 ??? example  "[relativeAmount]% [stat] from every follower, up to [relativeAmount]%"
 	Example: "[+20]% [Culture] from every follower, up to [+20]%"
 
@@ -1068,6 +1088,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building, Unit
 
 ## Unit uniques
+!!! note ""
+
+    Uniques that can be added to units, unit types, or promotions
+
 ??? example  "Founds a new city"
 	Applicable to: Unit
 
@@ -1632,6 +1656,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Stockpiled"
 	Applicable to: Resource
 
+??? example  "City-level resource"
+	Applicable to: Resource
+
 ??? example  "Cannot be traded"
 	Applicable to: Resource
 
@@ -1688,6 +1715,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: CityState
 
 ## Conditional uniques
+!!! note ""
+
+    Modifiers that can be added to other uniques to limit when they will be active
+
 ??? example  "&lt;for [amount] turns&gt;"
 	Example: "&lt;for [3] turns&gt;"
 
@@ -1955,6 +1986,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ## TriggerCondition uniques
+!!! note ""
+
+    Special conditionals that can be added to Triggerable uniques, to make them activate upon specific actions.
+
 ??? example  "&lt;upon discovering [tech]&gt;"
 	Example: "&lt;upon discovering [Agriculture]&gt;"
 
@@ -2013,6 +2048,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: TriggerCondition
 
 ## UnitTriggerCondition uniques
+!!! note ""
+
+    Special conditionals that can be added to UnitTriggerable uniques, to make them activate upon specific actions.
+
 ??? example  "&lt;upon defeating a [mapUnitFilter] unit&gt;"
 	Example: "&lt;upon defeating a [Wounded] unit&gt;"
 
@@ -2035,6 +2074,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: UnitTriggerCondition
 
 ## UnitActionModifier uniques
+!!! note ""
+
+    Modifiers that can be added to unit action uniques as conditionals
+
 ??? example  "&lt;by consuming this unit&gt;"
 	Applicable to: UnitActionModifier
 

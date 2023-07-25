@@ -45,11 +45,11 @@ class TileInfoImprovementFunctions(val tile: Tile) {
             yield(ImprovementBuildingProblem.Obsolete)
 
         if (improvement.getMatchingUniques(UniqueType.ConsumesResources, stateForConditionals)
-                    .any { civInfo.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt() })
+                    .any { civInfo.getResourceAmount(it.params[1]) < it.params[0].toInt() })
             yield(ImprovementBuildingProblem.MissingResources)
 
         if (improvement.getMatchingUniques(UniqueType.CostsResources)
-                    .any { civInfo.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt() })
+                    .any { civInfo.getResourceAmount(it.params[1]) < it.params[0].toInt() })
             yield(ImprovementBuildingProblem.MissingResources)
 
         val knownFeatureRemovals = tile.ruleset.tileImprovements.values
@@ -126,7 +126,8 @@ class TileInfoImprovementFunctions(val tile: Tile) {
             // Can't build if the improvement specifically prevents building on some present feature
             improvement.getMatchingUniques(UniqueType.CannotBuildOnTile, stateForConditionals).any {
                     unique -> tile.matchesTerrainFilter(unique.params[0])
-            } -> false
+            } ->
+                false
 
             // Can't build if an improvement is only allowed to be built on specific tiles and this is not one of them
             // If multiple uniques of this type exists, we want all to match (e.g. Hill _and_ Forest would be meaningful)

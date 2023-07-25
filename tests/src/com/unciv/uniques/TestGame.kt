@@ -59,6 +59,9 @@ class TestGame {
         tileMap.mapParameters.mapSize = MapSizeNew(0, 0)
         tileMap.ruleset = ruleset
         tileMap.gameInfo = gameInfo
+
+        for (baseUnit in ruleset.units.values)
+            baseUnit.ruleset = ruleset
     }
 
     /** Makes a new rectangular tileMap and sets it in gameInfo. Removes all existing tiles. All new tiles have terrain [baseTerrain] */
@@ -152,11 +155,11 @@ class TestGame {
         city.tiles.add(tile.position)
     }
 
-    fun addUnit(name: String, civInfo: Civilization, tile: Tile): MapUnit {
+    fun addUnit(name: String, civInfo: Civilization, tile: Tile?): MapUnit {
         val baseUnit = ruleset.units[name]!!
         baseUnit.ruleset = ruleset
         val mapUnit = baseUnit.getMapUnit(civInfo)
-        mapUnit.putInTile(tile)
+        if (tile!=null) mapUnit.putInTile(tile)
         return mapUnit
     }
 

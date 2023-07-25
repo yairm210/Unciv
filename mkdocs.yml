@@ -24,13 +24,6 @@ theme:
 repo_name: yairm210/unciv
 repo_url: https://github.com/yairm210/unciv
 
-#markdown_extensions:
-#  - abbr
-#  - pymdownx.snippets
-#  - attr_list
-#  - md_in_html
-#  - pymdownx.superfences
-
 markdown_extensions:
   # For adminitions
   - admonition
@@ -41,3 +34,8 @@ markdown_extensions:
   # For Abbreviations
   - abbr
   - pymdownx.snippets
+
+plugins:
+  - search
+  - awesome-pages # For reordering pages so modders have a clear progression for understanding
+

@@ -320,7 +320,8 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun knows(otherCivName: String) = diplomacy.containsKey(otherCivName)
     fun knows(otherCiv: Civilization) = knows(otherCiv.civName)
 
-    fun getCapital() = cities.firstOrNull { it.isCapital() }
+    fun getCapital(firstCityIfNoCapital: Boolean = false) = cities.firstOrNull { it.isCapital() } ?:
+        if (firstCityIfNoCapital) cities.firstOrNull() else null
     fun isHuman() = playerType == PlayerType.Human
     fun isAI() = playerType == PlayerType.AI
     fun isOneCityChallenger() = playerType == PlayerType.Human && gameInfo.gameParameters.oneCityChallenge
@@ -423,6 +424,13 @@ class Civilization : IsPartOfGameInfoSerialization {
         return hashMap
     }
 
+    /** Gets the number of resources available to this city
+     * Does not include city-wide resources
+     * Returns 0 for undefined resources */
+    fun getResourceAmount(resourceName:String): Int {
+        return getCivResourcesByName()[resourceName] ?: 0
+    }
+
     fun getResourceModifier(resource: TileResource): Float {
         var resourceModifier = 1f
         for (unique in getMatchingUniques(UniqueType.DoubleResourceProduced))
@@ -436,7 +444,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         return resourceModifier
     }
 
-    fun hasResource(resourceName: String): Boolean = getCivResourcesByName()[resourceName]!! > 0
+    fun hasResource(resourceName: String): Boolean = getResourceAmount(resourceName) > 0
 
     fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals =
         StateForConditionals(this)) = getMatchingUniques(uniqueType, stateForConditionals).any()
@@ -491,7 +499,12 @@ class Civilization : IsPartOfGameInfoSerialization {
         return tech.currentTechnology() == null && cities.isNotEmpty()
     }
 
-    fun getEquivalentBuilding(buildingName: String) = getEquivalentBuilding(gameInfo.ruleset.buildings[buildingName]!!)
+    fun getEquivalentBuilding(buildingName: String): Building {
+        val building = gameInfo.ruleset.buildings[buildingName]
+            ?: throw Exception("No building by the name of $buildingName exists!")
+        return getEquivalentBuilding(building)
+    }
+
     fun getEquivalentBuilding(baseBuilding: Building): Building {
         if (baseBuilding.replaces != null)
             return getEquivalentBuilding(baseBuilding.replaces!!)
@@ -616,8 +629,8 @@ class Civilization : IsPartOfGameInfoSerialization {
         scoreBreakdown["Population"] = cities.sumOf { it.population.population } * 3 * mapSizeModifier
         scoreBreakdown["Tiles"] = cities.sumOf { city -> city.getTiles().filter { !it.isWater}.count() } * 1 * mapSizeModifier
         scoreBreakdown["Wonders"] = 40 * cities
-            .sumOf { city -> city.cityConstructions.builtBuildings
-                .filter { gameInfo.ruleset.buildings[it]!!.isWonder }.size
+            .sumOf { city -> city.cityConstructions.getBuiltBuildings()
+                .filter { it.isWonder }.count()
             }.toDouble()
         scoreBreakdown["Technologies"] = tech.getNumberOfTechsResearched() * 4.toDouble()
         scoreBreakdown["Future Tech"] = tech.repeatingTechsResearched * 10.toDouble()
@@ -697,7 +710,7 @@ class Civilization : IsPartOfGameInfoSerialization {
         && gameInfo.civilizations.any { it.isMajorCiv() && !it.isDefeated() && it != this }
 
     fun diplomaticVoteForCiv(chosenCivName: String?) {
-        if (chosenCivName != null) gameInfo.diplomaticVictoryVotesCast[civName] = chosenCivName
+        gameInfo.diplomaticVictoryVotesCast[civName] = chosenCivName
     }
 
     fun shouldShowDiplomaticVotingResults() =
@@ -800,10 +813,7 @@ class Civilization : IsPartOfGameInfoSerialization {
     /**
      * Removes current capital then moves capital to argument city if not null
      */
-    fun moveCapitalTo(city: City?) {
-
-        val oldCapital = getCapital()
-
+    fun moveCapitalTo(city: City?, oldCapital: City?) {
         // Add new capital first so the civ doesn't get stuck in a state where it has cities but no capital
         if (city != null) {
             // move new capital
@@ -813,16 +823,20 @@ class Civilization : IsPartOfGameInfoSerialization {
         oldCapital?.cityConstructions?.removeBuilding(oldCapital.capitalCityIndicator())
     }
 
-    fun moveCapitalToNextLargest() {
+    fun moveCapitalToNextLargest(oldCapital: City?) {
         val availableCities = cities.filterNot { it.isCapital() }
-        if (availableCities.none()) return
+        if (availableCities.none()) {
+            moveCapitalTo(null, oldCapital)
+            return
+        }
+
         var newCapital = availableCities.filterNot { it.isPuppet }.maxByOrNull { it.population.population }
 
         if (newCapital == null) { // No non-puppets, take largest puppet and annex
             newCapital = availableCities.maxByOrNull { it.population.population }!!
             newCapital.annexCity()
         }
-        moveCapitalTo(newCapital)
+        moveCapitalTo(newCapital, oldCapital)
     }
 
     fun getAllyCiv() = allyCivName

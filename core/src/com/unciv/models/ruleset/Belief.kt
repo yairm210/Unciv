@@ -17,7 +17,7 @@ class Belief() : RulesetObject() {
     }
 
     override fun getUniqueTarget() =
-        if (type == BeliefType.Founder || type == BeliefType.Enhancer)  UniqueTarget.FounderBelief
+        if (type.isFounder)  UniqueTarget.FounderBelief
         else UniqueTarget.FollowerBelief
 
     override fun makeLink() = "Belief/$name"
@@ -79,11 +79,15 @@ class Belief() : RulesetObject() {
     }
 }
 
-enum class BeliefType(val color: String) {
+/** Subtypes of Beliefs - directly deserialized.
+ *  @param isFollower - Behaves as "follower" belief, Uniques processed per city
+ *  @param isFounder - Behaves as "founder" belief, Uniques processed globally for founding civ only
+ * */
+enum class BeliefType(val color: String, val isFollower: Boolean = false, val isFounder: Boolean = false) {
     None(""),
-    Pantheon("#44c6cc"),
-    Founder("#c00000"),
-    Follower("#ccaa44"),
-    Enhancer("#72cc45"),
+    Pantheon("#44c6cc", isFollower = true),
+    Founder("#c00000", isFounder = true),
+    Follower("#ccaa44", isFollower = true),
+    Enhancer("#72cc45", isFounder = true),
     Any(""),
 }

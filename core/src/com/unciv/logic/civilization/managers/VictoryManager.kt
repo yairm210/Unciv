@@ -6,7 +6,9 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Milestone
 import com.unciv.models.ruleset.Victory
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.tr
 
 class VictoryManager : IsPartOfGameInfoSerialization {
     @Transient
@@ -24,13 +26,28 @@ class VictoryManager : IsPartOfGameInfoSerialization {
         return toReturn
     }
 
-    private fun calculateDiplomaticVotingResults(votesCast: HashMap<String, String>): Counter<String> {
+    private fun calculateDiplomaticVotingResults(votesCast: HashMap<String, String?>): Counter<String> {
         val results = Counter<String>()
-        for (castVote in votesCast) {
-            results.add(castVote.value, 1)
+        // UN Owner gets 2 votes in G&K
+        val (_, civOwningUN) = getUNBuildingAndOwnerNames()
+        for ((voter, votedFor) in votesCast) {
+            if (votedFor == null) continue  // null means Abstained
+            results.add(votedFor, if (voter == civOwningUN) 2 else 1)
         }
         return results
     }
+
+    /** Finds the Building and Owner of the United Nations (or whatever the Mod called it)
+     *  - if it's built at all and only if the owner is alive
+     *  @return `first`: Building name, `second`: Owner civ name; both null if not found
+     */
+    fun getUNBuildingAndOwnerNames(): Pair<String?, String?> = civInfo.gameInfo.civilizations.asSequence()
+            .filterNot { it.isBarbarian() || it.isSpectator() || it.isDefeated() }
+            .flatMap { civ -> civ.cities.asSequence()
+                .flatMap { it.cityConstructions.getBuiltBuildings() }
+                .filter { it.hasUnique(UniqueType.OneTimeTriggerVoting, stateForConditionals = StateForConditionals.IgnoreConditionals) }
+                .map { it.name to civ.civName }
+            }.firstOrNull() ?: (null to null)
 
     private fun votesNeededForDiplomaticVictory(): Int {
         val civCount = civInfo.gameInfo.civilizations.count { !it.isDefeated() }
@@ -54,6 +71,29 @@ class VictoryManager : IsPartOfGameInfoSerialization {
 
         // If there's a tie, we haven't won either
         return (results.none { it != bestCiv && it.value == bestCiv.value })
+    }
+
+    fun getDiplomaticVictoryVoteBreakdown(): String {
+        val results = calculateDiplomaticVotingResults(civInfo.gameInfo.diplomaticVictoryVotesCast)
+        val (voteCount, winnerList) = results.asSequence()
+            .groupBy({ it.value }, { it.key }).asSequence()
+            .sortedByDescending { it.key }  // key is vote count here
+            .firstOrNull()
+            ?: return "No valid votes were cast."
+
+        val lines = arrayListOf<String>()
+        val minVotes = votesNeededForDiplomaticVictory()
+        if (voteCount < minVotes)
+            lines += "Minimum votes for electing a world leader: [$minVotes]"
+        if (winnerList.size > 1)
+            lines += "Tied in first position: [${winnerList.joinToString { it.tr() }}]" // Yes with icons
+        val winnerCiv = civInfo.gameInfo.getCivilization(winnerList.first())
+        lines += when {
+            lines.isNotEmpty() -> "No world leader was elected."
+            winnerCiv == civInfo -> "You have been elected world leader!"
+            else -> "${civInfo.nation.getLeaderDisplayName()} has been elected world leader!"
+        }
+        return lines.joinToString("\n") { "{$it}" }
     }
 
     fun getVictoryTypeAchieved(): String? {

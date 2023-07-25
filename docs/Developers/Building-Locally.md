@@ -20,7 +20,7 @@ By the end of this guide, you will have Unciv running locally from code, so you 
         ![image](/docs/assets/Android_SDK_Platforms.png)
         - Click "SDK Tools"
         - Select "Show Package Details" in the bottom right
-        - Choose version 32.0.0 under "Android SDK Build-Tools"
+        - Choose version 33.0.2 under "Android SDK Build-Tools"
         ![image](/docs/assets/Android_SDK_Tools.png)
         - Click "Apply"
         - Restart Android Studio
@@ -100,7 +100,7 @@ You can (and in some cases _should_) run and even debug the unit tests locally.
 
 ### Linting
 
-Detekt checks for code smells and other linting issues. 
+Detekt checks for code smells and other linting issues.
 To generate Detekt reports:
 
 - Download [detekt-cli](https://github.com/detekt/detekt/releases/latest) (the zip file) and unzip it

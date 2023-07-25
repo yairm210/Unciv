@@ -254,6 +254,16 @@ class City : IsPartOfGameInfoSerialization {
         return cityResources
     }
 
+    /** Gets the number of resources available to this city
+     * Accommodates both city-wide and civ-wide resources */
+    fun getResourceAmount(resourceName: String): Int {
+        val resource = getRuleset().tileResources[resourceName] ?: return 0
+
+        if (resource.hasUnique(UniqueType.CityResource))
+            return getCityResources().asSequence().filter { it.resource == resource }.sumOf { it.amount }
+        return civ.getResourceAmount(resourceName)
+    }
+
     private fun getTileResourceAmount(tile: Tile): Int {
         if (tile.resource == null) return 0
         if (!tile.providesResources(civ)) return 0
@@ -457,9 +467,7 @@ class City : IsPartOfGameInfoSerialization {
 
         // Move the capital if destroyed (by a nuke or by razing)
         // Must be before removing existing capital because we may be annexing a puppet which means city stats update - see #8337
-        if (isCapital() && civ.cities.size > 1) {
-            civ.moveCapitalToNextLargest()
-        }
+        if (isCapital()) civ.moveCapitalToNextLargest(null)
 
         civ.cities = civ.cities.toMutableList().apply { remove(this@City) }
         getCenterTile().changeImprovement("City ruins")

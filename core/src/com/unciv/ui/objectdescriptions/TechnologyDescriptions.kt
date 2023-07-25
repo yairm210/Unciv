@@ -100,7 +100,7 @@ object TechnologyDescriptions {
                     // doesn't have the tech, so it can't have this built anyways. It should be a
                     // little more performant though to add this filter.
                     .filter{ it.civ != viewingCiv }
-                    .any { it.cityConstructions.builtBuildings.contains(building.name) }
+                    .any { it.cityConstructions.isBuilt(building.name)}
                 val wonderConstructionPortrait =
                         if (isAlreadyBuilt)
                             PortraitUnavailableWonderForTechTree(building.name, techIconSize)

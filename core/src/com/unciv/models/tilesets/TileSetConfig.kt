@@ -7,7 +7,8 @@ class TileSetConfig {
     var useSummaryImages = false
     var unexploredTileColor: Color = Color.DARK_GRAY
     var fogOfWarColor: Color = Color.BLACK
-    /** Name of the tileset to use when this one is missing images. Null to disable. */
+    /** Name of the tileset to use when this one is missing images. Null to disable.
+     * Don't change unless you've also moved the crosshatch, borders, and arrows as well */
     var fallbackTileSet: String? = "FantasyHex"
     /** Scale factor for hex images, with hex center as origin. */
     var tileScale: Float = 1f

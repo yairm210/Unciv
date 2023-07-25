@@ -19,7 +19,6 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
@@ -428,9 +427,10 @@ object GameStarter {
 
             //Trigger any global or nation uniques that should triggered.
             //We may need the starting location for some uniques, which is why we're doing it now
-            for (unique in ruleset.globalUniques.uniqueObjects + civ.nation.uniqueObjects)
+            val startingTriggers = (ruleset.globalUniques.uniqueObjects + civ.nation.uniqueObjects)
+            for (unique in startingTriggers.filter { !it.hasTriggerConditional() })
                 if(unique.isTriggerable)
-                    UniqueTriggerActivation.triggerCivwideUnique(unique,civ, tile = startingLocation)
+                    UniqueTriggerActivation.triggerCivwideUnique(unique, civ, tile = startingLocation)
         }
     }
 

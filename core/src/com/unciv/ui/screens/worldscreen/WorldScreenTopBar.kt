@@ -151,7 +151,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         }
 
         val strategicResources = worldScreen.gameInfo.ruleset.tileResources.values
-            .filter { it.resourceType == ResourceType.Strategic }
+            .filter { it.resourceType == ResourceType.Strategic && !it.hasUnique(UniqueType.CityResource) }
         for (resource in strategicResources) {
             val resourceImage = ImageGetter.getResourcePortrait(resource.name, 20f)
             val resourceLabel = "0".toLabel()

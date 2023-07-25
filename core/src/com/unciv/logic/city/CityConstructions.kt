@@ -22,6 +22,7 @@ import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -184,7 +185,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     fun getCurrentConstruction(): IConstruction = getConstruction(currentConstructionFromQueue)
 
-    fun isBuilt(buildingName: String): Boolean = builtBuildings.contains(buildingName)
+    fun isAllBuilt(buildingList: List<String>): Boolean = buildingList.all { isBuilt(it) }
+
+    fun isBuilt(buildingName: String): Boolean = builtBuildingObjects.any { it.name == buildingName }
     @Suppress("MemberVisibilityCanBePrivate")
     fun isBeingConstructed(constructionName: String): Boolean = currentConstructionFromQueue == constructionName
     fun isEnqueued(constructionName: String): Boolean = constructionQueue.contains(constructionName)
@@ -479,16 +482,77 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     fun addBuilding(buildingName: String) {
-        val buildingObject = city.getRuleset().buildings[buildingName]!!
-        builtBuildingObjects = builtBuildingObjects.withItem(buildingObject)
+        val building = city.getRuleset().buildings[buildingName]!!
+        val civ = city.civ
+
+        if (building.cityHealth > 0) {
+            // city built a building that increases health so add a portion of this added health that is
+            // proportional to the city's current health
+            city.health += (building.cityHealth.toFloat() * city.health.toFloat() / city.getMaxHealth().toFloat()).toInt()
+        }
+        builtBuildingObjects = builtBuildingObjects.withItem(building)
         builtBuildings.add(buildingName)
+
+        city.civ.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
+        city.civ.cache.updateCivResources() // this building could be a resource-requiring one
+
+        /** Support for [UniqueType.CreatesOneImprovement] */
+        applyCreateOneImprovement(building)
+
+        addFreeBuildings()
+
+        triggerNewBuildingUniques(building)
+
+        if (building.hasUnique(UniqueType.EnemyUnitsSpendExtraMovement))
+            civ.cache.updateHasActiveEnemyMovementPenalty()
+
+        // Korean unique - apparently gives the same as the research agreement
+        if (building.isStatRelated(Stat.Science) && civ.hasUnique(UniqueType.TechBoostWhenScientificBuildingsBuiltInCapital))
+            civ.tech.addScience(civ.tech.scienceOfLast8Turns.sum() / 8)
+
+        val uniqueTypesModifyingYields = listOf(
+            UniqueType.StatsFromTiles, UniqueType.StatsFromTilesWithout, UniqueType.StatsFromObject,
+            UniqueType.StatPercentFromObject, UniqueType.AllStatsPercentFromObject
+        )
+
+        // Happiness is global, so it could affect all cities
+        if(building.isStatRelated(Stat.Happiness)) {
+            for (city in civ.cities) {
+                city.reassignPopulationDeferred()
+            }
+        }
+        else if(uniqueTypesModifyingYields.any { building.hasUnique(it) })
+            city.reassignPopulationDeferred()
+
         updateUniques()
     }
 
+    fun triggerNewBuildingUniques(building: Building) {
+        val triggerNotificationText ="due to constructing [${building.name}]"
+
+        for (unique in building.uniqueObjects)
+            if (!unique.hasTriggerConditional())
+                UniqueTriggerActivation.triggerCivwideUnique(unique, city.civ, city, triggerNotificationText = triggerNotificationText)
+
+            for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, StateForConditionals(city.civ, city)))
+                if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuilding && building.matchesFilter(it.params[0])})
+                    UniqueTriggerActivation.triggerCivwideUnique(unique, city.civ, city, triggerNotificationText = triggerNotificationText)
+
+        for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuildingCityFilter, StateForConditionals(city.civ, city)))
+            if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuildingCityFilter
+                    && building.matchesFilter(it.params[0])
+                    && city.matchesFilter(it.params[1])})
+                UniqueTriggerActivation.triggerCivwideUnique(unique, city.civ, city, triggerNotificationText = triggerNotificationText)
+    }
+
     fun removeBuilding(buildingName: String) {
-        val buildingObject = city.getRuleset().buildings[buildingName]!!
-        builtBuildingObjects = builtBuildingObjects.withoutItem(buildingObject)
+        val buildingObject = city.getRuleset().buildings[buildingName]
+        if (buildingObject != null)
+            builtBuildingObjects = builtBuildingObjects.withoutItem(buildingObject)
+        else builtBuildingObjects.removeAll{ it.name == buildingName }
         builtBuildings.remove(buildingName)
+        city.civ.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
+        city.civ.cache.updateCivResources() // this building could be a resource-requiring one
         updateUniques()
     }
 

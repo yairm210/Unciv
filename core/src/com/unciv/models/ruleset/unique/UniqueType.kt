@@ -6,84 +6,17 @@ import com.unciv.models.ruleset.RulesetErrorSeverity
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 
-/** inheritsFrom means that all such uniques are acceptable as well.
- * For example, all Global uniques are acceptable for Nations, Eras, etc. */
-enum class UniqueTarget(val inheritsFrom: UniqueTarget? = null) {
-
-    /** Only includes uniques that have immediate effects, caused by UniqueTriggerActivation */
-    Triggerable,
-    UnitTriggerable(Triggerable),
-
-    /** Buildings, units, nations, policies, religions, techs etc.
-     * Basically anything caught by CivInfo.getMatchingUniques. */
-    Global(Triggerable),
-
-    // Civilization-specific
-    Nation(Global),
-    Era(Global),
-    Tech(Global),
-    Policy(Global),
-    FounderBelief(Global),
-    /** These apply only to cities where the religion is the majority religion */
-    FollowerBelief,
-
-    // City-specific
-    /** This is used as the base when checking buildings */
-    Building(Global),
-    Wonder(Building),
-
-    // Unit-specific
-    // These are a bit of a lie. There's no "Promotion only" or "UnitType only" uniques,
-    //  they're all just Unit uniques in different places.
-    //  So there should be no uniqueType that has a Promotion or UnitType target.
-    //  Except meta-level uniques, such as 'incompatible with [promotion]', of course
-    Unit(UnitTriggerable),
-    UnitType(Unit),
-    Promotion(Unit),
-
-    // Tile-specific
-    Terrain,
-    Improvement,
-    Resource(Global),
-    Ruins(UnitTriggerable),
-
-    // Other
-    Speed,
-    Tutorial,
-    CityState(Global),
-    ModOptions,
-    Conditional,
-    TriggerCondition(Global),
-    UnitTriggerCondition(TriggerCondition),
-    UnitActionModifier,
-    ;
-
-    fun canAcceptUniqueTarget(uniqueTarget: UniqueTarget): Boolean {
-        if (this == uniqueTarget) return true
-        if (inheritsFrom != null) return inheritsFrom.canAcceptUniqueTarget(uniqueTarget)
-        return false
-    }
-}
-
-enum class UniqueFlag {
-    HiddenToUsers,
-    ;
-    companion object {
-        val setOfHiddenToUsers = listOf(HiddenToUsers)
-    }
-}
-
-
 // I didn't put this in a companion object because APPARENTLY doing that means you can't use it in the init function.
-val numberRegex = Regex("\\d+$") // Any number of trailing digits
+private val numberRegex = Regex("\\d+$") // Any number of trailing digits
+
 enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags: List<UniqueFlag> = emptyList()) {
 
-    //////////////////////////////////////// region GLOBAL UNIQUES ////////////////////////////////////////
+    //////////////////////////////////////// region 01 GLOBAL UNIQUES ////////////////////////////////////////
 
     // region Stat providing uniques
 
     // Used for *global* bonuses and improvement/terrain bonuses
-    Stats("[stats]", UniqueTarget.Global, UniqueTarget.FollowerBelief, UniqueTarget.Improvement, UniqueTarget.Terrain),
+    Stats("[stats]", UniqueTarget.Global, UniqueTarget.Improvement, UniqueTarget.Terrain),
     // Used for city-wide bonuses
     StatsPerCity("[stats] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
@@ -119,8 +52,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     PercentProductionWonders("[relativeAmount]% Production when constructing [buildingFilter] wonders [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     PercentProductionBuildingsInCapital("[relativeAmount]% Production towards any buildings that already exist in the Capital", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
-    //endregion Stat providing uniques
-
+    // endregion Stat providing uniques
 
     // region City-State related uniques
 
@@ -144,8 +76,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     CityStateResources("[relativeAmount]% resources gifted by City-States",  UniqueTarget.Global),
     CityStateLuxuryHappiness("[relativeAmount]% Happiness from luxury resources gifted by City-States", UniqueTarget.Global),
     CityStateInfluenceRecoversTwiceNormalRate("City-State Influence recovers at twice the normal rate", UniqueTarget.Global),
-    // endregion
 
+    // endregion
 
     /////// region Other global uniques
 
@@ -312,13 +244,12 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     SpawnRebels("Rebel units may spawn", UniqueTarget.Global),
 
+    // endregion Other global uniques
 
-    //endregion
+    // endregion 01 Global uniques
 
-    //endregion Global uniques
 
-    ///////////////////////////////////////// region CONSTRUCTION UNIQUES /////////////////////////////////////////
-
+    ///////////////////////////////////////// region 02 CONSTRUCTION UNIQUES /////////////////////////////////////////
 
     Unbuildable("Unbuildable", UniqueTarget.Building, UniqueTarget.Unit, UniqueTarget.Improvement),
     CannotBePurchased("Cannot be purchased", UniqueTarget.Building, UniqueTarget.Unit),
@@ -337,7 +268,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     TriggersAlertOnCompletion("Triggers a global alert upon completion", UniqueTarget.Building, UniqueTarget.Unit),
     //endregion
 
-    ///////////////////////////////////////// region BUILDING UNIQUES /////////////////////////////////////////
+    ///////////////////////////////////////// region 03 BUILDING UNIQUES /////////////////////////////////////////
 
 
     CostIncreasesPerCity("Cost increases by [amount] per owned city", UniqueTarget.Building),
@@ -374,7 +305,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     CreatesOneImprovement("Creates a [improvementName] improvement on a specific tile", UniqueTarget.Building),
     //endregion
 
-    ///////////////////////////////////////// region UNIT UNIQUES /////////////////////////////////////////
+    ///////////////////////////////////////// region 04 UNIT UNIQUES /////////////////////////////////////////
 
     // Unit action uniques
     // Unit actions should look like: "Can {action description}, to allow them to be combined with modifiers
@@ -536,7 +467,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     //endregion
 
-    ///////////////////////////////////////// region UNIT ACTION MODIFIERS /////////////////////////////////////////
+    ///////////////////////////////////////// region 05 UNIT ACTION MODIFIERS /////////////////////////////////////////
 
     UnitActionConsumeUnit("by consuming this unit", UniqueTarget.UnitActionModifier),
     UnitActionMovementCost("for [amount] movement", UniqueTarget.UnitActionModifier),
@@ -547,7 +478,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     // endregion
 
-    ///////////////////////////////////////// region TILE UNIQUES /////////////////////////////////////////
+    ///////////////////////////////////////// region 06 TILE UNIQUES /////////////////////////////////////////
 
     // Natural wonders
     NaturalWonderNeighborCount("Must be adjacent to [amount] [simpleTerrain] tiles", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
@@ -607,6 +538,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ResourceAmountOnTiles("Deposits in [tileFilter] tiles always provide [amount] resources", UniqueTarget.Resource),
     CityStateOnlyResource("Can only be created by Mercantile City-States", UniqueTarget.Resource),
     Stockpiled("Stockpiled", UniqueTarget.Resource),
+    CityResource("City-level resource", UniqueTarget.Resource),
     CannotBeTraded("Cannot be traded", UniqueTarget.Resource),
     NotShownOnWorldScreen("Not shown on world screen", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
 
@@ -647,7 +579,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     AutomatedWorkersWillReplace("Will be replaced by automated workers", UniqueTarget.Improvement),
     //endregion
 
-    ///////////////////////////////////////// region CONDITIONALS /////////////////////////////////////////
+    ///////////////////////////////////////// region 07 CONDITIONALS /////////////////////////////////////////
 
 
     /////// general conditionals
@@ -736,7 +668,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     //endregion
 
-    ///////////////////////////////////////// region TRIGGERED ONE-TIME /////////////////////////////////////////
+    ///////////////////////////////////////// region 08 TRIGGERED ONE-TIME /////////////////////////////////////////
 
 
     OneTimeFreeUnit("Free [unit] appears", UniqueTarget.Triggerable),  // used in Policies, Buildings
@@ -786,7 +718,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     //endregion
 
 
-    ///////////////////////////////////////// region TRIGGERS /////////////////////////////////////////
+    ///////////////////////////////////////// region 09 TRIGGERS /////////////////////////////////////////
 
     TriggerUponResearch("upon discovering [tech]", UniqueTarget.TriggerCondition),
     TriggerUponEnteringEra("upon entering the [era]", UniqueTarget.TriggerCondition),
@@ -810,7 +742,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     //endregion
 
 
-    ///////////////////////////////////////// region UNIT TRIGGERS /////////////////////////////////////////
+    ///////////////////////////////////////// region 10 UNIT TRIGGERS /////////////////////////////////////////
 
     TriggerUponDefeatingUnit("upon defeating a [mapUnitFilter] unit", UniqueTarget.UnitTriggerCondition),
     TriggerUponDefeat("upon being defeated", UniqueTarget.UnitTriggerCondition),
@@ -820,7 +752,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     //endregion
 
-    ///////////////////////////////////////////// region META /////////////////////////////////////////////
+    ///////////////////////////////////////////// region 90 META /////////////////////////////////////////////
     HiddenWithoutReligion("Hidden when religion is disabled", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins, flags = UniqueFlag.setOfHiddenToUsers),
 
     HiddenAfterGreatProphet("Hidden after generating a Great Prophet", UniqueTarget.Ruins),
@@ -831,7 +763,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     // endregion
 
-    // region DEPRECATED AND REMOVED
+    ///////////////////////////////////////////// region 99 DEPRECATED AND REMOVED /////////////////////////////////////////////
 
     @Deprecated("as of 4.5.3", ReplaceWith("Empire enters a [amount]-turn Golden Age <by consuming this unit>"), DeprecationLevel.ERROR)
     StartGoldenAge("Can start an [amount]-turn golden age", UniqueTarget.Unit),
@@ -1181,9 +1113,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     @Deprecated("Extremely old - used for auto-updates only", ReplaceWith("[+50]% Strength for cities <with a garrison> <when attacking>"), DeprecationLevel.ERROR)
     StrengthForGarrisonedCitiesAttackingDeprecated("+50% attacking strength for cities with garrisoned units", UniqueTarget.Global),
 
-    // endregion
-
+    // Keep the endregion after the semicolon or it won't work
     ;
+    // endregion
 
     /** A map of allowed [UniqueParameterType]s per parameter position. Initialized from overridable function [parameterTypeMapInitializer]. */
     val parameterTypeMap = parameterTypeMapInitializer()
@@ -1200,7 +1132,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
         }
         return map
     }
-    val targetTypes = HashSet<UniqueTarget>()
+
+    val targetTypes = HashSet<UniqueTarget>(targets.size)
 
     init {
         targetTypes.addAll(targets)
@@ -1261,4 +1194,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     fun getDeprecationAnnotation(): Deprecated? = declaringJavaClass.getField(name)
         .getAnnotation(Deprecated::class.java)
 
+    /** Checks whether a specific [uniqueTarget] as e.g. given by [IHasUniques.getUniqueTarget] works with `this` UniqueType */
+    fun canAcceptUniqueTarget(uniqueTarget: UniqueTarget) =
+        targetTypes.any { uniqueTarget.canAcceptUniqueTarget(it) }
 }

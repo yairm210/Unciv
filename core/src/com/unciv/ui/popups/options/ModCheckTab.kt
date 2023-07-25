@@ -15,19 +15,19 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.TabbedPager
-import com.unciv.ui.components.input.onChange
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.onChange
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.newgamescreen.TranslatedSelectBox
-import com.unciv.utils.Log
 import com.unciv.utils.Concurrency
-import com.unciv.utils.launchOnGLThread
+import com.unciv.utils.Log
 import com.unciv.utils.debug
+import com.unciv.utils.launchOnGLThread
 
 
 private const val MOD_CHECK_WITHOUT_BASE = "-none-"
@@ -203,7 +203,7 @@ class ModCheckTab(
             val modInvariantErrors = RulesetValidator(mod).checkUnique(
                 replacementUnique,
                 false,
-                "",
+                null,
                 UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
             )
             for (error in modInvariantErrors)
@@ -214,7 +214,7 @@ class ModCheckTab(
                 val modSpecificErrors = RulesetValidator(mod).checkUnique(
                     replacementUnique,
                     false,
-                    "",
+                    null,
                     UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
                 )
                 for (error in modSpecificErrors)

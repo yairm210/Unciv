@@ -1,0 +1,16 @@
+Fixed India's 'double unhappiness' unique
+
+By SeventhM:
+- Fix buildings/units not triggering and golden age stat updates
+- Avoid crashes with incorrect condtionals
+- Scaling purchase costs for faith/culture/science/etc. with speed
+- Better support for lacking a capital
+
+By SomeTroglodyte:
+- AI support for Alpha Frontier-like Workers
+- Prevent activation of disabled actors via keyboard
+- Key shortcuts for Main Menu Screen
+
+Fix civilopedia gold cost  - By Skekdog
+
+Other modding fixes :)

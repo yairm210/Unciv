@@ -58,8 +58,8 @@ open class Tile : IsPartOfGameInfoSerialization {
             }
             roadOwner = city.civ.civName // only when taking control, otherwise last owner
         } else if (roadStatus != RoadStatus.None && owningCity != null) {
-            // previous tile owner still owns road, add to tracker
-            owningCity!!.civ.neutralRoads.add(this.position)
+            // Razing City! Remove owner
+            roadOwner = ""
         }
         owningCity = city
         isCityCenterInternal = getCity()?.location == position
@@ -532,9 +532,11 @@ open class Tile : IsPartOfGameInfoSerialization {
             naturalWonder -> true
             "Open terrain" -> !isRoughTerrain()
             "Rough terrain" -> isRoughTerrain()
+
             "Foreign Land", "Foreign" -> observingCiv != null && !isFriendlyTerritory(observingCiv)
             "Friendly Land", "Friendly" -> observingCiv != null && isFriendlyTerritory(observingCiv)
             "Enemy Land", "Enemy" -> observingCiv != null && isEnemyTerritory(observingCiv)
+
             resource -> observingCiv != null && hasViewableResource(observingCiv)
             "Water resource" -> isWater && observingCiv != null && hasViewableResource(observingCiv)
             "Natural Wonder" -> naturalWonder != null
@@ -830,9 +832,7 @@ open class Tile : IsPartOfGameInfoSerialization {
             yieldAll(terrainFeatureObjects)
         }.toList().asSequence() //Save in memory, and return as sequence
 
-        val newUniqueMap = UniqueMap()
-        for (terrain in allTerrains)
-            newUniqueMap.addUniques(terrain.uniqueObjects)
+        updateUniqueMap()
 
         lastTerrain = when {
             terrainFeatures.isNotEmpty() -> ruleset.terrains[terrainFeatures.last()]
@@ -840,7 +840,23 @@ open class Tile : IsPartOfGameInfoSerialization {
             naturalWonder != null -> getNaturalWonder()
             else -> getBaseTerrain()
         }
-        terrainUniqueMap = newUniqueMap
+    }
+
+    private fun updateUniqueMap() {
+        if (!::tileMap.isInitialized) return // This tile is a fake tile, for visual display only (e.g. map editor, civilopedia)
+        val terrainNameList = allTerrains.map { it.name }.toList()
+
+        // List hash is function of all its items, so the same items in the same order will always give the same hash
+        val cachedUniqueMap = tileMap.tileUniqueMapCache[terrainNameList]
+        terrainUniqueMap = if (cachedUniqueMap != null)
+            cachedUniqueMap
+        else {
+            val newUniqueMap = UniqueMap()
+            for (terrain in allTerrains)
+                newUniqueMap.addUniques(terrain.uniqueObjects)
+            tileMap.tileUniqueMapCache[terrainNameList] = newUniqueMap
+            newUniqueMap
+        }
     }
 
     fun addTerrainFeature(terrainFeature: String) =
