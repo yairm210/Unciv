@@ -83,7 +83,7 @@ interface ICivilopediaText {
                 if (outerNotEmpty) yield(FormattedLine())
                 yieldAll(getCivilopediaTextLines(ruleset))
             }
-            if (this@ICivilopediaText is IRulesetObject && ruleset.mods.size > 1) {
+            if (this@ICivilopediaText is IRulesetObject && ruleset.mods.size > 1 && originRuleset.isNotEmpty()) {
                 yield(FormattedLine())
                 yield(FormattedLine("Mod: [$originRuleset]", starred = true, color = "#daa520"))
             }
