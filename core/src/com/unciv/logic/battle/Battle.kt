@@ -843,6 +843,7 @@ object Battle {
         for (resource in attacker.unit.baseUnit.getResourceRequirementsPerTurn().keys) {
             if (civResources[resource]!! < 0 && !attacker.getCivInfo().isBarbarian())
                 damageModifierFromMissingResource *= 0.5f // I could not find a source for this number, but this felt about right
+                // - Original Civ5 does *not* reduce damage from missing resource, from source inspection
         }
 
         var buildingModifier = 1f  // Strange, but in Civ5 a bunker mitigates damage to garrison, even if the city is destroyed by the nuke
@@ -850,7 +851,8 @@ object Battle {
         // Damage city and reduce its population
         val city = tile.getCity()
         if (city != null && tile.position == city.location) {
-            buildingModifier = doNukeExplosionDamageToCity(city, nukeStrength, damageModifierFromMissingResource)
+            buildingModifier = city.getAggregateModifier(UniqueType.GarrisonDamageFromNukes)
+            doNukeExplosionDamageToCity(city, nukeStrength, damageModifierFromMissingResource)
             postBattleNotifications(attacker, CityCombatant(city), city.getCenterTile())
             destroyIfDefeated(city.civ, attacker.getCivInfo())
         }
@@ -907,19 +909,13 @@ object Battle {
     }
 
     /** @return the "protection" modifier from buildings (Bomb Shelter, UniqueType.PopulationLossFromNukes) */
-    private fun doNukeExplosionDamageToCity(targetedCity: City, nukeStrength: Int, damageModifierFromMissingResource: Float): Float {
-        var buildingModifier = 1f
-        for (unique in targetedCity.getMatchingUniques(UniqueType.PopulationLossFromNukes)) {
-            if (!targetedCity.matchesFilter(unique.params[1])) continue
-            buildingModifier *= unique.params[0].toPercent()
-        }
-
+    private fun doNukeExplosionDamageToCity(targetedCity: City, nukeStrength: Int, damageModifierFromMissingResource: Float) {
         // Original Capitals must be protected, `canBeDestroyed` is responsible for that check.
         // The `justCaptured = true` parameter is what allows other Capitals to suffer normally.
         if ((nukeStrength > 2 || nukeStrength > 1 && targetedCity.population.population < 5)
                 && targetedCity.canBeDestroyed(true)) {
             targetedCity.destroyCity()
-            return buildingModifier
+            return
         }
 
         val cityCombatant = CityCombatant(targetedCity)
@@ -928,7 +924,7 @@ object Battle {
         // Difference to original: Civ5 rounds population loss down twice - before and after bomb shelters
         val populationLoss = (
                 targetedCity.population.population *
-                buildingModifier *
+                    targetedCity.getAggregateModifier(UniqueType.PopulationLossFromNukes) *
                 when (nukeStrength) {
                     0 -> 0f
                     1 -> (30 + Random.Default.nextInt(20) + Random.Default.nextInt(20)) / 100f
@@ -937,7 +933,15 @@ object Battle {
                 }
             ).toInt().coerceAtMost(targetedCity.population.population - 1)
         targetedCity.population.addPopulation(-populationLoss)
-        return buildingModifier
+    }
+
+    private fun City.getAggregateModifier(uniqueType: UniqueType): Float {
+        var modifier = 1f
+        for (unique in getMatchingUniques(uniqueType)) {
+            if (!matchesFilter(unique.params[1])) continue
+            modifier *= unique.params[0].toPercent()
+        }
+        return modifier
     }
 
     // Should draw an Interception if available on the tile from any Civ
