@@ -16,7 +16,7 @@ By the end of this guide, you will have Unciv running locally from code, so you 
 -   Gradle will attempt the initial sync. If this is your first time with Android Studio, this may require you to accept the Android Build-tools licenses, which works differently on every device, so search for your OS-specific solution.
     -   A new install may not be able to do the initial sync - this comes in the form of `Unable to find method ''void org.apache.commons.compress.archivers.zip.ZipFile.<init>(java.nio.channels.SeekableByteChannel)''` errors when you try to sync. If you have this problem go into File > Settings > Appearance & Behavior > System Settings > Android SDK
         - Click "SDK Platforms"
-        - Click "Android 12L (Sv2)"
+        - Click "Android 13 (Tiramisu)"
         ![image](/docs/assets/Android_SDK_Platforms.png)
         - Click "SDK Tools"
         - Select "Show Package Details" in the bottom right
