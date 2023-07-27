@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.automation.unit.AttackableTile
+import com.unciv.logic.automation.unit.SpecificUnitAutomation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
@@ -27,6 +28,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.toPercent
+import com.unciv.ui.screens.worldscreen.bottombar.BattleTable
 import com.unciv.utils.debug
 import kotlin.math.max
 import kotlin.math.min
@@ -743,22 +745,34 @@ object Battle {
         }
     }
 
+    /**
+     *  Checks whether [nuke] is allowed to nuke [targetTile]
+     *  - Not if we would need to declare war on someone we can't.
+     *  - Disallow nuking the tile the nuke is in, as per Civ5 (but not nuking your own tiles/units otherwise)
+     *
+     *  Both [BattleTable.simulateNuke] and [SpecificUnitAutomation.automateNukes] check range, so that check is omitted here.
+     */
     fun mayUseNuke(nuke: MapUnitCombatant, targetTile: Tile): Boolean {
-        val blastRadius = nuke.unit.getNukeBlastRadius()
+        if (nuke.getTile() == targetTile) return false
 
         var canNuke = true
         val attackerCiv = nuke.getCivInfo()
-        for (tile in targetTile.getTilesInDistance(blastRadius)) {
-            val defendingTileCiv = tile.getCity()?.civ
-            if (defendingTileCiv != null && attackerCiv.knows(defendingTileCiv)) {
-                canNuke = canNuke && attackerCiv.getDiplomacyManager(defendingTileCiv).canAttack()
-            }
+        fun checkDefenderCiv(defenderCiv: Civilization?) {
+            if (defenderCiv == null) return
+            // Allow nuking yourself! (Civ5 source: CvUnit::isNukeVictim)
+            if (defenderCiv == attackerCiv || defenderCiv.isDefeated()) return
+            // Gleaned from Civ5 source - this disallows nuking unknown civs even in invisible tiles
+            // https://github.com/Gedemon/Civ5-DLL/blob/master/CvGameCoreDLL_Expansion1/CvUnit.cpp#L5056
+            // https://github.com/Gedemon/Civ5-DLL/blob/master/CvGameCoreDLL_Expansion1/CvTeam.cpp#L986
+            if (attackerCiv.knows(defenderCiv) && attackerCiv.getDiplomacyManager(defenderCiv).canAttack())
+                return
+            canNuke = false
+        }
 
-            val defender = getMapCombatantOfTile(tile) ?: continue
-            val defendingUnitCiv = defender.getCivInfo()
-            if (attackerCiv.knows(defendingUnitCiv)) {
-                canNuke = canNuke && attackerCiv.getDiplomacyManager(defendingUnitCiv).canAttack()
-            }
+        val blastRadius = nuke.unit.getNukeBlastRadius()
+        for (tile in targetTile.getTilesInDistance(blastRadius)) {
+            checkDefenderCiv(tile.getOwner())
+            checkDefenderCiv(getMapCombatantOfTile(tile)?.getCivInfo())
         }
         return canNuke
     }
