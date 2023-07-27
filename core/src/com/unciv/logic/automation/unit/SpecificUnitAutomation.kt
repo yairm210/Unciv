@@ -500,8 +500,7 @@ object SpecificUnitAutomation {
                     && tile.getOwner()!!.isAtWarWith(unit.civ)
                     && tile.getCity()!!.health > tile.getCity()!!.getMaxHealth() / 2
                     && Battle.mayUseNuke(MapUnitCombatant(unit), tile)) {
-                val blastRadius = unit.getMatchingUniques(UniqueType.BlastRadius)
-                    .firstOrNull()?.params?.get(0)?.toInt() ?: 2
+                val blastRadius = unit.getNukeBlastRadius()
                 val tilesInBlastRadius = tile.getTilesInDistance(blastRadius)
                 val civsInBlastRadius = tilesInBlastRadius.mapNotNull { it.getOwner() } +
                         tilesInBlastRadius.mapNotNull { it.getFirstUnit()?.civ }

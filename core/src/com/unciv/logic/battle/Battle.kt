@@ -744,10 +744,7 @@ object Battle {
     }
 
     fun mayUseNuke(nuke: MapUnitCombatant, targetTile: Tile): Boolean {
-        val blastRadius =
-            if (!nuke.hasUnique(UniqueType.BlastRadius)) 2
-            // Don't check conditionals as these are not supported
-            else nuke.unit.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
+        val blastRadius = nuke.unit.getNukeBlastRadius()
 
         var canNuke = true
         val attackerCiv = nuke.getCivInfo()

@@ -789,6 +789,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return true
     }
 
+    /** Gets a Nuke's blast radius from the BlastRadius unique, defaulting to 2. No check whether the unit actually is a Nuke. */
+    fun getNukeBlastRadius() = getMatchingUniques(UniqueType.BlastRadius)
+        // Don't check conditionals as these are not supported
+        .firstOrNull()?.params?.get(0)?.toInt() ?: 2
 
     private fun isAlly(otherCiv: Civilization): Boolean {
         return otherCiv == civ

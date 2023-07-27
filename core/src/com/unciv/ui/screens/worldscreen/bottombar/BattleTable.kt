@@ -305,9 +305,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         val canNuke = Battle.mayUseNuke(attacker, targetTile)
 
-        val blastRadius =
-            if (!attacker.unit.hasUnique(UniqueType.BlastRadius)) 2
-            else attacker.unit.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
+        val blastRadius = attacker.unit.getNukeBlastRadius()
 
         val defenderNameWrapper = Table()
         for (tile in targetTile.getTilesInDistance(blastRadius)) {
