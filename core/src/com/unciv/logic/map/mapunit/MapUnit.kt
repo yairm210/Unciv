@@ -383,9 +383,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun isInvisible(to: Civilization): Boolean {
-        if (hasUnique(UniqueType.Invisible))
+        if (hasUnique(UniqueType.Invisible) && !to.isSpectator())
             return true
-        if (hasUnique(UniqueType.InvisibleToNonAdjacent))
+        if (hasUnique(UniqueType.InvisibleToNonAdjacent) && !to.isSpectator())
             return getTile().getTilesInDistance(1).none {
                 it.getUnits().any { unit -> unit.owner == to.civName }
             }
