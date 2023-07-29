@@ -494,12 +494,12 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         builtBuildings.add(buildingName)
 
         city.civ.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
-        city.civ.cache.updateCivResources() // this building could be a resource-requiring one
 
         /** Support for [UniqueType.CreatesOneImprovement] */
         applyCreateOneImprovement(building)
 
-        addFreeBuildings()
+        city.civ.cache.updateCivResources() // this building could be a resource-requiring one
+
 
         triggerNewBuildingUniques(building)
 
@@ -514,7 +514,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             UniqueType.StatsFromTiles, UniqueType.StatsFromTilesWithout, UniqueType.StatsFromObject,
             UniqueType.StatPercentFromObject, UniqueType.AllStatsPercentFromObject
         )
-
+        
+        updateUniques()
+        
         // Happiness is global, so it could affect all cities
         if(building.isStatRelated(Stat.Happiness)) {
             for (city in civ.cities) {
@@ -523,8 +525,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         }
         else if(uniqueTypesModifyingYields.any { building.hasUnique(it) })
             city.reassignPopulationDeferred()
-
-        updateUniques()
+        
+        addFreeBuildings()
     }
 
     fun triggerNewBuildingUniques(building: Building) {
@@ -534,9 +536,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             if (!unique.hasTriggerConditional())
                 UniqueTriggerActivation.triggerCivwideUnique(unique, city.civ, city, triggerNotificationText = triggerNotificationText)
 
-            for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, StateForConditionals(city.civ, city)))
-                if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuilding && building.matchesFilter(it.params[0])})
-                    UniqueTriggerActivation.triggerCivwideUnique(unique, city.civ, city, triggerNotificationText = triggerNotificationText)
+        for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, StateForConditionals(city.civ, city)))
+            if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuilding && building.matchesFilter(it.params[0])})
+                UniqueTriggerActivation.triggerCivwideUnique(unique, city.civ, city, triggerNotificationText = triggerNotificationText)
 
         for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuildingCityFilter, StateForConditionals(city.civ, city)))
             if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuildingCityFilter
