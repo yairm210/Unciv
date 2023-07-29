@@ -555,8 +555,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         else builtBuildingObjects.removeAll{ it.name == buildingName }
         builtBuildings.remove(buildingName)
         city.civ.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
-        city.civ.cache.updateCivResources() // this building could be a resource-requiring one
         updateUniques()
+        city.civ.cache.updateCivResources() // this building could be a resource-requiring one
     }
 
     fun updateUniques(onLoadGame:Boolean = false) {
