@@ -498,7 +498,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         /** Support for [UniqueType.CreatesOneImprovement] */
         applyCreateOneImprovement(building)
 
-        city.civ.cache.updateCivResources() // this building could be a resource-requiring one
 
 
         triggerNewBuildingUniques(building)
@@ -525,6 +524,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         }
         else if(uniqueTypesModifyingYields.any { building.hasUnique(it) })
             city.reassignPopulationDeferred()
+
+        city.civ.cache.updateCivResources() // this building could be a resource-requiring one
         
         addFreeBuildings()
     }
