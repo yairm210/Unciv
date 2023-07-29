@@ -89,9 +89,9 @@ internal class PromotionTree(val unit: MapUnit) {
 
         // Fill parent/child relations, ignoring prerequisites not in possiblePromotions
         for (node in nodes.values) {
+            if (detectLoop(node)) continue
             for (prerequisite in node.promotion.prerequisites) {
                 val parent = nodes[prerequisite] ?: continue
-                if (detectLoop(node, parent)) continue
                 node.parents += parent
                 parent.children += node
                 if (node.level > 0 && node.baseName == parent.baseName)
@@ -150,20 +150,18 @@ internal class PromotionTree(val unit: MapUnit) {
     fun allNodes() = nodes.values.asSequence()
     fun allRoots() = allNodes().filter { it.isRoot }
 
-    private fun detectLoop(node: PromotionNode, parent: PromotionNode): Boolean {
-        if (parent == node) return true
+    private fun detectLoop(node: PromotionNode): Boolean {
         val loopCheck = HashSet<PromotionNode>(nodes.size)
-        loopCheck.add(node)
-        fun detectRecursive(parent: PromotionNode, level: Int): Boolean {
+        fun detectRecursive(node: PromotionNode, level: Int, loopCheck: HashSet<PromotionNode>): Boolean {
             if (level > 99) return true
-            if (parent in loopCheck) return true
-            loopCheck.add(parent)
-            for (child in parent.children) {
-                if (detectRecursive(child, level + 1)) return true
+            if (node in loopCheck) return true
+            loopCheck.add(node)
+            for (parent in node.parents) {
+                if (detectRecursive(parent, level + 1, loopCheck)) return true
             }
             return false
         }
-        return detectRecursive(parent, 0)
+        return detectRecursive(node, 0, loopCheck)
     }
 
     private fun getReachableNode(promotion: Promotion): PromotionNode? =
