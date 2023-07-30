@@ -689,6 +689,8 @@ class Civilization : IsPartOfGameInfoSerialization {
 
         tacticalAI.init(this)
 
+        cache.updateCivResources()
+
         cache.setTransients()
     }
 
