@@ -34,7 +34,7 @@ enum class UniqueTarget(
     Tech(inheritsFrom = Global),
     Policy(inheritsFrom = Global),
     FounderBelief("Uniques for Founder and Enhancer type Beliefs, that will apply to the founder of this religion", inheritsFrom = Global),
-    FollowerBelief("Uniques for Pantheon and Follower type beliefs, that will apply to each city where the religion is the majority religion"),
+    FollowerBelief("Uniques for Pantheon and Follower type beliefs, that will apply to each city where the religion is the majority religion", inheritsFrom = Triggerable),
 
     // City-specific
     Building(inheritsFrom = Global),
