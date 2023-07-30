@@ -738,6 +738,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
+??? example  "Damage to garrison from nuclear attacks [relativeAmount]% [cityFilter]"
+	Example: "Damage to garrison from nuclear attacks [+20]% [in all cities]"
+
+	Applicable to: Global
+
 ??? example  "Rebel units may spawn"
 	Applicable to: Global
 

@@ -241,6 +241,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     GoldenAgeLength("[relativeAmount]% Golden Age length", UniqueTarget.Global),
 
     PopulationLossFromNukes("Population loss from nuclear attacks [relativeAmount]% [cityFilter]", UniqueTarget.Global),
+    GarrisonDamageFromNukes("Damage to garrison from nuclear attacks [relativeAmount]% [cityFilter]", UniqueTarget.Global),
 
     SpawnRebels("Rebel units may spawn", UniqueTarget.Global),
 
