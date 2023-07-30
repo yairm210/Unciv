@@ -769,7 +769,7 @@ class UnitMovement(val unit: MapUnit) {
                     unit.civ.getMatchingUniques(UniqueType.UnitsMayEnterOcean)
                         .any { unit.matchesFilter(it.params[0]) }
         }
-        if (tile.isWater && unit.baseUnit.isLandUnit()) {
+        if (tile.isWater && unit.baseUnit.isLandUnit() && !unit.cache.canMoveOnWater) {
             if (!unit.civ.tech.unitsCanEmbark) return false
             if (tile.isOcean && !unit.civ.tech.embarkedUnitsCanEnterOcean && !unitSpecificAllowOcean)
                 return false
@@ -791,7 +791,7 @@ class UnitMovement(val unit: MapUnit) {
         if (firstUnit != null && unit.civ != firstUnit.civ) {
             // Allow movement through unguarded, at-war Civilian Unit. Capture on the way
             // But not for Embarked Units capturing on Water
-            if (!(unit.baseUnit.isLandUnit() && tile.isWater)
+            if (!(unit.baseUnit.isLandUnit() && tile.isWater && !unit.cache.canMoveOnWater)
                     && firstUnit.isCivilian() && unit.civ.isAtWarWith(firstUnit.civ))
                 return true
             // Cannot enter hostile tile with any unit in there
