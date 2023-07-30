@@ -1,0 +1,20 @@
+
+
+By SomeTroglodyte:
+- Key bindings CityScreen 
+- Local mod folder names preserved. 
+- Overhaul NUKE code to behave closer to original 
+- Local mod folder names preserved. 
+- Fix a few now flagged but working Unique targets 
+- Simple Originating-Mod display in Civilopedia 
+
+By SeventhM:
+- Clean up some differences between units that can move on water and other units 
+- Fix resources subtracting in an incorrect manner when they have the same source 
+- Fix free buildings from other buildings not showing up correctly 
+
+Spectator can now see all invisible units including submarines without fog of war.  - By tuvus
+
+Fix logic in Fog Busting  - By itanasi
+
+Fix linting warnings  - By alexban011
