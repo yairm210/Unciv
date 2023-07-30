@@ -1,23 +1,20 @@
 ## 4.7.11
 
 By SomeTroglodyte:
-- Key bindings CityScreen 
-- Local mod folder names preserved. 
-- Overhaul NUKE code to behave closer to original 
-- Local mod folder names preserved. 
-- Fix a few now flagged but working Unique targets 
-- Simple Originating-Mod display in Civilopedia 
+- Civilopedia shows origin mod for objects
+- Key shortcuts for CityScreen
+- Nukes behave closer to Civ V
+- Local mod folder names preserved for strangely-named mods
+- modding: Better unique warnings
 
 By SeventhM:
-- Clean up some differences between units that can move on water and other units 
-- Fix resources subtracting in an incorrect manner when they have the same source 
-- Fix free buildings from other buildings not showing up correctly 
+- Fixed behaviour for units that can move on water
+- Fix: Resources with the same source subtract correctly
+- Fix: Free buildings from other buildings show up correctly
 
-Spectator can now see all invisible units including submarines without fog of war.  - By tuvus
+Fix: Spectator can see all invisible units - By tuvus
 
-Fix logic in Fog Busting  - By itanasi
-
-Fix linting warnings  - By alexban011
+Fix: Better Fog Busting AI  - By itanasi
 
 ## 4.7.10
 
