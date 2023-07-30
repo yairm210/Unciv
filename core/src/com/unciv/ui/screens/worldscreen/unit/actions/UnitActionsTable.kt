@@ -52,13 +52,12 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         if (unitAction.type == UnitActionType.Promote && unitAction.action != null)
             actionButton.color = Color.GREEN.cpy().lerp(Color.WHITE, 0.5f)
 
-        actionButton.addTooltip(binding)
         actionButton.pack()
 
         if (unitAction.action == null) {
             actionButton.disable()
         } else {
-            actionButton.onActivation(unitAction.uncivSound) {
+            actionButton.onActivation(unitAction.uncivSound, binding) {
                 unitAction.action.invoke()
                 GUI.setUpdateWorldOnNextRender()
                 // We keep the unit action/selection overlay from the previous unit open even when already selecting another unit
@@ -70,7 +69,6 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
                     worldScreen.switchToNextUnit()
                 }
             }
-            actionButton.keyShortcuts.add(binding)
         }
 
         return actionButton
