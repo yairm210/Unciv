@@ -79,7 +79,7 @@ object UnitAutomation {
 
         // If everything around this unit is visible, we can stop.
         // Calculations below are quite expensive especially in the late game.
-        if (unit.currentTile.getTilesInDistance(5).any { !it.isVisible(unit.civ) }) {
+        if (unit.currentTile.getTilesInDistance(5).all { it.isVisible(unit.civ) }) {
             return false
         }
 
