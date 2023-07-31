@@ -550,6 +550,8 @@ class RulesetValidator(val ruleset: Ruleset) {
                 "$prefix unique \"${unique.text}\" contains mismatched conditional braces!",
                     RulesetErrorSeverity.Warning))
 
+        // Support purely filtering Uniques without actual implementation
+        if (isFilteringUniqueAllowed(unique)) return emptyList()
         if (tryFixUnknownUniques) {
             val fixes = tryFixUnknownUnique(unique, prefix)
             if (fixes.isNotEmpty()) return fixes
@@ -560,6 +562,13 @@ class RulesetValidator(val ruleset: Ruleset) {
         return listOf(RulesetError(
         "$prefix unique \"${unique.text}\" not found in Unciv's unique types.",
             RulesetErrorSeverity.WarningOptionsOnly))
+    }
+
+    private fun isFilteringUniqueAllowed(unique: Unique): Boolean {
+        // Isolate this decision, to allow easy change of approach
+        // This says: Must have no conditionals or parameters, and is contained in GlobalUniques
+        if (unique.conditionals.isNotEmpty() || unique.params.isNotEmpty()) return false
+        return unique.text in ruleset.globalUniques.uniqueMap
     }
 
     private fun tryFixUnknownUnique(unique: Unique, prefix: String): List<RulesetError> {

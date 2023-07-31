@@ -3,6 +3,7 @@ package com.unciv.models.ruleset.unique
 import com.unciv.Constants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetErrorSeverity
+import com.unciv.models.ruleset.RulesetValidator  // Kdoc only
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 
@@ -406,8 +407,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     CarryAirUnits("Can carry [amount] [mapUnitFilter] units", UniqueTarget.Unit),
     CarryExtraAirUnits("Can carry [amount] extra [mapUnitFilter] units", UniqueTarget.Unit),
     CannotBeCarriedBy("Cannot be carried by [mapUnitFilter] units", UniqueTarget.Unit),
-    // Used only as mapUnitFilter marker for CarryAirUnits and CarryExtraAirUnits, has no actual implementation
-    AircraftMarker("Aircraft", UniqueTarget.UnitType),
     // Interception
     ChanceInterceptAirAttacks("[relativeAmount]% chance to intercept air attacks", UniqueTarget.Unit),
     DamageFromInterceptionReduced("Damage taken from interception reduced by [relativeAmount]%", UniqueTarget.Unit),
