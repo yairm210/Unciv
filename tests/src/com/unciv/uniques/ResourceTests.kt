@@ -61,6 +61,22 @@ class ResourceTests {
         Assert.assertEquals(civInfo.getCivResourcesByName()["Coal"], 1)
     }
 
+
+    @Test
+    fun testTileDoesNotProvideResourceWithPillagedImprovement() {
+        val tile = game.tileMap[1,1]
+        tile.resource = "Coal"
+        tile.improvement = "Mine"
+        tile.resourceAmount = 1
+
+        civInfo.tech.addTechnology(game.ruleset.tileImprovements["Mine"]!!.techRequired!!)
+        civInfo.tech.addTechnology(game.ruleset.tileResources["Coal"]!!.revealedBy!!)
+        Assert.assertEquals(civInfo.getCivResourcesByName()["Coal"], 1)
+
+        tile.setPillaged()
+        Assert.assertEquals(civInfo.getCivResourcesByName()["Coal"], 0)
+    }
+
     @Test
         /** The revealing tech should not affect whether we can get the resource from improvements */
     fun testImprovementProvidesResourceEvenWithoutTech() {

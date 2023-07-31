@@ -931,6 +931,8 @@ open class Tile : IsPartOfGameInfoSerialization {
         }
 
         owningCity?.reassignPopulationDeferred()
+        if (resource != null && owningCity != null)
+            owningCity!!.civ.cache.updateCivResources()
     }
 
     fun isPillaged(): Boolean {
