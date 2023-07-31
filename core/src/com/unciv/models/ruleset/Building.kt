@@ -12,7 +12,6 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueTarget
-import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -23,8 +22,6 @@ import com.unciv.ui.components.extensions.getConsumesAmountString
 import com.unciv.ui.components.extensions.getNeedMoreAmountString
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
-import com.unciv.utils.Concurrency
-import kotlin.math.pow
 
 
 class Building : RulesetStatsObject(), INonPerpetualConstruction {
@@ -119,10 +116,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (isWonder) translatedLines += "Wonder".tr()
         if (isNationalWonder) translatedLines += "National Wonder".tr()
         if (!isFree) {
-            val availableResources = if (!showAdditionalInfo) emptyMap()
-                else city.civ.getCivResourcesByName()
             for ((resourceName, amount) in getResourceRequirementsPerTurn()) {
-                val available = availableResources[resourceName] ?: 0
+                val available = city.getResourceAmount(resourceName)
                 val resource = city.getRuleset().tileResources[resourceName] ?: continue
                 val consumesString = resourceName.getConsumesAmountString(amount, resource.isStockpiled())
 
@@ -617,10 +612,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             yield(RejectionReasonType.RequiresBuildingInThisCity.toInstance("Requires a [${civ.getEquivalentBuilding(requiredBuilding!!)}] in this city"))
         }
 
-        for ((resource, requiredAmount) in getResourceRequirementsPerTurn()) {
-            val availableAmount = civ.getCivResourcesByName()[resource]!!
+        for ((resourceName, requiredAmount) in getResourceRequirementsPerTurn()) {
+            val availableAmount = cityConstructions.city.getResourceAmount(resourceName)
             if (availableAmount < requiredAmount) {
-                yield(RejectionReasonType.ConsumesResources.toInstance(resource.getNeedMoreAmountString(requiredAmount - availableAmount)))
+                yield(RejectionReasonType.ConsumesResources.toInstance(resourceName.getNeedMoreAmountString(requiredAmount - availableAmount)))
             }
         }
 
@@ -644,7 +639,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     override fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat?): Boolean {
         val civInfo = cityConstructions.city.civ
-        
+
         if (civInfo.gameInfo.spaceResources.contains(name)) {
             civInfo.victoryManager.currentsSpaceshipParts.add(name, 1)
             return true

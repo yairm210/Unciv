@@ -377,10 +377,7 @@ open class Tile : IsPartOfGameInfoSerialization {
 
     fun getBaseTerrain(): Terrain = baseTerrainObject
 
-    fun getOwner(): Civilization? {
-        val containingCity = getCity() ?: return null
-        return containingCity.civ
-    }
+    fun getOwner(): Civilization? = getCity()?.civ
 
     fun getRoadOwner(): Civilization? {
         return if (roadOwner != "")
@@ -832,9 +829,7 @@ open class Tile : IsPartOfGameInfoSerialization {
             yieldAll(terrainFeatureObjects)
         }.toList().asSequence() //Save in memory, and return as sequence
 
-        val newUniqueMap = UniqueMap()
-        for (terrain in allTerrains)
-            newUniqueMap.addUniques(terrain.uniqueObjects)
+        updateUniqueMap()
 
         lastTerrain = when {
             terrainFeatures.isNotEmpty() -> ruleset.terrains[terrainFeatures.last()]
@@ -842,7 +837,23 @@ open class Tile : IsPartOfGameInfoSerialization {
             naturalWonder != null -> getNaturalWonder()
             else -> getBaseTerrain()
         }
-        terrainUniqueMap = newUniqueMap
+    }
+
+    private fun updateUniqueMap() {
+        if (!::tileMap.isInitialized) return // This tile is a fake tile, for visual display only (e.g. map editor, civilopedia)
+        val terrainNameList = allTerrains.map { it.name }.toList()
+
+        // List hash is function of all its items, so the same items in the same order will always give the same hash
+        val cachedUniqueMap = tileMap.tileUniqueMapCache[terrainNameList]
+        terrainUniqueMap = if (cachedUniqueMap != null)
+            cachedUniqueMap
+        else {
+            val newUniqueMap = UniqueMap()
+            for (terrain in allTerrains)
+                newUniqueMap.addUniques(terrain.uniqueObjects)
+            tileMap.tileUniqueMapCache[terrainNameList] = newUniqueMap
+            newUniqueMap
+        }
     }
 
     fun addTerrainFeature(terrainFeature: String) =

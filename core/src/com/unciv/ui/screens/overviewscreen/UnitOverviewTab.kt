@@ -247,35 +247,11 @@ class UnitOverviewTab(
 
             // Promotions column
             val promotionsTable = Table()
-            // getPromotions goes by json order on demand, so this is same sorting as on picker
-            val promotions = unit.promotions.getPromotions(true)
-            if (promotions.any()) {
-                val iconCount = promotions.count() + (if (unit.promotions.canBePromoted()) 1 else 0)
-                val numberOfLines = (iconCount - 1) / 8 + 1
-                val promotionsPerLine = (iconCount - 1) / numberOfLines + 1
-                for (linePromotions in promotions.chunked(promotionsPerLine)) {
-                    for (promotion in linePromotions) {
-                        promotionsTable.add(ImageGetter.getPromotionPortrait(promotion.name))
-                    }
-                    if (linePromotions.size == promotionsPerLine) promotionsTable.row()
-                }
-            }
-
-            val canPromoteCell: Cell<Image>? =
-                if (unit.promotions.canBePromoted())
-                    promotionsTable.add(
-                        ImageGetter.getImage("OtherIcons/Star").apply {
-                            color = if (GUI.isAllowedChangeState() && unit.currentMovement > 0f && unit.attacksThisTurn == 0)
-                                    Color.GOLDENROD
-                                else Color.GOLDENROD.darken(0.25f)
-                        }
-                    ).size(24f).padLeft(8f)
-                else null
+            updatePromotionsTable(promotionsTable, unit)
             promotionsTable.onClick {
                 if (unit.promotions.canBePromoted() || unit.promotions.promotions.isNotEmpty()) {
                     game.pushScreen(PromotionPickerScreen(unit) {
-                        if (canPromoteCell != null && !unit.promotions.canBePromoted())
-                            canPromoteCell.size(0f).pad(0f).setActor(null)
+                        updatePromotionsTable(promotionsTable, unit)
                     })
                 }
             }
@@ -305,6 +281,35 @@ class UnitOverviewTab(
             row()
         }
         return this
+    }
+
+    private fun updatePromotionsTable(table: Table, unit: MapUnit) {
+        table.clearChildren()
+
+        // getPromotions goes by json order on demand - so this is the same sorting as on UnitTable,
+        // but not same as on PromotionPickerScreen (which e.g. tries to respect prerequisite proximity)
+        val promotions = unit.promotions.getPromotions(true)
+        val showPromoteStar = unit.promotions.canBePromoted()
+        if (promotions.any()) {
+            val iconCount = promotions.count() + (if (showPromoteStar) 1 else 0)
+            val numberOfLines = (iconCount - 1) / 8 + 1  // Int math: -1,/,+1 means divide rounding *up*
+            val promotionsPerLine = (iconCount - 1) / numberOfLines + 1
+            for (linePromotions in promotions.chunked(promotionsPerLine)) {
+                for (promotion in linePromotions) {
+                    table.add(ImageGetter.getPromotionPortrait(promotion.name))
+                }
+                if (linePromotions.size == promotionsPerLine) table.row()
+            }
+        }
+
+        if (!showPromoteStar) return
+        table.add(
+            ImageGetter.getImage("OtherIcons/Star").apply {
+                color = if (GUI.isAllowedChangeState() && unit.currentMovement > 0f && unit.attacksThisTurn == 0)
+                    Color.GOLDENROD
+                else Color.GOLDENROD.darken(0.25f)
+            }
+        ).size(24f).padLeft(8f)
     }
 
     companion object {

@@ -69,7 +69,7 @@ I'm not planning on it. It means paying money to Apple, yet another release path
  
 ### Steam release?
 
-Steam has decided that they don't want to host Unciv, they probably don't want to risk legal issues with Firaxis (although those should be non-existant, see below)
+Steam has decided that they don't want to host Unciv, they probably don't want to risk legal issues with Firaxis (although those should be non-existent, see below)
  
 ### Will you implement {feature}?
 
@@ -135,7 +135,7 @@ If just docker:
 
 Or just use our already built one:
 
-```$ docker run -d -p 6901:6901 -p 5901:5901 ghcr.io/yairm210/Unciv ```
+```$ docker run -d -p 6901:6901 -p 5901:5901 ghcr.io/yairm210/unciv ```
 
 and then goto http://localhost:6901/vnc.html?password=headless
 ## [Credits and 3rd parties](docs/Credits.md)

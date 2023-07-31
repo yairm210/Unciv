@@ -1,3 +1,58 @@
+## 4.7.11
+
+By SomeTroglodyte:
+- Civilopedia shows origin mod for objects
+- Key shortcuts for CityScreen
+- Nukes behave closer to Civ V
+- Local mod folder names preserved for strangely-named mods
+- modding: Better unique warnings
+
+By SeventhM:
+- Fixed behaviour for units that can move on water
+- Fix: Resources with the same source subtract correctly
+- Fix: Free buildings from other buildings show up correctly
+
+Fix: Spectator can see all invisible units - By tuvus
+
+Fix: Better Fog Busting AI  - By itanasi
+
+## 4.7.10
+
+BaseUnit unique-finding always takes Type uniques into account
+
+Automated AI workers now replace forts - By tuvus
+
+Fix issues when adding/removing buildings - By SeventhM
+
+NotificationAction compatibility patch  - By SomeTroglodyte
+
+Text correction for Ottomans war declaration - By LenaBullens
+
+## 4.7.9
+
+Minor memory improvement
+
+By SomeTroglodyte:
+- Little Promotion UX improvements
+- Modding: Better unique-to-object compliance testing
+
+By SeventhM:
+- Fix issues from gaining free beliefs
+- Fix issues when transferring capitals
+- Avoid built buildings
+
+## 4.7.8
+
+Modding: City-level resources!
+
+Display resource uniques in civilopedia
+
+Memory improvements
+
+Added notification for destruction of tile improvements via unit ability  - By random271
+
+Translation updates
+
 ## 4.7.7
 
 Fixed India's 'double unhappiness' unique

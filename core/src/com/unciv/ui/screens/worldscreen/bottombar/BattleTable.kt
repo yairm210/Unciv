@@ -63,6 +63,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         if (attacker is MapUnitCombatant && attacker.unit.baseUnit.isNuclearWeapon()) {
             val selectedTile = worldScreen.mapHolder.selectedTile
                 ?: return hide() // no selected tile
+            if (selectedTile == attacker.getTile()) return hide() // mayUseNuke would test this again, but not actually seeing the nuke-yourself table just by selecting the nuke is nicer
             simulateNuke(attacker, selectedTile)
         } else if (attacker is MapUnitCombatant && attacker.unit.isPreparingAirSweep()) {
             val selectedTile = worldScreen.mapHolder.selectedTile
@@ -305,9 +306,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         val canNuke = Battle.mayUseNuke(attacker, targetTile)
 
-        val blastRadius =
-            if (!attacker.unit.hasUnique(UniqueType.BlastRadius)) 2
-            else attacker.unit.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
+        val blastRadius = attacker.unit.getNukeBlastRadius()
 
         val defenderNameWrapper = Table()
         for (tile in targetTile.getTilesInDistance(blastRadius)) {

@@ -3,7 +3,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ## Triggerable uniques
 !!! note ""
 
-    Uniques that have immediate, one-time effects. These can be added to techs to trigger when researched, to policies to trigger when adpoted, to eras to trigger when reached, to buildings to trigger when built. Alternatively, you can add a TriggerCondition to them to make them into Global uniques that activate upon a specific event.They can also be added to units to grant them the ability to trigger this effect as an action, which can be modified with UnitActionModifier and UnitTriggerCondition conditionals.
+    Uniques that have immediate, one-time effects. These can be added to techs to trigger when researched, to policies to trigger when adopted, to eras to trigger when reached, to buildings to trigger when built. Alternatively, you can add a TriggerCondition to them to make them into Global uniques that activate upon a specific event.They can also be added to units to grant them the ability to trigger this effect as an action, which can be modified with UnitActionModifier and UnitTriggerCondition conditionals.
 
 ??? example  "Free [unit] appears"
 	Example: "Free [Musketman] appears"
@@ -165,7 +165,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "[stats]"
 	Example: "[+1 Gold, +2 Production]"
 
-	Applicable to: Global, FollowerBelief, Terrain, Improvement
+	Applicable to: Global, Terrain, Improvement
 
 ??? example  "[stats] [cityFilter]"
 	Example: "[+1 Gold, +2 Production] [in all cities]"
@@ -606,7 +606,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Provides [amount] [resource]"
 	Example: "Provides [3] [Iron]"
 
-	Applicable to: Global, Improvement
+	Applicable to: Global, FollowerBelief, Improvement
 
 ??? example  "Quantity of strategic resources produced by the empire +[relativeAmount]%"
 	Example: "Quantity of strategic resources produced by the empire +[+20]%"
@@ -735,6 +735,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Population loss from nuclear attacks [relativeAmount]% [cityFilter]"
 	Example: "Population loss from nuclear attacks [+20]% [in all cities]"
+
+	Applicable to: Global
+
+??? example  "Damage to garrison from nuclear attacks [relativeAmount]% [cityFilter]"
+	Example: "Damage to garrison from nuclear attacks [+20]% [in all cities]"
 
 	Applicable to: Global
 
@@ -1450,7 +1455,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Terrain
 
 ??? example  "Vegetation"
-	Applicable to: Terrain
+	Applicable to: Terrain, Improvement
 
 ??? example  "Tile provides yield without assigned population"
 	Applicable to: Terrain, Improvement
@@ -1654,6 +1659,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Resource
 
 ??? example  "Stockpiled"
+	Applicable to: Resource
+
+??? example  "City-level resource"
 	Applicable to: Resource
 
 ??? example  "Cannot be traded"

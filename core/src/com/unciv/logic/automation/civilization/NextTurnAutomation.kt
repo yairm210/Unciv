@@ -48,6 +48,7 @@ import com.unciv.ui.screens.victoryscreen.RankingType
 import java.util.SortedMap
 import java.util.TreeMap
 import kotlin.math.min
+import kotlin.random.Random
 
 object NextTurnAutomation {
 
@@ -362,16 +363,17 @@ object NextTurnAutomation {
             val highlyDesirableTilesInCity = city.tilesInRange.filter {
                 val hasNaturalWonder = it.naturalWonder != null
                 val hasLuxuryCivDoesntOwn =
-                        it.hasViewableResource(civInfo) &&
-                                it.tileResource.resourceType == ResourceType.Luxury &&
-                                !civInfo.hasResource(it.resource!!)
+                    it.hasViewableResource(civInfo)
+                        && it.tileResource.resourceType == ResourceType.Luxury
+                        && !civInfo.hasResource(it.resource!!)
                 val hasResourceCivHasNoneOrLittle =
-                        (it.hasViewableResource(civInfo)
-                                && it.tileResource.resourceType == ResourceType.Strategic &&
-                                (civInfo.getCivResourcesByName()[it.resource!!] ?: 0) <= 3)
+                    it.hasViewableResource(civInfo)
+                        && it.tileResource.resourceType == ResourceType.Strategic
+                        && civInfo.getResourceAmount(it.resource!!) <= 3
+
                 it.isVisible(civInfo) && it.getOwner() == null
-                        && it.neighbors.any { neighbor -> neighbor.getCity() == city }
-                        (hasNaturalWonder || hasLuxuryCivDoesntOwn || hasResourceCivHasNoneOrLittle)
+                    && it.neighbors.any { neighbor -> neighbor.getCity() == city }
+                (hasNaturalWonder || hasLuxuryCivDoesntOwn || hasResourceCivHasNoneOrLittle)
             }
             for (highlyDesirableTileInCity in highlyDesirableTilesInCity) {
                 highlyDesirableTiles.getOrPut(highlyDesirableTileInCity) { mutableSetOf() }
@@ -602,8 +604,7 @@ object NextTurnAutomation {
 
         for (resource in civInfo.gameInfo.spaceResources) {
             // Have enough resources already
-            val resourceCount = civInfo.getCivResourcesByName()[resource] ?: 0
-            if (resourceCount >= Automation.getReservedSpaceResourceAmount(civInfo))
+            if (civInfo.getResourceAmount(resource) >= Automation.getReservedSpaceResourceAmount(civInfo))
                 continue
 
             val unitToDisband = civInfo.units.getCivUnits()
@@ -615,7 +616,7 @@ object NextTurnAutomation {
                 if (city.hasSoldBuildingThisTurn)
                     continue
                 val buildingToSell = civInfo.gameInfo.ruleset.buildings.values.filter {
-                        it.name in city.cityConstructions.builtBuildings
+                        city.cityConstructions.isBuilt(it.name)
                         && it.requiresResource(resource)
                         && it.isSellable()
                         && it.name !in civInfo.civConstructions.getFreeBuildings(city.id) }
@@ -839,7 +840,7 @@ object NextTurnAutomation {
         val baseForce = 30f
 
         var ourCombatStrength = civInfo.getStatForRanking(RankingType.Force).toFloat() + baseForce
-        if (civInfo.getCapital()!= null) ourCombatStrength += CityCombatant(civInfo.getCapital()!!).getCityStrength()
+        if (civInfo.getCapital() != null) ourCombatStrength += CityCombatant(civInfo.getCapital()!!).getCityStrength()
         var theirCombatStrength = otherCiv.getStatForRanking(RankingType.Force).toFloat() + baseForce
         if(otherCiv.getCapital() != null) theirCombatStrength += CityCombatant(otherCiv.getCapital()!!).getCityStrength()
 
@@ -1071,30 +1072,35 @@ object NextTurnAutomation {
             }
             .maxByOrNull { it.cityStats.currentCityStats.production }
             ?: return
-        if (bestCity.cityConstructions.builtBuildings.size > 1) // 2 buildings or more, otherwise focus on self first
+        if (bestCity.cityConstructions.getBuiltBuildings().count() > 1) // 2 buildings or more, otherwise focus on self first
             bestCity.cityConstructions.currentConstructionFromQueue = settlerUnits.minByOrNull { it.cost }!!.name
     }
 
     // Technically, this function should also check for civs that have liberated one or more cities
     // However, that can be added in another update, this PR is large enough as it is.
-    private fun tryVoteForDiplomaticVictory(civInfo: Civilization) {
-        if (!civInfo.mayVoteForDiplomaticVictory()) return
-        val chosenCiv: String? = if (civInfo.isMajorCiv()) {
+    private fun tryVoteForDiplomaticVictory(civ: Civilization) {
+        if (!civ.mayVoteForDiplomaticVictory()) return
 
-            val knownMajorCivs = civInfo.getKnownCivs().filter { it.isMajorCiv() }
+        val chosenCiv: String? = if (civ.isMajorCiv()) {
+
+            val knownMajorCivs = civ.getKnownCivs().filter { it.isMajorCiv() }
             val highestOpinion = knownMajorCivs
                 .maxOfOrNull {
-                    civInfo.getDiplomacyManager(it).opinionOfOtherCiv()
+                    civ.getDiplomacyManager(it).opinionOfOtherCiv()
                 }
 
-            if (highestOpinion == null) null
-            else knownMajorCivs.filter { civInfo.getDiplomacyManager(it).opinionOfOtherCiv() == highestOpinion}.toList().random().civName
+            if (highestOpinion == null) null  // Abstain if we know nobody
+            else if (highestOpinion < -80 || highestOpinion < -40 && highestOpinion + Random.Default.nextInt(40) < -40)
+                null // Abstain if we hate everybody (proportional chance in the RelationshipLevel.Enemy range - lesser evil)
+            else knownMajorCivs
+                .filter { civ.getDiplomacyManager(it).opinionOfOtherCiv() == highestOpinion }
+                .toList().random().civName
 
         } else {
-            civInfo.getAllyCiv()
+            civ.getAllyCiv()
         }
 
-        civInfo.diplomaticVoteForCiv(chosenCiv)
+        civ.diplomaticVoteForCiv(chosenCiv)
     }
 
     private fun issueRequests(civInfo: Civilization) {

@@ -12,6 +12,7 @@ import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toGroup
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -141,6 +142,7 @@ class SpecialistAllocationTable(private val cityScreen: CityScreen) : Table(Base
             fontSize = Constants.defaultFontSize,
             persistenceID = "CityStatsTable.Specialists",
             startsOutOpened = true,
+            toggleKey = KeyboardBinding.SpecialistDetail,
             onChange = onChange
         ) {
             it.add(this)

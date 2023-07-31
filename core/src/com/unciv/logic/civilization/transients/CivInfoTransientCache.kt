@@ -284,10 +284,6 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         val newDetailedCivResources = ResourceSupplyList()
         for (city in civInfo.cities) newDetailedCivResources.add(city.getCityResources())
 
-        for (resourceSupply in newDetailedCivResources)
-            if (resourceSupply.amount > 0)
-                resourceSupply.amount = (resourceSupply.amount * civInfo.getResourceModifier(resourceSupply.resource)).toInt()
-
         if (!civInfo.isCityState()) {
             // First we get all these resources of each city state separately
             val cityStateProvidedResources = ResourceSupplyList()
@@ -306,10 +302,11 @@ class CivInfoTransientCache(val civInfo: Civilization) {
 
         for (unique in civInfo.getMatchingUniques(UniqueType.ProvidesResources)) {
             if (unique.sourceObjectType == UniqueTarget.Building || unique.sourceObjectType == UniqueTarget.Wonder) continue // already calculated in city
+            val resource = civInfo.gameInfo.ruleset.tileResources[unique.params[1]]!!
             newDetailedCivResources.add(
-                civInfo.gameInfo.ruleset.tileResources[unique.params[1]]!!,
+                resource,
                 unique.sourceObjectType?.name ?: "",
-                unique.params[0].toInt()
+                (unique.params[0].toFloat() * civInfo.getResourceModifier(resource)).toInt()
             )
         }
 
@@ -319,6 +316,8 @@ class CivInfoTransientCache(val civInfo: Civilization) {
         for (unit in civInfo.units.getCivUnits())
             newDetailedCivResources.subtractResourceRequirements(
                 unit.baseUnit.getResourceRequirementsPerTurn(), civInfo.gameInfo.ruleset, "Units")
+
+        newDetailedCivResources.removeAll { it.resource.hasUnique(UniqueType.CityResource) }
 
         // Check if anything has actually changed so we don't update stats for no reason - this uses List equality which means it checks the elements
         if (civInfo.detailedCivResources == newDetailedCivResources) return

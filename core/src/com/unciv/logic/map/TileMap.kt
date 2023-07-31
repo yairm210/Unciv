@@ -12,8 +12,10 @@ import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
 import java.lang.Integer.max
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.abs
 
 /** An Unciv map with all properties as produced by the [map editor][com.unciv.ui.screens.mapeditorscreen.MapEditorScreen]
@@ -59,6 +61,9 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     /** Keep a copy of the [Ruleset] object passed to setTransients, for now only to allow subsequent setTransients without. Copied on [clone]. */
     @Transient
     var ruleset: Ruleset? = null
+
+    @Transient
+    var tileUniqueMapCache = ConcurrentHashMap<List<String>, UniqueMap>()
 
     @Transient
     var tileMatrix = ArrayList<ArrayList<Tile?>>() // this works several times faster than a hashmap, the performance difference is really astounding
@@ -140,6 +145,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
         toReturn.startingLocations.clear()
         toReturn.startingLocations.ensureCapacity(startingLocations.size)
         toReturn.startingLocations.addAll(startingLocations)
+        toReturn.tileUniqueMapCache = tileUniqueMapCache
 
         return toReturn
     }
@@ -507,7 +513,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             var potentialCandidates = getPassableNeighbours(currentTile)
             while (unitToPlaceTile == null && tryCount++ < 10) {
                 unitToPlaceTile = potentialCandidates
-                        .sortedByDescending { if (unit.baseUnit.isLandUnit()) it.isLand else true } // Land units should prefer to go into land tiles
+                        .sortedByDescending { if (unit.baseUnit.isLandUnit() && !unit.cache.canMoveOnWater) it.isLand else true } // Land units should prefer to go into land tiles
                         .firstOrNull { unit.movement.canMoveTo(it) }
                 if (unitToPlaceTile != null) continue
                 // if it's not found yet, let's check their neighbours

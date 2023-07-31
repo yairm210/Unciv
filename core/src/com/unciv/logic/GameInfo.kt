@@ -1,6 +1,7 @@
 package com.unciv.logic
 
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.UncivGame.Version
 import com.unciv.json.json
@@ -35,6 +36,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Speed
 import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.screens.pickerscreens.Github.repoNameToFolderName
@@ -54,6 +56,13 @@ import java.util.UUID
  * When you change the structure of any class with this interface in a way which makes it impossible
  * to load the new saves from an older game version, increment [CURRENT_COMPATIBILITY_NUMBER]! And don't forget
  * to add backwards compatibility for the previous format.
+ *
+ * Reminder: In all subclasse, do use only actual Collection types, not abstractions like
+ * `= mutableSetOf<Something>()`. That would make the reflection type of the field an interface, which
+ * hides the actual implementation from Gdx Json, so it will not try to call a no-args constructor but
+ * will instead deserialize a List in the jsonData.isArray() -> isAssignableFrom(Collection) branch of readValue:
+ * https://github.com/libgdx/libgdx/blob/75612dae1eeddc9611ed62366858ff1d0ac7898b/gdx/src/com/badlogic/gdx/utils/Json.java#L1111
+ * .. which will crash later (when readFields actually assigns it) unless empty.
  */
 interface IsPartOfGameInfoSerialization
 
@@ -109,8 +118,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
     var victoryData:VictoryData? = null
 
-    // Maps a civ to the civ they voted for
-    var diplomaticVictoryVotesCast = HashMap<String, String>()
+    /** Maps a civ to the civ they voted for - `null` on the value side means they abstained */
+    var diplomaticVictoryVotesCast = HashMap<String, String?>()
     // Set to false whenever the results still need te be processed
     var diplomaticVictoryVotesProcessed = false
 
@@ -227,6 +236,35 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
     fun getCities() = civilizations.asSequence().flatMap { it.cities }
     fun getAliveCityStates() = civilizations.filter { it.isAlive() && it.isCityState() }
     fun getAliveMajorCivs() = civilizations.filter { it.isAlive() && it.isMajorCiv() }
+
+    /** Gets civilizations in their commonly used order - City-states last,
+     *  otherwise alphabetically by culture and translation. [civToSortFirst] can be used to force
+     *  a specific Civilization to be listed first.
+     *
+     *  Barbarians and Spectators always excluded, other filter criteria are [includeCityStates],
+     *  [includeDefeated] and optionally an [additionalFilter].
+     */
+    fun getCivsSorted(
+        includeCityStates: Boolean = true,
+        includeDefeated: Boolean = false,
+        civToSortFirst: Civilization? = null,
+        additionalFilter: ((Civilization) -> Boolean)? = null
+    ): Sequence<Civilization> {
+        val collator = GUI.getSettings().getCollatorFromLocale()
+        return civilizations.asSequence()
+            .filterNot {
+                it.isBarbarian() ||
+                it.isSpectator() ||
+                !includeDefeated && it.isDefeated() ||
+                !includeCityStates && it.isCityState() ||
+                additionalFilter?.invoke(it) == false
+            }
+            .sortedWith(
+                compareBy<Civilization> { it != civToSortFirst }
+                    .thenByDescending { it.isMajorCiv() }
+                    .thenBy(collator) { it.civName.tr(hideIcons = true) }
+            )
+    }
 
     /** Returns the first spectator for a [playerId] or creates one if none found */
     fun getSpectator(playerId: String): Civilization {
@@ -543,7 +581,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         // Cater for the mad modder using trailing '-' in their repo name - convert the mods list so
         // it requires our new, Windows-safe local name (no trailing blanks)
-        for ((oldName, newName) in gameParameters.mods.map { it to it.repoNameToFolderName() }) {
+        for ((oldName, newName) in gameParameters.mods.map { it to it.repoNameToFolderName(onlyOuterBlanks = true) }) {
             if (newName == oldName) continue
             gameParameters.mods.remove(oldName)
             gameParameters.mods.add(newName)

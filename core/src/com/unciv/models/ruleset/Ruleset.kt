@@ -230,6 +230,8 @@ class Ruleset {
             allRulesetObjects() + sequenceOf(modOptions)
 
     fun load(folderHandle: FileHandle) {
+        // Note: Most files are loaded using createHashmap, which sets originRuleset automatically.
+        // For other files containing IRulesetObject's we'll have to remember to do so manually - e.g. Tech.
         val modOptionsFile = folderHandle.child("ModOptions.json")
         if (modOptionsFile.exists()) {
             try {
@@ -250,6 +252,7 @@ class Ruleset {
                 for (tech in techColumn.techs) {
                     if (tech.cost == 0) tech.cost = techColumn.techCost
                     tech.column = techColumn
+                    tech.originRuleset = name
                     technologies[tech.name] = tech
                 }
             }
@@ -261,7 +264,10 @@ class Ruleset {
         val terrainsFile = folderHandle.child("Terrains.json")
         if (terrainsFile.exists()) {
             terrains += createHashmap(json().fromJsonFile(Array<Terrain>::class.java, terrainsFile))
-            for (terrain in terrains.values) terrain.setTransients()
+            for (terrain in terrains.values) {
+                terrain.originRuleset = name
+                terrain.setTransients()
+            }
         }
 
         val resourcesFile = folderHandle.child("TileResources.json")
@@ -316,6 +322,7 @@ class Ruleset {
                 // Append child policies of this branch
                 for (policy in branch.policies) {
                     policy.branch = branch
+                    policy.originRuleset = name
                     if (policy.requires == null) {
                         policy.requires = arrayListOf(branch.name)
                     }
@@ -366,6 +373,7 @@ class Ruleset {
         val globalUniquesFile = folderHandle.child("GlobalUniques.json")
         if (globalUniquesFile.exists()) {
             globalUniques = json().fromJsonFile(GlobalUniques::class.java, globalUniquesFile)
+            globalUniques.originRuleset = name
         }
 
         val victoryTypesFile = folderHandle.child("VictoryTypes.json")
