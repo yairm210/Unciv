@@ -116,7 +116,7 @@ class CityMovingTests {
         theirCapital.getCenterTile().resource = "Salt"
         theirCapital.getCenterTile().resourceAmount = 1
 
-        val resourceTile = testGame.getTile(Vector2(0f,1f))
+        val resourceTile = testGame.tileMap[0,1]
         resourceTile.resource = "Iron"
         resourceTile.resourceAmount = 3
         resourceTile.changeImprovement("Mine")
