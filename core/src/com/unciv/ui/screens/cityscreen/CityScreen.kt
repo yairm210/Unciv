@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.cityscreen
 
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -353,7 +352,7 @@ class CityScreen(
         if (!canChangeState || city.isPuppet) return
         val tile = tileGroup.tile
 
-        // Cycling as: Not-worked -> Worked -> Locked -> Not-worked
+        // Cycling as: Not-worked -> Worked  -> Not-worked
         if (tileGroup.tileState == CityTileState.WORKABLE) {
             if (!tile.providesYield() && city.population.getFreePopulation() > 0) {
                 city.workedTiles.add(tile.position)
@@ -403,6 +402,11 @@ class CityScreen(
     private fun tileWorkedIconDoubleClick(tileGroup: CityTileGroup, city: City) {
         if (!canChangeState || city.isPuppet || tileGroup.tileState != CityTileState.WORKABLE) return
         val tile = tileGroup.tile
+
+        // Double-click should lead to locked tiles - both for unworked AND worked tiles
+
+        if (!tile.isWorked()) // If not worked, try to work it first
+            tileWorkedIconOnClick(tileGroup, city)
 
         if (tile.isWorked())
             city.lockedTiles.add(tile.position)
