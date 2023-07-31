@@ -22,7 +22,11 @@ class CityMovingTests {
         enemy = testGame.addCiv()
 
         // Required for enemy to utilize roads
-        enemy.tech.techsResearched.addAll(testGame.ruleset.technologies.keys)
+        for (tech in testGame.ruleset.technologies.keys)
+            enemy.tech.addTechnology(tech)
+
+        for (tech in testGame.ruleset.technologies.keys)
+            civInfo.tech.addTechnology(tech)
 
         civInfo.diplomacyFunctions.makeCivilizationsMeet(enemy)
         civInfo.getDiplomacyManager(enemy).declareWar()
@@ -103,5 +107,25 @@ class CityMovingTests {
         theirCapital.moveToCiv(civInfo)
         Assert.assertTrue(theirCapital.isCapital())
         Assert.assertTrue(theirCapital.civ == civInfo)
+    }
+
+    @Test
+    fun moveTheirCityToUsWhenTheyHaveResources() {
+        val theirCapital = testGame.addCity(enemy, testGame.tileMap[2,0])
+
+        theirCapital.getCenterTile().resource = "Salt"
+        theirCapital.getCenterTile().resourceAmount = 1
+
+        val resourceTile = testGame.getTile(Vector2(0f,1f))
+        resourceTile.resource = "Iron"
+        resourceTile.resourceAmount = 3
+        resourceTile.changeImprovement("Mine")
+        theirCapital.expansion.takeOwnership(resourceTile)
+
+        theirCapital.moveToCiv(civInfo)
+        Assert.assertTrue(theirCapital.isCapital())
+        Assert.assertTrue(theirCapital.civ == civInfo)
+        Assert.assertTrue(civInfo.hasResource("Salt"))
+        Assert.assertEquals(civInfo.getResourceAmount("Iron"), 3)
     }
 }

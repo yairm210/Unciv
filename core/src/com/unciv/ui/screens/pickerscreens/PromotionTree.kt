@@ -7,7 +7,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.translations.tr
 
-internal class PromotionTree(val unit: MapUnit) {
+class PromotionTree(val unit: MapUnit) {
     /** Ordered set of Promotions to show - by Json column/row and translated name */
     // Not using SortedSet - that uses needlessly complex implementations that remember the comparator
     val possiblePromotions: LinkedHashSet<Promotion>

@@ -112,4 +112,46 @@ class UnitUniquesTests {
         // This effectively tests whether the G&K rules have not been tampered with, but won't hurt
         Assert.assertNotEquals("Great General stacked with a Hakkapeliitta should NOT have its normal movement points.", baseMovement, actualMovement)
     }
+
+    @Test
+    fun testCanGetPromotionsWithXP() {
+        val civ = game.addCiv(isPlayer = true)
+
+        val centerTile = game.getTile(Vector2.Zero)
+        val unit = game.addUnit("Scout", civ, centerTile)
+        val tree = PromotionTree(unit)
+
+        Assert.assertFalse(tree.allNodes().any { !it.unreachable && tree.canBuyUpTo(it.promotion) })
+        unit.promotions.XP += 10
+        Assert.assertTrue(tree.allNodes().any { !it.unreachable && tree.canBuyUpTo(it.promotion) })
+    }
+
+    @Test
+    fun testPromotionsWithMultipleRequirements() {
+        val civ = game.addCiv(isPlayer = true)
+
+        val promotionBranch1 = game.createUnitPromotion()
+        promotionBranch1.unitTypes = listOf("Scout")
+
+        val promotionBranch2a = game.createUnitPromotion()
+        promotionBranch2a.unitTypes = listOf("Scout")
+        promotionBranch2a.prerequisites = listOf(promotionBranch1.name)
+
+        val promotionBranch2b = game.createUnitPromotion()
+        promotionBranch2b.prerequisites = listOf(promotionBranch1.name,promotionBranch2a.name)
+        promotionBranch2b.unitTypes = listOf("Scout")
+
+        val centerTile = game.getTile(Vector2.Zero)
+        val unit = game.addUnit("Scout", civ, centerTile)
+        var tree = PromotionTree(unit)
+        Assert.assertFalse(tree.canBuyUpTo(promotionBranch2b))
+
+        unit.promotions.XP += 40
+        unit.promotions.addPromotion(promotionBranch1.name)
+
+        // The Promotion tree needs to be refreshed to check it after gaining a promotion
+        tree = PromotionTree(unit)
+
+        Assert.assertTrue(tree.canBuyUpTo(promotionBranch2b))
+    }
 }
