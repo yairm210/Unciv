@@ -377,10 +377,7 @@ open class Tile : IsPartOfGameInfoSerialization {
 
     fun getBaseTerrain(): Terrain = baseTerrainObject
 
-    fun getOwner(): Civilization? {
-        val containingCity = getCity() ?: return null
-        return containingCity.civ
-    }
+    fun getOwner(): Civilization? = getCity()?.civ
 
     fun getRoadOwner(): Civilization? {
         return if (roadOwner != "")

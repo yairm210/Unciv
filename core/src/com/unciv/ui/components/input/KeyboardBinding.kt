@@ -2,6 +2,7 @@ package com.unciv.ui.components.input
 
 import com.badlogic.gdx.Input
 import com.unciv.Constants
+import com.unciv.models.stats.Stat
 
 
 private val unCamelCaseRegex = Regex("([A-Z])([A-Z])([a-z])|([a-z])([A-Z])")
@@ -123,6 +124,38 @@ enum class KeyboardBinding(
     HideAdditionalActions(Category.UnitActions,"Back", Input.Keys.PAGE_UP),
     AddInCapital(Category.UnitActions, "Add in capital", 'g'),
 
+    // City Screen
+    AddConstruction(Category.CityScreen, "Add to or remove from queue", KeyCharAndCode.RETURN),
+    RaisePriority(Category.CityScreen, "Raise queue priority", Input.Keys.UP),
+    LowerPriority(Category.CityScreen, "Lower queue priority", Input.Keys.DOWN),
+    BuyConstruction(Category.CityScreen, 'b'),
+    BuyTile(Category.CityScreen, 't'),
+    BuildUnits(Category.CityScreen, "Buildable Units", 'u'),
+    BuildBuildings(Category.CityScreen, "Buildable Buildings", 'l'),
+    BuildWonders(Category.CityScreen, "Buildable Wonders", 'w'),
+    BuildNationalWonders(Category.CityScreen, "Buildable National Wonders", 'n'),
+    BuildOther(Category.CityScreen, "Other Constructions", 'o'),
+    NextCity(Category.CityScreen, Input.Keys.RIGHT),
+    PreviousCity(Category.CityScreen, Input.Keys.LEFT),
+    ShowStats(Category.CityScreen, 's'),
+    ShowStatDetails(Category.CityScreen, "Toggle Stat Details", Input.Keys.NUMPAD_ADD),
+    CitizenManagement(Category.CityScreen, 'c'),
+    GreatPeopleDetail(Category.CityScreen, 'g'),
+    SpecialistDetail(Category.CityScreen, 'p'),
+    ReligionDetail(Category.CityScreen, 'r'),
+    BuildingsDetail(Category.CityScreen, 'd'),
+    ResetCitizens(Category.CityScreen, KeyCharAndCode.ctrl('r')),
+    AvoidGrowth(Category.CityScreen, KeyCharAndCode.ctrl('a')),
+    // The following are automatically matched by enum name to CityFocus entries - if necessary override there
+    // Note on label: copied from CityFocus to ensure same translatable is used - without we'd get "Food Focus", not the same as "[Food] Focus"
+    NoFocus(Category.CityScreen, "Default Focus", KeyCharAndCode.ctrl('d')),
+    FoodFocus(Category.CityScreen, "[${Stat.Food.name}] Focus", KeyCharAndCode.ctrl('f')),
+    ProductionFocus(Category.CityScreen, "[${Stat.Production.name}] Focus", KeyCharAndCode.ctrl('p')),
+    GoldFocus(Category.CityScreen, "[${Stat.Gold.name}] Focus", KeyCharAndCode.ctrl('g')),
+    ScienceFocus(Category.CityScreen, "[${Stat.Science.name}] Focus", KeyCharAndCode.ctrl('s')),
+    CultureFocus(Category.CityScreen, "[${Stat.Culture.name}] Focus", KeyCharAndCode.ctrl('c')),
+    FaithFocus(Category.CityScreen, "[${Stat.Faith.name}] Focus", KeyCharAndCode.UNKNOWN),
+
     // Popups
     Confirm(Category.Popups, "Confirm Dialog", 'y'),
     Cancel(Category.Popups, "Cancel Dialog", 'n'),
@@ -144,6 +177,7 @@ enum class KeyboardBinding(
             // Conflict checking within group disabled, but any key assigned on WorldScreen is a problem
             override fun checkConflictsIn() = sequenceOf(WorldScreen)
         },
+        CityScreen,
         Popups
         ;
         val label = unCamelCase(name)

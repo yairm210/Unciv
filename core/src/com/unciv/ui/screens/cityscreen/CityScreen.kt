@@ -27,6 +27,7 @@ import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
@@ -139,8 +140,8 @@ class CityScreen(
         stage.addActor(exitCityButton)
         update()
 
-        globalShortcuts.add(Input.Keys.LEFT) { page(-1) }
-        globalShortcuts.add(Input.Keys.RIGHT) { page(1) }
+        globalShortcuts.add(KeyboardBinding.PreviousCity) { page(-1) }
+        globalShortcuts.add(KeyboardBinding.NextCity) { page(1) }
     }
 
     internal fun update() {
@@ -150,6 +151,19 @@ class CityScreen(
         constructionsTable.isVisible = true
         constructionsTable.update(selectedConstruction)
 
+        updateWithoutConstructionAndMap()
+
+        // Rest of screen: Map of surroundings
+        updateTileGroups()
+        if (isPortrait()) mapScrollPane.apply {
+            // center scrolling so city center sits more to the bottom right
+            scrollX = (maxX - constructionsTable.getLowerWidth() - posFromEdge) / 2
+            scrollY = (maxY - cityStatsTable.packIfNeeded().height - posFromEdge + cityPickerTable.top) / 2
+            updateVisualScroll()
+        }
+    }
+
+    internal fun updateWithoutConstructionAndMap() {
         // Bottom right: Tile or selected construction info
         tileTable.update(selectedTile)
         tileTable.setPosition(stage.width - posFromEdge, posFromEdge, Align.bottomRight)
@@ -185,15 +199,6 @@ class CityScreen(
 
         // Top center: Annex/Raze button
         updateAnnexAndRazeCityButton()
-
-        // Rest of screen: Map of surroundings
-        updateTileGroups()
-        if (isPortrait()) mapScrollPane.apply {
-            // center scrolling so city center sits more to the bottom right
-            scrollX = (maxX - constructionsTable.getLowerWidth() - posFromEdge) / 2
-            scrollY = (maxY - cityStatsTable.packIfNeeded().height - posFromEdge + cityPickerTable.top) / 2
-            updateVisualScroll()
-        }
     }
 
     fun canCityBeChanged(): Boolean {
