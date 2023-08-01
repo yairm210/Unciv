@@ -21,6 +21,7 @@ import java.io.InputStream
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
+import java.nio.Buffer
 import java.nio.ByteBuffer
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -260,7 +261,9 @@ object Github {
                 ?: download("$fileLocation.png")
                 ?: return null
             val byteArray = file.readBytes()
-            val buffer = ByteBuffer.allocateDirect(byteArray.size).put(byteArray).position(0)
+            val buffer = ByteBuffer.allocateDirect(byteArray.size).put(byteArray)
+            // This works around a Java 8 bug. With Java 11+, you can chain the rewind directly on the previous line.
+            (buffer as Buffer).position(0)
             return Pixmap(buffer)
         } catch (_: Throwable) {
             return null
