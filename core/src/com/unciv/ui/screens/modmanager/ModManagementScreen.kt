@@ -58,15 +58,19 @@ import java.io.IOException
 import kotlin.math.max
 
 /**
- * The Mod Management Screen - called only from [MainMenuScreen]
- * @param previousOnlineMods - cached online mod list, if supplied and not empty, it will be displayed as is and no online query will be run. Used for resize.
+ * The Mod Management Screen - constructor for internal use by [resize]
+ * @param previousInstalledMods - cached installed mod list.
+ * @param previousOnlineMods - cached online mod list, if supplied and not empty, it will be displayed as is and no online query will be run.
  */
 // All picker screens auto-wrap the top table in a ScrollPane.
 // Since we want the different parts to scroll separately, we disable the default ScrollPane, which would scroll everything at once.
-class ModManagementScreen(
-    previousInstalledMods: HashMap<String, ModUIData>? = null,
-    previousOnlineMods: HashMap<String, ModUIData>? = null
+class ModManagementScreen private constructor(
+    previousInstalledMods: HashMap<String, ModUIData>?,
+    previousOnlineMods: HashMap<String, ModUIData>?
 ): PickerScreen(disableScroll = true), RecreateOnResize {
+    /** The Mod Management Screen - called only from [MainMenuScreen] */
+    constructor() : this(null, null)
+
     companion object {
         // Tweakable constants
         /** For preview.png */
