@@ -30,6 +30,14 @@ object TechnologyDescriptions {
     fun getDescription(technology: Technology, viewingCiv: Civilization): String = technology.run {
         val ruleset = viewingCiv.gameInfo.ruleset
         val lineList = ArrayList<String>() // more readable than StringBuilder, with same performance for our use-case
+
+        for (pediaText in technology.civilopediaText) {
+            // This is explicitly to get the "Who knows what the future holds" of Future Tech back into
+            // the Tech Picker and Tech Researched Alert display, without making it an untyped Unique.
+            // May need tuning for mods, in vanilla there is just the one case.
+            if (pediaText.text.isEmpty() || pediaText.header != 0) continue
+            lineList += pediaText.text
+        }
         for (unique in uniques) lineList += unique
 
         lineList.addAll(
