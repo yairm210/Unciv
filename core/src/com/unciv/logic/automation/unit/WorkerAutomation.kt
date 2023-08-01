@@ -138,12 +138,13 @@ class WorkerAutomation(
 
             // If there's move still left, perform action
             // Unit may stop due to Enemy Unit within walking range during doAction() call
-            if (unit.currentMovement > 0 && reachedTile == tileToWork) {
+            if (reachedTile == tileToWork) {
                 if (reachedTile.isPillaged()) {
                     debug("WorkerAutomation: ${unit.label()} -> repairs $reachedTile")
                     UnitActions.getRepairAction(unit).invoke()
                     return
-                } else if (reachedTile.terrainFeatures.contains("Fallout")) {
+                }
+                if (reachedTile.terrainFeatures.contains("Fallout")) {
                     debug("WorkerAutomation: ${unit.label()} -> removes fallout $reachedTile")
                     reachedTile.improvementInProgress = Constants.remove + "Fallout"
                     reachedTile.turnsToImprovement = reachedTile.ruleset.tileImprovements["Remove Fallout"]!!.getTurnsToBuild(unit.civ, unit)
