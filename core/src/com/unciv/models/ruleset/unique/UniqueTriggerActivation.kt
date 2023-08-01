@@ -53,7 +53,7 @@ object UniqueTriggerActivation {
             UniqueType.OneTimeFreeUnit -> {
                 val unitName = unique.params[0]
                 val unit = ruleSet.units[unitName]
-                if (chosenCity == null
+                if ((chosenCity == null && tile == null)
                         || unit == null
                         || unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger())
                     return false
@@ -63,7 +63,9 @@ object UniqueTriggerActivation {
                 if (limit!=null && limit <= civInfo.units.getCivUnits().count { it.name==unitName })
                     return false
 
-                val placedUnit = civInfo.units.addUnit(unitName, chosenCity) ?: return false
+                val placedUnit = if (city != null)
+                    civInfo.units.addUnit(unitName, chosenCity) ?: return false
+                    else civInfo.units.placeUnitNearTile(tile!!.position, unitName) ?: return false
 
                 val notificationText = getNotificationText(notification, triggerNotificationText,
                     "Gained [1] [$unitName] unit(s)")
@@ -80,7 +82,7 @@ object UniqueTriggerActivation {
             UniqueType.OneTimeAmountFreeUnits -> {
                 val unitName = unique.params[1]
                 val unit = ruleSet.units[unitName]
-                if (chosenCity == null || unit == null || (unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger()))
+                if ((chosenCity == null && tile == null) || unit == null || (unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger()))
                     return false
 
                 val limit = unit.getMatchingUniques(UniqueType.MaxNumberBuildable)
@@ -94,7 +96,8 @@ object UniqueTriggerActivation {
 
                 val tilesUnitsWerePlacedOn: MutableList<Vector2> = mutableListOf()
                 repeat(actualAmount) {
-                    val placedUnit = civInfo.units.addUnit(unitName, chosenCity)
+                    val placedUnit = if (city != null) civInfo.units.addUnit(unitName, chosenCity)
+                        else civInfo.units.placeUnitNearTile(tile!!.position, unitName)
                     if (placedUnit != null)
                         tilesUnitsWerePlacedOn.add(placedUnit.getTile().position)
                 }
