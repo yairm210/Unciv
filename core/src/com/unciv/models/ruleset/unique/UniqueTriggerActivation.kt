@@ -63,7 +63,7 @@ object UniqueTriggerActivation {
                 if (limit!=null && limit <= civInfo.units.getCivUnits().count { it.name==unitName })
                     return false
 
-                val placedUnit = if (city != null)
+                val placedUnit = if (city != null || tile == null)
                     civInfo.units.addUnit(unitName, chosenCity) ?: return false
                     else civInfo.units.placeUnitNearTile(tile!!.position, unitName) ?: return false
 
@@ -96,7 +96,7 @@ object UniqueTriggerActivation {
 
                 val tilesUnitsWerePlacedOn: MutableList<Vector2> = mutableListOf()
                 repeat(actualAmount) {
-                    val placedUnit = if (city != null) civInfo.units.addUnit(unitName, chosenCity)
+                    val placedUnit = if (city != null || tile == null) civInfo.units.addUnit(unitName, chosenCity)
                         else civInfo.units.placeUnitNearTile(tile!!.position, unitName)
                     if (placedUnit != null)
                         tilesUnitsWerePlacedOn.add(placedUnit.getTile().position)
