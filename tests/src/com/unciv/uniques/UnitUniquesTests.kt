@@ -139,7 +139,7 @@ class UnitUniquesTests {
         promotionBranch2a.prerequisites = listOf(promotionBranch1.name)
 
         val promotionBranch2b = game.createUnitPromotion()
-        promotionBranch2b.prerequisites = listOf(promotionBranch1.name,promotionBranch2a.name)
+        promotionBranch2b.prerequisites = listOf(promotionBranch1.name, promotionBranch2a.name)
         promotionBranch2b.unitTypes = listOf("Scout")
 
         val centerTile = game.getTile(Vector2.Zero)
@@ -147,12 +147,16 @@ class UnitUniquesTests {
         var tree = PromotionTree(unit)
         Assert.assertFalse(tree.canBuyUpTo(promotionBranch2b))
 
-        unit.promotions.XP += 40
+        unit.promotions.XP += 30
         unit.promotions.addPromotion(promotionBranch1.name)
 
         // The Promotion tree needs to be refreshed to check it after gaining a promotion
         tree = PromotionTree(unit)
 
+        Assert.assertTrue(tree.canBuyUpTo(promotionBranch2b))
+
+        promotionBranch2b.prerequisites = listOf(promotionBranch2a.name, promotionBranch1.name)
+        tree = PromotionTree(unit)
         Assert.assertTrue(tree.canBuyUpTo(promotionBranch2b))
     }
 }
