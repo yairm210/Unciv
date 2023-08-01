@@ -143,9 +143,14 @@ class WorkerAutomation(
                     debug("WorkerAutomation: ${unit.label()} -> repairs $reachedTile")
                     UnitActions.getRepairAction(unit).invoke()
                     return
+                } else if (reachedTile.terrainFeatures.contains("Fallout")) {
+                    debug("WorkerAutomation: ${unit.label()} -> removes fallout $reachedTile")
+                    reachedTile.improvementInProgress = Constants.remove + "Fallout"
+                    reachedTile.turnsToImprovement = reachedTile.ruleset.tileImprovements["Remove Fallout"]!!.getTurnsToBuild(unit.civ, unit)
+                    return
                 }
                 if (reachedTile.improvementInProgress == null && reachedTile.isLand
-                        && tileCanBeImproved(unit, reachedTile)
+                    && tileCanBeImproved(unit, reachedTile)
                 ) {
                     debug("WorkerAutomation: ${unit.label()} -> start improving $reachedTile")
                     return reachedTile.startWorkingOnImprovement(
@@ -159,6 +164,11 @@ class WorkerAutomation(
         if (currentTile.isPillaged()) {
             debug("WorkerAutomation: ${unit.label()} -> repairs $currentTile")
             UnitActions.getRepairAction(unit).invoke()
+            return
+        } else if (currentTile.terrainFeatures.contains("Fallout")) {
+            debug("WorkerAutomation: ${unit.label()} -> removes fallout $currentTile")
+            currentTile.improvementInProgress = Constants.remove + "Fallout"
+            currentTile.turnsToImprovement = currentTile.ruleset.tileImprovements["Remove Fallout"]!!.getTurnsToBuild(unit.civ, unit)
             return
         }
 
@@ -301,7 +311,7 @@ class WorkerAutomation(
 
         // These are the expensive calculations (tileCanBeImproved, canReach), so we only apply these filters after everything else it done.
         val selectedTile = workableTilesPrioritized
-            .firstOrNull { unit.movement.canReach(it) && (tileCanBeImproved(unit, it) || it.isPillaged()) }
+            .firstOrNull { unit.movement.canReach(it) && (tileCanBeImproved(unit, it) || it.isPillaged() || it.terrainFeatures.contains("Fallout")) }
             ?: return currentTile
 
         // Note: workableTiles is a Sequence, and we oiginally used workableTiles.contains for the second
@@ -310,7 +320,7 @@ class WorkerAutomation(
         // currentTile is always the very first entry of the _unsorted_ Sequence - if it is still
         // contained at all and not dropped by the filters - which is the point here.
         return if ( currentTile == selectedTile  // No choice
-                || (!tileCanBeImproved(unit, currentTile) && !currentTile.isPillaged()) // current tile is unimprovable
+                || !(tileCanBeImproved(unit, currentTile) || currentTile.isPillaged() || currentTile.terrainFeatures.contains("Fallout")) // current tile is unimprovable
                 || workableTilesCenterFirst.firstOrNull() != currentTile  // current tile is unworkable by city
                 || getPriority(selectedTile) > getPriority(currentTile))  // current tile is less important
             selectedTile
@@ -368,7 +378,7 @@ class WorkerAutomation(
         if (tile.getOwner() == civInfo) {
             priority += 2
             if (tile.providesYield()) priority += 3
-            if (tile.isPillaged()) priority += 1
+            if (tile.isPillaged() || tile.terrainFeatures.contains("Fallout")) priority += 1
         }
         // give a minor priority to tiles that we could expand onto
         else if (tile.getOwner() == null && tile.neighbors.any { it.getOwner() == civInfo })
