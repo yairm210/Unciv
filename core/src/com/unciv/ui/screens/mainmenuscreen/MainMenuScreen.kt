@@ -47,7 +47,7 @@ import com.unciv.ui.screens.mapeditorscreen.EditorMapHolder
 import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
 import com.unciv.ui.screens.multiplayerscreens.MultiplayerScreen
 import com.unciv.ui.screens.newgamescreen.NewGameScreen
-import com.unciv.ui.screens.pickerscreens.ModManagementScreen
+import com.unciv.ui.screens.modmanager.ModManagementScreen
 import com.unciv.ui.screens.savescreens.LoadGameScreen
 import com.unciv.ui.screens.savescreens.QuickSave
 import com.unciv.ui.screens.worldscreen.BackgroundActor

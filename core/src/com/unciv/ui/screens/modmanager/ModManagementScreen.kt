@@ -1,4 +1,4 @@
-package com.unciv.ui.screens.pickerscreens
+package com.unciv.ui.screens.modmanager
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
@@ -46,7 +46,9 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
 import com.unciv.ui.screens.pickerscreens.Github.repoNameToFolderName
-import com.unciv.ui.screens.pickerscreens.ModManagementOptions.SortType
+import com.unciv.ui.screens.modmanager.ModManagementOptions.SortType
+import com.unciv.ui.screens.pickerscreens.Github
+import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
