@@ -31,6 +31,8 @@ import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.ActivationTypes
+import com.unciv.ui.components.input.clearActivationActions
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
@@ -411,7 +413,12 @@ class ModManagementScreen private constructor(
             }.start()
         }
 
+        rightSideButton.isVisible = true
+        rightSideButton.enable()
+        val label = if (installedModInfo[repo.name]?.hasUpdate == true) "Update [${repo.name}]"
+            else "Download [${repo.name}]"
         rightSideButton.setText(label.tr())
+        rightSideButton.clearActivationActions(ActivationTypes.Tap)
         rightSideButton.onClick {
             rightSideButton.setText("Downloading...".tr())
             rightSideButton.disable()
@@ -552,7 +559,7 @@ class ModManagementScreen private constructor(
         // Don't let the player think he can delete Vanilla and G&K rulesets
         rightSideButton.isEnabled = mod.ruleset.folderLocation!=null
         showModDescription(mod.name)
-        rightSideButton.clearListeners()
+        rightSideButton.clearActivationActions(ActivationTypes.Tap)  // clearListeners would also kill mouseover styling
         rightSideButton.onClick {
             rightSideButton.isEnabled = false
             ConfirmPopup(
