@@ -312,8 +312,10 @@ open class Tile : IsPartOfGameInfoSerialization {
         improvementIsPillaged = false
         improvement = improvementStr
 
-        if (resource != null && owningCity != null)
-            owningCity!!.civ.cache.updateCivResources()
+
+        if (owningCity != null){
+                owningCity!!.civ.cache.updateCivResources()
+        }
     }
 
     // function handling when adding a road to the tile
@@ -934,7 +936,7 @@ open class Tile : IsPartOfGameInfoSerialization {
         }
 
         owningCity?.reassignPopulationDeferred()
-        if (resource != null && owningCity != null)
+        if (owningCity != null)
             owningCity!!.civ.cache.updateCivResources()
     }
 

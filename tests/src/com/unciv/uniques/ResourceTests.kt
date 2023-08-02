@@ -21,20 +21,37 @@ class ResourceTests {
 
     @Test
     fun testResourceProductionModifierDoesNotAffectConsumption() {
-        val consumesCoal = game.createBuilding("Consumes [1] [Coal]", "Double quantity of [Coal] produced")
+        val consumesCoal = game.createBuilding("Consumes [1] [Coal]")
+        val doubleCoal = game.createBuilding("Double quantity of [Coal] produced")
+        val doubleStrategic = game.createBuilding("Quantity of strategic resources produced by the empire +[100]%")
+
         city.cityConstructions.addBuilding(consumesCoal.name)
+        Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == -1)
+
+        city.cityConstructions.addBuilding(doubleCoal.name)
+        Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == -1)
+
+        city.cityConstructions.addBuilding(doubleStrategic.name)
         Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == -1)
     }
 
     @Test
     fun testResourceProductionAndConsumptionModifierDoesNotAffectConsumption() {
-        val consumesCoal = game.createBuilding("Consumes [1] [Coal]", "Provides [1] [Coal]",
-            "Double quantity of [Coal] produced")
-        city.cityConstructions.addBuilding(consumesCoal.name)
+        val consumesCoal = game.createBuilding("Consumes [1] [Coal]")
+        val providesCoal = game.createBuilding("Provides [1] [Coal]")
+        val doubleCoal = game.createBuilding("Double quantity of [Coal] produced")
+        val doubleStrategic = game.createBuilding("Quantity of strategic resources produced by the empire +[100]%")
+
+        city.cityConstructions.addBuilding(providesCoal.name)
         Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 1)
 
-        val doubleStrategic = game.createBuilding("Quantity of strategic resources produced by the empire +[100]%")
+        city.cityConstructions.addBuilding(doubleCoal.name)
+        Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 2)
+
         city.cityConstructions.addBuilding(doubleStrategic.name)
+        Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 4)
+
+        city.cityConstructions.addBuilding(consumesCoal.name)
         Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 3) // Produce 4 (1*2*2), consume 1
     }
 
