@@ -193,6 +193,8 @@ class TileStatFunctions(val tile: Tile) {
             food + production + gold
         }
 
+    /** Returns the extra stats that we would get if we switched to this improvement
+     * Can be negative if we're switching to a worse improvement */
     fun getStatDiffForImprovement(
         improvement: TileImprovement,
         observingCiv: Civilization,
