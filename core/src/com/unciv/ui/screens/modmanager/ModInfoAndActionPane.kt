@@ -98,7 +98,7 @@ internal class ModInfoAndActionPane : Table() {
         val text = when {
             size <= 0 -> ""
             size < 2048 -> "Size: [$size] kB"
-            else -> "Size: [${size/1024}] MB"
+            else -> "Size: [${(size + 512) / 1024}] MB"
         }
         sizeLabel.setText(text.tr())
     }
