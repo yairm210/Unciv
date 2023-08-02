@@ -94,6 +94,7 @@ open class Stats(
 
     /** @return a new [Stats] instance containing the sum of its operands value by value */
     operator fun plus(stats: Stats) = clone().apply { add(stats) }
+    operator fun minus(stats: Stats) = clone().apply { add(stats.times(-1)) }
 
     /** Adds the [value] parameter to the instance value specified by [stat] in place
      * @return `this` to allow chaining */

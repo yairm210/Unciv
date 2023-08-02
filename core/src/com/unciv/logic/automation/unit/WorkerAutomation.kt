@@ -342,12 +342,12 @@ class WorkerAutomation(
         val junkImprovement = tile.getTileImprovement()?.hasUnique(UniqueType.AutomatedWorkersWillReplace) == true
             || (tile.improvement == Constants.fort && !evaluateFortSuroundings(tile, false) && !civInfo.isHuman())
 
-        if (tile.improvement != null && junkImprovement == false
+        if (tile.improvement != null && !junkImprovement
                 && !UncivGame.Current.settings.automatedWorkersReplaceImprovements
                 && unit.civ.isHuman())
             return false
 
-        if (tile.improvement == null || junkImprovement == true) {
+        if (tile.improvement == null || junkImprovement) {
             if (tile.improvementInProgress != null && unit.canBuildImprovement(tile.getTileImprovementInProgress()!!, tile)) return true
             val chosenImprovement = chooseImprovement(unit, tile)
             if (chosenImprovement != null && tile.improvementFunctions.canBuildImprovement(chosenImprovement, civInfo) && unit.canBuildImprovement(chosenImprovement, tile)) return true

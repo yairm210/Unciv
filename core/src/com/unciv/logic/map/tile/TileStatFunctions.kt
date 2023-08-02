@@ -201,6 +201,14 @@ class TileStatFunctions(val tile: Tile) {
         city: City?,
         cityUniqueCache: LocalUniqueCache = LocalUniqueCache(false)
     ): Stats {
+        if (improvement.name.startsWith(Constants.remove)){
+            val currentTileStats = getTileStats(city, observingCiv, cityUniqueCache)
+            val tileClone = tile.clone()
+            tileClone.removeTerrainFeature(improvement.name.removePrefix(Constants.remove))
+            val tileStatsAfterRemoval = tileClone.stats.getTileStats(city, observingCiv, cityUniqueCache)
+            return tileStatsAfterRemoval.minus(currentTileStats)
+        }
+
         val stats = improvement.cloneStats()
         if (tile.hasViewableResource(observingCiv) && tile.tileResource.isImprovedBy(improvement.name)
                 && tile.tileResource.improvementStats != null
