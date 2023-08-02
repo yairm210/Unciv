@@ -56,7 +56,8 @@ open class Stats(
                 && faith == otherStats.faith
     }
 
-    /** @return a new instance containing the same values as `this` */
+    /** **Non-Mutating function**
+     * @return a new instance containing the same values as `this` */
     fun clone() = Stats(production, food, gold, science, culture, happiness, faith)
 
     /** @return `true` if all values are zero */
@@ -80,7 +81,9 @@ open class Stats(
         faith = 0f
     }
 
-    /** Adds each value of another [Stats] instance to this one in place */
+    /** **Mutating function**
+     * Adds each value of another [Stats] instance to this one in place
+     * @return this for chaining */
     fun add(other: Stats): Stats {
         production += other.production
         food += other.food
@@ -92,20 +95,28 @@ open class Stats(
         return this
     }
 
-    /** @return a new [Stats] instance containing the sum of its operands value by value */
+    /** **Non-mutating function**
+     * @return a new [Stats] instance */
     operator fun plus(stats: Stats) = clone().apply { add(stats) }
-    operator fun minus(stats: Stats) = clone().apply { add(stats.clone().times(-1)) }
 
-    /** Adds the [value] parameter to the instance value specified by [stat] in place
+    /** **Non-mutating function**
+     * @return a new [Stats] instance */
+    operator fun minus(stats: Stats) = clone().apply { add(stats.times(-1)) }
+
+    /** **Mutating function**
+     * Adds the [value] parameter to the instance value specified by [stat] in place
      * @return `this` to allow chaining */
     fun add(stat: Stat, value: Float): Stats {
         set(stat, value + get(stat))
         return this
     }
 
-    /** @return The result of multiplying each value of this instance by [number] as a new instance */
+    /** **Non-Mutating function**
+     * @return a new [Stats] instance with the result of multiplying each value of this instance by [number] as a new instance */
     operator fun times(number: Int) = times(number.toFloat())
-    /** @return The result of multiplying each value of this instance by [number] as a new instance */
+
+    /** **Non-Mutating function**
+     * @return a new [Stats] instance with the result of multiplying each value of this instance by [number] as a new instance */
     operator fun times(number: Float) = Stats(
         production * number,
         food * number,
@@ -116,7 +127,8 @@ open class Stats(
         faith * number
     )
 
-    /** Multiplies each value of this instance by [number] in place */
+    /** **Mutating function**
+     * Multiplies each value of this instance by [number] in place */
     fun timesInPlace(number: Float) {
         production *= number
         food *= number
@@ -127,9 +139,12 @@ open class Stats(
         faith *= number
     }
 
+    /** **Non-Mutating function**
+     * @return a new [Stats] instance */
     operator fun div(number: Float) = times(1/number)
 
-    /** Apply weighting for Production Ranking */
+    /** **Mutating function**
+     * Apply weighting for Production Ranking */
     fun applyRankingWeights(){
         food *= 14
         production *= 12
