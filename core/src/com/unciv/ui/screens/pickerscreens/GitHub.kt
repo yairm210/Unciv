@@ -267,25 +267,38 @@ object Github {
         }
     }
 
-    class Tree {
+    /** Class to receive a github API "Get a tree" response parsed as json */
+    // Parts of the response we ignore are commented out
+    private class Tree {
+        //val sha = ""
+        //val url = ""
 
         class TreeFile {
+            //val path = ""
+            //val mode = 0
+            //val type = "" // blob / tree
+            //val sha = ""
+            //val url = ""
             var size: Long = 0L
         }
 
-        var url: String = ""
         @Suppress("MemberNameEqualsClassName")
         var tree = ArrayList<TreeFile>()
+        var truncated = false
     }
 
-    fun getRepoSize(repo: Repo): Float {
+    /** Queries github for a tree and calculates the sum of the blob sizes.
+     *  @return -1 on failure, else size rounded to kB
+      */
+    fun getRepoSize(repo: Repo): Int {
+        // See https://docs.github.com/en/rest/git/trees#get-a-tree
         val link = "https://api.github.com/repos/${repo.full_name}/git/trees/${repo.default_branch}?recursive=true"
 
         var retries = 2
         while (retries > 0) {
             retries--
             // obey rate limit
-            if (RateLimit.waitForLimit()) return 0f
+            if (RateLimit.waitForLimit()) return -1
             // try download
             val inputStream = download(link) {
                 if (it.responseCode == 403 || it.responseCode == 200 && retries == 1) {
@@ -294,15 +307,18 @@ object Github {
                     retries++   // An extra retry so the 403 is ignored in the retry count
                 }
             } ?: continue
+
             val tree = json().fromJson(Tree::class.java, inputStream.bufferedReader().readText())
+            if (tree.truncated) return -1  // unlikely: >100k blobs or blob > 7MB
 
             var totalSizeBytes = 0L
             for (file in tree.tree)
                 totalSizeBytes += file.size
 
-            return totalSizeBytes / 1024f
+            // overflow unlikely: >2TB
+            return ((totalSizeBytes + 512) / 1024).toInt()
         }
-        return 0f
+        return -1
     }
 
     /**
@@ -324,6 +340,8 @@ object Github {
     @Suppress("PropertyName")
     class Repo {
 
+        /** Unlike the rest of this class, this is not part of the API but added by us locally
+         *  to track whether [getRepoSize] has been run successfully for this repo */
         var hasUpdatedSize = false
 
         var name = ""

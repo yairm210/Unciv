@@ -395,22 +395,23 @@ class ModManagementScreen private constructor(
         showModDescription(repo.name)
 
         if (!repo.hasUpdatedSize) {
+            // Setting this later would mean a failed query is repeated on the next mod click,
+            // and click-spamming would launch several github queries.
+            repo.hasUpdatedSize = true
             Concurrency.run("GitHubParser") {
                 try {
                     val repoSize = Github.getRepoSize(repo)
-                    if (repoSize > 0f) {
+                    if (repoSize > -1) {
                         launchOnGLThread {
-                            repo.size = repoSize.toInt()
-                            repo.hasUpdatedSize = true
+                            repo.size = repoSize
                             if (selectedMod == repo)
-                                updateModInfo()
+                                modActionTable.updateSize(repoSize)
                         }
                     }
                 } catch (ignore: IOException) {
-                    /* Parsing of mod size failed, do nothing  */
+                    /* Parsing of mod size failed, do nothing */
                 }
-
-            }.start()
+            }
         }
 
         rightSideButton.isVisible = true
