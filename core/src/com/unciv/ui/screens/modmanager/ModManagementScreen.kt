@@ -607,7 +607,7 @@ class ModManagementScreen private constructor(
         }
 
         onlineModsTable.pack()
-        (onlineModsTable.parent as ScrollPane).actor = onlineModsTable
+        scrollOnlineMods.actor = onlineModsTable
     }
 
     private fun showModDescription(modName: String) {
