@@ -8,8 +8,10 @@ import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.screens.pickerscreens.Github
 
-/** Helper class holds combined mod info for ModManagementScreen, used for both installed and online lists
+/** Helper class holds combined mod info for ModManagementScreen, used for both installed and online lists.
  *
+ *  Contains metadata only, some preformatted for the UI, but no Gdx actors!
+ *  (This is important on resize - ModUIData are passed to the new screen)
  *  Note it is guaranteed either ruleset or repo are non-null, never both.
  */
 internal class ModUIData private constructor(
@@ -17,34 +19,34 @@ internal class ModUIData private constructor(
     val description: String,
     val ruleset: Ruleset?,
     val repo: Github.Repo?,
-    var y: Float,
-    var height: Float,
-    var button: TextButton
+    var isVisual: Boolean = false,
+    var hasUpdate: Boolean = false
 ) {
-    var state = ModStateImages()  // visible only on the 'installed' side - todo?
-
-    constructor(ruleset: Ruleset): this (
+    constructor(ruleset: Ruleset, isVisual: Boolean): this (
         ruleset.name,
         ruleset.getSummary().let {
             "Installed".tr() + (if (it.isEmpty()) "" else ": $it")
         },
-        ruleset, null, 0f, 0f, getTextButton(ruleset.name, ruleset.modOptions.topics)
+        ruleset, null, isVisual = isVisual
     )
 
     constructor(repo: Github.Repo, isUpdated: Boolean): this (
         repo.name,
         (repo.description ?: "-{No description provided}-".tr()) +
                 "\n" + "[${repo.stargazers_count}]✯".tr(),
-        null, repo, 0f, 0f,
-        getTextButton(repo.name + (if (isUpdated) " - {Updated}" else ""), repo.topics)
-    ) {
-        state.hasUpdate = isUpdated
-    }
+        null, repo, hasUpdate = isUpdated
+    )
 
-
+    val isInstalled get() = ruleset != null
     fun lastUpdated() = ruleset?.modOptions?.lastUpdated ?: repo?.pushed_at ?: ""
     fun stargazers() = repo?.stargazers_count ?: 0
     fun author() = ruleset?.modOptions?.author ?: repo?.owner?.login ?: ""
+    fun topics() = ruleset?.modOptions?.topics ?: repo?.topics ?: emptyList()
+    fun buttonText() = when {
+        ruleset != null -> ruleset.name
+        repo != null -> repo.name + (if (hasUpdate) " - {Updated}" else "")
+        else -> ""
+    }
 
     fun matchesFilter(filter: ModManagementOptions.Filter): Boolean = when {
         !matchesCategory(filter) -> false
@@ -62,21 +64,19 @@ internal class ModUIData private constructor(
         return filter.topic in modTopics
     }
 
-    companion object {
-        private fun getTextButton(nameString: String, topics: List<String>): TextButton {
-            val categories = ArrayList<ModCategories.Category>()
-            for (category in ModCategories) {
-                if (category == ModCategories.default()) continue
-                if (topics.contains(category.topic)) categories += category
-            }
-
-            val button = nameString.toTextButton()
-            val topicString = categories.joinToString { it.label.tr() }
-            if (categories.isNotEmpty()) {
-                button.row()
-                button.add(topicString.toLabel(fontSize = 14))
-            }
-            return button
-        }
+    fun stateSortWeight() = when {
+        hasUpdate && isVisual -> 3
+        hasUpdate -> 2
+        isVisual -> 1
+        else -> 0
     }
+
+    // Equality contract required to use this as HashMap key
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is ModUIData) return false
+        return other.isInstalled == isInstalled && other.name == name
+    }
+
+    override fun hashCode() = name.hashCode() * (if (isInstalled) 31 else 19)
 }

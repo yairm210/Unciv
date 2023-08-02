@@ -39,7 +39,7 @@ internal class ModManagementOptions(private val modManagementScreen: ModManageme
             10 * (mod2.stargazers() - mod1.stargazers()) + mod1.name.compareTo(mod2.name, true).sign
         }
         val sortByStatus = Comparator { mod1, mod2: ModUIData ->
-            10 * (mod2.state.sortWeight() - mod1.state.sortWeight()) + mod1.name.compareTo(mod2.name, true).sign
+            10 * (mod2.stateSortWeight() - mod1.stateSortWeight()) + mod1.name.compareTo(mod2.name, true).sign
         }
 
         const val installedHeaderText = "Current mods"

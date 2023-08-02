@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
@@ -84,15 +83,19 @@ class ModManagementScreen private constructor(
         }
     }
 
-    private val modTable = Table().apply { defaults().pad(10f) }
-    private val scrollInstalledMods = AutoScrollPane(modTable)
-    private val downloadTable = Table().apply { defaults().pad(10f) }
-    private val scrollOnlineMods = AutoScrollPane(downloadTable)
+    // Left column (in landscape, portrait stacks them within expanders)
+    private val installedModsTable = Table().apply { defaults().pad(10f) }
+    private val scrollInstalledMods = AutoScrollPane(installedModsTable)
+    // Center column
+    private val onlineModsTable = Table().apply { defaults().pad(10f) }
+    private val scrollOnlineMods = AutoScrollPane(onlineModsTable)
+    // Right column
     private val modActionTable = Table().apply { defaults().pad(10f) }
+    // Factory for the Widget floating top right
     private val optionsManager = ModManagementOptions(this)
 
-    private var lastSelectedButton: Button? = null
-    private var lastSyncMarkedButton: Button? = null
+    private var lastSelectedButton: ModDecoratedButton? = null
+    private var lastSyncMarkedButton: ModDecoratedButton? = null
     private var selectedMod: Github.Repo? = null
 
     private val modDescriptionLabel: WrappableLabel
@@ -102,12 +105,11 @@ class ModManagementScreen private constructor(
     private var installedExpanderTab: ExpanderTab? = null
     private var onlineExpanderTab: ExpanderTab? = null
 
-
     // Enable re-sorting and syncing entries in 'installed' and 'repo search' ScrollPanes
+    // Keep metadata and buttons in separate pools
     private val installedModInfo = previousInstalledMods ?: HashMap(10) // HashMap<String, ModUIData> inferred
     private val onlineModInfo = previousOnlineMods ?: HashMap(90) // HashMap<String, ModUIData> inferred
-
-    private var onlineScrollCurrentY = -1f
+    private val modButtons: HashMap<ModUIData, ModDecoratedButton> = HashMap(100)
 
     // cleanup - background processing needs to be stopped on exit and memory freed
     private var runningSearchJob: Job? = null
@@ -122,7 +124,11 @@ class ModManagementScreen private constructor(
 
 
     init {
-        //setDefaultCloseAction(screen) // this would initialize the new MainMenuScreen immediately
+        pickerPane.bottomTable.background = skinStrings.getUiBackground("ModManagementScreen/BottomTable", tintColor = skinStrings.skinConfig.clearColor)
+        pickerPane.topTable.background = skinStrings.getUiBackground("ModManagementScreen/TopTable", tintColor = skinStrings.skinConfig.clearColor)
+        topTable.top()  // So short lists won't vertically center everything including headers
+
+        //setDefaultCloseAction() // we're adding the tileSet check
         rightSideButton.isVisible = false
         closeButton.onActivation {
             val tileSets = ImageGetter.getAvailableTilesets()
@@ -146,18 +152,18 @@ class ModManagementScreen private constructor(
         labelWrapper.add(modDescriptionLabel).row()
         labelScroll.actor = labelWrapper
 
-        refreshInstalledModTable()
-
         if (isNarrowerThan4to3()) initPortrait()
         else initLandscape()
+
+        if (installedModInfo.isEmpty())
+            refreshInstalledModInfo()
+        refreshInstalledModTable()
 
         if (onlineModInfo.isEmpty())
             reloadOnlineMods()
         else
             refreshOnlineModTable()
 
-        pickerPane.bottomTable.background = skinStrings.getUiBackground("ModManagementScreen/BottomTable", tintColor = skinStrings.skinConfig.clearColor)
-        pickerPane.topTable.background = skinStrings.getUiBackground("ModManagementScreen/TopTable", tintColor = skinStrings.skinConfig.clearColor)
     }
 
     private fun initPortrait() {
@@ -190,26 +196,23 @@ class ModManagementScreen private constructor(
             optionsManager.installedHeaderClicked()
         }
         topTable.add(installedHeaderLabel).pad(15f).minWidth(200f).padLeft(25f)
-            // 30 = 5 default pad + 20 to compensate for 'permanent visual mod' decoration icon
         onlineHeaderLabel = optionsManager.getOnlineHeader().toLabel()
         onlineHeaderLabel!!.onClick {
             optionsManager.onlineHeaderClicked()
         }
         topTable.add(onlineHeaderLabel).pad(15f)
         topTable.add("".toLabel()).minWidth(200f)  // placeholder for "Mod actions"
-        topTable.add().expandX()
-        topTable.row()
+        topTable.add().expandX().row()
 
         // horizontal separator looking like the SplitPane handle
         topTable.addSeparator(Color.CLEAR, 5, 3f)
 
         // main row containing the three 'blocks' installed, online and information
-        topTable.add()      // skip empty first column
+        topTable.add().expandX()      // skip empty first column
         topTable.add(scrollInstalledMods)
         topTable.add(scrollOnlineMods)
         topTable.add(modActionTable)
-        topTable.add().row()
-        topTable.add().expandY()  // So short lists won't vertically center everything including headers
+        topTable.add().expandX().row()
 
         stage.addActor(optionsManager.expander)
         optionsManager.expanderChangeEvent = {
@@ -220,11 +223,10 @@ class ModManagementScreen private constructor(
     }
 
     private fun reloadOnlineMods() {
-        onlineScrollCurrentY = -1f
-        downloadTable.clear()
+        onlineModsTable.clear()
         onlineModInfo.clear()
-        downloadTable.add(getDownloadFromUrlButton()).padBottom(15f).row()
-        downloadTable.add("...".toLabel()).row()
+        onlineModsTable.add(getDownloadFromUrlButton()).padBottom(15f).row()
+        onlineModsTable.add("...".toLabel()).row()
         tryDownloadPage(1)
     }
 
@@ -257,10 +259,10 @@ class ModManagementScreen private constructor(
 
     private fun addModInfoFromRepoSearch(repoSearch: Github.RepoSearch, pageNum: Int){
         // clear and remove last cell if it is the "..." indicator
-        val lastCell = downloadTable.cells.lastOrNull()
+        val lastCell = onlineModsTable.cells.lastOrNull()
         if (lastCell != null && lastCell.actor is Label && (lastCell.actor as Label).text.toString() == "...") {
             lastCell.setActor<Actor>(null)
-            downloadTable.cells.removeValue(lastCell, true)
+            onlineModsTable.cells.removeValue(lastCell, true)
         }
 
         for (repo in repoSearch.items) {
@@ -283,7 +285,9 @@ class ModManagementScreen private constructor(
             if (installedMod != null) {
 
                 if (isUpdatedVersionOfInstalledMod) {
-                    installedModInfo[repo.name]!!.state.hasUpdate = true
+                    val modInfo = installedModInfo[repo.name]!!
+                    modInfo.hasUpdate = true
+                    modButtons[modInfo]?.updateIndicators()
                 }
 
                 if (installedMod.modOptions.author.isEmpty()) {
@@ -304,14 +308,7 @@ class ModManagementScreen private constructor(
 
             val mod = ModUIData(repo, isUpdatedVersionOfInstalledMod)
             onlineModInfo[repo.name] = mod
-            mod.button.onClick { onlineButtonAction(repo, mod.button) }
-
-            val cell = downloadTable.add(mod.button)
-            downloadTable.row()
-            if (onlineScrollCurrentY < 0f) onlineScrollCurrentY = cell.padTop
-            mod.y = onlineScrollCurrentY
-            mod.height = cell.prefHeight
-            onlineScrollCurrentY += cell.padBottom + cell.prefHeight + cell.padTop
+            onlineModsTable.add(getCachedModButton(mod)).row()
         }
 
         // Now the tasks after the 'page' of search results has been fully processed
@@ -322,31 +319,31 @@ class ModManagementScreen private constructor(
                 val retryLabel = "Online query result is incomplete".toLabel(Color.RED)
                 retryLabel.touchable = Touchable.enabled
                 retryLabel.onClick { reloadOnlineMods() }
-                downloadTable.add(retryLabel)
+                onlineModsTable.add(retryLabel)
             }
         } else {
             // the page was full so there may be more pages.
             // indicate that search will be continued
-            downloadTable.add("...".toLabel()).row()
+            onlineModsTable.add("...".toLabel()).row()
         }
 
-        downloadTable.pack()
+        onlineModsTable.pack()
         // Shouldn't actor.parent.actor = actor be a no-op? No, it has side effects we need.
         // See [commit for #3317](https://github.com/yairm210/Unciv/commit/315a55f972b8defe22e76d4a2d811c6e6b607e57)
-        (downloadTable.parent as ScrollPane).actor = downloadTable
+        (onlineModsTable.parent as ScrollPane).actor = onlineModsTable
 
         // continue search unless last page was reached
         if (repoSearch.items.size >= amountPerPage && !stopBackgroundTasks)
             tryDownloadPage(pageNum + 1)
     }
 
-    private fun syncOnlineSelected(modName: String, button: Button) {
+    private fun syncOnlineSelected(modName: String, button: ModDecoratedButton) {
         syncSelected(modName, button, installedModInfo, scrollInstalledMods)
     }
-    private fun syncInstalledSelected(modName: String, button: Button) {
+    private fun syncInstalledSelected(modName: String, button: ModDecoratedButton) {
         syncSelected(modName, button, onlineModInfo, scrollOnlineMods)
     }
-    private fun syncSelected(modName: String, button: Button, modNameToData: HashMap<String, ModUIData>, scroll: ScrollPane) {
+    private fun syncSelected(modName: String, button: ModDecoratedButton, modNameToData: HashMap<String, ModUIData>, scroll: ScrollPane) {
         // manage selection color for user selection
         lastSelectedButton?.color = Color.WHITE
         button.color = Color.BLUE
@@ -355,12 +352,12 @@ class ModManagementScreen private constructor(
             lastSyncMarkedButton?.color = Color.WHITE
         lastSyncMarkedButton = null
         // look for sync-able same mod in other list
-        val modUIDataInOtherList = modNameToData[modName] ?: return
-        // scroll into view
-        scroll.scrollY = (modUIDataInOtherList.y + (modUIDataInOtherList.height - scroll.height) / 2).coerceIn(0f, scroll.maxY)
+        val buttonInOtherList = modButtons[modNameToData[modName]] ?: return
+        // scroll into view - we know the containing Tables all have cell default padding 10f
+        scroll.scrollTo(0f, buttonInOtherList.y - 10f, scroll.actor.width, buttonInOtherList.height + 20f, true, false)
         // and color it so it's easier to find. ROYAL and SLATE too dark.
-        modUIDataInOtherList.button.color = Color.valueOf("7499ab")  // about halfway between royal and sky
-        lastSyncMarkedButton = modUIDataInOtherList.button
+        buttonInOtherList.color = Color.valueOf("7499ab")  // about halfway between royal and sky
+        lastSyncMarkedButton = buttonInOtherList
     }
 
     /** Recreate the information part of the right-hand column
@@ -397,8 +394,6 @@ class ModManagementScreen private constructor(
         author: String,
         modSize: Int
     ) {
-        // remember selected mod - for now needed only to display a background-fetched image while the user is watching
-
         // Display metadata
 
         val imageHolder = Table()
@@ -522,13 +517,13 @@ class ModManagementScreen private constructor(
     }
 
     /** Used as onClick handler for the online Mod list buttons */
-    private fun onlineButtonAction(repo: Github.Repo, button: Button) {
+    private fun onlineButtonAction(repo: Github.Repo, button: ModDecoratedButton) {
         syncOnlineSelected(repo.name, button)
         showModDescription(repo.name)
         rightSideButton.isVisible = true
         rightSideButton.clearListeners()
         rightSideButton.enable()
-        val label = if (installedModInfo[repo.name]?.state?.hasUpdate == true)
+        val label = if (installedModInfo[repo.name]?.hasUpdate == true)
             "Update [${repo.name}]"
         else "Download [${repo.name}]"
 
@@ -580,7 +575,7 @@ class ModManagementScreen private constructor(
                     TileSetCache.loadTileSetConfigs(false)
                     UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()
                     RulesetCache[repo.name]?.let {
-                        installedModInfo[repo.name] = ModUIData(it)
+                        installedModInfo[repo.name] = ModUIData(it, false)
                     }
                     refreshInstalledModTable()
                     showModDescription(repo.name)
@@ -604,10 +599,14 @@ class ModManagementScreen private constructor(
      *  (called under postRunnable posted by background thread)
      */
     private fun unMarkUpdatedMod(name: String) {
-        installedModInfo[name]?.state?.hasUpdate = false
-        onlineModInfo[name]?.state?.hasUpdate = false
-        val button = onlineModInfo[name]?.button
-        button?.setText(name)
+        installedModInfo[name]?.run {
+            hasUpdate = false
+            modButtons[this]?.updateIndicators()
+        }
+        onlineModInfo[name]?.run {
+            hasUpdate = false
+            modButtons[this]?.setText(name)
+        }
         if (optionsManager.sortInstalled == SortType.Status)
             refreshInstalledModTable()
         if (optionsManager.sortOnline == SortType.Status)
@@ -623,16 +622,20 @@ class ModManagementScreen private constructor(
         // show mod information first
         addModInfoToActionTable(mod.name, mod.modOptions)
 
+        val modInfo = installedModInfo[mod.name]!!
+
         // offer 'permanent visual mod' toggle
-        val visualMods = game.settings.visualMods
-        val isVisualMod = visualMods.contains(mod.name)
-        installedModInfo[mod.name]!!.state.isVisual = isVisualMod
+        val isVisualMod = game.settings.visualMods.contains(mod.name)
+        if (modInfo.isVisual != isVisualMod) {
+            modInfo.isVisual = isVisualMod
+            modButtons[modInfo]?.updateIndicators()
+        }
 
         val visualCheckBox = "Permanent audiovisual mod".toCheckBox(isVisualMod) { checked ->
             if (checked)
-                visualMods.add(mod.name)
+                game.settings.visualMods.add(mod.name)
             else
-                visualMods.remove(mod.name)
+                game.settings.visualMods.remove(mod.name)
             game.settings.save()
             ImageGetter.setNewRuleset(ImageGetter.ruleset)
             refreshInstalledModActions(mod)
@@ -641,7 +644,7 @@ class ModManagementScreen private constructor(
         }
         modActionTable.add(visualCheckBox).row()
 
-        if (installedModInfo[mod.name]!!.state.hasUpdate) {
+        if (modInfo.hasUpdate) {
             val updateModTextbutton = "Update [${mod.name}]".toTextButton()
             updateModTextbutton.onClick {
                 updateModTextbutton.setText("Downloading...".tr())
@@ -652,48 +655,39 @@ class ModManagementScreen private constructor(
         }
     }
 
+    /** Rebuild the metadata on installed mods */
+    private fun refreshInstalledModInfo() {
+        installedModInfo.clear()
+        for (mod in RulesetCache.values.asSequence().filter { it.name != "" }) {
+            installedModInfo[mod.name] = ModUIData(mod, mod.name in game.settings.visualMods)
+        }
+    }
+
+    private fun getCachedModButton(mod: ModUIData) = modButtons.getOrPut(mod) {
+        val newButton = ModDecoratedButton(mod)
+        if (mod.isInstalled) newButton.onClick { installedButtonAction(mod, newButton) }
+        else newButton.onClick { onlineButtonAction(mod.repo!!, newButton) }
+        newButton
+    }
+
     /** Rebuild the left-hand column containing all installed mods */
     internal fun refreshInstalledModTable() {
-        // pre-init if not already done - important: keep the ModUIData instances later on or
-        // at least the button references otherwise sync will not work
-        if (installedModInfo.isEmpty()) {
-            for (mod in RulesetCache.values.asSequence().filter { it.name != "" }) {
-                val modUIData = ModUIData(mod)
-                modUIData.state.isVisual = mod.name in game.settings.visualMods
-                installedModInfo[mod.name] = modUIData
-            }
-        }
-
         val newHeaderText = optionsManager.getInstalledHeader()
         installedHeaderLabel?.setText(newHeaderText)
         installedExpanderTab?.setText(newHeaderText)
 
-        modTable.clear()
-        var currentY = -1f
+        installedModsTable.clear()
         val filter = optionsManager.getFilter()
         for (mod in installedModInfo.values.sortedWith(optionsManager.sortInstalled.comparator)) {
             if (!mod.matchesFilter(filter)) continue
-            // Prevent building up listeners. The virgin Button has one: for mouseover styling.
-            // The captures for our listener shouldn't need updating, so assign only once
-            if (mod.button.listeners.none { it.javaClass.`package`.name.startsWith("com.unciv") })
-                mod.button.onClick {
-                    rightSideButton.isVisible = true
-                    installedButtonAction(mod)
-                }
-            val decoratedButton = Table()
-            decoratedButton.add(mod.button)
-            decoratedButton.add(mod.state.container).align(Align.center+Align.left)
-            val cell = modTable.add(decoratedButton)
-            modTable.row()
-            if (currentY < 0f) currentY = cell.padTop
-            mod.y = currentY
-            mod.height = cell.prefHeight
-            currentY += cell.padBottom + cell.prefHeight + cell.padTop
+            installedModsTable.add(getCachedModButton(mod)).row()
         }
     }
 
-    private fun installedButtonAction(mod: ModUIData) {
-        syncInstalledSelected(mod.name, mod.button)
+    private fun installedButtonAction(mod: ModUIData, button: ModDecoratedButton) {
+        rightSideButton.isVisible = true
+
+        syncInstalledSelected(mod.name, button)
         refreshInstalledModActions(mod.ruleset!!)
         val deleteText = "Delete [${mod.name}]"
         rightSideButton.setText(deleteText.tr())
@@ -734,9 +728,8 @@ class ModManagementScreen private constructor(
         onlineHeaderLabel?.setText(newHeaderText)
         onlineExpanderTab?.setText(newHeaderText)
 
-        downloadTable.clear()
-        downloadTable.add(getDownloadFromUrlButton()).row()
-        onlineScrollCurrentY = -1f
+        onlineModsTable.clear()
+        onlineModsTable.add(getDownloadFromUrlButton()).row()
 
         val filter = optionsManager.getFilter()
         // Important: sortedMods holds references to the original values, so the referenced buttons stay valid.
@@ -744,16 +737,11 @@ class ModManagementScreen private constructor(
         val sortedMods = onlineModInfo.values.asSequence().sortedWith(optionsManager.sortOnline.comparator)
         for (mod in sortedMods) {
             if (!mod.matchesFilter(filter)) continue
-            val cell = downloadTable.add(mod.button)
-            downloadTable.row()
-            if (onlineScrollCurrentY < 0f) onlineScrollCurrentY = cell.padTop
-            mod.y = onlineScrollCurrentY
-            mod.height = cell.prefHeight
-            onlineScrollCurrentY += cell.padBottom + cell.prefHeight + cell.padTop
+            onlineModsTable.add(getCachedModButton(mod)).row()
         }
 
-        downloadTable.pack()
-        (downloadTable.parent as ScrollPane).actor = downloadTable
+        onlineModsTable.pack()
+        (onlineModsTable.parent as ScrollPane).actor = onlineModsTable
     }
 
     private fun showModDescription(modName: String) {
