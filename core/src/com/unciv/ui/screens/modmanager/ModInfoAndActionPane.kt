@@ -4,8 +4,8 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.models.ruleset.ModOptions
-import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.metadata.BaseRuleset
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.UncivDateFormat.formatDate
 import com.unciv.ui.components.extensions.UncivDateFormat.parseDate
@@ -21,35 +21,33 @@ internal class ModInfoAndActionPane : Table() {
     private val repoUrlToPreviewImage = HashMap<String, Texture?>()
     private val imageHolder = Table()
     private val sizeLabel = "".toLabel()
+    private var isBuiltin = false
+    private var disableVisualCheckBox = false
 
     init {
         defaults().pad(10f)
     }
 
-//     fun update(modInfo: ModUIData) {
-//         if (modInfo.isInstalled) {
-//             val modOptions = RulesetCache[modInfo.name]?.modOptions
-//                 ?: return
-//             update(modInfo.name, modOptions)
-//         } else {
-//             update(modInfo.repo!!)
-//         }
-//     }
-
     /** Recreate the information part of the right-hand column
      * @param repo: the repository instance as received from the GitHub api
      */
     fun update(repo: Github.Repo) {
+        isBuiltin = false
+        disableVisualCheckBox = true
         update(
             repo.name, repo.html_url, repo.default_branch,
             repo.pushed_at, repo.owner.login, repo.size
         )
     }
+
     /** Recreate the information part of the right-hand column
-     * @param modName: The mod name (name from the RuleSet)
-     * @param modOptions: The ModOptions as enriched by us with GitHub metadata when originally downloaded
+     * @param mod: The mod RuleSet (from RulesetCache)
      */
-    fun update(modName: String, modOptions: ModOptions) {
+    fun update(mod: Ruleset) {
+        val modName = mod.name
+        val modOptions = mod.modOptions  // The ModOptions as enriched by us with GitHub metadata when originally downloaded
+        isBuiltin = modOptions.modUrl.isEmpty() && BaseRuleset.values().any { it.fullName == modName }
+        disableVisualCheckBox = mod.folderLocation?.list("atlas")?.isEmpty() ?: true  // Also catches isBuiltin
         update(
             modName, modOptions.modUrl, modOptions.defaultBranch,
             modOptions.lastUpdated, modOptions.author, modOptions.modSize
@@ -68,10 +66,11 @@ internal class ModInfoAndActionPane : Table() {
         clear()
 
         imageHolder.clear()
-        if (repoUrl.isEmpty())
-            addLocalPreviewImage(modName)
-        else
-            addPreviewImage(repoUrl, defaultBranch)
+        when {
+            isBuiltin -> addUncivLogo()
+            repoUrl.isEmpty() -> addLocalPreviewImage(modName)
+            else -> addPreviewImage(repoUrl, defaultBranch)
+        }
         add(imageHolder).row()
 
         if (author.isNotEmpty())
@@ -105,6 +104,7 @@ internal class ModInfoAndActionPane : Table() {
     }
 
     fun addVisualCheckBox(startsOutChecked: Boolean = false, changeAction: ((Boolean)->Unit)? = null) {
+        if (disableVisualCheckBox) return
         add("Permanent audiovisual mod".toCheckBox(startsOutChecked, changeAction)).row()
     }
 
@@ -150,6 +150,10 @@ internal class ModInfoAndActionPane : Table() {
             ?: modFolder.child("preview.png").takeIf { it.exists() }
             ?: return
         setTextureAsPreview(Texture(previewFile))
+    }
+
+    private fun addUncivLogo() {
+        setTextureAsPreview(Texture(Gdx.files.internal("ExtraImages/banner.png")))
     }
 
     private fun setTextureAsPreview(texture: Texture) {

@@ -492,7 +492,7 @@ class ModManagementScreen private constructor(
     private fun refreshInstalledModActions(mod: Ruleset) {
         selectedMod = null
         // show mod information first
-        modActionTable.update(mod.name, mod.modOptions)
+        modActionTable.update(mod)
 
         val modInfo = installedModInfo[mod.name]!!
 
