@@ -2,10 +2,8 @@ package com.unciv.ui.screens.modmanager
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -15,7 +13,6 @@ import com.badlogic.gdx.utils.SerializationException
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
-import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
@@ -25,8 +22,6 @@ import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.WrappableLabel
-import com.unciv.ui.components.extensions.UncivDateFormat.formatDate
-import com.unciv.ui.components.extensions.UncivDateFormat.parseDate
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
@@ -34,7 +29,6 @@ import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.images.ImageGetter
@@ -90,7 +84,8 @@ class ModManagementScreen private constructor(
     private val onlineModsTable = Table().apply { defaults().pad(10f) }
     private val scrollOnlineMods = AutoScrollPane(onlineModsTable)
     // Right column
-    private val modActionTable = Table().apply { defaults().pad(10f) }
+    private val modActionTable = ModInfoAndActionPane()
+    private val scrollActionTable = AutoScrollPane(modActionTable)
     // Factory for the Widget floating top right
     private val optionsManager = ModManagementOptions(this)
 
@@ -172,19 +167,19 @@ class ModManagementScreen private constructor(
         topTable.add(optionsManager.expander).top().growX().row()
 
         installedExpanderTab = ExpanderTab(optionsManager.getInstalledHeader(), expanderWidth = stage.width) {
-            it.add(scrollInstalledMods).growX()
+            it.add(scrollInstalledMods).growX().maxHeight(stage.height / 2)
         }
         topTable.add(installedExpanderTab).top().growX().row()
 
         onlineExpanderTab = ExpanderTab(optionsManager.getOnlineHeader(), expanderWidth = stage.width) {
-            it.add(scrollOnlineMods).growX()
+            it.add(scrollOnlineMods).growX().maxHeight(stage.height / 2)
         }
         topTable.add(onlineExpanderTab).top().padTop(10f).growX().row()
 
-        topTable.add().expandY().row() // helps with top() being ignored
+        topTable.add().expandY().row() // keep action / info on the bottom if there's room to spare
 
         topTable.add(ExpanderTab("Mod info and options", expanderWidth = stage.width) {
-            it.add(modActionTable).growX()
+            it.add(scrollActionTable).growX().maxHeight(stage.height / 2)
         }).bottom().padTop(10f).growX().row()
     }
 
@@ -211,7 +206,7 @@ class ModManagementScreen private constructor(
         topTable.add().expandX()      // skip empty first column
         topTable.add(scrollInstalledMods)
         topTable.add(scrollOnlineMods)
-        topTable.add(modActionTable)
+        topTable.add(scrollActionTable)
         topTable.add().expandX().row()
 
         stage.addActor(optionsManager.expander)
@@ -330,7 +325,7 @@ class ModManagementScreen private constructor(
         onlineModsTable.pack()
         // Shouldn't actor.parent.actor = actor be a no-op? No, it has side effects we need.
         // See [commit for #3317](https://github.com/yairm210/Unciv/commit/315a55f972b8defe22e76d4a2d811c6e6b607e57)
-        (onlineModsTable.parent as ScrollPane).actor = onlineModsTable
+        scrollOnlineMods.actor = onlineModsTable
 
         // continue search unless last page was reached
         if (repoSearch.items.size >= amountPerPage && !stopBackgroundTasks)
@@ -360,123 +355,6 @@ class ModManagementScreen private constructor(
         lastSyncMarkedButton = buttonInOtherList
     }
 
-    /** Recreate the information part of the right-hand column
-     * @param repo: the repository instance as received from the GitHub api
-     */
-    private fun addModInfoToActionTable(repo: Github.Repo) {
-        addModInfoToActionTable(
-            repo.name, repo.html_url, repo.default_branch,
-            repo.pushed_at, repo.owner.login, repo.size
-        )
-    }
-    /** Recreate the information part of the right-hand column
-     * @param modName: The mod name (name from the RuleSet)
-     * @param modOptions: The ModOptions as enriched by us with GitHub metadata when originally downloaded
-     */
-    private fun addModInfoToActionTable(modName: String, modOptions: ModOptions) {
-        addModInfoToActionTable(
-            modName,
-            modOptions.modUrl,
-            modOptions.defaultBranch,
-            modOptions.lastUpdated,
-            modOptions.author,
-            modOptions.modSize
-        )
-    }
-
-    private val repoUrlToPreviewImage = HashMap<String, Texture?>()
-
-    private fun addModInfoToActionTable(
-        modName: String,
-        repoUrl: String,
-        defaultBranch: String,
-        updatedAt: String,
-        author: String,
-        modSize: Int
-    ) {
-        // Display metadata
-
-        val imageHolder = Table()
-
-        if (repoUrl.isEmpty())
-            addLocalPreviewImage(imageHolder, modName)
-        else
-            addPreviewImage(imageHolder, repoUrl, defaultBranch)
-
-        modActionTable.add(imageHolder).row()
-
-
-        if (author.isNotEmpty())
-            modActionTable.add("Author: [$author]".toLabel()).row()
-        if (modSize > 0) {
-            if (modSize < 2048)
-                modActionTable.add("Size: [$modSize] kB".toLabel()).padBottom(15f).row()
-            else
-                modActionTable.add("Size: [${modSize/1024}] MB".toLabel()).padBottom(15f).row()
-        }
-
-        // offer link to open the repo itself in a browser
-        if (repoUrl.isNotEmpty()) {
-            modActionTable.add("Open Github page".toTextButton().onClick {
-                Gdx.net.openURI(repoUrl)
-            }).row()
-        }
-
-        // display "updated" date
-        if (updatedAt.isNotEmpty()) {
-            val date = updatedAt.parseDate()
-            val updateString = "{Updated}: " + date.formatDate()
-            modActionTable.add(updateString.toLabel()).row()
-        }
-    }
-
-    private fun setTextureAsPreview(imageHolder: Table, texture: Texture) {
-        val cell = imageHolder.add(Image(texture))
-        val largestImageSize = max(texture.width, texture.height)
-        if (largestImageSize > maxAllowedPreviewImageSize) {
-            val resizeRatio = maxAllowedPreviewImageSize / largestImageSize
-            cell.size(texture.width * resizeRatio, texture.height * resizeRatio)
-        }
-    }
-
-    private fun addPreviewImage(
-        imageHolder: Table,
-        repoUrl: String,
-        defaultBranch: String
-    ) {
-        if (!repoUrl.startsWith("http")) return // invalid url
-
-
-        if (repoUrlToPreviewImage.containsKey(repoUrl)) {
-            val texture = repoUrlToPreviewImage[repoUrl]
-            if (texture != null) setTextureAsPreview(imageHolder, texture)
-            return
-        }
-
-        Concurrency.run {
-            val imagePixmap = Github.tryGetPreviewImage(repoUrl, defaultBranch)
-
-            if (imagePixmap == null) {
-                repoUrlToPreviewImage[repoUrl] = null
-                return@run
-            }
-            Concurrency.runOnGLThread {
-                val texture = Texture(imagePixmap)
-                imagePixmap.dispose()
-                repoUrlToPreviewImage[repoUrl] = texture
-                setTextureAsPreview(imageHolder, texture)
-            }
-        }
-    }
-
-    private fun addLocalPreviewImage(imageHolder: Table, modName: String) {
-        // No concurrency, order of magnitude 20ms
-        val modFolder = Gdx.files.local("mods/$modName")
-        val previewFile = modFolder.child("preview.jpg").takeIf { it.exists() }
-            ?: modFolder.child("preview.png").takeIf { it.exists() }
-            ?: return
-        setTextureAsPreview(imageHolder, Texture(previewFile))
-    }
 
     /** Create the special "Download from URL" button */
     private fun getDownloadFromUrlButton(): TextButton {
@@ -509,23 +387,10 @@ class ModManagementScreen private constructor(
         return downloadButton
     }
 
-    private fun updateModInfo() {
-        if (selectedMod != null) {
-            modActionTable.clear()
-            addModInfoToActionTable(selectedMod!!)
-        }
-    }
-
     /** Used as onClick handler for the online Mod list buttons */
     private fun onlineButtonAction(repo: Github.Repo, button: ModDecoratedButton) {
         syncOnlineSelected(repo.name, button)
         showModDescription(repo.name)
-        rightSideButton.isVisible = true
-        rightSideButton.clearListeners()
-        rightSideButton.enable()
-        val label = if (installedModInfo[repo.name]?.hasUpdate == true)
-            "Update [${repo.name}]"
-        else "Download [${repo.name}]"
 
         if (!repo.hasUpdatedSize) {
             Concurrency.run("GitHubParser") {
@@ -556,7 +421,7 @@ class ModManagementScreen private constructor(
         }
 
         selectedMod = repo
-        updateModInfo()
+        modActionTable.update(repo)
     }
 
     /** Download and install a mod in the background, called both from the right-bottom button and the URL entry popup */
@@ -618,9 +483,8 @@ class ModManagementScreen private constructor(
     */
     private fun refreshInstalledModActions(mod: Ruleset) {
         selectedMod = null
-        modActionTable.clear()
         // show mod information first
-        addModInfoToActionTable(mod.name, mod.modOptions)
+        modActionTable.update(mod.name, mod.modOptions)
 
         val modInfo = installedModInfo[mod.name]!!
 
@@ -631,7 +495,7 @@ class ModManagementScreen private constructor(
             modButtons[modInfo]?.updateIndicators()
         }
 
-        val visualCheckBox = "Permanent audiovisual mod".toCheckBox(isVisualMod) { checked ->
+        modActionTable.addVisualCheckBox(isVisualMod) { checked ->
             if (checked)
                 game.settings.visualMods.add(mod.name)
             else
@@ -642,16 +506,10 @@ class ModManagementScreen private constructor(
             if (optionsManager.sortInstalled == SortType.Status)
                 refreshInstalledModTable()
         }
-        modActionTable.add(visualCheckBox).row()
 
-        if (modInfo.hasUpdate) {
-            val updateModTextbutton = "Update [${mod.name}]".toTextButton()
-            updateModTextbutton.onClick {
-                updateModTextbutton.setText("Downloading...".tr())
-                val repo = onlineModInfo[mod.name]!!.repo!!
-                downloadMod(repo) { refreshInstalledModActions(mod) }
-            }
-            modActionTable.add(updateModTextbutton)
+        modActionTable.addUpdateModButton(modInfo) {
+            val repo = onlineModInfo[mod.name]!!.repo!!
+            downloadMod(repo) { refreshInstalledModActions(mod) }
         }
     }
 
