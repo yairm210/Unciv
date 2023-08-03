@@ -1,4 +1,4 @@
-package com.unciv.ui.screens.pickerscreens
+package com.unciv.ui.screens.modmanager
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
@@ -23,6 +23,7 @@ import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.screens.pickerscreens.Github
 import kotlin.math.sign
 
 /**

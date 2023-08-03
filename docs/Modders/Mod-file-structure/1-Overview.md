@@ -30,6 +30,7 @@ The JSON files that make up mods can have many different fields, and as not all 
     - [Difficulties.json](5-Miscellaneous-JSON-files.md#difficultiesjson)
     - [Eras.json](5-Miscellaneous-JSON-files.md#erasjson)
     - [ModOptions.json](5-Miscellaneous-JSON-files.md#modoptionsjson)
+    - [GlobalUniques.json](5-Miscellaneous-JSON-files.md#globaluniquesjson)
     - [Tutorials.json](5-Miscellaneous-JSON-files.md#tutorialsjson)
 -   [Stats](3-Map-related-JSON-files.md#stats)
 -   [Sounds](../Images-and-Audio.md#sounds)
@@ -80,6 +81,21 @@ Example of a Buildings.json adding a new "Cultural Library" building which gives
 The keys in this example are "science" and "culture", and both have the value "50".
 
 In some sense you can see from these types that JSON files themselves are actually a list of objects, each describing a single building, unit or something else.
+
+## Uniques
+
+"Uniques" are a label used by Unciv for extensible and customizable effects. Nearly every "ruleset object" allows a set of them, as a List with the name "uniques".
+
+Every Unique follows a general structure: `Unique type defining name [placeholder] more name [another placeholder] <condition or trigger> <condition or trigger>...`
+The entire string, excluding all `<>`-delimited conditionals or triggers with their separating blanks, and excluding the placeholders but not their `[]` delimiters, are used to look up the Unique's implementation.
+The content of the optional `[placeholder]`s are implementation-dependant, they are parameters modifying the effect, and described in [Unique parameters](../Unique-parameters.md).
+All `<condition or trigger>`s are optional (but if they are used the spaces separating them are mandatory), and each in turn follows the Unique structure rules for the part between the `<>` angled brackets, including possible placeholders, but not nested conditionals.
+
+Example: `"uniques":["[+1 Gold] <with a garrison>"]` on a building - does almost the same thing as the `"gold":1` attribute does, except it only applies when the city has a garrison. In this example, `[]` and `with a garrison` are the keys Unciv uses to look up two Uniques, an effect (of type `Stats`) and a condition (of type `ConditionalWhenGarrisoned`).
+
+All Unique "types" that have an implementation in Unciv are automatically documented in [uniques](../uniques.md). Note that file is entirely machine-generated from source code structures. Also kindly note the separate sections for [conditionals](../uniques.md#conditional-uniques) and [trigger conditions](../uniques.md#triggercondition-uniques).
+Uniques that do not correspond to any of those entries (verbatim including upper/lower case!) are called "untyped", will have no _direct_ effect, and may result in the "Ruleset Validator" showing warnings (see the Options Tab "Locate mod errors", it also runs when starting new games).
+A legitimate use of "untyped" Uniques is their use as markers that can be recognized elsewhere in filters (example: "Aircraft" in the vanilla rulesets used as [Unit filter](../Unique-parameters.md#baseunitfilter)). To allow "Ruleset Validator" to warn about mistakes leading to untyped uniques, but still allow the "filtering Unique" use, those should be "declared" by including each in [GlobalUniques](5-Miscellaneous-JSON-files.md#globaluniquesjson), too.
 
 ## Information on JSON files used in the game
 

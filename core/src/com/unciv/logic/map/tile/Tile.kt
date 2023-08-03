@@ -311,6 +311,11 @@ open class Tile : IsPartOfGameInfoSerialization {
     fun changeImprovement(improvementStr: String?) {
         improvementIsPillaged = false
         improvement = improvementStr
+
+
+        if (owningCity != null){
+                owningCity!!.civ.cache.updateCivResources()
+        }
     }
 
     // function handling when adding a road to the tile
@@ -377,10 +382,7 @@ open class Tile : IsPartOfGameInfoSerialization {
 
     fun getBaseTerrain(): Terrain = baseTerrainObject
 
-    fun getOwner(): Civilization? {
-        val containingCity = getCity() ?: return null
-        return containingCity.civ
-    }
+    fun getOwner(): Civilization? = getCity()?.civ
 
     fun getRoadOwner(): Civilization? {
         return if (roadOwner != "")
@@ -934,6 +936,8 @@ open class Tile : IsPartOfGameInfoSerialization {
         }
 
         owningCity?.reassignPopulationDeferred()
+        if (owningCity != null)
+            owningCity!!.civ.cache.updateCivResources()
     }
 
     fun isPillaged(): Boolean {

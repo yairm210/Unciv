@@ -76,7 +76,8 @@ class UnitManager(val civInfo:Civilization) {
                 if (!unique.hasTriggerConditional())
                     UniqueTriggerActivation.triggerUnitwideUnique(unique, unit, triggerNotificationText = triggerNotificationText)
             for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponGainingUnit))
-                if (unit.matchesFilter(unique.params[0]))
+                if (unique.conditionals.any { it.isOfType(UniqueType.TriggerUponGainingUnit) && 
+                        unit.matchesFilter(unique.params[0]) })
                     UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
             if (unit.baseUnit.getResourceRequirementsPerTurn().isNotEmpty())
                 civInfo.cache.updateCivResources()

@@ -1,3 +1,21 @@
+## 4.7.11
+
+By SomeTroglodyte:
+- Civilopedia shows origin mod for objects
+- Key shortcuts for CityScreen
+- Nukes behave closer to Civ V
+- Local mod folder names preserved for strangely-named mods
+- modding: Better unique warnings
+
+By SeventhM:
+- Fixed behaviour for units that can move on water
+- Fix: Resources with the same source subtract correctly
+- Fix: Free buildings from other buildings show up correctly
+
+Fix: Spectator can see all invisible units - By tuvus
+
+Fix: Better Fog Busting AI  - By itanasi
+
 ## 4.7.10
 
 BaseUnit unique-finding always takes Type uniques into account

@@ -3,6 +3,7 @@ package com.unciv.models.ruleset.unique
 import com.unciv.Constants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetErrorSeverity
+import com.unciv.models.ruleset.RulesetValidator  // Kdoc only
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 
@@ -184,7 +185,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     /// Resource production & consumption
     ConsumesResources("Consumes [amount] [resource]", UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit),
-    ProvidesResources("Provides [amount] [resource]", UniqueTarget.Improvement, UniqueTarget.Global),
+    ProvidesResources("Provides [amount] [resource]", UniqueTarget.Global, UniqueTarget.Improvement, UniqueTarget.FollowerBelief),
     CostsResources("Costs [amount] [stockpiledResource]", UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit),
     // Todo: Get rid of forced sign (+[relativeAmount]) and unify these two, e.g.: "[relativeAmount]% [resource/resourceType] production"
     // Note that the parameter type 'resourceType' (strategic, luxury, bonus) currently doesn't exist and should then be added as well
@@ -241,6 +242,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     GoldenAgeLength("[relativeAmount]% Golden Age length", UniqueTarget.Global),
 
     PopulationLossFromNukes("Population loss from nuclear attacks [relativeAmount]% [cityFilter]", UniqueTarget.Global),
+    GarrisonDamageFromNukes("Damage to garrison from nuclear attacks [relativeAmount]% [cityFilter]", UniqueTarget.Global),
 
     SpawnRebels("Rebel units may spawn", UniqueTarget.Global),
 
@@ -453,6 +455,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     CanEnterForeignTilesButLosesReligiousStrength("May enter foreign tiles without open borders, but loses [amount] religious strength each turn it ends there", UniqueTarget.Unit),
     ReducedDisembarkCost("[amount] Movement point cost to disembark", UniqueTarget.Global, UniqueTarget.Unit),
     ReducedEmbarkCost("[amount] Movement point cost to embark", UniqueTarget.Global, UniqueTarget.Unit),
+    // These affect movement as Nation uniques
+    ForestsAndJunglesAreRoads("All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel.", UniqueTarget.Nation),
+    IgnoreHillMovementCost("Units ignore terrain costs when moving into any tile with Hills", UniqueTarget.Nation),
 
     CannotBeBarbarian("Never appears as a Barbarian unit", UniqueTarget.Unit, flags = UniqueFlag.setOfHiddenToUsers),
 
@@ -497,7 +502,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     TerrainGrantsPromotion("Grants [promotion] ([comment]) to adjacent [mapUnitFilter] units for the rest of the game", UniqueTarget.Terrain),
     GrantsCityStrength("[amount] Strength for cities built on this terrain", UniqueTarget.Terrain),
     ProductionBonusWhenRemoved("Provides a one-time Production bonus to the closest city when cut down", UniqueTarget.Terrain),
-    Vegetation("Vegetation", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
+    Vegetation("Vegetation", UniqueTarget.Terrain, UniqueTarget.Improvement, flags = UniqueFlag.setOfHiddenToUsers),  // Improvement included because use as tileFilter works
 
 
     TileProvidesYieldWithoutPopulation("Tile provides yield without assigned population", UniqueTarget.Terrain, UniqueTarget.Improvement),

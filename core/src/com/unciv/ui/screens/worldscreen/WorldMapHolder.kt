@@ -637,6 +637,9 @@ class WorldMapHolder(
         val isAirUnit = unit.baseUnit.movesLikeAirUnits()
         val moveTileOverlayColor = if (unit.isPreparingParadrop()) Color.BLUE else Color.WHITE
         val tilesInMoveRange = unit.movement.getReachableTilesInCurrentTurn()
+        // Prepare special Nuke blast radius display
+        val nukeBlastRadius = if (unit.baseUnit.isNuclearWeapon() && selectedTile != null && selectedTile != unit.getTile())
+            unit.getNukeBlastRadius() else -1
 
         // Highlight tiles within movement range
         for (tile in tilesInMoveRange) {
@@ -644,7 +647,10 @@ class WorldMapHolder(
 
             // Air-units have additional highlights
             if (isAirUnit && !unit.isPreparingAirSweep()) {
-                if (tile.aerialDistanceTo(unit.getTile()) <= unit.getRange()) {
+                if (nukeBlastRadius >= 0 && tile.aerialDistanceTo(selectedTile!!) <= nukeBlastRadius) {
+                    // The tile is within the nuke blast radius
+                    group.layerMisc.overlayTerrain(Color.FIREBRICK, 0.6f)
+                } else if (tile.aerialDistanceTo(unit.getTile()) <= unit.getRange()) {
                     // The tile is within attack range
                     group.layerMisc.overlayTerrain(Color.RED)
                 } else if (tile.isExplored(worldScreen.viewingCiv) && tile.aerialDistanceTo(unit.getTile()) <= unit.getRange()*2) {
@@ -687,7 +693,12 @@ class WorldMapHolder(
         if (unit.isMilitary()) {
 
             val attackableTiles: List<AttackableTile> =
-                BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
+                if (nukeBlastRadius >= 0)
+                    selectedTile!!.getTilesInDistance(nukeBlastRadius)
+                        .filter { it.getFirstUnit() != null }
+                        .map { AttackableTile(unit.getTile(), it, 1f, null) }
+                        .toList()
+                else BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
                     .filter { it.tileToAttack.isVisible(unit.civ) }
                     .distinctBy { it.tileToAttack }
 

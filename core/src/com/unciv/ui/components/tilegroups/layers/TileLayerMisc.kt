@@ -325,8 +325,16 @@ class TileLayerMisc(tileGroup: TileGroup, size: Float) : TileLayer(tileGroup, si
         determineVisibility()
     }
 
+    /** Activates a colored semitransparent overlay. [color] is cloned, brightened by 0.3f and an alpha of 0.4f applied. */
     fun overlayTerrain(color: Color) {
         terrainOverlay.color = color.cpy().lerp(Color.WHITE, 0.3f).apply { a = 0.4f }
+        terrainOverlay.isVisible = true
+        determineVisibility()
+    }
+
+    /** Activates a colored semitransparent overlay. [color] is cloned and [alpha] applied. No brightening unlike the overload without explicit alpha! */
+    fun overlayTerrain(color: Color, alpha: Float) {
+        terrainOverlay.color = color.cpy().apply { a = alpha }
         terrainOverlay.isVisible = true
         determineVisibility()
     }

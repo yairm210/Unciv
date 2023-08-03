@@ -68,7 +68,7 @@
 			"Paros","Elis","Syracuse","Herakleia","Gortyn","Chalkis","Pylos","Pella","Naxos","Sicyon",
 			"Larissa","Apollonia","Messene","Orchomenos","Ambracia","Kos","Knidos","Amphipolis",
 			"Patras","Lamia","Nafplion","Apolyton"],
-        "spyNames": ["Jason", "Helena", "Alexa", "Cletus", "Kassandra", "Andres", "Desdemona", "Anthea", "Aeneas", "Leander",]
+        "spyNames": ["Jason", "Helena", "Alexa", "Cletus", "Kassandra", "Andres", "Desdemona", "Anthea", "Aeneas", "Leander"]
     },
 	{
 		"name": "China",
@@ -246,7 +246,7 @@
 			"Satricum","Ardea","Ostia","Velitrae","Viroconium","Tarentum","Brundisium","Caesaraugusta","Caesarea","Palmyra",
 			"Signia","Aquileia","Clusium","Sutrium","Cremona","Placentia","Hispalis","Artaxata","Aurelianorum","Nicopolis",
 			  "Agrippina","Verona","Corfinium","Treverii","Sirmium","Augustadorum","Curia","Interrama","Adria"],
-        "spyNames": ["Flavius", "Regula", "Servius", "Lucia", "Cornelius", "Licina", "Canus", "Serpens", "Agrippa", "Brutus",]
+        "spyNames": ["Flavius", "Regula", "Servius", "Lucia", "Cornelius", "Licina", "Canus", "Serpens", "Agrippa", "Brutus"]
     },
 	{
 		"name": "Arabia",
@@ -880,7 +880,7 @@
 			"Amstetten", "Bad Ischl", "Wolfsberg", "Kufstein", "Leoben", "Klosterneuburg", "Leonding",
 			"Kapfenberg", "Hallein", "Bischofshofen", "Waidhofen", "Saalbach", "Lienz", "Steyr"
 		],
-        "spyNames": ["Ferdinand", "Johanna", "Franz-Josef", "Astrid", "Anna", "Hubert", "Alois", "Natter", "Georg", "Arnold",]
+        "spyNames": ["Ferdinand", "Johanna", "Franz-Josef", "Astrid", "Anna", "Hubert", "Alois", "Natter", "Georg", "Arnold"]
     },
 	{
 		"name": "Carthage",
@@ -903,13 +903,13 @@
 		"innerColor": [81, 0, 137],
 		"favoredReligion": "Islam",
 		"uniqueName": "Phoenician Heritage",
-		"uniques": ["Gain a free [Harbor] [in all coastal cities]","Land units may cross [Mountain] tiles after the first [Great General] is earned",
-			"Units ending their turn on [Mountain] tiles take [50] damage"],
+		"uniques": ["Gain a free [Harbor] [in all coastal cities]","Land units may cross [Mountain] tiles after the first [Great General] is earned"],
 		"cities": ["Carthage","Utique","Hippo Regius","Gades","Saguntum","Carthago Nova","Panormus","Lilybaeum","Hadrumetum","Zama Regia",
 			"Karalis","Malaca","Leptis Magna","Hippo Diarrhytus","Motya","Sulci","Leptis Parva","Tharros","Soluntum","Lixus",
 			"Oea","Theveste","Ibossim","Thapsus","Aleria","Tingis","Abyla","Sabratha","Rusadir","Baecula",
 			"Saldae"],
-        "spyNames": ["Hamilcar", "Mago", "Baalhaan", "Sophoniba", "Yzebel", "Similce", "Kandaulo", "Zinnridi", "Gisgo", "Fierelus"]
+        "spyNames": ["Hamilcar", "Mago", "Baalhaan", "Sophoniba", "Yzebel", "Similce", "Kandaulo", "Zinnridi", "Gisgo", "Fierelus"],
+        "civilopediaText": [{"text": "Units ending their turn on [Mountain] tiles take [50] damage"}]
     },
 	{
 		"name": "Byzantium",

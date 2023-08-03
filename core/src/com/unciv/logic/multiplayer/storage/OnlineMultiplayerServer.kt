@@ -50,7 +50,7 @@ class OnlineMultiplayerServer(
             if (result.isNotEmpty()) {
                 featureSet = try {
                     json().fromJson(ServerFeatureSet::class.java, result)
-                } catch (ex: Exception) {
+                } catch (_: Exception) {
                     // The server does not support server feature set - not an error!
                     ServerFeatureSet()
                 }

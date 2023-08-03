@@ -104,21 +104,24 @@ class CivConstructions : IsPartOfGameInfoSerialization {
             .mapValues { unique -> unique.value.sumOf { it.params[1].toInt() } }
 
         for ((building, amount) in buildingsUniquesData) {
-            addFreeBuildings(building, amount)
+            val civBuildingEquivalent = civInfo.getEquivalentBuilding(building)
+            addFreeBuildings(civBuildingEquivalent, amount)
         }
     }
 
-    private fun addFreeBuildings(building: String, amount: Int) {
+    private fun addFreeBuildings(building: Building, amount: Int) {
+
         for (city in civInfo.cities.take(amount)) {
-            if (freeSpecificBuildingsProvided[building]?.contains(city.id) == true || city.cityConstructions.containsBuildingOrEquivalent(building)) continue
+            if (freeSpecificBuildingsProvided[building.name]?.contains(city.id) == true
+                || city.cityConstructions.containsBuildingOrEquivalent(building.name)) continue
 
-            (city.cityConstructions.getConstruction(building) as INonPerpetualConstruction).postBuildEvent(city.cityConstructions)
+            building.postBuildEvent(city.cityConstructions)
 
-            if (!freeSpecificBuildingsProvided.containsKey(building))
-                freeSpecificBuildingsProvided[building] = hashSetOf()
-            freeSpecificBuildingsProvided[building]!!.add(city.id)
+            if (!freeSpecificBuildingsProvided.containsKey(building.name))
+                freeSpecificBuildingsProvided[building.name] = hashSetOf()
+            freeSpecificBuildingsProvided[building.name]!!.add(city.id)
 
-            addFreeBuilding(city.id, building)
+            addFreeBuilding(city.id, building.name)
         }
     }
 
