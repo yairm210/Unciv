@@ -21,8 +21,8 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueMap
-import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -513,11 +513,11 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             UniqueType.StatsFromTiles, UniqueType.StatsFromTilesWithout, UniqueType.StatsFromObject,
             UniqueType.StatPercentFromObject, UniqueType.AllStatsPercentFromObject
         )
-        
+
         updateUniques()
-        
+
         // Happiness is global, so it could affect all cities
-        if(building.isStatRelated(Stat.Happiness)) {
+        if (building.isStatRelated(Stat.Happiness)) {
             for (city in civ.cities) {
                 city.reassignPopulationDeferred()
             }
@@ -525,8 +525,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         else if(uniqueTypesModifyingYields.any { building.hasUnique(it) })
             city.reassignPopulationDeferred()
 
-        city.civ.cache.updateCivResources() // this building could be a resource-requiring one
-        
         addFreeBuildings()
     }
 
@@ -556,14 +554,16 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         builtBuildings.remove(buildingName)
         city.civ.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
         updateUniques()
-        city.civ.cache.updateCivResources() // this building could be a resource-requiring one
     }
 
     fun updateUniques(onLoadGame:Boolean = false) {
         builtBuildingUniqueMap.clear()
         for (building in getBuiltBuildings())
             builtBuildingUniqueMap.addUniques(building.uniqueObjects)
-        if (!onLoadGame) city.cityStats.update()
+        if (!onLoadGame) {
+            city.cityStats.update()
+            city.civ.cache.updateCivResources()
+        }
     }
 
     fun addFreeBuildings() {
