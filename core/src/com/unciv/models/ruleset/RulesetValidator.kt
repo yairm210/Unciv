@@ -1,8 +1,13 @@
 package com.unciv.models.ruleset
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData
 import com.unciv.Constants
+import com.unciv.json.fromJsonFile
+import com.unciv.json.json
 import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.nation.getContrastRatio
 import com.unciv.models.ruleset.nation.getRelativeLuminance
 import com.unciv.models.ruleset.tile.TerrainType
@@ -14,6 +19,8 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stats
+import com.unciv.models.tilesets.TileSetCache
+import com.unciv.models.tilesets.TileSetConfig
 
 class RulesetValidator(val ruleset: Ruleset) {
 
@@ -138,6 +145,13 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         for (resource in ruleset.tileResources.values) {
             checkUniques(resource, lines, rulesetInvariant, tryFixUnknownUniques)
+        }
+
+        /********************** Tileset tests **********************/
+        // e.g. json configs complete and parseable
+        // Check for mod or Civ_V_GnK to avoid running the same test twice (~200ms for the builtin assets)
+        if (ruleset.folderLocation != null || ruleset.name == BaseRuleset.Civ_V_GnK.fullName) {
+            checkTilesetSanity(lines)
         }
 
         // Quit here when no base ruleset is loaded - references cannot be checked
@@ -431,6 +445,68 @@ class RulesetValidator(val ruleset: Ruleset) {
         }
 
         return lines
+    }
+
+    private fun checkTilesetSanity(lines: RulesetErrorList) {
+        val tilesetConfigFolder = (ruleset.folderLocation ?: Gdx.files.internal("")).child("jsons\\TileSets")
+        if (!tilesetConfigFolder.exists()) return
+
+        val configTilesets = mutableSetOf<String>()
+        val allFallbacks = mutableSetOf<String>()
+        val folderContent = tilesetConfigFolder.list()
+        var folderContentBad = false
+
+        for (file in folderContent) {
+            if (file.isDirectory || file.extension() != "json") { folderContentBad = true; continue }
+            // All json files should be parseable
+            try {
+                val config = json().fromJsonFile(TileSetConfig::class.java, file)
+                configTilesets += file.nameWithoutExtension().removeSuffix("Config")
+                if (config.fallbackTileSet?.isNotEmpty() == true)
+                    allFallbacks.add(config.fallbackTileSet!!)
+            } catch (ex: Exception) {
+                // Our fromJsonFile wrapper already intercepts Exceptions and gives them a generalized message, so go a level deeper for useful details (like "unmatched brace")
+                lines.add("Tileset config '${file.name()}' cannot be loaded (${ex.cause?.message})", RulesetErrorSeverity.Warning)
+            }
+        }
+
+        // Folder should not contain subdirectories, non-json files, or be empty
+        if (folderContentBad)
+            lines.add("The Mod tileset config folder contains non-json files or subdirectories", RulesetErrorSeverity.Warning)
+        if (configTilesets.isEmpty())
+            lines.add("The Mod tileset config folder contains no json files", RulesetErrorSeverity.Warning)
+
+        // There should be atlas images corresponding to each json name
+        val atlasTilesets = getTilesetNamesFromAtlases()
+        val configOnlyTilesets = configTilesets - atlasTilesets
+        if (configOnlyTilesets.isNotEmpty())
+            lines.add("Mod has no graphics for configured tilesets: ${configOnlyTilesets.joinToString()}", RulesetErrorSeverity.Warning)
+
+        // For all atlas images matching "TileSets/*" there should be a json
+        val atlasOnlyTilesets = atlasTilesets - configTilesets
+        if (atlasOnlyTilesets.isNotEmpty())
+            lines.add("Mod has no configuration for tileset graphics: ${atlasOnlyTilesets.joinToString()}", RulesetErrorSeverity.Warning)
+
+        // All fallbacks should exist (default added because TileSetCache is not loaded when running as unit test)
+        val unknownFallbacks = allFallbacks - TileSetCache.keys - Constants.defaultFallbackTileset
+        if (unknownFallbacks.isNotEmpty())
+            lines.add("Fallback tileset invalid: ${unknownFallbacks.joinToString()}", RulesetErrorSeverity.Warning)
+    }
+
+    private fun getTilesetNamesFromAtlases(): Set<String> {
+        // This partially duplicates code in ImageGetter.getAvailableTilesets, but we don't want to reload that singleton cache.
+
+        // Our builtin rulesets have no folderLocation, in that case cheat and apply knowledge about
+        // where the builtin Tileset textures are (correct would be to parse Atlases.json):
+        val files = ruleset.folderLocation?.list("atlas")?.asSequence()
+            ?: sequenceOf(Gdx.files.internal("Tilesets.atlas"))
+        // Next, we need to cope with this running without GL context (unit test) - no TextureAtlas(file)
+        return files
+            .flatMap { file ->
+                TextureAtlasData(file, file.parent(), false).regions.asSequence()
+                    .filter { it.name.startsWith("TileSets/") && !it.name.contains("/Units/") }
+            }.map { it.name.split("/")[1] }
+            .toSet()
     }
 
     private fun checkPromotionCircularReferences(lines: RulesetErrorList) {
