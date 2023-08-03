@@ -634,6 +634,9 @@ object UnitActions {
         // If gifting to major civ they need to be friendly
         else if (!tile.isFriendlyTerritory(unit.civ)) return null
 
+        // Transported units can't be gifted
+        if (unit.isTransported) return null
+
         if (unit.currentMovement <= 0)
             return UnitAction(UnitActionType.GiftUnit, action = null)
 
