@@ -1,26 +1,18 @@
 ## 4.7.12
 
-Compare improvements by tile yield calculation 
+AI workers remove detrimental features
 
-Added tests to ensure that resources from buildings behave as expected 
+Free buildings are converted to civ-specific replacements
 
-Resolved  - free buildings are converted to civ-specific replacements
+Double-click on worked tile icon locks tile
 
-Resolve  - update Windows JDK to Adoptium JDK 11
+Update Windows JDK to Adoptium JDK 11
 
-Resolved 
+Better untyped unique recognition in mod checker - By SomeTroglodyte
 
-double-click on worked tile icon locks tile, for worked tiles as well!
+Gifting a unit transport gifts the contained units - By tuvus
 
-Steam deploy is failing, and it's not in use anyway, time to say goodbye
-
-By SomeTroglodyte:
-- Treat remaining untyped Uniques in default rulesets 
-- Move Mod Manager to prepare class splits 
-
-Transported units gifting fix  - By tuvus
-
-Allow free unit triggers for any location  - By SeventhM
+Allow free unit triggers for any location - By SeventhM
 
 ## 4.7.11
 
