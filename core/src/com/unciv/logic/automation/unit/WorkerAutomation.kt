@@ -391,18 +391,18 @@ class WorkerAutomation(
         if (potentialTileImprovements.isEmpty()) return null
 
         val cityUniqueCaches = HashMap<City, LocalUniqueCache>()
-        fun getRankingWithImprovement(improvementName: String): Float {
+        fun getImprovementRanking(improvementName: String): Float {
             val improvement = ruleSet.tileImprovements[improvementName]!!
             val city = tile.getCity()
             val cache =
                     if (city == null) LocalUniqueCache(false)
                     else cityUniqueCaches.getOrPut(city) { LocalUniqueCache() }
-            val stats = tile.stats.getImprovementStats(improvement, civInfo, tile.getCity(), cache)
+            val stats = tile.stats.getStatDiffForImprovement(improvement, civInfo, tile.getCity(), cache)
             return Automation.rankStatsValue(stats, unit.civ)
         }
 
         val bestBuildableImprovement = potentialTileImprovements.values.asSequence()
-            .map { Pair(it, getRankingWithImprovement(it.name)) }
+            .map { Pair(it, getImprovementRanking(it.name)) }
             .filter { it.second > 0f }
             .maxByOrNull { it.second }?.first
 
@@ -418,7 +418,7 @@ class WorkerAutomation(
                 && !tile.providesResources(civInfo)
                 && !isResourceImprovementAllowedOnFeature(tile, potentialTileImprovements) -> Constants.remove + lastTerrain.name
             else -> tile.tileResource.getImprovements().filter { it in potentialTileImprovements || it==tile.improvement }
-                .maxByOrNull { getRankingWithImprovement(it) }
+                .maxByOrNull { getImprovementRanking(it) }
         }
 
         // After gathering all the data, we conduct the hierarchy in one place
@@ -430,7 +430,7 @@ class WorkerAutomation(
             bestBuildableImprovement == null -> null
 
             tile.improvement != null &&
-                    getRankingWithImprovement(tile.improvement!!) > getRankingWithImprovement(bestBuildableImprovement.name)
+                    getImprovementRanking(tile.improvement!!) > getImprovementRanking(bestBuildableImprovement.name)
                 -> null // What we have is better, even if it's pillaged we should repair it
 
             lastTerrain.let {

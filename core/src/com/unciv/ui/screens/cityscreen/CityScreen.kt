@@ -209,19 +209,16 @@ class CityScreen(
         fun isExistingImprovementValuable(tile: Tile, improvementToPlace: TileImprovement): Boolean {
             if (tile.improvement == null) return false
             val civInfo = city.civ
-            val existingStats = tile.stats.getImprovementStats(
+
+            val statDiffForNewImprovement = tile.stats.getStatDiffForImprovement(
                 tile.getTileImprovement()!!,
                 civInfo,
                 city,
                 cityUniqueCache
             )
-            val replacingStats = tile.stats.getImprovementStats(
-                improvementToPlace,
-                civInfo,
-                city,
-                cityUniqueCache
-            )
-            return Automation.rankStatsValue(existingStats, civInfo) > Automation.rankStatsValue(replacingStats, civInfo)
+
+            // If stat diff for new improvement is negative/zero utility, current improvement is valuable
+            return Automation.rankStatsValue(statDiffForNewImprovement, civInfo) <= 0
         }
 
         fun getPickImprovementColor(tile: Tile): Pair<Color, Float> {

@@ -388,16 +388,6 @@ object Automation {
             if (distance > 3) score += 100
         }
 
-        // Improvements are good: less points
-        if (tile.improvement != null &&
-            tile.stats.getImprovementStats(
-                tile.getTileImprovement()!!,
-                city.civ,
-                city,
-                localUniqueCache
-            ).values.sum() > 0f
-        ) score -= 5
-
         if (tile.naturalWonder != null) score -= 105
 
         // Straight up take the sum of all yields
