@@ -573,7 +573,7 @@ class ModManagementScreen(
                 launchOnGLThread {
                     ToastPopup("[${repo.name}] Downloaded!", this@ModManagementScreen)
                     RulesetCache.loadRulesets()
-                    TileSetCache.loadTileSetConfigs(false)
+                    TileSetCache.loadTileSetConfigs()
                     UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()
                     RulesetCache[repo.name]?.let {
                         installedModInfo[repo.name] = ModUIData(it)
@@ -716,6 +716,7 @@ class ModManagementScreen(
     private fun deleteMod(mod: Ruleset) {
         mod.folderLocation!!.deleteDirectory()
         RulesetCache.loadRulesets()
+        TileSetCache.loadTileSetConfigs()
         installedModInfo.remove(mod.name)
         refreshInstalledModTable()
     }
