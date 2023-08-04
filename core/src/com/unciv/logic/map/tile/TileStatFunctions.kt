@@ -204,7 +204,7 @@ class TileStatFunctions(val tile: Tile) {
         val currentStats = getTileStats(city, observingCiv, cityUniqueCache)
 
         val tileClone = tile.clone()
-        tileClone.setTransients()
+        tileClone.setTerrainTransients()
 
         if (improvement.name.startsWith(Constants.remove))
             tileClone.removeTerrainFeature(improvement.name.removePrefix(Constants.remove))
