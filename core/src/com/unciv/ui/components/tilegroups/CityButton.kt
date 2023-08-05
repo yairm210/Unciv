@@ -12,19 +12,19 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.GUI
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.City
-import com.unciv.models.ruleset.INonPerpetualConstruction
-import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.TutorialTrigger
+import com.unciv.models.ruleset.INonPerpetualConstruction
+import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.ui.components.BorderedTable
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.centerX
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.darken
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toGroup
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -594,7 +594,7 @@ class CityButton(val city: City, private val tileGroup: TileGroup): Table(BaseSc
             addOKButton("Diplomacy") { openDiplomacy() }
             add().expandX()
             addCloseButton() {
-                GUI.getWorldScreen().run { nextTurnButton.update(this@run) }
+                GUI.getWorldScreen().run { nextTurnButton.update() }
             }
         }
         popup.open()
