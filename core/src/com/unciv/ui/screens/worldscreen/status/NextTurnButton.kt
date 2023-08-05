@@ -2,6 +2,7 @@ package com.unciv.ui.screens.worldscreen.status
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.translations.tr
@@ -43,6 +44,14 @@ class NextTurnButton : IconTextButton("", null, 30) {
     fun update(worldScreen: WorldScreen) {
         nextTurnAction = getNextTurnAction(worldScreen)
         updateButton(nextTurnAction)
+
+        if (worldScreen.gameInfo.turns != 0) {
+            if (nextTurnAction.text.tr() == "Next turn".tr() &&
+                UncivGame.Current.settings.autoNextTurn
+            ) {
+                worldScreen.nextTurn()
+            }
+        }
 
         isEnabled = !worldScreen.hasOpenPopups() && worldScreen.isPlayersTurn
                 && !worldScreen.waitingForAutosave && !worldScreen.isNextTurnUpdateRunning()

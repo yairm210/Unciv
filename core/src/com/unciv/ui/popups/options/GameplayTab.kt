@@ -18,6 +18,7 @@ fun gameplayTab(
     val settings = optionsPopup.settings
 
     optionsPopup.addCheckbox(this, "Check for idle units", settings.checkForDueUnits, true) { settings.checkForDueUnits = it }
+    optionsPopup.addCheckbox(this, "Auto next turn", settings.autoNextTurn, true) { settings.autoNextTurn = it }
     optionsPopup.addCheckbox(this, "Auto Unit Cycle", settings.autoUnitCycle, true) { settings.autoUnitCycle = it }
     optionsPopup.addCheckbox(this, "Move units with a single tap", settings.singleTapMove) { settings.singleTapMove = it }
     optionsPopup.addCheckbox(this, "Auto-assign city production", settings.autoAssignCityProduction, true) { shouldAutoAssignCityProduction ->
