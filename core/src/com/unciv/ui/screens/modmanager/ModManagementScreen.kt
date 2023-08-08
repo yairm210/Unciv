@@ -570,7 +570,7 @@ class ModManagementScreen(
                     repo,
                     Gdx.files.local("mods")
                 )
-                    ?: throw Exception("downloadAndExtract returns null for 404 errors and the like")    // downloadAndExtract returns null for 404 errors and the like -> display something!
+                    ?: throw Exception("Exception during GitHub download")    // downloadAndExtract returns null for 404 errors and the like -> display something!
                 Github.rewriteModOptions(repo, modFolder)
                 launchOnGLThread {
                     val repoName = modFolder.name()  // repo.name still has the replaced "-"'s
