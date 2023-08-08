@@ -64,10 +64,10 @@ class ModOptions : IHasUniques {
 
     override var uniques = ArrayList<String>()
 
-    // If these two are delegated with "by lazy", the mod download process crashes and burns
-    // Instead, Ruleset.load sets them, which is preferable in this case anyway
-    override var uniqueObjects: List<Unique> = listOf()
-    override var uniqueMap: Map<String, List<Unique>> = mapOf()
+    @delegate:Transient
+    override val uniqueObjects: List<Unique> by lazy (::uniqueObjectsProvider)
+    @delegate:Transient
+    override val uniqueMap: UniqueMap by lazy(::uniqueMapProvider)
 
     override fun getUniqueTarget() = UniqueTarget.ModOptions
 
@@ -242,8 +242,6 @@ class Ruleset {
             } catch (ex: Exception) {
                 Log.error("Failed to get modOptions from json file", ex)
             }
-            modOptions.uniqueObjects = modOptions.uniques.map { Unique(it, UniqueTarget.ModOptions) }
-            modOptions.uniqueMap = modOptions.uniqueObjects.groupBy { it.placeholderText }
         }
 
         val techFile = folderHandle.child("Techs.json")
