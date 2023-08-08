@@ -8,11 +8,11 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.HexMath
-import com.unciv.logic.map.MapParameters  // Kdoc only
+import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapResources
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.mapunit.UnitMovement  // Kdoc only
+import com.unciv.logic.map.mapunit.UnitMovement
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
@@ -25,7 +25,6 @@ import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.withItem
 import com.unciv.ui.components.extensions.withoutItem
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.utils.DebugUtils
 import kotlin.math.abs
 import kotlin.math.min
@@ -310,37 +309,11 @@ open class Tile : IsPartOfGameInfoSerialization {
     }
 
     /** Does not remove roads */
-    fun removeImprovement() = changeImprovement(null)
+    fun removeImprovement() =
+        improvementFunctions.changeImprovement(null)
 
-    fun changeImprovement(improvementStr: String?, civToHandleCompletion:Civilization? = null) {
-        improvementIsPillaged = false
-        improvement = improvementStr
-
-        val improvementObject = getTileImprovement()
-        if (improvementObject != null && improvementObject.hasUnique(UniqueType.RemovesFeaturesIfBuilt)) {
-            // Remove terrainFeatures that a Worker can remove
-            // and that aren't explicitly allowed under the improvement
-            val removableTerrainFeatures = terrainFeatures.filter { feature ->
-                val removingAction = "${Constants.remove}$feature"
-
-                removingAction in ruleset.tileImprovements // is removable
-                    && !improvementObject.isAllowedOnFeature(feature) // cannot coexist
-            }
-
-            setTerrainFeatures(terrainFeatures.filterNot { it in removableTerrainFeatures })
-        }
-
-        if (civToHandleCompletion != null && improvementObject != null
-            && improvementObject.hasUnique(UniqueType.TakesOverAdjacentTiles)
-        )
-            UnitActions.takeOverTilesAround(civToHandleCompletion, this)
-
-        if (owningCity != null) {
-            owningCity!!.civ.cache.updateCivResources()
-            owningCity!!.reassignPopulationDeferred()
-        }
-
-    }
+    fun changeImprovement(improvementStr: String, civToHandleCompletion:Civilization? = null) =
+        improvementFunctions.changeImprovement(improvementStr, civToHandleCompletion)
 
     // function handling when adding a road to the tile
     fun addRoad(roadType: RoadStatus, unitCivInfo: Civilization) {

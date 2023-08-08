@@ -178,9 +178,10 @@ class UnitTurnManager(val unit: MapUnit) {
         if (unit.civ.isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Construct an improvement")
 
+        val improvementInProgress = tile.improvementInProgress ?: return
         when {
-            tile.improvementInProgress!!.startsWith(Constants.remove) -> {
-                val removedFeatureName = tile.improvementInProgress!!.removePrefix(Constants.remove)
+            improvementInProgress.startsWith(Constants.remove) -> {
+                val removedFeatureName = improvementInProgress.removePrefix(Constants.remove)
                 val tileImprovement = tile.getTileImprovement()
                 if (tileImprovement != null
                         && tile.terrainFeatures.any {
@@ -192,7 +193,7 @@ class UnitTurnManager(val unit: MapUnit) {
                     tile.removeImprovement()
                     if (tile.resource != null) unit.civ.cache.updateCivResources() // unlikely, but maybe a mod makes a resource improvement dependent on a terrain feature
                 }
-                if (RoadStatus.values().any { tile.improvementInProgress == it.removeAction }) {
+                if (RoadStatus.values().any { improvementInProgress == it.removeAction }) {
                     tile.removeRoad()
                 } else {
                     val removedFeatureObject = tile.ruleset.terrains[removedFeatureName]
@@ -202,11 +203,11 @@ class UnitTurnManager(val unit: MapUnit) {
                     tile.removeTerrainFeature(removedFeatureName)
                 }
             }
-            tile.improvementInProgress == RoadStatus.Road.name -> tile.addRoad(RoadStatus.Road, unit.civ)
-            tile.improvementInProgress == RoadStatus.Railroad.name -> tile.addRoad(RoadStatus.Railroad, unit.civ)
-            tile.improvementInProgress == Constants.repair -> tile.setRepaired()
+            improvementInProgress == RoadStatus.Road.name -> tile.addRoad(RoadStatus.Road, unit.civ)
+            improvementInProgress == RoadStatus.Railroad.name -> tile.addRoad(RoadStatus.Railroad, unit.civ)
+            improvementInProgress == Constants.repair -> tile.setRepaired()
             else -> {
-                tile.changeImprovement(tile.improvementInProgress, unit.civ)
+                tile.changeImprovement(improvementInProgress, unit.civ)
             }
         }
 

@@ -5,6 +5,7 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 
 
 enum class ImprovementBuildingProblem {
@@ -159,6 +160,36 @@ class TileInfoImprovementFunctions(val tile: Tile) {
             resourceIsVisible && tile.tileResource.isImprovedBy(improvement.name) -> true
             // No reason this improvement should be built here, so can't build it
             else -> false
+        }
+    }
+
+
+    fun changeImprovement(improvementStr: String?, civToHandleCompletion:Civilization? = null) {
+        tile.improvementIsPillaged = false
+        tile.improvement = improvementStr
+
+        val improvementObject = tile.getTileImprovement()
+        if (improvementObject != null && improvementObject.hasUnique(UniqueType.RemovesFeaturesIfBuilt)) {
+            // Remove terrainFeatures that a Worker can remove
+            // and that aren't explicitly allowed under the improvement
+            val removableTerrainFeatures = tile.terrainFeatures.filter { feature ->
+                val removingAction = "${Constants.remove}$feature"
+
+                removingAction in tile.ruleset.tileImprovements // is removable
+                    && !improvementObject.isAllowedOnFeature(feature) // cannot coexist
+            }
+
+            tile.setTerrainFeatures(tile.terrainFeatures.filterNot { it in removableTerrainFeatures })
+        }
+
+        if (civToHandleCompletion != null && improvementObject != null
+            && improvementObject.hasUnique(UniqueType.TakesOverAdjacentTiles)
+        )
+            UnitActions.takeOverTilesAround(civToHandleCompletion, tile)
+
+        if (tile.owningCity != null) {
+            tile.owningCity!!.civ.cache.updateCivResources()
+            tile.owningCity!!.reassignPopulationDeferred()
         }
     }
 
