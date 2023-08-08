@@ -629,6 +629,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
+??? example  "Enables Defensive Pacts"
+	Applicable to: Global
+
 ??? example  "When declaring friendship, both parties gain a [relativeAmount]% boost to great person generation"
 	Example: "When declaring friendship, both parties gain a [+20]% boost to great person generation"
 
@@ -2020,6 +2023,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: TriggerCondition
 
 ??? example  "&lt;upon declaring friendship&gt;"
+	Applicable to: TriggerCondition
+
+??? example  "&lt;upon declaring a defensive pact&gt;"
 	Applicable to: TriggerCondition
 
 ??? example  "&lt;upon entering a Golden Age&gt;"

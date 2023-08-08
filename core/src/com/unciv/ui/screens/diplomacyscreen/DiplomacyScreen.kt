@@ -662,6 +662,9 @@ class DiplomacyScreen(
             if (viewingCiv.diplomacyFunctions.canSignResearchAgreementsWith(otherCiv))
                 diplomacyTable.add(getResearchAgreementButton(otherCiv)).row()
 
+            if (viewingCiv.diplomacyFunctions.canSignDefensivePactWith(otherCiv))
+                diplomacyTable.add(getDefensivePactButton(otherCiv)).row()
+
             if (!diplomacyManager.hasFlag(DiplomacyFlags.Denunciation)
                     && !diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
             ) diplomacyTable.add(getDenounceButton(otherCiv, diplomacyManager)).row()
@@ -766,6 +769,24 @@ class DiplomacyScreen(
         }
         if (isNotPlayersTurn()) researchAgreementButton.disable()
         return researchAgreementButton
+    }
+
+    private fun getDefensivePactButton(otherCiv: Civilization): TextButton {
+        val defensivePactButton = "Defensive Pact".toTextButton()
+
+        defensivePactButton.onClick {
+            val tradeTable = setTrade(otherCiv)
+            val defensivePact =
+                TradeOffer(Constants.defensivePact, TradeType.Treaty, 0)
+            tradeTable.tradeLogic.currentTrade.theirOffers.add(defensivePact)
+            tradeTable.tradeLogic.ourAvailableOffers.add(defensivePact)
+            tradeTable.tradeLogic.currentTrade.ourOffers.add(defensivePact)
+            tradeTable.tradeLogic.theirAvailableOffers.add(defensivePact)
+            tradeTable.offerColumnsTable.update()
+            tradeTable.enableOfferButton(true)
+        }
+        if (isNotPlayersTurn()) defensivePactButton.disable()
+        return defensivePactButton
     }
 
     private fun getDeclareFriendshipButton(otherCiv: Civilization): TextButton {

@@ -113,6 +113,22 @@ class DiplomacyFunctions(val civInfo: Civilization){
                 ).toInt()
     }
 
+    fun canSignDefensivePact(): Boolean {
+        if (!civInfo.isMajorCiv()) return false
+        if (!civInfo.hasUnique(UniqueType.EnablesDefensivePacts)) return false
+        if (civInfo.gameInfo.ruleset.technologies.values
+                .none { civInfo.tech.canBeResearched(it.name) && !civInfo.tech.isResearched(it.name) }) return false
+        return true
+    }
+
+    fun canSignDefensivePactWith(otherCiv: Civilization): Boolean {
+        val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
+        return canSignDefensivePact() && otherCiv.diplomacyFunctions.canSignDefensivePact()
+            && diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+            && !diplomacyManager.hasFlag(DiplomacyFlags.DefensivePact)
+            && !diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.DefensivePact)
+    }
+
 
     /**
      * @returns whether units of this civilization can pass through the tiles owned by [otherCiv],

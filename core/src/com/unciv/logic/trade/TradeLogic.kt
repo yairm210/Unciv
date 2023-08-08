@@ -123,6 +123,7 @@ class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civili
                         to.getDiplomacyManager(from)
                             .setFlag(DiplomacyFlags.ResearchAgreement, offer.duration)
                     }
+                    if (offer.name == Constants.defensivePact) to.getDiplomacyManager(from).setFlag(DiplomacyFlags.DefensivePact, offer.duration)
                 }
                 TradeType.Introduction -> to.diplomacyFunctions.makeCivilizationsMeet(to.gameInfo.getCivilization(offer.name))
                 TradeType.WarDeclaration -> {

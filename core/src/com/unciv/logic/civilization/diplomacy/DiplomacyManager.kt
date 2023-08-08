@@ -44,6 +44,8 @@ enum class DiplomacyFlags {
     DeclinedResearchAgreement,
     DeclaredWar,
     DeclarationOfFriendship,
+    DefensivePact,
+    DeclinedDefensivePact,
     ResearchAgreement,
     BorderConflict,
     SettledCitiesNearUs,
@@ -71,6 +73,7 @@ enum class DiplomaticModifiers(val text:String) {
     WarMongerer("Your warmongering ways are unacceptable to us."),
     CapturedOurCities("You have captured our cities!"),
     DeclaredFriendshipWithOurEnemies("You have declared friendship with our enemies!"),
+    DeclaredDefensivePactWithOurEnemies("You have declared a defensive pact with our enemies!"),
     BetrayedDeclarationOfFriendship("Your so-called 'friendship' is worth nothing."),
     Denunciation("You have publicly denounced us!"),
     DenouncedOurAllies("You have denounced our allies"),
@@ -90,6 +93,8 @@ enum class DiplomaticModifiers(val text:String) {
     LiberatedCity("We applaud your liberation of conquered cities!"),
     DeclarationOfFriendship("We have signed a public declaration of friendship"),
     DeclaredFriendshipWithOurAllies("You have declared friendship with our allies"),
+    DeclaredDefensivePact("We are protecting eachother."),
+    DeclaredDefensivePactWithOurAllies("You have declared a defensive pact with our allies"),
     DenouncedOurEnemies("You have denounced our enemies"),
     OpenBorders("Our open borders have brought us closer together."),
     FulfilledPromiseToNotSettleCitiesNearUs("You fulfilled your promise to stop settling cities near us!"),
@@ -928,6 +933,42 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             }
         }
     }
+
+    fun signDefensivePact() {
+        setModifier(DiplomaticModifiers.DeclaredDefensivePact, 45f)
+        otherCivDiplomacy().setModifier(DiplomaticModifiers.DeclaredDefensivePact, 45f)
+        setFlag(DiplomacyFlags.DefensivePact, 40)
+        otherCivDiplomacy().setFlag(DiplomacyFlags.DefensivePact, 40)
+
+        for (thirdCiv in getCommonKnownCivs().filter { it.isMajorCiv() }) {
+            thirdCiv.addNotification("[${civInfo.civName}] and [$otherCivName] have signed the Defensive Pact!",
+                NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
+            thirdCiv.getDiplomacyManager(civInfo).setDefensiveBasedModifier()
+        }
+
+        // Ignore contitionals as triggerCivwideUnique will check again, and that would break
+        // UniqueType.ConditionalChance - 25% declared chance would work as 6% actual chance
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringDefensivePact, StateForConditionals.IgnoreConditionals))
+            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+        for (unique in otherCiv().getTriggeredUniques(UniqueType.TriggerUponDeclaringDefensivePact, StateForConditionals.IgnoreConditionals))
+            UniqueTriggerActivation.triggerCivwideUnique(unique, otherCiv())
+    }
+
+    private fun setDefensiveBasedModifier() {
+        removeModifier(DiplomaticModifiers.DeclaredFriendshipWithOurAllies)
+        removeModifier(DiplomaticModifiers.DeclaredDefensivePactWithOurEnemies)
+        for (thirdCiv in getCommonKnownCivs()
+            .filter { it.getDiplomacyManager(civInfo).hasFlag(DiplomacyFlags.DeclarationOfFriendship) }) {
+            when (otherCiv().getDiplomacyManager(thirdCiv).relationshipIgnoreAfraid()) {
+                RelationshipLevel.Unforgivable -> addModifier(DiplomaticModifiers.DeclaredDefensivePactWithOurEnemies, -20f)
+                RelationshipLevel.Enemy -> addModifier(DiplomaticModifiers.DeclaredDefensivePactWithOurEnemies, -10f)
+                RelationshipLevel.Friend -> addModifier(DiplomaticModifiers.DeclaredFriendshipWithOurAllies, 10f)
+                RelationshipLevel.Ally -> addModifier(DiplomaticModifiers.DeclaredFriendshipWithOurAllies, 20f)
+                else -> {}
+            }
+        }
+    }
+
 
     fun denounce() {
         setModifier(DiplomaticModifiers.Denunciation, -35f)
