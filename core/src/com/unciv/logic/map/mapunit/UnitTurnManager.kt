@@ -189,7 +189,7 @@ class UnitTurnManager(val unit: MapUnit) {
                         && !tileImprovement.terrainsCanBeBuiltOn.contains(tile.baseTerrain)
                 ) {
                     // We removed a terrain (e.g. Forest) and the improvement (e.g. Lumber mill) requires it!
-                    tile.changeImprovement(null)
+                    tile.removeImprovement()
                     if (tile.resource != null) unit.civ.cache.updateCivResources() // unlikely, but maybe a mod makes a resource improvement dependent on a terrain feature
                 }
                 if (RoadStatus.values().any { tile.improvementInProgress == it.removeAction }) {

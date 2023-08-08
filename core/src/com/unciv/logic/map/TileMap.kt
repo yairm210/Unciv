@@ -615,7 +615,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
             .map { it to StartingLocation(it.position, it.improvement!!.removePrefix(startingLocationPrefix)) }
             .sortedBy { it.second.nation }  // vanity, or to make diffs between un-gzipped map files easier
             .forEach { (tile, startingLocation) ->
-                tile.changeImprovement(null)
+                tile.removeImprovement()
                 startingLocations.add(startingLocation)
             }
         setStartingLocationsTransients()

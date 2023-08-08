@@ -308,6 +308,9 @@ open class Tile : IsPartOfGameInfoSerialization {
         else ruleset.tileImprovements[getUnpillagedRoad().name]
     }
 
+    /** Does not remove roads */
+    fun removeImprovement() = changeImprovement(null)
+
     fun changeImprovement(improvementStr: String?) {
         improvementIsPillaged = false
         improvement = improvementStr
@@ -893,7 +896,7 @@ open class Tile : IsPartOfGameInfoSerialization {
         if (resource != null && resource !in ruleset.tileResources)
             resource = null
         if (improvement != null && improvement !in ruleset.tileImprovements)
-            changeImprovement(null)
+            removeImprovement()
     }
 
     /** If the unit isn't in the ruleset we can't even know what type of unit this is! So check each place
@@ -927,7 +930,7 @@ open class Tile : IsPartOfGameInfoSerialization {
         // http://well-of-souls.com/civ/civ5_improvements.html says that naval improvements are destroyed upon pillage
         //    and I can't find any other sources so I'll go with that
         if (!isLand) {
-            changeImprovement(null)
+            removeImprovement()
             owningCity?.reassignPopulationDeferred()
             return
         }
@@ -939,7 +942,7 @@ open class Tile : IsPartOfGameInfoSerialization {
         // if no Repair action, destroy improvements instead
         if (ruleset.tileImprovements[Constants.repair] == null) {
             if (canPillageTileImprovement())
-                changeImprovement(null)
+                removeImprovement()
             else
                 removeRoad()
         } else {
