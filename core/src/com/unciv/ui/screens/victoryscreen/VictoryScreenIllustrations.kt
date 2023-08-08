@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Stack
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.badlogic.gdx.utils.Disposable
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.MilestoneType
@@ -24,8 +25,10 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 // todo Image sizing
+// todo Idea: use victoryCompletePercent to allow "percentage" images - e.g. "Destroy all players" now works all or nothing - boring.
 
 class VictoryScreenIllustrations(
+    parent: VictoryScreen,
     worldScreen: WorldScreen
 ) : Table(BaseScreen.skin), TabbedPager.IPageExtensions {
 
@@ -35,11 +38,12 @@ class VictoryScreenIllustrations(
         private const val iconPath = "VictoryTypeIcons"
         private val enablingImages = listOf("Won", "Lost", "Background")
 
-        fun enablePage(game: GameInfo) = game.getEnabledVictories().values.any { victory ->
-                enablingImages.any { element ->
-                    ImageGetter.imageExists(getImageName(victory, element))
-                }
-            }
+        internal fun enablePage(game: GameInfo) = game.getEnabledVictories().values
+            .any { it.hasIllustrations() }
+
+        private fun Victory.hasIllustrations() = enablingImages.any { element ->
+            ImageGetter.imageExists(getImageName(this, element))
+        }
 
         private fun getImageName(victory: Victory, element: String) =
             "$basePath/${victory.name}/$element"
@@ -52,8 +56,10 @@ class VictoryScreenIllustrations(
     }
 
     private val game = worldScreen.gameInfo
-    private val maxLabelWidth = worldScreen.stage.run { width * (if (isNarrowerThan4to3()) 0.9f else 0.7f) }
-    private val victories = game.getEnabledVictories().values.sortedBy { it.name.tr(hideIcons = true) }
+    private val maxLabelWidth = parent.stage.run { width * (if (isNarrowerThan4to3()) 0.9f else 0.7f) }
+    private val victories = game.getEnabledVictories().values
+        .filter { it.hasIllustrations() }
+        .sortedBy { it.name.tr(hideIcons = true) }
     private val selectedCiv = worldScreen.selectedCiv
     private val completionPercentages = game.civilizations
         .filter { it.isMajorCiv() && it.isAlive() || it == selectedCiv }
@@ -61,8 +67,10 @@ class VictoryScreenIllustrations(
             victories.associateWith { victoryCompletePercent(it, civ) }
         }
 
-    private val tabs = TabbedPager(shortcutScreen = worldScreen, capacity = victories.size)
+    private val tabs = TabbedPager(shortcutScreen = parent, capacity = victories.size)
     private val holder = Stack()
+
+    private var selectedVictory = selectVictory()
 
     init {
         top()
@@ -74,20 +82,26 @@ class VictoryScreenIllustrations(
             val key = KeyCharAndCode(victory.name.first())
             tabs.addPage(victory.name, holder, icon, 20f, shortcutKey = key)
         }
-        tabs.selectPage(selectVictory())
 
-        tabs.onSelection { _, name, _ -> select(name) }
+        tabs.selectPage(selectedVictory)
         add(tabs).top().grow()
     }
 
-    fun select(name: String) {
-        val victory = victories.firstOrNull { it.name == name } ?: return
-        holder.addAction(FadeTo(holder, getImages(victory)))
+    private fun select() {
+        val victory = victories.firstOrNull { it.name == selectedVictory } ?: return
+        tabs.onSelection(null)  // Prevent recursion from replacePage
+        val fadeAction = FadeTo(holder, getImages(victory))  // side effect: adds images to holder and packs it
+        tabs.replacePage(tabs.activePage, holder)  // Force TabbedPager to measure content
+        holder.addAction(fadeAction)
+        tabs.onSelection { _, name, _ ->
+            selectedVictory = name
+            select()
+        }
     }
 
     override fun activated(index: Int, caption: String, pager: TabbedPager) {
         pager.setScrollDisabled(true)
-        select(caption)
+        select()
     }
 
     override fun deactivated(index: Int, caption: String, pager: TabbedPager) {
@@ -98,24 +112,36 @@ class VictoryScreenIllustrations(
     private class FadeTo(
         private val holder: Stack,
         private val newActors: List<Actor>
-    ) : TemporalAction(fadeDuration) {
-        private val oldActors: List<Actor> = holder.children.toList()
-        private val fadeOutFrom = oldActors.firstOrNull()?.color?.a ?: 1f
+    ) : TemporalAction(fadeDuration), Disposable {
+        private var oldActors: List<Actor>? = holder.children.toList()  // nullable to allow relinquishing the references when done
+        private val fadeOutFrom = oldActors!!.firstOrNull()?.color?.a ?: 1f
 
         init {
             holder.actions.filterIsInstance<FadeTo>().forEach { it.dispose() }
-            for (actor in newActors) holder.add(actor)
+            for (actor in newActors) {
+                actor.color.a = 0f
+                holder.add(actor)
+            }
+            holder.pack()
+            holder.invalidateHierarchy()
         }
 
-        fun dispose() {
-            for (actor in oldActors) holder.removeActor(actor)
+        override fun dispose() {
+            end()
         }
 
         override fun update(percent: Float) {
-            val oldAlpha = Interpolation.fade.apply(1f - percent) * fadeOutFrom
             val alpha = Interpolation.fade.apply(percent)
-            for (actor in oldActors) actor.color.a = oldAlpha
             for (actor in newActors) actor.color.a = alpha
+            if (oldActors == null) return
+            val oldAlpha = Interpolation.fade.apply(1f - percent) * fadeOutFrom
+            for (actor in oldActors!!) actor.color.a = oldAlpha
+        }
+
+        override fun end() {
+            val toRemove = oldActors ?: return
+            oldActors = null
+            for (actor in toRemove) holder.removeActor(actor)
         }
     }
 
@@ -170,7 +196,7 @@ class VictoryScreenIllustrations(
                 }
                 MilestoneType.ScoreAfterTimeOut -> {
                     total += game.gameParameters.maxTurns
-                    game.turns
+                    game.turns.coerceAtMost(game.gameParameters.maxTurns)
                 }
                 else -> {
                     total += 2
@@ -188,13 +214,12 @@ class VictoryScreenIllustrations(
                 val image = getImageOrNull(victory, "Won")
                 return getWonOrLostStack(image, victory.victoryString, Color.GOLD)
             }
-            if (victory.name != victoryType || selectedCiv.civName != winningCiv) {
-                val image = getImageOrNull(victory, "Lost")
-                return getWonOrLostStack(image, victory.defeatString.takeIf { victory.name == victoryType }, Color.MAROON)
-            }
+            val image = getImageOrNull(victory, "Lost")
+            return getWonOrLostStack(image, victory.defeatString.takeIf { victory.name == victoryType }, Color.MAROON)
         }
 
         val result = mutableListOf<Actor>()
+        result.addImageIf(victory, "Background") { true }
         for (milestone in victory.milestoneObjects) {
             val element = milestone.uniqueDescription.replace("[", "").replace("]", "")
             result.addImageIf(victory, element) { milestone.hasBeenCompletedBy(selectedCiv) }

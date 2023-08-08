@@ -47,31 +47,31 @@ class VictoryScreen(
         val allowAsSecret: Boolean = false
     ) {
         OurStatus('O', caption = "Our status") {
-            override fun getContent(worldScreen: WorldScreen) = VictoryScreenOurVictory(worldScreen)
+            override fun getContent(parent: VictoryScreen) = VictoryScreenOurVictory(parent.worldScreen)
             override fun isHidden(playerCiv: Civilization) = playerCiv.isSpectator()
         },
         Global('G', caption = "Global status") {
-            override fun getContent(worldScreen: WorldScreen) = VictoryScreenGlobalVictory(worldScreen)
+            override fun getContent(parent: VictoryScreen) = VictoryScreenGlobalVictory(parent.worldScreen)
         },
         Illustration('I', allowAsSecret = true) {
-            override fun getContent(worldScreen: WorldScreen) = VictoryScreenIllustrations(worldScreen)
+            override fun getContent(parent: VictoryScreen) = VictoryScreenIllustrations(parent, parent.worldScreen)
             override fun isHidden(playerCiv: Civilization) = !VictoryScreenIllustrations.enablePage(playerCiv.gameInfo)
         },
         Demographics('D', allowAsSecret = true) {
-            override fun getContent(worldScreen: WorldScreen) = VictoryScreenDemographics(worldScreen)
+            override fun getContent(parent: VictoryScreen) = VictoryScreenDemographics(parent.worldScreen)
             override fun isHidden(playerCiv: Civilization) = !UncivGame.Current.settings.useDemographics
         },
         Rankings('R', allowAsSecret = true) {
-            override fun getContent(worldScreen: WorldScreen) = VictoryScreenCivRankings(worldScreen)
+            override fun getContent(parent: VictoryScreen) = VictoryScreenCivRankings(parent.worldScreen)
             override fun isHidden(playerCiv: Civilization) = UncivGame.Current.settings.useDemographics
         },
         Charts('C') {
-            override fun getContent(worldScreen: WorldScreen) = VictoryScreenCharts(worldScreen)
+            override fun getContent(parent: VictoryScreen) = VictoryScreenCharts(parent.worldScreen)
             override fun isHidden(playerCiv: Civilization) =
                 !playerCiv.isSpectator() && playerCiv.statsHistory.size < 2
         },
         Replay('P', allowAsSecret = true) {
-            override fun getContent(worldScreen: WorldScreen) = VictoryScreenReplay(worldScreen)
+            override fun getContent(parent: VictoryScreen) = VictoryScreenReplay(parent.worldScreen)
             override fun isHidden(playerCiv: Civilization) =
                 !playerCiv.isSpectator()
                         && playerCiv.gameInfo.victoryData == null
@@ -80,7 +80,7 @@ class VictoryScreen(
                         // slider doesn't look weird.
                         && playerCiv.gameInfo.turns < 5
         };
-        abstract fun getContent(worldScreen: WorldScreen): Table
+        abstract fun getContent(parent: VictoryScreen): Table
         open fun isHidden(playerCiv: Civilization) = false
     }
 
@@ -96,7 +96,7 @@ class VictoryScreen(
             val icon = ImageGetter.getImage("VictoryScreenIcons/${tab.name}")
             tabs.addPage(
                 tab.caption ?: tab.name,
-                tab.getContent(worldScreen),
+                tab.getContent(this),
                 icon, iconSize,
                 scrollAlign = Align.topLeft,
                 shortcutKey = KeyCharAndCode(tab.key),
