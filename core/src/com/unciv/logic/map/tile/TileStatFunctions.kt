@@ -193,22 +193,34 @@ class TileStatFunctions(val tile: Tile) {
             food + production + gold
         }
 
+    /** Returns the extra stats that we would get if we switched to this improvement
+     * Can be negative if we're switching to a worse improvement */
+    fun getStatDiffForImprovement(
+        improvement: TileImprovement,
+        observingCiv: Civilization,
+        city: City?,
+        cityUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats {
+
+        val currentStats = getTileStats(city, observingCiv, cityUniqueCache)
+
+        val tileClone = tile.clone()
+        tileClone.setTerrainTransients()
+
+        if (improvement.name.startsWith(Constants.remove))
+            tileClone.removeTerrainFeature(improvement.name.removePrefix(Constants.remove))
+        else tileClone.changeImprovement(improvement.name)
+        val futureStats = tileClone.stats.getTileStats(city, observingCiv, cityUniqueCache)
+
+        return futureStats.minus(currentStats)
+    }
 
     // Also multiplies the stats by the percentage bonus for improvements (but not for tiles)
-    fun getImprovementStats(
+    private fun getImprovementStats(
         improvement: TileImprovement,
         observingCiv: Civilization,
         city: City?,
         cityUniqueCache: LocalUniqueCache = LocalUniqueCache(false)
     ): Stats {
-        if (improvement.name.startsWith(Constants.remove)){
-            val currentTileStats = getTileStats(city, observingCiv, cityUniqueCache)
-            val tileClone = tile.clone()
-            tileClone.removeTerrainFeature(improvement.name.removePrefix(Constants.remove))
-            val tileStatsAfterRemoval = tileClone.stats.getTileStats(city, observingCiv, cityUniqueCache)
-            return tileStatsAfterRemoval.minus(currentTileStats)
-        }
-
         val stats = improvement.cloneStats()
         if (tile.hasViewableResource(observingCiv) && tile.tileResource.isImprovedBy(improvement.name)
                 && tile.tileResource.improvementStats != null

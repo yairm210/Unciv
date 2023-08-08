@@ -1,6 +1,7 @@
 //  Taken from https://github.com/TomGrill/gdx-testing
 package com.unciv.logic.map
 
+import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.StateForConditionals
@@ -17,18 +18,19 @@ class TileImprovementConstructionTests {
 
     private lateinit var civInfo: Civilization
     private lateinit var tileMap: TileMap
+    private lateinit var city: City
 
     val testGame = TestGame()
 
 
     @Before
     fun initTheWorld() {
-        testGame.makeHexagonalMap(3)
+        testGame.makeHexagonalMap(4)
         tileMap = testGame.tileMap
         civInfo = testGame.addCiv()
         civInfo.tech.researchedTechnologies.addAll(testGame.ruleset.technologies.values)
         civInfo.tech.techsResearched.addAll(testGame.ruleset.technologies.keys)
-        testGame.addCity(civInfo, tileMap[0,0])
+        city = testGame.addCity(civInfo, tileMap[0,0])
     }
 
 
@@ -134,6 +136,26 @@ class TileImprovementConstructionTests {
             val canBeBuilt = tile.improvementFunctions.canBuildImprovement(improvement, civInfo)
             Assert.assertFalse(improvement.name, canBeBuilt)
         }
+    }
+
+    @Test
+    fun buildingGreatImprovementRemovesFeatures() {
+        val tile = tileMap[1,1]
+        tile.baseTerrain = "Plains"
+        tile.addTerrainFeature("Hill")
+        tile.addTerrainFeature("Forest")
+        Assert.assertEquals(tile.terrainFeatures, listOf("Hill", "Forest"))
+
+        tile.changeImprovement("Landmark")
+        Assert.assertEquals(tile.terrainFeatures, listOf("Hill"))
+    }
+
+    @Test
+    fun citadelTakesOverAdjacentTiles() {
+        val tile = tileMap[1,1]
+        Assert.assertFalse(tile.neighbors.all { it.owningCity == city })
+        tile.changeImprovement("Citadel", civInfo)
+        Assert.assertTrue(tile.neighbors.all { it.owningCity == city })
     }
 
     @Test

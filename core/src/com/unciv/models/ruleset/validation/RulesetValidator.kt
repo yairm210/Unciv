@@ -1,4 +1,4 @@
-package com.unciv.models.ruleset
+package com.unciv.models.ruleset.validation
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
@@ -8,6 +8,9 @@ import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.metadata.BaseRuleset
+import com.unciv.models.ruleset.IRulesetObject
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.nation.getContrastRatio
 import com.unciv.models.ruleset.nation.getRelativeLuminance
 import com.unciv.models.ruleset.tile.TerrainType
@@ -71,11 +74,13 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         for (techColumn in ruleset.techColumns){
             if (techColumn.columnNumber < 0)
-                lines+= "Tech Column number ${techColumn.columnNumber} is negative"
+                lines += "Tech Column number ${techColumn.columnNumber} is negative"
             if (techColumn.buildingCost == -1)
-                lines.add("Tech Column number ${techColumn.columnNumber} has no explicit building cost", RulesetErrorSeverity.Warning)
+                lines.add("Tech Column number ${techColumn.columnNumber} has no explicit building cost",
+                    RulesetErrorSeverity.Warning)
             if (techColumn.wonderCost == -1)
-                lines.add("Tech Column number ${techColumn.columnNumber} has no explicit wonder cost", RulesetErrorSeverity.Warning)
+                lines.add("Tech Column number ${techColumn.columnNumber} has no explicit wonder cost",
+                    RulesetErrorSeverity.Warning)
         }
 
         for (building in ruleset.buildings.values) {
@@ -346,10 +351,11 @@ class RulesetValidator(val ruleset: Ruleset) {
                 lines += "Population in cities from settlers must be strictly positive! Found value ${era.settlerPopulation} for era ${era.name}"
 
             if (era.allyBonus.isNotEmpty())
-                lines.add("Era ${era.name} contains city-state bonuses. City-state bonuses are now defined in CityStateType.json", RulesetErrorSeverity.WarningOptionsOnly)
+                lines.add("Era ${era.name} contains city-state bonuses. City-state bonuses are now defined in CityStateType.json",
+                    RulesetErrorSeverity.WarningOptionsOnly)
             if (era.friendBonus.isNotEmpty())
-                lines.add("Era ${era.name} contains city-state bonuses. City-state bonuses are now defined in CityStateType.json", RulesetErrorSeverity.WarningOptionsOnly)
-
+                lines.add("Era ${era.name} contains city-state bonuses. City-state bonuses are now defined in CityStateType.json",
+                    RulesetErrorSeverity.WarningOptionsOnly)
 
             checkUniques(era, lines, rulesetSpecific, tryFixUnknownUniques)
         }
@@ -402,10 +408,12 @@ class RulesetValidator(val ruleset: Ruleset) {
             // These are warning as of 3.17.5 to not break existing mods and give them time to correct, should be upgraded to error in the future
             for (prereq in promotion.prerequisites)
                 if (!ruleset.unitPromotions.containsKey(prereq))
-                    lines.add("${promotion.name} requires promotion $prereq which does not exist!", RulesetErrorSeverity.Warning)
+                    lines.add("${promotion.name} requires promotion $prereq which does not exist!",
+                        RulesetErrorSeverity.Warning)
             for (unitType in promotion.unitTypes)
                 if (!ruleset.unitTypes.containsKey(unitType) && (ruleset.unitTypes.isNotEmpty() || !vanillaRuleset.unitTypes.containsKey(unitType)))
-                    lines.add("${promotion.name} references unit type $unitType, which does not exist!", RulesetErrorSeverity.Warning)
+                    lines.add("${promotion.name} references unit type $unitType, which does not exist!",
+                        RulesetErrorSeverity.Warning)
             checkUniques(promotion, lines, rulesetSpecific, tryFixUnknownUniques)
             checkPromotionCircularReferences(lines)
         }
@@ -417,13 +425,16 @@ class RulesetValidator(val ruleset: Ruleset) {
         for (victoryType in ruleset.victories.values) {
             for (requiredUnit in victoryType.requiredSpaceshipParts)
                 if (!ruleset.units.contains(requiredUnit))
-                    lines.add("Victory type ${victoryType.name} requires adding the non-existant unit $requiredUnit to the capital to win!", RulesetErrorSeverity.Warning)
+                    lines.add("Victory type ${victoryType.name} requires adding the non-existant unit $requiredUnit to the capital to win!",
+                        RulesetErrorSeverity.Warning)
             for (milestone in victoryType.milestoneObjects)
                 if (milestone.type == null)
-                    lines.add("Victory type ${victoryType.name} has milestone ${milestone.uniqueDescription} that is of an unknown type!", RulesetErrorSeverity.Error)
+                    lines.add("Victory type ${victoryType.name} has milestone ${milestone.uniqueDescription} that is of an unknown type!",
+                        RulesetErrorSeverity.Error)
             for (victory in ruleset.victories.values)
                 if (victory.name != victoryType.name && victory.milestones == victoryType.milestones)
-                    lines.add("Victory types ${victoryType.name} and ${victory.name} have the same requirements!", RulesetErrorSeverity.Warning)
+                    lines.add("Victory types ${victoryType.name} and ${victory.name} have the same requirements!",
+                        RulesetErrorSeverity.Warning)
         }
 
         for (difficulty in ruleset.difficulties.values) {
@@ -512,7 +523,8 @@ class RulesetValidator(val ruleset: Ruleset) {
     private fun checkPromotionCircularReferences(lines: RulesetErrorList) {
         fun recursiveCheck(history: LinkedHashSet<Promotion>, promotion: Promotion, level: Int) {
             if (promotion in history) {
-                lines.add("Circular Reference in Promotions: ${history.joinToString("→") { it.name }}→${promotion.name}", RulesetErrorSeverity.Warning)
+                lines.add("Circular Reference in Promotions: ${history.joinToString("→") { it.name }}→${promotion.name}",
+                    RulesetErrorSeverity.Warning)
                 return
             }
             if (level > 99) return
@@ -553,46 +565,7 @@ class RulesetValidator(val ruleset: Ruleset) {
     ): List<RulesetError> {
         val prefix = (if (namedObj is IRulesetObject) "${namedObj.originRuleset}: " else "") +
             (if (namedObj == null) "The" else "${namedObj.name}'s")
-        if (unique.type == null) {
-            if (!tryFixUnknownUniques) return emptyList()
-            val similarUniques = UniqueType.values().filter {
-                getRelativeTextDistance(
-                    it.placeholderText,
-                    unique.placeholderText
-                ) <= RulesetCache.uniqueMisspellingThreshold
-            }
-            val equalUniques =
-                    similarUniques.filter { it.placeholderText == unique.placeholderText }
-            return when {
-                // Malformed conditional
-                unique.text.count { it=='<' } != unique.text.count { it=='>' } ->listOf(
-                    RulesetError("$prefix unique \"${unique.text}\" contains mismatched conditional braces!",
-                        RulesetErrorSeverity.Warning))
-
-                // This should only ever happen if a bug is or has been introduced that prevents Unique.type from being set for a valid UniqueType, I think.\
-                equalUniques.isNotEmpty() -> listOf(RulesetError(
-                    "$prefix unique \"${unique.text}\" looks like it should be fine, but for some reason isn't recognized.",
-                    RulesetErrorSeverity.OK))
-
-                similarUniques.isNotEmpty() -> {
-                    val text =
-                            "$prefix unique \"${unique.text}\" looks like it may be a misspelling of:\n" +
-                                    similarUniques.joinToString("\n") { uniqueType ->
-                                        var text = "\"${uniqueType.text}"
-                                        if (unique.conditionals.isNotEmpty())
-                                            text += " " + unique.conditionals.joinToString(" ") { "<${it.text}>" }
-                                        text += "\""
-                                        if (uniqueType.getDeprecationAnnotation() != null) text += " (Deprecated)"
-                                        return@joinToString text
-                                    }.prependIndent("\t")
-                    listOf(RulesetError(text, RulesetErrorSeverity.OK))
-                }
-                RulesetCache.modCheckerAllowUntypedUniques -> emptyList()
-                else -> listOf(RulesetError(
-                    "$prefix unique \"${unique.text}\" not found in Unciv's unique types.",
-                    RulesetErrorSeverity.OK))
-            }
-        }
+        if (unique.type == null) return checkUntypedUnique(unique, tryFixUnknownUniques, prefix)
 
         val rulesetErrors = RulesetErrorList()
 
@@ -657,65 +630,64 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         return rulesetErrors
     }
-}
 
+    private fun checkUntypedUnique(unique: Unique, tryFixUnknownUniques: Boolean, prefix: String ): List<RulesetError> {
+        // Malformed conditional is always bad
+        if (unique.text.count { it == '<' } != unique.text.count { it == '>' })
+            return listOf(RulesetError(
+                "$prefix unique \"${unique.text}\" contains mismatched conditional braces!",
+                    RulesetErrorSeverity.Warning))
 
-class RulesetError(val text: String, val errorSeverityToReport: RulesetErrorSeverity)
+        // Support purely filtering Uniques without actual implementation
+        if (isFilteringUniqueAllowed(unique)) return emptyList()
+        if (tryFixUnknownUniques) {
+            val fixes = tryFixUnknownUnique(unique, prefix)
+            if (fixes.isNotEmpty()) return fixes
+        }
 
-enum class RulesetErrorSeverity(val color: Color) {
-    OK(Color.GREEN),
-    WarningOptionsOnly(Color.YELLOW),
-    Warning(Color.YELLOW),
-    Error(Color.RED),
-}
+        if (RulesetCache.modCheckerAllowUntypedUniques) return emptyList()
 
-class RulesetErrorList : ArrayList<RulesetError>() {
-    operator fun plusAssign(text: String) {
-        add(text, RulesetErrorSeverity.Error)
+        return listOf(RulesetError(
+            "$prefix unique \"${unique.text}\" not found in Unciv's unique types.",
+                RulesetErrorSeverity.WarningOptionsOnly))
     }
 
-    fun add(text: String, errorSeverityToReport: RulesetErrorSeverity) {
-        add(RulesetError(text, errorSeverityToReport))
+    private fun isFilteringUniqueAllowed(unique: Unique): Boolean {
+        // Isolate this decision, to allow easy change of approach
+        // This says: Must have no conditionals or parameters, and is contained in GlobalUniques
+        if (unique.conditionals.isNotEmpty() || unique.params.isNotEmpty()) return false
+        return unique.text in ruleset.globalUniques.uniqueMap
     }
 
-    override fun add(element: RulesetError): Boolean {
-        // Suppress duplicates due to the double run of some checks for invariant/specific,
-        // Without changing collection type or making RulesetError obey the equality contract
-        val existing = firstOrNull { it.text == element.text }
-            ?: return super.add(element)
-        if (existing.errorSeverityToReport >= element.errorSeverityToReport) return false
-        remove(existing)
-        return super.add(element)
+    private fun tryFixUnknownUnique(unique: Unique, prefix: String): List<RulesetError> {
+        val similarUniques = UniqueType.values().filter {
+            getRelativeTextDistance(
+                it.placeholderText,
+                unique.placeholderText
+            ) <= RulesetCache.uniqueMisspellingThreshold
+        }
+        val equalUniques =
+            similarUniques.filter { it.placeholderText == unique.placeholderText }
+        return when {
+            // This should only ever happen if a bug is or has been introduced that prevents Unique.type from being set for a valid UniqueType, I think.\
+            equalUniques.isNotEmpty() -> listOf(RulesetError(
+                "$prefix unique \"${unique.text}\" looks like it should be fine, but for some reason isn't recognized.",
+                    RulesetErrorSeverity.OK))
+
+            similarUniques.isNotEmpty() -> {
+                val text =
+                    "$prefix unique \"${unique.text}\" looks like it may be a misspelling of:\n" +
+                        similarUniques.joinToString("\n") { uniqueType ->
+                            var text = "\"${uniqueType.text}"
+                            if (unique.conditionals.isNotEmpty())
+                                text += " " + unique.conditionals.joinToString(" ") { "<${it.text}>" }
+                            text += "\""
+                            if (uniqueType.getDeprecationAnnotation() != null) text += " (Deprecated)"
+                            return@joinToString text
+                        }.prependIndent("\t")
+                listOf(RulesetError(text, RulesetErrorSeverity.OK))
+            }
+            else -> emptyList()
+        }
     }
-
-    override fun addAll(elements: Collection<RulesetError>): Boolean {
-        var result = false
-        for (element in elements)
-            if (add(element)) result = true
-        return result
-    }
-
-    fun getFinalSeverity(): RulesetErrorSeverity {
-        if (isEmpty()) return RulesetErrorSeverity.OK
-        return this.maxOf { it.errorSeverityToReport }
-    }
-
-    /** @return `true` means severe errors make the mod unplayable */
-    fun isError() = getFinalSeverity() == RulesetErrorSeverity.Error
-    /** @return `true` means problems exist, Options screen mod checker or unit tests for vanilla ruleset should complain */
-    fun isNotOK() = getFinalSeverity() != RulesetErrorSeverity.OK
-    /** @return `true` means at least errors impacting gameplay exist, new game screen should warn or block */
-    fun isWarnUser() = getFinalSeverity() >= RulesetErrorSeverity.Warning
-
-    fun getErrorText(unfiltered: Boolean = false) =
-            getErrorText { unfiltered || it.errorSeverityToReport != RulesetErrorSeverity.WarningOptionsOnly }
-    fun getErrorText(filter: (RulesetError)->Boolean) =
-            filter(filter)
-                .sortedByDescending { it.errorSeverityToReport }
-                .joinToString("\n") {
-                    it.errorSeverityToReport.name + ": " +
-                        // This will go through tr(), unavoidably, which will move the conditionals
-                        // out of place. Prevent via kludge:
-                        it.text.replace('<','〈').replace('>','〉')
-                }
 }

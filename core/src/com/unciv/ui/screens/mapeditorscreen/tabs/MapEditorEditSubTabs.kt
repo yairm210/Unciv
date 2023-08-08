@@ -20,8 +20,8 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.extensions.center
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.images.ImageGetter
@@ -208,7 +208,7 @@ class MapEditorEditImprovementsTab(
         val eraser = FormattedLine("Remove improvement", icon = eraserIcon, size = 32, iconCrossed = true)
         add(eraser.render(0f).apply { onClick {
             editTab.setBrush("Remove improvement", eraserIcon, true) { tile ->
-                tile.changeImprovement(null)
+                tile.removeImprovement()
                 tile.removeRoad()
             }
         } }).padBottom(0f).row()
