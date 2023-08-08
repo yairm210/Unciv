@@ -498,8 +498,10 @@ class ModManagementScreen(
                 actualDownloadButton.disable()
                 val repo = Github.Repo().parseUrl(textField.text)
                 if (repo == null) {
-                    ToastPopup("Invalid link!", this@ModManagementScreen)
-                    popup.close()  // Re-enabling button would be nice, but Toast doesn't work over other Popups
+                    ToastPopup("«RED»{Invalid link!}«»", this@ModManagementScreen)
+                        .apply { isVisible = true }
+                    actualDownloadButton.setText("Download".tr())
+                    actualDownloadButton.enable()
                 } else
                     downloadMod(repo) { popup.close() }
             }
