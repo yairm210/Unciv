@@ -697,8 +697,8 @@ class CityStateFunctions(val civInfo: Civilization) {
         val cityStateUniqueMap = when (relationshipLevel) {
             RelationshipLevel.Ally -> cityStateType.allyBonusUniqueMap
             RelationshipLevel.Friend -> cityStateType.friendBonusUniqueMap
-            else -> null
-        } ?: return emptySequence()
+            else -> return emptySequence()
+        }
         return if (uniqueType == null) cityStateUniqueMap.getAllUniques()
         else cityStateUniqueMap.getUniques(uniqueType)
     }

@@ -1,3 +1,19 @@
+## 4.7.12
+
+AI workers remove detrimental features
+
+Free buildings are converted to civ-specific replacements
+
+Double-click on worked tile icon locks tile
+
+Update Windows JDK to Adoptium JDK 11
+
+Better untyped unique recognition in mod checker - By SomeTroglodyte
+
+Gifting a unit transport gifts the contained units - By tuvus
+
+Allow free unit triggers for any location - By SeventhM
+
 ## 4.7.11
 
 By SomeTroglodyte:

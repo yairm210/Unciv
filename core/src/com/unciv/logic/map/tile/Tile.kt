@@ -739,6 +739,8 @@ open class Tile : IsPartOfGameInfoSerialization {
     //endregion
     //region state-changing functions
 
+    /** Do not run this on cloned tiles, since then the cloned *units* will be assigned to the civs
+     * Instead run setTerrainTransients */
     fun setTransients() {
         setTerrainTransients()
         setUnitTransients(true)
