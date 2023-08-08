@@ -576,7 +576,7 @@ class ModManagementScreen(
                     val repoName = modFolder.name()  // repo.name still has the replaced "-"'s
                     ToastPopup("[$repoName] Downloaded!", this@ModManagementScreen)
                     RulesetCache.loadRulesets()
-                    TileSetCache.loadTileSetConfigs(false)
+                    TileSetCache.loadTileSetConfigs()
                     UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()
                     RulesetCache[repoName]?.let {
                         installedModInfo[repoName] = ModUIData(it)
@@ -720,6 +720,7 @@ class ModManagementScreen(
     private fun deleteMod(mod: Ruleset) {
         mod.folderLocation!!.deleteDirectory()
         RulesetCache.loadRulesets()
+        TileSetCache.loadTileSetConfigs()
         installedModInfo.remove(mod.name)
         refreshInstalledModTable()
     }

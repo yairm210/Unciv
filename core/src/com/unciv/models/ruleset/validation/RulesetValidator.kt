@@ -1,8 +1,13 @@
 package com.unciv.models.ruleset.validation
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData
 import com.unciv.Constants
+import com.unciv.json.fromJsonFile
+import com.unciv.json.json
 import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -17,6 +22,8 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stats
+import com.unciv.models.tilesets.TileSetCache
+import com.unciv.models.tilesets.TileSetConfig
 
 class RulesetValidator(val ruleset: Ruleset) {
 
@@ -67,23 +74,20 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         for (techColumn in ruleset.techColumns){
             if (techColumn.columnNumber < 0)
-                lines+= "Tech Column number ${techColumn.columnNumber} is negative"
+                lines += "Tech Column number ${techColumn.columnNumber} is negative"
             if (techColumn.buildingCost == -1)
                 lines.add("Tech Column number ${techColumn.columnNumber} has no explicit building cost",
-                    RulesetErrorSeverity.Warning
-                )
+                    RulesetErrorSeverity.Warning)
             if (techColumn.wonderCost == -1)
                 lines.add("Tech Column number ${techColumn.columnNumber} has no explicit wonder cost",
-                    RulesetErrorSeverity.Warning
-                )
+                    RulesetErrorSeverity.Warning)
         }
 
         for (building in ruleset.buildings.values) {
             if (building.requiredTech == null && building.cost == -1 && !building.hasUnique(
                         UniqueType.Unbuildable))
                 lines.add("${building.name} is buildable and therefore should either have an explicit cost or reference an existing tech!",
-                    RulesetErrorSeverity.Warning
-                )
+                    RulesetErrorSeverity.Warning)
 
             checkUniques(building, lines, rulesetInvariant, tryFixUnknownUniques)
 
@@ -148,6 +152,13 @@ class RulesetValidator(val ruleset: Ruleset) {
             checkUniques(resource, lines, rulesetInvariant, tryFixUnknownUniques)
         }
 
+        /********************** Tileset tests **********************/
+        // e.g. json configs complete and parseable
+        // Check for mod or Civ_V_GnK to avoid running the same test twice (~200ms for the builtin assets)
+        if (ruleset.folderLocation != null || ruleset.name == BaseRuleset.Civ_V_GnK.fullName) {
+            checkTilesetSanity(lines)
+        }
+
         // Quit here when no base ruleset is loaded - references cannot be checked
         if (!ruleset.modOptions.isBaseRuleset) return lines
 
@@ -199,8 +210,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                         unit.isCivilian() &&
                         !unit.isGreatPersonOfType("War")) {
                     lines.add("${unit.name} can place improvement $improvementName which has no stats, preventing unit automation!",
-                        RulesetErrorSeverity.Warning
-                    )
+                        RulesetErrorSeverity.Warning)
                 }
             }
 
@@ -295,8 +305,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                 if (tech.prerequisites.asSequence().filterNot { it == prereq }
                             .any { getPrereqTree(it).contains(prereq) }){
                     lines.add("No need to add $prereq as a prerequisite of ${tech.name} - it is already implicit from the other prerequisites!",
-                        RulesetErrorSeverity.Warning
-                    )
+                        RulesetErrorSeverity.Warning)
                 }
 
                 if (getPrereqTree(prereq).contains(tech.name))
@@ -343,13 +352,10 @@ class RulesetValidator(val ruleset: Ruleset) {
 
             if (era.allyBonus.isNotEmpty())
                 lines.add("Era ${era.name} contains city-state bonuses. City-state bonuses are now defined in CityStateType.json",
-                    RulesetErrorSeverity.WarningOptionsOnly
-                )
+                    RulesetErrorSeverity.WarningOptionsOnly)
             if (era.friendBonus.isNotEmpty())
                 lines.add("Era ${era.name} contains city-state bonuses. City-state bonuses are now defined in CityStateType.json",
-                    RulesetErrorSeverity.WarningOptionsOnly
-                )
-
+                    RulesetErrorSeverity.WarningOptionsOnly)
 
             checkUniques(era, lines, rulesetSpecific, tryFixUnknownUniques)
         }
@@ -403,13 +409,11 @@ class RulesetValidator(val ruleset: Ruleset) {
             for (prereq in promotion.prerequisites)
                 if (!ruleset.unitPromotions.containsKey(prereq))
                     lines.add("${promotion.name} requires promotion $prereq which does not exist!",
-                        RulesetErrorSeverity.Warning
-                    )
+                        RulesetErrorSeverity.Warning)
             for (unitType in promotion.unitTypes)
                 if (!ruleset.unitTypes.containsKey(unitType) && (ruleset.unitTypes.isNotEmpty() || !vanillaRuleset.unitTypes.containsKey(unitType)))
                     lines.add("${promotion.name} references unit type $unitType, which does not exist!",
-                        RulesetErrorSeverity.Warning
-                    )
+                        RulesetErrorSeverity.Warning)
             checkUniques(promotion, lines, rulesetSpecific, tryFixUnknownUniques)
             checkPromotionCircularReferences(lines)
         }
@@ -422,18 +426,15 @@ class RulesetValidator(val ruleset: Ruleset) {
             for (requiredUnit in victoryType.requiredSpaceshipParts)
                 if (!ruleset.units.contains(requiredUnit))
                     lines.add("Victory type ${victoryType.name} requires adding the non-existant unit $requiredUnit to the capital to win!",
-                        RulesetErrorSeverity.Warning
-                    )
+                        RulesetErrorSeverity.Warning)
             for (milestone in victoryType.milestoneObjects)
                 if (milestone.type == null)
                     lines.add("Victory type ${victoryType.name} has milestone ${milestone.uniqueDescription} that is of an unknown type!",
-                        RulesetErrorSeverity.Error
-                    )
+                        RulesetErrorSeverity.Error)
             for (victory in ruleset.victories.values)
                 if (victory.name != victoryType.name && victory.milestones == victoryType.milestones)
                     lines.add("Victory types ${victoryType.name} and ${victory.name} have the same requirements!",
-                        RulesetErrorSeverity.Warning
-                    )
+                        RulesetErrorSeverity.Warning)
         }
 
         for (difficulty in ruleset.difficulties.values) {
@@ -457,12 +458,73 @@ class RulesetValidator(val ruleset: Ruleset) {
         return lines
     }
 
+    private fun checkTilesetSanity(lines: RulesetErrorList) {
+        val tilesetConfigFolder = (ruleset.folderLocation ?: Gdx.files.internal("")).child("jsons\\TileSets")
+        if (!tilesetConfigFolder.exists()) return
+
+        val configTilesets = mutableSetOf<String>()
+        val allFallbacks = mutableSetOf<String>()
+        val folderContent = tilesetConfigFolder.list()
+        var folderContentBad = false
+
+        for (file in folderContent) {
+            if (file.isDirectory || file.extension() != "json") { folderContentBad = true; continue }
+            // All json files should be parseable
+            try {
+                val config = json().fromJsonFile(TileSetConfig::class.java, file)
+                configTilesets += file.nameWithoutExtension().removeSuffix("Config")
+                if (config.fallbackTileSet?.isNotEmpty() == true)
+                    allFallbacks.add(config.fallbackTileSet!!)
+            } catch (ex: Exception) {
+                // Our fromJsonFile wrapper already intercepts Exceptions and gives them a generalized message, so go a level deeper for useful details (like "unmatched brace")
+                lines.add("Tileset config '${file.name()}' cannot be loaded (${ex.cause?.message})", RulesetErrorSeverity.Warning)
+            }
+        }
+
+        // Folder should not contain subdirectories, non-json files, or be empty
+        if (folderContentBad)
+            lines.add("The Mod tileset config folder contains non-json files or subdirectories", RulesetErrorSeverity.Warning)
+        if (configTilesets.isEmpty())
+            lines.add("The Mod tileset config folder contains no json files", RulesetErrorSeverity.Warning)
+
+        // There should be atlas images corresponding to each json name
+        val atlasTilesets = getTilesetNamesFromAtlases()
+        val configOnlyTilesets = configTilesets - atlasTilesets
+        if (configOnlyTilesets.isNotEmpty())
+            lines.add("Mod has no graphics for configured tilesets: ${configOnlyTilesets.joinToString()}", RulesetErrorSeverity.Warning)
+
+        // For all atlas images matching "TileSets/*" there should be a json
+        val atlasOnlyTilesets = atlasTilesets - configTilesets
+        if (atlasOnlyTilesets.isNotEmpty())
+            lines.add("Mod has no configuration for tileset graphics: ${atlasOnlyTilesets.joinToString()}", RulesetErrorSeverity.Warning)
+
+        // All fallbacks should exist (default added because TileSetCache is not loaded when running as unit test)
+        val unknownFallbacks = allFallbacks - TileSetCache.keys - Constants.defaultFallbackTileset
+        if (unknownFallbacks.isNotEmpty())
+            lines.add("Fallback tileset invalid: ${unknownFallbacks.joinToString()}", RulesetErrorSeverity.Warning)
+    }
+
+    private fun getTilesetNamesFromAtlases(): Set<String> {
+        // This partially duplicates code in ImageGetter.getAvailableTilesets, but we don't want to reload that singleton cache.
+
+        // Our builtin rulesets have no folderLocation, in that case cheat and apply knowledge about
+        // where the builtin Tileset textures are (correct would be to parse Atlases.json):
+        val files = ruleset.folderLocation?.list("atlas")?.asSequence()
+            ?: sequenceOf(Gdx.files.internal("Tilesets.atlas"))
+        // Next, we need to cope with this running without GL context (unit test) - no TextureAtlas(file)
+        return files
+            .flatMap { file ->
+                TextureAtlasData(file, file.parent(), false).regions.asSequence()
+                    .filter { it.name.startsWith("TileSets/") && !it.name.contains("/Units/") }
+            }.map { it.name.split("/")[1] }
+            .toSet()
+    }
+
     private fun checkPromotionCircularReferences(lines: RulesetErrorList) {
         fun recursiveCheck(history: LinkedHashSet<Promotion>, promotion: Promotion, level: Int) {
             if (promotion in history) {
                 lines.add("Circular Reference in Promotions: ${history.joinToString("→") { it.name }}→${promotion.name}",
-                    RulesetErrorSeverity.Warning
-                )
+                    RulesetErrorSeverity.Warning)
                 return
             }
             if (level > 99) return
@@ -513,13 +575,11 @@ class RulesetValidator(val ruleset: Ruleset) {
         val typeComplianceErrors = unique.type.getComplianceErrors(unique, ruleset)
         for (complianceError in typeComplianceErrors) {
             if (complianceError.errorSeverity <= severityToReport)
-                rulesetErrors.add(
-                    RulesetError("$prefix unique \"${unique.text}\" contains parameter ${complianceError.parameterName}," +
+                rulesetErrors.add(RulesetError("$prefix unique \"${unique.text}\" contains parameter ${complianceError.parameterName}," +
                         " which does not fit parameter type" +
                         " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
                     complianceError.errorSeverity.getRulesetErrorSeverity(severityToReport)
-                )
-                )
+                ))
         }
 
         for (conditional in unique.conditionals) {
@@ -533,20 +593,17 @@ class RulesetValidator(val ruleset: Ruleset) {
                 if (conditional.type.targetTypes.none { it.modifierType != UniqueTarget.ModifierType.None })
                     rulesetErrors.add("$prefix unique \"${unique.text}\" contains the conditional \"${conditional.text}\"," +
                         " which is a Unique type not allowed as conditional or trigger.",
-                        RulesetErrorSeverity.Warning
-                    )
+                        RulesetErrorSeverity.Warning)
 
                 val conditionalComplianceErrors =
                         conditional.type.getComplianceErrors(conditional, ruleset)
                 for (complianceError in conditionalComplianceErrors) {
                     if (complianceError.errorSeverity == severityToReport)
-                        rulesetErrors.add(
-                            RulesetError( "$prefix unique \"${unique.text}\" contains the conditional \"${conditional.text}\"." +
+                        rulesetErrors.add(RulesetError( "$prefix unique \"${unique.text}\" contains the conditional \"${conditional.text}\"." +
                                 " This contains the parameter ${complianceError.parameterName} which does not fit parameter type" +
                                 " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
                             complianceError.errorSeverity.getRulesetErrorSeverity(severityToReport)
-                        )
-                        )
+                        ))
                 }
             }
         }
@@ -577,12 +634,9 @@ class RulesetValidator(val ruleset: Ruleset) {
     private fun checkUntypedUnique(unique: Unique, tryFixUnknownUniques: Boolean, prefix: String ): List<RulesetError> {
         // Malformed conditional is always bad
         if (unique.text.count { it == '<' } != unique.text.count { it == '>' })
-            return listOf(
-                RulesetError(
+            return listOf(RulesetError(
                 "$prefix unique \"${unique.text}\" contains mismatched conditional braces!",
-                    RulesetErrorSeverity.Warning
-                )
-            )
+                    RulesetErrorSeverity.Warning))
 
         // Support purely filtering Uniques without actual implementation
         if (isFilteringUniqueAllowed(unique)) return emptyList()
@@ -593,12 +647,9 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         if (RulesetCache.modCheckerAllowUntypedUniques) return emptyList()
 
-        return listOf(
-            RulesetError(
-        "$prefix unique \"${unique.text}\" not found in Unciv's unique types.",
-            RulesetErrorSeverity.WarningOptionsOnly
-            )
-        )
+        return listOf(RulesetError(
+            "$prefix unique \"${unique.text}\" not found in Unciv's unique types.",
+                RulesetErrorSeverity.WarningOptionsOnly))
     }
 
     private fun isFilteringUniqueAllowed(unique: Unique): Boolean {
@@ -619,12 +670,9 @@ class RulesetValidator(val ruleset: Ruleset) {
             similarUniques.filter { it.placeholderText == unique.placeholderText }
         return when {
             // This should only ever happen if a bug is or has been introduced that prevents Unique.type from being set for a valid UniqueType, I think.\
-            equalUniques.isNotEmpty() -> listOf(
-                RulesetError(
+            equalUniques.isNotEmpty() -> listOf(RulesetError(
                 "$prefix unique \"${unique.text}\" looks like it should be fine, but for some reason isn't recognized.",
-                RulesetErrorSeverity.OK
-                )
-            )
+                    RulesetErrorSeverity.OK))
 
             similarUniques.isNotEmpty() -> {
                 val text =
