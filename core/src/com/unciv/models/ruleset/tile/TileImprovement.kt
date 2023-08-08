@@ -76,19 +76,8 @@ class TileImprovement : RulesetStatsObject() {
     /** ONLY to be called if the improvement was ACTUALLY built, not for simulating builds! */
     fun handleImprovementCompletion(builder: MapUnit) {
         val tile = builder.getTile()
-
         if (hasUnique(UniqueType.TakesOverAdjacentTiles))
             UnitActions.takeOverTilesAround(builder.civ, builder.currentTile)
-
-        if (tile.resource != null) {
-            val city = builder.getTile().getCity()
-            if (city != null) {
-                city.updateCitizens = true
-                city.cityStats.update()
-                city.civ.cache.updateCivResources()
-            }
-        }
-
 
         tile.owningCity?.reassignPopulationDeferred()
     }
