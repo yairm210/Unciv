@@ -3,9 +3,11 @@ package com.unciv.logic.map
 
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.stats.Stats
 import com.unciv.testing.GdxTestRunner
 import com.unciv.uniques.TestGame
 import org.junit.Assert
@@ -171,5 +173,64 @@ class TileImprovementConstructionTests {
             val canBeBuilt = tile.improvementFunctions.canBuildImprovement(improvement, civInfo)
             Assert.assertFalse(improvement.name, canBeBuilt)
         }
+    }
+
+    @Test
+    fun buildingRoadBuildsARoad(){
+        val tile = tileMap[1,1]
+        tile.improvementFunctions.changeImprovement("Road")
+        assert(tile.roadStatus == RoadStatus.Road)
+    }
+
+    @Test
+    fun removingRoadRemovesRoad(){
+        val tile = tileMap[1,1]
+        tile.roadStatus = RoadStatus.Road
+        tile.improvementFunctions.changeImprovement("Remove Road")
+        assert(tile.roadStatus == RoadStatus.None)
+    }
+
+    @Test
+    fun removingForestRemovesForestAndLumbermill(){
+        val tile = tileMap[1,1]
+        tile.addTerrainFeature("Forest")
+        tile.improvementFunctions.changeImprovement("Lumber mill")
+        assert(tile.getTileImprovement()!!.name == "Lumber mill")
+        tile.improvementFunctions.changeImprovement("Remove Forest")
+        assert(tile.terrainFeatures.isEmpty())
+        assert(tile.improvement == null) // Lumber mill can ONLY be on Forest, and is therefore removed
+    }
+
+    @Test
+    fun removingForestRemovesForestButNotCamp(){
+        val tile = tileMap[1,1]
+        tile.addTerrainFeature("Forest")
+        tile.resource = "Deer"
+        tile.baseTerrain = "Plains"
+        tile.improvementFunctions.changeImprovement("Camp")
+        assert(tile.getTileImprovement()!!.name == "Camp")
+        tile.improvementFunctions.changeImprovement("Remove Forest")
+        assert(tile.terrainFeatures.isEmpty())
+        assert(tile.improvement == "Camp") // Camp can be both on Forest AND on Plains, so not removed
+    }
+
+    @Test
+    fun statsDiffFromRemovingForestTakesRemovedLumberMillIntoAccount(){
+        val tile = tileMap[1,1]
+        tile.baseTerrain = "Grassland"
+        tile.addTerrainFeature("Forest")
+
+        val lumberMill = testGame.ruleset.tileImprovements["Lumber mill"]!!
+        tile.improvementFunctions.changeImprovement(lumberMill.name)
+        assert(tile.getTileImprovement() == lumberMill)
+
+        // 1f 1p from forest, 2p from lumber mill since all techs are researched
+        val tileStats = tile.stats.getTileStats(civInfo)
+        assert(tileStats.equals(Stats(production = 3f, food = 1f)))
+
+        val statsDiff = tile.stats.getStatDiffForImprovement(testGame.ruleset.tileImprovements["Remove Forest"]!!, civInfo, null)
+
+        // We'll be reverting back to grassland stats - 2f only
+        assert(statsDiff.equals(Stats(food = +1f, production = -3f)))
     }
 }

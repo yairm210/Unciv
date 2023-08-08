@@ -491,9 +491,7 @@ object UnitActions {
                 title = actionTextWithSideEffects("Create [$improvementName]", unique, unit),
                 action = {
                     val unitTile = unit.getTile()
-                    unitTile.improvementFunctions.removeCreatesOneImprovementMarker()
                     unitTile.changeImprovement(improvementName, unit.civ)
-                    unitTile.stopWorkingOnImprovement()
 
                     // without this the world screen won't show the improvement because it isn't the 'last seen improvement'
                     unit.civ.cache.updateViewableTiles()

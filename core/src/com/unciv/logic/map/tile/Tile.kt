@@ -316,14 +316,14 @@ open class Tile : IsPartOfGameInfoSerialization {
         improvementFunctions.changeImprovement(improvementStr, civToHandleCompletion)
 
     // function handling when adding a road to the tile
-    fun addRoad(roadType: RoadStatus, unitCivInfo: Civilization) {
+    fun addRoad(roadType: RoadStatus, creatingCivInfo: Civilization?) {
         roadStatus = roadType
         roadIsPillaged = false
-        if (getOwner() == null) {
-            roadOwner = unitCivInfo.civName // neutral tile, use building unit
-            unitCivInfo.neutralRoads.add(this.position)
-        } else {
+        if (getOwner() != null) {
             roadOwner = getOwner()!!.civName
+        } else if (creatingCivInfo != null) {
+            roadOwner = creatingCivInfo.civName // neutral tile, use building unit
+            creatingCivInfo.neutralRoads.add(this.position)
         }
     }
 
