@@ -462,8 +462,8 @@ object Github {
      *
      *  Replaces '-' with blanks but ensures no leading or trailing blanks.
      *  As mad modders know no limits, trailing "-" did indeed happen, causing things to break due to trailing blanks on a folder name.
-     *  As "test-" and "test" are different allowed repository names, trimmed blanks are replaced with one overscore per side.
-     *  @param onlyOuterBlanks If `true` ignores inner dashes - only start and end are treated. Useful when modders have manually creted local folder names using dashes.
+     *  As "test-" and "test" are different allowed repository names, trimmed blanks are replaced with one equals sign per side.
+     *  @param onlyOuterBlanks If `true` ignores inner dashes - only start and end are treated. Useful when modders have manually created local folder names using dashes.
      */
     fun String.repoNameToFolderName(onlyOuterBlanks: Boolean = false): String {
         var result = if (onlyOuterBlanks) this else replace('-', ' ')
