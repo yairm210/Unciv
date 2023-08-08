@@ -312,9 +312,22 @@ open class Tile : IsPartOfGameInfoSerialization {
         improvementIsPillaged = false
         improvement = improvementStr
 
+        val improvementObject = getTileImprovement()
+        if (improvementObject != null && improvementObject.hasUnique(UniqueType.RemovesFeaturesIfBuilt)) {
+            // Remove terrainFeatures that a Worker can remove
+            // and that aren't explicitly allowed under the improvement
+            val removableTerrainFeatures = terrainFeatures.filter { feature ->
+                val removingAction = "${Constants.remove}$feature"
 
-        if (owningCity != null){
-                owningCity!!.civ.cache.updateCivResources()
+                removingAction in ruleset.tileImprovements // is removable
+                    && !improvementObject.isAllowedOnFeature(feature) // cannot coexist
+            }
+
+            setTerrainFeatures(terrainFeatures.filterNot { it in removableTerrainFeatures })
+        }
+
+        if (owningCity != null) {
+            owningCity!!.civ.cache.updateCivResources()
         }
     }
 

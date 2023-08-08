@@ -73,11 +73,12 @@ class TileImprovement : RulesetStatsObject() {
         return terrain in terrainsCanBeBuiltOn
     }
 
+    /** ONLY to be called if the improvement was ACTUALLY built, not for simulating builds! */
     fun handleImprovementCompletion(builder: MapUnit) {
         val tile = builder.getTile()
 
         if (hasUnique(UniqueType.TakesOverAdjacentTiles))
-            UnitActions.takeOverTilesAround(builder)
+            UnitActions.takeOverTilesAround(builder.civ, builder.currentTile)
 
         if (tile.resource != null) {
             val city = builder.getTile().getCity()
@@ -88,21 +89,6 @@ class TileImprovement : RulesetStatsObject() {
             }
         }
 
-        if (hasUnique(UniqueType.RemovesFeaturesIfBuilt)) {
-            // Remove terrainFeatures that a Worker can remove
-            // and that aren't explicitly allowed under the improvement
-            val removableTerrainFeatures = tile.terrainFeatures.filter { feature ->
-                val removingAction = "${Constants.remove}$feature"
-
-                removingAction in tile.ruleset.tileImprovements
-                && !isAllowedOnFeature(feature)
-                && tile.ruleset.tileImprovements[removingAction]!!.let {
-                    it.techRequired == null || builder.civ.tech.isResearched(it.techRequired!!)
-                }
-            }
-
-            tile.setTerrainFeatures(tile.terrainFeatures.filterNot { it in removableTerrainFeatures })
-        }
 
         tile.owningCity?.reassignPopulationDeferred()
     }

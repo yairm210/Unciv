@@ -137,6 +137,18 @@ class TileImprovementConstructionTests {
     }
 
     @Test
+    fun buildingGreatImprovementRemovesFeatures() {
+        val tile = tileMap[1,1]
+        tile.baseTerrain = "Plains"
+        tile.addTerrainFeature("Hill")
+        tile.addTerrainFeature("Forest")
+        Assert.assertEquals(tile.terrainFeatures, listOf("Hill", "Forest"))
+
+        tile.changeImprovement("Landmark")
+        Assert.assertEquals(tile.terrainFeatures, listOf("Hill"))
+    }
+
+    @Test
     fun terraceFarmCanNOTBeBuiltOnBonus() {
         val tile = tileMap[1,1]
         tile.resource = "Sheep"
