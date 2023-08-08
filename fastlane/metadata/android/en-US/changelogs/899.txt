@@ -1,0 +1,29 @@
+
+
+Much more accurate improvement stat effects
+
+chore: Modernized DiplomacyManagerTests
+
+Moved changeImprovement to TileInfoImprovementFunctions
+
+Removed HandleImprovementCompletion function, added test for citadel tile takeover
+
+Removed double lines between handleImprovementCompletion and changeImprovement
+
+removeImprovement convenience function
+
+changeImprovement now contains 'terrain feature removal' logic
+
+Resolved  - Improvement picker screen does not cause 'phantom' units to be assigned to civ
+
+ - Set initial screen color on Desktop so it's not black-to-blue
+
+ fix - Lock known city states before gaining influence to avoid altering the sequence we're iterating on
+
+4.7.12-patch1
+
+By SomeTroglodyte:
+- Ruleset validator: Tilesets 
+- NextTurnAction as enum 
+- Minor Mod Manager fixes (mods having dashes in their repo name not shown right away) 
+- Ruleset object reorganization 
