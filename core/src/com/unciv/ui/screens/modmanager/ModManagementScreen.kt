@@ -571,16 +571,18 @@ class ModManagementScreen(
                     ?: throw Exception("downloadAndExtract returns null for 404 errors and the like")    // downloadAndExtract returns null for 404 errors and the like -> display something!
                 Github.rewriteModOptions(repo, modFolder)
                 launchOnGLThread {
-                    ToastPopup("[${repo.name}] Downloaded!", this@ModManagementScreen)
+                    val repoName = modFolder.name()  // repo.name still has the replaced "-"'s
+                    ToastPopup("[${repoName}] Downloaded!", this@ModManagementScreen)
                     RulesetCache.loadRulesets()
                     TileSetCache.loadTileSetConfigs(false)
                     UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()
-                    RulesetCache[repo.name]?.let {
-                        installedModInfo[repo.name] = ModUIData(it)
+                    RulesetCache[repoName]?.let {
+                        installedModInfo[repoName] = ModUIData(it)
                     }
                     refreshInstalledModTable()
-                    showModDescription(repo.name)
-                    unMarkUpdatedMod(repo.name)
+                    lastSelectedButton?.let { syncOnlineSelected(repoName, it) }
+                    showModDescription(repoName)
+                    unMarkUpdatedMod(repoName)
                     postAction()
                 }
             } catch (ex: Exception) {
