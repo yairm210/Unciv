@@ -46,6 +46,8 @@ object ModOptionsConstants {
 }
 
 class ModOptions : IHasUniques {
+    override var name = "ModOptions"
+
     var isBaseRuleset = false
     var techsToRemove = HashSet<String>()
     var buildingsToRemove = HashSet<String>()

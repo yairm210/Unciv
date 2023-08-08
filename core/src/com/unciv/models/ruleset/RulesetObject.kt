@@ -3,13 +3,12 @@ package com.unciv.models.ruleset
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueMap
-import com.unciv.models.stats.INamed
 import com.unciv.models.stats.NamedStats
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.ICivilopediaText
 
-interface IRulesetObject: INamed, IHasUniques, ICivilopediaText{
-    var originRuleset:String
+interface IRulesetObject: IHasUniques, ICivilopediaText {
+    var originRuleset: String
 }
 
 abstract class RulesetObject: IRulesetObject {

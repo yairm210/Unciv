@@ -1,9 +1,11 @@
 package com.unciv.models.ruleset.unique
 
+import com.unciv.models.stats.INamed
+
 /**
  * Common interface for all 'ruleset objects' that have Uniques, like BaseUnit, Nation, etc.
  */
-interface IHasUniques {
+interface IHasUniques : INamed {
     var uniques: ArrayList<String> // Can not be a hashset as that would remove doubles
     // I bet there's a way of initializing these without having to override it everywhere...
     val uniqueObjects: List<Unique>
@@ -29,4 +31,3 @@ interface IHasUniques {
     fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) =
         getMatchingUniques(uniqueType.placeholderText, stateForConditionals).any()
 }
-
