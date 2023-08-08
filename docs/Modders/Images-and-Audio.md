@@ -87,10 +87,10 @@ Remember - these are logical names as they are indexed in your atlas file, if yo
 
 That's almost all there is - no json needed, and works as ['Permanent audiovisual mod'](#permanent-audiovisual-mods). The Background image is the trigger, and if it's present all part images must be present too, or your spaceship crashes before takeoff, taking Unciv along with it. That was a joke, all other images are optional, it could just look boring if you omit the wrong ones.
 
-As for "almost" - all images are overlaid one by one over the Background one, so they must all be the same size. Except for Won and Lost - those, if their condition is met, _replace_ the entire rest, so they can be different sizes than the background. The part images are overlaid over the background image in no guaranteeed order, therefore they should use _transparency_ to not hide parts of each other.
+As for "almost" - all images are overlaid one by one over the Background one, so they must all be the same size. Except for Won and Lost - those, if their condition is met, _replace_ the entire rest, so they can be different sizes than the background. The part images are overlaid over the background image in no guaranteed order, therefore they should use _transparency_ to avoid hiding parts of each other.
 
 One way to create a set is to take one final image, select all parts that should be the centerpiece itself not background (use lasso, magic wand or similar tools, use antialiasing and feathering as you see fit), copy and paste as new layer. Then apply desaturation and/or curves to the selection on the background layer to only leave a hint of how the completed victory will look like. Now take apart the centerpiece - do a selection fitting one part name, copy and paste as new layer (in place), then delete the selected part from the original centerpiece layer. Rinse and repeat, then export each layer separately as png with the appropriate filenames.
-There's no suggested size, but keep in mind textures are a maximum of 2048x2048 pixels, and if you want them packed properly, several should fit into one texture. They will be scaled down if needed to no more than 80% screen size, preserving aspect ratio.
+There's no suggested size, but keep in mind textures are a maximum of 2048x2048 pixels, and if you want your images packed properly, several should fit into one texture. They will be scaled down if needed to no more than 80% screen size, preserving aspect ratio.
 
 ## Sounds
 
