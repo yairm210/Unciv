@@ -25,6 +25,7 @@ import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.withItem
 import com.unciv.ui.components.extensions.withoutItem
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.utils.DebugUtils
 import kotlin.math.abs
 import kotlin.math.min
@@ -311,7 +312,7 @@ open class Tile : IsPartOfGameInfoSerialization {
     /** Does not remove roads */
     fun removeImprovement() = changeImprovement(null)
 
-    fun changeImprovement(improvementStr: String?) {
+    fun changeImprovement(improvementStr: String?, civToHandleCompletion:Civilization? = null) {
         improvementIsPillaged = false
         improvement = improvementStr
 
@@ -329,9 +330,16 @@ open class Tile : IsPartOfGameInfoSerialization {
             setTerrainFeatures(terrainFeatures.filterNot { it in removableTerrainFeatures })
         }
 
+        if (civToHandleCompletion != null && improvementObject != null
+            && improvementObject.hasUnique(UniqueType.TakesOverAdjacentTiles)
+        )
+            UnitActions.takeOverTilesAround(civToHandleCompletion, this)
+
         if (owningCity != null) {
             owningCity!!.civ.cache.updateCivResources()
+            owningCity!!.reassignPopulationDeferred()
         }
+
     }
 
     // function handling when adding a road to the tile

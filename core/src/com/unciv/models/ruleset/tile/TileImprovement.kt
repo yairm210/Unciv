@@ -16,7 +16,6 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showReligionInCivilopedia
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import kotlin.math.roundToInt
 
 class TileImprovement : RulesetStatsObject() {
@@ -71,15 +70,6 @@ class TileImprovement : RulesetStatsObject() {
 
     fun canBeBuiltOn(terrain: String): Boolean {
         return terrain in terrainsCanBeBuiltOn
-    }
-
-    /** ONLY to be called if the improvement was ACTUALLY built, not for simulating builds! */
-    fun handleImprovementCompletion(builder: MapUnit) {
-        val tile = builder.getTile()
-        if (hasUnique(UniqueType.TakesOverAdjacentTiles))
-            UnitActions.takeOverTilesAround(builder.civ, builder.currentTile)
-
-        tile.owningCity?.reassignPopulationDeferred()
     }
 
     /**
