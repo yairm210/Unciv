@@ -4,6 +4,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.unciv.json.fromJsonFile
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.updateDeprecations
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.nation.CityStateType
 import com.unciv.models.ruleset.nation.Difficulty
 import com.unciv.models.ruleset.nation.Nation
@@ -27,9 +28,22 @@ import kotlin.collections.set
 
 class Ruleset {
 
-    var folderLocation:FileHandle?=null
+    /** If (and only if) this Ruleset is a mod, this will be the source folder.
+     *  In other words, this is `null` for built-in and combined rulesets.
+     */
+    var folderLocation: FileHandle? = null
 
+    /** A Ruleset instance can represent a built-in ruleset, a mod or a combined ruleset.
+     *
+     *  `name` will be the built-in's fullName, the mod's name as displayed (same as folder name),
+     *  or in the case of combined rulesets it will be empty.
+     *
+     *  @see toString
+     *  @see BaseRuleset.fullName
+     *  @see RulesetCache.getComplexRuleset
+     */
     var name = ""
+
     val beliefs = LinkedHashMap<String, Belief>()
     val buildings = LinkedHashMap<String, Building>()
     val difficulties = LinkedHashMap<String, Difficulty>()

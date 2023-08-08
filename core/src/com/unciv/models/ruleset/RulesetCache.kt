@@ -41,9 +41,9 @@ object RulesetCache : HashMap<String, Ruleset>() {
         this.putAll(newRulesets)
 
         val errorLines = ArrayList<String>()
-        if (!noMods){
+        if (!noMods) {
             val modsHandles = if (consoleMode) FileHandle("mods").list()
-            else Gdx.files.local("mods").list()
+                else Gdx.files.local("mods").list()
 
             for (modFolder in modsHandles) {
                 if (modFolder.name().startsWith('.')) continue
