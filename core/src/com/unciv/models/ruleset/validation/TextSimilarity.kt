@@ -1,4 +1,4 @@
-package com.unciv.models.ruleset
+package com.unciv.models.ruleset.validation
 
 /**
  * Algorithm:
