@@ -574,7 +574,7 @@ class ModManagementScreen(
                 Github.rewriteModOptions(repo, modFolder)
                 launchOnGLThread {
                     val repoName = modFolder.name()  // repo.name still has the replaced "-"'s
-                    ToastPopup("[${repoName}] Downloaded!", this@ModManagementScreen)
+                    ToastPopup("[$repoName] Downloaded!", this@ModManagementScreen)
                     RulesetCache.loadRulesets()
                     TileSetCache.loadTileSetConfigs(false)
                     UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()
