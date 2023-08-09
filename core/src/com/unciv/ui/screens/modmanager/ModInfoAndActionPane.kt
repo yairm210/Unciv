@@ -36,7 +36,8 @@ internal class ModInfoAndActionPane : Table() {
         disableVisualCheckBox = true
         update(
             repo.name, repo.html_url, repo.default_branch,
-            repo.pushed_at, repo.owner.login, repo.size
+            repo.pushed_at, repo.owner.login, repo.size,
+            repo.owner.avatar_url
         )
     }
 
@@ -60,7 +61,8 @@ internal class ModInfoAndActionPane : Table() {
            defaultBranch: String,
            updatedAt: String,
            author: String,
-           modSize: Int
+           modSize: Int,
+           avatarUrl: String? = null
     ) {
         // Display metadata
         clear()
@@ -69,7 +71,7 @@ internal class ModInfoAndActionPane : Table() {
         when {
             isBuiltin -> addUncivLogo()
             repoUrl.isEmpty() -> addLocalPreviewImage(modName)
-            else -> addPreviewImage(repoUrl, defaultBranch)
+            else -> addPreviewImage(repoUrl, defaultBranch, avatarUrl)
         }
         add(imageHolder).row()
 
@@ -118,7 +120,7 @@ internal class ModInfoAndActionPane : Table() {
         add(updateModTextbutton).row()
     }
 
-    private fun addPreviewImage(repoUrl: String, defaultBranch: String) {
+    private fun addPreviewImage(repoUrl: String, defaultBranch: String, avatarUrl: String?) {
         if (!repoUrl.startsWith("http")) return // invalid url
 
         if (repoUrlToPreviewImage.containsKey(repoUrl)) {
@@ -128,7 +130,7 @@ internal class ModInfoAndActionPane : Table() {
         }
 
         Concurrency.run {
-            val imagePixmap = Github.tryGetPreviewImage(repoUrl, defaultBranch)
+            val imagePixmap = Github.tryGetPreviewImage(repoUrl, defaultBranch, avatarUrl)
 
             if (imagePixmap == null) {
                 repoUrlToPreviewImage[repoUrl] = null

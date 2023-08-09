@@ -252,12 +252,26 @@ object Github {
         return null
     }
 
-    fun tryGetPreviewImage(modUrl:String, defaultBranch: String): Pixmap? {
+    /** Get a Pixmap from a "preview" png or jpg file at the root of the repo, falling back to the
+     *  repo owner's avatar [avatarUrl]. The file content url is constructed from [modUrl] and [defaultBranch]
+     *  by replacing the host with `raw.githubusercontent.com`.
+     */
+    fun tryGetPreviewImage(modUrl: String, defaultBranch: String, avatarUrl: String?): Pixmap? {
+        // Side note: github repos also have a "Social Preview" optionally assignable on the repo's
+        // settings page, but that info is inaccessible using the v3 API anonymously. The easiest way
+        // to get it would be to query the the repo's frontend page (modUrl), and parse out
+        // `head/meta[property=og:image]/@content`, which is one extra spurious roundtrip and a
+        // non-trivial waste of bandwidth.
+        // Thus we ask for a "preview" file as part of the repo contents instead.
         val fileLocation = "$modUrl/$defaultBranch/preview"
             .replace("github.com", "raw.githubusercontent.com")
         try {
             val file = download("$fileLocation.jpg")
                 ?: download("$fileLocation.png")
+                    // Note: avatar urls look like: https://avatars.githubusercontent.com/u/<number>?v=4
+                    // So the image format is only recognizable from the response "Content-Type" header
+                    // or by looking for magic markers in the bits - which the Pixmap constructor below does.
+                ?: avatarUrl?.let { download(it) }
                 ?: return null
             val byteArray = file.readBytes()
             val buffer = ByteBuffer.allocateDirect(byteArray.size).put(byteArray).position(0)
