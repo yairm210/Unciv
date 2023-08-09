@@ -84,7 +84,6 @@ class AlertPopup(
             AlertType.TechResearched -> addTechResearched()
             AlertType.GoldenAge -> addGoldenAge()
             AlertType.DeclarationOfFriendship -> addDeclarationOfFriendship()
-            AlertType.DefensivePact -> addDefensivePact()
             AlertType.StartIntro -> addStartIntro()
             AlertType.DiplomaticMarriage -> addDiplomaticMarriage()
             AlertType.BulliedProtectedMinor, AlertType.AttackedProtectedMinor -> addBulliedOrAttackedProtectedMinor()
@@ -193,17 +192,6 @@ class AlertPopup(
         addCloseButton("We are not interested.", KeyboardBinding.Cancel).row()
         addCloseButton("Declare Friendship ([30] turns)", KeyboardBinding.Confirm) {
             playerDiploManager.signDeclarationOfFriendship()
-        }
-    }
-
-    private fun addDefensivePact() {
-        val otherciv = getCiv(popupAlert.value)
-        val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)
-        addLeaderName(otherciv)
-        addGoodSizedLabel("My friend, shall we protect eachother from the world?").row()
-        addCloseButton("We are not interested.", KeyboardBinding.Cancel).row()
-        addCloseButton("Sign Defensive Pact", KeyboardBinding.Confirm) {
-            playerDiploManager.signDefensivePact()
         }
     }
 

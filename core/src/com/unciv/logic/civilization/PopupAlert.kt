@@ -15,7 +15,6 @@ enum class AlertType : IsPartOfGameInfoSerialization {
     CitySettledNearOtherCivDespiteOurPromise,
     GoldenAge,
     DeclarationOfFriendship,
-    DefensivePact,
     StartIntro,
     DiplomaticMarriage,
     BulliedProtectedMinor,
