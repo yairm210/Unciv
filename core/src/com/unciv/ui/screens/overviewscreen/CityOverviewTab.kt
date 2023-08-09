@@ -35,12 +35,6 @@ class CityOverviewTab(
         this.layout()
     }
 
-//     override fun getFixedContent() = Table().apply {
-//         add("Cities".toLabel(fontSize = Constants.headingFontSize)).padTop(10f).row()
-//         add(grid.getHeader()).padBottom(paddingVert).row()
-//         addSeparator(Color.GRAY)
-//     }
-
     init {
         add(grid)
     }
