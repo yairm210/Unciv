@@ -27,12 +27,12 @@ import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
-import com.unciv.ui.components.input.keyShortcuts
-import com.unciv.ui.components.input.onActivation
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.ActivationTypes
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.clearActivationActions
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
@@ -40,9 +40,9 @@ import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
 import com.unciv.ui.screens.mainmenuscreen.MainMenuScreen
-import com.unciv.ui.screens.pickerscreens.Github.repoNameToFolderName
 import com.unciv.ui.screens.modmanager.ModManagementOptions.SortType
 import com.unciv.ui.screens.pickerscreens.Github
+import com.unciv.ui.screens.pickerscreens.Github.repoNameToFolderName
 import com.unciv.ui.screens.pickerscreens.PickerScreen
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
