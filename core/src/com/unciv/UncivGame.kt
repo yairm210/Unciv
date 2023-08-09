@@ -79,6 +79,7 @@ object GUI {
     }
 
     fun isMyTurn(): Boolean {
+        if (!UncivGame.isCurrentInitialized() || !isWorldLoaded()) return false
         return UncivGame.Current.worldScreen!!.isPlayersTurn
     }
 
@@ -137,7 +138,9 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
     var worldScreen: WorldScreen? = null
         private set
 
-    var isInitialized = false
+    /** Flag used only during initialization until the end of [create] */
+    protected var isInitialized = false
+        private set
 
     /** A wrapped render() method that crashes to [CrashScreen] on a unhandled exception or error. */
     private val wrappedCrashHandlingRender = { super.render() }.wrapCrashHandlingUnit()
@@ -459,6 +462,8 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
         Gdx.input.inputProcessor = null // don't allow ANRs when shutting down, that's silly
         SoundPlayer.clearCache()
         if (::musicController.isInitialized) musicController.gracefulShutdown()  // Do allow fade-out
+        // We stop the *in-game* multiplayer update, so that it doesn't keep working and A. we'll have errors and B. we'll have multiple updaters active
+        if (::onlineMultiplayer.isInitialized) onlineMultiplayer.multiplayerGameUpdater.cancel()
 
         val curGameInfo = gameInfo
         if (curGameInfo != null) {
@@ -531,7 +536,7 @@ open class UncivGame(val isConsoleMode: Boolean = false) : Game(), PlatformSpeci
 
     companion object {
         //region AUTOMATICALLY GENERATED VERSION DATA - DO NOT CHANGE THIS REGION, INCLUDING THIS COMMENT
-        val VERSION = Version("4.6.19", 877)
+        val VERSION = Version("4.7.13", 899)
         //endregion
 
         lateinit var Current: UncivGame

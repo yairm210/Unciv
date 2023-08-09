@@ -9,7 +9,7 @@ import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
-import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.logic.map.mapunit.UnitTurnManager
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.multiplayer.isUsersTurn
 import com.unciv.models.ruleset.Building
@@ -21,6 +21,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueMap
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -184,7 +185,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     fun getCurrentConstruction(): IConstruction = getConstruction(currentConstructionFromQueue)
 
-    fun isBuilt(buildingName: String): Boolean = builtBuildings.contains(buildingName)
+    fun isAllBuilt(buildingList: List<String>): Boolean = buildingList.all { isBuilt(it) }
+
+    fun isBuilt(buildingName: String): Boolean = builtBuildingObjects.any { it.name == buildingName }
     @Suppress("MemberVisibilityCanBePrivate")
     fun isBeingConstructed(constructionName: String): Boolean = currentConstructionFromQueue == constructionName
     fun isEnqueued(constructionName: String): Boolean = constructionQueue.contains(constructionName)
@@ -479,16 +482,77 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     fun addBuilding(buildingName: String) {
-        val buildingObject = city.getRuleset().buildings[buildingName]!!
-        builtBuildingObjects = builtBuildingObjects.withItem(buildingObject)
+        val building = city.getRuleset().buildings[buildingName]!!
+        val civ = city.civ
+
+        if (building.cityHealth > 0) {
+            // city built a building that increases health so add a portion of this added health that is
+            // proportional to the city's current health
+            city.health += (building.cityHealth.toFloat() * city.health.toFloat() / city.getMaxHealth().toFloat()).toInt()
+        }
+        builtBuildingObjects = builtBuildingObjects.withItem(building)
         builtBuildings.add(buildingName)
+
+        city.civ.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
+
+        /** Support for [UniqueType.CreatesOneImprovement] */
+        applyCreateOneImprovement(building)
+
+
+
+        triggerNewBuildingUniques(building)
+
+        if (building.hasUnique(UniqueType.EnemyUnitsSpendExtraMovement))
+            civ.cache.updateHasActiveEnemyMovementPenalty()
+
+        // Korean unique - apparently gives the same as the research agreement
+        if (building.isStatRelated(Stat.Science) && civ.hasUnique(UniqueType.TechBoostWhenScientificBuildingsBuiltInCapital))
+            civ.tech.addScience(civ.tech.scienceOfLast8Turns.sum() / 8)
+
+        val uniqueTypesModifyingYields = listOf(
+            UniqueType.StatsFromTiles, UniqueType.StatsFromTilesWithout, UniqueType.StatsFromObject,
+            UniqueType.StatPercentFromObject, UniqueType.AllStatsPercentFromObject
+        )
+
         updateUniques()
+
+        // Happiness is global, so it could affect all cities
+        if (building.isStatRelated(Stat.Happiness)) {
+            for (city in civ.cities) {
+                city.reassignPopulationDeferred()
+            }
+        }
+        else if(uniqueTypesModifyingYields.any { building.hasUnique(it) })
+            city.reassignPopulationDeferred()
+
+        addFreeBuildings()
+    }
+
+    fun triggerNewBuildingUniques(building: Building) {
+        val triggerNotificationText ="due to constructing [${building.name}]"
+
+        for (unique in building.uniqueObjects)
+            if (!unique.hasTriggerConditional())
+                UniqueTriggerActivation.triggerCivwideUnique(unique, city.civ, city, triggerNotificationText = triggerNotificationText)
+
+        for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuilding, StateForConditionals(city.civ, city)))
+            if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuilding && building.matchesFilter(it.params[0])})
+                UniqueTriggerActivation.triggerCivwideUnique(unique, city.civ, city, triggerNotificationText = triggerNotificationText)
+
+        for (unique in city.civ.getTriggeredUniques(UniqueType.TriggerUponConstructingBuildingCityFilter, StateForConditionals(city.civ, city)))
+            if (unique.conditionals.any {it.type == UniqueType.TriggerUponConstructingBuildingCityFilter
+                    && building.matchesFilter(it.params[0])
+                    && city.matchesFilter(it.params[1])})
+                UniqueTriggerActivation.triggerCivwideUnique(unique, city.civ, city, triggerNotificationText = triggerNotificationText)
     }
 
     fun removeBuilding(buildingName: String) {
-        val buildingObject = city.getRuleset().buildings[buildingName]!!
-        builtBuildingObjects = builtBuildingObjects.withoutItem(buildingObject)
+        val buildingObject = city.getRuleset().buildings[buildingName]
+        if (buildingObject != null)
+            builtBuildingObjects = builtBuildingObjects.withoutItem(buildingObject)
+        else builtBuildingObjects.removeAll{ it.name == buildingName }
         builtBuildings.remove(buildingName)
+        city.civ.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
         updateUniques()
     }
 
@@ -496,7 +560,10 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         builtBuildingUniqueMap.clear()
         for (building in getBuiltBuildings())
             builtBuildingUniqueMap.addUniques(building.uniqueObjects)
-        if (!onLoadGame) city.cityStats.update()
+        if (!onLoadGame) {
+            city.cityStats.update()
+            city.civ.cache.updateCivResources()
+        }
     }
 
     fun addFreeBuildings() {
@@ -532,6 +599,14 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                     addBuilding(freeBuildingName)
             }
         }
+
+
+        val autoGrantedBuildings = city.getRuleset().buildings.values
+            .filter { it.hasUnique(UniqueType.GainBuildingWhereBuildable) }
+
+        for (building in autoGrantedBuildings)
+            if (building.isBuildable(city.cityConstructions))
+                addBuilding(building.name)
     }
 
     /**
@@ -677,13 +752,15 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         } else true // we're just continuing the regular queue
     }
 
-    fun raisePriority(constructionQueueIndex: Int) {
+    fun raisePriority(constructionQueueIndex: Int): Int {
         constructionQueue.swap(constructionQueueIndex - 1, constructionQueueIndex)
+        return constructionQueueIndex - 1
     }
 
     // Lowering == Highering next element in queue
-    fun lowerPriority(constructionQueueIndex: Int) {
+    fun lowerPriority(constructionQueueIndex: Int): Int {
         raisePriority(constructionQueueIndex + 1)
+        return constructionQueueIndex + 1
     }
 
     private fun MutableList<String>.swap(idx1: Int, idx2: Int) {
@@ -703,11 +780,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         val tileForImprovement = getTileForImprovement(improvement.name) ?: return
         tileForImprovement.stopWorkingOnImprovement()  // clears mark
         if (removeOnly) return
-        /**todo unify with [UnitActions.getImprovementConstructionActions] and [MapUnit.workOnImprovement] - this won't allow e.g. a building to place a road */
+        /**todo unify with [UnitActions.getImprovementConstructionActions] and [UnitTurnManager.workOnImprovement] - this won't allow e.g. a building to place a road */
         tileForImprovement.changeImprovement(improvement.name)
         city.civ.lastSeenImprovement[tileForImprovement.position] = improvement.name
-        city.cityStats.update()
-        city.civ.cache.updateCivResources()
         // If bought the worldscreen will not have been marked to update, and the new improvement won't show until later...
         GUI.setUpdateWorldOnNextRender()
     }
@@ -719,11 +794,11 @@ class CityConstructions : IsPartOfGameInfoSerialization {
      */
     fun removeCreateOneImprovementConstruction(improvement: String) {
         val ruleset = city.getRuleset()
-        val indexToRemove = constructionQueue.withIndex().mapNotNull {
+        val indexToRemove = constructionQueue.withIndex().firstNotNullOfOrNull {
             val construction = getConstruction(it.value)
             val buildingImprovement = (construction as? Building)?.getImprovementToCreate(ruleset)?.name
             it.index.takeIf { buildingImprovement == improvement }
-        }.firstOrNull() ?: return
+        } ?: return
 
         constructionQueue.removeAt(indexToRemove)
 

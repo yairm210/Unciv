@@ -2,6 +2,7 @@ package com.unciv.ui.screens.civilopediascreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
+import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.stats.INamed
 
@@ -81,6 +82,10 @@ interface ICivilopediaText {
             if (!middleDone) {
                 if (outerNotEmpty) yield(FormattedLine())
                 yieldAll(getCivilopediaTextLines(ruleset))
+            }
+            if (this@ICivilopediaText is IRulesetObject && ruleset.mods.size > 1 && originRuleset.isNotEmpty()) {
+                yield(FormattedLine())
+                yield(FormattedLine("Mod: [$originRuleset]", starred = true, color = "#daa520"))
             }
         }
         return SimpleCivilopediaText(newLines.toList())

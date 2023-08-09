@@ -213,7 +213,7 @@ object Automation {
 
         // If we have vision of our entire starting continent (ish) we are not afraid
         civInfo.gameInfo.tileMap.assignContinents(TileMap.AssignContinentsMode.Ensure)
-        val startingContinent = civInfo.getCapital()!!.getCenterTile().getContinent()
+        val startingContinent = civInfo.getCapital(true)!!.getCenterTile().getContinent()
         val startingContinentSize = civInfo.gameInfo.tileMap.continentSizes[startingContinent]
         if (startingContinentSize != null && startingContinentSize < civInfo.viewableTiles.size * multiplier)
             return false
@@ -387,16 +387,6 @@ object Automation {
             // Can't work it anyways
             if (distance > 3) score += 100
         }
-
-        // Improvements are good: less points
-        if (tile.improvement != null &&
-            tile.stats.getImprovementStats(
-                tile.getTileImprovement()!!,
-                city.civ,
-                city,
-                localUniqueCache
-            ).values.sum() > 0f
-        ) score -= 5
 
         if (tile.naturalWonder != null) score -= 105
 

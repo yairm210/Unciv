@@ -18,6 +18,8 @@ import com.unciv.GUI
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.KeyboardBindings
 import com.unciv.ui.screens.basescreen.BaseScreen
 
 /**
@@ -33,16 +35,19 @@ import com.unciv.ui.screens.basescreen.BaseScreen
  * @param animate       Use show/hide animations
  * @param forceContentSize  Force virtual [content] width/height for alignment calculation
  *                      - because Gdx auto layout reports wrong dimensions on scaled actors.
+ * @param contentRefresher  Called just before showing the [content], to give the builder a chance to do last-minute updates.
+ *                      Return value is used as new `forceContentSize`.
  */
 // region fields
 class UncivTooltip <T: Actor>(
-    val target: Actor,
-    val content: T,
-    val targetAlign: Int = Align.topRight,
-    val tipAlign: Int = Align.topRight,
-    val offset: Vector2 = Vector2.Zero,
-    val animate: Boolean = true,
+    private val target: Actor,
+    private val content: T,
+    private val targetAlign: Int = Align.topRight,
+    private val tipAlign: Int = Align.topRight,
+    private val offset: Vector2 = Vector2.Zero,
+    private val animate: Boolean = true,
     forceContentSize: Vector2? = null,
+    private val contentRefresher: (() -> Vector2?)? = null
 ) : InputListener() {
 
     private val container: Container<T> = Container(content)
@@ -55,8 +60,8 @@ class UncivTooltip <T: Actor>(
     // touching buttons (exit fires, sometimes very late, with "to" actor being the label of the button)
     private var touchDownSeen = false
 
-    private val contentWidth: Float
-    private val contentHeight: Float
+    private var contentWidth: Float
+    private var contentHeight: Float
 
     init {
         content.touchable = Touchable.disabled
@@ -78,6 +83,13 @@ class UncivTooltip <T: Actor>(
             container.clearActions()
             state = TipState.Hidden
             container.remove()
+        }
+
+        if (contentRefresher != null) {
+            val forceContentSize = contentRefresher.invoke()
+            container.pack()
+            contentWidth = forceContentSize?.x ?: content.width
+            contentHeight = forceContentSize?.y ?: content.height
         }
 
         val pos = target.localToStageCoordinates(target.getEdgePoint(targetAlign)).add(offset)
@@ -198,18 +210,20 @@ class UncivTooltip <T: Actor>(
 
     companion object {
         /** Duration of the fade/zoom-in/out animations */
-        const val tipAnimationDuration = 0.2f
+        private const val tipAnimationDuration = 0.2f
 
         /**
          * Add a [Label]-based Tooltip with a rounded-corner background to a [Table] or other [Group].
          *
+         * Removes any previous tooltips (so this can be used to clear tips by passing an empty [text]).
          * Tip is positioned over top right corner, slightly overshooting the receiver widget, longer tip [text]s will extend to the left.
+         * Note - since this is mainly used for keyboard tips, this is by default automatically suppressed on devices without keyboard. Use the [always] parameter to override.
          *
          * @param text Automatically translated tooltip text
          * @param size _Vertical_ size of the entire Tooltip including background
-         * @param always override requirement: presence of physical keyboard
          * @param targetAlign   Point on the [target] widget to align the Tooltip to
          * @param tipAlign      Point on the Tooltip to align with the given point on the [target]
+         * @param hideIcons Do not automatically add ruleset object icons during translation
          */
         fun Actor.addTooltip(
             text: String,
@@ -217,8 +231,14 @@ class UncivTooltip <T: Actor>(
             always: Boolean = false,
             targetAlign: Int = Align.topRight,
             tipAlign: Int = Align.top,
-            hideIcons: Boolean = false
+            hideIcons: Boolean = false,
+            dynamicTextProvider: (() -> String)? = null
         ) {
+            for (tip in listeners.filterIsInstance<UncivTooltip<*>>()) {
+                tip.hide(true)
+                removeListener(tip)
+            }
+
             if (!(always || GUI.keyboardAvailable) || text.isEmpty()) return
 
             val label = text.toLabel(BaseScreen.skinStrings.skinConfig.baseColor, 38, hideIcons = hideIcons)
@@ -232,48 +252,79 @@ class UncivTooltip <T: Actor>(
             val horizontalPad = if (text.length > 1) 10f else 6f
             background.setPadding(4f+skewPadDescenders, horizontalPad, 8f-skewPadDescenders, horizontalPad)
 
-            val widthHeightRatio: Float
-            val multiRowSize = size * (1 + text.count { it == '\n' })
             val labelWithBackground = Container(label).apply {
                 setBackground(background)
-                pack()
-                widthHeightRatio = width / height
                 isTransform = true  // otherwise setScale is ignored
-                setScale(multiRowSize / height)
             }
+
+            fun getMultiRowSize(text: String) = size * (1 + text.count { it == '\n' })
+            fun scaleContainerAndGetSize(text: String): Vector2 {
+                val multiRowSize = getMultiRowSize(text)
+                val widthHeightRatio = labelWithBackground.run {
+                    pack()
+                    setScale(1f)
+                    val ratio = width / height
+                    setScale(multiRowSize / height)
+                    ratio
+                }
+                return Vector2(multiRowSize * widthHeightRatio, multiRowSize)
+            }
+
+            val contentRefresher: (() -> Vector2)? = if (dynamicTextProvider == null) null else { {
+                val newText = dynamicTextProvider()
+                label.setText(newText)
+                scaleContainerAndGetSize(newText)
+            } }
 
             addListener(UncivTooltip(this,
                 labelWithBackground,
-                forceContentSize = Vector2(multiRowSize * widthHeightRatio, multiRowSize),
-                offset = Vector2(-multiRowSize/4, size/4),
+                forceContentSize = scaleContainerAndGetSize(text),
+                offset = Vector2(-getMultiRowSize(text)/4, size/4),
                 targetAlign = targetAlign,
-                tipAlign = tipAlign
+                tipAlign = tipAlign,
+                contentRefresher = contentRefresher
             ))
         }
 
         /**
-         * Add a single Char [Label]-based Tooltip with a rounded-corner background to a [Table] or other [Group].
+         * Add a single-Char [Label]-based Tooltip with a rounded-corner background to a [Table] or other [Group].
          *
+         * Note this is automatically suppressed on devices without keyboard.
          * Tip is positioned over top right corner, slightly overshooting the receiver widget.
          *
          * @param size _Vertical_ size of the entire Tooltip including background
-         * @param always override requirement: presence of physical keyboard
          */
-        fun Actor.addTooltip(char: Char, size: Float = 26f, always: Boolean = false) {
-            addTooltip((if (char in "Ii") 'i' else char.uppercaseChar()).toString(), size, always)
+        fun Actor.addTooltip(char: Char, size: Float = 26f) {
+            addTooltip((if (char in "Ii") 'i' else char.uppercaseChar()).toString(), size)
         }
 
         /**
          * Add a [Label]-based Tooltip for a keyboard binding with a rounded-corner background to a [Table] or other [Group].
          *
+         * Note this is automatically suppressed on devices without keyboard.
          * Tip is positioned over top right corner, slightly overshooting the receiver widget.
          *
          * @param size _Vertical_ size of the entire Tooltip including background
-         * @param always override requirement: presence of physical keyboard
          */
-        fun Actor.addTooltip(key: KeyCharAndCode, size: Float = 26f, always: Boolean = false) {
+        fun Actor.addTooltip(key: KeyCharAndCode, size: Float = 26f) {
             if (key != KeyCharAndCode.UNKNOWN)
-                addTooltip(key.toString().tr(), size, always)
+                addTooltip(key.toString().tr(), size)
+        }
+
+        /**
+         * Add a [Label]-based Tooltip for a dynamic keyboard binding with a rounded-corner background to a [Table] or other [Group].
+         * Supports dynamic display of changes to the binding while the tip is attached to an actor, fetched the moment it is shown.
+         *
+         * Note this is automatically suppressed on devices without keyboard.
+         * Tip is positioned over top right corner, slightly overshooting the receiver widget.
+         *
+         * @param size _Vertical_ size of the entire Tooltip including background
+         */
+        fun Actor.addTooltip(binding: KeyboardBinding, size: Float = 26f) {
+            fun getText() = KeyboardBindings[binding].toString().tr()
+            addTooltip(getText(), size) {
+                getText()
+            }
         }
     }
 }

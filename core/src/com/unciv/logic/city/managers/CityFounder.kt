@@ -53,7 +53,7 @@ class CityFounder {
         })
             tile.removeTerrainFeature(terrainFeature)
 
-        tile.changeImprovement(null)
+        tile.removeImprovement()
         tile.improvementInProgress = null
 
         val ruleset = civInfo.gameInfo.ruleset
@@ -209,7 +209,6 @@ class CityFounder {
         }
 
         civInfo.civConstructions.tryAddFreeBuildings()
-        city.cityConstructions.addFreeBuildings()
     }
 
 

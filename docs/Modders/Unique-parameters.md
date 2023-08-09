@@ -41,6 +41,7 @@ The following are allowed to be used:
 -   `Nuclear Weapon`
 -   `Great Person`, `Great`
 -   `Embarked`
+-   Matching [technologyfilter](#technologyfilter) for the tech this unit requires - e.g. `Modern Era`
 -   Any exact unique the unit has
 -   Any exact unique the unit type has
 -   Any combination of the above (will match only if all match). The format is `{filter1} {filter2}` and can match any number of filters. For example: `[{Military} {Water}]` units, `[{non-air} {Armor}]` units, etc. No space or other text is allowed between the `[` and the first `{`.
@@ -149,7 +150,7 @@ These can be strung together with ", " between them, for example: `+2 Production
 
 ## technologyFilter
 
-At the moment only implemented for [ModOptions.techsToRemove](../Other/Miscellaneous-JSON-files.md#modoptionsjson).
+At the moment only implemented for [ModOptions.techsToRemove](Mod-file-structure/5-Miscellaneous-JSON-files.md#modoptionsjson).
 
 Allowed values are:
 

@@ -158,8 +158,7 @@ object UnitActions {
 
         return UnitAction(UnitActionType.Create, "Create [$improvementName]",
             action = {
-                tile.changeImprovement(improvementName)
-                tile.getTileImprovement()!!.handleImprovementCompletion(unit)
+                tile.changeImprovement(improvementName, unit.civ)
                 unit.destroy()  // Modders may wish for a nondestructive way, but that should be another Unique
             }.takeIf { unit.currentMovement > 0 })
     }
@@ -180,11 +179,11 @@ object UnitActions {
       */
     fun getFoundCityAction(unit: MapUnit, tile: Tile): UnitAction? {
         val unique = unit.getMatchingUniques(UniqueType.FoundCity)
-            .filter { it.conditionals.none { it.type == UniqueType.UnitActionExtraLimitedTimes } }
+            .filter { unique -> unique.conditionals.none { it.type == UniqueType.UnitActionExtraLimitedTimes } }
             .firstOrNull()
         if (unique == null || tile.isWater || tile.isImpassible()) return null
         // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
-        if (unit.civ.isOneCityChallenger() && unit.civ.hasEverOwnedOriginalCapital == true) return null
+        if (unit.civ.isOneCityChallenger() && unit.civ.hasEverOwnedOriginalCapital) return null
         if (usagesLeft(unit, unique)==0) return null
 
         if (unit.currentMovement <= 0 || !tile.canBeSettled())
@@ -470,8 +469,7 @@ object UnitActions {
 
     fun getImprovementConstructionActions(unit: MapUnit, tile: Tile): ArrayList<UnitAction> {
         val finalActions = ArrayList<UnitAction>()
-        val uniquesToCheck = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit) +
-                unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)
+        val uniquesToCheck = unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)
         val civResources = unit.civ.getCivResourcesByName()
 
         for (unique in uniquesToCheck) {
@@ -493,16 +491,12 @@ object UnitActions {
                 title = actionTextWithSideEffects("Create [$improvementName]", unique, unit),
                 action = {
                     val unitTile = unit.getTile()
-                    unitTile.improvementFunctions.removeCreatesOneImprovementMarker()
-                    unitTile.changeImprovement(improvementName)
-                    unitTile.stopWorkingOnImprovement()
-                    improvement.handleImprovementCompletion(unit)
+                    unitTile.changeImprovement(improvementName, unit.civ)
 
                     // without this the world screen won't show the improvement because it isn't the 'last seen improvement'
                     unit.civ.cache.updateViewableTiles()
 
-                    if (unique.type == UniqueType.ConstructImprovementConsumingUnit) unit.consume()
-                    else activateSideEffects(unit, unique)
+                    activateSideEffects(unit, unique)
                 }.takeIf {
                     resourcesAvailable
                     && unit.currentMovement > 0f
@@ -516,7 +510,7 @@ object UnitActions {
         return finalActions
     }
 
-    fun takeOverTilesAround(unit: MapUnit) {
+    fun takeOverTilesAround(civ: Civilization, tile: Tile) {
         // This method should only be called for a citadel - therefore one of the neighbour tile
         // must belong to unit's civ, so minByOrNull in the nearestCity formula should be never `null`.
         // That is, unless a mod does not specify the proper unique - then fallbackNearestCity will take over.
@@ -526,39 +520,39 @@ object UnitActions {
             return city.getCenterTile().aerialDistanceTo(tile) +
                     (if (city.isBeingRazed) 5 else 0)
         }
-        fun fallbackNearestCity(unit: MapUnit) =
-            unit.civ.cities.minByOrNull {
-               it.getCenterTile().aerialDistanceTo(unit.currentTile) +
+        fun fallbackNearestCity(civ: Civilization, tile: Tile) =
+            civ.cities.minByOrNull {
+               it.getCenterTile().aerialDistanceTo(tile) +
                    (if (it.isBeingRazed) 5 else 0)
             }!!
 
         // In the rare case more than one city owns tiles neighboring the citadel
         // this will prioritize the nearest one not being razed
-        val nearestCity = unit.currentTile.neighbors
-            .filter { it.getOwner() == unit.civ }
+        val nearestCity = tile.neighbors
+            .filter { it.getOwner() == civ }
             .minByOrNull { priority(it) }?.getCity()
-            ?: fallbackNearestCity(unit)
+            ?: fallbackNearestCity(civ, tile)
 
         // capture all tiles which do not belong to unit's civ and are not enemy cities
         // we use getTilesInDistance here, not neighbours to include the current tile as well
-        val tilesToTakeOver = unit.currentTile.getTilesInDistance(1)
-                .filter { !it.isCityCenter() && it.getOwner() != unit.civ }
+        val tilesToTakeOver = tile.getTilesInDistance(1)
+                .filter { !it.isCityCenter() && it.getOwner() != civ }
 
         val civsToNotify = mutableSetOf<Civilization>()
-        for (tile in tilesToTakeOver) {
-            val otherCiv = tile.getOwner()
+        for (tileToTakeOver in tilesToTakeOver) {
+            val otherCiv = tileToTakeOver.getOwner()
             if (otherCiv != null) {
                 // decrease relations for -10 pt/tile
-                if (!otherCiv.knows(unit.civ)) otherCiv.diplomacyFunctions.makeCivilizationsMeet(unit.civ)
-                otherCiv.getDiplomacyManager(unit.civ).addModifier(DiplomaticModifiers.StealingTerritory, -10f)
+                if (!otherCiv.knows(civ)) otherCiv.diplomacyFunctions.makeCivilizationsMeet(civ)
+                otherCiv.getDiplomacyManager(civ).addModifier(DiplomaticModifiers.StealingTerritory, -10f)
                 civsToNotify.add(otherCiv)
             }
-            nearestCity.expansion.takeOwnership(tile)
+            nearestCity.expansion.takeOwnership(tileToTakeOver)
         }
 
         for (otherCiv in civsToNotify)
-            otherCiv.addNotification("Your territory has been stolen by [${unit.civ}]!",
-                unit.currentTile.position, NotificationCategory.Cities, unit.civ.civName, NotificationIcon.War)
+            otherCiv.addNotification("Your territory has been stolen by [$civ]!",
+                tile.position, NotificationCategory.Cities, civ.civName, NotificationIcon.War)
     }
 
     private fun addFortifyActions(actionList: ArrayList<UnitAction>, unit: MapUnit, showingAdditionalActions: Boolean) {
@@ -635,6 +629,9 @@ object UnitActions {
         }
         // If gifting to major civ they need to be friendly
         else if (!tile.isFriendlyTerritory(unit.civ)) return null
+
+        // Transported units can't be gifted
+        if (unit.isTransported) return null
 
         if (unit.currentMovement <= 0)
             return UnitAction(UnitActionType.GiftUnit, action = null)
@@ -747,7 +744,7 @@ object UnitActions {
     fun getMaxUsages(unit: MapUnit, actionUnique: Unique): Int? {
         val extraTimes = unit.getMatchingUniques(actionUnique.type!!)
             .filter { it.text.removeConditionals() == actionUnique.text.removeConditionals() }
-            .flatMap { it.conditionals.filter { it.type == UniqueType.UnitActionExtraLimitedTimes } }
+            .flatMap { unique -> unique.conditionals.filter { it.type == UniqueType.UnitActionExtraLimitedTimes } }
             .map { it.params[0].toInt() }
             .sum()
 

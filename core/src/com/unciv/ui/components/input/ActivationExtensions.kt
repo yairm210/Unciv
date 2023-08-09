@@ -1,116 +1,141 @@
 package com.unciv.ui.components.input
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.InputEvent
-import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.scenes.scene2d.utils.Disableable
 import com.unciv.models.UncivSound
-import com.unciv.ui.audio.SoundPlayer
-import com.unciv.utils.Concurrency
+import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 
+/** Used to stop activation events if this returns `true`. */
+internal fun Actor.isActive(): Boolean = isVisible && ((this as? Disableable)?.isDisabled != true)
 
-fun Actor.addActivationAction(action: (() -> Unit)?) {
-    if (action != null)
-        ActorAttachments.get(this).addActivationAction(action)
+/** Routes events from the listener to [ActorAttachments] */
+internal fun Actor.activate(type: ActivationTypes = ActivationTypes.Tap): Boolean {
+    if (!isActive()) return false
+    val attachment = ActorAttachments.getOrNull(this) ?: return false
+    return attachment.activate(type)
 }
 
-fun Actor.removeActivationAction(action: (() -> Unit)?) {
-    if (action != null)
-        ActorAttachments.getOrNull(this)?.removeActivationAction(action)
-}
-
-fun Actor.isActive(): Boolean = isVisible && ((this as? Disableable)?.isDisabled != true)
-
-fun Actor.activate() {
-    if (isActive())
-        ActorAttachments.getOrNull(this)?.activate()
-}
-
-val Actor.keyShortcutsOrNull
-    get() = ActorAttachments.getOrNull(this)?.keyShortcuts
+/** Accesses the [shortcut dispatcher][ActorKeyShortcutDispatcher] for your actor
+ *  (creates one if the actor has none).
+ *
+ *  Note that shortcuts you add with handlers are routed directly, those without are routed to [onActivation] with type [ActivationTypes.Keystroke]. */
 val Actor.keyShortcuts
     get() = ActorAttachments.get(this).keyShortcuts
 
-fun Actor.onActivation(sound: UncivSound = UncivSound.Click, action: () -> Unit): Actor {
-    addActivationAction {
-        Concurrency.run("Sound") { SoundPlayer.play(sound) }
-        action()
-    }
+/** Routes input events of type [type] to your handler [action].
+ *  Will also be activated for events [equivalent][ActivationTypes.isEquivalent] to [type] unless [noEquivalence] is `true`.
+ *  A [sound] will be played (concurrently) on activation unless you specify [UncivSound.Silent].
+ *  @return `this` to allow chaining
+ */
+fun Actor.onActivation(
+    type: ActivationTypes,
+    sound: UncivSound = UncivSound.Click,
+    noEquivalence: Boolean = false,
+    action: ActivationAction
+): Actor {
+    ActorAttachments.get(this).addActivationAction(type, sound, noEquivalence, action)
     return this
 }
 
-fun Actor.onActivation(action: () -> Unit): Actor = onActivation(UncivSound.Click, action)
+/** Assigns an activation [handler][action] to your Widget, which reacts to clicks and a [key stroke][binding].
+ *  A tooltip is attached automatically, if there is a keyboard and the [binding] has a mapping.
+ *  A [sound] will be played (concurrently) on activation unless you specify [UncivSound.Silent].
+ *  @return `this` to allow chaining
+ */
+fun Actor.onActivation(sound: UncivSound = UncivSound.Click, binding: KeyboardBinding, action: ActivationAction): Actor {
+    onActivation(ActivationTypes.Tap, sound, action = action)
+    keyShortcuts.add(binding)
+    addTooltip(binding)
+    return this
+}
 
+/** Routes clicks and [keyboard shortcuts][keyShortcuts] to your handler [action].
+ *  A [sound] will be played (concurrently) on activation unless you specify [UncivSound.Silent].
+ *  @return `this` to allow chaining
+ */
+fun Actor.onActivation(sound: UncivSound = UncivSound.Click, action: ActivationAction): Actor =
+    onActivation(ActivationTypes.Tap, sound, action = action)
 
-enum class DispatcherVetoResult { Accept, Skip, SkipWithChildren }
-typealias DispatcherVetoer = (associatedActor: Actor?, keyDispatcher: KeyShortcutDispatcher?) -> DispatcherVetoResult
+/** Routes clicks and [keyboard shortcuts][keyShortcuts] to your handler [action].
+ *  A [Click sound][UncivSound.Click] will be played (concurrently).
+ *  @return `this` to allow chaining
+ */
+fun Actor.onActivation(action: ActivationAction): Actor =
+    onActivation(ActivationTypes.Tap, action = action)
+
+/** Routes clicks to your handler [action], ignoring [keyboard shortcuts][keyShortcuts].
+ *  A [sound] will be played (concurrently) on activation unless you specify [UncivSound.Silent].
+ *  @return `this` to allow chaining
+ */
+fun Actor.onClick(sound: UncivSound = UncivSound.Click, action: ActivationAction): Actor =
+    onActivation(ActivationTypes.Tap, sound, noEquivalence = true, action)
+
+/** Routes clicks to your handler [action], ignoring [keyboard shortcuts][keyShortcuts].
+ *  A [Click sound][UncivSound.Click] will be played (concurrently).
+ *  @return `this` to allow chaining
+ */
+fun Actor.onClick(action: ActivationAction): Actor =
+    onActivation(ActivationTypes.Tap, noEquivalence = true, action = action)
+
+/** Routes double-clicks to your handler [action].
+ *  A [sound] will be played (concurrently) on activation unless you specify [UncivSound.Silent].
+ *  @return `this` to allow chaining
+ */
+fun Actor.onDoubleClick(sound: UncivSound = UncivSound.Click, action: ActivationAction): Actor =
+    onActivation(ActivationTypes.Doubletap, sound, action = action)
+
+/** Routes right-clicks and long-presses to your handler [action].
+ *  These are treated as equivalent so both desktop and mobile can access the same functionality with methods common to the platform.
+ *  A [sound] will be played (concurrently) on activation unless you specify [UncivSound.Silent].
+ *  @return `this` to allow chaining
+ */
+fun Actor.onRightClick(sound: UncivSound = UncivSound.Click, action: ActivationAction): Actor =
+    onActivation(ActivationTypes.RightClick, sound, action = action)
+
+/** Routes long-presses (but not right-clicks) to your handler [action].
+ *  A [sound] will be played (concurrently) on activation unless you specify [UncivSound.Silent].
+ *  @return `this` to allow chaining
+ */
+@Suppress("unused")  // Just in case - for now, only onRightClick is used
+fun Actor.onLongPress(sound: UncivSound = UncivSound.Click, action: ActivationAction): Actor =
+    onActivation(ActivationTypes.Longpress, sound, noEquivalence = true, action)
+
+/** Clears activation actions for a specific [type], and, if [noEquivalence] is `true`,
+ *  its [equivalent][ActivationTypes.isEquivalent] types.
+ */
+@Suppress("unused")  // Just in case - for now, it's automatic clear via clearListener
+fun Actor.clearActivationActions(type: ActivationTypes, noEquivalence: Boolean = true) {
+    ActorAttachments.get(this).clearActivationActions(type, noEquivalence)
+}
 
 /**
  * Install shortcut dispatcher for this stage. It activates all actions associated with the
- * pressed key in [additionalShortcuts] (if specified) and all actors in the stage. It is
- * possible to temporarily disable or veto some shortcut dispatchers by passing an appropriate
+ * pressed key in [additionalShortcuts] (if specified) and **all** actors in the stage - recursively.
+ *
+ * It is possible to temporarily disable or veto some shortcut dispatchers by passing an appropriate
  * [dispatcherVetoerCreator] function. This function may return a [DispatcherVetoer], which
  * will then be used to evaluate all shortcut sources in the stage. This two-step vetoing
- * mechanism allows the callback ([dispatcherVetoerCreator]) perform expensive preparations
- * only one per keypress (doing them in the returned [DispatcherVetoer] would instead be once
+ * mechanism allows the callback ([dispatcherVetoerCreator]) to perform expensive preparations
+ * only once per keypress (doing them in the returned [DispatcherVetoer] would instead be once
  * per keypress/actor combination).
+ *
+ * Note - screens containing a TileGroupMap **should** supply a vetoer skipping that actor, or else
+ * the scanning Deque will be several thousand entries deep.
  */
-fun Stage.installShortcutDispatcher(additionalShortcuts: KeyShortcutDispatcher? = null, dispatcherVetoerCreator: (() -> DispatcherVetoer?)? = null) {
-    addListener(object: InputListener() {
-        override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
-            val key = when {
-                event == null ->
-                    KeyCharAndCode.UNKNOWN
-                Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) ->
-                    KeyCharAndCode.ctrlFromCode(event.keyCode)
-                else ->
-                    KeyCharAndCode(event.keyCode)
-            }
+fun Stage.installShortcutDispatcher(additionalShortcuts: KeyShortcutDispatcher? = null, dispatcherVetoerCreator: () -> DispatcherVetoer?) {
+    addListener(KeyShortcutListener(actors.asSequence(), additionalShortcuts, dispatcherVetoerCreator))
+}
 
-            if (key != KeyCharAndCode.UNKNOWN) {
-                var dispatcherVetoer = when { dispatcherVetoerCreator != null -> dispatcherVetoerCreator() else -> null }
-                if (dispatcherVetoer == null) dispatcherVetoer = { _, _ -> DispatcherVetoResult.Accept }
+private class OnChangeListener(val function: (event: ChangeEvent?) -> Unit): ChangeListener() {
+    override fun changed(event: ChangeEvent?, actor: Actor?) {
+        function(event)
+    }
+}
 
-                if (activate(key, dispatcherVetoer))
-                    return true
-                // Make both Enter keys equivalent.
-                if ((key == KeyCharAndCode.NUMPAD_ENTER && activate(KeyCharAndCode.RETURN, dispatcherVetoer))
-                    || (key == KeyCharAndCode.RETURN && activate(KeyCharAndCode.NUMPAD_ENTER, dispatcherVetoer)))
-                    return true
-                // Likewise always match Back to ESC.
-                if ((key == KeyCharAndCode.ESC && activate(KeyCharAndCode.BACK, dispatcherVetoer))
-                    || (key == KeyCharAndCode.BACK && activate(KeyCharAndCode.ESC, dispatcherVetoer)))
-                    return true
-            }
-
-            return false
-        }
-
-        private fun activate(key: KeyCharAndCode, dispatcherVetoer: DispatcherVetoer): Boolean {
-            val shortcutResolver = KeyShortcutDispatcher.Resolver(key)
-            val pendingActors = ArrayDeque<Actor>(actors.toList())
-
-            if (additionalShortcuts != null && dispatcherVetoer(null, additionalShortcuts) == DispatcherVetoResult.Accept)
-                shortcutResolver.updateFor(additionalShortcuts)
-
-            while (pendingActors.any()) {
-                val actor = pendingActors.removeFirst()
-                val shortcuts = actor.keyShortcutsOrNull
-                val vetoResult = dispatcherVetoer(actor, shortcuts)
-
-                if (shortcuts != null && vetoResult == DispatcherVetoResult.Accept)
-                    shortcutResolver.updateFor(shortcuts)
-                if (actor is Group && vetoResult != DispatcherVetoResult.SkipWithChildren)
-                    pendingActors.addAll(actor.children)
-            }
-
-            for (action in shortcutResolver.triggeredActions)
-                action()
-            return shortcutResolver.triggeredActions.any()
-        }
-    })
+/** Attach a ChangeListener to [this] and route its changed event to [action] */
+fun Actor.onChange(action: (event: ChangeListener.ChangeEvent?) -> Unit): Actor {
+    this.addListener(OnChangeListener(action))
+    return this
 }

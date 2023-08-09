@@ -12,6 +12,7 @@ import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
@@ -520,7 +521,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         }
 
         if (!civInfo.isDefeated()) { // don't display city state relationship notifications when the city state is currently defeated
-            val civCapitalLocation = if (civInfo.cities.isNotEmpty() || civInfo.getCapital() != null) civInfo.getCapital()!!.location else null
+            val civCapitalLocation = if (civInfo.cities.any() && civInfo.getCapital() != null) civInfo.getCapital()!!.location else null
             if (getTurnsToRelationshipChange() == 1) {
                 val text = "Your relationship with [${civInfo.civName}] is about to degrade"
                 if (civCapitalLocation != null) otherCiv().addNotification(text,
@@ -905,9 +906,11 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             thirdCiv.getDiplomacyManager(civInfo).setFriendshipBasedModifier()
         }
 
-        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringFriendship))
+        // Ignore contitionals as triggerCivwideUnique will check again, and that would break
+        // UniqueType.ConditionalChance - 25% declared chance would work as 6% actual chance
+        for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringFriendship, StateForConditionals.IgnoreConditionals))
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
-        for (unique in otherCiv().getTriggeredUniques(UniqueType.TriggerUponDeclaringFriendship))
+        for (unique in otherCiv().getTriggeredUniques(UniqueType.TriggerUponDeclaringFriendship, StateForConditionals.IgnoreConditionals))
             UniqueTriggerActivation.triggerCivwideUnique(unique, otherCiv())
     }
 

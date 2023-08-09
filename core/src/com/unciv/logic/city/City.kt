@@ -3,11 +3,12 @@ package com.unciv.logic.city
 import com.badlogic.gdx.math.Vector2
 import com.unciv.GUI
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.city.managers.CityConquestFunctions
 import com.unciv.logic.city.managers.CityEspionageManager
 import com.unciv.logic.city.managers.CityExpansionManager
-import com.unciv.logic.city.managers.CityInfoConquestFunctions
 import com.unciv.logic.city.managers.CityPopulationManager
 import com.unciv.logic.city.managers.CityReligionManager
+import com.unciv.logic.city.managers.SpyFleeReason
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.TileMap
@@ -101,6 +102,13 @@ class City : IsPartOfGameInfoSerialization {
 
     internal var flagsCountdown = HashMap<String, Int>()
 
+    /** Persisted connected-to-capital (by any medium) to allow "disconnected" notifications after loading */
+    // Unknown only exists to support older saves, so those do not generate spurious connected/disconnected messages.
+    // The other names are chosen so serialization is compatible with a Boolean to allow easy replacement in the future.
+    @Suppress("EnumEntryName")
+    enum class ConnectedToCapitalStatus { Unknown, `false`, `true` }
+    var connectedToCapitalStatus = ConnectedToCapitalStatus.Unknown
+
     fun hasDiplomaticMarriage(): Boolean = foundingCiv == ""
 
     //region pure functions
@@ -129,6 +137,7 @@ class City : IsPartOfGameInfoSerialization {
         toReturn.cityAIFocus = cityAIFocus
         toReturn.avoidGrowth = avoidGrowth
         toReturn.manualSpecialists = manualSpecialists
+        toReturn.connectedToCapitalStatus = connectedToCapitalStatus
         return toReturn
     }
 
@@ -193,10 +202,14 @@ class City : IsPartOfGameInfoSerialization {
     fun getCityResources(): ResourceSupplyList {
         val cityResources = ResourceSupplyList()
 
+        val resourceModifer = HashMap<String,Float>()
+        for (resource in civ.gameInfo.ruleset.tileResources.values)
+            resourceModifer[resource.name] = civ.getResourceModifier(resource)
+
         for (tileInfo in getTiles().filter { it.resource != null }) {
             val resource = tileInfo.tileResource
-            val amount = getTileResourceAmount(tileInfo)
-            if (amount > 0) cityResources.add(resource, "Tiles", amount)
+            val amount = getTileResourceAmount(tileInfo) * resourceModifer[resource.name]!!
+            if (amount > 0) cityResources.add(resource, "Tiles", amount.toInt())
         }
 
         for (tileInfo in getTiles()) {
@@ -207,7 +220,7 @@ class City : IsPartOfGameInfoSerialization {
                 val resource = getRuleset().tileResources[unique.params[1]] ?: continue
                 cityResources.add(
                     resource, "Improvements",
-                    unique.params[0].toInt()
+                    (unique.params[0].toFloat() * resourceModifer[resource.name]!!).toInt()
                 )
             }
             for (unique in tileImprovement.getMatchingUniques(UniqueType.ConsumesResources, stateForConditionals)) {
@@ -231,7 +244,7 @@ class City : IsPartOfGameInfoSerialization {
                 ?: continue
             cityResources.add(
                 resource, "Buildings",
-                unique.params[0].toInt()
+                (unique.params[0].toFloat() * resourceModifer[resource.name]!!).toInt()
             )
         }
 
@@ -243,6 +256,16 @@ class City : IsPartOfGameInfoSerialization {
         }
 
         return cityResources
+    }
+
+    /** Gets the number of resources available to this city
+     * Accommodates both city-wide and civ-wide resources */
+    fun getResourceAmount(resourceName: String): Int {
+        val resource = getRuleset().tileResources[resourceName] ?: return 0
+
+        if (resource.hasUnique(UniqueType.CityResource))
+            return getCityResources().asSequence().filter { it.resource == resource }.sumOf { it.amount }
+        return civ.getResourceAmount(resourceName)
     }
 
     private fun getTileResourceAmount(tile: Tile): Int {
@@ -266,7 +289,7 @@ class City : IsPartOfGameInfoSerialization {
 
 
     fun containsBuildingUnique(uniqueType: UniqueType) =
-        cityConstructions.getBuiltBuildings().flatMap { it.uniqueObjects }.any { it.isOfType(uniqueType) }
+        cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).any()
 
     fun getGreatPersonPercentageBonus(): Int{
         var allGppPercentageBonus = 0
@@ -437,7 +460,8 @@ class City : IsPartOfGameInfoSerialization {
         // unless, of course, they are captured by a one-city-challenger.
         if (!canBeDestroyed() && !overrideSafeties) return
 
-        for (airUnit in getCenterTile().airUnits.toList()) airUnit.destroy() //Destroy planes stationed in city
+        // Destroy planes stationed in city
+        for (airUnit in getCenterTile().airUnits.toList()) airUnit.destroy()
 
         // The relinquish ownership MUST come before removing the city,
         // because it updates the city stats which assumes there is a capital, so if you remove the capital it crashes
@@ -447,9 +471,7 @@ class City : IsPartOfGameInfoSerialization {
 
         // Move the capital if destroyed (by a nuke or by razing)
         // Must be before removing existing capital because we may be annexing a puppet which means city stats update - see #8337
-        if (isCapital() && civ.cities.size > 1) {
-            civ.moveCapitalToNextLargest()
-        }
+        if (isCapital()) civ.moveCapitalToNextLargest(null)
 
         civ.cities = civ.cities.toMutableList().apply { remove(this@City) }
         getCenterTile().changeImprovement("City ruins")
@@ -461,6 +483,7 @@ class City : IsPartOfGameInfoSerialization {
                 unit.movement.teleportToClosestMoveableTile()
         }
 
+        espionage.removeAllPresentSpies(SpyFleeReason.CityDestroyed)
 
         // Update proximity rankings for all civs
         for (otherCiv in civ.gameInfo.getAliveMajorCivs()) {
@@ -475,18 +498,18 @@ class City : IsPartOfGameInfoSerialization {
         civ.gameInfo.cityDistances.setDirty()
     }
 
-    fun annexCity() = CityInfoConquestFunctions(this).annexCity()
+    fun annexCity() = CityConquestFunctions(this).annexCity()
 
     /** This happens when we either puppet OR annex, basically whenever we conquer a city and don't liberate it */
     fun puppetCity(conqueringCiv: Civilization) =
-        CityInfoConquestFunctions(this).puppetCity(conqueringCiv)
+        CityConquestFunctions(this).puppetCity(conqueringCiv)
 
     /* Liberating is returning a city to its founder - makes you LOSE warmongering points **/
     fun liberateCity(conqueringCiv: Civilization) =
-        CityInfoConquestFunctions(this).liberateCity(conqueringCiv)
+        CityConquestFunctions(this).liberateCity(conqueringCiv)
 
     fun moveToCiv(newCivInfo: Civilization) =
-        CityInfoConquestFunctions(this).moveToCiv(newCivInfo)
+        CityConquestFunctions(this).moveToCiv(newCivInfo)
 
     internal fun tryUpdateRoadStatus() {
         if (getCenterTile().roadStatus == RoadStatus.None) {
@@ -526,8 +549,8 @@ class City : IsPartOfGameInfoSerialization {
     /** Implements [UniqueParameterType.CityFilter][com.unciv.models.ruleset.unique.UniqueParameterType.CityFilter] */
     fun matchesFilter(filter: String, viewingCiv: Civilization = civ): Boolean {
         return when (filter) {
-            "in this city" -> true
-            "in all cities" -> true // Filtered by the way uniques are found
+            "in this city" -> true // Filtered by the way uniques are found
+            "in all cities" -> true
             "in other cities" -> true // Filtered by the way uniques are found
             "in all coastal cities" -> isCoastal()
             "in capital" -> isCapital()

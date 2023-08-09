@@ -69,7 +69,7 @@ I'm not planning on it. It means paying money to Apple, yet another release path
  
 ### Steam release?
 
-Steam has decided that they don't want to host Unciv, they probably don't want to risk legal issues with Firaxis (although those should be non-existant, see below)
+Steam has decided that they don't want to host Unciv, they probably don't want to risk legal issues with Firaxis (although those should be non-existent, see below)
  
 ### Will you implement {feature}?
 
@@ -116,11 +116,6 @@ From what I understand, intellectual property rights apply to names, characters 
 
 If anyone has any real legal sources, or can shed some light on the limits of what is and is not allowed, I'd be happy to hear!
 
-## Downloads
-
-| [![](https://static.itch.io/images/badge.svg)](https://yairm210.itch.io/unciv)    |    [![](https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png)](https://play.google.com/store/apps/details?id=com.unciv.app)   |    [![](https://fdroid.gitlab.io/artwork/badge/get-it-on.png)](https://f-droid.org/en/packages/com.unciv.app/)	| [![](https://flathub.org/assets/badges/flathub-badge-en.svg)](https://flathub.org/apps/details/io.github.yairm210.unciv)
-|---	|---	|---	|---	|
-
 ## Run with Docker [![Docker](https://github.com/haimlm/Unciv/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/haimlm/Unciv/actions/workflows/docker-publish.yml)
 
 If you have docker compose installed:
@@ -135,7 +130,7 @@ If just docker:
 
 Or just use our already built one:
 
-```$ docker run -d -p 6901:6901 -p 5901:5901 ghcr.io/yairm210/Unciv ```
+```$ docker run -d -p 6901:6901 -p 5901:5901 ghcr.io/yairm210/unciv ```
 
 and then goto http://localhost:6901/vnc.html?password=headless
 ## [Credits and 3rd parties](docs/Credits.md)

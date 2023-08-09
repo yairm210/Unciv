@@ -112,7 +112,7 @@ class DiplomacyScreen(
 
         var selectCivY = 0f
 
-        for (civ in viewingCiv.diplomacyFunctions.getKnownCivsSorted(includeSelf = false)) {
+        for (civ in viewingCiv.diplomacyFunctions.getKnownCivsSorted()) {
             if (civ == selectCiv) {
                 selectCivY = leftSideTable.prefHeight
             }
@@ -424,7 +424,7 @@ class DiplomacyScreen(
         if (otherCiv.cities.isEmpty()) return null
         val improvableResourceTiles = getImprovableResourceTiles(otherCiv)
         val improvements =
-            otherCiv.gameInfo.ruleset.tileImprovements.filter { it.value.turnsToBuild != 0 }
+            otherCiv.gameInfo.ruleset.tileImprovements.filter { it.value.turnsToBuild != -1 }
         var needsImprovements = false
 
         for (improvableTile in improvableResourceTiles)

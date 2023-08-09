@@ -1,13 +1,17 @@
 # Uniques
 Simple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](../Unique-parameters)
 ## Triggerable uniques
-??? example  "Free [baseUnitFilter] appears"
-	Example: "Free [Melee] appears"
+!!! note ""
+
+    Uniques that have immediate, one-time effects. These can be added to techs to trigger when researched, to policies to trigger when adopted, to eras to trigger when reached, to buildings to trigger when built. Alternatively, you can add a TriggerCondition to them to make them into Global uniques that activate upon a specific event.They can also be added to units to grant them the ability to trigger this effect as an action, which can be modified with UnitActionModifier and UnitTriggerCondition conditionals.
+
+??? example  "Free [unit] appears"
+	Example: "Free [Musketman] appears"
 
 	Applicable to: Triggerable
 
-??? example  "[amount] free [baseUnitFilter] units appear"
-	Example: "[3] free [Melee] units appear"
+??? example  "[amount] free [unit] units appear"
+	Example: "[3] free [Musketman] units appear"
 
 	Applicable to: Triggerable
 
@@ -128,6 +132,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Triggerable
 
 ## UnitTriggerable uniques
+!!! note ""
+
+    Uniques that have immediate, one-time effects on a unit.They can be added to units (on unit, unit type, or promotion) to grant them the ability to trigger this effect as an action, which can be modified with UnitActionModifier and UnitTriggerCondition conditionals.
+
 ??? example  "Heal this unit by [amount] HP"
 	Example: "Heal this unit by [3] HP"
 
@@ -150,10 +158,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: UnitTriggerable
 
 ## Global uniques
+!!! note ""
+
+    Uniques that apply globally. Civs gain the abilities of these uniques from nation uniques, reached eras, researched techs, adopted policies, built buildings, religion 'founder' uniques, owned resources, and ruleset-wide global uniques.
+
 ??? example  "[stats]"
 	Example: "[+1 Gold, +2 Production]"
 
-	Applicable to: Global, FollowerBelief, Terrain, Improvement
+	Applicable to: Global, Terrain, Improvement
 
 ??? example  "[stats] [cityFilter]"
 	Example: "[+1 Gold, +2 Production] [in all cities]"
@@ -319,63 +331,13 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "City-State Influence recovers at twice the normal rate"
 	Applicable to: Global
 
-??? example  "[amount] units cost no maintenance"
-	Example: "[3] units cost no maintenance"
-
-	Applicable to: Global
-
-??? example  "Cannot build [baseUnitFilter] units"
-	Example: "Cannot build [Melee] units"
-
-	Applicable to: Global
-
-??? example  "Provides [amount] [resource]"
-	Example: "Provides [3] [Iron]"
-
-	Applicable to: Global, Improvement
-
 ??? example  "[relativeAmount]% growth [cityFilter]"
 	Example: "[+20]% growth [in all cities]"
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "[relativeAmount]% Food is carried over after population increases [cityFilter]"
-	Example: "[+20]% Food is carried over after population increases [in all cities]"
-
-	Applicable to: Global, FollowerBelief
-
-??? example  "Gain a free [buildingName] [cityFilter]"
-	Example: "Gain a free [Library] [in all cities]"
-
-	Applicable to: Global
-
-??? example  "[relativeAmount]% Great Person generation [cityFilter]"
-	Example: "[+20]% Great Person generation [in all cities]"
-
-	Applicable to: Global, FollowerBelief
-
-??? example  "May choose [amount] additional [beliefType] beliefs when [foundingOrEnhancing] a religion"
-	Example: "May choose [3] additional [Follower] beliefs when [founding] a religion"
-
-	Applicable to: Global
-
-??? example  "May choose [amount] additional belief(s) of any type when [foundingOrEnhancing] a religion"
-	Example: "May choose [3] additional belief(s) of any type when [founding] a religion"
-
-	Applicable to: Global
-
-??? example  "[stats] when a city adopts this religion for the first time (modified by game speed)"
-	Example: "[+1 Gold, +2 Production] when a city adopts this religion for the first time (modified by game speed)"
-
-	Applicable to: Global
-
-??? example  "[stats] when a city adopts this religion for the first time"
-	Example: "[+1 Gold, +2 Production] when a city adopts this religion for the first time"
-
-	Applicable to: Global
-
-??? example  "[relativeAmount]% Unhappiness from [populationFilter] [cityFilter]"
-	Example: "[+20]% Unhappiness from [Followers of this Religion] [in all cities]"
+??? example  "[amount]% Food is carried over after population increases [cityFilter]"
+	Example: "[3]% Food is carried over after population increases [in all cities]"
 
 	Applicable to: Global, FollowerBelief
 
@@ -384,20 +346,38 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
+??? example  "[relativeAmount]% unhappiness from the number of cities"
+	Example: "[+20]% unhappiness from the number of cities"
+
+	Applicable to: Global
+
+??? example  "[relativeAmount]% Unhappiness from [populationFilter] [cityFilter]"
+	Example: "[+20]% Unhappiness from [Followers of this Religion] [in all cities]"
+
+	Applicable to: Global, FollowerBelief
+
+??? example  "[amount] Happiness from each type of luxury resource"
+	Example: "[3] Happiness from each type of luxury resource"
+
+	Applicable to: Global
+
+??? example  "Retain [relativeAmount]% of the happiness from a luxury after the last copy has been traded away"
+	Example: "Retain [+20]% of the happiness from a luxury after the last copy has been traded away"
+
+	Applicable to: Global
+
 ??? example  "[relativeAmount]% of excess happiness converted to [stat]"
 	Example: "[+20]% of excess happiness converted to [Culture]"
 
 	Applicable to: Global
 
-??? example  "[relativeAmount]% Culture cost of natural border growth [cityFilter]"
-	Example: "[+20]% Culture cost of natural border growth [in all cities]"
+??? example  "Cannot build [baseUnitFilter] units"
+	Example: "Cannot build [Melee] units"
 
-	Applicable to: Global, FollowerBelief
+	Applicable to: Global
 
-??? example  "[relativeAmount]% Gold cost of acquiring tiles [cityFilter]"
-	Example: "[+20]% Gold cost of acquiring tiles [in all cities]"
-
-	Applicable to: Global, FollowerBelief
+??? example  "Enables construction of Spaceship parts"
+	Applicable to: Global
 
 ??? example  "May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] at an increasing price ([amount])"
 	Example: "May buy [Melee] units for [3] [Culture] [in all cities] at an increasing price ([3])"
@@ -439,11 +419,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "Enables conversion of city production to [civWideStat]"
-	Example: "Enables conversion of city production to [Gold]"
-
-	Applicable to: Global
-
 ??? example  "[stat] cost of purchasing items in cities [relativeAmount]%"
 	Example: "[Culture] cost of purchasing items in cities [+20]%"
 
@@ -459,6 +434,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
+??? example  "Enables conversion of city production to [civWideStat]"
+	Example: "Enables conversion of city production to [Gold]"
+
+	Applicable to: Global
+
+??? example  "Production to [civWideStat] conversion in cities changed by [relativeAmount]%"
+	Example: "Production to [Gold] conversion in cities changed by [+20]%"
+
+	Applicable to: Global
+
 ??? example  "Improves movement speed on roads"
 	Applicable to: Global
 
@@ -470,28 +455,35 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
+??? example  "No Maintenance costs for improvements in [tileFilter] tiles"
+	Example: "No Maintenance costs for improvements in [Farm] tiles"
+
+	Applicable to: Global
+
+??? example  "[relativeAmount]% tile improvement construction time"
+	Example: "[+20]% tile improvement construction time"
+
+	Applicable to: Global, Unit
+
+??? example  "Gain a free [buildingName] [cityFilter]"
+	Example: "Gain a free [Library] [in all cities]"
+
+	Applicable to: Global
+
 ??? example  "[relativeAmount]% maintenance cost for buildings [cityFilter]"
 	Example: "[+20]% maintenance cost for buildings [in all cities]"
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "Receive a free Great Person at the end of every [comment] (every 394 years), after researching [tech]. Each bonus person can only be chosen once."
-	Example: "Receive a free Great Person at the end of every [comment] (every 394 years), after researching [Agriculture]. Each bonus person can only be chosen once."
+??? example  "[relativeAmount]% Culture cost of natural border growth [cityFilter]"
+	Example: "[+20]% Culture cost of natural border growth [in all cities]"
 
-	Applicable to: Global
+	Applicable to: Global, FollowerBelief
 
-??? example  "Once The Long Count activates, the year on the world screen displays as the traditional Mayan Long Count."
-	Applicable to: Global
+??? example  "[relativeAmount]% Gold cost of acquiring tiles [cityFilter]"
+	Example: "[+20]% Gold cost of acquiring tiles [in all cities]"
 
-??? example  "Retain [relativeAmount]% of the happiness from a luxury after the last copy has been traded away"
-	Example: "Retain [+20]% of the happiness from a luxury after the last copy has been traded away"
-
-	Applicable to: Global
-
-??? example  "[amount] Happiness from each type of luxury resource"
-	Example: "[3] Happiness from each type of luxury resource"
-
-	Applicable to: Global
+	Applicable to: Global, FollowerBelief
 
 ??? example  "Each city founded increases culture cost of policies [relativeAmount]% less than normal"
 	Example: "Each city founded increases culture cost of policies [+20]% less than normal"
@@ -503,107 +495,18 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "Quantity of strategic resources produced by the empire +[relativeAmount]%"
-	Example: "Quantity of strategic resources produced by the empire +[+20]%"
-
-	Applicable to: Global
-
-??? example  "Double quantity of [resource] produced"
-	Example: "Double quantity of [Iron] produced"
-
-	Applicable to: Global
-
 ??? example  "[stats] for every known Natural Wonder"
 	Example: "[+1 Gold, +2 Production] for every known Natural Wonder"
 
 	Applicable to: Global
 
-??? example  "Enables construction of Spaceship parts"
-	Applicable to: Global
-
-??? example  "Enemy [mapUnitFilter] units must spend [amount] extra movement points when inside your territory"
-	Example: "Enemy [Wounded] units must spend [3] extra movement points when inside your territory"
-
-	Applicable to: Global
-
-??? example  "Production to [civWideStat] conversion in cities changed by [relativeAmount]%"
-	Example: "Production to [Gold] conversion in cities changed by [+20]%"
-
-	Applicable to: Global
-
-??? example  "Notified of new Barbarian encampments"
-	Applicable to: Global
-
-??? example  ""Borrows" city names from other civilizations in the game"
-	Applicable to: Global
-
 ??? example  "100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it)"
 	Applicable to: Global
 
-??? example  "Unhappiness from number of Cities doubled"
-	Applicable to: Global
+??? example  "[relativeAmount]% Great Person generation [cityFilter]"
+	Example: "[+20]% Great Person generation [in all cities]"
 
-??? example  "Great General provides double combat bonus"
-	Applicable to: Global, Unit
-
-??? example  "Receive a tech boost when scientific buildings/wonders are built in capital"
-	Applicable to: Global
-
-??? example  "May not generate great prophet equivalents naturally"
-	Applicable to: Global
-
-??? example  "When conquering an encampment, earn [amount] Gold and recruit a Barbarian unit"
-	Example: "When conquering an encampment, earn [3] Gold and recruit a Barbarian unit"
-
-	Applicable to: Global
-
-??? example  "When defeating a [mapUnitFilter] unit, earn [amount] Gold and recruit it"
-	Example: "When defeating a [Wounded] unit, earn [3] Gold and recruit it"
-
-	Applicable to: Global
-
-??? example  "Receive triple Gold from Barbarian encampments and pillaging Cities"
-	Applicable to: Global
-
-??? example  "Cities are razed [amount] times as fast"
-	Example: "Cities are razed [3] times as fast"
-
-	Applicable to: Global
-
-??? example  "When declaring friendship, both parties gain a [relativeAmount]% boost to great person generation"
-	Example: "When declaring friendship, both parties gain a [+20]% boost to great person generation"
-
-	Applicable to: Global
-
-??? example  "No Maintenance costs for improvements in [tileFilter] tiles"
-	Example: "No Maintenance costs for improvements in [Farm] tiles"
-
-	Applicable to: Global
-
-??? example  "Influence of all other civilizations with all city-states degrades [relativeAmount]% faster"
-	Example: "Influence of all other civilizations with all city-states degrades [+20]% faster"
-
-	Applicable to: Global
-
-??? example  "Land units may cross [terrainName] tiles after the first [baseUnitFilter] is earned"
-	Example: "Land units may cross [Forest] tiles after the first [Melee] is earned"
-
-	Applicable to: Global
-
-??? example  "Gain [amount] Influence with a [baseUnitFilter] gift to a City-State"
-	Example: "Gain [3] Influence with a [Melee] gift to a City-State"
-
-	Applicable to: Global
-
-??? example  "[relativeAmount]% Faith cost of generating Great Prophet equivalents"
-	Example: "[+20]% Faith cost of generating Great Prophet equivalents"
-
-	Applicable to: Global
-
-??? example  "Resting point for Influence with City-States following this religion [amount]"
-	Example: "Resting point for Influence with City-States following this religion [3]"
-
-	Applicable to: Global
+	Applicable to: Global, FollowerBelief
 
 ??? example  "Provides a sum of gold each time you spend a Great Person"
 	Applicable to: Global
@@ -613,97 +516,20 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "Receive free [unit] when you discover [tech]"
-	Example: "Receive free [Musketman] when you discover [Agriculture]"
-
-	Applicable to: Global
-
-??? example  "Enables Open Borders agreements"
-	Applicable to: Global
-
-??? example  "Enables Research agreements"
-	Applicable to: Global
-
-??? example  "Science gained from research agreements [relativeAmount]%"
-	Example: "Science gained from research agreements [+20]%"
-
-	Applicable to: Global
-
-??? example  "Triggers victory"
-	Applicable to: Global
-
-??? example  "Triggers a Cultural Victory upon completion"
-	Applicable to: Global
-
-??? example  "[relativeAmount]% City Strength from defensive buildings"
-	Example: "[+20]% City Strength from defensive buildings"
-
-	Applicable to: Global
-
-??? example  "[relativeAmount]% tile improvement construction time"
-	Example: "[+20]% tile improvement construction time"
-
-	Applicable to: Global, Unit
-
 ??? example  "[relativeAmount]% Gold from Great Merchant trade missions"
 	Example: "[+20]% Gold from Great Merchant trade missions"
 
 	Applicable to: Global
 
-??? example  "[mapUnitFilter] Units adjacent to this city heal [amount] HP per turn when healing"
-	Example: "[Wounded] Units adjacent to this city heal [3] HP per turn when healing"
+??? example  "Great General provides double combat bonus"
+	Applicable to: Global, Unit
 
-	Applicable to: Global, FollowerBelief
-
-??? example  "[relativeAmount]% Golden Age length"
-	Example: "[+20]% Golden Age length"
+??? example  "Receive a free Great Person at the end of every [comment] (every 394 years), after researching [tech]. Each bonus person can only be chosen once."
+	Example: "Receive a free Great Person at the end of every [comment] (every 394 years), after researching [Agriculture]. Each bonus person can only be chosen once."
 
 	Applicable to: Global
 
-??? example  "[relativeAmount]% Strength for cities"
-	Example: "[+20]% Strength for cities"
-
-	Applicable to: Global, FollowerBelief
-
-??? example  "New [baseUnitFilter] units start with [amount] Experience [cityFilter]"
-	Example: "New [Melee] units start with [3] Experience [in all cities]"
-
-	Applicable to: Global, FollowerBelief
-
-??? example  "All newly-trained [baseUnitFilter] units [cityFilter] receive the [promotion] promotion"
-	Example: "All newly-trained [Melee] units [in all cities] receive the [Shock I] promotion"
-
-	Applicable to: Global, FollowerBelief
-
-??? example  "[baseUnitFilter] units built [cityFilter] can [action] [amount] extra times"
-	Example: "[Melee] units built [in all cities] can [Spread Religion] [3] extra times"
-
-	Applicable to: Global, FollowerBelief
-
-??? example  "Enables embarkation for land units"
-	Applicable to: Global
-
-??? example  "Enables [mapUnitFilter] units to enter ocean tiles"
-	Example: "Enables [Wounded] units to enter ocean tiles"
-
-	Applicable to: Global
-
-??? example  "Population loss from nuclear attacks [relativeAmount]% [cityFilter]"
-	Example: "Population loss from nuclear attacks [+20]% [in all cities]"
-
-	Applicable to: Global
-
-??? example  "[relativeAmount]% Natural religion spread [cityFilter]"
-	Example: "[+20]% Natural religion spread [in all cities]"
-
-	Applicable to: Global, FollowerBelief
-
-??? example  "Religion naturally spreads to cities [amount] tiles away"
-	Example: "Religion naturally spreads to cities [3] tiles away"
-
-	Applicable to: Global, FollowerBelief
-
-??? example  "Can be continually researched"
+??? example  "Once The Long Count activates, the year on the world screen displays as the traditional Mayan Long Count."
 	Applicable to: Global
 
 ??? example  "[amount] Unit Supply"
@@ -721,7 +547,200 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
+??? example  "[amount] units cost no maintenance"
+	Example: "[3] units cost no maintenance"
+
+	Applicable to: Global
+
 ??? example  "Units in cities cost no Maintenance"
+	Applicable to: Global
+
+??? example  "Receive free [unit] when you discover [tech]"
+	Example: "Receive free [Musketman] when you discover [Agriculture]"
+
+	Applicable to: Global
+
+??? example  "Enables embarkation for land units"
+	Applicable to: Global
+
+??? example  "Enables [mapUnitFilter] units to enter ocean tiles"
+	Example: "Enables [Wounded] units to enter ocean tiles"
+
+	Applicable to: Global
+
+??? example  "Land units may cross [terrainName] tiles after the first [baseUnitFilter] is earned"
+	Example: "Land units may cross [Forest] tiles after the first [Melee] is earned"
+
+	Applicable to: Global
+
+??? example  "Enemy [mapUnitFilter] units must spend [amount] extra movement points when inside your territory"
+	Example: "Enemy [Wounded] units must spend [3] extra movement points when inside your territory"
+
+	Applicable to: Global
+
+??? example  "New [baseUnitFilter] units start with [amount] Experience [cityFilter]"
+	Example: "New [Melee] units start with [3] Experience [in all cities]"
+
+	Applicable to: Global, FollowerBelief
+
+??? example  "All newly-trained [baseUnitFilter] units [cityFilter] receive the [promotion] promotion"
+	Example: "All newly-trained [Melee] units [in all cities] receive the [Shock I] promotion"
+
+	Applicable to: Global, FollowerBelief
+
+??? example  "[mapUnitFilter] Units adjacent to this city heal [amount] HP per turn when healing"
+	Example: "[Wounded] Units adjacent to this city heal [3] HP per turn when healing"
+
+	Applicable to: Global, FollowerBelief
+
+??? example  "[relativeAmount]% City Strength from defensive buildings"
+	Example: "[+20]% City Strength from defensive buildings"
+
+	Applicable to: Global
+
+??? example  "[relativeAmount]% Strength for cities"
+	Example: "[+20]% Strength for cities"
+
+	Applicable to: Global, FollowerBelief
+
+??? example  "Provides [amount] [resource]"
+	Example: "Provides [3] [Iron]"
+
+	Applicable to: Global, FollowerBelief, Improvement
+
+??? example  "Quantity of strategic resources produced by the empire +[relativeAmount]%"
+	Example: "Quantity of strategic resources produced by the empire +[+20]%"
+
+	Applicable to: Global
+
+??? example  "Double quantity of [resource] produced"
+	Example: "Double quantity of [Iron] produced"
+
+	Applicable to: Global
+
+??? example  "Enables Open Borders agreements"
+	Applicable to: Global
+
+??? example  "Enables Research agreements"
+	Applicable to: Global
+
+??? example  "Science gained from research agreements [relativeAmount]%"
+	Example: "Science gained from research agreements [+20]%"
+
+	Applicable to: Global
+
+??? example  "When declaring friendship, both parties gain a [relativeAmount]% boost to great person generation"
+	Example: "When declaring friendship, both parties gain a [+20]% boost to great person generation"
+
+	Applicable to: Global
+
+??? example  "Influence of all other civilizations with all city-states degrades [relativeAmount]% faster"
+	Example: "Influence of all other civilizations with all city-states degrades [+20]% faster"
+
+	Applicable to: Global
+
+??? example  "Gain [amount] Influence with a [baseUnitFilter] gift to a City-State"
+	Example: "Gain [3] Influence with a [Melee] gift to a City-State"
+
+	Applicable to: Global
+
+??? example  "Resting point for Influence with City-States following this religion [amount]"
+	Example: "Resting point for Influence with City-States following this religion [3]"
+
+	Applicable to: Global
+
+??? example  "Notified of new Barbarian encampments"
+	Applicable to: Global
+
+??? example  "Receive triple Gold from Barbarian encampments and pillaging Cities"
+	Applicable to: Global
+
+??? example  "When conquering an encampment, earn [amount] Gold and recruit a Barbarian unit"
+	Example: "When conquering an encampment, earn [3] Gold and recruit a Barbarian unit"
+
+	Applicable to: Global
+
+??? example  "When defeating a [mapUnitFilter] unit, earn [amount] Gold and recruit it"
+	Example: "When defeating a [Wounded] unit, earn [3] Gold and recruit it"
+
+	Applicable to: Global
+
+??? example  "May choose [amount] additional [beliefType] beliefs when [foundingOrEnhancing] a religion"
+	Example: "May choose [3] additional [Follower] beliefs when [founding] a religion"
+
+	Applicable to: Global
+
+??? example  "May choose [amount] additional belief(s) of any type when [foundingOrEnhancing] a religion"
+	Example: "May choose [3] additional belief(s) of any type when [founding] a religion"
+
+	Applicable to: Global
+
+??? example  "[stats] when a city adopts this religion for the first time (modified by game speed)"
+	Example: "[+1 Gold, +2 Production] when a city adopts this religion for the first time (modified by game speed)"
+
+	Applicable to: Global
+
+??? example  "[stats] when a city adopts this religion for the first time"
+	Example: "[+1 Gold, +2 Production] when a city adopts this religion for the first time"
+
+	Applicable to: Global
+
+??? example  "[relativeAmount]% Natural religion spread [cityFilter]"
+	Example: "[+20]% Natural religion spread [in all cities]"
+
+	Applicable to: Global, FollowerBelief
+
+??? example  "Religion naturally spreads to cities [amount] tiles away"
+	Example: "Religion naturally spreads to cities [3] tiles away"
+
+	Applicable to: Global, FollowerBelief
+
+??? example  "May not generate great prophet equivalents naturally"
+	Applicable to: Global
+
+??? example  "[relativeAmount]% Faith cost of generating Great Prophet equivalents"
+	Example: "[+20]% Faith cost of generating Great Prophet equivalents"
+
+	Applicable to: Global
+
+??? example  "[baseUnitFilter] units built [cityFilter] can [action] [amount] extra times"
+	Example: "[Melee] units built [in all cities] can [Spread Religion] [3] extra times"
+
+	Applicable to: Global, FollowerBelief
+
+??? example  "Triggers victory"
+	Applicable to: Global
+
+??? example  "Triggers a Cultural Victory upon completion"
+	Applicable to: Global
+
+??? example  "May not annex cities"
+	Applicable to: Global
+
+??? example  ""Borrows" city names from other civilizations in the game"
+	Applicable to: Global
+
+??? example  "Cities are razed [amount] times as fast"
+	Example: "Cities are razed [3] times as fast"
+
+	Applicable to: Global
+
+??? example  "Receive a tech boost when scientific buildings/wonders are built in capital"
+	Applicable to: Global
+
+??? example  "[relativeAmount]% Golden Age length"
+	Example: "[+20]% Golden Age length"
+
+	Applicable to: Global
+
+??? example  "Population loss from nuclear attacks [relativeAmount]% [cityFilter]"
+	Example: "Population loss from nuclear attacks [+20]% [in all cities]"
+
+	Applicable to: Global
+
+??? example  "Damage to garrison from nuclear attacks [relativeAmount]% [cityFilter]"
+	Example: "Damage to garrison from nuclear attacks [+20]% [in all cities]"
+
 	Applicable to: Global
 
 ??? example  "Rebel units may spawn"
@@ -863,9 +882,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Will not be chosen for new games"
 	Applicable to: Nation
 
-??? example  "May not annex cities"
-	Applicable to: Nation
-
 ??? example  "Starts with [tech]"
 	Example: "Starts with [Agriculture]"
 
@@ -874,6 +890,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Starts with [policy] adopted"
 	Example: "Starts with [Oligarchy] adopted"
 
+	Applicable to: Nation
+
+??? example  "All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel."
+	Applicable to: Nation
+
+??? example  "Units ignore terrain costs when moving into any tile with Hills"
 	Applicable to: Nation
 
 ??? example  "Will not be displayed in Civilopedia"
@@ -890,6 +912,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Starting tech"
 	Applicable to: Tech
 
+??? example  "Can be continually researched"
+	Applicable to: Tech
+
 ??? example  "Only available"
 	Applicable to: Tech, Policy, FounderBelief, FollowerBelief, Building, Unit, Promotion, Improvement, Ruins
 
@@ -897,6 +922,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Tech, Building
 
 ## FounderBelief uniques
+!!! note ""
+
+    Uniques for Founder and Enhancer type Beliefs, that will apply to the founder of this religion
+
 ??? example  "[stats] for each global city following this religion"
 	Example: "[+1 Gold, +2 Production] for each global city following this religion"
 
@@ -908,6 +937,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: FounderBelief
 
 ## FollowerBelief uniques
+!!! note ""
+
+    Uniques for Pantheon and Follower type beliefs, that will apply to each city where the religion is the majority religion
+
 ??? example  "[relativeAmount]% [stat] from every follower, up to [relativeAmount]%"
 	Example: "[+20]% [Culture] from every follower, up to [+20]%"
 
@@ -1046,6 +1079,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Connects trade routes over water"
 	Applicable to: Building
 
+??? example  "Automatically built in all cities where it is buildable"
+	Applicable to: Building
+
 ??? example  "Creates a [improvementName] improvement on a specific tile"
 	Example: "Creates a [Trading Post] improvement on a specific tile"
 
@@ -1063,6 +1099,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building, Unit
 
 ## Unit uniques
+!!! note ""
+
+    Uniques that can be added to units, unit types, or promotions
+
 ??? example  "Founds a new city"
 	Applicable to: Unit
 
@@ -1306,6 +1346,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "All tiles cost 1 movement"
 	Applicable to: Unit
 
+??? example  "May travel on Water tiles without embarking"
+	Applicable to: Unit
+
 ??? example  "Can pass through impassable tiles"
 	Applicable to: Unit
 
@@ -1343,6 +1386,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Great Person - [comment]"
 	Example: "Great Person - [comment]"
+
+	Applicable to: Unit
+
+??? example  "Is part of Great Person group [comment]"
+	Example: "Is part of Great Person group [comment]"
 
 	Applicable to: Unit
 
@@ -1413,7 +1461,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Terrain
 
 ??? example  "Vegetation"
-	Applicable to: Terrain
+	Applicable to: Terrain, Improvement
 
 ??? example  "Tile provides yield without assigned population"
 	Applicable to: Terrain, Improvement
@@ -1514,11 +1562,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Terrain
 
 ## Improvement uniques
-??? example  "Ensures a minimum tile yield of [stats]"
-	Example: "Ensures a minimum tile yield of [+1 Gold, +2 Production]"
-
-	Applicable to: Improvement
-
 ??? example  "Can also be built on tiles adjacent to fresh water"
 	Applicable to: Improvement
 
@@ -1529,6 +1572,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[stats] for each adjacent [tileFilter]"
 	Example: "[+1 Gold, +2 Production] for each adjacent [Farm]"
+
+	Applicable to: Improvement
+
+??? example  "Ensures a minimum tile yield of [stats]"
+	Example: "Ensures a minimum tile yield of [+1 Gold, +2 Production]"
 
 	Applicable to: Improvement
 
@@ -1619,6 +1667,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Stockpiled"
 	Applicable to: Resource
 
+??? example  "City-level resource"
+	Applicable to: Resource
+
 ??? example  "Cannot be traded"
 	Applicable to: Resource
 
@@ -1652,8 +1703,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Resource
 
 ## Ruins uniques
-??? example  "Free [baseUnitFilter] found in the ruins"
-	Example: "Free [Melee] found in the ruins"
+??? example  "Free [unit] found in the ruins"
+	Example: "Free [Musketman] found in the ruins"
 
 	Applicable to: Ruins
 
@@ -1675,6 +1726,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: CityState
 
 ## Conditional uniques
+!!! note ""
+
+    Modifiers that can be added to other uniques to limit when they will be active
+
 ??? example  "&lt;for [amount] turns&gt;"
 	Example: "&lt;for [3] turns&gt;"
 
@@ -1942,6 +1997,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ## TriggerCondition uniques
+!!! note ""
+
+    Special conditionals that can be added to Triggerable uniques, to make them activate upon specific actions.
+
 ??? example  "&lt;upon discovering [tech]&gt;"
 	Example: "&lt;upon discovering [Agriculture]&gt;"
 
@@ -2000,6 +2059,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: TriggerCondition
 
 ## UnitTriggerCondition uniques
+!!! note ""
+
+    Special conditionals that can be added to UnitTriggerable uniques, to make them activate upon specific actions.
+
 ??? example  "&lt;upon defeating a [mapUnitFilter] unit&gt;"
 	Example: "&lt;upon defeating a [Wounded] unit&gt;"
 
@@ -2022,6 +2085,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: UnitTriggerCondition
 
 ## UnitActionModifier uniques
+!!! note ""
+
+    Modifiers that can be added to unit action uniques as conditionals
+
 ??? example  "&lt;by consuming this unit&gt;"
 	Applicable to: UnitActionModifier
 

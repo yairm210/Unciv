@@ -79,7 +79,7 @@ object UnitAutomation {
 
         // If everything around this unit is visible, we can stop.
         // Calculations below are quite expensive especially in the late game.
-        if (unit.currentTile.getTilesInDistance(5).any { !it.isVisible(unit.civ) }) {
+        if (unit.currentTile.getTilesInDistance(5).all { it.isVisible(unit.civ) }) {
             return false
         }
 
@@ -249,7 +249,13 @@ object UnitAutomation {
             return SpecificUnitAutomation.automateSettlerActions(unit, tilesWhereWeWillBeCaptured)
 
         if (unit.cache.hasUniqueToBuildImprovements)
-            return WorkerAutomation.automateWorkerAction(unit, tilesWhereWeWillBeCaptured)
+            return unit.civ.getWorkerAutomation().automateWorkerAction(unit, tilesWhereWeWillBeCaptured)
+
+        if (unit.cache.hasUniqueToCreateWaterImprovements){
+            if (!unit.civ.getWorkerAutomation().automateWorkBoats(unit))
+                tryExplore(unit)
+            return
+        }
 
         if (unit.hasUnique(UniqueType.MayFoundReligion)
                 && unit.civ.religionManager.religionState < ReligionState.Religion
@@ -262,9 +268,6 @@ object UnitAutomation {
                 && unit.civ.religionManager.mayEnhanceReligionAtAll(unit)
         )
             return SpecificUnitAutomation.enhanceReligion(unit)
-
-        if (unit.hasUnique(UniqueType.CreateWaterImprovements))
-            return SpecificUnitAutomation.automateWorkBoats(unit)
 
         // We try to add any unit in the capital we can, though that might not always be desirable
         // For now its a simple option to allow AI to win a science victory again
@@ -325,8 +328,7 @@ object UnitAutomation {
 
         // This has to come after the individual abilities for the great people that can also place
         // instant improvements (e.g. great scientist).
-        if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit)
-                || unit.hasUnique(UniqueType.ConstructImprovementInstantly)
+        if (unit.hasUnique(UniqueType.ConstructImprovementInstantly)
         ) {
             // catch great prophet for civs who can't found/enhance/spread religion
             // includes great people plus moddable units
@@ -694,7 +696,7 @@ object UnitAutomation {
     }
 
     private fun tryTakeBackCapturedCity(unit: MapUnit): Boolean {
-        var capturedCities = unit.civ.getKnownCivs().asSequence()
+        var capturedCities = unit.civ.getKnownCivs() // This is a Sequence
                 .flatMap { it.cities.asSequence() }
                 .filter {
                     unit.civ.isAtWarWith(it.civ) &&

@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.cityscreen
 
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -21,15 +20,17 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.CityAmbiencePlayer
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.disable
+import com.unciv.ui.components.extensions.packIfNeeded
+import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
+import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onDoubleClick
-import com.unciv.ui.components.extensions.packIfNeeded
-import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.tilegroups.CityTileGroup
 import com.unciv.ui.components.tilegroups.CityTileState
 import com.unciv.ui.components.tilegroups.TileGroupMap
@@ -37,9 +38,9 @@ import com.unciv.ui.components.tilegroups.TileSetStrings
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
-import com.unciv.ui.popups.closeAllPopups
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
 class CityScreen(
@@ -138,8 +139,8 @@ class CityScreen(
         stage.addActor(exitCityButton)
         update()
 
-        globalShortcuts.add(Input.Keys.LEFT) { page(-1) }
-        globalShortcuts.add(Input.Keys.RIGHT) { page(1) }
+        globalShortcuts.add(KeyboardBinding.PreviousCity) { page(-1) }
+        globalShortcuts.add(KeyboardBinding.NextCity) { page(1) }
     }
 
     internal fun update() {
@@ -149,6 +150,19 @@ class CityScreen(
         constructionsTable.isVisible = true
         constructionsTable.update(selectedConstruction)
 
+        updateWithoutConstructionAndMap()
+
+        // Rest of screen: Map of surroundings
+        updateTileGroups()
+        if (isPortrait()) mapScrollPane.apply {
+            // center scrolling so city center sits more to the bottom right
+            scrollX = (maxX - constructionsTable.getLowerWidth() - posFromEdge) / 2
+            scrollY = (maxY - cityStatsTable.packIfNeeded().height - posFromEdge + cityPickerTable.top) / 2
+            updateVisualScroll()
+        }
+    }
+
+    internal fun updateWithoutConstructionAndMap() {
         // Bottom right: Tile or selected construction info
         tileTable.update(selectedTile)
         tileTable.setPosition(stage.width - posFromEdge, posFromEdge, Align.bottomRight)
@@ -184,15 +198,6 @@ class CityScreen(
 
         // Top center: Annex/Raze button
         updateAnnexAndRazeCityButton()
-
-        // Rest of screen: Map of surroundings
-        updateTileGroups()
-        if (isPortrait()) mapScrollPane.apply {
-            // center scrolling so city center sits more to the bottom right
-            scrollX = (maxX - constructionsTable.getLowerWidth() - posFromEdge) / 2
-            scrollY = (maxY - cityStatsTable.packIfNeeded().height - posFromEdge + cityPickerTable.top) / 2
-            updateVisualScroll()
-        }
     }
 
     fun canCityBeChanged(): Boolean {
@@ -204,19 +209,16 @@ class CityScreen(
         fun isExistingImprovementValuable(tile: Tile, improvementToPlace: TileImprovement): Boolean {
             if (tile.improvement == null) return false
             val civInfo = city.civ
-            val existingStats = tile.stats.getImprovementStats(
+
+            val statDiffForNewImprovement = tile.stats.getStatDiffForImprovement(
                 tile.getTileImprovement()!!,
                 civInfo,
                 city,
                 cityUniqueCache
             )
-            val replacingStats = tile.stats.getImprovementStats(
-                improvementToPlace,
-                civInfo,
-                city,
-                cityUniqueCache
-            )
-            return Automation.rankStatsValue(existingStats, civInfo) > Automation.rankStatsValue(replacingStats, civInfo)
+
+            // If stat diff for new improvement is negative/zero utility, current improvement is valuable
+            return Automation.rankStatsValue(statDiffForNewImprovement, civInfo) <= 0
         }
 
         fun getPickImprovementColor(tile: Tile): Pair<Color, Float> {
@@ -305,24 +307,22 @@ class CityScreen(
     }
 
     private fun addTiles() {
-        val cityInfo = city
-
         val tileSetStrings = TileSetStrings()
-        val cityTileGroups = cityInfo.getCenterTile().getTilesInDistance(5)
-                .filter { cityInfo.civ.hasExplored(it) }
-                .map { CityTileGroup(cityInfo, it, tileSetStrings) }
+        val cityTileGroups = city.getCenterTile().getTilesInDistance(5)
+                .filter { city.civ.hasExplored(it) }
+                .map { CityTileGroup(city, it, tileSetStrings) }
 
         for (tileGroup in cityTileGroups) {
-            tileGroup.onClick { tileGroupOnClick(tileGroup, cityInfo) }
-            tileGroup.layerMisc.onClick { tileWorkedIconOnClick(tileGroup, cityInfo) }
-            tileGroup.layerMisc.onDoubleClick { tileWorkedIconDoubleClick(tileGroup, cityInfo) }
+            tileGroup.onClick { tileGroupOnClick(tileGroup, city) }
+            tileGroup.layerMisc.onClick { tileWorkedIconOnClick(tileGroup, city) }
+            tileGroup.layerMisc.onDoubleClick { tileWorkedIconDoubleClick(tileGroup, city) }
             tileGroups.add(tileGroup)
         }
 
         val tilesToUnwrap = mutableSetOf<CityTileGroup>()
         for (tileGroup in tileGroups) {
-            val xDifference = cityInfo.getCenterTile().position.x - tileGroup.tile.position.x
-            val yDifference = cityInfo.getCenterTile().position.y - tileGroup.tile.position.y
+            val xDifference = city.getCenterTile().position.x - tileGroup.tile.position.x
+            val yDifference = city.getCenterTile().position.y - tileGroup.tile.position.y
             //if difference is bigger than 5 the tileGroup we are looking for is on the other side of the map
             if (xDifference > 5 || xDifference < -5 || yDifference > 5 || yDifference < -5) {
                 //so we want to unwrap its position
@@ -341,12 +341,15 @@ class CityScreen(
         mapScrollPane.updateVisualScroll()
     }
 
+    // We contain a map...
+    override fun getShortcutDispatcherVetoer() = KeyShortcutDispatcherVeto.createTileGroupMapDispatcherVetoer()
+
     private fun tileWorkedIconOnClick(tileGroup: CityTileGroup, city: City) {
 
         if (!canChangeState || city.isPuppet) return
         val tile = tileGroup.tile
 
-        // Cycling as: Not-worked -> Worked -> Locked -> Not-worked
+        // Cycling as: Not-worked -> Worked  -> Not-worked
         if (tileGroup.tileState == CityTileState.WORKABLE) {
             if (!tile.providesYield() && city.population.getFreePopulation() > 0) {
                 city.workedTiles.add(tile.position)
@@ -396,6 +399,11 @@ class CityScreen(
     private fun tileWorkedIconDoubleClick(tileGroup: CityTileGroup, city: City) {
         if (!canChangeState || city.isPuppet || tileGroup.tileState != CityTileState.WORKABLE) return
         val tile = tileGroup.tile
+
+        // Double-click should lead to locked tiles - both for unworked AND worked tiles
+
+        if (!tile.isWorked()) // If not worked, try to work it first
+            tileWorkedIconOnClick(tileGroup, city)
 
         if (tile.isWorked())
             city.lockedTiles.add(tile.position)

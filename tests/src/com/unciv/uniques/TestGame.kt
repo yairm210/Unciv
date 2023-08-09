@@ -9,9 +9,9 @@ import com.unciv.logic.city.managers.CityFounder
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapSizeNew
+import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
-import com.unciv.logic.map.TileMap
 import com.unciv.models.Religion
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
@@ -49,15 +49,19 @@ class TestGame {
         RulesetCache.loadRulesets(noMods = true)
         ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
         gameInfo.ruleset = ruleset
+        gameInfo.difficulty = "Prince"
         gameInfo.difficultyObject = ruleset.difficulties["Prince"]!!
         gameInfo.speed = ruleset.speeds[Speed.DEFAULTFORSIMULATION]!!
         gameInfo.currentPlayerCiv = Civilization()  // Will be uninitialized, do not build on for tests
 
         // Create a tilemap, needed for city centers
-        gameInfo.tileMap = TileMap(1, ruleset, false)
+        gameInfo.tileMap = TileMap(0, ruleset, false)
         tileMap.mapParameters.mapSize = MapSizeNew(0, 0)
         tileMap.ruleset = ruleset
         tileMap.gameInfo = gameInfo
+
+        for (baseUnit in ruleset.units.values)
+            baseUnit.ruleset = ruleset
     }
 
     /** Makes a new rectangular tileMap and sets it in gameInfo. Removes all existing tiles. All new tiles have terrain [baseTerrain] */
@@ -134,28 +138,29 @@ class TestGame {
         replacePalace: Boolean = false,
         initialPopulation: Int = 0
     ): City {
-        val cityInfo = CityFounder().foundCity(civInfo, tile.position)
+        val city = CityFounder().foundCity(civInfo, tile.position)
         if (initialPopulation != 1)
-            cityInfo.population.addPopulation(initialPopulation - 1) // With defaults this will remove population
+            city.population.addPopulation(initialPopulation - 1) // With defaults this will remove population
 
         if (replacePalace && civInfo.cities.size == 1) {
             // Add a capital indicator without any other stats
             val palaceWithoutStats = createBuilding(UniqueType.IndicatesCapital.text)
-            cityInfo.cityConstructions.removeBuilding("Palace")
-            cityInfo.cityConstructions.addBuilding(palaceWithoutStats.name)
+            city.cityConstructions.removeBuilding("Palace")
+            city.cityConstructions.addBuilding(palaceWithoutStats.name)
         }
-        return cityInfo
+        return city
     }
 
     fun addTileToCity(city: City, tile: Tile) {
         city.tiles.add(tile.position)
     }
 
-    fun addUnit(name: String, civInfo: Civilization, tile: Tile): MapUnit {
+    fun addUnit(name: String, civInfo: Civilization, tile: Tile?): MapUnit {
         val baseUnit = ruleset.units[name]!!
         baseUnit.ruleset = ruleset
         val mapUnit = baseUnit.getMapUnit(civInfo)
-        mapUnit.putInTile(tile)
+        civInfo.units.addUnit(mapUnit)
+        if (tile!=null) mapUnit.putInTile(tile)
         return mapUnit
     }
 

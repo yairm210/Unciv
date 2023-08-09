@@ -8,7 +8,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.RulesetValidator
+import com.unciv.models.ruleset.validation.RulesetValidator
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.getConditionals
 import com.unciv.models.translations.getPlaceholderParameters
@@ -41,6 +41,16 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     val isAntiLocalEffect = params.contains("in other cities") || conditionals.any { it.type == UniqueType.ConditionalInOtherCities }
 
     fun hasFlag(flag: UniqueFlag) = type != null && type.flags.contains(flag)
+
+    fun hasTriggerConditional(): Boolean {
+        if(conditionals.none()) return false
+        return conditionals.any { conditional ->
+            conditional.type?.targetTypes?.any {
+                it.canAcceptUniqueTarget(UniqueTarget.TriggerCondition) || it.canAcceptUniqueTarget(UniqueTarget.UnitActionModifier)
+            }
+            ?: false
+        }
+    }
 
     fun isOfType(uniqueType: UniqueType) = uniqueType == type
 
@@ -110,7 +120,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         val uniquesWithNoErrors = finalPossibleUniques.filter {
             val unique = Unique(it)
             val errors = RulesetValidator(ruleset).checkUnique(
-                unique, true, "",
+                unique, true, null,
                 UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
             )
             errors.isEmpty()
@@ -126,8 +136,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         state: StateForConditionals
     ): Boolean {
 
-        val nonConditionalConditionTypes = setOf(UniqueTarget.TriggerCondition, UniqueTarget.UnitTriggerCondition, UniqueTarget.UnitActionModifier)
-        if (condition.type?.targetTypes?.any { it in nonConditionalConditionTypes } == true)
+        if (condition.type?.targetTypes?.any { it.modifierType == UniqueTarget.ModifierType.Other } == true)
             return true // not a filtering condition
 
         fun ruleset() = state.civInfo!!.gameInfo.ruleset
@@ -145,24 +154,28 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
         val stateBasedRandom by lazy { Random(state.hashCode()) }
 
+        fun getResourceAmount(resourceName: String): Int {
+            if (state.city != null) return state.city.getResourceAmount(resourceName)
+            if (state.civInfo != null) return state.civInfo.getResourceAmount(resourceName)
+            return 0
+        }
+
         return when (condition.type) {
             // These are 'what to do' and not 'when to do' conditionals
             UniqueType.ConditionalTimedUnique -> true
 
+            UniqueType.ConditionalChance -> stateBasedRandom.nextFloat() < condition.params[0].toFloat() / 100f
             UniqueType.ConditionalBeforeTurns -> state.civInfo != null && state.civInfo.gameInfo.turns < condition.params[0].toInt()
             UniqueType.ConditionalAfterTurns -> state.civInfo != null && state.civInfo.gameInfo.turns >= condition.params[0].toInt()
 
-            UniqueType.ConditionalChance -> stateBasedRandom.nextFloat() < condition.params[0].toFloat() / 100f
 
             UniqueType.ConditionalNationFilter -> state.civInfo?.nation?.matchesFilter(condition.params[0]) == true
             UniqueType.ConditionalWar -> state.civInfo?.isAtWar() == true
             UniqueType.ConditionalNotWar -> state.civInfo?.isAtWar() == false
-            UniqueType.ConditionalWithResource -> state.civInfo?.hasResource(condition.params[0]) == true
-            UniqueType.ConditionalWithoutResource -> state.civInfo?.hasResource(condition.params[0]) == false
-            UniqueType.ConditionalWhenAboveAmountResource -> state.civInfo != null
-                    && state.civInfo.getCivResourcesByName()[condition.params[1]]!! > condition.params[0].toInt()
-            UniqueType.ConditionalWhenBelowAmountResource -> state.civInfo != null
-                    && state.civInfo.getCivResourcesByName()[condition.params[1]]!! < condition.params[0].toInt()
+            UniqueType.ConditionalWithResource -> getResourceAmount(condition.params[0]) > 0
+            UniqueType.ConditionalWithoutResource -> getResourceAmount(condition.params[0]) <= 0
+            UniqueType.ConditionalWhenAboveAmountResource -> getResourceAmount(condition.params[1]) > condition.params[0].toInt()
+            UniqueType.ConditionalWhenBelowAmountResource -> getResourceAmount(condition.params[1]) < condition.params[0].toInt()
             UniqueType.ConditionalHappy ->
                 state.civInfo != null && state.civInfo.stats.happiness >= 0
             UniqueType.ConditionalBetweenHappiness ->
@@ -311,13 +324,12 @@ class LocalUniqueCache(val cache:Boolean = true) {
     fun forCityGetMatchingUniques(
         city: City,
         uniqueType: UniqueType,
-        stateForConditionals: StateForConditionals = StateForConditionals(
-            city.civ,
-            city
-        )
+        ignoreConditionals: Boolean = false
     ): Sequence<Unique> {
+        val stateForConditionals = if (ignoreConditionals) StateForConditionals.IgnoreConditionals
+        else StateForConditionals(city.civ, city)
         return get(
-            "city-${city.id}-${uniqueType.name}-${stateForConditionals}",
+            "city-${city.id}-${uniqueType.name}-${ignoreConditionals}",
             city.getMatchingUniques(uniqueType, stateForConditionals)
         )
     }
@@ -329,9 +341,11 @@ class LocalUniqueCache(val cache:Boolean = true) {
             civ
         )
     ): Sequence<Unique> {
+        val sequence = civ.getMatchingUniques(uniqueType, stateForConditionals)
+        if (!cache) return sequence // So we don't need to toString the stateForConditionals
         return get(
             "civ-${civ.civName}-${uniqueType.name}-${stateForConditionals}",
-            civ.getMatchingUniques(uniqueType, stateForConditionals)
+            sequence
         )
     }
 
@@ -354,8 +368,10 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
     /** Adds one [unique] unless it has a ConditionalTimedUnique conditional */
     fun addUnique(unique: Unique) {
         if (unique.conditionals.any { it.type == UniqueType.ConditionalTimedUnique }) return
-        if (!containsKey(unique.placeholderText)) this[unique.placeholderText] = ArrayList()
-        this[unique.placeholderText]!!.add(unique)
+
+        val existingArrayList = get(unique.placeholderText)
+        if (existingArrayList != null) existingArrayList.add(unique)
+        else this[unique.placeholderText] = arrayListOf(unique)
     }
 
     /** Calls [addUnique] on each item from [uniques] */

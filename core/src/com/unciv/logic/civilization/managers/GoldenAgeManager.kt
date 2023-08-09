@@ -49,7 +49,9 @@ class GoldenAgeManager : IsPartOfGameInfoSerialization {
 
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponEnteringGoldenAge))
             UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
-        civInfo.updateStatsForNextTurn()
+        //Golden Age can happen mid turn with Great Artist effects
+        for (city in civInfo.cities)
+            city.cityStats.update()
     }
 
     fun endTurn(happiness: Int) {

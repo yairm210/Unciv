@@ -16,18 +16,18 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.MayaCalendar
-import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.YearTextUtil
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.darken
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.setFontColor
 import com.unciv.ui.components.extensions.setFontSize
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toStringSigned
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.popups.popups
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
@@ -151,7 +151,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         }
 
         val strategicResources = worldScreen.gameInfo.ruleset.tileResources.values
-            .filter { it.resourceType == ResourceType.Strategic }
+            .filter { it.resourceType == ResourceType.Strategic && !it.hasUnique(UniqueType.CityResource) }
         for (resource in strategicResources) {
             val resourceImage = ImageGetter.getResourcePortrait(resource.name, 20f)
             val resourceLabel = "0".toLabel()
@@ -180,8 +180,9 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
             }
 
             val overviewButton = "Overview".toTextButton()
-            overviewButton.addTooltip('e')
-            overviewButton.onClick { worldScreen.openEmpireOverview() }
+            overviewButton.onActivation(binding = KeyboardBinding.EmpireOverview) {
+                worldScreen.openEmpireOverview()
+            }
 
             unitSupplyCell = add()
             add(overviewButton).pad(10f)
@@ -209,10 +210,8 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
             defaults().pad(10f)
 
             menuButton.color = Color.WHITE
-            menuButton.onClick {
-                val worldScreenMenuPopup = worldScreen.popups.firstOrNull { it is WorldScreenMenuPopup }
-                if (worldScreenMenuPopup != null) worldScreenMenuPopup.close()
-                else WorldScreenMenuPopup(worldScreen).open(force = true)
+            menuButton.onActivation(binding = KeyboardBinding.Menu) {
+                WorldScreenMenuPopup(worldScreen).open(force = true)
             }
 
             selectedCivLabel.setFontSize(25)

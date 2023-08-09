@@ -9,8 +9,10 @@ import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.colorFromRGB
-import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
@@ -42,40 +44,37 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
     init {
         defaults().left()
         add(techButtonHolder).colspan(4).row()
-        add(undoButtonHolder).padTop(10f).padRight(10f)
         add(policyButtonHolder).padTop(10f).padRight(10f)
         add(diplomacyButtonHolder).padTop(10f).padRight(10f)
-        add(espionageButtonHolder).padTop(10f)
+        add(espionageButtonHolder).padTop(10f).padRight(10f)
+        add(undoButtonHolder).padTop(10f).padRight(10f)
         add().growX()  // Allows Policy and Diplo buttons to keep to the left
 
         pickTechButton.background = BaseScreen.skinStrings.getUiBackground("WorldScreen/PickTechButton", BaseScreen.skinStrings.roundedEdgeRectangleShape, colorFromRGB(7, 46, 43))
         pickTechButton.defaults().pad(20f)
         pickTechButton.add(pickTechLabel)
-        techButtonHolder.onClick(UncivSound.Paper) {
+        techButtonHolder.onActivation(UncivSound.Paper, KeyboardBinding.TechnologyTree) {
             game.pushScreen(TechPickerScreen(viewingCiv))
         }
 
         undoButton.add(ImageGetter.getImage("OtherIcons/Resume")).size(30f).pad(15f)
-        undoButton.onClick {
-            Concurrency.run {
-                // Most of the time we won't load this, so we only set transients once we see it's relevant
-                worldScreen.preActionGameInfo.setTransients()
-                game.loadGame(worldScreen.preActionGameInfo)
-            }
+        undoButton.onActivation(binding = KeyboardBinding.Undo) {
+            handleUndo()
         }
 
         policyScreenButton.add(ImageGetter.getImage("PolicyIcons/Constitution")).size(30f).pad(15f)
-        policyButtonHolder.onClick {
+        policyButtonHolder.onActivation(binding = KeyboardBinding.SocialPolicies) {
             game.pushScreen(PolicyPickerScreen(worldScreen.selectedCiv, worldScreen.canChangeState))
         }
 
         diplomacyButton.add(ImageGetter.getImage("OtherIcons/DiplomacyW")).size(30f).pad(15f)
-        diplomacyButtonHolder.onClick {
+        diplomacyButtonHolder.onActivation(binding = KeyboardBinding.Diplomacy) {
             game.pushScreen(DiplomacyScreen(viewingCiv))
         }
+
         if (game.gameInfo!!.isEspionageEnabled()) {
             espionageButton.add(ImageGetter.getImage("OtherIcons/Spy_White")).size(30f).pad(15f)
-            espionageButtonHolder.onClick {
+            espionageButtonHolder.onActivation(binding = KeyboardBinding.Espionage) {
                 game.pushScreen(EspionageOverviewScreen(viewingCiv))
             }
         }
@@ -154,12 +153,21 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
     }
 
     private fun updateEspionageButton() {
-        if (viewingCiv.espionageManager.spyCount == 0) {
+        if (viewingCiv.espionageManager.spyList.isEmpty()) {
             espionageButtonHolder.touchable = Touchable.disabled
             espionageButtonHolder.actor = null
         } else {
             espionageButtonHolder.touchable = Touchable.enabled
             espionageButtonHolder.actor = espionageButton
+        }
+    }
+
+    private fun handleUndo() {
+        undoButton.disable()
+        Concurrency.run {
+            // Most of the time we won't load this, so we only set transients once we see it's relevant
+            worldScreen.preActionGameInfo.setTransients()
+            game.loadGame(worldScreen.preActionGameInfo)
         }
     }
 }

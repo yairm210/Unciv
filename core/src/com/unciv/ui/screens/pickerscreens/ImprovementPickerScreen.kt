@@ -15,10 +15,10 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
+import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onDoubleClick
-import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
 import kotlin.math.roundToInt
 
@@ -89,7 +89,7 @@ class ImprovementPickerScreen(
         for (improvement in ruleSet.tileImprovements.values) {
             var suggestRemoval = false
             // canBuildImprovement() would allow e.g. great improvements thus we need to exclude them - except cancel
-            if (improvement.turnsToBuild == 0 && improvement.name != Constants.cancelImprovementOrder) continue
+            if (improvement.turnsToBuild == -1 && improvement.name != Constants.cancelImprovementOrder) continue
             if (improvement.name == tile.improvement) continue // also checked by canImprovementBeBuiltHere, but after more expensive tests
             if (!unit.canBuildImprovement(improvement)) continue
 
@@ -143,7 +143,7 @@ class ImprovementPickerScreen(
                 proposedSolutions.add("Have this tile inside your empire")
             if (ImprovementBuildingProblem.MissingResources in unbuildableBecause) {
                 proposedSolutions.addAll(improvement.getMatchingUniques(UniqueType.ConsumesResources).filter {
-                    currentPlayerCiv.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt()
+                    currentPlayerCiv.getResourceAmount(it.params[1]) < it.params[0].toInt()
                 }.map { "Acquire more [$it]" })
             }
 
@@ -157,24 +157,12 @@ class ImprovementPickerScreen(
             val statIcons = getStatIconsTable(provideResource, removeImprovement)
 
             // get benefits of the new improvement
-            val stats = tile.stats.getImprovementStats(
+            val stats = tile.stats.getStatDiffForImprovement(
                 improvement,
                 currentPlayerCiv,
                 tile.getCity(),
                 cityUniqueCache
             )
-            // subtract the benefits of the replaced improvement, if any
-            val existingImprovement = tile.getTileImprovement()
-            if (existingImprovement != null && removeImprovement) {
-                val existingStats = tile.stats.getImprovementStats(
-                    existingImprovement,
-                    currentPlayerCiv,
-                    tile.getCity(),
-                    cityUniqueCache
-                )
-                stats.add(existingStats.times(-1.0f))
-            }
-
             val statsTable = getStatsTable(stats)
             statIcons.add(statsTable).padLeft(13f)
 

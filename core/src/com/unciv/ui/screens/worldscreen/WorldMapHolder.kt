@@ -9,11 +9,9 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -35,17 +33,18 @@ import com.unciv.models.helpers.MiscArrowTypes
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.SoundPlayer
-import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.UnitGroup
 import com.unciv.ui.components.ZoomableScrollPane
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.darken
+import com.unciv.ui.components.extensions.surroundWithCircle
+import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.extensions.surroundWithCircle
-import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.components.tilegroups.TileSetStrings
@@ -54,8 +53,8 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.ui.screens.worldscreen.bottombar.BattleTableHelpers.battleAnimation
-import com.unciv.utils.Log
 import com.unciv.utils.Concurrency
+import com.unciv.utils.Log
 import com.unciv.utils.launchOnGLThread
 import java.lang.Float.max
 
@@ -131,19 +130,13 @@ class WorldMapHolder(
                 continue
 
             // Right mouse click listener
-            tileGroup.addListener(object : ClickListener() {
-                init {
-                    button = Input.Buttons.RIGHT
+            tileGroup.onRightClick {
+                val unit = worldScreen.bottomUnitTable.selectedUnit
+                    ?: return@onRightClick
+                Concurrency.run("WorldScreenClick") {
+                    onTileRightClicked(unit, tileGroup.tile)
                 }
-
-                override fun clicked(event: InputEvent?, x: Float, y: Float) {
-                    val unit = worldScreen.bottomUnitTable.selectedUnit
-                        ?: return
-                    Concurrency.run("WorldScreenClick") {
-                        onTileRightClicked(unit, tileGroup.tile)
-                    }
-                }
-            })
+            }
         }
         actor = tileGroupMap
         setSize(worldScreen.stage.width, worldScreen.stage.height)
@@ -644,6 +637,9 @@ class WorldMapHolder(
         val isAirUnit = unit.baseUnit.movesLikeAirUnits()
         val moveTileOverlayColor = if (unit.isPreparingParadrop()) Color.BLUE else Color.WHITE
         val tilesInMoveRange = unit.movement.getReachableTilesInCurrentTurn()
+        // Prepare special Nuke blast radius display
+        val nukeBlastRadius = if (unit.baseUnit.isNuclearWeapon() && selectedTile != null && selectedTile != unit.getTile())
+            unit.getNukeBlastRadius() else -1
 
         // Highlight tiles within movement range
         for (tile in tilesInMoveRange) {
@@ -651,7 +647,10 @@ class WorldMapHolder(
 
             // Air-units have additional highlights
             if (isAirUnit && !unit.isPreparingAirSweep()) {
-                if (tile.aerialDistanceTo(unit.getTile()) <= unit.getRange()) {
+                if (nukeBlastRadius >= 0 && tile.aerialDistanceTo(selectedTile!!) <= nukeBlastRadius) {
+                    // The tile is within the nuke blast radius
+                    group.layerMisc.overlayTerrain(Color.FIREBRICK, 0.6f)
+                } else if (tile.aerialDistanceTo(unit.getTile()) <= unit.getRange()) {
                     // The tile is within attack range
                     group.layerMisc.overlayTerrain(Color.RED)
                 } else if (tile.isExplored(worldScreen.viewingCiv) && tile.aerialDistanceTo(unit.getTile()) <= unit.getRange()*2) {
@@ -670,7 +669,7 @@ class WorldMapHolder(
         }
 
         // Add back in the red markers for Air Unit Attack range since they can't move, but can still attack
-        if (unit.hasUnique(UniqueType.CannotMove) && isAirUnit && !unit.isPreparingAirSweep()) {
+        if (unit.cache.cannotMove && isAirUnit && !unit.isPreparingAirSweep()) {
             val tilesInAttackRange = unit.getTile().getTilesInDistanceRange(IntRange(1, unit.getRange()))
             for (tile in tilesInAttackRange) {
                 // The tile is within attack range
@@ -694,7 +693,12 @@ class WorldMapHolder(
         if (unit.isMilitary()) {
 
             val attackableTiles: List<AttackableTile> =
-                BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
+                if (nukeBlastRadius >= 0)
+                    selectedTile!!.getTilesInDistance(nukeBlastRadius)
+                        .filter { it.getFirstUnit() != null }
+                        .map { AttackableTile(unit.getTile(), it, 1f, null) }
+                        .toList()
+                else BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
                     .filter { it.tileToAttack.isVisible(unit.civ) }
                     .distinctBy { it.tileToAttack }
 

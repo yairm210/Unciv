@@ -238,7 +238,7 @@ class NotificationsScroll(
         val backgroundDrawable = BaseScreen.skinStrings.getUiBackground("WorldScreen/Notification", BaseScreen.skinStrings.roundedEdgeRectangleShape)
 
         val orderedNotifications = (additionalNotification + notifications.asReversed())
-            .groupBy { NotificationCategory.safeValueOf(it.category) ?: NotificationCategory.General }
+            .groupBy { it.category }
             .toSortedMap()  // This sorts by Category ordinal, so far intentional - the order of the grouped lists are unaffected
         for ((category, categoryNotifications) in orderedNotifications) {
             if (category == NotificationCategory.General)
@@ -351,7 +351,7 @@ class NotificationsScroll(
             add(listItem).pad(topBottomPad, listItemPad, topBottomPad, rightPadToScreenEdge)
             touchable = Touchable.enabled
             onClick {
-                notification.action?.execute(worldScreen)
+                notification.execute(worldScreen)
                 clickedNotification = notification
                 GUI.setUpdateWorldOnNextRender()
             }

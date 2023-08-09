@@ -378,13 +378,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun isEmbarked(): Boolean {
         if (!baseUnit.isLandUnit()) return false
+        if (cache.canMoveOnWater) return false
         return currentTile.isWater
     }
 
     fun isInvisible(to: Civilization): Boolean {
-        if (hasUnique(UniqueType.Invisible))
+        if (hasUnique(UniqueType.Invisible) && !to.isSpectator())
             return true
-        if (hasUnique(UniqueType.InvisibleToNonAdjacent))
+        if (hasUnique(UniqueType.InvisibleToNonAdjacent) && !to.isSpectator())
             return getTile().getTilesInDistance(1).none {
                 it.getUnits().any { unit -> unit.owner == to.civName }
             }
@@ -508,6 +509,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         var healing = when {
             tile.isCityCenter() -> 25
             tile.isWater && isFriendlyTerritory && (baseUnit.isWaterUnit() || isTransported) -> 20 // Water unit on friendly water
+            tile.isWater && isFriendlyTerritory && cache.canMoveOnWater -> 20 // Treated as a water unit on friendly water
             tile.isWater -> 0 // All other water cases
             isFriendlyTerritory -> 20 // Allied territory
             tile.getOwner() == null -> 10 // Neutral territory
@@ -557,10 +559,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun gift(recipient: Civilization) {
         civ.units.removeUnit(this)
         civ.cache.updateViewableTiles()
-        // all transported units should be destroyed as well
+        // all transported units should be gift as well
         currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }
-            .toList() // because we're changing the list
-            .forEach { unit -> unit.destroy() }
+            .forEach { unit -> unit.gift(recipient) }
         assignOwner(recipient)
         recipient.cache.updateViewableTiles()
     }
@@ -647,7 +648,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     private fun clearEncampment(tile: Tile) {
-        tile.changeImprovement(null)
+        tile.removeImprovement()
 
         // Notify City-States that this unit cleared a Barbarian Encampment, required for quests
         civ.gameInfo.getAliveCityStates()
@@ -698,7 +699,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     private fun getAncientRuinBonus(tile: Tile) {
-        tile.changeImprovement(null)
+        tile.removeImprovement()
         civ.ruinsManager.selectNextRuinsReward(this)
     }
 
@@ -788,6 +789,10 @@ class MapUnit : IsPartOfGameInfoSerialization {
         return true
     }
 
+    /** Gets a Nuke's blast radius from the BlastRadius unique, defaulting to 2. No check whether the unit actually is a Nuke. */
+    fun getNukeBlastRadius() = getMatchingUniques(UniqueType.BlastRadius)
+        // Don't check conditionals as these are not supported
+        .firstOrNull()?.params?.get(0)?.toInt() ?: 2
 
     private fun isAlly(otherCiv: Civilization): Boolean {
         return otherCiv == civ
@@ -817,7 +822,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun canBuildImprovement(improvement: TileImprovement, tile: Tile = currentTile): Boolean {
         // Workers (and similar) should never be able to (instantly) construct things, only build them
         // HOWEVER, they should be able to repair such things if they are pillaged
-        if (improvement.turnsToBuild == 0
+        if (improvement.turnsToBuild == -1
             && improvement.name != Constants.cancelImprovementOrder
             && tile.improvementInProgress != improvement.name
         ) return false

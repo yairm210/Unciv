@@ -112,8 +112,7 @@ class TradeEvaluation {
             }
 
             TradeType.Strategic_Resource -> {
-                val resources = civInfo.getCivResourcesByName()
-                val amountWillingToBuy = 2 - resources[offer.name]!!
+                val amountWillingToBuy = 2 - civInfo.getResourceAmount(offer.name)
                 if (amountWillingToBuy <= 0) return 0 // we already have enough.
                 val amountToBuyInOffer = min(amountWillingToBuy, offer.amount)
 
@@ -200,7 +199,7 @@ class TradeEvaluation {
             }
             TradeType.Luxury_Resource -> {
                 return when {
-                    civInfo.getCivResourcesByName()[offer.name]!! > 1 -> 250 // fair price
+                    civInfo.getResourceAmount(offer.name) > 1 -> 250 // fair price
                     civInfo.hasUnique(UniqueType.RetainHappinessFromLuxury) -> // If we retain 50% happiness, value at 375
                         750 - (civInfo.getMatchingUniques(UniqueType.RetainHappinessFromLuxury)
                             .first().params[0].toPercent() * 250).toInt()
@@ -221,8 +220,7 @@ class TradeEvaluation {
                             && it.isBuildable(civInfo) }
                 if (!canUseForUnits) return 50 * offer.amount
 
-                val amountLeft = civInfo.getCivResourcesByName()[offer.name]
-                    ?: throw Exception("Got a strategic resource offer but the the resource doesn't exist in this ruleset!")
+                val amountLeft = civInfo.getResourceAmount(offer.name)
 
                 // Each strategic resource starts costing 100 more when we ass the 5 resources baseline
                 // That is to say, if I have 4 and you take one away, that's 200

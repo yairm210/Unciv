@@ -1,8 +1,10 @@
-# How to create a UI skin for Unciv
+# Creating a UI skin
 
 **You should read the [Mods](Mods.md) page first before proceeding**
 
-In order to add a UI skin mod (yes, UI skins are just another type of mod), all you need to do is add your images under `Images/Skins/MyCoolSkinExample` and enable the mod as a permanent visual mod - the game will recognize the skin, and allow you to pick it in the options menu.
+In order to add a UI skin mod (yes, UI skins are just another type of mod), all you need to do is add your images under `Images/Skins/MyCoolSkinExample` and enable the mod as a permanent visual mod.
+
+The game will then recognize the skin, and allow you to pick it in the options menu.
 
 Just like [tilesets](Creating-a-custom-tileset.md), UI skins can be used to alter the appearance of Unciv. Please note that UI skins do not support custom icons and fonts and not every UI element can be customized yet too.
 
@@ -34,6 +36,7 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 <!--- DO NOT REMOVE OR MODIFY THIS LINE UI_ELEMENT_TABLE_REGION -->
 | Directory | Name | Default shape | Image |
 |---|:---:|:---:|---|
+| AnimatedMenu/ | Button | roundedEdgeRectangleMid | |
 | CityScreen/ | CityPickerTable | roundedEdgeRectangle | |
 | CityScreen/CitizenManagementTable/ | AvoidCell | null | |
 | CityScreen/CitizenManagementTable/ | FocusCell | null | |
@@ -52,6 +55,7 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | CityScreen/ConstructionInfoTable/ | Background | null | |
 | CityScreen/ConstructionInfoTable/ | SelectedConstructionTable | null | |
 | CivilopediaScreen/ | EntryButton | null | |
+| General/ | AnimatedMenu | roundedEdgeRectangle | |
 | General/ | Border | null | |
 | General/ | ExpanderTab | null | |
 | General/ | HealthBar | null | |
@@ -103,7 +107,6 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | TechPickerScreen/ | ResearchedFutureTechColor | 127, 50, 0 | |
 | TechPickerScreen/ | ResearchedTechColor | 255, 215, 0 | |
 | TechPickerScreen/ | TechButtonIconsOutline | roundedEdgeRectangleSmall | |
-| UnitUpgradeMenu/ | Button | roundedEdgeRectangleMid | |
 | VictoryScreen/ | CivGroup | roundedEdgeRectangle | |
 | WorldScreen/ | AirUnitTable | null | |
 | WorldScreen/ | BattleTable | null | |
@@ -127,9 +130,9 @@ These shapes are used all over Unciv and can be replaced to make a lot of UI ele
 | WorldScreen/TopBar/ | ResourceTable | null | |
 | WorldScreen/TopBar/ | RightAttachment | roundedEdgeRectangle | |
 | WorldScreen/TopBar/ | StatsTable | null | |
-| WorldScreenMusicPopup/TrackList/ | Down", tintColor = skin.getColor("positive | null | |
-| WorldScreenMusicPopup/TrackList/ | Over", tintColor = skin.getColor("highlight | null | |
-| WorldScreenMusicPopup/TrackList/ | Up", tintColor = skin.getColor("color | null | |
+| WorldScreenMusicPopup/TrackList/ | Down | null | |
+| WorldScreenMusicPopup/TrackList/ | Over | null | |
+| WorldScreenMusicPopup/TrackList/ | Up | null | |
 <!--- DO NOT REMOVE OR MODIFY THIS LINE UI_ELEMENT_TABLE_REGION_END -->
 
 ## SkinConfig

@@ -13,9 +13,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
+import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
+import com.unciv.models.metadata.ModCategories
 import com.unciv.models.metadata.ScreenSize
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.tr
@@ -234,8 +236,8 @@ private fun addTranslationGeneration(table: Table, optionsPopup: OptionsPopup) {
     val generateTranslationsButton = "Generate translation files".toTextButton()
 
     generateTranslationsButton.onActivation {
-        optionsPopup.tabs.selectPage("Advanced")
-        generateTranslationsButton.setText("Working...".tr())
+        optionsPopup.tabs.selectPage("Advanced")  // only because key F12 works from any page
+        generateTranslationsButton.setText(Constants.working.tr())
         Concurrency.run("WriteTranslations") {
             val result = TranslationFileWriter.writeNewTranslationFiles()
             launchOnGLThread {
@@ -250,12 +252,24 @@ private fun addTranslationGeneration(table: Table, optionsPopup: OptionsPopup) {
     generateTranslationsButton.addTooltip("F12", 18f)
     table.add(generateTranslationsButton).colspan(2).row()
 
+    val updateModCategoriesButton = "Update Mod categories".toTextButton()
+    updateModCategoriesButton.onActivation {
+        updateModCategoriesButton.setText(Constants.working.tr())
+        Concurrency.run("GithubTopicQuery") {
+            val result = ModCategories.mergeOnline()
+            launchOnGLThread {
+                updateModCategoriesButton.setText(result)
+            }
+        }
+    }
+    table.add(updateModCategoriesButton).colspan(2).row()
+
+    if (!UncivGame.Current.files.getSave("ScreenshotGenerationGame").exists()) return
 
     val generateScreenshotsButton = "Generate screenshots".toTextButton()
 
     generateScreenshotsButton.onActivation {
-        optionsPopup.tabs.selectPage("Advanced")
-        generateScreenshotsButton.setText("Working...".tr())
+        generateScreenshotsButton.setText(Constants.working.tr())
         Concurrency.run("GenerateScreenshot") {
             val extraImagesLocation = "../../extraImages"
             // I'm not sure why we need to advance the y by 2 for every screenshot... but that's the only way it remains centered
@@ -267,8 +281,8 @@ private fun addTranslationGeneration(table: Table, optionsPopup: OptionsPopup) {
             ))
         }
     }
-//     table.add(generateScreenshotsButton).colspan(2).row()
 
+    table.add(generateScreenshotsButton).colspan(2).row()
 }
 
 data class ScreenshotConfig(val width: Int, val height: Int, val screenSize: ScreenSize, var fileLocation:String, var centerTile:Vector2, var attackCity:Boolean=true)

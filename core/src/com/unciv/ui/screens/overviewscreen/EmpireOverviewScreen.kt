@@ -79,10 +79,6 @@ class EmpireOverviewScreen(
         stage.addActor(tabbedPager)
    }
 
-    override fun resume() {
-        game.replaceCurrentScreen(recreate())
-    }
-
     override fun recreate(): BaseScreen {
         tabbedPager.selectPage(-1)  // trigger deselect on _old_ instance so the tabs can persist their stuff
         updatePersistState(pageObjects)
@@ -112,6 +108,6 @@ class EmpireOverviewScreen(
         val worldScreen = GUI.getWorldScreen()
         worldScreen.notificationsScroll.oneTimeNotification = notification
         GUI.resetToWorldScreen()
-        notification.action?.execute(worldScreen)
+        notification.execute(worldScreen)
     }
 }

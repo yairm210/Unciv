@@ -302,7 +302,7 @@ class CityStats(val city: City) {
         if (currentConstruction is Building
             && city.civ.cities.isNotEmpty()
             && city.civ.getCapital() != null
-            && city.civ.getCapital()!!.cityConstructions.builtBuildings.contains(currentConstruction.name)
+            && city.civ.getCapital()!!.cityConstructions.isBuilt(currentConstruction.name)
         ) {
             for (unique in city.getMatchingUniques(UniqueType.PercentProductionBuildingsInCapital))
                 addUniqueStats(unique, Stat.Production, unique.params[0].toFloat())
@@ -384,6 +384,14 @@ class CityStats(val city: City) {
     fun updateCityHappiness(statsFromBuildings: StatTreeNode) {
         val civInfo = city.civ
         val newHappinessList = LinkedHashMap<String, Float>()
+        // This calculation seems weird to me.
+        // Suppose we calculate the modifier for an AI (non-human) player when the game settings has difficulty level 'prince'.
+        // We first get the difficulty modifier for this civilization, which results in the 'chieftain' modifier (0.6) being used,
+        // as this is a non-human player. Then we multiply that by the ai modifier in general, which is 1.0 for prince.
+        // The end result happens to be 0.6, which seems correct. However, if we were playing on chieftain difficulty,
+        // we would get back 0.6 twice and the modifier would be 0.36. Thus, in general there seems to be something wrong here
+        // I don't know enough about the original whether they do something similar or not and can't be bothered to find where
+        // in the source code this calculation takes place, but it would surprise me if they also did this double multiplication thing. ~xlenstra
         var unhappinessModifier = civInfo.getDifficulty().unhappinessModifier
         if (!civInfo.isHuman())
             unhappinessModifier *= civInfo.gameInfo.getDifficulty().aiUnhappinessModifier
@@ -394,7 +402,11 @@ class CityStats(val city: City) {
         if (civInfo.hasUnique(UniqueType.UnhappinessFromCitiesDoubled))
             unhappinessFromCity *= 2f //doubled for the Indian
 
-        newHappinessList["Cities"] = unhappinessFromCity * unhappinessModifier
+        var uniqueUnhappinessModifier = 0f
+        for (unique in civInfo.getMatchingUniques(UniqueType.UnhappinessFromCitiesPercentage))
+            uniqueUnhappinessModifier += unique.params[0].toFloat()
+
+        newHappinessList["Cities"] = unhappinessFromCity * unhappinessModifier * uniqueUnhappinessModifier.toPercent()
 
         var unhappinessFromCitizens = city.population.population.toFloat()
 

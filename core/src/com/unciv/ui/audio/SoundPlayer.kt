@@ -160,9 +160,12 @@ object SoundPlayer {
      * and lastly Unciv's own assets/sounds. Will fail silently if the sound file cannot be found.
      *
      * This will wait for the Stream to become ready (Android issue) if necessary, and do so on a
-     * separate thread. No new thread is created if the sound can be played immediately.
+     * separate thread. **No new thread is created** if the sound can be played immediately.
+     *
+     * That also means that it's the caller's responsibility to ensure calling this only on the GL thread.
      *
      * @param sound The sound to play
+     * @see playRepeated
      */
     fun play(sound: UncivSound) {
         val volume = UncivGame.Current.settings.soundEffectsVolume
@@ -174,6 +177,22 @@ object SoundPlayer {
             Concurrency.run("DelayedSound") {
                 delay(initialDelay.toLong())
                 while (resource.play(volume) == -1L) delay(20L)
+            }
+        }
+    }
+
+    /** Play a sound repeatedly - e.g. to express that an action was applied multiple times or to multiple targets.
+     *
+     *  Runs the actual sound player decoupled on the GL thread unlike [SoundPlayer.play], which leaves that responsibility to the caller.
+     */
+    fun playRepeated(sound: UncivSound, count: Int = 2, delay: Long = 200) {
+        Concurrency.runOnGLThread {
+            SoundPlayer.play(sound)
+            if (count > 1) Concurrency.run {
+                repeat(count - 1) {
+                    delay(delay)
+                    Concurrency.runOnGLThread { SoundPlayer.play(sound) }
+                }
             }
         }
     }

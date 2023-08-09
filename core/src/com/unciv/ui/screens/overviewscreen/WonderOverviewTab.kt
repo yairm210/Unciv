@@ -231,7 +231,7 @@ class WonderInfo {
         }
 
         for (city in gameInfo.getCities()) {
-            for (wonderName in city.cityConstructions.builtBuildings.intersect(wonderIndexMap.keys)) {
+            for (wonderName in city.cityConstructions.getBuiltBuildings().map { it.name }.toList().intersect(wonderIndexMap.keys)) {
                 val index = wonderIndexMap[wonderName]!!
                 val status = when {
                     viewingPlayer == city.civ -> WonderStatus.Owned

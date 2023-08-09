@@ -1,3 +1,227 @@
+## 4.7.13
+
+Improvement improvements!
+
+- More accurate improvement stat previews for edge cases (e.g. removing Forest on Forest + Lumber Mill)
+- 'Create improvement' uniques can create roads and remove features
+
+Set initial screen color on Desktop so it's not black-to-blue
+
+Fixed rare AI City State Influence crash
+
+By SomeTroglodyte:
+- Ruleset validator: Tilesets
+- Minor Mod Manager fixes (mods having dashes in their repo name not shown right away)
+
+## 4.7.12
+
+AI workers remove detrimental features
+
+Free buildings are converted to civ-specific replacements
+
+Double-click on worked tile icon locks tile
+
+Update Windows JDK to Adoptium JDK 11
+
+Better untyped unique recognition in mod checker - By SomeTroglodyte
+
+Gifting a unit transport gifts the contained units - By tuvus
+
+Allow free unit triggers for any location - By SeventhM
+
+## 4.7.11
+
+By SomeTroglodyte:
+- Civilopedia shows origin mod for objects
+- Key shortcuts for CityScreen
+- Nukes behave closer to Civ V
+- Local mod folder names preserved for strangely-named mods
+- modding: Better unique warnings
+
+By SeventhM:
+- Fixed behaviour for units that can move on water
+- Fix: Resources with the same source subtract correctly
+- Fix: Free buildings from other buildings show up correctly
+
+Fix: Spectator can see all invisible units - By tuvus
+
+Fix: Better Fog Busting AI  - By itanasi
+
+## 4.7.10
+
+BaseUnit unique-finding always takes Type uniques into account
+
+Automated AI workers now replace forts - By tuvus
+
+Fix issues when adding/removing buildings - By SeventhM
+
+NotificationAction compatibility patch  - By SomeTroglodyte
+
+Text correction for Ottomans war declaration - By LenaBullens
+
+## 4.7.9
+
+Minor memory improvement
+
+By SomeTroglodyte:
+- Little Promotion UX improvements
+- Modding: Better unique-to-object compliance testing
+
+By SeventhM:
+- Fix issues from gaining free beliefs
+- Fix issues when transferring capitals
+- Avoid built buildings
+
+## 4.7.8
+
+Modding: City-level resources!
+
+Display resource uniques in civilopedia
+
+Memory improvements
+
+Added notification for destruction of tile improvements via unit ability  - By random271
+
+Translation updates
+
+## 4.7.7
+
+Fixed India's 'double unhappiness' unique
+
+By SeventhM:
+- Fix buildings/units not triggering and golden age stat updates
+- Avoid crashes with incorrect condtionals
+- Scaling purchase costs for faith/culture/science/etc. with speed
+- Better support for lacking a capital
+
+By SomeTroglodyte:
+- AI support for Alpha Frontier-like Workers
+- Prevent activation of disabled actors via keyboard
+- Key shortcuts for Main Menu Screen
+
+Fix civilopedia gold cost  - By Skekdog
+
+Other modding fixes :)
+
+## 4.7.6
+
+"Requires a [buildingFilter] in at least [amount] cities" works correctly with filters that aren't building names
+
+AI only buys tiles contiguous to the current city tiles
+
+Undo Move button moved to the right, so other buttons stay in place
+
+By SeventhM:
+- Check for trigger conditions on new game techs
+- Fix when units can be purchased
+
+On City Raze, previous owner doesn't pay Road Maintenance  - By itanasi
+
+By SomeTroglodyte:
+- Defense against circular references in Promotions
+
+## 4.7.5
+
+Solved concurrency crashes due to players keypress-activating disabled buttons
+
+'liberate city and resurrect civ' no longer crashes
+
+AI no longer purchases non-contiguous tiles
+
+City name translation for conquered popup does not get icon
+
+Promotion picker allowing picking chains in one go - By SomeTroglodyte
+
+Fixing workers dying in mountains bug for Carthage - By random271
+
+Check for trigger uniques when starting and recaluating population - By SeventhM
+
+## 4.7.4
+
+Zoom in/out of history charts  - By JackRainy
+
+Removing old buildings on enemy capital (when not last city) no longer crashes
+
+Liberating city with multiple units in it no longer errors
+
+By SomeTroglodyte:
+- Fixed ruleset error crashes
+- Fixed loading of mods with unconventional names
+-
+By SeventhM:
+- Modding: Allow Great People to have different counters
+- Tech column validation for mods
+- Solved crashes from undefined building costs
+
+Ensure more unit uniques work - By xlenstra
+
+## 4.7.3
+
+Linked Unit Types and Promotions in Civilopedia
+
+Added new unique - "Automatically built in all cities where it is buildable"
+
+By SeventhM:
+- Added unique "May travel on Water tiles without embarking"
+- Change the default cost of buildings and the default time of tile improvements
+
+By xlenstra:
+- Spies now occasionally steal technologies
+- Spies in cities that are captured or destroyed now go to the hideout
+
+Better mod conflict prevention - By SomeTroglodyte
+
+## 4.7.2
+
+Resolved performance problem
+
+Performance improvements!
+
+Automated air units no longer lose "automated" state after moving between cities
+
+By SomeTroglodyte:
+- Fix conditionals for trigger upon declaring friendship running twice
+- More keyboard binding work - World, World Menu Popup, WASD
+- Fixed CannotMove unique
+- Fix translation problems due to nested brackets in getDifferences
+
+## 4.7.1
+
+AI:
+- AI prioritizes purchace path to highly desirable tiles
+- AI prioritizes work boats, and creates work boats for close non-contiguous cities
+- Workers try to build roads utilizing existing roads, and railroads overriding existing roads
+
+Modding: UnitFilter allows TechFilter for unit's required tech
+
+By SomeTroglodyte:
+- Long press support
+- Improve Alert Popup scrolling
+- Fix vulnerability of new NationPickerPopup icon view
+- Keyboard bindings - collision check
+
+## 4.7.0
+
+AI:
+- Improved AI city location picking
+- AI more willing to risk happiness to create a new city
+- AI doesn't construct Settler before Worker
+- AI Workers remove fallout
+
+Global politics table includes current civ
+
+Fixed crash when resuming Overview screen
+
+Fixed background errors
+
+By SomeTroglodyte:
+- Nation picker - Icon View & improvements
+- Expander tab animations :)
+- Key bindings options
+- Improved "connected to Capital" handling
+
+Always select military unit first - By WhoIsJohannes
+
 ## 4.6.19
 
 Modding:

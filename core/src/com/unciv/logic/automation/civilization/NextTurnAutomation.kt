@@ -8,8 +8,6 @@ import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
-import com.unciv.models.ruleset.INonPerpetualConstruction
-import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
@@ -33,8 +31,10 @@ import com.unciv.models.Counter
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.ModOptionsConstants
+import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.Victory
@@ -48,6 +48,7 @@ import com.unciv.ui.screens.victoryscreen.RankingType
 import java.util.SortedMap
 import java.util.TreeMap
 import kotlin.math.min
+import kotlin.random.Random
 
 object NextTurnAutomation {
 
@@ -292,7 +293,9 @@ object NextTurnAutomation {
     }
 
     private fun useGoldForCityStates(civ: Civilization) {
-        val knownCityStates = civ.getKnownCivs().filter { it.isCityState() }
+        // RARE EDGE CASE: If you ally with a city-state, you may reveal more map that includes ANOTHER civ!
+        // So if we don't lock this list, we may later discover that there are more known civs, concurrent modification exception!
+        val knownCityStates = civ.getKnownCivs().filter { it.isCityState() }.toList()
 
         // canBeMarriedBy checks actual cost, but it can't be below 500*speedmodifier, and the later check is expensive
         if (civ.gold >= 330 && civ.getHappiness() > 0 && civ.hasUnique(UniqueType.CityStateCanBeBoughtForGold)) {
@@ -362,16 +365,17 @@ object NextTurnAutomation {
             val highlyDesirableTilesInCity = city.tilesInRange.filter {
                 val hasNaturalWonder = it.naturalWonder != null
                 val hasLuxuryCivDoesntOwn =
-                        it.hasViewableResource(civInfo) &&
-                                it.tileResource.resourceType == ResourceType.Luxury &&
-                                !civInfo.hasResource(it.resource!!)
+                    it.hasViewableResource(civInfo)
+                        && it.tileResource.resourceType == ResourceType.Luxury
+                        && !civInfo.hasResource(it.resource!!)
                 val hasResourceCivHasNoneOrLittle =
-                        (it.hasViewableResource(civInfo)
-                                && it.tileResource.resourceType == ResourceType.Strategic &&
-                                (civInfo.getCivResourcesByName()[it.resource!!] ?: 0) <= 3)
+                    it.hasViewableResource(civInfo)
+                        && it.tileResource.resourceType == ResourceType.Strategic
+                        && civInfo.getResourceAmount(it.resource!!) <= 3
+
                 it.isVisible(civInfo) && it.getOwner() == null
-                        && it.neighbors.any { neighbor -> neighbor.getCity() == city }
-                        (hasNaturalWonder || hasLuxuryCivDoesntOwn || hasResourceCivHasNoneOrLittle)
+                    && it.neighbors.any { neighbor -> neighbor.getCity() == city }
+                (hasNaturalWonder || hasLuxuryCivDoesntOwn || hasResourceCivHasNoneOrLittle)
             }
             for (highlyDesirableTileInCity in highlyDesirableTilesInCity) {
                 highlyDesirableTiles.getOrPut(highlyDesirableTileInCity) { mutableSetOf() }
@@ -384,12 +388,14 @@ object NextTurnAutomation {
             val cityWithLeastCostToBuy = highlyDesirableTile.value.minBy {
                 it.getCenterTile().aerialDistanceTo(highlyDesirableTile.key)
             }
-            val bfs = BFS(cityWithLeastCostToBuy.getCenterTile()) {
-                it.getOwner() == null || it.getOwner() == civInfo
+            val bfs = BFS(cityWithLeastCostToBuy.getCenterTile())
+            {
+                it.getOwner() == null || it.owningCity == cityWithLeastCostToBuy
             }
             bfs.stepUntilDestination(highlyDesirableTile.key)
             val tilesThatNeedBuying =
-                    bfs.getPathTo(highlyDesirableTile.key).filter { it.getOwner() != civInfo }
+                    bfs.getPathTo(highlyDesirableTile.key).filter { it.getOwner() == null }
+                        .toList().reversed() // getPathTo is from destination to source
 
             // We're trying to acquire everything and revert if it fails, because of the difficult
             // way how tile acquisition cost is calculated. Everytime you buy a tile, the next one
@@ -600,8 +606,7 @@ object NextTurnAutomation {
 
         for (resource in civInfo.gameInfo.spaceResources) {
             // Have enough resources already
-            val resourceCount = civInfo.getCivResourcesByName()[resource] ?: 0
-            if (resourceCount >= Automation.getReservedSpaceResourceAmount(civInfo))
+            if (civInfo.getResourceAmount(resource) >= Automation.getReservedSpaceResourceAmount(civInfo))
                 continue
 
             val unitToDisband = civInfo.units.getCivUnits()
@@ -613,7 +618,7 @@ object NextTurnAutomation {
                 if (city.hasSoldBuildingThisTurn)
                     continue
                 val buildingToSell = civInfo.gameInfo.ruleset.buildings.values.filter {
-                        it.name in city.cityConstructions.builtBuildings
+                        city.cityConstructions.isBuilt(it.name)
                         && it.requiresResource(resource)
                         && it.isSellable()
                         && it.name !in civInfo.civConstructions.getFreeBuildings(city.id) }
@@ -836,8 +841,10 @@ object NextTurnAutomation {
         val closestCities = getClosestCities(civInfo, otherCiv) ?: return 0
         val baseForce = 30f
 
-        val ourCombatStrength = civInfo.getStatForRanking(RankingType.Force).toFloat() + baseForce + CityCombatant(civInfo.getCapital()!!).getCityStrength()
-        var theirCombatStrength = otherCiv.getStatForRanking(RankingType.Force).toFloat() + baseForce + CityCombatant(otherCiv.getCapital()!!).getCityStrength()
+        var ourCombatStrength = civInfo.getStatForRanking(RankingType.Force).toFloat() + baseForce
+        if (civInfo.getCapital() != null) ourCombatStrength += CityCombatant(civInfo.getCapital()!!).getCityStrength()
+        var theirCombatStrength = otherCiv.getStatForRanking(RankingType.Force).toFloat() + baseForce
+        if(otherCiv.getCapital() != null) theirCombatStrength += CityCombatant(otherCiv.getCapital()!!).getCityStrength()
 
         //for city-states, also consider their protectors
         if (otherCiv.isCityState() and otherCiv.cityStateFunctions.getProtectorCivs().isNotEmpty()) {
@@ -940,7 +947,7 @@ object NextTurnAutomation {
             return motivationSoFar
         }
 
-        val reachableEnemyCitiesBfs = BFS(civInfo.getCapital()!!.getCenterTile()) { isTileCanMoveThrough(it) }
+        val reachableEnemyCitiesBfs = BFS(civInfo.getCapital(true)!!.getCenterTile()) { isTileCanMoveThrough(it) }
         reachableEnemyCitiesBfs.stepToEnd()
         val reachableEnemyCities = otherCiv.cities.filter { reachableEnemyCitiesBfs.hasReachedTile(it.getCenterTile()) }
         if (reachableEnemyCities.isEmpty()) return 0 // Can't even reach the enemy city, no point in war.
@@ -1037,43 +1044,65 @@ object NextTurnAutomation {
         if (civInfo.isCityState()) return
         if (civInfo.isAtWar()) return // don't train settlers when you could be training troops.
         if (civInfo.wantsToFocusOn(Victory.Focus.Culture) && civInfo.cities.size > 3) return
-        if (civInfo.cities.none() || civInfo.getHappiness() <= civInfo.cities.size + 5) return
+        if (civInfo.cities.none()) return
+        if (civInfo.getHappiness() <= civInfo.cities.size) return
 
         val settlerUnits = civInfo.gameInfo.ruleset.units.values
                 .filter { it.hasUnique(UniqueType.FoundCity) && it.isBuildable(civInfo) }
         if (settlerUnits.isEmpty()) return
-        if (civInfo.units.getCivUnits().none { it.hasUnique(UniqueType.FoundCity) }
-                && civInfo.cities.none {
-                    val currentConstruction = it.cityConstructions.getCurrentConstruction()
-                    currentConstruction is BaseUnit && currentConstruction.hasUnique(UniqueType.FoundCity)
-                }) {
+        if (!civInfo.units.getCivUnits().none { it.hasUnique(UniqueType.FoundCity) }) return
 
-            val bestCity = civInfo.cities.filterNot { it.isPuppet }.maxByOrNull { it.cityStats.currentCityStats.production }!!
-            if (bestCity.cityConstructions.builtBuildings.size > 1) // 2 buildings or more, otherwise focus on self first
-                bestCity.cityConstructions.currentConstructionFromQueue = settlerUnits.minByOrNull { it.cost }!!.name
+        if (civInfo.cities.any {
+                val currentConstruction = it.cityConstructions.getCurrentConstruction()
+                currentConstruction is BaseUnit && currentConstruction.hasUnique(UniqueType.FoundCity)
+            }) return
+
+        if (civInfo.units.getCivUnits().none { it.isMilitary() }) return // We need someone to defend him first
+
+        val workersBuildableForThisCiv = civInfo.gameInfo.ruleset.units.values.any {
+            it.hasUnique(UniqueType.BuildImprovements)
+                && it.isBuildable(civInfo)
         }
+
+        val bestCity = civInfo.cities.filterNot { it.isPuppet }
+            // If we can build workers, then we want AT LEAST 2 improvements, OR a worker nearby.
+            // Otherwise, AI tries to produce settlers when it can hardly sustain itself
+            .filter {
+                !workersBuildableForThisCiv
+                    || it.getCenterTile().getTilesInDistance(2).count { it.improvement!=null } > 1
+                    || it.getCenterTile().getTilesInDistance(3).any { it.civilianUnit?.hasUnique(UniqueType.BuildImprovements)==true }
+            }
+            .maxByOrNull { it.cityStats.currentCityStats.production }
+            ?: return
+        if (bestCity.cityConstructions.getBuiltBuildings().count() > 1) // 2 buildings or more, otherwise focus on self first
+            bestCity.cityConstructions.currentConstructionFromQueue = settlerUnits.minByOrNull { it.cost }!!.name
     }
 
     // Technically, this function should also check for civs that have liberated one or more cities
     // However, that can be added in another update, this PR is large enough as it is.
-    private fun tryVoteForDiplomaticVictory(civInfo: Civilization) {
-        if (!civInfo.mayVoteForDiplomaticVictory()) return
-        val chosenCiv: String? = if (civInfo.isMajorCiv()) {
+    private fun tryVoteForDiplomaticVictory(civ: Civilization) {
+        if (!civ.mayVoteForDiplomaticVictory()) return
 
-            val knownMajorCivs = civInfo.getKnownCivs().filter { it.isMajorCiv() }
+        val chosenCiv: String? = if (civ.isMajorCiv()) {
+
+            val knownMajorCivs = civ.getKnownCivs().filter { it.isMajorCiv() }
             val highestOpinion = knownMajorCivs
                 .maxOfOrNull {
-                    civInfo.getDiplomacyManager(it).opinionOfOtherCiv()
+                    civ.getDiplomacyManager(it).opinionOfOtherCiv()
                 }
 
-            if (highestOpinion == null) null
-            else knownMajorCivs.filter { civInfo.getDiplomacyManager(it).opinionOfOtherCiv() == highestOpinion}.toList().random().civName
+            if (highestOpinion == null) null  // Abstain if we know nobody
+            else if (highestOpinion < -80 || highestOpinion < -40 && highestOpinion + Random.Default.nextInt(40) < -40)
+                null // Abstain if we hate everybody (proportional chance in the RelationshipLevel.Enemy range - lesser evil)
+            else knownMajorCivs
+                .filter { civ.getDiplomacyManager(it).opinionOfOtherCiv() == highestOpinion }
+                .toList().random().civName
 
         } else {
-            civInfo.getAllyCiv()
+            civ.getAllyCiv()
         }
 
-        civInfo.diplomaticVoteForCiv(chosenCiv)
+        civ.diplomaticVoteForCiv(chosenCiv)
     }
 
     private fun issueRequests(civInfo: Civilization) {
