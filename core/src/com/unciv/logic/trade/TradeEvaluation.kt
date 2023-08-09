@@ -76,7 +76,7 @@ class TradeEvaluation {
 
         // If we're making a peace treaty, don't try to up the bargain for people you don't like.
         // Leads to spartan behaviour where you demand more, the more you hate the enemy...unhelpful
-        if (trade.ourOffers.none { it.name == Constants.peaceTreaty || it.name == Constants.researchAgreement }) {
+        if (trade.ourOffers.none { it.name == Constants.peaceTreaty || it.name == Constants.researchAgreement || it.name == Constants.defensivePact }) {
             val relationshipLevel = evaluator.getDiplomacyManager(tradePartner).relationshipIgnoreAfraid()
             if (relationshipLevel == RelationshipLevel.Enemy) sumOfOurOffers = (sumOfOurOffers * 1.5).toInt()
             else if (relationshipLevel == RelationshipLevel.Unforgivable) sumOfOurOffers *= 2

@@ -126,7 +126,7 @@ object NextTurnAutomation {
              * the same resource to ANOTHER civ in this turn. Complicated!
              */
             civInfo.tradeRequests.remove(tradeRequest)
-            if (TradeEvaluation().isTradeAcceptable(tradeLogic.currentTrade, civInfo, otherCiv)) {
+            if (TradeEvaluation().isTradeAcceptable(tradeLogic.currentTrade, civInfo, otherCiv) || otherCiv.isHuman()) {
                 tradeLogic.acceptTrade()
                 otherCiv.addNotification("[${civInfo.civName}] has accepted your trade request", NotificationCategory.Trade, NotificationIcon.Trade, civInfo.civName)
             } else {
@@ -270,7 +270,7 @@ object NextTurnAutomation {
             if (popupAlert.type == AlertType.DeclarationOfFriendship) {
                 val requestingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
                 val diploManager = civInfo.getDiplomacyManager(requestingCiv)
-                if (diploManager.isRelationshipLevelGT(RelationshipLevel.Neutral)
+                if (true || diploManager.isRelationshipLevelGT(RelationshipLevel.Neutral)
                         && !diploManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.Denunciation)) {
                     diploManager.signDeclarationOfFriendship()
                     requestingCiv.addNotification("We have signed a Declaration of Friendship with [${civInfo.civName}]!", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
@@ -279,7 +279,7 @@ object NextTurnAutomation {
             if (popupAlert.type == AlertType.DefensivePact) {
                 val requestingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
                 val diploManager = civInfo.getDiplomacyManager(requestingCiv)
-                if (diploManager.isRelationshipLevelGT(RelationshipLevel.Friend) //Todo: change this
+                if (true || diploManager.isRelationshipLevelGT(RelationshipLevel.Friend) //Todo: change this
                     && !diploManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.Denunciation)) {
                     diploManager.signDefensivePact()
                     requestingCiv.addNotification("We have signed a Defensive Pact with [${civInfo.civName}]!", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
@@ -968,7 +968,7 @@ object NextTurnAutomation {
     private fun offerPeaceTreaty(civInfo: Civilization) {
         if (!civInfo.isAtWar() || civInfo.cities.isEmpty() || civInfo.diplomacy.isEmpty()) return
 
-        val enemiesCiv = civInfo.diplomacy.filter { it.value.diplomaticStatus == DiplomaticStatus.War }
+        val enemiesCiv = civInfo.diplomacy.filter { it.value.isAtWar() }
                 .map { it.value.otherCiv() }
                 .filterNot { it == civInfo || it.isBarbarian() || it.cities.isEmpty() }
                 .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedPeace) }

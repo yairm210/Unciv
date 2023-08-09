@@ -485,7 +485,7 @@ class WorldScreen(
 
         displayTutorial(TutorialTrigger.EnemyCityNeedsConqueringWithMeleeUnit) {
             viewingCiv.diplomacy.values.asSequence()
-                    .filter { it.diplomaticStatus == DiplomaticStatus.War }
+                    .filter { it.isAtWar() }
                     .map { it.otherCiv() } // we're now lazily enumerating over CivilizationInfo's we're at war with
                     .flatMap { it.cities.asSequence() } // ... all *their* cities
                     .filter { it.health == 1 } // ... those ripe for conquering

@@ -434,7 +434,7 @@ class GlobalPoliticsOverviewTable (
                         endY = otherCivGroup.y + otherCivGroup.height / 2,
                         width = 2f)
 
-                    statusLine.color = if (diplomacy.diplomaticStatus == DiplomaticStatus.War) Color.RED
+                    statusLine.color = if (diplomacy.isAtWar()) Color.RED
                     else diplomacy.relationshipLevel().color
 
                     if (!civLines.containsKey(civ.civName)) civLines[civ.civName] = mutableSetOf()

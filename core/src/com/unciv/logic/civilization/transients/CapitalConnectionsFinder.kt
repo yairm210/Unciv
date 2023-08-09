@@ -136,7 +136,7 @@ class CapitalConnectionsFinder(private val civInfo: Civilization) {
         if (otherCiv.isBarbarian() || civInfo.isBarbarian()) return false // barbarians blocks the routes
         val diplomacyManager = civInfo.diplomacy[otherCiv.civName]
             ?: return false // not encountered yet
-        if (otherCiv.isCityState() && diplomacyManager.diplomaticStatus != DiplomaticStatus.War) return true
+        if (otherCiv.isCityState() && diplomacyManager.isAtWar()) return true
         return diplomacyManager.hasOpenBorders
     }
 

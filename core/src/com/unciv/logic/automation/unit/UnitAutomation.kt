@@ -737,7 +737,7 @@ object UnitAutomation {
         fun isCityThatNeedsDefendingInWartime(city: City): Boolean {
             if (city.health < city.getMaxHealth()) return true // this city is under attack!
             for (enemyCivCity in unit.civ.diplomacy.values
-                    .filter { it.diplomaticStatus == DiplomaticStatus.War }
+                    .filter { it.isAtWar() }
                     .map { it.otherCiv() }.flatMap { it.cities })
                 if (city.getCenterTile().aerialDistanceTo(enemyCivCity.getCenterTile()) <= 5) return true // this is an edge city that needs defending
             return false
