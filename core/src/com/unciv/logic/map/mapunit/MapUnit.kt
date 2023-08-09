@@ -559,10 +559,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun gift(recipient: Civilization) {
         civ.units.removeUnit(this)
         civ.cache.updateViewableTiles()
-        // all transported units should be destroyed as well
+        // all transported units should be gift as well
         currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }
-            .toList() // because we're changing the list
-            .forEach { unit -> unit.destroy() }
+            .forEach { unit -> unit.gift(recipient) }
         assignOwner(recipient)
         recipient.cache.updateViewableTiles()
     }
@@ -649,7 +648,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     private fun clearEncampment(tile: Tile) {
-        tile.changeImprovement(null)
+        tile.removeImprovement()
 
         // Notify City-States that this unit cleared a Barbarian Encampment, required for quests
         civ.gameInfo.getAliveCityStates()
@@ -700,7 +699,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     private fun getAncientRuinBonus(tile: Tile) {
-        tile.changeImprovement(null)
+        tile.removeImprovement()
         civ.ruinsManager.selectNextRuinsReward(this)
     }
 

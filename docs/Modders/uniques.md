@@ -892,6 +892,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Nation
 
+??? example  "All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel."
+	Applicable to: Nation
+
+??? example  "Units ignore terrain costs when moving into any tile with Hills"
+	Applicable to: Nation
+
 ??? example  "Will not be displayed in Civilopedia"
 	Applicable to: Nation, Tech, Policy, Building, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins
 

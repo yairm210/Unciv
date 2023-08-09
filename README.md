@@ -116,11 +116,6 @@ From what I understand, intellectual property rights apply to names, characters 
 
 If anyone has any real legal sources, or can shed some light on the limits of what is and is not allowed, I'd be happy to hear!
 
-## Downloads
-
-| [![](https://static.itch.io/images/badge.svg)](https://yairm210.itch.io/unciv)    |    [![](https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png)](https://play.google.com/store/apps/details?id=com.unciv.app)   |    [![](https://fdroid.gitlab.io/artwork/badge/get-it-on.png)](https://f-droid.org/en/packages/com.unciv.app/)	| [![](https://flathub.org/assets/badges/flathub-badge-en.svg)](https://flathub.org/apps/details/io.github.yairm210.unciv)
-|---	|---	|---	|---	|
-
 ## Run with Docker [![Docker](https://github.com/haimlm/Unciv/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/haimlm/Unciv/actions/workflows/docker-publish.yml)
 
 If you have docker compose installed:

@@ -1,3 +1,34 @@
+## 4.7.13
+
+Improvement improvements!
+
+- More accurate improvement stat previews for edge cases (e.g. removing Forest on Forest + Lumber Mill)
+- 'Create improvement' uniques can create roads and remove features
+
+Set initial screen color on Desktop so it's not black-to-blue
+
+Fixed rare AI City State Influence crash
+
+By SomeTroglodyte:
+- Ruleset validator: Tilesets
+- Minor Mod Manager fixes (mods having dashes in their repo name not shown right away)
+
+## 4.7.12
+
+AI workers remove detrimental features
+
+Free buildings are converted to civ-specific replacements
+
+Double-click on worked tile icon locks tile
+
+Update Windows JDK to Adoptium JDK 11
+
+Better untyped unique recognition in mod checker - By SomeTroglodyte
+
+Gifting a unit transport gifts the contained units - By tuvus
+
+Allow free unit triggers for any location - By SeventhM
+
 ## 4.7.11
 
 By SomeTroglodyte:

@@ -1,117 +1,67 @@
 package com.unciv.logic.civilization
 
-import com.unciv.logic.GameInfo
-import com.unciv.logic.city.City
-import com.unciv.models.ruleset.nation.Nation
 import com.unciv.testing.GdxTestRunner
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.slot
-import org.junit.After
+import com.unciv.uniques.TestGame
 import org.junit.Assert
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(GdxTestRunner::class)
 class DiplomacyManagerTests {
 
-    private val mockGameInfo = mockk<GameInfo>()
-    private val slot = slot<String>()
+    private val testGame = TestGame()
 
-    private val testCivilizationNames = arrayListOf("Russia", "America", "Germany", "Greece", "Babylon")
-    private val civilizations = testCivilizationNames.associateWith { Civilization(it) }
+    fun addCiv() = testGame.addCiv().apply { testGame.addUnit("Warrior", this@apply, null) }
+    // We need to add units so they are not considered defeated, since defeated civs are filtered out of knowncivs
+    private val a = addCiv()
+    private val b = addCiv()
+    private val c = addCiv()
+    private val d = addCiv()
 
-    private fun meetByName(civilization: String, civilizationToMeet: String) {
-        civilizations.getValue(civilization)
-            .diplomacyFunctions.makeCivilizationsMeet(civilizations.getValue(civilizationToMeet))
-    }
 
-    @Before
-    fun setup() {
-        // Setup the GameInfo mock
-        every { mockGameInfo.getCivilization(capture(slot)) } answers { civilizations.getValue(slot.captured) }
-        // Just return the default CivilizationInfo, since the .meetCivilization() includes the tutorial logic and crashes otherwise
-        every { mockGameInfo.getCurrentPlayerCivilization() } returns Civilization()
-        every { mockGameInfo.currentPlayerCiv } returns Civilization()
-
-        // Initialize test civilizations so they pass certain criteria
-        civilizations.values.forEach {
-            it.gameInfo = mockGameInfo
-            it.nation = Nation()            // for isMajorCiv() (as cityStateType will be null)
-            it.nation.name = it.civName     // for isBarbarian()
-            it.cities = listOf(City())  // for isDefeated()
-            it.hasEverOwnedOriginalCapital = true   // also isDefeated() - adding a unit is much harder so we need the other defeat condition
-        }
-    }
-
-    @After
-    fun tearDown() {
-        // Clear the diplomacy
-        for (civ in civilizations.values) {
-            civ.diplomacy.clear()
-        }
-    }
-
-    @Test
-    fun `all mock civilizations are major and alive`() {
-        // Without these prerequisites the diplomacy tests won't work properly
-        val pass = civilizations.values.all {
-            it.isMajorCiv() && it.isAlive()
-        }
-        Assert.assertTrue(pass)
+    private fun meet(civilization: Civilization, otherCivilization: Civilization){
+        civilization.diplomacyFunctions.makeCivilizationsMeet(otherCivilization)
     }
 
     @Test
     fun `getCommonKnownCivs does not include either DiplomacyManagers's civs`() {
-        val russia = civilizations.getValue("Russia")
-        val america = civilizations.getValue("America")
-        meetByName("Russia", "America")
+        meet(a, b)
+        val commonKnownCivs = a.getDiplomacyManager(b).getCommonKnownCivs()
 
-        val commonKnownCivs = russia.getDiplomacyManager(america).getCommonKnownCivs()
-
-        Assert.assertTrue(russia !in commonKnownCivs)
-        Assert.assertTrue(america !in commonKnownCivs)
+        Assert.assertTrue(a !in commonKnownCivs)
+        Assert.assertTrue(b !in commonKnownCivs)
     }
 
     @Test
     fun `getCommonKnownCivs includes civs met by both civs`() {
-        val russia = civilizations.getValue("Russia")
-        val america = civilizations.getValue("America")
-        meetByName("Russia", "America")
-        meetByName("Russia", "Germany")
-        meetByName("America", "Germany")
+        meet(a,b)
+        meet(b,c)
+        meet(c,a)
+        val commonKnownCivs = a.getDiplomacyManager(b).getCommonKnownCivs()
 
-        val commonKnownCivs = russia.getDiplomacyManager(america).getCommonKnownCivs()
-
-        Assert.assertTrue(civilizations.getValue("Germany") in commonKnownCivs)
+        Assert.assertTrue(c in commonKnownCivs)
     }
 
     @Test
     fun `getCommonKnownCivs does not include civs met by only one civ`() {
-        val russia = civilizations.getValue("Russia")
-        val america = civilizations.getValue("America")
-        meetByName("Russia", "America")
-        meetByName("Russia", "Germany")
+        meet(a,b)
+        meet(a,c)
+        val commonKnownCivs = a.getDiplomacyManager(b).getCommonKnownCivs()
 
-        val commonKnownCivs = russia.getDiplomacyManager(america).getCommonKnownCivs()
-
-        Assert.assertTrue(civilizations.getValue("Germany") !in commonKnownCivs)
+        Assert.assertTrue(c !in commonKnownCivs)
     }
 
     @Test
-    fun `getCommonKnownCivs is equal for mirrored DiplomacyManagers`() {
-        val russia = civilizations.getValue("Russia")
-        val america = civilizations.getValue("America")
-        meetByName("Russia", "America")
-        meetByName("Russia", "Germany")
-        meetByName("America", "Germany")
-        meetByName("Russia", "Greece")
-        meetByName("America", "Greece")
+    fun getCommonKnownCivsIsEqualForMirroredDiplomacyManagers() {
+        meet(a,b)
+        meet(a,c)
+        meet(b,c)
+        meet(a,d)
+        meet(b,d)
 
         Assert.assertEquals(
-            america.getDiplomacyManager(russia).getCommonKnownCivs(),
-            russia.getDiplomacyManager(america).getCommonKnownCivs()
+            a.getDiplomacyManager(b).getCommonKnownCivs(),
+            b.getDiplomacyManager(a).getCommonKnownCivs()
         )
     }
 

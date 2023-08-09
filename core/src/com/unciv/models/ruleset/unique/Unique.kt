@@ -8,7 +8,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.RulesetValidator
+import com.unciv.models.ruleset.validation.RulesetValidator
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.getConditionals
 import com.unciv.models.translations.getPlaceholderParameters

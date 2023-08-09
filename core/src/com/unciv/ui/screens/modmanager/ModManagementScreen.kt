@@ -19,19 +19,19 @@ import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.AutoScrollPane
 import com.unciv.ui.components.ExpanderTab
-import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.WrappableLabel
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
 import com.unciv.ui.components.extensions.isEnabled
+import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.ActivationTypes
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.clearActivationActions
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
@@ -377,8 +377,10 @@ class ModManagementScreen private constructor(
                 actualDownloadButton.disable()
                 val repo = Github.Repo().parseUrl(textField.text)
                 if (repo == null) {
-                    ToastPopup("Invalid link!", this@ModManagementScreen)
-                    popup.close()  // Re-enabling button would be nice, but Toast doesn't work over other Popups
+                    ToastPopup("«RED»{Invalid link!}«»", this@ModManagementScreen)
+                        .apply { isVisible = true }
+                    actualDownloadButton.setText("Download".tr())
+                    actualDownloadButton.enable()
                 } else
                     downloadMod(repo) { popup.close() }
             }
@@ -440,19 +442,21 @@ class ModManagementScreen private constructor(
                     repo,
                     Gdx.files.local("mods")
                 )
-                    ?: throw Exception("downloadAndExtract returns null for 404 errors and the like")    // downloadAndExtract returns null for 404 errors and the like -> display something!
+                    ?: throw Exception("Exception during GitHub download")    // downloadAndExtract returns null for 404 errors and the like -> display something!
                 Github.rewriteModOptions(repo, modFolder)
                 launchOnGLThread {
-                    ToastPopup("[${repo.name}] Downloaded!", this@ModManagementScreen)
+                    val repoName = modFolder.name()  // repo.name still has the replaced "-"'s
+                    ToastPopup("[$repoName] Downloaded!", this@ModManagementScreen)
                     RulesetCache.loadRulesets()
-                    TileSetCache.loadTileSetConfigs(false)
+                    TileSetCache.loadTileSetConfigs()
                     UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()
-                    RulesetCache[repo.name]?.let {
-                        installedModInfo[repo.name] = ModUIData(it, false)
+                    RulesetCache[repoName]?.let {
+                        installedModInfo[repoName] = ModUIData(it, false)
                     }
                     refreshInstalledModTable()
-                    showModDescription(repo.name)
-                    unMarkUpdatedMod(repo.name)
+                    lastSelectedButton?.let { syncOnlineSelected(repoName, it) }
+                    showModDescription(repoName)
+                    unMarkUpdatedMod(repoName)
                     postAction()
                 }
             } catch (ex: Exception) {
@@ -580,6 +584,7 @@ class ModManagementScreen private constructor(
     private fun deleteMod(mod: Ruleset) {
         mod.folderLocation!!.deleteDirectory()
         RulesetCache.loadRulesets()
+        TileSetCache.loadTileSetConfigs()
         installedModInfo.remove(mod.name)
         refreshInstalledModTable()
     }

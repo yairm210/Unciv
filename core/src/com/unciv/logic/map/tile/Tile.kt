@@ -8,11 +8,11 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.HexMath
-import com.unciv.logic.map.MapParameters  // Kdoc only
+import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapResources
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
-import com.unciv.logic.map.mapunit.UnitMovement  // Kdoc only
+import com.unciv.logic.map.mapunit.UnitMovement
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
@@ -308,20 +308,22 @@ open class Tile : IsPartOfGameInfoSerialization {
         else ruleset.tileImprovements[getUnpillagedRoad().name]
     }
 
-    fun changeImprovement(improvementStr: String?) {
-        improvementIsPillaged = false
-        improvement = improvementStr
-    }
+    /** Does not remove roads */
+    fun removeImprovement() =
+        improvementFunctions.changeImprovement(null)
+
+    fun changeImprovement(improvementStr: String, civToHandleCompletion:Civilization? = null) =
+        improvementFunctions.changeImprovement(improvementStr, civToHandleCompletion)
 
     // function handling when adding a road to the tile
-    fun addRoad(roadType: RoadStatus, unitCivInfo: Civilization) {
+    fun addRoad(roadType: RoadStatus, creatingCivInfo: Civilization?) {
         roadStatus = roadType
         roadIsPillaged = false
-        if (getOwner() == null) {
-            roadOwner = unitCivInfo.civName // neutral tile, use building unit
-            unitCivInfo.neutralRoads.add(this.position)
-        } else {
+        if (getOwner() != null) {
             roadOwner = getOwner()!!.civName
+        } else if (creatingCivInfo != null) {
+            roadOwner = creatingCivInfo.civName // neutral tile, use building unit
+            creatingCivInfo.neutralRoads.add(this.position)
         }
     }
 
@@ -734,6 +736,8 @@ open class Tile : IsPartOfGameInfoSerialization {
     //endregion
     //region state-changing functions
 
+    /** Do not run this on cloned tiles, since then the cloned *units* will be assigned to the civs
+     * Instead run setTerrainTransients */
     fun setTransients() {
         setTerrainTransients()
         setUnitTransients(true)
@@ -873,7 +877,7 @@ open class Tile : IsPartOfGameInfoSerialization {
         if (resource != null && resource !in ruleset.tileResources)
             resource = null
         if (improvement != null && improvement !in ruleset.tileImprovements)
-            changeImprovement(null)
+            removeImprovement()
     }
 
     /** If the unit isn't in the ruleset we can't even know what type of unit this is! So check each place
@@ -907,7 +911,7 @@ open class Tile : IsPartOfGameInfoSerialization {
         // http://well-of-souls.com/civ/civ5_improvements.html says that naval improvements are destroyed upon pillage
         //    and I can't find any other sources so I'll go with that
         if (!isLand) {
-            changeImprovement(null)
+            removeImprovement()
             owningCity?.reassignPopulationDeferred()
             return
         }
@@ -919,7 +923,7 @@ open class Tile : IsPartOfGameInfoSerialization {
         // if no Repair action, destroy improvements instead
         if (ruleset.tileImprovements[Constants.repair] == null) {
             if (canPillageTileImprovement())
-                changeImprovement(null)
+                removeImprovement()
             else
                 removeRoad()
         } else {
@@ -931,6 +935,8 @@ open class Tile : IsPartOfGameInfoSerialization {
         }
 
         owningCity?.reassignPopulationDeferred()
+        if (owningCity != null)
+            owningCity!!.civ.cache.updateCivResources()
     }
 
     fun isPillaged(): Boolean {
