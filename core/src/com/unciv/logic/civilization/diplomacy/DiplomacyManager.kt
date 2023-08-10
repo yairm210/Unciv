@@ -599,7 +599,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                             scienceFromResearchAgreement()
                     }
                     DiplomacyFlags.DefensivePact.name -> {
-
+                        diplomaticStatus = DiplomaticStatus.Peace;
                     }
                     // This is confusingly named - in fact, the civ that has the flag set is the MAJOR civ
                     DiplomacyFlags.ProvideMilitaryUnit.name -> {
@@ -704,7 +704,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             revertToZero(DiplomaticModifiers.DeclarationOfFriendship, 1 / 2f) //decreases slowly and will revert to full if it is declared later
 
         if (!hasFlag(DiplomacyFlags.DefensivePact))
-            revertToZero(DiplomaticModifiers.DefensivePact, 1 / 2f) //decreases slowly and will revert to full if it is declared later
+            revertToZero(DiplomaticModifiers.DefensivePact, 1f)
 
         if (!otherCiv().isCityState()) return
 
@@ -964,11 +964,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun signDefensivePact() {
+    fun signDefensivePact(duration: Int) {
         setModifier(DiplomaticModifiers.DefensivePact, 45f)
         otherCivDiplomacy().setModifier(DiplomaticModifiers.DefensivePact, 45f)
-        setFlag(DiplomacyFlags.DefensivePact, 40)
-        otherCivDiplomacy().setFlag(DiplomacyFlags.DefensivePact, 40)
         diplomaticStatus = DiplomaticStatus.DefensivePact;
         otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.DefensivePact;
 

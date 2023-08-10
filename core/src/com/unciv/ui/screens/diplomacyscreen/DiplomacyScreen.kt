@@ -659,11 +659,8 @@ class DiplomacyScreen(
                 diplomacyTable.add(getDeclareFriendshipButton(otherCiv)).row()
 
 
-            if (viewingCiv.diplomacyFunctions.canSignResearchAgreementsWith(otherCiv))
-                diplomacyTable.add(getResearchAgreementButton(otherCiv)).row()
-
-            if (viewingCiv.diplomacyFunctions.canSignDefensivePactWith(otherCiv))
-                diplomacyTable.add(getDefensivePactButton(otherCiv)).row()
+//             if (viewingCiv.diplomacyFunctions.canSignResearchAgreementsWith(otherCiv))
+//                 diplomacyTable.add(getResearchAgreementButton(otherCiv)).row()
 
             if (!diplomacyManager.hasFlag(DiplomacyFlags.Denunciation)
                     && !diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
@@ -748,46 +745,28 @@ class DiplomacyScreen(
         return denounceButton
     }
 
-    private fun getResearchAgreementButton(otherCiv: Civilization): TextButton {
-        val researchAgreementButton = "Research Agreement".toTextButton()
-
-        val requiredGold = viewingCiv.diplomacyFunctions.getResearchAgreementCost()
-        researchAgreementButton.onClick {
-            val tradeTable = setTrade(otherCiv)
-            val researchAgreement =
-                    TradeOffer(Constants.researchAgreement, TradeType.Treaty, requiredGold)
-            val goldCostOfSignResearchAgreement =
-                    TradeOffer("Gold".tr(), TradeType.Gold, -requiredGold)
-            tradeTable.tradeLogic.currentTrade.theirOffers.add(researchAgreement)
-            tradeTable.tradeLogic.ourAvailableOffers.add(researchAgreement)
-            tradeTable.tradeLogic.ourAvailableOffers.add(goldCostOfSignResearchAgreement)
-            tradeTable.tradeLogic.currentTrade.ourOffers.add(researchAgreement)
-            tradeTable.tradeLogic.theirAvailableOffers.add(researchAgreement)
-            tradeTable.tradeLogic.theirAvailableOffers.add(goldCostOfSignResearchAgreement)
-            tradeTable.offerColumnsTable.update()
-            tradeTable.enableOfferButton(true)
-        }
-        if (isNotPlayersTurn()) researchAgreementButton.disable()
-        return researchAgreementButton
-    }
-
-    private fun getDefensivePactButton(otherCiv: Civilization): TextButton {
-        val defensivePactButton = "Defensive Pact".toTextButton()
-
-        defensivePactButton.onClick {
-            val tradeTable = setTrade(otherCiv)
-            val defensivePact =
-                TradeOffer(Constants.defensivePact, TradeType.Treaty, 0)
-            tradeTable.tradeLogic.currentTrade.theirOffers.add(defensivePact)
-            tradeTable.tradeLogic.ourAvailableOffers.add(defensivePact)
-            tradeTable.tradeLogic.currentTrade.ourOffers.add(defensivePact)
-            tradeTable.tradeLogic.theirAvailableOffers.add(defensivePact)
-            tradeTable.offerColumnsTable.update()
-            tradeTable.enableOfferButton(true)
-        }
-        if (isNotPlayersTurn()) defensivePactButton.disable()
-        return defensivePactButton
-    }
+//     private fun getResearchAgreementButton(otherCiv: Civilization): TextButton {
+//         val researchAgreementButton = "Research Agreement".toTextButton()
+//
+//         val requiredGold = viewingCiv.diplomacyFunctions.getResearchAgreementCost()
+//         researchAgreementButton.onClick {
+//             val tradeTable = setTrade(otherCiv)
+//             val researchAgreement =
+//                     TradeOffer(Constants.researchAgreement, TradeType.Treaty, requiredGold)
+//             val goldCostOfSignResearchAgreement =
+//                     TradeOffer("Gold".tr(), TradeType.Gold, -requiredGold)
+//             tradeTable.tradeLogic.currentTrade.theirOffers.add(researchAgreement)
+//             tradeTable.tradeLogic.ourAvailableOffers.add(researchAgreement)
+//             tradeTable.tradeLogic.ourAvailableOffers.add(goldCostOfSignResearchAgreement)
+//             tradeTable.tradeLogic.currentTrade.ourOffers.add(researchAgreement)
+//             tradeTable.tradeLogic.theirAvailableOffers.add(researchAgreement)
+//             tradeTable.tradeLogic.theirAvailableOffers.add(goldCostOfSignResearchAgreement)
+//             tradeTable.offerColumnsTable.update()
+//             tradeTable.enableOfferButton(true)
+//         }
+//         if (isNotPlayersTurn()) researchAgreementButton.disable()
+//         return researchAgreementButton
+//     }
 
     private fun getDeclareFriendshipButton(otherCiv: Civilization): TextButton {
         val declareFriendshipButton =
@@ -812,8 +791,8 @@ class DiplomacyScreen(
         val tradeButton = "Trade".toTextButton()
         tradeButton.onClick {
             setTrade(otherCiv).apply {
-                tradeLogic.ourAvailableOffers.apply { remove(firstOrNull { it.type == TradeType.Treaty }) }
-                tradeLogic.theirAvailableOffers.apply { remove(firstOrNull { it.type == TradeType.Treaty }) }
+//                 tradeLogic.ourAvailableOffers.apply { remove(firstOrNull { it.type == TradeType.Treaty }) }
+//                 tradeLogic.theirAvailableOffers.apply { remove(firstOrNull { it.type == TradeType.Treaty }) }
                 offerColumnsTable.update()
             }
         }

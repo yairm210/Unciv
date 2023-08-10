@@ -276,15 +276,6 @@ object NextTurnAutomation {
                     requestingCiv.addNotification("We have signed a Declaration of Friendship with [${civInfo.civName}]!", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
                 } else requestingCiv.addNotification("[${civInfo.civName}] has denied our Declaration of Friendship!", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
             }
-            if (popupAlert.type == AlertType.DefensivePact) {
-                val requestingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
-                val diploManager = civInfo.getDiplomacyManager(requestingCiv)
-                if (true || diploManager.isRelationshipLevelGT(RelationshipLevel.Friend) //Todo: change this
-                    && !diploManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.Denunciation)) {
-                    diploManager.signDefensivePact()
-                    requestingCiv.addNotification("We have signed a Defensive Pact with [${civInfo.civName}]!", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
-                } else requestingCiv.addNotification("[${civInfo.civName}] has denied our Defensive Pact!", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
-            }
         }
 
         civInfo.popupAlerts.clear() // AIs don't care about popups.
@@ -807,8 +798,8 @@ object NextTurnAutomation {
             if ((1..10).random() > 5) continue
             val tradeLogic = TradeLogic(civInfo, otherCiv)
             val cost = civInfo.diplomacyFunctions.getResearchAgreementCost()
-            tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
-            tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
+//             tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
+//             tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
 
             otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
         }

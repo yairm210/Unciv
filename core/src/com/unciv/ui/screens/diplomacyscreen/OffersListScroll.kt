@@ -103,11 +103,13 @@ class OffersListScroll(
                 }
 
                 val amountPerClick =
-                        if (offer.type == Gold) 50
-                        else 1
+                    when (offer.type) {
+                        Gold -> 50
+                        Treaty -> Int.MAX_VALUE
+                        else -> 1
+                    }
 
-                if (offer.isTradable() && offer.name != Constants.peaceTreaty && // can't disable peace treaty!
-                        offer.name != Constants.researchAgreement) {
+                if (offer.isTradable() && offer.name != Constants.peaceTreaty) { // can't disable peace treaty!
 
                     // highlight unique suggestions
                     if (offerType in listOf(Luxury_Resource, Strategic_Resource)

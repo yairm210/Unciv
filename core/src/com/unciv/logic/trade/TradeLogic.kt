@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.CityStateFunctions
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
+import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
@@ -30,6 +31,12 @@ class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civili
                 && otherCivilization.hasUnique(UniqueType.EnablesOpenBorders)) {
             offers.add(TradeOffer(Constants.openBorders, TradeType.Agreement))
         }
+
+        if (civInfo.diplomacyFunctions.canSignResearchAgreementsWith(otherCivilization))
+            offers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, civInfo.diplomacyFunctions.getResearchAgreementCost()))
+
+        if (civInfo.diplomacyFunctions.canSignDefensivePactWith(otherCivilization))
+            offers.add(TradeOffer(Constants.defensivePact, TradeType.Treaty))
 
         for (entry in civInfo.getCivResourcesWithOriginsForTrade()
             .filterNot { it.resource.resourceType == ResourceType.Bonus }
@@ -126,7 +133,7 @@ class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civili
                     if (offer.name == Constants.defensivePact) {
                         to.getDiplomacyManager(from)
                             .setFlag(DiplomacyFlags.DefensivePact, offer.duration)
-                        from.getDiplomacyManager(to).signDefensivePact();
+                        from.getDiplomacyManager(to).signDefensivePact(offer.duration);
                     }
                 }
                 TradeType.Introduction -> to.diplomacyFunctions.makeCivilizationsMeet(to.gameInfo.getCivilization(offer.name))
