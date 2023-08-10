@@ -5,6 +5,7 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.ModOptionsConstants
@@ -74,16 +75,20 @@ class TradeEvaluation {
 
         var sumOfOurOffers = trade.ourOffers.sumOf { evaluateSellCost(it, evaluator, tradePartner) }
 
+        val relationshipLevel = evaluator.getDiplomacyManager(tradePartner).relationshipIgnoreAfraid()
         // If we're making a peace treaty, don't try to up the bargain for people you don't like.
         // Leads to spartan behaviour where you demand more, the more you hate the enemy...unhelpful
         if (trade.ourOffers.none { it.name == Constants.peaceTreaty || it.name == Constants.researchAgreement}) {
-            val relationshipLevel = evaluator.getDiplomacyManager(tradePartner).relationshipIgnoreAfraid()
             if (relationshipLevel == RelationshipLevel.Enemy) sumOfOurOffers = (sumOfOurOffers * 1.5).toInt()
             else if (relationshipLevel == RelationshipLevel.Unforgivable) sumOfOurOffers *= 2
         }
-        if (trade.ourOffers.firstOrNull { it.name == Constants.defensivePact } != null && evaluator.getDiplomacyManager(tradePartner).relationshipIgnoreAfraid() != RelationshipLevel.Ally) {
-            //Todo: Add checking for war here
-            return Int.MIN_VALUE
+        if (trade.ourOffers.firstOrNull { it.name == Constants.defensivePact } != null) {
+            if (tradePartner.getDiplomacyManager(evaluator).hasFlag(DiplomacyFlags.DeclinedDefensivePact) // If we offered it to them recently we are fine if they accept now
+                || (relationshipLevel == RelationshipLevel.Ally && evaluator.diplomacyFunctions.getCivDefensiveWars().isEmpty())) {
+                sumOfOurOffers += 10;
+            } else {
+                return Int.MIN_VALUE
+            }
         }
 
         return sumOfTheirOffers - sumOfOurOffers

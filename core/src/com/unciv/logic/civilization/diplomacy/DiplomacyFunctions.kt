@@ -87,6 +87,10 @@ class DiplomacyFunctions(val civInfo: Civilization){
         }
     }
 
+    fun getCivDefensiveWars() : List<DiplomacyManager> {
+        return civInfo.diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.DefensiveWar }
+    }
+
 
     fun canSignResearchAgreement(): Boolean {
         if (!civInfo.isMajorCiv()) return false

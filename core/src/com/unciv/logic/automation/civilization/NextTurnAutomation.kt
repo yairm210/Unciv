@@ -814,6 +814,7 @@ object NextTurnAutomation {
                 civInfo.diplomacyFunctions.canSignDefensivePactWith(it)
                     && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedDefensivePact)
                     && civInfo.getDiplomacyManager(it).relationshipIgnoreAfraid() == RelationshipLevel.Ally
+                    && it.diplomacyFunctions.getCivDefensiveWars().isEmpty()
             }
             .sortedByDescending { it.stats.statsForNextTurn.science }
 
