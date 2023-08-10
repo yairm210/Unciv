@@ -83,9 +83,8 @@ class TradeEvaluation {
             else if (relationshipLevel == RelationshipLevel.Unforgivable) sumOfOurOffers *= 2
         }
         if (trade.ourOffers.firstOrNull { it.name == Constants.defensivePact } != null) {
-            if (tradePartner.getDiplomacyManager(evaluator).hasFlag(DiplomacyFlags.DeclinedDefensivePact) // If we offered it to them recently we are fine if they accept now
-                || (relationshipLevel == RelationshipLevel.Ally && evaluator.diplomacyFunctions.getCivDefensiveWars().isEmpty())) {
-                sumOfOurOffers += 10;
+            if ((relationshipLevel == RelationshipLevel.Ally && evaluator.diplomacyFunctions.getCivDefensiveWars().isEmpty())) {
+                //todo: Add more in depth evaluation here
             } else {
                 return Int.MIN_VALUE
             }
