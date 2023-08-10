@@ -2,8 +2,8 @@ package com.unciv.models.ruleset.unique
 
 import com.unciv.Constants
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.RulesetErrorSeverity
-import com.unciv.models.ruleset.RulesetValidator  // Kdoc only
+import com.unciv.models.ruleset.validation.RulesetErrorSeverity
+import com.unciv.models.ruleset.validation.RulesetValidator  // Kdoc only
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 

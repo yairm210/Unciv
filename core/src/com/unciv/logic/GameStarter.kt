@@ -404,7 +404,7 @@ object GameStarter {
             if (tile.improvement != null
                 && tile.getTileImprovement()!!.isAncientRuinsEquivalent()
             ) {
-                tile.changeImprovement(null) // Remove ancient ruins in immediate vicinity
+                tile.removeImprovement() // Remove ancient ruins in immediate vicinity
             }
         }
     }

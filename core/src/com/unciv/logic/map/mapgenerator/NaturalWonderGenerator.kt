@@ -1,14 +1,14 @@
 package com.unciv.logic.map.mapgenerator
 
 import com.unciv.Constants
-import com.unciv.utils.debug
-import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.utils.debug
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -204,7 +204,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
     private fun clearTile(tile: Tile){
         tile.setTerrainFeatures(listOf())
         tile.resource = null
-        tile.changeImprovement(null)
+        tile.removeImprovement()
         tile.setTerrainTransients()
     }
 

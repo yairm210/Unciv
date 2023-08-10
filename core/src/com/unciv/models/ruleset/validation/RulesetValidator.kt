@@ -1,8 +1,16 @@
-package com.unciv.models.ruleset
+package com.unciv.models.ruleset.validation
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData
 import com.unciv.Constants
+import com.unciv.json.fromJsonFile
+import com.unciv.json.json
 import com.unciv.logic.map.tile.RoadStatus
+import com.unciv.models.metadata.BaseRuleset
+import com.unciv.models.ruleset.IRulesetObject
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.nation.getContrastRatio
 import com.unciv.models.ruleset.nation.getRelativeLuminance
 import com.unciv.models.ruleset.tile.TerrainType
@@ -14,6 +22,8 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stats
+import com.unciv.models.tilesets.TileSetCache
+import com.unciv.models.tilesets.TileSetConfig
 
 class RulesetValidator(val ruleset: Ruleset) {
 
@@ -64,11 +74,13 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         for (techColumn in ruleset.techColumns){
             if (techColumn.columnNumber < 0)
-                lines+= "Tech Column number ${techColumn.columnNumber} is negative"
+                lines += "Tech Column number ${techColumn.columnNumber} is negative"
             if (techColumn.buildingCost == -1)
-                lines.add("Tech Column number ${techColumn.columnNumber} has no explicit building cost", RulesetErrorSeverity.Warning)
+                lines.add("Tech Column number ${techColumn.columnNumber} has no explicit building cost",
+                    RulesetErrorSeverity.Warning)
             if (techColumn.wonderCost == -1)
-                lines.add("Tech Column number ${techColumn.columnNumber} has no explicit wonder cost", RulesetErrorSeverity.Warning)
+                lines.add("Tech Column number ${techColumn.columnNumber} has no explicit wonder cost",
+                    RulesetErrorSeverity.Warning)
         }
 
         for (building in ruleset.buildings.values) {
@@ -138,6 +150,13 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         for (resource in ruleset.tileResources.values) {
             checkUniques(resource, lines, rulesetInvariant, tryFixUnknownUniques)
+        }
+
+        /********************** Tileset tests **********************/
+        // e.g. json configs complete and parseable
+        // Check for mod or Civ_V_GnK to avoid running the same test twice (~200ms for the builtin assets)
+        if (ruleset.folderLocation != null || ruleset.name == BaseRuleset.Civ_V_GnK.fullName) {
+            checkTilesetSanity(lines)
         }
 
         // Quit here when no base ruleset is loaded - references cannot be checked
@@ -332,10 +351,11 @@ class RulesetValidator(val ruleset: Ruleset) {
                 lines += "Population in cities from settlers must be strictly positive! Found value ${era.settlerPopulation} for era ${era.name}"
 
             if (era.allyBonus.isNotEmpty())
-                lines.add("Era ${era.name} contains city-state bonuses. City-state bonuses are now defined in CityStateType.json", RulesetErrorSeverity.WarningOptionsOnly)
+                lines.add("Era ${era.name} contains city-state bonuses. City-state bonuses are now defined in CityStateType.json",
+                    RulesetErrorSeverity.WarningOptionsOnly)
             if (era.friendBonus.isNotEmpty())
-                lines.add("Era ${era.name} contains city-state bonuses. City-state bonuses are now defined in CityStateType.json", RulesetErrorSeverity.WarningOptionsOnly)
-
+                lines.add("Era ${era.name} contains city-state bonuses. City-state bonuses are now defined in CityStateType.json",
+                    RulesetErrorSeverity.WarningOptionsOnly)
 
             checkUniques(era, lines, rulesetSpecific, tryFixUnknownUniques)
         }
@@ -388,10 +408,12 @@ class RulesetValidator(val ruleset: Ruleset) {
             // These are warning as of 3.17.5 to not break existing mods and give them time to correct, should be upgraded to error in the future
             for (prereq in promotion.prerequisites)
                 if (!ruleset.unitPromotions.containsKey(prereq))
-                    lines.add("${promotion.name} requires promotion $prereq which does not exist!", RulesetErrorSeverity.Warning)
+                    lines.add("${promotion.name} requires promotion $prereq which does not exist!",
+                        RulesetErrorSeverity.Warning)
             for (unitType in promotion.unitTypes)
                 if (!ruleset.unitTypes.containsKey(unitType) && (ruleset.unitTypes.isNotEmpty() || !vanillaRuleset.unitTypes.containsKey(unitType)))
-                    lines.add("${promotion.name} references unit type $unitType, which does not exist!", RulesetErrorSeverity.Warning)
+                    lines.add("${promotion.name} references unit type $unitType, which does not exist!",
+                        RulesetErrorSeverity.Warning)
             checkUniques(promotion, lines, rulesetSpecific, tryFixUnknownUniques)
             checkPromotionCircularReferences(lines)
         }
@@ -403,13 +425,16 @@ class RulesetValidator(val ruleset: Ruleset) {
         for (victoryType in ruleset.victories.values) {
             for (requiredUnit in victoryType.requiredSpaceshipParts)
                 if (!ruleset.units.contains(requiredUnit))
-                    lines.add("Victory type ${victoryType.name} requires adding the non-existant unit $requiredUnit to the capital to win!", RulesetErrorSeverity.Warning)
+                    lines.add("Victory type ${victoryType.name} requires adding the non-existant unit $requiredUnit to the capital to win!",
+                        RulesetErrorSeverity.Warning)
             for (milestone in victoryType.milestoneObjects)
                 if (milestone.type == null)
-                    lines.add("Victory type ${victoryType.name} has milestone ${milestone.uniqueDescription} that is of an unknown type!", RulesetErrorSeverity.Error)
+                    lines.add("Victory type ${victoryType.name} has milestone ${milestone.uniqueDescription} that is of an unknown type!",
+                        RulesetErrorSeverity.Error)
             for (victory in ruleset.victories.values)
                 if (victory.name != victoryType.name && victory.milestones == victoryType.milestones)
-                    lines.add("Victory types ${victoryType.name} and ${victory.name} have the same requirements!", RulesetErrorSeverity.Warning)
+                    lines.add("Victory types ${victoryType.name} and ${victory.name} have the same requirements!",
+                        RulesetErrorSeverity.Warning)
         }
 
         for (difficulty in ruleset.difficulties.values) {
@@ -433,10 +458,73 @@ class RulesetValidator(val ruleset: Ruleset) {
         return lines
     }
 
+    private fun checkTilesetSanity(lines: RulesetErrorList) {
+        val tilesetConfigFolder = (ruleset.folderLocation ?: Gdx.files.internal("")).child("jsons\\TileSets")
+        if (!tilesetConfigFolder.exists()) return
+
+        val configTilesets = mutableSetOf<String>()
+        val allFallbacks = mutableSetOf<String>()
+        val folderContent = tilesetConfigFolder.list()
+        var folderContentBad = false
+
+        for (file in folderContent) {
+            if (file.isDirectory || file.extension() != "json") { folderContentBad = true; continue }
+            // All json files should be parseable
+            try {
+                val config = json().fromJsonFile(TileSetConfig::class.java, file)
+                configTilesets += file.nameWithoutExtension().removeSuffix("Config")
+                if (config.fallbackTileSet?.isNotEmpty() == true)
+                    allFallbacks.add(config.fallbackTileSet!!)
+            } catch (ex: Exception) {
+                // Our fromJsonFile wrapper already intercepts Exceptions and gives them a generalized message, so go a level deeper for useful details (like "unmatched brace")
+                lines.add("Tileset config '${file.name()}' cannot be loaded (${ex.cause?.message})", RulesetErrorSeverity.Warning)
+            }
+        }
+
+        // Folder should not contain subdirectories, non-json files, or be empty
+        if (folderContentBad)
+            lines.add("The Mod tileset config folder contains non-json files or subdirectories", RulesetErrorSeverity.Warning)
+        if (configTilesets.isEmpty())
+            lines.add("The Mod tileset config folder contains no json files", RulesetErrorSeverity.Warning)
+
+        // There should be atlas images corresponding to each json name
+        val atlasTilesets = getTilesetNamesFromAtlases()
+        val configOnlyTilesets = configTilesets - atlasTilesets
+        if (configOnlyTilesets.isNotEmpty())
+            lines.add("Mod has no graphics for configured tilesets: ${configOnlyTilesets.joinToString()}", RulesetErrorSeverity.Warning)
+
+        // For all atlas images matching "TileSets/*" there should be a json
+        val atlasOnlyTilesets = atlasTilesets - configTilesets
+        if (atlasOnlyTilesets.isNotEmpty())
+            lines.add("Mod has no configuration for tileset graphics: ${atlasOnlyTilesets.joinToString()}", RulesetErrorSeverity.Warning)
+
+        // All fallbacks should exist (default added because TileSetCache is not loaded when running as unit test)
+        val unknownFallbacks = allFallbacks - TileSetCache.keys - Constants.defaultFallbackTileset
+        if (unknownFallbacks.isNotEmpty())
+            lines.add("Fallback tileset invalid: ${unknownFallbacks.joinToString()}", RulesetErrorSeverity.Warning)
+    }
+
+    private fun getTilesetNamesFromAtlases(): Set<String> {
+        // This partially duplicates code in ImageGetter.getAvailableTilesets, but we don't want to reload that singleton cache.
+
+        // Our builtin rulesets have no folderLocation, in that case cheat and apply knowledge about
+        // where the builtin Tileset textures are (correct would be to parse Atlases.json):
+        val files = ruleset.folderLocation?.list("atlas")?.asSequence()
+            ?: sequenceOf(Gdx.files.internal("Tilesets.atlas"))
+        // Next, we need to cope with this running without GL context (unit test) - no TextureAtlas(file)
+        return files
+            .flatMap { file ->
+                TextureAtlasData(file, file.parent(), false).regions.asSequence()
+                    .filter { it.name.startsWith("TileSets/") && !it.name.contains("/Units/") }
+            }.map { it.name.split("/")[1] }
+            .toSet()
+    }
+
     private fun checkPromotionCircularReferences(lines: RulesetErrorList) {
         fun recursiveCheck(history: LinkedHashSet<Promotion>, promotion: Promotion, level: Int) {
             if (promotion in history) {
-                lines.add("Circular Reference in Promotions: ${history.joinToString("→") { it.name }}→${promotion.name}", RulesetErrorSeverity.Warning)
+                lines.add("Circular Reference in Promotions: ${history.joinToString("→") { it.name }}→${promotion.name}",
+                    RulesetErrorSeverity.Warning)
                 return
             }
             if (level > 99) return
@@ -560,8 +648,8 @@ class RulesetValidator(val ruleset: Ruleset) {
         if (RulesetCache.modCheckerAllowUntypedUniques) return emptyList()
 
         return listOf(RulesetError(
-        "$prefix unique \"${unique.text}\" not found in Unciv's unique types.",
-            RulesetErrorSeverity.WarningOptionsOnly))
+            "$prefix unique \"${unique.text}\" not found in Unciv's unique types.",
+                RulesetErrorSeverity.WarningOptionsOnly))
     }
 
     private fun isFilteringUniqueAllowed(unique: Unique): Boolean {
@@ -584,7 +672,7 @@ class RulesetValidator(val ruleset: Ruleset) {
             // This should only ever happen if a bug is or has been introduced that prevents Unique.type from being set for a valid UniqueType, I think.\
             equalUniques.isNotEmpty() -> listOf(RulesetError(
                 "$prefix unique \"${unique.text}\" looks like it should be fine, but for some reason isn't recognized.",
-                RulesetErrorSeverity.OK))
+                    RulesetErrorSeverity.OK))
 
             similarUniques.isNotEmpty() -> {
                 val text =
@@ -602,65 +690,4 @@ class RulesetValidator(val ruleset: Ruleset) {
             else -> emptyList()
         }
     }
-}
-
-
-class RulesetError(val text: String, val errorSeverityToReport: RulesetErrorSeverity)
-
-enum class RulesetErrorSeverity(val color: Color) {
-    OK(Color.GREEN),
-    WarningOptionsOnly(Color.YELLOW),
-    Warning(Color.YELLOW),
-    Error(Color.RED),
-}
-
-class RulesetErrorList : ArrayList<RulesetError>() {
-    operator fun plusAssign(text: String) {
-        add(text, RulesetErrorSeverity.Error)
-    }
-
-    fun add(text: String, errorSeverityToReport: RulesetErrorSeverity) {
-        add(RulesetError(text, errorSeverityToReport))
-    }
-
-    override fun add(element: RulesetError): Boolean {
-        // Suppress duplicates due to the double run of some checks for invariant/specific,
-        // Without changing collection type or making RulesetError obey the equality contract
-        val existing = firstOrNull { it.text == element.text }
-            ?: return super.add(element)
-        if (existing.errorSeverityToReport >= element.errorSeverityToReport) return false
-        remove(existing)
-        return super.add(element)
-    }
-
-    override fun addAll(elements: Collection<RulesetError>): Boolean {
-        var result = false
-        for (element in elements)
-            if (add(element)) result = true
-        return result
-    }
-
-    fun getFinalSeverity(): RulesetErrorSeverity {
-        if (isEmpty()) return RulesetErrorSeverity.OK
-        return this.maxOf { it.errorSeverityToReport }
-    }
-
-    /** @return `true` means severe errors make the mod unplayable */
-    fun isError() = getFinalSeverity() == RulesetErrorSeverity.Error
-    /** @return `true` means problems exist, Options screen mod checker or unit tests for vanilla ruleset should complain */
-    fun isNotOK() = getFinalSeverity() != RulesetErrorSeverity.OK
-    /** @return `true` means at least errors impacting gameplay exist, new game screen should warn or block */
-    fun isWarnUser() = getFinalSeverity() >= RulesetErrorSeverity.Warning
-
-    fun getErrorText(unfiltered: Boolean = false) =
-            getErrorText { unfiltered || it.errorSeverityToReport != RulesetErrorSeverity.WarningOptionsOnly }
-    fun getErrorText(filter: (RulesetError)->Boolean) =
-            filter(filter)
-                .sortedByDescending { it.errorSeverityToReport }
-                .joinToString("\n") {
-                    it.errorSeverityToReport.name + ": " +
-                        // This will go through tr(), unavoidably, which will move the conditionals
-                        // out of place. Prevent via kludge:
-                        it.text.replace('<','〈').replace('>','〉')
-                }
 }

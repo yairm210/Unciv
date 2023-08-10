@@ -584,13 +584,9 @@ object NextTurnAutomation {
                 civInfo.policies.branchCompletionMap.filterKeys { key ->
                     key in candidates
                 }
-            // The highest number of adopted child policies within a single candidate
-            val maxCompletion: Int =
-                candidateCompletionMap.maxOf { entry -> entry.value }
-            // The candidate closest to completion, hence the target branch
-            val targetBranch = candidateCompletionMap.filterValues { value ->
-                value == maxCompletion
-            }.keys.random()
+
+            // Choose the branch with the LEAST REMAINING policies, not the MOST ADOPTED ones
+            val targetBranch = candidateCompletionMap.minBy { it.key.policies.size - it.value }.key
 
             val policyToAdopt: Policy =
                 if (civInfo.policies.isAdoptable(targetBranch)) targetBranch

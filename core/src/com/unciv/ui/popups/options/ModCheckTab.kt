@@ -7,9 +7,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.ruleset.RulesetError
-import com.unciv.models.ruleset.RulesetErrorSeverity
-import com.unciv.models.ruleset.RulesetValidator
+import com.unciv.models.ruleset.validation.RulesetError
+import com.unciv.models.ruleset.validation.RulesetErrorSeverity
+import com.unciv.models.ruleset.validation.RulesetValidator
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr

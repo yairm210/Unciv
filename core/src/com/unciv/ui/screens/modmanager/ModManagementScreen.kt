@@ -498,8 +498,10 @@ class ModManagementScreen(
                 actualDownloadButton.disable()
                 val repo = Github.Repo().parseUrl(textField.text)
                 if (repo == null) {
-                    ToastPopup("Invalid link!", this@ModManagementScreen)
-                    popup.close()  // Re-enabling button would be nice, but Toast doesn't work over other Popups
+                    ToastPopup("«RED»{Invalid link!}«»", this@ModManagementScreen)
+                        .apply { isVisible = true }
+                    actualDownloadButton.setText("Download".tr())
+                    actualDownloadButton.enable()
                 } else
                     downloadMod(repo) { popup.close() }
             }
@@ -568,19 +570,21 @@ class ModManagementScreen(
                     repo,
                     Gdx.files.local("mods")
                 )
-                    ?: throw Exception("downloadAndExtract returns null for 404 errors and the like")    // downloadAndExtract returns null for 404 errors and the like -> display something!
+                    ?: throw Exception("Exception during GitHub download")    // downloadAndExtract returns null for 404 errors and the like -> display something!
                 Github.rewriteModOptions(repo, modFolder)
                 launchOnGLThread {
-                    ToastPopup("[${repo.name}] Downloaded!", this@ModManagementScreen)
+                    val repoName = modFolder.name()  // repo.name still has the replaced "-"'s
+                    ToastPopup("[$repoName] Downloaded!", this@ModManagementScreen)
                     RulesetCache.loadRulesets()
-                    TileSetCache.loadTileSetConfigs(false)
+                    TileSetCache.loadTileSetConfigs()
                     UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()
-                    RulesetCache[repo.name]?.let {
-                        installedModInfo[repo.name] = ModUIData(it)
+                    RulesetCache[repoName]?.let {
+                        installedModInfo[repoName] = ModUIData(it)
                     }
                     refreshInstalledModTable()
-                    showModDescription(repo.name)
-                    unMarkUpdatedMod(repo.name)
+                    lastSelectedButton?.let { syncOnlineSelected(repoName, it) }
+                    showModDescription(repoName)
+                    unMarkUpdatedMod(repoName)
                     postAction()
                 }
             } catch (ex: Exception) {
@@ -716,6 +720,7 @@ class ModManagementScreen(
     private fun deleteMod(mod: Ruleset) {
         mod.folderLocation!!.deleteDirectory()
         RulesetCache.loadRulesets()
+        TileSetCache.loadTileSetConfigs()
         installedModInfo.remove(mod.name)
         refreshInstalledModTable()
     }

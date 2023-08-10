@@ -159,6 +159,7 @@ class TestGame {
         val baseUnit = ruleset.units[name]!!
         baseUnit.ruleset = ruleset
         val mapUnit = baseUnit.getMapUnit(civInfo)
+        civInfo.units.addUnit(mapUnit)
         if (tile!=null) mapUnit.putInTile(tile)
         return mapUnit
     }

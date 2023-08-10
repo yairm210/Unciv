@@ -783,8 +783,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         /**todo unify with [UnitActions.getImprovementConstructionActions] and [UnitTurnManager.workOnImprovement] - this won't allow e.g. a building to place a road */
         tileForImprovement.changeImprovement(improvement.name)
         city.civ.lastSeenImprovement[tileForImprovement.position] = improvement.name
-        city.cityStats.update()
-        city.civ.cache.updateCivResources()
         // If bought the worldscreen will not have been marked to update, and the new improvement won't show until later...
         GUI.setUpdateWorldOnNextRender()
     }

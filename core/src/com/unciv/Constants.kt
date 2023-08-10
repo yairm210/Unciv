@@ -91,6 +91,8 @@ object Constants {
     const val uncivXyzServer = "https://uncivserver.xyz"
 
     const val defaultTileset = "HexaRealm"
+    /** Default for TileSetConfig.fallbackTileSet - Don't change unless you've also moved the crosshatch, borders, and arrows as well */
+    const val defaultFallbackTileset = "FantasyHex"
     const val defaultUnitset = "AbsoluteUnits"
     const val defaultSkin = "Minimal"
 
