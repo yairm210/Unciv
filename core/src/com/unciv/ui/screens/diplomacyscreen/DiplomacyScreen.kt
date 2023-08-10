@@ -740,30 +740,7 @@ class DiplomacyScreen(
         if (isNotPlayersTurn()) denounceButton.disable()
         return denounceButton
     }
-
-//     private fun getResearchAgreementButton(otherCiv: Civilization): TextButton {
-//         val researchAgreementButton = "Research Agreement".toTextButton()
-//
-//         val requiredGold = viewingCiv.diplomacyFunctions.getResearchAgreementCost()
-//         researchAgreementButton.onClick {
-//             val tradeTable = setTrade(otherCiv)
-//             val researchAgreement =
-//                     TradeOffer(Constants.researchAgreement, TradeType.Treaty, requiredGold)
-//             val goldCostOfSignResearchAgreement =
-//                     TradeOffer("Gold".tr(), TradeType.Gold, -requiredGold)
-//             tradeTable.tradeLogic.currentTrade.theirOffers.add(researchAgreement)
-//             tradeTable.tradeLogic.ourAvailableOffers.add(researchAgreement)
-//             tradeTable.tradeLogic.ourAvailableOffers.add(goldCostOfSignResearchAgreement)
-//             tradeTable.tradeLogic.currentTrade.ourOffers.add(researchAgreement)
-//             tradeTable.tradeLogic.theirAvailableOffers.add(researchAgreement)
-//             tradeTable.tradeLogic.theirAvailableOffers.add(goldCostOfSignResearchAgreement)
-//             tradeTable.offerColumnsTable.update()
-//             tradeTable.enableOfferButton(true)
-//         }
-//         if (isNotPlayersTurn()) researchAgreementButton.disable()
-//         return researchAgreementButton
-//     }
-
+    
     private fun getDeclareFriendshipButton(otherCiv: Civilization): TextButton {
         val declareFriendshipButton =
                 "Offer Declaration of Friendship ([30] turns)".toTextButton()
