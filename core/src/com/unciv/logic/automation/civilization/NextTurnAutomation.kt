@@ -173,6 +173,8 @@ object NextTurnAutomation {
 
             if (tradeLogic.currentTrade.theirOffers.any { it.type == offer.type && it.name == offer.name })
                 continue // So you don't get double offers of open borders declarations of war etc.
+            if (offer.type == TradeType.Treaty)
+                continue // Don't try to counter with a defensive pact or research pact
 
             val value = evaluation.evaluateBuyCost(offer, civInfo, otherCiv)
             if (value > 0)
