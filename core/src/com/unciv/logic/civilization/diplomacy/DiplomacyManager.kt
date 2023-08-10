@@ -737,6 +737,20 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             for (offer in trade.theirOffers.filter { it.duration > 0 })
                 civInfo.addNotification("[${offer.name}] from [$otherCivName] has ended",
                     NotificationCategory.Trade, otherCivName, NotificationIcon.Trade)
+
+        // If we attacked, then we need to end all of our defensive pacts acording to Civ 5
+        if (isOffensiveWar) {
+            civInfo.diplomacy.values.filter { it.otherCiv() != otherCiv() // So that we don't cancel the defensive pact before negative modifiers are added
+                && it.diplomaticStatus == DiplomaticStatus.DefensivePact }.forEach {
+                // Trades with defensive pact are now invalid
+                val defensivePactOffer = it.trades.firstOrNull { trade -> trade.ourOffers.any { offer -> offer.name == Constants.defensivePact} }
+                it.trades.remove(defensivePactOffer)
+                it.removeFlag(DiplomacyFlags.DefensivePact)
+                it.diplomaticStatus = DiplomaticStatus.Peace
+                it.otherCivDiplomacy().removeFlag(DiplomacyFlags.DefensivePact)
+                it.otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.Peace
+            }
+        }
         trades.clear()
         updateHasOpenBorders()
 
