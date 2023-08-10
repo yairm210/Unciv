@@ -658,10 +658,6 @@ class DiplomacyScreen(
             if (!diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship))
                 diplomacyTable.add(getDeclareFriendshipButton(otherCiv)).row()
 
-
-//             if (viewingCiv.diplomacyFunctions.canSignResearchAgreementsWith(otherCiv))
-//                 diplomacyTable.add(getResearchAgreementButton(otherCiv)).row()
-
             if (!diplomacyManager.hasFlag(DiplomacyFlags.Denunciation)
                     && !diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
             ) diplomacyTable.add(getDenounceButton(otherCiv, diplomacyManager)).row()

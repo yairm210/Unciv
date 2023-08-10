@@ -74,7 +74,8 @@ enum class DiplomaticModifiers(val text:String) {
     CapturedOurCities("You have captured our cities!"),
     DeclaredFriendshipWithOurEnemies("You have declared friendship with our enemies!"),
     BetrayedDeclarationOfFriendship("Your so-called 'friendship' is worth nothing."),
-    DefensivePactWithOurEnemies("You have declared a defensive pact with our enemies!"),
+    SignedDefensivePactWithOurEnemies("You have declared a defensive pact with our enemies!"),
+    BetrayedDefensivePact("Your so-called 'defensive pact' is worth nothing."),
     Denunciation("You have publicly denounced us!"),
     DenouncedOurAllies("You have denounced our allies"),
     RefusedToNotSettleCitiesNearUs("You refused to stop settling cities near us"),
@@ -94,7 +95,7 @@ enum class DiplomaticModifiers(val text:String) {
     DeclarationOfFriendship("We have signed a public declaration of friendship"),
     DeclaredFriendshipWithOurAllies("You have declared friendship with our allies"),
     DefensivePact("We have signed a promise to protect each other."),
-    DefensivePactWithOurAllies("You have declared a defensive pact with our allies"),
+    SignedDefensivePactWithOurAllies("You have declared a defensive pact with our allies"),
     DenouncedOurEnemies("You have denounced our enemies"),
     OpenBorders("Our open borders have brought us closer together."),
     FulfilledPromiseToNotSettleCitiesNearUs("You fulfilled your promise to stop settling cities near us!"),
@@ -245,10 +246,10 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     /** Same as [relationshipLevel] but omits the distinction Neutral/Afraid, which can be _much_ cheaper */
     fun relationshipIgnoreAfraid(): RelationshipLevel {
-        if (civInfo.isHuman() && otherCiv().isHuman())
+        if (false && civInfo.isHuman() && otherCiv().isHuman())
             return RelationshipLevel.Neutral // People make their own choices.
 
-        if (civInfo.isHuman())
+        if (false && civInfo.isHuman())
             return otherCiv().getDiplomacyManager(civInfo).relationshipLevel()
 
         if (civInfo.isCityState()) return when {
@@ -683,6 +684,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         revertToZero(DiplomaticModifiers.WarMongerer, 1 / 2f) // warmongering gives a big negative boost when it happens but they're forgotten relatively quickly, like WWII amirite
         revertToZero(DiplomaticModifiers.CapturedOurCities, 1 / 4f) // if you captured our cities, though, that's harder to forget
         revertToZero(DiplomaticModifiers.BetrayedDeclarationOfFriendship, 1 / 8f) // That's a bastardly thing to do
+        revertToZero(DiplomaticModifiers.BetrayedDefensivePact, 1 / 16f) // That's an outrageous thing to do
         revertToZero(DiplomaticModifiers.RefusedToNotSettleCitiesNearUs, 1 / 4f)
         revertToZero(DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs, 1 / 8f) // That's a bastardly thing to do
         revertToZero(DiplomaticModifiers.UnacceptableDemands, 1 / 4f)
@@ -844,17 +846,19 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         }
         otherCivDiplomacy.removeFlag(DiplomacyFlags.ResearchAgreement)
 
+        //Note: this stacks with Declaration of Freindship
         if (hasFlag(DiplomacyFlags.DefensivePact)) {
             removeFlag(DiplomacyFlags.DefensivePact)
             otherCivDiplomacy.removeModifier(DiplomaticModifiers.DefensivePact)
             for (knownCiv in civInfo.getKnownCivs()) {
                 val amount = if (knownCiv == otherCiv) -40f else -20f
                 val diploManager = knownCiv.getDiplomacyManager(civInfo)
-                diploManager.addModifier(DiplomaticModifiers.BetrayedDeclarationOfFriendship, amount)
-                diploManager.removeModifier(DiplomaticModifiers.DeclaredFriendshipWithOurAllies) // obviously this guy's declarations of friendship aren't worth much.
+                diploManager.addModifier(DiplomaticModifiers.BetrayedDefensivePact, amount)
+                diploManager.removeModifier(DiplomaticModifiers.SignedDefensivePactWithOurAllies) // obviously this guy's declarations of friendship aren't worth much.
             }
         }
         otherCivDiplomacy.removeFlag(DiplomacyFlags.DefensivePact)
+        otherCivDiplomacy.removeModifier(DiplomaticModifiers.DefensivePact)
 
         if (otherCiv.isMajorCiv())
             for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringWar))
@@ -965,8 +969,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
     fun signDefensivePact(duration: Int) {
-        setModifier(DiplomaticModifiers.DefensivePact, 45f)
-        otherCivDiplomacy().setModifier(DiplomaticModifiers.DefensivePact, 45f)
+        //Note: These modifiers are additive to the freindship modifiers
+        setModifier(DiplomaticModifiers.DefensivePact, 30f)
+        otherCivDiplomacy().setModifier(DiplomaticModifiers.DefensivePact, 30f)
         diplomaticStatus = DiplomaticStatus.DefensivePact;
         otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.DefensivePact;
 
@@ -997,15 +1002,16 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
     private fun setDefensivePactBasedModifier() {
-        removeModifier(DiplomaticModifiers.DefensivePactWithOurAllies)
-        removeModifier(DiplomaticModifiers.DefensivePactWithOurEnemies)
+        removeModifier(DiplomaticModifiers.SignedDefensivePactWithOurAllies)
+        removeModifier(DiplomaticModifiers.SignedDefensivePactWithOurEnemies)
         for (thirdCiv in getCommonKnownCivs()
             .filter { it.getDiplomacyManager(civInfo).hasFlag(DiplomacyFlags.DefensivePact) }) {
+            //Note: These modifiers are additive to the freindship modifiers
             when (otherCiv().getDiplomacyManager(thirdCiv).relationshipIgnoreAfraid()) {
-                RelationshipLevel.Unforgivable -> addModifier(DiplomaticModifiers.DefensivePactWithOurEnemies, -30f)
-                RelationshipLevel.Enemy -> addModifier(DiplomaticModifiers.DefensivePactWithOurEnemies, -15f)
-                RelationshipLevel.Friend -> addModifier(DiplomaticModifiers.DefensivePactWithOurAllies, 15f)
-                RelationshipLevel.Ally -> addModifier(DiplomaticModifiers.DefensivePactWithOurAllies, 30f)
+                RelationshipLevel.Unforgivable -> addModifier(DiplomaticModifiers.SignedDefensivePactWithOurEnemies, -30f)
+                RelationshipLevel.Enemy -> addModifier(DiplomaticModifiers.SignedDefensivePactWithOurEnemies, -15f)
+                RelationshipLevel.Friend -> addModifier(DiplomaticModifiers.SignedDefensivePactWithOurAllies, 5f)
+                RelationshipLevel.Ally -> addModifier(DiplomaticModifiers.SignedDefensivePactWithOurAllies, 15f)
                 else -> {}
             }
         }
