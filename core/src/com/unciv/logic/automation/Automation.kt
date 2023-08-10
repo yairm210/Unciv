@@ -40,6 +40,8 @@ object Automation {
         return rank
     }
 
+    val zeroFoodFocuses = setOf(CityFocus.CultureFocus, CityFocus.FaithFocus, CityFocus.GoldFocus,
+        CityFocus.HappinessFocus, CityFocus.ProductionFocus, CityFocus.ScienceFocus)
     private fun rankStatsForCityWork(stats: Stats, city: City, cityStats: Stats, specialist: Boolean, localUniqueCache: LocalUniqueCache): Float {
         val cityAIFocus = city.cityAIFocus
         val yieldStats = stats.clone()
@@ -62,23 +64,20 @@ object Automation {
 
         if (surplusFood > 0 && city.avoidGrowth) {
             yieldStats.food = 0f // don't need more food!
-        } else {
-            if (cityAIFocus != CityFocus.NoFocus && cityAIFocus != CityFocus.FoodFocus && cityAIFocus != CityFocus.ProductionGrowthFocus && cityAIFocus != CityFocus.GoldGrowthFocus) {
-                // Focus on non-food/growth
-                if (surplusFood < 0)
-                    yieldStats.food *= 8 // Starving, need Food, get to 0
-                else
-                    yieldStats.food /= 2
-            } else if (!city.avoidGrowth) {
-                // NoFocus or Food/Growth Focus. Target +2 Food Surplus
-                if (surplusFood < 2)
-                    yieldStats.food *= 8
-                else if (cityAIFocus != CityFocus.FoodFocus)
-                    yieldStats.food /= 2
-                if (city.population.population < 5 && cityAIFocus != CityFocus.FoodFocus)
-                // NoFocus or GoldGrow or ProdGrow, not Avoid Growth, pop < 5. FoodFocus already does this up
-                    yieldStats.food *= 3
-            }
+        } else if (cityAIFocus in zeroFoodFocuses) {
+            // Focus on non-food/growth
+            if (surplusFood < 0)
+                yieldStats.food *= 8 // Starving, need Food, get to 0
+            else
+                yieldStats.food /= 2
+        } else if (!city.avoidGrowth) {
+            // NoFocus or Food/Growth Focus. Target +2 Food Surplus
+            if (surplusFood < 2)
+                yieldStats.food *= 8
+            else if (city.population.population < 5)
+                yieldStats.food *= 3
+            else if (cityAIFocus == CityFocus.FoodFocus)
+                yieldStats.food *= 2
         }
 
         if (city.population.population < 5) {
