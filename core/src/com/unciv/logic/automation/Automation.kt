@@ -2,13 +2,13 @@ package com.unciv.logic.automation
 
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityFocus
-import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
@@ -141,12 +141,23 @@ object Automation {
 
         // if not coastal, removeShips == true so don't even consider ships
         var removeShips = true
+        var isMissingNavalUnitsForCityDefence = false
+
+        fun isNavalMeleeUnit(unit: BaseUnit) = unit.isMelee() && unit.type.isWaterUnit()
         if (city.isCoastal()) {
             // in the future this could be simplified by assigning every distinct non-lake body of
             // water their own ID like a continent ID
             val findWaterConnectedCitiesAndEnemies =
                     BFS(city.getCenterTile()) { it.isWater || it.isCityCenter() }
             findWaterConnectedCitiesAndEnemies.stepToEnd()
+
+            val numberOfOurConnectedCities = findWaterConnectedCitiesAndEnemies.getReachedTiles()
+                .count { it.isCityCenter() && it.getOwner() == city.civ }
+            val numberOfOurNavalMeleeUnits = findWaterConnectedCitiesAndEnemies.getReachedTiles().asSequence()
+                .flatMap { it.getUnits() }
+                .count { isNavalMeleeUnit(it.baseUnit) }
+            isMissingNavalUnitsForCityDefence = numberOfOurConnectedCities > numberOfOurNavalMeleeUnits
+
             removeShips = findWaterConnectedCitiesAndEnemies.getReachedTiles().none {
                         (it.isCityCenter() && it.getOwner() != city.civ)
                                 || (it.militaryUnit != null && it.militaryUnit!!.civ != city.civ)
@@ -174,7 +185,13 @@ object Automation {
             chosenUnit = militaryUnits
                 .filter { it.isRanged() }
                 .maxByOrNull { it.cost }!!
-        } else { // randomize type of unit and take the most expensive of its kind
+        }
+        else if (isMissingNavalUnitsForCityDefence && militaryUnits.any { isNavalMeleeUnit(it) }){
+            chosenUnit = militaryUnits
+                .filter { isNavalMeleeUnit(it) }
+                .maxBy { it.cost }
+        }
+        else { // randomize type of unit and take the most expensive of its kind
             val bestUnitsForType = hashMapOf<String, BaseUnit>()
             for (unit in militaryUnits) {
                 if (bestUnitsForType[unit.unitType] == null || bestUnitsForType[unit.unitType]!!.cost < unit.cost) {
