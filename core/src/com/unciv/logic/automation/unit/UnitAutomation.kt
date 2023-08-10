@@ -158,6 +158,7 @@ object UnitAutomation {
 
         if (unit.promotions.canBePromoted()) {
             val availablePromotions = unit.promotions.getAvailablePromotions()
+                .filterNot { it.hasUnique(UniqueType.SkipPromotion) }
             if (availablePromotions.any())
                 unit.promotions.addPromotion(availablePromotions.toList().random().name)
         }
