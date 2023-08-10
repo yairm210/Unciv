@@ -76,10 +76,14 @@ class TradeEvaluation {
 
         // If we're making a peace treaty, don't try to up the bargain for people you don't like.
         // Leads to spartan behaviour where you demand more, the more you hate the enemy...unhelpful
-        if (trade.ourOffers.none { it.name == Constants.peaceTreaty || it.name == Constants.researchAgreement || it.name == Constants.defensivePact }) {
+        if (trade.ourOffers.none { it.name == Constants.peaceTreaty || it.name == Constants.researchAgreement}) {
             val relationshipLevel = evaluator.getDiplomacyManager(tradePartner).relationshipIgnoreAfraid()
             if (relationshipLevel == RelationshipLevel.Enemy) sumOfOurOffers = (sumOfOurOffers * 1.5).toInt()
             else if (relationshipLevel == RelationshipLevel.Unforgivable) sumOfOurOffers *= 2
+        }
+        if (trade.ourOffers.firstOrNull { it.name == Constants.defensivePact } != null && evaluator.getDiplomacyManager(tradePartner).relationshipIgnoreAfraid() != RelationshipLevel.Ally) {
+            //Todo: Add checking for war here
+            return Int.MIN_VALUE
         }
 
         return sumOfTheirOffers - sumOfOurOffers
@@ -195,6 +199,7 @@ class TradeEvaluation {
                     Constants.peaceTreaty -> evaluatePeaceCostForThem(civInfo, tradePartner)
                     Constants.researchAgreement -> -offer.amount
                     else -> 1000
+                    //Todo:AddDefensiveTreatyHere
                 }
             }
             TradeType.Luxury_Resource -> {

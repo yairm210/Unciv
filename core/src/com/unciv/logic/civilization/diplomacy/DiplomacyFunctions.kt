@@ -103,7 +103,7 @@ class DiplomacyFunctions(val civInfo: Civilization){
                 && diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
                 && !diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement)
                 && !diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement)
-//                 && civInfo.gold >= cost && otherCiv.gold >= cost
+                && civInfo.gold >= cost && otherCiv.gold >= cost
     }
 
     fun getResearchAgreementCost(): Int {

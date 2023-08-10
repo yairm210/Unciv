@@ -69,6 +69,7 @@ object NextTurnAutomation {
                 ReligionAutomation.spendFaithOnReligion(civInfo)
             }
             offerResearchAgreement(civInfo)
+            offerDefensivePact(civInfo)
             exchangeLuxuries(civInfo)
             issueRequests(civInfo)
             adoptPolicy(civInfo)  // todo can take a second - why?
@@ -126,7 +127,7 @@ object NextTurnAutomation {
              * the same resource to ANOTHER civ in this turn. Complicated!
              */
             civInfo.tradeRequests.remove(tradeRequest)
-            if (TradeEvaluation().isTradeAcceptable(tradeLogic.currentTrade, civInfo, otherCiv) || otherCiv.isHuman()) {
+            if (TradeEvaluation().isTradeAcceptable(tradeLogic.currentTrade, civInfo, otherCiv)) {
                 tradeLogic.acceptTrade()
                 otherCiv.addNotification("[${civInfo.civName}] has accepted your trade request", NotificationCategory.Trade, NotificationIcon.Trade, civInfo.civName)
             } else {
@@ -798,8 +799,31 @@ object NextTurnAutomation {
             if ((1..10).random() > 5) continue
             val tradeLogic = TradeLogic(civInfo, otherCiv)
             val cost = civInfo.diplomacyFunctions.getResearchAgreementCost()
-//             tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
-//             tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
+            tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
+            tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
+
+            otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
+        }
+    }
+
+    private fun offerDefensivePact(civInfo: Civilization) {
+        if (!civInfo.diplomacyFunctions.canSignDefensivePact()) return // don't waste your time
+
+        val canSignDefensivePactCiv = civInfo.getKnownCivs()
+            .filter {
+                civInfo.diplomacyFunctions.canSignDefensivePactWith(it)
+                    && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedDefensivePact)
+                    && civInfo.getDiplomacyManager(it).relationshipIgnoreAfraid() == RelationshipLevel.Ally
+            }
+            .sortedByDescending { it.stats.statsForNextTurn.science }
+
+        for (otherCiv in canSignDefensivePactCiv) {
+            // Default setting is 9, this will be changed according to different civ.
+            if ((1..10).random() > 9) continue
+            //Todo: Add checking for war here
+            val tradeLogic = TradeLogic(civInfo, otherCiv)
+            tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.defensivePact, TradeType.Treaty))
+            tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.defensivePact, TradeType.Treaty))
 
             otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
         }
