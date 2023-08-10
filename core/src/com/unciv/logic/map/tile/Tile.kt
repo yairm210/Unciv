@@ -673,7 +673,11 @@ open class Tile : IsPartOfGameInfoSerialization {
     }
 
     @delegate:Transient
-    private val isAdjacentToRiverLazy by lazy { neighbors.any { isConnectedByRiver(it) } }
+    private val isAdjacentToRiverLazy by lazy {
+        // These are so if you add a river at the bottom of the map (no neighboring tile to be connected to)
+        //   that tile is still considered adjacent to river
+        hasBottomLeftRiver || hasBottomRiver || hasBottomRightRiver
+        || neighbors.any { isConnectedByRiver(it) } }
     fun isAdjacentToRiver() = isAdjacentToRiverLazy
 
     /**
