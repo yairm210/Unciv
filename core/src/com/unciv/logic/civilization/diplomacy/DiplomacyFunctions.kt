@@ -115,8 +115,6 @@ class DiplomacyFunctions(val civInfo: Civilization){
     fun canSignDefensivePact(): Boolean {
         if (!civInfo.isMajorCiv()) return false
         if (!civInfo.hasUnique(UniqueType.EnablesDefensivePacts)) return false
-        if (civInfo.gameInfo.ruleset.technologies.values
-                .none { civInfo.tech.canBeResearched(it.name) && !civInfo.tech.isResearched(it.name) }) return false
         return true
     }
 
