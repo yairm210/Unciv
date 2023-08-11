@@ -491,7 +491,7 @@ class CityStateFunctions(val civInfo: Civilization) {
 
     fun threateningBarbarianKilledBy(otherCiv: Civilization) {
         val diplomacy = civInfo.getDiplomacyManager(otherCiv)
-        if (diplomacy.isAtWar()) return // No reward for enemies
+        if (diplomacy.diplomaticStatus == DiplomaticStatus.War) return // No reward for enemies
 
         diplomacy.addInfluence(12f)
 

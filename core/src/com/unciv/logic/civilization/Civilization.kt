@@ -551,7 +551,7 @@ class Civilization : IsPartOfGameInfoSerialization {
 
     fun isAtWarWith(otherCiv: Civilization) = diplomacyFunctions.isAtWarWith(otherCiv)
 
-    fun isAtWar() = diplomacy.values.any { it.isAtWar() && !it.otherCiv().isDefeated() }
+    fun isAtWar() = diplomacy.values.any { it.diplomaticStatus == DiplomaticStatus.War && !it.otherCiv().isDefeated() }
 
 
     /**

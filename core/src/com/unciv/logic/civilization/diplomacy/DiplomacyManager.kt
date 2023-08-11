@@ -123,7 +123,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     lateinit var otherCivName: String
     var trades = ArrayList<Trade>()
-    var diplomaticStatus = DiplomaticStatus.DefensiveWar
+    var diplomaticStatus = DiplomaticStatus.War
 
     /** Contains various flags (declared war, promised to not settle, declined luxury trade) and the number of turns in which they will expire.
      *  The JSON serialize/deserialize REFUSES to deserialize hashmap keys as Enums, so I'm forced to use strings instead =(
@@ -383,7 +383,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         return max(0f, increment) * max(0f, modifierPercent).toPercent()
     }
 
-    fun isAtWar() = diplomaticStatus == DiplomaticStatus.OffensiveWar || diplomaticStatus == DiplomaticStatus.DefensiveWar
+    fun isAtWar() = diplomaticStatus == DiplomaticStatus.War && !otherCiv().isDefeated()
 
     fun canDeclareWar() = turnsToPeaceTreaty() == 0 && !isAtWar()
 
@@ -761,7 +761,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             civInfo.cityStateFunctions.removeProtectorCiv(civAtWarWith, forced = true)
         }
 
-        diplomaticStatus = if(isOffensiveWar) DiplomaticStatus.OffensiveWar else DiplomaticStatus.DefensiveWar
+        diplomaticStatus = DiplomaticStatus.War
 
         removeModifier(DiplomaticModifiers.YearsOfPeace)
         setFlag(DiplomacyFlags.DeclinedPeace, 10)/// AI won't propose peace for 10 turns
@@ -771,7 +771,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
         if (!civInfo.isCityState()) {
             // Go through defensive pact allies.
-            if (diplomaticStatus == DiplomaticStatus.DefensiveWar) {
+            if (!isOffensiveWar) {
                 for (defensivePact in civInfo.diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.DefensivePact && !it.otherCiv().isDefeated()
                     && !otherCivDiplomacy().civInfo.isAtWarWith(it.otherCiv())}) {
                     otherCiv().diplomacy.values.find { it.otherCiv() == defensivePact.otherCiv()}?.declareWar(true)

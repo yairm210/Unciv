@@ -783,7 +783,7 @@ object Battle {
         fun tryDeclareWar(civSuffered: Civilization) {
             if (civSuffered != attackingCiv
                 && civSuffered.knows(attackingCiv)
-                && !civSuffered.getDiplomacyManager(attackingCiv).isAtWar()
+                && civSuffered.getDiplomacyManager(attackingCiv).diplomaticStatus != DiplomaticStatus.War
             ) {
                 attackingCiv.getDiplomacyManager(civSuffered).declareWar()
                 attackingCiv.addNotification("After being hit by our [${attacker.getName()}], [${civSuffered}] has declared war on us!", targetTile.position, NotificationCategory.Diplomacy, NotificationIcon.War)

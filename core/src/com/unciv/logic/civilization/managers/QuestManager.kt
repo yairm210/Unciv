@@ -390,7 +390,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
             QuestName.GiveGold.value -> mostRecentBully != null
             QuestName.DenounceCiv.value -> mostRecentBully != null && challenger.knows(mostRecentBully)
                                             && !challenger.getDiplomacyManager(mostRecentBully).hasFlag(DiplomacyFlags.Denunciation)
-                                            && challenger.getDiplomacyManager(mostRecentBully).isAtWar()
+                                            && challenger.getDiplomacyManager(mostRecentBully).diplomaticStatus != DiplomaticStatus.War
                                             && !( challenger.playerType == PlayerType.Human && civInfo.gameInfo.getCivilization(mostRecentBully).playerType == PlayerType.Human)
             QuestName.SpreadReligion.value -> playerReligion != null && civInfo.getCapital()!!.religion.getMajorityReligion()?.name != playerReligion
             QuestName.ConquerCityState.value -> getCityStateTarget(challenger) != null && civInfo.cityStatePersonality != CityStatePersonality.Friendly
