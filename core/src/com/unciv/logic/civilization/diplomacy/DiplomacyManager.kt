@@ -990,6 +990,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         //Note: These modifiers are additive to the friendship modifiers
         setModifier(DiplomaticModifiers.DefensivePact, 30f)
         otherCivDiplomacy().setModifier(DiplomaticModifiers.DefensivePact, 30f)
+        setFlag(DiplomacyFlags.DefensivePact, duration)
+        otherCivDiplomacy().setFlag(DiplomacyFlags.DefensivePact, duration)
         diplomaticStatus = DiplomaticStatus.DefensivePact;
         otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.DefensivePact;
 
