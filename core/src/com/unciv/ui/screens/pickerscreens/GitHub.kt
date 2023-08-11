@@ -46,18 +46,25 @@ object Github {
      * @return The [InputStream] if successful, `null` otherwise.
      */
     fun download(url: String, action: (HttpURLConnection) -> Unit = {}): InputStream? {
-        with(URL(url).openConnection() as HttpURLConnection)
-        {
-            action(this)
-
-            return try {
-                inputStream
-            } catch (ex: Exception) {
-                Log.error("Exception during GitHub download", ex)
-                val reader = BufferedReader(InputStreamReader(errorStream))
-                Log.error("Message from GitHub: %s", reader.readText())
-                null
+        try {
+            // Problem type 1 - opening the URL connection
+            with(URL(url).openConnection() as HttpURLConnection)
+            {
+                action(this)
+                // Problem type 2 - getting the information
+                try {
+                    return inputStream
+                } catch (ex: Exception) {
+                    // No error handling, just log the message.
+                    // NOTE that this 'read error stream' CAN ALSO fail, but will be caught by the big try/catch
+                    val reader = BufferedReader(InputStreamReader(errorStream))
+                    Log.error("Message from GitHub: %s", reader.readText())
+                    throw ex
+                }
             }
+        } catch (ex: Exception) {
+            Log.error("Exception during GitHub download", ex)
+            return null
         }
     }
 
