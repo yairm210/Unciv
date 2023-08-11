@@ -246,10 +246,10 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     /** Same as [relationshipLevel] but omits the distinction Neutral/Afraid, which can be _much_ cheaper */
     fun relationshipIgnoreAfraid(): RelationshipLevel {
-        if (false && civInfo.isHuman() && otherCiv().isHuman())
+        if (civInfo.isHuman() && otherCiv().isHuman())
             return RelationshipLevel.Neutral // People make their own choices.
 
-        if (false && civInfo.isHuman())
+        if (civInfo.isHuman())
             return otherCiv().getDiplomacyManager(civInfo).relationshipLevel()
 
         if (civInfo.isCityState()) return when {
@@ -983,7 +983,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
     fun signDefensivePact(duration: Int) {
-        //Note: These modifiers are additive to the freindship modifiers
+        //Note: These modifiers are additive to the friendship modifiers
         setModifier(DiplomaticModifiers.DefensivePact, 30f)
         otherCivDiplomacy().setModifier(DiplomaticModifiers.DefensivePact, 30f)
         diplomaticStatus = DiplomaticStatus.DefensivePact;
@@ -994,7 +994,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
             thirdCiv.getDiplomacyManager(civInfo).setDefensivePactBasedModifier()
         }
-        civInfo.isAtWar()
+
         //Have them join our wars
         for (newWar in civInfo.diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.DefensiveWar && !it.otherCiv().isDefeated()
             && !otherCivDiplomacy().civInfo.isAtWarWith(it.otherCiv())
