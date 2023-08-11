@@ -742,12 +742,19 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                 && it.diplomaticStatus == DiplomaticStatus.DefensivePact }.forEach {
                 // Trades with defensive pact are now invalid
                 val defensivePactOffer = it.trades.firstOrNull { trade -> trade.ourOffers.any { offer -> offer.name == Constants.defensivePact} }
-                trades.remove(defensivePactOffer)
                 it.trades.remove(defensivePactOffer)
+                val theirDefensivePactOffer = it.otherCivDiplomacy().trades.firstOrNull { trade -> trade.ourOffers.any { offer -> offer.name == Constants.defensivePact} }
+                it.otherCivDiplomacy().trades.remove(theirDefensivePactOffer)
                 it.removeFlag(DiplomacyFlags.DefensivePact)
-                it.diplomaticStatus = DiplomaticStatus.Peace
                 it.otherCivDiplomacy().removeFlag(DiplomacyFlags.DefensivePact)
+                it.diplomaticStatus = DiplomaticStatus.Peace
                 it.otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.Peace
+                for (civ in getCommonKnownCivs().filter { civ -> civ.isMajorCiv() }) {
+                    civ.addNotification("[${civInfo.civName}] canceled thier Defensive Pact with [${it.otherCivName}]!",
+                        NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, it.otherCivName)
+                }
+                civInfo.addNotification("We have canceled our Defensive Pact with [${it.otherCivName}]!",
+                    NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, it.otherCivName)
             }
         }
         trades.clear()
