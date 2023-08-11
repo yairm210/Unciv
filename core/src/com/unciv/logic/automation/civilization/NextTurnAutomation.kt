@@ -981,7 +981,7 @@ object NextTurnAutomation {
     private fun offerPeaceTreaty(civInfo: Civilization) {
         if (!civInfo.isAtWar() || civInfo.cities.isEmpty() || civInfo.diplomacy.isEmpty()) return
 
-        val enemiesCiv = civInfo.diplomacy.filter { it.value.isAtWar() }
+        val enemiesCiv = civInfo.diplomacy.filter { it.value.diplomaticStatus == DiplomaticStatus.War }
                 .map { it.value.otherCiv() }
                 .filterNot { it == civInfo || it.isBarbarian() || it.cities.isEmpty() }
                 .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedPeace) }

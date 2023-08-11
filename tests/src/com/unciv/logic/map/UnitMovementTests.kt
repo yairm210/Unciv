@@ -199,7 +199,7 @@ class UnitMovementTests {
 
         city.hasJustBeenConquered = true
         civInfo.diplomacy[otherCiv.civName] = DiplomacyManager(otherCiv, otherCiv.civName)
-        civInfo.getDiplomacyManager(otherCiv).isAtWar()
+        civInfo.getDiplomacyManager(otherCiv).diplomaticStatus == DiplomaticStatus.War
 
         Assert.assertTrue("Unit can capture other civ city", unit.movement.canPassThrough(tile))
     }

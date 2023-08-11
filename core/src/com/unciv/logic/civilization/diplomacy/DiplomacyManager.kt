@@ -382,10 +382,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
         return max(0f, increment) * max(0f, modifierPercent).toPercent()
     }
-
-    fun isAtWar() = diplomaticStatus == DiplomaticStatus.War && !otherCiv().isDefeated()
-
-    fun canDeclareWar() = turnsToPeaceTreaty() == 0 && !isAtWar()
+    
+    fun canDeclareWar() = turnsToPeaceTreaty() == 0 && diplomaticStatus != DiplomaticStatus.War
 
     //Used for nuke
     fun canAttack() = turnsToPeaceTreaty() == 0
