@@ -995,18 +995,6 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             thirdCiv.getDiplomacyManager(civInfo).setDefensivePactBasedModifier()
         }
 
-        //Have them join our wars
-        for (newWar in civInfo.diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.DefensiveWar && !it.otherCiv().isDefeated()
-            && !otherCivDiplomacy().civInfo.isAtWarWith(it.otherCiv())
-        }) {
-                otherCiv().diplomacy.values.find { it.otherCiv() == newWar.otherCiv() }?.declareWar(true)
-        }
-        //Join thier wars
-        for (newWar in otherCiv().diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.DefensiveWar && !it.otherCiv().isDefeated()
-            && !civInfo.isAtWarWith(it.otherCiv())}) {
-                civInfo.diplomacy.values.find { it.otherCiv() == newWar.otherCiv() }?.declareWar()
-        }
-
         // Ignore contitionals as triggerCivwideUnique will check again, and that would break
         // UniqueType.ConditionalChance - 25% declared chance would work as 6% actual chance
         for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponSigningDefensivePact, StateForConditionals.IgnoreConditionals))
@@ -1020,14 +1008,18 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         removeModifier(DiplomaticModifiers.SignedDefensivePactWithOurEnemies)
         for (thirdCiv in getCommonKnownCivs()
             .filter { it.getDiplomacyManager(civInfo).hasFlag(DiplomacyFlags.DefensivePact) }) {
-            //Note: These modifiers are additive to the freindship modifiers
-            when (otherCiv().getDiplomacyManager(thirdCiv).relationshipIgnoreAfraid()) {
-                RelationshipLevel.Unforgivable -> addModifier(DiplomaticModifiers.SignedDefensivePactWithOurEnemies, -30f)
-                RelationshipLevel.Enemy -> addModifier(DiplomaticModifiers.SignedDefensivePactWithOurEnemies, -15f)
-                RelationshipLevel.Friend -> addModifier(DiplomaticModifiers.SignedDefensivePactWithOurAllies, 5f)
-                RelationshipLevel.Ally -> addModifier(DiplomaticModifiers.SignedDefensivePactWithOurAllies, 15f)
-                else -> {}
-            }
+            //Note: These modifiers are additive to the friendship modifiers
+            val relationshipLevel =  otherCiv().getDiplomacyManager(thirdCiv).relationshipIgnoreAfraid()
+            addModifier(when (relationshipLevel) {
+                RelationshipLevel.Unforgivable, RelationshipLevel.Enemy -> DiplomaticModifiers.SignedDefensivePactWithOurEnemies
+                RelationshipLevel.Friend, RelationshipLevel.Ally -> DiplomaticModifiers.SignedDefensivePactWithOurAllies
+                else -> DiplomaticModifiers.SignedDefensivePactWithOurAllies }, when (relationshipLevel) {
+                RelationshipLevel.Unforgivable -> -30f
+                RelationshipLevel.Enemy -> -15f
+                RelationshipLevel.Friend ->  5f
+                RelationshipLevel.Ally -> 15f
+                else -> {0f}
+            })
         }
     }
 
