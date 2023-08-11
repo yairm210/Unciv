@@ -744,6 +744,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                 && it.diplomaticStatus == DiplomaticStatus.DefensivePact }.forEach {
                 // Trades with defensive pact are now invalid
                 val defensivePactOffer = it.trades.firstOrNull { trade -> trade.ourOffers.any { offer -> offer.name == Constants.defensivePact} }
+                trades.remove(defensivePactOffer)
                 it.trades.remove(defensivePactOffer)
                 it.removeFlag(DiplomacyFlags.DefensivePact)
                 it.diplomaticStatus = DiplomaticStatus.Peace
