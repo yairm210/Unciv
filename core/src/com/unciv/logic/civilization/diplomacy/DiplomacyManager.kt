@@ -750,7 +750,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                 it.diplomaticStatus = DiplomaticStatus.Peace
                 it.otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.Peace
                 for (civ in getCommonKnownCivs().filter { civ -> civ.isMajorCiv() }) {
-                    civ.addNotification("[${civInfo.civName}] canceled thier Defensive Pact with [${it.otherCivName}]!",
+                    civ.addNotification("[${civInfo.civName}] canceled their Defensive Pact with [${it.otherCivName}]!",
                         NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, it.otherCivName)
                 }
                 civInfo.addNotification("We have canceled our Defensive Pact with [${it.otherCivName}]!",
@@ -866,7 +866,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         }
         otherCivDiplomacy.removeFlag(DiplomacyFlags.ResearchAgreement)
 
-        //Note: this stacks with Declaration of Freindship
+        //Note: this stacks with Declaration of Friendship
         if (hasFlag(DiplomacyFlags.DefensivePact)) {
             removeFlag(DiplomacyFlags.DefensivePact)
             otherCivDiplomacy.removeModifier(DiplomaticModifiers.DefensivePact)
