@@ -972,13 +972,18 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         removeModifier(DiplomaticModifiers.DeclaredFriendshipWithOurEnemies)
         for (thirdCiv in getCommonKnownCivs()
                 .filter { it.getDiplomacyManager(civInfo).hasFlag(DiplomacyFlags.DeclarationOfFriendship) }) {
-            when (otherCiv().getDiplomacyManager(thirdCiv).relationshipIgnoreAfraid()) {
-                RelationshipLevel.Unforgivable -> addModifier(DiplomaticModifiers.DeclaredFriendshipWithOurEnemies, -15f)
-                RelationshipLevel.Enemy -> addModifier(DiplomaticModifiers.DeclaredFriendshipWithOurEnemies, -5f)
-                RelationshipLevel.Friend -> addModifier(DiplomaticModifiers.DeclaredFriendshipWithOurAllies, 5f)
-                RelationshipLevel.Ally -> addModifier(DiplomaticModifiers.DeclaredFriendshipWithOurAllies, 15f)
-                else -> {}
-            }
+            val relationshipLevel =  otherCiv().getDiplomacyManager(thirdCiv).relationshipIgnoreAfraid()
+            addModifier(when (relationshipLevel) {
+                RelationshipLevel.Unforgivable, RelationshipLevel.Enemy -> DiplomaticModifiers.DeclaredFriendshipWithOurEnemies
+                RelationshipLevel.Friend, RelationshipLevel.Ally -> DiplomaticModifiers.DeclaredFriendshipWithOurAllies
+                else -> DiplomaticModifiers.SignedDefensivePactWithOurAllies }, when (relationshipLevel) {
+                RelationshipLevel.Unforgivable -> -15f
+                RelationshipLevel.Enemy -> -5f
+                RelationshipLevel.Friend -> 5f
+                RelationshipLevel.Ally -> 15f
+                else -> {0f}
+            })
+
         }
     }
 
@@ -1016,7 +1021,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                 else -> DiplomaticModifiers.SignedDefensivePactWithOurAllies }, when (relationshipLevel) {
                 RelationshipLevel.Unforgivable -> -30f
                 RelationshipLevel.Enemy -> -15f
-                RelationshipLevel.Friend ->  5f
+                RelationshipLevel.Friend -> 5f
                 RelationshipLevel.Ally -> 15f
                 else -> {0f}
             })
