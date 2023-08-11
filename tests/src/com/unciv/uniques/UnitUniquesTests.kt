@@ -128,24 +128,27 @@ class UnitUniquesTests {
     }
 
     @Test
-    fun testPromotionsWithMultipleRequirements() {
+    fun testPromotionTreeSetUp() {
         val civ = game.addCiv(isPlayer = true)
 
         val promotionBranch1 = game.createUnitPromotion()
         promotionBranch1.unitTypes = listOf("Scout")
 
-        val promotionBranch2a = game.createUnitPromotion()
-        promotionBranch2a.unitTypes = listOf("Scout")
-        promotionBranch2a.prerequisites = listOf(promotionBranch1.name)
+        val promotionBranch2 = game.createUnitPromotion()
+        promotionBranch2.unitTypes = listOf("Scout")
 
-        val promotionBranch2b = game.createUnitPromotion()
-        promotionBranch2b.prerequisites = listOf(promotionBranch1.name, promotionBranch2a.name)
-        promotionBranch2b.unitTypes = listOf("Scout")
+        val promotionTestBranchA = game.createUnitPromotion()
+        promotionTestBranchA.unitTypes = listOf("Scout")
+        promotionTestBranchA.prerequisites = listOf(promotionBranch1.name, promotionBranch2.name, promotionBranch1.name)
 
-        val centerTile = game.getTile(Vector2.Zero)
+        val promotionTestBranchB = game.createUnitPromotion()
+        promotionTestBranchB.prerequisites = listOf(promotionBranch1.name, promotionTestBranchA.name, promotionBranch2.name, promotionBranch1.name)
+        promotionTestBranchB.unitTypes = listOf("Scout")
+
+        val centerTile = game.tileMap[0,0]
         val unit = game.addUnit("Scout", civ, centerTile)
         var tree = PromotionTree(unit)
-        Assert.assertFalse(tree.canBuyUpTo(promotionBranch2b))
+        Assert.assertFalse(tree.canBuyUpTo(promotionTestBranchB))
 
         unit.promotions.XP += 30
         unit.promotions.addPromotion(promotionBranch1.name)
@@ -153,10 +156,20 @@ class UnitUniquesTests {
         // The Promotion tree needs to be refreshed to check it after gaining a promotion
         tree = PromotionTree(unit)
 
-        Assert.assertTrue(tree.canBuyUpTo(promotionBranch2b))
+        Assert.assertTrue(tree.canBuyUpTo(promotionTestBranchB))
 
-        promotionBranch2b.prerequisites = listOf(promotionBranch2a.name, promotionBranch1.name)
-        tree = PromotionTree(unit)
-        Assert.assertTrue(tree.canBuyUpTo(promotionBranch2b))
+        val promotionNode1 = tree.allNodes().first{ it.promotion == promotionTestBranchA }
+        Assert.assertEquals(promotionNode1.parents.size, 2)
+        Assert.assertTrue(
+            promotionNode1.parents.any { it.promotion == promotionBranch1 } &&
+            promotionNode1.parents.any { it.promotion == promotionBranch2 }
+        )
+        val promotionNode2 = tree.allNodes().first{ it.promotion == promotionTestBranchB }
+        Assert.assertEquals(promotionNode2.parents.size, 3)
+        Assert.assertTrue(
+            promotionNode2.parents.any { it.promotion == promotionBranch1 } &&
+            promotionNode2.parents.any { it.promotion == promotionTestBranchA } &&
+            promotionNode2.parents.any { it.promotion == promotionBranch2 }
+        )
     }
 }
