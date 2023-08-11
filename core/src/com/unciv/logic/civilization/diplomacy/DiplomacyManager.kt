@@ -864,7 +864,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             removeFlag(DiplomacyFlags.DefensivePact)
             otherCivDiplomacy.removeModifier(DiplomaticModifiers.DefensivePact)
             for (knownCiv in civInfo.getKnownCivs()) {
-                val amount = if (knownCiv == otherCiv) -40f else -20f
+                val amount = if (knownCiv == otherCiv) -20f else -10f
                 val diploManager = knownCiv.getDiplomacyManager(civInfo)
                 diploManager.addModifier(DiplomaticModifiers.BetrayedDefensivePact, amount)
                 diploManager.removeModifier(DiplomaticModifiers.SignedDefensivePactWithOurAllies) // obviously this guy's declarations of friendship aren't worth much.
@@ -988,8 +988,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     fun signDefensivePact(duration: Int) {
         //Note: These modifiers are additive to the friendship modifiers
-        setModifier(DiplomaticModifiers.DefensivePact, 30f)
-        otherCivDiplomacy().setModifier(DiplomaticModifiers.DefensivePact, 30f)
+        setModifier(DiplomaticModifiers.DefensivePact, 10f)
+        otherCivDiplomacy().setModifier(DiplomaticModifiers.DefensivePact, 10f)
         setFlag(DiplomacyFlags.DefensivePact, duration)
         otherCivDiplomacy().setFlag(DiplomacyFlags.DefensivePact, duration)
         diplomaticStatus = DiplomaticStatus.DefensivePact;
@@ -1020,10 +1020,10 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                 RelationshipLevel.Unforgivable, RelationshipLevel.Enemy -> DiplomaticModifiers.SignedDefensivePactWithOurEnemies
                 RelationshipLevel.Friend, RelationshipLevel.Ally -> DiplomaticModifiers.SignedDefensivePactWithOurAllies
                 else -> DiplomaticModifiers.SignedDefensivePactWithOurAllies }, when (relationshipLevel) {
-                RelationshipLevel.Unforgivable -> -30f
-                RelationshipLevel.Enemy -> -15f
-                RelationshipLevel.Friend -> 5f
-                RelationshipLevel.Ally -> 15f
+                RelationshipLevel.Unforgivable -> -15f
+                RelationshipLevel.Enemy -> -10f
+                RelationshipLevel.Friend -> 2f
+                RelationshipLevel.Ally -> 5f
                 else -> {0f}
             })
         }
