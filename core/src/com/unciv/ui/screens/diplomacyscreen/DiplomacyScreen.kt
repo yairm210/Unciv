@@ -764,8 +764,6 @@ class DiplomacyScreen(
         val tradeButton = "Trade".toTextButton()
         tradeButton.onClick {
             setTrade(otherCiv).apply {
-//                 tradeLogic.ourAvailableOffers.apply { remove(firstOrNull { it.type == TradeType.Treaty }) }
-//                 tradeLogic.theirAvailableOffers.apply { remove(firstOrNull { it.type == TradeType.Treaty }) }
                 offerColumnsTable.update()
             }
         }
