@@ -807,6 +807,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             val ally = ourDefensivePact.otherCiv()
             // Have the agressor declare war on the ally.
             civAtWarWith.getDiplomacyManager(ally).declareWar(true)
+            // Notify the agressor
+            civAtWarWith.addNotification("[${ally.civName}] has joined the defensive war with [${civInfo.civName}]!",
+                NotificationCategory.Diplomacy, ally.civName, NotificationIcon.Diplomacy, civInfo.civName)
         }
     }
     
