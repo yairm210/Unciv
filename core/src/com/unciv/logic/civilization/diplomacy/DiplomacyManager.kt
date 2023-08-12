@@ -1055,17 +1055,19 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         for (thirdCiv in getCommonKnownCivs()
             .filter { it.getDiplomacyManager(civInfo).hasFlag(DiplomacyFlags.DefensivePact) }) {
             //Note: These modifiers are additive to the friendship modifiers
-            val relationshipLevel =  otherCiv().getDiplomacyManager(thirdCiv).relationshipIgnoreAfraid()
-            addModifier(when (relationshipLevel) {
+            val relationshipLevel = otherCiv().getDiplomacyManager(thirdCiv).relationshipIgnoreAfraid()
+            val modifierType = when (relationshipLevel) {
                 RelationshipLevel.Unforgivable, RelationshipLevel.Enemy -> DiplomaticModifiers.SignedDefensivePactWithOurEnemies
-                RelationshipLevel.Friend, RelationshipLevel.Ally -> DiplomaticModifiers.SignedDefensivePactWithOurAllies
-                else -> DiplomaticModifiers.SignedDefensivePactWithOurAllies }, when (relationshipLevel) {
+                else -> DiplomaticModifiers.SignedDefensivePactWithOurAllies
+            }
+            val modifierValue = when (relationshipLevel) {
                 RelationshipLevel.Unforgivable -> -15f
                 RelationshipLevel.Enemy -> -10f
                 RelationshipLevel.Friend -> 2f
                 RelationshipLevel.Ally -> 5f
-                else -> {0f}
-            })
+                else -> 0f
+            }
+            addModifier(modifierType, modifierValue)
         }
     }
 
