@@ -984,18 +984,20 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         removeModifier(DiplomaticModifiers.DeclaredFriendshipWithOurEnemies)
         for (thirdCiv in getCommonKnownCivs()
                 .filter { it.getDiplomacyManager(civInfo).hasFlag(DiplomacyFlags.DeclarationOfFriendship) }) {
-            val relationshipLevel =  otherCiv().getDiplomacyManager(thirdCiv).relationshipIgnoreAfraid()
-            addModifier(when (relationshipLevel) {
+            
+            val relationshipLevel = otherCiv().getDiplomacyManager(thirdCiv).relationshipIgnoreAfraid()
+            val modifierType = when (relationshipLevel) {
                 RelationshipLevel.Unforgivable, RelationshipLevel.Enemy -> DiplomaticModifiers.DeclaredFriendshipWithOurEnemies
-                RelationshipLevel.Friend, RelationshipLevel.Ally -> DiplomaticModifiers.DeclaredFriendshipWithOurAllies
-                else -> DiplomaticModifiers.SignedDefensivePactWithOurAllies }, when (relationshipLevel) {
+                else -> DiplomaticModifiers.DeclaredFriendshipWithOurAllies 
+            }
+            val modifierValue = when (relationshipLevel) {
                 RelationshipLevel.Unforgivable -> -15f
                 RelationshipLevel.Enemy -> -5f
                 RelationshipLevel.Friend -> 5f
                 RelationshipLevel.Ally -> 15f
-                else -> {0f}
-            })
-
+                else -> 0f
+            }
+            addModifier(modifierType, modifierValue)
         }
     }
 
@@ -1007,6 +1009,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         otherCivDiplomacy().setFlag(DiplomacyFlags.DefensivePact, duration)
         diplomaticStatus = DiplomaticStatus.DefensivePact;
         otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.DefensivePact;
+        
 
         for (thirdCiv in getCommonKnownCivs().filter { it.isMajorCiv() }) {
             thirdCiv.addNotification("[${civInfo.civName}] and [$otherCivName] have signed the Defensive Pact!",
