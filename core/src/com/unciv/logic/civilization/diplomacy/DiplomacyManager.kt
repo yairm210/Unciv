@@ -772,7 +772,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             for (ourDefensivePact in civInfo.diplomacy.values.filter {
                 ourDipManager -> ourDipManager.diplomaticStatus == DiplomaticStatus.DefensivePact
                 && !ourDipManager.otherCiv().isDefeated()
-                && !ourDipManager.otherCiv().isAtWarWith(otherCiv())}) {
+                && !ourDipManager.otherCiv().isAtWarWith(civAtWarWith)}) {
                 val ally = ourDefensivePact.otherCiv()
                 // Have the agressor declare war on the ally.
                 civAtWarWith.getDiplomacyManager(ally).declareWar(true)
