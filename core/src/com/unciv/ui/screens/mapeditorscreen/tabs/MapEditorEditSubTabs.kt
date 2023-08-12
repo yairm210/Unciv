@@ -283,7 +283,7 @@ class MapEditorEditStartsTab(
         val eraserIcon = "Nation/${firstNation.name}"
         val eraser = FormattedLine("Remove starting locations", icon = eraserIcon, size = 24, iconCrossed = true)
         add(eraser.render(0f).apply { onClick {
-            editTab.setBrush(BrushHandlerType.Direct, "Remove starting locations", eraserIcon, true) { tile ->
+            editTab.setBrush(BrushHandlerType.Direct, "Remove", eraserIcon, true) { tile ->
                 tile.tileMap.removeStartingLocations(tile.position)
             }
         } }).padBottom(0f).row()
