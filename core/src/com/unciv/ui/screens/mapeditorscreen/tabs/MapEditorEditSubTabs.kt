@@ -3,6 +3,7 @@ package com.unciv.ui.screens.mapeditorscreen.tabs
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.map.tile.RoadStatus
@@ -19,6 +20,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.components.TabbedPager
+import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onClick
@@ -285,14 +287,18 @@ class MapEditorEditStartsTab(
                 tile.tileMap.removeStartingLocations(tile.position)
             }
         } }).padBottom(0f).row()
-
+        val anyCiv = FormattedLine("Any Civ starting location", Constants.spectator, "Nation/Spectator", size = 24)
+        val nations = getNations().toList()
+        val nationsToAdd = ArrayList<FormattedLine>(1 + nations.count())
+        nationsToAdd.add((anyCiv))
+        nationsToAdd.addAll(nations);
         add(
             MarkupRenderer.render(
-            getNations(),
+            nationsToAdd,
             iconDisplay = FormattedLine.IconDisplay.NoLink
         ) {
             UncivGame.Current.musicController.chooseTrack(it, MusicMood.Theme, MusicTrackChooserFlags.setSpecific)
-            editTab.setBrush(BrushHandlerType.Direct, it, "Nation/$it") { tile ->
+            editTab.setBrush(BrushHandlerType.Direct, when (it) {Constants.spectator -> "Any Civ" else -> it}, "Nation/$it") { tile ->
                 // toggle the starting location here, note this allows
                 // both multiple locations per nation and multiple nations per tile
                 if (!tile.tileMap.addStartingLocation(it, tile))
