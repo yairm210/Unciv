@@ -732,61 +732,56 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     private fun onWarDeclared(isOffensiveWar: Boolean) {
         // Cancel all trades.
         for (trade in trades)
-            for (offer in trade.theirOffers.filter { it.duration > 0 })
+            for (offer in trade.theirOffers.filter { it.duration > 0 && it.name != Constants.defensivePact})
                 civInfo.addNotification("[${offer.name}] from [$otherCivName] has ended",
                     NotificationCategory.Trade, otherCivName, NotificationIcon.Trade)
+        trades.clear()
 
+        val civAtWarWith = otherCiv()
+        
         // If we attacked, then we need to end all of our defensive pacts acording to Civ 5
         if (isOffensiveWar) {
-            civInfo.diplomacy.values.filter { it.otherCiv() != otherCiv() // So that we don't cancel the defensive pact before negative modifiers are added
-                && it.diplomaticStatus == DiplomaticStatus.DefensivePact }.forEach {
-                // Trades with defensive pact are now invalid
-                val defensivePactOffer = it.trades.firstOrNull { trade -> trade.ourOffers.any { offer -> offer.name == Constants.defensivePact} }
-                it.trades.remove(defensivePactOffer)
-                val theirDefensivePactOffer = it.otherCivDiplomacy().trades.firstOrNull { trade -> trade.ourOffers.any { offer -> offer.name == Constants.defensivePact} }
-                it.otherCivDiplomacy().trades.remove(theirDefensivePactOffer)
-                it.removeFlag(DiplomacyFlags.DefensivePact)
-                it.otherCivDiplomacy().removeFlag(DiplomacyFlags.DefensivePact)
-                it.diplomaticStatus = DiplomaticStatus.Peace
-                it.otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.Peace
+            civInfo.diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.DefensivePact }.forEach {
+                // We already removed the trades and we don't want to remove the flags yet.
+                if (it.otherCiv() != civAtWarWith) {
+                    // Trades with defensive pact are now invalid
+                    val defensivePactOffer = it.trades.firstOrNull { trade -> trade.ourOffers.any { offer -> offer.name == Constants.defensivePact } }
+                    it.trades.remove(defensivePactOffer)
+                    val theirDefensivePactOffer = it.otherCivDiplomacy().trades.firstOrNull { trade -> trade.ourOffers.any { offer -> offer.name == Constants.defensivePact } }
+                    it.otherCivDiplomacy().trades.remove(theirDefensivePactOffer)
+                    it.removeFlag(DiplomacyFlags.DefensivePact)
+                    it.otherCivDiplomacy().removeFlag(DiplomacyFlags.DefensivePact)
+                    it.diplomaticStatus = DiplomaticStatus.Peace
+                    it.otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.Peace
+                }
                 for (civ in getCommonKnownCivs().filter { civ -> civ.isMajorCiv() }) {
                     civ.addNotification("[${civInfo.civName}] canceled their Defensive Pact with [${it.otherCivName}]!",
                         NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, it.otherCivName)
                 }
                 civInfo.addNotification("We have canceled our Defensive Pact with [${it.otherCivName}]!",
                     NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, it.otherCivName)
+                it.otherCiv().addNotification("[${civInfo.civName}] has canceled our Defensive Pact with us!",
+                    NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
             }
         }
-        trades.clear()
-        updateHasOpenBorders()
-
-        val civAtWarWith = otherCiv()
-
-        if (civInfo.isCityState() && civInfo.cityStateFunctions.getProtectorCivs().contains(civAtWarWith)) {
-            civInfo.cityStateFunctions.removeProtectorCiv(civAtWarWith, forced = true)
-        }
-
         diplomaticStatus = DiplomaticStatus.War
 
-        removeModifier(DiplomaticModifiers.YearsOfPeace)
-        setFlag(DiplomacyFlags.DeclinedPeace, 10)/// AI won't propose peace for 10 turns
-        setFlag(DiplomacyFlags.DeclaredWar, 10) // AI won't agree to trade for 10 turns
-        removeFlag(DiplomacyFlags.BorderConflict)
-
-
-        if (!civInfo.isCityState()) {
-            // Go through defensive pact allies.
-            if (!isOffensiveWar) {
-                for (defensivePact in civInfo.diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.DefensivePact && !it.otherCiv().isDefeated()
-                    && !otherCivDiplomacy().civInfo.isAtWarWith(it.otherCiv())}) {
-                    otherCiv().diplomacy.values.find { it.otherCiv() == defensivePact.otherCiv()}?.declareWar(true)
-                }
+        if (civInfo.isMajorCiv()) {
+            // Go through each DiplomacyManager with a defensive pact that is not already in the war.
+            // There is no chance that we have a defensive pact with civAtWarWith at this point.
+            for (ourDefensivePact in civInfo.diplomacy.values.filter {
+                ourDipManager -> ourDipManager.diplomaticStatus == DiplomaticStatus.DefensivePact
+                && !ourDipManager.otherCiv().isDefeated()
+                && !ourDipManager.otherCiv().isAtWarWith(otherCiv())}) {
+                val ally = ourDefensivePact.otherCiv()
+                // Have the agressor declare war on the ally.
+                civAtWarWith.getDiplomacyManager(ally).declareWar(true)
             }
 
             // Go through city state allies.
             for (thirdCiv in civInfo.getKnownCivs()
                 .filter { it.isCityState() && it.getAllyCiv() == civInfo.civName }) {
-
+    
                 if (thirdCiv.knows(civAtWarWith) && !thirdCiv.isAtWarWith(civAtWarWith))
                     thirdCiv.getDiplomacyManager(civAtWarWith).declareWar(true)
                 else if (!thirdCiv.knows(civAtWarWith)) {
@@ -796,6 +791,17 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                 }
             }
         }
+            
+        if (civInfo.isCityState() && civInfo.cityStateFunctions.getProtectorCivs().contains(civAtWarWith)) { 
+            civInfo.cityStateFunctions.removeProtectorCiv(civAtWarWith, forced = true)
+        }
+        
+        updateHasOpenBorders()
+        
+        removeModifier(DiplomaticModifiers.YearsOfPeace)
+        setFlag(DiplomacyFlags.DeclinedPeace, 10)/// AI won't propose peace for 10 turns
+        setFlag(DiplomacyFlags.DeclaredWar, 10) // AI won't agree to trade for 10 turns
+        removeFlag(DiplomacyFlags.BorderConflict)
     }
 
     /** Declares war with the other civ in this diplomacy manager.
