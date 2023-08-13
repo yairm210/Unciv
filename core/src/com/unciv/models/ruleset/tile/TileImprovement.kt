@@ -89,9 +89,9 @@ class TileImprovement : RulesetStatsObject() {
         return when (filter) {
             name -> true
             "All" -> true
+            "Improvement" -> true // For situations involing tileFilter
             "All Road" -> isRoad()
             "Great Improvement", "Great" -> isGreatImprovement()
-            "Improvement" -> !isRoad()
             in uniqueMap -> true
             else -> false
         }
