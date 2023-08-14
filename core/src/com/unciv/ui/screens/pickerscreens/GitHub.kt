@@ -259,12 +259,26 @@ object Github {
         return null
     }
 
-    fun tryGetPreviewImage(modUrl:String, defaultBranch: String): Pixmap? {
+    /** Get a Pixmap from a "preview" png or jpg file at the root of the repo, falling back to the
+     *  repo owner's avatar [avatarUrl]. The file content url is constructed from [modUrl] and [defaultBranch]
+     *  by replacing the host with `raw.githubusercontent.com`.
+     */
+    fun tryGetPreviewImage(modUrl: String, defaultBranch: String, avatarUrl: String?): Pixmap? {
+        // Side note: github repos also have a "Social Preview" optionally assignable on the repo's
+        // settings page, but that info is inaccessible using the v3 API anonymously. The easiest way
+        // to get it would be to query the the repo's frontend page (modUrl), and parse out
+        // `head/meta[property=og:image]/@content`, which is one extra spurious roundtrip and a
+        // non-trivial waste of bandwidth.
+        // Thus we ask for a "preview" file as part of the repo contents instead.
         val fileLocation = "$modUrl/$defaultBranch/preview"
             .replace("github.com", "raw.githubusercontent.com")
         try {
             val file = download("$fileLocation.jpg")
                 ?: download("$fileLocation.png")
+                    // Note: avatar urls look like: https://avatars.githubusercontent.com/u/<number>?v=4
+                    // So the image format is only recognizable from the response "Content-Type" header
+                    // or by looking for magic markers in the bits - which the Pixmap constructor below does.
+                ?: avatarUrl?.let { download(it) }
                 ?: return null
             val byteArray = file.readBytes()
             val buffer = ByteBuffer.allocateDirect(byteArray.size).put(byteArray).position(0)
@@ -274,25 +288,38 @@ object Github {
         }
     }
 
-    class Tree {
+    /** Class to receive a github API "Get a tree" response parsed as json */
+    // Parts of the response we ignore are commented out
+    private class Tree {
+        //val sha = ""
+        //val url = ""
 
         class TreeFile {
+            //val path = ""
+            //val mode = 0
+            //val type = "" // blob / tree
+            //val sha = ""
+            //val url = ""
             var size: Long = 0L
         }
 
-        var url: String = ""
         @Suppress("MemberNameEqualsClassName")
         var tree = ArrayList<TreeFile>()
+        var truncated = false
     }
 
-    fun getRepoSize(repo: Repo): Float {
+    /** Queries github for a tree and calculates the sum of the blob sizes.
+     *  @return -1 on failure, else size rounded to kB
+      */
+    fun getRepoSize(repo: Repo): Int {
+        // See https://docs.github.com/en/rest/git/trees#get-a-tree
         val link = "https://api.github.com/repos/${repo.full_name}/git/trees/${repo.default_branch}?recursive=true"
 
         var retries = 2
         while (retries > 0) {
             retries--
             // obey rate limit
-            if (RateLimit.waitForLimit()) return 0f
+            if (RateLimit.waitForLimit()) return -1
             // try download
             val inputStream = download(link) {
                 if (it.responseCode == 403 || it.responseCode == 200 && retries == 1) {
@@ -301,15 +328,18 @@ object Github {
                     retries++   // An extra retry so the 403 is ignored in the retry count
                 }
             } ?: continue
+
             val tree = json().fromJson(Tree::class.java, inputStream.bufferedReader().readText())
+            if (tree.truncated) return -1  // unlikely: >100k blobs or blob > 7MB
 
             var totalSizeBytes = 0L
             for (file in tree.tree)
                 totalSizeBytes += file.size
 
-            return totalSizeBytes / 1024f
+            // overflow unlikely: >2TB
+            return ((totalSizeBytes + 512) / 1024).toInt()
         }
-        return 0f
+        return -1
     }
 
     /**
@@ -331,6 +361,8 @@ object Github {
     @Suppress("PropertyName")
     class Repo {
 
+        /** Unlike the rest of this class, this is not part of the API but added by us locally
+         *  to track whether [getRepoSize] has been run successfully for this repo */
         var hasUpdatedSize = false
 
         var name = ""
