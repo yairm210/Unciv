@@ -805,9 +805,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                 && !ourDipManager.otherCiv().isAtWarWith(civAtWarWith)
         }) {
             val ally = ourDefensivePact.otherCiv()
-            // Have the agressor declare war on the ally.
+            // Have the aggressor declare war on the ally.
             civAtWarWith.getDiplomacyManager(ally).declareWar(true)
-            // Notify the agressor
+            // Notify the aggressor
             civAtWarWith.addNotification("[${ally.civName}] has joined the defensive war with [${civInfo.civName}]!",
                 NotificationCategory.Diplomacy, ally.civName, NotificationIcon.Diplomacy, civInfo.civName)
         }
@@ -876,18 +876,50 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                 else thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.SharedEnemy, 5f)
             } else thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.WarMongerer, -5f)
         }
+        
+        breakTreaties()
 
+        if (otherCiv.isMajorCiv())
+            for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringWar))
+                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+    }
+    
+    private fun breakTreaties() {
+        val otherCiv = otherCiv()
+        val otherCivDiplomacy = otherCivDiplomacy()
+
+        var betrayedFriendship = false
+        var betrayedDefensivePact = false
         if (hasFlag(DiplomacyFlags.DeclarationOfFriendship)) {
+            betrayedFriendship = true
             removeFlag(DiplomacyFlags.DeclarationOfFriendship)
             otherCivDiplomacy.removeModifier(DiplomaticModifiers.DeclarationOfFriendship)
-            for (knownCiv in civInfo.getKnownCivs()) {
-                val amount = if (knownCiv == otherCiv) -40f else -20f
-                val diploManager = knownCiv.getDiplomacyManager(civInfo)
-                diploManager.addModifier(DiplomaticModifiers.BetrayedDeclarationOfFriendship, amount)
-                diploManager.removeModifier(DiplomaticModifiers.DeclaredFriendshipWithOurAllies) // obviously this guy's declarations of friendship aren't worth much.
-            }
         }
         otherCivDiplomacy.removeFlag(DiplomacyFlags.DeclarationOfFriendship)
+
+        if (hasFlag(DiplomacyFlags.DefensivePact)) {
+            betrayedDefensivePact = true
+            removeFlag(DiplomacyFlags.DefensivePact)
+            otherCivDiplomacy.removeModifier(DiplomaticModifiers.DefensivePact)
+        }
+        otherCivDiplomacy.removeFlag(DiplomacyFlags.DefensivePact)
+
+        if (betrayedFriendship || betrayedDefensivePact) {
+            for (knownCiv in civInfo.getKnownCivs()) {
+                val diploManager = knownCiv.getDiplomacyManager(civInfo)
+                if (betrayedFriendship) {
+                    val amount = if (knownCiv == otherCiv) -40f else -20f
+                    diploManager.addModifier(DiplomaticModifiers.BetrayedDeclarationOfFriendship, amount)
+                }
+                if (betrayedDefensivePact) {
+                    //Note: this stacks with Declaration of Friendship
+                    val amount = if (knownCiv == otherCiv) -20f else -10f
+                    diploManager.addModifier(DiplomaticModifiers.BetrayedDefensivePact, amount)
+                }
+                diploManager.removeModifier(DiplomaticModifiers.DeclaredFriendshipWithOurAllies) // obviously this guy's declarations of friendship aren't worth much.
+                diploManager.removeModifier(DiplomaticModifiers.SignedDefensivePactWithOurAllies)
+            }
+        }
 
         if (hasFlag(DiplomacyFlags.ResearchAgreement)) {
             removeFlag(DiplomacyFlags.ResearchAgreement)
@@ -895,24 +927,6 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             otherCivDiplomacy.totalOfScienceDuringRA = 0
         }
         otherCivDiplomacy.removeFlag(DiplomacyFlags.ResearchAgreement)
-
-        //Note: this stacks with Declaration of Friendship
-        if (hasFlag(DiplomacyFlags.DefensivePact)) {
-            removeFlag(DiplomacyFlags.DefensivePact)
-            otherCivDiplomacy.removeModifier(DiplomaticModifiers.DefensivePact)
-            for (knownCiv in civInfo.getKnownCivs()) {
-                val amount = if (knownCiv == otherCiv) -20f else -10f
-                val diploManager = knownCiv.getDiplomacyManager(civInfo)
-                diploManager.addModifier(DiplomaticModifiers.BetrayedDefensivePact, amount)
-                diploManager.removeModifier(DiplomaticModifiers.SignedDefensivePactWithOurAllies) // obviously this guy's declarations of friendship aren't worth much.
-            }
-        }
-        otherCivDiplomacy.removeFlag(DiplomacyFlags.DefensivePact)
-        otherCivDiplomacy.removeModifier(DiplomaticModifiers.DefensivePact)
-
-        if (otherCiv.isMajorCiv())
-            for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringWar))
-                UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
     }
 
     /** Should only be called from makePeace */
