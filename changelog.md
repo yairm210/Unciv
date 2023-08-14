@@ -1,24 +1,20 @@
 ## 4.7.14
 
-Resolved  - Improvements created by buildings can activate 'take over adjacent tiles' unique
+Improvements from buildings can activate 'take over adjacent tiles' unique
 
-Safeguard against errors in establishing the URL connection to Github
+Safeguard against Github connection errors
 
-AI: Better policy selection
-
-AI: Finer-tuned Food ranking vs other stats for cities
-
-AI: Build melee naval units to defend coastal cities and move them there
-
-AI will not waste promotions on Heal Instantly
-
-Rivers at the bottom edge of maps are considered by tiles for river-adjacency
+AI:
+- Better policy selection
+- Finer-tuned Food ranking vs other stats for cities
+- Build melee naval units to defend coastal cities, and move them there
+- Do not waste promotions on Heal Instantly
 
 Mod manager smallish overhaul  - By SomeTroglodyte
 
-Fixed GameStarter adding gold to spectator Civilization on later eras when it shouldn't.  - By tuvus
+Spectators don't get gold on new games - By tuvus
 
-Fix promotions being unavailable when it can be reached a slower way  - By SeventhM
+Promotion tree improvements  - By SeventhM
 
 ## 4.7.13
 
