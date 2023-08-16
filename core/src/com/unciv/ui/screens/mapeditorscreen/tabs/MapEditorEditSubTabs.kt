@@ -287,11 +287,13 @@ class MapEditorEditStartsTab(
                 tile.tileMap.removeStartingLocations(tile.position)
             }
         } }).padBottom(0f).row()
+        // Create the nation list with the spectator nation included
+        // We use Nation/Spectator because it hasn't been used yet and we need an icon within the Nation.
         val anyCiv = FormattedLine("Any Civ starting location", Constants.spectator, "Nation/Spectator", size = 24)
         val nations = getNations().toList()
         val nationsToAdd = ArrayList<FormattedLine>(1 + nations.count())
-        nationsToAdd.add((anyCiv))
-        nationsToAdd.addAll(nations);
+        nationsToAdd.add((anyCiv)) // An Civ starting location should be first
+        nationsToAdd.addAll(nations)
         add(
             MarkupRenderer.render(
             nationsToAdd,
