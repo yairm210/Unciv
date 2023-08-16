@@ -42,7 +42,6 @@ import kotlinx.coroutines.Job
 
 //todo normalize properly
 
-//todo Remove "Area: [amount] tiles, [amount2] continents/islands = " after 2022-07-01
 //todo functional Tab for Units (empty Tab is prepared but commented out in MapEditorEditTab.AllEditSubTabs)
 //todo copy/paste tile areas? (As tool tab, brush sized, floodfill forbidden, tab displays copied area)
 //todo Synergy with Civilopedia for drawing loose tiles / terrain icons
