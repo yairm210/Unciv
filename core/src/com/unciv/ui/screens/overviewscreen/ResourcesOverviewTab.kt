@@ -15,6 +15,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.addSeparatorVertical
+import com.unciv.ui.components.extensions.equalizeColumns
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.surroundWithCircle

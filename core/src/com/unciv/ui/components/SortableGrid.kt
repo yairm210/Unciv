@@ -115,8 +115,8 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
     }
 
     private fun initHeader() {
-        sortSymbols[false] = "￪".toLabel().apply { setOrigin(Align.bottomRight) }
-        sortSymbols[true] = "￬".toLabel().apply { setOrigin(Align.bottomRight) }
+        sortSymbols[false] = "￪".toLabel()
+        sortSymbols[true] = "￬".toLabel()
 
         for (column in columns) {
             val group = HeaderGroup(column)
@@ -215,7 +215,6 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
             if (icon != null) {
                 this.onClick { toggleSort(column) }
                 icon.setSize(iconSize, iconSize)
-                icon.setOrigin(Align.center)
                 icon.center(this)
                 if (column.headerTip.isNotEmpty())
                     icon.addTooltip(column.headerTip, 18f, tipAlign = Align.center)
@@ -224,7 +223,7 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
         }
 
         /** Show or remove the sort symbol.
-         * @param showSort null removes the symbol, `false` shows an up arrow, `true` a down arrow */
+         * @param showSort None removes the symbol, Ascending shows an up arrow, Descending a down arrow */
         fun setSortState(showSort: SortDirection) {
             if (showSort == sortShown) return
             for (symbol in sortSymbols.values)
@@ -232,8 +231,7 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
             sortShown = showSort
             if (showSort == SortDirection.None) return
             val sortSymbol = sortSymbols[showSort == SortDirection.Descending]!!
-            sortSymbol.setOrigin(Align.bottomRight)
-            sortSymbol.setPosition(iconSize - 2f, 0f)
+            sortSymbol.setPosition(iconSize - 2f, 0f, Align.bottomLeft)
             this.addActor(sortSymbol)
         }
     }

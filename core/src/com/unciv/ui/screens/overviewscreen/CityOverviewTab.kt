@@ -2,6 +2,7 @@ package com.unciv.ui.screens.overviewscreen
 
 import com.unciv.logic.civilization.Civilization
 import com.unciv.ui.components.SortableGrid
+import com.unciv.ui.components.extensions.equalizeColumns
 
 
 class CityOverviewTab(

@@ -378,8 +378,10 @@ fun equalizeColumns(vararg tables: Table) {
         table.packIfNeeded()
     }
     val columns = tables.first().columns
-    if (tables.any { it.columns < columns })
-        throw IllegalStateException("equalizeColumns needs all tables to have at least the same number of columns as the first one")
+    check(tables.all { it.columns >= columns }) {
+        "IPageExtensions.equalizeColumns needs all tables to have at least the same number of columns as the first one"
+    }
+
     val widths = (0 until columns)
         .mapTo(ArrayList(columns)) { column ->
             tables.maxOf { it.getColumnWidth(column) }
