@@ -10,9 +10,9 @@ import com.unciv.models.translations.tr
 class PromotionTree(val unit: MapUnit) {
     /** Ordered set of Promotions to show - by Json column/row and translated name */
     // Not using SortedSet - that uses needlessly complex implementations that remember the comparator
-    val possiblePromotions: LinkedHashSet<Promotion>
+    lateinit var possiblePromotions: LinkedHashSet<Promotion>
     /** Ordered map, key is the Promotion name, same order as [possiblePromotions] */
-    private val nodes: LinkedHashMap<String, PromotionNode>
+    private lateinit var nodes: LinkedHashMap<String, PromotionNode>
 
     class PromotionNode(
         val promotion: Promotion,
