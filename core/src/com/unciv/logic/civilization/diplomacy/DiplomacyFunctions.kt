@@ -11,7 +11,6 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.tr
 
 class DiplomacyFunctions(val civInfo: Civilization){
 
@@ -113,6 +112,7 @@ class DiplomacyFunctions(val civInfo: Civilization){
     }
 
     fun canSignDefensivePact(): Boolean {
+        return false // TEMPORARY - remove at 4.7.17!
         if (!civInfo.isMajorCiv()) return false
         if (!civInfo.hasUnique(UniqueType.EnablesDefensivePacts)) return false
         return true

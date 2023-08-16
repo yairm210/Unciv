@@ -17,9 +17,6 @@ import kotlin.math.pow
 import kotlin.random.Random
 
 class BarbarianManager : IsPartOfGameInfoSerialization {
-    /** Deprecated  */
-    @Deprecated("by 4.6.12 due to serialization containing exact class location - replaced by encampments")
-    val camps = HashMapVector2<Encampment>()
 
     val encampments = ArrayList<Encampment>()
 

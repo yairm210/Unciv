@@ -1,5 +1,13 @@
 ## 4.7.15
 
+By tuvus:
+- Added defensive pact logic (not yet active, will activate in a week for multiplayer reasons)
+- Nuke blast simulation no longer shows invisible units
+
+Show impassable tile percentage on Map Editor View summary - By SomeTroglodyte
+
+Add "Improvement" as an improvement filter - by SeventhM
+
 ## 4.7.14
 
 Improvements from buildings can activate 'take over adjacent tiles' unique

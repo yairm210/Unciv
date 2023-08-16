@@ -5,7 +5,6 @@ import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.UncivGame.Version
 import com.unciv.json.json
-import com.unciv.logic.BackwardCompatibility.convertEncampmentData
 import com.unciv.logic.BackwardCompatibility.convertFortify
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
 import com.unciv.logic.BackwardCompatibility.migrateGreatPersonPools
@@ -642,7 +641,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             .flatMap { it.getResourceRequirementsPerTurn().keys })
         spaceResources.addAll(ruleset.victories.values.flatMap { it.requiredSpaceshipParts })
 
-        convertEncampmentData()
         barbarians.setTransients(this)
 
         cityDistances.game = this
