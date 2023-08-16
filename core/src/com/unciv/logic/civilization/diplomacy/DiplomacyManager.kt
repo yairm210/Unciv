@@ -598,7 +598,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                             scienceFromResearchAgreement()
                     }
                     DiplomacyFlags.DefensivePact.name -> {
-                        diplomaticStatus = DiplomaticStatus.Peace;
+                        diplomaticStatus = DiplomaticStatus.Peace
                     }
                     // This is confusingly named - in fact, the civ that has the flag set is the MAJOR civ
                     DiplomacyFlags.ProvideMilitaryUnit.name -> {
@@ -1045,8 +1045,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         otherCivDiplomacy().setModifier(DiplomaticModifiers.DefensivePact, 10f)
         setFlag(DiplomacyFlags.DefensivePact, duration)
         otherCivDiplomacy().setFlag(DiplomacyFlags.DefensivePact, duration)
-        diplomaticStatus = DiplomaticStatus.DefensivePact;
-        otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.DefensivePact;
+        diplomaticStatus = DiplomaticStatus.DefensivePact
+        otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.DefensivePact
         
 
         for (thirdCiv in getCommonKnownCivs().filter { it.isMajorCiv() }) {
