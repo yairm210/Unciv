@@ -214,8 +214,9 @@
 				"name": "Chivalry",
 				"row": 5,
 				"prerequisites": ["Civil Service","Currency","Horseback Riding"],
+                "uniques": ["Enables Defensive Pacts"],
 				"quote": "'Whoso pulleth out this sword of this stone and anvil, is rightwise king born of all England.' - Malory"
-			}, // Allows for defensive pacts
+			},
 			{
 				"name": "Machinery",
 				"row": 8,

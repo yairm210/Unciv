@@ -87,7 +87,6 @@ class DiplomacyFunctions(val civInfo: Civilization){
         }
     }
 
-
     fun canSignResearchAgreement(): Boolean {
         if (!civInfo.isMajorCiv()) return false
         if (!civInfo.hasUnique(UniqueType.EnablesResearchAgreements)) return false
@@ -111,6 +110,21 @@ class DiplomacyFunctions(val civInfo: Civilization){
         return (
                 civInfo.getEra().researchAgreementCost * civInfo.gameInfo.speed.goldCostModifier
                 ).toInt()
+    }
+
+    fun canSignDefensivePact(): Boolean {
+        if (!civInfo.isMajorCiv()) return false
+        if (!civInfo.hasUnique(UniqueType.EnablesDefensivePacts)) return false
+        return true
+    }
+
+    fun canSignDefensivePactWith(otherCiv: Civilization): Boolean {
+        val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
+        return canSignDefensivePact() && otherCiv.diplomacyFunctions.canSignDefensivePact()
+            && diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+            && !diplomacyManager.hasFlag(DiplomacyFlags.DefensivePact)
+            && !diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.DefensivePact)
+            && diplomacyManager.diplomaticStatus != DiplomaticStatus.DefensivePact
     }
 
 
