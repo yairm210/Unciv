@@ -58,6 +58,10 @@ class PromotionTree(val unit: MapUnit) {
     }
 
     init {
+        update()
+    }
+
+    fun update() {
         val collator = GUI.getSettings().getCollatorFromLocale()
         val rulesetPromotions = unit.civ.gameInfo.ruleset.unitPromotions.values
         val unitType = unit.baseUnit.unitType
@@ -165,6 +169,8 @@ class PromotionTree(val unit: MapUnit) {
         }
         return detectRecursive(parent, 0)
     }
+
+    fun getNode(promotion: Promotion): PromotionNode? = nodes[promotion.name]
 
     private fun getReachableNode(promotion: Promotion): PromotionNode? =
         nodes[promotion.name]?.takeUnless { it.distanceToAdopted == Int.MAX_VALUE }

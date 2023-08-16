@@ -131,6 +131,7 @@ class UnitUniquesTests {
     fun testPromotionTreeSetUp() {
         val civ = game.addCiv(isPlayer = true)
 
+        //Creating the promotions
         val promotionBranch1 = game.createUnitPromotion()
         promotionBranch1.unitTypes = listOf("Scout")
 
@@ -139,32 +140,38 @@ class UnitUniquesTests {
 
         val promotionTestBranchA = game.createUnitPromotion()
         promotionTestBranchA.unitTypes = listOf("Scout")
+        // intentional lists a promotion twice
         promotionTestBranchA.prerequisites = listOf(promotionBranch1.name, promotionBranch2.name, promotionBranch1.name)
 
         val promotionTestBranchB = game.createUnitPromotion()
-        promotionTestBranchB.prerequisites = listOf(promotionBranch1.name, promotionTestBranchA.name, promotionBranch2.name, promotionBranch1.name)
         promotionTestBranchB.unitTypes = listOf("Scout")
+        // intentional lists a promotion twice
+        promotionTestBranchB.prerequisites = listOf(promotionBranch1.name, promotionTestBranchA.name, promotionBranch2.name, promotionBranch1.name)
 
+        // add unit
         val centerTile = game.tileMap[0,0]
         val unit = game.addUnit("Scout", civ, centerTile)
         var tree = PromotionTree(unit)
-        Assert.assertFalse(tree.canBuyUpTo(promotionTestBranchB))
+        Assert.assertFalse("We shouldn't be able to get the promotion without XP",
+            tree.canBuyUpTo(promotionTestBranchB))
 
         unit.promotions.XP += 30
         unit.promotions.addPromotion(promotionBranch1.name)
 
         // The Promotion tree needs to be refreshed to check it after gaining a promotion
-        tree = PromotionTree(unit)
+        tree.update()
 
-        Assert.assertTrue(tree.canBuyUpTo(promotionTestBranchB))
+        Assert.assertTrue("Check if we can buy the Promotion now",
+            tree.canBuyUpTo(promotionTestBranchB))
 
-        val promotionNode1 = tree.allNodes().first{ it.promotion == promotionTestBranchA }
+        // Make sure we only have the prerequisite promotions and that it's only listed once each
+        val promotionNode1 = tree.getNode(promotionTestBranchA)!!
         Assert.assertEquals(promotionNode1.parents.size, 2)
         Assert.assertTrue(
             promotionNode1.parents.any { it.promotion == promotionBranch1 } &&
             promotionNode1.parents.any { it.promotion == promotionBranch2 }
         )
-        val promotionNode2 = tree.allNodes().first{ it.promotion == promotionTestBranchB }
+        val promotionNode2 = tree.getNode(promotionTestBranchB)!!
         Assert.assertEquals(promotionNode2.parents.size, 3)
         Assert.assertTrue(
             promotionNode2.parents.any { it.promotion == promotionBranch1 } &&
