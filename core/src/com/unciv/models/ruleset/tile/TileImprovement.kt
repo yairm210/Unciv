@@ -26,7 +26,7 @@ class TileImprovement : RulesetStatsObject() {
     override fun getUniqueTarget() = UniqueTarget.Improvement
     val shortcutKey: Char? = null
     // This is the base cost. A cost of 0 means created instead of buildable.
-    val turnsToBuild: Int = -1
+    var turnsToBuild: Int = -1
 
 
     fun getTurnsToBuild(civInfo: Civilization, unit: MapUnit): Int {
@@ -89,6 +89,7 @@ class TileImprovement : RulesetStatsObject() {
         return when (filter) {
             name -> true
             "All" -> true
+            "Improvement" -> true // For situations involing tileFilter
             "All Road" -> isRoad()
             "Great Improvement", "Great" -> isGreatImprovement()
             in uniqueMap -> true

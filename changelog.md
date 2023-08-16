@@ -1,3 +1,31 @@
+## 4.7.15
+
+By tuvus:
+- Added defensive pact logic (not yet active, will activate in a week for multiplayer reasons)
+- Nuke blast simulation no longer shows invisible units
+
+Show impassable tile percentage on Map Editor View summary - By SomeTroglodyte
+
+Add "Improvement" as an improvement filter - by SeventhM
+
+## 4.7.14
+
+Improvements from buildings can activate 'take over adjacent tiles' unique
+
+Safeguard against Github connection errors
+
+AI:
+- Better policy selection
+- Finer-tuned Food ranking vs other stats for cities
+- Build melee naval units to defend coastal cities, and move them there
+- Do not waste promotions on Heal Instantly
+
+Mod manager smallish overhaul  - By SomeTroglodyte
+
+Spectators don't get gold on new games - By tuvus
+
+Promotion tree improvements  - By SeventhM
+
 ## 4.7.13
 
 Improvement improvements!
