@@ -585,8 +585,14 @@ object GameStarter {
             val presetStartingLocation = tileMap.startingLocationsByNation[civ.civName]?.randomOrNull()
             val startingLocation = if (presetStartingLocation != null) presetStartingLocation
             else {
-                if (freeTiles.isEmpty()) break // we failed to get all the starting tiles with this minimum distance
-                getOneStartingLocation(civ, tileMap, freeTiles, startScores)
+                val presetAnyStartingLocation = tileMap.startingLocationsByNation[Constants.spectator]?.randomOrNull()
+                if (presetAnyStartingLocation != null) {
+                    tileMap.startingLocationsByNation[Constants.spectator]?.remove(presetAnyStartingLocation)
+                    presetAnyStartingLocation
+                } else {
+                    if (freeTiles.isEmpty()) break // we failed to get all the starting tiles with this minimum distance
+                    getOneStartingLocation(civ, tileMap, freeTiles, startScores)
+                }
             }
             startingLocations[civ] = startingLocation
             freeTiles.removeAll(tileMap.getTilesInDistance(startingLocation.position, distanceToNext)
