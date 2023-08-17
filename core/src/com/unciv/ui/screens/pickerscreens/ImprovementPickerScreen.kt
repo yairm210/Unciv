@@ -164,16 +164,10 @@ class ImprovementPickerScreen(
                 cityUniqueCache
             )
 
-            //Determine if a stat will be increased by the current improvement
-            var isStatIncrease = false;
-            if (stats.values.any { it > 0f }) {
-                    isStatIncrease = true
-            }
-
             //Warn when the current improvement will increase a stat for the tile,
             // but the tile is outside of the range (> 3 tiles from city center) that can be
             // worked by a city's population
-            if (isStatIncrease
+            if (stats.values.any { it > 0f }
                     && !improvement.name.startsWith(Constants.remove)
                     && !improvement.isRoad()
                     && tile.owningCity != null
