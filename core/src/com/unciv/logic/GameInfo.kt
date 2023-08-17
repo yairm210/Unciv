@@ -43,7 +43,6 @@ import com.unciv.ui.screens.savescreens.Gzip
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
-import java.nio.charset.Charset
 import java.security.MessageDigest
 import java.util.UUID
 
