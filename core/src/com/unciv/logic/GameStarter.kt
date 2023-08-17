@@ -583,6 +583,8 @@ object GameStarter {
         for (civ in civsOrderedByAvailableLocations) {
             
             val startingLocation = getCivStartingLocation(civ, tileMap, freeTiles, startScores)
+            startingLocation ?: break
+            
             startingLocations[civ] = startingLocation
             
             val distanceToNext = minimumDistanceBetweenStartingLocations /
@@ -598,7 +600,7 @@ object GameStarter {
         tileMap: TileMap,
         freeTiles: MutableList<Tile>,
         startScores: HashMap<Tile, Float>,
-    ): Tile {
+    ): Tile? {
         var startingLocation = tileMap.startingLocationsByNation[civ.civName]?.randomOrNull()
         if (startingLocation == null) {
             startingLocation = tileMap.startingLocationsByNation[Constants.spectator]?.randomOrNull()
@@ -609,7 +611,7 @@ object GameStarter {
         if (startingLocation == null && freeTiles.isNotEmpty())
             startingLocation = getOneStartingLocation(civ, tileMap, freeTiles, startScores)
         // If startingLocation is null we failed to get all the starting tiles with this minimum distance
-        return startingLocation as Tile
+        return startingLocation
     }
 
     private fun getOneStartingLocation(
