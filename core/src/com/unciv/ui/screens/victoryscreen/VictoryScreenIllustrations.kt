@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.victoryscreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
@@ -9,6 +10,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Stack
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Disposable
 import com.unciv.logic.GameInfo
@@ -16,16 +19,17 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.extensions.isNarrowerThan4to3
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.images.ImageWithCustomSize  // Kdoc, not used
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
 
-// todo Image sizing
 // todo Idea: use victoryCompletePercent to allow "percentage" images - e.g. "Destroy all players" now works all or nothing - boring.
+// (requires some rework of the victoryCompletePercent here and similar code in VictoryManager - and likely move stuff to make MilestoneType an intelligent enum)
 
 class VictoryScreenIllustrations(
     parent: VictoryScreen,
@@ -38,21 +42,35 @@ class VictoryScreenIllustrations(
         private const val iconPath = "VictoryTypeIcons"
         private val enablingImages = listOf("Won", "Lost", "Background")
 
+        /** Check whether the entire "Illustrations" tab in VictoryScreen should display */
         internal fun enablePage(game: GameInfo) = game.getEnabledVictories().values
             .any { it.hasIllustrations() }
 
+        /** Check whether a Victory has enough images to display that Victory's sub-tab */
         private fun Victory.hasIllustrations() = enablingImages.any { element ->
             ImageGetter.imageExists(getImageName(this, element))
         }
 
+        /** Build a texture atlas path for a [victory] and an "[element]", which can be a Milestone name or other Decoration part name */
         private fun getImageName(victory: Victory, element: String) =
             "$basePath/${victory.name}/$element"
 
+        /** Gets an image if it exists as [ImageWithFixedPrefSize] */
         private fun getImageOrNull(name: String) =
-            if (ImageGetter.imageExists(name)) ImageGetter.getImage(name) else null
+            if (ImageGetter.imageExists(name))
+                // ImageGetter.getImage uses ImageWithCustomSize which interferes incorrectly with our sizing
+                ImageWithFixedPrefSize(ImageGetter.getDrawable(name)) else null
 
+        /** Gets an image if a texture for [victory] and [element] exists (see [getImageName]) as [ImageWithFixedPrefSize] */
         private fun getImageOrNull(victory: Victory, element: String) =
             getImageOrNull(getImageName(victory, element))
+
+        /** Readability shortcut for [getImages] */
+        private fun MutableList<Actor>.addImageIf(victory: Victory, element: String, test: () -> Boolean) {
+            if (!test()) return
+            val image = getImageOrNull(victory, element)
+            if (image != null) add(image)
+        }
     }
 
     private val game = worldScreen.gameInfo
@@ -67,7 +85,7 @@ class VictoryScreenIllustrations(
             victories.associateWith { victoryCompletePercent(it, civ) }
         }
 
-    private val tabs = TabbedPager(shortcutScreen = parent, capacity = victories.size)
+    private val tabs = TabbedPager(backgroundColor = Color.CLEAR, shortcutScreen = parent, capacity = victories.size)
     private val holder = Stack()
 
     private var selectedVictory = selectVictory()
@@ -87,10 +105,15 @@ class VictoryScreenIllustrations(
         add(tabs).top().grow()
     }
 
+    /** Activates content for [selectedVictory]. Images are loaded and [FadeTo] animation started. */
+    // Note the little trick - all tabs of our inner per-Victory TabbedPager contain the same holder,
+    // So we can fade over from one Victory to the next.
     private fun select() {
         val victory = victories.firstOrNull { it.name == selectedVictory } ?: return
         tabs.onSelection(null)  // Prevent recursion from replacePage
-        val fadeAction = FadeTo(holder, getImages(victory))  // side effect: adds images to holder and packs it
+        // todo measure: 265f = PickerPane.bottomTable.height + SplitPane.handle.height + 2* TabbedPager.header.height + separator.height
+        val maxHeight = stage.height - 265f
+        val fadeAction = FadeTo(holder, getImages(victory), maxHeight)  // side effect: adds images to holder and packs it
         tabs.replacePage(tabs.activePage, holder)  // Force TabbedPager to measure content
         holder.addAction(fadeAction)
         tabs.onSelection { _, name, _ ->
@@ -99,34 +122,41 @@ class VictoryScreenIllustrations(
         }
     }
 
+    /** When the outer TabbedPager selects `this` page... */
     override fun activated(index: Int, caption: String, pager: TabbedPager) {
         pager.setScrollDisabled(true)
         select()
     }
 
+    /** When the outer TabbedPager de-selects `this` page... */
     override fun deactivated(index: Int, caption: String, pager: TabbedPager) {
         pager.setScrollDisabled(false)
         holder.clear()
     }
 
+    /** A specialized Gdx.Action for fading over one set (already loaded into [holder]) of images to
+     *  another (from parameter [newActors]).
+     *
+     *  Initialization has the ***side effects*** of stacking the new images into [holder],
+     *  sizing them preserving aspect ratio (which is why it needs `maxHeight`: taking available
+     *  width from holder.width works, same for height does not), and invalidating ascendants.
+     */
     private class FadeTo(
         private val holder: Stack,
-        private val newActors: List<Actor>
+        private val newActors: List<Actor>,
+        maxHeight: Float
     ) : TemporalAction(fadeDuration), Disposable {
         private var oldActors: List<Actor>? = holder.children.toList()  // nullable to allow relinquishing the references when done
         private val fadeOutFrom = oldActors!!.firstOrNull()?.color?.a ?: 1f
 
         init {
             holder.actions.filterIsInstance<FadeTo>().forEach { it.dispose() }
-            for (actor in newActors) {
-                actor.color.a = 0f
-                holder.add(actor)
-            }
-            holder.pack()
+            holder.addAndSize(newActors, maxHeight)
             holder.invalidateHierarchy()
         }
 
         override fun dispose() {
+            finish()
             end()
         }
 
@@ -143,8 +173,32 @@ class VictoryScreenIllustrations(
             oldActors = null
             for (actor in toRemove) holder.removeActor(actor)
         }
+
+        private fun Stack.addAndSize(actors: List<Actor>, maxHeight: Float) {
+            // Local and not to be confused with Gdx or awt versions. We need a width/height container only
+            class Rectangle(var width: Float, var height: Float) {
+                constructor(region: TextureRegion) : this(region.regionWidth.toFloat(), region.regionHeight.toFloat())
+            }
+
+            for (actor in actors) {
+                actor.color.a = 0f
+                // actor.width, actor.height are empirically equal to the image's pixel dimensions
+                // at this moment, before actor has a parent, but I don't trust that happenstance.
+                val pixelArea = Rectangle(((actor as Image).drawable as TextureRegionDrawable).region)
+                // Scale max image dimensions into holder space minus padding preserving aspect ratio
+                val imageArea = Rectangle(this.width - 30f, maxHeight - 30f)
+                if (pixelArea.width * imageArea.height > imageArea.width * pixelArea.height)
+                    imageArea.height = imageArea.width * pixelArea.height / pixelArea.width
+                else
+                    imageArea.width = imageArea.height * pixelArea.width / pixelArea.height
+                actor.setSize(imageArea.width, imageArea.height)
+                if (actor is ImageWithFixedPrefSize) actor.setPrefSize(imageArea.width, imageArea.height)
+                add(actor)
+            }
+        }
     }
 
+    /** Determine the Victory to show initially - try to select the most interesting one for the current game. */
     private fun selectVictory(): String {
         if (game.victoryData != null) return game.victoryData!!.victoryType
         val victory = victories.asSequence()
@@ -159,6 +213,10 @@ class VictoryScreenIllustrations(
         return victory.name
     }
 
+    /** Calculate a completion percentage for a [victory] -
+     *  relative weights for individual milestones are not equal in this implementation!
+     *  (weight = number of sub-steps, or 2 if a milestone doesn't have any - very debatable)
+     */
     private fun victoryCompletePercent(victory: Victory, civ: Civilization): Int {
         var points = 0
         var total = 0
@@ -245,9 +303,21 @@ class VictoryScreenIllustrations(
         return listOfNotNull(image, container)
     }
 
-    private fun MutableList<Actor>.addImageIf(victory: Victory, element: String, test: () -> Boolean) {
-        if (!test()) return
-        val image = getImageOrNull(victory, element)
-        if (image != null) add(image)
+    /** Variant of [ImageWithCustomSize] that avoids certain problems.
+     *
+     *  Reports a `prefWidth`/`prefHeight` set through [setPrefSize], which cannot be otherwise
+     *  altered, especially not by ascendant layout methods, since they don't know the interface.
+     *  This size defaults to the [drawable]'s minWidth/minHeight - same as what [Image] reports as
+     *  `prefWidth`/`prefHeight` directly without the ability to override.
+     */
+    private class ImageWithFixedPrefSize(drawable: Drawable) : Image(drawable) {
+        private var prefW: Float = prefWidth
+        private var prefH: Float = prefHeight
+        fun setPrefSize(w: Float, h: Float) {
+            prefW = w
+            prefH = h
+        }
+        override fun getPrefWidth() = prefW
+        override fun getPrefHeight() = prefH
     }
 }
