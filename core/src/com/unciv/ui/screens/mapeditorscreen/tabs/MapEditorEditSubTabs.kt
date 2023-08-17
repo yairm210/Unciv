@@ -298,7 +298,7 @@ class MapEditorEditStartsTab(
             iconDisplay = FormattedLine.IconDisplay.NoLink
         ) {
             UncivGame.Current.musicController.chooseTrack(it, MusicMood.Theme, MusicTrackChooserFlags.setSpecific)
-            editTab.setBrush(BrushHandlerType.Direct, when (it) {Constants.spectator -> "Any Civ" else -> it}, "Nation/$it") { tile ->
+            editTab.setBrush(BrushHandlerType.Direct, if (it ==Constants.spectator)  "Any Civ" else it, "Nation/$it") { tile ->
                 // toggle the starting location here, note this allows
                 // both multiple locations per nation and multiple nations per tile
                 if (!tile.tileMap.addStartingLocation(it, tile))
