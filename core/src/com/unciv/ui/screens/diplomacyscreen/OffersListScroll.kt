@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOffersList
 import com.unciv.logic.trade.TradeType
@@ -52,7 +53,9 @@ class OffersListScroll(
     fun update(
         offersToDisplay: TradeOffersList,
         otherOffers: TradeOffersList,
-        untradableOffers: ResourceSupplyList = ResourceSupplyList.emptyList
+        untradableOffers: ResourceSupplyList = ResourceSupplyList.emptyList,
+        ourCiv: Civilization,
+        theirCiv: Civilization
     ) {
         table.clear()
         expanderTabs.clear()
@@ -109,7 +112,9 @@ class OffersListScroll(
                         else -> 1
                     }
 
-                if (offer.isTradable() && offer.name != Constants.peaceTreaty) { // can't disable peace treaty!
+                if (offer.isTradable() && offer.name != Constants.peaceTreaty // can't disable peace treaty!
+                    && (offer.name != Constants.researchAgreement // If we have a research agreement make sure the total gold of both Civs is higher than the total cost
+                        || (ourCiv.gold + theirCiv.gold > ourCiv.diplomacyFunctions.getResearchAgreementCost() * 2))) { 
 
                     // highlight unique suggestions
                     if (offerType in listOf(Luxury_Resource, Strategic_Resource)

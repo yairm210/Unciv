@@ -93,15 +93,19 @@ class DiplomacyFunctions(val civInfo: Civilization){
                     .none { civInfo.tech.canBeResearched(it.name) && !civInfo.tech.isResearched(it.name) }) return false
         return true
     }
+    
+    fun canSignResearchAgreementNoCostWith (otherCiv: Civilization): Boolean {
+        val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
+        return canSignResearchAgreement() && otherCiv.diplomacyFunctions.canSignResearchAgreement()
+            && diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+            && !diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement)
+            && !diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement)
+    }
 
     fun canSignResearchAgreementsWith(otherCiv: Civilization): Boolean {
-        val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
         val cost = getResearchAgreementCost()
-        return canSignResearchAgreement() && otherCiv.diplomacyFunctions.canSignResearchAgreement()
-                && diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
-                && !diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement)
-                && !diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement)
-                && civInfo.gold >= cost && otherCiv.gold >= cost
+        return canSignResearchAgreementNoCostWith(otherCiv)
+            && civInfo.gold >= cost && otherCiv.gold >= cost
     }
 
     fun getResearchAgreementCost(): Int {
