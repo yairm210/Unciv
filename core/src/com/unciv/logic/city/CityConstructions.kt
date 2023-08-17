@@ -9,7 +9,6 @@ import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
-import com.unciv.logic.map.mapunit.UnitTurnManager
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.multiplayer.isUsersTurn
 import com.unciv.models.ruleset.Building
@@ -32,7 +31,6 @@ import com.unciv.ui.components.extensions.withItem
 import com.unciv.ui.components.extensions.withoutItem
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -774,14 +772,13 @@ class CityConstructions : IsPartOfGameInfoSerialization {
      *  If [building] is an improvement-creating one, find a marked tile matching the improvement to be created
      *  (skip if none found), then un-mark the tile and place the improvement unless [removeOnly] is set.
      */
-    fun applyCreateOneImprovement(building: Building, removeOnly: Boolean = false) {
+    private fun applyCreateOneImprovement(building: Building, removeOnly: Boolean = false) {
         val improvement = building.getImprovementToCreate(city.getRuleset())
             ?: return
         val tileForImprovement = getTileForImprovement(improvement.name) ?: return
         tileForImprovement.stopWorkingOnImprovement()  // clears mark
         if (removeOnly) return
-        /**todo unify with [UnitActions.getImprovementConstructionActions] and [UnitTurnManager.workOnImprovement] - this won't allow e.g. a building to place a road */
-        tileForImprovement.changeImprovement(improvement.name)
+        tileForImprovement.changeImprovement(improvement.name, city.civ)
         city.civ.lastSeenImprovement[tileForImprovement.position] = improvement.name
         // If bought the worldscreen will not have been marked to update, and the new improvement won't show until later...
         GUI.setUpdateWorldOnNextRender()

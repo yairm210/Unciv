@@ -28,8 +28,6 @@ class PolicyManager : IsPartOfGameInfoSerialization {
 
     var freePolicies = 0
     var storedCulture = 0
-    // TODO: 'adoptedPolicies' seems to be an internal API.
-    //  Why is it HashSet<String> instead of HashSet<Policy>?
     internal val adoptedPolicies = HashSet<String>()
     var numberOfAdoptedPolicies = 0
     var shouldOpenPolicyPicker = false

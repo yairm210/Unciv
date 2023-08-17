@@ -109,7 +109,6 @@ object UnitAutomation {
                 && unit.movement.canReach(tile) // expensive, evaluate last
     }
 
-    @JvmStatic
     fun wander(unit: MapUnit, stayInTerritory: Boolean = false, tilesToAvoid:Set<Tile> = setOf()) {
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         val reachableTiles = unitDistanceToTiles
@@ -158,6 +157,7 @@ object UnitAutomation {
 
         if (unit.promotions.canBePromoted()) {
             val availablePromotions = unit.promotions.getAvailablePromotions()
+                .filterNot { it.hasUnique(UniqueType.SkipPromotion) }
             if (availablePromotions.any())
                 unit.promotions.addPromotion(availablePromotions.toList().random().name)
         }
@@ -204,7 +204,9 @@ object UnitAutomation {
         // Focus all units without a specific target on the enemy city closest to one of our cities
         if (tryHeadTowardsEnemyCity(unit)) return
 
-        if (tryGarrisoningUnit(unit)) return
+        if (tryGarrisoningRangedLandUnit(unit)) return
+
+        if (tryStationingMeleeNavalUnit(unit)) return
 
         if (unit.health < 80 && tryHealUnit(unit)) return
 
@@ -726,7 +728,7 @@ object UnitAutomation {
 
     }
 
-    private fun tryGarrisoningUnit(unit: MapUnit): Boolean {
+    private fun tryGarrisoningRangedLandUnit(unit: MapUnit): Boolean {
         if (unit.baseUnit.isMelee() || unit.baseUnit.isWaterUnit()) return false // don't garrison melee units, they're not that good at it
         val citiesWithoutGarrison = unit.civ.cities.filter {
             val centerTile = it.getCenterTile()
@@ -749,8 +751,10 @@ object UnitAutomation {
         } else {
             if (unit.getTile().isCityCenter() &&
                     isCityThatNeedsDefendingInWartime(unit.getTile().getCity()!!)) return true
-            citiesWithoutGarrison.asSequence()
+            val citiesWithoutGarrisonThatNeedDefending = citiesWithoutGarrison.asSequence()
                     .filter { isCityThatNeedsDefendingInWartime(it) }
+            if (citiesWithoutGarrisonThatNeedDefending.any()) citiesWithoutGarrisonThatNeedDefending
+            else citiesWithoutGarrison.asSequence()
         }
 
         val closestReachableCityNeedsDefending = citiesToTry
@@ -758,6 +762,35 @@ object UnitAutomation {
             .firstOrNull { unit.movement.canReach(it.getCenterTile()) }
             ?: return false
         unit.movement.headTowards(closestReachableCityNeedsDefending.getCenterTile())
+        return true
+    }
+
+    private fun tryStationingMeleeNavalUnit(unit: MapUnit): Boolean {
+        fun isMeleeNaval(mapUnit: MapUnit) = mapUnit.baseUnit.isMelee() && mapUnit.type.isWaterUnit()
+
+        if (!isMeleeNaval(unit)) return false
+        val closeCity = unit.getTile().getTilesInDistance(3)
+            .firstOrNull { it.isCityCenter() }
+
+        // We're the closest unit to this city, we should stay here :)
+        if (closeCity != null && closeCity.getTilesInDistance(3)
+                .flatMap { it.getUnits() }
+                .firstOrNull {isMeleeNaval(it)} == unit
+            && unit.movement.canReach(closeCity)) {
+            unit.movement.headTowards(closeCity)
+            return true
+        }
+
+        val citiesWithoutNavalDefence = unit.civ.cities.filter { it.isCoastal() }
+            .filter { it.getCenterTile().aerialDistanceTo(unit.getTile()) < 20 } // Not too far away
+            .filter { it.getCenterTile().getTilesInDistance(3)
+                .flatMap { it.getUnits() }
+                .none { isMeleeNaval(it) }}
+
+        val reachableCity = citiesWithoutNavalDefence.firstOrNull {
+            unit.movement.canReach(it.getCenterTile())
+        } ?: return false
+        unit.movement.headTowards(reachableCity.getCenterTile())
         return true
     }
 

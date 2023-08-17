@@ -63,6 +63,8 @@ class UnitMovement(val unit: MapUnit) {
         // when entering territory of a city state
         val areConnectedByRoad = from.hasConnection(civInfo) && to.hasConnection(civInfo)
 
+        // You might think "wait doesn't isAdjacentToRiver() call isConnectedByRiver() anyway, why have those checks?"
+        // The answer is that the isAdjacentToRiver values are CACHED per tile, but the isConnectedByRiver are not - this is an efficiency optimization
         val areConnectedByRiver =
             from.isAdjacentToRiver() && to.isAdjacentToRiver() && from.isConnectedByRiver(to)
 

@@ -93,6 +93,7 @@ cityFilters allow us to choose the range of cities affected by this unique:
 -   `in non-enemy foreign cities` - In all cities owned by civs other than you that you are not at war with
 -   `in foreign cities`
 -   `in annexed cities`
+-   `in puppeted cities`
 -   `in holy cities`
 -   `in City-State cities`
 -   `in cities following this religion` - Should only be used in pantheon/follower uniques for religions
@@ -192,9 +193,10 @@ So for instance, the unique "[stats] from [tileFilter] tiles [cityFilter]" can m
 ## tileFilter
 
 Any of:
-- [terrainFilter](#terrainfilter) for this tile
-- [improvementFilter](#improvementfilter) for this tile
-- `unimproved' if no improvement exists
+-   [terrainFilter](#terrainfilter) for this tile
+-   [improvementFilter](#improvementfilter) for this tile
+-   `Improvement` for all improvements
+-   `unimproved` if no improvement exists
 
 ## terrainQuality
 
