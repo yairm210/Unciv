@@ -69,6 +69,7 @@ object NextTurnAutomation {
                 ReligionAutomation.spendFaithOnReligion(civInfo)
             }
             offerResearchAgreement(civInfo)
+            offerDefensivePact(civInfo)
             exchangeLuxuries(civInfo)
             issueRequests(civInfo)
             adoptPolicy(civInfo)  // todo can take a second - why?
@@ -172,6 +173,8 @@ object NextTurnAutomation {
 
             if (tradeLogic.currentTrade.theirOffers.any { it.type == offer.type && it.name == offer.name })
                 continue // So you don't get double offers of open borders declarations of war etc.
+            if (offer.type == TradeType.Treaty)
+                continue // Don't try to counter with a defensive pact or research pact
 
             val value = evaluation.evaluateBuyCost(offer, civInfo, otherCiv)
             if (value > 0)
@@ -796,6 +799,29 @@ object NextTurnAutomation {
             val cost = civInfo.diplomacyFunctions.getResearchAgreementCost()
             tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
             tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
+
+            otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
+        }
+    }
+
+    private fun offerDefensivePact(civInfo: Civilization) {
+        if (!civInfo.diplomacyFunctions.canSignDefensivePact()) return // don't waste your time
+
+        val canSignDefensivePactCiv = civInfo.getKnownCivs()
+            .filter {
+                civInfo.diplomacyFunctions.canSignDefensivePactWith(it)
+                    && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedDefensivePact)
+                    && civInfo.getDiplomacyManager(it).relationshipIgnoreAfraid() == RelationshipLevel.Ally
+            }
+            .sortedByDescending { it.stats.statsForNextTurn.science }
+
+        for (otherCiv in canSignDefensivePactCiv) {
+            // Default setting is 1, this will be changed according to different civ.
+            if ((1..10).random() > 1) continue
+            //todo: Add more in depth evaluation here
+            val tradeLogic = TradeLogic(civInfo, otherCiv)
+            tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.defensivePact, TradeType.Treaty))
+            tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.defensivePact, TradeType.Treaty))
 
             otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
         }

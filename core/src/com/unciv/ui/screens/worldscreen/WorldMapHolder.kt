@@ -695,7 +695,9 @@ class WorldMapHolder(
             val attackableTiles: List<AttackableTile> =
                 if (nukeBlastRadius >= 0)
                     selectedTile!!.getTilesInDistance(nukeBlastRadius)
-                        .filter { it.getFirstUnit() != null }
+                        // Should not display invisible submarine units even if the tile is visible.
+                        .filter { targetTile -> (targetTile.isVisible(unit.civ) && targetTile.getUnits().any { !it.isInvisible(unit.civ) }) 
+                            || (targetTile.isCityCenter() && unit.civ.hasExplored(targetTile)) }
                         .map { AttackableTile(unit.getTile(), it, 1f, null) }
                         .toList()
                 else BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())

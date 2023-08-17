@@ -1,0 +1,7 @@
+By tuvus:
+- Added defensive pact logic (not yet active, will activate in a week for multiplayer reasons)
+- Nuke blast simulation no longer shows invisible units
+
+Show impassable tile percentage on Map Editor View summary - By SomeTroglodyte
+
+Add "Improvement" as an improvement filter - by SeventhM

@@ -185,13 +185,6 @@ object BackwardCompatibility {
         }
     }
 
-    fun GameInfo.convertEncampmentData(){
-        if (barbarians.camps.isNotEmpty()){
-            barbarians.encampments.addAll(barbarians.camps.values)
-            barbarians.camps.clear()
-        }
-    }
-
     fun GameInfo.migrateToTileHistory() {
         if (historyStartTurn >= 0) return
         for (tile in getCities().flatMap { it.getTiles() }) {

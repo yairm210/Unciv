@@ -95,8 +95,9 @@ class MapEditorViewTab(
 
         val area = tileMap.values.size
         val waterPercent = (tileMap.values.count { it.isWater } * 100f / area).toInt()
+        val impassablePercent = (tileMap.values.count { it.isImpassible() } * 100f / area).toInt()
         val continents = tileMap.continentSizes.size
-        val statsText = "Area: [$area] tiles, [$waterPercent]% water, [$continents] continents/islands"
+        val statsText = "Area: [$area] tiles, [$waterPercent]% water, [$impassablePercent]% impassable, [$continents] continents/islands"
         val statsLabel = WrappableLabel(statsText, labelWidth)
         add(statsLabel.apply { wrap = true }).row()
 
