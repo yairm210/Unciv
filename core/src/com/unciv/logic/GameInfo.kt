@@ -43,6 +43,7 @@ import com.unciv.ui.screens.savescreens.Gzip
 import com.unciv.ui.screens.worldscreen.status.NextTurnProgress
 import com.unciv.utils.DebugUtils
 import com.unciv.utils.debug
+import java.nio.charset.Charset
 import java.security.MessageDigest
 import java.util.UUID
 
@@ -320,7 +321,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         checksum = "" // Checksum calculation cannot include old checksum, obvs
         val bytes = MessageDigest
             .getInstance("SHA-1")
-            .digest(json().toJson(this).toByteArray())
+            .digest(json().toJson(this).toByteArray(Charsets.UTF_8))
         checksum = oldChecksum
         return Gzip.encode(bytes)
     }
