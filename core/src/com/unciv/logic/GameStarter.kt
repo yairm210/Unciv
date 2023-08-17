@@ -581,27 +581,36 @@ object GameStarter {
     ): HashMap<Civilization, Tile>? {
         val startingLocations = HashMap<Civilization, Tile>()
         for (civ in civsOrderedByAvailableLocations) {
+            
+            val startingLocation = getCivStartingLocation(civ, tileMap, freeTiles, startScores)
+            startingLocations[civ] = startingLocation
+            
             val distanceToNext = minimumDistanceBetweenStartingLocations /
                 (if (civ.isCityState()) 2 else 1) // We allow city states to squeeze in tighter
-            val presetStartingLocation = tileMap.startingLocationsByNation[civ.civName]?.randomOrNull()
-            val startingLocation = if (presetStartingLocation != null) presetStartingLocation
-            else {
-                val presetAnyStartingLocation = tileMap.startingLocationsByNation[Constants.spectator]?.randomOrNull()
-                if (presetAnyStartingLocation != null) { // Since we don't have any nation specific starting locations, pick one of the free ones to use
-                    tileMap.startingLocationsByNation[Constants.spectator]?.remove(presetAnyStartingLocation)
-                    presetAnyStartingLocation
-                } else {
-                    if (freeTiles.isEmpty()) break // We failed to get all the starting tiles with this minimum distance
-                    getOneStartingLocation(civ, tileMap, freeTiles, startScores)
-                }
-            }
-            startingLocations[civ] = startingLocation
             freeTiles.removeAll(tileMap.getTilesInDistance(startingLocation.position, distanceToNext)
                 .toSet())
         }
         return if (startingLocations.size < civsOrderedByAvailableLocations.size) null else startingLocations
     }
 
+    private fun getCivStartingLocation(
+        civ: Civilization,
+        tileMap: TileMap,
+        freeTiles: MutableList<Tile>,
+        startScores: HashMap<Tile, Float>,
+    ): Tile {
+        var startingLocation = tileMap.startingLocationsByNation[civ.civName]?.randomOrNull()
+        if (startingLocation == null) {
+            startingLocation = tileMap.startingLocationsByNation[Constants.spectator]?.randomOrNull()
+            if (startingLocation != null) {
+                tileMap.startingLocationsByNation[Constants.spectator]?.remove(startingLocation)
+            }
+        }
+        if (startingLocation == null && freeTiles.isNotEmpty())
+            startingLocation = getOneStartingLocation(civ, tileMap, freeTiles, startScores)
+        // If startingLocation is null we failed to get all the starting tiles with this minimum distance
+        return startingLocation as Tile
+    }
 
     private fun getOneStartingLocation(
         civ: Civilization,
