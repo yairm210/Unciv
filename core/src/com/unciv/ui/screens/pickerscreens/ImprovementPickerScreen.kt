@@ -166,11 +166,8 @@ class ImprovementPickerScreen(
 
             //Determine if a stat will be increased by the current improvement
             var isStatIncrease = false;
-            for (stat in stats) {
-                if (stat.value > 0.0) {
+            if (stats.values.any { it > 0f }) {
                     isStatIncrease = true
-                    break
-                }
             }
 
             //Warn when the current improvement will increase a stat for the tile,
@@ -182,7 +179,7 @@ class ImprovementPickerScreen(
                     && tile.owningCity != null
                     && !tile.owningCity!!.getWorkableTiles().contains(tile)
             )
-                labelText += "\n" + "Not in city work range"
+                labelText += "\n" + "Not in city work range".tr()
 
             val statsTable = getStatsTable(stats)
             statIcons.add(statsTable).padLeft(13f)
