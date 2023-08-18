@@ -22,7 +22,7 @@ AI:
 
 Mod manager smallish overhaul  - By SomeTroglodyte
 
-Spectators don't get gold on new games - By tuvus
+Spectators don't get gold on new g                                      ///////ames - By tuvus
 
 Promotion tree improvements  - By SeventhM
 
