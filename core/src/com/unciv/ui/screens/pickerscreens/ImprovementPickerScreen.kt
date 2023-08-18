@@ -191,13 +191,12 @@ class ImprovementPickerScreen(
             regularImprovements.row()
         }
 
-        var tileOwnerText = "Tile owned by "
-        tileOwnerText += if (tile.getOwner() == null) {
-            "no one"
+        val tileOwnerText = if (tile.getOwner() == null) {
+            "Tile owned by no one"
         } else if (tile.getOwner()!!.isCurrentPlayer()) {
-             "[${tile.getOwner()!!.civName}] (You) - [${tile.getCity()!!.name}]"
+             "Tile owned by [${tile.getOwner()!!.civName}] (You) - [${tile.getCity()!!.name}]"
         } else {
-            "[${tile.getOwner()!!.civName}] - [${tile.getCity()!!.name}]"
+            "Tile owned by [${tile.getOwner()!!.civName}] - [${tile.getCity()!!.name}]"
         }
 
         topTable.add(tileOwnerText.tr().toLabel()).padLeft(10f).fillY()
