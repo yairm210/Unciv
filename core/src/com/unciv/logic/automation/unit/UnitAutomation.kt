@@ -129,8 +129,8 @@ object UnitAutomation {
     }
 
     internal fun tryUpgradeUnit(unit: MapUnit): Boolean {
-        val isPlayer = unit.civ.isCurrentPlayer()
-        if (!UncivGame.Current.settings.automatedUnitsCanUpgrade && isPlayer) return false
+        val isHuman = unit.civ.isHuman()
+        if (!UncivGame.Current.settings.automatedUnitsCanUpgrade && isHuman) return false
         if (unit.baseUnit.upgradesTo == null) return false
         val upgradedUnit = unit.upgrade.getUnitToUpgradeTo()
         if (!upgradedUnit.isBuildable(unit.civ)) return false // for resource reasons, usually
