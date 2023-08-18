@@ -42,6 +42,11 @@ fun gameplayTab(
         "Automated units move on turn start",
         settings.automatedUnitsMoveOnTurnStart, true
     ) { settings.automatedUnitsMoveOnTurnStart = it }
+    optionsPopup.addCheckbox(
+        this,
+        "Automated units can upgrade",
+        settings.automatedUnitsCanUpgrade, true
+    ) { settings.automatedUnitsCanUpgrade = it }
     optionsPopup.addCheckbox(this, "Order trade offers by amount", settings.orderTradeOffersByAmount) { settings.orderTradeOffersByAmount = it }
     optionsPopup.addCheckbox(this, "Ask for confirmation when pressing next turn", settings.confirmNextTurn) { settings.confirmNextTurn = it }
 
