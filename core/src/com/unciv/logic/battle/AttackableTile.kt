@@ -1,4 +1,4 @@
-package com.unciv.logic.automation.unit
+package com.unciv.logic.battle
 
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.map.tile.Tile
