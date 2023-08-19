@@ -8,6 +8,7 @@ import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
+import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
@@ -470,7 +471,7 @@ object UnitAutomation {
     /** Get a list of visible tiles which have something attackable */
     fun getBombardableTiles(city: City): Sequence<Tile> =
             city.getCenterTile().getTilesInDistance(city.range)
-                    .filter { it.isVisible(city.civ) && BattleHelper.containsAttackableEnemy(it, CityCombatant(city)) }
+                    .filter { it.isVisible(city.civ) && TargetHelper.containsAttackableEnemy(it, CityCombatant(city)) }
 
     /** Move towards the closest attackable enemy of the [unit].
      *
@@ -482,7 +483,7 @@ object UnitAutomation {
                 unit.getTile().position,
                 unit.getMaxMovement() * CLOSE_ENEMY_TURNS_AWAY_LIMIT
         )
-        var closeEnemies = BattleHelper.getAttackableEnemies(
+        var closeEnemies = TargetHelper.getAttackableEnemies(
             unit,
             unitDistanceToTiles,
             tilesToCheck = unit.getTile().getTilesInDistance(CLOSE_ENEMY_TILES_AWAY_LIMIT).toList()

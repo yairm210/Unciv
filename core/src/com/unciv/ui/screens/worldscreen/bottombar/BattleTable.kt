@@ -5,13 +5,13 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.automation.unit.AttackableTile
-import com.unciv.logic.automation.unit.BattleHelper
 import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
+import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unique.UniqueType
@@ -73,7 +73,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             val defender = tryGetDefender() ?: return hide()
             if (attacker is CityCombatant && defender is CityCombatant) return hide()
             val tileToAttackFrom = if (attacker is MapUnitCombatant)
-                BattleHelper.getAttackableEnemies(
+                TargetHelper.getAttackableEnemies(
                     attacker.unit,
                     attacker.unit.movement.getDistanceToTiles()
                 )
@@ -247,7 +247,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         if (attacker.canAttack()) {
             if (attacker is MapUnitCombatant) {
-                attackableTile = BattleHelper
+                attackableTile = TargetHelper
                         .getAttackableEnemies(attacker.unit, attacker.unit.movement.getDistanceToTiles())
                         .firstOrNull{ it.tileToAttack == defender.getTile()}
             } else if (attacker is CityCombatant) {
