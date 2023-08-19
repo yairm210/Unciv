@@ -1,7 +1,6 @@
 package com.unciv.logic.battle
 
 import com.unciv.Constants
-import com.unciv.logic.automation.unit.AttackableTile
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.PathsToTilesWithinTurn
 import com.unciv.logic.map.tile.Tile
