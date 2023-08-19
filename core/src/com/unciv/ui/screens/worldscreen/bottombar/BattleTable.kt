@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.battle.AttackableTile
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
@@ -251,7 +250,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
                         .getAttackableEnemies(attacker.unit, attacker.unit.movement.getDistanceToTiles())
                         .firstOrNull{ it.tileToAttack == defender.getTile()}
             } else if (attacker is CityCombatant) {
-                val canBombard = UnitAutomation.getBombardableTiles(attacker.city).contains(defender.getTile())
+                val canBombard = TargetHelper.getBombardableTiles(attacker.city).contains(defender.getTile())
                 if (canBombard) {
                     attackableTile = AttackableTile(attacker.getTile(), defender.getTile(), 0f, defender)
                 }

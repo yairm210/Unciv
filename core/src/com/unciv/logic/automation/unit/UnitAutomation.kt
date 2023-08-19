@@ -468,11 +468,6 @@ object UnitAutomation {
         return unit.currentMovement == 0f
     }
 
-    /** Get a list of visible tiles which have something attackable */
-    fun getBombardableTiles(city: City): Sequence<Tile> =
-            city.getCenterTile().getTilesInDistance(city.range)
-                    .filter { it.isVisible(city.civ) && TargetHelper.containsAttackableEnemy(it, CityCombatant(city)) }
-
     /** Move towards the closest attackable enemy of the [unit].
      *
      *  Limited by [CLOSE_ENEMY_TURNS_AWAY_LIMIT] and [CLOSE_ENEMY_TILES_AWAY_LIMIT].
@@ -675,7 +670,7 @@ object UnitAutomation {
     }
 
     private fun chooseBombardTarget(city: City): ICombatant? {
-        var targets = getBombardableTiles(city).map { Battle.getMapCombatantOfTile(it)!! }
+        var targets = TargetHelper.getBombardableTiles(city).map { Battle.getMapCombatantOfTile(it)!! }
         if (targets.none()) return null
 
         val siegeUnits = targets

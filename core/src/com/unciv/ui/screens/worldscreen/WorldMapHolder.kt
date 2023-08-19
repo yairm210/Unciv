@@ -16,7 +16,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.unit.CityLocationTileRanker
-import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.battle.AttackableTile
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
@@ -730,7 +729,7 @@ class WorldMapHolder(
 
     private fun updateBombardableTilesForSelectedCity(city: City) {
         if (!city.canBombard()) return
-        for (attackableTile in UnitAutomation.getBombardableTiles(city)) {
+        for (attackableTile in TargetHelper.getBombardableTiles(city)) {
             val group = tileGroups[attackableTile]!!
             group.layerOverlay.showHighlight(colorFromRGB(237, 41, 57))
             group.layerOverlay.showCrosshair()

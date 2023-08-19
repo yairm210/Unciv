@@ -1,6 +1,7 @@
 package com.unciv.logic.battle
 
 import com.unciv.Constants
+import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.PathsToTilesWithinTurn
 import com.unciv.logic.map.tile.Tile
@@ -126,4 +127,10 @@ object TargetHelper {
         }
         return true
     }
+
+    /** Get a list of visible tiles which have something attackable */
+    fun getBombardableTiles(city: City): Sequence<Tile> =
+            city.getCenterTile().getTilesInDistance(city.range)
+                    .filter { it.isVisible(city.civ) && containsAttackableEnemy(it, CityCombatant(city)) }
+
 }
