@@ -5,6 +5,7 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.GreatGeneralImplementation
 import com.unciv.logic.battle.MapUnitCombatant
+import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.mapunit.MapUnit
@@ -480,7 +481,7 @@ object SpecificUnitAutomation {
             .filter { destinationCity ->
                 destinationCity != airUnit.currentTile
                         && destinationCity.getTilesInDistance(airUnit.getRange())
-                    .any { BattleHelper.containsAttackableEnemy(it, MapUnitCombatant(airUnit)) }
+                    .any { TargetHelper.containsAttackableEnemy(it, MapUnitCombatant(airUnit)) }
             }
         if (citiesThatCanAttackFrom.isEmpty()) return
 
@@ -547,7 +548,7 @@ object SpecificUnitAutomation {
             if (city.getTilesInDistance(unit.getRange())
                             .any {
                                 it.isVisible(unit.civ) &&
-                                BattleHelper.containsAttackableEnemy(
+                                TargetHelper.containsAttackableEnemy(
                                     it,
                                     MapUnitCombatant(unit)
                                 )
