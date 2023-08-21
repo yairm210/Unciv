@@ -39,6 +39,9 @@ object SystemUtils {
             builder.appendLine("Max Memory: $maxMemory MB")
         }
 
+        // Encoding used by Java when not explicitly specified/-able (such as atlas loader)
+        builder.appendLine("System default encoding: " + Charset.defaultCharset().name())
+
         return builder.toString()
     }
 
