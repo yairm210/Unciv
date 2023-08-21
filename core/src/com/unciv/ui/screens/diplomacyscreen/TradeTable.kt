@@ -58,19 +58,17 @@ class TradeTable(
                 val researchCost = currentPlayerCiv.diplomacyFunctions.getResearchAgreementCost()
                 val currentPlayerOfferedGold = tradeLogic.currentTrade.ourOffers.firstOrNull { it.type == TradeType.Gold }?.amount ?: 0
                 val otherCivOfferedGold = tradeLogic.currentTrade.theirOffers.firstOrNull { it.type == TradeType.Gold }?.amount ?: 0
+                val newCurrentPlayerGold = currentPlayerCiv.gold + otherCivOfferedGold - researchCost
+                val newOtherCivGold = otherCivilization.gold + currentPlayerOfferedGold - researchCost
                 // Check if we require more gold from them
-                if (currentPlayerCiv.gold + otherCivOfferedGold < researchCost) {
-                    offerColumnsTable.addOffer(
-                        tradeLogic.theirAvailableOffers.first { it.type == TradeType.Gold }
-                            .copy(amount = researchCost - (currentPlayerCiv.gold + otherCivOfferedGold))
-                        , tradeLogic.currentTrade.theirOffers, tradeLogic.currentTrade.ourOffers)
+                if (newCurrentPlayerGold < 0) {
+                    offerColumnsTable.addOffer( tradeLogic.theirAvailableOffers.first { it.type == TradeType.Gold }
+                            .copy(amount = -newCurrentPlayerGold), tradeLogic.currentTrade.theirOffers, tradeLogic.currentTrade.ourOffers)
                 }
                 // Check if they require more gold from us
-                if (otherCivilization.gold + currentPlayerOfferedGold < researchCost) {
-                    offerColumnsTable.addOffer(
-                        tradeLogic.ourAvailableOffers.first { it.type == TradeType.Gold }
-                            .copy(amount = researchCost - (otherCivilization.gold + currentPlayerOfferedGold))
-                        , tradeLogic.currentTrade.ourOffers, tradeLogic.currentTrade.theirOffers)
+                if (newOtherCivGold < 0) {
+                    offerColumnsTable.addOffer( tradeLogic.ourAvailableOffers.first { it.type == TradeType.Gold }
+                            .copy(amount = -newOtherCivGold), tradeLogic.currentTrade.ourOffers, tradeLogic.currentTrade.theirOffers)
                 }
             }
 
