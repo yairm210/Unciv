@@ -16,10 +16,12 @@ import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.cityscreen.CityScreen
 import kotlin.math.roundToInt
 
 class ImprovementPickerScreen(
@@ -191,15 +193,21 @@ class ImprovementPickerScreen(
             regularImprovements.row()
         }
 
-        val tileOwnerText = if (tile.getOwner() == null) {
-            "Tile owned by no one"
+        var ownerTable = Table()
+        if (tile.getOwner() == null) {
+            ownerTable.add("Unowned tile".tr().toLabel())
         } else if (tile.getOwner()!!.isCurrentPlayer()) {
-             "Tile owned by [${tile.getOwner()!!.civName}] (You) - [${tile.getCity()!!.name}]"
+            val button = tile.getCity()!!.name.toTextButton(hideIcons = true)
+            button.onClick {
+                this.game.pushScreen(CityScreen(tile.getCity()!!,null,tile))
+            }
+            ownerTable.add("Tile owned by [${tile.getOwner()!!.civName}] (You)".tr().toLabel()).padLeft(10f)
+            ownerTable.add(button).padLeft(20f)
         } else {
-            "Tile owned by [${tile.getOwner()!!.civName}] - [${tile.getCity()!!.name}]"
+            ownerTable.add("Tile owned by [${tile.getOwner()!!.civName}] - [${tile.getCity()!!.name}]".tr().toLabel()).padLeft(10f)
         }
 
-        topTable.add(tileOwnerText.tr().toLabel()).padLeft(10f).fillY()
+        topTable.add(ownerTable)
         topTable.row()
         topTable.add(regularImprovements)
     }
