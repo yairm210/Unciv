@@ -173,14 +173,6 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
     //endregion
     //region Overridable methods
 
-    /** [Comparator] Factory used for sorting.
-     * - The default will sort by [getEntryValue] ascending.
-     * @return positive to sort second lambda argument before first lambda argument
-     */
-    override fun getComparator() = Comparator { city2: City, city1: City ->
-        getEntryValue(city2) - getEntryValue(city1)
-    }
-
     /** Factory for the header cell [Actor]
      * - Must override unless a texture exists for "StatIcons/$name" - e.g. a [Stat] column or [Population].
      * - _Should_ be sized to [iconSize].

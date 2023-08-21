@@ -42,9 +42,10 @@ interface ISortableGridContentProvider<IT, ACT> {
     fun isVisible(gameInfo: GameInfo): Boolean = true
 
     /** [Comparator] Factory used for sorting.
+     * - The default will sort by [getEntryValue] ascending.
      * @return positive to sort second lambda argument before first lambda argument
      */
-    fun getComparator(): Comparator<IT>
+    fun getComparator(): Comparator<IT> = compareBy { item: IT -> getEntryValue(item) }
 
     /** Factory for the header cell [Actor] */
     fun getHeaderIcon(iconSize: Float): Actor?
