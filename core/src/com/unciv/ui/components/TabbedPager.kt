@@ -94,6 +94,8 @@ open class TabbedPager(
     private val deferredSecretPages = ArrayDeque<PageState>(0)
     private var askPasswordLock = false
 
+    private var onSelectionCallback: ((Int, String, TabbedPager) -> Unit)? = null
+
     //endregion
     //region Public Interfaces
 
@@ -443,6 +445,7 @@ open class TabbedPager(
                 headerScroll.run { scrollX = scrollX.coerceIn((page.buttonX + page.buttonW - scrollWidth)..page.buttonX) }
 
             (page.content as? IPageExtensions)?.activated(index, page.caption, this)
+            onSelectionCallback?.invoke(index, page.caption, this)
         }
         return true
     }
@@ -716,5 +719,10 @@ open class TabbedPager(
         for (page in pages) {
             page.buttonX += addWidth
         }
+    }
+
+    /** Alternative selection handler to [IPageExtensions.activated] */
+    fun onSelection(action: ((index: Int, caption: String, pager: TabbedPager) -> Unit)?) {
+        onSelectionCallback = action
     }
 }
