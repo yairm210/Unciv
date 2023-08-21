@@ -114,6 +114,7 @@ class OffersListScroll(
 
                 if (offer.isTradable() && offer.name != Constants.peaceTreaty // can't disable peace treaty!
                     && (offer.name != Constants.researchAgreement // If we have a research agreement make sure the total gold of both Civs is higher than the total cost
+                        // If both civs combined can pay for the research agreement, don't disable it. One can offer the other it's gold.
                         || (ourCiv.gold + theirCiv.gold > ourCiv.diplomacyFunctions.getResearchAgreementCost() * 2))) { 
 
                     // highlight unique suggestions
