@@ -18,7 +18,7 @@ class TradeTable(
 ): Table(BaseScreen.skin) {
     private val currentPlayerCiv = otherCivilization.gameInfo.getCurrentPlayerCivilization()
     internal val tradeLogic = TradeLogic(currentPlayerCiv, otherCivilization)
-    internal val offerColumnsTable = OfferColumnsTable(tradeLogic, diplomacyScreen, { onChange() } , currentPlayerCiv, otherCivilization) 
+    internal val offerColumnsTable = OfferColumnsTable(tradeLogic, diplomacyScreen , currentPlayerCiv, otherCivilization) { onChange() } 
     // This is so that after a trade has been traded, we can switch out the offersToDisplay to start anew - this is the easiest way
     private val offerColumnsTableWrapper = Table()
     private val offerButton = "Offer trade".toTextButton()
