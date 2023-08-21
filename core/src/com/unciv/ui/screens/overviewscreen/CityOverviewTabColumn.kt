@@ -32,9 +32,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override val align = Align.left
         override val fillX = true
         override val defaultDescending = false
-        override fun getComparator() = Comparator { city2: City, city1: City ->
-            collator.compare(city2.name.tr(hideIcons = true), city1.name.tr(hideIcons = true))
-        }
+        override fun getComparator() = compareBy(collator) { it: City -> it.name.tr(hideIcons = true) }
         override fun getHeaderIcon(iconSize: Float) =
                 ImageGetter.getUnitIcon("Settler")
                 .surroundWithCircle(iconSize)
@@ -66,12 +64,8 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override val equalizeHeight = true
         override val headerTip = "Current construction"
         override val defaultDescending = false
-        override fun getComparator() = Comparator { city2: City, city1: City ->
-            collator.compare(
-                city2.cityConstructions.currentConstructionFromQueue.tr(hideIcons = true),
-                city1.cityConstructions.currentConstructionFromQueue.tr(hideIcons = true)
-            )
-        }
+        override fun getComparator() =
+            compareBy(collator) { it: City -> it.cityConstructions.currentConstructionFromQueue.tr(hideIcons = true) }
         override fun getHeaderIcon(iconSize: Float) =
                 getCircledIcon("OtherIcons/Settings", iconSize)
         override fun getEntryValue(item: City) = 0
@@ -106,6 +100,8 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
     WLTK {
         override val headerTip = "We Love The King Day"
         override val defaultDescending = false
+        override fun getComparator() =
+            super.getComparator().thenBy { it.demandedResource.tr(hideIcons = true) }
         override fun getHeaderIcon(iconSize: Float) =
                 getCircledIcon("OtherIcons/WLTK 2", iconSize, Color.TAN)
         override fun getEntryValue(item: City) =
@@ -133,12 +129,8 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
     Garrison {
         override val headerTip = "Garrisoned by unit"
         override val defaultDescending = false
-        override fun getComparator() = Comparator { city2: City, city1: City ->
-            collator.compare(
-                city2.getCenterTile().militaryUnit?.name?.tr(hideIcons = true) ?: "",
-                city1.getCenterTile().militaryUnit?.name?.tr(hideIcons = true) ?: ""
-            )
-        }
+        override fun getComparator() =
+            compareBy(collator) { it: City -> it.getCenterTile().militaryUnit?.name?.tr(hideIcons = true) ?: "" }
         override fun getHeaderIcon(iconSize: Float) =
                 getCircledIcon("OtherIcons/Shield", iconSize)
         override fun getEntryValue(item: City) =
