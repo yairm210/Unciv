@@ -224,6 +224,7 @@ class UncivTooltip <T: Actor>(
          * @param targetAlign   Point on the [target] widget to align the Tooltip to
          * @param tipAlign      Point on the Tooltip to align with the given point on the [target]
          * @param hideIcons Do not automatically add ruleset object icons during translation
+         * @param dynamicTextProvider If specified, the tooltip calls this every time it is about to be shown to get refreshed text - _not_ autotranslated. Used e.g. by addTooltip(KeyboardBinding).
          */
         fun Actor.addTooltip(
             text: String,
@@ -241,7 +242,9 @@ class UncivTooltip <T: Actor>(
 
             if (!(always || GUI.keyboardAvailable) || text.isEmpty()) return
 
-            val label = text.toLabel(BaseScreen.skinStrings.skinConfig.baseColor, 38, hideIcons = hideIcons)
+            val labelColor = BaseScreen.skinStrings.skinConfig.baseColor
+            val label = if (hideIcons) text.toLabel(labelColor, fontSize = 38, hideIcons = true)
+                else ColorMarkupLabel(text, labelColor, fontSize = 38)
             label.setAlignment(Align.center)
 
             val background = BaseScreen.skinStrings.getUiBackground("General/Tooltip", BaseScreen.skinStrings.roundedEdgeRectangleShape, Color.LIGHT_GRAY)
