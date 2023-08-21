@@ -18,9 +18,9 @@ import com.unciv.ui.screens.basescreen.BaseScreen
 class OfferColumnsTable(
     private val tradeLogic: TradeLogic,
     private val screen: DiplomacyScreen,
-    private val onChange: () -> Unit,
     private val ourCiv: Civilization,
-    private val theirCiv: Civilization
+    private val theirCiv: Civilization,
+    private val onChange: () -> Unit
 ): Table(BaseScreen.skin) {
 
     fun addOffer(offer: TradeOffer, offerList: TradeOffersList, correspondingOfferList: TradeOffersList) {
