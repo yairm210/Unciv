@@ -1,3 +1,27 @@
+## 4.7.16
+
+Resolved  - Undo button in Multiplayer no longer changes 'next turn' button
+
+4.7.15-patch1
+
+By SomeTroglodyte:
+- Fix minimum votes needed for a diplomatic victory 
+- Consistent UTF-8 where possible 
+- Victory illustrations 
+- Fix missing DiplomaticVotePickerScreen link in NextTurnAction 
+- Fix AutoScrollPane to not steal focus when disabled 
+
+Add option to Enable/Disable unit upgrades for automated units  - By jlmcdonnell
+
+Visual indicator for building outside workable tiles 9486  - By huckdogg
+
+By SeventhM:
+- Refactor: Move checking targets from automation to logic 
+- Additional unit tests 
+- Fix City-States giving untradeable resources 
+
+Fix docker badge  - By cxong
+
 ## 4.7.15
 
 By tuvus:
