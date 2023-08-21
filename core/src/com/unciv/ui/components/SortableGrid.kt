@@ -47,6 +47,7 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
     private val updateCallback: ((header: Table, details: Table, totals: Table) -> Unit)? = null
 ) : Table(BaseScreen.skin) {
     /** The direction a column may be sorted in */
+    // None is the Natural order of underlying data - only available before using any sort-click
     enum class SortDirection { None, Ascending, Descending }
 
     /** Defines what is needed to remember the sorting state of the grid. */
@@ -137,10 +138,12 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
         details.clear()
         if (data.none()) return
 
-        val sorter = sortState.sortedBy.getComparator()
-        var sortedData = data.sortedWith(sorter)
-        if (sortState.direction == SortDirection.Descending)
-            sortedData = sortedData.reversed()
+        val comparator = sortState.sortedBy.getComparator()
+        val sortedData = when(sortState.direction) {
+            SortDirection.None -> data.asSequence()
+            SortDirection.Ascending -> data.asSequence().sortedWith(comparator)
+            SortDirection.Descending -> data.asSequence().sortedWith(comparator.reversed())
+        }
 
         val cellsToEqualize = mutableListOf<Cell<Actor>>()
         for (item in sortedData) {
@@ -174,10 +177,11 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
 
     private fun toggleSort(sortBy: CT) {
         // Could be a SortDirection method, but it's single use here
-        fun SortDirection.inverted() = when(this) {
-            SortDirection.Ascending -> SortDirection.Descending
-            SortDirection.Descending -> SortDirection.Ascending
-            else -> SortDirection.None
+        fun SortDirection.inverted() = when {
+            this == SortDirection.Ascending -> SortDirection.Descending
+            this == SortDirection.Descending -> SortDirection.Ascending
+            sortBy.defaultDescending -> SortDirection.Descending
+            else -> SortDirection.Ascending
         }
 
         sortState.run {
@@ -185,7 +189,7 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
                 direction = direction.inverted()
             } else {
                 sortedBy = sortBy
-                direction = if (sortBy.defaultDescending) SortDirection.Descending else SortDirection.Ascending
+                direction = SortDirection.None.inverted()
             }
         }
 
@@ -227,12 +231,12 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
         fun setSortState(showSort: SortDirection) {
             if (showSort == sortShown) return
             for (symbol in sortSymbols.values)
-                symbol.remove()
+                removeActor(symbol)  // Important: Does nothing if the actor is not our child
             sortShown = showSort
             if (showSort == SortDirection.None) return
             val sortSymbol = sortSymbols[showSort == SortDirection.Descending]!!
-            sortSymbol.setPosition(iconSize - 2f, 0f, Align.bottomLeft)
-            this.addActor(sortSymbol)
+            sortSymbol.setPosition(iconSize - 2f, 0f)
+            addActor(sortSymbol)
         }
     }
 }
