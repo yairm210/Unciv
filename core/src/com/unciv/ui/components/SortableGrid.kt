@@ -221,7 +221,7 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
                 icon.setSize(iconSize, iconSize)
                 icon.center(this)
                 if (column.headerTip.isNotEmpty())
-                    icon.addTooltip(column.headerTip, 18f, tipAlign = Align.center)
+                    icon.addTooltip(column.headerTip, 18f, tipAlign = Align.center, hideIcons = column.headerTipHideIcons)
                 this.addActor(icon)
             }
         }

@@ -9,15 +9,18 @@ import com.unciv.logic.GameInfo
  * - [isVisible] can hide a column
  * - [align], [fillX], [expandX], [equalizeHeight] control geometry
  * - [getComparator] or [getEntryValue] control sorting, [defaultDescending] the initial order
- * - [headerTip] and [getHeaderIcon] define how the header row looks
+ * - [getHeaderIcon], [headerTip] and [headerTipHideIcons] define how the header row looks
  * - [getEntryValue] or [getEntryActor] define what the cells display
  * - [getEntryValue] or [getTotalsActor] define what the totals row displays
  * @param IT The item type - what defines the row
  * @param ACT Action context type - The Type of any object you need passed to [getEntryActor] for potential OnClick calls
  */
 interface ISortableGridContentProvider<IT, ACT> {
-    /** tooltip for the column header, defaults to enum name, will be auto-translated */
+    /** tooltip for the column header, typically overridden to default to enum name, will be auto-translated */
     val headerTip: String
+
+    /** Passed to addTooltip(hideIcons) - override to true to prevent autotranslation from inserting icons */
+    val headerTipHideIcons get() = false
 
     /** [Cell.align] - used on header, entry and total cells */
     val align: Int
