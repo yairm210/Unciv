@@ -704,7 +704,10 @@ class Civilization : IsPartOfGameInfoSerialization {
     fun getTurnsTillCallForBarbHelp() = flagsCountdown[CivFlags.TurnsTillCallForBarbHelp.name]
 
     fun mayVoteForDiplomaticVictory() =
-        getTurnsTillNextDiplomaticVote() == 0
+        // Does not need checks for Barbarians or dead civs because the callers already ensure that
+        // (NextTurnAutomation.tryVoteForDiplomaticVictory and NextTurnAction.WorldCongressVote)
+        !isSpectator()
+        && getTurnsTillNextDiplomaticVote() == 0
         && civName !in gameInfo.diplomaticVictoryVotesCast.keys
         // Only vote if there is someone to vote for, may happen in one-more-turn mode
         && gameInfo.civilizations.any { it.isMajorCiv() && !it.isDefeated() && it != this }
