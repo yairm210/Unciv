@@ -116,7 +116,7 @@ From what I understand, intellectual property rights apply to names, characters 
 
 If anyone has any real legal sources, or can shed some light on the limits of what is and is not allowed, I'd be happy to hear!
 
-## Run with Docker [![Docker](https://github.com/haimlm/Unciv/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/haimlm/Unciv/actions/workflows/docker-publish.yml)
+## Run with Docker [![Docker](https://github.com/haimlm/Unciv/actions/workflows/dockerPublish.yml/badge.svg)](https://github.com/haimlm/Unciv/actions/workflows/dockerPublish.yml)
 
 If you have docker compose installed:
 

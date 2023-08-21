@@ -6,7 +6,6 @@ import com.unciv.json.json
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.TileMap
 import com.unciv.ui.screens.savescreens.Gzip
-import com.unciv.utils.Log
 
 object MapSaver {
 
@@ -30,11 +29,11 @@ object MapSaver {
     }
 
     fun saveMap(mapName: String, tileMap: TileMap) {
-        getMap(mapName).writeString(mapToSavedString(tileMap), false)
+        getMap(mapName).writeString(mapToSavedString(tileMap), false, Charsets.UTF_8.name())
     }
 
     fun loadMap(mapFile: FileHandle): TileMap {
-        return mapFromSavedString(mapFile.readString())
+        return mapFromSavedString(mapFile.readString(Charsets.UTF_8.name()))
     }
 
     fun getMaps(): Array<FileHandle> = Gdx.files.local(mapsFolder).list()

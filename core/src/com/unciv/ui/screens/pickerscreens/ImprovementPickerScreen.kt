@@ -165,6 +165,18 @@ class ImprovementPickerScreen(
                 tile.getCity(),
                 cityUniqueCache
             )
+
+            //Warn when the current improvement will increase a stat for the tile,
+            // but the tile is outside of the range (> 3 tiles from city center) that can be
+            // worked by a city's population
+            if (stats.values.any { it > 0f }
+                    && !improvement.name.startsWith(Constants.remove)
+                    && !improvement.isRoad()
+                    && tile.owningCity != null
+                    && !tile.owningCity!!.getWorkableTiles().contains(tile)
+            )
+                labelText += "\n" + "Not in city work range".tr()
+
             val statsTable = getStatsTable(stats)
             statIcons.add(statsTable).padLeft(13f)
 

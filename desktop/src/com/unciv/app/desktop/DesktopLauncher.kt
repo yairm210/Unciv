@@ -65,7 +65,7 @@ internal object DesktopLauncher {
                 width = maximumWindowBounds.width,
                 height = maximumWindowBounds.height
             )
-            FileHandle(SETTINGS_FILE_NAME).writeString(json().toJson(settings), false) // so when we later open the game we get fullscreen
+            FileHandle(SETTINGS_FILE_NAME).writeString(json().toJson(settings), false, Charsets.UTF_8.name()) // so when we later open the game we get fullscreen
         }
         // Kludge! This is a workaround - the matching call in DesktopDisplay doesn't "take" quite permanently,
         // the window might revert to the "config" values when the user moves the window - worse if they

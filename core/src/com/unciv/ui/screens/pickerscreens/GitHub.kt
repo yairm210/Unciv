@@ -57,7 +57,7 @@ object Github {
                 } catch (ex: Exception) {
                     // No error handling, just log the message.
                     // NOTE that this 'read error stream' CAN ALSO fail, but will be caught by the big try/catch
-                    val reader = BufferedReader(InputStreamReader(errorStream))
+                    val reader = BufferedReader(InputStreamReader(errorStream, Charsets.UTF_8))
                     Log.error("Message from GitHub: %s", reader.readText())
                     throw ex
                 }

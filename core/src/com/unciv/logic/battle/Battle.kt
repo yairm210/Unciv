@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.civilization.NextTurnAutomation
-import com.unciv.logic.automation.unit.AttackableTile
 import com.unciv.logic.automation.unit.SpecificUnitAutomation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.AlertType

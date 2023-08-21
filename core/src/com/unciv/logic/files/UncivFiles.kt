@@ -4,6 +4,7 @@ import com.badlogic.gdx.Files
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.JsonReader
+import com.badlogic.gdx.utils.GdxRuntimeException  // Kdoc
 import com.badlogic.gdx.utils.SerializationException
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
@@ -84,7 +85,7 @@ class UncivFiles(
         } else {
             files.local(path)
         }
-        return file.writer(append)
+        return file.writer(append, Charsets.UTF_8.name())
     }
 
     fun getMultiplayerSaves(): Sequence<FileHandle> {
@@ -226,7 +227,7 @@ class UncivFiles(
             loadGameFromFile(getSave(gameName))
 
     fun loadGameFromFile(gameFile: FileHandle): GameInfo {
-        val gameData = gameFile.readString()
+        val gameData = gameFile.readString(Charsets.UTF_8.name())
         if (gameData.isNullOrBlank()) {
             throw emptyFile(gameFile)
         }
@@ -304,7 +305,7 @@ class UncivFiles(
     }
 
     fun setGeneralSettings(gameSettings: GameSettings) {
-        getGeneralSettingsFile().writeString(json().toJson(gameSettings), false)
+        getGeneralSettingsFile().writeString(json().toJson(gameSettings), false, Charsets.UTF_8.name())
     }
 
     companion object {
