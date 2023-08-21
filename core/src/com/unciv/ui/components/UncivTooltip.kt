@@ -224,7 +224,7 @@ class UncivTooltip <T: Actor>(
          * @param targetAlign   Point on the [target] widget to align the Tooltip to
          * @param tipAlign      Point on the Tooltip to align with the given point on the [target]
          * @param hideIcons Do not automatically add ruleset object icons during translation
-         * @param dynamicTextProvider If specified, the tooltip calls this every time it is about to be shown to get refreshed text - _not_ autotranslated. Used e.g. by addTooltip(KeyboardBinding).
+         * @param dynamicTextProvider If specified, the tooltip calls this every time it is about to be shown to get refreshed text - will be translated. Used e.g. by addTooltip(KeyboardBinding).
          */
         fun Actor.addTooltip(
             text: String,
@@ -275,7 +275,14 @@ class UncivTooltip <T: Actor>(
 
             val contentRefresher: (() -> Vector2)? = if (dynamicTextProvider == null) null else { {
                 val newText = dynamicTextProvider()
-                label.setText(newText)
+                if (hideIcons)
+                    label.setText(newText.tr())
+                else
+                    // Note: This is a kludge. `setText` alone would revert the text color since
+                    // ColorMarkupLabel doesn't use Actor.color but markup only. The proper way -
+                    // let ColorMarkupLabel override setText and manage - is much more effort.
+                    // Note this also translates, so for consistency the normal branch above does the same.
+                    label.setText(ColorMarkupLabel.prepareText(newText, labelColor, Color.WHITE))
                 scaleContainerAndGetSize(newText)
             } }
 
