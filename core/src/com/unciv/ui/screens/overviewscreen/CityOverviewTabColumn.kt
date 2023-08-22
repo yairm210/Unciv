@@ -24,7 +24,11 @@ import kotlin.math.roundToInt
 /**
  * This defines all behaviour of the [CityOverviewTab] columns through overridable parts
  */
-@Suppress("unused")
+
+// This false positive of detekt is possibly fixed in https://github.com/detekt/detekt/pull/6367
+// (The getComparator overrides need the explicit City type on their lambda parameter)
+@Suppress("ExplicitItLambdaParameter")  // detekt is wrong
+
 enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOverviewScreen> {
     //region Enum Instances
     CityColumn {
