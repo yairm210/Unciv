@@ -55,7 +55,7 @@ class TradeTable(
             // If not lets add an extra gold offer to satisfy this.
             // There must be enough gold to add to the offer to satisfy this, otherwise the research agreement button would be disabled
             if (tradeLogic.currentTrade.ourOffers.any { it.name == Constants.researchAgreement}) {
-                val researchCost = currentPlayerCiv.diplomacyFunctions.getResearchAgreementCost()
+                val researchCost = currentPlayerCiv.diplomacyFunctions.getResearchAgreementCost(otherCivilization)
                 val currentPlayerOfferedGold = tradeLogic.currentTrade.ourOffers.firstOrNull { it.type == TradeType.Gold }?.amount ?: 0
                 val otherCivOfferedGold = tradeLogic.currentTrade.theirOffers.firstOrNull { it.type == TradeType.Gold }?.amount ?: 0
                 val newCurrentPlayerGold = currentPlayerCiv.gold + otherCivOfferedGold - researchCost
