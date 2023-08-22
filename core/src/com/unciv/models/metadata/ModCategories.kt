@@ -59,7 +59,7 @@ class ModCategories : ArrayList<ModCategories.Category>() {
         val json = json()
         val compact = json.toJson(this, ModCategories::class.java, Category::class.java)
         val verbose = json.prettyPrint(compact)
-        Gdx.files.local(fileLocation).writeString(verbose, false, "UTF-8")
+        Gdx.files.local(fileLocation).writeString(verbose, false, Charsets.UTF_8.name())
     }
 
     fun fromSelectBox(selectBox: TranslatedSelectBox): Category {

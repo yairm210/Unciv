@@ -1,6 +1,7 @@
 package com.unciv.logic.automation.unit
 
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.battle.Battle
@@ -17,6 +18,7 @@ import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
+import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
@@ -128,6 +130,8 @@ object UnitAutomation {
     }
 
     internal fun tryUpgradeUnit(unit: MapUnit): Boolean {
+        val isHuman = unit.civ.isHuman()
+        if (!UncivGame.Current.settings.automatedUnitsCanUpgrade && isHuman) return false
         if (unit.baseUnit.upgradesTo == null) return false
         val upgradedUnit = unit.upgrade.getUnitToUpgradeTo()
         if (!upgradedUnit.isBuildable(unit.civ)) return false // for resource reasons, usually
