@@ -91,6 +91,10 @@ open class Notification() : IsPartOfGameInfoSerialization {
         index = ++index % actions.size // cycle through tiles
     }
 
+    fun resetExecuteRoundRobin() {
+        index = 0
+    }
+
     /**
      *  Custom [Gdx.Json][Json] serializer/deserializer for one [Notification].
      *
