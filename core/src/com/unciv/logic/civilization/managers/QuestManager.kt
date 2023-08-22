@@ -8,6 +8,8 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.DiplomacyAction
+import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.NotificationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
@@ -311,12 +313,14 @@ class QuestManager : IsPartOfGameInfoSerialization {
 
             var data1 = ""
             var data2 = ""
+            var notificationActions: List<NotificationAction> = listOf(DiplomacyAction(civInfo.civName))
 
             when (quest.name) {
                 QuestName.ClearBarbarianCamp.value -> {
                     val camp = getBarbarianEncampmentForQuest()!!
                     data1 = camp.position.x.toInt().toString()
                     data2 = camp.position.y.toInt().toString()
+                    notificationActions = listOf(LocationAction(camp.position), notificationActions.first())
                 }
                 QuestName.ConnectResource.value -> data1 = getResourceForQuest(assignee)!!.name
                 QuestName.ConstructWonder.value -> data1 = getWonderToBuildForQuest(assignee)!!.name
@@ -348,7 +352,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
 
             assignedQuests.add(newQuest)
             assignee.addNotification("[${civInfo.civName}] assigned you a new quest: [${quest.name}].",
-                    DiplomacyAction(civInfo.civName),
+                notificationActions,
                 NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
 
             if (quest.isIndividual())
