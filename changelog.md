@@ -1,3 +1,80 @@
+## 4.7.16
+
+Undo button in Multiplayer no longer changes 'next turn' button
+
+By SomeTroglodyte:
+- Fix minimum votes needed for a diplomatic victory
+- Mods can add Victory illustrations
+
+Add setting for unit upgrades for automated units  - By jlmcdonnell
+
+By huckdogg:
+- Visual indicator for building outside workable tiles
+- ImprovementPicker screen displays tile owner civ and city
+
+General Starting locations in map editor - By tuvus
+
+Fix City-States giving untradeable resources - By SeventhM
+
+## 4.7.15
+
+By tuvus:
+- Added defensive pact logic (not yet active, will activate in a week for multiplayer reasons)
+- Nuke blast simulation no longer shows invisible units
+
+Show impassable tile percentage on Map Editor View summary - By SomeTroglodyte
+
+Add "Improvement" as an improvement filter - by SeventhM
+
+## 4.7.14
+
+Improvements from buildings can activate 'take over adjacent tiles' unique
+
+Safeguard against Github connection errors
+
+AI:
+- Better policy selection
+- Finer-tuned Food ranking vs other stats for cities
+- Build melee naval units to defend coastal cities, and move them there
+- Do not waste promotions on Heal Instantly
+
+Mod manager smallish overhaul  - By SomeTroglodyte
+
+Spectators don't get gold on new g                                      ///////ames - By tuvus
+
+Promotion tree improvements  - By SeventhM
+
+## 4.7.13
+
+Improvement improvements!
+
+- More accurate improvement stat previews for edge cases (e.g. removing Forest on Forest + Lumber Mill)
+- 'Create improvement' uniques can create roads and remove features
+
+Set initial screen color on Desktop so it's not black-to-blue
+
+Fixed rare AI City State Influence crash
+
+By SomeTroglodyte:
+- Ruleset validator: Tilesets
+- Minor Mod Manager fixes (mods having dashes in their repo name not shown right away)
+
+## 4.7.12
+
+AI workers remove detrimental features
+
+Free buildings are converted to civ-specific replacements
+
+Double-click on worked tile icon locks tile
+
+Update Windows JDK to Adoptium JDK 11
+
+Better untyped unique recognition in mod checker - By SomeTroglodyte
+
+Gifting a unit transport gifts the contained units - By tuvus
+
+Allow free unit triggers for any location - By SeventhM
+
 ## 4.7.11
 
 By SomeTroglodyte:

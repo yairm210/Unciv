@@ -69,6 +69,7 @@ object NextTurnAutomation {
                 ReligionAutomation.spendFaithOnReligion(civInfo)
             }
             offerResearchAgreement(civInfo)
+            offerDefensivePact(civInfo)
             exchangeLuxuries(civInfo)
             issueRequests(civInfo)
             adoptPolicy(civInfo)  // todo can take a second - why?
@@ -172,6 +173,8 @@ object NextTurnAutomation {
 
             if (tradeLogic.currentTrade.theirOffers.any { it.type == offer.type && it.name == offer.name })
                 continue // So you don't get double offers of open borders declarations of war etc.
+            if (offer.type == TradeType.Treaty)
+                continue // Don't try to counter with a defensive pact or research pact
 
             val value = evaluation.evaluateBuyCost(offer, civInfo, otherCiv)
             if (value > 0)
@@ -293,7 +296,9 @@ object NextTurnAutomation {
     }
 
     private fun useGoldForCityStates(civ: Civilization) {
-        val knownCityStates = civ.getKnownCivs().filter { it.isCityState() }
+        // RARE EDGE CASE: If you ally with a city-state, you may reveal more map that includes ANOTHER civ!
+        // So if we don't lock this list, we may later discover that there are more known civs, concurrent modification exception!
+        val knownCityStates = civ.getKnownCivs().filter { it.isCityState() }.toList()
 
         // canBeMarriedBy checks actual cost, but it can't be below 500*speedmodifier, and the later check is expensive
         if (civ.gold >= 330 && civ.getHappiness() > 0 && civ.hasUnique(UniqueType.CityStateCanBeBoughtForGold)) {
@@ -579,13 +584,9 @@ object NextTurnAutomation {
                 civInfo.policies.branchCompletionMap.filterKeys { key ->
                     key in candidates
                 }
-            // The highest number of adopted child policies within a single candidate
-            val maxCompletion: Int =
-                candidateCompletionMap.maxOf { entry -> entry.value }
-            // The candidate closest to completion, hence the target branch
-            val targetBranch = candidateCompletionMap.filterValues { value ->
-                value == maxCompletion
-            }.keys.random()
+
+            // Choose the branch with the LEAST REMAINING policies, not the MOST ADOPTED ones
+            val targetBranch = candidateCompletionMap.minBy { it.key.policies.size - it.value }.key
 
             val policyToAdopt: Policy =
                 if (civInfo.policies.isAdoptable(targetBranch)) targetBranch
@@ -798,6 +799,29 @@ object NextTurnAutomation {
             val cost = civInfo.diplomacyFunctions.getResearchAgreementCost()
             tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
             tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
+
+            otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
+        }
+    }
+
+    private fun offerDefensivePact(civInfo: Civilization) {
+        if (!civInfo.diplomacyFunctions.canSignDefensivePact()) return // don't waste your time
+
+        val canSignDefensivePactCiv = civInfo.getKnownCivs()
+            .filter {
+                civInfo.diplomacyFunctions.canSignDefensivePactWith(it)
+                    && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedDefensivePact)
+                    && civInfo.getDiplomacyManager(it).relationshipIgnoreAfraid() == RelationshipLevel.Ally
+            }
+            .sortedByDescending { it.stats.statsForNextTurn.science }
+
+        for (otherCiv in canSignDefensivePactCiv) {
+            // Default setting is 1, this will be changed according to different civ.
+            if ((1..10).random() > 1) continue
+            //todo: Add more in depth evaluation here
+            val tradeLogic = TradeLogic(civInfo, otherCiv)
+            tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.defensivePact, TradeType.Treaty))
+            tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.defensivePact, TradeType.Treaty))
 
             otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
         }

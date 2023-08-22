@@ -167,6 +167,7 @@ class TechPolicyDiplomacyButtons(val worldScreen: WorldScreen) : Table(BaseScree
         Concurrency.run {
             // Most of the time we won't load this, so we only set transients once we see it's relevant
             worldScreen.preActionGameInfo.setTransients()
+            worldScreen.preActionGameInfo.isUpToDate = worldScreen.gameInfo.isUpToDate
             game.loadGame(worldScreen.preActionGameInfo)
         }
     }

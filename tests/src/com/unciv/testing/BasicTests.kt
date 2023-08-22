@@ -91,6 +91,7 @@ class BasicTests {
 
     @Test
     fun baseRulesetHasNoBugs() {
+        RulesetCache.modCheckerAllowUntypedUniques = false
         for (baseRuleset in BaseRuleset.values()) {
             val ruleset = RulesetCache[baseRuleset.fullName]!!
             val modCheck = ruleset.checkModLinks()

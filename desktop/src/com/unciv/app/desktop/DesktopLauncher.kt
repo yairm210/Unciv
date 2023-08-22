@@ -10,6 +10,7 @@ import com.unciv.logic.files.UncivFiles
 import com.unciv.models.metadata.ScreenSize
 import com.unciv.models.metadata.WindowState
 import com.unciv.ui.components.Fonts
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Display
 import com.unciv.utils.Log
 import java.awt.GraphicsEnvironment
@@ -64,12 +65,13 @@ internal object DesktopLauncher {
                 width = maximumWindowBounds.width,
                 height = maximumWindowBounds.height
             )
-            FileHandle(SETTINGS_FILE_NAME).writeString(json().toJson(settings), false) // so when we later open the game we get fullscreen
+            FileHandle(SETTINGS_FILE_NAME).writeString(json().toJson(settings), false, Charsets.UTF_8.name()) // so when we later open the game we get fullscreen
         }
         // Kludge! This is a workaround - the matching call in DesktopDisplay doesn't "take" quite permanently,
         // the window might revert to the "config" values when the user moves the window - worse if they
         // minimize/restore. And the config default is 640x480 unless we set something here.
         config.setWindowedMode(max(settings.windowState.width, 100), max(settings.windowState.height, 100))
+        config.setInitialBackgroundColor(BaseScreen.clearColor)
 
         if (!isRunFromJAR) {
             UniqueDocsWriter().write()

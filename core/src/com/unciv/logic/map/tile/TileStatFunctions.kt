@@ -193,9 +193,27 @@ class TileStatFunctions(val tile: Tile) {
             food + production + gold
         }
 
+    /** Returns the extra stats that we would get if we switched to this improvement
+     * Can be negative if we're switching to a worse improvement */
+    fun getStatDiffForImprovement(
+        improvement: TileImprovement,
+        observingCiv: Civilization,
+        city: City?,
+        cityUniqueCache: LocalUniqueCache = LocalUniqueCache(false)): Stats {
+
+        val currentStats = getTileStats(city, observingCiv, cityUniqueCache)
+
+        val tileClone = tile.clone()
+        tileClone.setTerrainTransients()
+
+        tileClone.changeImprovement(improvement.name)
+        val futureStats = tileClone.stats.getTileStats(city, observingCiv, cityUniqueCache)
+
+        return futureStats.minus(currentStats)
+    }
 
     // Also multiplies the stats by the percentage bonus for improvements (but not for tiles)
-    fun getImprovementStats(
+    private fun getImprovementStats(
         improvement: TileImprovement,
         observingCiv: Civilization,
         city: City?,

@@ -1,6 +1,5 @@
 package com.unciv.ui.screens.cityscreen
 
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -210,19 +209,16 @@ class CityScreen(
         fun isExistingImprovementValuable(tile: Tile, improvementToPlace: TileImprovement): Boolean {
             if (tile.improvement == null) return false
             val civInfo = city.civ
-            val existingStats = tile.stats.getImprovementStats(
+
+            val statDiffForNewImprovement = tile.stats.getStatDiffForImprovement(
                 tile.getTileImprovement()!!,
                 civInfo,
                 city,
                 cityUniqueCache
             )
-            val replacingStats = tile.stats.getImprovementStats(
-                improvementToPlace,
-                civInfo,
-                city,
-                cityUniqueCache
-            )
-            return Automation.rankStatsValue(existingStats, civInfo) > Automation.rankStatsValue(replacingStats, civInfo)
+
+            // If stat diff for new improvement is negative/zero utility, current improvement is valuable
+            return Automation.rankStatsValue(statDiffForNewImprovement, civInfo) <= 0
         }
 
         fun getPickImprovementColor(tile: Tile): Pair<Color, Float> {
@@ -353,7 +349,7 @@ class CityScreen(
         if (!canChangeState || city.isPuppet) return
         val tile = tileGroup.tile
 
-        // Cycling as: Not-worked -> Worked -> Locked -> Not-worked
+        // Cycling as: Not-worked -> Worked  -> Not-worked
         if (tileGroup.tileState == CityTileState.WORKABLE) {
             if (!tile.providesYield() && city.population.getFreePopulation() > 0) {
                 city.workedTiles.add(tile.position)
@@ -403,6 +399,11 @@ class CityScreen(
     private fun tileWorkedIconDoubleClick(tileGroup: CityTileGroup, city: City) {
         if (!canChangeState || city.isPuppet || tileGroup.tileState != CityTileState.WORKABLE) return
         val tile = tileGroup.tile
+
+        // Double-click should lead to locked tiles - both for unworked AND worked tiles
+
+        if (!tile.isWorked()) // If not worked, try to work it first
+            tileWorkedIconOnClick(tileGroup, city)
 
         if (tile.isWorked())
             city.lockedTiles.add(tile.position)

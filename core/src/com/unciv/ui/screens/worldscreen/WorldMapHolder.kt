@@ -15,12 +15,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.automation.unit.AttackableTile
-import com.unciv.logic.automation.unit.BattleHelper
 import com.unciv.logic.automation.unit.CityLocationTileRanker
-import com.unciv.logic.automation.unit.UnitAutomation
+import com.unciv.logic.battle.AttackableTile
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
+import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.TileMap
@@ -224,7 +223,7 @@ class WorldMapHolder(
             /** If we are in unit-swapping mode and didn't find a swap partner, we don't want to move or attack */
         } else {
             // This seems inefficient as the tileToAttack is already known - but the method also calculates tileToAttackFrom
-            val attackableTile = BattleHelper
+            val attackableTile = TargetHelper
                     .getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
                     .firstOrNull { it.tileToAttack == tile }
             if (unit.canAttack() && attackableTile != null) {
@@ -695,10 +694,12 @@ class WorldMapHolder(
             val attackableTiles: List<AttackableTile> =
                 if (nukeBlastRadius >= 0)
                     selectedTile!!.getTilesInDistance(nukeBlastRadius)
-                        .filter { it.getFirstUnit() != null }
+                        // Should not display invisible submarine units even if the tile is visible.
+                        .filter { targetTile -> (targetTile.isVisible(unit.civ) && targetTile.getUnits().any { !it.isInvisible(unit.civ) }) 
+                            || (targetTile.isCityCenter() && unit.civ.hasExplored(targetTile)) }
                         .map { AttackableTile(unit.getTile(), it, 1f, null) }
                         .toList()
-                else BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
+                else TargetHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
                     .filter { it.tileToAttack.isVisible(unit.civ) }
                     .distinctBy { it.tileToAttack }
 
@@ -728,7 +729,7 @@ class WorldMapHolder(
 
     private fun updateBombardableTilesForSelectedCity(city: City) {
         if (!city.canBombard()) return
-        for (attackableTile in UnitAutomation.getBombardableTiles(city)) {
+        for (attackableTile in TargetHelper.getBombardableTiles(city)) {
             val group = tileGroups[attackableTile]!!
             group.layerOverlay.showHighlight(colorFromRGB(237, 41, 57))
             group.layerOverlay.showCrosshair()

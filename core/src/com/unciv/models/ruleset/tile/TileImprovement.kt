@@ -16,7 +16,6 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showReligionInCivilopedia
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import kotlin.math.roundToInt
 
 class TileImprovement : RulesetStatsObject() {
@@ -27,7 +26,7 @@ class TileImprovement : RulesetStatsObject() {
     override fun getUniqueTarget() = UniqueTarget.Improvement
     val shortcutKey: Char? = null
     // This is the base cost. A cost of 0 means created instead of buildable.
-    val turnsToBuild: Int = -1
+    var turnsToBuild: Int = -1
 
 
     fun getTurnsToBuild(civInfo: Civilization, unit: MapUnit): Int {
@@ -73,40 +72,6 @@ class TileImprovement : RulesetStatsObject() {
         return terrain in terrainsCanBeBuiltOn
     }
 
-    fun handleImprovementCompletion(builder: MapUnit) {
-        val tile = builder.getTile()
-
-        if (hasUnique(UniqueType.TakesOverAdjacentTiles))
-            UnitActions.takeOverTilesAround(builder)
-
-        if (tile.resource != null) {
-            val city = builder.getTile().getCity()
-            if (city != null) {
-                city.updateCitizens = true
-                city.cityStats.update()
-                city.civ.cache.updateCivResources()
-            }
-        }
-
-        if (hasUnique(UniqueType.RemovesFeaturesIfBuilt)) {
-            // Remove terrainFeatures that a Worker can remove
-            // and that aren't explicitly allowed under the improvement
-            val removableTerrainFeatures = tile.terrainFeatures.filter { feature ->
-                val removingAction = "${Constants.remove}$feature"
-
-                removingAction in tile.ruleset.tileImprovements
-                && !isAllowedOnFeature(feature)
-                && tile.ruleset.tileImprovements[removingAction]!!.let {
-                    it.techRequired == null || builder.civ.tech.isResearched(it.techRequired!!)
-                }
-            }
-
-            tile.setTerrainFeatures(tile.terrainFeatures.filterNot { it in removableTerrainFeatures })
-        }
-
-        tile.owningCity?.reassignPopulationDeferred()
-    }
-
     /**
      * Check: Is this improvement allowed on a [given][name] terrain feature?
      *
@@ -124,6 +89,7 @@ class TileImprovement : RulesetStatsObject() {
         return when (filter) {
             name -> true
             "All" -> true
+            "Improvement" -> true // For situations involing tileFilter
             "All Road" -> isRoad()
             "Great Improvement", "Great" -> isGreatImprovement()
             in uniqueMap -> true

@@ -28,6 +28,7 @@ import com.unciv.models.ruleset.nation.Nation
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
 
 class TestGame {
@@ -159,6 +160,7 @@ class TestGame {
         val baseUnit = ruleset.units[name]!!
         baseUnit.ruleset = ruleset
         val mapUnit = baseUnit.getMapUnit(civInfo)
+        civInfo.units.addUnit(mapUnit)
         if (tile!=null) mapUnit.putInTile(tile)
         return mapUnit
     }
@@ -206,4 +208,6 @@ class TestGame {
         createRulesetObject(ruleset.tileImprovements, *uniques) { TileImprovement() }
     fun createUnitType(vararg uniques: String) =
         createRulesetObject(ruleset.unitTypes, *uniques) { UnitType() }
+    fun createUnitPromotion(vararg uniques: String) =
+        createRulesetObject(ruleset.unitPromotions, *uniques) { Promotion() }
 }

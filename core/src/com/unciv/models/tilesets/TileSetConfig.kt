@@ -1,15 +1,15 @@
 package com.unciv.models.tilesets
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.Constants
 
 class TileSetConfig {
     var useColorAsBaseTerrain = false
     var useSummaryImages = false
     var unexploredTileColor: Color = Color.DARK_GRAY
     var fogOfWarColor: Color = Color.BLACK
-    /** Name of the tileset to use when this one is missing images. Null to disable.
-     * Don't change unless you've also moved the crosshatch, borders, and arrows as well */
-    var fallbackTileSet: String? = "FantasyHex"
+    /** Name of the tileset to use when this one is missing images. Null to disable. */
+    var fallbackTileSet: String? = Constants.defaultFallbackTileset
     /** Scale factor for hex images, with hex center as origin. */
     var tileScale: Float = 1f
     var tileScales: HashMap<String, Float> = HashMap()

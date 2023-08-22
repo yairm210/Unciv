@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.civilization.NextTurnAutomation
-import com.unciv.logic.automation.unit.AttackableTile
 import com.unciv.logic.automation.unit.SpecificUnitAutomation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.AlertType
@@ -898,7 +897,7 @@ object Battle {
         fun applyPillageAndFallout() {
             if (tile.getUnpillagedImprovement() != null && !tile.getTileImprovement()!!.hasUnique(UniqueType.Irremovable)) {
                 if (tile.getTileImprovement()!!.hasUnique(UniqueType.Unpillagable)) {
-                    tile.changeImprovement(null)
+                    tile.removeImprovement()
                 } else {
                     tile.setPillaged()
                 }
@@ -1208,7 +1207,7 @@ object Battle {
             && attacker.hasUnique(UniqueType.DestroysImprovementUponAttack, conditionalState)
         ) {
             val currentTileImprovement = attackedTile.improvement
-            attackedTile.changeImprovement(null)
+            attackedTile.removeImprovement()
             defender.getCivInfo().addNotification(
                 "An enemy [${attacker.unit.baseUnit.name}] has destroyed our tile improvement [${currentTileImprovement}]",
                 LocationAction(attackedTile.position, attacker.getTile().position),

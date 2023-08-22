@@ -12,7 +12,6 @@ import com.unciv.logic.civilization.NotificationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
-import com.unciv.logic.map.mapunit.UnitTurnManager
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.multiplayer.isUsersTurn
 import com.unciv.models.ruleset.Building
@@ -25,8 +24,8 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueMap
-import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -36,7 +35,6 @@ import com.unciv.ui.components.extensions.withItem
 import com.unciv.ui.components.extensions.withoutItem
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -522,11 +520,11 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             UniqueType.StatsFromTiles, UniqueType.StatsFromTilesWithout, UniqueType.StatsFromObject,
             UniqueType.StatPercentFromObject, UniqueType.AllStatsPercentFromObject
         )
-        
+
         updateUniques()
-        
+
         // Happiness is global, so it could affect all cities
-        if(building.isStatRelated(Stat.Happiness)) {
+        if (building.isStatRelated(Stat.Happiness)) {
             for (city in civ.cities) {
                 city.reassignPopulationDeferred()
             }
@@ -534,8 +532,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         else if(uniqueTypesModifyingYields.any { building.hasUnique(it) })
             city.reassignPopulationDeferred()
 
-        city.civ.cache.updateCivResources() // this building could be a resource-requiring one
-        
         addFreeBuildings()
     }
 
@@ -565,14 +561,16 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         builtBuildings.remove(buildingName)
         city.civ.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
         updateUniques()
-        city.civ.cache.updateCivResources() // this building could be a resource-requiring one
     }
 
     fun updateUniques(onLoadGame:Boolean = false) {
         builtBuildingUniqueMap.clear()
         for (building in getBuiltBuildings())
             builtBuildingUniqueMap.addUniques(building.uniqueObjects)
-        if (!onLoadGame) city.cityStats.update()
+        if (!onLoadGame) {
+            city.cityStats.update()
+            city.civ.cache.updateCivResources()
+        }
     }
 
     fun addFreeBuildings() {
@@ -783,17 +781,14 @@ class CityConstructions : IsPartOfGameInfoSerialization {
      *  If [building] is an improvement-creating one, find a marked tile matching the improvement to be created
      *  (skip if none found), then un-mark the tile and place the improvement unless [removeOnly] is set.
      */
-    fun applyCreateOneImprovement(building: Building, removeOnly: Boolean = false) {
+    private fun applyCreateOneImprovement(building: Building, removeOnly: Boolean = false) {
         val improvement = building.getImprovementToCreate(city.getRuleset())
             ?: return
         val tileForImprovement = getTileForImprovement(improvement.name) ?: return
         tileForImprovement.stopWorkingOnImprovement()  // clears mark
         if (removeOnly) return
-        /**todo unify with [UnitActions.getImprovementConstructionActions] and [UnitTurnManager.workOnImprovement] - this won't allow e.g. a building to place a road */
-        tileForImprovement.changeImprovement(improvement.name)
+        tileForImprovement.changeImprovement(improvement.name, city.civ)
         city.civ.lastSeenImprovement[tileForImprovement.position] = improvement.name
-        city.cityStats.update()
-        city.civ.cache.updateCivResources()
         // If bought the worldscreen will not have been marked to update, and the new improvement won't show until later...
         GUI.setUpdateWorldOnNextRender()
     }

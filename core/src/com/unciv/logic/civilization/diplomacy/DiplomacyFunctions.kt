@@ -11,7 +11,6 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.tr
 
 class DiplomacyFunctions(val civInfo: Civilization){
 
@@ -87,7 +86,6 @@ class DiplomacyFunctions(val civInfo: Civilization){
         }
     }
 
-
     fun canSignResearchAgreement(): Boolean {
         if (!civInfo.isMajorCiv()) return false
         if (!civInfo.hasUnique(UniqueType.EnablesResearchAgreements)) return false
@@ -111,6 +109,22 @@ class DiplomacyFunctions(val civInfo: Civilization){
         return (
                 civInfo.getEra().researchAgreementCost * civInfo.gameInfo.speed.goldCostModifier
                 ).toInt()
+    }
+
+    fun canSignDefensivePact(): Boolean {
+        return false // TEMPORARY - remove at 4.7.17!
+        if (!civInfo.isMajorCiv()) return false
+        if (!civInfo.hasUnique(UniqueType.EnablesDefensivePacts)) return false
+        return true
+    }
+
+    fun canSignDefensivePactWith(otherCiv: Civilization): Boolean {
+        val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
+        return canSignDefensivePact() && otherCiv.diplomacyFunctions.canSignDefensivePact()
+            && diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+            && !diplomacyManager.hasFlag(DiplomacyFlags.DefensivePact)
+            && !diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.DefensivePact)
+            && diplomacyManager.diplomaticStatus != DiplomaticStatus.DefensivePact
     }
 
 

@@ -228,17 +228,21 @@ object Fonts {
     val charToRulesetImageActor = HashMap<Char, Actor>()
     // See https://en.wikipedia.org/wiki/Private_Use_Areas - char encodings 57344 63743 are not assigned
     private var nextUnusedCharacterNumber = 57344
-    fun addRulesetImages(ruleset:Ruleset) {
+    fun addRulesetImages(ruleset: Ruleset) {
         rulesetObjectNameToChar.clear()
         charToRulesetImageActor.clear()
         nextUnusedCharacterNumber = 57344
 
-        fun addChar(objectName:String, objectActor: Actor){
+        fun addChar(objectName: String, objectActor: Actor) {
             val char = Char(nextUnusedCharacterNumber)
             nextUnusedCharacterNumber++
             rulesetObjectNameToChar[objectName] = char
             charToRulesetImageActor[char] = objectActor
         }
+
+        // Note: If an image is missing, these will insert a white square in the font - acceptable in
+        // most cases as these white squares will be visible elsewhere anyway. "Policy branch Complete"
+        // is an exception, and therefore gets an existence test.
 
         for (resourceName in ruleset.tileResources.keys)
             addChar(resourceName, ImageGetter.getResourcePortrait(resourceName, ORIGINAL_FONT_SIZE))
@@ -264,6 +268,7 @@ object Fonts {
         for (policy in ruleset.policies.values) {
             val fileLocation = if (policy.name in ruleset.policyBranches)
                 "PolicyBranchIcons/" + policy.name else "PolicyIcons/" + policy.name
+            if (!ImageGetter.imageExists(fileLocation)) continue
             addChar(policy.name, ImageGetter.getImage(fileLocation).apply { setSize(ORIGINAL_FONT_SIZE) })
         }
     }

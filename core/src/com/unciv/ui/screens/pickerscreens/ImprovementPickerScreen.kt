@@ -16,10 +16,12 @@ import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.cityscreen.CityScreen
 import kotlin.math.roundToInt
 
 class ImprovementPickerScreen(
@@ -157,23 +159,23 @@ class ImprovementPickerScreen(
             val statIcons = getStatIconsTable(provideResource, removeImprovement)
 
             // get benefits of the new improvement
-            val stats = tile.stats.getImprovementStats(
+            val stats = tile.stats.getStatDiffForImprovement(
                 improvement,
                 currentPlayerCiv,
                 tile.getCity(),
                 cityUniqueCache
             )
-            // subtract the benefits of the replaced improvement, if any
-            val existingImprovement = tile.getTileImprovement()
-            if (existingImprovement != null && removeImprovement) {
-                val existingStats = tile.stats.getImprovementStats(
-                    existingImprovement,
-                    currentPlayerCiv,
-                    tile.getCity(),
-                    cityUniqueCache
-                )
-                stats.add(existingStats.times(-1.0f))
-            }
+
+            //Warn when the current improvement will increase a stat for the tile,
+            // but the tile is outside of the range (> 3 tiles from city center) that can be
+            // worked by a city's population
+            if (stats.values.any { it > 0f }
+                    && !improvement.name.startsWith(Constants.remove)
+                    && !improvement.isRoad()
+                    && tile.owningCity != null
+                    && !tile.owningCity!!.getWorkableTiles().contains(tile)
+            )
+                labelText += "\n" + "Not in city work range".tr()
 
             val statsTable = getStatsTable(stats)
             statIcons.add(statsTable).padLeft(13f)
@@ -203,6 +205,22 @@ class ImprovementPickerScreen(
             regularImprovements.row()
         }
 
+        var ownerTable = Table()
+        if (tile.getOwner() == null) {
+            ownerTable.add("Unowned tile".tr().toLabel())
+        } else if (tile.getOwner()!!.isCurrentPlayer()) {
+            val button = tile.getCity()!!.name.toTextButton(hideIcons = true)
+            button.onClick {
+                this.game.pushScreen(CityScreen(tile.getCity()!!,null,tile))
+            }
+            ownerTable.add("Tile owned by [${tile.getOwner()!!.civName}] (You)".tr().toLabel()).padLeft(10f)
+            ownerTable.add(button).padLeft(20f)
+        } else {
+            ownerTable.add("Tile owned by [${tile.getOwner()!!.civName}] - [${tile.getCity()!!.name}]".tr().toLabel()).padLeft(10f)
+        }
+
+        topTable.add(ownerTable)
+        topTable.row()
         topTable.add(regularImprovements)
     }
 
