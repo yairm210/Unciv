@@ -5,7 +5,6 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.ModOptionsConstants
@@ -54,6 +53,7 @@ class TradeEvaluation {
             TradeType.Technology -> true
             TradeType.Introduction -> !tradePartner.knows(tradeOffer.name) // You can't introduce them to someone they already know!
             TradeType.WarDeclaration -> true
+            TradeType.PeaceTreaty -> true
             TradeType.City -> offerer.cities.any { it.id == tradeOffer.name }
         }
     }
@@ -146,6 +146,19 @@ class TradeEvaluation {
                     ThreatLevel.VeryLow -> return 0
                     ThreatLevel.Low -> return 0
                     ThreatLevel.Medium -> return 100
+                    ThreatLevel.High -> return 500
+                    ThreatLevel.VeryHigh -> return 1000
+                }
+            }
+            TradeType.PeaceTreaty -> {
+                val civToSignPeaceWith = civInfo.gameInfo.getCivilization(offer.name)
+                val threatToThem = Automation.threatAssessment(civInfo, civToSignPeaceWith)
+
+                if (civInfo.isAtWarWith(civToSignPeaceWith)) return 0 // why should we pay you to sign peace...?
+                else when (threatToThem) {
+                    ThreatLevel.VeryLow -> return 0
+                    ThreatLevel.Low -> return 0
+                    ThreatLevel.Medium -> return 200
                     ThreatLevel.High -> return 500
                     ThreatLevel.VeryHigh -> return 1000
                 }
@@ -257,6 +270,16 @@ class TradeEvaluation {
                     ThreatLevel.Medium -> 500
                     ThreatLevel.High -> 1000
                     ThreatLevel.VeryHigh -> 10000 // no way boyo
+                }
+            }
+            TradeType.PeaceTreaty -> {
+                val civToSignPeaceWith = civInfo.gameInfo.getCivilization(offer.name)
+                return when (Automation.threatAssessment(civInfo, civToSignPeaceWith)) {
+                    ThreatLevel.VeryLow -> return 100
+                    ThreatLevel.Low -> return 250
+                    ThreatLevel.Medium -> return 500
+                    ThreatLevel.High -> return 1000
+                    ThreatLevel.VeryHigh -> return 10000
                 }
             }
 

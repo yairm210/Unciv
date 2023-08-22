@@ -37,6 +37,7 @@ data class TradeOffer(val name: String, val type: TradeType, var amount: Int = 1
     fun getOfferText(untradable: Int = 0): String {
         var offerText = when(type){
             TradeType.WarDeclaration -> "Declare war on [$name]"
+            TradeType.PeaceTreaty -> "Sign peace with [$name]"
             TradeType.Introduction -> "Introduction to [$name]"
             TradeType.City -> {
                 val city =

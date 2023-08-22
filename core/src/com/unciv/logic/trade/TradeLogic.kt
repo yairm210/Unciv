@@ -7,7 +7,6 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.CityStateFunctions
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
-import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
@@ -76,6 +75,12 @@ class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civili
             for (thirdCiv in civsWeArentAtWarWith) {
                 offers.add(TradeOffer(thirdCiv.civName, TradeType.WarDeclaration))
             }
+            
+            val civsWeAreAtWarWith = civsWeBothKnow
+                .filter { civInfo.isAtWarWith(it) && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclaredWar) }
+            for (thirdCiv in civsWeAreAtWarWith) {
+                offers.add(TradeOffer(thirdCiv.civName, TradeType.PeaceTreaty))
+            }
         }
 
         return offers
@@ -130,12 +135,16 @@ class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civili
                         to.getDiplomacyManager(from)
                             .setFlag(DiplomacyFlags.ResearchAgreement, offer.duration)
                     }
-                    if (offer.name == Constants.defensivePact) from.getDiplomacyManager(to).signDefensivePact(offer.duration);
+                    if (offer.name == Constants.defensivePact) from.getDiplomacyManager(to).signDefensivePact(offer.duration)
                 }
                 TradeType.Introduction -> to.diplomacyFunctions.makeCivilizationsMeet(to.gameInfo.getCivilization(offer.name))
                 TradeType.WarDeclaration -> {
                     val nameOfCivToDeclareWarOn = offer.name
                     from.getDiplomacyManager(nameOfCivToDeclareWarOn).declareWar()
+                }
+                TradeType.PeaceTreaty -> {
+                    val nameOfCivToSignPeaceWith = offer.name
+                    from.getDiplomacyManager(nameOfCivToSignPeaceWith).makePeace()
                 }
                 else -> {}
             }
