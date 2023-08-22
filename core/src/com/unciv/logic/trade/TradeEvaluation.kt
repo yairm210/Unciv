@@ -53,7 +53,7 @@ class TradeEvaluation {
             TradeType.Technology -> true
             TradeType.Introduction -> !tradePartner.knows(tradeOffer.name) // You can't introduce them to someone they already know!
             TradeType.WarDeclaration -> true
-            TradeType.PeaceTreaty -> true
+            TradeType.OfferPeaceTreaty -> true
             TradeType.City -> offerer.cities.any { it.id == tradeOffer.name }
         }
     }
@@ -150,7 +150,7 @@ class TradeEvaluation {
                     ThreatLevel.VeryHigh -> return 1000
                 }
             }
-            TradeType.PeaceTreaty -> {
+            TradeType.OfferPeaceTreaty -> {
                 val civToSignPeaceWith = civInfo.gameInfo.getCivilization(offer.name)
                 val threatToThem = Automation.threatAssessment(civInfo, civToSignPeaceWith)
 
@@ -272,7 +272,7 @@ class TradeEvaluation {
                     ThreatLevel.VeryHigh -> 10000 // no way boyo
                 }
             }
-            TradeType.PeaceTreaty -> {
+            TradeType.OfferPeaceTreaty -> {
                 val civToSignPeaceWith = civInfo.gameInfo.getCivilization(offer.name)
                 return when (Automation.threatAssessment(civInfo, civToSignPeaceWith)) {
                     ThreatLevel.VeryLow -> return 100

@@ -79,7 +79,7 @@ class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civili
             val civsWeAreAtWarWith = civsWeBothKnow
                 .filter { civInfo.isAtWarWith(it) && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclaredWar) }
             for (thirdCiv in civsWeAreAtWarWith) {
-                offers.add(TradeOffer(thirdCiv.civName, TradeType.PeaceTreaty))
+                offers.add(TradeOffer(thirdCiv.civName, TradeType.OfferPeaceTreaty))
             }
         }
 
@@ -142,9 +142,13 @@ class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civili
                     val nameOfCivToDeclareWarOn = offer.name
                     from.getDiplomacyManager(nameOfCivToDeclareWarOn).declareWar()
                 }
-                TradeType.PeaceTreaty -> {
-                    val nameOfCivToSignPeaceWith = offer.name
-                    from.getDiplomacyManager(nameOfCivToSignPeaceWith).makePeace()
+                TradeType.OfferPeaceTreaty -> {
+                    // Ask the other Civ for a peace treaty through a trade
+                    val civToSignPeaceWith = ourCivilization.gameInfo.getCivilization(offer.name)
+                    val tradeLogic = TradeLogic(ourCivilization, civToSignPeaceWith)
+                    tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
+                    tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
+                    civToSignPeaceWith.tradeRequests.add(TradeRequest(ourCivilization.civName, tradeLogic.currentTrade.reverse()))
                 }
                 else -> {}
             }
