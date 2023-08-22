@@ -333,12 +333,6 @@ class WorldMapHolder(
              * so that and that alone will be relegated to the concurrent thread.
              */
 
-            /** LibGdx sometimes has these weird errors when you try to edit the UI layout from 2 separate threads.
-             * And so, all UI editing will be done on the main thread.
-             * The only "heavy lifting" that needs to be done is getting the turns to get there,
-             * so that and that alone will be relegated to the concurrent thread.
-             */
-
             val unitToTurnsToTile = HashMap<MapUnit, Int>()
             for (unit in selectedUnits) {
                 val shortestPath = ArrayList<Tile>()
@@ -695,7 +689,7 @@ class WorldMapHolder(
                 if (nukeBlastRadius >= 0)
                     selectedTile!!.getTilesInDistance(nukeBlastRadius)
                         // Should not display invisible submarine units even if the tile is visible.
-                        .filter { targetTile -> (targetTile.isVisible(unit.civ) && targetTile.getUnits().any { !it.isInvisible(unit.civ) }) 
+                        .filter { targetTile -> (targetTile.isVisible(unit.civ) && targetTile.getUnits().any { !it.isInvisible(unit.civ) })
                             || (targetTile.isCityCenter() && unit.civ.hasExplored(targetTile)) }
                         .map { AttackableTile(unit.getTile(), it, 1f, null) }
                         .toList()
