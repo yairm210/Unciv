@@ -1292,6 +1292,13 @@ UnitActionIcons/StopMove
   orig: 100, 100
   offset: 0, 0
   index: -1
+UnitActionIcons/JumpToDestination
+  rotate: false
+  xy: 980, 0
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
 UnitActionIcons/Swap
   rotate: false
   xy: 1702, 646

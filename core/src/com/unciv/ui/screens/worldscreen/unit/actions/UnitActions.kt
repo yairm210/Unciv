@@ -60,8 +60,10 @@ object UnitActions {
         addTriggerUniqueActions(unit, actionList)
         addAddInCapitalAction(unit, actionList, tile)
 
-        if (unit.isMoving())
+        if (unit.isMoving()) {
             actionList += UnitAction(UnitActionType.StopMovement) { unit.action = null }
+            actionList += UnitAction(UnitActionType.JumpToDestination) { GUI.getMap().setCenterPosition(unit.getMovementDestination().position,true) }
+        }
         if (unit.isExploring())
             actionList += UnitAction(UnitActionType.StopExploration) { unit.action = null }
         if (unit.isAutomated())
