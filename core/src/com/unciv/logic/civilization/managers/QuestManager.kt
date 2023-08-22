@@ -1,3 +1,5 @@
+@file:Suppress("ConvertArgumentToSet")  // Flags all assignedQuests.removeAll(List) - not worth it
+
 package com.unciv.logic.civilization.managers
 
 import com.badlogic.gdx.math.Vector2
@@ -9,6 +11,7 @@ import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.DiplomacyAction
 import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.Notification  // for Kdoc
 import com.unciv.logic.civilization.NotificationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
@@ -32,7 +35,6 @@ import com.unciv.ui.components.extensions.toPercent
 import kotlin.math.max
 import kotlin.random.Random
 
-@Suppress("NON_EXHAUSTIVE_WHEN")  // Many when uses in here are much clearer this way
 class QuestManager : IsPartOfGameInfoSerialization {
 
     companion object {
@@ -83,10 +85,8 @@ class QuestManager : IsPartOfGameInfoSerialization {
     /** Returns the influence multiplier for [donor] from a Investment quest that [civInfo] might have (assumes only one) */
     fun getInvestmentMultiplier(donor: String): Float {
         val investmentQuest = assignedQuests.firstOrNull { it.questName == QuestName.Invest.value && it.assignee == donor }
-        return if (investmentQuest == null)
-            1f
-        else
-            investmentQuest.data1.toPercent()
+            ?: return 1f
+        return investmentQuest.data1.toPercent()
     }
 
     fun clone(): QuestManager {
@@ -332,8 +332,10 @@ class QuestManager : IsPartOfGameInfoSerialization {
                 QuestName.PledgeToProtect.value -> data1 = getMostRecentBully()!!
                 QuestName.GiveGold.value -> data1 = getMostRecentBully()!!
                 QuestName.DenounceCiv.value -> data1 = getMostRecentBully()!!
-                QuestName.SpreadReligion.value -> { data1 = playerReligion!!.getReligionDisplayName() // For display
-                                                    data2 = playerReligion.name } // To check completion
+                QuestName.SpreadReligion.value -> {
+                    data1 = playerReligion!!.getReligionDisplayName() // For display
+                    data2 = playerReligion.name // To check completion
+                }
                 QuestName.ContestCulture.value -> data1 = assignee.totalCultureForContests.toString()
                 QuestName.ContestFaith.value -> data1 = assignee.totalFaithForContests.toString()
                 QuestName.ContestTech.value -> data1 = assignee.tech.getNumberOfTechsResearched().toString()
