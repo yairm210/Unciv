@@ -559,18 +559,21 @@ class QuestManager : IsPartOfGameInfoSerialization {
         val unitsToKill = max(3, totalMilitaryUnits / 4)
         unitsToKillForCiv[attacker.civName] = unitsToKill
 
-
-        val location = if (civInfo.cities.isEmpty() || civInfo.getCapital() == null) null
-            else civInfo.getCapital()!!.location
-
         // Ask for assistance
-        for (thirdCiv in civInfo.getKnownCivs().filter { it.isAlive() && !it.isAtWarWith(civInfo) && it.isMajorCiv() }) {
-            if (location != null)
-                thirdCiv.addNotification("[${civInfo.civName}] is being attacked by [${attacker.civName}]! Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful.",
-                    location, NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
-            else thirdCiv.addNotification("[${civInfo.civName}] is being attacked by [${attacker.civName}]! Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful.",
-                NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
+        val location = civInfo.getCapital(firstCityIfNoCapital = true)?.location
+        for (thirdCiv in civInfo.getKnownCivs()) {
+            if (!thirdCiv.isMajorCiv() || thirdCiv.isDefeated() || thirdCiv.isAtWarWith(civInfo))
+                continue
+            notifyAskForAssistance(thirdCiv, attacker.civName, unitsToKill, location)
         }
+    }
+
+    private fun notifyAskForAssistance(assignee: Civilization, attackerName: String, unitsToKill: Int, location: Vector2?) {
+        if (attackerName == assignee.civName) return  // No "Hey Bob help us against Bob"
+        val message = "[${civInfo.civName}] is being attacked by [$attackerName]!" +
+            "Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful."
+        // Note: that LocationAction pseudo-constructor is able to filter out null location(s), no need for `if`
+        assignee.addNotification(message, LocationAction(location), NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
     }
 
     /** Gets notified when [killed]'s military unit was killed by [killer], for war with major pseudo-quest */
@@ -599,16 +602,10 @@ class QuestManager : IsPartOfGameInfoSerialization {
 
     /** Called when a major civ meets the city-state for the first time. Mainly for war with major pseudo-quest. */
     fun justMet(otherCiv: Civilization) {
-        val location = if (civInfo.cities.isEmpty() || civInfo.getCapital() == null) null
-            else civInfo.getCapital()!!.location
-
-        for ((attackerName, unitsToKill) in unitsToKillForCiv) {
-            if (location != null)
-                otherCiv.addNotification("[${civInfo.civName}] is being attacked by [$attackerName]! Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful.",
-                    location, NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
-            else otherCiv.addNotification("[${civInfo.civName}] is being attacked by [$attackerName]! Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful.",
-                NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
-        }
+        if (unitsToKillForCiv.isEmpty()) return
+        val location = civInfo.getCapital(firstCityIfNoCapital = true)?.location
+        for ((attackerName, unitsToKill) in unitsToKillForCiv)
+            notifyAskForAssistance(otherCiv, attackerName, unitsToKill, location)
     }
 
     /** Ends War with Major pseudo-quests that aren't relevant any longer */
