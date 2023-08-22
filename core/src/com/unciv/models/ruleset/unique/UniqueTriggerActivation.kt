@@ -7,6 +7,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.MayaLongCountAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
@@ -73,7 +74,7 @@ object UniqueTriggerActivation {
 
                 civInfo.addNotification(
                     notificationText,
-                    placedUnit.getTile().position,
+                    MapUnitAction(placedUnit.getTile().position),
                     NotificationCategory.Units,
                     placedUnit.name
                 )
@@ -109,7 +110,7 @@ object UniqueTriggerActivation {
 
                 civInfo.addNotification(
                     notificationText,
-                    LocationAction(tilesUnitsWerePlacedOn),
+                    MapUnitAction(tilesUnitsWerePlacedOn),
                     NotificationCategory.Units,
                     civInfo.getEquivalentUnit(unit).name
                 )
@@ -134,7 +135,10 @@ object UniqueTriggerActivation {
                         else notification
                     civInfo.addNotification(
                         notificationText,
-                        LocationAction(placedUnit.getTile().position, tile?.position),
+                        sequence {
+                            yield(MapUnitAction(placedUnit.getTile().position))
+                            yieldAll(LocationAction(tile?.position))
+                        },
                         NotificationCategory.Units,
                         placedUnit.name
                     )
@@ -393,7 +397,7 @@ object UniqueTriggerActivation {
                 if (notification != null) {
                     civInfo.addNotification(
                         notification,
-                        LocationAction(promotedUnitLocations),
+                        MapUnitAction(promotedUnitLocations),
                         NotificationCategory.Units,
                         "unitPromotionIcons/${unique.params[1]}"
                     )

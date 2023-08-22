@@ -95,6 +95,11 @@ class MapUnitAction(private val location: Vector2 = Vector2.Zero) : Notification
     override fun execute(worldScreen: WorldScreen) {
         worldScreen.mapHolder.setCenterPosition(location, selectUnit = true)
     }
+    companion object {
+        // Convenience shortcut as it makes replacing LocationAction calls easier (see above)
+        operator fun invoke(locations: Iterable<Vector2>): Sequence<MapUnitAction> =
+            locations.asSequence().map { MapUnitAction(it) }
+    }
 }
 
 /** A notification action that shows a Civilopedia entry, e.g. for a Wonder. */

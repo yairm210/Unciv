@@ -8,7 +8,7 @@ import com.unciv.logic.automation.city.ConstructionAutomation
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivilopediaAction
 import com.unciv.logic.civilization.LocationAction
-import com.unciv.logic.civilization.NotificationAction
+import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
@@ -455,7 +455,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
         val buildingIcon = "BuildingIcons/${construction.name}"
         val pediaAction = CivilopediaAction(construction.makeLink())
-        val locationAndPediaActions = listOf(LocationAction(city.location), pediaAction)
+        val locationAction = if (construction is BaseUnit) MapUnitAction(city.location)
+            else LocationAction(city.location)
+        val locationAndPediaActions = listOf(locationAction, pediaAction)
 
         if (construction is Building && construction.isWonder) {
             city.civ.popupAlerts.add(PopupAlert(AlertType.WonderBuilt, construction.name))
