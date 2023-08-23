@@ -5,6 +5,7 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.ModOptionsConstants
@@ -14,6 +15,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.victoryscreen.RankingType
 import kotlin.math.ceil
+import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -282,13 +284,20 @@ class TradeEvaluation {
             }
             TradeType.OfferPeaceTreaty -> {
                 val civToSignPeaceWith = civInfo.gameInfo.getCivilization(offer.name)
-                return when (Automation.threatAssessment(civToSignPeaceWith, civInfo)) {
+                // If the civ has signed treaties with us, we should listen to them more
+                var diplomacyValue = 0
+                if (civInfo.getDiplomacyManager(tradePartner).hasFlag(DiplomacyFlags.DeclarationOfFriendship))
+                    diplomacyValue += 150
+                if (civInfo.getDiplomacyManager(tradePartner).hasFlag(DiplomacyFlags.DefensivePact))
+                    diplomacyValue += 350
+                
+                return max(when (Automation.threatAssessment(civToSignPeaceWith, civInfo)) {
                     ThreatLevel.VeryLow -> 100
-                    ThreatLevel.Low -> 250
+                    ThreatLevel.Low -> 150
                     ThreatLevel.Medium -> 500
                     ThreatLevel.High -> 1000
                     ThreatLevel.VeryHigh -> 10000
-                }
+                } - diplomacyValue, 0)
             }
 
             TradeType.City -> {
