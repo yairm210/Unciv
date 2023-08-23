@@ -756,7 +756,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
      */
     fun addToQueue(constructionName: String) = addToQueue(getConstruction(constructionName))
 
-    /** If this was done automatically, we should automatically try to choose a new construction and treat it as such */
+    /** Remove one entry from the queue by index.
+     *  @param automatic  If this was done automatically, we should automatically try to choose a new construction and treat it as such
+     */
     fun removeFromQueue(constructionQueueIndex: Int, automatic: Boolean) {
         val constructionName = constructionQueue.removeAt(constructionQueueIndex)
 
@@ -774,6 +776,38 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             else constructionQueue.add("Nothing") // To prevent Construction Automation
             false
         } else true // we're just continuing the regular queue
+    }
+
+    /** Remove all queue entries for [constructionName].
+     *
+     *  Does nothing if there's no entry of that name in the queue.
+     *  If the queue is emptied, no automatic: getSettings().autoAssignCityProduction is ignored! (parameter to be added when needed)
+     */
+    fun removeAllByName(constructionName: String) {
+        while (true) {
+            val index = constructionQueue.indexOf(constructionName)
+            if (index < 0) return
+            removeFromQueue(index, false)
+        }
+    }
+
+    /** Moves an entry to the queue top by index.
+     *  No-op when index invalid. Must not be called for PerpetualConstruction entries - unchecked! */
+    fun moveEntryToTop(constructionQueueIndex: Int) {
+        if (constructionQueueIndex == 0 || constructionQueueIndex >= constructionQueue.size) return
+        val constructionName = constructionQueue.removeAt(constructionQueueIndex)
+        constructionQueue.add(0, constructionName)
+    }
+
+    /** Moves an entry by index to the end of the queue, or just before a PerpetualConstruction
+     *  (or replacing a PerpetualConstruction if it itself is one and the queue is by happenstance invalid having more than one of those)
+     */
+    fun moveEntryToEnd(constructionQueueIndex: Int) {
+        if (constructionQueueIndex >= constructionQueue.size) return
+        val constructionName = constructionQueue.removeAt(constructionQueueIndex)
+        // Some of the overhead of addToQueue is redundant here, but if the complex "needs to replace or go before a perpetual" logic is needed, then use it anyway
+        if (isLastConstructionPerpetual()) return addToQueue(constructionName)
+        constructionQueue.add(constructionName)
     }
 
     fun raisePriority(constructionQueueIndex: Int): Int {
