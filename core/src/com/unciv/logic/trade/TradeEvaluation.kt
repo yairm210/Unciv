@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.victoryscreen.RankingType
@@ -152,14 +153,24 @@ class TradeEvaluation {
             TradeType.OfferPeaceTreaty -> {
                 val civToSignPeaceWith = civInfo.gameInfo.getCivilization(offer.name)
 
-                return if (civInfo.isAtWarWith(civToSignPeaceWith)) 0 // why should we pay you to sign peace...?
-                else when (Automation.threatAssessment(civToSignPeaceWith, civInfo)) {
-                    ThreatLevel.VeryLow -> 0
-                    ThreatLevel.Low -> 0
-                    ThreatLevel.Medium -> 200
-                    ThreatLevel.High -> 500
-                    ThreatLevel.VeryHigh -> 1000
-                }
+                // For now if they are not a city state under our protection, don't put any value to the offer.
+                if ((!civToSignPeaceWith.isCityState() || civToSignPeaceWith.getAllyCiv() != civInfo.civName)) return 0
+                
+                // See if they actually are threatening our city state
+                var threateningUnitsStrength = 0
+                tradePartner.units.getCivUnits()
+                    .filter { it.threatensCiv(civToSignPeaceWith) }
+                    .forEach { threateningUnitsStrength += it.getForceEvaluation() }
+                // Loosing the city state is valued based on resources
+                return if (threateningUnitsStrength > civToSignPeaceWith.getStatForRanking(RankingType.Force)) {
+                    var value = 100
+                    civToSignPeaceWith.getCivResourceSupply().forEach { value += when(it.resource.resourceType) {
+                        ResourceType.Luxury -> 40
+                        ResourceType.Strategic -> 20 
+                        else -> 0
+                    } * it.amount }
+                    value
+                } else 0
             }
             TradeType.City -> {
                 val city = tradePartner.cities.firstOrNull { it.id == offer.name }
