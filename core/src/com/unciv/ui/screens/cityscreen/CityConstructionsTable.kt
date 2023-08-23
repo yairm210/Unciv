@@ -10,14 +10,14 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
+import com.unciv.logic.map.tile.Tile
+import com.unciv.models.UncivSound
+import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.RejectionReason
 import com.unciv.models.ruleset.RejectionReasonType
-import com.unciv.logic.map.tile.Tile
-import com.unciv.models.UncivSound
-import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -34,15 +34,17 @@ import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.getConsumesAmountString
 import com.unciv.ui.components.extensions.isEnabled
-import com.unciv.ui.components.input.onActivation
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.CityScreenConstructionMenu
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.closeAllPopups
@@ -440,6 +442,17 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             }
             selectedQueueEntry = -1
             cityScreen.update()
+        }
+        pickConstructionButton.onRightClick {
+            if (cityScreen.selectedConstruction != construction) {
+                // Ensure context is visible
+                cityScreen.selectConstruction(construction)
+                highlightConstructionButton(pickConstructionButton, true)
+                cityScreen.updateWithoutConstructionAndMap()
+            }
+            CityScreenConstructionMenu(cityScreen.stage, pickConstructionButton, cityScreen.city, construction) {
+                cityScreen.update()
+            }
         }
 
         return pickConstructionButton
