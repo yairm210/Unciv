@@ -152,7 +152,7 @@ class TradeEvaluation {
             }
             TradeType.OfferPeaceTreaty -> {
                 val civToSignPeaceWith = civInfo.gameInfo.getCivilization(offer.name)
-                val threatToThem = Automation.threatAssessment(civInfo, civToSignPeaceWith)
+                val threatToThem = Automation.threatAssessment(civToSignPeaceWith, civInfo)
 
                 if (civInfo.isAtWarWith(civToSignPeaceWith)) return 0 // why should we pay you to sign peace...?
                 else when (threatToThem) {
@@ -274,7 +274,7 @@ class TradeEvaluation {
             }
             TradeType.OfferPeaceTreaty -> {
                 val civToSignPeaceWith = civInfo.gameInfo.getCivilization(offer.name)
-                return when (Automation.threatAssessment(civInfo, civToSignPeaceWith)) {
+                return when (Automation.threatAssessment(civToSignPeaceWith, civInfo)) {
                     ThreatLevel.VeryLow -> return 100
                     ThreatLevel.Low -> return 250
                     ThreatLevel.Medium -> return 500
