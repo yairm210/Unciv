@@ -93,9 +93,7 @@ class OffersListScroll(
                 val tradeIcon = when (offer.type) {
                     Luxury_Resource, Strategic_Resource ->
                         ImageGetter.getResourcePortrait(offer.name, 30f)
-                    WarDeclaration ->
-                        ImageGetter.getNationPortrait(UncivGame.Current.gameInfo!!.ruleset.nations[offer.name]!!, 30f)
-                    OfferPeaceTreaty ->
+                    WarDeclaration, OfferPeaceTreaty ->
                         ImageGetter.getNationPortrait(UncivGame.Current.gameInfo!!.ruleset.nations[offer.name]!!, 30f)
                     else -> null
                 }
