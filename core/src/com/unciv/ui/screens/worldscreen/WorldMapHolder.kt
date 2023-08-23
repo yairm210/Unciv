@@ -39,11 +39,11 @@ import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.ActivationTypes
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.components.tilegroups.TileSetStrings
@@ -124,14 +124,15 @@ class WorldMapHolder(
             }
             tileGroup.onClick { onTileClicked(tileGroup.tile) }
 
-            // On 'droid two-finger tap is mapped to right click and dissent has been expressed
-            if (Gdx.app.type == Application.ApplicationType.Android)
-                continue
-
-            // Right mouse click listener
-            tileGroup.onRightClick {
+            // Right mouse click on desktop / Longpress on Android, and no equivalence mapping between those two,
+            // because on 'droid two-finger tap is mapped to right click and dissent has been expressed
+            tileGroup.onActivation(
+                type = if (Gdx.app.type == Application.ApplicationType.Android)
+                    ActivationTypes.Longpress else ActivationTypes.RightClick,
+                noEquivalence = true
+            ) {
                 val unit = worldScreen.bottomUnitTable.selectedUnit
-                    ?: return@onRightClick
+                    ?: return@onActivation
                 Concurrency.run("WorldScreenClick") {
                     onTileRightClicked(unit, tileGroup.tile)
                 }
@@ -695,7 +696,7 @@ class WorldMapHolder(
                 if (nukeBlastRadius >= 0)
                     selectedTile!!.getTilesInDistance(nukeBlastRadius)
                         // Should not display invisible submarine units even if the tile is visible.
-                        .filter { targetTile -> (targetTile.isVisible(unit.civ) && targetTile.getUnits().any { !it.isInvisible(unit.civ) }) 
+                        .filter { targetTile -> (targetTile.isVisible(unit.civ) && targetTile.getUnits().any { !it.isInvisible(unit.civ) })
                             || (targetTile.isCityCenter() && unit.civ.hasExplored(targetTile)) }
                         .map { AttackableTile(unit.getTile(), it, 1f, null) }
                         .toList()
@@ -798,8 +799,7 @@ class WorldMapHolder(
         unitActionOverlays.clear()
     }
 
-    override fun reloadMaxZoom()
-    {
+    override fun reloadMaxZoom() {
         val maxWorldZoomOut = UncivGame.Current.settings.maxWorldZoomOut
         val mapRadius = tileMap.mapParameters.mapSize.radius
 

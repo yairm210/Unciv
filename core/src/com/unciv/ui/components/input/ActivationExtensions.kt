@@ -98,14 +98,13 @@ fun Actor.onRightClick(sound: UncivSound = UncivSound.Click, action: ActivationA
  *  A [sound] will be played (concurrently) on activation unless you specify [UncivSound.Silent].
  *  @return `this` to allow chaining
  */
-@Suppress("unused")  // Just in case - for now, only onRightClick is used
+@Suppress("unused")  // Just in case - for now, the Longpress in WorldMapHolder is using onActivation directly
 fun Actor.onLongPress(sound: UncivSound = UncivSound.Click, action: ActivationAction): Actor =
     onActivation(ActivationTypes.Longpress, sound, noEquivalence = true, action)
 
 /** Clears activation actions for a specific [type], and, if [noEquivalence] is `true`,
  *  its [equivalent][ActivationTypes.isEquivalent] types.
  */
-@Suppress("unused")  // Just in case - for now, it's automatic clear via clearListener
 fun Actor.clearActivationActions(type: ActivationTypes, noEquivalence: Boolean = true) {
     ActorAttachments.get(this).clearActivationActions(type, noEquivalence)
 }
