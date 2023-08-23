@@ -368,21 +368,13 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
     private fun getConstructionButton(constructionButtonDTO: ConstructionButtonDTO): Table {
         val construction = constructionButtonDTO.construction
-        val pickConstructionButton = Table().apply { isTransform = false }
-
-        pickConstructionButton.align(Align.left).pad(5f)
-        pickConstructionButton.background = BaseScreen.skinStrings.getUiBackground(
-            "CityScreen/CityConstructionTable/PickConstructionButton",
-            tintColor = Color.BLACK
-        )
-        pickConstructionButton.touchable = Touchable.enabled
-
-        if (!isSelectedQueueEntry() && cityScreen.selectedConstruction == construction) {
-            pickConstructionButton.background = BaseScreen.skinStrings.getUiBackground(
-                "CityScreen/CityConstructionTable/PickConstructionButtonSelected",
-                tintColor = Color.GREEN.darken(0.5f)
-            )
+        val pickConstructionButton = Table().apply {
+            isTransform = false
+            align(Align.left).pad(5f)
+            touchable = Touchable.enabled
         }
+
+        highlightConstructionButton(pickConstructionButton, !isSelectedQueueEntry() && cityScreen.selectedConstruction == construction)
 
         val icon = ImageGetter.getConstructionPortrait(construction.name, 40f)
         pickConstructionButton.add(getProgressBar(construction.name)).padRight(5f)
@@ -444,12 +436,28 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 addConstructionToQueue(construction, cityScreen.city.cityConstructions)
             } else {
                 cityScreen.selectConstruction(construction)
+                highlightConstructionButton(pickConstructionButton, true)  // without, will highlight but with visible delay (the one *un-selected* will still un-highlight with delay)
             }
             selectedQueueEntry = -1
             cityScreen.update()
         }
 
         return pickConstructionButton
+    }
+
+    private fun highlightConstructionButton(pickConstructionButton: Table, highlight: Boolean) {
+        pickConstructionButton.background =
+            // We don't merge the getUiBackground calls because the UiElementDocsWriter wouldn't understand
+            if (highlight)
+                BaseScreen.skinStrings.getUiBackground(
+                    "CityScreen/CityConstructionTable/PickConstructionButtonSelected",
+                    tintColor = Color.GREEN.darken(0.5f)
+                )
+            else
+                BaseScreen.skinStrings.getUiBackground(
+                    "CityScreen/CityConstructionTable/PickConstructionButton",
+                    tintColor = Color.BLACK
+                )
     }
 
     private fun isSelectedQueueEntry(): Boolean = selectedQueueEntry >= 0

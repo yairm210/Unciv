@@ -712,23 +712,49 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         newTile.improvementFunctions.markForCreatesOneImprovement(improvement.name)
     }
 
-    fun addToQueue(constructionName: String) {
-        if (isQueueFull()) return
-        val construction = getConstruction(constructionName)
-        if (!construction.isBuildable(this)) return
-        if (construction is Building && isBeingConstructedOrEnqueued(constructionName)) return
-        if (currentConstructionFromQueue == "" || currentConstructionFromQueue == "Nothing") {
-            currentConstructionFromQueue = constructionName
-        } else if (getConstruction(constructionQueue.last()) is PerpetualConstruction) {
-            if (construction is PerpetualConstruction) {  // perpetual constructions will replace each other
-                constructionQueue.removeAt(constructionQueue.size - 1)
+    fun canAddToQueue(construction: IConstruction) =
+        !isQueueFull() &&
+        construction.isBuildable(this) &&
+        !(construction is Building && isBeingConstructedOrEnqueued(construction.name))
+
+    private fun isLastConstructionPerpetual() = constructionQueue.isNotEmpty() &&
+        PerpetualConstruction.isNamePerpetual(constructionQueue.last())
+        // `getConstruction(constructionQueue.last()) is PerpetualConstruction` is clear but more expensive
+
+    /** Add [construction] to the end or top (controlled by [addToTop]) of the queue with all checks (does nothing if not possible)
+     *
+     *  Note: Overload with string parameter `constructionName` exists as well.
+     */
+    fun addToQueue(construction: IConstruction, addToTop: Boolean = false) {
+        if (!canAddToQueue(construction)) return
+        val constructionName = construction.name
+        when {
+            currentConstructionFromQueue.isEmpty() || currentConstructionFromQueue == "Nothing" ->
+                currentConstructionFromQueue = constructionName
+            addToTop && construction is PerpetualConstruction && PerpetualConstruction.isNamePerpetual(currentConstructionFromQueue) ->
+                currentConstructionFromQueue = constructionName // perpetual constructions will replace each other
+            addToTop ->
+                constructionQueue.add(0, constructionName)
+            isLastConstructionPerpetual() -> {
+                // Note this also works if currentConstructionFromQueue is perpetual and the only entry - that var is delegated to the first queue position
+                if (construction is PerpetualConstruction) {
+                    // perpetual constructions will replace each other
+                    constructionQueue.removeLast()
+                    constructionQueue.add(constructionName)
+                } else
+                    constructionQueue.add(constructionQueue.size - 1, constructionName) // insert new construction before perpetual one
+            }
+            else ->
                 constructionQueue.add(constructionName)
-            } else
-                constructionQueue.add(constructionQueue.size - 1, constructionName) // insert new construction before perpetual one
-        } else
-            constructionQueue.add(constructionName)
+        }
         currentConstructionIsUserSet = true
     }
+
+    /** Add a construction named [constructionName] to the end of the queue with all checks
+     *
+     *  Note: Delegates to overload with `construction` parameter.
+     */
+    fun addToQueue(constructionName: String) = addToQueue(getConstruction(constructionName))
 
     /** If this was done automatically, we should automatically try to choose a new construction and treat it as such */
     fun removeFromQueue(constructionQueueIndex: Int, automatic: Boolean) {

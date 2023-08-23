@@ -1,7 +1,6 @@
 package com.unciv.ui.screens.worldscreen.unit.actions
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
@@ -10,9 +9,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.UpgradeUnitAction
-import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
-import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.images.IconTextButton
@@ -29,8 +26,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
             val button = getUnitActionButton(unit, unitAction)
             if (unitAction is UpgradeUnitAction) {
                 button.onRightClick {
-                    val pos = button.localToStageCoordinates(Vector2(button.width, button.height))
-                    UnitUpgradeMenu(worldScreen.stage, pos, unit, unitAction, callbackAfterAnimation = true) {
+                    UnitUpgradeMenu(worldScreen.stage, button, unit, unitAction, callbackAfterAnimation = true) {
                         worldScreen.shouldUpdate = true
                     }
                 }

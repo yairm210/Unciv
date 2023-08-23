@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
@@ -53,6 +54,11 @@ open class AnimatedMenuPopup(
      *  When still `false` in a callback, then ESC/BACK or the click-behind listener closed this. */
     var anyButtonWasClicked = false
         private set
+
+    companion object {
+        /** Get stage coords of an [actor]'s top right corner, to help position an [AnimatedMenuPopup] */
+        fun getActorTopRight(actor: Actor) = actor.localToStageCoordinates(Vector2(actor.width, actor.height))
+    }
 
     /**
      *  Provides the Popup content.
