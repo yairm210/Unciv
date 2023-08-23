@@ -339,9 +339,13 @@ object Automation {
         return if (civInfo.wantsToFocusOn(Victory.Focus.Science)) 3 else 2
     }
 
-    fun threatAssessment(assessor: Civilization, assessed: Civilization): ThreatLevel {
+    /**
+     * Returns the threat level of the agressor to the defender.
+     * The stronger the agressor compared to the defender, the higher the threat level.
+     */
+    fun threatAssessment(defender: Civilization, agressor: Civilization): ThreatLevel {
         val powerLevelComparison =
-            assessed.getStatForRanking(RankingType.Force) / assessor.getStatForRanking(RankingType.Force).toFloat()
+            agressor.getStatForRanking(RankingType.Force) / defender.getStatForRanking(RankingType.Force).toFloat()
         return when {
             powerLevelComparison > 2 -> ThreatLevel.VeryHigh
             powerLevelComparison > 1.5f -> ThreatLevel.High
