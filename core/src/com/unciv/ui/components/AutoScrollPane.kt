@@ -29,30 +29,91 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
         e.g. zooming. For panes scrolling only horizontally, using this class is redundant.
         To make the signature identical, including parameter names, all constructors have
         been replicated functionally by checking the Gdx sources for which defaults to use.
+
+        ** Commented-out code **
+        The FocusLossDetector listener and related lines are intentionally left in.
+        See #9612 - "AutoScrollPanes disable scrolling after clicking on them"
+        Actually, what happens is due to nested ScrollPanes. In the described case, it is
+        PickerPane.scrollPane, disabled in landscape mode, that "steals" the focus.
+        That is solved by removing the MouseOverListener when scrolling is disabled.
+        But there may be other similar situations - in such cases the FocusLossDetector might be a
+        solution, or at least it is valuable as debugging tool - ***who*** are we losing focus to?
  */
 
-open class AutoScrollPane(widget: Actor?, style: ScrollPaneStyle = ScrollPaneStyle()): ScrollPane(widget,style) {
-    constructor(widget: Actor?, skin: Skin) : this(widget,skin.get(ScrollPaneStyle::class.java))
-    constructor(widget: Actor?, skin: Skin, styleName: String) : this(widget,skin.get(styleName,ScrollPaneStyle::class.java))
+open class AutoScrollPane(
+    widget: Actor?,
+    style: ScrollPaneStyle = ScrollPaneStyle()
+) : ScrollPane(widget, style) {
+    constructor(widget: Actor?, skin: Skin) : this(widget, skin.get(ScrollPaneStyle::class.java))
+    constructor(widget: Actor?, skin: Skin, styleName: String) : this(widget, skin.get(styleName,ScrollPaneStyle::class.java))
 
     private var savedFocus: Actor? = null
+//     private var isInMouseOverListener = false
 
-    class AutoScrollPaneClickListener(val autoScrollPane: AutoScrollPane):ClickListener(){
-        override fun enter(event: InputEvent?, x: Float, y: Float, pointer: Int, fromActor: Actor?) {
-            if (autoScrollPane.stage == null) return
-            if (fromActor?.isDescendantOf(autoScrollPane) == true) return
-            if (autoScrollPane.savedFocus == null) autoScrollPane.savedFocus = autoScrollPane.stage.scrollFocus
-            autoScrollPane.stage.scrollFocus = autoScrollPane
+    /** This listener "grabs" focus on mouse-over */
+    private class MouseOverListener : ClickListener() {
+        // Note - using listenerActor is a bit more verbose than making this an inner class, but seems cleaner
+        override fun enter(event: InputEvent, x: Float, y: Float, pointer: Int, fromActor: Actor?) {
+            val thisScroll = event.listenerActor as AutoScrollPane
+            val stage = thisScroll.stage ?: return
+            if (fromActor?.isDescendantOf(thisScroll) == true) return
+//             thisScroll.isInMouseOverListener = true
+            if (thisScroll.savedFocus == null) thisScroll.savedFocus = stage.scrollFocus
+            stage.scrollFocus = thisScroll
+//             thisScroll.isInMouseOverListener = false
         }
-        override fun exit(event: InputEvent?, x: Float, y: Float, pointer: Int, toActor: Actor?) {
-            if (autoScrollPane.stage == null) return
-            if (toActor?.isDescendantOf(autoScrollPane) == true) return
-            if (autoScrollPane.stage.scrollFocus == autoScrollPane) autoScrollPane.stage.scrollFocus = autoScrollPane.savedFocus
-            autoScrollPane.savedFocus = null
+        override fun exit(event: InputEvent, x: Float, y: Float, pointer: Int, toActor: Actor?) {
+            val thisScroll = event.listenerActor as AutoScrollPane
+            val stage = thisScroll.stage ?: return
+            if (toActor?.isDescendantOf(thisScroll) == true) return
+//             thisScroll.isInMouseOverListener = true
+            if (stage.scrollFocus == thisScroll) stage.scrollFocus = thisScroll.savedFocus
+            thisScroll.savedFocus = null
+//             thisScroll.isInMouseOverListener = false
         }
     }
 
+    /** A listener with the sole task to prevent losing focus un-wanted-ly. */
+    /*
+        private class FocusLossDetector : FocusListener() {
+            override fun scrollFocusChanged(event: FocusEvent, targetActor: Actor, focused: Boolean) {
+                // Here, targetActor is the old focus, relatedActor is the new one something wants to set (but hasn't yet)
+                // So we only want to react to focus losses to someone else...
+                // Note: super is empty, so no need to pass through
+                if (focused || targetActor != event.listenerActor)
+                    return
+                // if (event.listenerActor == event.relatedActor) return  // empirically shown to be redundant
+                if ((event.listenerActor as AutoScrollPane).isInMouseOverListener) return
+                val mouse = event.stage.screenToStageCoordinates(Vector2(Gdx.input.x.toFloat(), Gdx.input.y.toFloat()))
+                val hitActor = event.stage.hit(mouse.x, mouse.y, false)
+                val hitScroll = hitActor.firstAscendant(ScrollPane::class.java)
+                if (hitScroll == event.relatedActor) return
+                // if (hitScroll != event.listenerActor) return  // empirically shown to be redundant
+
+                // Now we're sure it is an unwanted focus stealing attempt
+                event.cancel()
+            }
+        }
+    */
+
     init {
-        this.addListener (AutoScrollPaneClickListener(this))
+        ensureListener()
+//         addListener(FocusLossDetector())
+    }
+
+    override fun setScrollingDisabled(x: Boolean, y: Boolean) {
+        super.setScrollingDisabled(x, y)
+        ensureListener()
+    }
+
+    private fun ensureListener() {
+        val existingListener = listeners.firstOrNull { it is MouseOverListener }
+        if (isScrollingDisabledX && isScrollingDisabledY) {
+            if (existingListener != null)
+                removeListener(existingListener)
+        } else {
+            if (existingListener == null)
+                addListener(MouseOverListener())
+        }
     }
 }

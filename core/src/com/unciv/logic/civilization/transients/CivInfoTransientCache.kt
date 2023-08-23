@@ -292,6 +292,7 @@ class CivInfoTransientCache(val civInfo: Civilization) {
                 resourceBonusPercentage += unique.params[0].toFloat() / 100
             for (cityStateAlly in civInfo.getKnownCivs().filter { it.getAllyCiv() == civInfo.civName }) {
                 for (resourceSupply in cityStateAlly.cityStateFunctions.getCityStateResourcesForAlly()) {
+                    if (resourceSupply.resource.hasUnique(UniqueType.CannotBeTraded)) continue
                     val newAmount = (resourceSupply.amount * resourceBonusPercentage).toInt()
                     cityStateProvidedResources.add(resourceSupply.copy(amount = newAmount))
                 }

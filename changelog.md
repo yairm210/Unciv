@@ -1,3 +1,21 @@
+## 4.7.16
+
+Undo button in Multiplayer no longer changes 'next turn' button
+
+By SomeTroglodyte:
+- Fix minimum votes needed for a diplomatic victory
+- Mods can add Victory illustrations
+
+Add setting for unit upgrades for automated units  - By jlmcdonnell
+
+By huckdogg:
+- Visual indicator for building outside workable tiles
+- ImprovementPicker screen displays tile owner civ and city
+
+General Starting locations in map editor - By tuvus
+
+Fix City-States giving untradeable resources - By SeventhM
+
 ## 4.7.15
 
 By tuvus:
@@ -22,7 +40,7 @@ AI:
 
 Mod manager smallish overhaul  - By SomeTroglodyte
 
-Spectators don't get gold on new games - By tuvus
+Spectators don't get gold on new g                                      ///////ames - By tuvus
 
 Promotion tree improvements  - By SeventhM
 

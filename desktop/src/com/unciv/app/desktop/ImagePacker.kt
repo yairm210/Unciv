@@ -121,7 +121,7 @@ internal object ImagePacker {
         // An image folder can optionally have a TexturePacker settings file
         val settingsFile = File("$input${File.separator}TexturePacker.settings")
         val settings = if (settingsFile.exists())
-            Json().fromJson(TexturePacker.Settings::class.java, settingsFile.reader())
+            Json().fromJson(TexturePacker.Settings::class.java, settingsFile.reader(Charsets.UTF_8))
         else defaultSettings
 
         TexturePacker.process(settings, input, output, packFileName)

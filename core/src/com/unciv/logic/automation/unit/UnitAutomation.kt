@@ -1,6 +1,7 @@
 package com.unciv.logic.automation.unit
 
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.battle.Battle
@@ -8,6 +9,7 @@ import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
+import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
@@ -16,6 +18,7 @@ import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
+import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
@@ -127,6 +130,8 @@ object UnitAutomation {
     }
 
     internal fun tryUpgradeUnit(unit: MapUnit): Boolean {
+        val isHuman = unit.civ.isHuman()
+        if (!UncivGame.Current.settings.automatedUnitsCanUpgrade && isHuman) return false
         if (unit.baseUnit.upgradesTo == null) return false
         val upgradedUnit = unit.upgrade.getUnitToUpgradeTo()
         if (!upgradedUnit.isBuildable(unit.civ)) return false // for resource reasons, usually
@@ -467,11 +472,6 @@ object UnitAutomation {
         return unit.currentMovement == 0f
     }
 
-    /** Get a list of visible tiles which have something attackable */
-    fun getBombardableTiles(city: City): Sequence<Tile> =
-            city.getCenterTile().getTilesInDistance(city.range)
-                    .filter { it.isVisible(city.civ) && BattleHelper.containsAttackableEnemy(it, CityCombatant(city)) }
-
     /** Move towards the closest attackable enemy of the [unit].
      *
      *  Limited by [CLOSE_ENEMY_TURNS_AWAY_LIMIT] and [CLOSE_ENEMY_TILES_AWAY_LIMIT].
@@ -482,7 +482,7 @@ object UnitAutomation {
                 unit.getTile().position,
                 unit.getMaxMovement() * CLOSE_ENEMY_TURNS_AWAY_LIMIT
         )
-        var closeEnemies = BattleHelper.getAttackableEnemies(
+        var closeEnemies = TargetHelper.getAttackableEnemies(
             unit,
             unitDistanceToTiles,
             tilesToCheck = unit.getTile().getTilesInDistance(CLOSE_ENEMY_TILES_AWAY_LIMIT).toList()
@@ -674,7 +674,7 @@ object UnitAutomation {
     }
 
     private fun chooseBombardTarget(city: City): ICombatant? {
-        var targets = getBombardableTiles(city).map { Battle.getMapCombatantOfTile(it)!! }
+        var targets = TargetHelper.getBombardableTiles(city).map { Battle.getMapCombatantOfTile(it)!! }
         if (targets.none()) return null
 
         val siegeUnits = targets
