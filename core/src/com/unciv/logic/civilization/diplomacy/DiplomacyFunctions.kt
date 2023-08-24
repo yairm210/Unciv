@@ -94,7 +94,7 @@ class DiplomacyFunctions(val civInfo: Civilization){
                     .none { civInfo.tech.canBeResearched(it.name) && !civInfo.tech.isResearched(it.name) }) return false
         return true
     }
-    
+
     fun canSignResearchAgreementNoCostWith (otherCiv: Civilization): Boolean {
         val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
         return canSignResearchAgreement() && otherCiv.diplomacyFunctions.canSignResearchAgreement()
@@ -117,7 +117,6 @@ class DiplomacyFunctions(val civInfo: Civilization){
     }
 
     fun canSignDefensivePact(): Boolean {
-        return false // TEMPORARY - remove at 4.7.17!
         if (!civInfo.isMajorCiv()) return false
         if (!civInfo.hasUnique(UniqueType.EnablesDefensivePacts)) return false
         return true

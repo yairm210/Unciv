@@ -1,15 +1,15 @@
 ## 4.7.17
 
-Free water units are always added to coastal cities
+Free naval units are always added to coastal cities
 
-Research agreements with gold offer  - By tuvus
+Can offer Research agreements with gold, if other civ can't cover the cost  - By tuvus
 
 By SomeTroglodyte:
-- A few more useful notification actions 
-- Centralize hasUnitMovedThisTurn and fix by moving TransferMovement implementation to getMaxMovement 
-- Bombard to the north 
-- Fix next-turn not offering Policy Picker for free Policies 
-- Fix intended Longpress-to-move on Android not working 
+- Can select tile north of city for bombarding
+- Fixed 'Transfer Movement' stopping healing
+- Fix next-turn not offering Policy Picker for free Policies
+- Fix intended Longpress-to-move on Android not working
+- A few more useful notification actions
 
 ## 4.7.16
 

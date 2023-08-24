@@ -296,14 +296,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         val relevantUniques = getMatchingUniques(UniqueType.Sight, conditionalState, checkCivInfoUniques = true) +
                 getTile().getMatchingUniques(UniqueType.Sight, conditionalState)
-        if (isEmbarked() && !hasUnique(UniqueType.NormalVisionWhenEmbarked, conditionalState, checkCivInfoUniques = true)) {
-            visibilityRange += relevantUniques
-                .filter { it.conditionals.any {
-                    (it.type == UniqueType.ConditionalOurUnit || it.type == UniqueType.ConditionalOurUnitOnUnit)
-                            && it.params[0] == Constants.embarked } }
-                .sumOf { it.params[0].toInt() }
-        }
-        else visibilityRange += relevantUniques.sumOf { it.params[0].toInt() }
+        visibilityRange += relevantUniques.sumOf { it.params[0].toInt() }
 
         if (visibilityRange < 1) visibilityRange = 1
 
