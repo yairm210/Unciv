@@ -214,8 +214,6 @@ object UnitAutomation {
         if (tryAdvanceTowardsCloseEnemy(unit)) return
 
         if (tryHeadTowardsEncampment(unit)) return
-        
-        if (tryAttacking(unit)) return
 
         if (unit.health < 100 && tryHealUnit(unit)) return
 
