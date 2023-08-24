@@ -30,7 +30,7 @@ object BattleDamage {
         return "$source - $conditionalsText"
     }
 
-    private fun getGeneralModifiers(combatant: ICombatant, enemy: ICombatant, combatAction: CombatAction, tileToAttackFrom:Tile): Counter<String> {
+    private fun getGeneralModifiers(combatant: ICombatant, enemy: ICombatant, combatAction: CombatAction, tileToAttackFrom: Tile): Counter<String> {
         val modifiers = Counter<String>()
 
         val civInfo = combatant.getCivInfo()
@@ -43,42 +43,9 @@ object BattleDamage {
 
         if (combatant is MapUnitCombatant) {
 
-            for (unique in combatant.getMatchingUniques(UniqueType.Strength, conditionalState, true)) {
-                modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
-            }
+            addUnitUniqueModifiers(combatant, enemy, conditionalState, tileToAttackFrom, modifiers)
 
-            // e.g., Mehal Sefari https://civilization.fandom.com/wiki/Mehal_Sefari_(Civ5)
-            for (unique in combatant.getMatchingUniques(
-                UniqueType.StrengthNearCapital, conditionalState, true
-            )) {
-                if (civInfo.cities.isEmpty() || civInfo.getCapital() == null) break
-                val distance =
-                    combatant.getTile().aerialDistanceTo(civInfo.getCapital()!!.getCenterTile())
-                // https://steamcommunity.com/sharedfiles/filedetails/?id=326411722#464287
-                val effect = unique.params[0].toInt() - 3 * distance
-                if (effect <= 0) continue
-                modifiers.add("${unique.sourceObjectName} (${unique.sourceObjectType})", effect)
-            }
-
-            //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
-            var adjacentUnits = combatant.getTile().neighbors.flatMap { it.getUnits() }
-            if (enemy.getTile() !in combatant.getTile().neighbors && tileToAttackFrom in combatant.getTile().neighbors
-                    && enemy is MapUnitCombatant)
-                adjacentUnits += sequenceOf(enemy.unit)
-
-            // e.g., Maori Warrior - https://civilization.fandom.com/wiki/Maori_Warrior_(Civ5)
-            val strengthMalus = adjacentUnits.filter { it.civ.isAtWarWith(civInfo) }
-                    .flatMap { it.getMatchingUniques(UniqueType.StrengthForAdjacentEnemies) }
-                    .filter { combatant.matchesCategory(it.params[1]) && combatant.getTile().matchesFilter(it.params[2]) }
-                    .maxByOrNull { it.params[0] }
-            if (strengthMalus != null) {
-                modifiers.add("Adjacent enemy units", strengthMalus.params[0].toInt())
-            }
-
-            val civResources = civInfo.getCivResourcesByName()
-            for (resource in combatant.unit.baseUnit.getResourceRequirementsPerTurn().keys)
-                if (civResources[resource]!! < 0 && !civInfo.isBarbarian())
-                    modifiers["Missing resource"] = -25  //todo ModConstants
+            addResourceLackingMalus(combatant, modifiers)
 
             val (greatGeneralName, greatGeneralBonus) = GreatGeneralImplementation.getGreatGeneralBonus(combatant, enemy, combatAction)
             if (greatGeneralBonus != 0)
@@ -92,12 +59,6 @@ object BattleDamage {
                 if (stackedUnitsBonus > 0)
                     modifiers["Stacked with [${unique.params[1]}]"] = stackedUnitsBonus
             }
-
-            // e.g., Mongolia - https://civilization.fandom.com/wiki/Mongolian_(Civ5)
-            if (enemy.getCivInfo().isCityState()
-                && civInfo.hasUnique(UniqueType.StrengthBonusVsCityStates)
-            )
-                modifiers["vs [City-States]"] = 30
         } else if (combatant is CityCombatant) {
             for (unique in combatant.city.getMatchingUniques(UniqueType.StrengthForCities, conditionalState)) {
                 modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
@@ -110,6 +71,58 @@ object BattleDamage {
         }
 
         return modifiers
+    }
+
+    private fun addUnitUniqueModifiers(combatant: MapUnitCombatant, enemy: ICombatant, conditionalState: StateForConditionals,
+                                       tileToAttackFrom: Tile, modifiers: Counter<String>) {
+        val civInfo = combatant.getCivInfo()
+
+        for (unique in combatant.getMatchingUniques(UniqueType.Strength, conditionalState, true)) {
+            modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
+        }
+
+        // e.g., Mehal Sefari https://civilization.fandom.com/wiki/Mehal_Sefari_(Civ5)
+        for (unique in combatant.getMatchingUniques(
+            UniqueType.StrengthNearCapital, conditionalState, true
+        )) {
+            if (civInfo.cities.isEmpty() || civInfo.getCapital() == null) break
+            val distance =
+                combatant.getTile().aerialDistanceTo(civInfo.getCapital()!!.getCenterTile())
+            // https://steamcommunity.com/sharedfiles/filedetails/?id=326411722#464287
+            val effect = unique.params[0].toInt() - 3 * distance
+            if (effect <= 0) continue
+            modifiers.add("${unique.sourceObjectName} (${unique.sourceObjectType})", effect)
+        }
+
+        //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
+        var adjacentUnits = combatant.getTile().neighbors.flatMap { it.getUnits() }
+        if (enemy.getTile() !in combatant.getTile().neighbors && tileToAttackFrom in combatant.getTile().neighbors
+            && enemy is MapUnitCombatant
+        )
+            adjacentUnits += sequenceOf(enemy.unit)
+
+        // e.g., Maori Warrior - https://civilization.fandom.com/wiki/Maori_Warrior_(Civ5)
+        val strengthMalus = adjacentUnits.filter { it.civ.isAtWarWith(combatant.getCivInfo()) }
+            .flatMap { it.getMatchingUniques(UniqueType.StrengthForAdjacentEnemies) }
+            .filter { combatant.matchesCategory(it.params[1]) && combatant.getTile().matchesFilter(it.params[2]) }
+            .maxByOrNull { it.params[0] }
+        if (strengthMalus != null) {
+            modifiers.add("Adjacent enemy units", strengthMalus.params[0].toInt())
+        }
+
+        // e.g., Mongolia - https://civilization.fandom.com/wiki/Mongolian_(Civ5)
+        if (enemy.getCivInfo().isCityState()
+            && civInfo.hasUnique(UniqueType.StrengthBonusVsCityStates)
+        )
+            modifiers["vs [City-States]"] = 30
+    }
+
+    private fun addResourceLackingMalus(combatant: MapUnitCombatant, modifiers: Counter<String>) {
+        val civInfo = combatant.getCivInfo()
+        val civResources = civInfo.getCivResourcesByName()
+        for (resource in combatant.unit.baseUnit.getResourceRequirementsPerTurn().keys)
+            if (civResources[resource]!! < 0 && !civInfo.isBarbarian())
+                modifiers["Missing resource"] = -25  //todo ModConstants
     }
 
     fun getAttackModifiers(
