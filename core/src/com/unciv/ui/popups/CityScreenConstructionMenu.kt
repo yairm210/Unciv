@@ -48,13 +48,13 @@ class CityScreenConstructionMenu(
         if (canMoveQueueEnd())
             table.add(getButton("Move to the end of the queue", KeyboardBinding.LowerPriority, ::moveQueueEnd)).row()
         if (canAddQueueTop())
-            table.add(getButton("Add to the top of the queue", KeyboardBinding.AddConstruction, ::addQueueTop)).row()
+            table.add(getButton("Add to the top of the queue", KeyboardBinding.AddConstructionTop, ::addQueueTop)).row()
         if (canAddAllQueues())
-            table.add(getButton("Add to the queue in all cities", KeyboardBinding.None, ::addAllQueues)).row()
+            table.add(getButton("Add to the queue in all cities", KeyboardBinding.AddConstructionAll, ::addAllQueues)).row()
         if (canAddAllQueuesTop())
-            table.add(getButton("Add to the top in all cities", KeyboardBinding.None, ::addAllQueuesTop)).row()
+            table.add(getButton("Add or move to the top in all cities", KeyboardBinding.AddConstructionAllTop, ::addAllQueuesTop)).row()
         if (canRemoveAllQueues())
-            table.add(getButton("Remove from the queue in all cities", KeyboardBinding.None, ::removeAllQueues)).row()
+            table.add(getButton("Remove from the queue in all cities", KeyboardBinding.RemoveConstructionAll, ::removeAllQueues)).row()
         return table
     }
 
