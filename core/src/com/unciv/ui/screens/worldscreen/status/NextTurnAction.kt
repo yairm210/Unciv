@@ -54,9 +54,7 @@ enum class NextTurnAction(protected val text: String, val color: Color) {
     },
     PickPolicy("Pick a policy", Color.VIOLET) {
         override fun isChoice(worldScreen: WorldScreen) =
-            (worldScreen.viewingCiv.policies.shouldOpenPolicyPicker ||
-                    worldScreen.viewingCiv.policies.freePolicies > 0)
-                && worldScreen.viewingCiv.policies.canAdoptPolicy()
+            worldScreen.viewingCiv.policies.shouldShowPolicyPicker()
         override fun action(worldScreen: WorldScreen) {
             worldScreen.game.pushScreen(PolicyPickerScreen(worldScreen.selectedCiv, worldScreen.canChangeState))
             worldScreen.viewingCiv.policies.shouldOpenPolicyPicker = false
