@@ -766,6 +766,12 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
         UniqueTarget.Tech, UniqueTarget.Terrain, UniqueTarget.Resource, UniqueTarget.Policy, UniqueTarget.Promotion,
         UniqueTarget.Nation, UniqueTarget.Ruins, flags = UniqueFlag.setOfHiddenToUsers),
 
+    // Declarative Mod compatibility (so far rudimentary):
+    ModIncompatibleWith("Mod is incompatible with [modFilter]", UniqueTarget.ModOptions),
+    ModIsAudioVisualOnly("Should only be used as permanent audiovisual mod", UniqueTarget.ModOptions),
+    ModIsAudioVisual("Can be used as permanent audiovisual mod", UniqueTarget.ModOptions),
+    ModIsNotAudioVisual("Cannot be used as permanent audiovisual mod", UniqueTarget.ModOptions),
+
     // endregion
 
     ///////////////////////////////////////////// region 99 DEPRECATED AND REMOVED /////////////////////////////////////////////
