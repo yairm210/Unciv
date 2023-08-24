@@ -16,6 +16,7 @@ import com.unciv.ui.components.input.onChange
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.victoryscreen.LoadMapPreview
 import com.unciv.utils.Concurrency
+import io.ktor.util.collections.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import com.badlogic.gdx.utils.Array as GdxArray
@@ -34,7 +35,7 @@ class MapFileSelectTable(
     private class MapWrapper(val fileHandle: FileHandle, val mapParameters: MapParameters) {
         override fun toString(): String = mapParameters.baseRuleset + " | " + fileHandle.name()
     }
-    private val mapWrappers= ArrayList<MapWrapper>()
+    private val mapWrappers = ConcurrentSet<MapWrapper>()
 
     private val columnWidth = newGameScreen.getColumnWidth()
 
@@ -53,6 +54,10 @@ class MapFileSelectTable(
 
         mapFileSelectBox.onChange { onSelectBoxChange() }
 
+        addMapWrappersSemiAsync()
+    }
+
+    private fun addMapWrappersSemiAsync(){
         val mapFilesSequence = sequence<FileHandle> {
             yieldAll(MapSaver.getMaps().asSequence())
             for (modFolder in RulesetCache.values.mapNotNull { it.folderLocation }) {
@@ -60,16 +65,24 @@ class MapFileSelectTable(
                 if (mapsFolder.exists())
                     yieldAll(mapsFolder.list().asSequence())
             }
-        }
+        }.sortedByDescending { it.lastModified() }
 
-
-        for (mapFile in mapFilesSequence) {
+        // We only really need ONE map to be loaded to tell us "isNotEmpty" and "recentlySavedMapExists"
+        // The rest we can defer, so that users don't get ANRs when opening the new game screen
+        //   because the game wants to load ALL the maps before first render
+        fun tryAddMapFile(mapFile: FileHandle){
             val mapParameters = try {
                 MapSaver.loadMapParameters(mapFile)
             } catch (_: Exception) {
-                continue
+                return
             }
             mapWrappers.add(MapWrapper(mapFile, mapParameters))
+        }
+
+        for (mapFile in mapFilesSequence) {
+            if (mapWrappers.isEmpty()) tryAddMapFile(mapFile)
+            // Each other map is loaded in another thread, so we can multiplex the IO and CPU capabilities
+            else Concurrency.run { tryAddMapFile(mapFile) }
         }
     }
 
