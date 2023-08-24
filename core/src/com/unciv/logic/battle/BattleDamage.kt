@@ -46,6 +46,8 @@ object BattleDamage {
             for (unique in combatant.getMatchingUniques(UniqueType.Strength, conditionalState, true)) {
                 modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
             }
+
+            // e.g., Mehal Sefari https://civilization.fandom.com/wiki/Mehal_Sefari_(Civ5)
             for (unique in combatant.getMatchingUniques(
                 UniqueType.StrengthNearCapital, conditionalState, true
             )) {
@@ -63,6 +65,8 @@ object BattleDamage {
             if (enemy.getTile() !in combatant.getTile().neighbors && tileToAttackFrom in combatant.getTile().neighbors
                     && enemy is MapUnitCombatant)
                 adjacentUnits += sequenceOf(enemy.unit)
+
+            // e.g., Maori Warrior - https://civilization.fandom.com/wiki/Maori_Warrior_(Civ5)
             val strengthMalus = adjacentUnits.filter { it.civ.isAtWarWith(civInfo) }
                     .flatMap { it.getMatchingUniques(UniqueType.StrengthForAdjacentEnemies) }
                     .filter { combatant.matchesCategory(it.params[1]) && combatant.getTile().matchesFilter(it.params[2]) }
@@ -89,6 +93,7 @@ object BattleDamage {
                     modifiers["Stacked with [${unique.params[1]}]"] = stackedUnitsBonus
             }
 
+            // e.g., Mongolia - https://civilization.fandom.com/wiki/Mongolian_(Civ5)
             if (enemy.getCivInfo().isCityState()
                 && civInfo.hasUnique(UniqueType.StrengthBonusVsCityStates)
             )
