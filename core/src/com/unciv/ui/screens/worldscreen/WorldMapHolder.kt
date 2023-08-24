@@ -334,12 +334,6 @@ class WorldMapHolder(
              * so that and that alone will be relegated to the concurrent thread.
              */
 
-            /** LibGdx sometimes has these weird errors when you try to edit the UI layout from 2 separate threads.
-             * And so, all UI editing will be done on the main thread.
-             * The only "heavy lifting" that needs to be done is getting the turns to get there,
-             * so that and that alone will be relegated to the concurrent thread.
-             */
-
             val unitToTurnsToTile = HashMap<MapUnit, Int>()
             for (unit in selectedUnits) {
                 val shortestPath = ArrayList<Tile>()
@@ -423,9 +417,9 @@ class WorldMapHolder(
         }
 
         for (unit in unitList) {
-            val unitGroup = UnitGroup(unit, 60f).surroundWithCircle(85f, resizeActor = false)
+            val unitGroup = UnitGroup(unit, 48f).surroundWithCircle(68f, resizeActor = false)
             unitGroup.circle.color = Color.GRAY.cpy().apply { a = 0.5f }
-            if (unit.currentMovement == 0f) unitGroup.color.a = 0.5f
+            if (unit.currentMovement == 0f) unitGroup.color.a = 0.66f
             unitGroup.touchable = Touchable.enabled
             unitGroup.onClick {
                 worldScreen.bottomUnitTable.selectUnit(unit, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
@@ -436,7 +430,7 @@ class WorldMapHolder(
         }
 
         addOverlayOnTileGroup(tileGroups[tile]!!, table)
-        table.moveBy(0f, 60f)
+        table.moveBy(0f, 48f)
 
     }
 
