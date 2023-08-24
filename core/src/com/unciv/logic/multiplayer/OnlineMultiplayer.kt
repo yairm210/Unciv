@@ -21,9 +21,11 @@ import com.unciv.utils.withGLContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.isActive
 import java.time.Duration
 import java.time.Instant
 import java.util.Collections
@@ -63,7 +65,7 @@ class OnlineMultiplayer {
         multiplayerGameUpdater = flow<Unit> {
             while (true) {
                 delay(500)
-
+                if (!currentCoroutineContext().isActive) return@flow
                 val currentGame = getCurrentGame()
                 val multiplayerSettings = UncivGame.Current.settings.multiplayer
                 val preview = currentGame?.preview
