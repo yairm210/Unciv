@@ -632,8 +632,8 @@ object UnitAutomation {
             .map { BattleDamage.calculateDamageToDefender(MapUnitCombatant(it), cityCombatant) }
             .sum() // City heals 20 per turn
 
-        if (expectedDamagePerTurn < city.health * 4 && // If we can take immediately, go for it
-                (expectedDamagePerTurn <= 5 || city.health / (Math.max(1, expectedDamagePerTurn-20)) > 5)){ // otherwise check if we can take within a couple of turns
+        if (expectedDamagePerTurn < city.health && // If we can take immediately, go for it
+            (expectedDamagePerTurn <= 20 || city.health / (expectedDamagePerTurn-20) > 5)){ // otherwise check if we can take within a couple of turns
 
             // We won't be able to take this even with 5 turns of continuous damage!
             // don't head straight to the city, try to head to landing grounds -
