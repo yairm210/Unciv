@@ -11,6 +11,7 @@ import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import kotlin.math.max
 
 class DiplomacyFunctions(val civInfo: Civilization){
 
@@ -93,22 +94,26 @@ class DiplomacyFunctions(val civInfo: Civilization){
                     .none { civInfo.tech.canBeResearched(it.name) && !civInfo.tech.isResearched(it.name) }) return false
         return true
     }
-
-    fun canSignResearchAgreementsWith(otherCiv: Civilization): Boolean {
+    
+    fun canSignResearchAgreementNoCostWith (otherCiv: Civilization): Boolean {
         val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
-        val cost = getResearchAgreementCost()
         return canSignResearchAgreement() && otherCiv.diplomacyFunctions.canSignResearchAgreement()
-                && diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
-                && !diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement)
-                && !diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement)
-                && civInfo.gold >= cost && otherCiv.gold >= cost
+            && diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+            && !diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement)
+            && !diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement)
     }
 
-    fun getResearchAgreementCost(): Int {
+    fun canSignResearchAgreementsWith(otherCiv: Civilization): Boolean {
+        val cost = getResearchAgreementCost(otherCiv)
+        return canSignResearchAgreementNoCostWith(otherCiv)
+            && civInfo.gold >= cost && otherCiv.gold >= cost
+    }
+
+    fun getResearchAgreementCost(otherCiv: Civilization): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
-        return (
-                civInfo.getEra().researchAgreementCost * civInfo.gameInfo.speed.goldCostModifier
-                ).toInt()
+        return ( max(civInfo.getEra().researchAgreementCost, otherCiv.getEra().researchAgreementCost)
+                    * civInfo.gameInfo.speed.goldCostModifier
+            ).toInt()
     }
 
     fun canSignDefensivePact(): Boolean {
