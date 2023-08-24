@@ -122,7 +122,7 @@ object BattleDamage {
         val civResources = civInfo.getCivResourcesByName()
         for (resource in combatant.unit.baseUnit.getResourceRequirementsPerTurn().keys)
             if (civResources[resource]!! < 0 && !civInfo.isBarbarian())
-                modifiers["Missing resource"] = -25  //todo ModConstants
+                modifiers["Missing resource"] = BattleConstants.MISSING_RESOURCES_MALUS
     }
 
     fun getAttackModifiers(
@@ -146,7 +146,7 @@ object BattleDamage {
                             && MapUnitCombatant(it.militaryUnit!!).isMelee()
                 }
                 if (numberOfOtherAttackersSurroundingDefender > 0) {
-                    var flankingBonus = 10f //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
+                    var flankingBonus = BattleConstants.BASE_FLANKING_BONUS
 
                     // e.g., Discipline policy - https://civilization.fandom.com/wiki/Discipline_(Civ5)
                     for (unique in attacker.unit.getMatchingUniques(UniqueType.FlankAttackBonus, checkCivInfoUniques = true))
@@ -166,22 +166,22 @@ object BattleDamage {
         if (attacker.unit.isEmbarked() && defender.getTile().isLand
             && !attacker.unit.hasUnique(UniqueType.AttackAcrossCoast)
         )
-            modifiers["Landing"] = -50
+            modifiers["Landing"] = BattleConstants.LANDING_MALUS
 
         // Land Melee Unit attacking to Water
         if (attacker.unit.type.isLandUnit() && !attacker.getTile().isWater && attacker.isMelee() && defender.getTile().isWater
             && !attacker.unit.hasUnique(UniqueType.AttackAcrossCoast)
         )
-            modifiers["Boarding"] = -50
+            modifiers["Boarding"] = BattleConstants.BOARDING_MALUS
 
         // Melee Unit on water attacking to Land (not City) unit
         if (!attacker.unit.type.isAirUnit() && attacker.isMelee() && attacker.getTile().isWater && !defender.getTile().isWater
             && !attacker.unit.hasUnique(UniqueType.AttackAcrossCoast) && !defender.isCity()
         )
-            modifiers["Landing"] = -50
+            modifiers["Landing"] = BattleConstants.LANDING_MALUS
 
         if (isMeleeAttackingAcrossRiverWithNoBridge(attacker, tileToAttackFrom, defender))
-            modifiers["Across river"] = -20
+            modifiers["Across river"] = BattleConstants.ATTACKING_ACROSS_RIVER_MALUS
     }
 
     private fun isMeleeAttackingAcrossRiverWithNoBridge(attacker: MapUnitCombatant, tileToAttackFrom: Tile, defender: ICombatant) = (
@@ -220,7 +220,7 @@ object BattleDamage {
                 // embarked units get no defensive modifiers apart from this unique
                 if (defender.unit.hasUnique(UniqueType.DefenceBonusWhenEmbarked, checkCivInfoUniques = true)
                 )
-                    modifiers["Embarked"] = 100
+                    modifiers["Embarked"] = BattleConstants.EMBARKED_DEFENCE_BONUS
 
                 return modifiers
             }
@@ -233,7 +233,7 @@ object BattleDamage {
 
 
             if (defender.unit.isFortified())
-                modifiers["Fortification"] = 20 * defender.unit.getFortificationTurns()
+                modifiers["Fortification"] = BattleConstants.FORTIFICATION_BONUS * defender.unit.getFortificationTurns()
         }
 
         return modifiers
@@ -251,7 +251,7 @@ object BattleDamage {
             || combatant.unit.hasUnique(UniqueType.NoDamagePenalty, checkCivInfoUniques = true)
         ) 1f
         // Each 3 points of health reduces damage dealt by 1%
-        else 1 - (100 - combatant.getHealth()) / 300f
+        else 1 - (100 - combatant.getHealth()) / BattleConstants.DAMAGE_REDUCTION_WOUNDED_UNIT_RATIO_PERCENTAGE
     }
 
 
@@ -298,7 +298,7 @@ object BattleDamage {
         randomnessFactor: Float = Random(defender.getCivInfo().gameInfo.turns * defender.getTile().position.hashCode().toLong()).nextFloat()
         ,
     ): Int {
-        if (defender.isCivilian()) return 40
+        if (defender.isCivilian()) return BattleConstants.DAMAGE_TO_CIVILIAN_UNIT
         val ratio = getAttackingStrength(attacker, defender, tileToAttackFrom) /
                 getDefendingStrength(attacker, defender, tileToAttackFrom)
         return (damageModifier(ratio, false, randomnessFactor) * getHealthDependantDamageRatio(attacker)).roundToInt()
