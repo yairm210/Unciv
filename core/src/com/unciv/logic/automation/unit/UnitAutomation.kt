@@ -173,7 +173,7 @@ object UnitAutomation {
         if (unit.baseUnit.isAirUnit() && unit.canIntercept())
             return SpecificUnitAutomation.automateFighter(unit)
 
-        if (unit.baseUnit.isAirUnit() && ! unit.baseUnit.isNuclearWeapon())
+        if (unit.baseUnit.isAirUnit() && !unit.baseUnit.isNuclearWeapon())
             return SpecificUnitAutomation.automateBomber(unit)
 
         if (unit.baseUnit.isNuclearWeapon())
