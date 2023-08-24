@@ -202,19 +202,39 @@ class City : IsPartOfGameInfoSerialization {
     fun getCityResources(): ResourceSupplyList {
         val cityResources = ResourceSupplyList()
 
-        val resourceModifer = HashMap<String,Float>()
+        val resourceModifer = HashMap<String, Float>()
         for (resource in civ.gameInfo.ruleset.tileResources.values)
             resourceModifer[resource.name] = civ.getResourceModifier(resource)
 
+        getResourcesFromTiles(resourceModifer, cityResources)
+
+        getResourceFromUniqueImprovedTiles(cityResources, resourceModifer)
+
+        manageCityResourcesRequiredByBuildings(cityResources)
+
+        getCityResourcesFromUniqueBuildings(cityResources, resourceModifer)
+
+        if (civ.isCityState() && isCapital() && civ.cityStateResource != null) {
+            cityResources.add(
+                getRuleset().tileResources[civ.cityStateResource]!!,
+                "Mercantile City-State"
+            )
+        }
+
+        return cityResources
+    }
+
+    private fun getResourcesFromTiles(resourceModifer: HashMap<String, Float>, cityResources: ResourceSupplyList) {
         for (tileInfo in getTiles().filter { it.resource != null }) {
             val resource = tileInfo.tileResource
             val amount = getTileResourceAmount(tileInfo) * resourceModifer[resource.name]!!
             if (amount > 0) cityResources.add(resource, "Tiles", amount.toInt())
         }
+    }
 
-        for (tileInfo in getTiles()) {
+    private fun getResourceFromUniqueImprovedTiles(cityResources: ResourceSupplyList, resourceModifer: HashMap<String, Float>) {
+        for (tileInfo in getTiles().filter { it.getUnpillagedImprovement() != null }) {
             val stateForConditionals = StateForConditionals(civ, this, tile = tileInfo)
-            if (tileInfo.getUnpillagedImprovement() == null) continue
             val tileImprovement = tileInfo.getUnpillagedTileImprovement()
             for (unique in tileImprovement!!.getMatchingUniques(UniqueType.ProvidesResources, stateForConditionals)) {
                 val resource = getRuleset().tileResources[unique.params[1]] ?: continue
@@ -231,14 +251,18 @@ class City : IsPartOfGameInfoSerialization {
                 )
             }
         }
+    }
 
+    private fun manageCityResourcesRequiredByBuildings(cityResources: ResourceSupplyList) {
         val freeBuildings = civ.civConstructions.getFreeBuildings(id)
         for (building in cityConstructions.getBuiltBuildings()) {
             // Free buildings cost no resources
             if (building.name in freeBuildings) continue
             cityResources.subtractResourceRequirements(building.getResourceRequirementsPerTurn(), getRuleset(), "Buildings")
         }
+    }
 
+    private fun getCityResourcesFromUniqueBuildings(cityResources: ResourceSupplyList, resourceModifer: HashMap<String, Float>) {
         for (unique in getLocalMatchingUniques(UniqueType.ProvidesResources, StateForConditionals(civ, this))) { // E.G "Provides [1] [Iron]"
             val resource = getRuleset().tileResources[unique.params[1]]
                 ?: continue
@@ -247,15 +271,6 @@ class City : IsPartOfGameInfoSerialization {
                 (unique.params[0].toFloat() * resourceModifer[resource.name]!!).toInt()
             )
         }
-
-        if (civ.isCityState() && isCapital() && civ.cityStateResource != null) {
-            cityResources.add(
-                getRuleset().tileResources[civ.cityStateResource]!!,
-                "Mercantile City-State"
-            )
-        }
-
-        return cityResources
     }
 
     /** Gets the number of resources available to this city
