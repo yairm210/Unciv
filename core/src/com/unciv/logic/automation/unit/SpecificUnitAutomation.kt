@@ -6,6 +6,7 @@ import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.GreatGeneralImplementation
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
+import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
@@ -493,25 +494,75 @@ object SpecificUnitAutomation {
     }
 
     fun automateNukes(unit: MapUnit) {
-        val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange())
-        for (tile in tilesInRange) {
-            // For now AI will only use nukes against cities because in all honesty that's the best use for them.
-            if (tile.isCityCenter()
-                    && tile.getOwner()!!.isAtWarWith(unit.civ)
-                    && tile.getCity()!!.health > tile.getCity()!!.getMaxHealth() / 2
-                    && Battle.mayUseNuke(MapUnitCombatant(unit), tile)) {
-                val blastRadius = unit.getNukeBlastRadius()
-                val tilesInBlastRadius = tile.getTilesInDistance(blastRadius)
-                val civsInBlastRadius = tilesInBlastRadius.mapNotNull { it.getOwner() } +
-                        tilesInBlastRadius.mapNotNull { it.getFirstUnit()?.civ }
-                // Don't nuke if it means we will be declaring war on someone!
-                if (civsInBlastRadius.none { it != unit.civ && !it.isAtWarWith(unit.civ) }) {
-                    Battle.NUKE(MapUnitCombatant(unit), tile)
-                    return
-                }
+        // We should *Almost* never want to nuke our own city, so don't consider it
+        val tilesInRange = unit.currentTile.getTilesInDistanceRange(2..unit.getRange())
+        var highestTileNukeValue = 0
+        var tileToNuke: Tile? = null
+        tilesInRange.forEach { 
+            val value = getNukeLocationValue(unit, it)
+            if (value > highestTileNukeValue) {
+                highestTileNukeValue = value
+                tileToNuke = it
             }
         }
+        if (highestTileNukeValue > 0) {
+            Battle.NUKE(MapUnitCombatant(unit), tileToNuke!!)
+        }
         tryRelocateToNearbyAttackableCities(unit)
+    }
+
+    /**
+     * Ranks the tile to nuke based off of all tiles in it's blast radius
+     * By default the value is -400 to prevent inefficient nuking.
+     */
+    fun getNukeLocationValue(nuke: MapUnit, tile: Tile): Int {
+        val civ = nuke.civ
+        if (!Battle.mayUseNuke(MapUnitCombatant(nuke), tile)) return Int.MIN_VALUE
+        val blastRadius = nuke.getNukeBlastRadius()
+        val tilesInBlastRadius = tile.getTilesInDistance(blastRadius)
+        val civsInBlastRadius = tilesInBlastRadius.mapNotNull { it.getOwner() } +
+            tilesInBlastRadius.mapNotNull { it.getFirstUnit()?.civ }
+        
+        // Don't nuke if it means we will be declaring war on someone!
+        if (civsInBlastRadius.any { it != civ && !it.isAtWarWith(civ) }) return -100000
+        // If there are no enemies to hit, don't nuke
+        if (!civsInBlastRadius.any { it.isAtWarWith(civ) }) return -100000
+        
+        // Launching a Nuke uses resources, therefore don't launch it by default
+        var explosionValue = -500
+        
+        // Returns either ourValue or thierValue depending on if the input Civ matches the Nuke's Civ
+        fun evaluateCivValue(targetCiv: Civilization, ourValue: Int, theirValue: Int): Int {
+            if (targetCiv == civ) // We are nuking something that we own!
+                return ourValue
+            return theirValue // We are nuking an enemy!
+        }
+        for (targetTile in tilesInBlastRadius) {
+            // We can only account for visible units
+            if (tile.isVisible(civ)) {
+                if (targetTile.militaryUnit != null && !targetTile.militaryUnit!!.isInvisible(civ))
+                    explosionValue += evaluateCivValue(targetTile.militaryUnit?.civ!!, -150, 50)
+                if (targetTile.civilianUnit != null && !targetTile.civilianUnit!!.isInvisible(civ))
+                    explosionValue += evaluateCivValue(targetTile.civilianUnit?.civ!!, -100, 25)
+            }
+            // Never nuke our own Civ, don't nuke single enemy civs as well
+            if (targetTile.isCityCenter() 
+                && !(targetTile.getCity()!!.health <= 50f 
+                    && targetTile.neighbors.any {it.militaryUnit?.civ == civ})) // Prefer not to nuke cities that we are about to take
+                explosionValue += evaluateCivValue(targetTile.getCity()?.civ!!, -100000, 250)
+            else if (targetTile.owningCity != null) {
+                val owningCiv = targetTile.owningCity?.civ!!
+                // If there is a tile to add fallout to there is a 50% chance it will get fallout
+                if (!(tile.isWater || tile.isImpassible() || targetTile.terrainFeatures.any { it == "Fallout" }))
+                    explosionValue += evaluateCivValue(owningCiv, -40, 10)
+                // If there is an improvment to pillage
+                if (targetTile.improvement != null && !targetTile.improvementIsPillaged)
+                    explosionValue += evaluateCivValue(owningCiv, -40, 20)
+            }
+            // If the value is too low end the search early
+            if (explosionValue < -1000) return explosionValue
+        }
+        return explosionValue
     }
 
     // This really needs to be changed, to have better targeting for missiles

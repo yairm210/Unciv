@@ -173,7 +173,7 @@ object UnitAutomation {
         if (unit.baseUnit.isAirUnit() && unit.canIntercept())
             return SpecificUnitAutomation.automateFighter(unit)
 
-        if (unit.baseUnit.isAirUnit())
+        if (unit.baseUnit.isAirUnit() && ! unit.baseUnit.isNuclearWeapon())
             return SpecificUnitAutomation.automateBomber(unit)
 
         if (unit.baseUnit.isNuclearWeapon())
@@ -191,7 +191,7 @@ object UnitAutomation {
 
         if (tryHeadTowardsOurSiegedCity(unit)) return
 
-        if (unit.health < 50 && tryHealUnit(unit)) return // do nothing but heal
+        if (unit.health < 50 && /*(tryRetreat(unit) ||*/ tryHealUnit(unit)/*)*/) return // do nothing but heal
 
         // if a embarked melee unit can land and attack next turn, do not attack from water.
         if (BattleHelper.tryDisembarkUnitToAttackPosition(unit)) return
@@ -214,6 +214,8 @@ object UnitAutomation {
         if (tryAdvanceTowardsCloseEnemy(unit)) return
 
         if (tryHeadTowardsEncampment(unit)) return
+        
+        if (tryAttacking(unit)) return
 
         if (unit.health < 100 && tryHealUnit(unit)) return
 
@@ -378,6 +380,26 @@ object UnitAutomation {
         unit.movement.headTowards(encampmentToHeadTowards)
         return true
     }
+    
+//    private fun tryRetreat(unit: MapUnit): Boolean {
+//        val distanceToNearestEnemy = unit.distanceToNearestEnemy ?: 0
+//        if (distanceToNearestEnemy > 3)
+//            return false
+//        val shouldSwapWithUnit = fun (militaryUnit: MapUnit): Boolean {
+//            return militaryUnit.civ == unit.civ
+//                && (militaryUnit.distanceToNearestEnemy ?: 0) > distanceToNearestEnemy &&
+//                (!militaryUnit.baseUnit.isProbablySiegeUnit() || distanceToNearestEnemy > 2) // Don't want to swap with siege units that would be endangered
+//                && militaryUnit.health > 80
+//                && unit.movement.canUnitSwapTo(militaryUnit.currentTile)
+//        }
+//        val nearbyOwnedTiles = unit.movement.getReachableTilesInCurrentTurn().filter { tile -> tile.militaryUnit != null && shouldSwapWithUnit(tile.militaryUnit!!) }
+//        val nearbyBestTiles = nearbyOwnedTiles.sortedByDescending { tile -> tile.militaryUnit!!.distanceToNearestEnemy ?: 0 }
+//        if (nearbyBestTiles.any() ) {
+//            unit.movement.swapMoveToTile(nearbyBestTiles.first())
+//            return true;
+//        }
+//        return false
+//    }
 
     private fun tryHealUnit(unit: MapUnit): Boolean {
         if (unit.baseUnit.isRanged() && unit.hasUnique(UniqueType.HealsEvenAfterAction))
@@ -632,8 +654,8 @@ object UnitAutomation {
             .map { BattleDamage.calculateDamageToDefender(MapUnitCombatant(it), cityCombatant) }
             .sum() // City heals 20 per turn
 
-        if (expectedDamagePerTurn < city.health && // If we can take immediately, go for it
-                (expectedDamagePerTurn <= 20 || city.health / (expectedDamagePerTurn-20) > 5)){ // otherwise check if we can take within a couple of turns
+        if (expectedDamagePerTurn < city.health * 4 && // If we can take immediately, go for it
+                (expectedDamagePerTurn <= 5 || city.health / (Math.max(1, expectedDamagePerTurn-20)) > 5)){ // otherwise check if we can take within a couple of turns
 
             // We won't be able to take this even with 5 turns of continuous damage!
             // don't head straight to the city, try to head to landing grounds -
