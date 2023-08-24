@@ -494,6 +494,7 @@ object SpecificUnitAutomation {
     }
 
     fun automateNukes(unit: MapUnit) {
+        if (!unit.civ.isAtWar()) return
         // We should *Almost* never want to nuke our own city, so don't consider it
         val tilesInRange = unit.currentTile.getTilesInDistanceRange(2..unit.getRange())
         var highestTileNukeValue = 0
@@ -513,7 +514,7 @@ object SpecificUnitAutomation {
 
     /**
      * Ranks the tile to nuke based off of all tiles in it's blast radius
-     * By default the value is -400 to prevent inefficient nuking.
+     * By default the value is -500 to prevent inefficient nuking.
      */
     fun getNukeLocationValue(nuke: MapUnit, tile: Tile): Int {
         val civ = nuke.civ
