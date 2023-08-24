@@ -31,10 +31,11 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     internal val adoptedPolicies = HashSet<String>()
     var numberOfAdoptedPolicies = 0
 
-    /** Indicates whether we shoudl *check* if policy is adoptible, and if so open */
+    /** Indicates whether we should *check* if policy is adoptible, and if so open */
     var shouldOpenPolicyPicker = false
 
-    fun shouldOpenPolicyPicker() = shouldOpenPolicyPicker && canAdoptPolicy()
+    /** Used by NextTurnAction.PickPolicy.isChoice */
+    fun shouldShowPolicyPicker() = (shouldOpenPolicyPicker || freePolicies > 0) && canAdoptPolicy()
 
     /** A [Map] pairing each [PolicyBranch] to its priority ([Int]). */
     val priorityMap: Map<PolicyBranch, Int>
