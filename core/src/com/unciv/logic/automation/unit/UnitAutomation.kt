@@ -191,7 +191,7 @@ object UnitAutomation {
 
         if (tryHeadTowardsOurSiegedCity(unit)) return
 
-        if (unit.health < 50 && /*(tryRetreat(unit) ||*/ tryHealUnit(unit)/*)*/) return // do nothing but heal
+        if (unit.health < 50 && tryHealUnit(unit)) return // do nothing but heal
 
         // if a embarked melee unit can land and attack next turn, do not attack from water.
         if (BattleHelper.tryDisembarkUnitToAttackPosition(unit)) return
@@ -381,26 +381,6 @@ object UnitAutomation {
         return true
     }
     
-//    private fun tryRetreat(unit: MapUnit): Boolean {
-//        val distanceToNearestEnemy = unit.distanceToNearestEnemy ?: 0
-//        if (distanceToNearestEnemy > 3)
-//            return false
-//        val shouldSwapWithUnit = fun (militaryUnit: MapUnit): Boolean {
-//            return militaryUnit.civ == unit.civ
-//                && (militaryUnit.distanceToNearestEnemy ?: 0) > distanceToNearestEnemy &&
-//                (!militaryUnit.baseUnit.isProbablySiegeUnit() || distanceToNearestEnemy > 2) // Don't want to swap with siege units that would be endangered
-//                && militaryUnit.health > 80
-//                && unit.movement.canUnitSwapTo(militaryUnit.currentTile)
-//        }
-//        val nearbyOwnedTiles = unit.movement.getReachableTilesInCurrentTurn().filter { tile -> tile.militaryUnit != null && shouldSwapWithUnit(tile.militaryUnit!!) }
-//        val nearbyBestTiles = nearbyOwnedTiles.sortedByDescending { tile -> tile.militaryUnit!!.distanceToNearestEnemy ?: 0 }
-//        if (nearbyBestTiles.any() ) {
-//            unit.movement.swapMoveToTile(nearbyBestTiles.first())
-//            return true;
-//        }
-//        return false
-//    }
-
     private fun tryHealUnit(unit: MapUnit): Boolean {
         if (unit.baseUnit.isRanged() && unit.hasUnique(UniqueType.HealsEvenAfterAction))
             return false // will heal anyway, and attacks don't hurt
