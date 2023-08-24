@@ -132,18 +132,9 @@ object BattleDamage {
         val modifiers = getGeneralModifiers(attacker, defender, CombatAction.Attack, tileToAttackFrom)
 
         if (attacker is MapUnitCombatant) {
-            if (attacker.unit.isEmbarked() && defender.getTile().isLand
-                    && !attacker.unit.hasUnique(UniqueType.AttackAcrossCoast))
-                modifiers["Landing"] = -50
 
-            // Land Melee Unit attacking to Water
-            if (attacker.unit.type.isLandUnit() && !attacker.getTile().isWater && attacker.isMelee() && defender.getTile().isWater
-                    && !attacker.unit.hasUnique(UniqueType.AttackAcrossCoast))
-                modifiers["Boarding"] = -50
-            // Melee Unit on water attacking to Land (not City) unit
-            if (!attacker.unit.type.isAirUnit() && attacker.isMelee() && attacker.getTile().isWater && !defender.getTile().isWater
-                    && !attacker.unit.hasUnique(UniqueType.AttackAcrossCoast) && !defender.isCity())
-                modifiers["Landing"] = -50
+            addTerrainAttackModifiers(attacker, defender, tileToAttackFrom, modifiers)
+
             // Air unit attacking with Air Sweep
             if (attacker.unit.isPreparingAirSweep())
                 modifiers.add(getAirSweepAttackModifiers(attacker))
@@ -156,22 +147,12 @@ object BattleDamage {
                 }
                 if (numberOfOtherAttackersSurroundingDefender > 0) {
                     var flankingBonus = 10f //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
+
+                    // e.g., Discipline policy - https://civilization.fandom.com/wiki/Discipline_(Civ5)
                     for (unique in attacker.unit.getMatchingUniques(UniqueType.FlankAttackBonus, checkCivInfoUniques = true))
                         flankingBonus *= unique.params[0].toPercent()
                     modifiers["Flanking"] =
                         (flankingBonus * numberOfOtherAttackersSurroundingDefender).toInt()
-                }
-                if (tileToAttackFrom.aerialDistanceTo(defender.getTile()) == 1 &&
-                        tileToAttackFrom.isConnectedByRiver(defender.getTile()) &&
-                        !attacker.unit.hasUnique(UniqueType.AttackAcrossRiver)
-                ) {
-                    if (!tileToAttackFrom
-                            .hasConnection(attacker.getCivInfo()) // meaning, the tiles are not road-connected for this civ
-                        || !defender.getTile().hasConnection(attacker.getCivInfo())
-                        || !attacker.getCivInfo().tech.roadsConnectAcrossRivers
-                    ) {
-                        modifiers["Across river"] = -20
-                    }
                 }
             }
 
@@ -179,6 +160,41 @@ object BattleDamage {
 
         return modifiers
     }
+
+    private fun addTerrainAttackModifiers(attacker: MapUnitCombatant, defender: ICombatant,
+                                          tileToAttackFrom: Tile, modifiers: Counter<String>) {
+        if (attacker.unit.isEmbarked() && defender.getTile().isLand
+            && !attacker.unit.hasUnique(UniqueType.AttackAcrossCoast)
+        )
+            modifiers["Landing"] = -50
+
+        // Land Melee Unit attacking to Water
+        if (attacker.unit.type.isLandUnit() && !attacker.getTile().isWater && attacker.isMelee() && defender.getTile().isWater
+            && !attacker.unit.hasUnique(UniqueType.AttackAcrossCoast)
+        )
+            modifiers["Boarding"] = -50
+
+        // Melee Unit on water attacking to Land (not City) unit
+        if (!attacker.unit.type.isAirUnit() && attacker.isMelee() && attacker.getTile().isWater && !defender.getTile().isWater
+            && !attacker.unit.hasUnique(UniqueType.AttackAcrossCoast) && !defender.isCity()
+        )
+            modifiers["Landing"] = -50
+
+        if (isMeleeAttackingAcrossRiverWithNoBridge(attacker, tileToAttackFrom, defender))
+            modifiers["Across river"] = -20
+    }
+
+    private fun isMeleeAttackingAcrossRiverWithNoBridge(attacker: MapUnitCombatant, tileToAttackFrom: Tile, defender: ICombatant) = (
+        attacker.isMelee()
+            &&
+            (tileToAttackFrom.aerialDistanceTo(defender.getTile()) == 1
+                && tileToAttackFrom.isConnectedByRiver(defender.getTile())
+                && !attacker.unit.hasUnique(UniqueType.AttackAcrossRiver))
+            &&
+            (!tileToAttackFrom.hasConnection(attacker.getCivInfo()) // meaning, the tiles are not road-connected for this civ
+                || !defender.getTile().hasConnection(attacker.getCivInfo())
+                || !attacker.getCivInfo().tech.roadsConnectAcrossRivers)
+        )
 
     fun getAirSweepAttackModifiers(
         attacker: ICombatant
