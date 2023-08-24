@@ -1,3 +1,16 @@
+## 4.7.17
+
+Free water units are always added to coastal cities
+
+Research agreements with gold offer  - By tuvus
+
+By SomeTroglodyte:
+- A few more useful notification actions 
+- Centralize hasUnitMovedThisTurn and fix by moving TransferMovement implementation to getMaxMovement 
+- Bombard to the north 
+- Fix next-turn not offering Policy Picker for free Policies 
+- Fix intended Longpress-to-move on Android not working 
+
 ## 4.7.16
 
 Undo button in Multiplayer no longer changes 'next turn' button
