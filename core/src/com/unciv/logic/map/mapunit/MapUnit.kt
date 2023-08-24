@@ -433,6 +433,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun isGreatPerson() = baseUnit.isGreatPerson()
     fun isGreatPersonOfType(type: String) = baseUnit.isGreatPersonOfType(type)
 
+    fun getDistanceToEnemyUnit(maxDist: Int): Int? {
+        for (i in 1..maxDist) {
+            if (currentTile.getTilesAtDistance(i).any {it.militaryUnit != null
+                && it.militaryUnit!!.civ.isAtWarWith(civ) })
+                return i
+        }
+        return null
+    }
     //endregion
 
     //region state-changing functions
