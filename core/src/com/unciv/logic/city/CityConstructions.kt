@@ -139,13 +139,16 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         return result
     }
 
-    /** @constructionName needs to be a non-perpetual construction, else an empty string is returned */
-    internal fun getTurnsToConstructionString(constructionName: String, useStoredProduction:Boolean = true): String {
-        val construction = getConstruction(constructionName)
+    /** @param constructionName needs to be a non-perpetual construction, else an empty string is returned */
+    internal fun getTurnsToConstructionString(constructionName: String, useStoredProduction:Boolean = true) =
+        getTurnsToConstructionString(getConstruction(constructionName), useStoredProduction)
+
+    /** @param construction needs to be a non-perpetual construction, else an empty string is returned */
+    internal fun getTurnsToConstructionString(construction: IConstruction, useStoredProduction:Boolean = true): String {
         if (construction !is INonPerpetualConstruction) return ""   // shouldn't happen
         val cost = construction.getProductionCost(city.civ)
-        val turnsToConstruction = turnsToConstruction(constructionName, useStoredProduction)
-        val currentProgress = if (useStoredProduction) getWorkDone(constructionName) else 0
+        val turnsToConstruction = turnsToConstruction(construction.name, useStoredProduction)
+        val currentProgress = if (useStoredProduction) getWorkDone(construction.name) else 0
         val lines = ArrayList<String>()
         val buildable = !construction.getMatchingUniques(UniqueType.Unbuildable)
             .any { it.conditionalsApply(StateForConditionals(city.civ, city)) }
@@ -186,12 +189,23 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     fun isAllBuilt(buildingList: List<String>): Boolean = buildingList.all { isBuilt(it) }
 
     fun isBuilt(buildingName: String): Boolean = builtBuildingObjects.any { it.name == buildingName }
-    @Suppress("MemberVisibilityCanBePrivate")
-    fun isBeingConstructed(constructionName: String): Boolean = currentConstructionFromQueue == constructionName
-    fun isEnqueued(constructionName: String): Boolean = constructionQueue.contains(constructionName)
-    fun isBeingConstructedOrEnqueued(constructionName: String): Boolean = isBeingConstructed(constructionName) || isEnqueued(constructionName)
 
-    fun isQueueFull(): Boolean = constructionQueue.size == queueMaxSize
+    // Note: There was a isEnqueued here functionally identical to isBeingConstructedOrEnqueued,
+    // which was calling both isEnqueued and isBeingConstructed - BUT: currentConstructionFromQueue is just a
+    // a wrapper for constructionQueue[0], so that was redundant. Also, isEnqueued was used nowhere,
+    // and isBeingConstructed _only_ redundantly as described above.
+    // `isEnqueuedForLater` is not optimal code as it can iterate the whole list where checking size
+    // and first() would suffice, but the one current use in CityScreenConstructionMenu isn't critical.
+
+    @Suppress("unused", "MemberVisibilityCanBePrivate")  // kept for illustration
+    /** @return `true` if [constructionName] is the top queue entry, the one receiving production points */
+    fun isBeingConstructed(constructionName: String) = currentConstructionFromQueue == constructionName
+    /** @return `true` if [constructionName] is queued but not the top queue entry */
+    fun isEnqueuedForLater(constructionName: String) = constructionQueue.indexOf(constructionName) > 0
+    /** @return `true` if [constructionName] is anywhere in the construction queue - [isBeingConstructed] **or** [isEnqueuedForLater] */
+    fun isBeingConstructedOrEnqueued(constructionName: String) = constructionQueue.contains(constructionName)
+
+    fun isQueueFull(): Boolean = constructionQueue.size >= queueMaxSize
 
     fun isBuildingWonder(): Boolean {
         val currentConstruction = getCurrentConstruction()
@@ -205,8 +219,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     /** If the city is constructing multiple units of the same type, subsequent units will require the full cost  */
     fun isFirstConstructionOfItsKind(constructionQueueIndex: Int, name: String): Boolean {
-        // if the construction name is the same as the current construction, it isn't the first
-        return constructionQueueIndex == constructionQueue.indexOfFirst { it == name }
+        // Simply compare index of first found [name] with given index
+        return constructionQueueIndex == constructionQueue.indexOf(name)
     }
 
 
