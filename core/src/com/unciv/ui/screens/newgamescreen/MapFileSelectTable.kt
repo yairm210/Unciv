@@ -16,7 +16,7 @@ import com.unciv.ui.components.input.onChange
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.victoryscreen.LoadMapPreview
 import com.unciv.utils.Concurrency
-import io.ktor.util.collections.*
+import io.ktor.util.collections.ConcurrentSet
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import com.badlogic.gdx.utils.Array as GdxArray
