@@ -56,8 +56,10 @@ open class AnimatedMenuPopup(
         private set
 
     companion object {
-        /** Get stage coords of an [actor]'s top right corner, to help position an [AnimatedMenuPopup] */
-        fun getActorTopRight(actor: Actor) = actor.localToStageCoordinates(Vector2(actor.width, actor.height))
+        /** Get stage coords of an [actor]'s right edge center, to help position an [AnimatedMenuPopup].
+         *  Note the Popup will center over this point.
+         */
+        fun getActorTopRight(actor: Actor): Vector2 = actor.localToStageCoordinates(Vector2(actor.width, actor.height / 2))
     }
 
     /**
@@ -67,8 +69,11 @@ open class AnimatedMenuPopup(
      *  You can use [getButton], which produces TextButtons slightly smaller than Unciv's default ones.
      *  The content adding functions offered by [Popup] or [Table] won't work.
      *  The content needs to be complete when the method finishes, it will be `pack()`ed and measured immediately.
+     *
+     *  Return `null` to abort the menu creation - nothing will be shown and the instance should be discarded.
+     *  Useful if you need full context first to determine if any entry makes sense.
      */
-    open fun createContentTable() = Table().apply {
+    open fun createContentTable(): Table? = Table().apply {
         defaults().pad(5f, 15f, 5f, 15f).growX()
         background = BaseScreen.skinStrings.getUiBackground("General/AnimatedMenu", BaseScreen.skinStrings.roundedEdgeRectangleShape, Color.DARK_GRAY)
     }
@@ -85,6 +90,7 @@ open class AnimatedMenuPopup(
 
     private fun createAndShow(position: Vector2) {
         val newInnerTable = createContentTable()
+            ?: return  // Special case - we don't want the context menu after all. If cleanup should become necessary in that case, add here.
         newInnerTable.pack()
         container.actor = newInnerTable
         container.touchable = Touchable.childrenOnly

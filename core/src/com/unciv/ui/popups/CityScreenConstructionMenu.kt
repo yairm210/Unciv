@@ -5,17 +5,22 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
+import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.ui.components.input.KeyboardBinding
 
-//todo bind to existing queue entry buttons
-//todo template strings
-//todo Kdoc
-//todo KeyBindings
 //todo Check move/top/end for "place one improvement" buildings
 //todo Check add/remove-all for "place one improvement" buildings
 
+/**
+ *  "Context menu" for City constructions - available by right-clicking (or long-press) in
+ *   City Screen, left side, available constructions or queue entries.
+ *
+ *  @param city The [City] calling us - we need only `cityConstructions`, but future expansion may be easier having the parent
+ *  @param construction The construction that was right-clicked
+ *  @param onButtonClicked Callback if closed due to any action having been chosen - to update CityScreen
+ */
 class CityScreenConstructionMenu(
     stage: Stage,
     positionNextTo: Actor,
@@ -26,11 +31,13 @@ class CityScreenConstructionMenu(
 
     // These are only readability shorteners
     private val cityConstructions = city.cityConstructions
-    private val name = construction.name
-    private val queueSizeWithoutPerpetual = cityConstructions.constructionQueue
+    private val constructionName = construction.name
+    private val queueSizeWithoutPerpetual get() = // simply remove get() should this be needed more than once
+        cityConstructions.constructionQueue
         .count { it !in PerpetualConstruction.perpetualConstructionsMap }
-    private val myIndex = cityConstructions.constructionQueue.indexOf(name)
+    private val myIndex = cityConstructions.constructionQueue.indexOf(constructionName)
     private fun anyCity(predicate: (CityConstructions) -> Boolean) =
+        (construction as? Building)?.isAnyWonder() != true &&
         city.civ.cities.map { it.cityConstructions }.any(predicate)
     private fun forAllCities(action: (CityConstructions) -> Unit) =
         city.civ.cities.map { it.cityConstructions }.forEach(action)
@@ -41,8 +48,8 @@ class CityScreenConstructionMenu(
         }
     }
 
-    override fun createContentTable(): Table {
-        val table = super.createContentTable()
+    override fun createContentTable(): Table? {
+        val table = super.createContentTable()!!
         if (canMoveQueueTop())
             table.add(getButton("Move to the top of the queue", KeyboardBinding.RaisePriority, ::moveQueueTop)).row()
         if (canMoveQueueEnd())
@@ -55,7 +62,7 @@ class CityScreenConstructionMenu(
             table.add(getButton("Add or move to the top in all cities", KeyboardBinding.AddConstructionAllTop, ::addAllQueuesTop)).row()
         if (canRemoveAllQueues())
             table.add(getButton("Remove from the queue in all cities", KeyboardBinding.RemoveConstructionAll, ::removeAllQueues)).row()
-        return table
+        return table.takeUnless { it.cells.isEmpty }
     }
 
     private fun canMoveQueueTop(): Boolean {
@@ -68,7 +75,7 @@ class CityScreenConstructionMenu(
     private fun canMoveQueueEnd(): Boolean {
         if (construction is PerpetualConstruction)
             return false
-        return myIndex in 0 until queueSizeWithoutPerpetual
+        return myIndex in 0 until queueSizeWithoutPerpetual - 1
     }
     private fun moveQueueEnd() = cityConstructions.moveEntryToEnd(myIndex)
 
@@ -76,12 +83,23 @@ class CityScreenConstructionMenu(
         cityConstructions.canAddToQueue(construction)
     private fun addQueueTop() = cityConstructions.addToQueue(construction, addToTop = true)
 
-    private fun canAddAllQueues() = anyCity { it.canAddToQueue(construction) }
+    private fun canAddAllQueues() = anyCity {
+        it.canAddToQueue(construction) &&
+        // A Perpetual that is already queued can still be added says canAddToQueue, but here we don't want to count that
+        !(construction is PerpetualConstruction && it.isBeingConstructedOrEnqueued(constructionName))
+    }
     private fun addAllQueues() = forAllCities { it.addToQueue(construction) }
 
-    private fun canAddAllQueuesTop() = construction !is PerpetualConstruction && canAddAllQueues()
-    private fun addAllQueuesTop() = forAllCities { it.addToQueue(construction, true) }
+    private fun canAddAllQueuesTop() = construction !is PerpetualConstruction &&
+        anyCity { it.canAddToQueue(construction) || it.isEnqueuedForLater(constructionName) }
+    private fun addAllQueuesTop() = forAllCities {
+        val index = it.constructionQueue.indexOf(constructionName)
+        if (index > 0)
+            it.moveEntryToTop(index)
+        else
+            it.addToQueue(construction, true)
+    }
 
-    private fun canRemoveAllQueues() = anyCity { it.isBeingConstructedOrEnqueued(name) }
-    private fun removeAllQueues() = forAllCities { it.removeAllByName(name) }
+    private fun canRemoveAllQueues() = anyCity { it.isBeingConstructedOrEnqueued(constructionName) }
+    private fun removeAllQueues() = forAllCities { it.removeAllByName(constructionName) }
 }
