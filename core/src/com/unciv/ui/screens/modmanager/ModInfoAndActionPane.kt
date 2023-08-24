@@ -1,6 +1,7 @@
 package com.unciv.ui.screens.modmanager
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -22,7 +23,9 @@ internal class ModInfoAndActionPane : Table() {
     private val imageHolder = Table()
     private val sizeLabel = "".toLabel()
     private var isBuiltin = false
-    private var disableVisualCheckBox = false
+
+    /** controls "Permanent audiovisual mod" checkbox existence */
+    private var enableVisualCheckBox = false
 
     init {
         defaults().pad(10f)
@@ -33,7 +36,7 @@ internal class ModInfoAndActionPane : Table() {
      */
     fun update(repo: Github.Repo) {
         isBuiltin = false
-        disableVisualCheckBox = true
+        enableVisualCheckBox = false
         update(
             repo.name, repo.html_url, repo.default_branch,
             repo.pushed_at, repo.owner.login, repo.size,
@@ -48,7 +51,7 @@ internal class ModInfoAndActionPane : Table() {
         val modName = mod.name
         val modOptions = mod.modOptions  // The ModOptions as enriched by us with GitHub metadata when originally downloaded
         isBuiltin = modOptions.modUrl.isEmpty() && BaseRuleset.values().any { it.fullName == modName }
-        disableVisualCheckBox = mod.folderLocation?.list("atlas")?.isEmpty() ?: true  // Also catches isBuiltin
+        enableVisualCheckBox = shouldShowVisualCheckbox(mod)
         update(
             modName, modOptions.modUrl, modOptions.defaultBranch,
             modOptions.lastUpdated, modOptions.author, modOptions.modSize
@@ -106,8 +109,8 @@ internal class ModInfoAndActionPane : Table() {
     }
 
     fun addVisualCheckBox(startsOutChecked: Boolean = false, changeAction: ((Boolean)->Unit)? = null) {
-        if (disableVisualCheckBox) return
-        add("Permanent audiovisual mod".toCheckBox(startsOutChecked, changeAction)).row()
+        if (enableVisualCheckBox)
+            add("Permanent audiovisual mod".toCheckBox(startsOutChecked, changeAction)).row()
     }
 
     fun addUpdateModButton(modInfo: ModUIData, doDownload: () -> Unit) {
@@ -165,5 +168,21 @@ internal class ModInfoAndActionPane : Table() {
             val resizeRatio = ModManagementScreen.maxAllowedPreviewImageSize / largestImageSize
             cell.size(texture.width * resizeRatio, texture.height * resizeRatio)
         }
+    }
+
+    private fun shouldShowVisualCheckbox(mod: Ruleset): Boolean {
+        val folder = mod.folderLocation ?: return false  // Also catches isBuiltin
+
+        // The following is the "guessing" part: If there's media, show the PAV choice...
+        // Might be deprecated if declarative Mod compatibility succeeds
+        fun isSubFolderNotEmpty(modFolder: FileHandle, name: String): Boolean {
+            val file = modFolder.child(name)
+            if (!file.exists()) return false
+            if (!file.isDirectory) return false
+            return file.list().isNotEmpty()
+        }
+        if (isSubFolderNotEmpty(folder, "music")) return true
+        if (isSubFolderNotEmpty(folder, "sounds")) return true
+        return folder.list("atlas").isNotEmpty()
     }
 }
