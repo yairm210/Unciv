@@ -108,6 +108,7 @@ class EmpireOverviewScreen(
         val worldScreen = GUI.getWorldScreen()
         worldScreen.notificationsScroll.oneTimeNotification = notification
         GUI.resetToWorldScreen()
+        notification.resetExecuteRoundRobin()
         notification.execute(worldScreen)
     }
 }
