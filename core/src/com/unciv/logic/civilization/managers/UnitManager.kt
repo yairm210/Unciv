@@ -28,12 +28,16 @@ class UnitManager(val civInfo:Civilization) {
     private var nextPotentiallyDueAt = 0
 
     fun addUnit(unitName: String, city: City? = null): MapUnit? {
-        if (civInfo.cities.isEmpty()) return null
-        if (!civInfo.gameInfo.ruleset.units.containsKey(unitName)) return null
+        val unit = civInfo.gameInfo.ruleset.units[unitName] ?: return null
+        return addUnit(unit, city)
+    }
 
-        val unit = civInfo.getEquivalentUnit(unitName)
+    fun addUnit(baseUnit: BaseUnit, city: City? = null): MapUnit? {
+        if (civInfo.cities.isEmpty()) return null
+
+        val unit = civInfo.getEquivalentUnit(baseUnit)
         val cityToAddTo = when {
-            unit.isWaterUnit() && (city==null || !city.isCoastal()) ->
+            unit.isWaterUnit() && (city == null || !city.isCoastal()) ->
                 civInfo.cities.filter { it.isCoastal() }.randomOrNull()
             city != null -> city
             else -> civInfo.cities.random()
@@ -45,24 +49,12 @@ class UnitManager(val civInfo:Civilization) {
             civInfo.addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", placedUnit.getTile().position, NotificationCategory.General, unit.name)
         }
 
-        if (placedUnit.hasUnique(UniqueType.ReligiousUnit) && civInfo.gameInfo.isReligionEnabled()) {
-            placedUnit.religion =
-                    when {
-                        placedUnit.hasUnique(UniqueType.TakeReligionOverBirthCity)
-                                && civInfo.religionManager.religion?.isMajorReligion() == true ->
-                            civInfo.religionManager.religion!!.name
-                        city != null -> city.cityConstructions.city.religion.getMajorityReligionName()
-                        else -> civInfo.religionManager.religion?.name
-                    }
-            placedUnit.setupAbilityUses(cityToAddTo)
-        }
-
-        for (unique in civInfo.getMatchingUniques(UniqueType.LandUnitsCrossTerrainAfterUnitGained)) {
-            if (unit.matchesFilter(unique.params[1])) {
-                civInfo.passThroughImpassableUnlocked = true    // Update the cached Boolean
-                civInfo.passableImpassables.add(unique.params[0])   // Add to list of passable impassables
+        if (placedUnit.hasUnique(UniqueType.ReligiousUnit) && civInfo.gameInfo.isReligionEnabled())
+            if (city != null && !(placedUnit.hasUnique(UniqueType.TakeReligionOverBirthCity)
+                    && civInfo.religionManager.religion?.isMajorReligion() == true)) {
+                placedUnit.religion = city.cityConstructions.city.religion.getMajorityReligionName()
+                placedUnit.setupAbilityUses(cityToAddTo)
             }
-        }
 
         return placedUnit
     }
@@ -73,7 +65,17 @@ class UnitManager(val civInfo:Civilization) {
      * @return created [MapUnit] or null if no suitable location was found
      * */
     fun placeUnitNearTile(location: Vector2, unitName: String): MapUnit? {
-        val unit = civInfo.gameInfo.tileMap.placeUnitNearTile(location, unitName, civInfo)
+        val unit = civInfo.gameInfo.ruleset.units[unitName]!!
+        return placeUnitNearTile(location, unit)
+    }
+
+    /** Tries to place the a [baseUnit] unit into the [Tile] closest to the given the [location]
+     * @param location where to try to place the unit
+     * @param baseUnit [BaseUnit] to create and place
+     * @return created [MapUnit] or null if no suitable location was found
+     * */
+    fun placeUnitNearTile(location: Vector2, baseUnit: BaseUnit): MapUnit? {
+        val unit = civInfo.gameInfo.tileMap.placeUnitNearTile(location, baseUnit, civInfo)
 
         if (unit != null) {
             val triggerNotificationText = "due to gaining a [${unit.name}]"
@@ -86,6 +88,18 @@ class UnitManager(val civInfo:Civilization) {
                     UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo, triggerNotificationText = triggerNotificationText)
             if (unit.baseUnit.getResourceRequirementsPerTurn().isNotEmpty())
                 civInfo.cache.updateCivResources()
+                
+            for (unique in civInfo.getMatchingUniques(UniqueType.LandUnitsCrossTerrainAfterUnitGained)) {
+                if (unit.matchesFilter(unique.params[1])) {
+                    civInfo.passThroughImpassableUnlocked = true    // Update the cached Boolean
+                    civInfo.passableImpassables.add(unique.params[0])   // Add to list of passable impassables
+                }
+            }
+
+            if (unit.hasUnique(UniqueType.ReligiousUnit) && civInfo.gameInfo.isReligionEnabled()) {
+                unit.religion = civInfo.religionManager.religion?.name
+                unit.setupAbilityUses()
+            }
         }
         return unit
     }

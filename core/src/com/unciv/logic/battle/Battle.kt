@@ -736,7 +736,7 @@ object Battle {
                     .any { unique -> unique.params[0] == "Land" } }
 
             if (workerTypeUnit != null)
-                capturingCiv.units.placeUnitNearTile(capturedUnit.currentTile.position, workerTypeUnit.name)
+                capturingCiv.units.placeUnitNearTile(capturedUnit.currentTile.position, workerTypeUnit)
         }
         else capturedUnit.capturedBy(capturingCiv)
     }

@@ -150,13 +150,13 @@ class City : IsPartOfGameInfoSerialization {
     fun isCapital(): Boolean = cityConstructions.getBuiltBuildings().any { it.hasUnique(UniqueType.IndicatesCapital) }
     fun isCoastal(): Boolean = centerTile.isCoastalTile()
 
-    fun capitalCityIndicator(): String {
+    fun capitalCityIndicator(): Building {
         val indicatorBuildings = getRuleset().buildings.values
             .asSequence()
             .filter { it.hasUnique(UniqueType.IndicatesCapital) }
 
         val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo == civ.civName }
-        return civSpecificBuilding?.name ?: indicatorBuildings.first().name
+        return civSpecificBuilding ?: indicatorBuildings.first()
     }
 
     fun isConnectedToCapital(connectionTypePredicate: (Set<String>) -> Boolean = { true }): Boolean {
@@ -542,8 +542,12 @@ class City : IsPartOfGameInfoSerialization {
         getRuleset().buildings[buildingName]!!.cost / 10
 
     fun sellBuilding(buildingName: String) {
-        cityConstructions.removeBuilding(buildingName)
-        civ.addGold(getGoldForSellingBuilding(buildingName))
+        sellBuilding(getRuleset().buildings[buildingName]!!)
+    }
+
+    fun sellBuilding(building: Building) {
+        cityConstructions.removeBuilding(building)
+        civ.addGold(getGoldForSellingBuilding(building.name))
         hasSoldBuildingThisTurn = true
 
         population.unassignExtraPopulation() // If the building provided specialists, release them to other work

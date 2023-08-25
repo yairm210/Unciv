@@ -487,11 +487,26 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
      * @return created [MapUnit] or null if no suitable location was found
      * */
     fun placeUnitNearTile(
+        position: Vector2,
+        unitName: String,
+        civInfo: Civilization
+    ): MapUnit? {
+        val unit = gameInfo.ruleset.units[unitName]!!
+        return placeUnitNearTile(position, unit, civInfo)
+    }
+
+    /** Tries to place the [baseUnit] into the [Tile] closest to the given [position]
+     * @param position where to try to place the unit (or close - max 10 tiles distance)
+     * @param baseUnit [BaseUnit][com.unciv.models.ruleset.unit.BaseUnit] to create and place
+     * @param civInfo civilization to assign unit to
+     * @return created [MapUnit] or null if no suitable location was found
+     * */
+    fun placeUnitNearTile(
             position: Vector2,
-            unitName: String,
+            baseUnit: BaseUnit,
             civInfo: Civilization
     ): MapUnit? {
-        val unit = gameInfo.ruleset.units[unitName]!!.getMapUnit(civInfo)
+        val unit = baseUnit.getMapUnit(civInfo)
 
         fun getPassableNeighbours(tile: Tile): Set<Tile> =
                 tile.neighbors.filter { unit.movement.canPassThrough(it) }.toSet()

@@ -645,7 +645,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             return true
         }
 
-        cityConstructions.addBuilding(name)
+        cityConstructions.addBuilding(this)
         return true
     }
 

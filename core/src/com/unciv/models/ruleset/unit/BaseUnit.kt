@@ -209,23 +209,13 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     override fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat?): Boolean {
         val civInfo = cityConstructions.city.civ
-        val unit = civInfo.units.placeUnitNearTile(cityConstructions.city.location, name)
+        val unit = civInfo.units.addUnit(this, cityConstructions.city)
             ?: return false  // couldn't place the unit, so there's actually no unit =(
 
         //movement penalty
         if (boughtWith != null && !civInfo.gameInfo.gameParameters.godMode && !unit.hasUnique(UniqueType.MoveImmediatelyOnceBought))
             unit.currentMovement = 0f
-
-        // If this unit has special abilities that need to be kept track of, start doing so here
-        if (unit.hasUnique(UniqueType.ReligiousUnit) && civInfo.gameInfo.isReligionEnabled()) {
-            unit.religion =
-                if (unit.hasUnique(UniqueType.TakeReligionOverBirthCity))
-                    civInfo.religionManager.religion?.name
-                else cityConstructions.city.religion.getMajorityReligionName()
-
-            unit.setupAbilityUses(cityConstructions.city)
-        }
-
+        
         if (this.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
 
         addConstructionBonuses(unit, cityConstructions)
