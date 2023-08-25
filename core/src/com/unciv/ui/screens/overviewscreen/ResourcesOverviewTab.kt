@@ -100,7 +100,7 @@ class ResourcesOverviewTab(
                 gameInfo.getExploredResourcesNotification(viewingPlayer, name)
             ) }
         }
-    private fun TileResource.getLabel() = name.toLabel().apply {
+    private fun TileResource.getLabel() = name.toLabel(hideIcons = true).apply {
         onClick {
             overviewScreen.game.pushScreen(CivilopediaScreen(gameInfo.ruleset, CivilopediaCategories.Resource, this@getLabel.name))
         }

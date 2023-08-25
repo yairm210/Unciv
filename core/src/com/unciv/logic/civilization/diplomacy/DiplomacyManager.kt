@@ -5,6 +5,8 @@ import com.unciv.Constants
 import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.DiplomacyAction
+import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
@@ -527,18 +529,15 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         }
 
         if (!civInfo.isDefeated()) { // don't display city state relationship notifications when the city state is currently defeated
-            val civCapitalLocation = if (civInfo.cities.any() && civInfo.getCapital() != null) civInfo.getCapital()!!.location else null
+            val notificationActions = civInfo.cityStateFunctions.getNotificationActions()
             if (getTurnsToRelationshipChange() == 1) {
                 val text = "Your relationship with [${civInfo.civName}] is about to degrade"
-                if (civCapitalLocation != null) otherCiv().addNotification(text,
-                    civCapitalLocation, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
-                else otherCiv().addNotification(text, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
+                otherCiv().addNotification(text, notificationActions, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
             }
 
             if (initialRelationshipLevel >= RelationshipLevel.Friend && initialRelationshipLevel != relationshipIgnoreAfraid()) {
                 val text = "Your relationship with [${civInfo.civName}] degraded"
-                if (civCapitalLocation != null) otherCiv().addNotification(text, civCapitalLocation, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
-                else otherCiv().addNotification(text, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
+                otherCiv().addNotification(text, notificationActions, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
             }
 
             // Potentially notify about afraid status
@@ -549,8 +548,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             ) {
                 setFlag(DiplomacyFlags.NotifiedAfraid, 20)  // Wait 20 turns until next reminder
                 val text = "[${civInfo.civName}] is afraid of your military power!"
-                if (civCapitalLocation != null) otherCiv().addNotification(text, civCapitalLocation, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
-                else otherCiv().addNotification(text, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
+                otherCiv().addNotification(text, notificationActions, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
             }
         }
     }

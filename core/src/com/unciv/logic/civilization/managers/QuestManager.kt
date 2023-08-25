@@ -1,3 +1,5 @@
+@file:Suppress("ConvertArgumentToSet")  // Flags all assignedQuests.removeAll(List) - not worth it
+
 package com.unciv.logic.civilization.managers
 
 import com.badlogic.gdx.math.Vector2
@@ -8,6 +10,9 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.DiplomacyAction
+import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.Notification  // for Kdoc
+import com.unciv.logic.civilization.NotificationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
@@ -30,7 +35,6 @@ import com.unciv.ui.components.extensions.toPercent
 import kotlin.math.max
 import kotlin.random.Random
 
-@Suppress("NON_EXHAUSTIVE_WHEN")  // Many when uses in here are much clearer this way
 class QuestManager : IsPartOfGameInfoSerialization {
 
     companion object {
@@ -81,10 +85,8 @@ class QuestManager : IsPartOfGameInfoSerialization {
     /** Returns the influence multiplier for [donor] from a Investment quest that [civInfo] might have (assumes only one) */
     fun getInvestmentMultiplier(donor: String): Float {
         val investmentQuest = assignedQuests.firstOrNull { it.questName == QuestName.Invest.value && it.assignee == donor }
-        return if (investmentQuest == null)
-            1f
-        else
-            investmentQuest.data1.toPercent()
+            ?: return 1f
+        return investmentQuest.data1.toPercent()
     }
 
     fun clone(): QuestManager {
@@ -311,12 +313,14 @@ class QuestManager : IsPartOfGameInfoSerialization {
 
             var data1 = ""
             var data2 = ""
+            var notificationActions: List<NotificationAction> = listOf(DiplomacyAction(civInfo.civName))
 
             when (quest.name) {
                 QuestName.ClearBarbarianCamp.value -> {
                     val camp = getBarbarianEncampmentForQuest()!!
                     data1 = camp.position.x.toInt().toString()
                     data2 = camp.position.y.toInt().toString()
+                    notificationActions = listOf(LocationAction(camp.position), notificationActions.first())
                 }
                 QuestName.ConnectResource.value -> data1 = getResourceForQuest(assignee)!!.name
                 QuestName.ConstructWonder.value -> data1 = getWonderToBuildForQuest(assignee)!!.name
@@ -328,8 +332,10 @@ class QuestManager : IsPartOfGameInfoSerialization {
                 QuestName.PledgeToProtect.value -> data1 = getMostRecentBully()!!
                 QuestName.GiveGold.value -> data1 = getMostRecentBully()!!
                 QuestName.DenounceCiv.value -> data1 = getMostRecentBully()!!
-                QuestName.SpreadReligion.value -> { data1 = playerReligion!!.getReligionDisplayName() // For display
-                                                    data2 = playerReligion.name } // To check completion
+                QuestName.SpreadReligion.value -> {
+                    data1 = playerReligion!!.getReligionDisplayName() // For display
+                    data2 = playerReligion.name // To check completion
+                }
                 QuestName.ContestCulture.value -> data1 = assignee.totalCultureForContests.toString()
                 QuestName.ContestFaith.value -> data1 = assignee.totalFaithForContests.toString()
                 QuestName.ContestTech.value -> data1 = assignee.tech.getNumberOfTechsResearched().toString()
@@ -348,7 +354,7 @@ class QuestManager : IsPartOfGameInfoSerialization {
 
             assignedQuests.add(newQuest)
             assignee.addNotification("[${civInfo.civName}] assigned you a new quest: [${quest.name}].",
-                    DiplomacyAction(civInfo.civName),
+                notificationActions,
                 NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
 
             if (quest.isIndividual())
@@ -553,18 +559,21 @@ class QuestManager : IsPartOfGameInfoSerialization {
         val unitsToKill = max(3, totalMilitaryUnits / 4)
         unitsToKillForCiv[attacker.civName] = unitsToKill
 
-
-        val location = if (civInfo.cities.isEmpty() || civInfo.getCapital() == null) null
-            else civInfo.getCapital()!!.location
-
         // Ask for assistance
-        for (thirdCiv in civInfo.getKnownCivs().filter { it.isAlive() && !it.isAtWarWith(civInfo) && it.isMajorCiv() }) {
-            if (location != null)
-                thirdCiv.addNotification("[${civInfo.civName}] is being attacked by [${attacker.civName}]! Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful.",
-                    location, NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
-            else thirdCiv.addNotification("[${civInfo.civName}] is being attacked by [${attacker.civName}]! Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful.",
-                NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
+        val location = civInfo.getCapital(firstCityIfNoCapital = true)?.location
+        for (thirdCiv in civInfo.getKnownCivs()) {
+            if (!thirdCiv.isMajorCiv() || thirdCiv.isDefeated() || thirdCiv.isAtWarWith(civInfo))
+                continue
+            notifyAskForAssistance(thirdCiv, attacker.civName, unitsToKill, location)
         }
+    }
+
+    private fun notifyAskForAssistance(assignee: Civilization, attackerName: String, unitsToKill: Int, location: Vector2?) {
+        if (attackerName == assignee.civName) return  // No "Hey Bob help us against Bob"
+        val message = "[${civInfo.civName}] is being attacked by [$attackerName]!" +
+            "Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful."
+        // Note: that LocationAction pseudo-constructor is able to filter out null location(s), no need for `if`
+        assignee.addNotification(message, LocationAction(location), NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
     }
 
     /** Gets notified when [killed]'s military unit was killed by [killer], for war with major pseudo-quest */
@@ -593,16 +602,10 @@ class QuestManager : IsPartOfGameInfoSerialization {
 
     /** Called when a major civ meets the city-state for the first time. Mainly for war with major pseudo-quest. */
     fun justMet(otherCiv: Civilization) {
-        val location = if (civInfo.cities.isEmpty() || civInfo.getCapital() == null) null
-            else civInfo.getCapital()!!.location
-
-        for ((attackerName, unitsToKill) in unitsToKillForCiv) {
-            if (location != null)
-                otherCiv.addNotification("[${civInfo.civName}] is being attacked by [$attackerName]! Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful.",
-                    location, NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
-            else otherCiv.addNotification("[${civInfo.civName}] is being attacked by [$attackerName]! Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful.",
-                NotificationCategory.Diplomacy, civInfo.civName, "OtherIcons/Quest")
-        }
+        if (unitsToKillForCiv.isEmpty()) return
+        val location = civInfo.getCapital(firstCityIfNoCapital = true)?.location
+        for ((attackerName, unitsToKill) in unitsToKillForCiv)
+            notifyAskForAssistance(otherCiv, attackerName, unitsToKill, location)
     }
 
     /** Ends War with Major pseudo-quests that aren't relevant any longer */

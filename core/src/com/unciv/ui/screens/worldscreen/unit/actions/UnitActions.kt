@@ -277,9 +277,9 @@ object UnitActions {
                 if (unit.isPreparingParadrop()) unit.action = null
                 else unit.action = UnitActionType.Paradrop.value
             }.takeIf {
-                unit.currentMovement == unit.getMaxMovement().toFloat() &&
-                        unit.currentTile.isFriendlyTerritory(unit.civ) &&
-                        !unit.isEmbarked()
+                !unit.hasUnitMovedThisTurn() &&
+                unit.currentTile.isFriendlyTerritory(unit.civ) &&
+                !unit.isEmbarked()
             })
     }
 

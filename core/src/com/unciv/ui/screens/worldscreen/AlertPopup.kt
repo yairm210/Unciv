@@ -126,8 +126,8 @@ class AlertPopup(
             player.getDiplomacyManager(bullyOrAttacker).sideWithCityState()
         }.row()
         addCloseButton("Very well.", KeyboardBinding.Cancel) {
-            val capitalLocation = LocationAction(cityState.cities.asSequence().map { it.location }) // in practice 0 or 1 entries, that's OK
-            player.addNotification("You have broken your Pledge to Protect [${cityState.civName}]!", capitalLocation, NotificationCategory.Diplomacy, cityState.civName)
+            player.addNotification("You have broken your Pledge to Protect [${cityState.civName}]!",
+                cityState.cityStateFunctions.getNotificationActions(), NotificationCategory.Diplomacy, cityState.civName)
             cityState.cityStateFunctions.removeProtectorCiv(player, forced = true)
         }.row()
     }

@@ -6,6 +6,9 @@ import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.city.ConstructionAutomation
 import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.CivilopediaAction
+import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
@@ -14,6 +17,7 @@ import com.unciv.logic.multiplayer.isUsersTurn
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.INonPerpetualConstruction
+import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.models.ruleset.Ruleset
@@ -447,33 +451,40 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
         validateConstructionQueue() // if we've build e.g. the Great Lighthouse, then Lighthouse is no longer relevant in the queue
 
+        construction as IRulesetObject // Always OK for INonPerpetualConstruction, but compiler doesn't know
+
         val buildingIcon = "BuildingIcons/${construction.name}"
+        val pediaAction = CivilopediaAction(construction.makeLink())
+        val locationAction = if (construction is BaseUnit) MapUnitAction(city.location)
+            else LocationAction(city.location)
+        val locationAndPediaActions = listOf(locationAction, pediaAction)
+
         if (construction is Building && construction.isWonder) {
             city.civ.popupAlerts.add(PopupAlert(AlertType.WonderBuilt, construction.name))
             for (civ in city.civ.gameInfo.civilizations) {
                 if (civ.hasExplored(city.getCenterTile()))
-                    civ.addNotification("[${construction.name}] has been built in [${city.name}]", city.location,
+                    civ.addNotification("[${construction.name}] has been built in [${city.name}]",
+                        locationAndPediaActions,
                         if (civ == city.civ) NotificationCategory.Production else NotificationCategory.General, buildingIcon)
                 else
-                    civ.addNotification("[${construction.name}] has been built in a faraway land", NotificationCategory.General, buildingIcon)
+                    civ.addNotification("[${construction.name}] has been built in a faraway land",
+                        pediaAction, NotificationCategory.General, buildingIcon)
             }
         } else {
             val icon = if (construction is Building) buildingIcon else construction.name // could be a unit, in which case take the unit name.
             city.civ.addNotification(
                 "[${construction.name}] has been built in [${city.name}]",
-                    city.location, NotificationCategory.Production, NotificationIcon.Construction, icon)
+                locationAndPediaActions, NotificationCategory.Production, NotificationIcon.Construction, icon)
         }
 
-        if (construction is Building && construction.hasUnique(UniqueType.TriggersAlertOnCompletion,
-                StateForConditionals(city.civ, city)
-            )) {
+        if (construction.hasUnique(UniqueType.TriggersAlertOnCompletion, StateForConditionals(city.civ, city))) {
             for (otherCiv in city.civ.gameInfo.civilizations) {
                 // No need to notify ourself, since we already got the building notification anyway
                 if (otherCiv == city.civ) continue
                 val completingCivDescription =
                     if (otherCiv.knows(city.civ)) "[${city.civ.civName}]" else "An unknown civilization"
                 otherCiv.addNotification("$completingCivDescription has completed [${construction.name}]!",
-                    NotificationCategory.General, NotificationIcon.Construction, buildingIcon)
+                    pediaAction, NotificationCategory.General, NotificationIcon.Construction, buildingIcon)
             }
         }
         return true

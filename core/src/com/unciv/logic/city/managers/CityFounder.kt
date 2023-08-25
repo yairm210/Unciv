@@ -29,7 +29,7 @@ class CityFounder {
         city.isOriginalCapital = civInfo.citiesCreated == 0
         if (city.isOriginalCapital) {
             civInfo.hasEverOwnedOriginalCapital = true
-            // if you have some culture before the 1st city is found, you may want to adopt the 1st policy
+            // if you have some culture before the 1st city is founded, you may want to adopt the 1st policy
             civInfo.policies.shouldOpenPolicyPicker = true
         }
         civInfo.citiesCreated++

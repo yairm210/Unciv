@@ -208,7 +208,7 @@ class TileInfoImprovementFunctions(val tile: Tile) {
         val city = tile.owningCity
         if (city != null) {
             city.cityStats.update()
-            city.civ.cache.updateCivResources()
+            if (civToActivateBroaderEffects!=null) city.civ.cache.updateCivResources()
             city.reassignPopulationDeferred()
         }
     }

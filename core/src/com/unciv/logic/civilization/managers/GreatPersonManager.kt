@@ -17,8 +17,6 @@ class GreatPersonManager : IsPartOfGameInfoSerialization {
     lateinit var civInfo: Civilization
 
     /** Base points, without speed modifier */
-    @Deprecated("Values are now maintaned in pointsForNextGreatPersonCounter", ReplaceWith("pointsForNextGreatPersonCounter[\"\"]"))
-    var pointsForNextGreatPerson = 100
     var pointsForNextGreatPersonCounter = Counter<String>()  // Initial values assigned in getPointsRequiredForGreatPerson as needed
     var pointsForNextGreatGeneral = 200
 
