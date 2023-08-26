@@ -52,7 +52,7 @@ class UnitManager(val civInfo:Civilization) {
         if (placedUnit.hasUnique(UniqueType.ReligiousUnit) && civInfo.gameInfo.isReligionEnabled()) {
             if (!placedUnit.hasUnique(UniqueType.TakeReligionOverBirthCity)
                 || civInfo.religionManager.religion?.isMajorReligion() == false) {
-                placedUnit.religion = cityToAddTo.cityConstructions.city.religion.getMajorityReligionName()
+                placedUnit.religion = cityToAddTo.religion.getMajorityReligionName()
             }
             placedUnit.setupAbilityUses(cityToAddTo)  // Seting up abilies a second time in case the city or religion has a different ability count
         }
