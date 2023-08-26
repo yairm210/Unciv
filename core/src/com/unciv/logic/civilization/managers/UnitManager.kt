@@ -49,12 +49,13 @@ class UnitManager(val civInfo:Civilization) {
             civInfo.addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", placedUnit.getTile().position, NotificationCategory.General, unit.name)
         }
 
-        if (placedUnit.hasUnique(UniqueType.ReligiousUnit) && civInfo.gameInfo.isReligionEnabled())
-            if (city != null && !(placedUnit.hasUnique(UniqueType.TakeReligionOverBirthCity)
-                    && civInfo.religionManager.religion?.isMajorReligion() == true)) {
-                placedUnit.religion = city.cityConstructions.city.religion.getMajorityReligionName()
-                placedUnit.setupAbilityUses(cityToAddTo)
+        if (placedUnit.hasUnique(UniqueType.ReligiousUnit) && civInfo.gameInfo.isReligionEnabled()) {
+            if (!placedUnit.hasUnique(UniqueType.TakeReligionOverBirthCity)
+                || civInfo.religionManager.religion?.isMajorReligion() == false) {
+                placedUnit.religion = cityToAddTo.cityConstructions.city.religion.getMajorityReligionName()
             }
+            placedUnit.setupAbilityUses(cityToAddTo)  // Seting up abilies a second time in case the city or religion has a different ability count
+        }
 
         return placedUnit
     }
