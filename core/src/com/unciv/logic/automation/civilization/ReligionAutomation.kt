@@ -116,7 +116,7 @@ object ReligionAutomation {
             ?: return
 
 
-        val hasUniqueToTakeCivReligion = civInfo.gameInfo.ruleset.units[missionaryConstruction.name]!!.hasUnique(UniqueType.TakeReligionOverBirthCity)
+        val hasUniqueToTakeCivReligion = missionaryConstruction.hasUnique(UniqueType.TakeReligionOverBirthCity)
 
         val validCitiesToBuy = civInfo.cities.filter {
             (hasUniqueToTakeCivReligion || it.religion.getMajorityReligion() == civInfo.religionManager.religion)
@@ -173,7 +173,7 @@ object ReligionAutomation {
             ?: return
 
 
-        val hasUniqueToTakeCivReligion = civInfo.gameInfo.ruleset.units[inquisitorConstruction.name]!!.hasUnique(UniqueType.TakeReligionOverBirthCity)
+        val hasUniqueToTakeCivReligion = inquisitorConstruction.hasUnique(UniqueType.TakeReligionOverBirthCity)
 
         val validCitiesToBuy = civInfo.cities.filter {
             (hasUniqueToTakeCivReligion || it.religion.getMajorityReligion() == civInfo.religionManager.religion)
