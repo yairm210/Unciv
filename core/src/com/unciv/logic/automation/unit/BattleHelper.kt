@@ -59,17 +59,15 @@ object BattleHelper {
      */
     private fun chooseAttackTarget(unit: MapUnit, attackableEnemies: List<AttackableTile>): AttackableTile? {
         var highestAttackValue = 0
-        var attackTile: AttackableTile? = null
-        for (attackableEnemy in attackableEnemies) {
-            val tempValue = if (attackableEnemy.tileToAttack.isCityCenter()) getCityAttackValue(unit, attackableEnemy.tileToAttack.getCity()!!)
+        val attackTile = attackableEnemies.maxByOrNull { attackableEnemy -> 
+            val tempAttackValue = if (attackableEnemy.tileToAttack.isCityCenter()) 
+                getCityAttackValue(unit, attackableEnemy.tileToAttack.getCity()!!)
             else getUnitAttackValue(unit, attackableEnemy)
-            if (tempValue > highestAttackValue) {
-                highestAttackValue = tempValue
-                attackTile = attackableEnemy
-            }
+            highestAttackValue = max(tempAttackValue, highestAttackValue)
+            tempAttackValue
         }
         // todo For air units, prefer to attack tiles with lower intercept chance
-        return attackTile
+        return if (highestAttackValue > 0) attackTile else null
     }
 
     /**
