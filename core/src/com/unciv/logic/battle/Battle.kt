@@ -4,16 +4,17 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.civilization.NextTurnAutomation
-import com.unciv.logic.automation.unit.AttackableTile
 import com.unciv.logic.automation.unit.SpecificUnitAutomation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.civilization.PromoteUnitAction
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.mapunit.MapUnit
@@ -583,8 +584,12 @@ object Battle {
             civ.greatPeople.greatGeneralPoints += greatGeneralPointsGained
         }
 
-        if (!thisCombatant.isDefeated() && !unitCouldAlreadyPromote && promotions.canBePromoted())
-            civ.addNotification("[${thisCombatant.unit.displayName()}] can be promoted!",thisCombatant.getTile().position, NotificationCategory.Units, thisCombatant.unit.name)
+        if (!thisCombatant.isDefeated() && !unitCouldAlreadyPromote && promotions.canBePromoted()) {
+            val pos = thisCombatant.getTile().position
+            civ.addNotification("[${thisCombatant.unit.displayName()}] can be promoted!",
+                listOf(MapUnitAction(pos), PromoteUnitAction(thisCombatant.getName(), pos)),
+                NotificationCategory.Units, thisCombatant.unit.name)
+        }
     }
 
     private fun conquerCity(city: City, attacker: MapUnitCombatant) {

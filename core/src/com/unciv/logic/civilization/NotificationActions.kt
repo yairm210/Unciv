@@ -4,11 +4,13 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.city.City
 import com.unciv.ui.components.MayaCalendar
 import com.unciv.ui.screens.cityscreen.CityScreen
-import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
+import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories
+import com.unciv.ui.screens.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.screens.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.screens.pickerscreens.TechPickerScreen
 import com.unciv.ui.screens.worldscreen.WorldScreen
@@ -68,6 +70,9 @@ class CityAction(private val city: Vector2 = Vector2.Zero): NotificationAction {
         if (cityObject.civ == worldScreen.viewingCiv)
             worldScreen.game.pushScreen(CityScreen(cityObject))
     }
+    companion object {
+        fun withLocation(city: City) = listOf(LocationAction(city.location), CityAction(city.location))
+    }
 }
 
 /** enter diplomacy screen */
@@ -90,12 +95,17 @@ class MapUnitAction(private val location: Vector2 = Vector2.Zero) : Notification
     override fun execute(worldScreen: WorldScreen) {
         worldScreen.mapHolder.setCenterPosition(location, selectUnit = true)
     }
+    companion object {
+        // Convenience shortcut as it makes replacing LocationAction calls easier (see above)
+        operator fun invoke(locations: Iterable<Vector2>): Sequence<MapUnitAction> =
+            locations.asSequence().map { MapUnitAction(it) }
+    }
 }
 
-/** A notification action that shows the Civilopedia entry for a Wonder. */
-class WonderAction(private val wonderName: String = "") : NotificationAction {
+/** A notification action that shows a Civilopedia entry, e.g. for a Wonder. */
+class CivilopediaAction(private val link: String = "") : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
-        worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleset, CivilopediaCategories.Wonder, wonderName))
+        worldScreen.game.pushScreen(CivilopediaScreen(worldScreen.gameInfo.ruleset, link = link))
     }
 }
 
@@ -106,6 +116,16 @@ class PromoteUnitAction(private val name: String = "", private val location: Vec
         val unit = tile.militaryUnit?.takeIf { it.name == name && it.civ == worldScreen.selectedCiv }
             ?: return
         worldScreen.game.pushScreen(PromotionPickerScreen(unit))
+    }
+}
+
+/** Open the Empire Overview to a specific page, potentially "selecting" some entry */
+class OverviewAction(
+    private val page: EmpireOverviewCategories = EmpireOverviewCategories.Resources,
+    private val select: String = ""
+) : NotificationAction {
+    override fun execute(worldScreen: WorldScreen) {
+        worldScreen.game.pushScreen(EmpireOverviewScreen(worldScreen.selectedCiv, page, select))
     }
 }
 
@@ -127,14 +147,15 @@ internal class NotificationActionsDeserializer {
     private val DiplomacyAction: DiplomacyAction? = null
     private val MayaLongCountAction: MayaLongCountAction? = null
     private val MapUnitAction: MapUnitAction? = null
-    private val WonderAction: WonderAction? = null
+    private val CivilopediaAction: CivilopediaAction? = null
     private val PromoteUnitAction: PromoteUnitAction? = null
+    private val OverviewAction: OverviewAction? = null
 
     fun read(json: Json, jsonData: JsonValue): List<NotificationAction> {
         json.readFields(this, jsonData)
         return listOfNotNull(
-            LocationAction, TechAction, CityAction, DiplomacyAction,
-            MayaLongCountAction, MapUnitAction, WonderAction, PromoteUnitAction
+            LocationAction, TechAction, CityAction, DiplomacyAction, MayaLongCountAction,
+            MapUnitAction, CivilopediaAction, PromoteUnitAction, OverviewAction
         )
     }
 }

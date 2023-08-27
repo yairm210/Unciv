@@ -796,7 +796,7 @@ object NextTurnAutomation {
             // Default setting is 5, this will be changed according to different civ.
             if ((1..10).random() > 5) continue
             val tradeLogic = TradeLogic(civInfo, otherCiv)
-            val cost = civInfo.diplomacyFunctions.getResearchAgreementCost()
+            val cost = civInfo.diplomacyFunctions.getResearchAgreementCost(otherCiv)
             tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
             tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
 

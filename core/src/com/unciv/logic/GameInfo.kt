@@ -7,7 +7,6 @@ import com.unciv.UncivGame.Version
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.convertFortify
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
-import com.unciv.logic.BackwardCompatibility.migrateGreatPersonPools
 import com.unciv.logic.BackwardCompatibility.migrateToTileHistory
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.GameInfo.Companion.CURRENT_COMPATIBILITY_NUMBER
@@ -320,7 +319,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         checksum = "" // Checksum calculation cannot include old checksum, obvs
         val bytes = MessageDigest
             .getInstance("SHA-1")
-            .digest(json().toJson(this).toByteArray())
+            .digest(json().toJson(this).toByteArray(Charsets.UTF_8))
         checksum = oldChecksum
         return Gzip.encode(bytes)
     }
@@ -648,8 +647,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         guaranteeUnitPromotions()
 
         migrateToTileHistory()
-
-        migrateGreatPersonPools()
     }
 
     private fun updateCivilizationState() {

@@ -91,6 +91,10 @@ open class Notification() : IsPartOfGameInfoSerialization {
         index = ++index % actions.size // cycle through tiles
     }
 
+    fun resetExecuteRoundRobin() {
+        index = 0
+    }
+
     /**
      *  Custom [Gdx.Json][Json] serializer/deserializer for one [Notification].
      *
@@ -111,7 +115,7 @@ open class Notification() : IsPartOfGameInfoSerialization {
         companion object {
             /** The switch that starts Phase III and dies with Phase V
             *   @see Serializer */
-            private const val compatibilityMode = true
+            private const val compatibilityMode = false
         }
 
         override fun write(json: Json, notification: Notification, knownType: Class<*>?) {

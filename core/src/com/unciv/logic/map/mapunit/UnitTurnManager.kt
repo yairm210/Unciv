@@ -15,15 +15,14 @@ class UnitTurnManager(val unit: MapUnit) {
                 && unit.getTile().improvementInProgress != null
                 && unit.canBuildImprovement(unit.getTile().getTileImprovementInProgress()!!)
         ) workOnImprovement()
-        if (unit.currentMovement == unit.getMaxMovement().toFloat() && unit.isFortified() && unit.turnsFortified < 2) {
+        if (!unit.hasUnitMovedThisTurn() && unit.isFortified() && unit.turnsFortified < 2) {
             unit.turnsFortified++
         }
         if (!unit.isFortified())
             unit.turnsFortified = 0
 
-        if (unit.currentMovement == unit.getMaxMovement().toFloat() // didn't move this turn
-                || unit.hasUnique(UniqueType.HealsEvenAfterAction)
-        ) healUnit()
+        if (!unit.hasUnitMovedThisTurn() || unit.hasUnique(UniqueType.HealsEvenAfterAction))
+            healUnit()
 
         if (unit.action != null && unit.health > 99)
             if (unit.isActionUntilHealed()) {
@@ -136,17 +135,6 @@ class UnitTurnManager(val unit: MapUnit) {
         unit.currentMovement = unit.getMaxMovement().toFloat()
         unit.attacksThisTurn = 0
         unit.due = true
-
-        // Hakkapeliitta movement boost
-        // For every double-stacked tile, check if our cohabitant can boost our speed
-        // (a test `count() > 1` is no optimization - two iterations of a sequence instead of one)
-        for (boostingUnit in unit.getTile().getUnits()) {
-            if (boostingUnit == unit) continue
-
-            if (boostingUnit.getMatchingUniques(UniqueType.TransferMovement)
-                        .none { unit.matchesFilter(it.params[0]) } ) continue
-            unit.currentMovement = unit.currentMovement.coerceAtLeast(boostingUnit.getMaxMovement().toFloat())
-        }
 
         // Wake sleeping units if there's an enemy in vision range:
         // Military units always but civilians only if not protected.

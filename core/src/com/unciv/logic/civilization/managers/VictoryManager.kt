@@ -37,12 +37,14 @@ class VictoryManager : IsPartOfGameInfoSerialization {
         return results
     }
 
+    private fun getVotingCivs() = civInfo.gameInfo.civilizations.asSequence()
+        .filterNot { it.isBarbarian() || it.isSpectator() || it.isDefeated() }
+
     /** Finds the Building and Owner of the United Nations (or whatever the Mod called it)
      *  - if it's built at all and only if the owner is alive
      *  @return `first`: Building name, `second`: Owner civ name; both null if not found
      */
-    fun getUNBuildingAndOwnerNames(): Pair<String?, String?> = civInfo.gameInfo.civilizations.asSequence()
-            .filterNot { it.isBarbarian() || it.isSpectator() || it.isDefeated() }
+    fun getUNBuildingAndOwnerNames(): Pair<String?, String?> = getVotingCivs()
             .flatMap { civ -> civ.cities.asSequence()
                 .flatMap { it.cityConstructions.getBuiltBuildings() }
                 .filter { it.hasUnique(UniqueType.OneTimeTriggerVoting, stateForConditionals = StateForConditionals.IgnoreConditionals) }
@@ -50,13 +52,19 @@ class VictoryManager : IsPartOfGameInfoSerialization {
             }.firstOrNull() ?: (null to null)
 
     private fun votesNeededForDiplomaticVictory(): Int {
-        val civCount = civInfo.gameInfo.civilizations.count { !it.isDefeated() }
+        // The original counts "teams ever alive", which excludes Observer and Barbarians.
+        // The "ever alive" part sounds unfair - could make a Vote unwinnable?
 
-        // CvGame.cpp::DoUpdateDiploVictory() in the source code of the original
-        return (
-            if (civCount > 28) 0.35 * civCount
-            else (67 - 1.1 * civCount) / 100 * civCount
-        ).toInt()
+        // So this is a slightly arbitrary decision: Apply original formula to count of available votes
+        // - including catering for the possibility we're voting without a UN thanks to razing -
+        val (_, civOwningUN) = getUNBuildingAndOwnerNames()
+        val voteCount = getVotingCivs().count() + (if (civOwningUN != null) 1 else 0)
+
+        // CvGame.cpp::DoUpdateDiploVictory() in the source code of the original - same integer math and rounding!
+        // To verify run `(1..30).map { voteCount -> voteCount to voteCount * (67 - (1.1 * voteCount).toInt()) / 100 + 1 }`
+        // ... and compare with: "4 votes needed to win in a game with 5 players, 7 with 13 and 11 with 28"
+        if (voteCount > 28) return voteCount * 35 / 100
+        return voteCount * (67 - (1.1 * voteCount).toInt()) / 100 + 1
     }
 
     fun hasEnoughVotesForDiplomaticVictory(): Boolean {

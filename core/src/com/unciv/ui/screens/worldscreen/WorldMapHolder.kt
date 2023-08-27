@@ -15,12 +15,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.automation.unit.AttackableTile
-import com.unciv.logic.automation.unit.BattleHelper
 import com.unciv.logic.automation.unit.CityLocationTileRanker
-import com.unciv.logic.automation.unit.UnitAutomation
+import com.unciv.logic.battle.AttackableTile
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
+import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.TileMap
@@ -40,11 +39,11 @@ import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.ActivationTypes
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.components.tilegroups.TileSetStrings
@@ -125,14 +124,15 @@ class WorldMapHolder(
             }
             tileGroup.onClick { onTileClicked(tileGroup.tile) }
 
-            // On 'droid two-finger tap is mapped to right click and dissent has been expressed
-            if (Gdx.app.type == Application.ApplicationType.Android)
-                continue
-
-            // Right mouse click listener
-            tileGroup.onRightClick {
+            // Right mouse click on desktop / Longpress on Android, and no equivalence mapping between those two,
+            // because on 'droid two-finger tap is mapped to right click and dissent has been expressed
+            tileGroup.onActivation(
+                type = if (Gdx.app.type == Application.ApplicationType.Android)
+                    ActivationTypes.Longpress else ActivationTypes.RightClick,
+                noEquivalence = true
+            ) {
                 val unit = worldScreen.bottomUnitTable.selectedUnit
-                    ?: return@onRightClick
+                    ?: return@onActivation
                 Concurrency.run("WorldScreenClick") {
                     onTileRightClicked(unit, tileGroup.tile)
                 }
@@ -224,7 +224,7 @@ class WorldMapHolder(
             /** If we are in unit-swapping mode and didn't find a swap partner, we don't want to move or attack */
         } else {
             // This seems inefficient as the tileToAttack is already known - but the method also calculates tileToAttackFrom
-            val attackableTile = BattleHelper
+            val attackableTile = TargetHelper
                     .getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
                     .firstOrNull { it.tileToAttack == tile }
             if (unit.canAttack() && attackableTile != null) {
@@ -334,12 +334,6 @@ class WorldMapHolder(
              * so that and that alone will be relegated to the concurrent thread.
              */
 
-            /** LibGdx sometimes has these weird errors when you try to edit the UI layout from 2 separate threads.
-             * And so, all UI editing will be done on the main thread.
-             * The only "heavy lifting" that needs to be done is getting the turns to get there,
-             * so that and that alone will be relegated to the concurrent thread.
-             */
-
             val unitToTurnsToTile = HashMap<MapUnit, Int>()
             for (unit in selectedUnits) {
                 val shortestPath = ArrayList<Tile>()
@@ -423,9 +417,9 @@ class WorldMapHolder(
         }
 
         for (unit in unitList) {
-            val unitGroup = UnitGroup(unit, 60f).surroundWithCircle(85f, resizeActor = false)
+            val unitGroup = UnitGroup(unit, 48f).surroundWithCircle(68f, resizeActor = false)
             unitGroup.circle.color = Color.GRAY.cpy().apply { a = 0.5f }
-            if (unit.currentMovement == 0f) unitGroup.color.a = 0.5f
+            if (unit.currentMovement == 0f) unitGroup.color.a = 0.66f
             unitGroup.touchable = Touchable.enabled
             unitGroup.onClick {
                 worldScreen.bottomUnitTable.selectUnit(unit, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
@@ -436,7 +430,7 @@ class WorldMapHolder(
         }
 
         addOverlayOnTileGroup(tileGroups[tile]!!, table)
-        table.moveBy(0f, 60f)
+        table.moveBy(0f, 48f)
 
     }
 
@@ -696,11 +690,11 @@ class WorldMapHolder(
                 if (nukeBlastRadius >= 0)
                     selectedTile!!.getTilesInDistance(nukeBlastRadius)
                         // Should not display invisible submarine units even if the tile is visible.
-                        .filter { targetTile -> (targetTile.isVisible(unit.civ) && targetTile.getUnits().any { !it.isInvisible(unit.civ) }) 
+                        .filter { targetTile -> (targetTile.isVisible(unit.civ) && targetTile.getUnits().any { !it.isInvisible(unit.civ) })
                             || (targetTile.isCityCenter() && unit.civ.hasExplored(targetTile)) }
                         .map { AttackableTile(unit.getTile(), it, 1f, null) }
                         .toList()
-                else BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
+                else TargetHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
                     .filter { it.tileToAttack.isVisible(unit.civ) }
                     .distinctBy { it.tileToAttack }
 
@@ -730,7 +724,7 @@ class WorldMapHolder(
 
     private fun updateBombardableTilesForSelectedCity(city: City) {
         if (!city.canBombard()) return
-        for (attackableTile in UnitAutomation.getBombardableTiles(city)) {
+        for (attackableTile in TargetHelper.getBombardableTiles(city)) {
             val group = tileGroups[attackableTile]!!
             group.layerOverlay.showHighlight(colorFromRGB(237, 41, 57))
             group.layerOverlay.showCrosshair()
@@ -799,8 +793,7 @@ class WorldMapHolder(
         unitActionOverlays.clear()
     }
 
-    override fun reloadMaxZoom()
-    {
+    override fun reloadMaxZoom() {
         val maxWorldZoomOut = UncivGame.Current.settings.maxWorldZoomOut
         val mapRadius = tileMap.mapParameters.mapSize.radius
 

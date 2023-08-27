@@ -281,18 +281,24 @@ class MapEditorEditStartsTab(
         val eraserIcon = "Nation/${firstNation.name}"
         val eraser = FormattedLine("Remove starting locations", icon = eraserIcon, size = 24, iconCrossed = true)
         add(eraser.render(0f).apply { onClick {
-            editTab.setBrush(BrushHandlerType.Direct, "Remove starting locations", eraserIcon, true) { tile ->
+            editTab.setBrush(BrushHandlerType.Direct, "Remove", eraserIcon, true) { tile ->
                 tile.tileMap.removeStartingLocations(tile.position)
             }
         } }).padBottom(0f).row()
-
+        // Create the nation list with the spectator nation included
+        // We use Nation/Spectator because it hasn't been used yet and we need an icon within the Nation.
+        val anyCiv = FormattedLine("Any Civ starting location", Constants.spectator, "Nation/Spectator", size = 24)
+        val nations = getNations().toList()
+        val nationsToAdd = ArrayList<FormattedLine>(1 + nations.count())
+        nationsToAdd.add((anyCiv)) // An Civ starting location should be first
+        nationsToAdd.addAll(nations)
         add(
             MarkupRenderer.render(
-            getNations(),
+            nationsToAdd,
             iconDisplay = FormattedLine.IconDisplay.NoLink
         ) {
             UncivGame.Current.musicController.chooseTrack(it, MusicMood.Theme, MusicTrackChooserFlags.setSpecific)
-            editTab.setBrush(BrushHandlerType.Direct, it, "Nation/$it") { tile ->
+            editTab.setBrush(BrushHandlerType.Direct, if (it ==Constants.spectator)  "Any Civ" else it, "Nation/$it") { tile ->
                 // toggle the starting location here, note this allows
                 // both multiple locations per nation and multiple nations per tile
                 if (!tile.tileMap.addStartingLocation(it, tile))
