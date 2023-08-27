@@ -203,7 +203,7 @@
     "steps": [
         "Defensive pacts allow you and another civ to protect one another from aggressors.\nOnce the defensive pact is signed, you will be drawn into their future defensive wars, just as they will be drawn into your future defensive wars. Declaring war on any Civ will remove all of your defensive pacts. You will have to re-sign them to use their effect.",
         "Be cautious when signing defensive pacts because they can bring you into wars that you might not want to be in.",
-        "The AI is very careful and will not accept defensive pacts with less than 80 attitude."
+        "The AI is very careful and will not accept defensive pacts with less than 80 influence."
     ]
   },
   {
