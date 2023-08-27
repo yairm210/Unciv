@@ -9,6 +9,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.unique.UniqueType
+import kotlin.math.max
 
 object BattleHelper {
 
@@ -118,9 +119,9 @@ object BattleHelper {
         var attackValue = Int.MIN_VALUE
         // Prioritize attacking military
         val militaryUnit = attackTile.tileToAttack.militaryUnit
+        val civilianUnit = attackTile.tileToAttack.civilianUnit
         if (militaryUnit != null) {
-            attackValue = 0
-            attackValue += 150
+            attackValue = 150
             // Associate enemy units with number of hits from this unit to kill them
             val attacksToKill = (militaryUnit.health.toFloat() / 
                 BattleDamage.calculateDamageToDefender(MapUnitCombatant(attacker), MapUnitCombatant(militaryUnit))).coerceAtLeast(1f)
@@ -128,23 +129,20 @@ object BattleHelper {
             if (attacksToKill <= 1) attackValue += 100
             // On average, this should take around 3 turns, so -30
             else attackValue -= (attacksToKill * 10).toInt()
-        } else {
-            val civilianUnit = attackTile.tileToAttack.civilianUnit
-            if (civilianUnit != null) {
-                attackValue = 0
-                attackValue += 50
-                // Only melee units should really attack/capture civilian units, ranged units take more than one turn
-                if (attacker.baseUnit.isMelee()) {
-                    if (civilianUnit.isGreatPerson()) {
-                        attackValue += 50
-                        // This is really good if we can kill a great general
-                        if (civilianUnit.isGreatPersonOfType("Great General")) attackValue += 150
-                    }
-                    if (civilianUnit.hasUnique(UniqueType.FoundCity)) attackValue += 30
+        } else if (civilianUnit != null) {
+            attackValue = 50
+            // Only melee units should really attack/capture civilian units, ranged units take more than one turn
+            if (attacker.baseUnit.isMelee()) {
+                if (civilianUnit.isGreatPerson()) {
+                    attackValue += 50
+                    // This is really good if we can kill a great general
+                    if (civilianUnit.isGreatPersonOfType("Great General")) attackValue += 150
                 }
+                if (civilianUnit.hasUnique(UniqueType.FoundCity)) attackValue += 30
             }
         }
         // Prioritise closer units as they are generally more threatening to this unit
+        // Moving around less means we are straying less into enemy territory
         attackValue += (attackTile.movementLeftAfterMovingToAttackTile * 5).toInt()
         
         return attackValue
