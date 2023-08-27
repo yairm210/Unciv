@@ -68,43 +68,42 @@ object BattleHelper {
             tempAttackValue
         }
         // todo For air units, prefer to attack tiles with lower intercept chance
-        return if (highestAttackValue > 0) attackTile else null
+        return if (highestAttackValue > 30) attackTile else null
     }
 
     /**
      * Returns a value which represents the attacker's motivation to attack a city.
-     * Ranged and siege units are prefered.
+     * Siege units will almost always attack cities.
+     * Base value is 100(Mele) 110(Ranged) standard deviation is around 80 to 130
      */
     private fun getCityAttackValue(attacker: MapUnit, city: City): Int {
         val attackerUnit = MapUnitCombatant(attacker)
         val cityUnit = CityCombatant(city)
         val isCityCapturable = city.health == 1 
             || attacker.baseUnit.isMelee() && city.health <= BattleDamage.calculateDamageToDefender(attackerUnit, cityUnit).coerceAtLeast(1)
-        if (isCityCapturable) {
+        if (isCityCapturable)
             return if (attacker.baseUnit.isMelee()) 10000 // Capture the city immediatly!
-            else 0 // Don't attack the city anymore as we are a ranged unit
-        }
+            else 0 // Don't attack the city anymore since we are a ranged unit
         
-        // We'll probably die next turn if we attack the city
         if (attacker.baseUnit.isMelee() && attacker.health - BattleDamage.calculateDamageToAttacker(attackerUnit, cityUnit) * 2 <= 0)
-            return 0
+            return 0 // We'll probably die next turn if we attack the city
 
-        var attackValue = 120 
+        var attackValue = 100 
         // Siege units should really only attack the city
-        if (attacker.baseUnit.isProbablySiegeUnit()) attackValue += 300
+        if (attacker.baseUnit.isProbablySiegeUnit()) attackValue += 100
         // Ranged units don't take damage from the city
-        else if (attacker.baseUnit.isRanged()) attackValue += 50
-        // Lower health cities have a higher priority to attack
-        attackValue -= (city.health - 50) / 2
+        else if (attacker.baseUnit.isRanged()) attackValue += 10
+        // Lower health cities have a higher priority to attack ranges from -20 to 30
+        attackValue -= (city.health - 60) / 2
 
         // Add value based on number of units around the city
         val defendingCityCiv = city.civ
         city.getCenterTile().neighbors.forEach {
             if (it.militaryUnit != null) {
-                if (it.militaryUnit?.civ == defendingCityCiv)
-                    attackValue -= 10
-                if (it.militaryUnit?.civ == attacker.civ)
-                    attackValue += 20
+                if (it.militaryUnit!!.civ.isAtWarWith(attacker.civ))
+                    attackValue -= 5
+                if (it.militaryUnit!!.civ.isAtWarWith(defendingCityCiv))
+                    attackValue += 15
             }
         }
         
@@ -113,6 +112,7 @@ object BattleHelper {
 
     /**
      * Returns a value which represents the attacker's motivation to attack a unit.
+     * Base value is 100 and standard deviation is around 80 to 130
      */
     private fun getUnitAttackValue(attacker: MapUnit, attackTile: AttackableTile): Int {
         // Base attack value, there is nothing there...
@@ -121,28 +121,27 @@ object BattleHelper {
         val militaryUnit = attackTile.tileToAttack.militaryUnit
         val civilianUnit = attackTile.tileToAttack.civilianUnit
         if (militaryUnit != null) {
-            attackValue = 150
+            attackValue = 100
             // Associate enemy units with number of hits from this unit to kill them
             val attacksToKill = (militaryUnit.health.toFloat() / 
                 BattleDamage.calculateDamageToDefender(MapUnitCombatant(attacker), MapUnitCombatant(militaryUnit))).coerceAtLeast(1f)
             // We can kill them in this turn
-            if (attacksToKill <= 1) attackValue += 100
-            // On average, this should take around 3 turns, so -30
-            else attackValue -= (attacksToKill * 10).toInt()
+            if (attacksToKill <= 1) attackValue += 30
+            // On average, this should take around 3 turns, so -15
+            else attackValue -= (attacksToKill * 5).toInt()
         } else if (civilianUnit != null) {
             attackValue = 50
             // Only melee units should really attack/capture civilian units, ranged units take more than one turn
             if (attacker.baseUnit.isMelee()) {
                 if (civilianUnit.isGreatPerson()) {
-                    attackValue += 50
-                    // This is really good if we can kill a great general
-                    if (civilianUnit.isGreatPersonOfType("Great General")) attackValue += 150
+                    attackValue += 150
                 }
-                if (civilianUnit.hasUnique(UniqueType.FoundCity)) attackValue += 30
+                if (civilianUnit.hasUnique(UniqueType.FoundCity)) attackValue += 60
             }
         }
         // Prioritise closer units as they are generally more threatening to this unit
         // Moving around less means we are straying less into enemy territory
+        // Average should be around 2.5-5 early game and up to 35 for tanks in late game
         attackValue += (attackTile.movementLeftAfterMovingToAttackTile * 5).toInt()
         
         return attackValue
