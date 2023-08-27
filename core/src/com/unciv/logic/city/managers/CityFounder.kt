@@ -205,7 +205,7 @@ class CityFounder {
             val building = ruleset.buildings[buildingName] ?: continue
             val uniqueBuilding = civInfo.getEquivalentBuilding(building)
             if (uniqueBuilding.isBuildable(city.cityConstructions))
-                city.cityConstructions.addBuilding(uniqueBuilding.name)
+                city.cityConstructions.addBuilding(uniqueBuilding)
         }
 
         civInfo.civConstructions.tryAddFreeBuildings()

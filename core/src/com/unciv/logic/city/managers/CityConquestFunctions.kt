@@ -41,9 +41,9 @@ class CityConquestFunctions(val city: City){
                 building.hasUnique(UniqueType.NotDestroyedWhenCityCaptured) || building.isWonder -> continue
                 building.hasUnique(UniqueType.IndicatesCapital) -> continue // Palace needs to stay a just a bit longer so moveToCiv isn't confused
                 building.hasUnique(UniqueType.DestroyedWhenCityCaptured) ->
-                    city.cityConstructions.removeBuilding(building.name)
+                    city.cityConstructions.removeBuilding(building)
                 // Regular buildings have a 34% chance of removal
-                tileBasedRandom.nextInt(100) < 34 -> city.cityConstructions.removeBuilding(building.name)
+                tileBasedRandom.nextInt(100) < 34 -> city.cityConstructions.removeBuilding(building)
             }
         }
     }
@@ -67,7 +67,7 @@ class CityConquestFunctions(val city: City){
         for (building in city.cityConstructions.getBuiltBuildings()) {
             // Remove national wonders
             if (building.isNationalWonder && !building.hasUnique(UniqueType.NotDestroyedWhenCityCaptured))
-                city.cityConstructions.removeBuilding(building.name)
+                city.cityConstructions.removeBuilding(building)
 
             // Check if we exceed MaxNumberBuildable for any buildings
             for (unique in building.getMatchingUniques(UniqueType.MaxNumberBuildable)) {
@@ -78,7 +78,7 @@ class CityConquestFunctions(val city: City){
                         } >= unique.params[0].toInt()
                 ) {
                     // For now, just destroy in new city. Even if constructing in own cities
-                    this.city.cityConstructions.removeBuilding(building.name)
+                    this.city.cityConstructions.removeBuilding(building)
                 }
             }
         }
@@ -289,10 +289,10 @@ class CityConquestFunctions(val city: City){
 
         // Transfer unique buildings
         for (building in city.cityConstructions.getBuiltBuildings()) {
-            val civEquivalentBuilding = newCiv.getEquivalentBuilding(building.name)
+            val civEquivalentBuilding = newCiv.getEquivalentBuilding(building)
             if (building != civEquivalentBuilding) {
-                city.cityConstructions.removeBuilding(building.name)
-                city.cityConstructions.addBuilding(civEquivalentBuilding.name)
+                city.cityConstructions.removeBuilding(building)
+                city.cityConstructions.addBuilding(civEquivalentBuilding)
             }
         }
 

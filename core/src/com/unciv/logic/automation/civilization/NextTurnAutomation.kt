@@ -339,7 +339,7 @@ object NextTurnAutomation {
             if (construction is PerpetualConstruction) continue
             if ((construction as INonPerpetualConstruction).canBePurchasedWithStat(city, Stat.Gold)
                     && city.civ.gold / 3 >= construction.getStatBuyCost(city, Stat.Gold)!!) {
-                city.cityConstructions.purchaseConstruction(construction.name, 0, true)
+                city.cityConstructions.purchaseConstruction(construction, 0, true)
             }
         }
 
@@ -623,7 +623,7 @@ object NextTurnAutomation {
                         && it.name !in civInfo.civConstructions.getFreeBuildings(city.id) }
                     .randomOrNull()
                 if (buildingToSell != null) {
-                    city.sellBuilding(buildingToSell.name)
+                    city.sellBuilding(buildingToSell)
                     break
                 }
             }
