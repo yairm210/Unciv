@@ -142,7 +142,7 @@ class PromotionTree(val unit: MapUnit) {
                         // else: Already reached, but a worse way - overwrite fully
                     }
                     child.depth = depth + 1
-                    child.distanceToAdopted = distance
+                    if (!child.unreachable) child.distanceToAdopted = distance // Only edit this if the node could possibly be reached
                     child.pathIsAmbiguous = node.pathIsAmbiguous
                     child.preferredParent = node.takeUnless { node.pathIsAmbiguous }
                 }
