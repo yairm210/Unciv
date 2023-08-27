@@ -6,6 +6,7 @@ import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
+import com.unciv.logic.city.City
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.mapunit.PathsToTilesWithinTurn
 import com.unciv.logic.map.tile.Tile
@@ -175,64 +176,101 @@ object BattleHelper {
         return false
     }
 
+    /**
+     * Choses the best target in attackableEnemies, this could be a city or a unit.
+     */
     private fun chooseAttackTarget(unit: MapUnit, attackableEnemies: List<AttackableTile>): AttackableTile? {
-        val cityTilesToAttack = attackableEnemies.filter { it.tileToAttack.isCityCenter() }
-        val nonCityTilesToAttack = attackableEnemies.filter { !it.tileToAttack.isCityCenter() }
-
+        var highestAttackValue = 0
+        var attackTile: AttackableTile? = null
+        for (attackableEnemy in attackableEnemies) {
+            val tempValue = if (attackableEnemy.tileToAttack.isCityCenter()) getCityAttackValue(unit, attackableEnemy.tileToAttack.getCity()!!)
+            else getUnitAttackValue(unit, attackableEnemy)
+            if (tempValue > highestAttackValue) {
+                highestAttackValue = tempValue
+                attackTile = attackableEnemy
+            }
+        }
         // todo For air units, prefer to attack tiles with lower intercept chance
-
-        val capturableCity = cityTilesToAttack.firstOrNull { it.tileToAttack.getCity()!!.health == 1 }
-        val cityWithHealthLeft =
-            cityTilesToAttack.filter { it.tileToAttack.getCity()!!.health != 1 } // don't want ranged units to attack defeated cities
-                .minByOrNull { it.tileToAttack.getCity()!!.health }
-
-        if (unit.baseUnit.isMelee() && capturableCity != null)
-            return capturableCity // enter it quickly, top priority!
-
-        if (nonCityTilesToAttack.isNotEmpty()) // second priority, units
-            return chooseUnitToAttack(unit, nonCityTilesToAttack)
-
-        if (cityWithHealthLeft != null) return cityWithHealthLeft // third priority, city
-
-        return null
+        return attackTile
     }
 
-    private fun chooseUnitToAttack(unit: MapUnit, attackableUnits: List<AttackableTile>): AttackableTile {
-        val militaryUnits = attackableUnits.filter { it.tileToAttack.militaryUnit != null }
-
-        // prioritize attacking military
-        if (militaryUnits.isNotEmpty()) {
-            // associate enemy units with number of hits from this unit to kill them
-            val attacksToKill = militaryUnits
-                .associateWith { it.tileToAttack.militaryUnit!!.health.toFloat() / BattleDamage.calculateDamageToDefender(
-                        MapUnitCombatant(unit),
-                        MapUnitCombatant(it.tileToAttack.militaryUnit!!)
-                    ).toFloat().coerceAtLeast(1f) }
-
-            // kill a unit if possible, prioritizing by attack strength
-            val canKill = attacksToKill.filter { it.value <= 1 }.keys
-                .sortedByDescending { it.movementLeftAfterMovingToAttackTile } // Among equal kills, prioritize the closest unit
-                .maxByOrNull { MapUnitCombatant(it.tileToAttack.militaryUnit!!).getAttackingStrength() }
-            if (canKill != null) return canKill
-
-            // otherwise pick the unit we can kill the fastest
-            return attacksToKill.minBy { it.value }.key
+    /**
+     * Returns a value which represents the attacker's motivation to attack a city.
+     * Ranged and siege units are prefered.
+     */
+    private fun getCityAttackValue(attacker: MapUnit, city: City): Int {
+        val attackerUnit = MapUnitCombatant(attacker)
+        val cityUnit = CityCombatant(city)
+        val isCityCapturable = city.health == 1 
+            || attacker.baseUnit.isMelee() && city.health <= BattleDamage.calculateDamageToDefender(attackerUnit, cityUnit).coerceAtLeast(1)
+        if (isCityCapturable) {
+            return if (attacker.baseUnit.isMelee()) 10000 // Capture the city immediatly!
+            else 0 // Don't attack the city anymore as we are a ranged unit
         }
+        
+        // We'll probably die next turn if we attack the city
+        if (attacker.baseUnit.isMelee() && attacker.health - BattleDamage.calculateDamageToAttacker(attackerUnit, cityUnit) * 2 <= 0)
+            return 0
 
-        // only civilians in attacking range - GP most important, second settlers, then anything else
+        var attackValue = 120 
+        // Siege units should really only attack the city
+        if (attacker.baseUnit.isProbablySiegeUnit()) attackValue += 300
+        // Ranged units don't take damage from the city
+        else if (attacker.baseUnit.isRanged()) attackValue += 50
+        // Lower health cities have a higher priority to attack
+        attackValue -= (city.health - 50) / 2
 
-        val unitsToConsider = attackableUnits.filter { it.tileToAttack.civilianUnit!!.isGreatPerson() }
-            .ifEmpty { attackableUnits.filter { it.tileToAttack.civilianUnit!!.hasUnique(UniqueType.FoundCity) } }
-            .ifEmpty { attackableUnits }
-
-        // Melee - prioritize by distance, so we have most movement left
-        if (unit.baseUnit.isMelee()){
-            return unitsToConsider.maxBy { it.movementLeftAfterMovingToAttackTile }
+        // Add value based on number of units around the city
+        val defendingCityCiv = city.civ
+        city.getCenterTile().neighbors.forEach {
+            if (it.militaryUnit != null) {
+                if (it.militaryUnit?.civ == defendingCityCiv)
+                    attackValue -= 10
+                if (it.militaryUnit?.civ == attacker.civ)
+                    attackValue += 20
+            }
         }
+        
+        return attackValue
+    }
 
-        // We're ranged, prioritize that we can kill
-        return unitsToConsider.minBy {
-            Battle.getMapCombatantOfTile(it.tileToAttack)!!.getHealth()
+    /**
+     * Returns a value which represents the attacker's motivation to attack a unit.
+     */
+    private fun getUnitAttackValue(attacker: MapUnit, attackTile: AttackableTile): Int {
+        // Base attack value, there is nothing there...
+        var attackValue = Int.MIN_VALUE
+        // Prioritize attacking military
+        val militaryUnit = attackTile.tileToAttack.militaryUnit
+        if (militaryUnit != null) {
+            attackValue = 0
+            attackValue += 150
+            // Associate enemy units with number of hits from this unit to kill them
+            val attacksToKill = (militaryUnit.health.toFloat() / 
+                BattleDamage.calculateDamageToDefender(MapUnitCombatant(attacker), MapUnitCombatant(militaryUnit))).coerceAtLeast(1f)
+            // We can kill them in this turn
+            if (attacksToKill <= 1) attackValue += 100
+            // On average, this should take around 3 turns, so -30
+            else attackValue -= (attacksToKill * 10).toInt()
+        } else {
+            val civilianUnit = attackTile.tileToAttack.civilianUnit
+            if (civilianUnit != null) {
+                attackValue = 0
+                attackValue += 50
+                // Only melee units should really attack/capture civilian units, ranged units take more than one turn
+                if (attacker.baseUnit.isMelee()) {
+                    if (civilianUnit.isGreatPerson()) {
+                        attackValue += 50
+                        // This is really good if we can kill a great general
+                        if (civilianUnit.isGreatPersonOfType("Great General")) attackValue += 150
+                    }
+                    if (civilianUnit.hasUnique(UniqueType.FoundCity)) attackValue += 30
+                }
+            }
         }
+        // Prioritise closer units as they are generally more threatening to this unit
+        attackValue += (attackTile.movementLeftAfterMovingToAttackTile * 5).toInt()
+        
+        return attackValue
     }
 }
