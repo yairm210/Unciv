@@ -465,6 +465,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             yield(RejectionReasonType.AlreadyBuilt.toInstance())
 
         for (unique in uniqueObjects) {
+            for (unique in uniqueObjects) {
+                if (unique.type != UniqueType.OnlyAvailableWhen &&
+                    !unique.conditionalsApply(StateForConditionals(civ, cityConstructions.city))) continue
+                
             @Suppress("NON_EXHAUSTIVE_WHEN")
             when (unique.type) {
                 // for buildings that are created as side effects of other things, and not directly built,
