@@ -384,7 +384,7 @@ enum class UniqueParameterType(
 
     /** Implemented by [TileImprovement.matchesFilter][com.unciv.models.ruleset.tile.TileImprovement.matchesFilter] */
     ImprovementFilter("improvementFilter", "All Road", null, "Improvement Filters") {
-        private val knownValues = setOf("All", "All Road", "Great Improvement", "Great")
+        private val knownValues = setOf("All", "Improvement", "All Road", "Great Improvement", "Great")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText in knownValues) return null
