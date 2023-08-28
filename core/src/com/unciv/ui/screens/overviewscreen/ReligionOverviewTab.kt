@@ -91,7 +91,7 @@ class ReligionOverviewTab(
 
         if (manager.canGenerateProphet(ignoreFaithAmount = true)) {
             add("Minimal Faith required for\nthe next [great prophet equivalent]:"
-                .fillPlaceholders(manager.getGreatProphetEquivalent()!!)
+                .fillPlaceholders(manager.getGreatProphetEquivalent()!!.name)
                 .toLabel()
             )
             add(

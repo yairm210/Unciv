@@ -524,7 +524,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
     private fun cannotAddConstructionToQueue(construction: IConstruction, city: City, cityConstructions: CityConstructions): Boolean {
         return cityConstructions.isQueueFull()
-                || !cityConstructions.getConstruction(construction.name).isBuildable(cityConstructions)
+                || !construction.isBuildable(cityConstructions)
                 || !cityScreen.canChangeState
                 || construction is PerpetualConstruction && cityConstructions.isBeingConstructedOrEnqueued(construction.name)
                 || city.isPuppet
@@ -699,7 +699,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     ) {
         SoundPlayer.play(stat.purchaseSound)
         val city = cityScreen.city
-        if (!city.cityConstructions.purchaseConstruction(construction.name, selectedQueueEntry, false, stat, tile)) {
+        if (!city.cityConstructions.purchaseConstruction(construction, selectedQueueEntry, false, stat, tile)) {
             Popup(cityScreen).apply {
                 add("No space available to place [${construction.name}] near [${city.name}]".tr()).row()
                 addCloseButton()

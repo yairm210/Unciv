@@ -111,7 +111,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
                             cityScreen.update()
                         }
                     ) {
-                        cityScreen.city.sellBuilding(construction.name)
+                        cityScreen.city.sellBuilding(construction)
                         cityScreen.clearSelection()
                         cityScreen.update()
                     }.open()

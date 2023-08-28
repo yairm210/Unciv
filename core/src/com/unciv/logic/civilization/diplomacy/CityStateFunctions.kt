@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.DiplomacyAction
 import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
@@ -75,7 +76,7 @@ class CityStateFunctions(val civInfo: Civilization) {
             return
         val giftedUnit = giftableUnits.random()
         val cities = NextTurnAutomation.getClosestCities(receivingCiv, civInfo) ?: return
-        val placedUnit = receivingCiv.units.placeUnitNearTile(cities.city1.location, giftedUnit.name)
+        val placedUnit = receivingCiv.units.placeUnitNearTile(cities.city1.location, giftedUnit)
             ?: return
         val locations = LocationAction(placedUnit.getTile().position, cities.city2.location)
         receivingCiv.addNotification( "[${civInfo.civName}] gave us a [${giftedUnit.name}] as a gift!", locations,
@@ -115,12 +116,12 @@ class CityStateFunctions(val civInfo: Civilization) {
             placedUnit.promotions.XP += unique.params[0].toInt()
         }
 
-        // Point to the places mentioned in the message _in that order_ (debatable)
-        val placedLocation = placedUnit.getTile().position
-        val locations = LocationAction(placedLocation, cities.city2.location, city.location)
+        // Point to the gifted unit, then to the other places mentioned in the message
+        val unitAction = sequenceOf(MapUnitAction(placedUnit.getTile().position))
+        val notificationActions = unitAction + LocationAction(cities.city2.location, city.location)
         receivingCiv.addNotification(
             "[${civInfo.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!",
-            locations,
+            notificationActions,
             NotificationCategory.Units,
             civInfo.civName,
             militaryUnit.name
@@ -228,18 +229,11 @@ class CityStateFunctions(val civInfo: Civilization) {
             val oldAllyName = civInfo.getAllyCiv()
             civInfo.setAllyCiv(newAllyName)
 
-            // If the city-state is captured by a civ, it stops being the ally of the civ it was previously an ally of.
-            //  This means that it will NOT HAVE a capital at that time, so if we run getCapital we'll get a crash!
-            val capitalLocation = if (civInfo.cities.isNotEmpty() && civInfo.getCapital() != null) civInfo.getCapital()!!.location else null
-
             if (newAllyName != null) {
                 val newAllyCiv = civInfo.gameInfo.getCivilization(newAllyName)
                 val text = "We have allied with [${civInfo.civName}]."
-                if (capitalLocation != null) newAllyCiv.addNotification(text, capitalLocation,
-                    NotificationCategory.Diplomacy, civInfo.civName,
-                    NotificationIcon.Diplomacy
-                )
-                else newAllyCiv.addNotification(text,
+                newAllyCiv.addNotification(text,
+                    getNotificationActions(),
                     NotificationCategory.Diplomacy, civInfo.civName,
                     NotificationIcon.Diplomacy
                 )
@@ -262,11 +256,8 @@ class CityStateFunctions(val civInfo: Civilization) {
             if (oldAllyName != null && civInfo.isAlive()) {
                 val oldAllyCiv = civInfo.gameInfo.getCivilization(oldAllyName)
                 val text = "We have lost alliance with [${civInfo.civName}]."
-                if (capitalLocation != null) oldAllyCiv.addNotification(text, capitalLocation,
-                    NotificationCategory.Diplomacy, civInfo.civName,
-                    NotificationIcon.Diplomacy
-                )
-                else oldAllyCiv.addNotification(text,
+                oldAllyCiv.addNotification(text,
+                    getNotificationActions(),
                     NotificationCategory.Diplomacy, civInfo.civName,
                     NotificationIcon.Diplomacy
                 )
@@ -274,6 +265,21 @@ class CityStateFunctions(val civInfo: Civilization) {
                 oldAllyCiv.cache.updateCivResources()
             }
         }
+    }
+
+    /** @return a Sequence of NotificationActions for use in addNotification, showing Capital on map if any, then opening diplomacy */
+    fun getNotificationActions() = sequence {
+        // Notification click will first point to CS location, if any, then open diplomacy.
+        // That's fine for the influence notifications and for afraid too.
+        //
+        // If the city-state is captured by a civ, it stops being the ally of the civ it was previously an ally of.
+        //  This means that it will NOT HAVE a capital at that time, so if we run getCapital()!! we'll get a crash!
+        // Or, City States can get stuck with only their Settler and no cities until late into a game if city placements are rare
+        // We also had `cities.asSequence() // in practice 0 or 1 entries, that's OK` before (a CS *can* have >1 cities but it will always raze conquests).
+        val capital = civInfo.getCapital()
+        if (capital != null)
+            yield(LocationAction(capital.location))
+        yield(DiplomacyAction(civInfo.civName))
     }
 
     fun getDiplomaticMarriageCost(): Int {
@@ -432,7 +438,7 @@ class CityStateFunctions(val civInfo: Civilization) {
                 it.value.isCivilian() && it.value.isBuildable(civInfo)
         }
         if (buildableWorkerLikeUnits.isEmpty()) return  // Bad luck?
-        demandingCiv.units.placeUnitNearTile(civInfo.getCapital()!!.location, buildableWorkerLikeUnits.keys.random())
+        demandingCiv.units.placeUnitNearTile(civInfo.getCapital()!!.location, buildableWorkerLikeUnits.values.random())
 
         civInfo.getDiplomacyManager(demandingCiv).addInfluence(-50f)
         cityStateBullied(demandingCiv)

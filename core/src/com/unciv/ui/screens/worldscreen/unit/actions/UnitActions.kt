@@ -277,9 +277,9 @@ object UnitActions {
                 if (unit.isPreparingParadrop()) unit.action = null
                 else unit.action = UnitActionType.Paradrop.value
             }.takeIf {
-                unit.currentMovement == unit.getMaxMovement().toFloat() &&
-                        unit.currentTile.isFriendlyTerritory(unit.civ) &&
-                        !unit.isEmbarked()
+                !unit.hasUnitMovedThisTurn() &&
+                unit.currentTile.isFriendlyTerritory(unit.civ) &&
+                !unit.isEmbarked()
             })
     }
 
@@ -350,13 +350,13 @@ object UnitActions {
                 title = title,
                 action = {
                     unit.destroy()
-                    val newUnit = civInfo.units.placeUnitNearTile(unitTile.position, unitToTransformTo.name)
+                    val newUnit = civInfo.units.placeUnitNearTile(unitTile.position, unitToTransformTo)
 
                     /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
                      * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
                      */
                     if (newUnit == null) {
-                        val resurrectedUnit = civInfo.units.placeUnitNearTile(unitTile.position, unit.name)!!
+                        val resurrectedUnit = civInfo.units.placeUnitNearTile(unitTile.position, unit.baseUnit)!!
                         unit.copyStatisticsTo(resurrectedUnit)
                     } else { // Managed to upgrade
                         unit.copyStatisticsTo(newUnit)

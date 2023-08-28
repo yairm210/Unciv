@@ -339,7 +339,7 @@ object NextTurnAutomation {
             if (construction is PerpetualConstruction) continue
             if ((construction as INonPerpetualConstruction).canBePurchasedWithStat(city, Stat.Gold)
                     && city.civ.gold / 3 >= construction.getStatBuyCost(city, Stat.Gold)!!) {
-                city.cityConstructions.purchaseConstruction(construction.name, 0, true)
+                city.cityConstructions.purchaseConstruction(construction, 0, true)
             }
         }
 
@@ -623,7 +623,7 @@ object NextTurnAutomation {
                         && it.name !in civInfo.civConstructions.getFreeBuildings(city.id) }
                     .randomOrNull()
                 if (buildingToSell != null) {
-                    city.sellBuilding(buildingToSell.name)
+                    city.sellBuilding(buildingToSell)
                     break
                 }
             }
@@ -796,7 +796,7 @@ object NextTurnAutomation {
             // Default setting is 5, this will be changed according to different civ.
             if ((1..10).random() > 5) continue
             val tradeLogic = TradeLogic(civInfo, otherCiv)
-            val cost = civInfo.diplomacyFunctions.getResearchAgreementCost()
+            val cost = civInfo.diplomacyFunctions.getResearchAgreementCost(otherCiv)
             tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
             tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
 

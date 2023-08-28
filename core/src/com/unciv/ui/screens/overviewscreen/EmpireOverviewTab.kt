@@ -36,6 +36,7 @@ abstract class EmpireOverviewTab (
         val worldScreen = GUI.getWorldScreen()
         worldScreen.notificationsScroll.oneTimeNotification = notification
         UncivGame.Current.resetToWorldScreen()
+        notification.resetExecuteRoundRobin()
         notification.execute(worldScreen)
     }
 }

@@ -68,7 +68,7 @@ object BackwardCompatibility {
 
             for (building in city.cityConstructions.getBuiltBuildings()) {
                 if (!ruleset.buildings.containsKey(building.name))
-                    city.cityConstructions.removeBuilding(building.name)
+                    city.cityConstructions.removeBuilding(building)
             }
 
             fun isInvalidConstruction(construction: String) =
@@ -191,16 +191,5 @@ object BackwardCompatibility {
             tile.history.recordTakeOwnership(tile)
         }
         historyStartTurn = turns
-    }
-
-    fun GameInfo.migrateGreatPersonPools() {
-        for (civ in civilizations) civ.greatPeople.run {
-            if (pointsForNextGreatPerson >= pointsForNextGreatPersonCounter[""]) {
-                pointsForNextGreatPersonCounter[""] = pointsForNextGreatPerson
-            }
-             else {
-                 pointsForNextGreatPerson = pointsForNextGreatPersonCounter[""]
-             }
-        }
     }
 }

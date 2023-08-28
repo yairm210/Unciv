@@ -90,13 +90,12 @@ object ReligionAutomation {
             val buildings = city.religion.getMajorityReligion()!!.buildingsPurchasableByBeliefs
             val buildingToBePurchased = buildings
                 .asSequence()
-                .map { civInfo.getEquivalentBuilding(it).name }
-                .map { city.cityConstructions.getConstruction(it) as INonPerpetualConstruction }
+                .map { civInfo.getEquivalentBuilding(it) }
                 .filter { it.isPurchasable(city.cityConstructions) }
                 .filter { (it.getStatBuyCost(city, Stat.Faith) ?: return@filter false) <= civInfo.religionManager.storedFaith }
                 .minByOrNull { it.getStatBuyCost(city, Stat.Faith)!! }
                 ?: continue
-            city.cityConstructions.purchaseConstruction(buildingToBePurchased.name, -1, true, Stat.Faith)
+            city.cityConstructions.purchaseConstruction(buildingToBePurchased, -1, true, Stat.Faith)
             return
         }
     }
@@ -117,7 +116,7 @@ object ReligionAutomation {
             ?: return
 
 
-        val hasUniqueToTakeCivReligion = civInfo.gameInfo.ruleset.units[missionaryConstruction.name]!!.hasUnique(UniqueType.TakeReligionOverBirthCity)
+        val hasUniqueToTakeCivReligion = missionaryConstruction.hasUnique(UniqueType.TakeReligionOverBirthCity)
 
         val validCitiesToBuy = civInfo.cities.filter {
             (hasUniqueToTakeCivReligion || it.religion.getMajorityReligion() == civInfo.religionManager.religion)
@@ -138,21 +137,20 @@ object ReligionAutomation {
             else -> validCitiesToBuy.first()
         }
 
-        cityToBuyMissionary.cityConstructions.purchaseConstruction(missionaryConstruction.name, -1, true, Stat.Faith)
+        cityToBuyMissionary.cityConstructions.purchaseConstruction(missionaryConstruction, -1, true, Stat.Faith)
         return
     }
 
     private fun buyGreatProphetInAnyCity(civInfo: Civilization) {
         if (civInfo.religionManager.religionState < ReligionState.Religion) return
         var greatProphetUnit = civInfo.religionManager.getGreatProphetEquivalent() ?: return
-        greatProphetUnit = civInfo.getEquivalentUnit(greatProphetUnit).name
-        val greatProphetConstruction = civInfo.cities.first().cityConstructions.getConstruction(greatProphetUnit) as INonPerpetualConstruction
+        greatProphetUnit = civInfo.getEquivalentUnit(greatProphetUnit)
         val cityToBuyGreatProphet = civInfo.cities
             .asSequence()
-            .filter { greatProphetConstruction.isPurchasable(it.cityConstructions) }
-            .filter { greatProphetConstruction.canBePurchasedWithStat(it, Stat.Faith) }
-            .filter { (greatProphetConstruction.getStatBuyCost(it, Stat.Faith) ?: return@filter false) <= civInfo.religionManager.storedFaith }
-            .minByOrNull { greatProphetConstruction.getStatBuyCost(it, Stat.Faith)!! }
+            .filter { greatProphetUnit.isPurchasable(it.cityConstructions) }
+            .filter { greatProphetUnit.canBePurchasedWithStat(it, Stat.Faith) }
+            .filter { (greatProphetUnit.getStatBuyCost(it, Stat.Faith) ?: return@filter false) <= civInfo.religionManager.storedFaith }
+            .minByOrNull { greatProphetUnit.getStatBuyCost(it, Stat.Faith)!! }
             ?: return
         cityToBuyGreatProphet.cityConstructions.purchaseConstruction(greatProphetUnit, -1, true, Stat.Faith)
     }
@@ -175,7 +173,7 @@ object ReligionAutomation {
             ?: return
 
 
-        val hasUniqueToTakeCivReligion = civInfo.gameInfo.ruleset.units[inquisitorConstruction.name]!!.hasUnique(UniqueType.TakeReligionOverBirthCity)
+        val hasUniqueToTakeCivReligion = inquisitorConstruction.hasUnique(UniqueType.TakeReligionOverBirthCity)
 
         val validCitiesToBuy = civInfo.cities.filter {
             (hasUniqueToTakeCivReligion || it.religion.getMajorityReligion() == civInfo.religionManager.religion)
@@ -183,16 +181,10 @@ object ReligionAutomation {
             && inquisitorConstruction.isPurchasable(it.cityConstructions)
             && inquisitorConstruction.canBePurchasedWithStat(it, Stat.Faith)
         }
-        if (validCitiesToBuy.isEmpty()) return
-
         val cityToBuy = validCitiesToBuy
-            .filter {
-                inquisitorConstruction.isPurchasable(it.cityConstructions)
-                && inquisitorConstruction.canBePurchasedWithStat(it, Stat.Faith)
-            }
             .minByOrNull { it.getCenterTile().aerialDistanceTo(city.getCenterTile()) } ?: return
 
-        cityToBuy.cityConstructions.purchaseConstruction(inquisitorConstruction.name, -1, true, Stat.Faith)
+        cityToBuy.cityConstructions.purchaseConstruction(inquisitorConstruction, -1, true, Stat.Faith)
     }
 
     // endregion
@@ -331,7 +323,7 @@ object ReligionAutomation {
 
         for (unique in belief.uniqueObjects) {
             val modifier =
-                if (unique.conditionals.any { it.type == UniqueType.ConditionalOurUnit && it.params[0] == civInfo.religionManager.getGreatProphetEquivalent() }) 1/2f
+                if (unique.conditionals.any { it.type == UniqueType.ConditionalOurUnit && it.params[0] == civInfo.religionManager.getGreatProphetEquivalent()?.name }) 1/2f
                 else 1f
             // Some city-filters are modified by personality (non-enemy foreign cities)
             score += modifier * when (unique.type) {

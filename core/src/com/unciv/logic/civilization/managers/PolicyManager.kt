@@ -30,8 +30,12 @@ class PolicyManager : IsPartOfGameInfoSerialization {
     var storedCulture = 0
     internal val adoptedPolicies = HashSet<String>()
     var numberOfAdoptedPolicies = 0
+
+    /** Indicates whether we should *check* if policy is adoptible, and if so open */
     var shouldOpenPolicyPicker = false
-        get() = field && canAdoptPolicy()
+
+    /** Used by NextTurnAction.PickPolicy.isChoice */
+    fun shouldShowPolicyPicker() = (shouldOpenPolicyPicker || freePolicies > 0) && canAdoptPolicy()
 
     /** A [Map] pairing each [PolicyBranch] to its priority ([Int]). */
     val priorityMap: Map<PolicyBranch, Int>

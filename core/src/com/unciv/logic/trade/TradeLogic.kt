@@ -32,8 +32,8 @@ class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civili
             offers.add(TradeOffer(Constants.openBorders, TradeType.Agreement))
         }
 
-        if (civInfo.diplomacyFunctions.canSignResearchAgreementsWith(otherCivilization))
-            offers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, civInfo.diplomacyFunctions.getResearchAgreementCost()))
+        if (civInfo.diplomacyFunctions.canSignResearchAgreementNoCostWith(otherCivilization))
+            offers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, civInfo.diplomacyFunctions.getResearchAgreementCost(otherCivilization)))
 
         if (civInfo.diplomacyFunctions.canSignDefensivePactWith(otherCivilization))
             offers.add(TradeOffer(Constants.defensivePact, TradeType.Treaty))
