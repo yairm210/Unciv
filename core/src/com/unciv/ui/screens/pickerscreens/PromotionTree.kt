@@ -131,7 +131,8 @@ class PromotionTree(val unit: MapUnit) {
                 if (node.depth != depth) continue
                 for (child in node.children) {
                     val distance = if (child.isAdopted) 0
-                        else if (node.unreachable) Int.MAX_VALUE else node.distanceToAdopted + 1
+                        else if (node.distanceToAdopted == Int.MAX_VALUE) Int.MAX_VALUE else if (child.unreachable) Int.MAX_VALUE
+                        else node.distanceToAdopted + 1
                     when {
                         child.depth == Int.MIN_VALUE -> Unit // "New" node / first reached
                         child.distanceToAdopted < distance -> continue  // Already reached a better way
