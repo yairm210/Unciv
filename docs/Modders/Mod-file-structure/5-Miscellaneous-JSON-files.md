@@ -108,6 +108,9 @@ This file is a little different:
 -   Does not exist in Vanilla ruleset
 -   Is entirely optional but will be created after downloading a mod
 
+Note that this file controls _declarative mod compatibility_ (Work in progress) - e.g. there's [uniques](../uniques.md#modoptions-uniques) to say your Mod should only or never be used as 'Permanent audiovisual mod'.
+Incompatibility filtering works so far between extension and base mods, but feel free to document known extension-to-extension incompatibilities using the same Unique now. Stay tuned!
+
 The file can have the following attributes, including the values Unciv sets (no point in a mod author setting those):
 
 | Attribute           | Type    | Optional | Notes                                                                                                                                                                               |
