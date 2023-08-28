@@ -1,27 +1,17 @@
+Resolved ANRs on new game screen with a lot of maps
 
-
-Fix detekt by using fully qualified import
-
-Resolved ANRs on new game screen when user has a lot of maps, by deferring the parsing of most of the map files until after the screen has loaded
-
-Fixed errors when cloning civ that should open policy picker
-
-4.7.17-patch1
+Fixed errors when cloning civs that should open policy picker
 
 By SeventhM:
-- Fix promotions being available when they shouldn't 
-- Allow buildings to require population, Allow buildings to use condtionals 
-- Add Improvements to the list of of known improvement filters 
-- Refactor: Remove unnecessary ruleset checks 
+- Fix promotions being available when they shouldn't
+- Allow buildings to require population, Allow buildings to use condtionals
 
 By SomeTroglodyte:
-- Fix Permanent Audiovisual toggle and start on declarative Mod Compatibility 
-- Linting of unused new function shouldOpenPolicyPicker() 
+- Fix Permanent Audiovisual toggle
 
 By tuvus:
-- Ai nuke improvement 
-- AI now move units closer to enemy first in wartime 
-- Improved AI chooseAttackTarget 
-- Changed defensive pact description 
+- AI nuke improvement
+- AI move units closer to enemy first in wartime
+- Improved AI attack targetting
 
 Add tests for city class and introduce small refactor  - By Framonti
