@@ -463,17 +463,25 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         if (cityConstructions.isBuilt(name))
             yield(RejectionReasonType.AlreadyBuilt.toInstance())
-        // for buildings that are created as side effects of other things, and not directly built,
-        // or for buildings that can only be bought
-        if (hasUnique(UniqueType.Unbuildable, StateForConditionals(civ, cityConstructions.city)))
-            yield(RejectionReasonType.Unbuildable.toInstance())
 
         for (unique in uniqueObjects) {
+            if (unique.type != UniqueType.OnlyAvailableWhen &&
+                !unique.conditionalsApply(StateForConditionals(civ, cityConstructions.city))) continue
+                
             @Suppress("NON_EXHAUSTIVE_WHEN")
             when (unique.type) {
-                UniqueType.OnlyAvailableWhen->
+                // for buildings that are created as side effects of other things, and not directly built,
+                // or for buildings that can only be bought
+                UniqueType.Unbuildable ->
+                    yield(RejectionReasonType.Unbuildable.toInstance())
+
+                UniqueType.OnlyAvailableWhen ->
                     if (!unique.conditionalsApply(civ, cityConstructions.city))
                         yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
+
+                UniqueType.RequiresPopulation ->
+                    if (unique.params[0].toInt() > cityConstructions.city.population.population)
+                        yield(RejectionReasonType.PopulationRequirement.toInstance(unique.text))
 
                 UniqueType.EnablesNuclearWeapons -> if (!cityConstructions.city.civ.gameInfo.gameParameters.nuclearWeaponsEnabled)
                     yield(RejectionReasonType.DisabledBySetting.toInstance())
