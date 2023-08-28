@@ -759,6 +759,8 @@ object Battle {
      */
     fun mayUseNuke(nuke: MapUnitCombatant, targetTile: Tile): Boolean {
         if (nuke.getTile() == targetTile) return false
+        // Can only nuke visible Tiles
+        if (!targetTile.isVisible(nuke.getCivInfo())) return false
 
         var canNuke = true
         val attackerCiv = nuke.getCivInfo()

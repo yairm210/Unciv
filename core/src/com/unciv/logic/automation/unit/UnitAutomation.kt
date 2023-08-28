@@ -178,7 +178,7 @@ object UnitAutomation {
         if (unit.baseUnit.isAirUnit() && unit.canIntercept())
             return SpecificUnitAutomation.automateFighter(unit)
 
-        if (unit.baseUnit.isAirUnit())
+        if (unit.baseUnit.isAirUnit() && !unit.baseUnit.isNuclearWeapon())
             return SpecificUnitAutomation.automateBomber(unit)
 
         if (unit.baseUnit.isNuclearWeapon())
@@ -383,7 +383,7 @@ object UnitAutomation {
         unit.movement.headTowards(encampmentToHeadTowards)
         return true
     }
-
+    
     private fun tryHealUnit(unit: MapUnit): Boolean {
         if (unit.baseUnit.isRanged() && unit.hasUnique(UniqueType.HealsEvenAfterAction))
             return false // will heal anyway, and attacks don't hurt
@@ -633,7 +633,7 @@ object UnitAutomation {
             .sum() // City heals 20 per turn
 
         if (expectedDamagePerTurn < city.health && // If we can take immediately, go for it
-                (expectedDamagePerTurn <= 20 || city.health / (expectedDamagePerTurn-20) > 5)){ // otherwise check if we can take within a couple of turns
+            (expectedDamagePerTurn <= 20 || city.health / (expectedDamagePerTurn-20) > 5)){ // otherwise check if we can take within a couple of turns
 
             // We won't be able to take this even with 5 turns of continuous damage!
             // don't head straight to the city, try to head to landing grounds -
