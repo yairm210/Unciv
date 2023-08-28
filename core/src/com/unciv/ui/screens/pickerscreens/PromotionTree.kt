@@ -103,22 +103,11 @@ class PromotionTree(val unit: MapUnit) {
             }
         }
 
-        // Determine unreachable / disabled nodes
-        val state = StateForConditionals(unit.civ, unit = unit, tile = unit.getTile())
-        for (node in nodes.values) {
-            // defensive - I don't know how to provoke the situation, but if it ever occurs, disallow choosing that promotion
-            if (node.promotion.prerequisites.isNotEmpty() && node.parents.isEmpty())
-                node.unreachable = true
-            if (node.promotion.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals)
-                    .any { !it.conditionalsApply(state) })
-                node.unreachable = true
-        }
-
         // Calculate depth and distanceToAdopted - nonrecursively, shallows first.
         // Also determine preferredParent / pathIsAmbiguous by weighing distanceToAdopted
         for (node in allRoots()) {
             node.depth = 0
-            node.distanceToAdopted = if (node.unreachable) Int.MAX_VALUE else if (node.isAdopted) 0 else 1
+            node.distanceToAdopted = if (node.isAdopted) 0 else 1
         }
         for (depth in 0..99) {
             var complete = true
@@ -129,8 +118,7 @@ class PromotionTree(val unit: MapUnit) {
                 }
                 if (node.depth != depth) continue
                 for (child in node.children) {
-                    val distance = if (node.distanceToAdopted == Int.MAX_VALUE) Int.MAX_VALUE
-                        else if (child.isAdopted) 0 else node.distanceToAdopted + 1
+                    val distance = if (child.isAdopted) 0 else node.distanceToAdopted + 1
                     when {
                         child.depth == Int.MIN_VALUE -> Unit // "New" node / first reached
                         child.distanceToAdopted < distance -> continue  // Already reached a better way
@@ -142,12 +130,25 @@ class PromotionTree(val unit: MapUnit) {
                         // else: Already reached, but a worse way - overwrite fully
                     }
                     child.depth = depth + 1
-                    if (!child.unreachable) child.distanceToAdopted = distance // Only edit this if the node could possibly be reached
+                    child.distanceToAdopted = distance // Only edit this if the node could possibly be reached
                     child.pathIsAmbiguous = node.pathIsAmbiguous
                     child.preferredParent = node.takeUnless { node.pathIsAmbiguous }
                 }
             }
             if (complete) break
+        }
+        
+        // Determine unreachable / disabled nodes
+        val state = StateForConditionals(unit.civ, unit = unit, tile = unit.getTile())
+        for (node in nodes.values) {
+            // defensive - I don't know how to provoke the situation, but if it ever occurs, disallow choosing that promotion
+            if (node.promotion.prerequisites.isNotEmpty() && node.parents.isEmpty())
+                node.unreachable = true
+            if (node.promotion.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals)
+                    .any { !it.conditionalsApply(state) })
+                node.unreachable = true
+            if (node.unreachable)
+                node.distanceToAdopted = Int.MAX_VALUE
         }
     }
 
