@@ -147,7 +147,7 @@ class PromotionTree(val unit: MapUnit) {
             if (node.promotion.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals)
                     .any { !it.conditionalsApply(state) })
                 node.unreachable = true
-            if (node.unreachable)
+            if (node.unreachable && !node.isAdopted)
                 node.distanceToAdopted = Int.MAX_VALUE
         }
     }
