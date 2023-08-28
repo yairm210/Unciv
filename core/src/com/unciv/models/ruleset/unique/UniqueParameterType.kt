@@ -510,6 +510,16 @@ enum class UniqueParameterType(
         override fun getTranslationWriterStringsForOutput() = knownValues
     },
 
+    /** Mod declarative compatibility: Behaves like [Unknown], but makes for nicer auto-generated documentation. */
+    ModName("modFilter", "DeCiv Redux", """A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive""", "Mod name filter") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+            UniqueType.UniqueComplianceErrorSeverity? =
+            if ('-' !in parameterText && ('*' !in parameterText || parameterText.matches(Regex("""^\*[^*]+\*$""")))) null
+            else UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+
+        override fun getTranslationWriterStringsForOutput() = scanExistingValues(this)
+    },
+
     /** Behaves like [Unknown], but states explicitly the parameter is OK and its contents are ignored */
     Comment("comment", "comment", null, "Unique Specials") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
