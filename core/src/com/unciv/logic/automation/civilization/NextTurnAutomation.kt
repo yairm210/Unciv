@@ -20,6 +20,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.BFS
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeEvaluation
@@ -1019,16 +1020,21 @@ object NextTurnAutomation {
 
 
     private fun automateUnits(civInfo: Civilization) {
-        val sortedUnits = civInfo.units.getCivUnits().sortedBy { unit ->
-            when {
-                unit.baseUnit.isAirUnit() -> 2
-                unit.baseUnit.isRanged() -> 3
-                unit.baseUnit.isMelee() -> 4
-                unit.isGreatPersonOfType("War") -> 5 // Generals move after military units
-                else -> 1 // Civilian
-            }
-        }
+        val isAtWar = civInfo.isAtWar()
+        val sortedUnits = civInfo.units.getCivUnits().sortedBy { unit -> getUnitPriority(unit, isAtWar) }
         for (unit in sortedUnits) UnitAutomation.automateUnitMoves(unit)
+    }
+    
+    private fun getUnitPriority(unit: MapUnit, isAtWar: Boolean): Int {
+        if (unit.isCivilian() && !unit.isGreatPersonOfType("War")) return 1 // Civilian
+        if (unit.baseUnit.isAirUnit()) return 2
+        val distance = if (!isAtWar) 0 else unit.getDistanceToEnemyUnit(6)
+        return (distance ?: 5) + when {
+            unit.baseUnit.isRanged() -> 2
+            unit.baseUnit.isMelee() -> 3
+            unit.isGreatPersonOfType("War") -> 100 // Generals move after military units
+            else -> 1
+        }
     }
 
     private fun automateCityBombardment(civInfo: Civilization) {
