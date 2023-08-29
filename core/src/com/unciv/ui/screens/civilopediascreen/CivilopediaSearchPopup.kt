@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
@@ -12,7 +13,6 @@ import com.unciv.ui.components.ExpanderTab
 import com.unciv.ui.components.UncivTextField
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.enable
-import com.unciv.ui.components.extensions.toGdxArray
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.onClick
@@ -25,6 +25,7 @@ import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
+import com.badlogic.gdx.utils.Array as GdxArray
 
 class CivilopediaSearchPopup(
     private val pediaScreen: CivilopediaScreen,
@@ -33,7 +34,7 @@ class CivilopediaSearchPopup(
 ) : Popup(pediaScreen) {
     private var ruleset = pediaScreen.ruleset
     private val searchText = UncivTextField.create("Search text")
-    private val modSelect = SelectBox<String>(BaseScreen.skin)
+    private val modSelect = ModSelectBox()
     private lateinit var resultExpander: ExpanderTab
     private val resultCell: Cell<Actor?>
     private val searchButton: TextButton
@@ -43,7 +44,6 @@ class CivilopediaSearchPopup(
 
     init {
         searchText.maxLength = 100
-        modSelect.items = ruleset.mods.toGdxArray()
 
         add("{Search text}:".toLabel())
         add(searchText).growX().row()
@@ -87,7 +87,7 @@ class CivilopediaSearchPopup(
             checkLine = { line -> words.all { line.contains(it, ignoreCase = true) } }
         }
 
-        ruleset = RulesetCache[modSelect.selected] ?: return
+        ruleset = modSelect.selectedRuleset() ?: return
 
         if (::resultExpander.isInitialized) {
             resultExpander.innerTable.clear()
@@ -156,5 +156,23 @@ class CivilopediaSearchPopup(
                 close()
             }
         }
+    }
+
+    class ModSelectEntry(val key: String, val translate: Boolean = false) {
+        override fun toString() = if (translate) key.tr() else key
+    }
+    private inner class ModSelectBox : SelectBox<ModSelectEntry>(BaseScreen.skin) {
+        init {
+            val mods = pediaScreen.ruleset.mods
+            val entries = GdxArray<ModSelectEntry>(mods.size + 1)
+            entries.add(ModSelectEntry("-Combined-", true))
+            for (mod in mods) entries.add(ModSelectEntry(mod))
+            items = entries
+            selectedIndex = 0
+        }
+
+        fun selectedRuleset(): Ruleset? =
+            if (selectedIndex == 0) pediaScreen.ruleset
+            else RulesetCache[selected.key]
     }
 }
