@@ -1,21 +1,17 @@
-
-
-Resolved  - Defensive pact allies *meet* the aggressor civ so they can declare war on them, if they haven't already met
-
-Resolved  - Great person points for units not in ruleset are ignored, and warned against
-
-Performance: No need to calculate stats before reassigning population, since it's done there anyway
-
-Performance - copy resourceCache, and don't reassign population and update civ resources, when checking improvement stat diff
-
-Resolved  - clarify when trade decision is made for new players
-
-Automated units will not autopromote by default (changeable by options setting)
-
 "Jump To Destination" Unit Action Button for units that are moving  - By huckdogg
 
-Refactor BattleDamage object and test it  - By Framonti
+Automated units do not autopromote by default (changeable by options setting)
 
-By SomeTroglodyte:
-- UnitTable close button mouseover 
-- Some wiki documentation for declarative mod compatibility 
+Defensive pact allies meet aggressor civ so they can declare war on them
+
+Modding: GPP validation
+
+Performance:
+- Faster population reassignment
+- Faster improvement stats simulation
+
+Clarify when trade decision is made
+
+Battle Damage tests - By Framonti
+
+UnitTable close button mouseover - By SomeTroglodyte
