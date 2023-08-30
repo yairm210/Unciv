@@ -33,7 +33,7 @@ class CivilopediaSearchPopup(
     private val linkAction: (String) -> Unit
 ) : Popup(pediaScreen) {
     private var ruleset = pediaScreen.ruleset
-    private val searchText = UncivTextField.create("Search text")
+    private val searchText = UncivTextField.create("")   // Always focused, "hint" never seen
     private val modSelect = ModSelectBox()
     private lateinit var resultExpander: ExpanderTab
     private val resultCell: Cell<Actor?>
@@ -45,7 +45,7 @@ class CivilopediaSearchPopup(
     init {
         searchText.maxLength = 100
 
-        add("{Search text}:".toLabel())
+        add("Search text:".toLabel())
         add(searchText).growX().row()
         add("Mod filter:".toLabel())
         add(modSelect).growX().row()
@@ -87,28 +87,23 @@ class CivilopediaSearchPopup(
             checkLine = { line -> words.all { line.contains(it, ignoreCase = true) } }
         }
 
-        ruleset = modSelect.selectedRuleset() ?: return
+        ruleset = modSelect.selectedRuleset()
 
         if (::resultExpander.isInitialized) {
             resultExpander.innerTable.clear()
         } else {
             resultExpander = ExpanderTab("Results") {}
             resultCell.setActor(resultExpander)
-            resultExpander.innerTable.defaults().left().growX().pad(2f)
+            resultExpander.innerTable.defaults().growX().pad(2f)
         }
 
         searchJob = Concurrency.run("PediaSearch") {
             searchLoop()
-        }.apply {
-            invokeOnCompletion {
-                searchJob = null
-                Concurrency.runOnGLThread {
-                    if (resultExpander.innerTable.cells.isEmpty)
-                        resultExpander.innerTable.add(
-                            FormattedLine("Nothing found!", color = "#f53", header = 3, centered = true)
-                            .render(0f))
-                    searchButton.enable()
-                }
+        }
+        searchJob!!.invokeOnCompletion {
+            searchJob = null
+            Concurrency.runOnGLThread {
+                finishSearch()
             }
         }
     }
@@ -117,14 +112,17 @@ class CivilopediaSearchPopup(
         for (category in CivilopediaCategories.values()) {
             if (!isActive) break
             if (category.hide) continue
-            if (!ruleset.modOptions.isBaseRuleset && category == CivilopediaCategories.Tutorial) continue
+            if (!ruleset.modOptions.isBaseRuleset && category == CivilopediaCategories.Tutorial)
+                continue  // Search tutorials only when the mod filter is a base ruleset
             for (entry in category.getCategoryIterator(ruleset, tutorialController)) {
                 if (!isActive) break
                 if (entry !is INamed) continue
                 if (!ruleset.modOptions.isBaseRuleset) {
                     val sort = entry.getSortGroup(ruleset)
-                    if (category == CivilopediaCategories.UnitType && sort < 2) continue
-                    if (category == CivilopediaCategories.Belief && sort == 0) continue
+                    if (category == CivilopediaCategories.UnitType && sort < 2)
+                        continue  // Search "Domain:" entries only when the mod filter is a base ruleset
+                    if (category == CivilopediaCategories.Belief && sort == 0)
+                        continue  // Search "Religions" from `getCivilopediaReligionEntry` only when the mod filter is a base ruleset
                 }
                 searchEntry(entry)
             }
@@ -158,21 +156,32 @@ class CivilopediaSearchPopup(
         }
     }
 
+    private fun finishSearch() {
+        searchButton.enable()
+        if (!resultExpander.innerTable.cells.isEmpty) return
+        val nothingFound = FormattedLine("Nothing found!", color = "#f53", header = 3, centered = true)
+            .render(0f)
+        resultExpander.innerTable.add(nothingFound)
+    }
+
     class ModSelectEntry(val key: String, val translate: Boolean = false) {
         override fun toString() = if (translate) key.tr() else key
     }
+
     private inner class ModSelectBox : SelectBox<ModSelectEntry>(BaseScreen.skin) {
         init {
             val mods = pediaScreen.ruleset.mods
             val entries = GdxArray<ModSelectEntry>(mods.size + 1)
             entries.add(ModSelectEntry("-Combined-", true))
-            for (mod in mods) entries.add(ModSelectEntry(mod))
+            // This intersect is needed when pedia was called from the MainMenuScreen with an easter egg ruleset active -
+            // they are not in the cache and have their elements not marked with originRuleset anyway.
+            for (mod in mods.intersect(RulesetCache.keys)) entries.add(ModSelectEntry(mod))
             items = entries
             selectedIndex = 0
         }
 
-        fun selectedRuleset(): Ruleset? =
+        fun selectedRuleset(): Ruleset =
             if (selectedIndex == 0) pediaScreen.ruleset
-            else RulesetCache[selected.key]
+            else RulesetCache[selected.key]!!  // `!!` guarded by the intersect above
     }
 }
