@@ -264,7 +264,7 @@ class City : IsPartOfGameInfoSerialization {
     }
 
     private fun getCityResourcesFromUniqueBuildings(cityResources: ResourceSupplyList, resourceModifer: HashMap<String, Float>) {
-        for (unique in getLocalMatchingUniques(UniqueType.ProvidesResources, StateForConditionals(civ, this))) { // E.G "Provides [1] [Iron]"
+        for (unique in getMatchingUniques(UniqueType.ProvidesResources, StateForConditionals(civ, this))) { // E.G "Provides [1] [Iron]"
             val resource = getRuleset().tileResources[unique.params[1]]
                 ?: continue
             cityResources.add(
@@ -575,7 +575,6 @@ class City : IsPartOfGameInfoSerialization {
         return when (filter) {
             "in this city" -> true // Filtered by the way uniques are found
             "in all cities" -> true
-            "in other cities" -> true // Filtered by the way uniques are found
             "in all coastal cities" -> isCoastal()
             "in capital" -> isCapital()
             "in all non-occupied cities" -> !cityStats.hasExtraAnnexUnhappiness() || isPuppet
@@ -618,13 +617,14 @@ class City : IsPartOfGameInfoSerialization {
         uniqueType: UniqueType,
         stateForConditionals: StateForConditionals = StateForConditionals(civ, this)
     ): Sequence<Unique> {
-        return civ.getMatchingUniques(uniqueType, stateForConditionals, this) +
+        return civ.getMatchingUniques(uniqueType, stateForConditionals) +
                 getLocalMatchingUniques(uniqueType, stateForConditionals)
     }
 
-    fun getLocalMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(civ, this)): Sequence<Unique> {
+    // Uniques special to this city
+    private fun getLocalMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(civ, this)): Sequence<Unique> {
         return (
-            cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { !it.isAntiLocalEffect }
+            cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { it.isLocalEffect }
             + religion.getUniques().filter { it.isOfType(uniqueType) }
         ).filter {
             it.conditionalsApply(stateForConditionals)
@@ -632,6 +632,7 @@ class City : IsPartOfGameInfoSerialization {
     }
 
 
+    // Uniques coming from this city, but that should be provided globally
     fun getMatchingUniquesWithNonLocalEffects(uniqueType: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> {
         val uniques = cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
         // Memory performance showed that this function was very memory intensive, thus we only create the filter if needed

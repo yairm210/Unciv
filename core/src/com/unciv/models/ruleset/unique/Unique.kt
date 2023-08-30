@@ -38,7 +38,6 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     val allParams = params + conditionals.flatMap { it.params }
 
     val isLocalEffect = params.contains("in this city") || conditionals.any { it.type == UniqueType.ConditionalInThisCity }
-    val isAntiLocalEffect = params.contains("in other cities") || conditionals.any { it.type == UniqueType.ConditionalInOtherCities }
 
     fun hasFlag(flag: UniqueFlag) = type != null && type.flags.contains(flag)
 

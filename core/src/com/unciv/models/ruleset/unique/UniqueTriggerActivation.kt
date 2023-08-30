@@ -238,11 +238,9 @@ object UniqueTriggerActivation {
             }
 
             UniqueType.OneTimeGainPopulation -> {
-                val applicableCities = when (unique.params[1]) {
-                    "in this city" -> sequenceOf(city!!)
-                    "in other cities" -> civInfo.cities.asSequence().filter { it != city }
-                    else -> civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
-                }
+                val applicableCities =
+                    if (unique.params[1] == "in this city") sequenceOf(city!!)
+                    else civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
                 for (applicableCity in applicableCities) {
                     applicableCity.population.addPopulation(unique.params[0].toInt())
                 }
