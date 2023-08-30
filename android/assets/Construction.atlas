@@ -1292,7 +1292,7 @@ UnitActionIcons/StopMove
   orig: 100, 100
   offset: 0, 0
   index: -1
-UnitActionIcons/JumpToDestination
+UnitActionIcons/ShowUnitDestination
   rotate: false
   xy: 980, 0
   size: 100, 100

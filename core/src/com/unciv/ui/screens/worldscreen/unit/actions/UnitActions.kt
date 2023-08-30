@@ -62,7 +62,6 @@ object UnitActions {
 
         if (unit.isMoving()) {
             actionList += UnitAction(UnitActionType.StopMovement) { unit.action = null }
-            actionList += UnitAction(UnitActionType.JumpToDestination) { GUI.getMap().setCenterPosition(unit.getMovementDestination().position,true) }
         }
         if (unit.isExploring())
             actionList += UnitAction(UnitActionType.StopExploration) { unit.action = null }
@@ -89,6 +88,11 @@ object UnitActions {
         val tile = unit.getTile()
         val actionList = ArrayList<UnitAction>()
 
+        if (unit.isMoving()) {
+            actionList += UnitAction(UnitActionType.ShowUnitDestination) {
+                GUI.getMap().setCenterPosition(unit.getMovementDestination().position,true)
+            }
+        }
         addSleepActions(actionList, unit, true)
         addFortifyActions(actionList, unit, true)
         addAutomateAction(unit, actionList, false)

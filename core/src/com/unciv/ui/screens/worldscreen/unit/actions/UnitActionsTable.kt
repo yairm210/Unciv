@@ -65,7 +65,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
                 // overlay, since the user definitely wants to interact with the new unit.
                 worldScreen.mapHolder.removeUnitActionOverlay()
                 if (UncivGame.Current.settings.autoUnitCycle
-                        && (unit.isDestroyed || (unitAction.type.isSkippingToNextUnit && unit.currentMovement == 0f) || unitAction.type.isSkippingToNextUnit)) {
+                        && (unit.isDestroyed || (unit.isMoving() && unit.currentMovement == 0f && unitAction.type.isSkippingToNextUnit) || (!unit.isMoving() && unitAction.type.isSkippingToNextUnit))) {
                     worldScreen.switchToNextUnit()
                 }
             }
