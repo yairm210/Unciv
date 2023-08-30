@@ -364,6 +364,10 @@ class City : IsPartOfGameInfoSerialization {
         val gppCounter = Counter<String>()
         for (entry in getGreatPersonPointsForNextTurn().values)
             gppCounter.add(entry)
+        // Remove all "gpp" values that are not valid units
+        for (key in gppCounter.keys.toSet())
+            if (key !in getRuleset().units)
+                gppCounter.remove(key)
         return gppCounter
     }
 

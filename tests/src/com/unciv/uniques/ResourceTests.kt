@@ -99,7 +99,7 @@ class ResourceTests {
     fun testImprovementProvidesResourceEvenWithoutTech() {
         val tile = game.tileMap[1,1]
         val improvement = game.createTileImprovement("Provides [1] [Coal]", "Consumes [1] [Silver]")
-        tile.changeImprovement(improvement.name)
+        tile.changeImprovement(improvement.name, civInfo)
         Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 1)
         Assert.assertTrue(civInfo.getCivResourcesByName()["Silver"] == -1)
     }
@@ -109,7 +109,7 @@ class ResourceTests {
     fun testImprovementProvidesResourceWithUniqueBonuses() {
         val tile = game.tileMap[1,1]
         val improvement = game.createTileImprovement("Provides [1] [Coal]")
-        tile.changeImprovement(improvement.name)
+        tile.changeImprovement(improvement.name, civInfo)
         Assert.assertTrue(civInfo.getCivResourcesByName()["Coal"] == 1)
 
         val doubleCoal = game.createBuilding("Double quantity of [Coal] produced")
