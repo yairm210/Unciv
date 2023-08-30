@@ -71,7 +71,8 @@ class GameSettings {
     var autoBuildingRoads: Boolean = true
     var automatedWorkersReplaceImprovements = true
     var automatedUnitsMoveOnTurnStart: Boolean = false
-    var automatedUnitsCanUpgrade: Boolean = true
+    var automatedUnitsCanUpgrade: Boolean = false
+    var automatedUnitsChoosePromotions: Boolean = false
 
     var showMinimap: Boolean = true
     var minimapSize: Int = 6    // default corresponds to 15% screen space

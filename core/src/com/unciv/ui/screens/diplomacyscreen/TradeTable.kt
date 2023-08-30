@@ -7,10 +7,10 @@ import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.extensions.isEnabled
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.screens.basescreen.BaseScreen
 
 class TradeTable(
     private val otherCivilization: Civilization,
@@ -18,17 +18,19 @@ class TradeTable(
 ): Table(BaseScreen.skin) {
     private val currentPlayerCiv = otherCivilization.gameInfo.getCurrentPlayerCivilization()
     internal val tradeLogic = TradeLogic(currentPlayerCiv, otherCivilization)
-    internal val offerColumnsTable = OfferColumnsTable(tradeLogic, diplomacyScreen , currentPlayerCiv, otherCivilization) { onChange() } 
+    internal val offerColumnsTable = OfferColumnsTable(tradeLogic, diplomacyScreen , currentPlayerCiv, otherCivilization) { onChange() }
     // This is so that after a trade has been traded, we can switch out the offersToDisplay to start anew - this is the easiest way
     private val offerColumnsTableWrapper = Table()
-    private val offerButton = "Offer trade".toTextButton()
+
+    val offerTradeText = "{Offer trade}\n({They'll decide on their turn})"
+    private val offerButton = offerTradeText.toTextButton()
 
     private fun isTradeOffered() = otherCivilization.tradeRequests.any { it.requestingCiv == currentPlayerCiv.civName }
 
     private fun retractOffer() {
         otherCivilization.tradeRequests.removeAll { it.requestingCiv == currentPlayerCiv.civName }
         currentPlayerCiv.cache.updateCivResources()
-        offerButton.setText("Offer trade".tr())
+        offerButton.setText(offerTradeText.tr())
     }
 
     init {
@@ -44,7 +46,7 @@ class TradeTable(
         }
 
         if (isTradeOffered()) offerButton.setText("Retract offer".tr())
-        else offerButton.apply { isEnabled = false }.setText("Offer trade".tr())
+        else offerButton.apply { isEnabled = false }.setText(offerTradeText.tr())
 
         offerButton.onClick {
             if (isTradeOffered()) {
