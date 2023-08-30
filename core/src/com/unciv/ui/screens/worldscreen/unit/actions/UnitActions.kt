@@ -60,8 +60,9 @@ object UnitActions {
         addTriggerUniqueActions(unit, actionList)
         addAddInCapitalAction(unit, actionList, tile)
 
-        if (unit.isMoving())
+        if (unit.isMoving()) {
             actionList += UnitAction(UnitActionType.StopMovement) { unit.action = null }
+        }
         if (unit.isExploring())
             actionList += UnitAction(UnitActionType.StopExploration) { unit.action = null }
         if (unit.isAutomated())
@@ -87,6 +88,11 @@ object UnitActions {
         val tile = unit.getTile()
         val actionList = ArrayList<UnitAction>()
 
+        if (unit.isMoving()) {
+            actionList += UnitAction(UnitActionType.ShowUnitDestination) {
+                GUI.getMap().setCenterPosition(unit.getMovementDestination().position,true)
+            }
+        }
         addSleepActions(actionList, unit, true)
         addFortifyActions(actionList, unit, true)
         addAutomateAction(unit, actionList, false)
