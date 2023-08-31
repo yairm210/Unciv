@@ -20,23 +20,7 @@ object TargetHelper {
         val unitMustBeSetUp = unit.hasUnique(UniqueType.MustSetUp)
         val tilesToAttackFrom = if (stayOnTile || unit.baseUnit.movesLikeAirUnits())
             sequenceOf(Pair(unit.currentTile, unit.currentMovement))
-        else
-            unitDistanceToTiles.asSequence()
-                .map { (tile, distance) ->
-                    val movementPointsToExpendAfterMovement = if (unitMustBeSetUp) 1 else 0
-                    val movementPointsToExpendHere =
-                        if (unitMustBeSetUp && !unit.isSetUpForSiege()) 1 else 0
-                    val movementPointsToExpendBeforeAttack =
-                        if (tile == unit.currentTile) movementPointsToExpendHere else movementPointsToExpendAfterMovement
-                    val movementLeft =
-                        unit.currentMovement - distance.totalDistance - movementPointsToExpendBeforeAttack
-                    Pair(tile, movementLeft)
-                }
-                // still got leftover movement points after all that, to attack
-                .filter { it.second > Constants.minimumMovementEpsilon }
-                .filter {
-                    it.first == unit.getTile() || unit.movement.canMoveTo(it.first)
-                }
+        else getTilesToAttackFromWhenUnitMoves(unitDistanceToTiles, unitMustBeSetUp, unit)
 
         val tilesWithEnemies: HashSet<Tile> = HashSet()
         val tilesWithoutEnemies: HashSet<Tile> = HashSet()
@@ -72,6 +56,24 @@ object TargetHelper {
         }
         return attackableTiles
     }
+
+    private fun getTilesToAttackFromWhenUnitMoves(unitDistanceToTiles: PathsToTilesWithinTurn, unitMustBeSetUp: Boolean, unit: MapUnit) =
+        unitDistanceToTiles.asSequence()
+            .map { (tile, distance) ->
+                val movementPointsToExpendAfterMovement = if (unitMustBeSetUp) 1 else 0
+                val movementPointsToExpendHere =
+                    if (unitMustBeSetUp && !unit.isSetUpForSiege()) 1 else 0
+                val movementPointsToExpendBeforeAttack =
+                    if (tile == unit.currentTile) movementPointsToExpendHere else movementPointsToExpendAfterMovement
+                val movementLeft =
+                    unit.currentMovement - distance.totalDistance - movementPointsToExpendBeforeAttack
+                Pair(tile, movementLeft)
+            }
+            // still got leftover movement points after all that, to attack
+            .filter { it.second > Constants.minimumMovementEpsilon }
+            .filter {
+                it.first == unit.getTile() || unit.movement.canMoveTo(it.first)
+            }
 
     private fun tileContainsAttackableEnemy(unit: MapUnit, tile: Tile, tilesToCheck: List<Tile>?): Boolean {
         if (tile !in (tilesToCheck ?: unit.civ.viewableTiles) || !containsAttackableEnemy(tile, MapUnitCombatant(unit)) )
