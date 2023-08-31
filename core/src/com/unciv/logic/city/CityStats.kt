@@ -354,9 +354,8 @@ class CityStats(val city: City) {
     //endregion
     //region State-Changing Methods
 
-    fun updateTileStats() {
+    fun updateTileStats(localUniqueCache:LocalUniqueCache = LocalUniqueCache()) {
         val stats = Stats()
-        val localUniqueCache = LocalUniqueCache()
         val workedTiles = city.tilesInRange.asSequence()
             .filter {
                 city.location == it.position
@@ -490,12 +489,14 @@ class CityStats(val city: City) {
 
     fun update(currentConstruction: IConstruction = city.cityConstructions.getCurrentConstruction(),
                updateTileStats:Boolean = true,
-               updateCivStats:Boolean = true) {
-        if (updateTileStats) updateTileStats()
+               updateCivStats:Boolean = true,
+               localUniqueCache:LocalUniqueCache = LocalUniqueCache()) {
+
+        if (updateTileStats) updateTileStats(localUniqueCache)
 
         // We need to compute Tile yields before happiness
 
-        val statsFromBuildings = city.cityConstructions.getStats() // this is performance heavy, so calculate once
+        val statsFromBuildings = city.cityConstructions.getStats(localUniqueCache) // this is performance heavy, so calculate once
         updateBaseStatList(statsFromBuildings)
         updateCityHappiness(statsFromBuildings)
         updateStatPercentBonusList(currentConstruction)

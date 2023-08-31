@@ -258,7 +258,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
     private fun getSpreadRange(): Int {
         var spreadRange = 10
 
-        for (unique in city.getLocalMatchingUniques(UniqueType.ReligionSpreadDistance)) {
+        for (unique in city.getMatchingUniques(UniqueType.ReligionSpreadDistance)) {
             spreadRange += unique.params[0].toInt()
         }
 
@@ -308,7 +308,7 @@ class CityReligionManager : IsPartOfGameInfoSerialization {
         var pressure = pressureFromAdjacentCities.toFloat()
 
         // Follower beliefs of this religion
-        for (unique in city.getLocalMatchingUniques(UniqueType.NaturalReligionSpreadStrength)) {
+        for (unique in city.getMatchingUniques(UniqueType.NaturalReligionSpreadStrength)) {
             if (pressuredCity.matchesFilter(unique.params[1]))
                 pressure *= unique.params[0].toPercent()
         }

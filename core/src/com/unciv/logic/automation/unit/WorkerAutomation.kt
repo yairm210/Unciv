@@ -390,14 +390,10 @@ class WorkerAutomation(
         }
         if (potentialTileImprovements.isEmpty()) return null
 
-        val cityUniqueCaches = HashMap<City, LocalUniqueCache>()
+        val localUniqueCache = LocalUniqueCache()
         fun getImprovementRanking(improvementName: String): Float {
             val improvement = ruleSet.tileImprovements[improvementName]!!
-            val city = tile.getCity()
-            val cache =
-                    if (city == null) LocalUniqueCache(false)
-                    else cityUniqueCaches.getOrPut(city) { LocalUniqueCache() }
-            val stats = tile.stats.getStatDiffForImprovement(improvement, civInfo, tile.getCity(), cache)
+            val stats = tile.stats.getStatDiffForImprovement(improvement, civInfo, tile.getCity(), localUniqueCache)
             return Automation.rankStatsValue(stats, unit.civ)
         }
 

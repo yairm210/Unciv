@@ -1,3 +1,23 @@
+## 4.7.19
+
+"Jump To Destination" Unit Action Button for units that are moving  - By huckdogg
+
+Automated units do not autopromote by default (changeable by options setting)
+
+Defensive pact allies meet aggressor civ so they can declare war on them
+
+Modding: GPP validation
+
+Performance:
+- Faster population reassignment
+- Faster improvement stats simulation
+
+Clarify when trade decision is made
+
+Battle Damage tests - By Framonti
+
+UnitTable close button mouseover - By SomeTroglodyte
+
 ## 4.7.18
 
 Resolved ANRs on new game screen with a lot of maps

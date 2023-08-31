@@ -89,6 +89,11 @@ class RulesetValidator(val ruleset: Ruleset) {
                 lines.add("${building.name} is buildable and therefore should either have an explicit cost or reference an existing tech!",
                     RulesetErrorSeverity.Warning)
 
+            for (gpp in building.greatPersonPoints)
+                if (gpp.key !in ruleset.units)
+                    lines.add("Building ${building.name} has greatPersonPoints for ${gpp.key}, which is not a unit in the ruleset!",
+                        RulesetErrorSeverity.Warning)
+
             checkUniques(building, lines, rulesetInvariant, tryFixUnknownUniques)
 
         }
@@ -232,6 +237,13 @@ class RulesetValidator(val ruleset: Ruleset) {
             if (building.requiredBuilding != null && !ruleset.buildings.containsKey(building.requiredBuilding!!))
                 lines += "${building.name} requires ${building.requiredBuilding} which does not exist!"
             checkUniques(building, lines, rulesetSpecific, tryFixUnknownUniques)
+        }
+
+        for (specialist in ruleset.specialists.values){
+            for (gpp in specialist.greatPersonPoints)
+                if (gpp.key !in ruleset.units)
+                    lines.add("Specialist ${specialist.name} has greatPersonPoints for ${gpp.key}, which is not a unit in the ruleset!",
+                        RulesetErrorSeverity.Warning)
         }
 
         for (resource in ruleset.tileResources.values) {

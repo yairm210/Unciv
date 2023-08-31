@@ -730,6 +730,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 - [Keyboard](https://thenounproject.com/icon/keyboard-2685534/) by Twenty Foo Studio for Options Keys
 - [charts](https://thenounproject.com/icon/charts-2312023/) by Srinivas Agra (gimped to appear bolder) for the Charts page
 - [framed image](https://thenounproject.com/icon/framed-image-2332187/) by Jose Dean for Victory Illustrations page
+- [down](https://thenounproject.com/icon/down-39378/) by Cengiz SARI for Show unit destination
 
 
 ### Main menu

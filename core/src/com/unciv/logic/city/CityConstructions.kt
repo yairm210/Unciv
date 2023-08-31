@@ -110,9 +110,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     /**
      * @return [Stats] provided by all built buildings in city plus the bonus from Library
      */
-    fun getStats(): StatTreeNode {
+    fun getStats(localUniqueCache: LocalUniqueCache): StatTreeNode {
         val stats = StatTreeNode()
-        val localUniqueCache = LocalUniqueCache()
         for (building in getBuiltBuildings())
             stats.addStats(building.getStats(city, localUniqueCache), building.name)
         return stats
@@ -506,7 +505,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         }
         builtBuildingObjects = builtBuildingObjects.withItem(building)
         builtBuildings.add(buildingName)
-        
+
         updateUniques()
 
         /** Support for [UniqueType.CreatesOneImprovement] */
@@ -578,15 +577,13 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     fun addFreeBuildings() {
         // "Gain a free [buildingName] [cityFilter]"
-        val freeBuildingUniques = city.getLocalMatchingUniques(UniqueType.GainFreeBuildings, StateForConditionals(city.civ, city))
+        val freeBuildingUniques = city.getMatchingUniques(UniqueType.GainFreeBuildings, StateForConditionals(city.civ, city))
 
         for (unique in freeBuildingUniques) {
             val freeBuilding = city.civ.getEquivalentBuilding(unique.params[0])
-            val citiesThatApply = when (unique.params[1]) {
-                "in this city" -> listOf(city)
-                "in other cities" -> city.civ.cities.filter { it !== city }
-                else -> city.civ.cities.filter { it.matchesFilter(unique.params[1]) }
-            }
+            val citiesThatApply =
+                if (unique.isLocalEffect) listOf(city)
+                else city.civ.cities.filter { it.matchesFilter(unique.params[1]) }
 
             for (city in citiesThatApply) {
                 if (city.cityConstructions.containsBuildingOrEquivalent(freeBuilding.name)) continue
