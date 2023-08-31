@@ -63,16 +63,18 @@ class UnitPromotions : IsPartOfGameInfoSerialization {
     }
 
     fun addPromotion(promotionName: String, isFree: Boolean = false){
+        val ruleset = unit.civ.gameInfo.ruleset
+        val promotion = ruleset.unitPromotions[promotionName]!!
+
         if (!isFree) {
-            XP -= xpForNextPromotion()
-            numberOfPromotions++
+            if (!promotion.hasUnique(UniqueType.FreePromotion)) {
+                XP -= xpForNextPromotion()
+                numberOfPromotions++
+            }
 
             for (unique in unit.getTriggeredUniques(UniqueType.TriggerUponPromotion))
                 UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
         }
-
-        val ruleset = unit.civ.gameInfo.ruleset
-        val promotion = ruleset.unitPromotions[promotionName]!!
 
         if (!promotion.hasUnique(UniqueType.SkipPromotion))
             promotions.add(promotionName)
