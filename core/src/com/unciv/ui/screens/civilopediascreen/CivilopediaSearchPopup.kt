@@ -78,7 +78,7 @@ class CivilopediaSearchPopup(
                 val regex = Regex(text, RegexOption.IGNORE_CASE)
                 checkLine = { regex.containsMatchIn(it) }
             } catch (ex: Exception) {
-                ToastPopup("That's an invalid regular expression.", pediaScreen, 4000).open(true)
+                ToastPopup("Invalid regular expression", pediaScreen, 4000).open(true)
                 searchButton.enable()
                 return
             }
