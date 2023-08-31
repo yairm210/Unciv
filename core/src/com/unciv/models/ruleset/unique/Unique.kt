@@ -328,15 +328,15 @@ class LocalUniqueCache(val cache:Boolean = true) {
         // City uniques are a combination of *global civ* uniques plus *city relevant* uniques (see City.getMatchingUniques())
         // We can cache the civ uniques separately, so if we have several cities using the same cache,
         //   we can cache the list of *civ uniques* to reuse between cities.
-        // This is assuming that we're ignoring conditionals, because otherwise -
-        //   the conditionals will render the the *filtered uniques* different anyway, so there's no reason to cache...
-        val unfilteredUniques = forCivGetMatchingUniques(city.civ, uniqueType, StateForConditionals.IgnoreConditionals) +
-                city.getLocalMatchingUniques(uniqueType, StateForConditionals.IgnoreConditionals)
 
-        return get(
+        val citySpecificUniques = get(
             "city-${city.id}-${uniqueType.name}",
-            unfilteredUniques
+            city.getLocalMatchingUniques(uniqueType, StateForConditionals.IgnoreConditionals)
         ).filter { it.conditionalsApply(stateForConditionals) }
+
+        val civUniques = forCivGetMatchingUniques(city.civ, uniqueType, stateForConditionals)
+
+        return citySpecificUniques + civUniques
     }
 
     fun forCivGetMatchingUniques(

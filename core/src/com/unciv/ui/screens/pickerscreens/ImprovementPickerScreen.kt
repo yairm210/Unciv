@@ -205,18 +205,18 @@ class ImprovementPickerScreen(
             regularImprovements.row()
         }
 
-        var ownerTable = Table()
+        val ownerTable = Table()
         if (tile.getOwner() == null) {
-            ownerTable.add("Unowned tile".tr().toLabel())
+            ownerTable.add("Unowned tile".toLabel())
         } else if (tile.getOwner()!!.isCurrentPlayer()) {
             val button = tile.getCity()!!.name.toTextButton(hideIcons = true)
             button.onClick {
                 this.game.pushScreen(CityScreen(tile.getCity()!!,null,tile))
             }
-            ownerTable.add("Tile owned by [${tile.getOwner()!!.civName}] (You)".tr().toLabel()).padLeft(10f)
+            ownerTable.add("Tile owned by [${tile.getOwner()!!.civName}] (You)".toLabel()).padLeft(10f)
             ownerTable.add(button).padLeft(20f)
         } else {
-            ownerTable.add("Tile owned by [${tile.getOwner()!!.civName}] - [${tile.getCity()!!.name}]".tr().toLabel()).padLeft(10f)
+            ownerTable.add("Tile owned by [${tile.getOwner()!!.civName}] - [${tile.getCity()!!.name}]".toLabel()).padLeft(10f)
         }
 
         topTable.add(ownerTable)
