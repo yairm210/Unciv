@@ -57,13 +57,7 @@ object TargetHelper {
                     Battle.getMapCombatantOfTile(tile)
                 )
                 else if (tile in tilesWithoutEnemies) continue // avoid checking the same empty tile multiple times
-                else if (tileContainsAttackableEnemy(unit, tile, tilesToCheck)) {
-                    tilesWithEnemies += tile
-                    attackableTiles += AttackableTile(
-                        reachableTile, tile, movementLeft,
-                        Battle.getMapCombatantOfTile(tile)
-                    )
-                } else if (unit.isPreparingAirSweep()) {
+                else if (tileContainsAttackableEnemy(unit, tile, tilesToCheck) || unit.isPreparingAirSweep()) {
                     tilesWithEnemies += tile
                     attackableTiles += AttackableTile(
                         reachableTile, tile, movementLeft,
