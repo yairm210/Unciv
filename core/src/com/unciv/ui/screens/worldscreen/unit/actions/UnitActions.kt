@@ -333,7 +333,7 @@ object UnitActions {
         for (unique in unit.baseUnit().getMatchingUniques(UniqueType.CanTransform, stateForConditionals)) {
             val unitToTransformTo = civInfo.getEquivalentUnit(unique.params[0])
 
-            if (unitToTransformTo.getMatchingUniques(UniqueType.OnlyAvailableWhen)
+            if (unitToTransformTo.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals)
                     .any { !it.conditionalsApply(stateForConditionals) })
                 continue
 

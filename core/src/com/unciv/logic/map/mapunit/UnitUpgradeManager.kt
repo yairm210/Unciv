@@ -32,7 +32,7 @@ class UnitUpgradeManager(val unit:MapUnit) {
         fun isInvalidUpgradeDestination(baseUnit: BaseUnit): Boolean{
             if (baseUnit.requiredTech != null && !unit.civ.tech.isResearched(baseUnit.requiredTech!!))
                 return true
-            if (baseUnit.getMatchingUniques(UniqueType.OnlyAvailableWhen).any {
+            if (baseUnit.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals).any {
                         !it.conditionalsApply(StateForConditionals(unit.civ, unit = unit ))
                     }) return true
             return false
