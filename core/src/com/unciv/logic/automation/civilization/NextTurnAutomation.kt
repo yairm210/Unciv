@@ -10,6 +10,7 @@ import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
@@ -63,7 +64,7 @@ object NextTurnAutomation {
             if (!civInfo.gameInfo.ruleset.modOptions.hasUnique(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
                 declareWar(civInfo)
                 offerPeaceTreaty(civInfo)
-//            offerDeclarationOfFriendship(civInfo)
+                offerDeclarationOfFriendship(civInfo)
             }
             if (civInfo.gameInfo.isReligionEnabled()) {
                 ReligionAutomation.spendFaithOnReligion(civInfo)
@@ -273,8 +274,8 @@ object NextTurnAutomation {
             if (popupAlert.type == AlertType.DeclarationOfFriendship) {
                 val requestingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
                 val diploManager = civInfo.getDiplomacyManager(requestingCiv)
-                if (diploManager.isRelationshipLevelGT(RelationshipLevel.Neutral)
-                        && !diploManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.Denunciation)) {
+                if (civInfo.diplomacyFunctions.canSignDeclarationOfFriendshipWith(requestingCiv) 
+                    && wantsToSignDeclarationOfFrienship(civInfo,requestingCiv)) {
                     diploManager.signDeclarationOfFriendship()
                     requestingCiv.addNotification("We have signed a Declaration of Friendship with [${civInfo.civName}]!", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
                 } else requestingCiv.addNotification("[${civInfo.civName}] has denied our Declaration of Friendship!", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
@@ -765,23 +766,59 @@ object NextTurnAutomation {
         }
     }
 
-    @Suppress("unused")  //todo: Work in Progress?
     private fun offerDeclarationOfFriendship(civInfo: Civilization) {
         val civsThatWeCanDeclareFriendshipWith = civInfo.getKnownCivs()
-                .filter {
-                    it.isMajorCiv() && !it.isAtWarWith(civInfo)
-                            && it.getDiplomacyManager(civInfo).isRelationshipLevelGT(RelationshipLevel.Neutral)
-                            && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclarationOfFriendship)
-                            && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.Denunciation)
-                }
-                .sortedByDescending { it.getDiplomacyManager(civInfo).relationshipLevel() }
-        for (civ in civsThatWeCanDeclareFriendshipWith) {
+                .filter { civInfo.diplomacyFunctions.canSignDeclarationOfFriendshipWith(it) }
+                .sortedByDescending { it.getDiplomacyManager(civInfo).relationshipLevel() }.toList()
+        for (otherCiv in civsThatWeCanDeclareFriendshipWith) {
             // Default setting is 5, this will be changed according to different civ.
-            if ((1..10).random() <= 5)
-                civInfo.getDiplomacyManager(civ).signDeclarationOfFriendship()
+            if ((1..10).random() <= 5 && wantsToSignDeclarationOfFrienship(civInfo, otherCiv)) {
+                otherCiv.popupAlerts.add(PopupAlert(AlertType.DeclarationOfFriendship, civInfo.civName))
+            }
         }
     }
+    
+    private fun wantsToSignDeclarationOfFrienship(civInfo: Civilization, otherCiv: Civilization): Boolean {
+        // Shortcut, if it is below favorable then don't consider it
+        if (civInfo.getDiplomacyManager(otherCiv).isRelationshipLevelLT(RelationshipLevel.Favorable)) return false
+        
+        val numOfFriends = civInfo.diplomacy.count { it.value.hasFlag(DiplomacyFlags.DeclarationOfFriendship) }
+        val knownCivs = civInfo.getKnownCivs().filter { it.isMajorCiv() && it.isAlive() }.count()
+        val allCivs = civInfo.gameInfo.civilizations.count { it.isAlive() && it.isMajorCiv() } - 1 // Don't include us
+        var motivation = civInfo.getDiplomacyManager(otherCiv).opinionOfOtherCiv().toInt() - 40
+        
+        if (civInfo.wantsToFocusOn(Victory.Focus.Military)) {
+            // Try to ally with a third of the civs in play
+            // Goes form 0 to -120 as the civ gets more friends, goal is around 1/4 friends max
+            motivation -= ((numOfFriends * 120f) / knownCivs).toInt()
+        }
 
+        // Wait to declare frienships until more civs
+        // Goes from -30 to 0 when we know 75% of allCivs
+        val civsToKnow = .75f * allCivs
+        motivation -= min(((civsToKnow - knownCivs) / civsToKnow * 30f).toInt(), 0)
+        
+        motivation -= hasAtLeastMotivationToAttack(civInfo, otherCiv, motivation)
+        
+        return motivation > 0
+    }
+    
+    private fun offerOpenBoarders(civInfo: Civilization) {
+        val civsThatWeCanDeclareFriendshipWith = civInfo.getKnownCivs()
+            .filter { !civInfo.isAtWarWith(it) && !civInfo.getDiplomacyManager(it).hasOpenBorders}
+            .sortedByDescending { it.getDiplomacyManager(civInfo).relationshipLevel() }.toList()
+        for (otherCiv in civsThatWeCanDeclareFriendshipWith) {
+            // Default setting is 5, this will be changed according to different civ.
+            if ((1..10).random() <= 5 && civInfo.getDiplomacyManager(otherCiv).isRelationshipLevelGE(RelationshipLevel.Favorable)) {
+                val tradeLogic = TradeLogic(civInfo, otherCiv)
+                tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.openBorders, TradeType.Agreement))
+                tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.openBorders, TradeType.Agreement))
+
+                otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
+            }
+        }
+    }
+    
     private fun offerResearchAgreement(civInfo: Civilization) {
         if (!civInfo.diplomacyFunctions.canSignResearchAgreement()) return // don't waste your time
 
