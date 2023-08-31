@@ -325,11 +325,18 @@ class LocalUniqueCache(val cache:Boolean = true) {
         uniqueType: UniqueType,
         ignoreConditionals: Boolean = false
     ): Sequence<Unique> {
-        val stateForConditionals = if (ignoreConditionals) StateForConditionals.IgnoreConditionals
-        else StateForConditionals(city.civ, city)
+        // City uniques are a combination of *global civ* uniques plus *city relevant* uniques (see City.getMatchingUniques())
+        // We can cache the civ uniques separately, so if we have several cities using the same cache,
+        //   we can cache the list of *civ uniques* to reuse between cities.
+        // This is assuming that we're ignoring conditionals, because otherwise -
+        //   the conditionals will render the the *filtered uniques* different anyway, so there's no reason to cache...
+        val uniques = if (!ignoreConditionals) city.getMatchingUniques(uniqueType, StateForConditionals(city.civ, city))
+            else forCivGetMatchingUniques(city.civ, uniqueType, StateForConditionals.IgnoreConditionals) +
+                city.getLocalMatchingUniques(uniqueType, StateForConditionals.IgnoreConditionals)
+
         return get(
             "city-${city.id}-${uniqueType.name}-${ignoreConditionals}",
-            city.getMatchingUniques(uniqueType, stateForConditionals)
+            uniques
         )
     }
 
@@ -340,12 +347,16 @@ class LocalUniqueCache(val cache:Boolean = true) {
             civ
         )
     ): Sequence<Unique> {
-        val sequence = civ.getMatchingUniques(uniqueType, stateForConditionals)
-        if (!cache) return sequence // So we don't need to toString the stateForConditionals
+        val sequence = civ.getMatchingUniques(uniqueType, StateForConditionals.IgnoreConditionals)
+        // The uniques CACHED are ALL civ uniques, regardless of conditional matching.
+        // The uniques RETURNED are uniques AFTER conditional matching.
+        // This allows reuse of the cached values, between runs with different conditionals -
+        //   for example, iterate on all tiles and get StatPercentForObject uniques relevant for each tile,
+        //   each tile will have different conditional state, but they will all reuse the same list of uniques for the civ
         return get(
-            "civ-${civ.civName}-${uniqueType.name}-${stateForConditionals}",
+            "civ-${civ.civName}-${uniqueType.name}",
             sequence
-        )
+        ).filter { it.conditionalsApply(stateForConditionals) }
     }
 
     /** Get cached results as a sequence */

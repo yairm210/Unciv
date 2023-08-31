@@ -110,9 +110,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     /**
      * @return [Stats] provided by all built buildings in city plus the bonus from Library
      */
-    fun getStats(): StatTreeNode {
+    fun getStats(localUniqueCache: LocalUniqueCache): StatTreeNode {
         val stats = StatTreeNode()
-        val localUniqueCache = LocalUniqueCache()
         for (building in getBuiltBuildings())
             stats.addStats(building.getStats(city, localUniqueCache), building.name)
         return stats

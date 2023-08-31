@@ -345,8 +345,8 @@ object Automation {
         return when {
             powerLevelComparison > 2 -> ThreatLevel.VeryHigh
             powerLevelComparison > 1.5f -> ThreatLevel.High
-            powerLevelComparison < (1 / 1.5f) -> ThreatLevel.Low
             powerLevelComparison < 0.5f -> ThreatLevel.VeryLow
+            powerLevelComparison < (1 / 1.5f) -> ThreatLevel.Low
             else -> ThreatLevel.Medium
         }
     }
