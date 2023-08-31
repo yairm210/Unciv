@@ -323,21 +323,20 @@ class LocalUniqueCache(val cache:Boolean = true) {
     fun forCityGetMatchingUniques(
         city: City,
         uniqueType: UniqueType,
-        ignoreConditionals: Boolean = false
+        stateForConditionals: StateForConditionals = StateForConditionals(city.civ, city)
     ): Sequence<Unique> {
         // City uniques are a combination of *global civ* uniques plus *city relevant* uniques (see City.getMatchingUniques())
         // We can cache the civ uniques separately, so if we have several cities using the same cache,
         //   we can cache the list of *civ uniques* to reuse between cities.
         // This is assuming that we're ignoring conditionals, because otherwise -
         //   the conditionals will render the the *filtered uniques* different anyway, so there's no reason to cache...
-        val uniques = if (!ignoreConditionals) city.getMatchingUniques(uniqueType, StateForConditionals(city.civ, city))
-            else forCivGetMatchingUniques(city.civ, uniqueType, StateForConditionals.IgnoreConditionals) +
+        val unfilteredUniques = forCivGetMatchingUniques(city.civ, uniqueType, StateForConditionals.IgnoreConditionals) +
                 city.getLocalMatchingUniques(uniqueType, StateForConditionals.IgnoreConditionals)
 
         return get(
-            "city-${city.id}-${uniqueType.name}-${ignoreConditionals}",
-            uniques
-        )
+            "city-${city.id}-${uniqueType.name}",
+            unfilteredUniques
+        ).filter { it.conditionalsApply(stateForConditionals) }
     }
 
     fun forCivGetMatchingUniques(
