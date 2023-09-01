@@ -651,16 +651,36 @@ class MapUnit : IsPartOfGameInfoSerialization {
         updateVisibleTiles(true, currentTile.position)
     }
 
-    fun putInTile(tile: Tile) {
+    /** Place `this` unit into [tile]
+     *
+     *  * Unchecked - should not throw
+     *  * Use [putInTile] instead if either `canMoveTo` is uncertain or side effects such as visibility are needed
+     *  * Assumes unit is not currently placed on the map
+     *  * Loads air unit into a carrier on that tile unless it's a city
+     */
+    fun putInTileUnchecked(tile: Tile) {
         when {
-            !movement.canMoveTo(tile) ->
-                throw Exception("Unit $name at $currentTile can't be put in tile ${tile.position}!")
             baseUnit.movesLikeAirUnits() -> tile.airUnits.add(this)
             isCivilian() -> tile.civilianUnit = this
             else -> tile.militaryUnit = this
         }
         // this check is here in order to not load the fresh built unit into carrier right after the build
         isTransported = !tile.isCityCenter() && baseUnit.movesLikeAirUnits()  // not moving civilians
+        currentTile = tile
+    }
+
+    /** Place `this` unit into [tile]
+     *
+     *  * Ensures unit is allowed to move there, throws an exception otherwise
+     *  * Assumes unit is not currently placed on the map
+     *  * Loads air unit into a carrier on that tile unless it's a city
+     *  * Handles currentTile, terrain-granted promotion, civilian capture and visibility by calling [moveThroughTile]
+     *  @see [putInTileUnchecked]
+     */
+    fun putInTile(tile: Tile) {
+        if (!movement.canMoveTo(tile))
+            throw Exception("Unit $name at $currentTile can't be put in tile ${tile.position}!")
+        putInTileUnchecked(tile)
         moveThroughTile(tile)
     }
 

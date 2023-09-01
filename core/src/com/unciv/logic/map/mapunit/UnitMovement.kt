@@ -463,12 +463,12 @@ class UnitMovement(val unit: MapUnit) {
         // Check if we could enter their tile if they wouldn't be there
         otherUnit.removeFromTile()
         val weCanEnterTheirTile = canMoveTo(reachableTile)
-        otherUnit.putInTile(reachableTile)
+        otherUnit.putInTileUnchecked(reachableTile)
         if (!weCanEnterTheirTile) return false
         // Check if they could enter our tile if we wouldn't be here
         unit.removeFromTile()
         val theyCanEnterOurTile = otherUnit.movement.canMoveTo(ourPosition)
-        unit.putInTile(ourPosition)
+        unit.putInTileUnchecked(ourPosition)
         if (!theyCanEnterOurTile) return false
         // All clear!
         return true
