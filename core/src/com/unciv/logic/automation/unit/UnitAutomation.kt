@@ -165,7 +165,9 @@ object UnitAutomation {
             val availablePromotions = unit.promotions.getAvailablePromotions()
                 .filterNot { it.hasUnique(UniqueType.SkipPromotion) }
             if (availablePromotions.any())
-                unit.promotions.addPromotion(availablePromotions.toList().random().name)
+                unit.promotions.addPromotion(
+                    availablePromotions.filter { it.hasUnique(UniqueType.FreePromotion) }.toList().randomOrNull()?.name
+                        ?: availablePromotions.toList().random().name)
         }
 
         //This allows for military units with certain civilian abilities to behave as civilians in peace and soldiers in war
