@@ -784,8 +784,6 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             }
             civInfo.addNotification("We have canceled our Defensive Pact with [${it.otherCivName}]!",
                 NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, it.otherCivName)
-            it.otherCiv().addNotification("[${civInfo.civName}] has canceled our Defensive Pact with us!",
-                NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
         }
     }
 
