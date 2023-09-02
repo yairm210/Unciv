@@ -887,9 +887,9 @@ class DiplomacyScreen(
                     .map { it.otherCiv() })
             for (thirdDefensivePactCiv in otherCivDefensivePactList) {
                 defensivePactJoinText += if (viewingCiv.knows(thirdDefensivePactCiv))
-                    "\n [${thirdDefensivePactCiv.civName}] will also join them in the war."
+                    "\n [${thirdDefensivePactCiv.civName}] will also join them in the war"
                 else
-                    "\n An unknown civilization will also join them in the war."
+                    "\n An unknown civilization will also join them in the war"
             }
 
             // Tell the player that thier defensive pacts will be canceled.
@@ -898,7 +898,7 @@ class DiplomacyScreen(
                 if (civDiploManager.otherCiv() != otherCiv
                     && civDiploManager.diplomaticStatus == DiplomaticStatus.DefensivePact
                     && !otherCivDefensivePactList.contains(civDiploManager.otherCiv())) {
-                    defensivePactCancelText += "\n This will cancel your defensive pact with [${civDiploManager.otherCivName}]."
+                    defensivePactCancelText += "\n This will cancel your defensive pact with [${civDiploManager.otherCivName}]"
                 }
             }
             
