@@ -876,12 +876,14 @@ class DiplomacyScreen(
             // Tell the player who all will join the other side from defensive pacts
             var defensivePactJoinText = ""
             val otherCivDefensivePactList = otherCiv.diplomacy.values.filter { it.otherCiv() != viewingCiv
-                && it.diplomaticStatus == DiplomaticStatus.DefensivePact }.map { it.otherCiv() }.toMutableList()
+                && it.diplomaticStatus == DiplomaticStatus.DefensivePact && !it.otherCiv().isAtWarWith(viewingCiv) }
+                .map { it.otherCiv() }.toMutableList()
             // Go through and find all of the defensive pact chains and add them to the list
             for (i in 0 until  otherCivDefensivePactList.count())
                 otherCivDefensivePactList.addAll(otherCivDefensivePactList[i].diplomacy.values
                     .filter { !otherCivDefensivePactList.contains(it.otherCiv()) 
-                        && it.otherCiv() != viewingCiv && it.otherCiv() != otherCiv }
+                        && it.otherCiv() != viewingCiv && it.otherCiv() != otherCiv
+                        && !it.otherCiv().isAtWarWith(viewingCiv) }
                     .map { it.otherCiv() })
             for (otherCivDiploManager in otherCivDefensivePactList)
                 defensivePactJoinText += "\n [${otherCivDiploManager.civName}] will also join them in the war."
