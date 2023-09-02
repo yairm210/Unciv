@@ -119,7 +119,7 @@ class CityTest {
     fun `should get resources from unique buildings`() {
         // given
         val building = testGame.createBuilding("Provides [4] [Iron]")
-        capitalCity.cityConstructions.addBuilding(building.name)
+        capitalCity.cityConstructions.addBuilding(building)
 
         // when
         val cityResources = capitalCity.getCityResources()

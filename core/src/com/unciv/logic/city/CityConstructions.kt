@@ -110,9 +110,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     /**
      * @return [Stats] provided by all built buildings in city plus the bonus from Library
      */
-    fun getStats(): StatTreeNode {
+    fun getStats(localUniqueCache: LocalUniqueCache): StatTreeNode {
         val stats = StatTreeNode()
-        val localUniqueCache = LocalUniqueCache()
         for (building in getBuiltBuildings())
             stats.addStats(building.getStats(city, localUniqueCache), building.name)
         return stats
@@ -492,6 +491,11 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     fun addBuilding(buildingName: String) {
         val building = city.getRuleset().buildings[buildingName]!!
+        addBuilding(building)
+    }
+
+    fun addBuilding(building: Building) {
+        val buildingName = building.name
         val civ = city.civ
 
         if (building.cityHealth > 0) {
@@ -502,12 +506,10 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         builtBuildingObjects = builtBuildingObjects.withItem(building)
         builtBuildings.add(buildingName)
 
-        city.civ.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
+        updateUniques()
 
         /** Support for [UniqueType.CreatesOneImprovement] */
         applyCreateOneImprovement(building)
-
-
 
         triggerNewBuildingUniques(building)
 
@@ -518,21 +520,13 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         if (building.isStatRelated(Stat.Science) && civ.hasUnique(UniqueType.TechBoostWhenScientificBuildingsBuiltInCapital))
             civ.tech.addScience(civ.tech.scienceOfLast8Turns.sum() / 8)
 
-        val uniqueTypesModifyingYields = listOf(
-            UniqueType.StatsFromTiles, UniqueType.StatsFromTilesWithout, UniqueType.StatsFromObject,
-            UniqueType.StatPercentFromObject, UniqueType.AllStatsPercentFromObject
-        )
-
-        updateUniques()
-
         // Happiness is global, so it could affect all cities
         if (building.isStatRelated(Stat.Happiness)) {
             for (city in civ.cities) {
                 city.reassignPopulationDeferred()
             }
         }
-        else if(uniqueTypesModifyingYields.any { building.hasUnique(it) })
-            city.reassignPopulationDeferred()
+        else city.reassignPopulationDeferred()
 
         addFreeBuildings()
     }
@@ -561,7 +555,12 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             builtBuildingObjects = builtBuildingObjects.withoutItem(buildingObject)
         else builtBuildingObjects.removeAll{ it.name == buildingName }
         builtBuildings.remove(buildingName)
-        city.civ.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
+        updateUniques()
+    }
+
+    fun removeBuilding(building: Building) {
+        builtBuildingObjects = builtBuildingObjects.withoutItem(building)
+        builtBuildings.remove(building.name)
         updateUniques()
     }
 
@@ -570,6 +569,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         for (building in getBuiltBuildings())
             builtBuildingUniqueMap.addUniques(building.uniqueObjects)
         if (!onLoadGame) {
+            city.civ.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
             city.cityStats.update()
             city.civ.cache.updateCivResources()
         }
@@ -577,35 +577,33 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     fun addFreeBuildings() {
         // "Gain a free [buildingName] [cityFilter]"
-        val freeBuildingUniques = city.getLocalMatchingUniques(UniqueType.GainFreeBuildings, StateForConditionals(city.civ, city))
+        val freeBuildingUniques = city.getMatchingUniques(UniqueType.GainFreeBuildings, StateForConditionals(city.civ, city))
 
         for (unique in freeBuildingUniques) {
-            val freeBuildingName = city.civ.getEquivalentBuilding(unique.params[0]).name
-            val citiesThatApply = when (unique.params[1]) {
-                "in this city" -> listOf(city)
-                "in other cities" -> city.civ.cities.filter { it !== city }
-                else -> city.civ.cities.filter { it.matchesFilter(unique.params[1]) }
-            }
+            val freeBuilding = city.civ.getEquivalentBuilding(unique.params[0])
+            val citiesThatApply =
+                if (unique.isLocalEffect) listOf(city)
+                else city.civ.cities.filter { it.matchesFilter(unique.params[1]) }
 
             for (city in citiesThatApply) {
-                if (city.cityConstructions.containsBuildingOrEquivalent(freeBuildingName)) continue
-                city.cityConstructions.addBuilding(freeBuildingName)
+                if (city.cityConstructions.containsBuildingOrEquivalent(freeBuilding.name)) continue
+                city.cityConstructions.addBuilding(freeBuilding)
                 if (city.id !in freeBuildingsProvidedFromThisCity)
                     freeBuildingsProvidedFromThisCity[city.id] = hashSetOf()
 
-                freeBuildingsProvidedFromThisCity[city.id]!!.add(freeBuildingName)
+                freeBuildingsProvidedFromThisCity[city.id]!!.add(freeBuilding.name)
             }
         }
 
         // Civ-level uniques - for these only add free buildings from each city to itself to avoid weirdness on city conquest
         for (unique in city.civ.getMatchingUniques(UniqueType.GainFreeBuildings, stateForConditionals = StateForConditionals(city.civ, city))) {
-            val freeBuildingName = city.civ.getEquivalentBuilding(unique.params[0]).name
+            val freeBuilding = city.civ.getEquivalentBuilding(unique.params[0])
             if (city.matchesFilter(unique.params[1])) {
                 if (city.id !in freeBuildingsProvidedFromThisCity)
                     freeBuildingsProvidedFromThisCity[city.id] = hashSetOf()
-                freeBuildingsProvidedFromThisCity[city.id]!!.add(freeBuildingName)
-                if (!isBuilt(freeBuildingName))
-                    addBuilding(freeBuildingName)
+                freeBuildingsProvidedFromThisCity[city.id]!!.add(freeBuilding.name)
+                if (!isBuilt(freeBuilding.name))
+                    addBuilding(freeBuilding)
             }
         }
 
@@ -615,7 +613,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
         for (building in autoGrantedBuildings)
             if (building.isBuildable(city.cityConstructions))
-                addBuilding(building.name)
+                addBuilding(building)
     }
 
     /**
@@ -641,7 +639,31 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         tile: Tile? = null
     ): Boolean {
         val construction = getConstruction(constructionName) as? INonPerpetualConstruction ?: return false
+        return purchaseConstruction(construction, queuePosition, automatic, stat, tile)
+    }
 
+    /**
+     *  Purchase a construction for gold (or another stat)
+     *  called from NextTurnAutomation and the City UI
+     *  Build / place the new item, deduct cost, and maintain queue.
+     *
+     *  @param construction What to buy (needed since buying something not queued is allowed)
+     *  @param queuePosition    Position in the queue or -1 if not from queue
+     *                          Note: -1 does not guarantee queue will remain unchanged (validation)
+     *  @param automatic        Flag whether automation should try to choose what next to build (not coming from UI)
+     *                          Note: settings.autoAssignCityProduction is handled later
+     *  @param stat             Stat object of the stat with which was paid for the construction
+     *  @param tile             Supports [UniqueType.CreatesOneImprovement] the tile to place the improvement from that unique on.
+     *                          Ignored when the [constructionName] does not have that unique. If null and the building has the unique, a tile is chosen automatically.
+     *  @return                 Success (false e.g. unit cannot be placed)
+     */
+    fun purchaseConstruction(
+        construction: INonPerpetualConstruction,
+        queuePosition: Int,
+        automatic: Boolean,
+        stat: Stat = Stat.Gold,
+        tile: Tile? = null
+    ): Boolean {
         // Support UniqueType.CreatesOneImprovement: it is active when getImprovementToCreate returns an improvement
         val improvementToPlace = (construction as? Building)?.getImprovementToCreate(city.getRuleset())
         if (improvementToPlace != null) {
@@ -675,7 +697,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                     && it.params[2] == stat.name
                 }
             ) {
-                city.civ.civConstructions.boughtItemsWithIncreasingPrice.add(constructionName, 1)
+                city.civ.civConstructions.boughtItemsWithIncreasingPrice.add(construction.name, 1)
             }
         }
 
@@ -688,14 +710,14 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     fun addCheapestBuildableStatBuilding(stat: Stat): String? {
         val cheapestBuildableStatBuilding = getBasicStatBuildings(stat)
-            .map { city.civ.getEquivalentBuilding(it.name) }
+            .map { city.civ.getEquivalentBuilding(it) }
             .filter { it.isBuildable(this) || isBeingConstructedOrEnqueued(it.name) }
-            .minByOrNull { it.cost }?.name
+            .minByOrNull { it.cost }
             ?: return null
 
-        constructionComplete(getConstruction(cheapestBuildableStatBuilding) as INonPerpetualConstruction)
+        constructionComplete(cheapestBuildableStatBuilding)
 
-        return cheapestBuildableStatBuilding
+        return cheapestBuildableStatBuilding.name
     }
 
     private fun removeCurrentConstruction() = removeFromQueue(0, true)

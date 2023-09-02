@@ -373,6 +373,7 @@ class GameOptionsTable(
 
             // If so, add it to the current ruleset
             gameParameters.baseRuleset = newBaseRuleset
+            modCheckboxes.setBaseRuleset(newBaseRuleset)  // Treats declared incompatibility
             onChooseMod(newBaseRuleset)
 
             // Check if the ruleset in its entirety is still well-defined
@@ -383,7 +384,6 @@ class GameOptionsTable(
             }
             modLinkErrors.showWarnOrErrorToast(previousScreen as BaseScreen)
 
-            modCheckboxes.setBaseRuleset(newBaseRuleset)
             return null
         }
 

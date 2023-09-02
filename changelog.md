@@ -1,3 +1,43 @@
+## 4.7.19
+
+"Jump To Destination" Unit Action Button for units that are moving  - By huckdogg
+
+Automated units do not autopromote by default (changeable by options setting)
+
+Defensive pact allies meet aggressor civ so they can declare war on them
+
+Modding: GPP validation
+
+Performance:
+- Faster population reassignment
+- Faster improvement stats simulation
+
+Clarify when trade decision is made
+
+Battle Damage tests - By Framonti
+
+UnitTable close button mouseover - By SomeTroglodyte
+
+## 4.7.18
+
+Resolved ANRs on new game screen with a lot of maps
+
+Fixed errors when cloning civs that should open policy picker
+
+By SeventhM:
+- Fix promotions being available when they shouldn't
+- Allow buildings to require population, Allow buildings to use condtionals
+
+By SomeTroglodyte:
+- Fix Permanent Audiovisual toggle
+
+By tuvus:
+- AI nuke improvement
+- AI move units closer to enemy first in wartime
+- Improved AI attack targetting
+
+Add tests for city class and introduce small refactor  - By Framonti
+
 ## 4.7.17
 
 Free naval units are always added to coastal cities

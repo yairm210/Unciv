@@ -179,6 +179,8 @@ open class Tile : IsPartOfGameInfoSerialization {
         toReturn.continent = continent
         toReturn.exploredBy = exploredBy
         toReturn.history = history.clone()
+        // Setting even though it's transient - where it's needed, it's a real performance saver
+        toReturn.tileResourceCache = tileResourceCache
         return toReturn
     }
 

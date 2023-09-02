@@ -300,8 +300,7 @@ class TechManager : IsPartOfGameInfoSerialization {
 
         updateTransientBooleans()
         for (city in civInfo.cities) {
-            city.cityStats.update()
-            city.reassignPopulationDeferred()   
+            city.reassignPopulationDeferred()
         }
 
         if (!civInfo.isSpectator() && showNotification)

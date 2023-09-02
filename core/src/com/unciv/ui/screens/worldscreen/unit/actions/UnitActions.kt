@@ -60,8 +60,9 @@ object UnitActions {
         addTriggerUniqueActions(unit, actionList)
         addAddInCapitalAction(unit, actionList, tile)
 
-        if (unit.isMoving())
+        if (unit.isMoving()) {
             actionList += UnitAction(UnitActionType.StopMovement) { unit.action = null }
+        }
         if (unit.isExploring())
             actionList += UnitAction(UnitActionType.StopExploration) { unit.action = null }
         if (unit.isAutomated())
@@ -87,6 +88,11 @@ object UnitActions {
         val tile = unit.getTile()
         val actionList = ArrayList<UnitAction>()
 
+        if (unit.isMoving()) {
+            actionList += UnitAction(UnitActionType.ShowUnitDestination) {
+                GUI.getMap().setCenterPosition(unit.getMovementDestination().position,true)
+            }
+        }
         addSleepActions(actionList, unit, true)
         addFortifyActions(actionList, unit, true)
         addAutomateAction(unit, actionList, false)
@@ -350,13 +356,13 @@ object UnitActions {
                 title = title,
                 action = {
                     unit.destroy()
-                    val newUnit = civInfo.units.placeUnitNearTile(unitTile.position, unitToTransformTo.name)
+                    val newUnit = civInfo.units.placeUnitNearTile(unitTile.position, unitToTransformTo)
 
                     /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
                      * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
                      */
                     if (newUnit == null) {
-                        val resurrectedUnit = civInfo.units.placeUnitNearTile(unitTile.position, unit.name)!!
+                        val resurrectedUnit = civInfo.units.placeUnitNearTile(unitTile.position, unit.baseUnit)!!
                         unit.copyStatisticsTo(resurrectedUnit)
                     } else { // Managed to upgrade
                         unit.copyStatisticsTo(newUnit)

@@ -169,10 +169,10 @@ class ImprovementPickerScreen(
             //Warn when the current improvement will increase a stat for the tile,
             // but the tile is outside of the range (> 3 tiles from city center) that can be
             // worked by a city's population
-            if (stats.values.any { it > 0f }
+            if (tile.owningCity != null
+                && !improvement.isRoad()
+                    && stats.values.any { it > 0f }
                     && !improvement.name.startsWith(Constants.remove)
-                    && !improvement.isRoad()
-                    && tile.owningCity != null
                     && !tile.owningCity!!.getWorkableTiles().contains(tile)
             )
                 labelText += "\n" + "Not in city work range".tr()
@@ -205,18 +205,18 @@ class ImprovementPickerScreen(
             regularImprovements.row()
         }
 
-        var ownerTable = Table()
+        val ownerTable = Table()
         if (tile.getOwner() == null) {
-            ownerTable.add("Unowned tile".tr().toLabel())
+            ownerTable.add("Unowned tile".toLabel())
         } else if (tile.getOwner()!!.isCurrentPlayer()) {
             val button = tile.getCity()!!.name.toTextButton(hideIcons = true)
             button.onClick {
                 this.game.pushScreen(CityScreen(tile.getCity()!!,null,tile))
             }
-            ownerTable.add("Tile owned by [${tile.getOwner()!!.civName}] (You)".tr().toLabel()).padLeft(10f)
+            ownerTable.add("Tile owned by [${tile.getOwner()!!.civName}] (You)".toLabel()).padLeft(10f)
             ownerTable.add(button).padLeft(20f)
         } else {
-            ownerTable.add("Tile owned by [${tile.getOwner()!!.civName}] - [${tile.getCity()!!.name}]".tr().toLabel()).padLeft(10f)
+            ownerTable.add("Tile owned by [${tile.getOwner()!!.civName}] - [${tile.getCity()!!.name}]".toLabel()).padLeft(10f)
         }
 
         topTable.add(ownerTable)

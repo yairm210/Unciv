@@ -349,8 +349,8 @@ object Automation {
         return when {
             powerLevelComparison > 2 -> ThreatLevel.VeryHigh
             powerLevelComparison > 1.5f -> ThreatLevel.High
-            powerLevelComparison < (1 / 1.5f) -> ThreatLevel.Low
             powerLevelComparison < 0.5f -> ThreatLevel.VeryLow
+            powerLevelComparison < (1 / 1.5f) -> ThreatLevel.Low
             else -> ThreatLevel.Medium
         }
     }
@@ -366,11 +366,12 @@ object Automation {
     }
 
     // Ranks a tile for any purpose except the expansion algorithm of cities
-    internal fun rankTile(tile: Tile?, civInfo: Civilization): Float {
+    internal fun rankTile(tile: Tile?, civInfo: Civilization,
+                          localUniqueCache: LocalUniqueCache): Float {
         if (tile == null) return 0f
         val tileOwner = tile.getOwner()
         if (tileOwner != null && tileOwner != civInfo) return 0f // Already belongs to another civilization, useless to us
-        val stats = tile.stats.getTileStats(null, civInfo)
+        val stats = tile.stats.getTileStats(null, civInfo, localUniqueCache)
         var rank = rankStatsValue(stats, civInfo)
         if (tile.improvement == null) rank += 0.5f // improvement potential!
         if (tile.isPillaged()) rank += 0.6f

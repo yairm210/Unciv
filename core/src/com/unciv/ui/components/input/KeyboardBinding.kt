@@ -90,6 +90,7 @@ enum class KeyboardBinding(
     Automate(Category.UnitActions, 'm'),
     StopAutomation(Category.UnitActions,"Stop automation", 'm'),
     StopMovement(Category.UnitActions,"Stop movement", '.'),
+    ShowUnitDestination(Category.UnitActions, "Show unit destination", 'j'),
     Sleep(Category.UnitActions, 'f'),
     SleepUntilHealed(Category.UnitActions,"Sleep until healed", 'h'),
     Fortify(Category.UnitActions, 'f'),

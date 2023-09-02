@@ -2,12 +2,11 @@ package com.unciv.ui.popups.options
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
-import com.unciv.UncivGame
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.metadata.GameSettings
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.screens.basescreen.BaseScreen
 
 fun gameplayTab(
     optionsPopup: OptionsPopup
@@ -45,8 +44,13 @@ fun gameplayTab(
     optionsPopup.addCheckbox(
         this,
         "Automated units can upgrade",
-        settings.automatedUnitsCanUpgrade, true
+        settings.automatedUnitsCanUpgrade, false
     ) { settings.automatedUnitsCanUpgrade = it }
+    optionsPopup.addCheckbox(
+        this,
+        "Automated units choose promotions",
+        settings.automatedUnitsChoosePromotions, false
+    ) { settings.automatedUnitsChoosePromotions = it }
     optionsPopup.addCheckbox(this, "Order trade offers by amount", settings.orderTradeOffersByAmount) { settings.orderTradeOffersByAmount = it }
     optionsPopup.addCheckbox(this, "Ask for confirmation when pressing next turn", settings.confirmNextTurn) { settings.confirmNextTurn = it }
 

@@ -76,7 +76,7 @@ class CityStateFunctions(val civInfo: Civilization) {
             return
         val giftedUnit = giftableUnits.random()
         val cities = NextTurnAutomation.getClosestCities(receivingCiv, civInfo) ?: return
-        val placedUnit = receivingCiv.units.placeUnitNearTile(cities.city1.location, giftedUnit.name)
+        val placedUnit = receivingCiv.units.placeUnitNearTile(cities.city1.location, giftedUnit)
             ?: return
         val locations = LocationAction(placedUnit.getTile().position, cities.city2.location)
         receivingCiv.addNotification( "[${civInfo.civName}] gave us a [${giftedUnit.name}] as a gift!", locations,
@@ -438,7 +438,7 @@ class CityStateFunctions(val civInfo: Civilization) {
                 it.value.isCivilian() && it.value.isBuildable(civInfo)
         }
         if (buildableWorkerLikeUnits.isEmpty()) return  // Bad luck?
-        demandingCiv.units.placeUnitNearTile(civInfo.getCapital()!!.location, buildableWorkerLikeUnits.keys.random())
+        demandingCiv.units.placeUnitNearTile(civInfo.getCapital()!!.location, buildableWorkerLikeUnits.values.random())
 
         civInfo.getDiplomacyManager(demandingCiv).addInfluence(-50f)
         cityStateBullied(demandingCiv)

@@ -68,7 +68,7 @@ object BackwardCompatibility {
 
             for (building in city.cityConstructions.getBuiltBuildings()) {
                 if (!ruleset.buildings.containsKey(building.name))
-                    city.cityConstructions.removeBuilding(building.name)
+                    city.cityConstructions.removeBuilding(building)
             }
 
             fun isInvalidConstruction(construction: String) =
