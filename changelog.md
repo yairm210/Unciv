@@ -1,3 +1,16 @@
+## 4.7.17
+
+Free naval units are always added to coastal cities
+
+Can offer Research agreements with gold, if other civ can't cover the cost  - By tuvus
+
+By SomeTroglodyte:
+- Can select tile north of city for bombarding
+- Fixed 'Transfer Movement' stopping healing
+- Fix next-turn not offering Policy Picker for free Policies
+- Fix intended Longpress-to-move on Android not working
+- A few more useful notification actions
+
 ## 4.7.16
 
 Undo button in Multiplayer no longer changes 'next turn' button

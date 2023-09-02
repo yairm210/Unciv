@@ -39,11 +39,11 @@ import com.unciv.ui.components.extensions.colorFromRGB
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.ActivationTypes
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
-import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.components.tilegroups.TileGroup
 import com.unciv.ui.components.tilegroups.TileGroupMap
 import com.unciv.ui.components.tilegroups.TileSetStrings
@@ -124,14 +124,15 @@ class WorldMapHolder(
             }
             tileGroup.onClick { onTileClicked(tileGroup.tile) }
 
-            // On 'droid two-finger tap is mapped to right click and dissent has been expressed
-            if (Gdx.app.type == Application.ApplicationType.Android)
-                continue
-
-            // Right mouse click listener
-            tileGroup.onRightClick {
+            // Right mouse click on desktop / Longpress on Android, and no equivalence mapping between those two,
+            // because on 'droid two-finger tap is mapped to right click and dissent has been expressed
+            tileGroup.onActivation(
+                type = if (Gdx.app.type == Application.ApplicationType.Android)
+                    ActivationTypes.Longpress else ActivationTypes.RightClick,
+                noEquivalence = true
+            ) {
                 val unit = worldScreen.bottomUnitTable.selectedUnit
-                    ?: return@onRightClick
+                    ?: return@onActivation
                 Concurrency.run("WorldScreenClick") {
                     onTileRightClicked(unit, tileGroup.tile)
                 }
@@ -333,12 +334,6 @@ class WorldMapHolder(
              * so that and that alone will be relegated to the concurrent thread.
              */
 
-            /** LibGdx sometimes has these weird errors when you try to edit the UI layout from 2 separate threads.
-             * And so, all UI editing will be done on the main thread.
-             * The only "heavy lifting" that needs to be done is getting the turns to get there,
-             * so that and that alone will be relegated to the concurrent thread.
-             */
-
             val unitToTurnsToTile = HashMap<MapUnit, Int>()
             for (unit in selectedUnits) {
                 val shortestPath = ArrayList<Tile>()
@@ -422,9 +417,9 @@ class WorldMapHolder(
         }
 
         for (unit in unitList) {
-            val unitGroup = UnitGroup(unit, 60f).surroundWithCircle(85f, resizeActor = false)
+            val unitGroup = UnitGroup(unit, 48f).surroundWithCircle(68f, resizeActor = false)
             unitGroup.circle.color = Color.GRAY.cpy().apply { a = 0.5f }
-            if (unit.currentMovement == 0f) unitGroup.color.a = 0.5f
+            if (unit.currentMovement == 0f) unitGroup.color.a = 0.66f
             unitGroup.touchable = Touchable.enabled
             unitGroup.onClick {
                 worldScreen.bottomUnitTable.selectUnit(unit, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
@@ -435,7 +430,7 @@ class WorldMapHolder(
         }
 
         addOverlayOnTileGroup(tileGroups[tile]!!, table)
-        table.moveBy(0f, 60f)
+        table.moveBy(0f, 48f)
 
     }
 
@@ -695,7 +690,7 @@ class WorldMapHolder(
                 if (nukeBlastRadius >= 0)
                     selectedTile!!.getTilesInDistance(nukeBlastRadius)
                         // Should not display invisible submarine units even if the tile is visible.
-                        .filter { targetTile -> (targetTile.isVisible(unit.civ) && targetTile.getUnits().any { !it.isInvisible(unit.civ) }) 
+                        .filter { targetTile -> (targetTile.isVisible(unit.civ) && targetTile.getUnits().any { !it.isInvisible(unit.civ) })
                             || (targetTile.isCityCenter() && unit.civ.hasExplored(targetTile)) }
                         .map { AttackableTile(unit.getTile(), it, 1f, null) }
                         .toList()
@@ -798,8 +793,7 @@ class WorldMapHolder(
         unitActionOverlays.clear()
     }
 
-    override fun reloadMaxZoom()
-    {
+    override fun reloadMaxZoom() {
         val maxWorldZoomOut = UncivGame.Current.settings.maxWorldZoomOut
         val mapRadius = tileMap.mapParameters.mapSize.radius
 

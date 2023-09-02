@@ -7,6 +7,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.MayaLongCountAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
@@ -65,7 +66,7 @@ object UniqueTriggerActivation {
 
                 val placedUnit = if (city != null || tile == null)
                     civInfo.units.addUnit(unitName, chosenCity) ?: return false
-                    else civInfo.units.placeUnitNearTile(tile!!.position, unitName) ?: return false
+                    else civInfo.units.placeUnitNearTile(tile.position, unitName) ?: return false
 
                 val notificationText = getNotificationText(notification, triggerNotificationText,
                     "Gained [1] [$unitName] unit(s)")
@@ -73,7 +74,7 @@ object UniqueTriggerActivation {
 
                 civInfo.addNotification(
                     notificationText,
-                    placedUnit.getTile().position,
+                    MapUnitAction(placedUnit.getTile().position),
                     NotificationCategory.Units,
                     placedUnit.name
                 )
@@ -97,7 +98,7 @@ object UniqueTriggerActivation {
                 val tilesUnitsWerePlacedOn: MutableList<Vector2> = mutableListOf()
                 repeat(actualAmount) {
                     val placedUnit = if (city != null || tile == null) civInfo.units.addUnit(unitName, chosenCity)
-                        else civInfo.units.placeUnitNearTile(tile!!.position, unitName)
+                        else civInfo.units.placeUnitNearTile(tile.position, unitName)
                     if (placedUnit != null)
                         tilesUnitsWerePlacedOn.add(placedUnit.getTile().position)
                 }
@@ -109,7 +110,7 @@ object UniqueTriggerActivation {
 
                 civInfo.addNotification(
                     notificationText,
-                    LocationAction(tilesUnitsWerePlacedOn),
+                    MapUnitAction(tilesUnitsWerePlacedOn),
                     NotificationCategory.Units,
                     civInfo.getEquivalentUnit(unit).name
                 )
@@ -118,8 +119,11 @@ object UniqueTriggerActivation {
             UniqueType.OneTimeFreeUnitRuins -> {
                 var unit = civInfo.getEquivalentUnit(unique.params[0])
                 if ( unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger()) {
-                     val replacementUnit = ruleSet.units.values.firstOrNull{it.getMatchingUniques(UniqueType.BuildImprovements)
-                            .any { it.params[0] == "Land" }} ?: return false
+                     val replacementUnit = ruleSet.units.values
+                         .firstOrNull {
+                             it.getMatchingUniques(UniqueType.BuildImprovements)
+                                .any { unique -> unique.params[0] == "Land" }
+                         } ?: return false
                     unit = civInfo.getEquivalentUnit(replacementUnit.name)
                 }
 
@@ -134,7 +138,10 @@ object UniqueTriggerActivation {
                         else notification
                     civInfo.addNotification(
                         notificationText,
-                        LocationAction(placedUnit.getTile().position, tile?.position),
+                        sequence {
+                            yield(MapUnitAction(placedUnit.getTile().position))
+                            yieldAll(LocationAction(tile?.position))
+                        },
                         NotificationCategory.Units,
                         placedUnit.name
                     )
@@ -393,7 +400,7 @@ object UniqueTriggerActivation {
                 if (notification != null) {
                     civInfo.addNotification(
                         notification,
-                        LocationAction(promotedUnitLocations),
+                        MapUnitAction(promotedUnitLocations),
                         NotificationCategory.Units,
                         "unitPromotionIcons/${unique.params[1]}"
                     )
@@ -411,10 +418,10 @@ object UniqueTriggerActivation {
              * The very first time after acquiring this policy, the timer is set to half of its normal value
              * This is the basics, and apart from this, there is some randomness in the exact turn count, but I don't know how much
              * There is surprisingly little information findable online about this policy, and the civ 5 source files are
-             *  also quite though to search through, so this might all be incorrect.
+             *  also quite tough to search through, so this might all be incorrect.
              * For now this mechanic seems decent enough that this is fine.
              * Note that the way this is implemented now, this unique does NOT stack
-             * I could parametrize the [Allied], but eh.
+             * I could parametrize the 'Allied' of the Unique text, but eh.
              */
             UniqueType.CityStateCanGiftGreatPeople -> {
                 civInfo.addFlag(
@@ -643,7 +650,7 @@ object UniqueTriggerActivation {
         return false
     }
 
-    fun getNotificationText(notification: String?, triggerNotificationText: String?, effectNotificationText:String):String?{
+    private fun getNotificationText(notification: String?, triggerNotificationText: String?, effectNotificationText: String): String? {
         return if (!notification.isNullOrEmpty()) notification
         else if (triggerNotificationText != null)
         {
@@ -659,7 +666,7 @@ object UniqueTriggerActivation {
         unique: Unique,
         unit: MapUnit,
         notification: String? = null,
-        triggerNotificationText:String? = null
+        triggerNotificationText: String? = null
     ): Boolean {
         when (unique.type) {
             UniqueType.OneTimeUnitHeal -> {
