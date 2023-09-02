@@ -872,8 +872,31 @@ class DiplomacyScreen(
             declareWarButton.disable()
             declareWarButton.setText(declareWarButton.text.toString() + " ($turnsToPeaceTreaty${Fonts.turn})")
         }
-        declareWarButton.onClick {
-            ConfirmPopup(this, "Declare war on [${otherCiv.civName}]?", "Declare war") {
+        declareWarButton.onClick {            
+            // Tell the player who all will join the other side from defensive pacts
+            var defensivePactJoinText = ""
+            val otherCivDefensivePactList = otherCiv.diplomacy.values.filter { it.otherCiv() != viewingCiv
+                && it.diplomaticStatus == DiplomaticStatus.DefensivePact }.map { it.otherCiv() }.toMutableList()
+            // Go through and find all of the defensive pact chains and add them to the list
+            for (i in 0 until  otherCivDefensivePactList.count())
+                otherCivDefensivePactList.addAll(otherCivDefensivePactList[i].diplomacy.values
+                    .filter { !otherCivDefensivePactList.contains(it.otherCiv()) 
+                        && it.otherCiv() != viewingCiv && it.otherCiv() != otherCiv }
+                    .map { it.otherCiv() })
+            for (otherCivDiploManager in otherCivDefensivePactList)
+                defensivePactJoinText += "\n [${otherCivDiploManager.civName}] will also join them in the war."
+
+            // Tell the player that thier defensive pacts will be canceled.
+            var defensivePactCancelText = ""
+            for (civDiploManager in viewingCiv.diplomacy.values) {
+                if (civDiploManager.otherCiv() != otherCiv
+                    && civDiploManager.diplomaticStatus == DiplomaticStatus.DefensivePact
+                    && !otherCivDefensivePactList.contains(civDiploManager.otherCiv())) {
+                    defensivePactCancelText += "\n This will cancel your defensive pact with [${civDiploManager.otherCivName}]."
+                }
+            }
+            
+            ConfirmPopup(this, "Declare war on [${otherCiv.civName}]?" + defensivePactCancelText + defensivePactJoinText, "Declare war") {
                 diplomacyManager.declareWar()
                 setRightSideFlavorText(otherCiv, otherCiv.nation.attacked, "Very well.")
                 updateLeftSideTable(otherCiv)
