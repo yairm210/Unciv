@@ -264,7 +264,7 @@ class City : IsPartOfGameInfoSerialization {
     }
 
     private fun getCityResourcesFromUniqueBuildings(cityResources: ResourceSupplyList, resourceModifer: HashMap<String, Float>) {
-        for (unique in getMatchingUniques(UniqueType.ProvidesResources, StateForConditionals(civ, this))) { // E.G "Provides [1] [Iron]"
+        for (unique in cityConstructions.builtBuildingUniqueMap.getMatchingUniques(UniqueType.ProvidesResources, StateForConditionals(civ, this))) { // E.G "Provides [1] [Iron]"
             val resource = getRuleset().tileResources[unique.params[1]]
                 ?: continue
             cityResources.add(
