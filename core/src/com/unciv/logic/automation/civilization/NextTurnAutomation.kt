@@ -41,6 +41,7 @@ import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -708,7 +709,8 @@ object NextTurnAutomation {
                 (it.type == beliefType || beliefType == BeliefType.Any)
                 && !additionalBeliefsToExclude.contains(it)
                 && civInfo.religionManager.getReligionWithBelief(it) == null
-                && it.getMatchingUniques(UniqueType.OnlyAvailableWhen).none { unique -> !unique.conditionalsApply(civInfo) }
+                && it.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals)
+                    .none { unique -> !unique.conditionalsApply(civInfo) }
             }
             .maxByOrNull { ReligionAutomation.rateBelief(civInfo, it) }
     }
