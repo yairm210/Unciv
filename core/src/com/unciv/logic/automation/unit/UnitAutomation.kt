@@ -159,7 +159,7 @@ object UnitAutomation {
             return
         }
 
-        if (unit.promotions.canBePromoted() &&
+        while (unit.promotions.canBePromoted() &&
             // Restrict Human automated units from promotions via setting
                 (UncivGame.Current.settings.automatedUnitsChoosePromotions || unit.civ.isAI())) {
             val availablePromotions = unit.promotions.getAvailablePromotions()
