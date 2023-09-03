@@ -10,14 +10,14 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
+import com.unciv.logic.map.tile.Tile
+import com.unciv.models.UncivSound
+import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.PerpetualConstruction
 import com.unciv.models.ruleset.RejectionReason
 import com.unciv.models.ruleset.RejectionReasonType
-import com.unciv.logic.map.tile.Tile
-import com.unciv.models.UncivSound
-import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -34,15 +34,17 @@ import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.disable
 import com.unciv.ui.components.extensions.getConsumesAmountString
 import com.unciv.ui.components.extensions.isEnabled
-import com.unciv.ui.components.input.onActivation
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popups.CityScreenConstructionMenu
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.closeAllPopups
@@ -206,7 +208,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         for (entry in constructionsSequence.filter { it.shouldBeDisplayed(cityConstructions) }) {
 
             val useStoredProduction = entry is Building || !cityConstructions.isBeingConstructedOrEnqueued(entry.name)
-            val buttonText = cityConstructions.getTurnsToConstructionString(entry.name, useStoredProduction).trim()
+            val buttonText = cityConstructions.getTurnsToConstructionString(entry, useStoredProduction).trim()
             val resourcesRequired = entry.getResourceRequirementsPerTurn()
             val mostImportantRejection =
                     entry.getRejectionReasons(cityConstructions)
@@ -308,21 +310,16 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         val table = Table()
         table.align(Align.left).pad(5f)
-        table.background = BaseScreen.skinStrings.getUiBackground("CityScreen/CityConstructionTable/QueueEntry", tintColor = Color.BLACK)
+        highlightQueueEntry(table, constructionQueueIndex == selectedQueueEntry)
 
-        if (constructionQueueIndex == selectedQueueEntry)
-            table.background = BaseScreen.skinStrings.getUiBackground(
-                "CityScreen/CityConstructionTable/QueueEntrySelected",
-                tintColor = Color.GREEN.darken(0.5f)
-            )
-
+        val construction = cityConstructions.getConstruction(constructionName)
         val isFirstConstructionOfItsKind = cityConstructions.isFirstConstructionOfItsKind(constructionQueueIndex, constructionName)
 
         var text = constructionName.tr(true) +
                 if (constructionName in PerpetualConstruction.perpetualConstructionsMap) "\n∞"
-                else cityConstructions.getTurnsToConstructionString(constructionName, isFirstConstructionOfItsKind)
+                else cityConstructions.getTurnsToConstructionString(construction, isFirstConstructionOfItsKind)
 
-        val constructionResource = cityConstructions.getConstruction(constructionName).getResourceRequirementsPerTurn()
+        val constructionResource = construction.getResourceRequirementsPerTurn()
         for ((resourceName, amount) in constructionResource) {
             val resource = cityConstructions.city.getRuleset().tileResources[resourceName] ?: continue
             text += "\n" + resourceName.getConsumesAmountString(amount, resource.isStockpiled()).tr()
@@ -345,13 +342,38 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         else table.add().right()
 
         table.touchable = Touchable.enabled
-        table.onClick {
+
+        fun selectQueueEntry(onBeforeUpdate: () -> Unit) {
             cityScreen.selectConstruction(constructionName)
             selectedQueueEntry = constructionQueueIndex
-            cityScreen.update()
+            onBeforeUpdate()
+            cityScreen.update()  // Not before CityScreenConstructionMenu or table will have no parent to get stage coords
             ensureQueueEntryVisible()
         }
+
+        table.onClick { selectQueueEntry {} }
+        if (cityScreen.canCityBeChanged())
+            table.onRightClick { selectQueueEntry {
+                CityScreenConstructionMenu(cityScreen.stage, table, cityScreen.city, construction) {
+                    cityScreen.update()
+                }
+            } }
+
         return table
+    }
+
+    private fun highlightQueueEntry(queueEntry: Table, highlight: Boolean) {
+        queueEntry.background =
+            if (highlight)
+                BaseScreen.skinStrings.getUiBackground(
+                    "CityScreen/CityConstructionTable/QueueEntrySelected",
+                    tintColor = Color.GREEN.darken(0.5f)
+                )
+            else
+                BaseScreen.skinStrings.getUiBackground(
+                    "CityScreen/CityConstructionTable/QueueEntry",
+                    tintColor = Color.BLACK
+                )
     }
 
     private fun getProgressBar(constructionName: String): Group {
@@ -368,21 +390,13 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
     private fun getConstructionButton(constructionButtonDTO: ConstructionButtonDTO): Table {
         val construction = constructionButtonDTO.construction
-        val pickConstructionButton = Table().apply { isTransform = false }
-
-        pickConstructionButton.align(Align.left).pad(5f)
-        pickConstructionButton.background = BaseScreen.skinStrings.getUiBackground(
-            "CityScreen/CityConstructionTable/PickConstructionButton",
-            tintColor = Color.BLACK
-        )
-        pickConstructionButton.touchable = Touchable.enabled
-
-        if (!isSelectedQueueEntry() && cityScreen.selectedConstruction == construction) {
-            pickConstructionButton.background = BaseScreen.skinStrings.getUiBackground(
-                "CityScreen/CityConstructionTable/PickConstructionButtonSelected",
-                tintColor = Color.GREEN.darken(0.5f)
-            )
+        val pickConstructionButton = Table().apply {
+            isTransform = false
+            align(Align.left).pad(5f)
+            touchable = Touchable.enabled
         }
+
+        highlightConstructionButton(pickConstructionButton, !isSelectedQueueEntry() && cityScreen.selectedConstruction == construction)
 
         val icon = ImageGetter.getConstructionPortrait(construction.name, 40f)
         pickConstructionButton.add(getProgressBar(construction.name)).padRight(5f)
@@ -444,12 +458,66 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 addConstructionToQueue(construction, cityScreen.city.cityConstructions)
             } else {
                 cityScreen.selectConstruction(construction)
+                highlightConstructionButton(pickConstructionButton, true, true)  // without, will highlight but with visible delay
             }
             selectedQueueEntry = -1
             cityScreen.update()
         }
 
+        if (!cityScreen.canCityBeChanged()) return pickConstructionButton
+
+        pickConstructionButton.onRightClick {
+            if (cityScreen.selectedConstruction != construction) {
+                // Ensure context is visible
+                cityScreen.selectConstruction(construction)
+                highlightConstructionButton(pickConstructionButton, true, true)
+                cityScreen.updateWithoutConstructionAndMap()
+            }
+            CityScreenConstructionMenu(cityScreen.stage, pickConstructionButton, cityScreen.city, construction) {
+                cityScreen.update()
+            }
+        }
         return pickConstructionButton
+    }
+
+    private fun highlightConstructionButton(
+        pickConstructionButton: Table,
+        highlight: Boolean,
+        clearOthers: Boolean = false
+    ) {
+        val unselected by lazy {
+            // Lazy because possibly not needed (highlight true, clearOthers false) and slightly costly
+            BaseScreen.skinStrings.getUiBackground(
+                "CityScreen/CityConstructionTable/PickConstructionButton",
+                tintColor = Color.BLACK
+            )
+        }
+
+        pickConstructionButton.background =
+            if (highlight)
+                BaseScreen.skinStrings.getUiBackground(
+                    "CityScreen/CityConstructionTable/PickConstructionButtonSelected",
+                    tintColor = Color.GREEN.darken(0.5f)
+                )
+            else unselected
+
+        if (!clearOthers) return
+        // Using knowledge about Widget hierarchy - Making the Buttons their own class might be a better design.
+        for (categoryExpander in availableConstructionsTable.children.filterIsInstance<ExpanderTab>()) {
+            if (!categoryExpander.isOpen) continue
+            for (button in categoryExpander.innerTable.children.filterIsInstance<Table>()) {
+                if (button == pickConstructionButton) continue
+                button.background = unselected
+            }
+        }
+
+        if (!isSelectedQueueEntry()) return
+        // Same as above but worse - both buttons and headers are typed `Table`
+        for (button in constructionsQueueTable.children.filterIsInstance<Table>()) {
+            if (button.children.size == 1) continue // Skip headers, they only have 1 Label
+            highlightQueueEntry(button, false)
+        }
+        selectedQueueEntry = -1
     }
 
     private fun isSelectedQueueEntry(): Boolean = selectedQueueEntry >= 0
