@@ -15,7 +15,6 @@ import com.unciv.ui.components.ColorMarkupLabel
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.extensions.toLabel
 import com.unciv.utils.Log
 import kotlin.math.max
 
