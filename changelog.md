@@ -1,22 +1,16 @@
-## 4.7.20
-
-There's no need to save the civ uniques in *every* city unique usage differently, waste of RAM and CPU
-
-Performance: Cache uniques when choosing best tiles to settle/create improvements on
-
-performance: Use the same trick of 'save unfiltered, return filtered' for cached city uniques, so devs don't need to worry about cache state when improving performance!
-
-performance: Unique caching revamp!
+## 4.8.0
 
 By SomeTroglodyte:
-- City construct menu 
-- Pedia Search 
+- Civilopedia Search
+- City construction right-click menu
 
-Fix: "Only available" not working properly for religions or transforming/upgrading units  - By SeventhM
+Many performance improvements!
 
 Pillaged tile improvements  - By GeneralWadaling
 
-Make "Defensive Pact" button translatable  - By Ouaz
+Fix: "Only available" not working properly for religions or transforming/upgrading units  - By SeventhM
+
+Make "Defensive Pact" button translatable - By Ouaz
 
 ## 4.7.19
 
