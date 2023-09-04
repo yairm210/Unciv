@@ -212,7 +212,7 @@ class MapEditorEditTab(
             riverEndTile = tile
             if (riverStartTile != null) return paintRiverFromTo()
         }
-        for (tile in tilesToHighlight) editorScreen.highlightTile(tile, Color.BLUE)
+        for (tileToHighlight in tilesToHighlight) editorScreen.highlightTile(tileToHighlight, Color.BLUE)
     }
     private fun paintRiverFromTo() {
         val resultingTiles = mutableSetOf<Tile>()
@@ -240,12 +240,12 @@ class MapEditorEditTab(
             } else {
                 tile.getTilesInDistance(brushSize - 1)
             }
-        for (tile in tiles) {
+        for (tileToPaint in tiles) {
             when (brushHandlerType) {
-                BrushHandlerType.Direct -> directPaintTile(tile)
-                BrushHandlerType.Tile -> paintTile(tile)
-                BrushHandlerType.Road -> roadPaintTile(tile)
-                BrushHandlerType.River -> riverPaintTile(tile)
+                BrushHandlerType.Direct -> directPaintTile(tileToPaint)
+                BrushHandlerType.Tile -> paintTile(tileToPaint)
+                BrushHandlerType.Road -> roadPaintTile(tileToPaint)
+                BrushHandlerType.River -> riverPaintTile(tileToPaint)
                 else -> {} // other cases can't reach here
             }
         }
