@@ -7,7 +7,7 @@ import com.unciv.models.translations.tr
 
 class TranslatedSelectBox(values : Collection<String>, default:String, skin: Skin) : SelectBox<TranslatedSelectBox.TranslatedString>(skin) {
     class TranslatedString(val value: String) {
-        val translation = value.tr()
+        val translation = value.tr(hideIcons = true)
         override fun toString() = translation
         // Equality contract needs to be implemented else TranslatedSelectBox.setSelected won't work properly
         override fun equals(other: Any?): Boolean = other is TranslatedString && value == other.value
