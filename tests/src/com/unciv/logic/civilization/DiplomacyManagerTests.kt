@@ -1,7 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.unciv.testing.GdxTestRunner
-import com.unciv.uniques.TestGame
+import com.unciv.testing.TestGame
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith

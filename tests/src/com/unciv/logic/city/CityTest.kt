@@ -3,7 +3,7 @@ package com.unciv.logic.city
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.civilization.Civilization
 import com.unciv.testing.GdxTestRunner
-import com.unciv.uniques.TestGame
+import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue

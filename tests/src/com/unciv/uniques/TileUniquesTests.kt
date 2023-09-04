@@ -3,6 +3,7 @@ package com.unciv.uniques
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.TestGame
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
 import org.junit.Assert
 import org.junit.Before

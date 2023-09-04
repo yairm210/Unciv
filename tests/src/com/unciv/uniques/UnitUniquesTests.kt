@@ -5,6 +5,7 @@ import com.unciv.logic.map.mapunit.UnitTurnManager
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.TestGame
 import com.unciv.ui.screens.pickerscreens.PromotionTree
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getImprovementConstructionActions

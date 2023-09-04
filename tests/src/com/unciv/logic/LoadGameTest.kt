@@ -1,4 +1,4 @@
-package com.unciv.testing
+package com.unciv.logic
 
 import com.unciv.logic.files.UncivFiles
 import org.junit.Test

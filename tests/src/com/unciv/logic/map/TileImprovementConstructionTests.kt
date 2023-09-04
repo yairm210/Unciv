@@ -9,7 +9,7 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stats
 import com.unciv.testing.GdxTestRunner
-import com.unciv.uniques.TestGame
+import com.unciv.testing.TestGame
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

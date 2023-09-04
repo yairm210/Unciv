@@ -1,5 +1,5 @@
 //  Taken from https://github.com/TomGrill/gdx-testing
-package com.unciv.testing
+package com.unciv.logic
 
 import com.badlogic.gdx.Gdx
 import com.unciv.Constants

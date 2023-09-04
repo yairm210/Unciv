@@ -1,4 +1,4 @@
-package com.unciv.testing
+package com.unciv.logic
 
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.ruleset.Tutorial

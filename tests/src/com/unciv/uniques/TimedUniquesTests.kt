@@ -6,6 +6,7 @@ import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.TestGame
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
