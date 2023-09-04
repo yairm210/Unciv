@@ -17,7 +17,7 @@ class RiverGenerator(
     private val minRiverLength = ruleset.modOptions.constants.minRiverLength
     private val maxRiverLength = ruleset.modOptions.constants.maxRiverLength
 
-    fun spawnRivers() {
+    fun spawnRivers(resultingTiles: MutableSet<Tile>? = null) {
         if (tileMap.values.none { it.isWater }) return
         val numberOfRivers = (tileMap.values.count { it.isLand } * riverCountMultiplier).roundToInt()
 
@@ -33,7 +33,7 @@ class RiverGenerator(
         val mapRadius = tileMap.mapParameters.mapSize.radius
         val riverStarts =
             randomness.chooseSpreadOutLocations(numberOfRivers, optionalTiles, mapRadius)
-        for (tile in riverStarts) spawnRiver(tile)
+        for (tile in riverStarts) spawnRiver(tile, resultingTiles)
     }
 
     private fun Tile.isFarEnoughFromWater(): Boolean {
@@ -52,15 +52,15 @@ class RiverGenerator(
         return null
     }
 
-    private fun spawnRiver(initialPosition: Tile) {
+    private fun spawnRiver(initialPosition: Tile, resultingTiles: MutableSet<Tile>?) {
         val endPosition = getClosestWaterTile(initialPosition)
             ?: error("No water found for river destination")
-        spawnRiver(initialPosition, endPosition)
+        spawnRiver(initialPosition, endPosition, resultingTiles)
     }
 
     /** Spawns a river from [initialPosition] to [endPosition].
      *  If [resultingTiles] is supplied, it will contain all affected tiles, for map editor. */
-    fun spawnRiver(initialPosition: Tile, endPosition: Tile, resultingTiles: MutableSet<Tile>? = null) {
+    fun spawnRiver(initialPosition: Tile, endPosition: Tile, resultingTiles: MutableSet<Tile>?) {
         // Recommendation: Draw a bunch of hexagons on paper before trying to understand this, it's super helpful!
 
         var riverCoordinate = RiverCoordinate(tileMap, initialPosition.position,

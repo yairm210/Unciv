@@ -33,6 +33,13 @@ import kotlin.math.ulp
 import kotlin.random.Random
 
 
+/** Map generator, used by new game, map editor and main menu background
+ *
+ *  Class instance only keeps [ruleset] and [coroutineScope] for easier access, input and output are through methods, namely [generateMap] and [generateSingleStep].
+ *
+ *  @param ruleset The Ruleset supplying terrain and resource definitions
+ *  @param coroutineScope Enables early abort if this returns `isActive == false`
+ */
 class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineScope? = null) {
 
     companion object {
@@ -138,7 +145,7 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         runAndMeasure("RiverGenerator") {
             RiverGenerator(map, randomness, ruleset).spawnRivers()
         }
-        convertTerrains(map, ruleset)
+        convertTerrains(map.values)
 
         // Region based map generation - not used when generating maps in map editor
         if (civilizations.isNotEmpty()) {
@@ -195,8 +202,9 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
             MapGeneratorSteps.Continents -> map.assignContinents(TileMap.AssignContinentsMode.Reassign)
             MapGeneratorSteps.NaturalWonders -> NaturalWonderGenerator(ruleset, randomness).spawnNaturalWonders(map)
             MapGeneratorSteps.Rivers -> {
-                RiverGenerator(map, randomness, ruleset).spawnRivers()
-                convertTerrains(map, ruleset)
+                val resultingTiles = mutableSetOf<Tile>()
+                RiverGenerator(map, randomness, ruleset).spawnRivers(resultingTiles)
+                convertTerrains(resultingTiles)
             }
             MapGeneratorSteps.Resources -> spreadResources(map)
             MapGeneratorSteps.AncientRuins -> spreadAncientRuins(map)
@@ -213,8 +221,8 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
         debug("MapGenerator.%s took %s.%sms", text, delta/1000000L, (delta/10000L).rem(100))
     }
 
-    private fun convertTerrains(map: TileMap, ruleset: Ruleset) {
-        for (tile in map.values) {
+    fun convertTerrains(tiles: Iterable<Tile>) {
+        for (tile in tiles) {
             val conversionUnique =
                 tile.getBaseTerrain().getMatchingUniques(UniqueType.ChangesTerrain)
                     .firstOrNull { tile.isAdjacentTo(it.params[1]) }

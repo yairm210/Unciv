@@ -7,16 +7,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.mapgenerator.MapGenerationRandomness
+import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.extensions.addSeparator
-import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -219,6 +220,7 @@ class MapEditorEditTab(
         try {
             val riverGenerator = RiverGenerator(editorScreen.tileMap, randomness, ruleset)
             riverGenerator.spawnRiver(riverStartTile!!, riverEndTile!!, resultingTiles)
+            MapGenerator(ruleset).convertTerrains(resultingTiles)
         } catch (ex: Exception) {
             Log.error("Exception while generating rivers", ex)
             ToastPopup("River generation failed!", editorScreen)
@@ -256,7 +258,10 @@ class MapEditorEditTab(
         editorScreen.updateAndHighlight(tile)
     }
 
-    /** Used for rivers - same as directPaintTile but may need to update 10,12 and 2 o'clock neighbor tiles too */
+    /** Used for rivers - same as [directPaintTile] but may need to update 10,12 and 2 o'clock neighbor tiles too
+     *
+     *  Note: Unlike [paintRiverFromTo] this does **not** call [MapGenerator.convertTerrains] to allow more freedom.
+     */
     private fun riverPaintTile(tile: Tile) {
         directPaintTile(tile)
         tile.neighbors.forEach {

@@ -21,17 +21,17 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorOptionsTab
-import com.unciv.ui.popups.ConfirmPopup
-import com.unciv.ui.components.tilegroups.TileGroup
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyShortcutDispatcherVeto
 import com.unciv.ui.components.input.KeyboardPanningListener
+import com.unciv.ui.components.tilegroups.TileGroup
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.ImageWithCustomSize
+import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.ToastPopup
+import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.basescreen.RecreateOnResize
+import com.unciv.ui.screens.mapeditorscreen.tabs.MapEditorOptionsTab
 import com.unciv.ui.screens.worldscreen.ZoomButtonPair
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Dispatcher
@@ -47,7 +47,6 @@ import kotlinx.coroutines.Job
 //todo Synergy with Civilopedia for drawing loose tiles / terrain icons
 //todo left-align everything so a half-open drawer is more useful
 //todo combined brush
-//todo New function `convertTerrains` is auto-run after rivers the right decision for step-wise generation? Will paintRiverFromTo need the same? Will painting manually need the conversion?
 //todo Tooltips for Edit items with info on placeability? Place this info as Brush description? In Expander?
 //todo Civilopedia links from edit items by right-click/long-tap?
 //todo Mod tab change base ruleset - disableAllCheckboxes - instead some intelligence to leave those mods on that stay compatible?
