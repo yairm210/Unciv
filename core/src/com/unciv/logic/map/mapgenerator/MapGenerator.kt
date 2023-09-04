@@ -220,11 +220,12 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
                     .firstOrNull { tile.isAdjacentTo(it.params[1]) }
                     ?: continue
             val terrain = ruleset.terrains[conversionUnique.params[0]] ?: continue
-            if (!terrain.occursOn.contains(tile.lastTerrain.name)) continue
 
-            if (terrain.type == TerrainType.TerrainFeature)
+            if (terrain.type == TerrainType.TerrainFeature) {
+                if (!terrain.occursOn.contains(tile.lastTerrain.name)) continue
                 tile.addTerrainFeature(terrain.name)
-            else tile.baseTerrain = terrain.name
+            } else
+                tile.baseTerrain = terrain.name
             tile.setTerrainTransients()
         }
     }
