@@ -9,7 +9,6 @@ import com.unciv.logic.city.City
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.ruleset.unique.UniqueType
-import kotlin.math.max
 
 object BattleHelper {
 
@@ -59,15 +58,21 @@ object BattleHelper {
      * Choses the best target in attackableEnemies, this could be a city or a unit.
      */
     private fun chooseAttackTarget(unit: MapUnit, attackableEnemies: List<AttackableTile>): AttackableTile? {
+        // Get the highest valued attackableEnemy
         var highestAttackValue = 0
-        val attackTile = attackableEnemies.maxByOrNull { attackableEnemy -> 
+        var attackTile: AttackableTile? = null
+        // We always have to calculate the attack value even if there is only one attackableEnemy
+        for (attackableEnemy in attackableEnemies) {
             val tempAttackValue = if (attackableEnemy.tileToAttack.isCityCenter()) 
                 getCityAttackValue(unit, attackableEnemy.tileToAttack.getCity()!!)
             else getUnitAttackValue(unit, attackableEnemy)
-            highestAttackValue = max(tempAttackValue, highestAttackValue)
-            tempAttackValue
+            if (tempAttackValue > highestAttackValue) {
+                highestAttackValue = tempAttackValue
+                attackTile = attackableEnemy
+            }
         }
         // todo For air units, prefer to attack tiles with lower intercept chance
+        // Only return that tile if it is actually a good tile to attack
         return if (highestAttackValue > 30) attackTile else null
     }
 
@@ -124,7 +129,8 @@ object BattleHelper {
             attackValue = 100
             // Associate enemy units with number of hits from this unit to kill them
             val attacksToKill = (militaryUnit.health.toFloat() / 
-                BattleDamage.calculateDamageToDefender(MapUnitCombatant(attacker), MapUnitCombatant(militaryUnit))).coerceAtLeast(1f)
+                BattleDamage.calculateDamageToDefender(MapUnitCombatant(attacker), MapUnitCombatant(militaryUnit)))
+                .coerceAtLeast(1f).coerceAtMost(10f)
             // We can kill them in this turn
             if (attacksToKill <= 1) attackValue += 30
             // On average, this should take around 3 turns, so -15
