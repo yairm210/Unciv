@@ -1,3 +1,19 @@
+## 4.8.1
+
+Resolved  - Teleport units away from city center when liberating
+
+Resolved  - don't add icons to selection boxes
+
+chore: Moved TranslatedSelectBox to its own file in ui.components - see 
+
+By SeventhM:
+- Add unique for a promotion to be free 
+- Fix cities getting the resource list of other cities 
+
+Fixed AI unit attack decision making  - By tuvus
+
+Fix ChangesTerrain unique for base terrains  - By SomeTroglodyte
+
 ## 4.8.0
 
 By SomeTroglodyte:
