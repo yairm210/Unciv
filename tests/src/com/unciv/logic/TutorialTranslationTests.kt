@@ -2,6 +2,7 @@ package com.unciv.logic
 
 import com.unciv.models.TutorialTrigger
 import com.unciv.models.ruleset.Tutorial
+import com.unciv.testing.GdxTestRunner
 import com.unciv.ui.screens.basescreen.TutorialController
 import org.junit.Assert.fail
 import org.junit.Test

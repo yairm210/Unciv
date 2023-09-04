@@ -1,6 +1,6 @@
 package com.unciv.logic
 
-import com.unciv.logic.IdChecker
+import com.unciv.testing.GdxTestRunner
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
