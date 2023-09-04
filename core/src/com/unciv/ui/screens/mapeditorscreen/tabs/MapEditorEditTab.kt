@@ -7,16 +7,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.mapgenerator.MapGenerationRandomness
+import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
-import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.extensions.addSeparator
-import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.keyShortcuts
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -211,7 +212,7 @@ class MapEditorEditTab(
             riverEndTile = tile
             if (riverStartTile != null) return paintRiverFromTo()
         }
-        tilesToHighlight.forEach { editorScreen.highlightTile(it, Color.BLUE) }
+        for (tileToHighlight in tilesToHighlight) editorScreen.highlightTile(tileToHighlight, Color.BLUE)
     }
     private fun paintRiverFromTo() {
         val resultingTiles = mutableSetOf<Tile>()
@@ -219,6 +220,7 @@ class MapEditorEditTab(
         try {
             val riverGenerator = RiverGenerator(editorScreen.tileMap, randomness, ruleset)
             riverGenerator.spawnRiver(riverStartTile!!, riverEndTile!!, resultingTiles)
+            MapGenerator(ruleset).convertTerrains(resultingTiles)
         } catch (ex: Exception) {
             Log.error("Exception while generating rivers", ex)
             ToastPopup("River generation failed!", editorScreen)
@@ -226,7 +228,7 @@ class MapEditorEditTab(
         riverStartTile = null
         riverEndTile = null
         editorScreen.isDirty = true
-        resultingTiles.forEach { editorScreen.updateAndHighlight(it, Color.SKY) }
+        for (tile in resultingTiles) editorScreen.updateAndHighlight(tile, Color.SKY)
     }
 
     internal fun paintTilesWithBrush(tile: Tile) {
@@ -238,12 +240,12 @@ class MapEditorEditTab(
             } else {
                 tile.getTilesInDistance(brushSize - 1)
             }
-        tiles.forEach {
+        for (tileToPaint in tiles) {
             when (brushHandlerType) {
-                BrushHandlerType.Direct -> directPaintTile(it)
-                BrushHandlerType.Tile -> paintTile(it)
-                BrushHandlerType.Road -> roadPaintTile(it)
-                BrushHandlerType.River -> riverPaintTile(it)
+                BrushHandlerType.Direct -> directPaintTile(tileToPaint)
+                BrushHandlerType.Tile -> paintTile(tileToPaint)
+                BrushHandlerType.Road -> roadPaintTile(tileToPaint)
+                BrushHandlerType.River -> riverPaintTile(tileToPaint)
                 else -> {} // other cases can't reach here
             }
         }
@@ -256,19 +258,22 @@ class MapEditorEditTab(
         editorScreen.updateAndHighlight(tile)
     }
 
-    /** Used for rivers - same as directPaintTile but may need to update 10,12 and 2 o'clock neighbor tiles too */
+    /** Used for rivers - same as [directPaintTile] but may need to update 10,12 and 2 o'clock neighbor tiles too
+     *
+     *  Note: Unlike [paintRiverFromTo] this does **not** call [MapGenerator.convertTerrains] to allow more freedom.
+     */
     private fun riverPaintTile(tile: Tile) {
         directPaintTile(tile)
-        tile.neighbors.forEach {
-            if (it.position.x > tile.position.x || it.position.y > tile.position.y)
-                editorScreen.updateTile(it)
+        for (neighbor in tile.neighbors) {
+            if (neighbor.position.x > tile.position.x || neighbor.position.y > tile.position.y)
+                editorScreen.updateTile(neighbor)
         }
     }
 
     // Used for roads - same as paintTile but all neighbors need TileGroup.update too
     private fun roadPaintTile(tile: Tile) {
         if (!paintTile(tile)) return
-        tile.neighbors.forEach { editorScreen.updateTile(it) }
+        for (neighbor in tile.neighbors) editorScreen.updateTile(neighbor)
     }
 
     /** apply brush to a single tile */
