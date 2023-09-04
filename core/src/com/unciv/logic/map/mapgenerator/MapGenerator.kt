@@ -189,25 +189,27 @@ class MapGenerator(val ruleset: Ruleset, private val coroutineScope: CoroutineSc
 
         randomness.seedRNG(map.mapParameters.seed)
 
-        when(step) {
-            MapGeneratorSteps.None -> return
-            MapGeneratorSteps.All -> throw IllegalArgumentException("MapGeneratorSteps.All cannot be used in generateSingleStep")
-            MapGeneratorSteps.Landmass -> MapLandmassGenerator(ruleset, randomness).generateLand(map)
-            MapGeneratorSteps.Elevation -> raiseMountainsAndHills(map)
-            MapGeneratorSteps.HumidityAndTemperature -> applyHumidityAndTemperature(map)
-            MapGeneratorSteps.LakesAndCoast -> spawnLakesAndCoasts(map)
-            MapGeneratorSteps.Vegetation -> spawnVegetation(map)
-            MapGeneratorSteps.RareFeatures -> spawnRareFeatures(map)
-            MapGeneratorSteps.Ice -> spawnIce(map)
-            MapGeneratorSteps.Continents -> map.assignContinents(TileMap.AssignContinentsMode.Reassign)
-            MapGeneratorSteps.NaturalWonders -> NaturalWonderGenerator(ruleset, randomness).spawnNaturalWonders(map)
-            MapGeneratorSteps.Rivers -> {
-                val resultingTiles = mutableSetOf<Tile>()
-                RiverGenerator(map, randomness, ruleset).spawnRivers(resultingTiles)
-                convertTerrains(resultingTiles)
+        runAndMeasure("SingleStep $step") {
+            when (step) {
+                MapGeneratorSteps.None -> Unit
+                MapGeneratorSteps.All -> throw IllegalArgumentException("MapGeneratorSteps.All cannot be used in generateSingleStep")
+                MapGeneratorSteps.Landmass -> MapLandmassGenerator(ruleset, randomness).generateLand(map)
+                MapGeneratorSteps.Elevation -> raiseMountainsAndHills(map)
+                MapGeneratorSteps.HumidityAndTemperature -> applyHumidityAndTemperature(map)
+                MapGeneratorSteps.LakesAndCoast -> spawnLakesAndCoasts(map)
+                MapGeneratorSteps.Vegetation -> spawnVegetation(map)
+                MapGeneratorSteps.RareFeatures -> spawnRareFeatures(map)
+                MapGeneratorSteps.Ice -> spawnIce(map)
+                MapGeneratorSteps.Continents -> map.assignContinents(TileMap.AssignContinentsMode.Reassign)
+                MapGeneratorSteps.NaturalWonders -> NaturalWonderGenerator(ruleset, randomness).spawnNaturalWonders(map)
+                MapGeneratorSteps.Rivers -> {
+                    val resultingTiles = mutableSetOf<Tile>()
+                    RiverGenerator(map, randomness, ruleset).spawnRivers(resultingTiles)
+                    convertTerrains(resultingTiles)
+                }
+                MapGeneratorSteps.Resources -> spreadResources(map)
+                MapGeneratorSteps.AncientRuins -> spreadAncientRuins(map)
             }
-            MapGeneratorSteps.Resources -> spreadResources(map)
-            MapGeneratorSteps.AncientRuins -> spreadAncientRuins(map)
         }
     }
 
