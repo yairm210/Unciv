@@ -212,7 +212,7 @@ class MapEditorEditTab(
             riverEndTile = tile
             if (riverStartTile != null) return paintRiverFromTo()
         }
-        tilesToHighlight.forEach { editorScreen.highlightTile(it, Color.BLUE) }
+        for (tile in tilesToHighlight) editorScreen.highlightTile(tile, Color.BLUE)
     }
     private fun paintRiverFromTo() {
         val resultingTiles = mutableSetOf<Tile>()
@@ -228,7 +228,7 @@ class MapEditorEditTab(
         riverStartTile = null
         riverEndTile = null
         editorScreen.isDirty = true
-        resultingTiles.forEach { editorScreen.updateAndHighlight(it, Color.SKY) }
+        for (tile in resultingTiles) editorScreen.updateAndHighlight(tile, Color.SKY)
     }
 
     internal fun paintTilesWithBrush(tile: Tile) {
@@ -240,12 +240,12 @@ class MapEditorEditTab(
             } else {
                 tile.getTilesInDistance(brushSize - 1)
             }
-        tiles.forEach {
+        for (tile in tiles) {
             when (brushHandlerType) {
-                BrushHandlerType.Direct -> directPaintTile(it)
-                BrushHandlerType.Tile -> paintTile(it)
-                BrushHandlerType.Road -> roadPaintTile(it)
-                BrushHandlerType.River -> riverPaintTile(it)
+                BrushHandlerType.Direct -> directPaintTile(tile)
+                BrushHandlerType.Tile -> paintTile(tile)
+                BrushHandlerType.Road -> roadPaintTile(tile)
+                BrushHandlerType.River -> riverPaintTile(tile)
                 else -> {} // other cases can't reach here
             }
         }
@@ -264,16 +264,16 @@ class MapEditorEditTab(
      */
     private fun riverPaintTile(tile: Tile) {
         directPaintTile(tile)
-        tile.neighbors.forEach {
-            if (it.position.x > tile.position.x || it.position.y > tile.position.y)
-                editorScreen.updateTile(it)
+        for (neighbor in tile.neighbors) {
+            if (neighbor.position.x > tile.position.x || neighbor.position.y > tile.position.y)
+                editorScreen.updateTile(neighbor)
         }
     }
 
     // Used for roads - same as paintTile but all neighbors need TileGroup.update too
     private fun roadPaintTile(tile: Tile) {
         if (!paintTile(tile)) return
-        tile.neighbors.forEach { editorScreen.updateTile(it) }
+        for (neighbor in tile.neighbors) editorScreen.updateTile(neighbor)
     }
 
     /** apply brush to a single tile */
