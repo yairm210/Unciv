@@ -23,7 +23,7 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.screens.newgamescreen.TranslatedSelectBox
+import com.unciv.ui.components.TranslatedSelectBox
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
 import com.unciv.utils.debug

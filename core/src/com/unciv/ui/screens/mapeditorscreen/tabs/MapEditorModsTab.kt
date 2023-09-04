@@ -10,7 +10,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.screens.mapeditorscreen.MapEditorScreen
 import com.unciv.ui.screens.mapeditorscreen.TileInfoNormalizer
 import com.unciv.ui.screens.newgamescreen.ModCheckboxTable
-import com.unciv.ui.screens.newgamescreen.TranslatedSelectBox
+import com.unciv.ui.components.TranslatedSelectBox
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.TabbedPager
