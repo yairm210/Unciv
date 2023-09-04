@@ -103,13 +103,12 @@ class RiverGenerator(
 
         private val x = position.x.toInt()
         private val y = position.y.toInt()
-        // Two of these are not lazies as getAdjacentTiles will always be enumerated
-        // Advantage of the other four lazies uncertain - feel free to test and measure
+        // Depending on the tile instance, some of the following will never be used. Tested with lazies: ~2% slower
         private val myTile = tileMap[position]
-        private val myTopLeft by lazy { tileMap.getIfTileExistsOrNull(x + 1, y) }
-        private val myBottomLeft by lazy { tileMap.getIfTileExistsOrNull(x, y - 1) }
-        private val myTopRight by lazy { tileMap.getIfTileExistsOrNull(x, y + 1) }
-        private val myBottomRight by lazy { tileMap.getIfTileExistsOrNull(x - 1, y) }
+        private val myTopLeft = tileMap.getIfTileExistsOrNull(x + 1, y)
+        private val myBottomLeft = tileMap.getIfTileExistsOrNull(x, y - 1)
+        private val myTopRight = tileMap.getIfTileExistsOrNull(x, y + 1)
+        private val myBottomRight = tileMap.getIfTileExistsOrNull(x - 1, y)
         private val myBottomCenter = tileMap.getIfTileExistsOrNull(x - 1, y - 1)
 
         /** Lists the three neighboring vertices which have their anchor hex on the map
