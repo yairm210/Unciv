@@ -98,7 +98,7 @@ class TestGame {
     fun getTile(position: Vector2) = tileMap[position]
 
     /** Sets the [terrain] and [features] of the tile at [position], and then returns it */
-    fun setTileFeatures(position: Vector2, terrain: String = Constants.desert, features: List<String> = listOf()): Tile {
+    fun setTileTerrainAndFeatures(position: Vector2, terrain: String = Constants.desert, features: List<String> = listOf()): Tile {
         val tile = tileMap[position]
         tile.baseTerrain = terrain
         tile.setTerrainFeatures(listOf())

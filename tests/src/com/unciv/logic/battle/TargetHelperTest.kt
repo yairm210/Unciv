@@ -42,7 +42,7 @@ class TargetHelperTest {
         testGame.addUnit("Warrior", defenderCiv, testGame.getTile(Vector2(1f, 1f))) // enemy unit inside city range, bombardable
         testGame.addUnit("Warrior", defenderCiv, testGame.getTile(Vector2(-3f, -3f))) // enemy unit outside city range, not bombardable
 
-        val tile = testGame.setTileFeatures(Vector2(-2f, -1f), Constants.coast)
+        val tile = testGame.setTileTerrainAndFeatures(Vector2(-2f, -1f), Constants.coast)
         testGame.addTileToCity(attackerCity, tile)
         testGame.addUnit("Submarine", defenderCiv, tile) // enemy unit inside city range, invisible, not bombardable
 
@@ -302,9 +302,9 @@ class TargetHelperTest {
     @Test
     fun `should get no attackable tiles when terrain obstacle`() {
         // given
-        testGame.setTileFeatures(Vector2.Zero, features = listOf(Constants.hill))
-        testGame.setTileFeatures(Vector2(1f, 1f), features = listOf(Constants.hill))
-        testGame.setTileFeatures(Vector2(0f, -1f), features = listOf(Constants.hill))
+        testGame.setTileTerrainAndFeatures(Vector2.Zero, features = listOf(Constants.hill))
+        testGame.setTileTerrainAndFeatures(Vector2(1f, 1f), features = listOf(Constants.hill))
+        testGame.setTileTerrainAndFeatures(Vector2(0f, -1f), features = listOf(Constants.hill))
 
         val attackerTile = testGame.getTile(Vector2(-1f, 0f))
         val attackedTile = testGame.getTile(Vector2(1f, 0f))
@@ -340,8 +340,8 @@ class TargetHelperTest {
     @Test
     fun `should get no attackable tiles when has cannot attack unique`() {
         // given
-        val attackerTile = testGame.setTileFeatures(Vector2.Zero, Constants.ocean)
-        val defenderTile = testGame.setTileFeatures(Vector2(1f, 1f), Constants.ocean)
+        val attackerTile = testGame.setTileTerrainAndFeatures(Vector2.Zero, Constants.ocean)
+        val defenderTile = testGame.setTileTerrainAndFeatures(Vector2(1f, 1f), Constants.ocean)
 
         val attackerUnit = testGame.addUnit("Carrier", attackerCiv, attackerTile)
         attackerUnit.currentMovement = 2f

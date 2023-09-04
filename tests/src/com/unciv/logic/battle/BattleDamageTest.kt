@@ -130,7 +130,7 @@ class BattleDamageTest {
     @Test
     fun `should retrieve defence terrain modifiers`() {
         // given
-        testGame.setTileFeatures(defaultDefenderTile.position, "Hill")
+        testGame.setTileTerrainAndFeatures(defaultDefenderTile.position, "Hill")
 
         // when
         val defenceModifiers = BattleDamage.getDefenceModifiers(MapUnitCombatant(defaultAttackerUnit), MapUnitCombatant(defaultDefenderUnit), defaultAttackerTile)
@@ -144,7 +144,7 @@ class BattleDamageTest {
     fun `should not retrieve defence terrain modifiers when unit doesn't get them`() {
         // given
         val defenderTile = testGame.getTile(Vector2.Zero)
-        testGame.setTileFeatures(defenderTile.position, "Hill")
+        testGame.setTileTerrainAndFeatures(defenderTile.position, "Hill")
         defenderCiv.resourceStockpiles.add("Horses", 1) // no resource penalty
         val defenderUnit = testGame.addUnit("Horseman", defenderCiv, defenderTile)
 

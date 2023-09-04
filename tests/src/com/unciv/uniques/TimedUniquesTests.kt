@@ -20,9 +20,9 @@ class TimedUniquesTests {
             game.createPolicy("[+42]% Strength <when attacking> <for [Military] units> <for [1] turns>")
     private val enemy = game.addCiv()
     private val attacker =
-            MapUnitCombatant(game.addUnit("Warrior", civInfo, game.setTileFeatures(Vector2.Zero)))
+            MapUnitCombatant(game.addUnit("Warrior", civInfo, game.setTileTerrainAndFeatures(Vector2.Zero)))
     private val defender =
-            MapUnitCombatant(game.addUnit("Warrior", enemy, game.setTileFeatures(Vector2(1f, 0f))))
+            MapUnitCombatant(game.addUnit("Warrior", enemy, game.setTileTerrainAndFeatures(Vector2(1f, 0f))))
 
     @Test
     fun testConditionalTimedUniqueIsTriggerable() {
