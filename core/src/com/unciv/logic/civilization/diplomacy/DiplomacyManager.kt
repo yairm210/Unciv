@@ -780,7 +780,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                 it.diplomaticStatus = DiplomaticStatus.Peace
                 it.otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.Peace
             }
-            for (civ in getCommonKnownCivs().filter { civ -> civ.isMajorCiv() }) {
+            for (civ in getCommonKnownCivs().filter { civ -> civ.isMajorCiv() || civ.isSpectator() }) {
                 civ.addNotification("[${civInfo.civName}] canceled their Defensive Pact with [${it.otherCivName}]!",
                     NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, it.otherCivName)
             }
@@ -1001,10 +1001,11 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         setFlag(DiplomacyFlags.DeclarationOfFriendship, 30)
         otherCivDiplomacy().setFlag(DiplomacyFlags.DeclarationOfFriendship, 30)
 
-        for (thirdCiv in getCommonKnownCivs().filter { it.isMajorCiv() }) {
+        for (thirdCiv in getCommonKnownCivs().filter { it.isMajorCiv() || it.isSpectator() }) {
             thirdCiv.addNotification("[${civInfo.civName}] and [$otherCivName] have signed the Declaration of Friendship!",
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
-            thirdCiv.getDiplomacyManager(civInfo).setFriendshipBasedModifier()
+            if (!thirdCiv.isSpectator())
+                thirdCiv.getDiplomacyManager(civInfo).setFriendshipBasedModifier()
         }
 
         // Ignore contitionals as triggerCivwideUnique will check again, and that would break
@@ -1047,10 +1048,11 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.DefensivePact
         
 
-        for (thirdCiv in getCommonKnownCivs().filter { it.isMajorCiv() }) {
+        for (thirdCiv in getCommonKnownCivs().filter { it.isMajorCiv() || it.isSpectator() }) {
             thirdCiv.addNotification("[${civInfo.civName}] and [$otherCivName] have signed the Defensive Pact!",
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
-            thirdCiv.getDiplomacyManager(civInfo).setDefensivePactBasedModifier()
+            if (!thirdCiv.isSpectator())
+                thirdCiv.getDiplomacyManager(civInfo).setDefensivePactBasedModifier()
         }
 
         // Ignore contitionals as triggerCivwideUnique will check again, and that would break
@@ -1094,9 +1096,10 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
 
         // We, A, are denouncing B. What do other major civs (C,D, etc) think of this?
-        getCommonKnownCivs().filter { it.isMajorCiv() }.forEach { thirdCiv ->
+        getCommonKnownCivs().filter { it.isMajorCiv() || it.isSpectator() }.forEach { thirdCiv ->
             thirdCiv.addNotification("[${civInfo.civName}] has denounced [$otherCivName]!",
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
+            if (thirdCiv.isSpectator()) return@forEach
             val thirdCivRelationshipWithOtherCiv = thirdCiv.getDiplomacyManager(otherCiv()).relationshipIgnoreAfraid()
             val thirdCivDiplomacyManager = thirdCiv.getDiplomacyManager(civInfo)
             when (thirdCivRelationshipWithOtherCiv) {
