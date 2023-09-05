@@ -765,27 +765,29 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
      */
     private fun removeDefensivePacts() {
         val civAtWarWith = otherCiv()
-        civInfo.diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.DefensivePact }.forEach {
+        for (diploManager in civInfo.diplomacy.values) {
+            if (diploManager.diplomaticStatus != DiplomaticStatus.DefensivePact) continue
+
             // We already removed the trades and we don't want to remove the flags yet.
-            if (it.otherCiv() != civAtWarWith) {
+            if (diploManager.otherCiv() != civAtWarWith) {
                 // Trades with defensive pact are now invalid
-                val defensivePactOffer = it.trades.firstOrNull { trade -> trade.ourOffers.any { offer -> offer.name == Constants.defensivePact } }
-                it.trades.remove(defensivePactOffer)
-                val theirDefensivePactOffer = it.otherCivDiplomacy().trades.firstOrNull { trade -> trade.ourOffers.any { offer -> offer.name == Constants.defensivePact } }
-                it.otherCivDiplomacy().trades.remove(theirDefensivePactOffer)
-                it.removeFlag(DiplomacyFlags.DefensivePact)
-                it.otherCivDiplomacy().removeFlag(DiplomacyFlags.DefensivePact)
-                it.diplomaticStatus = DiplomaticStatus.Peace
-                it.otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.Peace
+                val defensivePactOffer = diploManager.trades
+                    .firstOrNull { trade -> trade.ourOffers.any { offer -> offer.name == Constants.defensivePact } }
+                diploManager.trades.remove(defensivePactOffer)
+                val theirDefensivePactOffer = diploManager.otherCivDiplomacy().trades
+                    .firstOrNull { trade -> trade.ourOffers.any { offer -> offer.name == Constants.defensivePact } }
+                diploManager.otherCivDiplomacy().trades.remove(theirDefensivePactOffer)
+                diploManager.removeFlag(DiplomacyFlags.DefensivePact)
+                diploManager.otherCivDiplomacy().removeFlag(DiplomacyFlags.DefensivePact)
+                diploManager.diplomaticStatus = DiplomaticStatus.Peace
+                diploManager.otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.Peace
             }
             for (civ in getCommonKnownCivs().filter { civ -> civ.isMajorCiv() }) {
-                civ.addNotification("[${civInfo.civName}] canceled their Defensive Pact with [${it.otherCivName}]!",
-                    NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, it.otherCivName)
+                civ.addNotification("[${civInfo.civName}] canceled their Defensive Pact with [${diploManager.otherCivName}]!",
+                    NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, diploManager.otherCivName)
             }
-            civInfo.addNotification("We have canceled our Defensive Pact with [${it.otherCivName}]!",
-                NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, it.otherCivName)
-            it.otherCiv().addNotification("[${civInfo.civName}] has canceled our Defensive Pact with us!",
-                NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
+            civInfo.addNotification("We have canceled our Defensive Pact with [${diploManager.otherCivName}]!",
+                NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, diploManager.otherCivName)
         }
     }
 
