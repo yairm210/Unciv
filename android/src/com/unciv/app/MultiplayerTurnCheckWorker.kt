@@ -189,7 +189,10 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
         fun startTurnChecker(applicationContext: Context, files: UncivFiles, currentGameInfo: GameInfo, settings: GameSettingsMultiplayer) {
             Log.i(LOG_TAG, "startTurnChecker")
+
+            val oneWeekWorthOfMilliseconds = 1000*60*60*24*7
             val gameFiles = files.getMultiplayerSaves()
+                .filter { it.lastModified() > System.currentTimeMillis() - oneWeekWorthOfMilliseconds }
             val gameIds = Array(gameFiles.count()) {""}
             val gameNames = Array(gameFiles.count()) {""}
 
