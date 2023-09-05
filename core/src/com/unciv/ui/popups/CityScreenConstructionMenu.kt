@@ -36,7 +36,9 @@ class CityScreenConstructionMenu(
         cityConstructions.constructionQueue
         .count { it !in PerpetualConstruction.perpetualConstructionsMap }
     private val myIndex = cityConstructions.constructionQueue.indexOf(constructionName)
-    private fun anyCity(predicate: (CityConstructions) -> Boolean) =
+    /** Check whether an "All cities" menu makes sense: `true` if there's more than one city, it's not a Wonder, and any city's queue matches [predicate]. */
+    private fun allCitiesEntryValid(predicate: (CityConstructions) -> Boolean) =
+        city.civ.cities.size > 1 &&
         (construction as? Building)?.isAnyWonder() != true &&
         city.civ.cities.map { it.cityConstructions }.any(predicate)
     private fun forAllCities(action: (CityConstructions) -> Unit) =
@@ -83,7 +85,7 @@ class CityScreenConstructionMenu(
         cityConstructions.canAddToQueue(construction)
     private fun addQueueTop() = cityConstructions.addToQueue(construction, addToTop = true)
 
-    private fun canAddAllQueues() = anyCity {
+    private fun canAddAllQueues() = allCitiesEntryValid {
         it.canAddToQueue(construction) &&
         // A Perpetual that is already queued can still be added says canAddToQueue, but here we don't want to count that
         !(construction is PerpetualConstruction && it.isBeingConstructedOrEnqueued(constructionName))
@@ -91,7 +93,7 @@ class CityScreenConstructionMenu(
     private fun addAllQueues() = forAllCities { it.addToQueue(construction) }
 
     private fun canAddAllQueuesTop() = construction !is PerpetualConstruction &&
-        anyCity { it.canAddToQueue(construction) || it.isEnqueuedForLater(constructionName) }
+        allCitiesEntryValid { it.canAddToQueue(construction) || it.isEnqueuedForLater(constructionName) }
     private fun addAllQueuesTop() = forAllCities {
         val index = it.constructionQueue.indexOf(constructionName)
         if (index > 0)
@@ -100,6 +102,6 @@ class CityScreenConstructionMenu(
             it.addToQueue(construction, true)
     }
 
-    private fun canRemoveAllQueues() = anyCity { it.isBeingConstructedOrEnqueued(constructionName) }
+    private fun canRemoveAllQueues() = allCitiesEntryValid { it.isBeingConstructedOrEnqueued(constructionName) }
     private fun removeAllQueues() = forAllCities { it.removeAllByName(constructionName) }
 }
