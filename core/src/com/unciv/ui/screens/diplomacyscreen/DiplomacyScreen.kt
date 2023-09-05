@@ -872,42 +872,8 @@ class DiplomacyScreen(
             declareWarButton.disable()
             declareWarButton.setText(declareWarButton.text.toString() + " ($turnsToPeaceTreaty${Fonts.turn})")
         }
-        declareWarButton.onClick {            
-            val messageLines = arrayListOf<String>()
-            messageLines += "Declare war on [${otherCiv.civName}]?"
-            // Tell the player who all will join the other side from defensive pacts
-            val otherCivDefensivePactList = otherCiv.diplomacy.values.filter { 
-                otherCivDiploManager -> otherCivDiploManager.otherCiv() != viewingCiv 
-                    && otherCivDiploManager.diplomaticStatus == DiplomaticStatus.DefensivePact 
-                    && !otherCivDiploManager.otherCiv().isAtWarWith(viewingCiv) }
-                .map { it.otherCiv() }.toMutableList()
-            // Go through and find all of the defensive pact chains and add them to the list
-            var listIndex = 0
-            while (listIndex < otherCivDefensivePactList.size) {
-                messageLines += if (viewingCiv.knows(otherCivDefensivePactList[listIndex]))
-                    "[${otherCivDefensivePactList[listIndex].civName}] will also join them in the war"
-                else "An unknown civilization will also join them in the war"
-                
-                // Add their defensive pact allies
-                otherCivDefensivePactList.addAll(otherCivDefensivePactList[listIndex].diplomacy.values
-                    .filter { diploChain -> diploChain.diplomaticStatus == DiplomaticStatus.DefensivePact
-                        && !otherCivDefensivePactList.contains(diploChain.otherCiv()) 
-                        && diploChain.otherCiv() != viewingCiv && diploChain.otherCiv() != otherCiv
-                        && !diploChain.otherCiv().isAtWarWith(viewingCiv) }
-                    .map { it.otherCiv() })
-                listIndex++
-            }
-
-            // Tell the player that their defensive pacts will be canceled.
-            for (civDiploManager in viewingCiv.diplomacy.values) {
-                if (civDiploManager.otherCiv() != otherCiv
-                    && civDiploManager.diplomaticStatus == DiplomaticStatus.DefensivePact
-                    && !otherCivDefensivePactList.contains(civDiploManager.otherCiv())) {
-                    messageLines += "This will cancel your defensive pact with [${civDiploManager.otherCivName}]"
-                }
-            }
-            
-            ConfirmPopup(this, messageLines.joinToString("\n") { "{$it}" }, "Declare war") {
+        declareWarButton.onClick {
+            ConfirmPopup(this, getDeclareWarButtonText(otherCiv), "Declare war") {
                 diplomacyManager.declareWar()
                 setRightSideFlavorText(otherCiv, otherCiv.nation.attacked, "Very well.")
                 updateLeftSideTable(otherCiv)
@@ -916,6 +882,43 @@ class DiplomacyScreen(
         }
         if (isNotPlayersTurn()) declareWarButton.disable()
         return declareWarButton
+    }
+    
+    private fun getDeclareWarButtonText(otherCiv: Civilization): String {
+        val messageLines = arrayListOf<String>()
+        messageLines += "Declare war on [${otherCiv.civName}]?"
+        // Tell the player who all will join the other side from defensive pacts
+        val otherCivDefensivePactList = otherCiv.diplomacy.values.filter {
+            otherCivDiploManager -> otherCivDiploManager.otherCiv() != viewingCiv
+            && otherCivDiploManager.diplomaticStatus == DiplomaticStatus.DefensivePact
+            && !otherCivDiploManager.otherCiv().isAtWarWith(viewingCiv) }
+            .map { it.otherCiv() }.toMutableList()
+        // Go through and find all of the defensive pact chains and add them to the list
+        var listIndex = 0
+        while (listIndex < otherCivDefensivePactList.size) {
+            messageLines += if (viewingCiv.knows(otherCivDefensivePactList[listIndex]))
+                "[${otherCivDefensivePactList[listIndex].civName}] will also join them in the war"
+            else "An unknown civilization will also join them in the war"
+
+            // Add their defensive pact allies
+            otherCivDefensivePactList.addAll(otherCivDefensivePactList[listIndex].diplomacy.values
+                .filter { diploChain -> diploChain.diplomaticStatus == DiplomaticStatus.DefensivePact
+                    && !otherCivDefensivePactList.contains(diploChain.otherCiv())
+                    && diploChain.otherCiv() != viewingCiv && diploChain.otherCiv() != otherCiv
+                    && !diploChain.otherCiv().isAtWarWith(viewingCiv) }
+                .map { it.otherCiv() })
+            listIndex++
+        }
+
+        // Tell the player that their defensive pacts will be canceled.
+        for (civDiploManager in viewingCiv.diplomacy.values) {
+            if (civDiploManager.otherCiv() != otherCiv
+                && civDiploManager.diplomaticStatus == DiplomaticStatus.DefensivePact
+                && !otherCivDefensivePactList.contains(civDiploManager.otherCiv())) {
+                messageLines += "This will cancel your defensive pact with [${civDiploManager.otherCivName}]"
+            }
+        }
+        return messageLines.joinToString("\n") { "{$it}" }
     }
 
     //endregion
