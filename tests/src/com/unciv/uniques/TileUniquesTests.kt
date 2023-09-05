@@ -24,7 +24,7 @@ class TileUniquesTests {
         game.makeHexagonalMap(2)
         val civInfo = game.addCiv()
 
-        val tile = game.setTileTerrainAndFeatures(Vector2(0f, 0f), Constants.grassland)
+        val tile = game.setTileTerrainAndFeatures(Vector2.Zero, Constants.grassland)
         val cityTile = game.setTileTerrainAndFeatures(Vector2(2f,0f), Constants.grassland)
         val city = game.addCity(civInfo, cityTile, true)
         city.population.foodStored = 0 // just to be sure
