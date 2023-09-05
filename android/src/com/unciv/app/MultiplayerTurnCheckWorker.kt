@@ -37,7 +37,6 @@ import java.io.PrintWriter
 import java.io.StringWriter
 import java.io.Writer
 import java.time.Duration
-import java.util.Arrays
 import java.util.GregorianCalendar
 import java.util.concurrent.TimeUnit
 
@@ -69,13 +68,12 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         private const val FILE_STORAGE = "FILE_STORAGE"
         private const val AUTH_HEADER = "AUTH_HEADER"
 
+        private val constraints = Constraints.Builder()
+            // If no internet is available, worker waits before becoming active.
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
         fun enqueue(appContext: Context, delay: Duration, inputData: Data) {
-
-            val constraints = Constraints.Builder()
-                    // If no internet is available, worker waits before becoming active.
-                    .setRequiredNetworkType(NetworkType.CONNECTED)
-                    .build()
-
             val checkTurnWork = OneTimeWorkRequestBuilder<MultiplayerTurnCheckWorker>()
                     .setConstraints(constraints)
                     .setInitialDelay(delay.seconds, TimeUnit.SECONDS)
