@@ -68,6 +68,7 @@ class GameSettings {
     var skin: String = Constants.defaultSkin
     var showTutorials: Boolean = true
     var autoAssignCityProduction: Boolean = true
+    var dontAutoAssignConstructions = HashSet<String>()
     var autoBuildingRoads: Boolean = true
     var automatedWorkersReplaceImprovements = true
     var automatedUnitsMoveOnTurnStart: Boolean = false

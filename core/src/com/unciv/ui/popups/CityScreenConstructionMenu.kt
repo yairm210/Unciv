@@ -3,6 +3,7 @@ package com.unciv.ui.popups
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.GUI
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
 import com.unciv.models.ruleset.Building
@@ -44,6 +45,9 @@ class CityScreenConstructionMenu(
     private fun forAllCities(action: (CityConstructions) -> Unit) =
         city.civ.cities.map { it.cityConstructions }.forEach(action)
 
+    private val settings = GUI.getSettings()
+    private val dontAutoAssignConstructions = settings.dontAutoAssignConstructions
+
     init {
         closeListeners.add {
             if (anyButtonWasClicked) onButtonClicked()
@@ -64,6 +68,10 @@ class CityScreenConstructionMenu(
             table.add(getButton("Add or move to the top in all cities", KeyboardBinding.AddConstructionAllTop, ::addAllQueuesTop)).row()
         if (canRemoveAllQueues())
             table.add(getButton("Remove from the queue in all cities", KeyboardBinding.RemoveConstructionAll, ::removeAllQueues)).row()
+        if (canDisable())
+            table.add(getButton("Disable", KeyboardBinding.BuildDisabled, ::disableEntry)).row()
+        if (canEnable())
+            table.add(getButton("Enable", KeyboardBinding.BuildDisabled, ::enableEntry)).row()
         return table.takeUnless { it.cells.isEmpty }
     }
 
@@ -104,4 +112,18 @@ class CityScreenConstructionMenu(
 
     private fun canRemoveAllQueues() = allCitiesEntryValid { it.isBeingConstructedOrEnqueued(constructionName) }
     private fun removeAllQueues() = forAllCities { it.removeAllByName(constructionName) }
+
+    private fun canDisable() = constructionName !in dontAutoAssignConstructions &&
+        constructionName != PerpetualConstruction.idle.name
+    private fun disableEntry() {
+        dontAutoAssignConstructions.add(constructionName)
+        settings.save()
+    }
+
+    private fun canEnable() = constructionName in dontAutoAssignConstructions &&
+        constructionName != PerpetualConstruction.idle.name
+    private fun enableEntry() {
+        dontAutoAssignConstructions.remove(constructionName)
+        settings.save()
+    }
 }
