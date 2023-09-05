@@ -1,6 +1,7 @@
 package com.unciv.logic.battle
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.logic.map.mapunit.MapUnit
@@ -130,7 +131,7 @@ class BattleDamageTest {
     @Test
     fun `should retrieve defence terrain modifiers`() {
         // given
-        testGame.setTileTerrainAndFeatures(defaultDefenderTile.position, "Hill")
+        testGame.setTileFeatures(defaultDefenderTile.position, Constants.hill)
 
         // when
         val defenceModifiers = BattleDamage.getDefenceModifiers(MapUnitCombatant(defaultAttackerUnit), MapUnitCombatant(defaultDefenderUnit), defaultAttackerTile)
@@ -144,7 +145,7 @@ class BattleDamageTest {
     fun `should not retrieve defence terrain modifiers when unit doesn't get them`() {
         // given
         val defenderTile = testGame.getTile(Vector2.Zero)
-        testGame.setTileTerrainAndFeatures(defenderTile.position, "Hill")
+        testGame.setTileFeatures(defenderTile.position, Constants.hill)
         defenderCiv.resourceStockpiles.add("Horses", 1) // no resource penalty
         val defenderUnit = testGame.addUnit("Horseman", defenderCiv, defenderTile)
 

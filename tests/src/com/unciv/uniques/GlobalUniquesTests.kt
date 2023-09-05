@@ -30,8 +30,7 @@ class GlobalUniquesTests {
     @Test
     fun statsOnBuilding() {
         val civInfo = game.addCiv()
-        val tile = game.setTileTerrainAndFeatures(Vector2.Zero)
-        val city = game.addCity(civInfo, tile, true)
+        val city = game.addCity(civInfo, game.getTile(Vector2.Zero), true)
         val building = game.createBuilding("[+1 Food]")
 
         city.cityConstructions.addBuilding(building)
@@ -58,8 +57,7 @@ class GlobalUniquesTests {
     @Test
     fun statsPerCity() {
         val civInfo = game.addCiv()
-        val tile = game.setTileTerrainAndFeatures(Vector2.Zero)
-        val city = game.addCity(civInfo, tile, true)
+        val city = game.addCity(civInfo,  game.getTile(Vector2.Zero), true)
         val building = game.createBuilding("[+1 Production] [in this city]")
 
         city.cityConstructions.addBuilding(building)
@@ -70,8 +68,7 @@ class GlobalUniquesTests {
     @Test
     fun statsPerSpecialist() {
         val civInfo = game.addCiv()
-        val tile = game.setTileTerrainAndFeatures(Vector2.Zero)
-        val city = game.addCity(civInfo, tile, true, initialPopulation = 2)
+        val city = game.addCity(civInfo, game.getTile(Vector2.Zero), true, initialPopulation = 2)
         val building = game.createBuilding("[+3 Gold] from every specialist [in this city]")
         val specialistName = game.createSpecialist()
         building.specialistSlots.add(specialistName, 2)
@@ -85,8 +82,7 @@ class GlobalUniquesTests {
     @Test
     fun statsPerPopulation() {
         val civInfo = game.addCiv()
-        val tile = game.setTileTerrainAndFeatures(Vector2.Zero)
-        val city = game.addCity(civInfo, tile, true, initialPopulation = 4)
+        val city = game.addCity(civInfo, game.getTile(Vector2.Zero), true, initialPopulation = 4)
         val building = game.createBuilding("[+3 Gold] per [2] population [in this city]")
 
         city.cityConstructions.addBuilding(building)
@@ -97,8 +93,7 @@ class GlobalUniquesTests {
     @Test
     fun statsPerXPopulation() {
         val civInfo = game.addCiv()
-        val tile = game.setTileTerrainAndFeatures(Vector2.Zero)
-        val city = game.addCity(civInfo, tile, true, initialPopulation = 2)
+        val city = game.addCity(civInfo, game.getTile(Vector2.Zero), true, initialPopulation = 2)
         val building = game.createBuilding("[+3 Gold] <in cities with at least [3] [Population]>")
 
         city.cityConstructions.addBuilding(building)
@@ -113,7 +108,7 @@ class GlobalUniquesTests {
     @Test
     fun statsFromCitiesOnSpecificTiles() {
         val civInfo = game.addCiv()
-        val tile = game.setTileTerrainAndFeatures(Vector2.Zero)
+        val tile = game.setTileTerrain(Vector2.Zero, Constants.desert)
         val city = game.addCity(civInfo, tile, true)
         val building = game.createBuilding("[+3 Gold] in cities on [${Constants.desert}] tiles")
         city.cityConstructions.addBuilding(building)
@@ -129,12 +124,11 @@ class GlobalUniquesTests {
     fun statsFromTiles() {
         game.makeHexagonalMap(2)
         val civInfo = game.addCiv()
-        val tile = game.setTileTerrainAndFeatures(Vector2.Zero)
-        val city = game.addCity(civInfo, tile, true)
+        val city = game.addCity(civInfo, game.getTile(Vector2.Zero), true)
         val building = game.createBuilding("[+4 Gold] from [${Constants.grassland}] tiles [in all cities]")
         city.cityConstructions.addBuilding(building)
 
-        val tile2 = game.setTileTerrainAndFeatures(Vector2(0f,1f), Constants.grassland)
+        val tile2 = game.setTileTerrain(Vector2(0f,1f), Constants.grassland)
         Assert.assertTrue(tile2.stats.getTileStats(city, civInfo).gold == 4f)
     }
 
@@ -142,16 +136,15 @@ class GlobalUniquesTests {
     fun statsFromTilesWithout() {
         game.makeHexagonalMap(3)
         val civInfo = game.addCiv()
-        val tile = game.setTileTerrainAndFeatures(Vector2.Zero)
-        val city = game.addCity(civInfo, tile, true)
+        val city = game.addCity(civInfo, game.getTile(Vector2.Zero), true)
         val building = game.createBuilding("[+4 Gold] from [${Constants.grassland}] tiles without [${Constants.forest}] [in this city]")
         city.cityConstructions.addBuilding(building)
 
-        val tile2 = game.setTileTerrainAndFeatures(Vector2(0f,1f), Constants.grassland)
+        val tile2 = game.setTileTerrain(Vector2(0f,1f), Constants.grassland)
         game.addTileToCity(city, tile2)
         Assert.assertTrue(tile2.stats.getTileStats(city, civInfo).gold == 4f)
 
-        val tile3 = game.setTileTerrainAndFeatures(Vector2(0f, 2f), Constants.grassland, listOf(Constants.forest))
+        val tile3 = game.setTileTerrainAndFeatures(Vector2(0f, 2f), Constants.grassland, Constants.forest)
         game.addTileToCity(city, tile3)
         Assert.assertFalse(tile3.stats.getTileStats(city, civInfo).gold == 4f)
     }
@@ -160,8 +153,7 @@ class GlobalUniquesTests {
     fun statsFromObject() {
         game.makeHexagonalMap(1)
         val civInfo = game.addCiv()
-        val tile = game.setTileTerrainAndFeatures(Vector2.Zero)
-        val city = game.addCity(civInfo, tile, true, initialPopulation = 2)
+        val city = game.addCity(civInfo, game.getTile(Vector2.Zero), true, initialPopulation = 2)
         val specialist = game.createSpecialist()
         val building = game.createBuilding("[+3 Faith] from every [${specialist}]")
 
@@ -175,7 +167,7 @@ class GlobalUniquesTests {
         val building2 = game.createBuilding("[+3 Faith] from every [${Constants.grassland}]")
         city.cityConstructions.addBuilding(building2)
 
-        val tile2 = game.setTileTerrainAndFeatures(Vector2(0f,1f), Constants.grassland)
+        val tile2 = game.setTileTerrain(Vector2(0f,1f), Constants.grassland)
         Assert.assertTrue(tile2.stats.getTileStats(city, civInfo).faith == 3f)
 
         city.cityConstructions.removeBuilding(building2)
@@ -194,14 +186,14 @@ class GlobalUniquesTests {
         game.makeHexagonalMap(3)
         val civInfo = game.addCiv("[+30 Science] from each Trade Route")
         civInfo.tech.addTechnology("The Wheel") // Required to form trade routes
-        val tile1 = game.setTileTerrainAndFeatures(Vector2.Zero)
-        val tile2 = game.setTileTerrainAndFeatures(Vector2(0f,2f))
+        val tile1 = game.getTile(Vector2.Zero)
+        val tile2 = game.getTile(Vector2(0f, 2f))
         tile1.roadStatus = RoadStatus.Road
         tile2.roadStatus = RoadStatus.Road
         @Suppress("UNUSED_VARIABLE")
         val city1 = game.addCity(civInfo, tile1)
         val city2 = game.addCity(civInfo, tile2)
-        val inBetweenTile = game.setTileTerrainAndFeatures(Vector2(0f, 1f))
+        val inBetweenTile = game.getTile(Vector2(0f, 1f))
         inBetweenTile.roadStatus = RoadStatus.Road
         civInfo.cache.updateCitiesConnectedToCapital()
         city2.cityStats.update()
@@ -311,13 +303,12 @@ class GlobalUniquesTests {
                 "[+200]% [Faith] from every [${emptyBuilding.name}]",
                 "[+200]% [Faith] from every [Farm]",
             )
-        val tile = game.setTileTerrainAndFeatures(Vector2(0f,0f))
-        val city = game.addCity(civInfo, tile, true)
+        val city = game.addCity(civInfo, game.getTile(Vector2.Zero), true)
         val faithBuilding = game.createBuilding()
         faithBuilding.faith = 3f
         city.cityConstructions.addBuilding(faithBuilding)
 
-        val tile2 = game.setTileTerrainAndFeatures(Vector2(0f,1f), Constants.grassland)
+        val tile2 = game.setTileTerrain(Vector2(0f,1f), Constants.grassland)
         tile2.changeImprovement("Farm")
         Assert.assertTrue(tile2.stats.getTileStats(city, civInfo).faith == 9f)
 
@@ -336,13 +327,12 @@ class GlobalUniquesTests {
                 "[+200]% Yield from every [${emptyBuilding.name}]",
                 "[+200]% Yield from every [Farm]",
             )
-        val tile = game.setTileTerrainAndFeatures(Vector2(0f,0f))
-        val city = game.addCity(civInfo, tile, true)
+        val city = game.addCity(civInfo, game.getTile(Vector2.Zero), true)
         val faithBuilding = game.createBuilding()
         faithBuilding.faith = 3f
         city.cityConstructions.addBuilding(faithBuilding)
 
-        val tile2 = game.setTileTerrainAndFeatures(Vector2(0f,1f), Constants.grassland)
+        val tile2 = game.setTileTerrain(Vector2(0f,1f), Constants.grassland)
         tile2.changeImprovement("Farm")
         Assert.assertTrue(tile2.stats.getTileStats(city, civInfo).faith == 9f)
 
@@ -356,8 +346,7 @@ class GlobalUniquesTests {
     fun statPercentFromReligionFollowers() {
         game.makeHexagonalMap(1)
         val civInfo = game.addCiv()
-        val tile = game.getTile(Vector2(0f,0f))
-        val city = game.addCity(civInfo, tile, true, 1)
+        val city = game.addCity(civInfo, game.getTile(Vector2.Zero), true, 1)
         val religion = game.addReligion(civInfo)
         val belief = game.createBelief(BeliefType.Follower, "[+10]% [Faith] from every follower, up to [42]%")
         religion.followerBeliefs.add(belief.name)
@@ -380,8 +369,7 @@ class GlobalUniquesTests {
         val civInfo = game.addCiv()
         val cityState = game.addCiv(cityStateType = "Maritime")
 
-        val tile = game.getTile(Vector2(0f,0f))
-        val city = game.addCity(civInfo, tile, true)
+        val city = game.addCity(civInfo, game.getTile(Vector2.Zero), true)
         val cityStateTile = game.getTile(Vector2(0f, 1f))
         @Suppress("UNUSED_VARIABLE")
         val cityStateCity = game.addCity(cityState, cityStateTile, true)
@@ -402,14 +390,14 @@ class GlobalUniquesTests {
         game.makeHexagonalMap(3)
         val civInfo = game.addCiv("[+30 Science] from each Trade Route", "[+100]% [Science] from Trade Routes")
         civInfo.tech.addTechnology("The Wheel") // Required to form trade routes
-        val tile1 = game.setTileTerrainAndFeatures(Vector2(0f,0f))
-        val tile2 = game.setTileTerrainAndFeatures(Vector2(0f,2f))
+        val tile1 = game.getTile(Vector2.Zero)
+        val tile2 =  game.getTile(Vector2(0f, 2f))
         tile1.roadStatus = RoadStatus.Road
         tile2.roadStatus = RoadStatus.Road
         @Suppress("UNUSED_VARIABLE")
         val city1 = game.addCity(civInfo, tile1)
         val city2 = game.addCity(civInfo, tile2)
-        val inBetweenTile = game.setTileTerrainAndFeatures(Vector2(0f, 1f))
+        val inBetweenTile =  game.getTile(Vector2(0f, 1f))
         inBetweenTile.roadStatus = RoadStatus.Road
 
         civInfo.cache.updateCitiesConnectedToCapital()
@@ -533,8 +521,7 @@ class GlobalUniquesTests {
     @Test
     fun growthPercentBonusTest() {
         val civInfo = game.addCiv()
-        val tile = game.setTileTerrainAndFeatures(Vector2(0f,0f))
-        val city = game.addCity(civInfo, tile, true)
+        val city = game.addCity(civInfo, game.getTile(Vector2.Zero), true)
         val building = game.createBuilding("[+100]% growth [in all cities]")
         city.cityConstructions.addBuilding(building)
 
@@ -545,8 +532,7 @@ class GlobalUniquesTests {
     @Test
     fun carryOverFoodTest() {
         val civInfo = game.addCiv("[50]% Food is carried over after population increases [in all cities]")
-        val tile = game.setTileTerrainAndFeatures(Vector2(0f,0f))
-        val city = game.addCity(civInfo, tile, true)
+        val city = game.addCity(civInfo, game.getTile(Vector2.Zero), true)
 
         val foodNecessary = city.population.getFoodToNextPopulation()
         city.population.nextTurn(foodNecessary)
@@ -558,8 +544,7 @@ class GlobalUniquesTests {
     @Test
     fun foodConsumptionBySpecialistsTest() {
         val civInfo = game.addCiv("[-50]% Food consumption by specialists [in all cities]")
-        val tile = game.setTileTerrainAndFeatures(Vector2(0f,0f))
-        val city = game.addCity(civInfo, tile, true, initialPopulation = 1)
+        val city = game.addCity(civInfo, game.getTile(Vector2.Zero), true, initialPopulation = 1)
 
         val building = game.createBuilding()
         val specialistName = game.createSpecialist()
@@ -578,8 +563,7 @@ class GlobalUniquesTests {
     @Test
     fun unhappinessFromCitiesPercentageTest() {
         val civInfo = game.addCiv("[+100]% unhappiness from the number of cities")
-        val tile = game.setTileTerrainAndFeatures(Vector2(0f,0f))
-        val city = game.addCity(civInfo, tile, true)
+        val city = game.addCity(civInfo, game.getTile(Vector2.Zero), true)
 
         city.cityStats.update()
         // Because of some weird design choices, -3.6 is correct, though I would expect it to be -6 instead.
@@ -592,8 +576,7 @@ class GlobalUniquesTests {
     @Test
     fun unhappinessFromPopulationTypePercentageChangeTest() {
         val civInfo = game.addCiv("[-50]% Unhappiness from [Population] [in all cities]")
-        val tile = game.setTileTerrainAndFeatures(Vector2(0f,0f))
-        val city = game.addCity(civInfo, tile, true, initialPopulation = 4)
+        val city = game.addCity(civInfo, game.getTile(Vector2.Zero), true, initialPopulation = 4)
 
         city.cityStats.update()
         // This test suffers from the same problems as `unhappinessFromCitiesPercentageTest()`.
@@ -621,7 +604,7 @@ class GlobalUniquesTests {
     @Test
     fun statsSpendingGreatPeople() {
         val civInfo = game.addCiv()
-        val tile = game.setTileTerrainAndFeatures(Vector2(0f,0f))
+        val tile = game.getTile(Vector2.Zero)
         val city = game.addCity(civInfo, tile, true)
         val unit = game.addUnit("Great Engineer", civInfo, tile)
         val building = game.createBuilding("[+250 Gold] whenever a Great Person is expended")
