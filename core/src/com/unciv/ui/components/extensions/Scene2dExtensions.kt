@@ -128,7 +128,7 @@ fun Actor.getAscendant(predicate: (Actor) -> Boolean): Actor? {
 
 /** The actors bounding box in stage coordinates */
 val Actor.stageBoundingBox: Rectangle get() {
-    val bottomLeft = localToStageCoordinates(Vector2(0f, 0f))
+    val bottomLeft = localToStageCoordinates(Vector2.Zero)
     val topRight = localToStageCoordinates(Vector2(width, height))
     return Rectangle(
         bottomLeft.x,

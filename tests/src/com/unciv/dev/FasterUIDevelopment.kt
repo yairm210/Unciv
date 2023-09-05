@@ -109,7 +109,7 @@ object FasterUIDevelopment {
         fun addBorder(actor: Actor, color: Color) {
             val border = ImageWithCustomSize(skinStrings.getUiBackground("", tintColor = color))
             border.zIndex = curBorderZ++
-            val stageCoords = actor.localToStageCoordinates(Vector2(0f, 0f))
+            val stageCoords = actor.localToStageCoordinates(Vector2.Zero)
             border.x = stageCoords.x - 1
             border.y = stageCoords.y - 1
             border.width = actor.width + 2

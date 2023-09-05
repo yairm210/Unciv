@@ -20,23 +20,7 @@ object TargetHelper {
         val unitMustBeSetUp = unit.hasUnique(UniqueType.MustSetUp)
         val tilesToAttackFrom = if (stayOnTile || unit.baseUnit.movesLikeAirUnits())
             sequenceOf(Pair(unit.currentTile, unit.currentMovement))
-        else
-            unitDistanceToTiles.asSequence()
-                .map { (tile, distance) ->
-                    val movementPointsToExpendAfterMovement = if (unitMustBeSetUp) 1 else 0
-                    val movementPointsToExpendHere =
-                        if (unitMustBeSetUp && !unit.isSetUpForSiege()) 1 else 0
-                    val movementPointsToExpendBeforeAttack =
-                        if (tile == unit.currentTile) movementPointsToExpendHere else movementPointsToExpendAfterMovement
-                    val movementLeft =
-                        unit.currentMovement - distance.totalDistance - movementPointsToExpendBeforeAttack
-                    Pair(tile, movementLeft)
-                }
-                // still got leftover movement points after all that, to attack
-                .filter { it.second > Constants.minimumMovementEpsilon }
-                .filter {
-                    it.first == unit.getTile() || unit.movement.canMoveTo(it.first)
-                }
+        else getTilesToAttackFromWhenUnitMoves(unitDistanceToTiles, unitMustBeSetUp, unit)
 
         val tilesWithEnemies: HashSet<Tile> = HashSet()
         val tilesWithoutEnemies: HashSet<Tile> = HashSet()
@@ -47,37 +31,53 @@ object TargetHelper {
                 else reachableTile.tileMap.getViewableTiles(reachableTile.position, rangeOfAttack, true).asSequence()
 
             for (tile in tilesInAttackRange) {
-                // Since military units can technically enter tiles with enemy civilians,
-                // some try to move to to the tile and then attack the unit it contains, which is silly
-                if (tile == reachableTile) continue
-                if (tile in tilesWithEnemies) attackableTiles += AttackableTile(
-                    reachableTile,
-                    tile,
-                    movementLeft,
-                    Battle.getMapCombatantOfTile(tile)
-                )
-                else if (tile in tilesWithoutEnemies) continue // avoid checking the same empty tile multiple times
-                else if (tileContainsAttackableEnemy(unit, tile, tilesToCheck)) {
-                    tilesWithEnemies += tile
-                    attackableTiles += AttackableTile(
-                        reachableTile, tile, movementLeft,
+                when {
+                    // Since military units can technically enter tiles with enemy civilians,
+                    // some try to move to to the tile and then attack the unit it contains, which is silly
+                    tile == reachableTile -> continue
+
+                    tile in tilesWithEnemies -> attackableTiles += AttackableTile(
+                        reachableTile,
+                        tile,
+                        movementLeft,
                         Battle.getMapCombatantOfTile(tile)
                     )
-                } else if (unit.isPreparingAirSweep()) {
-                    tilesWithEnemies += tile
-                    attackableTiles += AttackableTile(
-                        reachableTile, tile, movementLeft,
-                        Battle.getMapCombatantOfTile(tile)
-                    )
-                } else tilesWithoutEnemies += tile
+                    tile in tilesWithoutEnemies -> continue // avoid checking the same empty tile multiple times
+                    tileContainsAttackableEnemy(unit, tile, tilesToCheck) || unit.isPreparingAirSweep() -> {
+                        tilesWithEnemies += tile
+                        attackableTiles += AttackableTile(
+                            reachableTile, tile, movementLeft,
+                            Battle.getMapCombatantOfTile(tile)
+                        )
+                    }
+                    else -> tilesWithoutEnemies += tile
+                }
             }
         }
         return attackableTiles
     }
 
+    private fun getTilesToAttackFromWhenUnitMoves(unitDistanceToTiles: PathsToTilesWithinTurn, unitMustBeSetUp: Boolean, unit: MapUnit) =
+        unitDistanceToTiles.asSequence()
+            .map { (tile, distance) ->
+                val movementPointsToExpendAfterMovement = if (unitMustBeSetUp) 1 else 0
+                val movementPointsToExpendHere =
+                    if (unitMustBeSetUp && !unit.isSetUpForSiege()) 1 else 0
+                val movementPointsToExpendBeforeAttack =
+                    if (tile == unit.currentTile) movementPointsToExpendHere else movementPointsToExpendAfterMovement
+                val movementLeft =
+                    unit.currentMovement - distance.totalDistance - movementPointsToExpendBeforeAttack
+                Pair(tile, movementLeft)
+            }
+            // still got leftover movement points after all that, to attack
+            .filter { it.second > Constants.minimumMovementEpsilon }
+            .filter {
+                it.first == unit.getTile() || unit.movement.canMoveTo(it.first)
+            }
+
     private fun tileContainsAttackableEnemy(unit: MapUnit, tile: Tile, tilesToCheck: List<Tile>?): Boolean {
-        if (!containsAttackableEnemy(tile, MapUnitCombatant(unit))) return false
-        if (tile !in (tilesToCheck ?: unit.civ.viewableTiles)) return false
+        if (tile !in (tilesToCheck ?: unit.civ.viewableTiles) || !containsAttackableEnemy(tile, MapUnitCombatant(unit)) )
+            return false
         val mapCombatant = Battle.getMapCombatantOfTile(tile)
 
         return (!unit.baseUnit.isMelee() || mapCombatant !is MapUnitCombatant || !mapCombatant.unit.isCivilian() || unit.movement.canPassThrough(tile))

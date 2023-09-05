@@ -29,7 +29,7 @@ class UnitUniquesTests {
         // when
         game.makeHexagonalMap(1)
         val cityState = game.addCiv(cityStateType = "Cultured")
-        val cityStateCapitalTile = game.getTile(Vector2(0f, 0f))
+        val cityStateCapitalTile = game.getTile(Vector2.Zero)
         val cityStateCapital = game.addCity(cityState, cityStateCapitalTile)
 
         val mainCiv = game.addCiv("Gain [90] Influence with a [Great Person] gift to a City-State",
