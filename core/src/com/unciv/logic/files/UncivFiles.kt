@@ -3,8 +3,8 @@ package com.unciv.logic.files
 import com.badlogic.gdx.Files
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.utils.GdxRuntimeException
 import com.badlogic.gdx.utils.JsonReader
-import com.badlogic.gdx.utils.GdxRuntimeException  // Kdoc
 import com.badlogic.gdx.utils.SerializationException
 import com.unciv.UncivGame
 import com.unciv.json.fromJsonFile
@@ -159,7 +159,7 @@ class UncivFiles(
         try {
             debug("Saving GameInfo %s to %s", game.gameId, file.path())
             val string = gameInfoToString(game)
-            file.writeString(string, false)
+            file.writeString(string, false, Charsets.UTF_8.name())
             saveCompletionCallback(null)
         } catch (ex: Exception) {
             saveCompletionCallback(ex)
