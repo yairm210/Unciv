@@ -778,25 +778,34 @@ object NextTurnAutomation {
             }
         }
     }
-    
+
     private fun wantsToSignDeclarationOfFrienship(civInfo: Civilization, otherCiv: Civilization): Boolean {
         // Shortcut, if it is below favorable then don't consider it
         if (civInfo.getDiplomacyManager(otherCiv).isRelationshipLevelLT(RelationshipLevel.Favorable)) return false
         
         val numOfFriends = civInfo.diplomacy.count { it.value.hasFlag(DiplomacyFlags.DeclarationOfFriendship) }
         val knownCivs = civInfo.getKnownCivs().filter { it.isMajorCiv() && it.isAlive() }.count()
-        val allCivs = civInfo.gameInfo.civilizations.count { it.isAlive() && it.isMajorCiv() } - 1 // Don't include us
+        val allCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() } - 1 // Don't include us
+        val deadCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() && !it.isAlive() }
+        val allAliveCivs = allCivs - deadCivs
+        
+        // Motivation should be constant as the number of civs changes
         var motivation = civInfo.getDiplomacyManager(otherCiv).opinionOfOtherCiv().toInt() - 40
         
         if (civInfo.wantsToFocusOn(Victory.Focus.Military)) {
             // Try to ally with a third of the civs in play
             // Goes form 0 to -120 as the civ gets more friends, goal is around 1/4 friends max
             motivation -= ((numOfFriends * 120f) / knownCivs).toInt()
+
+            // Goes from 0 to -50 as more civs die
+            // this is meant to prevent the game from stalemating when a group of friends
+            // conquers all oposition
+            motivation -= deadCivs / allCivs * 50
         }
 
         // Wait to declare frienships until more civs
         // Goes from -30 to 0 when we know 75% of allCivs
-        val civsToKnow = .75f * allCivs
+        val civsToKnow = .75f * allAliveCivs
         motivation -= min(((civsToKnow - knownCivs) / civsToKnow * 30f).toInt(), 0)
         
         motivation -= hasAtLeastMotivationToAttack(civInfo, otherCiv, motivation)
@@ -822,10 +831,10 @@ object NextTurnAutomation {
     
     private fun wantsToOpenBorders(civInfo: Civilization, otherCiv: Civilization): Boolean {
         if (civInfo.getDiplomacyManager(otherCiv).isRelationshipLevelLT(RelationshipLevel.Favorable)) return false
-        if (hasAtLeastMotivationToAttack(civInfo, otherCiv, civInfo.getDiplomacyManager(otherCiv).opinionOfOtherCiv().toInt()) > 0)
-            return false
         // Don't accept if they are at war with our friends, they might use our land to attack them
         if (civInfo.diplomacy.values.any { it.isRelationshipLevelGE(RelationshipLevel.Friend) && it.otherCiv().isAtWarWith(otherCiv)})
+            return false
+        if (hasAtLeastMotivationToAttack(civInfo, otherCiv, civInfo.getDiplomacyManager(otherCiv).opinionOfOtherCiv().toInt()) > 0)
             return false
         return true
     }
