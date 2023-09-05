@@ -1,3 +1,25 @@
+## 4.8.2
+
+performance: Don't autoupdate multiplayer games more than a week old - they're inactive games
+
+performance: Don't calc checksum for non-multiplayer games, no one cares if you hack your own game
+
+tests: Load vanilla game test fixed
+
+Buildings missing from ruleset are removed from loaded games *properly*
+
+chore: Added missing imports
+
+chore: Reorg tests, so /testing folder contains only test-helper classes
+
+By SomeTroglodyte:
+- Fix Map Editor double map holders after ruleset change 
+- Fix longpress triggering when an onClick discards its actor 
+- Improve BaseUnit hasUnique(FoundCity) handling 
+- Fix Gdx not forced to UTF-8 when saving a game 
+
+Defensive pact notification fix  - By tuvus
+
 ## 4.8.1
 
 Fixed AI attack targetting - By tuvus
