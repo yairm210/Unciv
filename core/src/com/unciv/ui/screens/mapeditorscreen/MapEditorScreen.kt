@@ -231,7 +231,6 @@ class MapEditorScreen(map: TileMap? = null): BaseScreen(), RecreateOnResize {
             tileMap.ruleset = newRuleset
             ruleset = newRuleset
         }
-        mapHolder = newMapHolder()
         modsTabNeedsRefresh = false
     }
 
