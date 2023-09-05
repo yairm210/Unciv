@@ -8,9 +8,9 @@ import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.colorFromRGB
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 
 class Era : RulesetObject() {
     var eraNumber: Int = -1
@@ -88,7 +88,7 @@ class Era : RulesetObject() {
         val startingSettlerName: String =
             if (startingSettlerUnit in ruleset.units) startingSettlerUnit
             else ruleset.units.values
-                .firstOrNull { it.hasUnique(UniqueType.FoundCity) }
+                .firstOrNull { it.isCityFounder() }
                 ?.name
                 ?: throw UncivShowableException("No Settler unit found for era $name")
         val startingWorkerName: String =

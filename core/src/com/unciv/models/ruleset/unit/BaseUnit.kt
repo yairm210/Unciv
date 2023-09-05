@@ -215,7 +215,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         //movement penalty
         if (boughtWith != null && !civInfo.gameInfo.gameParameters.godMode && !unit.hasUnique(UniqueType.MoveImmediatelyOnceBought))
             unit.currentMovement = 0f
-        
+
         if (this.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
 
         addConstructionBonuses(unit, cityConstructions)
@@ -299,6 +299,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             }
         }
     }
+
+    /** Determine whether this is a City-founding unit - abstract, **without any game context**.
+     *  Use other methods for MapUnits or when there is a better StateForConditionals available. */
+    fun isCityFounder() = hasUnique(UniqueType.FoundCity, StateForConditionals.IgnoreConditionals)
 
     fun isGreatPerson() = getMatchingUniques(UniqueType.GreatPerson).any()
     fun isGreatPersonOfType(type: String) = getMatchingUniques(UniqueType.GreatPerson).any { it.params[0] == type }
