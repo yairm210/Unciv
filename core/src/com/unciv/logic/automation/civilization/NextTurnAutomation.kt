@@ -69,6 +69,7 @@ object NextTurnAutomation {
             if (civInfo.gameInfo.isReligionEnabled()) {
                 ReligionAutomation.spendFaithOnReligion(civInfo)
             }
+            offerOpenBorders(civInfo)
             offerResearchAgreement(civInfo)
             offerDefensivePact(civInfo)
             exchangeLuxuries(civInfo)
@@ -803,13 +804,13 @@ object NextTurnAutomation {
         return motivation > 0
     }
     
-    private fun offerOpenBoarders(civInfo: Civilization) {
+    private fun offerOpenBorders(civInfo: Civilization) {
         val civsThatWeCanDeclareFriendshipWith = civInfo.getKnownCivs()
             .filter { !civInfo.isAtWarWith(it) && !civInfo.getDiplomacyManager(it).hasOpenBorders}
             .sortedByDescending { it.getDiplomacyManager(civInfo).relationshipLevel() }.toList()
         for (otherCiv in civsThatWeCanDeclareFriendshipWith) {
-            // Default setting is 5, this will be changed according to different civ.
-            if ((1..10).random() <= 5 && civInfo.getDiplomacyManager(otherCiv).isRelationshipLevelGE(RelationshipLevel.Favorable)) {
+            // Default setting is 3, this will be changed according to different civ.
+            if ((1..10).random() <= 3 && wantsToOpenBorders(civInfo, otherCiv)) {
                 val tradeLogic = TradeLogic(civInfo, otherCiv)
                 tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.openBorders, TradeType.Agreement))
                 tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.openBorders, TradeType.Agreement))
@@ -817,6 +818,16 @@ object NextTurnAutomation {
                 otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
             }
         }
+    }
+    
+    private fun wantsToOpenBorders(civInfo: Civilization, otherCiv: Civilization): Boolean {
+        if (civInfo.getDiplomacyManager(otherCiv).isRelationshipLevelLT(RelationshipLevel.Favorable)) return false
+        if (hasAtLeastMotivationToAttack(civInfo, otherCiv, civInfo.getDiplomacyManager(otherCiv).opinionOfOtherCiv().toInt()) > 0)
+            return false
+        // Don't accept if they are at war with our friends, they might use our land to attack them
+        if (civInfo.diplomacy.values.any { it.isRelationshipLevelGE(RelationshipLevel.Friend) && it.otherCiv().isAtWarWith(otherCiv)})
+            return false
+        return true
     }
     
     private fun offerResearchAgreement(civInfo: Civilization) {
