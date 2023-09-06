@@ -37,8 +37,8 @@ kotlin {
 // Plugins used for serialization of JSON for networking
 plugins {
     id("io.gitlab.arturbosch.detekt").version("1.23.0-RC3")
-    kotlin("multiplatform") version com.unciv.build.BuildConfig.kotlinVersion
-    kotlin("plugin.serialization") version com.unciv.build.BuildConfig.kotlinVersion
+    kotlin("multiplatform") version "1.8.10"
+    kotlin("plugin.serialization") version "1.8.10"
 }
 
 allprojects {
