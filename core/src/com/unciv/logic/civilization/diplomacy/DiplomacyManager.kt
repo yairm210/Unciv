@@ -218,12 +218,10 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             compareRelationshipLevel(level, 1)
     /** @see compareRelationshipLevel */
     fun isRelationshipLevelLE(level: RelationshipLevel) =
-            if (level == RelationshipLevel.Ally) true
-            else compareRelationshipLevel(level + 1, -1)
+        level == RelationshipLevel.Ally || compareRelationshipLevel(level + 1, -1)
     /** @see compareRelationshipLevel */
     fun isRelationshipLevelGE(level: RelationshipLevel) =
-            if (level == RelationshipLevel.Unforgivable) true
-            else compareRelationshipLevel(level + -1, 1)
+        level == RelationshipLevel.Unforgivable || compareRelationshipLevel(level + -1, 1)
 
     /** Careful: Cheap unless this is a CityState and influence is in 0 until 30,
      *  where the distinction Neutral/Afraid gets expensive.
@@ -241,11 +239,11 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     /** Same as [relationshipLevel] but omits the distinction Neutral/Afraid, which can be _much_ cheaper */
     fun relationshipIgnoreAfraid(): RelationshipLevel {
-        if (civInfo.isHuman() && otherCiv().isHuman())
-            return RelationshipLevel.Neutral // People make their own choices.
-
-        if (civInfo.isHuman())
-            return otherCiv().getDiplomacyManager(civInfo).relationshipLevel()
+        if (civInfo.isHuman()) {
+           if (otherCiv().isHuman())
+               return RelationshipLevel.Neutral // People make their own choices.
+           return otherCiv().getDiplomacyManager(civInfo).relationshipLevel()
+        }
 
         if (civInfo.isCityState()) return when {
             getInfluence() <= DiplomacyConstants.UNFORGIVABLE_INFLUENCE_THRESHOLD -> RelationshipLevel.Unforgivable  // getInfluence tests isAtWarWith
