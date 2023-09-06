@@ -245,17 +245,23 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
            return otherCiv().getDiplomacyManager(civInfo).relationshipLevel()
         }
 
-        if (civInfo.isCityState()) return when {
+        if (civInfo.isCityState()) return relationshipIgnoreAfraidCityStates()
+
+        return relationshipIgnoreAfraidAI()
+    }
+    private fun relationshipIgnoreAfraidCityStates(): RelationshipLevel {
+        return when {
             getInfluence() <= DiplomacyConstants.UNFORGIVABLE_INFLUENCE_THRESHOLD -> RelationshipLevel.Unforgivable  // getInfluence tests isAtWarWith
             getInfluence() < 0 -> RelationshipLevel.Enemy
             getInfluence() >= DiplomacyConstants.ALLY_INFLUENCE_MIN_THRESHOLD && civInfo.getAllyCiv() == otherCivName -> RelationshipLevel.Ally
             getInfluence() >= DiplomacyConstants.FRIEND_INFLUENCE_THRESHOLD -> RelationshipLevel.Friend
             else -> RelationshipLevel.Neutral
         }
+    }
 
+    private fun relationshipIgnoreAfraidAI(): RelationshipLevel {
         // not entirely sure what to do between AI civs, because they probably have different views of each other,
         // maybe we need to average their views of each other? That makes sense to me.
-
         val opinion = opinionOfOtherCiv()
         return when {
             opinion <= -80 -> RelationshipLevel.Unforgivable
@@ -551,17 +557,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                 flagsCountdown[flag] = flagsCountdown[flag]!! - 1
 
             // If we have uniques that make city states grant military units faster when at war with a common enemy, add higher numbers to this flag
-            if (flag == DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.isMajorCiv() && otherCiv().isCityState() &&
-                    civInfo.gameInfo.civilizations.any { civInfo.isAtWarWith(it) && otherCiv().isAtWarWith(it) }) {
-                for (unique in civInfo.getMatchingUniques(UniqueType.CityStateMoreGiftedUnits)) {
-                    flagsCountdown[DiplomacyFlags.ProvideMilitaryUnit.name] =
-                        flagsCountdown[DiplomacyFlags.ProvideMilitaryUnit.name]!! - unique.params[0].toInt() + 1
-                    if (flagsCountdown[DiplomacyFlags.ProvideMilitaryUnit.name]!! <= 0) {
-                        flagsCountdown[DiplomacyFlags.ProvideMilitaryUnit.name] = 0
-                        break
-                    }
-                }
-            }
+            manageCityStateProvideMilitaryUnitFlag(flag)
 
             // At the end of every turn
             if (flag == DiplomacyFlags.ResearchAgreement.name)
@@ -581,46 +577,71 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
             // Only when flag is expired
             if (flagsCountdown[flag] == 0) {
-                when (flag) {
-                    DiplomacyFlags.ResearchAgreement.name -> {
-                        if (!otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement))
-                            scienceFromResearchAgreement()
-                    }
-                    DiplomacyFlags.DefensivePact.name -> {
-                        diplomaticStatus = DiplomaticStatus.Peace
-                    }
-                    // This is confusingly named - in fact, the civ that has the flag set is the MAJOR civ
-                    DiplomacyFlags.ProvideMilitaryUnit.name -> {
-                        // Do not unset the flag - they may return soon, and we'll continue from that point on
-                        if (civInfo.cities.isEmpty() || otherCiv().cities.isEmpty())
-                            continue@loop
-                        else
-                            otherCiv().cityStateFunctions.giveMilitaryUnitToPatron(civInfo)
-                    }
-                    DiplomacyFlags.AgreedToNotSettleNearUs.name -> {
-                        addModifier(DiplomaticModifiers.FulfilledPromiseToNotSettleCitiesNearUs, 10f)
-                    }
-                    DiplomacyFlags.RecentlyAttacked.name -> {
-                        civInfo.cityStateFunctions.askForUnitGifts(otherCiv())
-                    }
-                    // These modifiers don't tick down normally, instead there is a threshold number of turns
-                    DiplomacyFlags.RememberDestroyedProtectedMinor.name -> {    // 125
-                        removeModifier(DiplomaticModifiers.DestroyedProtectedMinor)
-                    }
-                    DiplomacyFlags.RememberAttackedProtectedMinor.name -> {     // 75
-                        removeModifier(DiplomaticModifiers.AttackedProtectedMinor)
-                    }
-                    DiplomacyFlags.RememberBulliedProtectedMinor.name -> {      // 75
-                        removeModifier(DiplomaticModifiers.BulliedProtectedMinor)
-                    }
-                    DiplomacyFlags.RememberSidedWithProtectedMinor.name -> {      // 25
-                        removeModifier(DiplomaticModifiers.SidedWithProtectedMinor)
-                    }
-                }
-
+                if (manageExpiredFlag(flag)) continue@loop
                 flagsCountdown.remove(flag)
             }
         }
+    }
+
+    private fun manageCityStateProvideMilitaryUnitFlag(flag: String) {
+        if (flag == DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.isMajorCiv() && otherCiv().isCityState() &&
+            civInfo.gameInfo.civilizations.any { civInfo.isAtWarWith(it) && otherCiv().isAtWarWith(it) }
+        ) {
+            for (unique in civInfo.getMatchingUniques(UniqueType.CityStateMoreGiftedUnits)) {
+                flagsCountdown[DiplomacyFlags.ProvideMilitaryUnit.name] =
+                    flagsCountdown[DiplomacyFlags.ProvideMilitaryUnit.name]!! - unique.params[0].toInt() + 1
+                if (flagsCountdown[DiplomacyFlags.ProvideMilitaryUnit.name]!! <= 0) {
+                    flagsCountdown[DiplomacyFlags.ProvideMilitaryUnit.name] = 0
+                    break
+                }
+            }
+        }
+    }
+
+    private fun manageExpiredFlag(flag: String): Boolean {
+        when (flag) {
+            DiplomacyFlags.ResearchAgreement.name -> {
+                if (!otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement))
+                    scienceFromResearchAgreement()
+            }
+
+            DiplomacyFlags.DefensivePact.name -> {
+                diplomaticStatus = DiplomaticStatus.Peace
+            }
+            // This is confusingly named - in fact, the civ that has the flag set is the MAJOR civ
+            DiplomacyFlags.ProvideMilitaryUnit.name -> {
+                // Do not unset the flag - they may return soon, and we'll continue from that point on
+                if (civInfo.cities.isEmpty() || otherCiv().cities.isEmpty())
+                    return true
+                else
+                    otherCiv().cityStateFunctions.giveMilitaryUnitToPatron(civInfo)
+            }
+
+            DiplomacyFlags.AgreedToNotSettleNearUs.name -> {
+                addModifier(DiplomaticModifiers.FulfilledPromiseToNotSettleCitiesNearUs, 10f)
+            }
+
+            DiplomacyFlags.RecentlyAttacked.name -> {
+                civInfo.cityStateFunctions.askForUnitGifts(otherCiv())
+            }
+            // These modifiers don't tick down normally, instead there is a threshold number of turns
+            DiplomacyFlags.RememberDestroyedProtectedMinor.name -> {    // 125
+                removeModifier(DiplomaticModifiers.DestroyedProtectedMinor)
+            }
+
+            DiplomacyFlags.RememberAttackedProtectedMinor.name -> {     // 75
+                removeModifier(DiplomaticModifiers.AttackedProtectedMinor)
+            }
+
+            DiplomacyFlags.RememberBulliedProtectedMinor.name -> {      // 75
+                removeModifier(DiplomaticModifiers.BulliedProtectedMinor)
+            }
+
+            DiplomacyFlags.RememberSidedWithProtectedMinor.name -> {      // 25
+                removeModifier(DiplomaticModifiers.SidedWithProtectedMinor)
+            }
+        }
+        return false
     }
 
     private fun nextTurnTrades() {
@@ -719,12 +740,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
     /** Everything that happens to both sides equally when war is declared by one side on the other */
     private fun onWarDeclared(isOffensiveWar: Boolean) {
-        // Cancel all trades.
-        for (trade in trades)
-            for (offer in trade.theirOffers.filter { it.duration > 0 && it.name != Constants.defensivePact})
-                civInfo.addNotification("[${offer.name}] from [$otherCivName] has ended",
-                    NotificationCategory.Trade, otherCivName, NotificationIcon.Trade)
-        trades.clear()
+        cancelAllTrades()
 
         val civAtWarWith = otherCiv()
 
@@ -749,6 +765,16 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         setFlag(DiplomacyFlags.DeclinedPeace, 10)/// AI won't propose peace for 10 turns
         setFlag(DiplomacyFlags.DeclaredWar, 10) // AI won't agree to trade for 10 turns
         removeFlag(DiplomacyFlags.BorderConflict)
+    }
+
+    private fun cancelAllTrades() {
+        for (trade in trades)
+            for (offer in trade.theirOffers.filter { it.duration > 0 && it.name != Constants.defensivePact })
+                civInfo.addNotification(
+                    "[${offer.name}] from [$otherCivName] has ended",
+                    NotificationCategory.Trade, otherCivName, NotificationIcon.Trade
+                )
+        trades.clear()
     }
 
     /**
