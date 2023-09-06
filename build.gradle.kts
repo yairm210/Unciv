@@ -1,11 +1,13 @@
+
 import com.unciv.build.BuildConfig.gdxVersion
+import com.unciv.build.BuildConfig.kotlinVersion
 import com.unciv.build.BuildConfig.ktorVersion
 import com.unciv.build.BuildConfig.roboVMVersion
 
 
 // You'll still get kotlin-reflect-1.3.70.jar in your classpath, but will no longer be used
 configurations.all { resolutionStrategy {
-    force("org.jetbrains.kotlin:kotlin-reflect:${com.unciv.build.BuildConfig.kotlinVersion}")
+    force("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
 } }
 
 
@@ -130,7 +132,7 @@ project(":core") {
     dependencies {
         "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
         "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-        "implementation"("org.jetbrains.kotlin:kotlin-reflect:${com.unciv.build.BuildConfig.kotlinVersion}")
+        "implementation"("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
 
         // Ktor core
         "implementation"("io.ktor:ktor-client-core:$ktorVersion")
@@ -167,7 +169,6 @@ project(":core") {
 
             "testImplementation"("junit:junit:4.13.2")
             "testImplementation"("org.mockito:mockito-core:5.1.1")
-            "testImplementation"("io.mockk:mockk:1.9.3")
 
             "testImplementation"("com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion")
             "testImplementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
