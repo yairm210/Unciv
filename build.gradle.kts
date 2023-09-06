@@ -166,13 +166,6 @@ project(":core") {
             "implementation"("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop")
             "implementation"("com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion")
             "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
-
-            "testImplementation"("junit:junit:4.13.2")
-            "testImplementation"("org.mockito:mockito-core:5.1.1")
-
-            "testImplementation"("com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion")
-            "testImplementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
-            "testImplementation"("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop")
         }
     }
 }
