@@ -11,16 +11,17 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.unciv.UncivGame
+import com.unciv.dev.FasterUIDevelopment.DevElement
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.multiplayer.throttle
+import com.unciv.ui.components.FontFamilyData
+import com.unciv.ui.components.FontImplementation
+import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.extensions.center
+import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.ImageWithCustomSize
 import com.unciv.ui.screens.basescreen.BaseScreen
-import com.unciv.ui.components.FontFamilyData
-import com.unciv.ui.components.Fonts
-import com.unciv.ui.components.FontImplementation
-import com.unciv.ui.components.extensions.center
-import com.unciv.ui.components.extensions.toLabel
 import com.unciv.utils.Concurrency
 import java.awt.Font
 import java.awt.RenderingHints
@@ -109,7 +110,7 @@ object FasterUIDevelopment {
         fun addBorder(actor: Actor, color: Color) {
             val border = ImageWithCustomSize(skinStrings.getUiBackground("", tintColor = color))
             border.zIndex = curBorderZ++
-            val stageCoords = actor.localToStageCoordinates(Vector2.Zero)
+            val stageCoords = actor.localToStageCoordinates(Vector2.Zero.cpy())
             border.x = stageCoords.x - 1
             border.y = stageCoords.y - 1
             border.width = actor.width + 2
