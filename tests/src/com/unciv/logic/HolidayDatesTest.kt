@@ -1,9 +1,9 @@
-package com.unciv.testing
+package com.unciv.logic
 
 import com.unciv.logic.HolidayDates.DateRange
-import com.unciv.logic.HolidayDates.getHolidayByYear
 import com.unciv.logic.HolidayDates.Holidays
 import com.unciv.logic.HolidayDates.getHolidayByDate
+import com.unciv.logic.HolidayDates.getHolidayByYear
 import org.junit.Assert
 import org.junit.Test
 import java.time.LocalDate

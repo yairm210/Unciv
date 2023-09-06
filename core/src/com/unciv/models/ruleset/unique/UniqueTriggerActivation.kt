@@ -56,7 +56,7 @@ object UniqueTriggerActivation {
                 val unit = ruleSet.units[unitName]
                 if ((chosenCity == null && tile == null)
                         || unit == null
-                        || unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger())
+                        || unit.isCityFounder() && civInfo.isOneCityChallenger())
                     return false
 
                 val limit = unit.getMatchingUniques(UniqueType.MaxNumberBuildable)
@@ -83,7 +83,7 @@ object UniqueTriggerActivation {
             UniqueType.OneTimeAmountFreeUnits -> {
                 val unitName = unique.params[1]
                 val unit = ruleSet.units[unitName]
-                if ((chosenCity == null && tile == null) || unit == null || (unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger()))
+                if ((chosenCity == null && tile == null) || unit == null || (unit.isCityFounder() && civInfo.isOneCityChallenger()))
                     return false
 
                 val limit = unit.getMatchingUniques(UniqueType.MaxNumberBuildable)
@@ -118,7 +118,7 @@ object UniqueTriggerActivation {
             }
             UniqueType.OneTimeFreeUnitRuins -> {
                 var unit = civInfo.getEquivalentUnit(unique.params[0])
-                if ( unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger()) {
+                if ( unit.isCityFounder() && civInfo.isOneCityChallenger()) {
                      val replacementUnit = ruleSet.units.values
                          .firstOrNull {
                              it.getMatchingUniques(UniqueType.BuildImprovements)

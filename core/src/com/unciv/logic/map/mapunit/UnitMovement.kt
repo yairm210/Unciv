@@ -488,7 +488,9 @@ class UnitMovement(val unit: MapUnit) {
         var distance = 0
         // When we didn't limit the allowed distance the game would sometimes spend a whole minute looking for a suitable tile.
 
-        if (canPassThrough(unit.getTile())) return // This unit can stay here - e.g. it has "May enter foreign tiles without open borders"
+        if (canPassThrough(unit.getTile())
+            && !isCityCenterCannotEnter(unit.getTile()))
+            return // This unit can stay here - e.g. it has "May enter foreign tiles without open borders"
         while (allowedTile == null && distance < 5) {
             distance++
             allowedTile = unit.getTile().getTilesAtDistance(distance)
@@ -698,6 +700,10 @@ class UnitMovement(val unit: MapUnit) {
         unit.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
     }
 
+    private fun isCityCenterCannotEnter(tile: Tile) = tile.isCityCenter()
+        && tile.getOwner() != unit.civ
+        && !tile.getCity()!!.hasJustBeenConquered
+
     /**
      * Designates whether we can enter the tile - without attacking
      * DOES NOT designate whether we can reach that tile in the current turn
@@ -710,7 +716,7 @@ class UnitMovement(val unit: MapUnit) {
             return false
 
         // even if they'll let us pass through, we can't enter their city - unless we just captured it
-        if (tile.isCityCenter() && tile.getOwner() != unit.civ && !tile.getCity()!!.hasJustBeenConquered)
+        if (isCityCenterCannotEnter(tile))
             return false
 
         return if (unit.isCivilian())

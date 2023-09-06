@@ -713,6 +713,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     OneTimeUnitSpecialUpgrade("This Unit upgrades for free including special upgrades", UniqueTarget.UnitTriggerable),
     OneTimeUnitGainPromotion("This Unit gains the [promotion] promotion", UniqueTarget.UnitTriggerable),  // Not used in Vanilla
     SkipPromotion("Doing so will consume this opportunity to choose a Promotion", UniqueTarget.Promotion),
+    FreePromotion("This Promotion is free", UniqueTarget.Promotion),
 
     UnitsGainPromotion("[mapUnitFilter] units gain the [promotion] promotion", UniqueTarget.Triggerable),  // Not used in Vanilla
     FreeStatBuildings("Provides the cheapest [stat] building in your first [amount] cities for free", UniqueTarget.Triggerable),  // used in Policy

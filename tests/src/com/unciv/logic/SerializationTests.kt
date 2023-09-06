@@ -1,11 +1,9 @@
-package com.unciv.testing
+package com.unciv.logic
 
 import com.badlogic.gdx.Gdx
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.json.json
-import com.unciv.logic.GameInfo
-import com.unciv.logic.GameStarter
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.files.UncivFiles
 import com.unciv.logic.map.MapParameters
@@ -17,6 +15,7 @@ import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.testing.GdxTestRunner
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import org.junit.After

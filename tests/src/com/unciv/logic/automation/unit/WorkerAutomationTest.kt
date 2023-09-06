@@ -3,7 +3,7 @@ package com.unciv.logic.automation.unit
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.testing.GdxTestRunner
-import com.unciv.uniques.TestGame
+import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before

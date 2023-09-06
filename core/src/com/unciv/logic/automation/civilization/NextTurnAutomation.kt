@@ -1083,7 +1083,7 @@ object NextTurnAutomation {
         val sortedUnits = civInfo.units.getCivUnits().sortedBy { unit -> getUnitPriority(unit, isAtWar) }
         for (unit in sortedUnits) UnitAutomation.automateUnitMoves(unit)
     }
-    
+
     private fun getUnitPriority(unit: MapUnit, isAtWar: Boolean): Int {
         if (unit.isCivilian() && !unit.isGreatPersonOfType("War")) return 1 // Civilian
         if (unit.baseUnit.isAirUnit()) return 2
@@ -1135,13 +1135,13 @@ object NextTurnAutomation {
         if (civInfo.getHappiness() <= civInfo.cities.size) return
 
         val settlerUnits = civInfo.gameInfo.ruleset.units.values
-                .filter { it.hasUnique(UniqueType.FoundCity) && it.isBuildable(civInfo) }
+                .filter { it.isCityFounder() && it.isBuildable(civInfo) }
         if (settlerUnits.isEmpty()) return
         if (!civInfo.units.getCivUnits().none { it.hasUnique(UniqueType.FoundCity) }) return
 
         if (civInfo.cities.any {
                 val currentConstruction = it.cityConstructions.getCurrentConstruction()
-                currentConstruction is BaseUnit && currentConstruction.hasUnique(UniqueType.FoundCity)
+                currentConstruction is BaseUnit && currentConstruction.isCityFounder()
             }) return
 
         if (civInfo.units.getCivUnits().none { it.isMilitary() }) return // We need someone to defend him first

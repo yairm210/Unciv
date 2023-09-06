@@ -765,27 +765,29 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
      */
     private fun removeDefensivePacts() {
         val civAtWarWith = otherCiv()
-        civInfo.diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.DefensivePact }.forEach {
+        for (diploManager in civInfo.diplomacy.values) {
+            if (diploManager.diplomaticStatus != DiplomaticStatus.DefensivePact) continue
+
             // We already removed the trades and we don't want to remove the flags yet.
-            if (it.otherCiv() != civAtWarWith) {
+            if (diploManager.otherCiv() != civAtWarWith) {
                 // Trades with defensive pact are now invalid
-                val defensivePactOffer = it.trades.firstOrNull { trade -> trade.ourOffers.any { offer -> offer.name == Constants.defensivePact } }
-                it.trades.remove(defensivePactOffer)
-                val theirDefensivePactOffer = it.otherCivDiplomacy().trades.firstOrNull { trade -> trade.ourOffers.any { offer -> offer.name == Constants.defensivePact } }
-                it.otherCivDiplomacy().trades.remove(theirDefensivePactOffer)
-                it.removeFlag(DiplomacyFlags.DefensivePact)
-                it.otherCivDiplomacy().removeFlag(DiplomacyFlags.DefensivePact)
-                it.diplomaticStatus = DiplomaticStatus.Peace
-                it.otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.Peace
+                val defensivePactOffer = diploManager.trades
+                    .firstOrNull { trade -> trade.ourOffers.any { offer -> offer.name == Constants.defensivePact } }
+                diploManager.trades.remove(defensivePactOffer)
+                val theirDefensivePactOffer = diploManager.otherCivDiplomacy().trades
+                    .firstOrNull { trade -> trade.ourOffers.any { offer -> offer.name == Constants.defensivePact } }
+                diploManager.otherCivDiplomacy().trades.remove(theirDefensivePactOffer)
+                diploManager.removeFlag(DiplomacyFlags.DefensivePact)
+                diploManager.otherCivDiplomacy().removeFlag(DiplomacyFlags.DefensivePact)
+                diploManager.diplomaticStatus = DiplomaticStatus.Peace
+                diploManager.otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.Peace
             }
             for (civ in getCommonKnownCivs().filter { civ -> civ.isMajorCiv() || civ.isSpectator() }) {
-                civ.addNotification("[${civInfo.civName}] canceled their Defensive Pact with [${it.otherCivName}]!",
-                    NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, it.otherCivName)
+                civ.addNotification("[${civInfo.civName}] canceled their Defensive Pact with [${diploManager.otherCivName}]!",
+                    NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, diploManager.otherCivName)
             }
-            civInfo.addNotification("We have canceled our Defensive Pact with [${it.otherCivName}]!",
-                NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, it.otherCivName)
-            it.otherCiv().addNotification("[${civInfo.civName}] has canceled our Defensive Pact with us!",
-                NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
+            civInfo.addNotification("We have canceled our Defensive Pact with [${diploManager.otherCivName}]!",
+                NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, diploManager.otherCivName)
         }
     }
 
@@ -1000,11 +1002,10 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         setFlag(DiplomacyFlags.DeclarationOfFriendship, 30)
         otherCivDiplomacy().setFlag(DiplomacyFlags.DeclarationOfFriendship, 30)
 
-        for (thirdCiv in getCommonKnownCivs().filter { it.isMajorCiv() || it.isSpectator() }) {
+        for (thirdCiv in getCommonKnownCivs().filter { it.isMajorCiv() }) {
             thirdCiv.addNotification("[${civInfo.civName}] and [$otherCivName] have signed the Declaration of Friendship!",
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
-            if (!thirdCiv.isSpectator())
-                thirdCiv.getDiplomacyManager(civInfo).setFriendshipBasedModifier()
+            thirdCiv.getDiplomacyManager(civInfo).setFriendshipBasedModifier()
         }
 
         // Ignore contitionals as triggerCivwideUnique will check again, and that would break
@@ -1047,11 +1048,10 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.DefensivePact
 
 
-        for (thirdCiv in getCommonKnownCivs().filter { it.isMajorCiv() || it.isSpectator() }) {
+        for (thirdCiv in getCommonKnownCivs().filter { it.isMajorCiv() }) {
             thirdCiv.addNotification("[${civInfo.civName}] and [$otherCivName] have signed the Defensive Pact!",
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
-            if (!thirdCiv.isSpectator())
-                thirdCiv.getDiplomacyManager(civInfo).setDefensivePactBasedModifier()
+            thirdCiv.getDiplomacyManager(civInfo).setDefensivePactBasedModifier()
         }
 
         // Ignore contitionals as triggerCivwideUnique will check again, and that would break
@@ -1095,10 +1095,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
 
         // We, A, are denouncing B. What do other major civs (C,D, etc) think of this?
-        getCommonKnownCivs().filter { it.isMajorCiv() || it.isSpectator() }.forEach { thirdCiv ->
+        getCommonKnownCivs().filter { it.isMajorCiv() }.forEach { thirdCiv ->
             thirdCiv.addNotification("[${civInfo.civName}] has denounced [$otherCivName]!",
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
-            if (thirdCiv.isSpectator()) return@forEach
             val thirdCivRelationshipWithOtherCiv = thirdCiv.getDiplomacyManager(otherCiv()).relationshipIgnoreAfraid()
             val thirdCivDiplomacyManager = thirdCiv.getDiplomacyManager(civInfo)
             when (thirdCivRelationshipWithOtherCiv) {

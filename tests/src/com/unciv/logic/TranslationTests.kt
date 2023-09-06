@@ -1,5 +1,5 @@
 //  Taken from https://github.com/TomGrill/gdx-testing
-package com.unciv.testing
+package com.unciv.logic
 
 import com.badlogic.gdx.Gdx
 import com.unciv.Constants
@@ -15,6 +15,7 @@ import com.unciv.models.translations.getPlaceholderParametersIgnoringLowerLevelB
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
+import com.unciv.testing.GdxTestRunner
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import org.junit.Assert

@@ -37,7 +37,6 @@ import java.io.PrintWriter
 import java.io.StringWriter
 import java.io.Writer
 import java.time.Duration
-import java.util.Arrays
 import java.util.GregorianCalendar
 import java.util.concurrent.TimeUnit
 
@@ -69,13 +68,12 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         private const val FILE_STORAGE = "FILE_STORAGE"
         private const val AUTH_HEADER = "AUTH_HEADER"
 
+        private val constraints = Constraints.Builder()
+            // If no internet is available, worker waits before becoming active.
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
         fun enqueue(appContext: Context, delay: Duration, inputData: Data) {
-
-            val constraints = Constraints.Builder()
-                    // If no internet is available, worker waits before becoming active.
-                    .setRequiredNetworkType(NetworkType.CONNECTED)
-                    .build()
-
             val checkTurnWork = OneTimeWorkRequestBuilder<MultiplayerTurnCheckWorker>()
                     .setConstraints(constraints)
                     .setInitialDelay(delay.seconds, TimeUnit.SECONDS)
@@ -191,7 +189,11 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
         fun startTurnChecker(applicationContext: Context, files: UncivFiles, currentGameInfo: GameInfo, settings: GameSettingsMultiplayer) {
             Log.i(LOG_TAG, "startTurnChecker")
+
+            // Games that haven't been updated in a week are considered stale
+            val oneWeekWorthOfMilliseconds = 1000*60*60*24*7
             val gameFiles = files.getMultiplayerSaves()
+                .filter { it.lastModified() > System.currentTimeMillis() - oneWeekWorthOfMilliseconds }
             val gameIds = Array(gameFiles.count()) {""}
             val gameNames = Array(gameFiles.count()) {""}
 
@@ -208,6 +210,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                     //just skip one file
                 }
             }
+            if (count==0) return // no games to update
 
             Log.d(LOG_TAG, "start gameNames: ${gameNames.contentToString()}")
 

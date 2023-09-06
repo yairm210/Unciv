@@ -5,6 +5,7 @@ import com.unciv.logic.map.mapunit.UnitTurnManager
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.testing.GdxTestRunner
+import com.unciv.testing.TestGame
 import com.unciv.ui.screens.pickerscreens.PromotionTree
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getImprovementConstructionActions
@@ -28,7 +29,7 @@ class UnitUniquesTests {
         // when
         game.makeHexagonalMap(1)
         val cityState = game.addCiv(cityStateType = "Cultured")
-        val cityStateCapitalTile = game.getTile(Vector2(0f, 0f))
+        val cityStateCapitalTile = game.getTile(Vector2.Zero)
         val cityStateCapital = game.addCity(cityState, cityStateCapitalTile)
 
         val mainCiv = game.addCiv("Gain [90] Influence with a [Great Person] gift to a City-State",

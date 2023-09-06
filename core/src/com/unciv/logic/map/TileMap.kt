@@ -101,7 +101,37 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
     //endregion
     //region Constructors
 
-    /** creates a hexagonal map of given radius (filled with grassland) */
+    /**
+     * creates a hexagonal map of given radius (filled with grassland)
+     *
+     * To help you visualize how UnCiv hexagonal cooridinate system works, here's a small example:
+     *
+     *          _____         _____         _____
+     *         /     \       /     \       /     \
+     *   _____/ 2, 0  \_____/  1, 1 \_____/  0,2  \_____
+     *  /     \       /     \       /     \       /     \
+     * / 2,-1  \_____/  1,0  \_____/  0, 1 \_____/  -1,2 \
+     * \       /     \       /     \       /     \       /
+     *  \_____/ 1,-1  \_____/  0,0  \_____/  -1,1 \_____/
+     *  /     \       /     \       /     \       /     \
+     * / 1 ,-2 \_____/ 0,-1  \_____/ -1,0  \_____/ -2,1  \
+     * \       /     \       /     \       /     \       /
+     *  \_____/ 0,-2  \_____/ -1,-1 \_____/ -2,0  \_____/
+     *  /     \       /     \       /     \       /
+     * / 0,-3  \_____/ -1,-2 \_____/ -2,-1 \_____/
+     * \       /     \       /     \       /
+     *  \_____/       \_____/       \_____/
+     *
+     *
+     * The rules are simple if you think about your X and Y axis as diagonal w.r.t. a standard carthesian plane. As such:
+     *
+     * moving "up": increase both X and Y by one
+     * moving "down": decrease both X and Y by one
+     * moving "up-right" and "down-left": moving along Y axis
+     * moving "up-left" and "down-right": moving along X axis
+     *
+     * Tip: you can always use the in-game map editor if you have any doubt
+     * */
     constructor(radius: Int, ruleset: Ruleset, worldWrap: Boolean = false)
             : this (HexMath.getNumberOfTilesInHexagon(radius)) {
         startingLocations.clear()

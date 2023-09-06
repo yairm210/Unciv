@@ -11,7 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener
 import com.unciv.logic.event.EventBus
 import com.unciv.models.translations.tr
-import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.ui.components.extensions.getAscendant
 import com.unciv.ui.components.extensions.getOverlap
 import com.unciv.ui.components.extensions.right
@@ -19,6 +18,7 @@ import com.unciv.ui.components.extensions.stageBoundingBox
 import com.unciv.ui.components.extensions.top
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.ui.screens.basescreen.UncivStage
 import com.unciv.utils.Concurrency
 import com.unciv.utils.withGLContext
 import kotlinx.coroutines.delay

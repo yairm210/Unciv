@@ -19,6 +19,7 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.components.AutoScrollPane
 import com.unciv.ui.components.ExpanderTab
+import com.unciv.ui.components.TranslatedSelectBox
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.toCheckBox

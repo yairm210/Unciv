@@ -1,3 +1,31 @@
+## 4.8.2
+
+performance: Don't autoupdate stale multiplayer games (more than a week old)
+
+Buildings missing from ruleset are removed from loaded games *properly*
+
+By SomeTroglodyte:
+
+- Fix Map Editor double map holders after ruleset change
+- Improve "does this unit found cities" check
+- Fix Gdx not forced to UTF-8 when saving a game
+
+Defensive pact notification fix  - By tuvus
+
+## 4.8.1
+
+Fixed AI attack targetting - By tuvus
+
+By SeventhM:
+- Add unique for a promotion to be free
+- Fix cities getting the resource list of other cities
+
+Fix ChangesTerrain unique for base terrains - By SomeTroglodyte
+
+Units teleport away from city center when liberating
+
+Icons are not added to  selection boxes
+
 ## 4.8.0
 
 By SomeTroglodyte:

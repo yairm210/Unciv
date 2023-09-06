@@ -1401,6 +1401,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Doing so will consume this opportunity to choose a Promotion"
 	Applicable to: Promotion
 
+??? example  "This Promotion is free"
+	Applicable to: Promotion
+
 ## Terrain uniques
 ??? example  "Must be adjacent to [amount] [simpleTerrain] tiles"
 	Example: "Must be adjacent to [3] [Elevated] tiles"
