@@ -304,23 +304,44 @@ class TranslationTests {
     fun newBracketParserWorks() {
         val parser = BracketsParser(10)
         val candidates = listOf(
-            "",
-            "Hello",
-            "My [Warrior]",
-            "My [A] (B) <C> {D}",
-            "gain [[Jaguar] ability]?",
-            "[+1 Food] from [Wheat] tiles [in this city]",
-            "[+15]% Strength <for [All] units> <vs cities> <when attacking>",
-            "alice {bob [charlie} foxtrot] tango"
+            "" to 0,
+            "Hello" to 0,
+            "My [Warrior]" to 1,
+            "My [A] (B) <C> {D}" to 3,  // BracketType Round is not configured
+            "gain [[Jaguar] ability]?" to 2,
+            "[+1 Food] from [Wheat] tiles [in this city]" to 3,
+            "[+15]% Strength <for [All] units> <vs cities> <when attacking>" to 5
         )
-        for (input in candidates) {
-            println()
-            println("Parsing: \"$input\"")
-            parser.parse(input) {
-                level, position, type, error, value ->
-                println("\tLevel $level, position $position, $type, $error: \"$value\"")
-            }
+        for ((input, expectedResults) in candidates) {
+            val results = parser.parse(input)
+            val resultCount = results.count { it.error == BracketsParser.ErrorType.Result }
+            Assert.assertEquals("BracketsParser should find $expectedResults bracket pairs in \"$input\" but finds $resultCount", expectedResults, resultCount)
+            Assert.assertEquals("BracketsParser should find no errors in \"$input\" but finds ${results.size - resultCount}", resultCount, results.size)
         }
+
+        val badlyNested = "alice {bob [charlie} foxtrot] tango"
+        val results = parser.parse(badlyNested)
+        val expected = listOf(
+            BracketsParser.ResultEntry(2, 19, BracketsParser.BracketType.Curly, BracketsParser.ErrorType.InvalidClosing, ""),
+            BracketsParser.ResultEntry(1, 11, BracketsParser.BracketType.Square, BracketsParser.ErrorType.Result, "charlie} foxtrot"),
+            BracketsParser.ResultEntry(-1, 6, BracketsParser.BracketType.Curly, BracketsParser.ErrorType.UnmatchedOpening, "")
+        )
+        Assert.assertEquals(expected, results)
+
+        val superNestedString = "The brother of [[my [best friend]] and [[America]'s greatest [Dad]]]"
+
+        val superResults = parser.parse(superNestedString)
+            .sortedWith(compareBy<BracketsParser.ResultEntry> { it.level }.thenBy { it.position })
+            .map { it.level to it.value }
+        val superExpected = listOf(
+            0 to "[my [best friend]] and [[America]'s greatest [Dad]]",
+            1 to "my [best friend]",
+            1 to "[America]'s greatest [Dad]",
+            2 to "best friend",
+            2 to "America",
+            2 to "Dad"
+        )
+        Assert.assertEquals(superExpected, superResults)
     }
 
 //    @Test
