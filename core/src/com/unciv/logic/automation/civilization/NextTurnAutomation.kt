@@ -787,7 +787,7 @@ object NextTurnAutomation {
         if (civInfo.getDiplomacyManager(otherCiv).isRelationshipLevelLT(RelationshipLevel.Favorable)) return false
         
         val numOfFriends = civInfo.diplomacy.count { it.value.hasFlag(DiplomacyFlags.DeclarationOfFriendship) }
-        val knownCivs = civInfo.getKnownCivs().filter { it.isMajorCiv() && it.isAlive() }.count()
+        val knownCivs = civInfo.getKnownCivs().count { it.isMajorCiv() && it.isAlive() }
         val allCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() } - 1 // Don't include us
         val deadCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() && !it.isAlive() }
         val allAliveCivs = allCivs - deadCivs
