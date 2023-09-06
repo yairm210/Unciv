@@ -107,11 +107,6 @@ enum class DiplomaticModifiers(val text:String) {
 
 class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
-    companion object {
-        /** The value city-state influence can't go below */
-        const val MINIMUM_INFLUENCE = -60f
-    }
-
     @Suppress("JoinDeclarationAndAssignment")  // incorrect warning - constructor would need to be higher in scope
     @Transient
     lateinit var civInfo: Civilization
@@ -197,13 +192,13 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         return when(level) {
             RelationshipLevel.Afraid -> when {
                 comparesAs < 0 -> getInfluence() < 0
-                comparesAs > 0 -> getInfluence() >= 30 || relationshipLevel() > level
+                comparesAs > 0 -> getInfluence() >= DiplomacyConstants.FRIEND_INFLUENCE_THRESHOLD || relationshipLevel() > level
                 else -> getInfluence().let { it >= 0 && it < 30 } && relationshipLevel() == level
             }
             RelationshipLevel.Neutral -> when {
                 comparesAs < 0 -> getInfluence() < 0 || relationshipLevel() < level
-                comparesAs > 0 -> getInfluence() >= 30
-                else -> getInfluence().let { it >= 0 && it < 30 } && relationshipLevel() == level
+                comparesAs > 0 -> getInfluence() >= DiplomacyConstants.FRIEND_INFLUENCE_THRESHOLD
+                else -> getInfluence().let { it >= 0 && it < DiplomacyConstants.FRIEND_INFLUENCE_THRESHOLD } && relationshipLevel() == level
             }
             else ->
                 // Outside the potentially expensive questions, do it the easy way
@@ -253,10 +248,10 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             return otherCiv().getDiplomacyManager(civInfo).relationshipLevel()
 
         if (civInfo.isCityState()) return when {
-            getInfluence() <= -30 -> RelationshipLevel.Unforgivable  // getInfluence tests isAtWarWith
+            getInfluence() <= DiplomacyConstants.UNFORGIVABLE_INFLUENCE_THRESHOLD -> RelationshipLevel.Unforgivable  // getInfluence tests isAtWarWith
             getInfluence() < 0 -> RelationshipLevel.Enemy
-            getInfluence() >= 60 && civInfo.getAllyCiv() == otherCivName -> RelationshipLevel.Ally
-            getInfluence() >= 30 -> RelationshipLevel.Friend
+            getInfluence() >= DiplomacyConstants.ALLY_INFLUENCE_MIN_THRESHOLD && civInfo.getAllyCiv() == otherCivName -> RelationshipLevel.Ally
+            getInfluence() >= DiplomacyConstants.FRIEND_INFLUENCE_THRESHOLD -> RelationshipLevel.Friend
             else -> RelationshipLevel.Neutral
         }
 
@@ -285,8 +280,8 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             val dropPerTurn = getCityStateInfluenceDegrade()
             return when {
                 dropPerTurn == 0f -> 0
-                isRelationshipLevelEQ(RelationshipLevel.Ally) -> ceil((getInfluence() - 60f) / dropPerTurn).toInt() + 1
-                isRelationshipLevelEQ(RelationshipLevel.Friend) -> ceil((getInfluence() - 30f) / dropPerTurn).toInt() + 1
+                isRelationshipLevelEQ(RelationshipLevel.Ally) -> ceil((getInfluence() - DiplomacyConstants.ALLY_INFLUENCE_MIN_THRESHOLD.toFloat()) / dropPerTurn).toInt() + 1
+                isRelationshipLevelEQ(RelationshipLevel.Friend) -> ceil((getInfluence() - DiplomacyConstants.FRIEND_INFLUENCE_THRESHOLD.toFloat()) / dropPerTurn).toInt() + 1
                 else -> 0
             }
         }
@@ -311,11 +306,11 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
     }
 
     fun setInfluence(amount: Float) {
-        influence = max(amount, MINIMUM_INFLUENCE)
+        influence = max(amount, DiplomacyConstants.MINIMUM_CITY_STATE_INFLUENCE)
         civInfo.cityStateFunctions.updateAllyCivForCityState()
     }
 
-    fun getInfluence() = if (civInfo.isAtWarWith(otherCiv())) MINIMUM_INFLUENCE else influence
+    fun getInfluence() = if (civInfo.isAtWarWith(otherCiv())) DiplomacyConstants.MINIMUM_CITY_STATE_INFLUENCE else influence
 
     // To be run from City-State DiplomacyManager, which holds the influence. Resting point for every major civ can be different.
     private fun getCityStateInfluenceRestingPoint(): Float {
@@ -1086,10 +1081,10 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
 
     fun denounce() {
-        setModifier(DiplomaticModifiers.Denunciation, -35f)
-        otherCivDiplomacy().setModifier(DiplomaticModifiers.Denunciation, -35f)
-        setFlag(DiplomacyFlags.Denunciation, 30)
-        otherCivDiplomacy().setFlag(DiplomacyFlags.Denunciation, 30)
+        setModifier(DiplomaticModifiers.Denunciation, DiplomacyConstants.DENOUNCE_PENALTY)
+        otherCivDiplomacy().setModifier(DiplomaticModifiers.Denunciation, DiplomacyConstants.DENOUNCE_PENALTY)
+        setFlag(DiplomacyFlags.Denunciation, DiplomacyConstants.DENOUNCE_TURNS)
+        otherCivDiplomacy().setFlag(DiplomacyFlags.Denunciation, DiplomacyConstants.DENOUNCE_TURNS)
 
         otherCiv().addNotification("[${civInfo.civName}] has denounced us!",
             NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
