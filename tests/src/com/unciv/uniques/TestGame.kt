@@ -147,7 +147,7 @@ class TestGame {
             // Add a capital indicator without any other stats
             val palaceWithoutStats = createBuilding(UniqueType.IndicatesCapital.text)
             city.cityConstructions.removeBuilding("Palace")
-            city.cityConstructions.addBuilding(palaceWithoutStats.name)
+            city.cityConstructions.addBuilding(palaceWithoutStats)
         }
         return city
     }

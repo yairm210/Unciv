@@ -634,7 +634,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     /////// city conditionals
     ConditionalInThisCity("in this city", UniqueTarget.Conditional),
-    ConditionalInOtherCities("in other cities", UniqueTarget.Conditional),
     ConditionalCityWithBuilding("in cities with a [buildingFilter]", UniqueTarget.Conditional),
     ConditionalCityWithoutBuilding("in cities without a [buildingFilter]", UniqueTarget.Conditional),
     ConditionalPopulationFilter("in cities with at least [amount] [populationFilter]", UniqueTarget.Conditional),
@@ -765,6 +764,12 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     HiddenFromCivilopedia("Will not be displayed in Civilopedia", UniqueTarget.Building, UniqueTarget.Unit, UniqueTarget.UnitType, UniqueTarget.Improvement,
         UniqueTarget.Tech, UniqueTarget.Terrain, UniqueTarget.Resource, UniqueTarget.Policy, UniqueTarget.Promotion,
         UniqueTarget.Nation, UniqueTarget.Ruins, flags = UniqueFlag.setOfHiddenToUsers),
+
+    // Declarative Mod compatibility (so far rudimentary):
+    ModIncompatibleWith("Mod is incompatible with [modFilter]", UniqueTarget.ModOptions),
+    ModIsAudioVisualOnly("Should only be used as permanent audiovisual mod", UniqueTarget.ModOptions),
+    ModIsAudioVisual("Can be used as permanent audiovisual mod", UniqueTarget.ModOptions),
+    ModIsNotAudioVisual("Cannot be used as permanent audiovisual mod", UniqueTarget.ModOptions),
 
     // endregion
 

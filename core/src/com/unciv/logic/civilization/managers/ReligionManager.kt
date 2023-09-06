@@ -11,6 +11,7 @@ import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.extensions.toPercent
 import java.lang.Integer.max
 import java.lang.Integer.min
@@ -143,7 +144,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     // https://www.reddit.com/r/civ/comments/2m82wu/can_anyone_detail_the_finer_points_of_great/
     // Game files (globaldefines.xml)
     fun faithForNextGreatProphet(): Int {
-        val greatProphetsEarned = civInfo.civConstructions.boughtItemsWithIncreasingPrice[getGreatProphetEquivalent()!!]
+        val greatProphetsEarned = civInfo.civConstructions.boughtItemsWithIncreasingPrice[getGreatProphetEquivalent()!!.name]
 
         var faithCost =
             (200 + 100 * greatProphetsEarned * (greatProphetsEarned + 1) / 2f) *
@@ -166,12 +167,12 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         return true
     }
 
-    fun getGreatProphetEquivalent(): String? {
-        return civInfo.gameInfo.ruleset.units.values.firstOrNull { it.hasUnique(UniqueType.MayFoundReligion) }?.name
+    fun getGreatProphetEquivalent(): BaseUnit? {
+        return civInfo.gameInfo.ruleset.units.values.firstOrNull { it.hasUnique(UniqueType.MayFoundReligion) }
     }
 
     private fun generateProphet() {
-        val prophetUnitName = getGreatProphetEquivalent() ?: return // No prophet units in this mod
+        val prophetUnit = getGreatProphetEquivalent() ?: return // No prophet units in this mod
 
         val prophetSpawnChange = (5f + storedFaith - faithForNextGreatProphet()) / 100f
 
@@ -179,10 +180,10 @@ class ReligionManager : IsPartOfGameInfoSerialization {
             val birthCity =
                 if (religionState <= ReligionState.Pantheon) civInfo.getCapital()
                 else civInfo.religionManager.getHolyCity()
-            val prophet = civInfo.units.addUnit(prophetUnitName, birthCity) ?: return
+            val prophet = civInfo.units.addUnit(prophetUnit, birthCity) ?: return
             prophet.religion = religion!!.name
             storedFaith -= faithForNextGreatProphet()
-            civInfo.civConstructions.boughtItemsWithIncreasingPrice.add(prophetUnitName, 1)
+            civInfo.civConstructions.boughtItemsWithIncreasingPrice.add(prophetUnit.name, 1)
         }
     }
 

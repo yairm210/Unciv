@@ -232,10 +232,10 @@ object Battle {
 
         val cityWithReligion =
             civUnit.getTile().getTilesInDistance(4).firstOrNull {
-                it.isCityCenter() && it.getCity()!!.getLocalMatchingUniques(UniqueType.KillUnitPlunderNearCity, stateForConditionals).any()
+                it.isCityCenter() && it.getCity()!!.getMatchingUniques(UniqueType.KillUnitPlunderNearCity, stateForConditionals).any()
             }?.getCity()
         if (cityWithReligion != null) {
-            bonusUniques.addAll(cityWithReligion.getLocalMatchingUniques(UniqueType.KillUnitPlunderNearCity, stateForConditionals))
+            bonusUniques.addAll(cityWithReligion.getMatchingUniques(UniqueType.KillUnitPlunderNearCity, stateForConditionals))
         }
 
         for (unique in bonusUniques) {
@@ -736,7 +736,7 @@ object Battle {
                     .any { unique -> unique.params[0] == "Land" } }
 
             if (workerTypeUnit != null)
-                capturingCiv.units.placeUnitNearTile(capturedUnit.currentTile.position, workerTypeUnit.name)
+                capturingCiv.units.placeUnitNearTile(capturedUnit.currentTile.position, workerTypeUnit)
         }
         else capturedUnit.capturedBy(capturingCiv)
     }
@@ -759,6 +759,8 @@ object Battle {
      */
     fun mayUseNuke(nuke: MapUnitCombatant, targetTile: Tile): Boolean {
         if (nuke.getTile() == targetTile) return false
+        // Can only nuke visible Tiles
+        if (!targetTile.isVisible(nuke.getCivInfo())) return false
 
         var canNuke = true
         val attackerCiv = nuke.getCivInfo()

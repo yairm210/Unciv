@@ -110,9 +110,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     /**
      * @return [Stats] provided by all built buildings in city plus the bonus from Library
      */
-    fun getStats(): StatTreeNode {
+    fun getStats(localUniqueCache: LocalUniqueCache): StatTreeNode {
         val stats = StatTreeNode()
-        val localUniqueCache = LocalUniqueCache()
         for (building in getBuiltBuildings())
             stats.addStats(building.getStats(city, localUniqueCache), building.name)
         return stats
@@ -143,13 +142,16 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         return result
     }
 
-    /** @constructionName needs to be a non-perpetual construction, else an empty string is returned */
-    internal fun getTurnsToConstructionString(constructionName: String, useStoredProduction:Boolean = true): String {
-        val construction = getConstruction(constructionName)
+    /** @param constructionName needs to be a non-perpetual construction, else an empty string is returned */
+    internal fun getTurnsToConstructionString(constructionName: String, useStoredProduction:Boolean = true) =
+        getTurnsToConstructionString(getConstruction(constructionName), useStoredProduction)
+
+    /** @param construction needs to be a non-perpetual construction, else an empty string is returned */
+    internal fun getTurnsToConstructionString(construction: IConstruction, useStoredProduction:Boolean = true): String {
         if (construction !is INonPerpetualConstruction) return ""   // shouldn't happen
         val cost = construction.getProductionCost(city.civ)
-        val turnsToConstruction = turnsToConstruction(constructionName, useStoredProduction)
-        val currentProgress = if (useStoredProduction) getWorkDone(constructionName) else 0
+        val turnsToConstruction = turnsToConstruction(construction.name, useStoredProduction)
+        val currentProgress = if (useStoredProduction) getWorkDone(construction.name) else 0
         val lines = ArrayList<String>()
         val buildable = !construction.getMatchingUniques(UniqueType.Unbuildable)
             .any { it.conditionalsApply(StateForConditionals(city.civ, city)) }
@@ -190,12 +192,23 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     fun isAllBuilt(buildingList: List<String>): Boolean = buildingList.all { isBuilt(it) }
 
     fun isBuilt(buildingName: String): Boolean = builtBuildingObjects.any { it.name == buildingName }
-    @Suppress("MemberVisibilityCanBePrivate")
-    fun isBeingConstructed(constructionName: String): Boolean = currentConstructionFromQueue == constructionName
-    fun isEnqueued(constructionName: String): Boolean = constructionQueue.contains(constructionName)
-    fun isBeingConstructedOrEnqueued(constructionName: String): Boolean = isBeingConstructed(constructionName) || isEnqueued(constructionName)
 
-    fun isQueueFull(): Boolean = constructionQueue.size == queueMaxSize
+    // Note: There was a isEnqueued here functionally identical to isBeingConstructedOrEnqueued,
+    // which was calling both isEnqueued and isBeingConstructed - BUT: currentConstructionFromQueue is just a
+    // a wrapper for constructionQueue[0], so that was redundant. Also, isEnqueued was used nowhere,
+    // and isBeingConstructed _only_ redundantly as described above.
+    // `isEnqueuedForLater` is not optimal code as it can iterate the whole list where checking size
+    // and first() would suffice, but the one current use in CityScreenConstructionMenu isn't critical.
+
+    @Suppress("unused", "MemberVisibilityCanBePrivate")  // kept for illustration
+    /** @return `true` if [constructionName] is the top queue entry, the one receiving production points */
+    fun isBeingConstructed(constructionName: String) = currentConstructionFromQueue == constructionName
+    /** @return `true` if [constructionName] is queued but not the top queue entry */
+    fun isEnqueuedForLater(constructionName: String) = constructionQueue.indexOf(constructionName) > 0
+    /** @return `true` if [constructionName] is anywhere in the construction queue - [isBeingConstructed] **or** [isEnqueuedForLater] */
+    fun isBeingConstructedOrEnqueued(constructionName: String) = constructionQueue.contains(constructionName)
+
+    fun isQueueFull(): Boolean = constructionQueue.size >= queueMaxSize
 
     fun isBuildingWonder(): Boolean {
         val currentConstruction = getCurrentConstruction()
@@ -209,8 +222,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     /** If the city is constructing multiple units of the same type, subsequent units will require the full cost  */
     fun isFirstConstructionOfItsKind(constructionQueueIndex: Int, name: String): Boolean {
-        // if the construction name is the same as the current construction, it isn't the first
-        return constructionQueueIndex == constructionQueue.indexOfFirst { it == name }
+        // Simply compare index of first found [name] with given index
+        return constructionQueueIndex == constructionQueue.indexOf(name)
     }
 
 
@@ -492,6 +505,11 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     fun addBuilding(buildingName: String) {
         val building = city.getRuleset().buildings[buildingName]!!
+        addBuilding(building)
+    }
+
+    fun addBuilding(building: Building) {
+        val buildingName = building.name
         val civ = city.civ
 
         if (building.cityHealth > 0) {
@@ -502,12 +520,10 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         builtBuildingObjects = builtBuildingObjects.withItem(building)
         builtBuildings.add(buildingName)
 
-        city.civ.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
+        updateUniques()
 
         /** Support for [UniqueType.CreatesOneImprovement] */
         applyCreateOneImprovement(building)
-
-
 
         triggerNewBuildingUniques(building)
 
@@ -518,21 +534,13 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         if (building.isStatRelated(Stat.Science) && civ.hasUnique(UniqueType.TechBoostWhenScientificBuildingsBuiltInCapital))
             civ.tech.addScience(civ.tech.scienceOfLast8Turns.sum() / 8)
 
-        val uniqueTypesModifyingYields = listOf(
-            UniqueType.StatsFromTiles, UniqueType.StatsFromTilesWithout, UniqueType.StatsFromObject,
-            UniqueType.StatPercentFromObject, UniqueType.AllStatsPercentFromObject
-        )
-
-        updateUniques()
-
         // Happiness is global, so it could affect all cities
         if (building.isStatRelated(Stat.Happiness)) {
             for (city in civ.cities) {
                 city.reassignPopulationDeferred()
             }
         }
-        else if(uniqueTypesModifyingYields.any { building.hasUnique(it) })
-            city.reassignPopulationDeferred()
+        else city.reassignPopulationDeferred()
 
         addFreeBuildings()
     }
@@ -561,7 +569,12 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             builtBuildingObjects = builtBuildingObjects.withoutItem(buildingObject)
         else builtBuildingObjects.removeAll{ it.name == buildingName }
         builtBuildings.remove(buildingName)
-        city.civ.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
+        updateUniques()
+    }
+
+    fun removeBuilding(building: Building) {
+        builtBuildingObjects = builtBuildingObjects.withoutItem(building)
+        builtBuildings.remove(building.name)
         updateUniques()
     }
 
@@ -570,6 +583,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         for (building in getBuiltBuildings())
             builtBuildingUniqueMap.addUniques(building.uniqueObjects)
         if (!onLoadGame) {
+            city.civ.cache.updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
             city.cityStats.update()
             city.civ.cache.updateCivResources()
         }
@@ -577,35 +591,33 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     fun addFreeBuildings() {
         // "Gain a free [buildingName] [cityFilter]"
-        val freeBuildingUniques = city.getLocalMatchingUniques(UniqueType.GainFreeBuildings, StateForConditionals(city.civ, city))
+        val freeBuildingUniques = city.getMatchingUniques(UniqueType.GainFreeBuildings, StateForConditionals(city.civ, city))
 
         for (unique in freeBuildingUniques) {
-            val freeBuildingName = city.civ.getEquivalentBuilding(unique.params[0]).name
-            val citiesThatApply = when (unique.params[1]) {
-                "in this city" -> listOf(city)
-                "in other cities" -> city.civ.cities.filter { it !== city }
-                else -> city.civ.cities.filter { it.matchesFilter(unique.params[1]) }
-            }
+            val freeBuilding = city.civ.getEquivalentBuilding(unique.params[0])
+            val citiesThatApply =
+                if (unique.isLocalEffect) listOf(city)
+                else city.civ.cities.filter { it.matchesFilter(unique.params[1]) }
 
             for (city in citiesThatApply) {
-                if (city.cityConstructions.containsBuildingOrEquivalent(freeBuildingName)) continue
-                city.cityConstructions.addBuilding(freeBuildingName)
+                if (city.cityConstructions.containsBuildingOrEquivalent(freeBuilding.name)) continue
+                city.cityConstructions.addBuilding(freeBuilding)
                 if (city.id !in freeBuildingsProvidedFromThisCity)
                     freeBuildingsProvidedFromThisCity[city.id] = hashSetOf()
 
-                freeBuildingsProvidedFromThisCity[city.id]!!.add(freeBuildingName)
+                freeBuildingsProvidedFromThisCity[city.id]!!.add(freeBuilding.name)
             }
         }
 
         // Civ-level uniques - for these only add free buildings from each city to itself to avoid weirdness on city conquest
         for (unique in city.civ.getMatchingUniques(UniqueType.GainFreeBuildings, stateForConditionals = StateForConditionals(city.civ, city))) {
-            val freeBuildingName = city.civ.getEquivalentBuilding(unique.params[0]).name
+            val freeBuilding = city.civ.getEquivalentBuilding(unique.params[0])
             if (city.matchesFilter(unique.params[1])) {
                 if (city.id !in freeBuildingsProvidedFromThisCity)
                     freeBuildingsProvidedFromThisCity[city.id] = hashSetOf()
-                freeBuildingsProvidedFromThisCity[city.id]!!.add(freeBuildingName)
-                if (!isBuilt(freeBuildingName))
-                    addBuilding(freeBuildingName)
+                freeBuildingsProvidedFromThisCity[city.id]!!.add(freeBuilding.name)
+                if (!isBuilt(freeBuilding.name))
+                    addBuilding(freeBuilding)
             }
         }
 
@@ -615,7 +627,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
         for (building in autoGrantedBuildings)
             if (building.isBuildable(city.cityConstructions))
-                addBuilding(building.name)
+                addBuilding(building)
     }
 
     /**
@@ -641,7 +653,31 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         tile: Tile? = null
     ): Boolean {
         val construction = getConstruction(constructionName) as? INonPerpetualConstruction ?: return false
+        return purchaseConstruction(construction, queuePosition, automatic, stat, tile)
+    }
 
+    /**
+     *  Purchase a construction for gold (or another stat)
+     *  called from NextTurnAutomation and the City UI
+     *  Build / place the new item, deduct cost, and maintain queue.
+     *
+     *  @param construction What to buy (needed since buying something not queued is allowed)
+     *  @param queuePosition    Position in the queue or -1 if not from queue
+     *                          Note: -1 does not guarantee queue will remain unchanged (validation)
+     *  @param automatic        Flag whether automation should try to choose what next to build (not coming from UI)
+     *                          Note: settings.autoAssignCityProduction is handled later
+     *  @param stat             Stat object of the stat with which was paid for the construction
+     *  @param tile             Supports [UniqueType.CreatesOneImprovement] the tile to place the improvement from that unique on.
+     *                          Ignored when the [constructionName] does not have that unique. If null and the building has the unique, a tile is chosen automatically.
+     *  @return                 Success (false e.g. unit cannot be placed)
+     */
+    fun purchaseConstruction(
+        construction: INonPerpetualConstruction,
+        queuePosition: Int,
+        automatic: Boolean,
+        stat: Stat = Stat.Gold,
+        tile: Tile? = null
+    ): Boolean {
         // Support UniqueType.CreatesOneImprovement: it is active when getImprovementToCreate returns an improvement
         val improvementToPlace = (construction as? Building)?.getImprovementToCreate(city.getRuleset())
         if (improvementToPlace != null) {
@@ -675,7 +711,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                     && it.params[2] == stat.name
                 }
             ) {
-                city.civ.civConstructions.boughtItemsWithIncreasingPrice.add(constructionName, 1)
+                city.civ.civConstructions.boughtItemsWithIncreasingPrice.add(construction.name, 1)
             }
         }
 
@@ -688,14 +724,14 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     fun addCheapestBuildableStatBuilding(stat: Stat): String? {
         val cheapestBuildableStatBuilding = getBasicStatBuildings(stat)
-            .map { city.civ.getEquivalentBuilding(it.name) }
+            .map { city.civ.getEquivalentBuilding(it) }
             .filter { it.isBuildable(this) || isBeingConstructedOrEnqueued(it.name) }
-            .minByOrNull { it.cost }?.name
+            .minByOrNull { it.cost }
             ?: return null
 
-        constructionComplete(getConstruction(cheapestBuildableStatBuilding) as INonPerpetualConstruction)
+        constructionComplete(cheapestBuildableStatBuilding)
 
-        return cheapestBuildableStatBuilding
+        return cheapestBuildableStatBuilding.name
     }
 
     private fun removeCurrentConstruction() = removeFromQueue(0, true)
@@ -723,25 +759,53 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         newTile.improvementFunctions.markForCreatesOneImprovement(improvement.name)
     }
 
-    fun addToQueue(constructionName: String) {
-        if (isQueueFull()) return
-        val construction = getConstruction(constructionName)
-        if (!construction.isBuildable(this)) return
-        if (construction is Building && isBeingConstructedOrEnqueued(constructionName)) return
-        if (currentConstructionFromQueue == "" || currentConstructionFromQueue == "Nothing") {
-            currentConstructionFromQueue = constructionName
-        } else if (getConstruction(constructionQueue.last()) is PerpetualConstruction) {
-            if (construction is PerpetualConstruction) {  // perpetual constructions will replace each other
-                constructionQueue.removeAt(constructionQueue.size - 1)
+    fun canAddToQueue(construction: IConstruction) =
+        !isQueueFull() &&
+        construction.isBuildable(this) &&
+        !(construction is Building && isBeingConstructedOrEnqueued(construction.name))
+
+    private fun isLastConstructionPerpetual() = constructionQueue.isNotEmpty() &&
+        PerpetualConstruction.isNamePerpetual(constructionQueue.last())
+        // `getConstruction(constructionQueue.last()) is PerpetualConstruction` is clear but more expensive
+
+    /** Add [construction] to the end or top (controlled by [addToTop]) of the queue with all checks (does nothing if not possible)
+     *
+     *  Note: Overload with string parameter `constructionName` exists as well.
+     */
+    fun addToQueue(construction: IConstruction, addToTop: Boolean = false) {
+        if (!canAddToQueue(construction)) return
+        val constructionName = construction.name
+        when {
+            currentConstructionFromQueue.isEmpty() || currentConstructionFromQueue == "Nothing" ->
+                currentConstructionFromQueue = constructionName
+            addToTop && construction is PerpetualConstruction && PerpetualConstruction.isNamePerpetual(currentConstructionFromQueue) ->
+                currentConstructionFromQueue = constructionName // perpetual constructions will replace each other
+            addToTop ->
+                constructionQueue.add(0, constructionName)
+            isLastConstructionPerpetual() -> {
+                // Note this also works if currentConstructionFromQueue is perpetual and the only entry - that var is delegated to the first queue position
+                if (construction is PerpetualConstruction) {
+                    // perpetual constructions will replace each other
+                    constructionQueue.removeLast()
+                    constructionQueue.add(constructionName)
+                } else
+                    constructionQueue.add(constructionQueue.size - 1, constructionName) // insert new construction before perpetual one
+            }
+            else ->
                 constructionQueue.add(constructionName)
-            } else
-                constructionQueue.add(constructionQueue.size - 1, constructionName) // insert new construction before perpetual one
-        } else
-            constructionQueue.add(constructionName)
+        }
         currentConstructionIsUserSet = true
     }
 
-    /** If this was done automatically, we should automatically try to choose a new construction and treat it as such */
+    /** Add a construction named [constructionName] to the end of the queue with all checks
+     *
+     *  Note: Delegates to overload with `construction` parameter.
+     */
+    fun addToQueue(constructionName: String) = addToQueue(getConstruction(constructionName))
+
+    /** Remove one entry from the queue by index.
+     *  @param automatic  If this was done automatically, we should automatically try to choose a new construction and treat it as such
+     */
     fun removeFromQueue(constructionQueueIndex: Int, automatic: Boolean) {
         val constructionName = constructionQueue.removeAt(constructionQueueIndex)
 
@@ -759,6 +823,38 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             else constructionQueue.add("Nothing") // To prevent Construction Automation
             false
         } else true // we're just continuing the regular queue
+    }
+
+    /** Remove all queue entries for [constructionName].
+     *
+     *  Does nothing if there's no entry of that name in the queue.
+     *  If the queue is emptied, no automatic: getSettings().autoAssignCityProduction is ignored! (parameter to be added when needed)
+     */
+    fun removeAllByName(constructionName: String) {
+        while (true) {
+            val index = constructionQueue.indexOf(constructionName)
+            if (index < 0) return
+            removeFromQueue(index, false)
+        }
+    }
+
+    /** Moves an entry to the queue top by index.
+     *  No-op when index invalid. Must not be called for PerpetualConstruction entries - unchecked! */
+    fun moveEntryToTop(constructionQueueIndex: Int) {
+        if (constructionQueueIndex == 0 || constructionQueueIndex >= constructionQueue.size) return
+        val constructionName = constructionQueue.removeAt(constructionQueueIndex)
+        constructionQueue.add(0, constructionName)
+    }
+
+    /** Moves an entry by index to the end of the queue, or just before a PerpetualConstruction
+     *  (or replacing a PerpetualConstruction if it itself is one and the queue is by happenstance invalid having more than one of those)
+     */
+    fun moveEntryToEnd(constructionQueueIndex: Int) {
+        if (constructionQueueIndex >= constructionQueue.size) return
+        val constructionName = constructionQueue.removeAt(constructionQueueIndex)
+        // Some of the overhead of addToQueue is redundant here, but if the complex "needs to replace or go before a perpetual" logic is needed, then use it anyway
+        if (isLastConstructionPerpetual()) return addToQueue(constructionName)
+        constructionQueue.add(constructionName)
     }
 
     fun raisePriority(constructionQueueIndex: Int): Int {

@@ -10,6 +10,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.extensions.randomWeighted
 import kotlin.math.max
 import kotlin.math.min
@@ -246,7 +247,7 @@ class Encampment() : IsPartOfGameInfoSerialization {
         return (spawnedUnit != null)
     }
 
-    private fun chooseBarbarianUnit(naval: Boolean): String? {
+    private fun chooseBarbarianUnit(naval: Boolean): BaseUnit? {
         // if we don't make this into a separate list then the retain() will happen on the Tech keys,
         // which effectively removes those techs from the game and causes all sorts of problems
         val allResearchedTechs = gameInfo.ruleset.technologies.keys.toMutableList()
@@ -269,9 +270,7 @@ class Encampment() : IsPartOfGameInfoSerialization {
         // getForceEvaluation is already conveniently biased towards fast units and against ranged naval
         val weightings = unitList.map { it.getForceEvaluation().toFloat() }
 
-        val unit = unitList.randomWeighted(weightings)
-
-        return unit.name
+        return unitList.randomWeighted(weightings)
     }
 
     /** When a barbarian is spawned, seed the counter for next spawn */

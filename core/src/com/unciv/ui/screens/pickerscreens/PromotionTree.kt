@@ -118,7 +118,8 @@ class PromotionTree(val unit: MapUnit) {
         // Also determine preferredParent / pathIsAmbiguous by weighing distanceToAdopted
         for (node in allRoots()) {
             node.depth = 0
-            node.distanceToAdopted = if (node.unreachable) Int.MAX_VALUE else if (node.isAdopted) 0 else 1
+            node.distanceToAdopted = if (node.isAdopted) 0 
+                else if (node.unreachable) Int.MAX_VALUE else 1
         }
         for (depth in 0..99) {
             var complete = true
@@ -129,8 +130,9 @@ class PromotionTree(val unit: MapUnit) {
                 }
                 if (node.depth != depth) continue
                 for (child in node.children) {
-                    val distance = if (node.distanceToAdopted == Int.MAX_VALUE) Int.MAX_VALUE
-                        else if (child.isAdopted) 0 else node.distanceToAdopted + 1
+                    val distance = if (child.isAdopted) 0
+                        else if (node.distanceToAdopted == Int.MAX_VALUE) Int.MAX_VALUE else if (child.unreachable) Int.MAX_VALUE
+                        else node.distanceToAdopted + 1
                     when {
                         child.depth == Int.MIN_VALUE -> Unit // "New" node / first reached
                         child.distanceToAdopted < distance -> continue  // Already reached a better way

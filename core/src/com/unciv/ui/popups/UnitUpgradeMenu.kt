@@ -1,6 +1,7 @@
 package com.unciv.ui.popups
 
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.mapunit.MapUnit
@@ -30,12 +31,12 @@ import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade
  */
 class UnitUpgradeMenu(
     stage: Stage,
-    position: Vector2,
+    positionNextTo: Actor,
     private val unit: MapUnit,
     private val unitAction: UpgradeUnitAction,
     private val callbackAfterAnimation: Boolean = false,
     private val onButtonClicked: () -> Unit
-) : AnimatedMenuPopup(stage, position) {
+) : AnimatedMenuPopup(stage, getActorTopRight(positionNextTo)) {
 
     private val allUpgradableUnits: Sequence<MapUnit> by lazy {
         unit.civ.units.getCivUnits()

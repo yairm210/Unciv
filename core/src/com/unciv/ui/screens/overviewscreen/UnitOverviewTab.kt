@@ -6,8 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.Cell
-import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
@@ -267,8 +265,7 @@ class UnitOverviewTab(
                 val upgradeIcon = ImageGetter.getUnitIcon(unitToUpgradeTo.name,
                     if (enable) Color.GREEN else Color.GREEN.darken(0.5f))
                 if (enable) upgradeIcon.onClick {
-                    val pos = upgradeIcon.localToStageCoordinates(Vector2(upgradeIcon.width/2, upgradeIcon.height/2))
-                    UnitUpgradeMenu(overviewScreen.stage, pos, unit, unitAction) {
+                    UnitUpgradeMenu(overviewScreen.stage, upgradeIcon, unit, unitAction) {
                         unitListTable.updateUnitListTable()
                         select(selectKey)
                     }

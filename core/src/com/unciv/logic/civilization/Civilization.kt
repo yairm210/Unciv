@@ -453,12 +453,10 @@ class Civilization : IsPartOfGameInfoSerialization {
     /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
     fun getMatchingUniques(
         uniqueType: UniqueType,
-        stateForConditionals: StateForConditionals = StateForConditionals(this),
-        cityToIgnore: City? = null
+        stateForConditionals: StateForConditionals = StateForConditionals(this)
     ): Sequence<Unique> = sequence {
         yieldAll(nation.getMatchingUniques(uniqueType, stateForConditionals))
         yieldAll(cities.asSequence()
-            .filter { it != cityToIgnore }
             .flatMap { city -> city.getMatchingUniquesWithNonLocalEffects(uniqueType, stateForConditionals) }
         )
         yieldAll(policies.policyUniques.getMatchingUniques(uniqueType, stateForConditionals))

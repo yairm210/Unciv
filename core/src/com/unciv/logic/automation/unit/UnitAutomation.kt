@@ -18,7 +18,6 @@ import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
-import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsPillage
@@ -160,7 +159,9 @@ object UnitAutomation {
             return
         }
 
-        if (unit.promotions.canBePromoted()) {
+        if (unit.promotions.canBePromoted() &&
+            // Restrict Human automated units from promotions via setting
+                (UncivGame.Current.settings.automatedUnitsChoosePromotions || unit.civ.isAI())) {
             val availablePromotions = unit.promotions.getAvailablePromotions()
                 .filterNot { it.hasUnique(UniqueType.SkipPromotion) }
             if (availablePromotions.any())
@@ -178,7 +179,7 @@ object UnitAutomation {
         if (unit.baseUnit.isAirUnit() && unit.canIntercept())
             return SpecificUnitAutomation.automateFighter(unit)
 
-        if (unit.baseUnit.isAirUnit())
+        if (unit.baseUnit.isAirUnit() && !unit.baseUnit.isNuclearWeapon())
             return SpecificUnitAutomation.automateBomber(unit)
 
         if (unit.baseUnit.isNuclearWeapon())
@@ -633,7 +634,7 @@ object UnitAutomation {
             .sum() // City heals 20 per turn
 
         if (expectedDamagePerTurn < city.health && // If we can take immediately, go for it
-                (expectedDamagePerTurn <= 20 || city.health / (expectedDamagePerTurn-20) > 5)){ // otherwise check if we can take within a couple of turns
+            (expectedDamagePerTurn <= 20 || city.health / (expectedDamagePerTurn-20) > 5)){ // otherwise check if we can take within a couple of turns
 
             // We won't be able to take this even with 5 turns of continuous damage!
             // don't head straight to the city, try to head to landing grounds -

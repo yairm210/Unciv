@@ -7,23 +7,23 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.Fonts
-import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.colorFromRGB
-import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.extensions.toImageButton
 import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -74,6 +74,11 @@ class CivilopediaScreen(
     private var currentCategory: CivilopediaCategories = CivilopediaCategories.Tutorial
     private var currentEntry: String = ""
     private val currentEntryPerCategory = HashMap<CivilopediaCategories, String>()
+
+    private val searchPopup by lazy { CivilopediaSearchPopup(this, tutorialController) {
+        selectLink(it)
+    } }
+
 
     /** Jump to a "link" selecting both category and entry
      *
@@ -160,7 +165,7 @@ class CivilopediaScreen(
      * @param name Entry (Ruleset object) name
      * @param noScrollAnimation Disable scroll animation
      */
-    fun selectEntry(name: String, noScrollAnimation: Boolean = false) {
+    private fun selectEntry(name: String, noScrollAnimation: Boolean = false) {
         val entry = entryIndex[name] ?: return
         // fails: entrySelectScroll.scrollTo(0f, entry.y, 0f, entry.h, false, true)
         entrySelectScroll.scrollY = (entry.y + (entry.height - entrySelectScroll.height) / 2)
@@ -195,7 +200,6 @@ class CivilopediaScreen(
 
     init {
         val imageSize = 50f
-        globalShortcuts.add(KeyCharAndCode.BACK) { game.popScreen() }
 
         val religionEnabled = showReligionInCivilopedia(ruleset)
         val victoryTypes = game.gameInfo?.gameParameters?.victoryTypes ?: ruleset.victories.keys
@@ -209,32 +213,11 @@ class CivilopediaScreen(
             }
         }
 
-        fun getCategoryIterator(category: CivilopediaCategories): Collection<ICivilopediaText> =
-            when (category) {
-                CivilopediaCategories.Building -> ruleset.buildings.values.filter { !it.isAnyWonder() }
-                CivilopediaCategories.Wonder -> ruleset.buildings.values.filter { it.isAnyWonder() }
-                CivilopediaCategories.Resource -> ruleset.tileResources.values
-                CivilopediaCategories.Terrain -> ruleset.terrains.values
-                CivilopediaCategories.Improvement -> ruleset.tileImprovements.values
-                CivilopediaCategories.Unit -> ruleset.units.values
-                CivilopediaCategories.UnitType -> UnitType.getCivilopediaIterator(ruleset)
-                CivilopediaCategories.Nation -> ruleset.nations.values.filter { !it.isSpectator }
-                CivilopediaCategories.Technology -> ruleset.technologies.values
-                CivilopediaCategories.Promotion -> ruleset.unitPromotions.values
-                CivilopediaCategories.Policy -> ruleset.policies.values
-                CivilopediaCategories.Tutorial -> tutorialController.getCivilopediaTutorials()
-                CivilopediaCategories.Difficulty -> ruleset.difficulties.values
-                CivilopediaCategories.Belief -> (ruleset.beliefs.values.asSequence() +
-                        Belief.getCivilopediaReligionEntry(ruleset)).toList()
-                CivilopediaCategories.Era -> ruleset.eras.values
-                CivilopediaCategories.Speed -> ruleset.speeds.values
-            }
-
         for (loopCategory in CivilopediaCategories.values()) {
             if (loopCategory.hide) continue
             if (!religionEnabled && loopCategory == CivilopediaCategories.Belief) continue
             categoryToEntries[loopCategory] =
-                getCategoryIterator(loopCategory)
+                loopCategory.getCategoryIterator(ruleset, tutorialController)
                     .filter { (it as? IHasUniques)?.let { obj -> shouldBeDisplayed(obj) } ?: true }
                     .map { CivilopediaEntry(
                         (it as INamed).name,
@@ -254,7 +237,6 @@ class CivilopediaScreen(
             val icon = if (categoryKey.headerIcon.isNotEmpty()) ImageGetter.getImage(categoryKey.headerIcon) else null
             val button = IconTextButton(categoryKey.label, icon)
             button.addTooltip(categoryKey.key)
-//            button.style = ImageButton.ImageButtonStyle(button.style)
             button.onClick { selectCategory(categoryKey) }
             val cell = buttonTable.add(button)
             categoryToButtons[categoryKey] = CategoryButtonInfo(button, currentX, cell.prefWidth)
@@ -265,14 +247,18 @@ class CivilopediaScreen(
         buttonTableScroll = ScrollPane(buttonTable)
         buttonTableScroll.setScrollingDisabled(false, true)
 
-        val goToGameButton = Constants.close.toTextButton()
-        goToGameButton.onClick {
-            game.popScreen()
-        }
+        val searchButton = "OtherIcons/Search".toImageButton(imageSize - 16f, imageSize, skinStrings.skinConfig.baseColor, Color.GOLD)
+        searchButton.onActivation { searchPopup.open(true) }
+        searchButton.keyShortcuts.add(KeyboardBinding.Civilopedia)  // "hit twice to search"
+
+        val closeButton = "OtherIcons/Close".toImageButton(imageSize - 20f, imageSize, skinStrings.skinConfig.baseColor, Color.RED)
+        closeButton.onActivation { game.popScreen() }
+        closeButton.keyShortcuts.add(KeyCharAndCode.BACK)
 
         val topTable = Table()
-        topTable.add(goToGameButton).pad(10f)
         topTable.add(buttonTableScroll).growX()
+        topTable.add(searchButton).padLeft(10f)
+        topTable.add(closeButton).padLeft(10f).padRight(10f)
         topTable.width = stage.width
         topTable.layout()
 

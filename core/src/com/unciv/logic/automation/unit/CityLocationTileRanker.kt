@@ -7,6 +7,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.unique.LocalUniqueCache
 
 object CityLocationTileRanker {
     fun getBestTilesToFoundCity(unit: MapUnit): Sequence<Pair<Tile, Float>> {
@@ -93,14 +94,15 @@ object CityLocationTileRanker {
         tile: Tile,
         civ: Civilization
     ): Map<Tile, Float> {
+        val uniqueCache = LocalUniqueCache()
         return tile.getTilesInDistance(7)
             .filter { canUseTileForRanking(it, civ) }
-            .associateBy({ it }, { Automation.rankTile(it, civ) })
+            .associateBy({ it }, { Automation.rankTile(it, civ, uniqueCache) })
     }
 
     private fun getLuxuryResourcesInCivArea(civ: Civilization): Sequence<TileResource> {
         return civ.cities.asSequence()
-            .flatMap { it.getTiles().asSequence() }.filter { it.resource != null }
+            .flatMap { it.getTiles() }.filter { it.resource != null }
             .map { it.tileResource }.filter { it.resourceType == ResourceType.Luxury }
             .distinct()
     }

@@ -454,7 +454,7 @@ object GameStarter {
         ruleset: Ruleset,
         eraUnitReplacement: String,
         settlerLikeUnits: Map<String, BaseUnit>
-    ): String? {
+    ): BaseUnit? {
         var unit = unitParam // We want to change it and this is the easiest way to do so
         if (unit == Constants.eraSpecificUnit) unit = eraUnitReplacement
         if (unit == Constants.settler && Constants.settler !in ruleset.units) {
@@ -464,7 +464,7 @@ object GameStarter {
                         && it.value.isCivilian()
                 }
             if (buildableSettlerLikeUnits.isEmpty()) return null // No settlers in this mod
-            return civ.getEquivalentUnit(buildableSettlerLikeUnits.keys.random()).name
+            return civ.getEquivalentUnit(buildableSettlerLikeUnits.keys.random())
         }
         if (unit == "Worker" && "Worker" !in ruleset.units) {
             val buildableWorkerLikeUnits = ruleset.units.filter {
@@ -472,9 +472,9 @@ object GameStarter {
                     it.value.isBuildable(civ) && it.value.isCivilian()
             }
             if (buildableWorkerLikeUnits.isEmpty()) return null // No workers in this mod
-            return civ.getEquivalentUnit(buildableWorkerLikeUnits.keys.random()).name
+            return civ.getEquivalentUnit(buildableWorkerLikeUnits.keys.random())
         }
-        return civ.getEquivalentUnit(unit).name
+        return civ.getEquivalentUnit(unit)
     }
 
     private fun adjustStartingUnitsForCityStatesAndOneCityChallenge(
