@@ -9,5 +9,6 @@ object BuildConfig {
 
     const val gdxVersion = "1.11.0"
     const val ktorVersion = "2.2.3"
+    const val coroutinesVersion = "1.6.4"
     const val roboVMVersion = "2.3.1"
 }
