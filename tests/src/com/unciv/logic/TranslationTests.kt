@@ -16,6 +16,7 @@ import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
 import com.unciv.testing.GdxTestRunner
+import com.unciv.utils.BracketsParser
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import org.junit.Assert
@@ -299,6 +300,28 @@ class TranslationTests {
         Assert.assertTrue(Stats.isStats(Stats(1f,2f,3f).toStringForNotifications()))
     }
 
+    @Test
+    fun newBracketParserWorks() {
+        val parser = BracketsParser(10)
+        val candidates = listOf(
+            "",
+            "Hello",
+            "My [Warrior]",
+            "My [A] (B) <C> {D}",
+            "gain [[Jaguar] ability]?",
+            "[+1 Food] from [Wheat] tiles [in this city]",
+            "[+15]% Strength <for [All] units> <vs cities> <when attacking>",
+            "alice {bob [charlie} foxtrot] tango"
+        )
+        for (input in candidates) {
+            println()
+            println("Parsing: \"$input\"")
+            parser.parse(input) {
+                level, position, type, error, value ->
+                println("\tLevel $level, position $position, $type, $error: \"$value\"")
+            }
+        }
+    }
 
 //    @Test
 //    fun allConditionalsAreContainedInConditionalOrderTranslation() {
