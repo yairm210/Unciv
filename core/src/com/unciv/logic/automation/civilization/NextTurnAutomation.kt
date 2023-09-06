@@ -809,7 +809,7 @@ object NextTurnAutomation {
         // Wait to declare frienships until more civs
         // Goes from -30 to 0 when we know 75% of allCivs
         val civsToKnow = .75f * allAliveCivs
-        motivation -= min(((civsToKnow - knownCivs) / civsToKnow * 30f).toInt(), 0)
+        motivation -= ((civsToKnow - knownCivs) / civsToKnow * 30f).toInt().coerceAtLeast(0)
         
         motivation -= hasAtLeastMotivationToAttack(civInfo, otherCiv, motivation)
         
