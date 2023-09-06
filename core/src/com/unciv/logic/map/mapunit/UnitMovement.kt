@@ -741,12 +741,11 @@ class UnitMovement(val unit: MapUnit) {
     }
 
     // Can a paratrooper land at this tile?
-    fun canParadropOn(destination: Tile): Boolean {
+    private fun canParadropOn(destination: Tile): Boolean {
         if (unit.cache.cannotMove) return false
         // Can only move to land tiles within range that are visible and not impassible
         // Based on some testing done in the base game
-        if (!destination.isLand || destination.isImpassible() || !unit.civ.viewableTiles.contains(destination)) return false
-        return true
+        return destination.isLand && !destination.isImpassible() && unit.civ.viewableTiles.contains(destination)
     }
 
     /**
