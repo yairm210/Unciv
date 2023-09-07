@@ -809,7 +809,7 @@ object NextTurnAutomation {
         val civsToKnow = .75f * allAliveCivs
         motivation -= ((civsToKnow - knownCivs) / civsToKnow * 30f).toInt().coerceAtLeast(0)
         
-        motivation -= hasAtLeastMotivationToAttack(civInfo, otherCiv, motivation)
+        motivation -= hasAtLeastMotivationToAttack(civInfo, otherCiv, motivation / 2) * 2
         
         return motivation > 0
     }
