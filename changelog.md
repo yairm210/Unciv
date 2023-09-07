@@ -1,3 +1,25 @@
+## 4.8.3
+
+Unify placeholder parsing for unique parameters 
+
+build: unify coroutines version to buildconfig variable
+
+cleanup: Copy Zero vectors before passing to localToStageCoordinates 
+
+build: Change Docker JDK download to adoptium used in other releases
+
+Revert "build: Kotlin plugins tied to kotlin version"
+
+build: removed 'testImplementation' double-imports for tests project
+
+build: remove unused mockk library
+
+build: Kotlin plugins tied to kotlin version
+
+chore: upgrade androidx versions
+
+Test/refactor target helper and test it  - By Framonti
+
 ## 4.8.2
 
 performance: Don't autoupdate stale multiplayer games (more than a week old)
