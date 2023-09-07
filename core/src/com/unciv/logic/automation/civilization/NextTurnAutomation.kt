@@ -816,7 +816,7 @@ object NextTurnAutomation {
     
     private fun offerOpenBorders(civInfo: Civilization) {
         val civsThatWeCanDeclareFriendshipWith = civInfo.getKnownCivs()
-            .filter { !civInfo.isAtWarWith(it) && !civInfo.getDiplomacyManager(it).hasOpenBorders}
+            .filter { it.isMajorCiv() && !civInfo.isAtWarWith(it) && !civInfo.getDiplomacyManager(it).hasOpenBorders}
             .sortedByDescending { it.getDiplomacyManager(civInfo).relationshipLevel() }.toList()
         for (otherCiv in civsThatWeCanDeclareFriendshipWith) {
             // Default setting is 3, this will be changed according to different civ.
