@@ -795,16 +795,14 @@ object NextTurnAutomation {
         // Motivation should be constant as the number of civs changes
         var motivation = civInfo.getDiplomacyManager(otherCiv).opinionOfOtherCiv().toInt() - 40
         
-        if (civInfo.wantsToFocusOn(Victory.Focus.Military)) {
-            // Try to ally with a third of the civs in play
-            // Goes form 0 to -120 as the civ gets more friends, goal is around 1/4 friends max
-            motivation -= ((numOfFriends * 120f) / knownCivs).toInt()
+        // Try to ally with a third of the civs in play
+        // Goes form 0 to -120 as the civ gets more friends, goal is around 1/4 friends max
+        motivation -= ((numOfFriends * 120f) / knownCivs).toInt()
 
-            // Goes from 0 to -50 as more civs die
-            // this is meant to prevent the game from stalemating when a group of friends
-            // conquers all oposition
-            motivation -= deadCivs / allCivs * 50
-        }
+        // Goes from 0 to -50 as more civs die
+        // this is meant to prevent the game from stalemating when a group of friends
+        // conquers all oposition
+        motivation -= deadCivs / allCivs * 50
 
         // Wait to declare frienships until more civs
         // Goes from -30 to 0 when we know 75% of allCivs
