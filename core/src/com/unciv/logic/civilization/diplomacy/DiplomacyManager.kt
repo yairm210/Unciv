@@ -264,13 +264,13 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         // maybe we need to average their views of each other? That makes sense to me.
         val opinion = opinionOfOtherCiv()
         return when {
-            opinion <= -80 -> RelationshipLevel.Unforgivable
-            opinion <= -40 || civInfo.isAtWarWith(otherCiv()) -> RelationshipLevel.Enemy  /* During wartime, the estimation in which you are held may be enemy OR unforgivable */
-            opinion <= -15 -> RelationshipLevel.Competitor
+            opinion <= DiplomacyConstants.UNFORGIVABLE_OPINION_THRESHOLD -> RelationshipLevel.Unforgivable
+            opinion <= DiplomacyConstants.ENEMY_OPINION_THRESHOLD || civInfo.isAtWarWith(otherCiv()) -> RelationshipLevel.Enemy  /* During wartime, the estimation in which you are held may be enemy OR unforgivable */
+            opinion <= DiplomacyConstants.COMPETITOR_OPINION_THRESHOLD -> RelationshipLevel.Competitor
 
-            opinion >= 80 -> RelationshipLevel.Ally
-            opinion >= 40 -> RelationshipLevel.Friend
-            opinion >= 15 -> RelationshipLevel.Favorable
+            opinion >= DiplomacyConstants.ALLY_OPINION_THRESHOLD -> RelationshipLevel.Ally
+            opinion >= DiplomacyConstants.FRIEND_OPINION_THRESHOLD -> RelationshipLevel.Friend
+            opinion >= DiplomacyConstants.FAVORABLE_OPINION_THRESHOLD -> RelationshipLevel.Favorable
             else -> RelationshipLevel.Neutral
         }
     }
@@ -340,9 +340,9 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             return 0f
 
         val decrement = when {
-            civInfo.cityStatePersonality == CityStatePersonality.Hostile -> 1.5f
-            otherCiv().isMinorCivAggressor() -> 2f
-            else -> 1f
+            civInfo.cityStatePersonality == CityStatePersonality.Hostile -> DiplomacyConstants.BASE_HOSTILE_INFLUENCE_DEGRADATION
+            otherCiv().isMinorCivAggressor() -> DiplomacyConstants.BASE_MINOR_AGGRESSOR_INFLUENCE_DEGRADATION
+            else -> DiplomacyConstants.BASE_NATURAL_INFLUENCE_CHANGE
         }
 
         var modifierPercent = 0f
@@ -352,7 +352,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         val religion = if (civInfo.cities.isEmpty() || civInfo.getCapital() == null) null
             else civInfo.getCapital()!!.religion.getMajorityReligionName()
         if (religion != null && religion == otherCiv().religionManager.religion?.name)
-            modifierPercent -= 25f  // 25% slower degrade when sharing a religion
+            modifierPercent -= DiplomacyConstants.RELIGION_BONUS_INFLUENCE_DEGRADATION  // 25% slower degrade when sharing a religion
 
         for (civ in civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it != otherCiv()}) {
             for (unique in civ.getMatchingUniques(UniqueType.OtherCivsCityStateRelationsDegradeFaster)) {
@@ -367,7 +367,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         if (getInfluence() >= getCityStateInfluenceRestingPoint())
             return 0f
 
-        val increment = 1f  // sic: personality does not matter here
+        val increment = DiplomacyConstants.BASE_NATURAL_INFLUENCE_CHANGE // sic: personality does not matter here
 
         var modifierPercent = 0f
 
@@ -377,7 +377,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         val religion = if (civInfo.cities.isEmpty() || civInfo.getCapital() == null) null
             else civInfo.getCapital()!!.religion.getMajorityReligionName()
         if (religion != null && religion == otherCiv().religionManager.religion?.name)
-            modifierPercent += 50f  // 50% quicker recovery when sharing a religion
+            modifierPercent += DiplomacyConstants.RELIGION_BONUS_INFLUENCE_RECOVERY  // 50% quicker recovery when sharing a religion
 
         return max(0f, increment) * max(0f, modifierPercent).toPercent()
     }
@@ -538,7 +538,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             }
 
             // Potentially notify about afraid status
-            if (getInfluence() < 30  // We usually don't want to bully our friends
+            if (getInfluence() < DiplomacyConstants.FRIEND_INFLUENCE_THRESHOLD  // We usually don't want to bully our friends
                 && !hasFlag(DiplomacyFlags.NotifiedAfraid)
                 && civInfo.cityStateFunctions.getTributeWillingness(otherCiv()) > 0
                 && otherCiv().isMajorCiv()
