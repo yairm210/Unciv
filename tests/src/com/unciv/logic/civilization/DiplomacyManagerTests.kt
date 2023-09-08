@@ -1,12 +1,16 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.logic.civilization.diplomacy.CityStatePersonality
 import com.unciv.logic.civilization.diplomacy.DiplomacyConstants
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.tile.Tile
+import com.unciv.models.ruleset.BeliefType
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -249,6 +253,152 @@ class DiplomacyManagerTests {
         // then
         assertTrue(cityState.getDiplomacyManager(e).isRelationshipLevelEQ(RelationshipLevel.Friend))
         assertEquals(DiplomacyConstants.FRIEND_INFLUENCE_THRESHOLD + 1f, cityState.getDiplomacyManager(e).getInfluence())
+    }
+
+    @Test
+    fun `should degrade influence in city state on next turn`() {
+        // given
+        val cityState = addCiv(cityStateType = "Mercantile")
+        cityState.cityStatePersonality = CityStatePersonality.Neutral
+        meet(a, cityState)
+
+        cityState.getDiplomacyManager(a).addInfluence(DiplomacyConstants.FRIEND_INFLUENCE_THRESHOLD.toFloat())
+
+
+        // when
+        cityState.getDiplomacyManager(a).nextTurn()
+
+        // then
+        assertEquals(
+            DiplomacyConstants.FRIEND_INFLUENCE_THRESHOLD - DiplomacyConstants.BASE_NATURAL_INFLUENCE_CHANGE,
+            cityState.getDiplomacyManager(a).getInfluence()
+        )
+    }
+
+    @Test
+    fun `should degrade influence in hostile city state on next turn`() {
+        // given
+        val cityState = addCiv(cityStateType = "Militaristic")
+        cityState.cityStatePersonality = CityStatePersonality.Hostile
+        meet(a, cityState)
+
+        cityState.getDiplomacyManager(a).addInfluence(DiplomacyConstants.FRIEND_INFLUENCE_THRESHOLD.toFloat())
+
+
+        // when
+        cityState.getDiplomacyManager(a).nextTurn()
+
+        // then
+        assertEquals(
+            DiplomacyConstants.FRIEND_INFLUENCE_THRESHOLD - DiplomacyConstants.BASE_HOSTILE_INFLUENCE_DEGRADATION,
+            cityState.getDiplomacyManager(a).getInfluence()
+        )
+    }
+
+    @Test
+    fun `should degrade influence in city state when sharing religion on next turn`() {
+        // given
+        val cityState = addCiv(cityStateType = "Mercantile")
+        cityState.cityStatePersonality = CityStatePersonality.Neutral
+
+        meet(a, cityState)
+
+        // to spread religion, need cities
+        testGame.addCity(a, testGame.getTile(Vector2.Zero))
+        val cityStateCapital = testGame.addCity(cityState, testGame.getTile(Vector2.X), initialPopulation = 2)
+
+        val religion = testGame.addReligion(a)
+        val belief = testGame.createBelief(BeliefType.Founder, "[+1 Food] from every [Shrine]")
+        religion.founderBeliefs.add(belief.name)
+        cityStateCapital.religion.addPressure(religion.name, 1000)
+
+        cityState.getDiplomacyManager(a).addInfluence(DiplomacyConstants.FRIEND_INFLUENCE_THRESHOLD.toFloat())
+
+        // when
+        cityState.getDiplomacyManager(a).nextTurn()
+
+        // then
+        assertEquals(
+            DiplomacyConstants.FRIEND_INFLUENCE_THRESHOLD
+                - DiplomacyConstants.BASE_NATURAL_INFLUENCE_CHANGE
+                + DiplomacyConstants.RELIGION_BONUS_INFLUENCE_DEGRADATION / 100f,
+            cityState.getDiplomacyManager(a).getInfluence()
+        )
+    }
+
+    @Test
+    fun `should increase influence in city state when under resting points`() {
+        // given
+        val cityState = addCiv(cityStateType = "Mercantile")
+        cityState.cityStatePersonality = CityStatePersonality.Neutral
+        meet(a, cityState)
+
+        cityState.getDiplomacyManager(a).addInfluence(DiplomacyConstants.UNFORGIVABLE_INFLUENCE_THRESHOLD.toFloat())
+
+        // when
+        cityState.getDiplomacyManager(a).nextTurn()
+
+        // then
+        assertEquals(
+            DiplomacyConstants.UNFORGIVABLE_INFLUENCE_THRESHOLD + DiplomacyConstants.BASE_NATURAL_INFLUENCE_CHANGE,
+            cityState.getDiplomacyManager(a).getInfluence()
+        )
+    }
+
+    @Test
+    fun `should increase influence in city state when under resting points and sharing religion`() {
+        // given
+        val cityState = addCiv(cityStateType = "Mercantile")
+        cityState.cityStatePersonality = CityStatePersonality.Neutral
+        meet(a, cityState)
+
+        // to spread religion, need cities
+        testGame.addCity(a, testGame.getTile(Vector2.Zero))
+        val cityStateCapital = testGame.addCity(cityState, testGame.getTile(Vector2.X), initialPopulation = 2)
+
+        val religion = testGame.addReligion(a)
+        val belief = testGame.createBelief(BeliefType.Founder, "[+1 Food] from every [Shrine]")
+        religion.founderBeliefs.add(belief.name)
+        cityStateCapital.religion.addPressure(religion.name, 1000)
+
+        cityState.getDiplomacyManager(a).addInfluence(DiplomacyConstants.UNFORGIVABLE_INFLUENCE_THRESHOLD.toFloat())
+
+        // when
+        cityState.getDiplomacyManager(a).nextTurn()
+
+        // then
+        assertEquals(
+            DiplomacyConstants.UNFORGIVABLE_INFLUENCE_THRESHOLD
+                + DiplomacyConstants.BASE_NATURAL_INFLUENCE_CHANGE
+                + DiplomacyConstants.RELIGION_BONUS_INFLUENCE_RECOVERY / 100f,
+            cityState.getDiplomacyManager(a).getInfluence()
+        )
+    }
+
+    @Test
+    fun `should give science for research agreement`() {
+        // given
+        meet(a, b)
+
+        testGame.addCity(a, testGame.getTile(Vector2.Zero), initialPopulation = 10)
+        testGame.addCity(b, testGame.getTile(Vector2.X), initialPopulation = 20)
+
+        val expectedSciencePerTurnCivA = 13 // 10 pop, 3 palace. Smaller than 23 science per turn of civ B (20 pop, 3 palace)
+        val turns = 10
+
+        // when
+        a.getDiplomacyManager(b).setFlag(DiplomacyFlags.ResearchAgreement, turns)
+        b.getDiplomacyManager(a).setFlag(DiplomacyFlags.ResearchAgreement, turns)
+        repeat(turns) {
+            a.getDiplomacyManager(b).nextTurn()
+            b.getDiplomacyManager(a).nextTurn()
+        }
+
+        // then
+        assertFalse(a.getDiplomacyManager(b).hasFlag(DiplomacyFlags.ResearchAgreement))
+        assertFalse(b.getDiplomacyManager(a).hasFlag(DiplomacyFlags.ResearchAgreement))
+        assertEquals(expectedSciencePerTurnCivA * turns, a.tech.scienceFromResearchAgreements)
+        assertEquals(expectedSciencePerTurnCivA * turns, b.tech.scienceFromResearchAgreements)
     }
 
 }
