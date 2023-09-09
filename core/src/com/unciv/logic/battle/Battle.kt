@@ -9,10 +9,12 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.LocationAction
+import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.civilization.PromoteUnitAction
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.mapunit.MapUnit
@@ -230,10 +232,10 @@ object Battle {
 
         val cityWithReligion =
             civUnit.getTile().getTilesInDistance(4).firstOrNull {
-                it.isCityCenter() && it.getCity()!!.getLocalMatchingUniques(UniqueType.KillUnitPlunderNearCity, stateForConditionals).any()
+                it.isCityCenter() && it.getCity()!!.getMatchingUniques(UniqueType.KillUnitPlunderNearCity, stateForConditionals).any()
             }?.getCity()
         if (cityWithReligion != null) {
-            bonusUniques.addAll(cityWithReligion.getLocalMatchingUniques(UniqueType.KillUnitPlunderNearCity, stateForConditionals))
+            bonusUniques.addAll(cityWithReligion.getMatchingUniques(UniqueType.KillUnitPlunderNearCity, stateForConditionals))
         }
 
         for (unique in bonusUniques) {
@@ -582,8 +584,12 @@ object Battle {
             civ.greatPeople.greatGeneralPoints += greatGeneralPointsGained
         }
 
-        if (!thisCombatant.isDefeated() && !unitCouldAlreadyPromote && promotions.canBePromoted())
-            civ.addNotification("[${thisCombatant.unit.displayName()}] can be promoted!",thisCombatant.getTile().position, NotificationCategory.Units, thisCombatant.unit.name)
+        if (!thisCombatant.isDefeated() && !unitCouldAlreadyPromote && promotions.canBePromoted()) {
+            val pos = thisCombatant.getTile().position
+            civ.addNotification("[${thisCombatant.unit.displayName()}] can be promoted!",
+                listOf(MapUnitAction(pos), PromoteUnitAction(thisCombatant.getName(), pos)),
+                NotificationCategory.Units, thisCombatant.unit.name)
+        }
     }
 
     private fun conquerCity(city: City, attacker: MapUnitCombatant) {
@@ -730,7 +736,7 @@ object Battle {
                     .any { unique -> unique.params[0] == "Land" } }
 
             if (workerTypeUnit != null)
-                capturingCiv.units.placeUnitNearTile(capturedUnit.currentTile.position, workerTypeUnit.name)
+                capturingCiv.units.placeUnitNearTile(capturedUnit.currentTile.position, workerTypeUnit)
         }
         else capturedUnit.capturedBy(capturingCiv)
     }
@@ -753,6 +759,8 @@ object Battle {
      */
     fun mayUseNuke(nuke: MapUnitCombatant, targetTile: Tile): Boolean {
         if (nuke.getTile() == targetTile) return false
+        // Can only nuke visible Tiles
+        if (!targetTile.isVisible(nuke.getCivInfo())) return false
 
         var canNuke = true
         val attackerCiv = nuke.getCivInfo()

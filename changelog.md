@@ -1,3 +1,106 @@
+## 4.8.3
+
+Allow unique parameters to contain square brackets
+
+Library updates for performance and stability
+
+Targetting refactor - By Framonti
+
+## 4.8.2
+
+performance: Don't autoupdate stale multiplayer games (more than a week old)
+
+Buildings missing from ruleset are removed from loaded games *properly*
+
+By SomeTroglodyte:
+
+- Fix Map Editor double map holders after ruleset change
+- Improve "does this unit found cities" check
+- Fix Gdx not forced to UTF-8 when saving a game
+
+Defensive pact notification fix  - By tuvus
+
+## 4.8.1
+
+Fixed AI attack targetting - By tuvus
+
+By SeventhM:
+- Add unique for a promotion to be free
+- Fix cities getting the resource list of other cities
+
+Fix ChangesTerrain unique for base terrains - By SomeTroglodyte
+
+Units teleport away from city center when liberating
+
+Icons are not added to  selection boxes
+
+## 4.8.0
+
+By SomeTroglodyte:
+- Civilopedia Search
+- City construction right-click menu
+
+Many performance improvements!
+
+Pillaged tile improvements  - By GeneralWadaling
+
+Fix: "Only available" not working properly for religions or transforming/upgrading units  - By SeventhM
+
+Make "Defensive Pact" button translatable - By Ouaz
+
+## 4.7.19
+
+"Jump To Destination" Unit Action Button for units that are moving  - By huckdogg
+
+Automated units do not autopromote by default (changeable by options setting)
+
+Defensive pact allies meet aggressor civ so they can declare war on them
+
+Modding: GPP validation
+
+Performance:
+- Faster population reassignment
+- Faster improvement stats simulation
+
+Clarify when trade decision is made
+
+Battle Damage tests - By Framonti
+
+UnitTable close button mouseover - By SomeTroglodyte
+
+## 4.7.18
+
+Resolved ANRs on new game screen with a lot of maps
+
+Fixed errors when cloning civs that should open policy picker
+
+By SeventhM:
+- Fix promotions being available when they shouldn't
+- Allow buildings to require population, Allow buildings to use condtionals
+
+By SomeTroglodyte:
+- Fix Permanent Audiovisual toggle
+
+By tuvus:
+- AI nuke improvement
+- AI move units closer to enemy first in wartime
+- Improved AI attack targetting
+
+Add tests for city class and introduce small refactor  - By Framonti
+
+## 4.7.17
+
+Free naval units are always added to coastal cities
+
+Can offer Research agreements with gold, if other civ can't cover the cost  - By tuvus
+
+By SomeTroglodyte:
+- Can select tile north of city for bombarding
+- Fixed 'Transfer Movement' stopping healing
+- Fix next-turn not offering Policy Picker for free Policies
+- Fix intended Longpress-to-move on Android not working
+- A few more useful notification actions
+
 ## 4.7.16
 
 Undo button in Multiplayer no longer changes 'next turn' button

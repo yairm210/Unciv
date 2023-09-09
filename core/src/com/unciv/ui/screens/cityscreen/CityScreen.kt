@@ -206,7 +206,7 @@ class CityScreen(
 
     private fun updateTileGroups() {
         val cityUniqueCache = LocalUniqueCache()
-        fun isExistingImprovementValuable(tile: Tile, improvementToPlace: TileImprovement): Boolean {
+        fun isExistingImprovementValuable(tile: Tile): Boolean {
             if (tile.improvement == null) return false
             val civInfo = city.civ
 
@@ -226,7 +226,7 @@ class CityScreen(
             return when {
                 tile.isMarkedForCreatesOneImprovement() -> Color.BROWN to 0.7f
                 !tile.improvementFunctions.canBuildImprovement(improvementToPlace, city.civ) -> Color.RED to 0.4f
-                isExistingImprovementValuable(tile, improvementToPlace) -> Color.ORANGE to 0.5f
+                isExistingImprovementValuable(tile) -> Color.ORANGE to 0.5f
                 tile.improvement != null -> Color.YELLOW to 0.6f
                 tile.turnsToImprovement > 0 -> Color.YELLOW to 0.6f
                 else -> Color.GREEN to 0.5f

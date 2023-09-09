@@ -5,19 +5,19 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
-import com.unciv.models.ruleset.IConstruction
-import com.unciv.models.ruleset.PerpetualConstruction
-import com.unciv.models.ruleset.PerpetualStatConversion
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.IConstruction
 import com.unciv.models.ruleset.IRulesetObject
+import com.unciv.models.ruleset.PerpetualConstruction
+import com.unciv.models.ruleset.PerpetualStatConversion
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.disable
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.toTextButton
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.closeAllPopups
@@ -74,7 +74,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
             val specialConstruction = PerpetualConstruction.perpetualConstructionsMap[construction.name]
 
             buildingText += specialConstruction?.getProductionTooltip(city)
-                    ?: cityConstructions.getTurnsToConstructionString(construction.name)
+                    ?: cityConstructions.getTurnsToConstructionString(construction)
 
             add(Label(buildingText, BaseScreen.skin)).row()  // already translated
 
@@ -111,7 +111,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
                             cityScreen.update()
                         }
                     ) {
-                        cityScreen.city.sellBuilding(construction.name)
+                        cityScreen.city.sellBuilding(construction)
                         cityScreen.clearSelection()
                         cityScreen.update()
                     }.open()

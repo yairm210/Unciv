@@ -7,7 +7,6 @@ import com.unciv.UncivGame.Version
 import com.unciv.json.json
 import com.unciv.logic.BackwardCompatibility.convertFortify
 import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
-import com.unciv.logic.BackwardCompatibility.migrateGreatPersonPools
 import com.unciv.logic.BackwardCompatibility.migrateToTileHistory
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.GameInfo.Companion.CURRENT_COMPATIBILITY_NUMBER
@@ -34,6 +33,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.Speed
 import com.unciv.models.ruleset.nation.Difficulty
+import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
@@ -648,8 +648,6 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
         guaranteeUnitPromotions()
 
         migrateToTileHistory()
-
-        migrateGreatPersonPools()
     }
 
     private fun updateCivilizationState() {
@@ -672,10 +670,11 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             civInfo.cache.updateCitiesConnectedToCapital(true)
 
             // We need to determine the GLOBAL happiness state in order to determine the city stats
+            val localUniqueCache = LocalUniqueCache()
             for (city in civInfo.cities) {
-                city.cityStats.updateTileStats() // Some nat wonders can give happiness!
+                city.cityStats.updateTileStats(localUniqueCache) // Some nat wonders can give happiness!
                 city.cityStats.updateCityHappiness(
-                    city.cityConstructions.getStats()
+                    city.cityConstructions.getStats(localUniqueCache)
                 )
             }
 
@@ -692,7 +691,8 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
                 if (!ruleset.tileResources.containsKey(city.demandedResource))
                     city.demandedResource = ""
 
-                city.cityStats.update()
+                // No uniques have changed since the cache was created, so we can still use it
+                city.cityStats.update(localUniqueCache=localUniqueCache)
             }
         }
     }

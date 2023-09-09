@@ -25,6 +25,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.filterAndLogic
 import java.text.DecimalFormat
 import kotlin.math.pow
+import kotlin.math.ulp
 
 
 /**
@@ -266,7 +267,22 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         if (movement < 1) movement = 1
 
+        // Hakkapeliitta movement boost
+        // For every double-stacked tile, check if our cohabitant can boost our speed
+        // (a test `count() > 1` is no optimization - two iterations of a sequence instead of one)
+        for (boostingUnit in currentTile.getUnits()) {
+            if (boostingUnit == this) continue
+            if (boostingUnit.getMatchingUniques(UniqueType.TransferMovement)
+                    .none { matchesFilter(it.params[0]) } ) continue
+            movement = movement.coerceAtLeast(boostingUnit.getMaxMovement())
+        }
+
         return movement
+    }
+
+    fun hasUnitMovedThisTurn(): Boolean {
+        val max = getMaxMovement().toFloat()
+        return currentMovement < max - max.ulp
     }
 
     /**
@@ -280,14 +296,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
         val relevantUniques = getMatchingUniques(UniqueType.Sight, conditionalState, checkCivInfoUniques = true) +
                 getTile().getMatchingUniques(UniqueType.Sight, conditionalState)
-        if (isEmbarked() && !hasUnique(UniqueType.NormalVisionWhenEmbarked, conditionalState, checkCivInfoUniques = true)) {
-            visibilityRange += relevantUniques
-                .filter { it.conditionals.any {
-                    (it.type == UniqueType.ConditionalOurUnit || it.type == UniqueType.ConditionalOurUnitOnUnit)
-                            && it.params[0] == Constants.embarked } }
-                .sumOf { it.params[0].toInt() }
-        }
-        else visibilityRange += relevantUniques.sumOf { it.params[0].toInt() }
+        visibilityRange += relevantUniques.sumOf { it.params[0].toInt() }
 
         if (visibilityRange < 1) visibilityRange = 1
 
@@ -433,6 +442,14 @@ class MapUnit : IsPartOfGameInfoSerialization {
     fun isGreatPerson() = baseUnit.isGreatPerson()
     fun isGreatPersonOfType(type: String) = baseUnit.isGreatPersonOfType(type)
 
+    fun getDistanceToEnemyUnit(maxDist: Int): Int? {
+        for (i in 1..maxDist) {
+            if (currentTile.getTilesAtDistance(i).any {it.militaryUnit != null
+                && it.militaryUnit!!.civ.isAtWarWith(civ) })
+                return i
+        }
+        return null
+    }
     //endregion
 
     //region state-changing functions

@@ -18,8 +18,8 @@ import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.equalsPlaceholderText
@@ -416,7 +416,7 @@ object GameStarter {
         ruleset: Ruleset
     ) {
         val startingEra = gameInfo.gameParameters.startingEra
-        val settlerLikeUnits = ruleset.units.filter { it.value.hasUnique(UniqueType.FoundCity) }
+        val settlerLikeUnits = ruleset.units.filter { it.value.isCityFounder() }
 
         for (civ in gameInfo.civilizations.filter { !it.isBarbarian() && !it.isSpectator() }) {
             val startingLocation = startingLocations[civ]!!
@@ -454,7 +454,7 @@ object GameStarter {
         ruleset: Ruleset,
         eraUnitReplacement: String,
         settlerLikeUnits: Map<String, BaseUnit>
-    ): String? {
+    ): BaseUnit? {
         var unit = unitParam // We want to change it and this is the easiest way to do so
         if (unit == Constants.eraSpecificUnit) unit = eraUnitReplacement
         if (unit == Constants.settler && Constants.settler !in ruleset.units) {
@@ -464,7 +464,7 @@ object GameStarter {
                         && it.value.isCivilian()
                 }
             if (buildableSettlerLikeUnits.isEmpty()) return null // No settlers in this mod
-            return civ.getEquivalentUnit(buildableSettlerLikeUnits.keys.random()).name
+            return civ.getEquivalentUnit(buildableSettlerLikeUnits.keys.random())
         }
         if (unit == "Worker" && "Worker" !in ruleset.units) {
             val buildableWorkerLikeUnits = ruleset.units.filter {
@@ -472,9 +472,9 @@ object GameStarter {
                     it.value.isBuildable(civ) && it.value.isCivilian()
             }
             if (buildableWorkerLikeUnits.isEmpty()) return null // No workers in this mod
-            return civ.getEquivalentUnit(buildableWorkerLikeUnits.keys.random()).name
+            return civ.getEquivalentUnit(buildableWorkerLikeUnits.keys.random())
         }
-        return civ.getEquivalentUnit(unit).name
+        return civ.getEquivalentUnit(unit)
     }
 
     private fun adjustStartingUnitsForCityStatesAndOneCityChallenge(
@@ -539,7 +539,7 @@ object GameStarter {
     ): HashMap<Civilization, Tile> {
 
         val civsOrderedByAvailableLocations = getCivsOrderedByAvailableLocations(civs, tileMap)
- 
+
         for (minimumDistanceBetweenStartingLocations in tileMap.tileMatrix.size / 6 downTo 0) {
             val freeTiles = getFreeTiles(tileMap, landTilesInBigEnoughGroup, minimumDistanceBetweenStartingLocations)
 
@@ -581,12 +581,12 @@ object GameStarter {
     ): HashMap<Civilization, Tile>? {
         val startingLocations = HashMap<Civilization, Tile>()
         for (civ in civsOrderedByAvailableLocations) {
-            
+
             val startingLocation = getCivStartingLocation(civ, tileMap, freeTiles, startScores)
             startingLocation ?: break
-            
+
             startingLocations[civ] = startingLocation
-            
+
             val distanceToNext = minimumDistanceBetweenStartingLocations /
                 (if (civ.isCityState()) 2 else 1) // We allow city states to squeeze in tighter
             freeTiles.removeAll(tileMap.getTilesInDistance(startingLocation.position, distanceToNext)

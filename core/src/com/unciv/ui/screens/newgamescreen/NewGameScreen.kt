@@ -2,10 +2,7 @@ package com.unciv.ui.screens.newgamescreen
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
-import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
-import com.badlogic.gdx.utils.Array
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
@@ -411,23 +408,3 @@ class NewGameScreen(
     override fun recreate(): BaseScreen = NewGameScreen(gameSetupInfo)
 }
 
-class TranslatedSelectBox(values : Collection<String>, default:String, skin: Skin) : SelectBox<TranslatedSelectBox.TranslatedString>(skin) {
-    class TranslatedString(val value: String) {
-        val translation = value.tr()
-        override fun toString() = translation
-        // Equality contract needs to be implemented else TranslatedSelectBox.setSelected won't work properly
-        override fun equals(other: Any?): Boolean = other is TranslatedString && value == other.value
-        override fun hashCode() = value.hashCode()
-    }
-
-    init {
-        val array = Array<TranslatedString>()
-        values.forEach { array.add(TranslatedString(it)) }
-        items = array
-        selected = array.firstOrNull { it.value == default } ?: array.first()
-    }
-
-    fun setSelected(newValue: String) {
-        selected = items.firstOrNull { it == TranslatedString(newValue) } ?: return
-    }
-}

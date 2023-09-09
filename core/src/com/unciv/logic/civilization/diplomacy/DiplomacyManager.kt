@@ -382,7 +382,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
 
         return max(0f, increment) * max(0f, modifierPercent).toPercent()
     }
-    
+
     fun canDeclareWar() = turnsToPeaceTreaty() == 0 && diplomaticStatus != DiplomaticStatus.War
 
     //Used for nuke
@@ -527,18 +527,15 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         }
 
         if (!civInfo.isDefeated()) { // don't display city state relationship notifications when the city state is currently defeated
-            val civCapitalLocation = if (civInfo.cities.any() && civInfo.getCapital() != null) civInfo.getCapital()!!.location else null
+            val notificationActions = civInfo.cityStateFunctions.getNotificationActions()
             if (getTurnsToRelationshipChange() == 1) {
                 val text = "Your relationship with [${civInfo.civName}] is about to degrade"
-                if (civCapitalLocation != null) otherCiv().addNotification(text,
-                    civCapitalLocation, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
-                else otherCiv().addNotification(text, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
+                otherCiv().addNotification(text, notificationActions, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
             }
 
             if (initialRelationshipLevel >= RelationshipLevel.Friend && initialRelationshipLevel != relationshipIgnoreAfraid()) {
                 val text = "Your relationship with [${civInfo.civName}] degraded"
-                if (civCapitalLocation != null) otherCiv().addNotification(text, civCapitalLocation, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
-                else otherCiv().addNotification(text, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
+                otherCiv().addNotification(text, notificationActions, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
             }
 
             // Potentially notify about afraid status
@@ -549,8 +546,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             ) {
                 setFlag(DiplomacyFlags.NotifiedAfraid, 20)  // Wait 20 turns until next reminder
                 val text = "[${civInfo.civName}] is afraid of your military power!"
-                if (civCapitalLocation != null) otherCiv().addNotification(text, civCapitalLocation, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
-                else otherCiv().addNotification(text, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
+                otherCiv().addNotification(text, notificationActions, NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
             }
         }
     }
@@ -738,7 +734,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         trades.clear()
 
         val civAtWarWith = otherCiv()
-        
+
         // If we attacked, then we need to end all of our defensive pacts acording to Civ 5
         if (isOffensiveWar) {
             removeDefensivePacts()
@@ -749,13 +745,13 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             if (!isOffensiveWar) callInDefensivePactAllies()
             callInCityStateAllies()
         }
-            
-        if (civInfo.isCityState() && civInfo.cityStateFunctions.getProtectorCivs().contains(civAtWarWith)) { 
+
+        if (civInfo.isCityState() && civInfo.cityStateFunctions.getProtectorCivs().contains(civAtWarWith)) {
             civInfo.cityStateFunctions.removeProtectorCiv(civAtWarWith, forced = true)
         }
-        
+
         updateHasOpenBorders()
-        
+
         removeModifier(DiplomaticModifiers.YearsOfPeace)
         setFlag(DiplomacyFlags.DeclinedPeace, 10)/// AI won't propose peace for 10 turns
         setFlag(DiplomacyFlags.DeclaredWar, 10) // AI won't agree to trade for 10 turns
@@ -769,27 +765,29 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
      */
     private fun removeDefensivePacts() {
         val civAtWarWith = otherCiv()
-        civInfo.diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.DefensivePact }.forEach {
+        for (diploManager in civInfo.diplomacy.values) {
+            if (diploManager.diplomaticStatus != DiplomaticStatus.DefensivePact) continue
+
             // We already removed the trades and we don't want to remove the flags yet.
-            if (it.otherCiv() != civAtWarWith) {
+            if (diploManager.otherCiv() != civAtWarWith) {
                 // Trades with defensive pact are now invalid
-                val defensivePactOffer = it.trades.firstOrNull { trade -> trade.ourOffers.any { offer -> offer.name == Constants.defensivePact } }
-                it.trades.remove(defensivePactOffer)
-                val theirDefensivePactOffer = it.otherCivDiplomacy().trades.firstOrNull { trade -> trade.ourOffers.any { offer -> offer.name == Constants.defensivePact } }
-                it.otherCivDiplomacy().trades.remove(theirDefensivePactOffer)
-                it.removeFlag(DiplomacyFlags.DefensivePact)
-                it.otherCivDiplomacy().removeFlag(DiplomacyFlags.DefensivePact)
-                it.diplomaticStatus = DiplomaticStatus.Peace
-                it.otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.Peace
+                val defensivePactOffer = diploManager.trades
+                    .firstOrNull { trade -> trade.ourOffers.any { offer -> offer.name == Constants.defensivePact } }
+                diploManager.trades.remove(defensivePactOffer)
+                val theirDefensivePactOffer = diploManager.otherCivDiplomacy().trades
+                    .firstOrNull { trade -> trade.ourOffers.any { offer -> offer.name == Constants.defensivePact } }
+                diploManager.otherCivDiplomacy().trades.remove(theirDefensivePactOffer)
+                diploManager.removeFlag(DiplomacyFlags.DefensivePact)
+                diploManager.otherCivDiplomacy().removeFlag(DiplomacyFlags.DefensivePact)
+                diploManager.diplomaticStatus = DiplomaticStatus.Peace
+                diploManager.otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.Peace
             }
             for (civ in getCommonKnownCivs().filter { civ -> civ.isMajorCiv() }) {
-                civ.addNotification("[${civInfo.civName}] canceled their Defensive Pact with [${it.otherCivName}]!",
-                    NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, it.otherCivName)
+                civ.addNotification("[${civInfo.civName}] canceled their Defensive Pact with [${diploManager.otherCivName}]!",
+                    NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, diploManager.otherCivName)
             }
-            civInfo.addNotification("We have canceled our Defensive Pact with [${it.otherCivName}]!",
-                NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, it.otherCivName)
-            it.otherCiv().addNotification("[${civInfo.civName}] has canceled our Defensive Pact with us!",
-                NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy)
+            civInfo.addNotification("We have canceled our Defensive Pact with [${diploManager.otherCivName}]!",
+                NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, diploManager.otherCivName)
         }
     }
 
@@ -805,6 +803,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                 && !ourDipManager.otherCiv().isAtWarWith(civAtWarWith)
         }) {
             val ally = ourDefensivePact.otherCiv()
+            if (!civAtWarWith.knows(ally)) civAtWarWith.diplomacyFunctions.makeCivilizationsMeet(ally, true)
             // Have the aggressor declare war on the ally.
             civAtWarWith.getDiplomacyManager(ally).declareWar(true)
             // Notify the aggressor
@@ -812,7 +811,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                 NotificationCategory.Diplomacy, ally.civName, NotificationIcon.Diplomacy, civInfo.civName)
         }
     }
-    
+
     private fun callInCityStateAllies() {
         val civAtWarWith = otherCiv()
         for (thirdCiv in civInfo.getKnownCivs()
@@ -876,14 +875,14 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                 else thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.SharedEnemy, 5f)
             } else thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.WarMongerer, -5f)
         }
-        
+
         breakTreaties()
 
         if (otherCiv.isMajorCiv())
             for (unique in civInfo.getTriggeredUniques(UniqueType.TriggerUponDeclaringWar))
                 UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
     }
-    
+
     private fun breakTreaties() {
         val otherCiv = otherCiv()
         val otherCivDiplomacy = otherCivDiplomacy()
@@ -1022,11 +1021,11 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         removeModifier(DiplomaticModifiers.DeclaredFriendshipWithOurEnemies)
         for (thirdCiv in getCommonKnownCivs()
                 .filter { it.getDiplomacyManager(civInfo).hasFlag(DiplomacyFlags.DeclarationOfFriendship) }) {
-            
+
             val relationshipLevel = otherCiv().getDiplomacyManager(thirdCiv).relationshipIgnoreAfraid()
             val modifierType = when (relationshipLevel) {
                 RelationshipLevel.Unforgivable, RelationshipLevel.Enemy -> DiplomaticModifiers.DeclaredFriendshipWithOurEnemies
-                else -> DiplomaticModifiers.DeclaredFriendshipWithOurAllies 
+                else -> DiplomaticModifiers.DeclaredFriendshipWithOurAllies
             }
             val modifierValue = when (relationshipLevel) {
                 RelationshipLevel.Unforgivable -> -15f
@@ -1047,7 +1046,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         otherCivDiplomacy().setFlag(DiplomacyFlags.DefensivePact, duration)
         diplomaticStatus = DiplomaticStatus.DefensivePact
         otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.DefensivePact
-        
+
 
         for (thirdCiv in getCommonKnownCivs().filter { it.isMajorCiv() }) {
             thirdCiv.addNotification("[${civInfo.civName}] and [$otherCivName] have signed the Defensive Pact!",

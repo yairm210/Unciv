@@ -2,7 +2,7 @@ package com.unciv.models.metadata
 
 import com.badlogic.gdx.Gdx
 import com.unciv.json.json
-import com.unciv.ui.screens.newgamescreen.TranslatedSelectBox
+import com.unciv.ui.components.TranslatedSelectBox
 import com.unciv.ui.screens.pickerscreens.Github
 
 

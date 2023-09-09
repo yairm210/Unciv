@@ -92,7 +92,9 @@ class TutorialController(screen: BaseScreen) {
     ) : INamed, SimpleCivilopediaText(
         sequenceOf(FormattedLine(extraImage = name.replace(' ', '_'))) + tutorial.civilopediaText.asSequence(),
         tutorial.steps?.asSequence() ?: emptySequence()
-    )
+    ) {
+        override fun makeLink() = "Tutorial/$name"
+    }
 
     /** Get all Tutorials intended to be displayed in the Civilopedia
      *  as a List of wrappers supporting INamed and ICivilopediaText

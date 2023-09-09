@@ -89,6 +89,11 @@ class RulesetValidator(val ruleset: Ruleset) {
                 lines.add("${building.name} is buildable and therefore should either have an explicit cost or reference an existing tech!",
                     RulesetErrorSeverity.Warning)
 
+            for (gpp in building.greatPersonPoints)
+                if (gpp.key !in ruleset.units)
+                    lines.add("Building ${building.name} has greatPersonPoints for ${gpp.key}, which is not a unit in the ruleset!",
+                        RulesetErrorSeverity.Warning)
+
             checkUniques(building, lines, rulesetInvariant, tryFixUnknownUniques)
 
         }
@@ -168,7 +173,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         checkUniques(ruleset.globalUniques, lines, rulesetSpecific, tryFixUnknownUniques)
 
-        if (ruleset.units.values.none { it.hasUnique(UniqueType.FoundCity, StateForConditionals.IgnoreConditionals) })
+        if (ruleset.units.values.none { it.isCityFounder() })
             lines += "No city-founding units in ruleset!"
 
         for (unit in ruleset.units.values) {
@@ -232,6 +237,13 @@ class RulesetValidator(val ruleset: Ruleset) {
             if (building.requiredBuilding != null && !ruleset.buildings.containsKey(building.requiredBuilding!!))
                 lines += "${building.name} requires ${building.requiredBuilding} which does not exist!"
             checkUniques(building, lines, rulesetSpecific, tryFixUnknownUniques)
+        }
+
+        for (specialist in ruleset.specialists.values){
+            for (gpp in specialist.greatPersonPoints)
+                if (gpp.key !in ruleset.units)
+                    lines.add("Specialist ${specialist.name} has greatPersonPoints for ${gpp.key}, which is not a unit in the ruleset!",
+                        RulesetErrorSeverity.Warning)
         }
 
         for (resource in ruleset.tileResources.values) {
@@ -336,7 +348,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                     lines += "Nonexistent building $building built by settlers when starting in ${era.name}"
             // todo the whole 'starting unit' thing needs to be redone, there's no reason we can't have a single list containing all the starting units.
             if (era.startingSettlerUnit !in ruleset.units
-                    && ruleset.units.values.none { it.hasUnique(UniqueType.FoundCity) })
+                    && ruleset.units.values.none { it.isCityFounder() })
                 lines += "Nonexistent unit ${era.startingSettlerUnit} marked as starting unit when starting in ${era.name}"
             if (era.startingWorkerCount != 0 && era.startingWorkerUnit !in ruleset.units
                     && ruleset.units.values.none { it.hasUnique(UniqueType.BuildImprovements) })

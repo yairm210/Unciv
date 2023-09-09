@@ -90,6 +90,7 @@ enum class KeyboardBinding(
     Automate(Category.UnitActions, 'm'),
     StopAutomation(Category.UnitActions,"Stop automation", 'm'),
     StopMovement(Category.UnitActions,"Stop movement", '.'),
+    ShowUnitDestination(Category.UnitActions, "Show unit destination", 'j'),
     Sleep(Category.UnitActions, 'f'),
     SleepUntilHealed(Category.UnitActions,"Sleep until healed", 'h'),
     Fortify(Category.UnitActions, 'f'),
@@ -156,6 +157,12 @@ enum class KeyboardBinding(
     CultureFocus(Category.CityScreen, "[${Stat.Culture.name}] Focus", KeyCharAndCode.ctrl('c')),
     FaithFocus(Category.CityScreen, "[${Stat.Faith.name}] Focus", KeyCharAndCode.UNKNOWN),
 
+    // CityScreenConstructionMenu (not quite cleanly) reuses RaisePriority/LowerPriority, plus:
+    AddConstructionTop(Category.CityScreenConstructionMenu, "Add to the top of the queue", 't'),
+    AddConstructionAll(Category.CityScreenConstructionMenu, "Add to the queue in all cities", KeyCharAndCode.ctrl('a')),
+    AddConstructionAllTop(Category.CityScreenConstructionMenu, "Add or move to the top in all cities", KeyCharAndCode.ctrl('t')),
+    RemoveConstructionAll(Category.CityScreenConstructionMenu, "Remove from the queue in all cities", KeyCharAndCode.ctrl('r')),
+
     // Popups
     Confirm(Category.Popups, "Confirm Dialog", 'y'),
     Cancel(Category.Popups, "Cancel Dialog", 'n'),
@@ -178,6 +185,7 @@ enum class KeyboardBinding(
             override fun checkConflictsIn() = sequenceOf(WorldScreen)
         },
         CityScreen,
+        CityScreenConstructionMenu, // Maybe someday a category hierarchy?
         Popups
         ;
         val label = unCamelCase(name)

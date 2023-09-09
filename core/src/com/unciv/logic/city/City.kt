@@ -16,6 +16,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
+import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
@@ -150,13 +151,13 @@ class City : IsPartOfGameInfoSerialization {
     fun isCapital(): Boolean = cityConstructions.getBuiltBuildings().any { it.hasUnique(UniqueType.IndicatesCapital) }
     fun isCoastal(): Boolean = centerTile.isCoastalTile()
 
-    fun capitalCityIndicator(): String {
+    fun capitalCityIndicator(): Building {
         val indicatorBuildings = getRuleset().buildings.values
             .asSequence()
             .filter { it.hasUnique(UniqueType.IndicatesCapital) }
 
         val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo == civ.civName }
-        return civSpecificBuilding?.name ?: indicatorBuildings.first().name
+        return civSpecificBuilding ?: indicatorBuildings.first()
     }
 
     fun isConnectedToCapital(connectionTypePredicate: (Set<String>) -> Boolean = { true }): Boolean {
@@ -202,19 +203,39 @@ class City : IsPartOfGameInfoSerialization {
     fun getCityResources(): ResourceSupplyList {
         val cityResources = ResourceSupplyList()
 
-        val resourceModifer = HashMap<String,Float>()
+        val resourceModifer = HashMap<String, Float>()
         for (resource in civ.gameInfo.ruleset.tileResources.values)
             resourceModifer[resource.name] = civ.getResourceModifier(resource)
 
+        getResourcesFromTiles(resourceModifer, cityResources)
+
+        getResourceFromUniqueImprovedTiles(cityResources, resourceModifer)
+
+        manageCityResourcesRequiredByBuildings(cityResources)
+
+        getCityResourcesFromUniqueBuildings(cityResources, resourceModifer)
+
+        if (civ.isCityState() && isCapital() && civ.cityStateResource != null) {
+            cityResources.add(
+                getRuleset().tileResources[civ.cityStateResource]!!,
+                "Mercantile City-State"
+            )
+        }
+
+        return cityResources
+    }
+
+    private fun getResourcesFromTiles(resourceModifer: HashMap<String, Float>, cityResources: ResourceSupplyList) {
         for (tileInfo in getTiles().filter { it.resource != null }) {
             val resource = tileInfo.tileResource
             val amount = getTileResourceAmount(tileInfo) * resourceModifer[resource.name]!!
             if (amount > 0) cityResources.add(resource, "Tiles", amount.toInt())
         }
+    }
 
-        for (tileInfo in getTiles()) {
+    private fun getResourceFromUniqueImprovedTiles(cityResources: ResourceSupplyList, resourceModifer: HashMap<String, Float>) {
+        for (tileInfo in getTiles().filter { it.getUnpillagedImprovement() != null }) {
             val stateForConditionals = StateForConditionals(civ, this, tile = tileInfo)
-            if (tileInfo.getUnpillagedImprovement() == null) continue
             val tileImprovement = tileInfo.getUnpillagedTileImprovement()
             for (unique in tileImprovement!!.getMatchingUniques(UniqueType.ProvidesResources, stateForConditionals)) {
                 val resource = getRuleset().tileResources[unique.params[1]] ?: continue
@@ -231,15 +252,19 @@ class City : IsPartOfGameInfoSerialization {
                 )
             }
         }
+    }
 
+    private fun manageCityResourcesRequiredByBuildings(cityResources: ResourceSupplyList) {
         val freeBuildings = civ.civConstructions.getFreeBuildings(id)
         for (building in cityConstructions.getBuiltBuildings()) {
             // Free buildings cost no resources
             if (building.name in freeBuildings) continue
             cityResources.subtractResourceRequirements(building.getResourceRequirementsPerTurn(), getRuleset(), "Buildings")
         }
+    }
 
-        for (unique in getLocalMatchingUniques(UniqueType.ProvidesResources, StateForConditionals(civ, this))) { // E.G "Provides [1] [Iron]"
+    private fun getCityResourcesFromUniqueBuildings(cityResources: ResourceSupplyList, resourceModifer: HashMap<String, Float>) {
+        for (unique in cityConstructions.builtBuildingUniqueMap.getMatchingUniques(UniqueType.ProvidesResources, StateForConditionals(civ, this))) { // E.G "Provides [1] [Iron]"
             val resource = getRuleset().tileResources[unique.params[1]]
                 ?: continue
             cityResources.add(
@@ -247,15 +272,6 @@ class City : IsPartOfGameInfoSerialization {
                 (unique.params[0].toFloat() * resourceModifer[resource.name]!!).toInt()
             )
         }
-
-        if (civ.isCityState() && isCapital() && civ.cityStateResource != null) {
-            cityResources.add(
-                getRuleset().tileResources[civ.cityStateResource]!!,
-                "Mercantile City-State"
-            )
-        }
-
-        return cityResources
     }
 
     /** Gets the number of resources available to this city
@@ -348,6 +364,10 @@ class City : IsPartOfGameInfoSerialization {
         val gppCounter = Counter<String>()
         for (entry in getGreatPersonPointsForNextTurn().values)
             gppCounter.add(entry)
+        // Remove all "gpp" values that are not valid units
+        for (key in gppCounter.keys.toSet())
+            if (key !in getRuleset().units)
+                gppCounter.remove(key)
         return gppCounter
     }
 
@@ -527,8 +547,12 @@ class City : IsPartOfGameInfoSerialization {
         getRuleset().buildings[buildingName]!!.cost / 10
 
     fun sellBuilding(buildingName: String) {
-        cityConstructions.removeBuilding(buildingName)
-        civ.addGold(getGoldForSellingBuilding(buildingName))
+        sellBuilding(getRuleset().buildings[buildingName]!!)
+    }
+
+    fun sellBuilding(building: Building) {
+        cityConstructions.removeBuilding(building)
+        civ.addGold(getGoldForSellingBuilding(building.name))
         hasSoldBuildingThisTurn = true
 
         population.unassignExtraPopulation() // If the building provided specialists, release them to other work
@@ -551,7 +575,6 @@ class City : IsPartOfGameInfoSerialization {
         return when (filter) {
             "in this city" -> true // Filtered by the way uniques are found
             "in all cities" -> true
-            "in other cities" -> true // Filtered by the way uniques are found
             "in all coastal cities" -> isCoastal()
             "in capital" -> isCapital()
             "in all non-occupied cities" -> !cityStats.hasExtraAnnexUnhappiness() || isPuppet
@@ -594,13 +617,14 @@ class City : IsPartOfGameInfoSerialization {
         uniqueType: UniqueType,
         stateForConditionals: StateForConditionals = StateForConditionals(civ, this)
     ): Sequence<Unique> {
-        return civ.getMatchingUniques(uniqueType, stateForConditionals, this) +
+        return civ.getMatchingUniques(uniqueType, stateForConditionals) +
                 getLocalMatchingUniques(uniqueType, stateForConditionals)
     }
 
+    // Uniques special to this city
     fun getLocalMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(civ, this)): Sequence<Unique> {
         return (
-            cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { !it.isAntiLocalEffect }
+            cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType).filter { it.isLocalEffect }
             + religion.getUniques().filter { it.isOfType(uniqueType) }
         ).filter {
             it.conditionalsApply(stateForConditionals)
@@ -608,6 +632,7 @@ class City : IsPartOfGameInfoSerialization {
     }
 
 
+    // Uniques coming from this city, but that should be provided globally
     fun getMatchingUniquesWithNonLocalEffects(uniqueType: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> {
         val uniques = cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
         // Memory performance showed that this function was very memory intensive, thus we only create the filter if needed

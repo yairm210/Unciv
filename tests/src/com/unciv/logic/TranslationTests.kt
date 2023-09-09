@@ -1,5 +1,5 @@
 //  Taken from https://github.com/TomGrill/gdx-testing
-package com.unciv.testing
+package com.unciv.logic
 
 import com.badlogic.gdx.Gdx
 import com.unciv.Constants
@@ -11,10 +11,11 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.TranslationEntry
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
-import com.unciv.models.translations.getPlaceholderParametersIgnoringLowerLevelBraces
+import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
+import com.unciv.testing.GdxTestRunner
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 import org.junit.Assert
@@ -243,24 +244,24 @@ class TranslationTests {
     @Test
     fun translationParameterExtractionForNestedBracesWorks() {
         Assert.assertEquals(listOf("New [York]"),
-            "The city of [New [York]]".getPlaceholderParametersIgnoringLowerLevelBraces())
+            "The city of [New [York]]".getPlaceholderParameters())
 
         // Closing braces without a matching opening brace - 'level 0' - are ignored
         Assert.assertEquals(listOf("New [York]"),
-            "The city of [New [York]]]".getPlaceholderParametersIgnoringLowerLevelBraces())
+            "The city of [New [York]]]".getPlaceholderParameters())
 
         // Opening braces without a matching closing brace mean that the term is never 'closed'
         // so there are no parameters
         Assert.assertEquals(listOf<String>(),
-            "The city of [[New [York]".getPlaceholderParametersIgnoringLowerLevelBraces())
+            "The city of [[New [York]".getPlaceholderParameters())
 
         // Supernesting
         val superNestedString = "The brother of [[my [best friend]] and [[America]'s greatest [Dad]]]"
         Assert.assertEquals(listOf("[my [best friend]] and [[America]'s greatest [Dad]]"),
-                superNestedString.getPlaceholderParametersIgnoringLowerLevelBraces())
+                superNestedString.getPlaceholderParameters())
         Assert.assertEquals(listOf("my [best friend]", "[America]'s greatest [Dad]"),
-        superNestedString.getPlaceholderParametersIgnoringLowerLevelBraces()[0]
-            .getPlaceholderParametersIgnoringLowerLevelBraces())
+        superNestedString.getPlaceholderParameters()[0]
+            .getPlaceholderParameters())
 
         UncivGame.Current = UncivGame()
         UncivGame.Current.settings = GameSettings()
@@ -282,7 +283,7 @@ class TranslationTests {
 
         debug("[Dad] and [my [best friend]]".getPlaceholderText())
         Assert.assertEquals(listOf("Dad","my [best friend]"),
-            "[Dad] and [my [best friend]]".getPlaceholderParametersIgnoringLowerLevelBraces())
+            "[Dad] and [my [best friend]]".getPlaceholderParameters())
         Assert.assertEquals("Father and indeed mine own closest ally", "[Dad] and [my [best friend]]".tr())
 
         // Reminder: "The brother of [[my [best friend]] and [[America]'s greatest [Dad]]]"

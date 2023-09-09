@@ -398,8 +398,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     // Vision
 
-    @Deprecated("as of 4.6.4", ReplaceWith("[+1] Sight <for [Embarked] units>\" OR \"[+1] Sight <when [Embarked]>"))
-    NormalVisionWhenEmbarked("Normal vision when embarked", UniqueTarget.Unit, UniqueTarget.Global),
     DefenceBonusWhenEmbarked("Defense bonus when embarked", UniqueTarget.Unit, UniqueTarget.Global),
     NoSight("No Sight", UniqueTarget.Unit),
     CanSeeOverObstacles("Can see over obstacles", UniqueTarget.Unit),
@@ -636,7 +634,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     /////// city conditionals
     ConditionalInThisCity("in this city", UniqueTarget.Conditional),
-    ConditionalInOtherCities("in other cities", UniqueTarget.Conditional),
     ConditionalCityWithBuilding("in cities with a [buildingFilter]", UniqueTarget.Conditional),
     ConditionalCityWithoutBuilding("in cities without a [buildingFilter]", UniqueTarget.Conditional),
     ConditionalPopulationFilter("in cities with at least [amount] [populationFilter]", UniqueTarget.Conditional),
@@ -716,6 +713,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     OneTimeUnitSpecialUpgrade("This Unit upgrades for free including special upgrades", UniqueTarget.UnitTriggerable),
     OneTimeUnitGainPromotion("This Unit gains the [promotion] promotion", UniqueTarget.UnitTriggerable),  // Not used in Vanilla
     SkipPromotion("Doing so will consume this opportunity to choose a Promotion", UniqueTarget.Promotion),
+    FreePromotion("This Promotion is free", UniqueTarget.Promotion),
 
     UnitsGainPromotion("[mapUnitFilter] units gain the [promotion] promotion", UniqueTarget.Triggerable),  // Not used in Vanilla
     FreeStatBuildings("Provides the cheapest [stat] building in your first [amount] cities for free", UniqueTarget.Triggerable),  // used in Policy
@@ -768,10 +766,18 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
         UniqueTarget.Tech, UniqueTarget.Terrain, UniqueTarget.Resource, UniqueTarget.Policy, UniqueTarget.Promotion,
         UniqueTarget.Nation, UniqueTarget.Ruins, flags = UniqueFlag.setOfHiddenToUsers),
 
+    // Declarative Mod compatibility (so far rudimentary):
+    ModIncompatibleWith("Mod is incompatible with [modFilter]", UniqueTarget.ModOptions),
+    ModIsAudioVisualOnly("Should only be used as permanent audiovisual mod", UniqueTarget.ModOptions),
+    ModIsAudioVisual("Can be used as permanent audiovisual mod", UniqueTarget.ModOptions),
+    ModIsNotAudioVisual("Cannot be used as permanent audiovisual mod", UniqueTarget.ModOptions),
+
     // endregion
 
     ///////////////////////////////////////////// region 99 DEPRECATED AND REMOVED /////////////////////////////////////////////
 
+    @Deprecated("as of 4.6.4", ReplaceWith("[+1] Sight <for [Embarked] units>\" OR \"[+1] Sight <when [Embarked]>"), DeprecationLevel.ERROR)
+    NormalVisionWhenEmbarked("Normal vision when embarked", UniqueTarget.Unit, UniqueTarget.Global),
     @Deprecated("as of 4.5.3", ReplaceWith("Empire enters a [amount]-turn Golden Age <by consuming this unit>"), DeprecationLevel.ERROR)
     StartGoldenAge("Can start an [amount]-turn golden age", UniqueTarget.Unit),
     @Deprecated("as of 4.5.2", ReplaceWith("Can instantly construct a [improvementName] improvement <by consuming this unit>"), DeprecationLevel.ERROR)
