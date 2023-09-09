@@ -874,14 +874,22 @@ object NextTurnAutomation {
 
         for (otherCiv in canSignDefensivePactCiv) {
             // Default setting is 3, this will be changed according to different civ.
-            if ((1..10).random() > 3) continue
-            //todo: Add more in depth evaluation here
-            val tradeLogic = TradeLogic(civInfo, otherCiv)
-            tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.defensivePact, TradeType.Treaty))
-            tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.defensivePact, TradeType.Treaty))
-
-            otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
+            if ((1..10).random() <= 1 && wantsToSignDefensivePact(civInfo, otherCiv)) {
+                //todo: Add more in depth evaluation here
+                val tradeLogic = TradeLogic(civInfo, otherCiv)
+                tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.defensivePact, TradeType.Treaty))
+                tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.defensivePact, TradeType.Treaty))
+    
+                otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
+            }
         }
+    }
+    
+    private fun wantsToSignDefensivePact(civInfo: Civilization, otherCiv: Civilization): Boolean {
+        if (civInfo.getDiplomacyManager(otherCiv).isRelationshipLevelLT(RelationshipLevel.Ally)) return false
+        val friendlyCivs = civInfo.getDiplomacyManager(otherCiv).getCommonKnownCivs().filter { it.getDiplomacyManager(civInfo).isRelationshipLevelGE(RelationshipLevel.Friend) }
+        if (friendlyCivs.any { it.getDiplomacyManager(otherCiv).isRelationshipLevelLT(RelationshipLevel.Favorable) }) return false
+        return true
     }
 
     private fun declareWar(civInfo: Civilization) {
