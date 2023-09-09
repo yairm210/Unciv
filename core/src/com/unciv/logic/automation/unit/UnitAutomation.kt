@@ -164,10 +164,10 @@ object UnitAutomation {
                 (UncivGame.Current.settings.automatedUnitsChoosePromotions || unit.civ.isAI())) {
             val availablePromotions = unit.promotions.getAvailablePromotions()
                 .filterNot { it.hasUnique(UniqueType.SkipPromotion) }
-            if (availablePromotions.any())
-                unit.promotions.addPromotion(
-                    availablePromotions.filter { it.hasUnique(UniqueType.FreePromotion) }.toList().randomOrNull()?.name
-                        ?: availablePromotions.toList().random().name)
+            if (availablePromotions.none()) break
+            unit.promotions.addPromotion(
+                availablePromotions.filter { it.hasUnique(UniqueType.FreePromotion) }.toList().randomOrNull()?.name
+                    ?: availablePromotions.toList().random().name)
             else break
         }
 
