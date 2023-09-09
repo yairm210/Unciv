@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.HolidayDates
@@ -156,12 +157,13 @@ class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
             val maxWidth = cityScreen.stage.width / 2
             fun line(msg: String, size: Int) {
                 val label = ColorMarkupLabel(msg, size)
+                label.setAlignment(Align.center)
                 label.wrap = true
                 add(label).maxWidth(maxWidth).row()
             }
             line("«GOLD»{You gain [$fakeGold] gold as reward for finding an exploit!}«»", Constants.headingFontSize)
             add().minHeight(100f).row()
-            line("«RED»{April Fools day! Nope, no gold for you!}«»", 9)
+            line("«RED»{April Fools day! Nope, no gold for you!}«»", 12)
             add().minHeight(20f).row()
             addCloseButton("Aww...")
             open()
