@@ -16,21 +16,13 @@ class DefensivePactTests {
     private val a = addCiv()
     private val b = addCiv()
     private val c = addCiv()
-    private val d = addCiv()
-    private val e = addCiv()
+
 
 
     private fun meetAll(){
         a.diplomacyFunctions.makeCivilizationsMeet(b)
         a.diplomacyFunctions.makeCivilizationsMeet(c)
-        a.diplomacyFunctions.makeCivilizationsMeet(d)
-        a.diplomacyFunctions.makeCivilizationsMeet(e)
         b.diplomacyFunctions.makeCivilizationsMeet(c)
-        b.diplomacyFunctions.makeCivilizationsMeet(d)
-        b.diplomacyFunctions.makeCivilizationsMeet(e)
-        c.diplomacyFunctions.makeCivilizationsMeet(d)
-        c.diplomacyFunctions.makeCivilizationsMeet(e)
-        d.diplomacyFunctions.makeCivilizationsMeet(e)
     }
     
     @Test 
