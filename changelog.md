@@ -1,3 +1,11 @@
+## 4.8.3
+
+Allow unique parameters to contain square brackets
+
+Library updates for performance and stability
+
+Targetting refactor - By Framonti
+
 ## 4.8.2
 
 performance: Don't autoupdate stale multiplayer games (more than a week old)
