@@ -61,7 +61,7 @@ object UniqueTriggerActivation {
 
                 val limit = unit.getMatchingUniques(UniqueType.MaxNumberBuildable)
                     .map { it.params[0].toInt() }.minOrNull()
-                if (limit!=null && limit <= civInfo.units.getCivUnits().count { it.name==unitName })
+                if (limit!=null && limit <= civInfo.units.getCivUnits().count { it.name == unitName })
                     return false
 
                 val placedUnit = if (city != null || tile == null)
@@ -88,10 +88,13 @@ object UniqueTriggerActivation {
 
                 val limit = unit.getMatchingUniques(UniqueType.MaxNumberBuildable)
                     .map { it.params[0].toInt() }.minOrNull()
+                val unitCount = civInfo.units.getCivUnits().count { it.name == unitName }
                 val amountFromTriggerable = unique.params[0].toInt()
-                val actualAmount =
-                        if (limit==null) amountFromTriggerable
-                        else civInfo.units.getCivUnits().count { it.name==unitName } - limit
+                val actualAmount = when {
+                    limit == null -> amountFromTriggerable
+                    amountFromTriggerable + unitCount > limit -> unitCount - limit
+                    else -> amountFromTriggerable
+                }
 
                 if (actualAmount <= 0) return false
 
