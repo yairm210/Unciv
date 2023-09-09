@@ -168,7 +168,6 @@ object UnitAutomation {
             unit.promotions.addPromotion(
                 availablePromotions.filter { it.hasUnique(UniqueType.FreePromotion) }.toList().randomOrNull()?.name
                     ?: availablePromotions.toList().random().name)
-            else break
         }
 
         //This allows for military units with certain civilian abilities to behave as civilians in peace and soldiers in war
