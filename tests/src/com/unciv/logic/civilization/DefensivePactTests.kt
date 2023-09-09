@@ -83,3 +83,5 @@ class DefensivePactTests {
         Assert.assertTrue(c.getDiplomacyManager(a).hasModifier(DiplomaticModifiers.BetrayedDefensivePact))
     }
 }
+
+
