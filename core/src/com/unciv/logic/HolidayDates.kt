@@ -31,6 +31,9 @@ object HolidayDates {
         },
         Xmas {
             override fun getByYear(year: Int) = DateRange.of(year, 12, 24, 4)
+        },
+        AprilFools {
+            override fun getByYear(year: Int) = DateRange.of(year, 4, 1)
         }
         ;
 
