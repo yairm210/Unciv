@@ -7,6 +7,7 @@ import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
+import com.unciv.ui.components.extensions.yieldAllNotNull
 
 class CivConstructions : IsPartOfGameInfoSerialization {
 
@@ -57,16 +58,21 @@ class CivConstructions : IsPartOfGameInfoSerialization {
         addFreeSpecificBuildings()
     }
 
-    fun getFreeBuildings(cityId: String): HashSet<String> {
-        val toReturn = freeBuildings[cityId] ?: hashSetOf()
+    /** Common to [hasFreeBuilding] and [getFreeBuildings] - 'has' doesn't need the whole set, one enumeration is enough */
+    private fun getFreeBuildingsSequence(cityId: String) = sequence {
+        yieldAllNotNull(freeBuildings[cityId])
         for (city in civInfo.cities) {
-            val freeBuildingsProvided =
-                city.cityConstructions.freeBuildingsProvidedFromThisCity[cityId]
-            if (freeBuildingsProvided != null)
-                toReturn.addAll(freeBuildingsProvided)
+            yieldAllNotNull(city.cityConstructions.freeBuildingsProvidedFromThisCity[cityId])
         }
-        return toReturn
     }
+
+    /** Gets a Set of all building names the [cityId] city has for free, from nationwide sources or buildings in other cities */
+    fun getFreeBuildings(cityId: String) =
+        getFreeBuildingsSequence(cityId).toSet()
+
+    /** Tests whether the [cityId] city has [building] for free, from nationwide sources or buildings in other cities */
+    fun hasFreeBuilding(cityId: String, building: String) =
+        getFreeBuildingsSequence(cityId).any { it == building }
 
     private fun addFreeBuilding(cityId: String, building: String) {
         if (!freeBuildings.containsKey(cityId))

@@ -109,7 +109,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     fun getDescription(city: City, showAdditionalInfo: Boolean): String {
         val stats = getStats(city)
         val translatedLines = ArrayList<String>() // Some translations require special handling
-        val isFree = name in city.civ.civConstructions.getFreeBuildings(city.id)
+        val isFree = city.civ.civConstructions.hasFreeBuilding(city.id, name)
         if (uniqueTo != null) translatedLines += if (replaces == null) "Unique to [$uniqueTo]".tr()
             else "Unique to [$uniqueTo], replaces [$replaces]".tr()
         val missingUnique = getMatchingUniques(UniqueType.RequiresBuildingInAllCities).firstOrNull()
@@ -467,7 +467,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         for (unique in uniqueObjects) {
             if (unique.type != UniqueType.OnlyAvailableWhen &&
                 !unique.conditionalsApply(StateForConditionals(civ, cityConstructions.city))) continue
-                
+
             @Suppress("NON_EXHAUSTIVE_WHEN")
             when (unique.type) {
                 // for buildings that are created as side effects of other things, and not directly built,
