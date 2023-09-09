@@ -21,8 +21,8 @@ class UnitMovement(val unit: MapUnit) {
             return civInfo.enemyMovementPenaltyUniques!!.sumOf {
                 if (it.type!! == UniqueType.EnemyUnitsSpendExtraMovement
                         && enemyUnit.matchesFilter(it.params[0]))
-                    it.params[1].toInt()
-                else 0
+                    it.params[1].toDouble()
+                else 0.0
             }.toFloat()
         }
         return 0f // should not reach this point
@@ -74,7 +74,7 @@ class UnitMovement(val unit: MapUnit) {
         if (unit.cache.ignoresTerrainCost) return 1f + extraCost
         if (areConnectedByRiver) return 100f  // Rivers take the entire turn to cross
 
-        val terrainCost = to.lastTerrain.movementCost.toFloat()
+        val terrainCost = to.lastTerrain.movementCost
 
         if (unit.cache.noTerrainMovementUniques)
             return terrainCost + extraCost
@@ -277,7 +277,7 @@ class UnitMovement(val unit: MapUnit) {
         movementTreeParents[currentTile] = null
 
         var distance = 1
-        val unitMaxMovement = unit.getMaxMovement().toFloat()
+        val unitMaxMovement = unit.getMaxMovement()
         val newTilesToCheck = ArrayList<Tile>()
         val visitedTiles: HashSet<Tile> = hashSetOf(currentTile)
         val civilization = unit.civ

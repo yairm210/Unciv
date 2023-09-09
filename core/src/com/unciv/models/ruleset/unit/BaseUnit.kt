@@ -30,7 +30,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     override var cost: Int = -1
     override var hurryCostModifier: Int = 0
-    var movement: Int = 0
+    var movement: Float = 0f
     var strength: Int = 0
     var rangedStrength: Int = 0
     var religiousStrength: Int = 0
@@ -363,7 +363,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         // Replicates the formula from civ V, which is a lower multiplier than probably intended, because math
         // They did fix it in BNW so it was completely bugged and always 1, again math
-        power = (power * movement.toFloat().pow(0.3f))
+        power = (power * movement.pow(0.3f))
 
         if (hasUnique(UniqueType.SelfDestructs))
             power /= 2

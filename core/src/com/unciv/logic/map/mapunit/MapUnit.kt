@@ -23,7 +23,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stats
 import com.unciv.ui.components.extensions.filterAndLogic
-import java.text.DecimalFormat
+import com.unciv.ui.components.extensions.toOneDecimalString
 import kotlin.math.pow
 import kotlin.math.ulp
 
@@ -193,8 +193,8 @@ class MapUnit : IsPartOfGameInfoSerialization {
         get() = baseUnit.type
 
     fun baseUnit(): BaseUnit = baseUnit
-    fun getMovementString(): String =
-        DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + getMaxMovement()
+    fun getMovementString(): String = currentMovement.toOneDecimalString() +
+            "/" + getMaxMovement().toOneDecimalString()
 
     fun getTile(): Tile = currentTile
 
@@ -257,15 +257,15 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
 
-    fun getMaxMovement(): Int {
+    fun getMaxMovement(): Float {
         var movement =
-            if (isEmbarked()) 2
+            if (isEmbarked()) 2f
             else baseUnit.movement
 
         movement += getMatchingUniques(UniqueType.Movement, checkCivInfoUniques = true)
-            .sumOf { it.params[0].toInt() }
+            .sumOf { it.params[0].toDouble() }.toFloat()
 
-        if (movement < 1) movement = 1
+        if (movement < 1f) movement = 1f
 
         // Hakkapeliitta movement boost
         // For every double-stacked tile, check if our cohabitant can boost our speed
@@ -281,7 +281,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
     fun hasUnitMovedThisTurn(): Boolean {
-        val max = getMaxMovement().toFloat()
+        val max = getMaxMovement()
         return currentMovement < max - max.ulp
     }
 
@@ -463,7 +463,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
 
     fun getTriggeredUniques(trigger: UniqueType,
                             stateForConditionals: StateForConditionals = StateForConditionals(civInfo = civ, unit = this)): Sequence<Unique> {
-        return getUniques().filter { it.conditionals.any { it.type == trigger } && it.conditionalsApply(stateForConditionals) }
+        return getUniques().filter { unique ->
+            unique.conditionals.any { it.type == trigger } && unique.conditionalsApply(stateForConditionals)
+        }
     }
 
     fun useMovementPoints(amount: Float) {
@@ -533,8 +535,9 @@ class MapUnit : IsPartOfGameInfoSerialization {
             else -> 10 // Enemy territory
         }
 
-        val mayHeal = healing > 0 || (tile.isWater && hasUnique(UniqueType.HealsOutsideFriendlyTerritory, checkCivInfoUniques = true))
-        if (!mayHeal) return healing
+        // Not checking tile.isWater because that's the only branch in above `when` to give 0 healing
+        val mayHeal = healing > 0 || (hasUnique(UniqueType.HealsOutsideFriendlyTerritory, checkCivInfoUniques = true))
+        if (!mayHeal) return 0
 
         healing += getMatchingUniques(UniqueType.Heal, checkCivInfoUniques = true).sumOf { it.params[0].toInt() }
 
@@ -549,7 +552,7 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
 
         val maxAdjacentHealingBonus = currentTile.neighbors
-            .flatMap { it.getUnits().asSequence() }.filter { it.civ == civ }
+            .flatMap { it.getUnits() }.filter { it.civ == civ }
             .map { it.adjacentHealingBonus() }.maxOrNull()
         if (maxAdjacentHealingBonus != null)
             healing += maxAdjacentHealingBonus

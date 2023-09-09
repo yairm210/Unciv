@@ -10,22 +10,23 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.AutoScrollPane
-import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.brighten
 import com.unciv.ui.components.extensions.darken
-import com.unciv.ui.components.input.keyShortcuts
-import com.unciv.ui.components.input.onActivation
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.pad
 import com.unciv.ui.components.extensions.surroundWithCircle
 import com.unciv.ui.components.extensions.toLabel
+import com.unciv.ui.components.extensions.toOneDecimalString
+import com.unciv.ui.components.extensions.toPercentString
+import com.unciv.ui.components.input.KeyCharAndCode
 import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
-import java.text.DecimalFormat
 import kotlin.math.max
 
 class DetailedStatsPopup(
@@ -40,9 +41,6 @@ class DetailedStatsPopup(
 
     private val colorTotal: Color = Color.BLUE.brighten(0.5f)
     private val colorSelector: Color = Color.GREEN.darken(0.5f)
-
-    private val percentFormatter = DecimalFormat("0.#%").apply { positivePrefix = "+"; multiplier = 1 }
-    private val decimalFormatter = DecimalFormat("0.#")
 
     init {
         headerTable.defaults().pad(3f, 0f)
@@ -283,6 +281,6 @@ class DetailedStatsPopup(
         return tbl
     }
 
-    private fun Float.toPercentLabel() = percentFormatter.format(this).toLabel()
-    private fun Float.toOneDecimalLabel() = decimalFormatter.format(this).toLabel()
+    private fun Float.toPercentLabel() = toPercentString().toLabel()
+    private fun Float.toOneDecimalLabel() = toOneDecimalString().toLabel()
 }

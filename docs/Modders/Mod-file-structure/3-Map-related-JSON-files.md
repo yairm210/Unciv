@@ -6,22 +6,22 @@ This file lists the base terrains, terrain features and natural wonders that can
 
 Each terrain entry can have the following properties:
 
-| Attribute | Type | Optional | Notes |
-| --------- | ---- | -------- | ----- |
-| name | String | Required |  |
-| type | Enum | Required | Land, Water, TerrainFeature, NaturalWonder |
-| occursOn | List | Default none | Only for terrain features and Natural Wonders: The baseTerrain it can be placed on |
-| turnsInto  | String | Default none | Only for Natural Wonders: After placing the Natural Wonder its base terrain is changed to this |
-| weight | Integer | Default 10 | Only for Natural Wonders: _relative_ weight it will be picked by the map generator |
-| `<stats>` | Float | Optional | Per-turn yield or bonus yield for the tile, see [Stats](#stats) |
-| overrideStats | Boolean | Default false | If on, a feature's yields replace any yield from underlying terrain instead of adding to it |
-| unbuildable | Boolean | Default false | If true, nothing can be built here - not even resource improvements |
-| impassable | Boolean | Default false | no unit can enter unless it has a special unique |
-| movementCost | Integer | Default 1 | base movement cost |
-| defenceBonus | Float | Default 0 | combat bonus for units being attacked here |
+| Attribute | Type             | Optional | Notes |
+| --------- |------------------| -------- | ----- |
+| name | String           | Required |  |
+| type | Enum             | Required | Land, Water, TerrainFeature, NaturalWonder |
+| occursOn | List             | Default none | Only for terrain features and Natural Wonders: The baseTerrain it can be placed on |
+| turnsInto  | String           | Default none | Only for Natural Wonders: After placing the Natural Wonder its base terrain is changed to this |
+| weight | Integer          | Default 10 | Only for Natural Wonders: _relative_ weight it will be picked by the map generator |
+| `<stats>` | Float            | Optional | Per-turn yield or bonus yield for the tile, see [Stats](#stats) |
+| overrideStats | Boolean          | Default false | If on, a feature's yields replace any yield from underlying terrain instead of adding to it |
+| unbuildable | Boolean          | Default false | If true, nothing can be built here - not even resource improvements |
+| impassable | Boolean          | Default false | no unit can enter unless it has a special unique |
+| movementCost | Float (>0)       | Default 1 | base movement cost |
+| defenceBonus | Float            | Default 0 | combat bonus for units being attacked here |
 | RGB | List Integer * 3 | Default 'Gold' | RGB color for 'Default' tileset display |
-| uniques | List | Default empty | List of effects, [see here](../uniques.md#terrain-uniques) |
-| civilopediaText | List | Default empty | see [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
+| uniques | List             | Default empty | List of effects, [see here](../uniques.md#terrain-uniques) |
+| civilopediaText | List             | Default empty | see [civilopediaText chapter](5-Miscellaneous-JSON-files.md#civilopedia-text) |
 
 
 ## TileImprovements.json

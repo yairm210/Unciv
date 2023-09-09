@@ -573,7 +573,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "Enemy [mapUnitFilter] units must spend [amount] extra movement points when inside your territory"
+??? example  "Enemy [mapUnitFilter] units must spend [fractionalAmount] extra movement points when inside your territory"
 	Example: "Enemy [Wounded] units must spend [3] extra movement points when inside your territory"
 
 	Applicable to: Global
@@ -772,7 +772,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
-??? example  "[amount] Movement"
+??? example  "[fractionalAmount] Movement"
 	Example: "[3] Movement"
 
 	Applicable to: Global, Unit
@@ -871,12 +871,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
-??? example  "[amount] Movement point cost to disembark"
+??? example  "[fractionalAmount] Movement point cost to disembark"
 	Example: "[3] Movement point cost to disembark"
 
 	Applicable to: Global, Unit
 
-??? example  "[amount] Movement point cost to embark"
+??? example  "[fractionalAmount] Movement point cost to embark"
 	Example: "[3] Movement point cost to embark"
 
 	Applicable to: Global, Unit
@@ -1537,7 +1537,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Doesn't generate naturally"
 	Applicable to: Terrain, Resource
 
-??? example  "Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]"
+??? example  "Occurs at temperature between [fractionalAmount] and [fractionalAmount] and humidity between [fractionalAmount] and [fractionalAmount]"
 	Example: "Occurs at temperature between [3] and [3] and humidity between [3] and [3]"
 
 	Applicable to: Terrain, Resource
@@ -2113,7 +2113,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;by consuming this unit&gt;"
 	Applicable to: UnitActionModifier
 
-??? example  "&lt;for [amount] movement&gt;"
+??? example  "&lt;for [fractionalAmount] movement&gt;"
 	Example: "&lt;for [3] movement&gt;"
 
 	Applicable to: UnitActionModifier
@@ -2146,6 +2146,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[costOrStrength]: `Cost` or `Strength`.
 *[era]: The name of any era.
 *[foundingOrEnhancing]: `founding` or `enhancing`.
+*[fractionalAmount]: This indicates a fractional number, possibly with a + or - sign, such as `2`, `+13.1`, or `-3.9`.
 *[improvementName]: The name of any improvement.
 *[modFilter]: A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive.
 *[policy]: The name of any policy.

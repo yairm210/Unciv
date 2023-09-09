@@ -25,6 +25,7 @@ import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.removeConditionals
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.extensions.toOneDecimalString
 import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.hasOpenPopups
 import com.unciv.ui.screens.pickerscreens.ImprovementPickerScreen
@@ -711,17 +712,17 @@ object UnitActions {
         )
     }
 
-    fun getMovementPointsToUse(actionUnique: Unique): Int {
+    fun getMovementPointsToUse(actionUnique: Unique): Float {
         val movementCost = actionUnique.conditionals
             .filter { it.type == UniqueType.UnitActionMovementCost }
-            .minOfOrNull { it.params[0].toInt() }
+            .minOfOrNull { it.params[0].toFloat() }
         if (movementCost != null) return movementCost
-        return 1
+        return 1f
     }
 
     fun activateSideEffects(unit: MapUnit, actionUnique: Unique){
         val movementCost = getMovementPointsToUse(actionUnique)
-        unit.useMovementPoints(movementCost.toFloat())
+        unit.useMovementPoints(movementCost)
 
         for (conditional in actionUnique.conditionals){
             when (conditional.type){
@@ -765,8 +766,8 @@ object UnitActions {
 
     fun actionTextWithSideEffects(originalText: String, actionUnique: Unique, unit: MapUnit): String {
         val sideEffectString = getSideEffectString(unit, actionUnique)
-        if (sideEffectString == "") return originalText
-        else return "{$originalText} $sideEffectString"
+        return if (sideEffectString.isEmpty()) originalText
+            else "{$originalText} $sideEffectString"
     }
 
     fun getSideEffectString(unit:MapUnit, actionUnique: Unique): String {
@@ -775,10 +776,11 @@ object UnitActions {
         val maxUsages = getMaxUsages(unit, actionUnique)
         if (maxUsages!=null) effects += "${usagesLeft(unit, actionUnique)}/$maxUsages"
 
-        if (actionUnique.conditionals.any { it.type == UniqueType.UnitActionConsumeUnit }
-                || actionUnique.conditionals.any { it.type == UniqueType.UnitActionAfterWhichConsumed } && usagesLeft(unit, actionUnique) == 1
-                ) effects += Fonts.death.toString()
-        else effects += getMovementPointsToUse(actionUnique).toString() + Fonts.movement
+        val hasConsumeUnit = actionUnique.conditionals.any { it.type == UniqueType.UnitActionConsumeUnit }
+        val isLastAfterWhichConsumed = actionUnique.conditionals.any { it.type == UniqueType.UnitActionAfterWhichConsumed }
+            && usagesLeft(unit, actionUnique) == 1
+        effects += if (hasConsumeUnit || isLastAfterWhichConsumed) Fonts.death.toString()
+            else getMovementPointsToUse(actionUnique).toOneDecimalString() + Fonts.movement
 
 
         return if (effects.isEmpty()) ""

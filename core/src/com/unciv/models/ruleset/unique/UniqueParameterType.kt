@@ -47,6 +47,14 @@ enum class UniqueParameterType(
         }
     },
 
+    FractionalNumber("fractionalAmount", "3", "This indicates a fractional number, possibly with a + or - sign, such as `2`, `+13.1`, or `-3.9`") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+            UniqueType.UniqueComplianceErrorSeverity? {
+            return if (parameterText.toFloatOrNull() == null) UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+            else null
+        }
+    },
+
     RelativeNumber("relativeAmount", "+20", "This indicates a number, usually with a + or - sign, such as `+25` (this kind of parameter is often followed by '%' which is nevertheless not part of the value)") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {

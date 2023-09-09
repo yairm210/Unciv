@@ -3,6 +3,7 @@ package com.unciv.ui.components.extensions
 import com.badlogic.gdx.math.Vector2
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.Fonts
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.temporal.ChronoUnit
@@ -18,6 +19,13 @@ fun Int.toPercent() = toFloat().toPercent()
 
 /** Translate a percentage number - e.g. 25 - to the multiplication value - e.g. 1.25f */
 fun Float.toPercent() = 1 + this/100
+
+private val percentFormatter = DecimalFormat("0.#%").apply { positivePrefix = "+"; multiplier = 1 }
+private val decimalFormatter = DecimalFormat("0.#")
+/** Format a percentage (1..100) with sign, percent symbol and up to 1 fractional digit */
+fun Float.toPercentString(): String = percentFormatter.format(this)
+/** Format a number with optional sign and up to 1 fractional digit */
+fun Float.toOneDecimalString(): String = decimalFormatter.format(this)
 
 /** Convert a [resource name][this] into "Consumes [amount] $resource" string (untranslated) */
 fun String.getConsumesAmountString(amount: Int, isStockpiled:Boolean): String {

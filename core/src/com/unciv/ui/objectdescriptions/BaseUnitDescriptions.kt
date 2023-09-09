@@ -14,11 +14,10 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.getConsumesAmountString
-import com.unciv.ui.components.extensions.toPercent
+import com.unciv.ui.components.extensions.toOneDecimalString
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
-import kotlin.math.pow
 
 object BaseUnitDescriptions {
 
@@ -26,7 +25,7 @@ object BaseUnitDescriptions {
         val infoList = mutableListOf<String>()
         if (baseUnit.strength != 0) infoList += "${baseUnit.strength}${Fonts.strength}"
         if (baseUnit.rangedStrength != 0) infoList += "${baseUnit.rangedStrength}${Fonts.rangedStrength}"
-        if (baseUnit.movement != 2) infoList += "${baseUnit.movement}${Fonts.movement}"
+        if (baseUnit.movement != 2f) infoList += "${baseUnit.movement.toOneDecimalString()}${Fonts.movement}"
         for (promotion in baseUnit.promotions)
             infoList += promotion.tr()
         if (baseUnit.replacementTextForUniques != "") infoList += baseUnit.replacementTextForUniques
@@ -53,7 +52,7 @@ object BaseUnitDescriptions {
             if (baseUnit.rangedStrength != 0)
                 strengthLine += "${baseUnit.rangedStrength}${Fonts.rangedStrength}, ${baseUnit.range}${Fonts.range}, "
         }
-        lines += "$strengthLine${baseUnit.movement}${Fonts.movement}"
+        lines += "$strengthLine${baseUnit.movement.toOneDecimalString()}${Fonts.movement}"
 
         if (baseUnit.replacementTextForUniques != "") lines += baseUnit.replacementTextForUniques
         else for (unique in baseUnit.uniqueObjects.filterNot {
@@ -84,8 +83,8 @@ object BaseUnitDescriptions {
             stats += "${baseUnit.rangedStrength}${Fonts.rangedStrength}"
             stats += "${baseUnit.range}${Fonts.range}"
         }
-        if (baseUnit.movement != 0 && ruleset.unitTypes[baseUnit.unitType]?.isAirUnit() != true)
-            stats += "${baseUnit.movement}${Fonts.movement}"
+        if (baseUnit.movement != 0f && ruleset.unitTypes[baseUnit.unitType]?.isAirUnit() != true)
+            stats += "${baseUnit.movement.toOneDecimalString()}${Fonts.movement}"
         if (stats.isNotEmpty())
             textList += FormattedLine(stats.joinToString(", "))
 
@@ -270,7 +269,7 @@ object BaseUnitDescriptions {
         }
 
         if (betterUnit.movement != originalUnit.movement)
-            yield("${Fonts.movement} {[${betterUnit.movement}] vs [${originalUnit.movement}]}" to null)
+            yield("${Fonts.movement} {[${betterUnit.movement.toOneDecimalString()}] vs [${originalUnit.movement.toOneDecimalString()}]}" to null)
 
         for (resource in originalUnit.getResourceRequirementsPerTurn().keys)
             if (!betterUnit.getResourceRequirementsPerTurn().containsKey(resource)) {

@@ -8,8 +8,9 @@ import com.unciv.models.ruleset.RulesetStatsObject
 import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.components.extensions.colorFromRGB
+import com.unciv.ui.components.extensions.toOneDecimalString
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 
 class Terrain : RulesetStatsObject() {
 
@@ -34,8 +35,8 @@ class Terrain : RulesetStatsObject() {
     /** RGB color of base terrain  */
     @Suppress("PropertyName")   // RGB is expected to be in caps
     var RGB: List<Int>? = null
-    var movementCost = 1
-    var defenceBonus:Float = 0f
+    var movementCost = 1f
+    var defenceBonus = 0f
     var impassable = false
 
     @Transient
@@ -125,7 +126,7 @@ class Terrain : RulesetStatsObject() {
 
         textList += FormattedLine()
         textList += if (impassable) FormattedLine(Constants.impassable, color="#A00")
-                    else FormattedLine("{Movement cost}: $movementCost")
+                    else FormattedLine("{Movement cost}: ${movementCost.toOneDecimalString()}")
 
         if (defenceBonus != 0f)
             textList += FormattedLine("{Defence bonus}: ${(defenceBonus * 100).toInt()}%")

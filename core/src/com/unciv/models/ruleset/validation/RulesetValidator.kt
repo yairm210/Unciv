@@ -59,6 +59,8 @@ class RulesetValidator(val ruleset: Ruleset) {
                 lines += "${unit.name} is a military unit but has no assigned strength!"
             if (unit.isRanged() && unit.rangedStrength == 0 && !unit.hasUnique(UniqueType.CannotAttack))
                 lines += "${unit.name} is a ranged unit but has no assigned rangedStrength!"
+            if (unit.movement < 0f)
+                lines += "${unit.name} has negative movement!"
 
             checkUniques(unit, lines, rulesetInvariant, tryFixUnknownUniques)
         }
@@ -151,6 +153,12 @@ class RulesetValidator(val ruleset: Ruleset) {
             for (otherPromotion in ruleset.unitPromotions.values)
                 if (promotion != otherPromotion && promotion.column == otherPromotion.column && promotion.row == otherPromotion.row)
                     lines += "Promotions ${promotion.name} and ${otherPromotion.name} have the same position: ${promotion.row}/${promotion.column}"
+        }
+
+        for (terrain in ruleset.terrains.values) {
+            if (terrain.movementCost <= 0f)
+                lines += "Terrain ${terrain.name} has zero or negative movement cost!"
+            checkUniques(terrain, lines, rulesetInvariant, tryFixUnknownUniques)
         }
 
         for (resource in ruleset.tileResources.values) {

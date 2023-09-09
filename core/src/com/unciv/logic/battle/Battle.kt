@@ -33,6 +33,7 @@ import com.unciv.ui.screens.worldscreen.bottombar.BattleTable
 import com.unciv.utils.debug
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.roundToInt
 import kotlin.math.ulp
 import kotlin.random.Random
 
@@ -1170,7 +1171,7 @@ object Battle {
         If 3-Tiles the defender can withdraw to is null, we choose this from 2-Tiles the defender can withdraw to.
         If 2-Tiles the defender can withdraw to is also null, we return false.
         */
-        val percentChance = baseWithdrawChance - max(0, (attackBaseUnit.movement-2)) * 20 -
+        val percentChance = baseWithdrawChance - (max(0f, (attackBaseUnit.movement - 2f)) * 20).roundToInt() -
                 fromTile.neighbors.filterNot { it == attTile || it in attTile.neighbors }.count { canNotWithdrawTo(it) } * 20
         // Get a random number in [0,100) : if the number <= percentChance, defender will withdraw from melee
         if (Random( // 'randomness' is consistent for turn and tile, to avoid save-scumming

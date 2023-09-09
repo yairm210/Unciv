@@ -78,7 +78,7 @@ class MapUnitCache(private val mapUnit: MapUnit) {
         ignoresTerrainCost = mapUnit.hasUnique(UniqueType.IgnoresTerrainCost)
         ignoresZoneOfControl = mapUnit.hasUnique(UniqueType.IgnoresZOC)
         roughTerrainPenalty = mapUnit.hasUnique(UniqueType.RoughTerrainPenalty)
-        cannotMove = mapUnit.hasUnique(UniqueType.CannotMove) || mapUnit.baseUnit.movement == 0
+        cannotMove = mapUnit.hasUnique(UniqueType.CannotMove) || mapUnit.baseUnit.movement == 0f
         canMoveOnWater = mapUnit.hasUnique(UniqueType.CanMoveOnWater)
 
         doubleMovementInTerrain.clear()

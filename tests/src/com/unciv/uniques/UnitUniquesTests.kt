@@ -13,7 +13,6 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.math.roundToInt
 
 @RunWith(GdxTestRunner::class)
 class UnitUniquesTests {
@@ -64,7 +63,7 @@ class UnitUniquesTests {
         // Place an Engineer and see if he could create a Manufactory
         val unitTile = game.getTile(Vector2(1f,0f))
         val unit = game.addUnit("Great Engineer", civ, unitTile)
-        unit.currentMovement = unit.baseUnit.movement.toFloat()  // Required!
+        unit.currentMovement = unit.baseUnit.movement  // Required!
         val actionsWithoutIron = try {
             getImprovementConstructionActions(unit, unitTile)
         } catch (ex: Throwable) {
@@ -107,7 +106,7 @@ class UnitUniquesTests {
 
         val baseMovement = general.baseUnit.movement
         UnitTurnManager(general).startTurn()
-        val actualMovement = general.currentMovement.roundToInt()
+        val actualMovement = general.currentMovement
         val boosterMovement = boostingUnit.baseUnit.movement
 
         Assert.assertEquals("Great General stacked with a Hakkapeliitta should have increased movement points.", boosterMovement, actualMovement)

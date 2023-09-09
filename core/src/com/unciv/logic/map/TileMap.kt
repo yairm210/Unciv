@@ -576,7 +576,7 @@ class TileMap(initialCapacity: Int = 10) : IsPartOfGameInfoSerialization {
 
         // only once we know the unit can be placed do we add it to the civ's unit list
         unit.putInTile(unitToPlaceTile)
-        unit.currentMovement = unit.getMaxMovement().toFloat()
+        unit.currentMovement = unit.getMaxMovement()
         unit.addMovementMemory()
 
         // Only once we add the unit to the civ we can activate addPromotion, because it will try to update civ viewable tiles

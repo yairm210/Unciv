@@ -135,7 +135,7 @@ object GameStarter {
 
         // set max starting movement for units loaded from map
         for (tile in tileMap.values) {
-            for (unit in tile.getUnits()) unit.currentMovement = unit.getMaxMovement().toFloat()
+            for (unit in tile.getUnits()) unit.currentMovement = unit.getMaxMovement()
         }
 
         // This triggers the one-time greeting from Nation.startIntroPart1/2
