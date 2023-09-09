@@ -92,7 +92,7 @@ object UniqueTriggerActivation {
                 val amountFromTriggerable = unique.params[0].toInt()
                 val actualAmount = when {
                     limit == null -> amountFromTriggerable
-                    amountFromTriggerable + unitCount > limit -> unitCount - limit
+                    amountFromTriggerable + unitCount > limit -> limit - unitCount
                     else -> amountFromTriggerable
                 }
 
