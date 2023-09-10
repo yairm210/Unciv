@@ -3,6 +3,7 @@ package com.unciv.logic.trade
 import com.unciv.Constants
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
+import com.unciv.logic.automation.civilization.NextTurnAutomation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -202,7 +203,8 @@ class TradeEvaluation {
                 return when (offer.name) {
                     // Since it will be evaluated twice, once when they evaluate our offer and once when they evaluate theirs
                     Constants.peaceTreaty -> evaluatePeaceCostForThem(civInfo, tradePartner)
-                    Constants.defensivePact -> 0
+                    Constants.defensivePact -> if (NextTurnAutomation.wantsToSignDefensivePact(civInfo, tradePartner)) 0
+                        else 100000
                     Constants.researchAgreement -> -offer.amount
                     else -> 1000
                     //Todo:AddDefensiveTreatyHere

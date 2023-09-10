@@ -830,7 +830,7 @@ object NextTurnAutomation {
         }
     }
     
-    private fun wantsToOpenBorders(civInfo: Civilization, otherCiv: Civilization): Boolean {
+    fun wantsToOpenBorders(civInfo: Civilization, otherCiv: Civilization): Boolean {
         if (civInfo.getDiplomacyManager(otherCiv).isRelationshipLevelLT(RelationshipLevel.Favorable)) return false
         // Don't accept if they are at war with our friends, they might use our land to attack them
         if (civInfo.diplomacy.values.any { it.isRelationshipLevelGE(RelationshipLevel.Friend) && it.otherCiv().isAtWarWith(otherCiv)})
@@ -885,7 +885,7 @@ object NextTurnAutomation {
         }
     }
     
-    private fun wantsToSignDefensivePact(civInfo: Civilization, otherCiv: Civilization): Boolean {
+    fun wantsToSignDefensivePact(civInfo: Civilization, otherCiv: Civilization): Boolean {
         if (civInfo.getDiplomacyManager(otherCiv).isRelationshipLevelLT(RelationshipLevel.Ally)) return false
         val friendlyCivs = civInfo.getDiplomacyManager(otherCiv).getCommonKnownCivs().filter { it.getDiplomacyManager(civInfo).isRelationshipLevelGE(RelationshipLevel.Friend) }
         if (friendlyCivs.any { it.getDiplomacyManager(otherCiv).isRelationshipLevelLT(RelationshipLevel.Favorable) }) return false
