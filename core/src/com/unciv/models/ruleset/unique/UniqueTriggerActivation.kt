@@ -61,7 +61,7 @@ object UniqueTriggerActivation {
 
                 val limit = unit.getMatchingUniques(UniqueType.MaxNumberBuildable)
                     .map { it.params[0].toInt() }.minOrNull()
-                if (limit!=null && limit <= civInfo.units.getCivUnits().count { it.name == unitName })
+                if (limit != null && limit <= civInfo.units.getCivUnits().count { it.name == unitName })
                     return false
 
                 val placedUnit = if (city != null || tile == null)
