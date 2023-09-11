@@ -157,6 +157,7 @@ class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civili
         for (offer in currentTrade.ourOffers.filterNot { it.type == TradeType.Treaty })
             transferTrade(ourCivilization, otherCivilization, offer)
 
+        // Transfter of treaties should only be done from one side to avoid double signing and notifying
         for (offer in currentTrade.theirOffers.filter { it.type == TradeType.Treaty })
             transferTrade(otherCivilization, ourCivilization, offer)
 
