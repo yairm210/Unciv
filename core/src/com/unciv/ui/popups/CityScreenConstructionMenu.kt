@@ -46,7 +46,7 @@ class CityScreenConstructionMenu(
         city.civ.cities.map { it.cityConstructions }.forEach(action)
 
     private val settings = GUI.getSettings()
-    private val dontAutoAssignConstructions = settings.dontAutoAssignConstructions
+    private val dontAutoAssignConstructions = settings.disabledAutoAssignConstructions
 
     init {
         closeListeners.add {
@@ -114,14 +114,13 @@ class CityScreenConstructionMenu(
     private fun removeAllQueues() = forAllCities { it.removeAllByName(constructionName) }
 
     private fun canDisable() = constructionName !in dontAutoAssignConstructions &&
-        constructionName != PerpetualConstruction.idle.name
+        construction != PerpetualConstruction.idle
     private fun disableEntry() {
         dontAutoAssignConstructions.add(constructionName)
         settings.save()
     }
 
-    private fun canEnable() = constructionName in dontAutoAssignConstructions &&
-        constructionName != PerpetualConstruction.idle.name
+    private fun canEnable() = constructionName in dontAutoAssignConstructions
     private fun enableEntry() {
         dontAutoAssignConstructions.remove(constructionName)
         settings.save()

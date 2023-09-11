@@ -257,7 +257,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 val buildableBuildings = ArrayList<Table>()
                 val specialConstructions = ArrayList<Table>()
                 val blacklisted = ArrayList<Table>()
-                val dontAutoAssignConstructions: Set<String> = GUI.getSettings().dontAutoAssignConstructions
+                val disabledAutoAssignConstructions: Set<String> = GUI.getSettings().disabledAutoAssignConstructions
 
                 var maxButtonWidth = constructionsQueueTable.width
                 for (dto in constructionButtonDTOList) {
@@ -271,7 +271,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                         continue
 
                     val constructionButton = getConstructionButton(dto)
-                    if (dto.construction.name in dontAutoAssignConstructions)
+                    if (dto.construction.name in disabledAutoAssignConstructions)
                         blacklisted.add(constructionButton)
                     else when (dto.construction) {
                         is BaseUnit -> units.add(constructionButton)

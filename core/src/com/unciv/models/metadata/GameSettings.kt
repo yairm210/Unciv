@@ -68,7 +68,13 @@ class GameSettings {
     var skin: String = Constants.defaultSkin
     var showTutorials: Boolean = true
     var autoAssignCityProduction: Boolean = true
-    var dontAutoAssignConstructions = HashSet<String>()
+
+    /** This set of construction names has two effects:
+     *  * Matching constructions are no longer candidates for [autoAssignCityProduction]
+     *  * Matching constructions are offered in a separate 'Disabled' category in CityScreen
+     */
+    var disabledAutoAssignConstructions = HashSet<String>()
+
     var autoBuildingRoads: Boolean = true
     var automatedWorkersReplaceImprovements = true
     var automatedUnitsMoveOnTurnStart: Boolean = false

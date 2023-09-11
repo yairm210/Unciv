@@ -26,7 +26,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     private val civInfo = city.civ
 
     private val dontAutoAssignConstructions: Set<String> =
-        if (civInfo.isHuman()) GUI.getSettings().dontAutoAssignConstructions
+        if (civInfo.isHuman()) GUI.getSettings().disabledAutoAssignConstructions
         else emptySet()
 
     private val buildableBuildings = hashMapOf<String, Boolean>()
