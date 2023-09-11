@@ -168,7 +168,8 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     }
 
     fun getGreatProphetEquivalent(): BaseUnit? {
-        return civInfo.gameInfo.ruleset.units.values.firstOrNull { it.hasUnique(UniqueType.MayFoundReligion) }
+        val baseUnit = civInfo.gameInfo.ruleset.units.values.firstOrNull { it.hasUnique(UniqueType.MayFoundReligion) }
+        return if (baseUnit == null) null else civInfo.getEquivalentUnit(baseUnit)
     }
 
     private fun generateProphet() {
