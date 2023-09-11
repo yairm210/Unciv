@@ -4,6 +4,7 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.glutils.HdpiMode
+import com.unciv.app.desktop.DesktopScreenMode.Companion.getMaximumWindowBounds
 import com.unciv.json.json
 import com.unciv.logic.files.SETTINGS_FILE_NAME
 import com.unciv.logic.files.UncivFiles
@@ -13,7 +14,6 @@ import com.unciv.ui.components.Fonts
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.utils.Display
 import com.unciv.utils.Log
-import java.awt.GraphicsEnvironment
 import kotlin.math.max
 
 internal object DesktopLauncher {
@@ -59,8 +59,7 @@ internal object DesktopLauncher {
         if (settings.isFreshlyCreated) {
             settings.screenSize = ScreenSize.Large // By default we guess that Desktops have larger screens
             // LibGDX not yet configured, use regular java class
-            val graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment()
-            val maximumWindowBounds = graphicsEnvironment.maximumWindowBounds
+            val maximumWindowBounds = getMaximumWindowBounds()
             settings.windowState = WindowState(
                 width = maximumWindowBounds.width,
                 height = maximumWindowBounds.height
