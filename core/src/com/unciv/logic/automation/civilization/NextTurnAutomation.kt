@@ -887,8 +887,11 @@ object NextTurnAutomation {
     
     fun wantsToSignDefensivePact(civInfo: Civilization, otherCiv: Civilization): Boolean {
         if (civInfo.getDiplomacyManager(otherCiv).isRelationshipLevelLT(RelationshipLevel.Ally)) return false
-        val friendlyCivs = civInfo.getDiplomacyManager(otherCiv).getCommonKnownCivs().filter { it.getDiplomacyManager(civInfo).isRelationshipLevelGE(RelationshipLevel.Friend) }
-        if (friendlyCivs.any { it.getDiplomacyManager(otherCiv).isRelationshipLevelLT(RelationshipLevel.Favorable) }) return false
+        for(thirdCiv in civInfo.getDiplomacyManager(otherCiv).getCommonKnownCivs()) {
+            if (civInfo.getDiplomacyManager(thirdCiv).isRelationshipLevelGE(RelationshipLevel.Friend)
+                && thirdCiv.getDiplomacyManager(otherCiv).isRelationshipLevelLT(RelationshipLevel.Favorable))
+                return false
+        }
         return true
     }
 
