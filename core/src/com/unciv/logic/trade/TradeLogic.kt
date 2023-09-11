@@ -159,6 +159,8 @@ class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civili
 
         for (offer in currentTrade.theirOffers.filter { it.type == TradeType.Treaty })
             transferTrade(otherCivilization, ourCivilization, offer)
+//        for (offer in currentTrade.ourOffers.filter { it.type == TradeType.Treaty })
+//            transferTrade(ourCivilization, otherCivilization, offer)
 
         ourCivilization.cache.updateCivResources()
         ourCivilization.updateStatsForNextTurn()
