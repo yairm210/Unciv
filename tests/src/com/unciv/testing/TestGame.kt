@@ -45,6 +45,7 @@ class TestGame {
         UncivGame.Current = UncivGame()
         // And the settings can be reached for the locale used in .tr()
         UncivGame.Current.settings = GameSettings()
+        UncivGame.Current.gameInfo = gameInfo
 
         // Create a new ruleset we can easily edit, and set the important variables of gameInfo
         RulesetCache.loadRulesets(noMods = true)
