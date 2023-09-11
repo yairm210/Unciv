@@ -187,9 +187,14 @@ class GlobalPoliticsOverviewTable (
         }
         politicsTable.row()
 
-        // declaration of friendships
+        // defensive pacts and declaration of friendships 
         for (otherCiv in civ.getKnownCivs()) {
-            if (civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.DeclarationOfFriendship) == true) {
+            if (civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.DefensivePact) == true) {
+                val friendText = ColorMarkupLabel("Defensive pact with [${getCivName(otherCiv)}]", Color.CYAN)
+                val turnsLeftText = " (${civ.diplomacy[otherCiv.civName]?.getFlag(DiplomacyFlags.DefensivePact)} ${Fonts.turn})".toLabel()
+                politicsTable.add(friendText)
+                politicsTable.add(turnsLeftText).row()
+            } else if (civ.diplomacy[otherCiv.civName]?.hasFlag(DiplomacyFlags.DeclarationOfFriendship) == true) {
                 val friendText = ColorMarkupLabel("Friends with [${getCivName(otherCiv)}]", Color.GREEN)
                 val turnsLeftText = " (${civ.diplomacy[otherCiv.civName]?.getFlag(DiplomacyFlags.DeclarationOfFriendship)} ${Fonts.turn})".toLabel()
                 politicsTable.add(friendText)
@@ -212,7 +217,7 @@ class GlobalPoliticsOverviewTable (
         //allied CS
         for (cityState in gameInfo.getAliveCityStates()) {
             if (cityState.diplomacy[civ.civName]?.isRelationshipLevelEQ(RelationshipLevel.Ally) == true) {
-                val alliedText = ColorMarkupLabel("Allied with [${getCivName(cityState)}]", Color.GREEN)
+                val alliedText = ColorMarkupLabel("Allied with [${getCivName(cityState)}]", Color.CYAN)
                 politicsTable.add(alliedText).row()
             }
         }
@@ -435,6 +440,10 @@ class GlobalPoliticsOverviewTable (
                         width = 2f)
 
                     statusLine.color = if (diplomacy.diplomaticStatus == DiplomaticStatus.War) Color.RED
+                    else if (diplomacy.diplomaticStatus == DiplomaticStatus.DefensivePact
+                        || (diplomacy.civInfo.isCityState() && diplomacy.civInfo.getAllyCiv() == diplomacy.otherCivName)
+                        || (diplomacy.otherCiv().isCityState() && diplomacy.otherCiv().getAllyCiv() == diplomacy.civInfo.civName)
+                    ) Color.CYAN
                     else diplomacy.relationshipLevel().color
 
                     if (!civLines.containsKey(civ.civName)) civLines[civ.civName] = mutableSetOf()

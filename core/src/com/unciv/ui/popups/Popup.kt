@@ -292,10 +292,10 @@ open class Popup(
         return bottomTable.add(button)
     }
     fun addButton(text: String, key: Char, style: TextButtonStyle? = null, action: () -> Unit)
-        = addButton(text, KeyCharAndCode(key), style, action).apply { row() }
+        = addButton(text, KeyCharAndCode(key), style, action)
     @Suppress("unused")  // Keep the offer to pass an Input.keys value
     fun addButton(text: String, key: Int, style: TextButtonStyle? = null, action: () -> Unit)
-        = addButton(text, KeyCharAndCode(key), style, action).apply { row() }
+        = addButton(text, KeyCharAndCode(key), style, action)
     fun addButton(text: String, binding: KeyboardBinding, style: TextButtonStyle? = null, action: () -> Unit): Cell<TextButton> {
         val button = text.toTextButton(style)
         button.onActivation(binding = binding) { action() }

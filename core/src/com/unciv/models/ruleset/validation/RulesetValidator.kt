@@ -173,7 +173,7 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         checkUniques(ruleset.globalUniques, lines, rulesetSpecific, tryFixUnknownUniques)
 
-        if (ruleset.units.values.none { it.hasUnique(UniqueType.FoundCity, StateForConditionals.IgnoreConditionals) })
+        if (ruleset.units.values.none { it.isCityFounder() })
             lines += "No city-founding units in ruleset!"
 
         for (unit in ruleset.units.values) {
@@ -348,7 +348,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                     lines += "Nonexistent building $building built by settlers when starting in ${era.name}"
             // todo the whole 'starting unit' thing needs to be redone, there's no reason we can't have a single list containing all the starting units.
             if (era.startingSettlerUnit !in ruleset.units
-                    && ruleset.units.values.none { it.hasUnique(UniqueType.FoundCity) })
+                    && ruleset.units.values.none { it.isCityFounder() })
                 lines += "Nonexistent unit ${era.startingSettlerUnit} marked as starting unit when starting in ${era.name}"
             if (era.startingWorkerCount != 0 && era.startingWorkerUnit !in ruleset.units
                     && ruleset.units.values.none { it.hasUnique(UniqueType.BuildImprovements) })

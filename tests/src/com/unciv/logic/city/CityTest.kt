@@ -102,7 +102,7 @@ class CityTest {
         testCiv.tech.addTechnology("Iron Working")
         testCiv.tech.addTechnology("Mining")
 
-        val tile = testGame.setTileFeatures(Vector2(1f, 1f))
+        val tile = testGame.getTile(Vector2(1f, 1f))
         tile.resource = "Iron"
         tile.resourceAmount = 4
         tile.improvement = "Mine"

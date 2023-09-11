@@ -17,6 +17,8 @@ class ActivationListener : ActorGestureListener(20f, 0.25f, 1.1f, Int.MAX_VALUE.
 
     override fun longPress(actor: Actor?, x: Float, y: Float): Boolean {
         if (actor == null) return false
+        // See #10050 - when a tap discards its actor or ascendants, Gdx can't cancel the longpress timer
+        if (actor.stage == null) return false
         return actor.activate(ActivationTypes.Longpress)
     }
 }

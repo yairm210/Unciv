@@ -56,12 +56,12 @@ object UniqueTriggerActivation {
                 val unit = ruleSet.units[unitName]
                 if ((chosenCity == null && tile == null)
                         || unit == null
-                        || unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger())
+                        || unit.isCityFounder() && civInfo.isOneCityChallenger())
                     return false
 
                 val limit = unit.getMatchingUniques(UniqueType.MaxNumberBuildable)
                     .map { it.params[0].toInt() }.minOrNull()
-                if (limit!=null && limit <= civInfo.units.getCivUnits().count { it.name==unitName })
+                if (limit != null && limit <= civInfo.units.getCivUnits().count { it.name == unitName })
                     return false
 
                 val placedUnit = if (city != null || tile == null)
@@ -83,15 +83,18 @@ object UniqueTriggerActivation {
             UniqueType.OneTimeAmountFreeUnits -> {
                 val unitName = unique.params[1]
                 val unit = ruleSet.units[unitName]
-                if ((chosenCity == null && tile == null) || unit == null || (unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger()))
+                if ((chosenCity == null && tile == null) || unit == null || (unit.isCityFounder() && civInfo.isOneCityChallenger()))
                     return false
 
                 val limit = unit.getMatchingUniques(UniqueType.MaxNumberBuildable)
                     .map { it.params[0].toInt() }.minOrNull()
+                val unitCount = civInfo.units.getCivUnits().count { it.name == unitName }
                 val amountFromTriggerable = unique.params[0].toInt()
-                val actualAmount =
-                        if (limit==null) amountFromTriggerable
-                        else civInfo.units.getCivUnits().count { it.name==unitName } - limit
+                val actualAmount = when {
+                    limit == null -> amountFromTriggerable
+                    amountFromTriggerable + unitCount > limit -> limit - unitCount
+                    else -> amountFromTriggerable
+                }
 
                 if (actualAmount <= 0) return false
 
@@ -118,7 +121,7 @@ object UniqueTriggerActivation {
             }
             UniqueType.OneTimeFreeUnitRuins -> {
                 var unit = civInfo.getEquivalentUnit(unique.params[0])
-                if ( unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger()) {
+                if ( unit.isCityFounder() && civInfo.isOneCityChallenger()) {
                      val replacementUnit = ruleSet.units.values
                          .firstOrNull {
                              it.getMatchingUniques(UniqueType.BuildImprovements)

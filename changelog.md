@@ -1,3 +1,38 @@
+## 4.8.4
+
+By SeventhM:
+- Fix unique Great Prophets not having the correct cost when buying at an increasing cost
+- Fix free units with a build limit not spawning
+- Fix AI getting stuck when it can't promote with enough xp
+
+Allow the Space key to close Alert popups with no actual choice  - By SomeTroglodyte
+
+By tuvus:
+- Fixed politics tab not showing defensive pacts
+- Defensive pact Tests
+
+## 4.8.3
+
+Allow unique parameters to contain square brackets
+
+Library updates for performance and stability
+
+Targetting refactor - By Framonti
+
+## 4.8.2
+
+performance: Don't autoupdate stale multiplayer games (more than a week old)
+
+Buildings missing from ruleset are removed from loaded games *properly*
+
+By SomeTroglodyte:
+
+- Fix Map Editor double map holders after ruleset change
+- Improve "does this unit found cities" check
+- Fix Gdx not forced to UTF-8 when saving a game
+
+Defensive pact notification fix  - By tuvus
+
 ## 4.8.1
 
 Fixed AI attack targetting - By tuvus
