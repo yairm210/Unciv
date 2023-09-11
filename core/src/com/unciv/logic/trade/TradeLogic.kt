@@ -124,14 +124,10 @@ class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civili
                         to.popupAlerts.add(PopupAlert(AlertType.CityTraded, city.id))
                 }
                 TradeType.Treaty -> {
-                    // Note: Treaties are not transfered from both sides due to notifications and double signing
                     if (offer.name == Constants.peaceTreaty) to.getDiplomacyManager(from).makePeace()
                     if (offer.name == Constants.researchAgreement) {
                         to.addGold(-offer.amount)
-                        from.addGold(-offer.amount)
                         to.getDiplomacyManager(from)
-                            .setFlag(DiplomacyFlags.ResearchAgreement, offer.duration)
-                        from.getDiplomacyManager(to)
                             .setFlag(DiplomacyFlags.ResearchAgreement, offer.duration)
                     }
                     if (offer.name == Constants.defensivePact) from.getDiplomacyManager(to).signDefensivePact(offer.duration);
@@ -159,8 +155,8 @@ class TradeLogic(val ourCivilization:Civilization, val otherCivilization: Civili
 
         for (offer in currentTrade.theirOffers.filter { it.type == TradeType.Treaty })
             transferTrade(otherCivilization, ourCivilization, offer)
-//        for (offer in currentTrade.ourOffers.filter { it.type == TradeType.Treaty })
-//            transferTrade(ourCivilization, otherCivilization, offer)
+        for (offer in currentTrade.ourOffers.filter { it.type == TradeType.Treaty })
+            transferTrade(ourCivilization, otherCivilization, offer)
 
         ourCivilization.cache.updateCivResources()
         ourCivilization.updateStatsForNextTurn()
