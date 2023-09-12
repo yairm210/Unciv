@@ -36,10 +36,7 @@ class BattleTest {
 
     @Test
     fun `defender should withdraw from melee attack if has the unique to do so`() {
-        val unitToConstruct = testGame.createBaseUnit("Sword", "May withdraw before melee ([100]%)")
-        unitToConstruct.movement = 2
-        unitToConstruct.strength = 8
-        val defenderUnit = testGame.addUnit(unitToConstruct.name, defenderCiv, testGame.getTile(Vector2.Y))
+        val defenderUnit =  testGame.addDefaultMeleeUnitWithUniques(attackerCiv, testGame.getTile(Vector2.Y), "May withdraw before melee ([100]%)")
         defenderUnit.currentMovement = 2f
 
         // when
@@ -100,7 +97,7 @@ class BattleTest {
     }
 
     @Test
-    fun `should earn XP when fighting barbarian`() {
+    fun `should earn XP when fighting barbarian and below XP cap`() {
         // given
         val barbarianCiv = testGame.addBarbarianCiv()
         val barbarianUnit = testGame.addUnit("Brute", barbarianCiv, testGame.getTile(Vector2.Y))
@@ -137,12 +134,11 @@ class BattleTest {
         assertEquals(0f, defaultAttackerUnit.currentMovement)
     }
 
-    @Test // todo fix?
-    fun `attacker should still have some points with uniques`() {
+    @Test
+    fun `attacker should still have movement points left with 'additional attack per turn' unique`() {
         // given
-        val attackerUnit = testGame.addUnit("Chu-Ko-Nu", attackerCiv, testGame.getTile(Vector2.Y))
+        val attackerUnit = testGame.addDefaultMeleeUnitWithUniques(attackerCiv, testGame.getTile(Vector2.Y), "[1] additional attacks per turn")
         attackerUnit.currentMovement = 2f
-        defaultDefenderUnit.health = 1 // killing removes ZoC
 
         // when
         Battle.attack(MapUnitCombatant(attackerUnit), MapUnitCombatant(defaultDefenderUnit))
@@ -154,14 +150,14 @@ class BattleTest {
     @Test
     fun `attacker should still have movement points left with 'can move after attacking' unique`() {
         // given
-        val attackerUnit = testGame.addUnit("Knight", attackerCiv, testGame.getTile(Vector2.Y))
-        attackerUnit.currentMovement = 4f
+        val attackerUnit = testGame.addDefaultMeleeUnitWithUniques(attackerCiv, testGame.getTile(Vector2.Y), "Can move after attacking")
+        attackerUnit.currentMovement = 2f
 
         // when
         Battle.attack(MapUnitCombatant(attackerUnit), MapUnitCombatant(defaultDefenderUnit))
 
         // then
-        assertEquals(3f, attackerUnit.currentMovement)
+        assertEquals(1f, attackerUnit.currentMovement)
     }
 
     @Test
@@ -232,10 +228,10 @@ class BattleTest {
         assertEquals(0, barbarianCiv.greatPeople.greatGeneralPoints)
     }
 
-    @Test // todo fix?
-    fun `should earn more Great General from uniques`() {
+    @Test
+    fun `should earn more Great General Points from uniques`() {
         // given
-        val attackerUnit = testGame.addUnit("Samurai", attackerCiv, testGame.getTile(Vector2.Y))
+        val attackerUnit = testGame.addDefaultMeleeUnitWithUniques(attackerCiv, testGame.getTile(Vector2.Y), "[Great General] is earned [100]% faster")
 
         // when
         Battle.attack(MapUnitCombatant(attackerUnit), MapUnitCombatant(defaultDefenderUnit))
