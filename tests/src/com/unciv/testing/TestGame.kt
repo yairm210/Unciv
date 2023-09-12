@@ -144,6 +144,16 @@ class TestGame {
         return civInfo
     }
 
+    fun addBarbarianCiv() : Civilization {
+        val barbarianCivilization = Civilization(Constants.barbarians)
+        val nation = Nation()
+        nation.name = Constants.barbarians
+        barbarianCivilization.nation = nation
+        barbarianCivilization.gameInfo = gameInfo
+        gameInfo.civilizations.add(barbarianCivilization)
+        return barbarianCivilization
+    }
+
     fun addCity(
         civInfo: Civilization,
         tile: Tile,
