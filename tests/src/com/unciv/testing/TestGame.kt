@@ -213,6 +213,22 @@ class TestGame {
         return obj
     }
 
+    fun addDefaultMeleeUnitWithUniques(civInfo: Civilization, tile: Tile, vararg uniques: String) : MapUnit {
+        val createBaseUnit = createBaseUnit("Sword", *uniques)
+        createBaseUnit.movement = 2
+        createBaseUnit.strength = 8
+        return this.addUnit(createBaseUnit.name, civInfo, tile)
+    }
+
+    fun addDefaultRangedUnitWithUniques(civInfo: Civilization, tile: Tile, vararg uniques: String) : MapUnit {
+        val createBaseUnit = createBaseUnit("Archery", *uniques)
+        createBaseUnit.movement = 2
+        createBaseUnit.strength = 5
+        createBaseUnit.rangedStrength = 7
+        createBaseUnit.range = 2
+        return this.addUnit(createBaseUnit.name, civInfo, tile)
+    }
+
     fun createBaseUnit(unitType: String = createUnitType().name, vararg uniques: String) =
         createRulesetObject(ruleset.units, *uniques) {
             val baseUnit = BaseUnit()
