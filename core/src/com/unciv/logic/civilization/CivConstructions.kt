@@ -15,26 +15,31 @@ class CivConstructions : IsPartOfGameInfoSerialization {
     @Transient
     lateinit var civInfo: Civilization
 
-    // Maps objects to the amount of times bought
+    /** Maps construction names to the amount of times bought */
     val boughtItemsWithIncreasingPrice: Counter<String> = Counter()
 
-    // Maps to cities to all free buildings they contain
+    /** Maps cities by id to a set of all free buildings by name they contain.
+     *  The building name is the Nation-specific equivalent if available.
+     *  Sources: [UniqueType.FreeStatBuildings] **and** [UniqueType.FreeSpecificBuildings]
+     *  This is persisted and _never_ cleared or elements removed (per civ and game).
+     */
     private val freeBuildings: HashMap<String, HashSet<String>> = hashMapOf()
 
-    // Maps stats to the cities that have received a building of that stat
-    // We can't use an enum instead of a string, due to the inability of the JSON-parser
+    /** Maps stat names to a set of cities by id that have received a building of that stat.
+     *  Source: [UniqueType.FreeStatBuildings]
+     *  This is persisted and _never_ cleared or elements removed (per civ and game).
+     */
+    // We can't use the Stat enum instead of a string, due to the inability of the JSON-parser
     // to function properly and forcing this to be an `HashMap<String, HashSet<String>>`
     // when loading, even if this wasn't the original type, leading to run-time errors.
     private val freeStatBuildingsProvided: HashMap<String, HashSet<String>> = hashMapOf()
 
-    // Maps buildings to the cities that have received that building
+    /** Maps buildings by name to a set of cities by id that have received that building.
+     *  The building name is the Nation-specific equivalent if available.
+     *  Source: [UniqueType.FreeSpecificBuildings]
+     *  This is persisted and _never_ cleared or elements removed (per civ and game).
+     */
     private val freeSpecificBuildingsProvided: HashMap<String, HashSet<String>> = hashMapOf()
-
-    init {
-        for (stat in Stat.values()) {
-            freeStatBuildingsProvided[stat.name] = hashSetOf()
-        }
-    }
 
     fun clone(): CivConstructions {
         val toReturn = CivConstructions()
@@ -42,7 +47,7 @@ class CivConstructions : IsPartOfGameInfoSerialization {
         toReturn.freeBuildings.putAll(freeBuildings)
         toReturn.freeStatBuildingsProvided.putAll(freeStatBuildingsProvided)
         toReturn.freeSpecificBuildingsProvided.putAll(freeSpecificBuildingsProvided)
-        toReturn.boughtItemsWithIncreasingPrice.add(boughtItemsWithIncreasingPrice.clone())
+        toReturn.boughtItemsWithIncreasingPrice.add(boughtItemsWithIncreasingPrice)  // add copies
         return toReturn
     }
 
@@ -83,9 +88,8 @@ class CivConstructions : IsPartOfGameInfoSerialization {
         getFreeBuildingNamesSequence(cityId).contains(buildingName)
 
     private fun addFreeBuilding(cityId: String, building: String) {
-        if (!freeBuildings.containsKey(cityId))
-            freeBuildings[cityId] = hashSetOf()
-        freeBuildings[cityId]!!.add(civInfo.getEquivalentBuilding(building).name)
+        freeBuildings.getOrPut(cityId) { hashSetOf() }
+            .add(civInfo.getEquivalentBuilding(building).name)
     }
 
     private fun addFreeStatsBuildings() {
@@ -93,7 +97,6 @@ class CivConstructions : IsPartOfGameInfoSerialization {
             .groupBy { it.params[0] }
             .mapKeys { Stat.valueOf(it.key) }
             .mapValues { unique -> unique.value.sumOf { it.params[1].toInt() } }
-            .toMutableMap()
 
         for ((stat, amount) in statUniquesData) {
             addFreeStatBuildings(stat, amount)
@@ -102,11 +105,12 @@ class CivConstructions : IsPartOfGameInfoSerialization {
 
     private fun addFreeStatBuildings(stat: Stat, amount: Int) {
         for (city in civInfo.cities.take(amount)) {
-            if (freeStatBuildingsProvided[stat.name]!!.contains(city.id) || !city.cityConstructions.hasBuildableStatBuildings(stat)) continue
+            if (freeStatBuildingsProvided[stat.name]?.contains(city.id) == true) continue
+            if (!city.cityConstructions.hasBuildableStatBuildings(stat)) continue
 
             val builtBuilding = city.cityConstructions.addCheapestBuildableStatBuilding(stat)
             if (builtBuilding != null) {
-                freeStatBuildingsProvided[stat.name]!!.add(city.id)
+                freeStatBuildingsProvided.getOrPut(stat.name) { hashSetOf() }.add(city.id)
                 addFreeBuilding(city.id, builtBuilding)
             }
         }
@@ -131,14 +135,18 @@ class CivConstructions : IsPartOfGameInfoSerialization {
 
             building.postBuildEvent(city.cityConstructions)
 
-            if (!freeSpecificBuildingsProvided.containsKey(building.name))
-                freeSpecificBuildingsProvided[building.name] = hashSetOf()
-            freeSpecificBuildingsProvided[building.name]!!.add(city.id)
-
+            freeSpecificBuildingsProvided.getOrPut(building.name) { hashSetOf() }.add(city.id)
             addFreeBuilding(city.id, building.name)
         }
     }
 
+    /** Calculates a civ-wide total for [objectToCount].
+     *
+     *  It counts:
+     *  * "Spaceship part" units added to "spaceship" in capital
+     *  * Built buildings or those in a construction queue
+     *  * Units on the map or being constructed
+     */
     fun countConstructedObjects(objectToCount: INonPerpetualConstruction): Int {
         val amountInSpaceShip = civInfo.victoryManager.currentsSpaceshipParts[objectToCount.name]
 
