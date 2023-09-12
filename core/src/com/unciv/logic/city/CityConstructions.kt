@@ -79,7 +79,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     var productionOverflow = 0
     private val queueMaxSize = 10
 
-    // Maps cities to the buildings they received
+    /** Maps cities by id to a set of the buildings they received (by nation equivalent name)
+     *  Source: [UniqueType.GainFreeBuildings]
+     */
     val freeBuildingsProvidedFromThisCity: HashMap<String, HashSet<String>> = hashMapOf()
 
     //endregion
@@ -602,10 +604,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             for (city in citiesThatApply) {
                 if (city.cityConstructions.containsBuildingOrEquivalent(freeBuilding.name)) continue
                 city.cityConstructions.addBuilding(freeBuilding)
-                if (city.id !in freeBuildingsProvidedFromThisCity)
-                    freeBuildingsProvidedFromThisCity[city.id] = hashSetOf()
-
-                freeBuildingsProvidedFromThisCity[city.id]!!.add(freeBuilding.name)
+                freeBuildingsProvidedFromThisCity.getOrPut(city.id) { hashSetOf() }.add(freeBuilding.name)
             }
         }
 
@@ -613,9 +612,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         for (unique in city.civ.getMatchingUniques(UniqueType.GainFreeBuildings, stateForConditionals = StateForConditionals(city.civ, city))) {
             val freeBuilding = city.civ.getEquivalentBuilding(unique.params[0])
             if (city.matchesFilter(unique.params[1])) {
-                if (city.id !in freeBuildingsProvidedFromThisCity)
-                    freeBuildingsProvidedFromThisCity[city.id] = hashSetOf()
-                freeBuildingsProvidedFromThisCity[city.id]!!.add(freeBuilding.name)
+                freeBuildingsProvidedFromThisCity.getOrPut(city.id) { hashSetOf() }.add(freeBuilding.name)
                 if (!isBuilt(freeBuilding.name))
                     addBuilding(freeBuilding)
             }
