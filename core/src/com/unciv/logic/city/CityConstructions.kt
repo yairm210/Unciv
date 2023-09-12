@@ -122,7 +122,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
      */
     fun getMaintenanceCosts(): Int {
         var maintenanceCost = 0
-        val freeBuildings = city.civ.civConstructions.getFreeBuildings(city.id)
+        val freeBuildings = city.civ.civConstructions.getFreeBuildingNames(city)
 
         for (building in getBuiltBuildings())
             if (building.name !in freeBuildings)

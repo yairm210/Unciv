@@ -105,7 +105,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
                 row()
                 add(sellBuildingButton).padTop(5f).colspan(2).center()
 
-                val isFree = cityScreen.hasFreeBuilding(construction.name)
+                val isFree = cityScreen.hasFreeBuilding(construction)
                 val isAprilFools = HolidayDates.getHolidayByDate() == HolidayDates.Holidays.AprilFools
                 val enableSell = (!isFree || isAprilFools) &&
                     !cityScreen.city.isPuppet &&

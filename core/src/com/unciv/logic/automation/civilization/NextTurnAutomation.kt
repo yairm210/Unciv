@@ -622,7 +622,7 @@ object NextTurnAutomation {
                         city.cityConstructions.isBuilt(it.name)
                         && it.requiresResource(resource)
                         && it.isSellable()
-                        && !civInfo.civConstructions.hasFreeBuilding(city.id, it.name) }
+                        && !civInfo.civConstructions.hasFreeBuilding(city, it) }
                     .randomOrNull()
                 if (buildingToSell != null) {
                     city.sellBuilding(buildingToSell)

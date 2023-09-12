@@ -109,7 +109,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     fun getDescription(city: City, showAdditionalInfo: Boolean): String {
         val stats = getStats(city)
         val translatedLines = ArrayList<String>() // Some translations require special handling
-        val isFree = city.civ.civConstructions.hasFreeBuilding(city.id, name)
+        val isFree = city.civ.civConstructions.hasFreeBuilding(city, this)
         if (uniqueTo != null) translatedLines += if (replaces == null) "Unique to [$uniqueTo]".tr()
             else "Unique to [$uniqueTo], replaces [$replaces]".tr()
         val missingUnique = getMatchingUniques(UniqueType.RequiresBuildingInAllCities).firstOrNull()

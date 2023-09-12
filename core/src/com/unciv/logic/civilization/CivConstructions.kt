@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.city.City
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.INonPerpetualConstruction
@@ -58,21 +59,28 @@ class CivConstructions : IsPartOfGameInfoSerialization {
         addFreeSpecificBuildings()
     }
 
-    /** Common to [hasFreeBuilding] and [getFreeBuildings] - 'has' doesn't need the whole set, one enumeration is enough */
-    private fun getFreeBuildingsSequence(cityId: String) = sequence {
+    /** Common to [hasFreeBuildingByName] and [getFreeBuildingNames] - 'has' doesn't need the whole set, one enumeration is enough.
+     *  Note: Operates on String city.id and String building name, close to the serialized and stored form.
+     *  When/if we do a transient cache for these using our objects, please rewrite this.
+     */
+    private fun getFreeBuildingNamesSequence(cityId: String) = sequence {
         yieldAllNotNull(freeBuildings[cityId])
         for (city in civInfo.cities) {
             yieldAllNotNull(city.cityConstructions.freeBuildingsProvidedFromThisCity[cityId])
         }
     }
 
-    /** Gets a Set of all building names the [cityId] city has for free, from nationwide sources or buildings in other cities */
-    fun getFreeBuildings(cityId: String) =
-        getFreeBuildingsSequence(cityId).toSet()
+    /** Gets a Set of all building names the [city] has for free, from nationwide sources or buildings in other cities */
+    fun getFreeBuildingNames(city: City) =
+        getFreeBuildingNamesSequence(city.id).toSet()
 
-    /** Tests whether the [cityId] city has [building] for free, from nationwide sources or buildings in other cities */
-    fun hasFreeBuilding(cityId: String, building: String) =
-        getFreeBuildingsSequence(cityId).any { it == building }
+    /** Tests whether the [city] has [building] for free, from nationwide sources or buildings in other cities */
+    fun hasFreeBuilding(city: City, building: Building) =
+        hasFreeBuildingByName(city.id, building.name)
+
+    /** Tests whether a city by [cityId] has a building named [buildingName] for free, from nationwide sources or buildings in other cities */
+    private fun hasFreeBuildingByName(cityId: String, buildingName: String) =
+        getFreeBuildingNamesSequence(cityId).contains(buildingName)
 
     private fun addFreeBuilding(cityId: String, building: String) {
         if (!freeBuildings.containsKey(cityId))
