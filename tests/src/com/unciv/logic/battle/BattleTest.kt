@@ -100,6 +100,35 @@ class BattleTest {
     }
 
     @Test
+    fun `should earn XP when fighting barbarian`() {
+        // given
+        val barbarianCiv = testGame.addBarbarianCiv()
+        val barbarianUnit = testGame.addUnit("Brute", barbarianCiv, testGame.getTile(Vector2.Y))
+
+        // when
+        Battle.attack(MapUnitCombatant(barbarianUnit), MapUnitCombatant(defaultDefenderUnit))
+
+        // then
+        assertEquals(5, barbarianUnit.promotions.XP)
+        assertEquals(4, defaultDefenderUnit.promotions.XP)
+    }
+
+    @Test
+    fun `should not earn XP when fighting barbarian if exceeding XP cap`() {
+        // given
+        val barbarianCiv = testGame.addBarbarianCiv()
+        val barbarianUnit = testGame.addUnit("Brute", barbarianCiv, testGame.getTile(Vector2.Y))
+        defaultDefenderUnit.promotions.XP = 35
+
+        // when
+        Battle.attack(MapUnitCombatant(barbarianUnit), MapUnitCombatant(defaultDefenderUnit))
+
+        // then
+        assertEquals(5, barbarianUnit.promotions.XP)
+        assertEquals(35, defaultDefenderUnit.promotions.XP)
+    }
+
+    @Test
     fun `attacker should expend all movement points without uniques`() {
         // when
         Battle.attack(MapUnitCombatant(defaultAttackerUnit), MapUnitCombatant(defaultDefenderUnit))
@@ -123,16 +152,16 @@ class BattleTest {
     }
 
     @Test
-    fun `attacker should still have movement points left with uniques`() {
+    fun `attacker should still have movement points left with 'can move after attacking' unique`() {
         // given
         val attackerUnit = testGame.addUnit("Knight", attackerCiv, testGame.getTile(Vector2.Y))
-        attackerUnit.currentMovement = 5f
+        attackerUnit.currentMovement = 4f
 
         // when
         Battle.attack(MapUnitCombatant(attackerUnit), MapUnitCombatant(defaultDefenderUnit))
 
         // then
-        assertEquals(4f, attackerUnit.currentMovement)
+        assertEquals(3f, attackerUnit.currentMovement)
     }
 
     @Test
@@ -145,8 +174,25 @@ class BattleTest {
 
         // then
         assertEquals(0, attack.attackerDealt)
+        assertEquals(0, attack.defenderDealt)
         assertEquals(Vector2(2f, 0f), defaultAttackerUnit.getTile().position)
         assertEquals(attackerCiv, defaultAttackerUnit.getTile().civilianUnit!!.civ)  // captured unit
+    }
+
+    @Test
+    fun `should transform settler into worker upon capture`() {
+        // given
+        val defenderUnit = testGame.addUnit("Settler", defenderCiv, testGame.getTile(Vector2(2f, 0f)))
+
+        // when
+        val attack = Battle.attack(MapUnitCombatant(defaultAttackerUnit), MapUnitCombatant(defenderUnit))
+
+        // then
+        assertEquals(0, attack.attackerDealt)
+        assertEquals(0, attack.defenderDealt)
+        assertEquals(Vector2(2f, 0f), defaultAttackerUnit.getTile().position)
+        assertEquals(attackerCiv, defaultAttackerUnit.getTile().civilianUnit!!.civ)  // captured unit
+        assertEquals("Worker", defaultAttackerUnit.getTile().civilianUnit!!.baseUnit.name)
     }
 
     @Test
@@ -161,6 +207,41 @@ class BattleTest {
         assertTrue(defenderUnit.isDestroyed)
         assertEquals(0, attack.attackerDealt)
         assertEquals(Vector2(2f, 0f), defaultAttackerUnit.getTile().position)  // todo no move??
+    }
+    @Test
+    fun `should earn Great General from combat`() {
+        // when
+       Battle.attack(MapUnitCombatant(defaultAttackerUnit), MapUnitCombatant(defaultDefenderUnit))
+
+        // then
+        assertEquals(5, attackerCiv.greatPeople.greatGeneralPoints)
+        assertEquals(4, defenderCiv.greatPeople.greatGeneralPoints)
+    }
+
+    @Test
+    fun `should not earn Great General from combat against barbarians`() {
+        // given
+        val barbarianCiv = testGame.addBarbarianCiv()
+        val barbarianUnit = testGame.addUnit("Brute", barbarianCiv, testGame.getTile(Vector2.Y))
+
+        // when
+        Battle.attack(MapUnitCombatant(defaultAttackerUnit), MapUnitCombatant(barbarianUnit))
+
+        // then
+        assertEquals(0, attackerCiv.greatPeople.greatGeneralPoints)
+        assertEquals(0, barbarianCiv.greatPeople.greatGeneralPoints)
+    }
+
+    @Test // todo fix?
+    fun `should earn more Great General from uniques`() {
+        // given
+        val attackerUnit = testGame.addUnit("Samurai", attackerCiv, testGame.getTile(Vector2.Y))
+
+        // when
+        Battle.attack(MapUnitCombatant(attackerUnit), MapUnitCombatant(defaultDefenderUnit))
+
+        // then
+        assertEquals(10, attackerCiv.greatPeople.greatGeneralPoints)
     }
 
 }
