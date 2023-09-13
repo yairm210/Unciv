@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.map.tile.Tile
@@ -255,6 +256,8 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                 val buildableNationalWonders = ArrayList<Table>()
                 val buildableBuildings = ArrayList<Table>()
                 val specialConstructions = ArrayList<Table>()
+                val blacklisted = ArrayList<Table>()
+                val disabledAutoAssignConstructions: Set<String> = GUI.getSettings().disabledAutoAssignConstructions
 
                 var maxButtonWidth = constructionsQueueTable.width
                 for (dto in constructionButtonDTOList) {
@@ -268,7 +271,9 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                         continue
 
                     val constructionButton = getConstructionButton(dto)
-                    when (dto.construction) {
+                    if (dto.construction.name in disabledAutoAssignConstructions)
+                        blacklisted.add(constructionButton)
+                    else when (dto.construction) {
                         is BaseUnit -> units.add(constructionButton)
                         is Building -> {
                             when {
@@ -290,6 +295,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                     addCategory("Wonders", buildableWonders, maxButtonWidth, KeyboardBinding.BuildWonders)
                     addCategory("National Wonders", buildableNationalWonders, maxButtonWidth, KeyboardBinding.BuildNationalWonders)
                     addCategory("Other", specialConstructions, maxButtonWidth, KeyboardBinding.BuildOther)
+                    addCategory("Disabled", blacklisted, maxButtonWidth, KeyboardBinding.BuildDisabled, startsOutOpened = false)
                     pack()
                 }
 
@@ -799,12 +805,19 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         lowerTable.pack()
     }
 
-    private fun Table.addCategory(title: String, list: ArrayList<Table>, prefWidth: Float, toggleKey: KeyboardBinding) {
+    private fun Table.addCategory(
+        title: String,
+        list: ArrayList<Table>,
+        prefWidth: Float,
+        toggleKey: KeyboardBinding,
+        startsOutOpened: Boolean = true
+    ) {
         if (list.isEmpty()) return
 
         if (rows > 0) addSeparator()
         val expander = ExpanderTab(
             title,
+            startsOutOpened = startsOutOpened,
             defaultPad = 0f,
             expanderWidth = prefWidth,
             persistenceID = "CityConstruction.$title",
