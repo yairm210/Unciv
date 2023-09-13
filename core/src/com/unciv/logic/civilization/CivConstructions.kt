@@ -8,6 +8,8 @@ import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
+import com.unciv.ui.components.extensions.addToMapOfSets
+import com.unciv.ui.components.extensions.contains
 import com.unciv.ui.components.extensions.yieldAllNotNull
 
 class CivConstructions : IsPartOfGameInfoSerialization {
@@ -88,8 +90,7 @@ class CivConstructions : IsPartOfGameInfoSerialization {
         getFreeBuildingNamesSequence(cityId).contains(buildingName)
 
     private fun addFreeBuilding(cityId: String, building: String) {
-        freeBuildings.getOrPut(cityId) { hashSetOf() }
-            .add(civInfo.getEquivalentBuilding(building).name)
+        freeBuildings.addToMapOfSets(cityId, civInfo.getEquivalentBuilding(building).name)
     }
 
     private fun addFreeStatsBuildings() {
@@ -105,12 +106,12 @@ class CivConstructions : IsPartOfGameInfoSerialization {
 
     private fun addFreeStatBuildings(stat: Stat, amount: Int) {
         for (city in civInfo.cities.take(amount)) {
-            if (freeStatBuildingsProvided[stat.name]?.contains(city.id) == true) continue
+            if (freeStatBuildingsProvided.contains(stat.name, city.id)) continue
             if (!city.cityConstructions.hasBuildableStatBuildings(stat)) continue
 
             val builtBuilding = city.cityConstructions.addCheapestBuildableStatBuilding(stat)
             if (builtBuilding != null) {
-                freeStatBuildingsProvided.getOrPut(stat.name) { hashSetOf() }.add(city.id)
+                freeStatBuildingsProvided.addToMapOfSets(stat.name, city.id)
                 addFreeBuilding(city.id, builtBuilding)
             }
         }
@@ -130,12 +131,12 @@ class CivConstructions : IsPartOfGameInfoSerialization {
     private fun addFreeBuildings(building: Building, amount: Int) {
 
         for (city in civInfo.cities.take(amount)) {
-            if (freeSpecificBuildingsProvided[building.name]?.contains(city.id) == true
+            if (freeSpecificBuildingsProvided.contains(building.name, city.id)
                 || city.cityConstructions.containsBuildingOrEquivalent(building.name)) continue
 
             building.postBuildEvent(city.cityConstructions)
 
-            freeSpecificBuildingsProvided.getOrPut(building.name) { hashSetOf() }.add(city.id)
+            freeSpecificBuildingsProvided.addToMapOfSets(building.name, city.id)
             addFreeBuilding(city.id, building.name)
         }
     }

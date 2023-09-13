@@ -31,6 +31,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.extensions.addToMapOfSets
 import com.unciv.ui.components.extensions.withItem
 import com.unciv.ui.components.extensions.withoutItem
 import com.unciv.ui.screens.civilopediascreen.CivilopediaCategories
@@ -38,7 +39,6 @@ import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.roundToInt
-
 
 /**
  * City constructions manager.
@@ -604,7 +604,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             for (city in citiesThatApply) {
                 if (city.cityConstructions.containsBuildingOrEquivalent(freeBuilding.name)) continue
                 city.cityConstructions.addBuilding(freeBuilding)
-                freeBuildingsProvidedFromThisCity.getOrPut(city.id) { hashSetOf() }.add(freeBuilding.name)
+                freeBuildingsProvidedFromThisCity.addToMapOfSets(city.id, freeBuilding.name)
             }
         }
 
@@ -612,7 +612,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         for (unique in city.civ.getMatchingUniques(UniqueType.GainFreeBuildings, stateForConditionals = StateForConditionals(city.civ, city))) {
             val freeBuilding = city.civ.getEquivalentBuilding(unique.params[0])
             if (city.matchesFilter(unique.params[1])) {
-                freeBuildingsProvidedFromThisCity.getOrPut(city.id) { hashSetOf() }.add(freeBuilding.name)
+                freeBuildingsProvidedFromThisCity.addToMapOfSets(city.id, freeBuilding.name)
                 if (!isBuilt(freeBuilding.name))
                     addBuilding(freeBuilding)
             }
