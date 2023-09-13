@@ -117,7 +117,7 @@ class ColorMarkupLabel private constructor(
             return translated.replace('«', '[').replace('»', ']')
         }
 
-        private fun prepareText(text: String, textColor: Color, symbolColor: Color): String {
+        fun prepareText(text: String, textColor: Color, symbolColor: Color): String {
             val translated = text.tr()
             if ((textColor == Color.WHITE && symbolColor == Color.WHITE) || translated.isBlank())
                 return translated
