@@ -68,3 +68,18 @@ fun <T> Iterable<T>.toGdxArray(): Array<T> {
     for (it in this) arr.add(it)
     return arr
 }
+
+/** [yield][SequenceScope.yield]s [element] if it's not null */
+suspend fun <T> SequenceScope<T>.yieldIfNotNull(element: T?) {
+    if (element != null) yield(element)
+}
+/** [yield][SequenceScope.yield]s all elements of [elements] if it's not null */
+suspend fun <T> SequenceScope<T>.yieldAllNotNull(elements: Iterable<T>?) {
+    if (elements != null) yieldAll(elements)
+}
+@JvmName("yieldAllNotNullNotNull")
+/** [yield][SequenceScope.yield]s all non-null elements of [elements] if it's not null */
+suspend fun <T> SequenceScope<T>.yieldAllNotNull(elements: Iterable<T?>?) {
+    if (elements == null) return
+    for (element in elements) yieldIfNotNull(element)
+}

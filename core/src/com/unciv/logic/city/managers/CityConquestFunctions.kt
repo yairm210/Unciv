@@ -50,7 +50,7 @@ class CityConquestFunctions(val city: City){
 
     private fun removeBuildingsOnMoveToCiv(oldCiv: Civilization) {
         // Remove all buildings provided for free to this city
-        for (building in city.civ.civConstructions.getFreeBuildings(city.id)) {
+        for (building in city.civ.civConstructions.getFreeBuildingNames(city)) {
             city.cityConstructions.removeBuilding(building)
         }
 

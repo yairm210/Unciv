@@ -16,6 +16,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.disable
+import com.unciv.ui.components.extensions.isEnabled
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
@@ -99,22 +100,15 @@ class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
                 row()
                 add(sellBuildingButton).padTop(5f).colspan(2).center()
 
-                sellBuildingButton.onClick(UncivSound.Coin) {
+                val isFree = cityScreen.hasFreeBuilding(construction)
+                val enableSell = !isFree &&
+                    !cityScreen.city.isPuppet &&
+                    cityScreen.canChangeState &&
+                    (!cityScreen.city.hasSoldBuildingThisTurn || cityScreen.city.civ.gameInfo.gameParameters.godMode)
+                sellBuildingButton.isEnabled = enableSell
+                if (sellBuildingButton.isEnabled) sellBuildingButton.onClick(UncivSound.Coin) {
                     sellBuildingButton.disable()
-                    cityScreen.closeAllPopups()
-
-                    ConfirmPopup(
-                        cityScreen,
-                        "Are you sure you want to sell this [${construction.name}]?",
-                        sellText,
-                        restoreDefault = {
-                            cityScreen.update()
-                        }
-                    ) {
-                        cityScreen.city.sellBuilding(construction)
-                        cityScreen.clearSelection()
-                        cityScreen.update()
-                    }.open()
+                    sellBuildingClicked(construction, isFree, sellText)
                 }
 
                 if (cityScreen.city.hasSoldBuildingThisTurn && !cityScreen.city.civ.gameInfo.gameParameters.godMode
@@ -125,4 +119,24 @@ class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
         }
     }
 
+    private fun sellBuildingClicked(construction: Building, isFree: Boolean, sellText: String) {
+        cityScreen.closeAllPopups()
+
+        ConfirmPopup(
+            cityScreen,
+            "Are you sure you want to sell this [${construction.name}]?",
+            sellText,
+            restoreDefault = {
+                cityScreen.update()
+            }
+        ) {
+            sellBuildingConfirmed(construction, isFree)
+        }.open()
+    }
+
+    private fun sellBuildingConfirmed(construction: Building, isFree: Boolean) {
+        cityScreen.city.sellBuilding(construction)
+        cityScreen.clearSelection()
+        cityScreen.update()
+    }
 }

@@ -285,7 +285,7 @@ class CityStatsTable(private val cityScreen: CityScreen): Table() {
         val statsAndSpecialists = Table()
 
         val icon = ImageGetter.getConstructionPortrait(building.name, 50f)
-        val isFree = building.name in cityScreen.city.civ.civConstructions.getFreeBuildings(cityScreen.city.id)
+        val isFree = cityScreen.hasFreeBuilding(building)
         val displayName = if (isFree) "{${building.name}} ({Free})" else building.name
 
         info.add(displayName.toLabel(fontSize = Constants.defaultFontSize, hideIcons = true)).padBottom(5f).right().row()
