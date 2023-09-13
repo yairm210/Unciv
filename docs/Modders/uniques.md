@@ -555,11 +555,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Units in cities cost no Maintenance"
 	Applicable to: Global
 
-??? example  "Receive free [unit] when you discover [tech]"
-	Example: "Receive free [Musketman] when you discover [Agriculture]"
-
-	Applicable to: Global
-
 ??? example  "Enables embarkation for land units"
 	Applicable to: Global
 
