@@ -1,3 +1,12 @@
+## 4.8.5
+
+Removed double notifications and processing of treaties when traded  - By tuvus
+
+By SomeTroglodyte:
+- Global Constructions Blacklist 
+- Prevent selling free buildings 
+- Defense against Circular upgrade paths in mods 
+
 ## 4.8.4
 
 By SeventhM:
