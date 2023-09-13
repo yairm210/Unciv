@@ -267,8 +267,7 @@ class UnitOverviewTab(
                 val upgradeIcon = ImageGetter.getUnitIcon(unitToUpgradeTo.name,
                     if (enable) Color.GREEN else Color.GREEN.darken(0.5f))
                 if (enable) upgradeIcon.onClick {
-                    val pos = upgradeIcon.localToStageCoordinates(Vector2(upgradeIcon.width/2, upgradeIcon.height/2))
-                    UnitUpgradeMenu(overviewScreen.stage, pos, unit, unitAction) {
+                    UnitUpgradeMenu(overviewScreen.stage, upgradeIcon, unit, unitAction) {
                         unitListTable.updateUnitListTable()
                         select(selectKey)
                     }

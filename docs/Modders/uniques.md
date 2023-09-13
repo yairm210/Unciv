@@ -1401,6 +1401,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Doing so will consume this opportunity to choose a Promotion"
 	Applicable to: Promotion
 
+??? example  "This Promotion is free"
+	Applicable to: Promotion
+
 ## Terrain uniques
 ??? example  "Must be adjacent to [amount] [simpleTerrain] tiles"
 	Example: "Must be adjacent to [3] [Elevated] tiles"
@@ -1728,6 +1731,21 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Provides a unique luxury"
 	Applicable to: CityState
 
+## ModOptions uniques
+??? example  "Mod is incompatible with [modFilter]"
+	Example: "Mod is incompatible with [DeCiv Redux]"
+
+	Applicable to: ModOptions
+
+??? example  "Should only be used as permanent audiovisual mod"
+	Applicable to: ModOptions
+
+??? example  "Can be used as permanent audiovisual mod"
+	Applicable to: ModOptions
+
+??? example  "Cannot be used as permanent audiovisual mod"
+	Applicable to: ModOptions
+
 ## Conditional uniques
 !!! note ""
 
@@ -1870,9 +1888,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;in this city&gt;"
-	Applicable to: Conditional
-
-??? example  "&lt;in other cities&gt;"
 	Applicable to: Conditional
 
 ??? example  "&lt;in cities with a [buildingFilter]&gt;"
@@ -2132,6 +2147,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 *[era]: The name of any era.
 *[foundingOrEnhancing]: `founding` or `enhancing`.
 *[improvementName]: The name of any improvement.
+*[modFilter]: A Mod name, case-sensitive _or_ a simple wildcard filter beginning and ending in an Asterisk, case-insensitive.
 *[policy]: The name of any policy.
 *[promotion]: The name of any promotion.
 *[relativeAmount]: This indicates a number, usually with a + or - sign, such as `+25` (this kind of parameter is often followed by '%' which is nevertheless not part of the value).

@@ -20,6 +20,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.BFS
+import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeEvaluation
@@ -40,6 +41,7 @@ import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.Victory
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -339,7 +341,7 @@ object NextTurnAutomation {
             if (construction is PerpetualConstruction) continue
             if ((construction as INonPerpetualConstruction).canBePurchasedWithStat(city, Stat.Gold)
                     && city.civ.gold / 3 >= construction.getStatBuyCost(city, Stat.Gold)!!) {
-                city.cityConstructions.purchaseConstruction(construction.name, 0, true)
+                city.cityConstructions.purchaseConstruction(construction, 0, true)
             }
         }
 
@@ -620,10 +622,10 @@ object NextTurnAutomation {
                         city.cityConstructions.isBuilt(it.name)
                         && it.requiresResource(resource)
                         && it.isSellable()
-                        && it.name !in civInfo.civConstructions.getFreeBuildings(city.id) }
+                        && !civInfo.civConstructions.hasFreeBuilding(city, it) }
                     .randomOrNull()
                 if (buildingToSell != null) {
-                    city.sellBuilding(buildingToSell.name)
+                    city.sellBuilding(buildingToSell)
                     break
                 }
             }
@@ -707,7 +709,8 @@ object NextTurnAutomation {
                 (it.type == beliefType || beliefType == BeliefType.Any)
                 && !additionalBeliefsToExclude.contains(it)
                 && civInfo.religionManager.getReligionWithBelief(it) == null
-                && it.getMatchingUniques(UniqueType.OnlyAvailableWhen).none { unique -> !unique.conditionalsApply(civInfo) }
+                && it.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals)
+                    .none { unique -> !unique.conditionalsApply(civInfo) }
             }
             .maxByOrNull { ReligionAutomation.rateBelief(civInfo, it) }
     }
@@ -1019,16 +1022,21 @@ object NextTurnAutomation {
 
 
     private fun automateUnits(civInfo: Civilization) {
-        val sortedUnits = civInfo.units.getCivUnits().sortedBy { unit ->
-            when {
-                unit.baseUnit.isAirUnit() -> 2
-                unit.baseUnit.isRanged() -> 3
-                unit.baseUnit.isMelee() -> 4
-                unit.isGreatPersonOfType("War") -> 5 // Generals move after military units
-                else -> 1 // Civilian
-            }
-        }
+        val isAtWar = civInfo.isAtWar()
+        val sortedUnits = civInfo.units.getCivUnits().sortedBy { unit -> getUnitPriority(unit, isAtWar) }
         for (unit in sortedUnits) UnitAutomation.automateUnitMoves(unit)
+    }
+
+    private fun getUnitPriority(unit: MapUnit, isAtWar: Boolean): Int {
+        if (unit.isCivilian() && !unit.isGreatPersonOfType("War")) return 1 // Civilian
+        if (unit.baseUnit.isAirUnit()) return 2
+        val distance = if (!isAtWar) 0 else unit.getDistanceToEnemyUnit(6)
+        return (distance ?: 5) + when {
+            unit.baseUnit.isRanged() -> 2
+            unit.baseUnit.isMelee() -> 3
+            unit.isGreatPersonOfType("War") -> 100 // Generals move after military units
+            else -> 1
+        }
     }
 
     private fun automateCityBombardment(civInfo: Civilization) {
@@ -1070,13 +1078,13 @@ object NextTurnAutomation {
         if (civInfo.getHappiness() <= civInfo.cities.size) return
 
         val settlerUnits = civInfo.gameInfo.ruleset.units.values
-                .filter { it.hasUnique(UniqueType.FoundCity) && it.isBuildable(civInfo) }
+                .filter { it.isCityFounder() && it.isBuildable(civInfo) }
         if (settlerUnits.isEmpty()) return
         if (!civInfo.units.getCivUnits().none { it.hasUnique(UniqueType.FoundCity) }) return
 
         if (civInfo.cities.any {
                 val currentConstruction = it.cityConstructions.getCurrentConstruction()
-                currentConstruction is BaseUnit && currentConstruction.hasUnique(UniqueType.FoundCity)
+                currentConstruction is BaseUnit && currentConstruction.isCityFounder()
             }) return
 
         if (civInfo.units.getCivUnits().none { it.isMilitary() }) return // We need someone to defend him first

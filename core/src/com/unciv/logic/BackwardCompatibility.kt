@@ -66,9 +66,9 @@ object BackwardCompatibility {
     private fun GameInfo.handleMissingReferencesForEachCity() {
         for (city in civilizations.asSequence().flatMap { it.cities.asSequence() }) {
 
-            for (building in city.cityConstructions.getBuiltBuildings()) {
-                if (!ruleset.buildings.containsKey(building.name))
-                    city.cityConstructions.removeBuilding(building.name)
+            for (building in city.cityConstructions.builtBuildings.toList()) {
+                if (!ruleset.buildings.containsKey(building))
+                    city.cityConstructions.builtBuildings.remove(building)
             }
 
             fun isInvalidConstruction(construction: String) =

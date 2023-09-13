@@ -109,7 +109,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     fun getDescription(city: City, showAdditionalInfo: Boolean): String {
         val stats = getStats(city)
         val translatedLines = ArrayList<String>() // Some translations require special handling
-        val isFree = name in city.civ.civConstructions.getFreeBuildings(city.id)
+        val isFree = city.civ.civConstructions.hasFreeBuilding(city, this)
         if (uniqueTo != null) translatedLines += if (replaces == null) "Unique to [$uniqueTo]".tr()
             else "Unique to [$uniqueTo], replaces [$replaces]".tr()
         val missingUnique = getMatchingUniques(UniqueType.RequiresBuildingInAllCities).firstOrNull()
@@ -463,17 +463,25 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         if (cityConstructions.isBuilt(name))
             yield(RejectionReasonType.AlreadyBuilt.toInstance())
-        // for buildings that are created as side effects of other things, and not directly built,
-        // or for buildings that can only be bought
-        if (hasUnique(UniqueType.Unbuildable, StateForConditionals(civ, cityConstructions.city)))
-            yield(RejectionReasonType.Unbuildable.toInstance())
 
         for (unique in uniqueObjects) {
+            if (unique.type != UniqueType.OnlyAvailableWhen &&
+                !unique.conditionalsApply(StateForConditionals(civ, cityConstructions.city))) continue
+
             @Suppress("NON_EXHAUSTIVE_WHEN")
             when (unique.type) {
-                UniqueType.OnlyAvailableWhen->
+                // for buildings that are created as side effects of other things, and not directly built,
+                // or for buildings that can only be bought
+                UniqueType.Unbuildable ->
+                    yield(RejectionReasonType.Unbuildable.toInstance())
+
+                UniqueType.OnlyAvailableWhen ->
                     if (!unique.conditionalsApply(civ, cityConstructions.city))
                         yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
+
+                UniqueType.RequiresPopulation ->
+                    if (unique.params[0].toInt() > cityConstructions.city.population.population)
+                        yield(RejectionReasonType.PopulationRequirement.toInstance(unique.text))
 
                 UniqueType.EnablesNuclearWeapons -> if (!cityConstructions.city.civ.gameInfo.gameParameters.nuclearWeaponsEnabled)
                     yield(RejectionReasonType.DisabledBySetting.toInstance())
@@ -645,7 +653,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             return true
         }
 
-        cityConstructions.addBuilding(name)
+        cityConstructions.addBuilding(this)
         return true
     }
 

@@ -2,11 +2,11 @@ package com.unciv.ui.screens.worldscreen.unit
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.Constants
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.City
@@ -17,6 +17,7 @@ import com.unciv.ui.components.UnitGroup
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.center
 import com.unciv.ui.components.extensions.darken
+import com.unciv.ui.components.extensions.toImageButton
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
@@ -57,7 +58,6 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
     }
 
     var selectedCity : City? = null
-    private val deselectUnitButton = Table()
 
     // This is so that not on every update(), we will update the unit table.
     // Most of the time it's the same unit with the same stats so why waste precious time?
@@ -80,20 +80,13 @@ class UnitTable(val worldScreen: WorldScreen) : Table() {
 
         promotionsTable.touchable = Touchable.enabled
 
-        add(VerticalGroup().apply {
-            pad(5f)
-            touchable = Touchable.enabled
-            onClick {
-                selectUnit()
-                worldScreen.shouldUpdate = true
-                this@UnitTable.isVisible = false
-            }
-
-            deselectUnitButton.add(ImageGetter.getImage("OtherIcons/Close")).size(20f).pad(10f)
-            deselectUnitButton.pack()
-            deselectUnitButton.touchable = Touchable.enabled
-            addActor(deselectUnitButton)
-        }).left()
+        val deselectUnitButton = "OtherIcons/Close".toImageButton(20f, 50f, Color.CLEAR, Color.RED)
+        deselectUnitButton.onClick {
+            selectUnit()
+            worldScreen.shouldUpdate = true
+            this@UnitTable.isVisible = false
+        }
+        add(deselectUnitButton).left()
 
         add(Table().apply {
             val moveBetweenUnitsTable = Table().apply {

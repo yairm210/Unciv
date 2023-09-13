@@ -7,7 +7,6 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.translations.tr
 import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showReligionInCivilopedia
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
-import kotlin.collections.ArrayList
 
 class Belief() : RulesetObject() {
     var type: BeliefType = BeliefType.None
@@ -23,7 +22,6 @@ class Belief() : RulesetObject() {
     override fun makeLink() = "Belief/$name"
     override fun getCivilopediaTextHeader() = FormattedLine(name, icon = makeLink(), header = 2, color = if (type == BeliefType.None) "#e34a2b" else "")
     override fun getSortGroup(ruleset: Ruleset) = type.ordinal
-    override fun getIconName() = if (type == BeliefType.None) "Religion" else type.name
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         return getCivilopediaTextLines(false)

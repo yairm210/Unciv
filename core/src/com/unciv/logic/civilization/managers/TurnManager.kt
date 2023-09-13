@@ -191,7 +191,7 @@ class TurnManager(val civInfo: Civilization) {
         repeat(rebelCount) {
             civInfo.gameInfo.tileMap.placeUnitNearTile(
                 spawnTile.position,
-                unitToSpawn.name,
+                unitToSpawn,
                 barbarians
             )
         }

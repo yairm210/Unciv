@@ -46,7 +46,7 @@ class RuinsManager : IsPartOfGameInfoSerialization {
             if (civInfo.gameInfo.difficulty in possibleReward.excludedDifficulties) continue
             if (possibleReward.hasUnique(UniqueType.HiddenWithoutReligion) && !civInfo.gameInfo.isReligionEnabled()) continue
             if (possibleReward.hasUnique(UniqueType.HiddenAfterGreatProphet)
-                && (civInfo.civConstructions.boughtItemsWithIncreasingPrice[civInfo.religionManager.getGreatProphetEquivalent()] ?: 0) > 0
+                && (civInfo.civConstructions.boughtItemsWithIncreasingPrice[civInfo.religionManager.getGreatProphetEquivalent()?.name] ?: 0) > 0
             ) continue
 
             if (possibleReward.getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals)

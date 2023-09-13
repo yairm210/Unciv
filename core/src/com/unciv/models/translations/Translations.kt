@@ -401,9 +401,9 @@ fun String.tr(hideIcons: Boolean = false): String {
         }
 
         // Take the terms in the message, WITHOUT square brackets
-        val termsInMessage = this.getPlaceholderParametersIgnoringLowerLevelBraces()
+        val termsInMessage = this.getPlaceholderParameters()
         // Take the terms from the placeholder
-        val termsInTranslationPlaceholder = originalEntry.getPlaceholderParametersIgnoringLowerLevelBraces()
+        val termsInTranslationPlaceholder = originalEntry.getPlaceholderParameters()
         if (termsInMessage.size != termsInTranslationPlaceholder.size)
             throw Exception("Message $this has a different number of terms than the placeholder $translationEntry!")
 
@@ -439,17 +439,19 @@ fun String.tr(hideIcons: Boolean = false): String {
  * For example, a string like 'The city of [New [York]]' will return ['New [York]'],
  * allowing us to have nested translations!
  */
-fun String.getPlaceholderParametersIgnoringLowerLevelBraces(): List<String> {
+fun String.getPlaceholderParameters(): List<String> {
     if (!this.contains('[')) return emptyList()
+
+    val stringToParse = this.removeConditionals()
     val parameters = ArrayList<String>()
     var depthOfBraces = 0
     var startOfCurrentParameter = -1
-    for (i in this.indices) {
-        if (this[i] == '[') {
+    for (i in stringToParse.indices) {
+        if (stringToParse[i] == '[') {
             if (depthOfBraces == 0) startOfCurrentParameter = i+1
             depthOfBraces++
         }
-        if (this[i] == ']' && depthOfBraces > 0) {
+        if (stringToParse[i] == ']' && depthOfBraces > 0) {
             depthOfBraces--
             if (depthOfBraces == 0) parameters.add(substring(startOfCurrentParameter,i))
         }
@@ -459,7 +461,7 @@ fun String.getPlaceholderParametersIgnoringLowerLevelBraces(): List<String> {
 
 fun String.getPlaceholderText(): String {
     var stringToReturn = this.removeConditionals()
-    val placeholderParameters = stringToReturn.getPlaceholderParametersIgnoringLowerLevelBraces()
+    val placeholderParameters = stringToReturn.getPlaceholderParameters()
     for (placeholderParameter in placeholderParameters)
         stringToReturn = stringToReturn.replace("[$placeholderParameter]", "[]")
     return stringToReturn
@@ -473,11 +475,6 @@ fun String.equalsPlaceholderText(str:String): Boolean {
 fun String.hasPlaceholderParameters(): Boolean {
     if (!this.contains('[')) return false
     return squareBraceRegex.containsMatchIn(this.removeConditionals())
-}
-
-fun String.getPlaceholderParameters(): List<String> {
-    if (!this.contains('[')) return emptyList()
-    return squareBraceRegex.findAll(this.removeConditionals()).map { it.groups[1]!!.value }.toList()
 }
 
 /** Substitutes placeholders with [strings], respecting order of appearance. */
