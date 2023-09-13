@@ -19,6 +19,7 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stats
@@ -28,19 +29,6 @@ import com.unciv.models.tilesets.TileSetConfig
 class RulesetValidator(val ruleset: Ruleset) {
 
     fun getErrorList(tryFixUnknownUniques: Boolean = false): RulesetErrorList {
-        val prereqsHashMap = HashMap<String,HashSet<String>>()
-        fun getPrereqTree(technologyName: String): Set<String> {
-            if (prereqsHashMap.containsKey(technologyName)) return prereqsHashMap[technologyName]!!
-            val technology = ruleset.technologies[technologyName]
-                ?: return emptySet()
-            val techHashSet = HashSet<String>()
-            techHashSet += technology.prerequisites
-            prereqsHashMap[technologyName] = techHashSet
-            for (prerequisite in technology.prerequisites)
-                techHashSet += getPrereqTree(prerequisite)
-            return techHashSet
-        }
-
         val lines = RulesetErrorList()
 
         /********************** Ruleset Invariant Part **********************/
@@ -169,56 +157,13 @@ class RulesetValidator(val ruleset: Ruleset) {
 
         /********************** Ruleset Specific Part **********************/
 
-        val vanillaRuleset = RulesetCache.getVanillaRuleset()  // for UnitTypes fallback
-
         checkUniques(ruleset.globalUniques, lines, rulesetSpecific, tryFixUnknownUniques)
 
         if (ruleset.units.values.none { it.isCityFounder() })
             lines += "No city-founding units in ruleset!"
 
         for (unit in ruleset.units.values) {
-            if (unit.requiredTech != null && !ruleset.technologies.containsKey(unit.requiredTech!!))
-                lines += "${unit.name} requires tech ${unit.requiredTech} which does not exist!"
-            if (unit.obsoleteTech != null && !ruleset.technologies.containsKey(unit.obsoleteTech!!))
-                lines += "${unit.name} obsoletes at tech ${unit.obsoleteTech} which does not exist!"
-            if (unit.upgradesTo != null && !ruleset.units.containsKey(unit.upgradesTo!!))
-                lines += "${unit.name} upgrades to unit ${unit.upgradesTo} which does not exist!"
-
-            // Check that we don't obsolete ourselves before we can upgrade
-            if (unit.upgradesTo!=null && ruleset.units.containsKey(unit.upgradesTo!!)
-                    && unit.obsoleteTech!=null && ruleset.technologies.containsKey(unit.obsoleteTech!!)) {
-                val upgradedUnit = ruleset.units[unit.upgradesTo!!]!!
-                if (upgradedUnit.requiredTech != null && upgradedUnit.requiredTech != unit.obsoleteTech
-                        && !getPrereqTree(unit.obsoleteTech!!).contains(upgradedUnit.requiredTech)
-                )
-                    lines.add(
-                        "${unit.name} obsoletes at tech ${unit.obsoleteTech}," +
-                                " and therefore ${upgradedUnit.requiredTech} for its upgrade ${upgradedUnit.name} may not yet be researched!",
-                        RulesetErrorSeverity.Warning
-                    )
-            }
-
-            for (resource in unit.getResourceRequirementsPerTurn().keys)
-                if (!ruleset.tileResources.containsKey(resource))
-                    lines += "${unit.name} requires resource $resource which does not exist!"
-            if (unit.replaces != null && !ruleset.units.containsKey(unit.replaces!!))
-                lines += "${unit.name} replaces ${unit.replaces} which does not exist!"
-            for (promotion in unit.promotions)
-                if (!ruleset.unitPromotions.containsKey(promotion))
-                    lines += "${unit.name} contains promotion $promotion which does not exist!"
-            if (!ruleset.unitTypes.containsKey(unit.unitType) && (ruleset.unitTypes.isNotEmpty() || !vanillaRuleset.unitTypes.containsKey(unit.unitType)))
-                lines += "${unit.name} is of type ${unit.unitType}, which does not exist!"
-            for (unique in unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)) {
-                val improvementName = unique.params[0]
-                if (ruleset.tileImprovements[improvementName]==null) continue // this will be caught in the checkUniques
-                if ((ruleset.tileImprovements[improvementName] as Stats).none() &&
-                        unit.isCivilian() &&
-                        !unit.isGreatPersonOfType("War")) {
-                    lines.add("${unit.name} can place improvement $improvementName which has no stats, preventing unit automation!",
-                        RulesetErrorSeverity.Warning)
-                }
-            }
-
+            checkUnitRulesetSpecific(unit, lines)
             checkUniques(unit, lines, rulesetSpecific, tryFixUnknownUniques)
         }
 
@@ -422,10 +367,10 @@ class RulesetValidator(val ruleset: Ruleset) {
                 if (!ruleset.unitPromotions.containsKey(prereq))
                     lines.add("${promotion.name} requires promotion $prereq which does not exist!",
                         RulesetErrorSeverity.Warning)
-            for (unitType in promotion.unitTypes)
-                if (!ruleset.unitTypes.containsKey(unitType) && (ruleset.unitTypes.isNotEmpty() || !vanillaRuleset.unitTypes.containsKey(unitType)))
-                    lines.add("${promotion.name} references unit type $unitType, which does not exist!",
-                        RulesetErrorSeverity.Warning)
+            for (unitType in promotion.unitTypes) checkUnitType(unitType) {
+                lines.add("${promotion.name} references unit type $unitType, which does not exist!",
+                    RulesetErrorSeverity.Warning)
+            }
             checkUniques(promotion, lines, rulesetSpecific, tryFixUnknownUniques)
             checkPromotionCircularReferences(lines)
         }
@@ -468,6 +413,121 @@ class RulesetValidator(val ruleset: Ruleset) {
         }
 
         return lines
+    }
+
+    /** Collects known technology prerequisite paths: key is the technology name,
+     *  value a Set of its prerequisites including indirect ones */
+    private val prereqsHashMap = HashMap<String, HashSet<String>>()
+    /** @return The Set of direct and indirect prerequisites of a Technology by names */
+    private fun getPrereqTree(technologyName: String): Set<String> {
+        if (prereqsHashMap.containsKey(technologyName)) return prereqsHashMap[technologyName]!!
+        val technology = ruleset.technologies[technologyName]
+            ?: return emptySet()
+        val techHashSet = HashSet<String>()
+        techHashSet += technology.prerequisites
+        prereqsHashMap[technologyName] = techHashSet
+        for (prerequisite in technology.prerequisites)
+            techHashSet += getPrereqTree(prerequisite)
+        return techHashSet
+    }
+
+    /** Collects all RulesetSpecific checks for a BaseUnit */
+    private fun checkUnitRulesetSpecific(unit: BaseUnit, lines: RulesetErrorList) {
+        if (unit.requiredTech != null && !ruleset.technologies.containsKey(unit.requiredTech!!))
+            lines += "${unit.name} requires tech ${unit.requiredTech} which does not exist!"
+        if (unit.obsoleteTech != null && !ruleset.technologies.containsKey(unit.obsoleteTech!!))
+            lines += "${unit.name} obsoletes at tech ${unit.obsoleteTech} which does not exist!"
+        if (unit.upgradesTo != null && !ruleset.units.containsKey(unit.upgradesTo!!))
+            lines += "${unit.name} upgrades to unit ${unit.upgradesTo} which does not exist!"
+
+        // Check that we don't obsolete ourselves before we can upgrade
+        if (unit.upgradesTo!=null && ruleset.units.containsKey(unit.upgradesTo!!)
+            && unit.obsoleteTech!=null && ruleset.technologies.containsKey(unit.obsoleteTech!!)) {
+            val upgradedUnit = ruleset.units[unit.upgradesTo!!]!!
+            if (upgradedUnit.requiredTech != null && upgradedUnit.requiredTech != unit.obsoleteTech
+                && !getPrereqTree(unit.obsoleteTech!!).contains(upgradedUnit.requiredTech)
+            )
+                lines.add(
+                    "${unit.name} obsoletes at tech ${unit.obsoleteTech}," +
+                        " and therefore ${upgradedUnit.requiredTech} for its upgrade ${upgradedUnit.name} may not yet be researched!",
+                    RulesetErrorSeverity.Warning
+                )
+        }
+
+        for (resource in unit.getResourceRequirementsPerTurn().keys)
+            if (!ruleset.tileResources.containsKey(resource))
+                lines += "${unit.name} requires resource $resource which does not exist!"
+        if (unit.replaces != null && !ruleset.units.containsKey(unit.replaces!!))
+            lines += "${unit.name} replaces ${unit.replaces} which does not exist!"
+        for (promotion in unit.promotions)
+            if (!ruleset.unitPromotions.containsKey(promotion))
+                lines += "${unit.name} contains promotion $promotion which does not exist!"
+        checkUnitType(unit.unitType) {
+            lines += "${unit.name} is of type ${unit.unitType}, which does not exist!"
+        }
+        for (unique in unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)) {
+            val improvementName = unique.params[0]
+            if (ruleset.tileImprovements[improvementName]==null) continue // this will be caught in the checkUniques
+            if ((ruleset.tileImprovements[improvementName] as Stats).none() &&
+                unit.isCivilian() &&
+                !unit.isGreatPersonOfType("War")) {
+                lines.add("${unit.name} can place improvement $improvementName which has no stats, preventing unit automation!",
+                    RulesetErrorSeverity.Warning)
+            }
+        }
+
+        checkUnitUpgradePath(unit, lines)
+    }
+
+    // for UnitTypes fallback, used if and only if the 'Ruleset Specific Part' runs,
+    // **and** a mod fails to provide the UnitTypes entirely (ruleset.unitTypes.isEmpty() is true).
+    private val vanillaRuleset by lazy { RulesetCache.getVanillaRuleset() }
+
+    /** Checks validity of one UnitType by name supporting fallback if a mod has no UnitTypes at all,
+     *  and calls [reportError] if it is bad.
+     */
+    private fun checkUnitType(type: String, reportError: ()->Unit) {
+        if (ruleset.unitTypes.containsKey(type)) return
+        if (ruleset.unitTypes.isEmpty() && vanillaRuleset.unitTypes.containsKey(type)) return
+        reportError()
+    }
+
+    /** Maps unit name to a set of all units naming it in its "replaces" property,
+     *  only for units having such a non-empty set, for use in [checkUnitUpgradePath] */
+    private val unitReplacesMap: Map<String, Set<BaseUnit>> by lazy {
+        ruleset.units.values.asSequence()
+            .mapNotNull { it.replaces }.distinct()
+            .associateWith { base ->
+                ruleset.units.values.filter { it.replaces == base }.toSet()
+            }
+    }
+
+    /** Checks all possible upgrade paths of [unit], reporting to [lines].
+     *  @param path used in recursion collecting the BaseUnits seen so far
+     *
+     *  Note: Since the units down the path will also be checked, this could log the same mistakes
+     *  repeatedly, but that is mostly prevented by RulesetErrorList.add(). Each unit involved in a
+     *  loop will still be flagged individually.
+     */
+    private fun checkUnitUpgradePath(
+        unit: BaseUnit,
+        lines: RulesetErrorList,
+        path: Set<BaseUnit> = emptySet()
+    ) {
+        // This is similar to UnitUpgradeManager.getUpgradePath but without the dependency on a Civilization instance
+        // It also branches over all possible nation-unique replacements in one go, since we only look for loops.
+        if (unit in path) {
+            lines += "Circular or self-referencing upgrade path for ${unit.name}"
+            return
+        }
+        val upgrade = ruleset.units[unit.upgradesTo] ?: return
+        val newPath = path + unit // All Set additions are new Sets - we're recursing!
+        val newPathWithReplacements = unitReplacesMap[unit.name]?.let { newPath + it } ?: newPath
+        checkUnitUpgradePath(upgrade, lines, newPathWithReplacements)
+        val replacements = unitReplacesMap[upgrade.name] ?: return
+        for (toCheck in replacements) {
+            checkUnitUpgradePath(toCheck, lines, newPath)
+        }
     }
 
     private fun checkTilesetSanity(lines: RulesetErrorList) {
@@ -552,7 +612,7 @@ class RulesetValidator(val ruleset: Ruleset) {
     }
 
 
-    fun checkUniques(
+    private fun checkUniques(
         uniqueContainer: IHasUniques,
         lines: RulesetErrorList,
         severityToReport: UniqueType.UniqueComplianceErrorSeverity,
