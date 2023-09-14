@@ -50,7 +50,8 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
     },
 
     Status {
-        override fun getHeaderIcon(iconSize: Float) = null
+        override val headerTip = "Status\n(puppet, resistance or being razed)"
+        override fun getHeaderIcon(iconSize: Float) = ImageGetter.getImage("OtherIcons/CityStatus")
         override fun getEntryValue(item: City) = when {
             item.isBeingRazed -> 3
             item.isInResistance() -> 2
