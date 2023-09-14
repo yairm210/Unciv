@@ -25,9 +25,8 @@ import kotlin.math.roundToInt
  * This defines all behaviour of the [CityOverviewTab] columns through overridable parts
  */
 
-// This false positive of detekt is possibly fixed in https://github.com/detekt/detekt/pull/6367
-// (The getComparator overrides need the explicit City type on their lambda parameter)
-@Suppress("ExplicitItLambdaParameter")  // detekt is wrong
+// Note: Using type hints on compareBy where explicitly typing the lambda `it` instead would be prettier.
+// detekt would false-positive the typed `it`, see discussion in: https://github.com/detekt/detekt/pull/6367
 
 enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOverviewScreen> {
     //region Enum Instances
@@ -36,7 +35,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override val align = Align.left
         override val fillX = true
         override val defaultDescending = false
-        override fun getComparator() = compareBy(collator) { it: City -> it.name.tr(hideIcons = true) }
+        override fun getComparator() = compareBy<City, String>(collator) { it.name.tr(hideIcons = true) }
         override fun getHeaderIcon(iconSize: Float) =
                 ImageGetter.getUnitIcon("Settler")
                 .surroundWithCircle(iconSize)
@@ -69,7 +68,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override val headerTip = "Current construction"
         override val defaultDescending = false
         override fun getComparator() =
-            compareBy(collator) { it: City -> it.cityConstructions.currentConstructionFromQueue.tr(hideIcons = true) }
+            compareBy<City, String>(collator) { it.cityConstructions.currentConstructionFromQueue.tr(hideIcons = true) }
         override fun getHeaderIcon(iconSize: Float) =
                 getCircledIcon("OtherIcons/Settings", iconSize)
         override fun getEntryValue(item: City) = 0
@@ -134,7 +133,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override val headerTip = "Garrisoned by unit"
         override val defaultDescending = false
         override fun getComparator() =
-            compareBy(collator) { it: City -> it.getCenterTile().militaryUnit?.name?.tr(hideIcons = true) ?: "" }
+            compareBy<City, String>(collator) { it.getGarrison()?.name?.tr(hideIcons = true) ?: "" }
         override fun getHeaderIcon(iconSize: Float) =
                 getCircledIcon("OtherIcons/Shield", iconSize)
         override fun getEntryValue(item: City) =
