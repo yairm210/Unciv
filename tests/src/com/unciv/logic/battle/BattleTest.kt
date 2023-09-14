@@ -58,6 +58,8 @@ class BattleTest {
         // then
         assertEquals(31, damageDealt.attackerDealt)
         assertEquals(31, damageDealt.defenderDealt)
+        assertEquals(69, defaultAttackerUnit.health)
+        assertEquals(69, defaultDefenderUnit.health)
     }
 
     @Test
@@ -83,6 +85,20 @@ class BattleTest {
 
         // then
         assertEquals(Vector2.Zero, defaultAttackerUnit.getTile().position)
+        assertTrue(defaultDefenderUnit.isDestroyed)
+    }
+
+    @Test
+    fun `should stay in original position when ranged killing`() {
+        // given
+        val attackerUnit = testGame.addUnit("Archer", attackerCiv, testGame.getTile(Vector2.Y))
+        defaultDefenderUnit.health = 1
+
+        // when
+        Battle.attack(MapUnitCombatant(attackerUnit), MapUnitCombatant(defaultDefenderUnit))
+
+        // then
+        assertEquals(Vector2.Y, attackerUnit.getTile().position)
         assertTrue(defaultDefenderUnit.isDestroyed)
     }
 
@@ -126,7 +142,7 @@ class BattleTest {
     }
 
     @Test
-    fun `attacker should expend all movement points without uniques`() {
+    fun `attacker should expend all movement points to attack without uniques`() {
         // when
         Battle.attack(MapUnitCombatant(defaultAttackerUnit), MapUnitCombatant(defaultDefenderUnit))
 
@@ -190,20 +206,6 @@ class BattleTest {
         assertEquals(attackerCiv, defaultAttackerUnit.getTile().civilianUnit!!.civ)  // captured unit
         assertEquals("Worker", defaultAttackerUnit.getTile().civilianUnit!!.baseUnit.name)
     }
-
-    @Test
-    fun `should destroy civilian`() {
-        // given
-        val defenderUnit = testGame.addUnit("Great Merchant", defenderCiv, testGame.getTile(Vector2(2f, 0f)))
-
-        // when
-        val attack = Battle.attack(MapUnitCombatant(defaultAttackerUnit), MapUnitCombatant(defenderUnit))
-
-        // then
-        assertTrue(defenderUnit.isDestroyed)
-        assertEquals(0, attack.attackerDealt)
-        assertEquals(Vector2(2f, 0f), defaultAttackerUnit.getTile().position)  // todo no move??
-    }
     @Test
     fun `should earn Great General from combat`() {
         // when
@@ -240,4 +242,100 @@ class BattleTest {
         assertEquals(10, attackerCiv.greatPeople.greatGeneralPoints)
     }
 
+    @Test
+    fun `should conquer city when defeated and melee attacked`() {
+        // given
+        val defenderCity = testGame.addCity(defenderCiv, testGame.getTile(Vector2.Y), initialPopulation = 1)
+        defenderCity.health = 1
+
+        testGame.gameInfo.currentPlayerCiv = testGame.addCiv() // otherwise test crashes when puppetying city
+        testGame.gameInfo.currentPlayer = testGame.gameInfo.currentPlayerCiv.civName
+
+        // when
+        Battle.attack(MapUnitCombatant(defaultAttackerUnit), CityCombatant(defenderCity))
+
+        // then
+        assertEquals(attackerCiv, defenderCity.civ)
+        assertEquals(defenderCiv.civName, defenderCity.previousOwner)
+        assertEquals(defenderCiv.civName, defenderCity.foundingCiv)
+    }
+
+    @Test
+    fun `should not conquer city when defeated and ranged attacked`() {
+        // given
+        val attackerUnit = testGame.addUnit("Archer", attackerCiv, testGame.getTile(Vector2(0f, 2f)))
+        val defenderCity = testGame.addCity(defenderCiv, testGame.getTile(Vector2.Y), initialPopulation = 1)
+        defenderCity.health = 1
+
+        // when
+        Battle.attack(MapUnitCombatant(attackerUnit), CityCombatant(defenderCity))
+
+        // then
+        assertEquals(defenderCiv, defenderCity.civ)
+        assertEquals(1, defenderCity.health)
+    }
+
+    @Test
+    fun `should not conquer city when unit has 'unable to capture cities' unique`() {
+        // given
+        val attackerUnit = testGame.addDefaultMeleeUnitWithUniques(attackerCiv, testGame.getTile(Vector2(0f, 2f)), "Unable to capture cities")
+        val defenderCity = testGame.addCity(defenderCiv, testGame.getTile(Vector2.Y), initialPopulation = 1)
+        defenderCity.health = 1
+
+        // when
+        Battle.attack(MapUnitCombatant(attackerUnit), CityCombatant(defenderCity))
+
+        // then
+        assertEquals(defenderCiv, defenderCity.civ)
+        assertEquals(1, defenderCity.health)
+    }
+
+    @Test
+    fun `should not gain XP when attacking defeated city`() {
+        // given
+        val attackerUnit = testGame.addUnit("Archer", attackerCiv, testGame.getTile(Vector2(0f, 2f)))
+        val defenderCity = testGame.addCity(defenderCiv, testGame.getTile(Vector2.Y), initialPopulation = 1)
+        defenderCity.health = 1
+
+        // when
+        Battle.attack(MapUnitCombatant(attackerUnit), CityCombatant(defenderCity))
+
+        // then
+        assertEquals(0, attackerUnit.promotions.XP)
+    }
+
+    @Test
+    fun `should earn prizes when defeating units`() {
+        // given
+        val attackerPolicy = testGame.createPolicy(
+            "Earn [100]% of killed [Military] unit's [Strength] as [Culture]",
+            "Earn [100]% of killed [Military] unit's [Strength] as [Gold]"
+        )
+        attackerCiv.policies.adopt(attackerPolicy, true)
+
+        defaultDefenderUnit.health = 1
+
+        // when
+        Battle.attack(MapUnitCombatant(defaultAttackerUnit), MapUnitCombatant(defaultDefenderUnit))
+
+        // then
+        assertEquals(8, attackerCiv.gold)
+        assertEquals(8, attackerCiv.policies.storedCulture)
+    }
+
+    @Test
+    fun `should heal when defeating units if has unique`() {
+        // given
+        val attackerUnit = testGame.addDefaultRangedUnitWithUniques(attackerCiv, testGame.getTile(Vector2.Y), "Heals [10] damage if it kills a unit")
+        attackerUnit.health = 90
+        attackerUnit.currentMovement = 2f
+
+        defaultDefenderUnit.health = 1
+
+        // when
+        Battle.attack(MapUnitCombatant(attackerUnit), MapUnitCombatant(defaultDefenderUnit))
+
+        // then
+        assertEquals(100, attackerUnit.health)
+    }
 }
