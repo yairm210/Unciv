@@ -137,9 +137,9 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override fun getHeaderIcon(iconSize: Float) =
                 getCircledIcon("OtherIcons/Shield", iconSize)
         override fun getEntryValue(item: City) =
-                if (item.getCenterTile().militaryUnit != null) 1 else 0
+                if (item.getGarrison() != null) 1 else 0
         override fun getEntryActor(item: City, iconSize: Float, actionContext: EmpireOverviewScreen): Actor? {
-            val unit = item.getCenterTile().militaryUnit ?: return null
+            val unit = item.getGarrison() ?: return null
             val unitName = unit.displayName()
             val unitIcon = ImageGetter.getConstructionPortrait(unit.baseUnit.getIconName(), iconSize * 0.7f)
             unitIcon.addTooltip(unitName, 18f, tipAlign = Align.topLeft)
