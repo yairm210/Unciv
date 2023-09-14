@@ -49,6 +49,27 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
                 "Total".toLabel()
     },
 
+    Status {
+        override fun getHeaderIcon(iconSize: Float) = null
+        override fun getEntryValue(item: City) = when {
+            item.isBeingRazed -> 3
+            item.isInResistance() -> 2
+            item.isPuppet -> 1
+            else -> 0
+        }
+        override fun getEntryActor(item: City, iconSize: Float, actionContext: EmpireOverviewScreen): Actor? {
+            val iconPath = when {
+                item.isBeingRazed -> "OtherIcons/Fire"
+                item.isInResistance() -> "StatIcons/Resistance"
+                item.isPuppet -> "OtherIcons/Puppet"
+                else -> return null
+            }
+            // getImage is an ImageWithCustomSize, but setting size here fails - width is not respected
+            return ImageGetter.getImage(iconPath).surroundWithCircle(iconSize * 0.7f, color = Color.CLEAR)
+        }
+        override fun getTotalsActor(items: Iterable<City>) = null
+    },
+
     ConstructionIcon {
         override fun getHeaderIcon(iconSize: Float) = null
         override fun getEntryValue(item: City) =
