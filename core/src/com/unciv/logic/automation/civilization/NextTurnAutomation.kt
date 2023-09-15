@@ -874,7 +874,7 @@ object NextTurnAutomation {
 
         for (otherCiv in canSignDefensivePactCiv) {
             // Default setting is 3, this will be changed according to different civ.
-            if ((1..10).random() <= 1 && wantsToSignDefensivePact(civInfo, otherCiv)) {
+            if ((1..10).random() <= 3 && wantsToSignDefensivePact(civInfo, otherCiv)) {
                 //todo: Add more in depth evaluation here
                 val tradeLogic = TradeLogic(civInfo, otherCiv)
                 tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.defensivePact, TradeType.Treaty))
