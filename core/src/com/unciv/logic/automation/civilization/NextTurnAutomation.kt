@@ -798,6 +798,15 @@ object NextTurnAutomation {
         
         // Motivation should be constant as the number of civs changes
         var motivation = civInfo.getDiplomacyManager(otherCiv).opinionOfOtherCiv().toInt() - 40
+
+        // If the other civ is stronger than we are compelled to be nice to them
+        // If they are too weak, then thier friendship doesn't mean much to us
+        motivation += when (Automation.threatAssessment(civInfo,otherCiv)) {
+            ThreatLevel.VeryHigh -> 10
+            ThreatLevel.High -> 5
+            ThreatLevel.VeryLow -> -5
+            else -> 0
+        }
         
         // Try to ally with a fourth of the civs in play
         val civsToAllyWith = 0.25f * allAliveCivs
