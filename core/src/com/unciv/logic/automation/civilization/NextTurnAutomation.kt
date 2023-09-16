@@ -799,9 +799,15 @@ object NextTurnAutomation {
         // Motivation should be constant as the number of civs changes
         var motivation = civInfo.getDiplomacyManager(otherCiv).opinionOfOtherCiv().toInt() - 40
         
-        // Try to ally with a third of the civs in play
-        // Goes form 0 to -120 as the civ gets more friends, goal is around 1/4 friends max
-        motivation -= ((numOfFriends * 120f) / knownCivs).toInt()
+        // Try to ally with a fourth of the civs in play
+        val civsToAllyWith = 0.25f * allAliveCivs
+        if (numOfFriends < civsToAllyWith) {
+            // Goes from 10 to 0 once the civ gets 1/4 of all alive civs as friends
+            motivation += (10 - 10 * (numOfFriends / civsToAllyWith)).toInt()
+        } else {
+            // Goes form 0 to -120 as the civ gets more friends, offset by civsToAllyWith
+            motivation -= (120f * (numOfFriends - civsToAllyWith) / (knownCivs - civsToAllyWith)).toInt()
+        }
 
         // Goes from 0 to -50 as more civs die
         // this is meant to prevent the game from stalemating when a group of friends
@@ -810,7 +816,7 @@ object NextTurnAutomation {
 
         // Wait to declare frienships until more civs
         // Goes from -30 to 0 when we know 75% of allCivs
-        val civsToKnow = .75f * allAliveCivs
+        val civsToKnow = 0.75f * allAliveCivs
         motivation -= ((civsToKnow - knownCivs) / civsToKnow * 30f).toInt().coerceAtLeast(0)
         
         motivation -= hasAtLeastMotivationToAttack(civInfo, otherCiv, motivation / 2) * 2
