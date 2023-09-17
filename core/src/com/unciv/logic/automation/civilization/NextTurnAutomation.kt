@@ -775,19 +775,21 @@ object NextTurnAutomation {
 
     private fun offerDeclarationOfFriendship(civInfo: Civilization) {
         val civsThatWeCanDeclareFriendshipWith = civInfo.getKnownCivs()
-                .filter { civInfo.diplomacyFunctions.canSignDeclarationOfFriendshipWith(it) }
+                .filter { civInfo.diplomacyFunctions.canSignDeclarationOfFriendshipWith(it)
+                    && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedDeclarationOfFriendship)}
                 .sortedByDescending { it.getDiplomacyManager(civInfo).relationshipLevel() }.toList()
         for (otherCiv in civsThatWeCanDeclareFriendshipWith) {
-            // Default setting is 5, this will be changed according to different civ.
-            if ((1..10).random() <= 5 && wantsToSignDeclarationOfFrienship(civInfo, otherCiv)) {
+            // Default setting is 2, this will be changed according to different civ.
+            if ((1..10).random() <= 2 && wantsToSignDeclarationOfFrienship(civInfo, otherCiv)) {
                 otherCiv.popupAlerts.add(PopupAlert(AlertType.DeclarationOfFriendship, civInfo.civName))
             }
         }
     }
 
     private fun wantsToSignDeclarationOfFrienship(civInfo: Civilization, otherCiv: Civilization): Boolean {
+        val diploManager = civInfo.getDiplomacyManager(otherCiv)
         // Shortcut, if it is below favorable then don't consider it
-        if (civInfo.getDiplomacyManager(otherCiv).isRelationshipLevelLT(RelationshipLevel.Favorable)) return false
+        if (diploManager.isRelationshipLevelLT(RelationshipLevel.Favorable)) return false
         
         val numOfFriends = civInfo.diplomacy.count { it.value.hasFlag(DiplomacyFlags.DeclarationOfFriendship) }
         val knownCivs = civInfo.getKnownCivs().count { it.isMajorCiv() && it.isAlive() }
@@ -796,7 +798,7 @@ object NextTurnAutomation {
         val allAliveCivs = allCivs - deadCivs
         
         // Motivation should be constant as the number of civs changes
-        var motivation = civInfo.getDiplomacyManager(otherCiv).opinionOfOtherCiv().toInt() - 40
+        var motivation = diploManager.opinionOfOtherCiv().toInt() - 40
 
         // If the other civ is stronger than we are compelled to be nice to them
         // If they are too weak, then thier friendship doesn't mean much to us
