@@ -1,5 +1,6 @@
 package com.unciv.logic.map.mapunit
 
+import com.unciv.logic.UncivShowableException
 import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
@@ -11,11 +12,13 @@ class UnitUpgradeManager(val unit:MapUnit) {
 
     /** Returns FULL upgrade path, without checking what we can or cannot build currently.
      * Does not contain current baseunit, so will be empty if no upgrades. */
-    private fun getUpgradePath(): List<BaseUnit>{
+    private fun getUpgradePath(): Iterable<BaseUnit> {
         var currentUnit = unit.baseUnit
-        val upgradeList = arrayListOf<BaseUnit>()
-        while (currentUnit.upgradesTo != null){
+        val upgradeList = linkedSetOf<BaseUnit>()
+        while (currentUnit.upgradesTo != null) {
             val nextUpgrade = unit.civ.getEquivalentUnit(currentUnit.upgradesTo!!)
+            if (nextUpgrade in upgradeList)
+                throw(UncivShowableException("Circular or self-referencing upgrade path for ${currentUnit.name}"))
             currentUnit = nextUpgrade
             upgradeList.add(currentUnit)
         }

@@ -9,7 +9,6 @@ import com.unciv.logic.battle.Battle
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -64,6 +63,10 @@ class AlertPopup(
     private fun getCiv(civName: String) = gameInfo.getCivilization(civName)
     private fun getCity(cityId: String) = gameInfo.getCities().first { it.id == cityId }
     //endregion
+
+    // This redirects all addCloseButton uses with only text and no action to accept the space key
+    private fun addCloseButton(text: String = Constants.close) =
+        addCloseButton(text, KeyboardBinding.NextTurnAlternate, null)
 
     init {
         // This makes the buttons fill up available width. See comments in #9559.

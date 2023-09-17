@@ -283,7 +283,7 @@ object TranslationActiveModsCache {
     }
 }
 
-    /**
+/**
  *  This function does the actual translation work,
  *      using an instance of [Translations] stored in UncivGame.Current
  *
@@ -293,12 +293,13 @@ object TranslationActiveModsCache {
  *                  sentences - contains at least one '{'
  *                  - phrases between curly braces are translated individually
  *                  Additionally, they may contain conditionals between '<' and '>'
+ *  @param      hideIcons disables auto-inserting icons for ruleset objects (but not Stats)
  *  @return     The translated string
  *                  defaults to the input string if no translation is available,
  *                  but with placeholder or sentence brackets removed.
  */
-fun String.tr(hideIcons:Boolean = false): String {
-    val language:String = UncivGame.Current.settings.language
+fun String.tr(hideIcons: Boolean = false): String {
+    val language: String = UncivGame.Current.settings.language
 
     // '<' and '>' checks for quick 'no' answer, regex to ensure that no one accidentally put '><' and ruined things
     if (contains('<') && contains('>') && pointyBraceRegex.containsMatchIn(this)) { // Conditionals!

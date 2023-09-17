@@ -89,8 +89,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     FoodConsumptionBySpecialists("[relativeAmount]% Food consumption by specialists [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
     /// Happiness
-    @Deprecated("As of 4.7.3", ReplaceWith("[+100]% unhappiness from the number of cities"))
-    UnhappinessFromCitiesDoubled("Unhappiness from number of Cities doubled", UniqueTarget.Global),
     UnhappinessFromCitiesPercentage("[relativeAmount]% unhappiness from the number of cities", UniqueTarget.Global),
     // Todo: capitalization of 'Unhappiness' -> 'unhappiness'
     UnhappinessFromPopulationTypePercentageChange("[relativeAmount]% Unhappiness from [populationFilter] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -163,7 +161,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     UnitSupplyPerCity("[amount] Unit Supply per city", UniqueTarget.Global),
     FreeUnits("[amount] units cost no maintenance", UniqueTarget.Global),
     UnitsInCitiesNoMaintenance("Units in cities cost no Maintenance", UniqueTarget.Global),
-    // ToDo: Replace with "Free [unit] appears <upon discovering [tech]>"
+    @Deprecated("As of 4.8.5", ReplaceWith("Free [unit] appears <upon discovering [tech]>"))
     ReceiveFreeUnitWhenDiscoveringTech("Receive free [unit] when you discover [tech]", UniqueTarget.Global),
 
     // Units entering Tiles
@@ -776,6 +774,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     ///////////////////////////////////////////// region 99 DEPRECATED AND REMOVED /////////////////////////////////////////////
 
+    @Deprecated("As of 4.7.3", ReplaceWith("[+100]% unhappiness from the number of cities"), DeprecationLevel.ERROR)
+    UnhappinessFromCitiesDoubled("Unhappiness from number of Cities doubled", UniqueTarget.Global),
     @Deprecated("as of 4.6.4", ReplaceWith("[+1] Sight <for [Embarked] units>\" OR \"[+1] Sight <when [Embarked]>"), DeprecationLevel.ERROR)
     NormalVisionWhenEmbarked("Normal vision when embarked", UniqueTarget.Unit, UniqueTarget.Global),
     @Deprecated("as of 4.5.3", ReplaceWith("Empire enters a [amount]-turn Golden Age <by consuming this unit>"), DeprecationLevel.ERROR)

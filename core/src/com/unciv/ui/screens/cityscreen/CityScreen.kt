@@ -440,6 +440,10 @@ class CityScreen(
         update()
     }
 
+    /** Convenience shortcut to [CivConstructions.hasFreeBuilding][com.unciv.logic.civilization.CivConstructions.hasFreeBuilding], nothing more */
+    internal fun hasFreeBuilding(building: Building) =
+        city.civ.civConstructions.hasFreeBuilding(city, building)
+
     fun selectConstruction(name: String) {
         selectConstruction(city.cityConstructions.getConstruction(name))
     }

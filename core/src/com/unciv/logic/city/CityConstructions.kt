@@ -79,7 +79,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     var productionOverflow = 0
     private val queueMaxSize = 10
 
-    // Maps cities to the buildings they received
+    /** Maps cities by id to a set of the buildings they received (by nation equivalent name)
+     *  Source: [UniqueType.GainFreeBuildings]
+     */
     val freeBuildingsProvidedFromThisCity: HashMap<String, HashSet<String>> = hashMapOf()
 
     //endregion
@@ -122,7 +124,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
      */
     fun getMaintenanceCosts(): Int {
         var maintenanceCost = 0
-        val freeBuildings = city.civ.civConstructions.getFreeBuildings(city.id)
+        val freeBuildings = city.civ.civConstructions.getFreeBuildingNames(city)
 
         for (building in getBuiltBuildings())
             if (building.name !in freeBuildings)
@@ -230,7 +232,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     internal fun getConstruction(constructionName: String): IConstruction {
         val gameBasics = city.getRuleset()
         when {
-            constructionName == "" -> return getConstruction("Nothing")
+            constructionName == "" -> return PerpetualConstruction.idle
             gameBasics.buildings.containsKey(constructionName) -> return gameBasics.buildings[constructionName]!!
             gameBasics.units.containsKey(constructionName) -> return gameBasics.units[constructionName]!!
             else -> {
@@ -602,10 +604,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             for (city in citiesThatApply) {
                 if (city.cityConstructions.containsBuildingOrEquivalent(freeBuilding.name)) continue
                 city.cityConstructions.addBuilding(freeBuilding)
-                if (city.id !in freeBuildingsProvidedFromThisCity)
-                    freeBuildingsProvidedFromThisCity[city.id] = hashSetOf()
-
-                freeBuildingsProvidedFromThisCity[city.id]!!.add(freeBuilding.name)
+                freeBuildingsProvidedFromThisCity.getOrPut(city.id) { hashSetOf() }.add(freeBuilding.name)
             }
         }
 
@@ -613,9 +612,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         for (unique in city.civ.getMatchingUniques(UniqueType.GainFreeBuildings, stateForConditionals = StateForConditionals(city.civ, city))) {
             val freeBuilding = city.civ.getEquivalentBuilding(unique.params[0])
             if (city.matchesFilter(unique.params[1])) {
-                if (city.id !in freeBuildingsProvidedFromThisCity)
-                    freeBuildingsProvidedFromThisCity[city.id] = hashSetOf()
-                freeBuildingsProvidedFromThisCity[city.id]!!.add(freeBuilding.name)
+                freeBuildingsProvidedFromThisCity.getOrPut(city.id) { hashSetOf() }.add(freeBuilding.name)
                 if (!isBuilt(freeBuilding.name))
                     addBuilding(freeBuilding)
             }
@@ -738,10 +735,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     fun chooseNextConstruction() {
         validateConstructionQueue()
-        if (constructionQueue.isNotEmpty()) {
-            if (currentConstructionFromQueue != ""
-                    // If the USER set a perpetual construction, then keep it!
-                    && (getConstruction(currentConstructionFromQueue) !is PerpetualConstruction || currentConstructionIsUserSet)) return
+        if (!isQueueEmptyOrIdle()) {
+            // If the USER set a perpetual construction, then keep it!
+            if (getConstruction(currentConstructionFromQueue) !is PerpetualConstruction || currentConstructionIsUserSet) return
         }
 
         val isCurrentPlayersTurn = city.civ.gameInfo.isUsersTurn()
@@ -768,6 +764,9 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         PerpetualConstruction.isNamePerpetual(constructionQueue.last())
         // `getConstruction(constructionQueue.last()) is PerpetualConstruction` is clear but more expensive
 
+    fun isQueueEmptyOrIdle() = currentConstructionFromQueue.isEmpty()
+        || currentConstructionFromQueue == PerpetualConstruction.idle.name
+
     /** Add [construction] to the end or top (controlled by [addToTop]) of the queue with all checks (does nothing if not possible)
      *
      *  Note: Overload with string parameter `constructionName` exists as well.
@@ -776,7 +775,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         if (!canAddToQueue(construction)) return
         val constructionName = construction.name
         when {
-            currentConstructionFromQueue.isEmpty() || currentConstructionFromQueue == "Nothing" ->
+            isQueueEmptyOrIdle() ->
                 currentConstructionFromQueue = constructionName
             addToTop && construction is PerpetualConstruction && PerpetualConstruction.isNamePerpetual(currentConstructionFromQueue) ->
                 currentConstructionFromQueue = constructionName // perpetual constructions will replace each other
@@ -820,7 +819,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
         currentConstructionIsUserSet = if (constructionQueue.isEmpty()) {
             if (automatic) chooseNextConstruction()
-            else constructionQueue.add("Nothing") // To prevent Construction Automation
+            else constructionQueue.add(PerpetualConstruction.idle.name) // To prevent Construction Automation
             false
         } else true // we're just continuing the regular queue
     }
@@ -831,7 +830,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
      *  If the queue is emptied, no automatic: getSettings().autoAssignCityProduction is ignored! (parameter to be added when needed)
      */
     fun removeAllByName(constructionName: String) {
-        while (true) {
+        while (!isQueueEmptyOrIdle()) {
             val index = constructionQueue.indexOf(constructionName)
             if (index < 0) return
             removeFromQueue(index, false)
@@ -907,7 +906,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         constructionQueue.removeAt(indexToRemove)
 
         currentConstructionIsUserSet = if (constructionQueue.isEmpty()) {
-            constructionQueue.add("Nothing")
+            constructionQueue.add(PerpetualConstruction.idle.name)
             false
         } else true
     }

@@ -398,8 +398,6 @@ class CityStats(val city: City) {
         var unhappinessFromCity = -3f // -3 happiness per city
         if (hasExtraAnnexUnhappiness())
             unhappinessFromCity -= 2f
-        if (civInfo.hasUnique(UniqueType.UnhappinessFromCitiesDoubled))
-            unhappinessFromCity *= 2f //doubled for the Indian
 
         var uniqueUnhappinessModifier = 0f
         for (unique in civInfo.getMatchingUniques(UniqueType.UnhappinessFromCitiesPercentage))

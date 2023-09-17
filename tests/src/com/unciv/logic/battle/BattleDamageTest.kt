@@ -146,8 +146,7 @@ class BattleDamageTest {
         // given
         val defenderTile = testGame.getTile(Vector2.Zero)
         testGame.setTileFeatures(defenderTile.position, Constants.hill)
-        defenderCiv.resourceStockpiles.add("Horses", 1) // no resource penalty
-        val defenderUnit = testGame.addUnit("Horseman", defenderCiv, defenderTile)
+        val defenderUnit = testGame.addDefaultMeleeUnitWithUniques(defenderCiv, defenderTile, "No defensive terrain bonus")
 
         // when
         val defenceModifiers = BattleDamage.getDefenceModifiers(MapUnitCombatant(defaultAttackerUnit), MapUnitCombatant(defenderUnit), defaultAttackerTile)

@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.Victory
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.extensions.addSeparator
+import com.unciv.ui.components.extensions.equalizeColumns
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen

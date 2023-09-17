@@ -255,7 +255,7 @@ class City : IsPartOfGameInfoSerialization {
     }
 
     private fun manageCityResourcesRequiredByBuildings(cityResources: ResourceSupplyList) {
-        val freeBuildings = civ.civConstructions.getFreeBuildings(id)
+        val freeBuildings = civ.civConstructions.getFreeBuildingNames(this)
         for (building in cityConstructions.getBuiltBuildings()) {
             // Free buildings cost no resources
             if (building.name in freeBuildings) continue
