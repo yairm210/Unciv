@@ -593,7 +593,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
 
     fun addFreeBuildings() {
         // "Gain a free [buildingName] [cityFilter]"
-        val freeBuildingUniques = city.getMatchingUniques(UniqueType.GainFreeBuildings, StateForConditionals(city.civ, city))
+        val freeBuildingUniques = city.getMatchingUniques(UniqueType.GainFreeBuildings, StateForConditionals.IgnoreConditionals)
 
         for (unique in freeBuildingUniques) {
             val freeBuilding = city.civ.getEquivalentBuilding(unique.params[0])
@@ -602,19 +602,13 @@ class CityConstructions : IsPartOfGameInfoSerialization {
                 else city.civ.cities.filter { it.matchesFilter(unique.params[1]) }
 
             for (city in citiesThatApply) {
+                if (!unique.conditionalsApply(StateForConditionals(civInfo = city.civ, city = city))) continue
+                if (city.id !in freeBuildingsProvidedFromThisCity)
+                    freeBuildingsProvidedFromThisCity[city.id] = hashSetOf()
+
+                freeBuildingsProvidedFromThisCity[city.id]!!.add(freeBuilding.name)
                 if (city.cityConstructions.containsBuildingOrEquivalent(freeBuilding.name)) continue
                 city.cityConstructions.addBuilding(freeBuilding)
-                freeBuildingsProvidedFromThisCity.getOrPut(city.id) { hashSetOf() }.add(freeBuilding.name)
-            }
-        }
-
-        // Civ-level uniques - for these only add free buildings from each city to itself to avoid weirdness on city conquest
-        for (unique in city.civ.getMatchingUniques(UniqueType.GainFreeBuildings, stateForConditionals = StateForConditionals(city.civ, city))) {
-            val freeBuilding = city.civ.getEquivalentBuilding(unique.params[0])
-            if (city.matchesFilter(unique.params[1])) {
-                freeBuildingsProvidedFromThisCity.getOrPut(city.id) { hashSetOf() }.add(freeBuilding.name)
-                if (!isBuilt(freeBuilding.name))
-                    addBuilding(freeBuilding)
             }
         }
 
