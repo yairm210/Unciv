@@ -10,6 +10,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
@@ -305,6 +306,7 @@ class AlertPopup(
                 originalOwner.getDiplomacyManager(captor)
                     .setModifier(DiplomaticModifiers.ReturnedCapturedUnits, 20f)
             }
+            originalOwner.addNotification("Your captured [${unitName}] has been returned by [${captor.civName}]", tile.position, NotificationCategory.Diplomacy, NotificationIcon.Trade, unitName, captor.civName)
         }
         addCloseButton(Constants.no, KeyboardBinding.Cancel) {
             // Take it for ourselves
