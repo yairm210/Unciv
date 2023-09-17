@@ -1,0 +1,15 @@
+Notifications sorted by category
+
+Game speed affects additional aspects
+
+Better bonus resource color
+
+Better nation colors
+
+Modding: Recognize uncontrasting colors for nations according to WCAG guidelines, and suggest tinted versions to conform
+
+Fixed city screen bug for pillaged improvements
+
+AbsoluteUnits - Roman Uniques - By letstalkaboutdune
+
+Fixed some warnings  - By alexban011

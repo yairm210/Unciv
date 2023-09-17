@@ -1,0 +1,15 @@
+By vegeta1k95:
+- Modding: allow mods to supply custom fonts
+- Fix TextureArraySpriteBatch missing method issue
+
+By Gualdimar:
+- Option to disable max zoom limit
+- Slider tip permanent by default
+
+Better error message for multiplayer games that get corrupted data from the server
+
+Civilopedia entry for policy links to units and buildings that it enables/disables
+
+Wonders with no tech requirement displayed in separate category
+
+Attacking of any sort prevents undo of unit move

@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+    - name: Help
+      url: https://discord.gg/bjrB4Xw
+      about: Questions about how the game works? Strategies? Go to our Discord server!
+      
+    - name: Suggestion for Civ V / G&K features
+      url: https://github.com/yairm210/Unciv/issues/4697
+      about: Is your feature a gameplay feature from Vanilla Civ V or from G&K? If so, add a comment in our dedicated issue!
+      
+    - name: Suggestion for non-Civ-V / BNW features
+      url: https://github.com/yairm210/Unciv#faq
+      about: We're currently not working on these, see the roadmap for more information
+      

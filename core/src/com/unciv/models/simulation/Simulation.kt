@@ -1,13 +1,17 @@
 package com.unciv.models.simulation
 
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
-import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.metadata.GameSetupInfo
-import com.unciv.ui.utils.crashHandlingThread
-import kotlin.time.Duration
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlin.math.max
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.ExperimentalTime
 
 @ExperimentalTime
@@ -23,7 +27,7 @@ class Simulation(
     private var endTime: Long = 0
     var steps = ArrayList<SimulationStep>()
     var winRate = mutableMapOf<String, MutableInt>()
-    private var winRateByVictory = HashMap<String, MutableMap<VictoryType, MutableInt>>()
+    private var winRateByVictory = HashMap<String, MutableMap<String, MutableInt>>()
     private var avgSpeed = 0f
     private var avgDuration: Duration = Duration.ZERO
     private var totalTurns = 0
@@ -35,18 +39,18 @@ class Simulation(
         for (civ in civilizations) {
             this.winRate[civ] = MutableInt(0)
             winRateByVictory[civ] = mutableMapOf()
-            for (victory in VictoryType.values())
+            for (victory in UncivGame.Current.gameInfo!!.ruleset.victories.keys)
                 winRateByVictory[civ]!![victory] = MutableInt(0)
         }
     }
 
-    fun start() {
+    fun start() = runBlocking {
 
         startTime = System.currentTimeMillis()
-        val threads: ArrayList<Thread> = ArrayList()
+        val jobs: ArrayList<Job> = ArrayList()
         for (threadId in 1..threadsNumber) {
-            threads.add(crashHandlingThread {
-                for (i in 1..simulationsPerThread) {
+            jobs.add(launch(CoroutineName("simulation-${threadId}")) {
+                repeat(simulationsPerThread) {
                     val gameInfo = GameStarter.startNewGame(GameSetupInfo(newGameInfo))
                     gameInfo.simulateMaxTurns = maxTurns
                     gameInfo.simulateUntilWin = true
@@ -66,8 +70,8 @@ class Simulation(
                 }
             })
         }
-        // wait for all threads to finish
-        for (thread in threads) thread.join()
+        // wait for all to finish
+        for (job in jobs) job.join()
         endTime = System.currentTimeMillis()
     }
 
@@ -107,7 +111,7 @@ class Simulation(
             }
         }
         totalTurns = steps.sumOf { it.turns }
-        totalDuration = Duration.milliseconds(endTime - startTime)
+        totalDuration = (endTime - startTime).milliseconds
         avgSpeed = totalTurns.toFloat() / totalDuration.inWholeSeconds
         avgDuration = totalDuration / steps.size
     }
@@ -118,7 +122,7 @@ class Simulation(
             outString += "\n$civ:\n"
             val wins = winRate[civ]!!.value * 100 / max(steps.size, 1)
             outString += "$wins% total win rate \n"
-            for (victory in VictoryType.values()) {
+            for (victory in UncivGame.Current.gameInfo!!.ruleset.victories.keys) {
                 val winsVictory = winRateByVictory[civ]!![victory]!!.value * 100 / max(winRate[civ]!!.value, 1)
                 outString += "$victory: $winsVictory%    "
             }

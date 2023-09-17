@@ -1,52 +1,99 @@
 package com.unciv.ui.audio
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Files.FileType
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
+import com.unciv.logic.multiplayer.storage.DropBox
 import com.unciv.models.metadata.GameSettings
-import com.unciv.ui.worldscreen.mainmenu.DropBox
-import java.util.*
+import com.unciv.utils.Concurrency
+import com.unciv.utils.Log
+import java.util.EnumSet
+import java.util.Timer
+import kotlin.concurrent.thread
 import kotlin.concurrent.timer
+import kotlin.math.roundToInt
 
 
 /**
  * Play, choose, fade-in/out and generally manage music track playback.
- * 
+ *
  * Main methods: [chooseTrack], [pause], [resume], [setModList], [isPlaying], [gracefulShutdown]
  */
 class MusicController {
     companion object {
         /** Mods live in Local - but this file prepares for music living in External just in case */
         private val musicLocation = FileType.Local
-        const val musicPath = "music"
-        const val modPath = "mods"
-        const val musicFallbackLocation = "/music/thatched-villagers.mp3"
-        const val maxVolume = 0.6f                  // baseVolume has range 0.0-1.0, which is multiplied by this for the API
-        private const val ticksPerSecond = 20       // Timer frequency defines smoothness of fade-in/out
-        private const val timerPeriod = 1000L / ticksPerSecond
-        const val defaultFadingStep = 0.08f         // this means fade is 12 ticks or 0.6 seconds
+        private const val musicPath = "music"
+        private const val modPath = "mods"
+        private const val musicFallbackLocation = "/music/thatched-villagers.mp3"  // Dropbox path
+        private const val musicFallbackLocalName = "music/Thatched Villagers - Ambient.mp3"  // Name we save it to
+        private const val maxVolume = 0.6f                  // baseVolume has range 0.0-1.0, which is multiplied by this for the API
+        private const val ticksPerSecondGdx = 58.3f  // *Observed* frequency of Gdx app loop
+        private const val ticksPerSecondOwn = 20f    // Timer frequency when we use our own
+        private const val defaultFadeDuration = 0.9f  // in seconds
+        private const val defaultFadingStepGdx = 1f / (defaultFadeDuration * ticksPerSecondGdx)
+        private const val defaultFadingStepOwn = 1f / (defaultFadeDuration * ticksPerSecondOwn)
         private const val musicHistorySize = 8      // number of names to keep to avoid playing the same in short succession
-        private val fileExtensions = listOf("mp3", "ogg")   // flac, opus, m4a... blocked by Gdx, `wav` we don't want
-
-        internal const val consoleLog = false
+        val gdxSupportedFileExtensions = listOf("mp3", "ogg", "wav")   // All Gdx formats
 
         private fun getFile(path: String) =
             if (musicLocation == FileType.External && Gdx.files.isExternalStorageAvailable)
                 Gdx.files.external(path)
             else Gdx.files.local(path)
+
+        // These are replaced when we _know_ we're attached to Gdx.audio.update
+        private var needOwnTimer = true
+        private var ticksPerSecond = ticksPerSecondOwn
+        internal var defaultFadingStep = defaultFadingStepOwn  // Used by MusicTrackController too
+    }
+
+    init {
+        val oldFallbackFile = Gdx.files.local(musicFallbackLocation.removePrefix("/"))
+        if (oldFallbackFile.exists()) {
+            val newFallbackFile = Gdx.files.local(musicFallbackLocalName)
+            if (!newFallbackFile.exists())
+                oldFallbackFile.moveTo(newFallbackFile)
+        }
+    }
+
+    /** Container for track info - used for [onChange] and [getHistory].
+     *
+     *  [toString] returns a prettified label: "Modname: Track".
+     *  No track playing is reported as a MusicTrackInfo instance with all
+     *  fields empty, for which _`toString`_ returns "—Paused—".
+     */
+    data class MusicTrackInfo(val mod: String, val track: String, val type: String) {
+        /** Used for display, not only debugging */
+        override fun toString() = if (track.isEmpty()) "—Paused—"  // using em-dash U+2014
+            else if (mod.isEmpty()) track else "$mod: $track"
+
+        companion object {
+            /** Parse a path - must be relative to `Gdx.files.local` */
+            fun parse(fileName: String): MusicTrackInfo {
+                if (fileName.isEmpty())
+                    return MusicTrackInfo("", "", "")
+                val fileNameParts = fileName.split('/')
+                val modName = if (fileNameParts.size > 1 && fileNameParts[0] == "mods") fileNameParts[1] else ""
+                var trackName = fileNameParts[if (fileNameParts.size > 3 && fileNameParts[2] == "music") 3 else 1]
+                val type = gdxSupportedFileExtensions.firstOrNull {trackName.endsWith(".$it") } ?: ""
+                trackName = trackName.removeSuffix(".$type")
+                return MusicTrackInfo(modName, trackName, type)
+            }
+        }
     }
 
     //region Fields
     /** mirrors [GameSettings.musicVolume] - use [setVolume] to update */
-    var baseVolume: Float = UncivGame.Current.settings.musicVolume
-        private set
+    private var baseVolume: Float = UncivGame.Current.settings.musicVolume
 
     /** Pause in seconds between tracks unless [chooseTrack] is called to force a track change */
     var silenceLength: Float
         get() = silenceLengthInTicks.toFloat() / ticksPerSecond
         set(value) { silenceLengthInTicks = (ticksPerSecond * value).toInt() }
-    private var silenceLengthInTicks = UncivGame.Current.settings.pauseBetweenTracks * ticksPerSecond
+
+    private var silenceLengthInTicks = (UncivGame.Current.settings.pauseBetweenTracks * ticksPerSecond).roundToInt()
 
     private var mods = HashSet<String>()
 
@@ -57,71 +104,66 @@ class MusicController {
     private var musicTimer: Timer? = null
 
     private enum class ControllerState {
-        /** As the name says. Timer will stop itself if it encounters this state. */
+        /** Own timer stopped, if using the HardenedGdxAudio callback just do nothing */
         Idle,
+        /** As the name says. Loop will release everything and go [Idle] if it encounters this state. */
+        Cleanup,
         /** Play a track to its end, then silence for a while, then choose another track */
         Playing,
-        /** Play a track to its end, then go [Idle] */
+        /** Play a track to its end, then [Cleanup] */
         PlaySingle,
         /** Wait for a while in silence to start next track */
         Silence,
         /** Music fades to pause or is paused. Continue with chooseTrack or resume. */
         Pause,
-        /** Fade out then stop */
+        /** Fade out then [Cleanup] */
         Shutdown
     }
 
     /** Simple two-entry only queue, for smooth fade-overs from one track to another */
-    var current: MusicTrackController? = null
-    var next: MusicTrackController? = null
+    private var current: MusicTrackController? = null
+    private var next: MusicTrackController? = null
 
     /** Keeps paths of recently played track to reduce repetition */
     private val musicHistory = ArrayDeque<String>(musicHistorySize)
 
-    /** One potential listener gets notified when track changes */
-    private var onTrackChangeListener: ((String)->Unit)? = null
+    /** These listeners get notified when track changes */
+    private var onTrackChangeListeners = mutableListOf<(MusicTrackInfo)->Unit>()
 
     //endregion
     //region Pure functions
 
+    fun getAudioLoopCallback(): ()->Unit {
+        needOwnTimer = false
+        ticksPerSecond = ticksPerSecondGdx
+        defaultFadingStep = defaultFadingStepGdx
+        return { musicTimerTask() }
+    }
+
+    fun getAudioExceptionHandler(): (Throwable, Music) -> Unit = {
+        ex: Throwable, music: Music ->
+        audioExceptionHandler(ex, music)
+    }
+
     /** @return the path of the playing track or null if none playing */
     private fun currentlyPlaying(): String = when(state) {
         ControllerState.Playing, ControllerState.PlaySingle, ControllerState.Pause ->
-            musicHistory.peekLast() ?: ""
+            musicHistory.lastOrNull() ?: ""
         else -> ""
     }
 
-    /** Registers a callback that will be called with the new track name every time it changes.
-     *  The track name will be prettified ("Modname: Track" instead of "mods/Modname/music/Track.ogg").
+    /** Registers a callback that will be called with the new track every time it changes.
      *
-     *  Will be called on a background thread, so please decouple UI access on the receiving side.
+     *  The track is given as [MusicTrackInfo], which has a `toString` that returns it prettified.
+     *
+     *  Several callbacks can be registered, but a onChange(null) clears them all.
+     *
+     *  Callbacks will be safely called on the GL thread.
      */
-    fun onChange(listener: ((String)->Unit)?) {
-        onTrackChangeListener = listener
+    fun onChange(listener: ((MusicTrackInfo)->Unit)?) {
+        if (listener == null) onTrackChangeListeners.clear()
+        else onTrackChangeListeners.add(listener)
         fireOnChange()
-    }
-    private fun fireOnChange() {
-        if (onTrackChangeListener == null) return
-        val fileName = currentlyPlaying()
-        if (fileName.isEmpty()) {
-            fireOnChange(fileName)
-            return
-        }
-        val fileNameParts = fileName.split('/')
-        val modName = if (fileNameParts.size > 1 && fileNameParts[0] == "mods") fileNameParts[1] else ""
-        var trackName = fileNameParts[if (fileNameParts.size > 3 && fileNameParts[2] == "music") 3 else 1]
-        for (extension in fileExtensions)
-            trackName = trackName.removeSuffix(".$extension")
-        fireOnChange(modName + (if (modName.isEmpty()) "" else ": ") + trackName)
-    }
-    private fun fireOnChange(trackLabel: String) {
-        try {
-            onTrackChangeListener?.invoke(trackLabel)
-        } catch (ex: Throwable) {
-            if (consoleLog)
-                println("onTrackChange event invoke failed: ${ex.message}")
-            onTrackChangeListener = null
-        }
     }
 
     /**
@@ -134,6 +176,14 @@ class MusicController {
         return current?.isPlaying() == true
     }
 
+    /** @return Sequence of most recently played tracks, oldest first, current last */
+    fun getHistory() = musicHistory.asSequence().map { MusicTrackInfo.parse(it) }
+
+    /** @return Sequence of all available and enabled music tracks */
+    fun getAllMusicFileInfo() = getAllMusicFiles().map {
+        MusicTrackInfo.parse(it.path())
+    }
+
     //endregion
     //region Internal helpers
 
@@ -141,10 +191,31 @@ class MusicController {
         current?.clear()
         current = null
     }
+    private fun clearNext() {
+        next?.clear()
+        next = null
+    }
+
+    private fun startTimer() {
+        if (!needOwnTimer || musicTimer != null) return
+        // Start background TimerTask which manages track changes - on desktop, we get callbacks from the app.loop instead
+        val timerPeriod = (1000f / ticksPerSecond).roundToInt().toLong()
+        musicTimer = timer("MusicTimer", daemon = true, period = timerPeriod ) {
+            musicTimerTask()
+        }
+    }
+
+    private fun stopTimer() {
+        if (musicTimer == null) return
+        musicTimer?.cancel()
+        musicTimer = null
+    }
 
     private fun musicTimerTask() {
-        // This ticks [ticksPerSecond] times per second
+        // This ticks [ticksPerSecond] times per second. Runs on Gdx main thread in desktop only
         when (state) {
+            ControllerState.Idle -> return
+
             ControllerState.Playing, ControllerState.PlaySingle ->
                 if (current == null) {
                     if (next == null) {
@@ -181,12 +252,46 @@ class MusicController {
             ControllerState.Shutdown -> {
                 // Fade out first, when all queue entries are idle set up for real shutdown
                 if (current?.shutdownTick() != false && next?.shutdownTick() != false)
-                    state = ControllerState.Idle
+                    state = ControllerState.Cleanup
             }
-            ControllerState.Idle ->
-                shutdown()  // stops timer so this will not repeat
+            ControllerState.Cleanup ->
+                shutdown()  // stops timer/sets Idle so this will not repeat
             ControllerState.Pause ->
                 current?.timerTick()
+        }
+    }
+
+    /** Forceful shutdown of music playback and timers - see [gracefulShutdown] */
+    private fun shutdown() {
+        state = ControllerState.Idle
+        fireOnChange()
+        // keep onTrackChangeListener! OptionsPopup will want to know when we start up again
+        stopTimer()
+        clearNext()
+        clearCurrent()
+        musicHistory.clear()
+        Log.debug("MusicController shut down.")
+    }
+
+    private fun audioExceptionHandler(ex: Throwable, music: Music) {
+        // Should run only in exceptional cases when the Gdx codecs actually have trouble with a file.
+        // Most playback problems are caught by the similar handler in MusicTrackController
+
+        // Gdx _will_ try to read more data from file in Lwjgl3Application.loop even for
+        // Music instances that already have thrown an exception.
+        // disposing as quickly as possible is a feeble attempt to prevent that.
+        music.dispose()
+        if (music == next?.music) clearNext()
+        if (music == current?.music) clearCurrent()
+
+        Log.error("Error playing music", ex)
+
+        // Since this is a rare emergency, go a simple way to reboot music later
+        thread(isDaemon = true) {
+            Thread.sleep(2000)
+            Gdx.app.postRunnable {
+                this.chooseTrack()
+            }
         }
     }
 
@@ -199,17 +304,20 @@ class MusicController {
         yield(getFile(musicPath))
     }
 
-    /** Get sequence of all existing music files */
+    /** Get a sequence of all existing music files */
     private fun getAllMusicFiles() = getMusicFolders()
         .filter { it.exists() && it.isDirectory }
         .flatMap { it.list().asSequence() }
         // ensure only normal files with common sound extension
-        .filter { it.exists() && !it.isDirectory && it.extension() in fileExtensions }
+        .filter { it.exists() && !it.isDirectory && it.extension() in gdxSupportedFileExtensions }
 
     /** Choose adequate entry from [getAllMusicFiles] */
     private fun chooseFile(prefix: String, suffix: String, flags: EnumSet<MusicTrackChooserFlags>): FileHandle? {
-        if (flags.contains(MusicTrackChooserFlags.PlayDefaultFile))
-            return getFile(musicFallbackLocation)
+        if (flags.contains(MusicTrackChooserFlags.PlayDefaultFile)) {
+            val defaultFile = getFile(musicFallbackLocalName)
+            // Test so if someone never downloaded Thatched Villagers, their volume slider will still play music
+            if (defaultFile.exists()) return defaultFile
+        }
         // Scan whole music folder and mods to find best match for desired prefix and/or suffix
         // get a path list (as strings) of music folder candidates - existence unchecked
         return getAllMusicFiles()
@@ -227,7 +335,23 @@ class MusicController {
             // Then just pick the first one. Not as wasteful as it looks - need to check all names anyway
             )).firstOrNull()
         // Note: shuffled().sortedWith(), ***not*** .sortedWith(.., Random)
-        // the latter worked with older JVM's, current ones *crash* you when a compare is not transitive. 
+        // the latter worked with older JVM's, current ones *crash* you when a compare is not transitive.
+    }
+
+    private fun fireOnChange() {
+        if (onTrackChangeListeners.isEmpty()) return
+        Concurrency.runOnGLThread {
+            fireOnChange(MusicTrackInfo.parse(currentlyPlaying()))
+        }
+    }
+    private fun fireOnChange(trackInfo: MusicTrackInfo) {
+        try {
+            for (listener in onTrackChangeListeners)
+                listener.invoke(trackInfo)
+        } catch (ex: Throwable) {
+            Log.debug("onTrackChange event invoke failed", ex)
+            onTrackChangeListeners.clear()
+        }
     }
 
     //endregion
@@ -246,17 +370,17 @@ class MusicController {
      * Chooses and plays a music track using an adaptable approach - for details see the wiki.
      * Called without parameters it will choose a new ambient music track and start playing it with fade-in/out.
      * Will do nothing when no music files exist or the master volume is zero.
-     * 
+     *
      * @param prefix file name prefix, meant to represent **Context** - in most cases a Civ name
      * @param suffix file name suffix, meant to represent **Mood** - e.g. Peace, War, Theme, Defeat, Ambient
      * (Ambient is the default when a track ends and exists so War Peace and the others are not chosen in that case)
      * @param flags a set of optional flags to tune the choice and playback.
      * @return `true` = success, `false` = no match, no playback change
      */
-    fun chooseTrack (
+    fun chooseTrack(
         prefix: String = "",
-        suffix: String = "Ambient", 
-        flags: EnumSet<MusicTrackChooserFlags> = EnumSet.noneOf(MusicTrackChooserFlags::class.java)
+        suffix: String = MusicMood.Ambient,
+        flags: EnumSet<MusicTrackChooserFlags> = MusicTrackChooserFlags.default
     ): Boolean {
         if (baseVolume == 0f) return false
 
@@ -264,10 +388,20 @@ class MusicController {
 
         if (musicFile == null) {
             // MustMatch flags at work or Music folder empty
-            if (consoleLog)
-                println("No music found for prefix=$prefix, suffix=$suffix, flags=$flags")
+            Log.debug("No music found for prefix=%s, suffix=%s, flags=%s", prefix, suffix, flags)
             return false
         }
+        Log.debug("Track chosen: %s for prefix=%s, suffix=%s, flags=%s", musicFile.path(), prefix, suffix, flags)
+        return startTrack(musicFile, flags)
+    }
+
+    /** Initiate playback of a _specific_ track by handle - part of [chooseTrack].
+     *  Manages fade-over from the previous track.
+     */
+    private fun startTrack(
+        musicFile: FileHandle,
+        flags: EnumSet<MusicTrackChooserFlags> = MusicTrackChooserFlags.default
+    ): Boolean {
         if (musicFile.path() == currentlyPlaying())
             return true  // picked file already playing
         if (!musicFile.exists())
@@ -281,11 +415,13 @@ class MusicController {
             state = ControllerState.Silence // will retry after one silence period
             next = null
         }, onSuccess = {
-            if (consoleLog)
-                println("Music queued: ${musicFile.path()} for prefix=$prefix, suffix=$suffix, flags=$flags")
+            Log.debug("Music queued: %s", musicFile.path())
 
             if (musicHistory.size >= musicHistorySize) musicHistory.removeFirst()
             musicHistory.addLast(musicFile.path())
+
+            // This is what makes a track change fade _over_ current fading out and next fading in at the same time.
+            it.play()
 
             val fadingStep = defaultFadingStep / (if (flags.contains(MusicTrackChooserFlags.SlowFade)) 5 else 1)
             it.startFade(MusicTrackController.State.FadeIn, fadingStep)
@@ -301,20 +437,15 @@ class MusicController {
 
         // Yes while the loader is doing its thing we wait for it in a Playing state
         state = if (flags.contains(MusicTrackChooserFlags.PlaySingle)) ControllerState.PlaySingle else ControllerState.Playing
-
-        // Start background TimerTask which manages track changes
-        if (musicTimer == null)
-            musicTimer = timer("MusicTimer", true, 0, timerPeriod) {
-                musicTimerTask()
-            }
-
+        startTimer()
         return true
     }
+
     /** Variant of [chooseTrack] that tries several moods ([suffixes]) until a match is chosen */
-    fun chooseTrack (
+    fun chooseTrack(
         prefix: String = "",
         suffixes: List<String>,
-        flags: EnumSet<MusicTrackChooserFlags> = EnumSet.noneOf(MusicTrackChooserFlags::class.java)
+        flags: EnumSet<MusicTrackChooserFlags> = MusicTrackChooserFlags.none
     ): Boolean {
         for (suffix in suffixes) {
             if (chooseTrack(prefix, suffix, flags)) return true
@@ -322,17 +453,27 @@ class MusicController {
         return false
     }
 
+    /** Initiate playback of a _specific_ track by a [MusicTrackInfo] instance */
+    fun startTrack(trackInfo: MusicTrackInfo): Boolean {
+        if (trackInfo.track.isEmpty()) return false
+        val path = trackInfo.run {
+            if (mod.isEmpty()) "$musicPath/$track.$type"
+            else "mods/$mod/$musicPath/$track.$type"
+        }
+        return startTrack(getFile(path))
+    }
+
     /**
      * Pause playback with fade-out
-     * 
+     *
      * @param speedFactor accelerate (>1) or slow down (<1) the fade-out. Clamped to 1/1000..1000.
      */
     fun pause(speedFactor: Float = 1f) {
-        if (consoleLog)
-            println("MusicTrackController.pause called")
-        if ((state != ControllerState.Playing && state != ControllerState.PlaySingle) || current == null) return
+        Log.debug("MusicTrackController.pause called")
+        val controller = current
+        if ((state != ControllerState.Playing && state != ControllerState.PlaySingle) || controller == null) return
         val fadingStep = defaultFadingStep * speedFactor.coerceIn(0.001f..1000f)
-        current!!.startFade(MusicTrackController.State.FadeOut, fadingStep)
+        controller.startFade(MusicTrackController.State.FadeOut, fadingStep)
         if (next?.state == MusicTrackController.State.FadeIn)
             next!!.startFade(MusicTrackController.State.FadeOut)
         state = ControllerState.Pause
@@ -345,20 +486,20 @@ class MusicController {
      * @param speedFactor accelerate (>1) or slow down (<1) the fade-in. Clamped to 1/1000..1000.
      */
     fun resume(speedFactor: Float = 1f) {
-        if (consoleLog)
-            println("MusicTrackController.resume called")
+        Log.debug("MusicTrackController.resume called")
         if (state == ControllerState.Pause && current != null) {
             val fadingStep = defaultFadingStep * speedFactor.coerceIn(0.001f..1000f)
             current!!.startFade(MusicTrackController.State.FadeIn, fadingStep)
             state = ControllerState.Playing  // this may circumvent a PlaySingle, but, currently only the main menu resumes, and then it's perfect
             current!!.play()
-        } else if (state == ControllerState.Idle) {
+        } else if (state == ControllerState.Cleanup) {
             chooseTrack()
         }
     }
 
-    /** Fade out then shutdown with a given [duration] in seconds */
-    fun fadeoutToSilence(duration: Float = 4.0f) {
+    /** Fade out then shutdown with a given [duration] in seconds, defaults to a 'slow' fade (4.5s) */
+    @Suppress("unused")  // might be useful instead of gracefulShutdown
+    fun fadeoutToSilence(duration: Float = defaultFadeDuration * 5) {
         val fadingStep = 1f / ticksPerSecond / duration
         current?.startFade(MusicTrackController.State.FadeOut, fadingStep)
         next?.startFade(MusicTrackController.State.FadeOut, fadingStep)
@@ -374,36 +515,19 @@ class MusicController {
 
     /** Soft shutdown of music playback, with fadeout */
     fun gracefulShutdown() {
-        if (state == ControllerState.Idle) shutdown()
+        if (state == ControllerState.Cleanup) shutdown()
         else state = ControllerState.Shutdown
     }
 
-    /** Forceful shutdown of music playback and timers - see [gracefulShutdown] */
-    private fun shutdown() {
-        state = ControllerState.Idle
-        fireOnChange()
-        // keep onTrackChangeListener! OptionsPopup will want to know when we start up again
-        if (musicTimer != null) {
-            musicTimer!!.cancel()
-            musicTimer = null
-        }
-        if (next != null) {
-            next!!.clear()
-            next = null
-        }
-        if (current != null) {
-            current!!.clear()
-            current = null
-        }
-        musicHistory.clear()
-        if (consoleLog)
-            println("MusicController shut down.")
-    }
-
+    /** Download Thatched Villagers */
     fun downloadDefaultFile() {
         val file = DropBox.downloadFile(musicFallbackLocation)
-        getFile(musicFallbackLocation).write(file, false)
+        getFile(musicFallbackLocalName).write(file, false)
     }
+
+    /** @return `true` if Thatched Villagers is present */
+    fun isDefaultFileAvailable() =
+        getFile(musicFallbackLocalName).exists()
 
     //endregion
 }

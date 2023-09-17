@@ -16,25 +16,24 @@
 
 package com.unciv.testing;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
 import com.badlogic.gdx.graphics.GL20;
-
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 public class GdxTestRunner extends BlockJUnit4ClassRunner implements ApplicationListener {
 
-	private final Map<FrameworkMethod, RunNotifier> invokeInRender = new HashMap<FrameworkMethod, RunNotifier>();
+	private final Map<FrameworkMethod, RunNotifier> invokeInRender = new HashMap<>();
 
 	public GdxTestRunner(Class<?> klass) throws InitializationError {
 		super(klass);

@@ -1,0 +1,11 @@
+'loading' popup between turns only appears if there's a significant delay
+
+xyz server as default multiplayer server
+
+Fixes for Repair
+
+Fixed all CSs getting unique units and unique luxuries
+
+UnitActions icons separated for modding purposes - By vegeta1k95
+
+Added button to paste from clipboard when downloading a mod - By alexban011

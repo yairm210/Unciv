@@ -1,32 +1,40 @@
 package com.unciv.models.ruleset
 
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.translations.tr
-import com.unciv.ui.civilopedia.FormattedLine
-import kotlin.collections.ArrayList
+import com.unciv.ui.screens.civilopediascreen.CivilopediaScreen.Companion.showReligionInCivilopedia
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
 
-class Belief : RulesetObject() {
+class Belief() : RulesetObject() {
     var type: BeliefType = BeliefType.None
 
+    constructor(type: BeliefType) : this() {
+        this.type = type
+    }
+
     override fun getUniqueTarget() =
-        if (type == BeliefType.Founder || type == BeliefType.Enhancer)  UniqueTarget.FounderBelief
+        if (type.isFounder)  UniqueTarget.FounderBelief
         else UniqueTarget.FollowerBelief
 
     override fun makeLink() = "Belief/$name"
     override fun getCivilopediaTextHeader() = FormattedLine(name, icon = makeLink(), header = 2, color = if (type == BeliefType.None) "#e34a2b" else "")
     override fun getSortGroup(ruleset: Ruleset) = type.ordinal
-    override fun getIconName() = if (type == BeliefType.None) "Religion" else type.name
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
-        return getCivilopediaTextLines(ruleset, false)
+        return getCivilopediaTextLines(false)
     }
-    
-    fun getCivilopediaTextLines(ruleset: Ruleset, centerType: Boolean): List<FormattedLine> {
+
+    fun getCivilopediaTextLines(withHeader: Boolean): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
+        if (withHeader) {
+            textList += FormattedLine(name, size = Constants.headingFontSize, centered = true, link = makeLink())
+            textList += FormattedLine()
+        }
         if (type != BeliefType.None)
-            textList += FormattedLine("{Type}: $type", color = type.color, centered = centerType)
+            textList += FormattedLine("{Type}: {$type}", color = type.color, centered = withHeader)
         uniqueObjects.forEach {
             if (!it.hasFlag(UniqueFlag.HiddenToUsers))
                 textList += FormattedLine(it)
@@ -37,9 +45,7 @@ class Belief : RulesetObject() {
     companion object {
         // private but potentially reusable, therefore not folded into getCivilopediaTextMatching
         private fun getBeliefsMatching(name: String, ruleset: Ruleset): Sequence<Belief> {
-            if (!UncivGame.isCurrentInitialized()) return sequenceOf()
-            if (!UncivGame.Current.isGameInfoInitialized()) return sequenceOf()
-            if (!UncivGame.Current.gameInfo.isReligionEnabled()) return sequenceOf()
+            if (!showReligionInCivilopedia(ruleset)) return sequenceOf()
             return ruleset.beliefs.asSequence().map { it.value }
                 .filter { belief -> belief.uniqueObjects.any { unique -> unique.params.any { it == name } }
             }
@@ -63,7 +69,7 @@ class Belief : RulesetObject() {
             name = "Religions"
             val lines = ArrayList<FormattedLine>()
             lines += FormattedLine(separator = true)
-            ruleset.religions.sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale(), { it.tr() })).forEach {
+            ruleset.religions.sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.tr(hideIcons = true) }).forEach {
                 lines += FormattedLine(it, icon = "Belief/$it")
             }
             civilopediaText = lines
@@ -71,11 +77,15 @@ class Belief : RulesetObject() {
     }
 }
 
-enum class BeliefType(val color: String) {
+/** Subtypes of Beliefs - directly deserialized.
+ *  @param isFollower - Behaves as "follower" belief, Uniques processed per city
+ *  @param isFounder - Behaves as "founder" belief, Uniques processed globally for founding civ only
+ * */
+enum class BeliefType(val color: String, val isFollower: Boolean = false, val isFounder: Boolean = false) {
     None(""),
-    Pantheon("#44c6cc"),
-    Founder("#c00000"),
-    Follower("#ccaa44"),
-    Enhancer("#72cc45"),
+    Pantheon("#44c6cc", isFollower = true),
+    Founder("#c00000", isFounder = true),
+    Follower("#ccaa44", isFollower = true),
+    Enhancer("#72cc45", isFounder = true),
     Any(""),
 }

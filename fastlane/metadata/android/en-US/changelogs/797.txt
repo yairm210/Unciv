@@ -1,0 +1,17 @@
+Fixed battle table uneven when only one side has modifiers
+
+"Street fighter" style of health bars, different colors for 'definite damage' and 'possible damage'
+
+Pathfinding avoids embarkation when possible
+
+Modding: 'transform' action - by itanasi
+
+Consider tile happiness for start-of-turn computations
+
+Better Himeji Castle unique text
+
+Fixed sleep not showing on units in tiles with improvements in repair
+
+Fixed Great Person speed modifier
+
+Civilians no longer 'attack' on rightclick

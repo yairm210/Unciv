@@ -1,109 +1,207 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.ui.cityscreen.CityScreen
-import com.unciv.ui.pickerscreens.TechPickerScreen
-import com.unciv.ui.trade.DiplomacyScreen
-import com.unciv.ui.utils.MayaCalendar
-import com.unciv.ui.worldscreen.WorldScreen
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Json
+import com.badlogic.gdx.utils.JsonValue
+import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.screens.worldscreen.WorldScreen
 
-object NotificationIcon {
-    // Remember: The typical white-on-transparency icon will not be visible on Notifications
-    const val Culture = "StatIcons/Culture"
-    const val Construction = "StatIcons/Production"
-    const val Growth = "StatIcons/Population"
-    const val War = "OtherIcons/Pillage"
-    const val Trade = "StatIcons/Acquire"
-    const val Science = "StatIcons/Science"
-    const val Gold = "StatIcons/Gold"
-    const val Death = "OtherIcons/DisbandUnit"
-    const val Diplomacy = "OtherIcons/Diplomacy"
-    const val City = "ImprovementIcons/City center"
-    const val Citadel = "ImprovementIcons/Citadel"
-    const val Happiness = "StatIcons/Happiness"
-    const val Population = "StatIcons/Population"
-    const val CityState = "OtherIcons/CityState"
-    const val Production = "StatIcons/Production"
-    const val Food = "StatIcons/Food"
-    const val Faith = "StatIcons/Faith"
-    const val Crosshair = "OtherIcons/CrosshairB"
-    const val Scout = "UnitIcons/Scout"
-    const val Ruins = "ImprovementIcons/Ancient ruins"
-    const val Barbarians = "ImprovementIcons/Barbarian encampment"
-}
 
-/**
- * [action] is not realized as lambda, as it would be too easy to introduce references to objects
- * there that should not be serialized to the saved game.
- */
-open class Notification() {
+typealias NotificationCategory = Notification.NotificationCategory
 
+open class Notification() : IsPartOfGameInfoSerialization {
+    /** Category - UI grouping, within a Category the most recent Notification will be shown on top */
+    var category: NotificationCategory = NotificationCategory.General
+        private set
+
+    /** The notification text, untranslated - will be translated on the fly */
     var text: String = ""
+        private set
 
+    /** Icons to be shown */
     var icons: ArrayList<String> = ArrayList() // Must be ArrayList and not List so it can be deserialized
-    var action: NotificationAction? = null
+        private set
 
-    constructor(text: String, notificationIcons: ArrayList<String>, action: NotificationAction? = null) : this() {
+    /** Actions on clicking a Notification - will be activated round-robin style */
+    var actions: ArrayList<NotificationAction> = ArrayList()
+        private set
+
+    constructor(
+        text: String,
+        notificationIcons: Array<out String>,
+        actions: Iterable<NotificationAction>?,
+        category: NotificationCategory = NotificationCategory.General
+    ) : this() {
+        this.category = category
         this.text = text
-        this.icons = notificationIcons
-        this.action = action
+        if (notificationIcons.isNotEmpty()) {
+            this.icons = notificationIcons.toCollection(ArrayList())
+        }
+        actions?.toCollection(this.actions)
     }
-}
 
-/** defines what to do if the user clicks on a notification */
-interface NotificationAction {
-    fun execute(worldScreen: WorldScreen)
-}
+    enum class NotificationCategory {
+        // These names are displayed, so remember to add a translation template
+        // - if there's no other source for one.
+        General,
+        Trade,
+        Diplomacy,
+        Production,
+        Units,
+        War,
+        Religion,
+        Espionage,
+        Cities
+        ;
 
-/** A notification action that cycles through tiles.
- * 
- * Constructors accept any kind of [Vector2] collection, including [Iterable], [Sequence], `vararg`.
- * `varargs` allows nulls which are ignored, a resulting empty list is allowed and equivalent to no [NotificationAction].
- */
-data class LocationAction(var locations: ArrayList<Vector2> = ArrayList()) : NotificationAction {
-    constructor(locations: Iterable<Vector2>) : this(locations.toCollection(ArrayList()))
-    constructor(locations: Sequence<Vector2>) : this(locations.toCollection(ArrayList()))
-    constructor(vararg locations: Vector2?) : this(locations.asSequence().filterNotNull())
-
-    override fun execute(worldScreen: WorldScreen) {
-        if (locations.isNotEmpty()) {
-            var index = locations.indexOf(worldScreen.mapHolder.selectedTile?.position)
-            index = ++index % locations.size // cycle through tiles
-            worldScreen.mapHolder.setCenterPosition(locations[index], selectUnit = false)
+        companion object {
+            fun safeValueOf(name: String): NotificationCategory? =
+                values().firstOrNull { it.name == name }
         }
     }
-}
 
-/** show tech screen */
-class TechAction(val techName: String = "") : NotificationAction {
-    override fun execute(worldScreen: WorldScreen) {
-        val tech = worldScreen.gameInfo.ruleSet.technologies[techName]
-        worldScreen.game.setScreen(TechPickerScreen(worldScreen.viewingCiv, tech))
-    }
-}
+    @Transient
+    /** For round-robin activation in [execute] */
+    private var index = 0
 
-/** enter city */
-data class CityAction(val city: Vector2 = Vector2.Zero): NotificationAction {
-    override fun execute(worldScreen: WorldScreen) {
-        worldScreen.mapHolder.tileMap[city].getCity()?.let {
-            if (it.civInfo == worldScreen.viewingCiv)
-                worldScreen.game.setScreen(CityScreen(it))
+    fun addNotificationIconsTo(table: Table, ruleset: Ruleset, iconSize: Float) {
+        if (icons.isEmpty()) return
+        for (icon in icons.reversed()) {
+            val image: Actor = when {
+                ruleset.technologies.containsKey(icon) ->
+                    ImageGetter.getTechIconPortrait(icon, iconSize)
+                ruleset.nations.containsKey(icon) ->
+                    ImageGetter.getNationPortrait(ruleset.nations[icon]!!, iconSize)
+                ruleset.units.containsKey(icon) ->
+                    ImageGetter.getUnitIcon(icon)
+                else ->
+                    ImageGetter.getImage(icon)
+            }
+            table.add(image).size(iconSize).padRight(5f)
         }
     }
-}
 
-/** enter diplomacy screen */
-data class DiplomacyAction(val otherCivName: String = ""): NotificationAction {
-    override fun execute(worldScreen: WorldScreen) {
-        val screen = DiplomacyScreen(worldScreen.viewingCiv)
-        screen.updateRightSide(worldScreen.gameInfo.getCivilization(otherCivName))
-        worldScreen.game.setScreen(screen)
+    fun execute(worldScreen: WorldScreen) {
+        if (actions.isEmpty()) return
+        actions[index].execute(worldScreen)
+        index = ++index % actions.size // cycle through tiles
     }
-}
 
-/** enter Maya Long Count popup */
-class MayaLongCountAction() : NotificationAction {
-    override fun execute(worldScreen: WorldScreen) {
-        MayaCalendar.openPopup(worldScreen, worldScreen.selectedCiv, worldScreen.gameInfo.getYear())
+    fun resetExecuteRoundRobin() {
+        index = 0
+    }
+
+    /**
+     *  Custom [Gdx.Json][Json] serializer/deserializer for one [Notification].
+     *
+     *  Migration roadmap:
+     *
+     *      1.) Change internal structures but write old json format
+     *      2.) Wait for good distribution in multiplayer user base
+     *      3.) Switch to writing new format
+     *      4.) Wait for Versions prior to Step 3 to fade out, keep switch for quick revert
+     *      5.) Remove Switch, old format routines and this comment
+     *
+     *  Caveats:
+     *
+     *      * New format can express Notifications the old can't.
+     *        In that case, in Phase 1, reduce to first action and throw away the rest.
+     */
+    class Serializer : Json.Serializer<Notification> {
+        companion object {
+            /** The switch that starts Phase III and dies with Phase V
+            *   @see Serializer */
+            private const val compatibilityMode = false
+        }
+
+        override fun write(json: Json, notification: Notification, knownType: Class<*>?) {
+            json.writeObjectStart()
+            if (notification.category != NotificationCategory.General)
+                json.writeValue("category", notification.category)
+            if (notification.text.isNotEmpty())
+                json.writeValue("text", notification.text)
+            if (notification.icons.isNotEmpty())
+                json.writeValue("icons", notification.icons, null, String::class.java)
+
+            if (compatibilityMode) writeOldFormatAction(json, notification)
+            else writeNewFormatActions(json, notification)
+
+            json.writeObjectEnd()
+        }
+
+        private fun writeNewFormatActions(json: Json, notification: Notification) {
+            if (notification.actions.isEmpty()) return
+            json.writeArrayStart("actions")
+            for (action in notification.actions) {
+                json.writeObjectStart()
+                json.writeObjectStart(action::class.java.simpleName)
+                json.writeFields(action)
+                json.writeObjectEnd()
+                json.writeObjectEnd()
+            }
+            json.writeArrayEnd()
+        }
+
+        private fun writeOldFormatAction(json: Json, notification: Notification) {
+            if (notification.actions.isEmpty()) return
+            val firstAction = notification.actions.first()
+            if (firstAction !is LocationAction) {
+                json.writeValue("action", firstAction, null)
+                return
+            }
+            val locations = notification.actions.filterIsInstance<LocationAction>()
+                .map { it.location }.toTypedArray()
+            json.writeObjectStart("action")
+            json.writeValue("class", "com.unciv.logic.civilization.LocationAction")
+            json.writeValue("locations", locations, Array<Vector2>::class.java, Vector2::class.java)
+            json.writeObjectEnd()
+        }
+
+        override fun read(json: Json, jsonData: JsonValue, type: Class<*>?) = Notification().apply {
+            // Cannot be distinguished 100% certain by field names but if neither action / actions exist then both formats are compatible
+            json.readField(this, "category", jsonData)
+            json.readField(this, "text", jsonData)
+            readOldFormatAction(json, jsonData)
+            readNewFormatActions(json, jsonData)
+            json.readField(this, "icons", jsonData)
+        }
+
+        private fun Notification.readNewFormatActions(json: Json, jsonData: JsonValue) {
+            // New format looks like this: "notifications":[
+            //      {"category":"Cities","text":"[Stockholm] has expanded its borders!","icons":["StatIcons/Culture"],"actions":[{"LocationAction":{"location":{"x":7,"y":1}}},{"LocationAction":{"location":{"x":9,"y":3}}}]},
+            //      {"category":"Production","text":"[Nobel Foundation] has been built in [Stockholm]","icons":["BuildingIcons/Nobel Foundation"],"actions":[{"LocationAction":{"location":{"x":9,"y":3}}}]}
+            //  ]
+            if (!jsonData.hasChild("actions")) return
+            var entry = jsonData.get("actions").child
+            while (entry != null) {
+                actions.addAll(NotificationActionsDeserializer().read(json, entry))
+                entry = entry.next
+            }
+        }
+
+        private fun Notification.readOldFormatAction(json: Json, jsonData: JsonValue) {
+            // Old format looks like: "notifications":[
+            //      {"text":"[Stockholm] has expanded its borders!","icons":["StatIcons/Culture"],"action":{"class":"com.unciv.logic.civilization.LocationAction","locations":[{"x":7,"y":1},{"x":9,"y":3}]},"category":"Cities"},
+            //      {"text":"[Nobel Foundation] has been built in [Stockholm]","icons":["BuildingIcons/Nobel Foundation"],"action":{"class":"com.unciv.logic.civilization.LocationAction","locations":[{"x":9,"y":3}]},"category":"Production"}
+            //  ]
+            val actionData = jsonData.get("action") ?: return
+            val actionClass = actionData.getString("class")
+            when (actionClass.substring(actionClass.lastIndexOf('.') + 1)) {
+                "LocationAction" -> actions += getOldFormatLocations(json, actionData)
+                "TechAction" -> actions += json.readValue(TechAction::class.java, actionData)
+                "CityAction" -> actions += json.readValue(CityAction::class.java, actionData)
+                "DiplomacyAction" -> actions += json.readValue(DiplomacyAction::class.java, actionData)
+                "MayaLongCountAction" -> actions += MayaLongCountAction()
+            }
+        }
+
+        private fun getOldFormatLocations(json: Json, actionData: JsonValue): Sequence<LocationAction> {
+            val locations = json.readValue("locations", Array<Vector2>::class.java, actionData)
+            return locations.asSequence().map { LocationAction(it) }
+        }
     }
 }

@@ -1,0 +1,9 @@
+Fixed memory leak
+
+Fixed Great Person Picker screen not responding
+
+Fixed stat conversion constructions (Science, Gold) not appearing
+
+Fixed units obsoleting before their replacements could be constructed
+
+Unit era variants added to FantasyHex tileset  - By GeneralWadaling

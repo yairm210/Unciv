@@ -1,82 +1,110 @@
 package com.unciv.models.metadata
 
-import com.unciv.Constants
+import com.unciv.logic.IsPartOfGameInfoSerialization
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.ruleset.VictoryType
+import com.unciv.models.ruleset.Speed
 
+
+@Suppress("EnumEntryName")  // These merit unusual names
 enum class BaseRuleset(val fullName:String){
     Civ_V_Vanilla("Civ V - Vanilla"),
     Civ_V_GnK("Civ V - Gods & Kings"),
 }
 
-class GameParameters { // Default values are the default new game
+class GameParameters : IsPartOfGameInfoSerialization { // Default values are the default new game
     var difficulty = "Prince"
-    var gameSpeed = GameSpeed.Standard
+    var speed = Speed.DEFAULT
+
+    var randomNumberOfPlayers = false
+    var minNumberOfPlayers = 3
+    var maxNumberOfPlayers = 3
     var players = ArrayList<Player>().apply {
-        add(Player().apply { playerType = PlayerType.Human })
-        for (i in 1..3) add(Player())
+        add(Player(playerType = PlayerType.Human))
+        repeat(3) { add(Player()) }
     }
+    var randomNumberOfCityStates = false
+    var minNumberOfCityStates = 6
+    var maxNumberOfCityStates = 6
     var numberOfCityStates = 6
 
+    var enableRandomNationsPool = false
+    var randomNationsPool = arrayListOf<String>()
+
+    var noCityRazing = false
     var noBarbarians = false
     var ragingBarbarians = false
     var oneCityChallenge = false
     var godMode = false
     var nuclearWeaponsEnabled = true
-    var religionEnabled = false
+    var espionageEnabled = false
+    var noStartBias = false
 
-    // By default, all victory types except Diplomacy and time as they are quite new
-    var victoryTypes: ArrayList<VictoryType> = arrayListOf(VictoryType.Cultural, VictoryType.Domination, VictoryType.Scientific)  
+    var victoryTypes: ArrayList<String> = arrayListOf()
     var startingEra = "Ancient era"
 
     var isOnlineMultiplayer = false
+    var multiplayerServerUrl: String? = null
+    var anyoneCanSpectate = true
     var baseRuleset: String = BaseRuleset.Civ_V_GnK.fullName
     var mods = LinkedHashSet<String>()
-    
+
     var maxTurns = 500
+
+    var acceptedModCheckErrors = ""
 
     fun clone(): GameParameters {
         val parameters = GameParameters()
         parameters.difficulty = difficulty
-        parameters.gameSpeed = gameSpeed
+        parameters.speed = speed
+        parameters.randomNumberOfPlayers = randomNumberOfPlayers
+        parameters.minNumberOfPlayers = minNumberOfPlayers
+        parameters.maxNumberOfPlayers = maxNumberOfPlayers
         parameters.players = ArrayList(players)
+        parameters.randomNumberOfCityStates = randomNumberOfCityStates
+        parameters.minNumberOfCityStates = minNumberOfCityStates
+        parameters.maxNumberOfCityStates = maxNumberOfCityStates
         parameters.numberOfCityStates = numberOfCityStates
+        parameters.enableRandomNationsPool = enableRandomNationsPool
+        parameters.randomNationsPool = ArrayList(randomNationsPool)
+        parameters.noCityRazing = noCityRazing
         parameters.noBarbarians = noBarbarians
         parameters.ragingBarbarians = ragingBarbarians
         parameters.oneCityChallenge = oneCityChallenge
+        // godMode intentionally reset on clone
         parameters.nuclearWeaponsEnabled = nuclearWeaponsEnabled
-        parameters.religionEnabled = religionEnabled
+        parameters.espionageEnabled = espionageEnabled
+        parameters.noStartBias = noStartBias
         parameters.victoryTypes = ArrayList(victoryTypes)
         parameters.startingEra = startingEra
         parameters.isOnlineMultiplayer = isOnlineMultiplayer
+        parameters.multiplayerServerUrl = multiplayerServerUrl
+        parameters.anyoneCanSpectate = anyoneCanSpectate
         parameters.baseRuleset = baseRuleset
         parameters.mods = LinkedHashSet(mods)
         parameters.maxTurns = maxTurns
+        parameters.acceptedModCheckErrors = acceptedModCheckErrors
         return parameters
     }
 
     // For debugging and GameStarter console output
-    override fun toString() = sequence<String> {
-            yield("$difficulty $gameSpeed $startingEra")
+    override fun toString() = sequence {
+            yield("$difficulty $speed $startingEra")
             yield("${players.count { it.playerType == PlayerType.Human }} ${PlayerType.Human}")
             yield("${players.count { it.playerType == PlayerType.AI }} ${PlayerType.AI}")
-            yield("$numberOfCityStates CS")
+            if (randomNumberOfPlayers) yield("Random number of Players: $minNumberOfPlayers..$maxNumberOfPlayers")
+            if (randomNumberOfCityStates) yield("Random number of City-States: $minNumberOfCityStates..$maxNumberOfCityStates")
+            else yield("$numberOfCityStates CS")
             if (isOnlineMultiplayer) yield("Online Multiplayer")
             if (noBarbarians) yield("No barbs")
             if (ragingBarbarians) yield("Raging barbs")
             if (oneCityChallenge) yield("OCC")
             if (!nuclearWeaponsEnabled) yield("No nukes")
-            if (religionEnabled) yield("Religion")
             if (godMode) yield("God mode")
-            for (victoryType in VictoryType.values()) {
-                if (victoryType !in victoryTypes) yield("No $victoryType Victory")
-            }
+            yield("Enabled Victories: " + victoryTypes.joinToString())
             yield(baseRuleset)
             yield(if (mods.isEmpty()) "no mods" else mods.joinToString(",", "mods=(", ")", 6) )
         }.joinToString(prefix = "(", postfix = ")")
-    
+
     fun getModsAndBaseRuleset(): HashSet<String> {
         return mods.toHashSet().apply { add(baseRuleset) }
     }

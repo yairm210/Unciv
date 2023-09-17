@@ -1,0 +1,7 @@
+Display mod categories in mod page, mod sizes larger than 2 MB are displayed in MB
+
+By Gualdimar:
+- Display pending trades in trade overview
+- Fixed unit upgrade check
+
+Desktop: world camera autoscroll, selectable window mode  - By vegeta1k95

@@ -24,7 +24,10 @@ www-test/
 /android/libs/x86/
 /android/libs/x86_64/
 /android/gen/
-.idea/
+.idea/*
+!/.idea/inspectionProfiles
+/.idea/inspectionProfiles/*
+!/.idea/inspectionProfiles/Project_Default.xml
 *.ipr
 *.iws
 *.iml
@@ -39,6 +42,7 @@ com_crashlytics_export_strings.xml
 /android/bin/
 /core/bin/
 /desktop/bin/
+/server/bin/
 /html/bin/
 /ios/bin/
 /ios-moe/bin/
@@ -57,6 +61,7 @@ com_crashlytics_export_strings.xml
 /android/nbproject/private/
 /core/nbproject/private/
 /desktop/nbproject/private/
+/server/nbproject/private/
 /html/nbproject/private/
 /ios/nbproject/private/
 /ios-moe/nbproject/private/
@@ -65,6 +70,7 @@ com_crashlytics_export_strings.xml
 /android/build/
 /core/build/
 /desktop/build/
+/server/build/
 /html/build/
 /ios/build/
 /ios-moe/build/
@@ -74,6 +80,7 @@ com_crashlytics_export_strings.xml
 /android/nbbuild/
 /core/nbbuild/
 /desktop/nbbuild/
+/server/nbbuild/
 /html/nbbuild/
 /ios/nbbuild/
 /ios-moe/nbbuild/
@@ -82,6 +89,7 @@ com_crashlytics_export_strings.xml
 /android/dist/
 /core/dist/
 /desktop/dist/
+/server/dist/
 /html/dist/
 /ios/dist/
 /ios-moe/dist/
@@ -90,6 +98,7 @@ com_crashlytics_export_strings.xml
 /android/nbdist/
 /core/nbdist/
 /desktop/nbdist/
+/server/nbdist/
 /html/nbdist/
 /ios/nbdist/
 /ios-moe/nbdist/
@@ -117,28 +126,42 @@ Thumbs.db
 !/ios-moe/xcode/*.xcodeproj/xcshareddata
 !/ios-moe/xcode/*.xcodeproj/project.pbxproj
 /ios-moe/xcode/native/
-SaveFiles/
 android/android-release.apk
-android/assets/GameSettings.json
 android/release/output.json
 android/release/android-release.apk
 android/release/release/android.aab
-android/assets/fonts/
 android/release/android.aab
-android/assets/maps/
 android/release/android.aab.sig
 android/release/android-release.aab
 tests/build/
 desktop/packr/
 desktop/packrCache/
+server/packr/
+server/packrCache/
 deploy/
 android/release/
 
+# Transient Unciv files
+android/assets/GameSettings.json
+android/assets/lasterror.txt
+android/assets/fonts/
+android/assets/maps/
 android/assets/mods/
-android/assets/SaveFiles/
-android/assets/scenarios/
 android/assets/MultiplayerGames/
 android/assets/music/
+android/assets/SaveFiles/
+android/assets/scenarios/
+SaveFiles/
 
 # Visual Studio Code
 .vscode/
+/.github/workflows/node_modules/*
+
+# node.js (we only need these temporarily for the release build)
+node_modules/
+package-lock.json
+package.json
+
+# Unsorted additions
+# Detekt
+detekt/reports.html

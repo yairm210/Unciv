@@ -5,6 +5,8 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 
 class GlobalUniques: RulesetObject() {
+    override var name = "GlobalUniques"
+
     override fun getUniqueTarget() = UniqueTarget.Global
     override fun makeLink() = "" // No own category on Civilopedia screen
 
@@ -17,6 +19,7 @@ class GlobalUniques: RulesetObject() {
                 UniqueType.ConditionalGoldenAge -> "Golden Age"
                 UniqueType.ConditionalHappy -> "Happiness"
                 UniqueType.ConditionalBetweenHappiness, UniqueType.ConditionalBelowHappiness -> "Unhappiness"
+                UniqueType.ConditionalWLTKD -> "We Love The King Day"
                 else -> "Global Effect"
             }
         }

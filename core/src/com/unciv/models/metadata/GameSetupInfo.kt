@@ -4,7 +4,6 @@ import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.map.MapParameters
-import com.unciv.models.ruleset.Difficulty
 
 class GameSetupInfo(
     var gameParameters: GameParameters = GameParameters(),
@@ -15,7 +14,7 @@ class GameSetupInfo(
 
     // This constructor is used for starting a new game from a running one, cloning the setup, including map seed
     constructor(gameInfo: GameInfo) : this(gameInfo.gameParameters.clone(), gameInfo.tileMap.mapParameters.clone())
-    // Cloning constructor used for [fromSettings] and [GameParametersScreen], reseeds map
+    // Cloning constructor used for [fromSettings], reseeds map
     constructor(setup: GameSetupInfo): this(setup.gameParameters.clone(), setup.mapParameters.clone())
 
     companion object {
@@ -25,7 +24,7 @@ class GameSetupInfo(
          *          Unciv installation can QuickStart with a different difficulty than New Game defaults to.
          */
         fun fromSettings(defaultDifficulty: String? = null) = UncivGame.Current.settings.run {
-            if (lastGameSetup == null) GameSetupInfo().apply { 
+            if (lastGameSetup == null) GameSetupInfo().apply {
                 if (defaultDifficulty != null) gameParameters.difficulty = defaultDifficulty
             }
             else GameSetupInfo(lastGameSetup!!).apply {

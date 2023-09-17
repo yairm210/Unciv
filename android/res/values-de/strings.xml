@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">UnCiv</string>
+    <string name="app_name">Unciv</string>
     <string name="Notify_YourTurn_Short">Unciv - Du bist am Zug!</string>
     <string name="Notify_YourTurn_Long">Deine Freunde warten auf deinen Zug in [gameName].</string>
     <string name="Notify_Error_Short">Ein Fehler ist aufgetreten</string>

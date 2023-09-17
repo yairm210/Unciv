@@ -1,0 +1,9 @@
+Don't show hidden improvements in nation info
+
+Fixed translations missing when cancelling a new game then resuming the old one
+
+Handle errors when renaming multiplayer games to impossible names
+
+Military units take most efficient route to capture civilians
+
+Translation fixes

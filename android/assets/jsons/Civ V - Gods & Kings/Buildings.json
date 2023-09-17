@@ -67,7 +67,8 @@
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"Great Engineer": 1},
-		"uniques": ["[+10]% [Food] [in all cities]", "[+15]% Production when constructing [Ranged] units [in all cities]"],
+        "uniques": ["[+10]% [Food] [in all cities]", "[+15]% Production when constructing [Archery] units [in this city]",
+            "[+15]% Production when constructing [Ranged Gunpowder] units [in this city]"],
 		"requiredTech": "Archery",
 		"quote": "'It is not so much for its beauty that the forest makes a claim upon men's hearts, as for that subtle something, that quality of air, that emanation from old trees, that so wonderfully changes and renews a weary spirit.' - Robert Louis Stevenson"
 	},
@@ -354,7 +355,7 @@
 		"cost": 125,
 		"culture": 1,
 		"isNationalWonder": true,
-		"uniques": ["Requires a [Monument] in all cities", "[+25]% great person generation [in this city]", "Cost increases by [30] per owned city"],
+		"uniques": ["Requires a [Monument] in all cities", "[+25]% Great Person generation [in this city]", "Cost increases by [30] per owned city"],
 		"requiredTech": "Drama and Poetry"
 	},
 	{
@@ -385,12 +386,12 @@
 		"uniques": ["[+2 Gold] from [Gold Ore] tiles [in this city]", "[+2 Gold] from [Silver] tiles [in this city]"],
 		"requiredTech": "Currency"
 	},
-	{ 
+	{
 		"name": "Petra",
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"Great Engineer": 1},
-		"uniques": ["Must be next to [Desert]", "[+1 Food, +1 Production, +1 Gold] from [Desert] tiles without [Flood plains] [in this city]", "Gain a free [Amphitheater] [in this city]", "[+6 Culture] <after discovering [Archaeology]>"],
+		"uniques": ["Must be next to [Desert]", "[+1 Food, +1 Production, +1 Gold] from [Desert] tiles without [Flood plains] [in this city]", "Gain a free [Amphitheater] [in this city]", "[+6 Culture] [in this city] <after discovering [Archaeology]>"],
 		"requiredTech": "Currency",
 		"quote": "'...who drinks the water I shall give him, says the Lord, will have a spring inside him welling up for eternal life. Let them bring me to your holy mountain in the place where you dwell. Across the desert and through the mountain to the Canyon of the Crescent Moon...' - Indiana Jones"
 	},
@@ -406,7 +407,7 @@
 		"culture": 3,
 		"greatPersonPoints": {"Great Engineer": 1},
 		"isWonder": true,
-		"uniques": ["Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)",
+		"uniques": ["Enemy [Land] units must spend [1] extra movement points when inside your territory <before discovering [Dynamite]>",
 			"Gain a free [Walls] [in this city]"],
 		"requiredTech": "Engineering",
 		"quote": "'The art of war teaches us to rely not on the likelihood of the enemy's not attacking, but rather on the fact that we have made our position unassailable.' - Sun Tzu"
@@ -437,7 +438,7 @@
 	// Column 5
 	{
 		"name": "Garden",
-		"uniques": ["[+25]% great person generation [in this city]", "Must be next to [Fresh water]"],
+		"uniques": ["[+25]% Great Person generation [in this city]", "Must be next to [Fresh water]"],
 		"hurryCostModifier": 25,
 		"maintenance": 1,
 		"requiredTech": "Theology"
@@ -496,7 +497,7 @@
 		"greatPersonPoints": {"Great Merchant": 1},
 		"culture": 1,
 		"isWonder": true,
-		"uniques": ["Gold from all trade routes +25%","Must have an owned [Mountain] within [2] tiles"],
+		"uniques": ["[+25]% [Gold] from Trade Routes","Must have an owned [Mountain] within [2] tiles"],
 		"requiredTech": "Guilds",
 		"quote": "'Few romances can ever surpass that of the granite citadel on top of the beetling precipices of Machu Picchu, the crown of Inca Land.' - Hiram Bingham"
 	},
@@ -725,7 +726,7 @@
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"Great Artist": 1},
-		"uniques": ["[-10]% unhappiness from population [in all cities]"],
+		"uniques": ["[-10]% Unhappiness from [Population] [in all cities]"],
 		"requiredTech": "Banking",
 		"quote": "'Most of us can, as we choose, make of this world either a palace or a prison' - John Lubbock"
 	},
@@ -742,7 +743,7 @@
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"Great Artist": 1},
-		"uniques": ["[+25]% great person generation [in all cities]", "Free Great Person"],
+		"uniques": ["[+25]% Great Person generation [in all cities]", "Free Great Person"],
 		"requiredTech": "Printing Press",
 		"quote": "'Don't clap too hard - it's a very old building.' - John Osbourne"
 	},
@@ -812,7 +813,7 @@
 		"specialistSlots": {"Engineer": 1},
 		"hurryCostModifier": 25,
 		"maintenance": 2,
-		"uniques": ["[+25]% great person generation [in this city]"],
+		"uniques": ["[+25]% Great Person generation [in this city]"],
 		"requiredTech": "Economics"
 	},
 	{
@@ -832,7 +833,7 @@
 		"isWonder": true,
 		"uniques": ["[+25]% City Strength from defensive buildings"],
 		"requiredTech": "Metallurgy",
-		"quote": "'The Law is a fortress on a hill that armies cannot take or floods wash away.' - The Prophet Muhammed"
+		"quote": "'The Kremlin is constantly changing the rules of the game to suit its purposes. We are not playing chess, we're playing roulette.' - Garry Kasparov"
 	},
 
 	// Industrial Era
@@ -958,7 +959,7 @@
 		"happiness": 5,
 		"greatPersonPoints": {"Great Merchant": 2},
 		"isWonder": true,
-		"uniques": ["Provides 1 happiness per 2 additional social policies adopted"],
+		"uniques": ["[+1 Happiness] per [2] social policies adopted"],
 		"requiredTech": "Radio",
 		"quote": "'We live only to discover beauty, all else is a form of waiting' - Kahlil Gibran"
 	},
@@ -1026,7 +1027,7 @@
 		"name": "Manhattan Project",
 		"cost": 750,
 		"isNationalWonder": true,
-		"uniques": ["Enables nuclear weapon", "Triggers a global alert upon completion"],
+		"uniques": ["Enables nuclear weapon", "Triggers a global alert upon completion", "Cannot be hurried"],
 		"requiredTech": "Atomic Theory"
 	},
 	{
@@ -1077,8 +1078,8 @@
 		"name": "Apollo Program",
 		"cost": 750,
 		"isNationalWonder": true,
-		"uniques": ["Enables construction of Spaceship parts", "Triggers a global alert upon completion", 
-			"Hidden when [Scientific] Victory is disabled"],
+		"uniques": ["Enables construction of Spaceship parts", "Triggers a global alert upon completion",
+			"Hidden when [Scientific] Victory is disabled", "Cannot be hurried"],
 		"requiredTech": "Rocketry"
 	},
 
@@ -1099,7 +1100,7 @@
 		"cost": 300,
 		"maintenance": 1,
 		"requiredTech": "Telecommunications",
-		"uniques": ["Population loss from nuclear attacks [-75]% [in this city]"]
+		"uniques": ["Population loss from nuclear attacks [-75]% [in this city]","Damage to garrison from nuclear attacks [-75]% [in this city]"]
 	},
 	{
 		"name": "Hubble Space Telescope",
@@ -1138,11 +1139,11 @@
 		"cost": 1500,
 		"isNationalWonder": true,
 		"uniques": ["Hidden until [5] social policy branches have been completed", "Triggers a global alert upon build start",
-			"Triggers a Cultural Victory upon completion", "Hidden when [Cultural] Victory is disabled"]
+			"Triggers a Cultural Victory upon completion", "Hidden when [Cultural] Victory is disabled", "Cannot be hurried"]
 	},
-	
+
 	// Religious buildings
-	
+
 	{
 		"name": "Cathedral",
 		"cost": 0,
@@ -1157,7 +1158,7 @@
 		"cost": 0,
 		"culture": 2,
 		"faith": 2,
-		"uniques": ["[+1 Culture, +1 Faith] from [Wine] tiles [in this city]", 
+		"uniques": ["[+1 Culture, +1 Faith] from [Wine] tiles [in this city]",
 			"[+1 Culture, +1 Faith] from [Incense] tiles [in this city]",
 			"Unbuildable", "Hidden when religion is disabled", "Destroyed when the city is captured"]
 	},

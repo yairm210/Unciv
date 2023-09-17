@@ -1,3 +1,5 @@
+# Coding standards
+
 As an open-source project, there will be a lot of eyes on our code.
 
 The main purpose of having a coding standard is for the code to be as immediately readable as possible to as many potential contributors, and hence most of it focuses on defaulting to coding structures that exist in other similar languages (Java, C#) when possible.

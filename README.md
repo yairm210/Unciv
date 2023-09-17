@@ -1,20 +1,23 @@
-# Unciv - FOSS Civ V for Android+Desktop
+# Unciv - Civ V remake for Android & Desktop
 
-![](/extraImages/GithubPreviewImage.png)
+![](/extraImages/GithubPreviewImage.jpg)
 
 [![Google Play](https://img.shields.io/static/v1?label=Google&message=Play&color=607D8B&logo=google-play)](https://play.google.com/store/apps/details?id=com.unciv.app)
-[![F-Droid](https://img.shields.io/f-droid/v/com.unciv.app)](https://f-droid.org/en/packages/com.unciv.app/)
+[![F-Droid](https://img.shields.io/f-droid/v/com.unciv.app?logo=f-droid)](https://f-droid.org/en/packages/com.unciv.app/)
 [![itch.io](https://img.shields.io/static/v1?label=itch.io&message=Unciv&color=607D8B&logo=itch.io)](https://yairm210.itch.io/unciv)
-[![Flathub](https://img.shields.io/flathub/v/io.github.yairm210.unciv)](https://flathub.org/apps/details/io.github.yairm210.unciv)
+[![Flathub](https://img.shields.io/flathub/v/io.github.yairm210.unciv?logo=flathub)](https://flathub.org/apps/details/io.github.yairm210.unciv)
+[![AUR](https://img.shields.io/aur/version/unciv-bin?logo=arch-linux)](https://aur.archlinux.org/packages/unciv-bin)
+[![pi-apps](https://img.shields.io/static/v1?label=pi-apps&message=Unciv&color=607D8B&logo=raspberry-pi)](https://github.com/Botspot/pi-apps)
+[![macport](https://img.shields.io/badge/dynamic/json?logo=apple&label=MacPorts&prefix=v&query=version&url=https%3A%2F%2Fports.macports.org%2Fapi%2Fv1%2Fports%2Funciv%2F)](https://ports.macports.org/port/unciv/)
+ 
 
-![Build and deploy](https://github.com/yairm210/Unciv/workflows/Build%20and%20deploy/badge.svg)
-[![Discord Chat](https://img.shields.io/discord/586194543280390151.svg)](https://discord.gg/bjrB4Xw)
+![Build status](https://github.com/yairm210/Unciv/workflows/Build%20and%20test/badge.svg)
+[![Discord](https://img.shields.io/discord/586194543280390151?color=%237289DA&logo=discord&logoColor=%23FFFFFF)](https://discord.gg/bjrB4Xw)
 
 
+## What is this?
 
-# What is this?
-
-An open-source, mod-friendly Android+Desktop remake of Civ V, made with LibGDX
+An open source, mod-friendly Android and Desktop remake of Civ V, made with LibGDX
 
 ## Is this any good?
 
@@ -24,20 +27,20 @@ If you want a small, fast, moddable, FOSS, in-depth 4X that can still run on a p
 
 ## What's the roadmap?
 
-Is this order:
+In this order:
 
 * Polish! As you may have noticed, Unciv is fully functional but rough around the edges. This means:
-    * UI+UX improvements (suggestions welcome!)
+    * UI+UX improvements ([suggestions welcome!](https://github.com/yairm210/Unciv/issues/new?assignees=&labels=feature&template=feature_request.md&title=Feature+request%3A+))
     * Better automation, AI etc. in-game
-* Finishing off Vanilla mechanics - Time Victory, Air sweep action - mostly done!
-* G&K mechanics - espionage, the Maya's, etc.
+* Finishing off Vanilla mechanics - mostly done!
+* G&K mechanics - espionage, small other changes (see [#4697](https://www.github.com/yairm210/Unciv/issues/4697))
 * BNW mechanics - trade routes, world congress, etc.
 
-# Contributing
+## Contributing
 
-## How can I help?
+### How can I help?
 
-Programmers start [here](https://yairm210.github.io/Unciv/Developers/Getting-Started/)!
+Programmers start [here](https://yairm210.github.io/Unciv/Developers/Building-Locally/)!
 
 Translators start [here](https://yairm210.github.io/Unciv/Other/Translating/)!
 
@@ -48,9 +51,27 @@ You can join us in any of the open issue, or work on improving anything you want
 If not, you can help by spreading the word - vote for Unciv where you can, mention it on Reddit or Twitter etc, and help us with new ideas of how to get the word out!
 
 
-# FAQ
+## FAQ
 
-## Will you implement {feature}?
+## How do I install?
+
+- **Android** - [Google Play](https://play.google.com/store/apps/details?id=com.unciv.app) or [F-droid](https://f-droid.org/en/packages/com.unciv.app/)
+- **Windows/Linux** - [itch.io](https://yairm210.itch.io/unciv), Flatpak via [Flathub](https://flathub.org/apps/details/io.github.yairm210.unciv), or [AUR](https://aur.archlinux.org/packages/unciv-bin)
+- **Raspberry Pi** - [Pi-apps](https://github.com/Botspot/pi-apps)
+- **MacOS** - Install [with this guide](https://yairm210.github.io/Unciv/Other/Installing-on-macOS/) 
+- Jars, APKs and Windows/Linux builds also available in [Releases](https://github.com/yairm210/Unciv/releases) (run jar with `java -jar Unciv.jar`) - *not recommended* since we update frequently and you will quickly become out-of-date
+- [Build from scratch](https://yairm210.github.io/Unciv/Developers/Building-locally-without-Android-Studio/) if that's your thing
+
+### How about IOS?
+
+I'm not planning on it. It means paying money to Apple, yet another release path,
+ and since I don't have an IOS device it means I can't test it properly.
+ 
+### Steam release?
+
+Steam has decided that they don't want to host Unciv, they probably don't want to risk legal issues with Firaxis (although those should be non-existent, see below)
+ 
+### Will you implement {feature}?
 
 If it's in the original Civ V, then yes!
 
@@ -58,9 +79,9 @@ There's a lot left to implement, so it's hard to give an estimation of when exac
 
 If not, then the feature won't be added until we've finished all the features from the original Civ - as mentioned, this will take a while!
 
-### Why not? This is its own game, why not add features that weren't in Civ V?
+#### Why not? This is its own game, why not add features that weren't in Civ V?
 
-Having a clear vision is important for actually getting things done. 
+Having a clear vision is important for actually getting things done.
 
 Anyone can make a suggestion. Not all are good, viable, or simple. Not many can actually implement stuff.
 
@@ -68,31 +89,11 @@ As an open source project, this stuff is done in our spare time, of which there 
 
 We need a clear-cut criteria to decide what to work on and what not to work on.
 
-## Will you implement Civ VI?
+#### Will you implement Civ VI?
 
 Considering how long it took to get this far, no.
 
-## Is there a desktop version?
-
-Yes! Windows and Linux versions are available at [itch.io](https://yairm210.itch.io/unciv), and if you're using the Itch app, your game will stay up-to-date - and we release pretty frequently so that's an issue ;)
-
-Unciv can also be installed on macOS, a guide on how to do that can be found [here](https://yairm210.github.io/Unciv/Other/Installing-on-macOS/).
-
-If you have Java 8, and are familiar with the command line, there are (considerably smaller) JARs in [Releases](https://github.com/yairm210/UnCiv/releases) which you can run with `java -jar Unciv.jar`.
-For Mac users, you'll need to add extra parameters, `java -XstartOnFirstThread -Djava.awt.headless=true -jar Unciv.jar`. 
-
-If you use Flatpaks, there's a Flatpak by [MayeulC](https://github.com/MayeulC) and you can know more about it [here](https://github.com/flathub/io.github.yairm210.unciv). Flathub link is available in the [Downloads](#downloads) section.
-
-If you want to build it from scratch for some reason, [we have instructions for that as well](https://yairm210.github.io/Unciv/Developers/Building-locally-without-Android-Studio/)
-
-## How about IOS?
-
-I'm not planning on it.
-
-It means paying money to Apple, yet another release path,
- and since I don't have an IOS device it means I can't test it properly.
- 
-## How can I learn to play? Where's the wiki?
+### How can I learn to play? Where's the wiki?
 
 All the tutorial information is available in-game at menu > civilopedia > tutorials
 
@@ -102,7 +103,7 @@ Since this is a Civ V clone, you can search Google for how to play Civ V and the
 
 Alternatively, you could [join us on Discord](https://discord.gg/bjrB4Xw) and ask there =D
 
-## Aren't you basically making a Civ V clone? Is that even legal?
+### Aren't you basically making a Civ V clone? Is that even legal?
 
 This is a subject that I've heard a lot of hearsay on but no solid sources of law.
 
@@ -115,15 +116,21 @@ From what I understand, intellectual property rights apply to names, characters 
 
 If anyone has any real legal sources, or can shed some light on the limits of what is and is not allowed, I'd be happy to hear!
 
-## Disclosure
+## Run with Docker [![Docker](https://github.com/haimlm/Unciv/actions/workflows/dockerPublish.yml/badge.svg)](https://github.com/haimlm/Unciv/actions/workflows/dockerPublish.yml)
 
-Multiplayer takes advantage of Dropbox, which is *non-free software*, for syncing purposes.
+If you have docker compose installed:
 
-Single player does not use this feature.
+ ```$ docker compose build && docker compose up```
 
-## Downloads
+and then goto http://localhost:6901/vnc.html?password=headless
 
-| [![](https://static.itch.io/images/badge.svg)](https://yairm210.itch.io/unciv)    |    [![](https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png)](https://play.google.com/store/apps/details?id=com.unciv.app)   |    [![](https://fdroid.gitlab.io/artwork/badge/get-it-on.png)](https://f-droid.org/en/packages/com.unciv.app/)	| [![](https://flathub.org/assets/badges/flathub-badge-en.svg)](https://flathub.org/apps/details/io.github.yairm210.unciv)  
-|---	|---	|---	|---	|
+If just docker:
 
-# [Credits and 3rd parties](docs/Credits.md)
+```$ docker build . -t unciv && docker run -d -p 6901:6901 -p 5901:5901 unciv  ```
+
+Or just use our already built one:
+
+```$ docker run -d -p 6901:6901 -p 5901:5901 ghcr.io/yairm210/unciv ```
+
+and then goto http://localhost:6901/vnc.html?password=headless
+## [Credits and 3rd parties](docs/Credits.md)

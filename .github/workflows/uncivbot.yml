@@ -5,303 +5,50 @@ on:
   workflow_dispatch:
 
 jobs:
-  update_wiki:
-    if: github.event_name == 'issue_comment' && github.event.issue.pull_request && github.event.comment.body == 'update wiki' && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association)
-    # This is the only place I could find an apparent list of valid author associations: https://docs.github.com/en/graphql/reference/enums#commentauthorassociation
-    runs-on: ubuntu-latest
-    steps:
-      - name: Update Wiki.
-        id: update
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
-          CODE_DIR: CodeRepo
-          WIKI_DIR: WikiRepo
-          WIKI_IN_CODE_REPO: /docs/wiki
-          EVENT_CONTEXT: ${{ toJSON(github) }}
-          # Dump for debug.
-          PR_MERGEDAT: ${{ toJSON(github.event.issue.pull_request.merged_at) }}
-          # The environment variable isn't set for `null`, so stringify.
-          PR_AUTHOR: ${{ github.event.issue.user.login }}
-          # I think directly putting these in the script would let quotes in PR title break the script. Set environment variables so Bash can take care of the substitution.
-          PR_TITLE: ${{ github.event.issue.title }}
-          PR_NUMBER: ${{ github.event.issue.number }}
-          PR_URL: ${{ github.event.issue.html_url }}
-        # Compare to https://github.com/SwiftDocOrg/github-wiki-publish-action/blob/v1/entrypoint.sh
-        # May also be some value in replacing `echo` for logging with some more structured GH Action commands: https://docs.github.com/en/actions/learn-github-actions/workflow-commands-for-github-actions
-        run: |
-          #echo "$EVENT_CONTEXT" # Dump entire event to logs. Watch out for leaks.
 
-          set -euo pipefail # Immediate exit on command errors and unset variables.
-          #set -x # Print out each executed command. THIS MAY LEAK THE PERSONAL ACCESS TOKEN SECRET VIA $GH_TOKEN and $WIKI_URL (though AFAICT GH is sanitizing it)!
-
-          function ghEnvVar() {
-            GHENV_DELIMITER="#GH-EOF_$(date +%s)-$RANDOM!"
-            echo "$1<<$GHENV_DELIMITER" >> $GITHUB_ENV
-            echo "$2" >> $GITHUB_ENV
-            echo "$GHENV_DELIMITER" >> $GITHUB_ENV
-            # This sets an environment variable for subsequent GH Action steps.
-          }
-
-          ghEnvVar WIKIBOT_STATUS ""
-          ghEnvVar WIKIBOT_CHANGES ""
-
-          function ghStatus() {
-            echo $@
-            ghEnvVar WIKIBOT_STATUS "$@"
-          }
-
-          for REQUIRED_ENV_VAR in GITHUB_ENV GITHUB_ACTOR GITHUB_SERVER_URL GITHUB_REPOSITORY GH_TOKEN CODE_DIR WIKI_DIR WIKI_IN_CODE_REPO PR_MERGEDAT PR_AUTHOR PR_TITLE PR_NUMBER PR_URL; do
-            if [ -z "$(eval "echo \$$REQUIRED_ENV_VAR")" ]; then
-              ghStatus "ERROR: \$$REQUIRED_ENV_VAR is not set."
-              exit 1
-            fi
-          done
-
-          if [ "${PR_MERGEDAT}" = 'null' ]; then
-            ghStatus "ERROR: Pull request must be merged."
-            exit 1
-          fi
-
-          CODE_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git"
-          WIKI_URL="https://${GH_TOKEN}@${GITHUB_SERVER_URL#https://}/${GITHUB_REPOSITORY}.wiki.git"
-
-          ghStatus "Cloning repository: $CODE_URL"
-          git clone "$CODE_URL" "$CODE_DIR"
-          ghStatus "Cloning Wiki."
-          git clone "$WIKI_URL" "$WIKI_DIR"
-
-          ghStatus 'Running `rsync`.'
-          rsync -avc --delete --exclude '.git*' "${CODE_DIR}${WIKI_IN_CODE_REPO}/" "$WIKI_DIR/"
-          # …The trailing slashes here are very important! Otherwise it will copy/target the directory, instead of its contents.
-
-          ghStatus "Formatting Markdown files in $WIKI_DIR."
-          cd "$WIKI_DIR"
-
-          for f in *.md; do
-            if [ -e "$f" ]; then
-              ghStatus "Formatting $f links."
-              # Convert AS/GH code browser inter-page links to GH Wiki links by stripping `.md` extensions.
-              sed -ie 's|\(](\./[^)]*\)\.md|\1|g' "$f"
-              # Convert AS/GH code browser repo file links to GH Wiki links by prepending repo browser to absolute links.
-              sed -ie 's|](/|](https://github.com/'"${GITHUB_REPOSITORY}"'/tree/master/|g' "$f"
-            else # When glob produces no matches, you just get the glob pattern instead.
-              ghStatus "Skipping non-existent file $f."
-            fi
-          done
-
-          ghStatus "Finished formatting Markdown files."
-
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-
-          ghStatus "Summarizing files."
-          tree
-          ghStatus "Adding files to Git."
-          git add .
-
-          ghStatus "Summarizing diff."
-          CHANGES="$(git diff --stat --cached | cat)" # IDK If Git might try to enter the interactive viewer without a pipe output. Probably not, but play it safe.
-          echo "$CHANGES"
-          ghEnvVar WIKIBOT_CHANGES "$CHANGES"
-
-          ghStatus "Committing changes."
-          git commit --allow-empty -m "@${PR_AUTHOR}: ${PR_TITLE} (#${PR_NUMBER})" -m "${PR_URL}"
-
-          ghStatus "Pushing changes."
-          git push # Since we just cloned the wiki repo anyway, it should also be safe to use -f.
-          #git push --set-upstream "$WIKI_URL" master # Should be the same since we cloned from the URL, just more explicit.
-
-          ghStatus "Done."
-      - name: Report Wiki update status.
-        id: report
-        continue-on-error: false
-        uses: actions/github-script@v3
-        env:
-          WIKIBOT_OUTCOME: ${{ steps.update.outcome }}
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const message = []
-
-            message.push(`Wiki update: ${process.env.WIKIBOT_OUTCOME}.`)
-            message.push("")
-            message.push("Status:")
-            message.push("```")
-            message.push(process.env.WIKIBOT_STATUS)
-            message.push("```")
-            message.push("")
-            message.push("Changes:")
-            message.push("```")
-            message.push(process.env.WIKIBOT_CHANGES)
-            message.push("```")
-
-            //message.push("\n<details><summary>Details</summary>\n\n```JSON\n" + JSON.stringify({context: context, github: github, core: core, glob: glob, io: io, process: process}, null, '\t') + '\n```\n</details>\n')
-            // Uncomment this for debug. But delete the bot comments on GH afterwards in case it leaks anything.
-
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: message.join("\n")
-            })
-
-            if (process.env.WIKIBOT_OUTCOME != 'success') {
-              core.setFailed(`Failed at: ${process.env.WIKIBOT_STATUS}.`)
-            }
-
-  summary:
-    if: github.event_name == 'issue_comment' && github.event.comment.body == 'summary' && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association)
+  prepare_version_for_rollout:
+    if: github.event_name == 'issue_comment' && (github.event.comment.body == 'summary' || github.event.comment.body == 'prepare version') && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association)
     # This is the only place I could find an apparent list of valid author associations. Also, at least they're not case-sensitive: https://docs.github.com/en/graphql/reference/enums#commentauthorassociation https://docs.github.com/en/actions/learn-github-actions/expressions#contains
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/github-script@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v2
+      - name: Generate new buildConfig.kt and changelog.md files
+        run: |
+          npm i @octokit/rest
+
+          node .github/workflows/incrementVersionAndChangelog.js
+
+          rm -rf node_modules # Now we need to remove extraneous node.js parts before commit
+          rm package-lock.json
+          rm package.json
+
+      - name: Create new branch with changes
+        uses: EndBug/add-and-commit@v9 # You can change this to use a specific version.
         with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            var result = await github.repos.listCommits({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              per_page: 50 });
-            var commitSummary = "";
-            var ownerToCommits = {}
-            var reachedPreviousVersion = false
-            result.data.forEach(commit => {
-              if (reachedPreviousVersion) return
-              var author = commit.author.login
-              if (author=="uncivbot[bot]") return
-              var commitMessage = commit.commit.message.split("\n")[0];
-          
-              if (commitMessage.match(/^\d+\.\d+\.\d+$/)){ // match EXACT version, like 3.4.55  ^ is for start-of-line, $ for end-of-line
-                reachedPreviousVersion=true
-                console.log(commitMessage)
-                return
-              }
-              if (commitMessage.startsWith("Merge ") || commitMessage.startsWith("Update ")) return
-              commitMessage = commitMessage.replace(/\(\#\d+\)/,"") // match PR auto-text, like (#2345)
-              if (author != context.repo.owner){
-                if (ownerToCommits[author] == undefined) ownerToCommits[author]=[]
-                ownerToCommits[author].push(commitMessage)
-              }
-              else commitSummary += "\n\n" + commitMessage
-            });
-            Object.entries(ownerToCommits).forEach(entry => {
-              const [author, commits] = entry;
-              if (commits.length==1) commitSummary += "\n\n" + commits[0] + " - By "+author
-              else {
-                commitSummary += "\n\nBy "+author+":"
-                commits.forEach(commitMessage => { commitSummary += "\n- "+commitMessage })
-              }
-            })
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: commitSummary
-            })
+          new_branch: version_rollout
+          message: 'Bump version and create initial changelog entry'
+
+      - name: Add translation PRs to the new branch, and PR the new branch to master
+        run: |
+          npm i @octokit/rest
+          node .github/workflows/mergeTranslations.js ${{ secrets.ACTIONS_ACCESS_TOKEN }} ${{ github.event.issue.number }} version_rollout
+
 
   merge_translations:
     if: github.event_name == 'workflow_dispatch' || (github.event.comment.body == 'merge translations' && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association))
     # This is the only place I could find an apparent list of valid author associations. Also, at least they're not case-sensitive: https://docs.github.com/en/graphql/reference/enums#commentauthorassociation https://docs.github.com/en/actions/learn-github-actions/expressions#contains
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/github-script@v3
-        with:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v2
+      - name: Add translation PRs to the new branch, and PR the new branch to master
+
           # SO, the story is that when using the default access token you CANNOT merge PRs from forks.
           # _Badly_ documented in multiple places, including here: https://docs.github.com/en/actions/reference/authentication-in-a-workflow
           # To get around this, we created a Personal Access Token,
           #  put it as one of the secrets in the repo settings (https://github.com/yairm210/Unciv/settings/secrets/actions),
           #  and use that instead.
-          github-token: ${{ secrets.ACTIONS_ACCESS_TOKEN }}
-          script: |
-            
-            const repo = {
-                  owner: context.repo.owner,
-                  repo: context.repo.repo }
-            
-            async function branchExists(branchName) {
-              try {
-                await github.git.getRef({...repo, ref: 'heads/' + branchName })
-                return true
-              } catch (err) {
-                return false
-              }
-            }
-
-            async function getDefaultBranch() {
-              var repoData = await github.repos.get(repo)
-              return repoData.data.default_branch
-            }
-            
-            var translations = "translations"
-
-            async function createTranslationBranchIfNeeded() {
-              if (await branchExists(translations)) return
-              var defaultBranch = await getDefaultBranch()
-              
-              var currentHead = await github.git.getRef({...repo, ref: 'heads/' + defaultBranch })
-              
-              var currentSha = currentHead.data.object.sha
-              console.log("Current sha: " + currentSha)
-              
-              await github.git.createRef({...repo,
-                ref: `refs/heads/`+translations,
-                sha: currentSha })
-              
-              await github.issues.createComment({...repo,
-                issue_number: context.issue.number,
-                body: 'Translations branch created' })
-            }
-            
-            async function mergeExistingTranslationsIntoBranch(){
-              var translationPrs = await github.pulls.list({ ...repo, state: "open" })
-              
-              // When we used a forEach loop here, only one merge would happen at each run,
-              //  because we essentially started multiple async tasks in parallel and they conflicted.
-              // Instead, we use X of Y as per https://stackoverflow.com/questions/37576685/using-async-await-with-a-foreach-loop
-              for (const pr of translationPrs.data) {
-                if (pr.labels.some(label => label.name == "mergeable translation"))
-                  await tryMergePr(pr)
-              }
-            }
-            
-            async function tryMergePr(pr){
-              if (pr.base.ref != translations)
-                await github.pulls.update({ ...repo,
-                  pull_number: pr.number,
-                  base: translations })
-              
-              try {
-                await github.pulls.merge({...repo,
-                  pull_number: pr.number,
-                  merge_method: "squash" })
-                console.log("Merged #"+pr.number+", "+pr.title)
-              } catch (err) {
-                console.log(err)
-              }
-                
-            }
-                        
-            
-            async function createTranslationPrIfNeeded() {
-              var translationPulls = await github.pulls.list({...repo,
-                  state: "open",
-                  head: context.repo.owner + ":" + translations });
-
-              if (translationPulls.data.length == 0) {
-                var defaultBranch = await getDefaultBranch(context);
-                await github.pulls.create({...repo,
-                  title: "Translations update",
-                  head: translations,
-                  base: defaultBranch });
-
-                await github.issues.createComment({...repo,
-                  issue_number: context.issue.number,
-                  body: 'Translations PR created' });
-              }
-            }
-                      
-            await createTranslationBranchIfNeeded()
-            await mergeExistingTranslationsIntoBranch()
-            await createTranslationPrIfNeeded()
-  
+        run: |
+          npm i @octokit/rest
+          node .github/workflows/mergeTranslations.js ${{ secrets.ACTIONS_ACCESS_TOKEN }} ${{ github.event.issue.number }} translations

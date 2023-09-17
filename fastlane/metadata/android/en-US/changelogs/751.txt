@@ -1,0 +1,9 @@
+Better milestones for world religion
+
+Correct filtering of civs that need to have majority religion for world religion to activate
+
+Moddable UI skins - by GGGuenni
+
+Disable spectators from changing unit names  - By xlenstra
+
+Lots of translations

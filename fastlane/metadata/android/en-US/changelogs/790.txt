@@ -1,0 +1,18 @@
+Modding: Humidity/Temperature limits on terrain features
+
+Allow mass unit upgrades from the unit overview screen
+
+Calculate movement correctly for road + railroad combinations
+
+Modding: Workers pick the best improvement for resources
+
+By FiretronP75:
+- Add random select for map options
+- Fixed flat world generation
+
+By vegeta1k95:
+- Resource icons colored by type
+- Modding: allow custom TechPortraits
+- Fixed PolicyScreen branches requirements text
+
+Translate "Sell" in city screen  - By Ouaz

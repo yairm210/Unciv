@@ -1,0 +1,15 @@
+O reimplementare a celui mai faimos joc de construire a civilizației din toate timpurile - rapid, mic, fără reclame, gratuit pentru totdeauna!
+
+Construiește-ți civilizația, cercetează tehnologii, extinde-ți orașele și învinge-ți dușmanii!
+
+Cereri? Bug-uri? Lista de toate pentru aplicație este https://github.com/yairm210/Unciv/issues, fiecare mic ajutor este binevenit!
+
+Întrebări? Comentarii? Doar plictisit? Alăturați-vă nouă pe https://discord.gg/bjrB4Xw.
+
+Vrei să ajuți la traducerea jocului în limba ta? Trimite-mi un e-mail la yairm210@hotmail.com.
+
+Grok Java sau Kotlin? Alăturați-vă nouă la https://github.com/yairm210/Unciv.
+
+Lumea așteaptă! Îți vei construi civilizația într-un imperiu care va rezista testului timpului?
+
+Permisiunea „a avea acces complet la rețea” este necesară pentru descărcări inițiate de utilizator și pentru caracteristica multiplayer. Toate celelalte permisiuni enumerate sunt incluse automat de API-ul utilizat pentru implementarea notificărilor de turnare pentru multiplayer. Permisiunile de rețea sunt folosite pentru a lista mod-uri, a descărca mod-uri, a descărca muzică și pentru a încărca/descărca jocuri multiplayer. Nicio altă comunicare pe internet nu este inițiată de Unciv.

@@ -1,12 +1,15 @@
 package com.unciv.logic.civilization
 
-enum class AlertType {
+import com.unciv.logic.IsPartOfGameInfoSerialization
+
+enum class AlertType : IsPartOfGameInfoSerialization {
     Defeated,
     WonderBuilt,
     TechResearched,
     WarDeclaration,
     FirstContact,
     CityConquered,
+    CityTraded,
     BorderConflict,
     DemandToStopSettlingCitiesNear,
     CitySettledNearOtherCivDespiteOurPromise,
@@ -17,9 +20,10 @@ enum class AlertType {
     BulliedProtectedMinor,
     AttackedProtectedMinor,
     RecapturedCivilian,
+    GameHasBeenWon
 }
 
-class PopupAlert {
+class PopupAlert : IsPartOfGameInfoSerialization {
     lateinit var type: AlertType
     lateinit var value: String
 

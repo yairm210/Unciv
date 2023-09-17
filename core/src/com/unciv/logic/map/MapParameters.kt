@@ -1,22 +1,36 @@
 package com.unciv.logic.map
 
-import com.unciv.Constants
-import com.unciv.logic.HexMath.getEquivalentHexagonalRadius
-import com.unciv.logic.HexMath.getEquivalentRectangularSize
-import com.unciv.logic.HexMath.getNumberOfTilesInHexagon
+import com.unciv.logic.IsPartOfGameInfoSerialization
+import com.unciv.logic.map.HexMath.getEquivalentHexagonalRadius
+import com.unciv.logic.map.HexMath.getEquivalentRectangularSize
+import com.unciv.logic.map.HexMath.getNumberOfTilesInHexagon
 import com.unciv.models.metadata.BaseRuleset
-import com.unciv.models.ruleset.RulesetCache
 
 
+/* Predefined Map Sizes - ours are a little lighter than the original values. For reference those are:
+    Civ5Duel(40,24,17),
+    Civ5Tiny(56,36,25),
+    Civ5Small(66,42,30),
+    Civ5Medium(80,52,37),
+    Civ5Large(104,64,47),
+    Civ5Huge(128,80,58),
+ */
 enum class MapSize(val radius: Int, val width: Int, val height: Int) {
     Tiny(10, 23, 15),
     Small(15, 33, 21),
     Medium(20, 44, 29),
     Large(30, 66, 43),
-    Huge(40, 87, 57)
+    Huge(40, 87, 57);
+
+    companion object {
+        /** Not a predefined [MapSize] enum value, but a String
+         * used in [MapParameters.mapSize] to indicate user-defined dimensions.
+         * Do not mistake for [MapGeneratedMainType.custom]. */
+        const val custom = "Custom"
+    }
 }
 
-class MapSizeNew {
+class MapSizeNew : IsPartOfGameInfoSerialization {
     var radius = 0
     var width = 0
     var height = 0
@@ -46,18 +60,18 @@ class MapSizeNew {
     }
 
     constructor(radius: Int) {
-        name = Constants.custom
+        name = MapSize.custom
         setNewRadius(radius)
     }
 
     constructor(width: Int, height: Int) {
-        name = Constants.custom
+        name = MapSize.custom
         this.width = width
         this.height = height
         this.radius = getEquivalentHexagonalRadius(width, height)
     }
 
-    fun clone() = MapSizeNew().also { 
+    fun clone() = MapSizeNew().also {
         it.name = name
         it.radius = radius
         it.width = width
@@ -69,7 +83,7 @@ class MapSizeNew {
      * @return null if size was acceptable, otherwise untranslated reason message
      */
     fun fixUndesiredSizes(worldWrap: Boolean): String? {
-        if (name != Constants.custom) return null  // predefined sizes are OK
+        if (name != MapSize.custom) return null  // predefined sizes are OK
         // world-wrap mas must always have an even width, so round down silently
         if (worldWrap && width % 2 != 0 ) width--
         // check for any bad condition and bail if none of them
@@ -105,27 +119,33 @@ class MapSizeNew {
     }
 
     // For debugging and MapGenerator console output
-    override fun toString() = if (name == Constants.custom) "${width}x${height}" else name
+    override fun toString() = if (name == MapSize.custom) "${width}x${height}" else name
 }
 
-object MapShape {
+object MapShape : IsPartOfGameInfoSerialization {
     const val hexagonal = "Hexagonal"
+    const val flatEarth = "Flat Earth Hexagonal"
     const val rectangular = "Rectangular"
 }
 
-object MapType {
-    const val pangaea = "Pangaea"
-    const val continents = "Continents"
-    const val fourCorners = "Four Corners"
-    const val perlin = "Perlin"
-    const val archipelago = "Archipelago"
-    const val innerSea = "Inner Sea"
-
-    // Cellular automata
-    const val default = "Default"
-
+object MapGeneratedMainType : IsPartOfGameInfoSerialization {
+    const val generated = "Generated"
+    // Randomly choose a generated map type
+    const val randomGenerated = "Random Generated"
     // Non-generated maps
     const val custom = "Custom"
+
+}
+
+object MapType : IsPartOfGameInfoSerialization {
+    const val perlin = "Perlin"
+    const val pangaea = "Pangaea"
+    const val continentAndIslands = "Continent and Islands"
+    const val twoContinents = "Two Continents"
+    const val threeContinents = "Three Continents"
+    const val fourCorners = "Four Corners"
+    const val archipelago = "Archipelago"
+    const val innerSea = "Inner Sea"
 
     // All ocean tiles
     const val empty = "Empty"
@@ -139,7 +159,7 @@ object MapResources {
     const val legendaryStart = "Legendary Start"
 }
 
-class MapParameters {
+class MapParameters : IsPartOfGameInfoSerialization {
     var name = ""
     var type = MapType.pangaea
     var shape = MapShape.hexagonal
@@ -151,7 +171,7 @@ class MapParameters {
 
     /** This is used mainly for the map editor, so you can continue editing a map under the same ruleset you started with */
     var mods = LinkedHashSet<String>()
-    var baseRuleset = BaseRuleset.Civ_V_GnK.fullName // Hardcoded as the Rulesetcache is not yet initialized when starting up 
+    var baseRuleset = BaseRuleset.Civ_V_GnK.fullName // Hardcoded as the RulesetCache is not yet initialized when starting up
 
     /** Unciv Version of creation for support cases */
     var createdWithVersion = ""
@@ -164,7 +184,10 @@ class MapParameters {
     var vegetationRichness = 0.4f
     var rareFeaturesRichness = 0.05f
     var resourceRichness = 0.1f
-    var waterThreshold = 0f
+    var waterThreshold = 0.0f
+
+    /** Shifts temperature (after random, latitude and temperatureExtremeness).*/
+    var temperatureShift = 0f
 
     fun clone() = MapParameters().also {
         it.name = name
@@ -182,6 +205,7 @@ class MapParameters {
         it.maxCoastExtension = maxCoastExtension
         it.elevationExponent = elevationExponent
         it.temperatureExtremeness = temperatureExtremeness
+        it.temperatureShift = temperatureShift
         it.vegetationRichness = vegetationRichness
         it.rareFeaturesRichness = rareFeaturesRichness
         it.resourceRichness = resourceRichness
@@ -199,6 +223,7 @@ class MapParameters {
         maxCoastExtension = 2
         elevationExponent = 0.7f
         temperatureExtremeness = 0.6f
+        temperatureShift = 0.0f
         vegetationRichness = 0.4f
         rareFeaturesRichness = 0.05f
         resourceRichness = 0.1f
@@ -206,32 +231,44 @@ class MapParameters {
     }
 
     fun getArea() = when {
-        shape == MapShape.hexagonal -> getNumberOfTilesInHexagon(mapSize.radius)
+        shape == MapShape.hexagonal || shape == MapShape.flatEarth -> getNumberOfTilesInHexagon(mapSize.radius)
         worldWrap && mapSize.width % 2 != 0 -> (mapSize.width - 1) * mapSize.height
         else -> mapSize.width * mapSize.height
     }
     fun displayMapDimensions() = mapSize.run {
-        (if (shape == MapShape.hexagonal) "R$radius" else "${width}x$height") +
+        (if (shape == MapShape.hexagonal || shape == MapShape.flatEarth) "R$radius" else "${width}x$height") +
         (if (worldWrap) "w" else "")
     }
+
+    // Human readable float representation akin to .net "0.###" - round to N digits but without redundant trailing zeroes
+    private fun Float.niceToString(maxPrecision: Int) =
+        "%.${maxPrecision}f".format(this).trimEnd('0').trimEnd('.')
 
     // For debugging and MapGenerator console output
     override fun toString() = sequence {
         if (name.isNotEmpty()) yield("\"$name\" ")
         yield("(")
-        if (mapSize.name != Constants.custom) yield(mapSize.name + " ")
-        if (worldWrap) yield("wrapped ")
-        yield(shape)
-        yield(" " + displayMapDimensions())
-        yield(mapResources)
+        if (mapSize.name != MapSize.custom) yield("{${mapSize.name}} ")
+        if (worldWrap) yield("{World Wrap} ")
+        yield("{$shape}")
+        yield(" " + displayMapDimensions() + ")")
+        if(mapResources != MapResources.default) yield(" {Resource Setting}: {$mapResources}")
         if (name.isEmpty()) return@sequence
-        yield(", $type, Seed $seed, ")
-        yield("$elevationExponent/$temperatureExtremeness/$resourceRichness/$vegetationRichness/")
-        yield("$rareFeaturesRichness/$maxCoastExtension/$tilesPerBiomeArea/$waterThreshold")
-    }.joinToString("", postfix = ")")
-    
+        yield("\n")
+        if (type != MapGeneratedMainType.custom && type != MapType.empty) yield("{Map Generation Type}: {$type}, ")
+        yield("{RNG Seed} $seed")
+        yield(", {Map Elevation}=" + elevationExponent.niceToString(2))
+        yield(", {Temperature extremeness}=" + temperatureExtremeness.niceToString(2))
+        yield(", {Resource richness}=" + resourceRichness.niceToString(3))
+        yield(", {Vegetation richness}=" + vegetationRichness.niceToString(2))
+        yield(", {Rare features richness}=" + rareFeaturesRichness.niceToString(3))
+        yield(", {Max Coast extension}=$maxCoastExtension")
+        yield(", {Biome areas extension}=$tilesPerBiomeArea")
+        yield(", {Water level}=" + waterThreshold.niceToString(2))
+    }.joinToString("")
+
     fun numberOfTiles() =
-        if (shape == MapShape.hexagonal) {
+        if (shape == MapShape.hexagonal || shape == MapShape.flatEarth) {
             1 + 3 * mapSize.radius * (mapSize.radius - 1)
         } else {
             mapSize.width * mapSize.height

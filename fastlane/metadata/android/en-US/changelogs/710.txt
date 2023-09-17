@@ -1,0 +1,16 @@
+Upgraded to libGDX 1.11.0 - enables Unciv on M1 chips
+
+Allow Android Unciv more memory than standard apps - By Azzurite
+
+Allow liberating a traded city - By JackRainy
+
+By xlenstra:
+- Disabled CS buttons when at war; CS keep influence when at war with ally 
+- Fixed bug where roads could not be removed 
+
+By SomeTroglodyte:
+- Accelerate custom map selection
+- Map Editor improvements 
+- Notifications no longer become unscrollable past a point
+
+Capital movement tweaks  - By OptimizedForDensity

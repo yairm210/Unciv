@@ -1,0 +1,14 @@
+"Requires a [buildingFilter] in at least [amount] cities" works correctly with filters that aren't building names
+
+AI only buys tiles contiguous to the current city tiles
+
+Undo Move button moved to the right, so other buttons stay in place
+
+By SeventhM:
+- Check for trigger conditions on new game techs
+- Fix when units can be purchased
+
+On City Raze, previous owner doesn't pay Road Maintenance  - By itanasi
+
+By SomeTroglodyte:
+- Defense against circular references in Promotions

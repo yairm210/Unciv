@@ -1,0 +1,8 @@
+By Gualdimar:
+- World wrap scrolling fix
+- Notifications scroll pane position fix
+- Double trades fix + Diplomacy screen layout fix
+- Minimap hotseat fix
+
+By SomeTroglodyte:
+- Fix SelectBox ScrollPane being transparent

@@ -1,0 +1,16 @@
+Zoom in/out of history charts  - By JackRainy
+
+Removing old buildings on enemy capital (when not last city) no longer crashes
+
+Liberating city with multiple units in it no longer errors
+
+By SomeTroglodyte:
+- Fixed ruleset error crashes
+- Fixed loading of mods with unconventional names
+-
+By SeventhM:
+- Modding: Allow Great People to have different counters
+- Tech column validation for mods
+- Solved crashes from undefined building costs
+
+Ensure more unit uniques work - By xlenstra

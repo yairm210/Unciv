@@ -1,4 +1,3 @@
-import com.unciv.build.BuildConfig
 
 plugins {
     id("kotlin")

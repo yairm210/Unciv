@@ -4,6 +4,7 @@
 		"era": "Ancient era",
 		"techCost": 20,
 		"buildingCost": 40,
+		"wonderCost": 185,
 		"techs": [
 			{
 				"name": "Agriculture",
@@ -170,7 +171,7 @@
 				"name": "Currency",
 				"row": 7,
 				"prerequisites": ["Mathematics"],
-				"uniques": ["Enables conversion of city production to gold"],
+				"uniques": ["Enables conversion of city production to [Gold]"],
 				"quote": "'Better is bread with a happy heart than wealth with vexation.' - Amenemope"
 			},
 			{
@@ -206,15 +207,16 @@
 				"name": "Education",
 				"row": 3,
 				"prerequisites": ["Theology","Civil Service"],
-				"uniques": ["Enables conversion of city production to science"],
+				"uniques": ["Enables conversion of city production to [Science]"],
 				"quote": "'Education is the best provision for old age.' - Aristotle"
 			},
 			{
 				"name": "Chivalry",
 				"row": 5,
 				"prerequisites": ["Civil Service","Currency","Horseback Riding"],
+                "uniques": ["Enables Defensive Pacts"],
 				"quote": "'Whoso pulleth out this sword of this stone and anvil, is rightwise king born of all England.' - Malory"
-			}, // Allows for defensive pacts
+			},
 			{
 				"name": "Machinery",
 				"row": 8,
@@ -614,9 +616,10 @@
 			{
 				"name": "Future Tech",
 				"row": 5,
-				"prerequisites": ["Globalization","Nuclear Fusion", "Nanotechnology"],
-				"uniques": ["Who knows what the future holds?", "Can be continually researched"],
-				"quote": "'I think we agree, the past is over.' - George W. Bush"
+				"prerequisites": ["Globalization","Nuclear Fusion","Nanotechnology"],
+                "uniques": ["Can be continually researched"],
+                "quote": "'I think we agree, the past is over.' - George W. Bush",
+                "civilopediaText": [{"text": "Who knows what the future holds?"}]
 			}
 		]
 	}

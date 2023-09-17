@@ -6,15 +6,25 @@
     <uses-sdk/>
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- See https://developer.android.com/training/tv/start/start -->
     <uses-feature android:name="android.software.leanback" android:required="false" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
 
+    <!--
+        Known Lint warnings:
+            UnusedAttribute: Since we're targeting a range of API levels, it's OK that e.g. appCategory will be ignored by OLD devices
+            IconDensities: See https://developer.android.com/training/tv/start/start#banner for the banner attribute, where they recommend supplying only one density.
+    -->
+    <!-- Cleartext traffic permission solely so users can host their own server without setting up https -->
     <application
+        android:usesCleartextTraffic="true"
         android:allowBackup="true"
-        android:icon="@drawable/uncivicon2"
+        android:icon="@mipmap/uncivicon"
+        android:roundIcon="@mipmap/uncivicon_round"
         android:label="@string/app_name"
         android:isGame="true"
+        android:largeHeap="true"
         android:appCategory="game"
         android:banner="@drawable/banner"
         android:theme="@style/GdxTheme" >
@@ -22,8 +32,8 @@
             android:name="com.unciv.app.AndroidLauncher"
             android:launchMode="singleTask"
             android:exported="true"
-            android:label="@string/app_name"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:screenOrientation="userLandscape"
             tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -43,7 +53,6 @@
 
         <activity
             android:name="com.unciv.app.AndroidTvLauncher"
-            android:label="@string/app_name"
             android:exported="true"
             android:theme="@style/GdxTheme">
 

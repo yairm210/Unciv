@@ -2,14 +2,17 @@ package com.unciv.models.tilesets
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
-import com.unciv.JsonParser
 import com.unciv.UncivGame
+import com.unciv.json.fromJsonFile
+import com.unciv.json.json
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.images.ImageGetter
 
-object TileSetCache : HashMap<String, TileSetConfig>() {
-    private data class TileSetAndMod(val tileSet: String, val mod: String)
-    private val allConfigs = HashMap<TileSetAndMod, TileSetConfig>()
+object TileSetCache : HashMap<String, TileSet>() {
+
+    fun getCurrent() : TileSet {
+        return get(UncivGame.Current.settings.tileSet)!!
+    }
 
     /** Combine [TileSetConfig]s for chosen mods.
      * Vanilla always active, even with a base ruleset mod active.
@@ -20,79 +23,94 @@ object TileSetCache : HashMap<String, TileSetConfig>() {
     fun assembleTileSetConfigs(ruleSetMods: Set<String>) {
         // Needs to be a list and not a set, so subsequent mods override the previous ones
         // Otherwise you rely on hash randomness to determine override order... not good
-        val mods = mutableListOf("")
-        if (UncivGame.isCurrentInitialized()) {
+        val mods = ArrayList<String>()
+        mods.add(TileSet.DEFAULT)
+        if (UncivGame.isCurrentInitialized())
             mods.addAll(UncivGame.Current.settings.visualMods)
-        }
         mods.addAll(ruleSetMods)
-        clear()
+
+        values.forEach { it.resetConfig() }
+
         for (mod in mods.distinct()) {
-            for (entry in allConfigs.entries.filter { it.key.mod == mod } ) { // Built-in tilesets all have empty strings as their `.mod`, so loop through all of them.
-                val tileSet = entry.key.tileSet
-                if (tileSet in this) this[tileSet]!!.updateConfig(entry.value)
-                else this[tileSet] = entry.value
+            for (tileset in values) {
+                tileset.mergeModConfig(mod)
             }
         }
     }
 
-    fun loadTileSetConfigs(consoleMode: Boolean = false, printOutput: Boolean = false){
-        allConfigs.clear()
-        var tileSetName = ""
+    /** Load the json config files and do an initial [assembleTileSetConfigs] run without explicit mods.
+     *
+     *  Runs from UncivGame.create without exception handling, therefore should not be vulnerable to broken mods.
+     *  (The critical point is json parsing in loadConfigFiles, which is now hardened)
+     *  Also runs from ModManagementScreen after downloading a new mod or deleting one.
+     */
+    fun loadTileSetConfigs(consoleMode: Boolean = false) {
 
-        //load internal TileSets
-        val fileHandles: Sequence<FileHandle> =
-            if (consoleMode) FileHandle("jsons/TileSets").list().asSequence()
-            else ImageGetter.getAvailableTilesets().map { Gdx.files.internal("jsons/TileSets/$it.json")}.filter { it.exists() }
+        clear()
 
-        for (configFile in fileHandles){
-            tileSetName = configFile.nameWithoutExtension().removeSuffix("Config")
-            try {
-                val key = TileSetAndMod(tileSetName, "")
-                assert(key !in allConfigs)
-                allConfigs[key] = JsonParser().getFromJson(TileSetConfig::class.java, configFile)
-                if (printOutput) {
-                    println("TileSetConfig loaded successfully: ${configFile.name()}")
-                    println()
-                }
-            } catch (ex: Exception){
-                if (printOutput){
-                    println("Exception loading TileSetConfig '${configFile.path()}':")
-                    println("  ${ex.localizedMessage}")
-                    println("  (Source file ${ex.stackTrace[0].fileName} line ${ex.stackTrace[0].lineNumber})")
-                }
-            }
-        }
+        // Load internal TileSets
+        val internalFiles: Sequence<FileHandle> =
+            if (consoleMode)
+                FileHandle("jsons/TileSets").list().asSequence()
+            else
+                ImageGetter.getAvailableTilesets()
+                .map { Gdx.files.internal("jsons/TileSets/$it.json") }
+                .filter { it.exists() }
 
-        //load mod TileSets
-        val modsHandles = 
+        loadConfigFiles(internalFiles, TileSet.DEFAULT)
+
+        // Load mod TileSets
+        val modsHandles =
             if (consoleMode) FileHandle("mods").list().toList()
             else RulesetCache.values.mapNotNull { it.folderLocation }
 
         for (modFolder in modsHandles) {
             val modName = modFolder.name()
-            if (modName.startsWith('.')) continue
-            if (!modFolder.isDirectory) continue
-
-            try {
-                for (configFile in modFolder.child("jsons/TileSets").list()){
-                    tileSetName = configFile.nameWithoutExtension().removeSuffix("Config")
-                    val key = TileSetAndMod(tileSetName, modName)
-                    assert(key !in allConfigs)
-                    allConfigs[key] = JsonParser().getFromJson(TileSetConfig::class.java, configFile)
-                    if (printOutput) {
-                        println("TileSetConfig loaded successfully: ${configFile.path()}")
-                        println()
-                    }
-                }
-            } catch (ex: Exception){
-                if (printOutput) {
-                    println("Exception loading TileSetConfig '${modFolder.name()}/jsons/TileSets/${tileSetName}':")
-                    println("  ${ex.localizedMessage}")
-                    println("  (Source file ${ex.stackTrace[0].fileName} line ${ex.stackTrace[0].lineNumber})")
-                }
-            }
+            if (!modFolder.isDirectory || modName.startsWith('.'))
+                continue
+            val modFiles = modFolder.child("jsons/TileSets").list().asSequence()
+            loadConfigFiles(modFiles, modName)
         }
 
+        values.forEach { it.fallback = get(it.config.fallbackTileSet) }
+
         assembleTileSetConfigs(hashSetOf()) // no game is loaded, this is just the initial game setup
+    }
+
+    private fun loadConfigFiles(files: Sequence<FileHandle>, configId: String) {
+        for (configFile in files) {
+            // jsons/TileSets shouldn't have subfolders, but if a mad modder has one, don't crash (file.readString would throw):
+            if (configFile.isDirectory) continue
+            // `files` is an unfiltered directory listing - ignore chaff
+            if (configFile.extension() != "json") continue
+
+            val config = try {
+                json().fromJsonFile(TileSetConfig::class.java, configFile)
+            } catch (_: Exception) {
+                continue  // Ignore jsons that don't load
+            }
+
+            val name = configFile.nameWithoutExtension().removeSuffix("Config")
+            val tileset = get(name) ?: TileSet(name)
+            tileset.cacheConfigFromMod(configId, config)
+            set(name, tileset)
+        }
+    }
+
+    /** Determines potentially available TileSets - by scanning for TileSet jsons.
+     *  Available before initialization finishes.
+     */
+    fun getAvailableTilesets(imageGetterTilesets:Sequence<String>): Set<String> {
+        val modTilesetConfigFiles = Gdx.files.local("mods").list().asSequence()
+            .filter { it.isDirectory && !it.name().startsWith('.') }
+            .flatMap { it.child("jsons/TileSets").list().asSequence() }
+
+        val builtinTilesetConfigFiles = imageGetterTilesets
+            .map { Gdx.files.internal("jsons/TileSets/$it.json") }
+
+        return (builtinTilesetConfigFiles + modTilesetConfigFiles)
+            .filter { it.exists() }
+            .map { it.nameWithoutExtension().removeSuffix("Config") }
+            .toSet()
     }
 }

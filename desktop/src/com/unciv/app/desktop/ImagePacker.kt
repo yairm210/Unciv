@@ -3,22 +3,27 @@ package com.unciv.app.desktop
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.tools.texturepacker.TexturePacker
 import com.badlogic.gdx.utils.Json
+import com.unciv.app.desktop.ImagePacker.packImages
+import com.unciv.utils.Log
+import com.unciv.utils.debug
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.attribute.BasicFileAttributes
 
 /**
  * Entry point: _ImagePacker.[packImages] ()_
- * 
+ *
  * Re-packs our texture assets into atlas + png File pairs, which will be loaded by the game.
  * With the exception of the ExtraImages folder and the Font system these are the only
  * graphics used (The source Image folders are unused at run time except here).
- * 
+ *
  * [TexturePacker] documentation is [here](https://github.com/libgdx/libgdx/wiki/Texture-packer)
  */
 internal object ImagePacker {
     private fun getDefaultSettings() = TexturePacker.Settings().apply {
         // Apparently some chipsets, like NVIDIA Tegra 3 graphics chipset (used in Asus TF700T tablet),
         // don't support non-power-of-two texture sizes - kudos @yuroller!
-        // https://github.com/yairm210/UnCiv/issues/1340
+        // https://github.com/yairm210/Unciv/issues/1340
 
         /**
          * These should be as big as possible in order to accommodate ALL the images together in one big file.
@@ -52,15 +57,16 @@ internal object ImagePacker {
         filterMag = Texture.TextureFilter.MipMapLinearLinear // I'm pretty sure this doesn't make sense for magnification, but setting it to Linear gives strange results
     }
 
-    fun packImages() {
+    fun packImages(isRunFromJAR:Boolean) {
         val startTime = System.currentTimeMillis()
 
         val defaultSettings = getDefaultSettings()
 
         // Scan for Image folders and build one atlas each
-        packImagesPerMod("..", ".", defaultSettings)
+        if (!isRunFromJAR)
+            packImagesPerMod("..", ".", defaultSettings)
 
-        // pack for mods as well
+        // pack for mods
         val modDirectory = File("mods")
         if (modDirectory.exists()) {
             for (mod in modDirectory.listFiles()!!) {
@@ -68,14 +74,14 @@ internal object ImagePacker {
                     try {
                         packImagesPerMod(mod.path, mod.path, defaultSettings)
                     } catch (ex: Throwable) {
-                        println("Exception in ImagePacker: ${ex.message}")
+                        Log.error("Exception in ImagePacker: %s", ex.message)
                     }
                 }
             }
         }
 
         val texturePackingTime = System.currentTimeMillis() - startTime
-        println("Packing textures - " + texturePackingTime + "ms")
+        debug("Packing textures - %sms", texturePackingTime)
     }
 
     // Scan multiple image folders and generate an atlas for each - if outdated
@@ -104,13 +110,18 @@ internal object ImagePacker {
         val atlasFile = File("$output${File.separator}$packFileName.atlas")
         if (atlasFile.exists() && File("$output${File.separator}$packFileName.png").exists()) {
             val atlasModTime = atlasFile.lastModified()
-            if (File(input).listTree().none { it.extension in listOf("png", "jpg", "jpeg") && it.lastModified() > atlasModTime }) return
+            if (File(input).listTree().none {
+                val attr: BasicFileAttributes = Files.readAttributes(it.toPath(), BasicFileAttributes::class.java)
+                val createdAt: Long = attr.creationTime().toMillis()
+                it.extension in listOf("png", "jpg", "jpeg")
+                        && (it.lastModified() > atlasModTime || createdAt > atlasModTime)
+            }) return
         }
 
         // An image folder can optionally have a TexturePacker settings file
         val settingsFile = File("$input${File.separator}TexturePacker.settings")
         val settings = if (settingsFile.exists())
-            Json().fromJson(TexturePacker.Settings::class.java, settingsFile.reader())
+            Json().fromJson(TexturePacker.Settings::class.java, settingsFile.reader(Charsets.UTF_8))
         else defaultSettings
 
         TexturePacker.process(settings, input, output, packFileName)

@@ -8,8 +8,8 @@ import com.unciv.models.ruleset.RulesetStatsObject
 import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.civilopedia.FormattedLine
-import com.unciv.ui.utils.colorFromRGB
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import com.unciv.ui.components.extensions.colorFromRGB
 
 class Terrain : RulesetStatsObject() {
 
@@ -24,7 +24,7 @@ class Terrain : RulesetStatsObject() {
     val occursOn = ArrayList<String>()
 
     /** Used by Natural Wonders: it is the baseTerrain on top of which the Natural Wonder is placed */
-    val turnsInto: String? = null
+    var turnsInto: String? = null
 
     override fun getUniqueTarget() = UniqueTarget.Terrain
 
@@ -43,7 +43,7 @@ class Terrain : RulesetStatsObject() {
 
     // Shouldn't this just be a lazy property so it's automatically cached?
     fun isRough(): Boolean = hasUnique(UniqueType.RoughTerrain)
-    
+
     /** Tests base terrains, features and natural wonders whether they should be treated as Land/Water.
      *  Currently only used for civilopedia display, as other code can test the tile itself.
      */
@@ -69,14 +69,16 @@ class Terrain : RulesetStatsObject() {
 
         val textList = ArrayList<FormattedLine>()
 
-        if (turnsInto != null) {
+        if (type == TerrainType.NaturalWonder) {
             textList += FormattedLine("Natural Wonder", header=3, color="#3A0")
         }
 
         val stats = cloneStats()
-        if (!stats.isEmpty()) {
+        if (!stats.isEmpty() || overrideStats) {
             textList += FormattedLine()
-            textList += FormattedLine("$stats")
+            textList += FormattedLine(if (stats.isEmpty()) "No yields" else "$stats")
+            if (overrideStats)
+                textList += FormattedLine("Overrides yields from underlying terrain")
         }
 
         if (occursOn.isNotEmpty() && !hasUnique(UniqueType.NoNaturalGeneration)) {

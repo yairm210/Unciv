@@ -1,67 +1,87 @@
 package com.unciv.models
 
-import com.badlogic.gdx.Input
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.utils.Align
-import com.unciv.ui.utils.KeyCharAndCode
-import com.unciv.ui.utils.ImageGetter
 import com.unciv.Constants
-import com.unciv.models.translations.equalsPlaceholderText
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.ui.utils.darken
+import com.unciv.ui.components.Fonts
+import com.unciv.ui.components.input.KeyboardBinding
+import com.unciv.ui.images.ImageGetter
 
 
 /** Unit Actions - class - carries dynamic data and actual execution.
  * Static properties are in [UnitActionType].
- * Note this is for the buttons offering actions, not the ongoing action stored with a [MapUnit][com.unciv.logic.map.MapUnit]
+ * Note this is for the buttons offering actions, not the ongoing action stored with a [MapUnit][com.unciv.logic.map.mapunit.MapUnit]
  */
-data class UnitAction(
-        val type: UnitActionType,
-        val title: String = type.value,
-        val isCurrentAction: Boolean = false,
-        val uncivSound: UncivSound = type.uncivSound,
-        val action: (() -> Unit)? = null
+open class UnitAction(
+    val type: UnitActionType,
+    val title: String = type.value,
+    val isCurrentAction: Boolean = false,
+    val uncivSound: UncivSound = type.uncivSound,
+    /** Action is Null if this unit *can* execute the action but *not right now* - it's embarked, out of moves, etc */
+    val action: (() -> Unit)? = null
 ) {
     fun getIcon(): Actor {
-        if (type.imageGetter != null) return type.imageGetter.invoke()
-        return when {
-            type == UnitActionType.Upgrade 
-                    && title.equalsPlaceholderText("Upgrade to [] ([] gold)") -> {
-                ImageGetter.getUnitIcon(title.getPlaceholderParameters()[0])
+        if (type.imageGetter != null)
+            return type.imageGetter.invoke()
+        return when (type) {
+            UnitActionType.Create -> {
+                ImageGetter.getImprovementPortrait(title.getPlaceholderParameters()[0])
             }
-            type == UnitActionType.Create
-                    && title.equalsPlaceholderText("Create []") -> {
-                ImageGetter.getImprovementIcon(title.getPlaceholderParameters()[0])
-            }
-            type == UnitActionType.SpreadReligion
-                    && title.equalsPlaceholderText("Spread []") -> {
+            UnitActionType.SpreadReligion -> {
                 val religionName = title.getPlaceholderParameters()[0]
-                ImageGetter.getReligionImage(
-                    if (ImageGetter.religionIconExists(religionName)) religionName 
-                    else "Pantheon"
-                ).apply { color = Color.BLACK }
+                ImageGetter.getReligionPortrait(
+                    if (ImageGetter.religionIconExists(religionName)) religionName
+                    else "Pantheon", 20f
+                )
             }
-            type == UnitActionType.Fortify || type == UnitActionType.FortifyUntilHealed -> {
-                val match = fortificationRegex.matchEntire(title)
-                val percentFortified = match?.groups?.get(1)?.value?.toInt() ?: 0
-                ImageGetter.getImage("OtherIcons/Shield").apply { 
-                    color = Color.GREEN.darken(1f - percentFortified / 80f)
-                }
-            }
-            else -> ImageGetter.getImage("OtherIcons/Star")
+            else -> ImageGetter.getUnitActionPortrait("Star")
         }
     }
-    companion object {
-        private val fortificationRegex = Regex(""".* (\d+)%""")
+
+    //TODO remove once sure they're unused
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is UnitAction) return false
+
+        if (type != other.type) return false
+        if (isCurrentAction != other.isCurrentAction) return false
+        if (action != other.action) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = type.hashCode()
+        result = 31 * result + isCurrentAction.hashCode()
+        result = 31 * result + (action?.hashCode() ?: 0)
+        return result
+    }
+
+    override fun toString(): String {
+        return "UnitAction(type=$type, title='$title', isCurrentAction=$isCurrentAction)"
     }
 }
 
+/** Specialized [UnitAction] for upgrades
+ *
+ *  Transports [unitToUpgradeTo] from [creation][com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsUpgrade.getUpgradeAction]
+ *  to [UI][com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsTable.update]
+ */
+class UpgradeUnitAction(
+    title: String,
+    val unitToUpgradeTo: BaseUnit,
+    val goldCostOfUpgrade: Int,
+    val newResourceRequirements: Counter<String>,
+    action: (() -> Unit)?
+) : UnitAction(UnitActionType.Upgrade, title, action = action)
+
 /** Unit Actions - generic enum with static properties
- * 
+ *
  * @param value         _default_ label to display, can be overridden in UnitAction instantiation
  * @param imageGetter   optional lambda to get an Icon - `null` if icon is dependent on outside factors and needs special handling
- * @param key           keyboard binding - can be a [KeyCharAndCode], a [Char], or omitted.
+ * @param binding       keyboard binding - omitting it will look up the KeyboardBinding of the same name (recommended)
+ * @param isSkippingToNextUnit if "Auto Unit Cycle" setting and this bit are on, this action will skip to the next unit
  * @param uncivSound    _default_ sound, can be overridden in UnitAction instantiation
  */
 
@@ -71,91 +91,96 @@ data class UnitAction(
 enum class UnitActionType(
     val value: String,
     val imageGetter: (()-> Actor)?,
-    val key: KeyCharAndCode,
+    binding: KeyboardBinding? = null,
+    val isSkippingToNextUnit: Boolean = true,
     val uncivSound: UncivSound = UncivSound.Click
 ) {
     SwapUnits("Swap units",
-        { ImageGetter.getImage("OtherIcons/Swap") }, 'y'),
+        { ImageGetter.getUnitActionPortrait("Swap") }, false),
     Automate("Automate",
-        { ImageGetter.getUnitIcon("Great Engineer") }, 'm'),
+        { ImageGetter.getUnitActionPortrait("Automate") }),
     StopAutomation("Stop automation",
-        { ImageGetter.getImage("OtherIcons/Stop") }, 'm'),
+        { ImageGetter.getUnitActionPortrait("Stop") }, false),
     StopMovement("Stop movement",
-        { imageGetStopMove() }, '.'),
+        { ImageGetter.getUnitActionPortrait("StopMove") }, false),
+    ShowUnitDestination("Show unit destination",
+        { ImageGetter.getUnitActionPortrait("ShowUnitDestination")}, false),
     Sleep("Sleep",
-        { ImageGetter.getImage("OtherIcons/Sleep") }, 'f'),
+        { ImageGetter.getUnitActionPortrait("Sleep") }),
     SleepUntilHealed("Sleep until healed",
-        { ImageGetter.getImage("OtherIcons/Sleep") }, 'h'),
-    // Note: Both Fortify actions are a special case. The button starting fortification uses the `value` here,
-    // the button label as shown when the unit is already fortifying is "Fortification".tr() + " nn%".
-    // For now we keep it simple, and the unit test `allUnitActionsHaveTranslation` does not know about the latter.
+        { ImageGetter.getUnitActionPortrait("Sleep") }),
     Fortify("Fortify",
-        null, 'f', UncivSound.Fortify),
+        { ImageGetter.getUnitActionPortrait("Fortify") }, UncivSound.Fortify),
     FortifyUntilHealed("Fortify until healed",
-        null, 'h', UncivSound.Fortify),
+        { ImageGetter.getUnitActionPortrait("FortifyUntilHealed") }, UncivSound.Fortify),
     Explore("Explore",
-        { ImageGetter.getUnitIcon("Scout") }, 'x'),
+        { ImageGetter.getUnitActionPortrait("Explore") }),
     StopExploration("Stop exploration",
-        { ImageGetter.getImage("OtherIcons/Stop") }, 'x'),
+        { ImageGetter.getUnitActionPortrait("Stop") }, false),
     Promote("Promote",
-        { imageGetPromote() }, 'o', UncivSound.Promote),
+        { ImageGetter.getUnitActionPortrait("Promote") }, false, UncivSound.Promote),
     Upgrade("Upgrade",
-        null, 'u', UncivSound.Upgrade),
-    Pillage("Pillage", 
-        { ImageGetter.getImage("OtherIcons/Pillage") }, 'p'),
+        { ImageGetter.getUnitActionPortrait("Upgrade") }, UncivSound.Upgrade),
+    Transform("Transform",
+        { ImageGetter.getUnitActionPortrait("Transform") }, UncivSound.Upgrade),
+    Pillage("Pillage",
+        { ImageGetter.getUnitActionPortrait("Pillage") }, false),
     Paradrop("Paradrop",
-        { ImageGetter.getUnitIcon("Paratrooper") }, 'p'),
+        { ImageGetter.getUnitActionPortrait("Paradrop") }, false),
+    AirSweep("Air Sweep",
+        { ImageGetter.getUnitActionPortrait("AirSweep") }, false),
     SetUp("Set up",
-        { ImageGetter.getUnitIcon("Catapult") }, 't', UncivSound.Setup),
+        { ImageGetter.getUnitActionPortrait("SetUp") }, false, UncivSound.Setup),
     FoundCity("Found city",
-        { ImageGetter.getUnitIcon(Constants.settler) }, 'c', UncivSound.Silent),
+        { ImageGetter.getUnitActionPortrait("FoundCity") }, UncivSound.Silent),
     ConstructImprovement("Construct improvement",
-        { ImageGetter.getUnitIcon(Constants.worker) }, 'i'),
+        { ImageGetter.getUnitActionPortrait("ConstructImprovement") }, false),
+    Repair(Constants.repair,
+        { ImageGetter.getUnitActionPortrait("Repair") }, UncivSound.Construction),
     Create("Create",
-        null, 'i', UncivSound.Chimes),
-    HurryResearch("Hurry Research",
-        { ImageGetter.getUnitIcon("Great Scientist") }, 'g', UncivSound.Chimes),
+        null, false, UncivSound.Chimes),
+    HurryResearch("{Hurry Research} (${Fonts.death})",
+        { ImageGetter.getUnitActionPortrait("HurryResearch") }, UncivSound.Chimes),
     StartGoldenAge("Start Golden Age",
-        { ImageGetter.getUnitIcon("Great Artist") }, 'g', UncivSound.Chimes),
-    HurryWonder("Hurry Wonder",
-        { ImageGetter.getUnitIcon("Great Engineer") }, 'g', UncivSound.Chimes),
-    HurryBuilding("Hurry Construction",
-        { ImageGetter.getUnitIcon("Great Engineer") }, 'g', UncivSound.Chimes),
-    ConductTradeMission("Conduct Trade Mission",
-        { ImageGetter.getUnitIcon("Great Merchant") }, 'g', UncivSound.Chimes),
+        { ImageGetter.getUnitActionPortrait("StartGoldenAge") }, UncivSound.Chimes),
+    HurryWonder("{Hurry Wonder} (${Fonts.death})",
+        { ImageGetter.getUnitActionPortrait("HurryConstruction") }, UncivSound.Chimes),
+    HurryBuilding("{Hurry Construction} (${Fonts.death})",
+        { ImageGetter.getUnitActionPortrait("HurryConstruction") }, UncivSound.Chimes),
+    ConductTradeMission("{Conduct Trade Mission} (${Fonts.death})",
+        { ImageGetter.getUnitActionPortrait("ConductTradeMission") }, UncivSound.Chimes),
     FoundReligion("Found a Religion",
-        { ImageGetter.getUnitIcon("Great Prophet") }, 'g', UncivSound.Choir),
+        { ImageGetter.getUnitActionPortrait("FoundReligion") }, UncivSound.Choir),
     TriggerUnique("Trigger unique",
-        { ImageGetter.getImage("OtherIcons/Star") }, 'g', UncivSound.Chimes),
+        { ImageGetter.getUnitActionPortrait("Star") }, false, UncivSound.Chimes),
     SpreadReligion("Spread Religion",
-        null, 'g', UncivSound.Choir),
+        null, UncivSound.Choir),
     RemoveHeresy("Remove Heresy",
-        { ImageGetter.getImage("OtherIcons/Remove Heresy") }, 'h', UncivSound.Fire),
+        { ImageGetter.getUnitActionPortrait("RemoveHeresy") }, UncivSound.Fire),
     EnhanceReligion("Enhance a Religion",
-        { ImageGetter.getUnitIcon("Great Prophet") }, 'g', UncivSound.Choir),
+        { ImageGetter.getUnitActionPortrait("EnhanceReligion") }, UncivSound.Choir),
     DisbandUnit("Disband unit",
-        { ImageGetter.getImage("OtherIcons/DisbandUnit") }, KeyCharAndCode.DEL),
+        { ImageGetter.getUnitActionPortrait("DisbandUnit") }, false),
     GiftUnit("Gift unit",
-        { ImageGetter.getImage("OtherIcons/Present") }, UncivSound.Silent),
+        { ImageGetter.getUnitActionPortrait("Present") }, UncivSound.Silent),
+    Wait("Wait",
+        { ImageGetter.getUnitActionPortrait("Wait") }, UncivSound.Silent),
     ShowAdditionalActions("Show more",
-        { imageGetShowMore() }, KeyCharAndCode(Input.Keys.PAGE_DOWN)),
+        { ImageGetter.getUnitActionPortrait("ShowMore") }, false),
     HideAdditionalActions("Back",
-        { imageGetHideMore() }, KeyCharAndCode(Input.Keys.PAGE_UP)),
+        { ImageGetter.getUnitActionPortrait("HideMore") }, false),
     AddInCapital( "Add in capital",
-        { ImageGetter.getUnitIcon("SS Cockpit")}, 'g', UncivSound.Chimes),
+        { ImageGetter.getUnitActionPortrait("AddInCapital")}, UncivSound.Chimes),
     ;
 
     // Allow shorter initializations
-    constructor(value: String, imageGetter: (() -> Actor)?, key: Char, uncivSound: UncivSound = UncivSound.Click)
-            : this(value, imageGetter, KeyCharAndCode(key), uncivSound)
     constructor(value: String, imageGetter: (() -> Actor)?, uncivSound: UncivSound = UncivSound.Click)
-            : this(value, imageGetter, KeyCharAndCode.UNKNOWN, uncivSound)
+            : this(value, imageGetter, null, true, uncivSound)
+    constructor(value: String, imageGetter: (() -> Actor)?, isSkippingToNextUnit: Boolean = true, uncivSound: UncivSound = UncivSound.Click)
+            : this(value, imageGetter, null, isSkippingToNextUnit, uncivSound)
 
-    companion object {
-        // readability factories
-        private fun imageGetStopMove() = ImageGetter.getStatIcon("Movement").apply { color = Color.RED }
-        private fun imageGetPromote() = ImageGetter.getImage("OtherIcons/Star").apply { color = Color.GOLD }
-        private fun imageGetShowMore() = ImageGetter.getArrowImage(Align.right).apply { color = Color.BLACK }
-        private fun imageGetHideMore() = ImageGetter.getArrowImage(Align.left).apply { color = Color.BLACK }
-    }
+    val binding: KeyboardBinding =
+            binding ?:
+            KeyboardBinding.values().firstOrNull { it.name == name } ?:
+            KeyboardBinding.None
 }

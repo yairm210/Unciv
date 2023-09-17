@@ -1,0 +1,4 @@
+Many many performance improvements!
+
+By SomeTroglodyte:
+- Music player controls

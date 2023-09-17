@@ -1,7 +1,7 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
-title: ''
+name: Non-gameplay feature request
+about: UI issue, Quality-of-life improvement, user experience or development issue
+title: 'Feature request: '
 labels: 'feature'
 assignees: ''
 

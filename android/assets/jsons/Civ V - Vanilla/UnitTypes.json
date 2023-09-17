@@ -59,7 +59,7 @@
     {
         "name": "Fighter",
         "movementType": "Air",
-        "uniques": ["Aircraft", "6 tiles in every direction always visible"]
+        "uniques": ["Aircraft", "[+4] Sight", "Can see over obstacles", "Can perform Air Sweep"]
     },
     {
         "name": "Bomber",
@@ -81,9 +81,9 @@
         "movementType": "Land",
         "uniques": ["Can pass through impassable tiles"]
     },
-    
+
     // Deprecated unit types required for mods without a UnitTypes.json file to work
-    
+
     {
         "name": "Melee",
         "movementType": "Land"
