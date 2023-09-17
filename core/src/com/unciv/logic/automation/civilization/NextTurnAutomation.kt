@@ -10,7 +10,6 @@ import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
-import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
@@ -907,13 +906,45 @@ object NextTurnAutomation {
     }
     
     fun wantsToSignDefensivePact(civInfo: Civilization, otherCiv: Civilization): Boolean {
-        if (civInfo.getDiplomacyManager(otherCiv).isRelationshipLevelLT(RelationshipLevel.Ally)) return false
-        for(thirdCiv in civInfo.getDiplomacyManager(otherCiv).getCommonKnownCivs()) {
+        val diploManager = civInfo.getDiplomacyManager(otherCiv)
+        if (diploManager.isRelationshipLevelLT(RelationshipLevel.Ally)) return false
+        val commonknownCivs = diploManager.getCommonKnownCivs()
+        // If they have bad relations with any of our friends, don't consider it
+        for(thirdCiv in commonknownCivs) {
             if (civInfo.getDiplomacyManager(thirdCiv).isRelationshipLevelGE(RelationshipLevel.Friend)
                 && thirdCiv.getDiplomacyManager(otherCiv).isRelationshipLevelLT(RelationshipLevel.Favorable))
                 return false
         }
-        return true
+
+        val defensivePacts = civInfo.diplomacy.count { it.value.hasFlag(DiplomacyFlags.DefensivePact) }
+        val otherCivNonOverlapingDefensivePacts = otherCiv.diplomacy.values.count { it.hasFlag(DiplomacyFlags.DefensivePact) 
+                && !it.otherCiv().getDiplomacyManager(civInfo).hasFlag(DiplomacyFlags.DefensivePact) }
+        val allCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() } - 1 // Don't include us
+        val deadCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() && !it.isAlive() }
+        val allAliveCivs = allCivs - deadCivs
+        
+        // We have to already be at RelationshipLevel.Ally, so we must have 80 oppinion of them
+        var motivation = diploManager.opinionOfOtherCiv().toInt() - 80
+        
+        // If they are stronger than us, then we value it a lot more
+        // If they are weaker than us, then we don't value it
+        motivation += when (Automation.threatAssessment(civInfo,otherCiv)) {
+            ThreatLevel.VeryHigh -> 10
+            ThreatLevel.High -> 5
+            ThreatLevel.Low -> -15
+            ThreatLevel.VeryLow -> -30
+            else -> 0
+        }
+        
+        // If they have a defensive pact with another civ then we would get drawn into thier battles as well
+        motivation -= 10 * otherCivNonOverlapingDefensivePacts
+
+        // Try to have a defensive pact with 1/5 of all civs
+        val civsToAllyWith = 0.20f * allAliveCivs
+        // Goes form 0 to -50 as the civ gets more allies, offset by civsToAllyWith
+        motivation -= (50f * (defensivePacts - civsToAllyWith) / (allAliveCivs - civsToAllyWith)).coerceAtMost(0f).toInt()
+
+        return motivation > 0
     }
 
     private fun declareWar(civInfo: Civilization) {
