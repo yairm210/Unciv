@@ -1,3 +1,19 @@
+## 4.8.6
+
+docs: linting - List for victory illustrations to be shown as list
+
+AI diplomatic actions rework  - By tuvus
+
+By SomeTroglodyte:
+- Readability helpers for Map of Sets: add, contains 
+- Replace incorrect GraphicsEnvironment.maximumWindowBounds 
+- A "Status" column for City Overview 
+- Generic Widget/Provider framework for sortable grids 
+
+Remove Faith bonus from Vanilla Siam  - By SpacedOutChicken
+
+Unit tests for Battle.kt  - By Framonti
+
 ## 4.8.5
 
 Removed double notifications and processing of treaties when traded  - By tuvus
