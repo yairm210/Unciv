@@ -115,6 +115,7 @@ enum class UniqueParameterType(
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText in knownValues) return null
             if (ruleset.unitTypes.containsKey(parameterText)) return null
+            if (ruleset.eras.containsKey(parameterText)) return null
             if (ruleset.unitTypes.values.any { it.uniques.contains(parameterText) }) return null
             return UniqueType.UniqueComplianceErrorSeverity.WarningOnly
         }
