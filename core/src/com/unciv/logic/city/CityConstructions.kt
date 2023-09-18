@@ -544,7 +544,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         }
         else city.reassignPopulationDeferred()
 
-        addFreeBuildings()
+        city.civ.civConstructions.tryAddFreeBuildings()
     }
 
     fun triggerNewBuildingUniques(building: Building) {
@@ -589,36 +589,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             city.cityStats.update()
             city.civ.cache.updateCivResources()
         }
-    }
-
-    fun addFreeBuildings() {
-        // "Gain a free [buildingName] [cityFilter]"
-        val freeBuildingUniques = city.getMatchingUniques(UniqueType.GainFreeBuildings, StateForConditionals.IgnoreConditionals)
-
-        for (unique in freeBuildingUniques) {
-            val freeBuilding = city.civ.getEquivalentBuilding(unique.params[0])
-            val citiesThatApply =
-                if (unique.isLocalEffect) listOf(city)
-                else city.civ.cities.filter { it.matchesFilter(unique.params[1]) }
-
-            for (city in citiesThatApply) {
-                if (!unique.conditionalsApply(StateForConditionals(civInfo = city.civ, city = city))) continue
-                if (city.id !in freeBuildingsProvidedFromThisCity)
-                    freeBuildingsProvidedFromThisCity[city.id] = hashSetOf()
-
-                freeBuildingsProvidedFromThisCity[city.id]!!.add(freeBuilding.name)
-                if (city.cityConstructions.containsBuildingOrEquivalent(freeBuilding.name)) continue
-                city.cityConstructions.addBuilding(freeBuilding)
-            }
-        }
-
-
-        val autoGrantedBuildings = city.getRuleset().buildings.values
-            .filter { it.hasUnique(UniqueType.GainBuildingWhereBuildable) }
-
-        for (building in autoGrantedBuildings)
-            if (building.isBuildable(city.cityConstructions))
-                addBuilding(building)
     }
 
     /**

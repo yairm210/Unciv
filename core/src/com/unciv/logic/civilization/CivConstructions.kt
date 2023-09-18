@@ -62,6 +62,7 @@ class CivConstructions : IsPartOfGameInfoSerialization {
     fun tryAddFreeBuildings() {
         addFreeStatsBuildings()
         addFreeSpecificBuildings()
+        addFreeBuildings()
     }
 
     /** Common to [hasFreeBuildingByName] and [getFreeBuildingNames] - 'has' doesn't need the whole set, one enumeration is enough.
@@ -137,6 +138,30 @@ class CivConstructions : IsPartOfGameInfoSerialization {
 
             freeSpecificBuildingsProvided.getOrPut(building.name) { hashSetOf() }.add(city.id)
             addFreeBuilding(city.id, building.name)
+        }
+    }
+
+    fun addFreeBuildings() {
+        val autoGrantedBuildings = civInfo.gameInfo.ruleset.buildings.values
+            .filter { it.hasUnique(UniqueType.GainBuildingWhereBuildable) }
+
+        // "Gain a free [buildingName] [cityFilter]"
+        val freeBuildingFromCiv = civInfo.getMatchingUniques(UniqueType.GainFreeBuildings, StateForConditionals.IgnoreConditionals)
+        for (city in civInfo.cities) {
+            val freeBuildingsFromCity = city.getMatchingUniquesWithLocalEffects(UniqueType.GainFreeBuildings, StateForConditionals.IgnoreConditionals)
+            val freeBuildingUniques = (freeBuildingFromCiv + freeBuildingsFromCity).filter { city.matchesFilter(it.params[1]) }
+            for (unique in freeBuildingUniques){
+                if (!unique.conditionalsApply(StateForConditionals(civInfo = civInfo, city = city))) continue
+                val freeBuilding = city.civ.getEquivalentBuilding(unique.params[0])
+                city.cityConstructions.freeBuildingsProvidedFromThisCity.addToMapOfSets(city.id, freeBuilding.name)
+
+                if (city.cityConstructions.containsBuildingOrEquivalent(freeBuilding.name)) continue
+                city.cityConstructions.addBuilding(freeBuilding)
+            }
+
+            for (building in autoGrantedBuildings)
+                if (building.isBuildable(city.cityConstructions))
+                    city.cityConstructions.addBuilding(building)
         }
     }
 
