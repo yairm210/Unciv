@@ -1,14 +1,11 @@
+Mod checker accepts era for unit type
 
-
-docs: linting - List for victory illustrations to be shown as list
-
-AI diplomatic actions rework  - By tuvus
+AI Declaration of Friendship rework  - By tuvus
 
 By SomeTroglodyte:
-- Readability helpers for Map of Sets: add, contains 
-- Replace incorrect GraphicsEnvironment.maximumWindowBounds 
-- A "Status" column for City Overview 
-- Generic Widget/Provider framework for sortable grids 
+- A "Status" column for City Overview
+- Fix maximum window bounds for zoomed-in displays
+- Generic Widget/Provider framework for sortable grids
 
 Remove Faith bonus from Vanilla Siam  - By SpacedOutChicken
 
