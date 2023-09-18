@@ -42,8 +42,10 @@ enum class DiplomacyFlags {
     DeclinedLuxExchange,
     DeclinedPeace,
     DeclinedResearchAgreement,
+    DeclinedOpenBorders,
     DeclaredWar,
     DeclarationOfFriendship,
+    DeclinedDeclarationOfFriendship,
     DefensivePact,
     DeclinedDefensivePact,
     ResearchAgreement,
@@ -782,7 +784,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
                 diploManager.diplomaticStatus = DiplomaticStatus.Peace
                 diploManager.otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.Peace
             }
-            for (civ in getCommonKnownCivs().filter { civ -> civ.isMajorCiv() }) {
+            for (civ in getCommonKnownCivs().filter { civ -> civ.isMajorCiv() || civ.isSpectator() }) {
                 civ.addNotification("[${civInfo.civName}] canceled their Defensive Pact with [${diploManager.otherCivName}]!",
                     NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, diploManager.otherCivName)
             }
@@ -1002,9 +1004,11 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         setFlag(DiplomacyFlags.DeclarationOfFriendship, 30)
         otherCivDiplomacy().setFlag(DiplomacyFlags.DeclarationOfFriendship, 30)
 
-        for (thirdCiv in getCommonKnownCivs().filter { it.isMajorCiv() }) {
+        for (thirdCiv in getCommonKnownCivs().filter { it.isMajorCiv() || it.isSpectator() }) {
             thirdCiv.addNotification("[${civInfo.civName}] and [$otherCivName] have signed the Declaration of Friendship!",
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
+            thirdCiv.getDiplomacyManager(civInfo).setFriendshipBasedModifier()
+            if (thirdCiv.isSpectator()) return
             thirdCiv.getDiplomacyManager(civInfo).setFriendshipBasedModifier()
         }
 
@@ -1048,9 +1052,10 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.DefensivePact
 
 
-        for (thirdCiv in getCommonKnownCivs().filter { it.isMajorCiv() }) {
+        for (thirdCiv in getCommonKnownCivs().filter { it.isMajorCiv() || it.isSpectator() }) {
             thirdCiv.addNotification("[${civInfo.civName}] and [$otherCivName] have signed the Defensive Pact!",
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
+            if (thirdCiv.isSpectator()) return
             thirdCiv.getDiplomacyManager(civInfo).setDefensivePactBasedModifier()
         }
 
@@ -1095,9 +1100,10 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
             NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
 
         // We, A, are denouncing B. What do other major civs (C,D, etc) think of this?
-        getCommonKnownCivs().filter { it.isMajorCiv() }.forEach { thirdCiv ->
+        getCommonKnownCivs().filter { it.isMajorCiv() || it.isSpectator() }.forEach { thirdCiv ->
             thirdCiv.addNotification("[${civInfo.civName}] has denounced [$otherCivName]!",
                 NotificationCategory.Diplomacy, civInfo.civName, NotificationIcon.Diplomacy, otherCivName)
+            if (thirdCiv.isSpectator()) return@forEach
             val thirdCivRelationshipWithOtherCiv = thirdCiv.getDiplomacyManager(otherCiv()).relationshipIgnoreAfraid()
             val thirdCivDiplomacyManager = thirdCiv.getDiplomacyManager(civInfo)
             when (thirdCivRelationshipWithOtherCiv) {

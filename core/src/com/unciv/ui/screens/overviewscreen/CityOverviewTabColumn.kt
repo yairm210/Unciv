@@ -25,9 +25,8 @@ import kotlin.math.roundToInt
  * This defines all behaviour of the [CityOverviewTab] columns through overridable parts
  */
 
-// This false positive of detekt is possibly fixed in https://github.com/detekt/detekt/pull/6367
-// (The getComparator overrides need the explicit City type on their lambda parameter)
-@Suppress("ExplicitItLambdaParameter")  // detekt is wrong
+// Note: Using type hints on compareBy where explicitly typing the lambda `it` instead would be prettier.
+// detekt would false-positive the typed `it`, see discussion in: https://github.com/detekt/detekt/pull/6367
 
 enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOverviewScreen> {
     //region Enum Instances
@@ -36,7 +35,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override val align = Align.left
         override val fillX = true
         override val defaultDescending = false
-        override fun getComparator() = compareBy(collator) { it: City -> it.name.tr(hideIcons = true) }
+        override fun getComparator() = compareBy<City, String>(collator) { it.name.tr(hideIcons = true) }
         override fun getHeaderIcon(iconSize: Float) =
                 ImageGetter.getUnitIcon("Settler")
                 .surroundWithCircle(iconSize)
@@ -48,6 +47,28 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
                 }
         override fun getTotalsActor(items: Iterable<City>) =
                 "Total".toLabel()
+    },
+
+    Status {
+        override val headerTip = "Status\n(puppet, resistance or being razed)"
+        override fun getHeaderIcon(iconSize: Float) = ImageGetter.getImage("OtherIcons/CityStatus")
+        override fun getEntryValue(item: City) = when {
+            item.isBeingRazed -> 3
+            item.isInResistance() -> 2
+            item.isPuppet -> 1
+            else -> 0
+        }
+        override fun getEntryActor(item: City, iconSize: Float, actionContext: EmpireOverviewScreen): Actor? {
+            val iconPath = when {
+                item.isBeingRazed -> "OtherIcons/Fire"
+                item.isInResistance() -> "StatIcons/Resistance"
+                item.isPuppet -> "OtherIcons/Puppet"
+                else -> return null
+            }
+            // getImage is an ImageWithCustomSize, but setting size here fails - width is not respected
+            return ImageGetter.getImage(iconPath).surroundWithCircle(iconSize * 0.7f, color = Color.CLEAR)
+        }
+        override fun getTotalsActor(items: Iterable<City>) = null
     },
 
     ConstructionIcon {
@@ -69,7 +90,7 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override val headerTip = "Current construction"
         override val defaultDescending = false
         override fun getComparator() =
-            compareBy(collator) { it: City -> it.cityConstructions.currentConstructionFromQueue.tr(hideIcons = true) }
+            compareBy<City, String>(collator) { it.cityConstructions.currentConstructionFromQueue.tr(hideIcons = true) }
         override fun getHeaderIcon(iconSize: Float) =
                 getCircledIcon("OtherIcons/Settings", iconSize)
         override fun getEntryValue(item: City) = 0
@@ -134,13 +155,13 @@ enum class CityOverviewTabColumn : ISortableGridContentProvider<City, EmpireOver
         override val headerTip = "Garrisoned by unit"
         override val defaultDescending = false
         override fun getComparator() =
-            compareBy(collator) { it: City -> it.getCenterTile().militaryUnit?.name?.tr(hideIcons = true) ?: "" }
+            compareBy<City, String>(collator) { it.getGarrison()?.name?.tr(hideIcons = true) ?: "" }
         override fun getHeaderIcon(iconSize: Float) =
                 getCircledIcon("OtherIcons/Shield", iconSize)
         override fun getEntryValue(item: City) =
-                if (item.getCenterTile().militaryUnit != null) 1 else 0
+                if (item.getGarrison() != null) 1 else 0
         override fun getEntryActor(item: City, iconSize: Float, actionContext: EmpireOverviewScreen): Actor? {
-            val unit = item.getCenterTile().militaryUnit ?: return null
+            val unit = item.getGarrison() ?: return null
             val unitName = unit.displayName()
             val unitIcon = ImageGetter.getConstructionPortrait(unit.baseUnit.getIconName(), iconSize * 0.7f)
             unitIcon.addTooltip(unitName, 18f, tipAlign = Align.topLeft)

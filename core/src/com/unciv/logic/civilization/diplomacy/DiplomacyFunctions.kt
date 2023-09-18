@@ -86,6 +86,12 @@ class DiplomacyFunctions(val civInfo: Civilization){
             }
         }
     }
+    
+    fun canSignDeclarationOfFriendshipWith(otherCiv: Civilization): Boolean {
+        return otherCiv.isMajorCiv() && !otherCiv.isAtWarWith(civInfo)
+            && !civInfo.getDiplomacyManager(otherCiv).hasFlag(DiplomacyFlags.Denunciation)
+            && !civInfo.getDiplomacyManager(otherCiv).hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+    }
 
     fun canSignResearchAgreement(): Boolean {
         if (!civInfo.isMajorCiv()) return false
