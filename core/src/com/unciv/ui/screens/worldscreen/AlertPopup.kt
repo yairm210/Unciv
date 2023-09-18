@@ -11,6 +11,7 @@ import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.ruleset.unique.UniqueType
@@ -192,7 +193,9 @@ class AlertPopup(
         val playerDiploManager = viewingCiv.getDiplomacyManager(otherciv)
         addLeaderName(otherciv)
         addGoodSizedLabel("My friend, shall we declare our friendship to the world?").row()
-        addCloseButton("We are not interested.", KeyboardBinding.Cancel).row()
+        addCloseButton("We are not interested.", KeyboardBinding.Cancel) {
+            playerDiploManager.otherCivDiplomacy().setFlag(DiplomacyFlags.DeclinedDeclarationOfFriendship, 10)
+        }.row()
         addCloseButton("Declare Friendship ([30] turns)", KeyboardBinding.Confirm) {
             playerDiploManager.signDeclarationOfFriendship()
         }
