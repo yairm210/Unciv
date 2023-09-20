@@ -2,6 +2,7 @@ package com.unciv.logic.battle
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
@@ -36,7 +37,8 @@ class BattleTest {
 
     @Test
     fun `defender should withdraw from melee attack if has the unique to do so`() {
-        val defenderUnit =  testGame.addDefaultMeleeUnitWithUniques(attackerCiv, testGame.getTile(Vector2.Y), "May withdraw before melee ([100]%)")
+        // given
+        val defenderUnit = testGame.addDefaultMeleeUnitWithUniques(attackerCiv, testGame.getTile(Vector2.Y), "May withdraw before melee ([100]%)")
         defenderUnit.currentMovement = 2f
 
         // when
@@ -92,6 +94,7 @@ class BattleTest {
     fun `should stay in original position when ranged killing`() {
         // given
         val attackerUnit = testGame.addUnit("Archer", attackerCiv, testGame.getTile(Vector2.Y))
+        attackerUnit.currentMovement = 2f
         defaultDefenderUnit.health = 1
 
         // when
@@ -206,10 +209,11 @@ class BattleTest {
         assertEquals(attackerCiv, defaultAttackerUnit.getTile().civilianUnit!!.civ)  // captured unit
         assertEquals("Worker", defaultAttackerUnit.getTile().civilianUnit!!.baseUnit.name)
     }
+
     @Test
     fun `should earn Great General from combat`() {
         // when
-       Battle.attack(MapUnitCombatant(defaultAttackerUnit), MapUnitCombatant(defaultDefenderUnit))
+        Battle.attack(MapUnitCombatant(defaultAttackerUnit), MapUnitCombatant(defaultDefenderUnit))
 
         // then
         assertEquals(5, attackerCiv.greatPeople.greatGeneralPoints)
@@ -337,5 +341,176 @@ class BattleTest {
 
         // then
         assertEquals(100, attackerUnit.health)
+    }
+
+    @Test
+    fun `should declare war when nuking neutral civs`() {
+        // given
+        val thirdCiv = testGame.addCiv()
+        testGame.addUnit("Warrior", thirdCiv, testGame.getTile(Vector2(0f, 2f)))
+
+        testGame.addCity(attackerCiv, testGame.getTile(Vector2.Y))
+        val attackerUnit = testGame.addUnit("Atomic Bomb", attackerCiv, testGame.getTile(Vector2.Y))
+
+        attackerCiv.diplomacyFunctions.makeCivilizationsMeet(defenderCiv)
+        attackerCiv.diplomacyFunctions.makeCivilizationsMeet(thirdCiv)
+        assertEquals(DiplomaticStatus.Peace, attackerCiv.diplomacy[defenderCiv.civName]!!.diplomaticStatus)
+        assertEquals(DiplomaticStatus.Peace, attackerCiv.diplomacy[thirdCiv.civName]!!.diplomaticStatus)
+
+        // when
+        Battle.attackOrNuke(MapUnitCombatant(attackerUnit), AttackableTile(attackerUnit.getTile(), defaultDefenderUnit.currentTile, 0f, null))
+
+        // then
+        assertEquals(DiplomaticStatus.War, attackerCiv.diplomacy[defenderCiv.civName]!!.diplomaticStatus)
+        assertEquals(DiplomaticStatus.War, attackerCiv.diplomacy[thirdCiv.civName]!!.diplomaticStatus)
+    }
+
+    @Test
+    fun `should give diplomacy penality for using a nuke`() {
+        // given
+        val thirdCiv = testGame.addCiv()
+        testGame.addUnit("Warrior", thirdCiv, testGame.getTile(Vector2(0f, -3f)))  // need unit or civ is considered defeated
+
+        testGame.addCity(attackerCiv, testGame.getTile(Vector2.Y))
+        val attackerUnit = testGame.addUnit("Atomic Bomb", attackerCiv, testGame.getTile(Vector2.Y))
+
+        attackerCiv.diplomacyFunctions.makeCivilizationsMeet(defenderCiv)
+        attackerCiv.diplomacyFunctions.makeCivilizationsMeet(thirdCiv)
+
+        // when
+        Battle.attackOrNuke(MapUnitCombatant(attackerUnit), AttackableTile(attackerUnit.getTile(), defaultDefenderUnit.currentTile, 0f, null))
+
+        // then
+        assertEquals(-75f, defenderCiv.getDiplomacyManager(attackerCiv).opinionOfOtherCiv()) // 50 for nuke, 25 for war declaration
+        assertEquals(-55f, thirdCiv.getDiplomacyManager(attackerCiv).opinionOfOtherCiv()) // 50 for nuke, 5 for warmongering
+    }
+
+    @Test
+    fun `should always destroy unit directly hit by nuke`() {
+        // given
+        val defenderUnit = testGame.addUnit("Warrior", defenderCiv, testGame.getTile(Vector2.Y))
+        defenderUnit.baseUnit.strength = 1_000_000
+
+        testGame.addCity(attackerCiv, testGame.getTile(Vector2.Y))
+        val attackerUnit = testGame.addUnit("Atomic Bomb", attackerCiv, testGame.getTile(Vector2.Y))
+        attackerCiv.resourceStockpiles["Uranium"] = 1
+
+        // when
+        Battle.attackOrNuke(MapUnitCombatant(attackerUnit), AttackableTile(attackerUnit.getTile(), defenderUnit.currentTile, 0f, null))
+
+        // then
+        assertTrue(defenderUnit.isDestroyed)
+    }
+
+    @Test
+    fun `should damage ALL units in blast radius`() {
+        // given
+        val thirdCiv = testGame.addCiv()
+        val thirdCivUnit = testGame.addUnit("Warrior", thirdCiv, testGame.getTile(Vector2(0f, 2f)))
+        val defenderUnit = testGame.addUnit("Warrior", defenderCiv, testGame.getTile(Vector2.Y))
+
+        testGame.addCity(attackerCiv, testGame.getTile(Vector2.Y))
+        val attackerUnit = testGame.addUnit("Atomic Bomb", attackerCiv, testGame.getTile(Vector2.Y))
+
+        // when
+        Battle.attackOrNuke(MapUnitCombatant(attackerUnit), AttackableTile(attackerUnit.getTile(), defaultDefenderUnit.currentTile, 0f, null))
+
+        // then
+        assertTrue(defenderUnit.health < 100)
+        assertTrue(thirdCivUnit.health < 100)
+        assertTrue(defaultAttackerUnit.health < 100)  // even attacker's own units
+        assertTrue(defaultDefenderUnit.health < 100)
+    }
+    @Test
+    fun `should kill people in city`() {
+        // given
+        val defenderCity = testGame.addCity(defenderCiv, testGame.getTile(Vector2(2f, 0f)), initialPopulation = 10)
+
+        testGame.addCity(attackerCiv, testGame.getTile(Vector2.Y))
+        val attackerUnit = testGame.addUnit("Atomic Bomb", attackerCiv, testGame.getTile(Vector2.Y))
+
+        // when
+        Battle.attackOrNuke(MapUnitCombatant(attackerUnit), AttackableTile(attackerUnit.getTile(), defenderCity.getCenterTile(), 0f, null))
+
+        // then
+        assertTrue(defenderCity.population.population in 3..7)  // there is some randomness in population killed
+    }
+
+    @Test
+    fun `should kill fewer people in city with bomb shelter`() {
+        // given
+        val defenderCity = testGame.addCity(defenderCiv, testGame.getTile(Vector2(2f, 0f)), initialPopulation = 10)
+        val building = testGame.createBuilding("Population loss from nuclear attacks [-100]% [in this city]")
+        defenderCity.cityConstructions.addBuilding(building.name)
+
+        testGame.addCity(attackerCiv, testGame.getTile(Vector2.Y))
+        val attackerUnit = testGame.addUnit("Atomic Bomb", attackerCiv, testGame.getTile(Vector2.Y))
+
+        // when
+        Battle.attackOrNuke(MapUnitCombatant(attackerUnit), AttackableTile(attackerUnit.getTile(), defenderCity.getCenterTile(), 0f, null))
+
+        // then
+        assertEquals(10, defenderCity.population.population)
+    }
+
+    @Test
+    fun `should not destroy city with nuclear missile when capital`() {
+        // given
+        val defenderCity = testGame.addCity(defenderCiv, testGame.getTile(Vector2(2f, 0f)), initialPopulation = 1)
+
+        testGame.addCity(attackerCiv, testGame.getTile(Vector2.Y))
+        val attackerUnit = testGame.addUnit("Nuclear Missile", attackerCiv, testGame.getTile(Vector2.Y))
+
+        // when
+        Battle.attackOrNuke(MapUnitCombatant(attackerUnit), AttackableTile(attackerUnit.getTile(), defenderCity.getCenterTile(), 0f, null))
+
+        // then
+        assertTrue(testGame.getTile(Vector2(2f, 0f)).isCityCenter())
+    }
+
+    @Test
+    fun `should destroy city with nuclear missile when not capital and below population threshold`() {
+        // given
+        testGame.addCity(defenderCiv, testGame.getTile(Vector2(2f, 0f)), initialPopulation = 1) // capital
+        val nonCapitalDefenderCity = testGame.addCity(defenderCiv, testGame.getTile(Vector2(3f, 0f)), initialPopulation = 1)
+
+        testGame.addCity(attackerCiv, testGame.getTile(Vector2.Y))
+        val attackerUnit = testGame.addUnit("Nuclear Missile", attackerCiv, testGame.getTile(Vector2.Y))
+
+        // when
+        Battle.attackOrNuke(MapUnitCombatant(attackerUnit), AttackableTile(attackerUnit.getTile(), nonCapitalDefenderCity.getCenterTile(), 0f, null))
+
+        // then
+        assertFalse(testGame.getTile(Vector2(3f, 0f)).isCityCenter())
+        assertTrue(testGame.getTile(Vector2(3f, 0f)).terrainFeatures.contains("Fallout"))
+    }
+
+    @Test
+    fun `should not destroy city with nuclear missile when not capital and above population threshold`() {
+        // given
+        testGame.addCity(defenderCiv, testGame.getTile(Vector2(2f, 0f)), initialPopulation = 1) // capital
+        val nonCapitalDefenderCity = testGame.addCity(defenderCiv, testGame.getTile(Vector2(3f, 0f)), initialPopulation = 7)
+
+        testGame.addCity(attackerCiv, testGame.getTile(Vector2.Y))
+        val attackerUnit = testGame.addUnit("Nuclear Missile", attackerCiv, testGame.getTile(Vector2.Y))
+
+        // when
+        Battle.attackOrNuke(MapUnitCombatant(attackerUnit), AttackableTile(attackerUnit.getTile(), nonCapitalDefenderCity.getCenterTile(), 0f, null))
+
+        // then
+        assertTrue(testGame.getTile(Vector2(3f, 0f)).isCityCenter())
+    }
+
+    @Test
+    fun `should consume nuke on usage`() {
+        // given
+        testGame.addCity(attackerCiv, testGame.getTile(Vector2.Y))
+        val attackerUnit = testGame.addUnit("Atomic Bomb", attackerCiv, testGame.getTile(Vector2.Y))
+
+        // when
+        Battle.attackOrNuke(MapUnitCombatant(attackerUnit), AttackableTile(attackerUnit.getTile(), defaultDefenderUnit.getTile(), 0f, null))
+
+        // then
+        assertTrue(attackerUnit.isDestroyed)
     }
 }
