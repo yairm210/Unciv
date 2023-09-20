@@ -14,7 +14,7 @@ import com.unciv.ui.screens.overviewscreen.EmpireOverviewCategories.EmpireOvervi
 import com.unciv.ui.screens.overviewscreen.EmpireOverviewTab.EmpireOverviewTabPersistableData
 
 class EmpireOverviewScreen(
-    private var viewingPlayer: Civilization,
+    private val viewingPlayer: Civilization,
     defaultCategory: EmpireOverviewCategories? = null,
     selection: String = ""
 ) : BaseScreen(), RecreateOnResize {
