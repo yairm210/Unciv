@@ -24,6 +24,8 @@ import com.unciv.ui.components.extensions.toPercent
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 
 
+
+@kotlinx.serialization.Serializable
 class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     override var requiredTech: String? = null
@@ -691,6 +693,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     }
     fun hasCreateOneImprovementUnique() = _hasCreatesOneImprovementUnique
 
+    @kotlinx.serialization.Transient
     private var _getImprovementToCreate: TileImprovement? = null
     fun getImprovementToCreate(ruleset: Ruleset): TileImprovement? {
         if (!hasCreateOneImprovementUnique()) return null

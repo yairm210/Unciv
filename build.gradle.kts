@@ -135,6 +135,8 @@ project(":core") {
         "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
         "implementation"("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
 
+        "implementation"("com.github.Ricky12Awesome:json-schema-serialization:0.6.6")
+
         "implementation"("io.ktor:ktor-client-core:$ktorVersion")
         "implementation"("io.ktor:ktor-client-cio:$ktorVersion")
         "implementation"("io.ktor:ktor-client-websockets:$ktorVersion")

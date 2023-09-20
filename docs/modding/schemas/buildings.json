@@ -1,0 +1,126 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "requiredTech": {
+        "if": {
+          "type": "string"
+        },
+        "else": {
+          "type": "null"
+        }
+      },
+      "cost": {
+        "type": "number"
+      },
+      "maintenance": {
+        "type": "number"
+      },
+      "percentStatBonus": {
+        "if": {
+          "type": "object"
+        },
+        "else": {
+          "type": "null"
+        },
+        "properties": {
+          "production": {
+            "type": "number"
+          },
+          "food": {
+            "type": "number"
+          },
+          "gold": {
+            "type": "number"
+          },
+          "science": {
+            "type": "number"
+          },
+          "culture": {
+            "type": "number"
+          },
+          "happiness": {
+            "type": "number"
+          },
+          "faith": {
+            "type": "number"
+          }
+        }
+      },
+      "specialistSlots": {
+        "type": "object"
+      },
+      "greatPersonPoints": {
+        "type": "object"
+      },
+      "hurryCostModifier": {
+        "type": "number"
+      },
+      "isWonder": {
+        "type": "boolean"
+      },
+      "isNationalWonder": {
+        "type": "boolean"
+      },
+      "requiredBuilding": {
+        "if": {
+          "type": "string"
+        },
+        "else": {
+          "type": "null"
+        }
+      },
+      "requiredResource": {
+        "if": {
+          "type": "string"
+        },
+        "else": {
+          "type": "null"
+        }
+      },
+      "requiredNearbyImprovedResources": {
+        "if": {
+          "type": "array"
+        },
+        "else": {
+          "type": "null"
+        },
+        "items": {
+          "type": "string"
+        }
+      },
+      "cityStrength": {
+        "type": "number"
+      },
+      "cityHealth": {
+        "type": "number"
+      },
+      "replaces": {
+        "if": {
+          "type": "string"
+        },
+        "else": {
+          "type": "null"
+        }
+      },
+      "uniqueTo": {
+        "if": {
+          "type": "string"
+        },
+        "else": {
+          "type": "null"
+        }
+      },
+      "quote": {
+        "type": "string"
+      },
+      "replacementTextForUniques": {
+        "type": "string"
+      }
+    }
+  },
+  "definitions": {
+  }
+}

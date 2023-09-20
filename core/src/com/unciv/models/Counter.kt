@@ -2,14 +2,10 @@ package com.unciv.models
 
 import com.unciv.logic.IsPartOfGameInfoSerialization
 
+
+@kotlinx.serialization.Serializable
 open class Counter<K>(
-    fromMap: Map<K, Int>? = null
-) : LinkedHashMap<K, Int>(fromMap?.size ?: 10), IsPartOfGameInfoSerialization {
-    init {
-        if (fromMap != null)
-            for ((key, value) in fromMap)
-                put(key, value)
-    }
+) : LinkedHashMap<K, Int>(), IsPartOfGameInfoSerialization {
 
     override operator fun get(key: K): Int { // don't return null if empty
         return if (containsKey(key))
@@ -27,7 +23,7 @@ open class Counter<K>(
         put(key, get(key) + value)
     }
 
-    fun add(other: Counter<K>) {
+    fun add(other: Map<K, Int>) {
         for ((key, value) in other) add(key, value)
     }
     operator fun plusAssign(other: Counter<K>) = add(other)
@@ -43,7 +39,7 @@ open class Counter<K>(
         return newCounter
     }
 
-    operator fun plus(other: Counter<K>) = clone().apply { add(other) }
+    operator fun plus(other: Map<K, Int>) = clone().apply { add(other) }
 
     fun sumValues() = values.sum()
 

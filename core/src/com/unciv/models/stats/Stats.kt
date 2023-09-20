@@ -11,6 +11,8 @@ import kotlin.reflect.KMutableProperty0
  *
  * Also possible: `<Stats>`.[values].sum() and similar aggregates over a Sequence<Float>.
  */
+
+@kotlinx.serialization.Serializable
 open class Stats(
     var production: Float = 0f,
     var food: Float = 0f,

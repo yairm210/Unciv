@@ -13,37 +13,42 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
+import com.github.ricky12awesome.jss.encodeToSchema
+import com.github.ricky12awesome.jss.globalJson
 import com.unciv.Constants
 import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.ModCategories
 import com.unciv.models.metadata.ScreenSize
+import com.unciv.models.ruleset.Building
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.tr
-import com.unciv.ui.popups.ConfirmPopup
-import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.components.FontFamilyData
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.disable
-import com.unciv.ui.components.input.keyShortcuts
-import com.unciv.ui.components.input.onActivation
-import com.unciv.ui.components.input.onChange
-import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.extensions.setFontColor
 import com.unciv.ui.components.extensions.toCheckBox
 import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.extensions.toTextButton
 import com.unciv.ui.components.extensions.withoutItem
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
+import com.unciv.ui.components.input.onChange
+import com.unciv.ui.components.input.onClick
+import com.unciv.ui.popups.ConfirmPopup
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.utils.Concurrency
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenOrientation
-import com.unciv.utils.Concurrency
 import com.unciv.utils.launchOnGLThread
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.builtins.ListSerializer
+import java.io.File
 import java.util.UUID
 import java.util.zip.Deflater
 
@@ -240,6 +245,19 @@ private fun addTranslationGeneration(table: Table, optionsPopup: OptionsPopup) {
         generateTranslationsButton.setText(Constants.working.tr())
         Concurrency.run("WriteTranslations") {
             val result = TranslationFileWriter.writeNewTranslationFiles()
+
+            fun getBuildingsJsonSchema() = globalJson.encodeToSchema(ListSerializer(Building.serializer()), generateDefinitions = false)
+
+            fun compileJsonSchema(){
+
+                val schemaLocation = "../../docs/modding/schemas"
+                File(schemaLocation).mkdirs()
+
+                val schemaString = getBuildingsJsonSchema()
+                File(schemaLocation + File.separator + "buildings.json").writeText(schemaString)
+            }
+            compileJsonSchema()
+
             launchOnGLThread {
                 // notify about completion
                 generateTranslationsButton.setText(result.tr())

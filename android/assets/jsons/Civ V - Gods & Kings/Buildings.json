@@ -15,12 +15,16 @@
 	},
 	{
 		"name": "Monument",
+        "fds": 2,
 		"culture": 2,
 		"cost": 40,
 		"hurryCostModifier": 40,
 		"maintenance": 1,
 		"uniques": ["Destroyed when the city is captured"]
 	},
+    {
+
+    },
 	{
 		"name": "Stele",
 		"replaces": "Monument",

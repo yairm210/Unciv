@@ -13,6 +13,9 @@
 		"cost": 1,
 		"uniques": ["Indicates the capital city"]
 	},
+    {
+        ""
+    },
 	{
 		"name": "Monument",
 		"culture": 2,
