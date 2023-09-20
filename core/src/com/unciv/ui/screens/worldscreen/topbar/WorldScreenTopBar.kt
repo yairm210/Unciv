@@ -113,8 +113,11 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
         val overlayHeight = max(overviewHeight, selectedCivHeight)
 
         clear()
-        add(statsTable).colspan(3).growX().row()
-        add(resourceTable).colspan(3).growX().row()
+        // Without the explicit cell width, a 'stats' line wider than the stage can force the Table to
+        // misbehave and place the filler actors out of bounds, even if Table.width is correct.
+        add(statsTable).colspan(3).growX().width(targetWidth).row()
+        // Probability of a too-wide resources line is low in Vanilla, but mods may have lots more...
+        add(resourceTable).colspan(3).growX().width(targetWidth).row()
         layout()  // force rowHeight calculation - validate is not enough - Table quirks
         val statsRowHeight = getRowHeight(0)
         val baseHeight = statsRowHeight + getRowHeight(1)
