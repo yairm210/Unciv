@@ -15,3 +15,17 @@ As of now, only Buildings.json has a proper schema
 
 Tada! Now Android Studio will recognize all Buildings.json files as belonging to that schema, and will warn you of inconsistencies!
 
+## Using VSCode
+
+- ctrl-shift-p, search "open user settings (json)", enter
+- Copy this into the settings:
+```json
+    "json.schemas": [
+        {
+            "fileMatch": [
+                "*/Buildings.json"
+            ],
+            "url": "https://raw.githubusercontent.com/yairm210/Unciv/14c5d9eb177cee719843336512b587780b59c452/docs/Modders/schemas/buildings.json"
+        }
+    ]
+```
