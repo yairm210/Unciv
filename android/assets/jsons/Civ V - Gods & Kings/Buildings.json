@@ -15,7 +15,6 @@
 	},
 	{
 		"name": "Monument",
-        "fds": 2,
 		"culture": 2,
 		"cost": 40,
 		"hurryCostModifier": 40,
