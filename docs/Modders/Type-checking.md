@@ -29,3 +29,16 @@ Tada! Now Android Studio will recognize all Buildings.json files as belonging to
         }
     ]
 ```
+
+## Using an online tool
+
+If you don't use any of these tools, you can check your file online using [this tool](https://www.jsonschemavalidator.net/)
+
+However, it can't handle the missing commas that vscode and Android Studio handle, so you may need to get your json up to spec to use it.
+
+The schema you want to validate against is:
+```json
+{
+	"$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/buildings.json"
+}
+```
