@@ -234,6 +234,9 @@ class CityConquestFunctions(val city: City){
         if (foundingCiv.isMajorCiv()) {
             foundingCiv.getDiplomacyManager(conqueringCiv)
                     .addModifier(DiplomaticModifiers.CapturedOurCities, respectForLiberatingOurCity)
+            val openBordersTrade = TradeLogic(foundingCiv, conqueringCiv)
+            openBordersTrade.currentTrade.ourOffers.add(TradeOffer(Constants.openBorders, TradeType.Agreement))
+            openBordersTrade.acceptTrade()
         } else {
             //Liberating a city state gives a large amount of influence, and peace
             foundingCiv.getDiplomacyManager(conqueringCiv).setInfluence(90f)
