@@ -793,7 +793,7 @@ object Battle {
                 && civSuffered.getDiplomacyManager(attackingCiv).diplomaticStatus != DiplomaticStatus.War
             ) {
                 attackingCiv.getDiplomacyManager(civSuffered).declareWar()
-                attackingCiv.addNotification("After being hit by our [${attacker.getName()}], [${civSuffered}] has declared war on us!", targetTile.position, NotificationCategory.Diplomacy, NotificationIcon.War)
+                attackingCiv.addNotification("After being hit by our [${attacker.getName()}], [${civSuffered}] has declared war on us!", targetTile.position, NotificationCategory.Diplomacy, NotificationIcon.War, attacker.getName())
             }
         }
 
@@ -805,11 +805,24 @@ object Battle {
 
         // Calculate the tiles that are hit
         val hitTiles = targetTile.getTilesInDistance(blastRadius)
-
+        
+        val hitCivsTerritory = ArrayList<Civilization>()
         // Declare war on the owners of all hit tiles
         for (hitCiv in hitTiles.mapNotNull { it.getOwner() }.distinct()) {
-            hitCiv.addNotification("A(n) [${attacker.getName()}] exploded in our territory!", targetTile.position, NotificationCategory.War, NotificationIcon.War)
+            hitCivsTerritory.add(hitCiv)
+            hitCiv.addNotification("A(n) [${attacker.getName()}] exploded in our territory!", targetTile.position, NotificationCategory.War, NotificationIcon.War, attackingCiv.civName, attacker.getName())
             tryDeclareWar(hitCiv)
+        }
+
+        // Message all other civs
+        for (otherCiv in attackingCiv.gameInfo.civilizations) {
+            if (!otherCiv.isAlive() || hitCivsTerritory.contains(otherCiv) || otherCiv == attackingCiv) continue
+            if (otherCiv.knows(attackingCiv))
+                otherCiv.addNotification("A(n) [${attacker.getName()}] has been detonated from [${attackingCiv.civName}].", 
+                    targetTile.position, NotificationCategory.War, NotificationIcon.War, attackingCiv.civName, attacker.getName())
+            else
+                otherCiv.addNotification("A(n) [${attacker.getName()}] has been detonated from an unkown civilization.", 
+                    targetTile.position, NotificationCategory.War, NotificationIcon.War, attacker.getName())
         }
 
         // Declare war on all potentially hit units. They'll try to intercept the nuke before it drops
