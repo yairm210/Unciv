@@ -4,6 +4,8 @@ Mistakes happen. Misnamed fields, things we forgot to add, or even stuff we didn
 
 Computers can handle a lot of that themselves, so we can let them do the work to ensure that our json files are correct, by using *json schemas*.
 
+This also allows autocompletion when writing jsons!
+
 As of now, only Buildings.json has a proper schema
 
 ## Using Android Studio
