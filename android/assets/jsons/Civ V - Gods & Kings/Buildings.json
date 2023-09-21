@@ -23,7 +23,7 @@
 	},
 	{
 		"name": "Stele",
-		"replaces": "Monument",
+        "replaces": "Monument",
 		"uniqueTo": "Ethiopia",
 		"culture": 2,
 		"faith": 2,
