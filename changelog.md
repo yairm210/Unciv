@@ -1,3 +1,21 @@
+## 4.8.7
+
+Reload images when downloading or removing a mod
+
+Fixed mod compatibility autochanges
+
+debug: More details for destination tile when failing to move to a tile
+
+By tuvus:
+- Added return worker notification 
+- Liberate civ open borders fix 
+
+By SomeTroglodyte:
+- Reorganize and fix WorldScreenTopBar 
+- Allow Space Key to close PlayerReadyScreen 
+
+💚 add tests covering most nukes functionalities  - By Framonti
+
 ## 4.8.6
 
 Mod checker accepts era for unit type
