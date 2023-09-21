@@ -564,8 +564,8 @@ object UnitAutomation {
         // Our main attack target is the closest city, but we're fine with deviating from that a bit
         var enemyCitiesByPriority = closestEnemyCity.civ.cities
             .associateWith { it.getCenterTile().aerialDistanceTo(closestEnemyCity.getCenterTile()) }
-            .filterNot { it.value > 10 } // anything 10 tiles away from the target is irrelevant
-            .asSequence().sortedBy { it.value }.map { it.key } // sort the list by closeness to target - least is best!
+            .asSequence().filterNot { it.value > 10 } // anything 10 tiles away from the target is irrelevant
+            .sortedBy { it.value }.map { it.key } // sort the list by closeness to target - least is best!
 
         if (unit.baseUnit.isRanged()) // ranged units don't harm capturable cities, waste of a turn
             enemyCitiesByPriority = enemyCitiesByPriority.filterNot { it.health == 1 }

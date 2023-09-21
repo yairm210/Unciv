@@ -883,7 +883,7 @@ open class Tile : IsPartOfGameInfoSerialization {
         if (resource != null && resource !in ruleset.tileResources)
             resource = null
         if (improvement != null && improvement !in ruleset.tileImprovements)
-            removeImprovement()
+            improvement = null
     }
 
     /** If the unit isn't in the ruleset we can't even know what type of unit this is! So check each place
