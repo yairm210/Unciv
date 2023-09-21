@@ -2,19 +2,17 @@
 
 Reload images when downloading or removing a mod
 
-Fixed mod compatibility autochanges
-
-debug: More details for destination tile when failing to move to a tile
+Better mod compatibility autochanges (remove removed units/improvements correctly)
 
 By tuvus:
-- Added return worker notification 
-- Liberate civ open borders fix 
+- Added 'civ returned worker' notification
+- Liberating civ grants open borders
 
 By SomeTroglodyte:
-- Reorganize and fix WorldScreenTopBar 
-- Allow Space Key to close PlayerReadyScreen 
+- Reorganized World Screen Top Bar in small screens
+- Allow Space Key to close 'Player Ready' screen (hotseat)
 
-💚 add tests covering most nukes functionalities  - By Framonti
+Added tests for most nuke functionalities  - By Framonti
 
 ## 4.8.6
 
