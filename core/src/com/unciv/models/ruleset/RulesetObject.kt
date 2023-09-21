@@ -25,6 +25,8 @@ abstract class RulesetObject: IRulesetObject {
 }
 
 // Same, but inherits from NamedStats - I couldn't find a way to unify the declarations but this is fine
+
+@kotlinx.serialization.Serializable
 abstract class RulesetStatsObject: NamedStats(), IRulesetObject {
     override var originRuleset = ""
     override var uniques = ArrayList<String>() // Can not be a hashset as that would remove doubles

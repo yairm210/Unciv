@@ -57,6 +57,7 @@
 	{
 		"name": "Stone Works",
 		"happiness": 1,
+        "fds": 1,
 		"production": 1,
 		"requiredNearbyImprovedResources": ["Marble", "Stone"],
 		"maintenance": 1,
@@ -64,7 +65,12 @@
 		"uniques": ["Must not be on [Plains]",
 			"[+1 Production] from [Stone] tiles [in this city]",
 			"[+1 Production] from [Marble] tiles [in this city]"],
-		"requiredTech": "Calendar"
+		"requiredTech": "Calendar",
+        "civilopediaText": [
+            {
+
+            }
+        ]
 	},
 	{
 		"name": "Stonehenge",

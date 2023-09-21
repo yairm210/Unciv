@@ -38,6 +38,8 @@ import kotlin.math.max
  *  - A separator line ([separator])
  *  - Automatic external links ([link] begins with a URL protocol)
  */
+
+@kotlinx.serialization.Serializable
 class FormattedLine (
     /** Text to display. */
     val text: String = "",
