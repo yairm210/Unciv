@@ -22,9 +22,6 @@
 		"maintenance": 1,
 		"uniques": ["Destroyed when the city is captured"]
 	},
-    {
-
-    },
 	{
 		"name": "Stele",
 		"replaces": "Monument",
