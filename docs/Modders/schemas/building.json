@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name": { "type": "string" },
+      "uniques": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "civilopediaText": {
+        "type": "array",
+        "items": { "$ref": "#/definitions/civilopediaText"}
+      },
+      "requiredTech": { "type": "string" },
+      "cost": { "type": "number" },
+      "maintenance": { "type": "number" },
+      "percentStatBonus": { "$ref": "#/definitions/stats" },
+      "specialistSlots": { "type": "object" },
+      "greatPersonPoints": { "type": "object" },
+      "hurryCostModifier": { "type": "number" },
+      "isWonder": { "type": "boolean" },
+      "isNationalWonder": { "type": "boolean" },
+      "requiredBuilding": { "type": "string" },
+      "requiredResource": { "type": "string" },
+      "requiredNearbyImprovedResources": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "cityStrength": { "type": "number" },
+      "cityHealth": { "type": "number" },
+      "replaces": { "type": "string" },
+      "uniqueTo": { "type": "string" },
+      "quote": { "type": "string" },
+      "replacementTextForUniques": { "type": "string" }
+    },
+    "required": [
+      "name"
+    ]
+  },
+  "definitions": {
+      "stats": {
+          "type": "object",
+          "properties": {
+              "production": { "type": "number" },
+              "food": { "type": "number" },
+              "gold": { "type": "number" },
+              "science": { "type": "number" },
+              "culture": { "type": "number" },
+              "happiness": { "type": "number" },
+              "faith": { "type": "number" }
+          }
+      },
+      "civilopediaText": {
+          "type": "object",
+          "properties": {
+              "text": { "type": "string" },
+              "link": { "type": "string" },
+              "icon": { "type": "string" },
+              "extraImage": { "type": "string" },
+              "imageSize": { "type": "number" },
+              "size": { "type": "number" },
+              "header": { "type": "number" },
+              "indent": { "type": "number" },
+              "padding": { "type": "number" },
+              "color": { "type": "string" },
+              "separator": { "type": "boolean" },
+              "starred": { "type": "boolean" },
+              "centered": { "type": "boolean" },
+              "iconCrossed": { "type": "boolean" }
+          }
+      }
+  }
+}
