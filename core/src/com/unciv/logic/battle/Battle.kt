@@ -849,10 +849,10 @@ object Battle {
                 otherCiv.addNotification("A(n) [${attacker.getName()}] exploded in our territory!",
                     targetTile.position, NotificationCategory.War, attackingCiv.civName, NotificationIcon.War, attacker.getName())
             else if (otherCiv.knows(attackingCiv))
-                otherCiv.addNotification("A(n) [${attacker.getName()}] has been detonated from [${attackingCiv.civName}].",
+                otherCiv.addNotification("A(n) [${attacker.getName()}] has been detonated from [${attackingCiv.civName}]!",
                     targetTile.position, NotificationCategory.War, attackingCiv.civName, NotificationIcon.War, attacker.getName())
             else
-                otherCiv.addNotification("A(n) [${attacker.getName()}] has been detonated from an unkown civilization.",
+                otherCiv.addNotification("A(n) [${attacker.getName()}] has been detonated from an unkown civilization!",
                     targetTile.position, NotificationCategory.War, NotificationIcon.War, attacker.getName())
         }
         
