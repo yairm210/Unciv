@@ -14,14 +14,9 @@
           "happiness": { "type": "number" },
           "faith": { "type": "number" },
 
-          "uniques": {
-              "type": "array",
-              "items": { "type": "string" }
-          },
-          "civilopediaText": {
-              "type": "array",
-              "items": { "$ref": "#/definitions/civilopediaText"}
-          },
+          "uniques": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/uniques.json" },
+          "civilopediaText": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/civilopediaText.json" },
+
           "requiredTech": { "type": "string" },
           "cost": { "type": "number" },
           "maintenance": { "type": "number" },
@@ -54,26 +49,5 @@
           "name"
       ],
       "additionalProperties": false
-  },
-  "definitions": {
-      "civilopediaText": {
-          "type": "object",
-          "properties": {
-              "text": { "type": "string" },
-              "link": { "type": "string" },
-              "icon": { "type": "string" },
-              "extraImage": { "type": "string" },
-              "imageSize": { "type": "number" },
-              "size": { "type": "number" },
-              "header": { "type": "number" },
-              "indent": { "type": "number" },
-              "padding": { "type": "number" },
-              "color": { "type": "string" },
-              "separator": { "type": "boolean" },
-              "starred": { "type": "boolean" },
-              "centered": { "type": "boolean" },
-              "iconCrossed": { "type": "boolean" }
-          }
-      }
   }
 }
