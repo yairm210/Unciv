@@ -837,11 +837,16 @@ object Battle {
         for (defendingCiv in notifyDeclaredWarCivs)
             attackingCiv.addNotification("After being hit by our [${attacker.getName()}], [${defendingCiv}] has declared war on us!", targetTile.position, NotificationCategory.Diplomacy, defendingCiv.civName, NotificationIcon.War, attacker.getName())
 
+        for (tile in hitTiles) {
+            // Handle complicated effects
+            doNukeExplosionForTile(attacker, tile, nukeStrength, targetTile == tile)
+        }
+
         // Message all other civs
         for (otherCiv in attackingCiv.gameInfo.civilizations) {
             if (!otherCiv.isAlive() || otherCiv == attackingCiv) continue
             if (hitCivsTerritory.contains(otherCiv))
-                otherCiv.addNotification("A(n) [${attacker.getName()}] exploded in our territory!", 
+                otherCiv.addNotification("A(n) [${attacker.getName()}] exploded in our territory!",
                     targetTile.position, NotificationCategory.War, attackingCiv.civName, NotificationIcon.War, attacker.getName())
             else if (otherCiv.knows(attackingCiv))
                 otherCiv.addNotification("A(n) [${attacker.getName()}] has been detonated from [${attackingCiv.civName}].",
@@ -849,11 +854,6 @@ object Battle {
             else
                 otherCiv.addNotification("A(n) [${attacker.getName()}] has been detonated from an unkown civilization.",
                     targetTile.position, NotificationCategory.War, NotificationIcon.War, attacker.getName())
-        }
-        
-        for (tile in hitTiles) {
-            // Handle complicated effects
-            doNukeExplosionForTile(attacker, tile, nukeStrength, targetTile == tile)
         }
         
         attacker.unit.attacksSinceTurnStart.add(Vector2(targetTile.position))
