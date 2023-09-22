@@ -26,8 +26,14 @@
           "cost": { "type": "number" },
           "maintenance": { "type": "number" },
           "percentStatBonus": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/stats.json" },
-          "specialistSlots": { "type": "object" },
-          "greatPersonPoints": { "type": "object" },
+          "specialistSlots": {
+              "type": "object",
+              "additionalProperties": {"type": "integer"}
+          },
+          "greatPersonPoints": {
+              "type": "object",
+              "additionalProperties": {"type": "integer"}
+          },
           "hurryCostModifier": { "type": "number" },
           "isWonder": { "type": "boolean" },
           "isNationalWonder": { "type": "boolean" },
