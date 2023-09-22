@@ -850,13 +850,13 @@ object Battle {
         for (otherCiv in attackingCiv.gameInfo.civilizations) {
             if (!otherCiv.isAlive() || otherCiv == attackingCiv) continue
             if (hitCivsTerritory.contains(otherCiv))
-                otherCiv.addNotification("A(n) [${attacker.getName()}] exploded in our territory!",
+                otherCiv.addNotification("A(n) [${attacker.getName()}] from [${attackingCiv.civName}] has exploded in our territory!",
                     nukeNotificationAction, NotificationCategory.War, attackingCiv.civName, NotificationIcon.War, attacker.getName())
             else if (otherCiv.knows(attackingCiv))
-                otherCiv.addNotification("A(n) [${attacker.getName()}] has been detonated from [${attackingCiv.civName}]!",
+                otherCiv.addNotification("A(n) [${attacker.getName()}] has been detonated by [${attackingCiv.civName}]!",
                     nukeNotificationAction, NotificationCategory.War, attackingCiv.civName, NotificationIcon.War, attacker.getName())
             else
-                otherCiv.addNotification("A(n) [${attacker.getName()}] has been detonated from an unkown civilization!",
+                otherCiv.addNotification("A(n) [${attacker.getName()}] has been detonated by an unkown civilization!",
                     nukeNotificationAction, NotificationCategory.War, NotificationIcon.War, attacker.getName())
         }
         
