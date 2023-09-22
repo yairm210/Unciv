@@ -25,7 +25,7 @@
           "requiredTech": { "type": "string" },
           "cost": { "type": "number" },
           "maintenance": { "type": "number" },
-          "percentStatBonus": { "$ref": "#/definitions/stats" },
+          "percentStatBonus": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/stats.json" },
           "specialistSlots": { "type": "object" },
           "greatPersonPoints": { "type": "object" },
           "hurryCostModifier": { "type": "number" },
