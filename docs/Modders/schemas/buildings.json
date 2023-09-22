@@ -56,19 +56,6 @@
       "additionalProperties": false
   },
   "definitions": {
-      "stats": {
-          "type": "object",
-          "properties": {
-              "production": { "type": "number" },
-              "food": { "type": "number" },
-              "gold": { "type": "number" },
-              "science": { "type": "number" },
-              "culture": { "type": "number" },
-              "happiness": { "type": "number" },
-              "faith": { "type": "number" }
-          },
-          "additionalProperties": false
-      },
       "civilopediaText": {
           "type": "object",
           "properties": {
