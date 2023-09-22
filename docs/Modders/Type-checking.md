@@ -6,9 +6,10 @@ Computers can handle a lot of that themselves, so we can let them do the work to
 
 This also allows autocompletion when writing jsons!
 
-As of now, only Buildings.json has a proper schema
+As of now, only Buildings and Units have proper schema
 
 ## Using Android Studio
+
 
 - Double-click space, search "json schema mappings", enter
 - Click the small '+' (top, under 'language & frameworks' text)
@@ -28,6 +29,12 @@ Tada! Now Android Studio will recognize all Buildings.json files as belonging to
                 "*/Buildings.json"
             ],
             "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/buildings.json"
+        },
+        {
+            "fileMatch": [
+              "*/Units.json"
+            ],
+            "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/units.json"
         }
     ]
 ```
