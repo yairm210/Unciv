@@ -7,12 +7,10 @@
         "allOf": [
             {
                 "type": "string",
-                "description": "All <> brackets come in pairs",
                 "pattern": "^[^><]*(\\<[^>]*\\>[^><]*)*$"
             },
             {
                 "type": "string",
-                "description": "All [] brackets come in pairs",
                 "pattern": "^[^\\[\\]]*(\\[[^\\[\\]]*\\][^\\[\\]]*)*$"
             }
         ]
