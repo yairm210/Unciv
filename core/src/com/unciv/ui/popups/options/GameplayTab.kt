@@ -6,7 +6,6 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.components.UncivSlider
 import com.unciv.ui.components.extensions.toLabel
-import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 
 fun gameplayTab(
@@ -18,7 +17,6 @@ fun gameplayTab(
     val settings = optionsPopup.settings
 
     optionsPopup.addCheckbox(this, "Check for idle units", settings.checkForDueUnits, true) { settings.checkForDueUnits = it }
-    optionsPopup.addCheckbox(this, "Auto next turn", settings.autoNextTurn, true) { settings.autoNextTurn = it }    
     optionsPopup.addCheckbox(this, "Auto Unit Cycle", settings.autoUnitCycle, true) { settings.autoUnitCycle = it }
     optionsPopup.addCheckbox(this, "Move units with a single tap", settings.singleTapMove) { settings.singleTapMove = it }
     optionsPopup.addCheckbox(this, "Auto-assign city production", settings.autoAssignCityProduction, true) { shouldAutoAssignCityProduction ->

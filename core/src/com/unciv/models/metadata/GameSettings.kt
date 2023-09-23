@@ -47,7 +47,6 @@ class GameSettings {
     var showSettlersSuggestedCityLocations: Boolean = true
 
     var checkForDueUnits: Boolean = true
-    var autoNextTurn: Boolean = false
     var autoUnitCycle: Boolean = true
     var singleTapMove: Boolean = false
     var language: String = Constants.english
