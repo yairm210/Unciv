@@ -47,6 +47,7 @@ class GameSettings {
     var showSettlersSuggestedCityLocations: Boolean = true
 
     var checkForDueUnits: Boolean = true
+    var autoNextTurn: Boolean = false
     var autoUnitCycle: Boolean = true
     var singleTapMove: Boolean = false
     var language: String = Constants.english
@@ -96,6 +97,24 @@ class GameSettings {
     var showZoomButtons: Boolean = false
 
     var notificationsLogMaxTurns = 5
+
+    var autoPlayMaxTurns = 10
+    var fullAutoPlayAI: Boolean = false
+    var autoPlayMilitary: Boolean = false
+    var autoPlayCivilian: Boolean = false
+    var autoPlayEconomy: Boolean = false
+    var autoPlayTechnology: Boolean = false
+    var autoPlayPolicies: Boolean = false
+    var autoPlayReligion: Boolean = false
+    var autoPlayDiplomacy: Boolean = false
+
+    var turnsToAutoPlay: Int = 0
+    var autoPlayInProgress: Boolean = false
+    
+    fun stopAutoPlay() {
+       turnsToAutoPlay = 0 
+    }
+
 
     var showAutosaves: Boolean = false
 
