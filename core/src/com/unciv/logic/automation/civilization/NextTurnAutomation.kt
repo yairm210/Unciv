@@ -859,7 +859,7 @@ object NextTurnAutomation {
         // Don't accept if they are at war with our friends, they might use our land to attack them
         if (civInfo.diplomacy.values.any { it.isRelationshipLevelGE(RelationshipLevel.Friend) && it.otherCiv().isAtWarWith(otherCiv)})
             return false
-        if (hasAtLeastMotivationToAttack(civInfo, otherCiv, civInfo.getDiplomacyManager(otherCiv).opinionOfOtherCiv().toInt()) > 0)
+        if (hasAtLeastMotivationToAttack(civInfo, otherCiv, (civInfo.getDiplomacyManager(otherCiv).opinionOfOtherCiv()/ 2 - 10).toInt()) >= 0)
             return false
         return true
     }
