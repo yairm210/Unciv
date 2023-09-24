@@ -52,11 +52,5 @@
           "name", "unitType"
       ],
       "additionalProperties": false
-  },
-  "definitions": {
-      "uniques": {
-          "type": "array",
-          "items": { "type": "string" }
-      }
   }
 }
