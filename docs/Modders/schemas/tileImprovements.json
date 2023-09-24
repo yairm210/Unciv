@@ -8,7 +8,7 @@
           "terrainsCanBeBuiltOn": {
               "type": "array",
               "items": { "type": "string" },
-              "uniqueItems": true,
+              "uniqueItems": true
           },
           "turnsToBuild": { "type": "integer" },
           "techRequired": { "type": "string" },
