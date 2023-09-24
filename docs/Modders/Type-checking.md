@@ -47,6 +47,12 @@ Tada! Now Android Studio will recognize all Buildings.json files as belonging to
               "*/TileImprovements.json"
             ],
             "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/tileImprovements.json"
+        },
+        {
+            "fileMatch": [
+              "*/TileImprovements.json"
+            ],
+            "url": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/tileImprovements.json"
         }
     ]
 ```
