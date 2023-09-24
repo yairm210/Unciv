@@ -18,9 +18,9 @@
           "civilopediaText": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/civilopediaText.json" },
 
           "requiredTech": { "type": "string" },
-          "cost": { "type": "number" },
+          "cost": { "type": "integer" },
           "maintenance": {
-              "type": "number",
+              "type": "integer",
               "description": "Gold upkeep per turn for this building"
           },
           "percentStatBonus": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/stats.json" },
@@ -44,8 +44,8 @@
               "items": { "type": "string" },
               "uniqueItems": true
           },
-          "cityStrength": { "type": "number" },
-          "cityHealth": { "type": "number" },
+          "cityStrength": { "type": "integer" },
+          "cityHealth": { "type": "integer" },
 
           "uniqueTo": {
               "type": "string",
