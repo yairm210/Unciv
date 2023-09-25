@@ -1053,7 +1053,24 @@ object NextTurnAutomation {
             else -> 0
         }
         modifierMap["Relative combat strength"] = combatStrengthModifier
-
+        
+        // Civs with more score are more threatening to our victory
+        // Bias towards attacking civs with a high score and low military
+        // Bias against attacking civs with a low score and a high military
+        // Designed to mitigate AIs declaring war on weaker civs instead of thier rivals
+        val scoreRatio = civInfo.getStatForRanking(RankingType.Score).toFloat() / otherCiv.getStatForRanking(RankingType.Score).toFloat()
+        val scoreRatioModifier = when {
+            scoreRatio > 2f -> 10
+            scoreRatio > 1.8f -> 8
+            scoreRatio > 1.6f -> 6
+            scoreRatio > 1.2f -> 4
+            scoreRatio > 1f -> 2
+            scoreRatio > .8f -> 0
+            scoreRatio > .5f -> -5
+            scoreRatio > .25f -> -10
+            else -> 0
+        }
+        modifierMap["Relative score"] = scoreRatioModifier
 
         if (closestCities.aerialDistance > 7)
             modifierMap["Far away cities"] = -10
