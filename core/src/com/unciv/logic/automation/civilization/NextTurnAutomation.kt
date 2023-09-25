@@ -780,14 +780,19 @@ object NextTurnAutomation {
                 .sortedByDescending { it.getDiplomacyManager(civInfo).relationshipLevel() }.toList()
         for (otherCiv in civsThatWeCanDeclareFriendshipWith) {
             // Default setting is 2, this will be changed according to different civ.
-            if ((1..10).random() <= 2 && wantsToSignDeclarationOfFrienship(civInfo, otherCiv)) {
+            if ((1..10).random() <= 8) continue 
+            if (wantsToSignDeclarationOfFrienship(civInfo, otherCiv)) {
                 otherCiv.popupAlerts.add(PopupAlert(AlertType.DeclarationOfFriendship, civInfo.civName))
+            } else {
+                // Remember this for a few turns to save computation power
+                civInfo.getDiplomacyManager(otherCiv).setFlag(DiplomacyFlags.DeclinedDeclarationOfFriendship, 5)
             }
         }
     }
 
     private fun wantsToSignDeclarationOfFrienship(civInfo: Civilization, otherCiv: Civilization): Boolean {
         val diploManager = civInfo.getDiplomacyManager(otherCiv)
+        if (diploManager.hasFlag(DiplomacyFlags.DeclinedDeclarationOfFriendship)) return false
         // Shortcut, if it is below favorable then don't consider it
         if (diploManager.isRelationshipLevelLT(RelationshipLevel.Favorable)) return false
         
@@ -842,22 +847,28 @@ object NextTurnAutomation {
             .sortedByDescending { it.getDiplomacyManager(civInfo).relationshipLevel() }.toList()
         for (otherCiv in civsThatWeCanDeclareFriendshipWith) {
             // Default setting is 3, this will be changed according to different civ.
-            if ((1..10).random() <= 3 && wantsToOpenBorders(civInfo, otherCiv)) {
+            if ((1..10).random() < 7) continue
+            if (wantsToOpenBorders(civInfo, otherCiv)) {
                 val tradeLogic = TradeLogic(civInfo, otherCiv)
                 tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.openBorders, TradeType.Agreement))
                 tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.openBorders, TradeType.Agreement))
 
                 otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
+            } else {
+                // Remember this for a few turns to save computation power
+                civInfo.getDiplomacyManager(otherCiv).setFlag(DiplomacyFlags.DeclinedOpenBorders, 5)
             }
         }
     }
     
     fun wantsToOpenBorders(civInfo: Civilization, otherCiv: Civilization): Boolean {
-        if (civInfo.getDiplomacyManager(otherCiv).isRelationshipLevelLT(RelationshipLevel.Favorable)) return false
+        val diploManager = civInfo.getDiplomacyManager(otherCiv)
+        if (diploManager.hasFlag(DiplomacyFlags.DeclinedOpenBorders)) return false
+        if (diploManager.isRelationshipLevelLT(RelationshipLevel.Favorable)) return false
         // Don't accept if they are at war with our friends, they might use our land to attack them
         if (civInfo.diplomacy.values.any { it.isRelationshipLevelGE(RelationshipLevel.Friend) && it.otherCiv().isAtWarWith(otherCiv)})
             return false
-        if (hasAtLeastMotivationToAttack(civInfo, otherCiv, civInfo.getDiplomacyManager(otherCiv).opinionOfOtherCiv().toInt()) > 0)
+        if (hasAtLeastMotivationToAttack(civInfo, otherCiv, diploManager.opinionOfOtherCiv().toInt()) > 0)
             return false
         return true
     }
@@ -874,7 +885,7 @@ object NextTurnAutomation {
 
         for (otherCiv in canSignResearchAgreementCiv) {
             // Default setting is 5, this will be changed according to different civ.
-            if ((1..10).random() > 5) continue
+            if ((1..10).random() <= 5) continue
             val tradeLogic = TradeLogic(civInfo, otherCiv)
             val cost = civInfo.diplomacyFunctions.getResearchAgreementCost(otherCiv)
             tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
@@ -896,19 +907,24 @@ object NextTurnAutomation {
 
         for (otherCiv in canSignDefensivePactCiv) {
             // Default setting is 3, this will be changed according to different civ.
-            if ((1..10).random() <= 3 && wantsToSignDefensivePact(civInfo, otherCiv)) {
+            if ((1..10).random() <= 7) continue
+            if (wantsToSignDefensivePact(civInfo, otherCiv)) {
                 //todo: Add more in depth evaluation here
                 val tradeLogic = TradeLogic(civInfo, otherCiv)
                 tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.defensivePact, TradeType.Treaty))
                 tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.defensivePact, TradeType.Treaty))
-    
+
                 otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
+            } else {
+                // Remember this for a few turns to save computation power
+                civInfo.getDiplomacyManager(otherCiv).setFlag(DiplomacyFlags.DeclinedDefensivePact, 5)
             }
         }
     }
     
     fun wantsToSignDefensivePact(civInfo: Civilization, otherCiv: Civilization): Boolean {
         val diploManager = civInfo.getDiplomacyManager(otherCiv)
+        if (diploManager.hasFlag(DiplomacyFlags.DeclinedDefensivePact)) return false
         if (diploManager.isRelationshipLevelLT(RelationshipLevel.Ally)) return false
         val commonknownCivs = diploManager.getCommonKnownCivs()
         // If they have bad relations with any of our friends, don't consider it
