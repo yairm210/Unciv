@@ -1106,13 +1106,20 @@ object NextTurnAutomation {
                 modifierMap["Allied City-state"] = -20 // There had better be a DAMN good reason
         }
 
+        var wonderCount = 0
         for (city in otherCiv.cities) {
             val construction = city.cityConstructions.getCurrentConstruction()
             if (construction is Building && construction.hasUnique(UniqueType.TriggersCulturalVictory))
                 modifierMap["About to win"] = 15
             if (construction is BaseUnit && construction.hasUnique(UniqueType.AddInCapital))
                 modifierMap["About to win"] = 15
+            wonderCount += city.cityConstructions.getBuiltBuildings().count { it.isWonder }
         }
+        
+        // The more wonders they have, the more beneficial it is to conquer them
+        // Civs need an army to protect thier wonders which give the most score
+        if (wonderCount > 0)
+            modifierMap["Owned Wonders"] = wonderCount.coerceAtMost(15)
 
         var motivationSoFar = modifierMap.values.sum()
 
