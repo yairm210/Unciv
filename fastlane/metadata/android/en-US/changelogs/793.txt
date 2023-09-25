@@ -1,0 +1,19 @@
+Updated Unciv Android icons
+
+Performance improvement for automated units looking for cities to connect
+
+Popup for multiplayer when someone else has won
+
+Politics shortcut fix
+
+Limit the number of workers an AI creates
+
+Sleeping units wake if there's an enemy in 3-tile radius
+
+Do not allow liberating city-states you were at war with
+
+AI peace deals don't pay more gold than they have
+
+Higher chance of starting bias for human players
+
+You can use missionaries of foreign religions

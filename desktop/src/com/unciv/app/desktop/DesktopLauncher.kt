@@ -1,100 +1,83 @@
 package com.unciv.app.desktop
 
-import club.minnced.discord.rpc.DiscordEventHandlers
-import club.minnced.discord.rpc.DiscordRPC
-import club.minnced.discord.rpc.DiscordRichPresence
-import com.badlogic.gdx.Files
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
-import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.tools.texturepacker.TexturePacker
-import com.unciv.UncivGame
-import com.unciv.models.translations.tr
-import java.io.File
-import kotlin.concurrent.thread
-
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
+import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.graphics.glutils.HdpiMode
+import com.unciv.app.desktop.DesktopScreenMode.Companion.getMaximumWindowBounds
+import com.unciv.json.json
+import com.unciv.logic.files.SETTINGS_FILE_NAME
+import com.unciv.logic.files.UncivFiles
+import com.unciv.models.metadata.ScreenSize
+import com.unciv.models.metadata.WindowState
+import com.unciv.ui.components.Fonts
+import com.unciv.ui.screens.basescreen.BaseScreen
+import com.unciv.utils.Display
+import com.unciv.utils.Log
+import kotlin.math.max
 
 internal object DesktopLauncher {
+
     @JvmStatic
     fun main(arg: Array<String>) {
 
-        packImages()
+        // Setup Desktop logging
+        Log.backend = DesktopLogBackend()
 
-        val config = LwjglApplicationConfiguration()
-        // Don't activate GL 3.0 because it causes problems for MacOS computers
-        config.addIcon("ExtraImages/Icon.png", Files.FileType.Internal)
-        config.title = "Unciv"
-        config.useHDPI = true
+        // Setup Desktop display
+        Display.platform = DesktopDisplay()
 
-        val game = UncivGame("Desktop")
+        // Setup Desktop font
+        Fonts.fontImplementation = DesktopFont()
 
+        // Setup Desktop saver-loader
+        UncivFiles.saverLoader = DesktopSaverLoader()
+        UncivFiles.preferExternalStorage = false
 
-        if(!RaspberryPiDetector.isRaspberryPi()) // No discord RPC for Raspberry Pi, see https://github.com/yairm210/Unciv/issues/1624
-            tryActivateDiscord(game)
+        // Solves a rendering problem in specific GPUs and drivers.
+        // For more info see https://github.com/yairm210/Unciv/pull/3202 and https://github.com/LWJGL/lwjgl/issues/119
+        System.setProperty("org.lwjgl.opengl.Display.allowSoftwareOpenGL", "true")
+        // This setting (default 64) limits clipboard transfers. Value in kB!
+        // 386 is an almost-arbitrary choice from the saves I had at the moment and their GZipped size.
+        // There must be a reason for lwjgl3 being so stingy, which for me meant to stay conservative.
+        System.setProperty("org.lwjgl.system.stackSize", "384")
 
-        LwjglApplication(game, config)
-    }
+        val isRunFromJAR = DesktopLauncher.javaClass.`package`.specificationVersion != null
+        ImagePacker.packImages(isRunFromJAR)
 
-    private fun packImages() {
-        val startTime = System.currentTimeMillis()
+        val config = Lwjgl3ApplicationConfiguration()
+        config.setWindowIcon("ExtraImages/Icon.png")
+        config.setTitle("Unciv")
+        config.setHdpiMode(HdpiMode.Logical)
+        config.setWindowSizeLimits(120, 80, -1, -1)
 
-        val settings = TexturePacker.Settings()
-        // Apparently some chipsets, like NVIDIA Tegra 3 graphics chipset (used in Asus TF700T tablet),
-        // don't support non-power-of-two texture sizes - kudos @yuroller!
-        // https://github.com/yairm210/UnCiv/issues/1340
-        settings.maxWidth = 2048
-        settings.maxHeight = 2048
-        settings.combineSubdirectories = true
-        settings.pot = true
-        settings.fast = true
+        // We don't need the initial Audio created in Lwjgl3Application, HardenGdxAudio will replace it anyway.
+        // Note that means config.setAudioConfig() would be ignored too, those would need to go into the HardenedGdxAudio constructor.
+        config.disableAudio(true)
 
-        // This is so they don't look all pixelated
-        settings.filterMag = Texture.TextureFilter.MipMapLinearLinear
-        settings.filterMin = Texture.TextureFilter.MipMapLinearLinear
+        val settings = UncivFiles.getSettingsForPlatformLaunchers()
+        if (settings.isFreshlyCreated) {
+            settings.screenSize = ScreenSize.Large // By default we guess that Desktops have larger screens
+            // LibGDX not yet configured, use regular java class
+            val maximumWindowBounds = getMaximumWindowBounds()
+            settings.windowState = WindowState(
+                width = maximumWindowBounds.width,
+                height = maximumWindowBounds.height
+            )
+            FileHandle(SETTINGS_FILE_NAME).writeString(json().toJson(settings), false, Charsets.UTF_8.name()) // so when we later open the game we get fullscreen
+        }
+        // Kludge! This is a workaround - the matching call in DesktopDisplay doesn't "take" quite permanently,
+        // the window might revert to the "config" values when the user moves the window - worse if they
+        // minimize/restore. And the config default is 640x480 unless we set something here.
+        config.setWindowedMode(max(settings.windowState.width, 100), max(settings.windowState.height, 100))
+        config.setInitialBackgroundColor(BaseScreen.clearColor)
 
-        if (File("../Images").exists()) // So we don't run this from within a fat JAR
-            TexturePacker.process(settings, "../Images", ".", "game")
-
-        // pack for mods as well
-        val modDirectory = File("mods")
-        if(modDirectory.exists()) {
-            for (mod in modDirectory.listFiles()!!){
-                TexturePacker.process(settings, mod.path + "/Images", mod.path, "game")
-            }
+        if (!isRunFromJAR) {
+            UniqueDocsWriter().write()
+            UiElementDocsWriter().write()
         }
 
-        val texturePackingTime = System.currentTimeMillis() - startTime
-        println("Packing textures - "+texturePackingTime+"ms")
-    }
-
-    private fun tryActivateDiscord(game: UncivGame) {
-
-        try {
-            val handlers = DiscordEventHandlers()
-            DiscordRPC.INSTANCE.Discord_Initialize("647066573147996161", handlers, true, null)
-
-            Runtime.getRuntime().addShutdownHook(Thread { DiscordRPC.INSTANCE.Discord_Shutdown() })
-
-            thread {
-                while (true) {
-                    try {
-                        updateRpc(game)
-                    }catch (ex:Exception){}
-                    Thread.sleep(1000)
-                }
-            }
-        } catch (ex: Exception) {
-            print("Could not initialize Discord")
-        }
-    }
-
-    fun updateRpc(game: UncivGame) {
-        if(!game.isInitialized) return
-        val presence = DiscordRichPresence()
-        val currentPlayerCiv = game.gameInfo.getCurrentPlayerCivilization()
-        presence.details=currentPlayerCiv.getTranslatedNation().getLeaderDisplayName().tr()
-        presence.largeImageKey = "logo" // The actual image is uploaded to the discord app / applications webpage
-        presence.largeImageText ="Turn".tr()+" " + currentPlayerCiv.gameInfo.turns
-        DiscordRPC.INSTANCE.Discord_UpdatePresence(presence);
+        val game = DesktopGame(config)
+        Lwjgl3Application(game, config)
     }
 }

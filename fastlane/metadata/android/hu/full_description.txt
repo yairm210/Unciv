@@ -1,0 +1,15 @@
+Minden idők leghíresebb civilizációépítő játékának feldolgozása - gyors, kis méretű, reklámmentes, örökre ingyenes!
+
+Építsd fel a saját civilizációdat, kutass új technológiák után, bővítsd a városaidat és győzd le az ellenfeleidet!
+
+Kérésed van? Hibát találtál? Az alkalmazás fejlesztési listáját eléred a https://github.com/yairm210/Unciv/issues címen, minden kis segítséget megköszönök!
+
+Kérdésed van? Mondani szeretnél valamit? Esetleg unatkozol? Csatlakozz hozzánk itt: https://discord.gg/bjrB4Xw.
+
+Segítenél lefordítani a játékot a saját nyelvedre? Küldj egy e-mailt nekem a yairm210@hotmail.com címre.
+
+Penge vagy Java-ban vagy Kotlinban? Csatlakozz hozzánk a https://github.com/yairm210/Unciv címen.
+
+A világ csak téged vár! Kiállja-e az idő próbáját a birodalom, amellyé a civilizációdat fejleszted?
+
+A 'teljes hálózati hozzáférés' engedély szükséges, hogy a felhasználó alkalmazásból indított letöltései és a többjátékos mód működjön. Minden más engedélyt a többjátékos mód körösszefoglalóit megvalósító API automatikusan beállít. A hálózati engedélyekre csak a modok böngészéséhez, letöltéséhez, zene letöltéséhez és a többjátékos játszmák fel- és letöltéséhez van szükség. Az Unciv semmilyen más internetes kommunikációt nem kezdeményez.

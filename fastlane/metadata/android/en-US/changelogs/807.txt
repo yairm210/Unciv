@@ -1,0 +1,17 @@
+By vegeta1k95:
+- Performance optimization: fast and smooth zoom
+
+By Gualdimar:
+- Policies screen top button reworked
+- Android autosave location fix
+- Fix unresponsive policy screen header
+
+AbsoluteUnits - Cataphract, Companion Cavalry, Horseman - By letstalkaboutdune
+
+Fix UX of random nations pool - By alexban011
+
+Double Click on Tech to Exit Tech Screen  - By OptimizedForDensity
+
+modding: "Unbuildable" accepts conditionals
+
+Stats serialize to notifications

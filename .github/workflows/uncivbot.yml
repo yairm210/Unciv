@@ -1,0 +1,54 @@
+name: UncivBot
+
+on:
+  issue_comment:
+  workflow_dispatch:
+
+jobs:
+
+  prepare_version_for_rollout:
+    if: github.event_name == 'issue_comment' && (github.event.comment.body == 'summary' || github.event.comment.body == 'prepare version') && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association)
+    # This is the only place I could find an apparent list of valid author associations. Also, at least they're not case-sensitive: https://docs.github.com/en/graphql/reference/enums#commentauthorassociation https://docs.github.com/en/actions/learn-github-actions/expressions#contains
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v2
+      - name: Generate new buildConfig.kt and changelog.md files
+        run: |
+          npm i @octokit/rest
+
+          node .github/workflows/incrementVersionAndChangelog.js
+
+          rm -rf node_modules # Now we need to remove extraneous node.js parts before commit
+          rm package-lock.json
+          rm package.json
+
+      - name: Create new branch with changes
+        uses: EndBug/add-and-commit@v9 # You can change this to use a specific version.
+        with:
+          new_branch: version_rollout
+          message: 'Bump version and create initial changelog entry'
+
+      - name: Add translation PRs to the new branch, and PR the new branch to master
+        run: |
+          npm i @octokit/rest
+          node .github/workflows/mergeTranslations.js ${{ secrets.ACTIONS_ACCESS_TOKEN }} ${{ github.event.issue.number }} version_rollout
+
+
+  merge_translations:
+    if: github.event_name == 'workflow_dispatch' || (github.event.comment.body == 'merge translations' && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association))
+    # This is the only place I could find an apparent list of valid author associations. Also, at least they're not case-sensitive: https://docs.github.com/en/graphql/reference/enums#commentauthorassociation https://docs.github.com/en/actions/learn-github-actions/expressions#contains
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v2
+      - name: Add translation PRs to the new branch, and PR the new branch to master
+
+          # SO, the story is that when using the default access token you CANNOT merge PRs from forks.
+          # _Badly_ documented in multiple places, including here: https://docs.github.com/en/actions/reference/authentication-in-a-workflow
+          # To get around this, we created a Personal Access Token,
+          #  put it as one of the secrets in the repo settings (https://github.com/yairm210/Unciv/settings/secrets/actions),
+          #  and use that instead.
+        run: |
+          npm i @octokit/rest
+          node .github/workflows/mergeTranslations.js ${{ secrets.ACTIONS_ACCESS_TOKEN }} ${{ github.event.issue.number }} translations

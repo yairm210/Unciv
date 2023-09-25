@@ -1,0 +1,390 @@
+{
+    "com.badlogic.gdx.graphics.g2d.BitmapFont": {
+        "button": "Nativefont",
+        "font": "Nativefont",
+        "title": "Nativefont"
+    },
+    "com.badlogic.gdx.graphics.Color": {
+        "black": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+        },
+        "color": {
+            "r": 0.2,
+            "g": 0.3,
+            "b": 0.5,
+            "a": 1
+        },
+        "gray": {
+            "r": 0.5,
+            "g": 0.5,
+            "b": 0.5,
+            "a": 1
+        },
+        "dark-gray": {
+            "r": 0.25,
+            "g": 0.25,
+            "b": 0.25,
+            "a": 1
+        },
+        "disabled": {
+            "r": 0.14509805,
+            "g": 0.16862746,
+            "b": 0.24313726,
+            "a": 1
+        },
+        "highlight": {
+            "r": 0.39607844,
+            "g": 0.8627451,
+            "b": 0.44705883,
+            "a": 1
+        },
+        "pressed": {
+            "r": 0.2529412,
+            "g": 0.6,
+            "b": 0.33313715,
+            "a": 1
+        },
+        "selection": {
+            "r": 0.22745098,
+            "g": 0.59607846,
+            "b": 0.85882354,
+            "a": 1
+        },
+        "white": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 1
+        },
+        "positive": {
+            "r": 0.12156863,
+            "g": 0.49411765,
+            "b": 0.21960784,
+            "a": 1
+        },
+        "negative": {
+            "r": 0.5529412,
+            "g": 0.03137255,
+            "b": 0.0,
+            "a": 1
+        },
+        "negative-highlight": {
+            "r": 0.8666667,
+            "g": 0.078431375,
+            "b": 0.050980393,
+            "a": 1
+        },
+        "negative-selected": {
+            "r": 0.7764706,
+            "g": 0.0627451,
+            "b": 0.039215688,
+            "a": 1
+        },
+        "promotion-default": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+        },
+        "promotion-selected": {
+            "r": 0.2824,
+            "g": 0.5765,
+            "b": 0.6863,
+            "a": 1
+        },
+        "promotion-path": {
+            "r": 0.1882,
+            "g": 0.3843,
+            "b": 0.4575,
+            "a": 1
+        },
+        "promotion-promoted": {
+            "r": 0.8,
+            "g": 0.6745,
+            "b": 0,
+            "a": 1
+        },
+        "promotion-promoted-text": {
+            "r": 0.16,
+            "g": 0.1349,
+            "b": 0,
+            "a": 1
+        },
+        "promotion-pickable": {
+            "r": 0.1098,
+            "g": 0.3137,
+            "b": 0,
+            "a": 1
+        },
+        "promotion-prerequisite": {
+            "r": 0.405,
+            "g": 0.506,
+            "b": 0.81,
+            "a": 1
+        },
+        "promotion-grouplines": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 1
+        },
+        "promotion-otherlines": {
+            "r": 1,
+            "g": 0.7,
+            "b": 0,
+            "a": 0
+        }
+    },
+    "com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable": {
+        "button-c": {
+            "name": "RoundedEdgeRectangle",
+            "color": "color"
+        },
+        "button-p": {
+            "name": "RoundedEdgeRectangle",
+            "color": "pressed"
+        },
+        "button-h": {
+            "name": "RoundedEdgeRectangle",
+            "color": "highlight"
+        },
+        "button-disabled": {
+            "name": "RoundedEdgeRectangle",
+            "color": "disabled"
+        },
+        "button-positive": {
+            "name": "RoundedEdgeRectangle",
+            "color": "positive"
+        },
+        "button-negative": {
+            "name": "RoundedEdgeRectangle",
+            "color": "negative"
+        },
+        "button-negative-pressed": {
+            "name": "RoundedEdgeRectangle",
+            "color": "negative-selected"
+        },
+        "button-negative-hover": {
+            "name": "RoundedEdgeRectangle",
+            "color": "negative-highlight"
+        },
+        "checkbox-c": {
+            "name": "Checkbox",
+            "color": "color"
+        },
+        "checkbox-pressed-c": {
+            "name": "Checkbox-pressed",
+            "color": "color"
+        },
+        "list-c": {
+            "name": "RectangleWithOutline",
+            "color": "color"
+        },
+        "scrollbar-c": {
+            "name": "Scrollbar",
+            "color": "color"
+        },
+        "select-box-c": {
+            "name": "Select-box",
+            "color": "color"
+        },
+        "select-box-pressed-c": {
+            "name": "Select-box-pressed",
+            "color": "color"
+        },
+        "select-box-h": {
+            "name": "Select-box",
+            "color": "highlight"
+        },
+        "select-box-scroll-bg-c": {
+            "name": "Scrollbar",
+            "color": "default-clear"
+        },
+        "slider-knob-c": {
+            "name": "Circle",
+            "color": "color"
+        },
+        "slider-horizontal-s": {
+            "name": "Rectangle",
+            "color": "selection"
+        },
+        "slider-vertical-s": {
+            "name": "Rectangle",
+            "color": "selection"
+        },
+        "slider-knob-h": {
+            "name": "Circle",
+            "color": "highlight"
+        },
+        "slider-horizontal-p": {
+            "name": "Rectangle",
+            "color": "pressed"
+        },
+        "slider-vertical-p": {
+            "name": "Rectangle",
+            "color": "pressed"
+        },
+        "splitpane-horizontal-c": {
+            "name": "RectangleWithOutline",
+            "color": "color"
+        },
+        "splitpane-vertical-c": {
+            "name": "RectangleWithOutline",
+            "color": "color"
+        },
+        "textfield-c": {
+            "name": "RoundedEdgeRectangle",
+            "color": "color"
+        },
+        "selection": {
+            "name": "Rectangle",
+            "color": "selection"
+        },
+        "white": {
+            "name": "Rectangle",
+            "color": "white"
+        }
+    },
+    "com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle": {
+        "default": {
+            "up": "button-c",
+            "down": "button-p",
+            "over": "button-h"
+        }
+    },
+    "com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle": {
+        "default": {
+            "checkboxOn": "checkbox-pressed-c",
+            "checkboxOff": "checkbox-c",
+            "font": "button",
+            "fontColor": "color",
+            "downFontColor": "pressed",
+            "overFontColor": "highlight",
+            "disabledFontColor": "gray"
+        }
+    },
+    "com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle": {
+        "default": {
+            "font": "font",
+            "fontColor": "color"
+        }
+    },
+    "com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle": {
+        "default": {
+            "font": "font",
+            "fontColorSelected": "white",
+            "fontColorUnselected": "white",
+            "selection": "selection",
+            "background": "list-c"
+        }
+    },
+    "com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle": {
+        "default": {
+            "hScrollKnob": "scrollbar-c",
+            "vScrollKnob": "scrollbar-c"
+        },
+        "select-box-scroll": {
+            "background": "select-box-scroll-bg-c",
+            "hScrollKnob": "scrollbar-c",
+            "vScrollKnob": "scrollbar-c"
+        }
+    },
+    "com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle": {
+        "default": {
+            "font": "font",
+            "fontColor": "white",
+            "background": "select-box-c",
+            "scrollStyle": "select-box-scroll",
+            "listStyle": "default",
+            "backgroundOver": "select-box-h",
+            "backgroundOpen": "select-box-pressed-c"
+        }
+    },
+    "com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle": {
+        "default-horizontal": {
+            "knobOver": "slider-knob-h",
+            "knobDown": "slider-knob-h",
+            "background": "slider-horizontal-p",
+            "knob": "slider-knob-c",
+            "knobBefore": "slider-horizontal-s"
+        },
+        "default-vertical": {
+            "knobOver": "slider-knob-h",
+            "knobDown": "slider-knob-h",
+            "background": "slider-vertical-p",
+            "knob": "slider-knob-c",
+            "knobBefore": "slider-vertical-s"
+        }
+    },
+    "com.badlogic.gdx.scenes.scene2d.ui.SplitPane$SplitPaneStyle": {
+        "default-horizontal": {
+            "handle": "splitpane-horizontal-c"
+        },
+        "default-vertical": {
+            "handle": "splitpane-vertical-c"
+        }
+    },
+    "com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle": {
+        "default": {
+            "font": "button",
+            "fontColor": "white",
+            "downFontColor": "white",
+            "overFontColor": "dark-gray",
+            "up": "button-c",
+            "down": "button-p",
+            "over": "button-h"
+        },
+        "positive": {
+            "font": "button",
+            "fontColor": "white",
+            "downFontColor": "white",
+            "overFontColor": "dark-gray",
+            "up": "button-positive",
+            "down": "button-p",
+            "over": "button-h"
+        },
+        "negative": {
+            "font": "button",
+            "fontColor": "white",
+            "downFontColor": "white",
+            "overFontColor": "white",
+            "up": "button-negative",
+            "down": "button-negative-pressed",
+            "over": "button-negative-hover"
+        },
+        "disabled": {
+            "font": "button",
+            "fontColor": "white",
+            "downFontColor": "white",
+            "overFontColor": "white",
+            "up": "button-disabled",
+            "down": "button-disabled",
+            "over": "button-disabled"
+        }
+    },
+    "com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle": {
+        "default": {
+            "font": "font",
+            "fontColor": "white",
+            "background": "textfield-c",
+            "cursor": "white",
+            "selection": "selection"
+        }
+    },
+    "com.unciv.ui.screens.pickerscreens.PromotionScreenColors": {
+        "default": {
+            "default": "promotion-default",
+            "selected": "promotion-selected",
+            "pathToSelection": "promotion-path",
+            "promoted": "promotion-promoted",
+            "promotedText": "promotion-promoted-text",
+            "pickable": "promotion-pickable",
+            "prerequisite": "promotion-prerequisite",
+            "groupLines": "promotion-grouplines",
+            "otherLines": "promotion-otherlines"
+        }
+    }
+}

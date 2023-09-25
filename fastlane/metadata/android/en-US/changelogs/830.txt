@@ -1,0 +1,6 @@
+Add Replay feature in VictoryScreen  - By WhoIsJohannes
+
+All units can be automated
+
+By SomeTroglodyte:
+- Make City center minimum tile yields moddable

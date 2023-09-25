@@ -1,0 +1,15 @@
+Reimplementace nejslavnější civilizační hry - rychlá, malá, bez reklam, navždy zadarmo!
+
+Vybudujte svoji civilizaci, vyzkoumejte technologie, rozšiřte svá města a podmaňte si své nepřátele!
+
+Žádosti? Chyby? Seznam plánovaných funkcí najdete na: https://github.com/yairm210/Unciv/issues, každá malá pomoc je vítaná!
+
+Otázky? Komentáře? Nudíte se? Připojte se k nám na Discordu: https://discord.gg/bjrB4Xw.
+
+Chcete pomoct překládat do vašeho jazyka? Pošlete mi e-mail na yairm210@hotmail.com.
+
+Rozumíte Javě nebo Kotlinu? Přidejte se k nám na https://github.com/yairm210/Unciv.
+
+Svět očekává! Vybudujete ze své civilizace říši, která obstojí ve zkoušce času?
+
+Oprávnění "Úplný přístup k síti" je vyžadováno pro uživatelem vyvolaná stahování a pro hru více hráčů. Ostatní vypsaná oprávnění jsou zajištěna automaticky. Síťová oprávnění jsou požadována pro výpis modů, stahování modů, stahování hudby a pro nahrávání/stahování her více hráčů. Žádná jiná internetová komunikace není Uncivem vyvolávána.

@@ -1,0 +1,5 @@
+Better generation for all map types
+
+Include forked repos in github search.  - By FiretronP75
+
+AI doesn't declare war until it's sufficiently built up

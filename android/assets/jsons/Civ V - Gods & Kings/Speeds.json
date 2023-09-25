@@ -1,0 +1,131 @@
+[
+    {
+        "name": "Quick",
+        "modifier": 0.67,
+        /*
+        Why are all of these raw values and not uniques? This is like EXACTLY what uniques are for,
+        and speeds even support uniques?
+        E.g.: [
+            "[-67]% Production cost of [All] buildings",
+            "[-67]% Produciton cost of [All] units",
+            "Gold cost of purchasing [All] units [-67]%"
+            "Gold cost of purchasing [All] buildings [-67]%"
+            "[-67]% Science cost of reseaching new Techs" // Needs to be added
+            "[-67]% Culture cost of adopting new policies"
+            etc.
+        I suppose this is how it is done in civ V, but uniques are one of the major features we have
+        that Civ V doesn't, so why are we not using them?
+        This approach requires adding these modifies for specific things that need to be added, while
+        uniques can just be added anywhere. Only need to change CivilizationInfo.getMatchingUniques()
+        to get the uniques of the current game speed and everything works out of the box.
+        -xlenstra
+        */
+        "productionCostModifier": 0.67,
+        "goldCostModifier": 0.67,
+        "scienceCostModifier": 0.67,
+        "cultureCostModifier": 0.67,
+        "faithCostModifier": 0.67,
+        "improvementBuildLengthModifier": 0.67,
+        "barbarianModifier": 0.67,
+        "goldGiftModifier": 1.25,
+        "cityStateTributeScalingInterval": 5.0,
+        "goldenAgeLengthModifier": 0.80,
+        "religiousPressureAdjacentCity": 9,
+        "peaceDealDuration": 10,
+        "dealDuration": 25,
+        "startYear": -4000,
+        "turns": [
+            {"yearsPerTurn": 60, "untilTurn":  50},
+            {"yearsPerTurn": 40, "untilTurn":  80},
+            {"yearsPerTurn": 30, "untilTurn": 100},
+            {"yearsPerTurn": 20, "untilTurn": 130},
+            {"yearsPerTurn": 10, "untilTurn": 155},
+            {"yearsPerTurn":  5, "untilTurn": 195},
+            {"yearsPerTurn":  2, "untilTurn": 260},
+            {"yearsPerTurn":  1, "untilTurn": 330}
+        ]
+    },
+    {
+        "name": "Standard",
+        "modifier": 1.0,
+        "productionCostModifier": 1.0,
+        "goldCostModifier": 1.0,
+        "scienceCostModifier": 1.0,
+        "cultureCostModifier": 1.0,
+        "faithCostModifier": 1.0,
+        "improvementBuildLengthModifier": 1.0,
+        "barbarianModifier": 1.0,
+        "goldGiftModifier": 1.0,
+        "cityStateTributeScalingInterval": 6.5,
+        "goldenAgeLengthModifier": 1.0,
+        "religiousPressureAdjacentCity": 6,
+        "peaceDealDuration": 10,
+        "dealDuration": 30,
+        "startYear": -4000,
+        "turns": [
+            {"yearsPerTurn":  40, "untilTurn": 75},
+            {"yearsPerTurn":  25, "untilTurn": 135},
+            {"yearsPerTurn":  20, "untilTurn": 160},
+            {"yearsPerTurn":  10, "untilTurn": 210},
+            {"yearsPerTurn":   5, "untilTurn": 270},
+            {"yearsPerTurn":   2, "untilTurn": 320},
+            {"yearsPerTurn":   1, "untilTurn": 440},
+            {"yearsPerTurn": 0.5, "untilTurn": 500}
+        ]
+    },
+    {
+        "name": "Epic",
+        "modifier": 1.5,
+        "productionCostModifier": 1.5,
+        "goldCostModifier": 1.5,
+        "scienceCostModifier": 1.5,
+        "cultureCostModifier": 1.5,
+        "faithCostModifier": 1.5,
+        "improvementBuildLengthModifier": 1.5,
+        "barbarianModifier": 1.5,
+        "goldGiftModifier": 0.75,
+        "cityStateTributeScalingInterval": 14.0,
+        "goldenAgeLengthModifier": 1.25,
+        "religiousPressureAdjacentCity": 4,
+        "peaceDealDuration": 15,
+        "dealDuration": 45,
+        "startYear": -4000,
+        "turns": [
+            {"yearsPerTurn":  25, "untilTurn": 140},
+            {"yearsPerTurn":  15, "untilTurn": 230},
+            {"yearsPerTurn":  10, "untilTurn": 270},
+            {"yearsPerTurn":   5, "untilTurn": 360},
+            {"yearsPerTurn":   2, "untilTurn": 430},
+            {"yearsPerTurn":   1, "untilTurn": 530},
+            {"yearsPerTurn": 0.5, "untilTurn": 750}
+        ]
+    },
+    {
+        "name": "Marathon",
+        "modifier": 3.0,
+        "productionCostModifier": 3.0,
+        "goldCostModifier": 3.0,
+        "scienceCostModifier": 3.0,
+        "cultureCostModifier": 3.0,
+        "faithCostModifier": 3.0,
+        "improvementBuildLengthModifier": 3.0,
+        "barbarianModifier": 4.0,
+        "goldGiftModifier": 0.67,
+        "cityStateTributeScalingInterval": 32.0,
+        "goldenAgeLengthModifier": 2.0,
+        "religiousPressureAdjacentCity": 2,
+        "peaceDealDuration": 30,
+        "dealDuration": 90,
+        "startYear": -4000,
+        "turns": [
+            {"yearsPerTurn":   15,     "untilTurn":  100},
+            {"yearsPerTurn":   10,     "untilTurn":  400},
+            {"yearsPerTurn":    5,     "untilTurn":  570},
+            {"yearsPerTurn":    2,     "untilTurn":  771},
+            {"yearsPerTurn":    1,     "untilTurn":  900},
+            {"yearsPerTurn":  0.5,     "untilTurn": 1080},
+            {"yearsPerTurn": 0.25,     "untilTurn": 1344},
+            {"yearsPerTurn": 0.083333, "untilTurn": 1500}
+        ]
+    }
+]

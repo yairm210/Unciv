@@ -1,0 +1,113 @@
+{
+    "useColorAsBaseTerrain": "false",
+    "fallbackTileSet": null,
+    "ruleVariants": {
+        //Legacy hill support
+        "Hill": ["Grassland","Hill"],
+        "Hill+Forest+Uranium": ["Grassland","Hill","Uranium","Forest"],
+        "Hill+Forest+Furs": ["Grassland","Hill","Furs","HillForest"],
+        "Hill+Forest+Deer": ["Grassland","Hill","Deer","HillForest"],
+
+        //Special forest and jungle
+        "Grassland+Forest": ["Grassland","GrasslandForest"],
+        "Plains+Forest": ["Plains","PlainsForest"],
+        "Plains+Jungle": ["Plains","PlainsJungle"],
+        "Tundra+Forest": ["Tundra","TundraForest"],
+        "Tundra+Hill+Forest": ["Tundra","Hill","TundraForest"],
+
+        //Snow improvements for Tundra and Snow
+            //TODO hill and forest variants + new images for Landmark, etc.
+        "Tundra+Barbarian encampment": ["Tundra","Barbarian encampment-Snow"],
+        "Tundra+Academy": ["Tundra","Academy-Snow"],
+        "Tundra+Citadel": ["Tundra","Citadel-Snow"],
+        "Tundra+Ancient ruins": ["Tundra","Ancient ruins-Snow"],
+        "Snow+Barbarian encampment": ["Snow","Barbarian encampment-Snow"],
+        "Snow+Academy": ["Snow","Academy-Snow"],
+        "Snow+Citadel": ["Snow","Citadel-Snow"],
+        "Snow+Ancient ruins": ["Snow","Ancient ruins-Snow"],
+
+        //Sand improvements for Desert
+        "Desert+Ancient ruins": ["Desert","Ancient ruins-Sand"],
+        "Desert+Hill+Ancient ruins": ["Desert","Hill","Ancient ruins-Sand"],
+
+        //Jungle improvements for Jungle
+        "Grassland+Jungle+Ancient ruins": ["Grassland","Ancient ruins-Jungle","Jungle"],
+        "Plains+Jungle+Ancient ruins": ["Plains","Ancient ruins-Jungle","PlainsJungle"],
+
+	// Farms on hills
+	"Grassland+Hill+Farm": ["Grassland+Farm","Hill"],
+        "Plains+Hill+Farm": ["Plains+Farm","Hill"],
+        "Desert+Hill+Farm": ["Desert+Farm","Hill"],
+        "Tundra+Hill+Farm": ["Tundra+Farm","Hill"],
+        "Snow+Hill+Farm": ["Snow+Farm","Hill"],
+
+        //resources behind forest and jungle
+            //TODO all the resources...
+        //Grassland
+        "Grassland+Jungle+Oil": ["Grassland","Oil","Jungle"],
+        "Grassland+Forest+Horses": ["Grassland","Horses","GrasslandForest"],
+        "Grassland+Forest+Iron": ["Grassland","Iron","GrasslandForest"],
+        "Grassland+Forest+Coal": ["Grassland","Coal","GrasslandForest"],
+        "Grassland+Forest+Aluminum": ["Grassland","Aluminum","GrasslandForest"],
+        "Grassland+Forest+Uranium": ["Grassland","Uranium","GrasslandForest"],
+        "Grassland+Forest+Deer": ["Grassland","Deer","GrasslandForest"],
+        "Grassland+Forest+Furs": ["Grassland","Furs","GrasslandForest"],
+	"Grassland+Forest+Truffles": ["Grassland","Truffles","GrasslandForest"],
+        //Grassland+Hill
+        "Grassland+Hill+Forest+Lumber mill": ["Grassland","Hill","HillForest+Lumber mill"],
+        "Grassland+Hill+Forest+Horses": ["Grassland","Hill","Horses","Forest"],
+        "Grassland+Hill+Forest+Iron": ["Grassland","Hill","Iron","Forest"],
+        "Grassland+Hill+Forest+Coal": ["Grassland","Hill","Coal","Forest"],
+        "Grassland+Hill+Forest+Aluminum": ["Grassland","Hill","Aluminum","Forest"],
+        "Grassland+Hill+Forest+Uranium": ["Grassland","Hill","Uranium","Forest"],
+        "Grassland+Hill+Forest+Furs": ["Grassland","Hill","Furs","Forest"],
+        "Grassland+Hill+Forest+Deer": ["Grassland","Hill","Deer","Forest"],
+	"Grassland+Hill+Forest+Truffles": ["Grassland","Hill","Truffles","Forest"],
+        //Plains
+        "Plains+Jungle+Oil": ["Plains","Oil","PlainsJungle"],
+        "Plains+Forest+Horses": ["Plains","Horses","PlainsForest"],
+        "Plains+Forest+Iron": ["Plains","Iron","PlainsForest"],
+        "Plains+Forest+Coal": ["Plains","Coal","PlainsForest"],
+        "Plains+Forest+Aluminum": ["Plains","Aluminum","PlainsForest"],
+        "Plains+Forest+Uranium": ["Plains","Uranium","PlainsForest"],
+        "Plains+Forest+Deer": ["Plains","Deer","PlainsForest"],
+        "Plains+Forest+Furs": ["Plains","Furs","PlainsForest"],
+	"Plains+Forest+Truffles": ["Plains","Truffles","PlainsForest"],
+        "Plains+Wheat+Farm": ["Plains+Farm","Wheat"],
+        //Plains+Hill
+        "Plains+Hill+Forest+Lumber mill": ["Plains","Hill","HillForest+Lumber mill"],
+        "Plains+Hill+Forest+Horses": ["Plains","Hill","Horses","Forest"],
+        "Plains+Hill+Forest+Iron": ["Plains","Hill","Iron","Forest"],
+        "Plains+Hill+Forest+Coal": ["Plains","Hill","Coal","Forest"],
+        "Plains+Hill+Forest+Aluminum": ["Plains","Hill","Aluminum","Forest"],
+        "Plains+Hill+Forest+Uranium": ["Plains","Hill","Uranium","Forest"],
+        "Plains+Hill+Forest+Furs": ["Plains","Hill","Furs","Forest"],
+        "Plains+Hill+Forest+Deer": ["Plains","Hill","Deer","Forest"],
+	"Plains+Hill+Forest+Truffles": ["Plains","Hill","Truffles","Forest"],
+        //Tundra
+        "Tundra+Jungle+Oil": ["Tundra","Oil","TundraForest"],
+        "Tundra+Forest+Horses": ["Tundra","Horses","TundraForest"],
+        "Tundra+Forest+Iron": ["Tundra","Iron","TundraForest"],
+        "Tundra+Forest+Coal": ["Tundra","Coal","TundraForest"],
+        "Tundra+Forest+Aluminum": ["Tundra","Aluminum","TundraForest"],
+        "Tundra+Forest+Uranium": ["Tundra","Uranium","TundraForest"],
+        "Tundra+Forest+Deer": ["Tundra","Deer","TundraForest"],
+        "Tundra+Forest+Furs": ["Tundra","Furs","TundraForest"],
+        //Tundra+Hill
+        "Tundra+Hill+Forest+Horses": ["Tundra","Hill","Horses","TundraForest"],
+        "Tundra+Hill+Forest+Iron": ["Tundra","Hill","Iron","TundraForest"],
+        "Tundra+Hill+Forest+Coal": ["Tundra","Hill","Coal","TundraForest"],
+        "Tundra+Hill+Forest+Aluminum": ["Tundra","Hill","Aluminum","TundraForest"],
+        "Tundra+Hill+Forest+Uranium": ["Tundra","Hill","Uranium","TundraForest"],
+        "Tundra+Hill+Forest+Furs": ["Tundra","Hill","Furs","TundraForest"],
+        "Tundra+Hill+Forest+Deer": ["Tundra","Hill","Deer","TundraForest"],
+
+        "Desert+Wheat+Farm": ["Desert+Farm","Wheat"],
+        "Desert+Flood plains+Wheat+Farm": ["Desert+Flood plains+Farm","Wheat"],
+
+        "Grassland+Forest+Ancient ruins": ["Grassland","Ancient ruins", "GrasslandForest"],
+        "Grassland+Cattle+Ancient ruins": ["Grassland","Ancient ruins","Cattle"],
+        "Grassland+Sheep+Ancient ruins": ["Grassland","Ancient ruins","Sheep"],
+        "Coast+Oil+Oil well": ["Coast","Offshore Platform"]
+    }
+}

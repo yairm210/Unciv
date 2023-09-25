@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Unciv</string>
+    <string name="Notify_YourTurn_Short">Unciv - Este rândul tău!</string>
+    <string name="Notify_YourTurn_Long">Prietenii tăi asteaptă după tine in [gameName].</string>
+    <string name="Notify_Error_Short">A aparut o eroare</string>
+    <string name="Notify_Error_Long">Notificator de ture pentru multiplayer oprit.</string>
+    <string name="Notify_Persist_Short">Ultima verificare online la rând:</string>
+    <string name="Notify_Persist_Long_P1">Unciv te va informa când este rândul tău în multiplayer.</string>
+    <string name="Notify_Persist_Long_P2">Verifică cca. fiecare</string>
+    <string name="Notify_Persist_Long_P3">minut(e) când este disponibil internetul.</string>
+    <string name="Notify_Persist_Long_P4">Configurabil în meniul de opțiuni Unciv.</string>
+    <string name="Notify_ChannelInfo_Short">Alertă pentru verificarea turei multiplayer Unciv</string>
+    <string name="Notify_ChannelInfo_Long">Te informează când este rândul tău în multiplayer.</string>
+    <string name="Notify_ChannelService_Short">Stare persistentă pentru verificarea turei multiplayer Unciv</string>
+    <string name="Notify_ChannelService_Long">Afișat în mod constant pentru a vă informa despre verificarea antecedentelor.</string>
+    <string name="Notify_Error_StackTrace_Toast">Stacktraces copiat în clipboard.</string>
+    <string name="Notify_Error_CopyAction">Copiați stacktrace în clipboard</string>
+    <string name="Notify_Error_Retrying">eșuat, reîncercare...</string>
+</resources>

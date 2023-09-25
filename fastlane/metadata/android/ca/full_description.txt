@@ -1,0 +1,21 @@
+Una reimplementació del joc de construcció de civilitzacions més famós ‒ ràpid, petit, sense anuncis i gratuït!
+
+Construïu la vostra civilització, investigueu tecnologies, expandiu les ciutats i derroteu els enemics!
+
+Si teniu suggeriments o trobeu algun error, ho podeu comunicar a la <a href="https://github.com/yairm210/Unciv/issues">llista de problemes de l’aplicació de GitHub</a>. Qualsevol ajuda, per petita que sigui, serà benvinguda!
+
+Uniu-vos al <a href="https://discord.gg/bjrB4Xw">canal del Discord</a> si teniu preguntes, comentaris o esteu avorrits.
+
+Si voleu ajudar en la traducció del joc, seguiu les instruccions a l’<a href="https://yairm210.github.io/Unciv/Other/Translating">article d’instruccions de traducció de l’Unciv</a>.
+
+Sabeu programar amb Grok Java o Kotlin? Podeu col·laborar amb el desenvolupament del joc a la <a href="https://github.com/yairm210/Unciv">pàgina de GitHub</a>.
+
+El món espera! Podreu conduir la vostra civilització i convertir-la en un imperi que sobrevisqui al pas del temps?
+
+L’opció de «permetre accés complet a la xarxa» es necessita per:
+
+‒participar en partides multijugador,
+‒descarregar i mostrar llistes de contingut addicional (música i mods) i
+‒enviar l’edat dels jugadors en mode multijugador.
+
+Tots els altres permisos els inclou automàticament l’API per permetre notificacions de torn en partides multijugador. L’Unciv no utilitza la xarxa per cap altre tipus de comunicació.

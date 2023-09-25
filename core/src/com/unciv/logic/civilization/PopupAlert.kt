@@ -1,21 +1,29 @@
 package com.unciv.logic.civilization
 
-enum class AlertType{
+import com.unciv.logic.IsPartOfGameInfoSerialization
+
+enum class AlertType : IsPartOfGameInfoSerialization {
     Defeated,
     WonderBuilt,
     TechResearched,
     WarDeclaration,
     FirstContact,
     CityConquered,
+    CityTraded,
     BorderConflict,
-    @Deprecated("As of 2.19.0 - replaced with DemandToStopSettlingCitiesNear")
-    CitiesSettledNearOtherCiv,
     DemandToStopSettlingCitiesNear,
     CitySettledNearOtherCivDespiteOurPromise,
     GoldenAge,
+    DeclarationOfFriendship,
+    StartIntro,
+    DiplomaticMarriage,
+    BulliedProtectedMinor,
+    AttackedProtectedMinor,
+    RecapturedCivilian,
+    GameHasBeenWon
 }
 
-class PopupAlert {
+class PopupAlert : IsPartOfGameInfoSerialization {
     lateinit var type: AlertType
     lateinit var value: String
 

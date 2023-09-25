@@ -1,0 +1,19 @@
+By Azzurite:
+- Many, many UX improvements!
+- Fixed memory leaks
+
+By OptimizedForDensity:
+- Moddable game speeds
+- Population reassignment bug fixes
+
+Civilopedia tweaks - By SomeTroglodyte
+
+Translation improvements - By J0anJosep
+
+Trigger Time Victory only if enabled  - By JackRainy
+
+Fix crash for "no strategic resource" mods - By Skekdog
+
+Shortcut fixes and additions - By doublep
+
+Maintain Fortify bonus after Fortify until Healed  - By itanasi

@@ -1,52 +1,85 @@
 package com.unciv.logic.map
 
-/**
- * Defines intermediate steps of a breadth-first search, for use in either get shortest path or get onnected tiles.
- */
-class BFS(val startingPoint: TileInfo, val predicate : (TileInfo) -> Boolean){
-    var tilesToCheck = ArrayList<TileInfo>()
-    /** each tile reached points to its parent tile, where we got to it from */
-    val tilesReached = HashMap<TileInfo, TileInfo>()
+import com.unciv.logic.map.tile.Tile
+import kotlin.collections.ArrayDeque
 
-    init{
+/**
+ * Defines intermediate steps of a breadth-first search, for use in either get shortest path or get connected tiles.
+ */
+class BFS(
+    val startingPoint: Tile,
+    private val predicate : (Tile) -> Boolean
+) {
+    /** Maximum number of tiles to search */
+    var maxSize = Int.MAX_VALUE
+
+    /** remaining tiles to check */
+    private val tilesToCheck = ArrayDeque<Tile>(37)  // needs resize at distance 4
+
+    /** each tile reached points to its parent tile, where we got to it from */
+    private val tilesReached = HashMap<Tile, Tile>()
+
+    init {
         tilesToCheck.add(startingPoint)
         tilesReached[startingPoint] = startingPoint
     }
 
-    fun stepToEnd(){
-        while(tilesToCheck.isNotEmpty())
+    /** Process fully until there's nowhere left to check */
+    fun stepToEnd() {
+        while (!hasEnded())
             nextStep()
     }
 
-    fun stepUntilDestination(destination: TileInfo): BFS {
-        while(!tilesReached.containsKey(destination) && tilesToCheck.isNotEmpty())
+    /**
+     * Process until either [destination] is reached or there's nowhere left to check
+     * @return `this` instance for chaining
+     */
+    fun stepUntilDestination(destination: Tile): BFS {
+        while (!tilesReached.containsKey(destination) && !hasEnded())
             nextStep()
         return this
     }
 
-    fun nextStep(){
-        val newTilesToCheck = ArrayList<TileInfo>()
-        for(tileInfo in tilesToCheck){
-            for(neighbor in tileInfo.neighbors){
-                if(predicate(neighbor) && !tilesReached.containsKey(neighbor)){
-                    tilesReached[neighbor] = tileInfo
-                    newTilesToCheck.add(neighbor)
-                }
+    /**
+     * Process one tile-to-search, fetching all neighbors not yet touched
+     * and adding those that fulfill the [predicate] to the reached set
+     * and to the yet-to-be-processed set.
+     *
+     * Will do nothing when [hasEnded] returns `true`
+     */
+    fun nextStep() {
+        if (tilesReached.size >= maxSize) { tilesToCheck.clear(); return }
+        val current = tilesToCheck.removeFirstOrNull() ?: return
+        for (neighbor in current.neighbors) {
+            if (neighbor !in tilesReached && predicate(neighbor)) {
+                tilesReached[neighbor] = current
+                tilesToCheck.add(neighbor)
             }
         }
-        tilesToCheck = newTilesToCheck
     }
 
-    fun getPathTo(destination: TileInfo): ArrayList<TileInfo> {
-        val path = ArrayList<TileInfo>()
-        path.add(destination)
+    /**
+     * @return a Sequence from the [destination] back to the [startingPoint], including both, or empty if [destination] has not been reached
+     */
+    fun getPathTo(destination: Tile): Sequence<Tile> = sequence {
         var currentNode = destination
-        while(currentNode != startingPoint) {
-            val parent = tilesReached[currentNode]
-            if (parent == null) return ArrayList()// destination is not in our path
+        while (true) {
+            val parent = tilesReached[currentNode] ?: break  // destination is not in our path
+            yield(currentNode)
+            if (currentNode == startingPoint) break
             currentNode = parent
-            path.add(currentNode)
         }
-        return path
     }
+
+    /** @return true if there are no more tiles to check */
+    fun hasEnded() = tilesToCheck.isEmpty()
+
+    /** @return true if the [tile] has been reached */
+    fun hasReachedTile(tile: Tile) = tilesReached.containsKey(tile)
+
+    /** @return all tiles reached so far */
+    fun getReachedTiles(): MutableSet<Tile> = tilesReached.keys
+
+    /** @return number of tiles reached so far */
+    fun size() = tilesReached.size
 }

@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "array",
+  "items": {
+      "type": "object",
+      "properties": {
+          "name": { "type": "string" },
+          "leaderName": { "type": "string" },
+          "adjective": {
+              "type": "array",
+              "items": { "type": "string" },
+              "uniqueItems": true,
+              "description": "Currently not in use"
+          },
+          "style": { "type": "string" },
+          "cityStateType": { "type": "string" },
+          "outerColor": { "$ref": "#/definitions/color" },
+          "innerColor": { "$ref": "#/definitions/color" },
+
+          "preferredVictoryType": { "type": "string" },
+          "startBias": {
+              "type": "array",
+              "items": { "type": "string" },
+              "uniqueItems": true,
+              "description": "Types of tiles where the civ will be more likely to start"
+          },
+
+          "uniques": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/uniques.json" },
+
+
+          // All of these are cosmetic
+          "introduction": { "type": "string" },
+          "tradeRequest": { "type": "string" },
+          "neutralHello": { "type": "string" },
+          "hateHello": { "type": "string" },
+
+          "declaringWar": { "type": "string" },
+          "attacked": { "type": "string" },
+          "defeated": { "type": "string" },
+          "startIntroPart1": { "type": "string" },
+          "startIntroPart2": { "type": "string" },
+          "cities": {
+              "type": "array",
+              "items": { "type": "string" },
+              "uniqueItems": true,
+          },
+          "spyNames": {
+              "type": "array",
+              "items": { "type": "string" },
+              "uniqueItems": true,
+          },
+          "favoredReligion": { "type": "string" },
+
+          "uniqueName": { "type": "string" },
+          "uniqueText": {
+              "type": "string",
+              "description": "Freeform text that will be shown to users, overriding the list of uniques."
+          },
+          "civilopediaText": { "$ref": "https://raw.githubusercontent.com/yairm210/Unciv/master/docs/Modders/schemas/civilopediaText.json" }
+      },
+      "required": [
+          "name", "outerColor"
+      ],
+      "additionalProperties": false,
+      "definitions": {
+          "color": {
+              "type": "array",
+              "minLength": 3,
+              "maxLength": 3,
+              "items": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 255
+              }
+          }
+      }
+  }
+}

@@ -1,0 +1,15 @@
+Interception always takes an attack  - By itanasi
+
+By OptimizedForDensity:
+- Add more music triggers
+- Move border below icons
+- Significantly reduce AI turn time
+- City health updates when finishing health-increasing buildings
+
+By Azzurite:
+- Fix potential race condition in multiplayer game update
+- Fix game crashing when a multiplayer game can not be read
+
+Sorted Civilopedia eras - By alexban011
+
+Remove in-game mentions of 1.5x unhappiness for puppeted cities  - By Ouaz

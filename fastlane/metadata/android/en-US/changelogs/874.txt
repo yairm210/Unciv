@@ -1,0 +1,14 @@
+More efficient use of the charts space  - By JackRainy
+
+By SomeTroglodyte:
+- Allow image overlay and changing world wrap in map editor
+- Reapply 'city focus' on yield changes
+- Upgrading from Unit overview improved
+
+Remove "does not support server feature set" error for uncivserver.xyz
+
+Trigger resource recalculation upon gaining a unit that requires resources
+
+Guard against '><' text causing translation recursion
+
+Badly configured era conditional no longer causes crashes

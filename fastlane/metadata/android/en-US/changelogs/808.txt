@@ -1,0 +1,18 @@
+AI tweaks for better targeting
+
+Cannot alter city build queue in between turns
+
+Fixed 'destroy civilian unit before attack' crash
+
+Terrain-Specific Natural Wonder Sprite Support  - By OptimizedForDensity
+
+By vegeta1k95:
+- City Screen improvements
+- Fix crash when attacking city with disabled overlays
+- PolicyScreen: branch progress + fix spectator
+
+Trade button initially disabled - By lishaoxia1985
+
+By Gualdimar:
+- Collapsible tutorial tasks
+- Bigger header on policy and mod screens

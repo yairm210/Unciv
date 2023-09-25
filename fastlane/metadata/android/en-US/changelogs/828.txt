@@ -1,0 +1,7 @@
+Dynamic minimap - By Gualdimar
+
+Better AI evaluation of which improvement to build on a tile
+
+Added 'additional times' to limited actions
+
+Android: selectable orientation  - By vegeta1k95

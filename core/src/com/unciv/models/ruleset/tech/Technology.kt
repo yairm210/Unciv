@@ -1,103 +1,42 @@
 package com.unciv.models.ruleset.tech
 
-import com.unciv.UncivGame
-import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.ruleset.Building
+import com.unciv.logic.civilization.Civilization
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.translations.tr
-import com.unciv.models.ruleset.unit.BaseUnit
-import java.util.*
+import com.unciv.models.ruleset.RulesetObject
+import com.unciv.models.ruleset.unique.UniqueTarget
+import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.objectdescriptions.TechnologyDescriptions
 
-class Technology {
-
-    lateinit var name: String
+class Technology: RulesetObject() {
 
     var cost: Int = 0
     var prerequisites = HashSet<String>()
-    var uniques = ArrayList<String>()
+    override fun getUniqueTarget() = UniqueTarget.Tech
 
     var column: TechColumn? = null // The column that this tech is in the tech tree
     var row: Int = 0
-    var quote=""
+    var quote = ""
 
-    fun getDescription(ruleset: Ruleset): String {
-        val lineList = ArrayList<String>() // more readable than StringBuilder, with same performance for our use-case
-        for (unique in uniques) lineList += unique.tr()
+    fun era(): String = column!!.era
 
-        val improvedImprovements = ruleset.tileImprovements.values
-                .filter { it.improvingTech == name }.groupBy { it.improvingTechStats.toString() }
-        for (improvement in improvedImprovements) {
-            val impimpString = improvement.value.joinToString { it.name.tr() } +
-                    " {provide" + (if (improvement.value.size == 1) "s" else "") + "} " + improvement.key
-            lineList += impimpString.tr()
+    fun isContinuallyResearchable() = hasUnique(UniqueType.ResearchableMultipleTimes)
+
+
+    /** Get Civilization-specific description for TechPicker or AlertType.TechResearched */
+    fun getDescription(viewingCiv: Civilization) =
+            TechnologyDescriptions.getDescription(this, viewingCiv)
+
+    override fun makeLink() = "Technology/$name"
+
+    override fun getCivilopediaTextLines(ruleset: Ruleset) =
+            TechnologyDescriptions.getCivilopediaTextLines(this, ruleset)
+
+    fun matchesFilter(filter: String): Boolean {
+        return when (filter) {
+            "All" -> true
+            name -> true
+            era() -> true
+            else -> uniques.contains(filter)
         }
-
-        val viewingCiv = UncivGame.Current.worldScreen.viewingCiv
-        val enabledUnits = getEnabledUnits(viewingCiv)
-        if (enabledUnits.isNotEmpty()) {
-            lineList += "{Units enabled}: "
-            for (unit in enabledUnits)
-                lineList += " * " + unit.name.tr() + " (" + unit.getShortDescription() + ")"
-        }
-
-        val enabledBuildings = getEnabledBuildings(viewingCiv)
-
-        val regularBuildings = enabledBuildings.filter { !it.isWonder && !it.isNationalWonder }
-        if (regularBuildings.isNotEmpty()) {
-            lineList += "{Buildings enabled}: "
-            for (building in regularBuildings)
-                lineList += "* " + building.name.tr() + " (" + building.getShortDescription(ruleset) + ")"
-        }
-
-        val wonders = enabledBuildings.filter { it.isWonder || it.isNationalWonder }
-        if (wonders.isNotEmpty()) {
-            lineList += "{Wonders enabled}: "
-            for (wonder in wonders)
-                lineList += " * " + wonder.name.tr() + " (" + wonder.getShortDescription(ruleset) + ")"
-        }
-
-        val revealedResource = ruleset.tileResources.values.filter { it.revealedBy == name }.map { it.name }.firstOrNull() // can only be one
-        if (revealedResource != null) lineList += "Reveals [$revealedResource] on the map".tr()
-
-        val tileImprovements = ruleset.tileImprovements.values.filter { it.techRequired == name }
-        if (tileImprovements.isNotEmpty())
-            lineList += "{Tile improvements enabled}: " + tileImprovements.joinToString { it.name.tr() }
-
-        return lineList.joinToString("\n") { it.tr() }
     }
-
-    fun getEnabledBuildings(civInfo: CivilizationInfo): List<Building> {
-        var enabledBuildings = civInfo.gameInfo.ruleSet.buildings.values.filter {
-            it.requiredTech == name &&
-                    (it.uniqueTo == null || it.uniqueTo == civInfo.civName)
-        }
-        val replacedBuildings = enabledBuildings.mapNotNull { it.replaces }
-        enabledBuildings = enabledBuildings.filter { it.name !in replacedBuildings }
-
-        if (!UncivGame.Current.settings.nuclearWeaponEnabled)
-            enabledBuildings=enabledBuildings.filterNot { it.name=="Manhattan Project" }
-
-        return enabledBuildings
-    }
-
-    fun getEnabledUnits(civInfo:CivilizationInfo): List<BaseUnit> {
-        var enabledUnits = civInfo.gameInfo.ruleSet.units.values.filter {
-            it.requiredTech == name &&
-                    (it.uniqueTo == null || it.uniqueTo == civInfo.civName)
-        }
-        val replacedUnits = enabledUnits.mapNotNull { it.replaces }
-        enabledUnits = enabledUnits.filter { it.name !in replacedUnits }
-
-        if (!UncivGame.Current.settings.nuclearWeaponEnabled)
-            enabledUnits=enabledUnits.filterNot { it.uniques.contains("Requires Manhattan Project") }
-
-
-        return enabledUnits
-    }
-
-    override fun toString(): String {
-        return name
-    }
-
-    fun era() = column!!.era
 }

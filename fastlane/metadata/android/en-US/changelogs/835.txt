@@ -1,0 +1,18 @@
+Fixed 'upon gaining unit' trigger activating for all units
+
+modding: 'Only available when' applies to beliefs
+
+Better promotion positioning in unit overview
+
+Stat updates propagate where they didn't before
+
+Hide bombard notification after bombarding
+
+By SomeTroglodyte:
+- Desktop starting size fix
+- Fix stats reward for GP consumption escalation
+- Fix Great Person Create Improvement w/ Resource
+
+By Gualdimar:
+- Victory screen fixed button position
+- Fixed foreign city religion table exploit

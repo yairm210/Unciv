@@ -1,168 +1,412 @@
 package com.unciv.models.ruleset.unit
 
-import com.unciv.Constants
-import com.unciv.UncivGame
+import com.unciv.logic.city.City
 import com.unciv.logic.city.CityConstructions
-import com.unciv.logic.city.IConstruction
-import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.MapUnit
+import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.mapunit.MapUnit
+import com.unciv.models.Counter
+import com.unciv.models.ruleset.INonPerpetualConstruction
+import com.unciv.models.ruleset.RejectionReason
+import com.unciv.models.ruleset.RejectionReasonType
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.translations.Translations
-import com.unciv.models.translations.tr
-import com.unciv.models.stats.INamed
+import com.unciv.models.ruleset.RulesetObject
+import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTarget
+import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.stats.Stat
+import com.unciv.ui.components.extensions.filterAndLogic
+import com.unciv.ui.components.extensions.getNeedMoreAmountString
+import com.unciv.ui.components.extensions.toPercent
+import com.unciv.ui.objectdescriptions.BaseUnitDescriptions
+import com.unciv.ui.screens.civilopediascreen.FormattedLine
+import kotlin.math.pow
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
 
 /** This is the basic info of the units, as specified in Units.json,
  in contrast to MapUnit, which is a specific unit of a certain type that appears on the map */
-class BaseUnit : INamed, IConstruction {
+class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
-    override lateinit var name: String
-    var cost: Int = 0
-    var hurryCostModifier: Int = 0
+    override var cost: Int = -1
+    override var hurryCostModifier: Int = 0
     var movement: Int = 0
-    var strength:Int = 0
-    var rangedStrength:Int = 0
-    var range:Int = 2
+    var strength: Int = 0
+    var rangedStrength: Int = 0
+    var religiousStrength: Int = 0
+    var range: Int = 2
     var interceptRange = 0
-    lateinit var unitType: UnitType
-    internal var unbuildable: Boolean = false // for special units like great people
-    var requiredTech:String? = null
-    var requiredResource:String? = null
-    var uniques =HashSet<String>()
-    var promotions =HashSet<String>()
-    var obsoleteTech:String?=null
-    var upgradesTo:String? = null
-    var replaces:String?=null
-    var uniqueTo:String?=null
-    var attackSound:String?=null
+    var unitType: String = ""
+
+    val type by lazy { ruleset.unitTypes[unitType]!! }
+    override var requiredTech: String? = null
+    private var requiredResource: String? = null
+
+    override fun getUniqueTarget() = UniqueTarget.Unit
+
+    var replacementTextForUniques = ""
+    var promotions = HashSet<String>()
+    var obsoleteTech: String? = null
+    var upgradesTo: String? = null
+    var replaces: String? = null
+    var uniqueTo: String? = null
+    var attackSound: String? = null
+
+    @Transient
+    var cachedForceEvaluation: Int = -1
+
+    @Transient
+    val costFunctions = BaseUnitCost(this)
+
+    lateinit var ruleset: Ruleset
 
 
-    fun getShortDescription(): String {
-        val infoList= mutableListOf<String>()
-        for(unique in uniques)
-            infoList+= Translations.translateBonusOrPenalty(unique)
-        for(promotion in promotions)
-            infoList += promotion.tr()
-        if(strength!=0) infoList += "{Strength}: $strength".tr()
-        if(rangedStrength!=0) infoList += "{Ranged strength}: $rangedStrength".tr()
-        if(movement!=2) infoList+="{Movement}: $movement".tr()
-        return infoList.joinToString()
-    }
+    fun getShortDescription() = BaseUnitDescriptions.getShortDescription(this)
 
-    fun getDescription(forPickerScreen:Boolean): String {
-        val sb = StringBuilder()
-        if(requiredResource!=null) sb.appendln("{Requires} {$requiredResource}".tr())
-        if(!forPickerScreen) {
-            if(uniqueTo!=null) sb.appendln("Unique to [$uniqueTo], replaces [$replaces]".tr())
-            if (unbuildable) sb.appendln("Unbuildable".tr())
-            else sb.appendln("{Cost}: $cost".tr())
-            if(requiredTech!=null) sb.appendln("Required tech: [$requiredTech]".tr())
-            if(upgradesTo!=null) sb.appendln("Upgrades to [$upgradesTo]".tr())
-            if(obsoleteTech!=null) sb.appendln("Obsolete with [$obsoleteTech]".tr())
-        }
-        if(strength!=0){
-            sb.append("{Strength}: $strength".tr())
-            if(rangedStrength!=0)  sb.append(", {Ranged strength}: $rangedStrength".tr())
-            if(rangedStrength!=0)  sb.append(", {Range}: $range".tr())
-            sb.appendln()
-        }
+    /** Generate description as multi-line string for CityScreen addSelectedConstructionTable
+     * @param city Supplies civInfo to show available resources after resource requirements */
+    fun getDescription(city: City): String = BaseUnitDescriptions.getDescription(this, city)
 
-        for(unique in uniques)
-            sb.appendln(Translations.translateBonusOrPenalty(unique))
+    override fun makeLink() = "Unit/$name"
 
-        for(promotion in promotions)
-            sb.appendln(promotion.tr())
+    override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> =
+            BaseUnitDescriptions.getCivilopediaTextLines(this, ruleset)
 
-        sb.appendln("{Movement}: $movement".tr())
-        return sb.toString()
-    }
-
-    fun getMapUnit(ruleset: Ruleset): MapUnit {
+    fun getMapUnit(civInfo: Civilization): MapUnit {
         val unit = MapUnit()
         unit.name = name
+        unit.civ = civInfo
+        unit.owner = civInfo.civName
 
-        unit.setTransients(ruleset) // must be after setting name because it sets the baseUnit according to the name
+        // must be after setting name & civInfo because it sets the baseUnit according to the name
+        // and the civInfo is required for using `hasUnique` when determining its movement options
+        unit.setTransients(civInfo.gameInfo.ruleset)
 
         return unit
     }
 
-    override fun canBePurchased(): Boolean {
+    override fun getProductionCost(civInfo: Civilization): Int  = costFunctions.getProductionCost(civInfo)
+
+    override fun canBePurchasedWithStat(city: City?, stat: Stat): Boolean {
+        if (city == null) return super.canBePurchasedWithStat(null, stat)
+        if (hasUnique(UniqueType.CannotBePurchased)) return false
+        if (getRejectionReasons(city.cityConstructions).any { it.type != RejectionReasonType.Unbuildable  })
+            return false
+        if (costFunctions.canBePurchasedWithStat(city, stat)) return true
+        return super.canBePurchasedWithStat(city, stat)
+    }
+
+    /** Whenever we call .hasUniques() or .getMatchingUniques(), we also want to return the uniques from the unit type
+     * All of the IHasUniques functions converge to getMatchingUniques, so overriding this one function gives us all of them */
+    override fun getMatchingUniques(uniqueTemplate: String, stateForConditionals: StateForConditionals?): Sequence<Unique> {
+        val baseUnitMatchingUniques = super<RulesetObject>.getMatchingUniques(uniqueTemplate, stateForConditionals)
+        return if (::ruleset.isInitialized) baseUnitMatchingUniques +
+                type.getMatchingUniques(uniqueTemplate, stateForConditionals)
+        else baseUnitMatchingUniques // for e.g. Mod Checker, we may chech a BaseUnit's uniques without initializing ruleset
+    }
+
+    override fun getBaseBuyCost(city: City, stat: Stat): Float? {
+        return sequence {
+            val baseCost = super.getBaseBuyCost(city, stat)
+            if (baseCost != null)
+                yield(baseCost)
+            yieldAll(costFunctions.getBaseBuyCosts(city, stat))
+        }.minOrNull()
+    }
+
+    override fun getStatBuyCost(city: City, stat: Stat): Int? = costFunctions.getStatBuyCost(city, stat)
+
+    fun getDisbandGold(civInfo: Civilization) = getBaseGoldCost(civInfo).toInt() / 20
+
+    override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
+        val rejectionReasons = getRejectionReasons(cityConstructions)
+
+        if (rejectionReasons.none { !it.shouldShow }) return true
+        if (canBePurchasedWithAnyStat(cityConstructions.city)
+            && rejectionReasons.all { it.type == RejectionReasonType.Unbuildable }) return true
+        return false
+    }
+
+    override fun getRejectionReasons(cityConstructions: CityConstructions): Sequence<RejectionReason> = sequence {
+        if (isWaterUnit() && !cityConstructions.city.isCoastal())
+            yield(RejectionReasonType.WaterUnitsInCoastalCities.toInstance())
+        if (isAirUnit()) {
+            val fakeUnit = getMapUnit(cityConstructions.city.civ)
+            val canUnitEnterTile = fakeUnit.movement.canMoveTo(cityConstructions.city.getCenterTile())
+            if (!canUnitEnterTile)
+                yield(RejectionReasonType.NoPlaceToPutUnit.toInstance())
+        }
+        val civInfo = cityConstructions.city.civ
+
+        for (unique in getMatchingUniques(UniqueType.OnlyAvailableWhen, StateForConditionals.IgnoreConditionals))
+            if (!unique.conditionalsApply(civInfo, cityConstructions.city))
+                yield(RejectionReasonType.ShouldNotBeDisplayed.toInstance())
+
+        for (unique in getMatchingUniques(UniqueType.RequiresPopulation))
+            if (unique.params[0].toInt() > cityConstructions.city.population.population)
+                yield(RejectionReasonType.PopulationRequirement.toInstance(unique.text))
+
+        yieldAll(getRejectionReasons(civInfo, cityConstructions.city))
+    }
+
+    fun getRejectionReasons(
+        civ: Civilization,
+        city: City? = null,
+        additionalResources: Counter<String> = Counter.ZERO
+    ): Sequence<RejectionReason> = sequence {
+        if (requiredTech != null && !civ.tech.isResearched(requiredTech!!))
+            yield(RejectionReasonType.RequiresTech.toInstance("$requiredTech not researched"))
+        if (obsoleteTech != null && civ.tech.isResearched(obsoleteTech!!))
+            yield(RejectionReasonType.Obsoleted.toInstance("Obsolete by $obsoleteTech"))
+
+        if (uniqueTo != null && uniqueTo != civ.civName)
+            yield(RejectionReasonType.UniqueToOtherNation.toInstance("Unique to $uniqueTo"))
+        if (civ.cache.uniqueUnits.any { it.replaces == name })
+            yield(RejectionReasonType.ReplacedByOurUnique.toInstance("Our unique unit replaces this"))
+
+        if (!civ.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon())
+            yield(RejectionReasonType.DisabledBySetting.toInstance())
+
+        val stateForConditionals = StateForConditionals(civ, city)
+
+        if (hasUnique(UniqueType.Unbuildable, stateForConditionals))
+            yield(RejectionReasonType.Unbuildable.toInstance())
+
+        if ((civ.isCityState() || civ.isOneCityChallenger()) && hasUnique(UniqueType.FoundCity, stateForConditionals))
+            yield(RejectionReasonType.NoSettlerForOneCityPlayers.toInstance())
+
+        if (getMatchingUniques(UniqueType.MaxNumberBuildable, stateForConditionals).any {
+                civ.civConstructions.countConstructedObjects(this@BaseUnit) >= it.params[0].toInt()
+            })
+            yield(RejectionReasonType.MaxNumberBuildable.toInstance())
+
+        if (!civ.isBarbarian()) { // Barbarians don't need resources
+            val civResources = Counter(civ.getCivResourcesByName()) + additionalResources
+            for ((resource, requiredAmount) in getResourceRequirementsPerTurn()) {
+                val availableAmount = civResources[resource]
+                if (availableAmount < requiredAmount) {
+                    val message = resource.getNeedMoreAmountString(requiredAmount - availableAmount)
+                    yield(RejectionReasonType.ConsumesResources.toInstance(message))
+                }
+            }
+        }
+
+        for (unique in civ.getMatchingUniques(UniqueType.CannotBuildUnits, stateForConditionals))
+            if (this@BaseUnit.matchesFilter(unique.params[0])) {
+                val hasHappinessCondition = unique.conditionals.any {
+                    it.type == UniqueType.ConditionalBelowHappiness || it.type == UniqueType.ConditionalBetweenHappiness
+                }
+                if (hasHappinessCondition)
+                    yield(RejectionReasonType.CannotBeBuiltUnhappiness.toInstance(unique.text))
+                else yield(RejectionReasonType.CannotBeBuilt.toInstance())
+            }
+    }
+
+    fun isBuildable(civInfo: Civilization) = getRejectionReasons(civInfo).none()
+
+    override fun isBuildable(cityConstructions: CityConstructions): Boolean =
+            getRejectionReasons(cityConstructions).none()
+
+    override fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat?): Boolean {
+        val civInfo = cityConstructions.city.civ
+        val unit = civInfo.units.addUnit(this, cityConstructions.city)
+            ?: return false  // couldn't place the unit, so there's actually no unit =(
+
+        //movement penalty
+        if (boughtWith != null && !civInfo.gameInfo.gameParameters.godMode && !unit.hasUnique(UniqueType.MoveImmediatelyOnceBought))
+            unit.currentMovement = 0f
+
+        if (this.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
+
+        addConstructionBonuses(unit, cityConstructions)
+
         return true
     }
 
-    override fun getProductionCost(civInfo: CivilizationInfo): Int {
-        var productionCost = cost.toFloat()
-        if (civInfo.isPlayerCivilization())
-            productionCost *= civInfo.getDifficulty().unitCostModifier
-        else
-            productionCost *= civInfo.gameInfo.getDifficulty().aiUnitCostModifier
-        productionCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
-        return productionCost.toInt()
+    fun addConstructionBonuses(unit: MapUnit, cityConstructions: CityConstructions) {
+        val civInfo = cityConstructions.city.civ
+
+        @Suppress("LocalVariableName")
+        var XP = 0
+
+        for (unique in
+        cityConstructions.city.getMatchingUniques(UniqueType.UnitStartingExperience)
+            .filter { cityConstructions.city.matchesFilter(it.params[2]) }
+        ) {
+            if (unit.matchesFilter(unique.params[0]))
+                XP += unique.params[1].toInt()
+        }
+        unit.promotions.XP = XP
+
+        for (unique in cityConstructions.city.getMatchingUniques(UniqueType.UnitStartingPromotions)
+            .filter { cityConstructions.city.matchesFilter(it.params[1]) }) {
+            val filter = unique.params[0]
+            val promotion = unique.params.last()
+
+            if (unit.matchesFilter(filter)
+                || (
+                    filter == "relevant"
+                    && civInfo.gameInfo.ruleset.unitPromotions.values
+                        .any {
+                            it.name == promotion
+                            && unit.type.name in it.unitTypes
+                        }
+                    )
+            ) {
+                unit.promotions.addPromotion(promotion, isFree = true)
+            }
+        }
     }
 
-    fun getBaseGoldCost() = Math.pow((30 * cost).toDouble(), 0.75) * (1 + hurryCostModifier / 100)
-
-    override fun getGoldCost(civInfo: CivilizationInfo): Int {
-        var cost = getBaseGoldCost()
-        if (civInfo.policies.adoptedPolicies.contains("Mercantilism")) cost *= 0.75
-        if (civInfo.policies.adoptedPolicies.contains("Militarism")) cost *= 0.66f
-        if (civInfo.containsBuildingUnique("-15% to purchasing items in cities")) cost *= 0.85
-        return (cost / 10).toInt() * 10 // rounded down o nearest ten
+    fun getReplacedUnit(ruleset: Ruleset): BaseUnit {
+        return if (replaces == null) this
+        else ruleset.units[replaces!!]!!
     }
 
-    fun getDisbandGold() = getBaseGoldCost().toInt()/20
+    /** Implements [UniqueParameterType.BaseUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.BaseUnitFilter] */
+    fun matchesFilter(filter: String): Boolean {
+        return filter.filterAndLogic { matchesFilter(it) } // multiple types at once - AND logic. Looks like:"{Military} {Land}"
+            ?: when (filter) {
 
-    override fun shouldBeDisplayed(construction: CityConstructions): Boolean {
-        val rejectionReason = getRejectionReason(construction)
-        return rejectionReason=="" || rejectionReason.startsWith("Requires")
+            unitType -> true
+            name -> true
+            replaces -> true
+            "All" -> true
+
+            "Melee" -> isMelee()
+            "Ranged" -> isRanged()
+            "Civilian" -> isCivilian()
+            "Military" -> isMilitary()
+            "Land" -> isLandUnit()
+            "Water" -> isWaterUnit()
+            "Air" -> isAirUnit()
+            "non-air" -> !movesLikeAirUnits()
+
+            "Nuclear Weapon" -> isNuclearWeapon()
+            "Great Person" -> isGreatPerson()
+            "Religious" -> hasUnique(UniqueType.ReligiousUnit)
+
+            else -> {
+                if (type.matchesFilter(filter)) return true
+                if (requiredTech != null && ruleset.technologies[requiredTech]?.matchesFilter(filter)==true) return true
+                if (
+                    // Uniques using these kinds of filters should be deprecated and replaced with adjective-only parameters
+                    filter.endsWith(" units")
+                    // "military units" --> "Military", using invariant locale
+                    && matchesFilter(filter.removeSuffix(" units").lowercase().replaceFirstChar { it.uppercaseChar() })
+                ) return true
+                return uniqueMap.contains(filter)
+            }
+        }
     }
 
-    fun getRejectionReason(construction: CityConstructions): String {
-        if(unitType.isWaterUnit() && !construction.cityInfo.getCenterTile().isCoastalTile())
-            return "Can't build water units by the coast"
-        val civRejectionReason = getRejectionReason(construction.cityInfo.civInfo)
-        if(civRejectionReason!="") return civRejectionReason
-        return ""
+    /** Determine whether this is a City-founding unit - abstract, **without any game context**.
+     *  Use other methods for MapUnits or when there is a better StateForConditionals available. */
+    fun isCityFounder() = hasUnique(UniqueType.FoundCity, StateForConditionals.IgnoreConditionals)
+
+    fun isGreatPerson() = getMatchingUniques(UniqueType.GreatPerson).any()
+    fun isGreatPersonOfType(type: String) = getMatchingUniques(UniqueType.GreatPerson).any { it.params[0] == type }
+
+    fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon)
+
+    fun movesLikeAirUnits() = type.getMovementType() == UnitMovementType.Air
+
+    /** Returns resource requirements from both uniques and requiredResource field */
+    override fun getResourceRequirementsPerTurn(): Counter<String> = resourceRequirementsInternal
+
+    private val resourceRequirementsInternal: Counter<String> by lazy {
+        val resourceRequirements = Counter<String>()
+        if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
+        for (unique in getMatchingUniques(UniqueType.ConsumesResources))
+            resourceRequirements[unique.params[1]] = unique.params[0].toInt()
+        resourceRequirements
     }
 
-    fun getRejectionReason(civInfo: CivilizationInfo): String {
-        if (unbuildable) return "Unbuildable"
-        if (requiredTech!=null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
-        if (obsoleteTech!=null && civInfo.tech.isResearched(obsoleteTech!!)) return "Obsolete by $obsoleteTech"
-        if (uniqueTo!=null && uniqueTo!=civInfo.civName) return "Unique to $uniqueTo"
-        if (civInfo.gameInfo.ruleSet.units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique unit replaces this"
-        if (!UncivGame.Current.settings.nuclearWeaponEnabled
-                && (name == "Manhattan Project" || uniques.contains("Requires Manhattan Project"))) return "Disabled by setting"
-        if (uniques.contains("Requires Manhattan Project") && !civInfo.containsBuildingUnique("Enables nuclear weapon"))
-            return "Requires Manhattan Project"
-        if (requiredResource!=null && !civInfo.hasResource(requiredResource!!)) return "Requires [$requiredResource]"
-        if (name == Constants.settler && civInfo.isCityState()) return "No settler for city-states"
-        if (name == Constants.settler && civInfo.isOneCityChallenger()) return "No settler for players in One City Challenge"
-        return ""
+    override fun requiresResource(resource: String) = getResourceRequirementsPerTurn().containsKey(resource)
+
+    fun isRanged() = rangedStrength > 0
+    fun isMelee() = !isRanged() && strength > 0
+    fun isMilitary() = isRanged() || isMelee()
+    fun isCivilian() = !isMilitary()
+
+    private val isLandUnitInternal by lazy { type.isLandUnit() }
+    fun isLandUnit() = isLandUnitInternal
+    fun isWaterUnit() = type.isWaterUnit()
+    fun isAirUnit() = type.isAirUnit()
+
+    fun isProbablySiegeUnit() = isRanged()
+            && getMatchingUniques(UniqueType.Strength, StateForConditionals.IgnoreConditionals)
+                .any { it.params[0].toInt() > 0
+                    && it.conditionals.any { conditional -> conditional.type == UniqueType.ConditionalVsCity }
+                }
+
+    fun getForceEvaluation(): Int {
+        if (cachedForceEvaluation < 0) evaluateForce()
+        return cachedForceEvaluation
     }
 
-    fun isBuildable(civInfo: CivilizationInfo) = getRejectionReason(civInfo)==""
+    private fun evaluateForce() {
+        if (strength == 0 && rangedStrength == 0) {
+            cachedForceEvaluation = 0
+            return
+        }
 
-    override fun isBuildable(construction: CityConstructions): Boolean {
-        return getRejectionReason(construction) == ""
+        var power = strength.toFloat().pow(1.5f)
+        var rangedPower = rangedStrength.toFloat().pow(1.45f)
+
+        // Value ranged naval units less
+        if (isWaterUnit()) {
+            rangedPower /= 2
+        }
+        if (rangedPower > 0)
+            power = rangedPower
+
+        // Replicates the formula from civ V, which is a lower multiplier than probably intended, because math
+        // They did fix it in BNW so it was completely bugged and always 1, again math
+        power = (power * movement.toFloat().pow(0.3f))
+
+        if (hasUnique(UniqueType.SelfDestructs))
+            power /= 2
+        if (isNuclearWeapon())
+            power += 4000
+
+        // Uniques
+        val allUniques = uniqueObjects.asSequence() +
+            promotions.asSequence()
+                .mapNotNull { ruleset.unitPromotions[it] }
+                .flatMap { it.uniqueObjects }
+
+        for (unique in allUniques) {
+            when (unique.type) {
+                UniqueType.Strength -> {
+                    if (unique.params[0].toInt() <= 0) continue
+                    if (unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsUnits) }) { // Bonus vs some units - a quarter of the bonus
+                        power *= (unique.params[0].toInt() / 4f).toPercent()
+                    } else if (
+                        unique.conditionals.any {
+                            it.isOfType(UniqueType.ConditionalVsCity) // City Attack - half the bonus
+                                || it.isOfType(UniqueType.ConditionalAttacking) // Attack - half the bonus
+                                || it.isOfType(UniqueType.ConditionalDefending) // Defense - half the bonus
+                                || it.isOfType(UniqueType.ConditionalFightingInTiles)
+                        } // Bonus in terrain or feature - half the bonus
+                    ) {
+                        power *= (unique.params[0].toInt() / 2f).toPercent()
+                    }
+                }
+                UniqueType.StrengthNearCapital ->
+                    if (unique.params[0].toInt() > 0)
+                        power *= (unique.params[0].toInt() / 4f).toPercent()  // Bonus decreasing with distance from capital - not worth much most of the map???
+
+                UniqueType.MayParadrop // Paradrop - 25% bonus
+                    -> power += power / 4
+                UniqueType.MustSetUp // Must set up - 20 % penalty
+                    -> power -= power / 5
+                UniqueType.AdditionalAttacks // Extra attacks - 20% bonus per extra attack
+                    -> power += (power * unique.params[0].toInt()) / 5
+                else -> {}
+            }
+        }
+
+        cachedForceEvaluation = power.toInt()
     }
-
-    override fun postBuildEvent(construction: CityConstructions) {
-        val unit = construction.cityInfo.civInfo.placeUnitNearTile(construction.cityInfo.location, name)
-        if(unit==null) return // couldn't place the unit, so there's actually no unit =(
-        unit.promotions.XP += construction.getBuiltBuildings().sumBy { it.xpForNewUnits }
-        if(construction.cityInfo.civInfo.policies.isAdopted("Total War"))
-            unit.promotions.XP += 15
-
-        if(unit.type in listOf(UnitType.Melee,UnitType.Mounted,UnitType.Armor)
-            && construction.cityInfo.containsBuildingUnique("All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion"))
-            unit.promotions.addPromotion("Drill I", isFree = true)
-    }
-
-    fun getDirectUpgradeUnit(civInfo: CivilizationInfo):BaseUnit{
-        return civInfo.getEquivalentUnit(upgradesTo!!)
-    }
-
-    override fun toString(): String = name
 }
