@@ -965,7 +965,7 @@ object NextTurnAutomation {
         }
         
         // If they have a defensive pact with another civ then we would get drawn into thier battles as well
-        motivation -= 10 * otherCivNonOverlappingDefensivePacts
+        motivation -= 30 * otherCivNonOverlappingDefensivePacts
 
         // Try to have a defensive pact with 1/5 of all civs
         val civsToAllyWith = 0.20f * allAliveCivs
