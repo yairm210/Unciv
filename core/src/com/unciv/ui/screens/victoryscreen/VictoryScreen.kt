@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.logic.VictoryData
 import com.unciv.logic.civilization.Civilization
@@ -158,6 +159,7 @@ class VictoryScreen(
             displayWonOrLost("[$winningCiv] has won a [$victoryType] Victory!", victory.defeatString)
             music.chooseTrack(playerCiv.civName, MusicMood.Defeat, EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch))
         }
+        GUI.getSettings().stopAutoPlay()
     }
 
     private fun displayWonOrLost(vararg descriptions: String) {
