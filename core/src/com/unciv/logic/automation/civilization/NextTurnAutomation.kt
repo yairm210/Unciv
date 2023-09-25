@@ -795,8 +795,9 @@ object NextTurnAutomation {
         if (diploManager.hasFlag(DiplomacyFlags.DeclinedDeclarationOfFriendship)) return false
         // Shortcut, if it is below favorable then don't consider it
         if (diploManager.isRelationshipLevelLT(RelationshipLevel.Favorable)) return false
-        
+
         val numOfFriends = civInfo.diplomacy.count { it.value.hasFlag(DiplomacyFlags.DeclarationOfFriendship) }
+        val otherCivNumberOfFriends = otherCiv.diplomacy.count { it.value.hasFlag(DiplomacyFlags.DeclarationOfFriendship) }
         val knownCivs = civInfo.getKnownCivs().count { it.isMajorCiv() && it.isAlive() }
         val allCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() } - 1 // Don't include us
         val deadCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() && !it.isAlive() }
@@ -823,6 +824,9 @@ object NextTurnAutomation {
             // Goes form 0 to -120 as the civ gets more friends, offset by civsToAllyWith
             motivation -= (120f * (numOfFriends - civsToAllyWith) / (knownCivs - civsToAllyWith)).toInt()
         }
+        
+        //The more friends they have the less we should like them (To promote teams)
+        motivation -= otherCivNumberOfFriends * 10
 
         // Goes from 0 to -50 as more civs die
         // this is meant to prevent the game from stalemating when a group of friends
