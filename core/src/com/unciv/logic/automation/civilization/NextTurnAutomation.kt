@@ -815,14 +815,14 @@ object NextTurnAutomation {
             else -> 0
         }
         
-        // Try to ally with a fourth of the civs in play
+        // Try to make friends with a fourth of the civs in play
         val civsToAllyWith = 0.25f * allAliveCivs
         if (numOfFriends < civsToAllyWith) {
             // Goes from 10 to 0 once the civ gets 1/4 of all alive civs as friends
             motivation += (10 - 10 * (numOfFriends / civsToAllyWith)).toInt()
         } else {
-            // Goes form 0 to -120 as the civ gets more friends, offset by civsToAllyWith
-            motivation -= (120f * (numOfFriends - civsToAllyWith) / (knownCivs - civsToAllyWith)).toInt()
+            // Goes form 0 to -240 as the civ gets more friends, offset by civsToAllyWith
+            motivation -= (240f * (numOfFriends - civsToAllyWith) / (knownCivs - civsToAllyWith)).toInt()
         }
         
         //The more friends they have the less we should like them (To promote teams)
