@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Disposable
 import com.unciv.GUI
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.components.input.onClick
+import com.unciv.ui.components.input.onRightClick
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.NextTurnMenu
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -21,13 +22,17 @@ class AutoPlayStatusButton(
 
     init {
         add(Stack(autoPlayImage)).pad(5f)
+        val settings = GUI.getSettings()
         onClick {
-            val settings = GUI.getSettings()
 
             if (settings.turnsToAutoPlay > 0)
                 settings.stopAutoPlay()
             else
                 NextTurnMenu(stage,this, nextTurnButton, worldScreen)
+        }
+        onRightClick {         
+            settings.turnsToAutoPlay = settings.autoPlayMaxTurns
+            nextTurnButton.update()
         }
     }
 
