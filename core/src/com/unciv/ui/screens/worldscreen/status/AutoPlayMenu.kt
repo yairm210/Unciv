@@ -4,8 +4,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
-import com.unciv.logic.automation.Automation
-import com.unciv.logic.city.City
 import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.screens.worldscreen.WorldScreen
@@ -17,7 +15,7 @@ import com.unciv.ui.screens.worldscreen.status.NextTurnButton
 /**
  * Adds a number of options 
  */
-class NextTurnMenu(
+class AutoPlayMenu(
     stage: Stage,
     positionNextTo: Actor,
     private val nextTurnButton: NextTurnButton,
