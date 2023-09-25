@@ -1071,17 +1071,15 @@ object NextTurnAutomation {
         // Civs with more score are more threatening to our victory
         // Bias towards attacking civs with a high score and low military
         // Bias against attacking civs with a low score and a high military
-        // Designed to mitigate AIs declaring war on weaker civs instead of thier rivals
+        // Designed to mitigate AIs declaring war on weaker civs instead of their rivals
         val scoreRatio = civInfo.getStatForRanking(RankingType.Score).toFloat() / otherCiv.getStatForRanking(RankingType.Score).toFloat()
         val scoreRatioModifier = when {
-            scoreRatio > 2f -> 10
-            scoreRatio > 1.8f -> 8
-            scoreRatio > 1.6f -> 6
-            scoreRatio > 1.2f -> 4
-            scoreRatio > 1f -> 2
+            scoreRatio > 2f -> 15
+            scoreRatio > 1.5f -> 10
+            scoreRatio > 1f -> 5
             scoreRatio > .8f -> 0
-            scoreRatio > .5f -> -5
-            scoreRatio > .25f -> -10
+            scoreRatio > .5f -> -10
+            scoreRatio > .25f -> -20
             else -> 0
         }
         modifierMap["Relative score"] = scoreRatioModifier
