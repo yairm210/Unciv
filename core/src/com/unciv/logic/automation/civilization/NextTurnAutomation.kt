@@ -1115,6 +1115,17 @@ object NextTurnAutomation {
                 modifierMap["About to win"] = 15
             wonderCount += city.cityConstructions.getBuiltBuildings().count { it.isWonder }
         }
+
+        // If they are at war with our allies, then we should join in
+        var alliedWarMotivation = 0
+        for(thirdCiv in civInfo.getDiplomacyManager(otherCiv).getCommonKnownCivs()) {
+            val thirdCivDiploManager = civInfo.getDiplomacyManager(thirdCiv)
+            if (thirdCivDiploManager.hasFlag(DiplomacyFlags.DeclinedDeclarationOfFriendship)
+                && thirdCiv.isAtWarWith(otherCiv)) {
+                alliedWarMotivation += if (thirdCivDiploManager.hasFlag(DiplomacyFlags.DefensivePact)) 15 else 5
+            }
+        }
+        modifierMap["War with allies"]
         
         // The more wonders they have, the more beneficial it is to conquer them
         // Civs need an army to protect thier wonders which give the most score
