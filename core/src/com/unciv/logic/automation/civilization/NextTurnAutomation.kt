@@ -1142,7 +1142,7 @@ object NextTurnAutomation {
         // The more wonders they have, the more beneficial it is to conquer them
         // Civs need an army to protect thier wonders which give the most score
         if (wonderCount > 0)
-            modifierMap["Owned Wonders"] = wonderCount.coerceAtMost(15)
+            modifierMap["Owned Wonders"] = (wonderCount * 2).coerceAtMost(20)
 
         var motivationSoFar = modifierMap.values.sum()
 
