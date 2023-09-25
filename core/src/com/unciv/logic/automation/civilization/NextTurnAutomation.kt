@@ -1066,7 +1066,7 @@ object NextTurnAutomation {
             modifierMap["Declaration of Friendship"] = -10
 
         if (diplomacyManager.hasFlag(DiplomacyFlags.DefensivePact))
-            modifierMap["Declaration of Friendship"] = -15
+            modifierMap["Defensive Pact"] = -15
 
         val relationshipModifier = when (diplomacyManager.relationshipIgnoreAfraid()) {
             RelationshipLevel.Unforgivable -> 10
