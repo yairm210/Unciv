@@ -211,15 +211,12 @@ object BaseUnitDescriptions {
      */
     // Note: By popular request (this is a simple variant of one of the ideas in #10175)
     private fun ArrayList<FormattedLine>.addPixelUnitImage(baseUnit: BaseUnit) {
-        // These are usually off-center within their bounding box, which looks bad. A correction
-        // would need to detect widths of transparent borders and re-map a smaller TextureRegion
-        // with different coords than the atlas file says...
         if (baseUnit.civilopediaText.any { it.extraImage.isNotEmpty() }) return
         val settings = GUI.getSettings()
         if (settings.unitSet.isNullOrEmpty() || settings.pediaUnitArtSize < 1f) return
         val imageName = "TileSets/${settings.unitSet}/Units/${baseUnit.name}"
         if (!ImageGetter.imageExists(imageName)) return  // Some units don't have Unit art (e.g. nukes)
-        add(FormattedLine(extraImage = imageName, imageSize = settings.pediaUnitArtSize))
+        add(FormattedLine(extraImage = imageName, imageSize = settings.pediaUnitArtSize, centered = true))
         add(FormattedLine(separator = true, color = "#7f7f7f"))
     }
 

@@ -2,8 +2,15 @@ package com.unciv.ui.screens.civilopediascreen
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Pixmap
+import com.badlogic.gdx.graphics.TextureData
+import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.graphics.glutils.FileTextureData
+import com.badlogic.gdx.graphics.glutils.PixmapTextureData
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -238,7 +245,8 @@ class FormattedLine (
             try {
                 val image = when {
                     ImageGetter.imageExists(extraImage) ->
-                        ImageGetter.getImage(extraImage)
+                        if (centered) ImageGetter.getDrawable(extraImage).cropToContent()
+                        else ImageGetter.getImage(extraImage)
                     Gdx.files.internal("ExtraImages/$extraImage.png").exists() ->
                         ImageGetter.getExternalImage("$extraImage.png")
                     Gdx.files.internal("ExtraImages/$extraImage.jpg").exists() ->
@@ -340,4 +348,63 @@ class FormattedLine (
             else -> "'$text'->$link"
         }
     }
+
+    // region Helpers to crop an image to content
+    private fun TextureRegionDrawable.cropToContent(): Image {
+        val rect = getContentSize()
+        val newRegion = TextureRegion(region.texture, rect.x, rect.y, rect.width, rect.height)
+        return Image(TextureRegionDrawable(newRegion))
+    }
+
+    private fun TextureRegionDrawable.getContentSize(): java.awt.Rectangle {
+        val pixMap = region.texture.textureData.getReadonlyPixmap()
+        val result = java.awt.Rectangle(region.regionX, region.regionY, region.regionWidth, region.regionHeight) // Not Gdx: integers!
+        val original = java.awt.Rectangle(result)
+
+        while (result.height > 0 && pixMap.isRowEmpty(result, result.height - 1)) {
+            result.height -= 1
+        }
+        while (result.height > 0 && pixMap.isRowEmpty(result, 0)) {
+            result.y += 1
+            result.height -= 1
+        }
+        while (result.width > 0 && pixMap.isColumnEmpty(result, result.width - 1)) {
+            result.width -= 1
+        }
+        while (result.width > 0 && pixMap.isColumnEmpty(result, 0)) {
+            result.x += 1
+            result.width -= 1
+        }
+
+        result.grow((original.width / 40).coerceAtLeast(1), (original.height / 40).coerceAtLeast(1))
+        return result.intersection(original)
+    }
+
+    private fun Pixmap.isRowEmpty(bounds: java.awt.Rectangle, relativeY: Int): Boolean {
+        val y = bounds.y + relativeY
+        return (bounds.x until bounds.x + bounds.width).all {
+            getPixel(it, y) and 255 == 0
+        }
+    }
+
+    private fun Pixmap.isColumnEmpty(bounds: java.awt.Rectangle, relativeX: Int): Boolean {
+        val x = bounds.x + relativeX
+        return (bounds.y until bounds.y + bounds.height).all {
+            getPixel(x, it) and 255 == 0
+        }
+    }
+
+    /** Retrieve a texture Pixmap without reload or ownership transfer, useable for read operations only.
+     *
+     *  (FileTextureData.consumePixmap forces a reload of the entire file - inefficient if we only want to look at pixel values) */
+    private fun TextureData.getReadonlyPixmap(): Pixmap {
+        if (!isPrepared) prepare()
+        if (this is PixmapTextureData) return consumePixmap()
+        if (this !is FileTextureData) throw TypeCastException("getReadonlyPixmap only works on file or pixmap based textures")
+        val field = FileTextureData::class.java.getDeclaredField("pixmap")
+        field.isAccessible = true
+        return field.get(this) as Pixmap
+    }
+    // endregion
+
 }
