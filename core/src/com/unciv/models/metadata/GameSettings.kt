@@ -134,6 +134,9 @@ class GameSettings {
     enum class NationPickerListMode { Icons, List }
     var nationPickerListMode = NationPickerListMode.List
 
+    /** Size of automatic display of UnitSet art in Civilopedia - 0 to disable */
+    var pediaUnitArtSize = 0f
+
     /** used to migrate from older versions of the settings */
     var version: Int? = null
 
