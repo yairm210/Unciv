@@ -835,12 +835,14 @@ object NextTurnAutomation {
     }
     
     private fun offerOpenBorders(civInfo: Civilization) {
-        val civsThatWeCanDeclareFriendshipWith = civInfo.getKnownCivs()
+        if (!civInfo.hasUnique(UniqueType.EnablesOpenBorders)) return
+        val civsThatWeCanOpenBordersWith = civInfo.getKnownCivs()
             .filter { it.isMajorCiv() && !civInfo.isAtWarWith(it) 
+                && it.hasUnique(UniqueType.EnablesOpenBorders)
                 && !civInfo.getDiplomacyManager(it).hasOpenBorders
                 && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedOpenBorders) }
             .sortedByDescending { it.getDiplomacyManager(civInfo).relationshipLevel() }.toList()
-        for (otherCiv in civsThatWeCanDeclareFriendshipWith) {
+        for (otherCiv in civsThatWeCanOpenBordersWith) {
             // Default setting is 3, this will be changed according to different civ.
             if ((1..10).random() <= 3 && wantsToOpenBorders(civInfo, otherCiv)) {
                 val tradeLogic = TradeLogic(civInfo, otherCiv)
@@ -857,7 +859,7 @@ object NextTurnAutomation {
         // Don't accept if they are at war with our friends, they might use our land to attack them
         if (civInfo.diplomacy.values.any { it.isRelationshipLevelGE(RelationshipLevel.Friend) && it.otherCiv().isAtWarWith(otherCiv)})
             return false
-        if (hasAtLeastMotivationToAttack(civInfo, otherCiv, civInfo.getDiplomacyManager(otherCiv).opinionOfOtherCiv().toInt()) > 0)
+        if (hasAtLeastMotivationToAttack(civInfo, otherCiv, (civInfo.getDiplomacyManager(otherCiv).opinionOfOtherCiv()/ 2 - 10).toInt()) >= 0)
             return false
         return true
     }

@@ -199,7 +199,7 @@ class AlertPopup(
         addLeaderName(otherciv)
         addGoodSizedLabel("My friend, shall we declare our friendship to the world?").row()
         addCloseButton("We are not interested.", KeyboardBinding.Cancel) {
-            playerDiploManager.otherCivDiplomacy().setFlag(DiplomacyFlags.DeclinedDeclarationOfFriendship, 10)
+            playerDiploManager.otherCivDiplomacy().setFlag(DiplomacyFlags.DeclinedDeclarationOfFriendship, 20)
         }.row()
         addCloseButton("Declare Friendship ([30] turns)", KeyboardBinding.Confirm) {
             playerDiploManager.signDeclarationOfFriendship()
