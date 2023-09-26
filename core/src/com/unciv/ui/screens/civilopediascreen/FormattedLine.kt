@@ -245,8 +245,11 @@ class FormattedLine (
                         ImageGetter.getExternalImage("$extraImage.jpg")
                     else -> return table
                 }
-                val width = if (imageSize.isNaN()) labelWidth else imageSize
-                val height = width * image.height / image.width
+                // limit larger cordinate to a given max size
+                val maxSize = if (imageSize.isNaN()) labelWidth else imageSize
+                val (width, height) = if (image.width > image.height)
+                        maxSize to maxSize * image.height / image.width
+                    else maxSize * image.width / image.height to maxSize
                 table.add(image).size(width, height)
             } catch (exception: Exception) {
                 Log.error("Exception while rendering civilopedia text", exception)

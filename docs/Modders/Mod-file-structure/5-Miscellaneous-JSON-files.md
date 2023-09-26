@@ -296,21 +296,21 @@ An example of the format is:
 
 List of attributes - note not all combinations are valid:
 
-| Attribute | Type | Description |
-| --------- | ---- | ----------- |
-|`text`|String|Text to display.|
-|`link`|String|Create link and icon, format: Category/Name or _external_ link ('http://','https://','mailto:').|
-|`icon`|String|Show icon without linking, format: Category/Name.|
-|`extraImage`|String|Display an Image instead of text. Can be a path found in a texture atlas or or the name of a png or jpg in the ExtraImages folder.|
-|`imageSize`|Float|Width in world units of the [extraImage], height is calculated preserving aspect ratio. Defaults to available width.|
-|`header`|Integer|Header level. 1 means double text size and decreases from there.|
-|`size`|Integer|Text size, default is 18. Use `size` or `header` but not both.|
-|`indent`|Integer|Indent level. 0 means text will follow icons, 1 aligns to the right of all icons, each further step is 30 units.|
-|`padding`|Float|Vertical padding between rows, defaults to 5 units.|
-|`color`|String|Sets text color, accepts names or 6/3-digit web colors (e.g. #FFA040).|
-|`separator`|Boolean|Renders a separator line instead of text. Can be combined only with `color` and `size` (line width, default 2).|
-|`starred`|Boolean|Decorates text with a star icon - if set, it receives the `color` instead of the text.|
-|`centered`|Boolean|Centers the line (and turns off automatic wrap).|
+| Attribute    | Type    | Description                                                                                                                         |
+|--------------|---------|-------------------------------------------------------------------------------------------------------------------------------------|
+| `text`       | String  | Text to display.                                                                                                                    |
+| `link`       | String  | Create link and icon, format: Category/Name or _external_ link ('http://','https://','mailto:').                                    |
+| `icon`       | String  | Show icon without linking, format: Category/Name.                                                                                   |
+| `extraImage` | String  | Display an Image instead of text. Can be a path found in a texture atlas or or the name of a png or jpg in the ExtraImages folder.  |
+| `imageSize`  | Float   | Size in world units of the [extraImage], the smaller coordinate is calculated preserving aspect ratio. Defaults to available width. |
+| `header`     | Integer | Header level. 1 means double text size and decreases from there.                                                                    |
+| `size`       | Integer | Text size, default is 18. Use `size` or `header` but not both.                                                                      |
+| `indent`     | Integer | Indent level. 0 means text will follow icons, 1 aligns to the right of all icons, each further step is 30 units.                    |
+| `padding`    | Float   | Vertical padding between rows, defaults to 5 units.                                                                                 |
+| `color`      | String  | Sets text color, accepts names or 6/3-digit web colors (e.g. #FFA040).                                                              |
+| `separator`  | Boolean | Renders a separator line instead of text. Can be combined only with `color` and `size` (line width, default 2).                     |
+| `starred`    | Boolean | Decorates text with a star icon - if set, it receives the `color` instead of the text.                                              |
+| `centered`   | Boolean | Centers the line (and turns off automatic wrap).                                                                                    |
 
 The lines from json will 'surround' the automatically generated lines such that the latter are inserted just above the first json line carrying a link, if any. If no json lines have links, they will be inserted between the automatic title and the automatic info. This method may, however, change in the future.
 
