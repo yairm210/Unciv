@@ -1192,4 +1192,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     /** Checks whether a specific [uniqueTarget] as e.g. given by [IHasUniques.getUniqueTarget] works with `this` UniqueType */
     fun canAcceptUniqueTarget(uniqueTarget: UniqueTarget) =
         targetTypes.any { uniqueTarget.canAcceptUniqueTarget(it) }
+
+    companion object {
+        val uniqueTypeMap: Map<String, UniqueType> = UniqueType.values().associateBy { it.placeholderText }
+    }
 }

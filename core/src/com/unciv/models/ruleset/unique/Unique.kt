@@ -21,7 +21,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
      *  - for instance, in the city screen, we call every tile unique for every tile, which can lead to ANRs */
     val placeholderText = text.getPlaceholderText()
     val params = text.getPlaceholderParameters()
-    val type = UniqueType.values().firstOrNull { it.placeholderText == placeholderText }
+    val type = UniqueType.uniqueTypeMap[placeholderText]
 
     val stats: Stats by lazy {
         val firstStatParam = params.firstOrNull { Stats.isStats(it) }
@@ -41,7 +41,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     fun hasFlag(flag: UniqueFlag) = type != null && type.flags.contains(flag)
 
     fun hasTriggerConditional(): Boolean {
-        if(conditionals.none()) return false
+        if (conditionals.none()) return false
         return conditionals.any { conditional ->
             conditional.type?.targetTypes?.any {
                 it.canAcceptUniqueTarget(UniqueTarget.TriggerCondition) || it.canAcceptUniqueTarget(UniqueTarget.UnitActionModifier)
