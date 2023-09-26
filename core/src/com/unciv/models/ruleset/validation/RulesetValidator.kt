@@ -635,8 +635,8 @@ class RulesetValidator(val ruleset: Ruleset) {
         namedObj: INamed?,
         severityToReport: UniqueType.UniqueComplianceErrorSeverity
     ): List<RulesetError> {
-        val prefix = (if (namedObj is IRulesetObject) "${namedObj.originRuleset}: " else "") +
-            (if (namedObj == null) "The" else "${namedObj.name}'s")
+        val prefix by lazy { (if (namedObj is IRulesetObject) "${namedObj.originRuleset}: " else "") +
+            (if (namedObj == null) "The" else "${namedObj.name}'s") }
         if (unique.type == null) return checkUntypedUnique(unique, tryFixUnknownUniques, prefix)
 
         val rulesetErrors = RulesetErrorList()
