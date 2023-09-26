@@ -595,7 +595,7 @@ class RulesetValidator(val ruleset: Ruleset) {
     }
 
     private fun checkPromotionCircularReferences(lines: RulesetErrorList) {
-        fun recursiveCheck(history: LinkedHashSet<Promotion>, promotion: Promotion, level: Int) {
+        fun recursiveCheck(history: HashSet<Promotion>, promotion: Promotion, level: Int) {
             if (promotion in history) {
                 lines.add("Circular Reference in Promotions: ${history.joinToString("→") { it.name }}→${promotion.name}",
                     RulesetErrorSeverity.Warning)
@@ -605,11 +605,16 @@ class RulesetValidator(val ruleset: Ruleset) {
             history.add(promotion)
             for (prerequisiteName in promotion.prerequisites) {
                 val prerequisite = ruleset.unitPromotions[prerequisiteName] ?: continue
-                recursiveCheck(history.toCollection(linkedSetOf()), prerequisite, level + 1)
+                // Performance - if there's only one prerequisite, we can send this linked set as-is, since no one else will be using it
+                val linkedSetToPass =
+                    if (promotion.prerequisites.size == 1) history
+                    else history.toCollection(hashSetOf())
+                recursiveCheck(linkedSetToPass, prerequisite, level + 1)
             }
         }
         for (promotion in ruleset.unitPromotions.values) {
-            recursiveCheck(linkedSetOf(), promotion, 0)
+            if (promotion.prerequisites.isEmpty()) continue
+            recursiveCheck(hashSetOf(), promotion, 0)
         }
     }
 
