@@ -1,63 +1,11 @@
+performance:
+- Faster ruleset validation
+- Faster ruleset loading
 
-
-performance:  - Don't need to always create hashsets, don't need linked hash set
-
-performance:  - Only check promotion circular references once, not once per promotion
-
-performance:  - Cache unique parameter validity for the same ruleset
-
-performance: Only build strings in ruleset validation when necessary
-
-Added unitTypes json schema
-
-Added techs json schema
-
-Added tileImprovement json schema
-
-Added nations json schema
-
-description testing on vscode showed we should remove pattern descriptions
-
-Added link to unique list :D
-
-Added descriptions for some fields
-
-Double patterns for uniques, for square brackets as well
-
-Added pattern to uniques to catch bugs
-
-civilopediaText.json array-ized, since it's common *as an array*
-
-Added units.json and separate schemas for uniques and civilopediaText, for sharing
-
-specialistSlots and greatPersonPoints are specifically maps to numbers
-
-Buildings schema references stats schema, so it's reusable from other places
-
-Documentation: Validate json using online tool
-
-Documentation: Validate json using online tool
-
-update documentation since latest schema works on both!
-
-Add stats as separate schema
-
-Remove anyOf, because technically it requires matching all subschemas - just redeclare the stats values...
-
-Consistent indendation
-
-Instructions for setting up schemas on Visual Studio
-
-Instructions for setting up schemas on AS
-
-Better schema for checking field names
-
-Test - Added building schema.json to docs
-
-4.8.7-google-play
+modding: Added json schemas for autocomplete and error detection
 
 By tuvus:
-- AI Open Borders Offer fix 
-- Fix Nuke Notification 
+- AI Open Borders Offer fix
+- Fix Nuke Notification
 
 Fix City construction context menu changing Puppets  - By SomeTroglodyte
