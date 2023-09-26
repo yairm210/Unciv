@@ -1186,24 +1186,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
         abstract fun getRulesetErrorSeverity(severityToReport: UniqueComplianceErrorSeverity): RulesetErrorSeverity
     }
 
-    /** Maps uncompliant parameters to their required types */
-    fun getComplianceErrors(
-        unique: Unique,
-        ruleset: Ruleset
-    ): List<UniqueComplianceError> {
-        val errorList = ArrayList<UniqueComplianceError>()
-        for ((index, param) in unique.params.withIndex()) {
-            val acceptableParamTypes = parameterTypeMap[index]
-            val errorTypesForAcceptableParameters =
-                    acceptableParamTypes.map { it.getErrorSeverity(param, ruleset) }
-            if (errorTypesForAcceptableParameters.any { it == null }) continue // This matches one of the types!
-            val leastSevereWarning =
-                    errorTypesForAcceptableParameters.minByOrNull { it!!.ordinal }!!
-            errorList += UniqueComplianceError(param, acceptableParamTypes, leastSevereWarning)
-        }
-        return errorList
-    }
-
     fun getDeprecationAnnotation(): Deprecated? = declaringJavaClass.getField(name)
         .getAnnotation(Deprecated::class.java)
 
