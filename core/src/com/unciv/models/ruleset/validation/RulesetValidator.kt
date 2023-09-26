@@ -374,8 +374,8 @@ class RulesetValidator(val ruleset: Ruleset) {
                     RulesetErrorSeverity.Warning)
             }
             checkUniques(promotion, lines, rulesetSpecific, tryFixUnknownUniques)
-            checkPromotionCircularReferences(lines)
         }
+        checkPromotionCircularReferences(lines)
 
         for (unitType in ruleset.unitTypes.values) {
             checkUniques(unitType, lines, rulesetSpecific, tryFixUnknownUniques)
