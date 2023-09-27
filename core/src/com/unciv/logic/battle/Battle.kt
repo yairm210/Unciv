@@ -11,7 +11,6 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.CivilopediaAction
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.MapUnitAction
-import com.unciv.logic.civilization.NotificationAction
 import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PlayerType
@@ -23,7 +22,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
-import com.unciv.models.helpers.UnitMovementMemoryType
+import com.unciv.ui.components.UnitMovementMemoryType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
@@ -808,7 +807,7 @@ object Battle {
 
         // Calculate the tiles that are hit
         val hitTiles = targetTile.getTilesInDistance(blastRadius)
-        
+
         val hitCivsTerritory = ArrayList<Civilization>()
         // Declare war on the owners of all hit tiles
         for (hitCiv in hitTiles.mapNotNull { it.getOwner() }.distinct()) {
@@ -859,7 +858,7 @@ object Battle {
                 otherCiv.addNotification("A(n) [${attacker.getName()}] has been detonated by an unkown civilization!",
                     nukeNotificationAction, NotificationCategory.War, NotificationIcon.War, attacker.getName())
         }
-        
+
         // Instead of postBattleAction() just destroy the unit, all other functions are not relevant
         if (attacker.unit.hasUnique(UniqueType.SelfDestructs)) attacker.unit.destroy()
 
