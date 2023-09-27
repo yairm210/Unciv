@@ -102,6 +102,7 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
     /** Performs the layout tricks mentioned in the class Kdoc */
     private fun updateLayout() {
         val targetWidth = stage.width
+        val statsWidth = statsTable.minWidth
         val resourceWidth = resourceTable.minWidth
         val overviewWidth = overviewButton.minWidth
         val overviewHeight = overviewButton.minHeight
@@ -121,7 +122,6 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
         layout()  // force rowHeight calculation - validate is not enough - Table quirks
         val statsRowHeight = getRowHeight(0)
         val baseHeight = statsRowHeight + getRowHeight(1)
-        val statsWidth = statsTable.width
 
         fun addFillers(fillerHeight: Float) {
             add(leftFiller).size(selectedCivWidth, fillerHeight + gapFillingExtraHeight)
