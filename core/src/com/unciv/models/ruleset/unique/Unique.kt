@@ -30,9 +30,11 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     }
     val conditionals: List<Unique> = text.getConditionals()
 
-    val isTriggerable = type != null && type.targetTypes.contains(UniqueTarget.Triggerable)
+    val isTriggerable = type != null && (
+        type.targetTypes.contains(UniqueTarget.Triggerable)
+            || type.targetTypes.contains(UniqueTarget.UnitTriggerable)
             // <for [amount] turns]> in effect makes any unique become a triggerable unique
-            || conditionals.any { it.type == UniqueType.ConditionalTimedUnique }
+        )
 
     val allParams = params + conditionals.flatMap { it.params }
 

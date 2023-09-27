@@ -667,12 +667,12 @@ object UnitActions {
     }
 
     private fun addTriggerUniqueActions(unit: MapUnit, actionList: ArrayList<UnitAction>){
-        val triggerableTypes = setOf(UniqueTarget.Triggerable, UniqueTarget.UnitTriggerable)
         for (unique in unit.getUniques()) {
+            // not a unit action
             if (unique.conditionals.none { it.type?.targetTypes?.contains(UniqueTarget.UnitActionModifier) == true }) continue
+            // extends an existing unit action
             if (unique.conditionals.any { it.type == UniqueType.UnitActionExtraLimitedTimes }) continue
-            if (unique.type?.targetTypes?.any { it in triggerableTypes }!=true
-                    && unique.conditionals.none { it.type == UniqueType.ConditionalTimedUnique }) continue
+            if (!unique.isTriggerable) continue
             if (usagesLeft(unit, unique)==0) continue
 
             val baseTitle = if (unique.isOfType(UniqueType.OneTimeEnterGoldenAgeTurns))
