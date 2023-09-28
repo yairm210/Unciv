@@ -88,7 +88,9 @@ object UnitActionsReligion {
 
     internal fun addRemoveHeresyActions(unit: MapUnit, actionList: ArrayList<UnitAction>) {
         if (!unit.civ.gameInfo.isReligionEnabled()) return
-        if (unit.religion ==null) return
+        val religion = unit.civ.gameInfo.religions[unit.religion] ?: return
+        if (religion.isPantheon()) return
+
         val city = unit.currentTile.getCity() ?: return
         if (city.civ != unit.civ) return
         // Only allow the action if the city actually has any foreign religion
