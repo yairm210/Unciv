@@ -15,7 +15,8 @@ object UnitActionsGreatPerson {
 
     internal fun addGreatPersonActions(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: Tile) {
 
-        if (unit.currentMovement > 0) for (unique in unit.getUniques()) when (unique.type) {
+        if (unit.currentMovement <= 0) return
+        for (unique in unit.getUniques()) when (unique.type) {
             UniqueType.CanHurryResearch -> {
                 actionList += UnitAction(
                     UnitActionType.HurryResearch,

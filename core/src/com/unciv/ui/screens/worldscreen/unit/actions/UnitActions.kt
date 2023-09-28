@@ -751,8 +751,7 @@ object UnitActions {
         val extraTimes = unit.getMatchingUniques(actionUnique.type!!)
             .filter { it.text.removeConditionals() == actionUnique.text.removeConditionals() }
             .flatMap { unique -> unique.conditionals.filter { it.type == UniqueType.UnitActionExtraLimitedTimes } }
-            .map { it.params[0].toInt() }
-            .sum()
+            .sumOf { it.params[0].toInt() }
 
         val times = actionUnique.conditionals
             .filter { it.type == UniqueType.UnitActionLimitedTimes }
