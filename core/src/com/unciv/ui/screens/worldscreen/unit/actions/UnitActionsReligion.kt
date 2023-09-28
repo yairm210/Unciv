@@ -61,7 +61,7 @@ object UnitActionsReligion {
         if (!unit.civ.religionManager.maySpreadReligionAtAll(unit)) return
         val city = unit.currentTile.getCity() ?: return
 
-        val newStyleUnique = unit.getMatchingUniques(UniqueType.CanSpreadReligion).firstOrNull()
+        val newStyleUnique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.CanSpreadReligion).firstOrNull()
 
         val title = if (newStyleUnique != null)
                 UnitActionModifiers.actionTextWithSideEffects("Spread [${unit.getReligionDisplayName()!!}]", newStyleUnique, unit)
@@ -78,10 +78,12 @@ object UnitActionsReligion {
                 city.religion.addPressure(unit.religion!!, getPressureAddedFromSpread(unit))
                 if (unit.hasUnique(UniqueType.RemoveOtherReligions))
                     city.religion.removeAllPressuresExceptFor(unit.religion!!)
-                unit.currentMovement = 0f
 
                 if (newStyleUnique != null) UnitActionModifiers.activateSideEffects(unit, newStyleUnique)
-                else useActionWithLimitedUses(unit, Constants.spreadReligion)
+                else {
+                    useActionWithLimitedUses(unit, Constants.spreadReligion)
+                    unit.currentMovement = 0f
+                }
             }.takeIf { unit.currentMovement > 0 && unit.civ.religionManager.maySpreadReligionNow(unit) }
         )
     }
@@ -100,7 +102,7 @@ object UnitActionsReligion {
         val hasOldStyleAbility = unit.abilityUsesLeft.containsKey(Constants.removeHeresy)
             && unit.abilityUsesLeft[Constants.removeHeresy]!! > 0
 
-        val newStyleUnique = unit.getMatchingUniques(UniqueType.CanRemoveHeresy).firstOrNull()
+        val newStyleUnique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.CanRemoveHeresy).firstOrNull()
         val hasNewStyleAbility = newStyleUnique != null && UnitActionModifiers.canUse(unit, newStyleUnique)
 
         if (!hasOldStyleAbility && !hasNewStyleAbility) return
@@ -124,10 +126,12 @@ object UnitActionsReligion {
                         city.religion.isBlockedHolyCity = false
                     }
                 }
-                unit.currentMovement = 0f
 
                 if (hasNewStyleAbility) UnitActionModifiers.activateSideEffects(unit, newStyleUnique!!)
-                useActionWithLimitedUses(unit, Constants.removeHeresy)
+                else {
+                    useActionWithLimitedUses(unit, Constants.removeHeresy)
+                    unit.currentMovement = 0f
+                }
             }.takeIf { unit.currentMovement > 0f }
         )
     }
