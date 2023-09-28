@@ -9,6 +9,11 @@ import com.unciv.ui.components.Fonts
 
 object UnitActionModifiers {
 
+    fun getUsableUnitActionUniques(unit:MapUnit, actionUniqueType: UniqueType) =
+        unit.getMatchingUniques(actionUniqueType)
+            .filter { it.conditionals.none { it.type == UniqueType.UnitActionExtraLimitedTimes } }
+            .filter { usagesLeft(unit, it) != 0 }
+
     private fun getMovementPointsToUse(actionUnique: Unique): Int {
         val movementCost = actionUnique.conditionals
             .filter { it.type == UniqueType.UnitActionMovementCost }
