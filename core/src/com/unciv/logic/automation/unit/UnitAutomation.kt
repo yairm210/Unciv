@@ -462,7 +462,7 @@ object UnitAutomation {
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         val tilesThatCanWalkToAndThenPillage = unitDistanceToTiles
             .filter { it.value.totalDistance < unit.currentMovement }.keys
-            .filter { unit.movement.canMoveTo(it) && UnitActions.canPillage(unit, it)
+            .filter { unit.movement.canMoveTo(it) && UnitActionsPillage.canPillage(unit, it)
                     && (it.canPillageTileImprovement()
                     || (it.canPillageRoad() && it.getRoadOwner() != null && unit.civ.isAtWarWith(it.getRoadOwner()!!)))}
 

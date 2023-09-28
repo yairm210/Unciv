@@ -18,6 +18,7 @@ import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsFromUniques
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsReligion
 
 object SpecificUnitAutomation {
@@ -58,13 +59,13 @@ object SpecificUnitAutomation {
         if (tileToSteal != null) {
             unit.movement.headTowards(tileToSteal)
             if (unit.currentMovement > 0 && unit.currentTile == tileToSteal)
-                UnitActions.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
+                UnitActionsFromUniques.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
             return true
         }
 
         // try to build a citadel for defensive purposes
         if (unit.civ.getWorkerAutomation().evaluateFortPlacement(unit.currentTile, true)) {
-            UnitActions.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
+            UnitActionsFromUniques.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
             return true
         }
         return false
@@ -98,13 +99,13 @@ object SpecificUnitAutomation {
         }
         unit.movement.headTowards(tileForCitadel)
         if (unit.currentMovement > 0 && unit.currentTile == tileForCitadel)
-            UnitActions.getImprovementConstructionActions(unit, unit.currentTile)
+            UnitActionsFromUniques.getImprovementConstructionActions(unit, unit.currentTile)
                 .firstOrNull()?.action?.invoke()
     }
 
     fun automateSettlerActions(unit: MapUnit, tilesWhereWeWillBeCaptured: Set<Tile>) {
         if (unit.civ.gameInfo.turns == 0) {   // Special case, we want AI to settle in place on turn 1.
-            val foundCityAction = UnitActions.getFoundCityAction(unit, unit.getTile())
+            val foundCityAction = UnitActionsFromUniques.getFoundCityAction(unit, unit.getTile())
             // Depending on era and difficulty we might start with more than one settler. In that case settle the one with the best location
             val otherSettlers = unit.civ.units.getCivUnits().filter { it.currentMovement > 0 && it.baseUnit == unit.baseUnit }
             if (foundCityAction?.action != null &&
@@ -146,7 +147,7 @@ object SpecificUnitAutomation {
             return
         }
 
-        val foundCityAction = UnitActions.getFoundCityAction(unit, bestCityLocation)
+        val foundCityAction = UnitActionsFromUniques.getFoundCityAction(unit, bestCityLocation)
         if (foundCityAction?.action == null) { // this means either currentMove == 0 or city within 3 tiles
             if (unit.currentMovement > 0) // therefore, city within 3 tiles
                 throw Exception("City within distance")
@@ -215,9 +216,10 @@ object SpecificUnitAutomation {
             unit.movement.headTowards(chosenTile)
             if (unit.currentTile == chosenTile) {
                 if (unit.currentTile.isPillaged())
-                    UnitActions.getRepairAction(unit).invoke()
+                    UnitActions.getUnitActions(unit).firstOrNull { it.type == UnitActionType.Repair }
+                        ?.action?.invoke()
                 else
-                    UnitActions.getImprovementConstructionActions(unit, unit.currentTile)
+                    UnitActionsFromUniques.getImprovementConstructionActions(unit, unit.currentTile)
                         .firstOrNull()?.action?.invoke()
                 return true
             }
@@ -320,8 +322,7 @@ object SpecificUnitAutomation {
         if (unit.movement.canReach(capitalTile))
             unit.movement.headTowards(capitalTile)
         if (unit.getTile() == capitalTile) {
-            UnitActions.getAddInCapitalAction(unit, capitalTile).action!!()
-            return
+            UnitActionsFromUniques.getAddInCapitalAction(unit, capitalTile).action?.invoke()
         }
     }
 

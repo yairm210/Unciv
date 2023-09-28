@@ -8,7 +8,7 @@ import com.unciv.testing.GdxTestRunner
 import com.unciv.testing.TestGame
 import com.unciv.ui.screens.pickerscreens.PromotionTree
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions.getImprovementConstructionActions
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsFromUniques
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -66,7 +66,7 @@ class UnitUniquesTests {
         val unit = game.addUnit("Great Engineer", civ, unitTile)
         unit.currentMovement = unit.baseUnit.movement.toFloat()  // Required!
         val actionsWithoutIron = try {
-            getImprovementConstructionActions(unit, unitTile)
+            UnitActionsFromUniques.getImprovementConstructionActions(unit, unitTile)
         } catch (ex: Throwable) {
             // Give that IndexOutOfBoundsException a nicer name
             Assert.fail("getImprovementConstructionActions throws Exception ${ex.javaClass.simpleName}")
@@ -88,7 +88,7 @@ class UnitUniquesTests {
         Assert.assertTrue("Test preparation failed to add Iron to Civ resources", ironAvailable >= 3)
 
         // See if that same Engineer could create a Manufactory NOW
-        val actionsWithIron = getImprovementConstructionActions(unit, unitTile)
+        val actionsWithIron = UnitActionsFromUniques.getImprovementConstructionActions(unit, unitTile)
             .filter { it.action != null }
         Assert.assertFalse("Great Engineer SHOULD be able to create a Manufactory modded to require Iron once Iron is available",
             actionsWithIron.isEmpty())
@@ -152,7 +152,7 @@ class UnitUniquesTests {
         // add unit
         val centerTile = game.tileMap[0,0]
         val unit = game.addUnit("Scout", civ, centerTile)
-        var tree = PromotionTree(unit)
+        val tree = PromotionTree(unit)
         Assert.assertFalse("We shouldn't be able to get the promotion without XP",
             tree.canBuyUpTo(promotionTestBranchB))
 
