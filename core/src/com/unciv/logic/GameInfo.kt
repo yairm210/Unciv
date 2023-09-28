@@ -615,7 +615,7 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
 
         tileMap.setTransients(ruleset)
 
-        if (currentPlayer == "") currentPlayer = civilizations.first { it.isHuman() }.civName
+        if (currentPlayer == "") currentPlayer = civilizations.first { it.isHuman() && !it.isSpectator() }.civName
         currentPlayerCiv = getCivilization(currentPlayer)
 
         difficultyObject = ruleset.difficulties[difficulty]!!
