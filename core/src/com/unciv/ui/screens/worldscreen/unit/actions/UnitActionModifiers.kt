@@ -8,6 +8,10 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.components.Fonts
 
 object UnitActionModifiers {
+    fun canUse(unit: MapUnit, actionUnique: Unique): Boolean {
+        val usagesLeft = usagesLeft(unit, actionUnique)
+        return usagesLeft == null || usagesLeft > 0
+    }
 
     private fun getMovementPointsToUse(actionUnique: Unique): Int {
         val movementCost = actionUnique.conditionals

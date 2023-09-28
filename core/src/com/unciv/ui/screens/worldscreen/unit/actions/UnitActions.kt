@@ -320,9 +320,5 @@ object UnitActions {
         )
     }
 
-    fun canUse(unit: MapUnit, actionUnique: Unique): Boolean {
-        val usagesLeft = usagesLeft(unit, actionUnique)
-        return usagesLeft == null || usagesLeft > 0
-    }
 
 }

@@ -13,7 +13,7 @@ import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.extensions.toPercent
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionModifiers
 import java.lang.Integer.min
 import kotlin.random.Random
 
@@ -451,7 +451,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         val spreadReligionUniques = missionary.getMatchingUniques(UniqueType.CanSpreadReligion)
         if (!missionary.canDoLimitedAction(Constants.spreadReligion)
             && (spreadReligionUniques.none()
-                || UnitActions.usagesLeft(missionary, spreadReligionUniques.first()) == 0)) return false
+                || UnitActionModifiers.usagesLeft(missionary, spreadReligionUniques.first()) == 0)) return false
         return true
     }
 

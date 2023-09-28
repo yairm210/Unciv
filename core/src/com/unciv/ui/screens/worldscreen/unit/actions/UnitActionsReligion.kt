@@ -64,7 +64,7 @@ object UnitActionsReligion {
         val newStyleUnique = unit.getMatchingUniques(UniqueType.CanSpreadReligion).firstOrNull()
 
         val title = if (newStyleUnique != null)
-                UnitActions.actionTextWithSideEffects("Spread [${unit.getReligionDisplayName()!!}]", newStyleUnique, unit)
+                UnitActionModifiers.actionTextWithSideEffects("Spread [${unit.getReligionDisplayName()!!}]", newStyleUnique, unit)
         else "Spread [${unit.getReligionDisplayName()!!}]"
 
         actionList += UnitAction(
@@ -80,7 +80,7 @@ object UnitActionsReligion {
                     city.religion.removeAllPressuresExceptFor(unit.religion!!)
                 unit.currentMovement = 0f
 
-                if (newStyleUnique != null) UnitActions.activateSideEffects(unit, newStyleUnique)
+                if (newStyleUnique != null) UnitActionModifiers.activateSideEffects(unit, newStyleUnique)
                 else useActionWithLimitedUses(unit, Constants.spreadReligion)
             }.takeIf { unit.currentMovement > 0 && unit.civ.religionManager.maySpreadReligionNow(unit) }
         )
@@ -101,12 +101,12 @@ object UnitActionsReligion {
             && unit.abilityUsesLeft[Constants.removeHeresy]!! > 0
 
         val newStyleUnique = unit.getMatchingUniques(UniqueType.CanRemoveHeresy).firstOrNull()
-        val hasNewStyleAbility = newStyleUnique != null && UnitActions.canUse(unit, newStyleUnique)
+        val hasNewStyleAbility = newStyleUnique != null && UnitActionModifiers.canUse(unit, newStyleUnique)
 
         if (!hasOldStyleAbility && !hasNewStyleAbility) return
 
         val title = if (hasNewStyleAbility)
-            UnitActions.actionTextWithSideEffects("Remove Heresy", newStyleUnique!!, unit)
+            UnitActionModifiers.actionTextWithSideEffects("Remove Heresy", newStyleUnique!!, unit)
         else "Remove Heresy"
 
         actionList += UnitAction(
@@ -126,7 +126,7 @@ object UnitActionsReligion {
                 }
                 unit.currentMovement = 0f
 
-                if (hasNewStyleAbility) UnitActions.activateSideEffects(unit, newStyleUnique!!)
+                if (hasNewStyleAbility) UnitActionModifiers.activateSideEffects(unit, newStyleUnique!!)
                 useActionWithLimitedUses(unit, Constants.removeHeresy)
             }.takeIf { unit.currentMovement > 0f }
         )
