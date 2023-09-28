@@ -19,15 +19,11 @@ object UnitActionsReligion {
         if (!unit.civ.religionManager.mayFoundReligionAtAll(unit)) return
         actionList += UnitAction(
             UnitActionType.FoundReligion,
-            action = getFoundReligionAction(unit).takeIf { unit.civ.religionManager.mayFoundReligionNow(unit) }
+            action = {
+                unit.civ.religionManager.foundReligion(unit)
+                unit.consume()
+            }.takeIf { unit.civ.religionManager.mayFoundReligionNow(unit) }
         )
-    }
-
-    fun getFoundReligionAction(unit: MapUnit): () -> Unit {
-        return {
-            unit.civ.religionManager.foundReligion(unit)
-            unit.consume()
-        }
     }
 
     internal fun addEnhanceReligionAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {

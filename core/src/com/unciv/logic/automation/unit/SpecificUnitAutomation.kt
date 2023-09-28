@@ -629,7 +629,11 @@ object SpecificUnitAutomation {
             return
         }
 
-        UnitActionsReligion.getFoundReligionAction(unit)()
+        val foundReligionAction = UnitActions.getUnitActions(unit)
+            .firstOrNull { it.type == UnitActionType.FoundReligion }
+            ?.action ?: return
+
+        foundReligionAction()
     }
 
     fun enhanceReligion(unit: MapUnit) {
