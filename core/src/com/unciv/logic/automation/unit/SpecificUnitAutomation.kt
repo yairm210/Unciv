@@ -340,8 +340,7 @@ object SpecificUnitAutomation {
         unit.movement.headTowards(destination)
 
         if (unit.getTile() in city.getTiles() && unit.civ.religionManager.maySpreadReligionNow(unit)) {
-            val action = UnitActions.getUnitActions(unit).firstOrNull { it.type == UnitActionType.SpreadReligion }?.action
-            if (action != null) action()
+            UnitActions.invokeUnitAction(unit, UnitActionType.SpreadReligion)
         }
     }
 
@@ -397,8 +396,7 @@ object SpecificUnitAutomation {
         unit.movement.headTowards(destination)
 
         if (cityToConvert != null && unit.getTile().getCity() == destination.getCity()) {
-            val action = UnitActions.getUnitActions(unit).firstOrNull { it.type == UnitActionType.RemoveHeresy }?.action
-            if (action != null) action()
+            UnitActions.invokeUnitAction(unit, UnitActionType.RemoveHeresy)
         }
     }
 
