@@ -21,6 +21,15 @@ object UnitActions {
         else getNormalActions(unit)
     }
 
+    /** Returns whether the action was invoked */
+    fun invokeUnitAction(unit: MapUnit, unitActionType: UnitActionType): Boolean {
+        val unitAction = getNormalActions(unit).firstOrNull { it.type == unitActionType }
+            ?: getAdditionalActions(unit).firstOrNull { it.type == unitActionType }
+        val internalAction = unitAction?.action ?: return false
+        internalAction.invoke()
+        return true
+    }
+
     private fun getNormalActions(unit: MapUnit): List<UnitAction> {
         val tile = unit.getTile()
         val actionList = ArrayList<UnitAction>()

@@ -303,12 +303,8 @@ object UnitAutomation {
         val isLateGame = isLateGame(unit.civ)
         // Great scientist -> Hurry research if late game
         if (isLateGame) {
-            val hurryResearch = UnitActions.getUnitActions(unit)
-                .firstOrNull { it.type == UnitActionType.HurryResearch }?.action
-            if (hurryResearch != null) {
-                hurryResearch()
-                return
-            }
+            val hurriedResearch = UnitActions.invokeUnitAction(unit, UnitActionType.HurryResearch)
+            if (hurriedResearch) return
         }
 
         // Great merchant -> Conduct trade mission if late game and if not at war.
@@ -345,7 +341,7 @@ object UnitAutomation {
             val improvementCanBePlacedEventually =
                     SpecificUnitAutomation.automateImprovementPlacer(unit)
             if (!improvementCanBePlacedEventually)
-                startGoldenAgeIfHasAbility(unit)
+                UnitActions.invokeUnitAction(unit, UnitActionType.StartGoldenAge)
         }
 
         // TODO: The AI tends to have a lot of great generals. Maybe there should be a cutoff
@@ -359,10 +355,6 @@ object UnitAutomation {
         val researchCompletePercent =
                 (civ.tech.researchedTechnologies.size * 1.0f) / civ.gameInfo.ruleset.technologies.size
         return researchCompletePercent >= 0.8f
-    }
-
-    private fun startGoldenAgeIfHasAbility(unit: MapUnit) {
-        UnitActions.getUnitActions(unit).firstOrNull { it.type == UnitActionType.StartGoldenAge }?.action?.invoke()
     }
 
     /** @return true only if the unit has 0 movement left */

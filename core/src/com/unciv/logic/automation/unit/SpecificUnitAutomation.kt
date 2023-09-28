@@ -216,11 +216,8 @@ object SpecificUnitAutomation {
             unit.movement.headTowards(chosenTile)
             if (unit.currentTile == chosenTile) {
                 if (unit.currentTile.isPillaged())
-                    UnitActions.getUnitActions(unit).firstOrNull { it.type == UnitActionType.Repair }
-                        ?.action?.invoke()
-                else
-                    UnitActionsFromUniques.getImprovementConstructionActions(unit, unit.currentTile)
-                        .firstOrNull()?.action?.invoke()
+                    UnitActions.invokeUnitAction(unit, UnitActionType.Repair)
+                else UnitActions.invokeUnitAction(unit, UnitActionType.Create)
                 return true
             }
             return unitTileBeforeMovement != unit.currentTile
@@ -251,12 +248,8 @@ object SpecificUnitAutomation {
                     .minByOrNull { it.second }?.first
                     ?: return false
 
-        val conductTradeMissionAction = UnitActions.getUnitActions(unit)
-            .firstOrNull { it.type == UnitActionType.ConductTradeMission }
-        if (conductTradeMissionAction?.action != null) {
-            conductTradeMissionAction.action.invoke()
-            return true
-        }
+        val conductedTradeMission = UnitActions.invokeUnitAction(unit, UnitActionType.ConductTradeMission)
+        if (conductedTradeMission) return true
 
         val unitTileBeforeMovement = unit.currentTile
         unit.movement.headTowards(closestCityStateTile)
@@ -295,12 +288,8 @@ object SpecificUnitAutomation {
                 wonderToHurry.name
             )
             unit.showAdditionalActions = false  // make sure getUnitActions doesn't skip the important ones
-            val unitAction = UnitActions.getUnitActions(unit).firstOrNull {
-                    it.type == UnitActionType.HurryBuilding || it.type == UnitActionType.HurryWonder
-                } ?: return false
-            if (unitAction.action == null) return false
-            unitAction.action.invoke()
-            return true
+            return UnitActions.invokeUnitAction(unit, UnitActionType.HurryBuilding)
+                || UnitActions.invokeUnitAction(unit, UnitActionType.HurryWonder)
         }
 
         // Walk towards the city.
@@ -630,11 +619,7 @@ object SpecificUnitAutomation {
             return
         }
 
-        val foundReligionAction = UnitActions.getUnitActions(unit)
-            .firstOrNull { it.type == UnitActionType.FoundReligion }
-            ?.action ?: return
-
-        foundReligionAction()
+        UnitActions.invokeUnitAction(unit, UnitActionType.FoundReligion)
     }
 
     fun enhanceReligion(unit: MapUnit) {
