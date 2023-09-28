@@ -755,11 +755,9 @@ class RulesetValidator(val ruleset: Ruleset) {
             if (fixes.isNotEmpty()) return fixes
         }
 
-        if (RulesetCache.modCheckerAllowUntypedUniques) return emptyList()
-
         return listOf(RulesetError(
             "$prefix unique \"${unique.text}\" not found in Unciv's unique types.",
-                RulesetErrorSeverity.WarningOptionsOnly))
+                RulesetErrorSeverity.OK))
     }
 
     private fun isFilteringUniqueAllowed(unique: Unique): Boolean {
