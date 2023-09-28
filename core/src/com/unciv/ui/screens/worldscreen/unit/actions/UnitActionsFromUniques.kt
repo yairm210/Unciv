@@ -60,13 +60,12 @@ object UnitActionsFromUniques {
      * (no movement left, too close to another city).
      */
     fun getFoundCityAction(unit: MapUnit, tile: Tile): UnitAction? {
-        val unique = unit.getMatchingUniques(UniqueType.FoundCity)
-            .filter { unique -> unique.conditionals.none { it.type == UniqueType.UnitActionExtraLimitedTimes } }
-            .firstOrNull()
-        if (unique == null || tile.isWater || tile.isImpassible()) return null
+        val unique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.FoundCity)
+            .firstOrNull() ?: return null
+
+        if (tile.isWater || tile.isImpassible()) return null
         // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
         if (unit.civ.isOneCityChallenger() && unit.civ.hasEverOwnedOriginalCapital) return null
-        if (UnitActionModifiers.usagesLeft(unit, unique) ==0) return null
 
         if (unit.currentMovement <= 0 || !tile.canBeSettled())
             return UnitAction(UnitActionType.FoundCity, action = null)
@@ -227,17 +226,15 @@ object UnitActionsFromUniques {
 
     fun getImprovementConstructionActions(unit: MapUnit, tile: Tile): ArrayList<UnitAction> {
         val finalActions = ArrayList<UnitAction>()
-        val uniquesToCheck = unit.getMatchingUniques(UniqueType.ConstructImprovementInstantly)
+        val uniquesToCheck = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.ConstructImprovementInstantly)
+
         val civResources = unit.civ.getCivResourcesByName()
 
         for (unique in uniquesToCheck) {
             // Skip actions with a "[amount] extra times" conditional - these are treated in addTriggerUniqueActions instead
-            if (unique.conditionals.any { it.type == UniqueType.UnitActionExtraLimitedTimes }) continue
-
             val improvementName = unique.params[0]
             val improvement = tile.ruleset.tileImprovements[improvementName]
                 ?: continue
-            if (UnitActionModifiers.usagesLeft(unit, unique) == 0) continue
 
             val resourcesAvailable = improvement.uniqueObjects.none {
                     improvementUnique ->
