@@ -54,7 +54,8 @@ object UnitActions {
         UnitActionsReligion.addFoundReligionAction(unit, actionList)
         UnitActionsReligion.addEnhanceReligionAction(unit, actionList)
         actionList += getImprovementConstructionActions(unit, tile)
-        UnitActionsReligion.addActionsWithLimitedUses(unit, actionList, tile)
+        UnitActionsReligion.addSpreadReligionActions(unit, actionList)
+        UnitActionsReligion.addRemoveHeresyActions(unit, actionList)
 
         addAutomateAction(unit, actionList, true)
         addTriggerUniqueActions(unit, actionList)
@@ -745,6 +746,11 @@ object UnitActions {
         val usagesTotal = getMaxUsages(unit, actionUnique) ?: return null
         val usagesSoFar = unit.abilityToTimesUsed[actionUnique.placeholderText] ?: 0
         return usagesTotal - usagesSoFar
+    }
+
+    fun canUse(unit: MapUnit, actionUnique: Unique): Boolean {
+        val usagesLeft = usagesLeft(unit, actionUnique)
+        return usagesLeft == null || usagesLeft > 0
     }
 
     fun getMaxUsages(unit: MapUnit, actionUnique: Unique): Int? {

@@ -701,11 +701,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "[baseUnitFilter] units built [cityFilter] can [action] [amount] extra times"
-	Example: "[Melee] units built [in all cities] can [Spread Religion] [3] extra times"
-
-	Applicable to: Global, FollowerBelief
-
 ??? example  "Triggers victory"
 	Applicable to: Global
 
@@ -1142,9 +1137,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Can perform Air Sweep"
 	Applicable to: Unit
 
-??? example  "Can [action] [amount] times"
-	Example: "Can [Spread Religion] [3] times"
+??? example  "Can Spread Religion"
+	Applicable to: Unit
 
+??? example  "Can remove other religions from cities"
 	Applicable to: Unit
 
 ??? example  "Can speed up construction of a building"

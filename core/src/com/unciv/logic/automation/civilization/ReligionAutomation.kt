@@ -2,7 +2,6 @@ package com.unciv.logic.automation.civilization
 
 import com.unciv.Constants
 import com.unciv.logic.city.City
-import com.unciv.models.ruleset.INonPerpetualConstruction
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.logic.map.tile.Tile
@@ -41,7 +40,10 @@ object ReligionAutomation {
         val citiesWithoutOurReligion = civInfo.cities.filter { it.religion.getMajorityReligion() != civInfo.religionManager.religion!! }
         // The original had a cap at 4 missionaries total, but 1/4 * the number of cities should be more appropriate imo
         if (citiesWithoutOurReligion.count() >
-            4 * civInfo.units.getCivUnits().count { it.canDoLimitedAction(Constants.spreadReligion) || it.canDoLimitedAction(Constants.removeHeresy) }
+            4 * civInfo.units.getCivUnits().count {
+                it.canDoLimitedAction(Constants.spreadReligion) // OLD
+                    || it.hasUnique(UniqueType.CanSpreadReligion) // NEW
+                    || it.canDoLimitedAction(Constants.removeHeresy) }
         ) {
             val (city, pressureDifference) = citiesWithoutOurReligion.map { city ->
                 city to city.religion.getPressureDeficit(civInfo.religionManager.religion?.name)
@@ -77,7 +79,10 @@ object ReligionAutomation {
         // Todo: buy Great People post industrial era
 
         // Just buy missionaries to spread our religion outside of our civ
-        if (civInfo.units.getCivUnits().count { it.canDoLimitedAction(Constants.spreadReligion) } < 4) {
+        if (civInfo.units.getCivUnits().count {
+                it.canDoLimitedAction(Constants.spreadReligion) // OLD
+                    || it.hasUnique(UniqueType.CanSpreadReligion) // NEW
+        } < 4) {
             buyMissionaryInAnyCity(civInfo)
             return
         }
@@ -103,7 +108,10 @@ object ReligionAutomation {
     private fun buyMissionaryInAnyCity(civInfo: Civilization) {
         if (civInfo.religionManager.religionState < ReligionState.Religion) return
         var missionaries = civInfo.gameInfo.ruleset.units.values.filter { unit ->
+            // OLD
             unit.getMatchingUniques(UniqueType.CanActionSeveralTimes).filter { it.params[0] == Constants.spreadReligion }.any()
+                // NEW
+                || unit.hasUnique(UniqueType.CanSpreadReligion)
         }
         missionaries = missionaries.map { civInfo.getEquivalentUnit(it) }
 
@@ -127,7 +135,8 @@ object ReligionAutomation {
         if (validCitiesToBuy.isEmpty()) return
 
         val citiesWithBonusCharges = validCitiesToBuy.filter { city ->
-            city.getMatchingUniques(UniqueType.UnitStartingActions).filter { it.params[2] == Constants.spreadReligion }.any()
+            // To be replaced by special promotion
+            city.getMatchingUniques(UniqueType.UnitStartingActions).any { it.params[2] == Constants.spreadReligion }
         }
         val holyCity = validCitiesToBuy.firstOrNull { it.isHolyCityOf(civInfo.religionManager.religion!!.name) }
 

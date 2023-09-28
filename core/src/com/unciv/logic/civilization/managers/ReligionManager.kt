@@ -13,7 +13,7 @@ import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.components.extensions.toPercent
-import java.lang.Integer.max
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import java.lang.Integer.min
 import kotlin.random.Random
 
@@ -445,7 +445,10 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     fun maySpreadReligionAtAll(missionary: MapUnit): Boolean {
         if (!civInfo.isMajorCiv()) return false // Only major civs
         if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion, no spreading
-        if (!missionary.canDoLimitedAction(Constants.spreadReligion)) return false
+        val spreadReligionUniques = missionary.getMatchingUniques(UniqueType.CanSpreadReligion)
+        if (!missionary.canDoLimitedAction(Constants.spreadReligion)
+            && (spreadReligionUniques.none()
+                || UnitActions.usagesLeft(missionary, spreadReligionUniques.first()) == 0)) return false
         return true
     }
 
