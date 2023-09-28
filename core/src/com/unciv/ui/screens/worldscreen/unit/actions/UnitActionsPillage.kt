@@ -67,7 +67,7 @@ object UnitActionsPillage {
 
                 if (pillagingImprovement)  // only Improvements heal HP
                     unit.healBy(25)
-            }.takeIf { unit.currentMovement > 0 && UnitActions.canPillage(unit, tile) }
+            }.takeIf { unit.currentMovement > 0 && canPillage(unit, tile) }
         )
     }
 
@@ -113,5 +113,13 @@ object UnitActionsPillage {
         }
         toCityPillageYield.notify(" which has been sent to [${closestCity?.name}]")
         globalPillageYield.notify("")
+    }
+
+    fun canPillage(unit: MapUnit, tile: Tile): Boolean {
+        if (unit.isTransported) return false
+        if (!tile.canPillageTile()) return false
+        val tileOwner = tile.getOwner()
+        // Can't pillage friendly tiles, just like you can't attack them - it's an 'act of war' thing
+        return tileOwner == null || unit.civ.isAtWarWith(tileOwner)
     }
 }
