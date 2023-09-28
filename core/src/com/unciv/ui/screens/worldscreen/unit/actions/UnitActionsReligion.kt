@@ -103,7 +103,7 @@ object UnitActionsReligion {
             && unit.abilityUsesLeft[Constants.removeHeresy]!! > 0
 
         val newStyleUnique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.CanRemoveHeresy).firstOrNull()
-        val hasNewStyleAbility = newStyleUnique != null && UnitActionModifiers.canUse(unit, newStyleUnique)
+        val hasNewStyleAbility = newStyleUnique != null
 
         if (!hasOldStyleAbility && !hasNewStyleAbility) return
 

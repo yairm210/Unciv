@@ -16,7 +16,7 @@ object UnitActionModifiers {
     fun getUsableUnitActionUniques(unit:MapUnit, actionUniqueType: UniqueType) =
         unit.getMatchingUniques(actionUniqueType)
             .filter { it.conditionals.none { it.type == UniqueType.UnitActionExtraLimitedTimes } }
-            .filter { usagesLeft(unit, it) != 0 }
+            .filter { canUse(unit, it) }
 
     private fun getMovementPointsToUse(actionUnique: Unique): Int {
         val movementCost = actionUnique.conditionals
@@ -48,7 +48,7 @@ object UnitActionModifiers {
     }
 
     /** Returns 'null' if usages are not limited */
-    fun usagesLeft(unit: MapUnit, actionUnique: Unique): Int?{
+    private fun usagesLeft(unit: MapUnit, actionUnique: Unique): Int?{
         val usagesTotal = getMaxUsages(unit, actionUnique) ?: return null
         val usagesSoFar = unit.abilityToTimesUsed[actionUnique.placeholderText] ?: 0
         return usagesTotal - usagesSoFar
