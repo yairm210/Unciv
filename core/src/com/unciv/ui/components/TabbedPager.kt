@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
@@ -21,12 +20,11 @@ import com.unciv.ui.components.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.components.extensions.addSeparator
 import com.unciv.ui.components.extensions.darken
 import com.unciv.ui.components.extensions.isEnabled
-import com.unciv.ui.components.input.keyShortcuts
-import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.extensions.packIfNeeded
 import com.unciv.ui.components.extensions.pad
-import com.unciv.ui.components.extensions.toLabel
 import com.unciv.ui.components.input.KeyCharAndCode
+import com.unciv.ui.components.input.keyShortcuts
+import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.screens.basescreen.BaseScreen
@@ -225,8 +223,8 @@ open class TabbedPager(
             }
         }
 
-        class SyncedScrollListener(val linkedScrollPane: LinkedScrollPane):InputListener(){
-            val oldScrollListener = linkedScrollPane.listeners.removeIndex(linkedScrollPane.listeners.size-1) as InputListener
+        class SyncedScrollListener(val linkedScrollPane: LinkedScrollPane) : InputListener() {
+            val oldScrollListener = linkedScrollPane.listeners.removeIndex(linkedScrollPane.listeners.size - 1) as InputListener
             override fun scrolled(event: InputEvent?, x: Float, y: Float, amountX: Float, amountY: Float): Boolean {
                 val toReturn = oldScrollListener.scrolled(event, x, y, amountX, amountY)
                 linkedScrollPane.sync(false)
@@ -239,7 +237,7 @@ open class TabbedPager(
             addListener(SyncedScrollListener(this))
         }
 
-        class LinkedCaptureListener(val linkedScrollPane: LinkedScrollPane):InputListener(){
+        class LinkedCaptureListener(val linkedScrollPane: LinkedScrollPane) : InputListener() {
             val oldListener = linkedScrollPane.captureListeners.removeIndex(0) as InputListener
             override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
                 val toReturn = oldListener.touchDown(event, x, y, pointer, button)
@@ -265,7 +263,7 @@ open class TabbedPager(
             addCaptureListener(LinkedCaptureListener(this))
         }
 
-        class LinkedFlickScrollListener(val stdFlickListener: ActorGestureListener, val linkedScrollPane: LinkedScrollPane):ActorGestureListener(){
+        class LinkedFlickScrollListener(val stdFlickListener: ActorGestureListener, val linkedScrollPane: LinkedScrollPane) : ActorGestureListener() {
             override fun pan(event: InputEvent?, x: Float, y: Float, deltaX: Float, deltaY: Float) {
                 stdFlickListener.pan(event, x, y, deltaX, deltaY)
                 linkedScrollPane.sync()
