@@ -5,6 +5,11 @@ import com.unciv.ui.components.SortableGrid
 import com.unciv.ui.components.extensions.equalizeColumns
 
 
+/**
+ *  Provides the Cities tab for Empire Overview.
+ *
+ *  Uses [SortableGrid], so all actual content implementation is in the [CityOverviewTabColumn] enum.
+ */
 class CityOverviewTab(
     viewingPlayer: Civilization,
     overviewScreen: EmpireOverviewScreen,
@@ -28,13 +33,15 @@ class CityOverviewTab(
         iconSize = 50f,  //if you set this too low, there is a chance that the tables will be misaligned
         paddingVert = 5f,
         paddingHorz = 8f,
-        separateHeader = false
+        separateHeader = true
     ) {
         header, details, totals ->
         this.name
         equalizeColumns(details, header, totals)
         this.layout()
     }
+
+    override fun getFixedContent() = grid.getHeader()
 
     init {
         add(grid)
