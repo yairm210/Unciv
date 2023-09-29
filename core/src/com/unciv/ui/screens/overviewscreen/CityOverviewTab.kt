@@ -36,9 +36,8 @@ class CityOverviewTab(
         separateHeader = true
     ) {
         header, details, totals ->
-        this.name
         equalizeColumns(details, header, totals)
-        this.layout()
+        this.validate()
     }
 
     override fun getFixedContent() = grid.getHeader()
