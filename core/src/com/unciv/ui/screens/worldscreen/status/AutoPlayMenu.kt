@@ -4,6 +4,8 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.GUI
+import com.unciv.logic.automation.civilization.NextTurnAutomation
+import com.unciv.logic.automation.unit.UnitAutomation
 import com.unciv.logic.civilization.managers.TurnManager
 import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.screens.worldscreen.WorldScreen
@@ -50,13 +52,29 @@ class AutoPlayMenu(
     }
     
     private fun autoPlayMilitary() {
-        //TODO: add logic here
+        val civInfo = worldScreen.viewingCiv
+        val isAtWar = civInfo.isAtWar()
+        val sortedUnits = civInfo.units.getCivUnits().filter { it.isMilitary() }.sortedBy { unit -> NextTurnAutomation.getUnitPriority(unit, isAtWar) }
+        for (unit in sortedUnits) UnitAutomation.automateUnitMoves(unit)
+
+        for (city in civInfo.cities) UnitAutomation.tryBombardEnemy(city)
+        worldScreen.shouldUpdate = true
+        worldScreen.render(0f)
     }
 
     private fun autoPlayCivilian() {
-        //TODO: add logic here
+        val civInfo = worldScreen.viewingCiv
+        val isAtWar = civInfo.isAtWar()
+        val sortedUnits = civInfo.units.getCivUnits().filter { it.isCivilian() }.sortedBy { unit -> NextTurnAutomation.getUnitPriority(unit, isAtWar) }
+        for (unit in sortedUnits) UnitAutomation.automateUnitMoves(unit)
+        worldScreen.shouldUpdate = true
+        worldScreen.render(0f)
     }
+    
     private fun autoPlayEconomy() {
-        //TODO: add logic here
+        val civInfo = worldScreen.viewingCiv
+        NextTurnAutomation.automateCities(civInfo)
+        worldScreen.shouldUpdate = true
+        worldScreen.render(0f)
     }
 }
