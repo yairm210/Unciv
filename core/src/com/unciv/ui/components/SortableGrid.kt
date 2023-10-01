@@ -75,7 +75,7 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
      */
     fun getHeader(): Table {
         if (!separateHeader)
-            throw IllegalStateException("You can't call SortableGrid.getHeader unless you override separateHeader to true")
+            throw IllegalStateException("You can't call SortableGrid.getHeader unless you set separateHeader to true")
         return headerRow
     }
 
@@ -116,8 +116,13 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
     }
 
     private fun initHeader() {
-        sortSymbols[false] = "￪".toLabel()
-        sortSymbols[true] = "￬".toLabel()
+        // These are possibly the highest codepoints in use in Unciv -
+        // Take into account when limiting Fonts.nextUnusedCharacterNumber
+        // Alternatives: "↑" U+2191, "↓" U+2193 - much wider and weird spacing in some fonts (e.g. Verdana)
+        // Note: These will scale with GameSettings.fontSizeMultiplier - could be *partly* countered
+        // with `toLabel(fontSize = (Constants.defaultFontSize / GUI.getSettings().fontSizeMultiplier).toInt())`
+        sortSymbols[false] = "￪".toLabel()  // U+FFEA
+        sortSymbols[true] = "￬".toLabel()   // U+FFEC
 
         for (column in columns) {
             val group = HeaderGroup(column)
@@ -208,6 +213,7 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
     // Using Group to overlay an optional sort symbol on top of the icon - we could also
     // do HorizontalGroup to have them side by side. Also, note this is not a WidgetGroup
     // so all layout details are left to the container - in this case, a Table.Cell
+    // This will knowingly place the arrow partly outside the Group bounds.
     /** Wrap icon and sort symbol for a header cell */
     inner class HeaderGroup(column: CT) : Group() {
         private val icon = column.getHeaderIcon(iconSize)
