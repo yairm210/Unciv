@@ -86,6 +86,7 @@ class VictoryScreen(
     }
 
     init {
+        GUI.getSettings().stopAutoPlay()
         //**************** Set up the tabs ****************
         splitPane.setFirstWidget(tabs)
         val iconSize = Constants.headingFontSize.toFloat()
