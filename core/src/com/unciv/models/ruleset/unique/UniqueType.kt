@@ -316,11 +316,11 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ConstructImprovementInstantly("Can instantly construct a [improvementFilter] improvement", UniqueTarget.UnitAction),
     CanSpreadReligion("Can Spread Religion", UniqueTarget.UnitAction),
     CanRemoveHeresy("Can remove other religions from cities", UniqueTarget.UnitAction),
+    MayFoundReligion("May found a religion", UniqueTarget.UnitAction),
 
     BuildImprovements("Can build [improvementFilter/terrainFilter] improvements on tiles", UniqueTarget.Unit),
-    CreateWaterImprovements("May create improvements on water resources", UniqueTarget.Unit),
 
-    MayFoundReligion("May found a religion", UniqueTarget.Unit),
+    CreateWaterImprovements("May create improvements on water resources", UniqueTarget.Unit),
     MayEnhanceReligion("May enhance a religion", UniqueTarget.Unit),
 
     AddInCapital("Can be added to [comment] in the Capital", UniqueTarget.Unit),

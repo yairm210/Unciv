@@ -1296,7 +1296,7 @@
             "Can instantly construct a [Holy site] improvement <by consuming this unit> <if it hasn't used other actions yet>",
             "Can Spread Religion <[4] times>",
 			"Removes other religions when spreading religion",
-            "May found a religion",
+            "May found a religion <by consuming this unit>",
             "May enhance a religion",
 			"May enter foreign tiles without open borders", "[-1] Sight", "Great Person - [Faith]",
 			"Unbuildable", "Religious Unit", "Hidden when religion is disabled",

@@ -5,6 +5,7 @@ import com.unciv.logic.civilization.NotificationCategory
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.components.extensions.toPercent
@@ -13,13 +14,29 @@ object UnitActionsReligion {
 
 
     internal fun addFoundReligionAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        if (!unit.hasUnique(UniqueType.MayFoundReligion)) return
         if (!unit.civ.religionManager.mayFoundReligionAtAll(unit)) return
+
+        val unique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.MayFoundReligion)
+            .firstOrNull() ?: return
+
+        val hasActionModifiers = unique.conditionals.any { it.type?.targetTypes?.contains(
+            UniqueTarget.UnitActionModifier
+        ) == true }
+
         actionList += UnitAction(
             UnitActionType.FoundReligion,
+
+            if (hasActionModifiers) UnitActionModifiers.actionTextWithSideEffects(
+                UnitActionType.FoundReligion.value,
+                unique,
+                unit
+            )
+            else UnitActionType.FoundReligion.value,
             action = {
                 unit.civ.religionManager.foundReligion(unit)
-                unit.consume()
+
+                if (hasActionModifiers) UnitActionModifiers.activateSideEffects(unit, unique)
+                else unit.consume()
             }.takeIf { unit.civ.religionManager.mayFoundReligionNow(unit) }
         )
     }

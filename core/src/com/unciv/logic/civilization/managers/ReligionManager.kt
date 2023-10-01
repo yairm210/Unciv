@@ -259,8 +259,6 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     fun mayFoundReligionAtAll(prophet: MapUnit): Boolean {
         if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion
         if (religionState >= ReligionState.Religion) return false // Already created a major religion
-        // Already used its power for other things
-        if (prophet.abilityUsesLeft.any { it.value != prophet.maxAbilityUses[it.key] }) return false
 
         if (!civInfo.isMajorCiv()) return false // Only major civs may use religion
 

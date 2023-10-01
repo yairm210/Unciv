@@ -1091,18 +1091,32 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Building, Unit
 
-## Unit uniques
+## UnitAction uniques
 !!! note ""
 
-    Uniques that can be added to units, unit types, or promotions
+    Uniques that affect a unit's actions, and can be modified by UnitActionModifiers
 
 ??? example  "Founds a new city"
-	Applicable to: Unit
+	Applicable to: UnitAction
 
 ??? example  "Can instantly construct a [improvementFilter] improvement"
 	Example: "Can instantly construct a [All Road] improvement"
 
-	Applicable to: Unit
+	Applicable to: UnitAction
+
+??? example  "Can Spread Religion"
+	Applicable to: UnitAction
+
+??? example  "Can remove other religions from cities"
+	Applicable to: UnitAction
+
+??? example  "May found a religion"
+	Applicable to: UnitAction
+
+## Unit uniques
+!!! note ""
+
+    Uniques that can be added to units, unit types, or promotions
 
 ??? example  "Can build [improvementFilter/terrainFilter] improvements on tiles"
 	Example: "Can build [All Road] improvements on tiles"
@@ -1110,9 +1124,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "May create improvements on water resources"
-	Applicable to: Unit
-
-??? example  "May found a religion"
 	Applicable to: Unit
 
 ??? example  "May enhance a religion"
@@ -1135,12 +1146,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Can perform Air Sweep"
-	Applicable to: Unit
-
-??? example  "Can Spread Religion"
-	Applicable to: Unit
-
-??? example  "Can remove other religions from cities"
 	Applicable to: Unit
 
 ??? example  "Can speed up construction of a building"
@@ -2099,7 +2104,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ## UnitActionModifier uniques
 !!! note ""
 
-    Modifiers that can be added to unit action uniques as conditionals
+    Modifiers that can be added to UnitAction uniques as conditionals
 
 ??? example  "&lt;by consuming this unit&gt;"
 	Applicable to: UnitActionModifier
