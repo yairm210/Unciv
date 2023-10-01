@@ -455,7 +455,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
     }
 
     /** Returns false if we tried to construct a unit but it has nowhere to go */
-    private fun constructionComplete(construction: INonPerpetualConstruction): Boolean {
+    fun constructionComplete(construction: INonPerpetualConstruction): Boolean {
         val managedToConstruct = construction.postBuildEvent(this)
         if (!managedToConstruct) return false
 
@@ -523,6 +523,8 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         builtBuildings.add(buildingName)
 
         updateUniques()
+
+        validateConstructionQueue()
 
         /** Support for [UniqueType.CreatesOneImprovement] */
         applyCreateOneImprovement(building)
