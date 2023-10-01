@@ -8,6 +8,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.popups.ConfirmPopup
@@ -47,7 +48,8 @@ object UnitActions {
         UnitActionsReligion.addFoundReligionAction(unit, actionList)
         UnitActionsReligion.addEnhanceReligionAction(unit, actionList)
         actionList += UnitActionsFromUniques.getImprovementConstructionActions(unit, tile)
-        UnitActionsReligion.addActionsWithLimitedUses(unit, actionList, tile)
+        UnitActionsReligion.addSpreadReligionActions(unit, actionList)
+        UnitActionsReligion.addRemoveHeresyActions(unit, actionList)
 
         UnitActionsFromUniques.addTriggerUniqueActions(unit, actionList)
         UnitActionsFromUniques.addAddInCapitalAction(unit, actionList, tile)
@@ -84,7 +86,7 @@ object UnitActions {
 
         if (unit.isMoving()) {
             actionList += UnitAction(UnitActionType.ShowUnitDestination) {
-                GUI.getMap().setCenterPosition(unit.getMovementDestination().position,true)
+                GUI.getMap().setCenterPosition(unit.getMovementDestination().position, true)
             }
         }
         addSleepActions(actionList, unit, true)
@@ -119,7 +121,8 @@ object UnitActions {
             type = UnitActionType.SwapUnits,
             isCurrentAction = worldScreen.bottomUnitTable.selectedUnitIsSwapping,
             action = {
-                worldScreen.bottomUnitTable.selectedUnitIsSwapping = !worldScreen.bottomUnitTable.selectedUnitIsSwapping
+                worldScreen.bottomUnitTable.selectedUnitIsSwapping =
+                    !worldScreen.bottomUnitTable.selectedUnitIsSwapping
                 worldScreen.shouldUpdate = true
             }
         )
@@ -163,7 +166,11 @@ object UnitActions {
     }
 
 
-    private fun addFortifyActions(actionList: ArrayList<UnitAction>, unit: MapUnit, showingAdditionalActions: Boolean) {
+    private fun addFortifyActions(
+        actionList: ArrayList<UnitAction>,
+        unit: MapUnit,
+        showingAdditionalActions: Boolean
+    ) {
         if (unit.isFortified() && !showingAdditionalActions) {
             actionList += UnitAction(
                 type = if (unit.isActionUntilHealed())
@@ -189,11 +196,16 @@ object UnitActions {
                 action = { unit.fortify() }.takeIf { !isFortified })
     }
 
-    private fun addSleepActions(actionList: ArrayList<UnitAction>, unit: MapUnit, showingAdditionalActions: Boolean) {
+    private fun addSleepActions(
+        actionList: ArrayList<UnitAction>,
+        unit: MapUnit,
+        showingAdditionalActions: Boolean
+    ) {
         if (unit.isFortified() || unit.canFortify() || unit.currentMovement == 0f) return
         // If this unit is working on an improvement, it cannot sleep
         if (unit.currentTile.hasImprovementInProgress()
-            && unit.canBuildImprovement(unit.currentTile.getTileImprovementInProgress()!!)) return
+            && unit.canBuildImprovement(unit.currentTile.getTileImprovementInProgress()!!)
+        ) return
         val isSleeping = unit.isSleeping()
         val isDamaged = unit.health < 100
 
@@ -223,7 +235,10 @@ object UnitActions {
             if (recipient.isAtWarWith(unit.civ)) return null // No gifts to enemy CS
             // City States only take military units (and units specifically allowed by uniques)
             if (!unit.isMilitary()
-                && unit.getMatchingUniques(UniqueType.GainInfluenceWithUnitGiftToCityState, checkCivInfoUniques = true)
+                && unit.getMatchingUniques(
+                    UniqueType.GainInfluenceWithUnitGiftToCityState,
+                    checkCivInfoUniques = true
+                )
                     .none { unit.matchesFilter(it.params[1]) }
             ) return null
         }
@@ -238,7 +253,10 @@ object UnitActions {
 
         val giftAction = {
             if (recipient.isCityState()) {
-                for (unique in unit.getMatchingUniques(UniqueType.GainInfluenceWithUnitGiftToCityState, checkCivInfoUniques = true)) {
+                for (unique in unit.getMatchingUniques(
+                    UniqueType.GainInfluenceWithUnitGiftToCityState,
+                    checkCivInfoUniques = true
+                )) {
                     if (unit.matchesFilter(unique.params[1])) {
                         recipient.getDiplomacyManager(unit.civ)
                             .addInfluence(unique.params[0].toFloat() - 5f)
@@ -260,7 +278,11 @@ object UnitActions {
         return UnitAction(UnitActionType.GiftUnit, action = giftAction)
     }
 
-    private fun addAutomateAction(unit: MapUnit, actionList: ArrayList<UnitAction>, showingAdditionalActions:Boolean) {
+    private fun addAutomateAction(
+        unit: MapUnit,
+        actionList: ArrayList<UnitAction>,
+        showingAdditionalActions: Boolean
+    ) {
 
         // If either of these are true it goes in primary actions, else in additional actions
         if ((unit.hasUnique(UniqueType.AutomationPrimaryAction) || unit.cache.hasUniqueToBuildImprovements) != showingAdditionalActions)
@@ -297,5 +319,6 @@ object UnitActions {
             }
         )
     }
-}
 
+
+}

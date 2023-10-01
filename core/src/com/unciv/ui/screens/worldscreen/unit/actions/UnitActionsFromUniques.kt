@@ -187,7 +187,7 @@ object UnitActionsFromUniques {
             // extends an existing unit action
             if (unique.conditionals.any { it.type == UniqueType.UnitActionExtraLimitedTimes }) continue
             if (!unique.isTriggerable) continue
-            if (UnitActionModifiers.usagesLeft(unit, unique) ==0) continue
+            if (!UnitActionModifiers.canUse(unit, unique)) continue
 
             val baseTitle = if (unique.isOfType(UniqueType.OneTimeEnterGoldenAgeTurns))
                 unique.placeholderText.fillPlaceholders(

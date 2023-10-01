@@ -11,7 +11,6 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unique.LocalUniqueCache
@@ -341,7 +340,7 @@ object SpecificUnitAutomation {
         unit.movement.headTowards(destination)
 
         if (unit.getTile() in city.getTiles() && unit.civ.religionManager.maySpreadReligionNow(unit)) {
-            doReligiousAction(unit, unit.getTile())
+            UnitActions.invokeUnitAction(unit, UnitActionType.SpreadReligion)
         }
     }
 
@@ -397,7 +396,7 @@ object SpecificUnitAutomation {
         unit.movement.headTowards(destination)
 
         if (cityToConvert != null && unit.getTile().getCity() == destination.getCity()) {
-            doReligiousAction(unit, destination)
+            UnitActions.invokeUnitAction(unit, UnitActionType.RemoveHeresy)
         }
     }
 
@@ -634,10 +633,4 @@ object SpecificUnitAutomation {
         UnitActionsReligion.getEnhanceReligionAction(unit)()
     }
 
-    private fun doReligiousAction(unit: MapUnit, destination: Tile) {
-        val religiousActions = ArrayList<UnitAction>()
-        UnitActionsReligion.addActionsWithLimitedUses(unit, religiousActions, destination)
-        if (religiousActions.firstOrNull()?.action == null) return
-        religiousActions.first().action!!.invoke()
-    }
 }
