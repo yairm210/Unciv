@@ -546,7 +546,7 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         }
         else city.reassignPopulationDeferred()
 
-        addFreeBuildings()
+        city.civ.civConstructions.tryAddFreeBuildings()
     }
 
     fun triggerNewBuildingUniques(building: Building) {
@@ -591,42 +591,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
             city.cityStats.update()
             city.civ.cache.updateCivResources()
         }
-    }
-
-    fun addFreeBuildings() {
-        // "Gain a free [buildingName] [cityFilter]"
-        val freeBuildingUniques = city.getMatchingUniques(UniqueType.GainFreeBuildings, StateForConditionals(city.civ, city))
-
-        for (unique in freeBuildingUniques) {
-            val freeBuilding = city.civ.getEquivalentBuilding(unique.params[0])
-            val citiesThatApply =
-                if (unique.isLocalEffect) listOf(city)
-                else city.civ.cities.filter { it.matchesFilter(unique.params[1]) }
-
-            for (city in citiesThatApply) {
-                if (city.cityConstructions.containsBuildingOrEquivalent(freeBuilding.name)) continue
-                city.cityConstructions.addBuilding(freeBuilding)
-                freeBuildingsProvidedFromThisCity.addToMapOfSets(city.id, freeBuilding.name)
-            }
-        }
-
-        // Civ-level uniques - for these only add free buildings from each city to itself to avoid weirdness on city conquest
-        for (unique in city.civ.getMatchingUniques(UniqueType.GainFreeBuildings, stateForConditionals = StateForConditionals(city.civ, city))) {
-            val freeBuilding = city.civ.getEquivalentBuilding(unique.params[0])
-            if (city.matchesFilter(unique.params[1])) {
-                freeBuildingsProvidedFromThisCity.addToMapOfSets(city.id, freeBuilding.name)
-                if (!isBuilt(freeBuilding.name))
-                    addBuilding(freeBuilding)
-            }
-        }
-
-
-        val autoGrantedBuildings = city.getRuleset().buildings.values
-            .filter { it.hasUnique(UniqueType.GainBuildingWhereBuildable) }
-
-        for (building in autoGrantedBuildings)
-            if (building.isBuildable(city.cityConstructions))
-                addBuilding(building)
     }
 
     /**

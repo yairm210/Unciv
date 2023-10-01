@@ -129,7 +129,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     TileImprovementTime("[relativeAmount]% tile improvement construction time", UniqueTarget.Global, UniqueTarget.Unit),
 
     /// Building Maintenance
-    GainFreeBuildings("Gain a free [buildingName] [cityFilter]", UniqueTarget.Global),
+    GainFreeBuildings("Gain a free [buildingName] [cityFilter]", UniqueTarget.Global, UniqueTarget.Triggerable),
     BuildingMaintenance("[relativeAmount]% maintenance cost for buildings [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
     /// Border growth
