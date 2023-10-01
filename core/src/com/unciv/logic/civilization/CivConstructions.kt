@@ -156,12 +156,12 @@ class CivConstructions : IsPartOfGameInfoSerialization {
                 city.cityConstructions.freeBuildingsProvidedFromThisCity.addToMapOfSets(city.id, freeBuilding.name)
 
                 if (city.cityConstructions.containsBuildingOrEquivalent(freeBuilding.name)) continue
-                city.cityConstructions.addBuilding(freeBuilding)
+                city.cityConstructions.constructionComplete(freeBuilding)
             }
 
             for (building in autoGrantedBuildings)
                 if (building.isBuildable(city.cityConstructions))
-                    city.cityConstructions.addBuilding(building)
+                    city.cityConstructions.constructionComplete(building)
         }
     }
 
