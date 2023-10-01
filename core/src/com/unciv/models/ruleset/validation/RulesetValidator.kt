@@ -667,7 +667,7 @@ class RulesetValidator(val ruleset: Ruleset) {
                 unit.isCivilian() &&
                 !unit.isGreatPersonOfType("War")) {
                 lines.add("${unit.name} can place improvement $improvementName which has no stats, preventing unit automation!",
-                    RulesetErrorSeverity.Warning)
+                    RulesetErrorSeverity.WarningOptionsOnly)
             }
         }
 

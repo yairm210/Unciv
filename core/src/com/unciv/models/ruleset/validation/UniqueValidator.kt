@@ -56,35 +56,7 @@ class UniqueValidator(val ruleset: Ruleset) {
         }
 
         for (conditional in unique.conditionals) {
-            if (conditional.type == null) {
-                rulesetErrors.add(
-                    "$prefix unique \"${unique.text}\" contains the conditional \"${conditional.text}\"," +
-                        " which is of an unknown type!",
-                    RulesetErrorSeverity.Warning
-                )
-            } else {
-                if (conditional.type.targetTypes.none { it.modifierType != UniqueTarget.ModifierType.None })
-                    rulesetErrors.add("$prefix unique \"${unique.text}\" contains the conditional \"${conditional.text}\"," +
-                        " which is a Unique type not allowed as conditional or trigger.",
-                        RulesetErrorSeverity.Warning)
-
-                if (conditional.type.targetTypes.contains(UniqueTarget.UnitActionModifier)
-                    && unique.type.targetTypes.none { UniqueTarget.UnitAction.canAcceptUniqueTarget(it) })
-                    rulesetErrors.add("$prefix unique \"${unique.text}\" contains the conditional \"${conditional.text}\"," +
-                        " which as a UnitActionModifier is only allowed on UnitAciton uniques.",
-                        RulesetErrorSeverity.Warning)
-
-                val conditionalComplianceErrors =
-                    getComplianceErrors(conditional)
-                for (complianceError in conditionalComplianceErrors) {
-                    if (complianceError.errorSeverity == severityToReport)
-                        rulesetErrors.add(RulesetError( "$prefix unique \"${unique.text}\" contains the conditional \"${conditional.text}\"." +
-                            " This contains the parameter ${complianceError.parameterName} which does not fit parameter type" +
-                            " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
-                            complianceError.errorSeverity.getRulesetErrorSeverity(severityToReport)
-                        ))
-                }
-            }
+            addConditionalErrors(conditional, rulesetErrors, prefix, unique, severityToReport)
         }
 
 
@@ -93,21 +65,75 @@ class UniqueValidator(val ruleset: Ruleset) {
         // The tests are RulesetInvariant in nature, but RulesetSpecific is called for _all_ objects, invariant is not.
             return rulesetErrors
 
+        addDeprecationAnnotationErrors(unique, prefix, rulesetErrors)
 
+        return rulesetErrors
+    }
+
+    private fun addConditionalErrors(
+        conditional: Unique,
+        rulesetErrors: RulesetErrorList,
+        prefix: String,
+        unique: Unique,
+        severityToReport: UniqueType.UniqueComplianceErrorSeverity
+    ) {
+        if (conditional.type == null) {
+            rulesetErrors.add(
+                "$prefix unique \"${unique.text}\" contains the conditional \"${conditional.text}\"," +
+                    " which is of an unknown type!",
+                RulesetErrorSeverity.Warning
+            )
+            return
+        }
+        
+        if (conditional.type.targetTypes.none { it.modifierType != UniqueTarget.ModifierType.None })
+            rulesetErrors.add(
+                "$prefix unique \"${unique.text}\" contains the conditional \"${conditional.text}\"," +
+                    " which is a Unique type not allowed as conditional or trigger.",
+                RulesetErrorSeverity.Warning
+            )
+
+        if (conditional.type.targetTypes.contains(UniqueTarget.UnitActionModifier)
+            && conditional.type.targetTypes.none { UniqueTarget.UnitAction.canAcceptUniqueTarget(it) }
+        )
+            rulesetErrors.add(
+                "$prefix unique \"${unique.text}\" contains the conditional \"${conditional.text}\"," +
+                    " which as a UnitActionModifier is only allowed on UnitAciton uniques.",
+                RulesetErrorSeverity.Warning
+            )
+
+        val conditionalComplianceErrors =
+            getComplianceErrors(conditional)
+        for (complianceError in conditionalComplianceErrors) {
+            if (complianceError.errorSeverity == severityToReport)
+                rulesetErrors.add(
+                    RulesetError(
+                        "$prefix unique \"${unique.text}\" contains the conditional \"${conditional.text}\"." +
+                            " This contains the parameter ${complianceError.parameterName} which does not fit parameter type" +
+                            " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !",
+                        complianceError.errorSeverity.getRulesetErrorSeverity(severityToReport)
+                    )
+                )
+        }
+    }
+
+    private fun addDeprecationAnnotationErrors(
+        unique: Unique,
+        prefix: String,
+        rulesetErrors: RulesetErrorList
+    ) {
         val deprecationAnnotation = unique.getDeprecationAnnotation()
         if (deprecationAnnotation != null) {
             val replacementUniqueText = unique.getReplacementText(ruleset)
             val deprecationText =
                 "$prefix unique \"${unique.text}\" is deprecated ${deprecationAnnotation.message}," +
-                    if (deprecationAnnotation.replaceWith.expression != "") " replace with \"${replacementUniqueText}\"" else ""
+                        if (deprecationAnnotation.replaceWith.expression != "") " replace with \"${replacementUniqueText}\"" else ""
             val severity = if (deprecationAnnotation.level == DeprecationLevel.WARNING)
                 RulesetErrorSeverity.WarningOptionsOnly // Not user-visible
             else RulesetErrorSeverity.Warning // User visible
 
             rulesetErrors.add(deprecationText, severity)
         }
-
-        return rulesetErrors
     }
 
     /** Maps uncompliant parameters to their required types */
