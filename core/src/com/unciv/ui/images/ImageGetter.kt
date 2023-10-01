@@ -62,6 +62,8 @@ object ImageGetter {
         atlases["game"] = atlas
     }
 
+    fun reloadImages() = setNewRuleset(ruleset)
+
     /** Required every time the ruleset changes, in order to load mod-specific images */
     fun setNewRuleset(ruleset: Ruleset) {
         ImageGetter.ruleset = ruleset

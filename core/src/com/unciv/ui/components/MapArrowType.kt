@@ -1,4 +1,4 @@
-package com.unciv.models.helpers
+package com.unciv.ui.components
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.IsPartOfGameInfoSerialization

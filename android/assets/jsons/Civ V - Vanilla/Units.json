@@ -1294,10 +1294,10 @@
 		"unitType": "Civilian",
 		"uniques": [
             "Can instantly construct a [Holy site] improvement <by consuming this unit> <if it hasn't used other actions yet>",
-            "Can [Spread Religion] [4] times",
+            "Can Spread Religion <[4] times>",
 			"Removes other religions when spreading religion",
-            "May found a religion",
-            "May enhance a religion",
+            "May found a religion <by consuming this unit> <if it hasn't used other actions yet>",
+            "May enhance a religion <by consuming this unit>  <if it hasn't used other actions yet>",
 			"May enter foreign tiles without open borders", "[-1] Sight", "Great Person - [Faith]",
 			"Unbuildable", "Religious Unit", "Hidden when religion is disabled",
 			"Takes your religion over the one in their birth city"],
@@ -1333,7 +1333,9 @@
 	{
 		"name": "Missionary",
 		"unitType": "Civilian",
-		"uniques": ["Can [Spread Religion] [2] times", "May enter foreign tiles without open borders, but loses [250] religious strength each turn it ends there",
+		"uniques": [
+            "Can Spread Religion <[2] times>",
+            "May enter foreign tiles without open borders, but loses [250] religious strength each turn it ends there",
 			"Can be purchased with [Faith] [in all cities in which the majority religion is a major religion]",
 			"[-1] Sight", "Unbuildable", "Religious Unit", "Hidden when religion is disabled"],
 		"movement": 4,
@@ -1343,7 +1345,7 @@
 		"name": "Inquisitor",
 		"unitType": "Civilian",
 		"uniques": ["Prevents spreading of religion to the city it is next to",
-			"Can [Remove Foreign religions from your own cities] [1] times",
+            "Can remove other religions from cities <in [Friendly] tiles> <once> <after which this unit is consumed>",
 			"Can be purchased with [Faith] [in all cities in which the majority religion is an enhanced religion]",
 			"[+1] Sight", "Hidden when religion is disabled", "Unbuildable", "Religious Unit"
 		],

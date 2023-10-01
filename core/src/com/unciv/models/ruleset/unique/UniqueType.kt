@@ -219,6 +219,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ReligionSpreadDistance("Religion naturally spreads to cities [amount] tiles away", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     MayNotGenerateGreatProphet("May not generate great prophet equivalents naturally", UniqueTarget.Global),
     FaithCostOfGreatProphetChange("[relativeAmount]% Faith cost of generating Great Prophet equivalents", UniqueTarget.Global),
+    @Deprecated("As of 4.8.9", ReplaceWith("All newly-trained [baseUnitFilter] units [cityFilter] receive the [Devout] promotion"))
     UnitStartingActions("[baseUnitFilter] units built [cityFilter] can [action] [amount] extra times", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
     /// Things you get at the start of the game
@@ -311,14 +312,15 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     // Unit action uniques
     // Unit actions should look like: "Can {action description}, to allow them to be combined with modifiers
 
-    FoundCity("Founds a new city", UniqueTarget.Unit),
+    FoundCity("Founds a new city", UniqueTarget.UnitAction),
+    ConstructImprovementInstantly("Can instantly construct a [improvementFilter] improvement", UniqueTarget.UnitAction),
+    CanSpreadReligion("Can Spread Religion", UniqueTarget.UnitAction),
+    CanRemoveHeresy("Can remove other religions from cities", UniqueTarget.UnitAction),
+    MayFoundReligion("May found a religion", UniqueTarget.UnitAction),
+    MayEnhanceReligion("May enhance a religion", UniqueTarget.UnitAction),
 
-    ConstructImprovementInstantly("Can instantly construct a [improvementFilter] improvement", UniqueTarget.Unit),
     BuildImprovements("Can build [improvementFilter/terrainFilter] improvements on tiles", UniqueTarget.Unit),
     CreateWaterImprovements("May create improvements on water resources", UniqueTarget.Unit),
-
-    MayFoundReligion("May found a religion", UniqueTarget.Unit),
-    MayEnhanceReligion("May enhance a religion", UniqueTarget.Unit),
 
     AddInCapital("Can be added to [comment] in the Capital", UniqueTarget.Unit),
     PreventSpreadingReligion("Prevents spreading of religion to the city it is next to", UniqueTarget.Unit),
@@ -326,7 +328,10 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     MayParadrop("May Paradrop up to [amount] tiles from inside friendly territory", UniqueTarget.Unit),
     CanAirsweep("Can perform Air Sweep", UniqueTarget.Unit),
+
+    @Deprecated("As of 4.8.9", ReplaceWith("Can Spread Religion <[amount] times> <after which this unit is consumed>\" OR \"Can remove other religions from cities <in [Friendly] tiles> <once> <after which this unit is consumed>"))
     CanActionSeveralTimes("Can [action] [amount] times", UniqueTarget.Unit),
+
     CanSpeedupConstruction("Can speed up construction of a building", UniqueTarget.Unit),
     CanSpeedupWonderConstruction("Can speed up the construction of a wonder", UniqueTarget.Unit),
     CanHurryResearch("Can hurry technology research", UniqueTarget.Unit),
@@ -1186,28 +1191,14 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
         abstract fun getRulesetErrorSeverity(severityToReport: UniqueComplianceErrorSeverity): RulesetErrorSeverity
     }
 
-    /** Maps uncompliant parameters to their required types */
-    fun getComplianceErrors(
-        unique: Unique,
-        ruleset: Ruleset
-    ): List<UniqueComplianceError> {
-        val errorList = ArrayList<UniqueComplianceError>()
-        for ((index, param) in unique.params.withIndex()) {
-            val acceptableParamTypes = parameterTypeMap[index]
-            val errorTypesForAcceptableParameters =
-                    acceptableParamTypes.map { it.getErrorSeverity(param, ruleset) }
-            if (errorTypesForAcceptableParameters.any { it == null }) continue // This matches one of the types!
-            val leastSevereWarning =
-                    errorTypesForAcceptableParameters.minByOrNull { it!!.ordinal }!!
-            errorList += UniqueComplianceError(param, acceptableParamTypes, leastSevereWarning)
-        }
-        return errorList
-    }
-
     fun getDeprecationAnnotation(): Deprecated? = declaringJavaClass.getField(name)
         .getAnnotation(Deprecated::class.java)
 
     /** Checks whether a specific [uniqueTarget] as e.g. given by [IHasUniques.getUniqueTarget] works with `this` UniqueType */
     fun canAcceptUniqueTarget(uniqueTarget: UniqueTarget) =
         targetTypes.any { uniqueTarget.canAcceptUniqueTarget(it) }
+
+    companion object {
+        val uniqueTypeMap: Map<String, UniqueType> = UniqueType.values().associateBy { it.placeholderText }
+    }
 }

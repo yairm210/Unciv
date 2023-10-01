@@ -11,14 +11,13 @@ import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.Tile
-import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsReligion
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsFromUniques
 
 object SpecificUnitAutomation {
 
@@ -58,13 +57,13 @@ object SpecificUnitAutomation {
         if (tileToSteal != null) {
             unit.movement.headTowards(tileToSteal)
             if (unit.currentMovement > 0 && unit.currentTile == tileToSteal)
-                UnitActions.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
+                UnitActionsFromUniques.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
             return true
         }
 
         // try to build a citadel for defensive purposes
         if (unit.civ.getWorkerAutomation().evaluateFortPlacement(unit.currentTile, true)) {
-            UnitActions.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
+            UnitActionsFromUniques.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
             return true
         }
         return false
@@ -98,22 +97,19 @@ object SpecificUnitAutomation {
         }
         unit.movement.headTowards(tileForCitadel)
         if (unit.currentMovement > 0 && unit.currentTile == tileForCitadel)
-            UnitActions.getImprovementConstructionActions(unit, unit.currentTile)
+            UnitActionsFromUniques.getImprovementConstructionActions(unit, unit.currentTile)
                 .firstOrNull()?.action?.invoke()
     }
 
     fun automateSettlerActions(unit: MapUnit, tilesWhereWeWillBeCaptured: Set<Tile>) {
         if (unit.civ.gameInfo.turns == 0) {   // Special case, we want AI to settle in place on turn 1.
-            val foundCityAction = UnitActions.getFoundCityAction(unit, unit.getTile())
+            val foundCityAction = UnitActionsFromUniques.getFoundCityAction(unit, unit.getTile())
             // Depending on era and difficulty we might start with more than one settler. In that case settle the one with the best location
             val otherSettlers = unit.civ.units.getCivUnits().filter { it.currentMovement > 0 && it.baseUnit == unit.baseUnit }
+            val unitTileRanking = CityLocationTileRanker.rankTileAsCityCenter(unit.getTile(), unit.civ)
             if (foundCityAction?.action != null &&
                     otherSettlers.none {
-                        CityLocationTileRanker.rankTileAsCityCenter(
-                            it.getTile(), unit.civ
-                        ) > CityLocationTileRanker.rankTileAsCityCenter(
-                            unit.getTile(), unit.civ
-                        )
+                        CityLocationTileRanker.rankTileAsCityCenter(it.getTile(), unit.civ) > unitTileRanking
                     }
             ) {
                 foundCityAction.action.invoke()
@@ -146,7 +142,7 @@ object SpecificUnitAutomation {
             return
         }
 
-        val foundCityAction = UnitActions.getFoundCityAction(unit, bestCityLocation)
+        val foundCityAction = UnitActionsFromUniques.getFoundCityAction(unit, bestCityLocation)
         if (foundCityAction?.action == null) { // this means either currentMove == 0 or city within 3 tiles
             if (unit.currentMovement > 0) // therefore, city within 3 tiles
                 throw Exception("City within distance")
@@ -215,10 +211,8 @@ object SpecificUnitAutomation {
             unit.movement.headTowards(chosenTile)
             if (unit.currentTile == chosenTile) {
                 if (unit.currentTile.isPillaged())
-                    UnitActions.getRepairAction(unit).invoke()
-                else
-                    UnitActions.getImprovementConstructionActions(unit, unit.currentTile)
-                        .firstOrNull()?.action?.invoke()
+                    UnitActions.invokeUnitAction(unit, UnitActionType.Repair)
+                else UnitActions.invokeUnitAction(unit, UnitActionType.Create)
                 return true
             }
             return unitTileBeforeMovement != unit.currentTile
@@ -249,12 +243,8 @@ object SpecificUnitAutomation {
                     .minByOrNull { it.second }?.first
                     ?: return false
 
-        val conductTradeMissionAction = UnitActions.getUnitActions(unit)
-            .firstOrNull { it.type == UnitActionType.ConductTradeMission }
-        if (conductTradeMissionAction?.action != null) {
-            conductTradeMissionAction.action.invoke()
-            return true
-        }
+        val conductedTradeMission = UnitActions.invokeUnitAction(unit, UnitActionType.ConductTradeMission)
+        if (conductedTradeMission) return true
 
         val unitTileBeforeMovement = unit.currentTile
         unit.movement.headTowards(closestCityStateTile)
@@ -293,12 +283,8 @@ object SpecificUnitAutomation {
                 wonderToHurry.name
             )
             unit.showAdditionalActions = false  // make sure getUnitActions doesn't skip the important ones
-            val unitAction = UnitActions.getUnitActions(unit).firstOrNull {
-                    it.type == UnitActionType.HurryBuilding || it.type == UnitActionType.HurryWonder
-                } ?: return false
-            if (unitAction.action == null) return false
-            unitAction.action.invoke()
-            return true
+            return UnitActions.invokeUnitAction(unit, UnitActionType.HurryBuilding)
+                || UnitActions.invokeUnitAction(unit, UnitActionType.HurryWonder)
         }
 
         // Walk towards the city.
@@ -320,8 +306,7 @@ object SpecificUnitAutomation {
         if (unit.movement.canReach(capitalTile))
             unit.movement.headTowards(capitalTile)
         if (unit.getTile() == capitalTile) {
-            UnitActions.getAddInCapitalAction(unit, capitalTile).action!!()
-            return
+            UnitActionsFromUniques.getAddInCapitalAction(unit, capitalTile).action?.invoke()
         }
     }
 
@@ -351,7 +336,7 @@ object SpecificUnitAutomation {
         unit.movement.headTowards(destination)
 
         if (unit.getTile() in city.getTiles() && unit.civ.religionManager.maySpreadReligionNow(unit)) {
-            doReligiousAction(unit, unit.getTile())
+            UnitActions.invokeUnitAction(unit, UnitActionType.SpreadReligion)
         }
     }
 
@@ -407,7 +392,7 @@ object SpecificUnitAutomation {
         unit.movement.headTowards(destination)
 
         if (cityToConvert != null && unit.getTile().getCity() == destination.getCity()) {
-            doReligiousAction(unit, destination)
+            UnitActions.invokeUnitAction(unit, UnitActionType.RemoveHeresy)
         }
     }
 
@@ -629,7 +614,7 @@ object SpecificUnitAutomation {
             return
         }
 
-        UnitActionsReligion.getFoundReligionAction(unit)()
+        UnitActions.invokeUnitAction(unit, UnitActionType.FoundReligion)
     }
 
     fun enhanceReligion(unit: MapUnit) {
@@ -641,13 +626,7 @@ object SpecificUnitAutomation {
         if (!unit.getTile().isCityCenter())
             return
 
-        UnitActionsReligion.getEnhanceReligionAction(unit)()
+        UnitActions.invokeUnitAction(unit, UnitActionType.EnhanceReligion)
     }
 
-    private fun doReligiousAction(unit: MapUnit, destination: Tile) {
-        val religiousActions = ArrayList<UnitAction>()
-        UnitActionsReligion.addActionsWithLimitedUses(unit, religiousActions, destination)
-        if (religiousActions.firstOrNull()?.action == null) return
-        religiousActions.first().action!!.invoke()
-    }
 }

@@ -1,3 +1,50 @@
+## 4.8.9
+
+New online multiplayer no longer stuck when first player is human spectator
+
+Modding:
+- Replaced old religion style actions! Paves the way for unit action generalization
+- Mod checker displays *all* unknown uniques
+
+By SomeTroglodyte:
+- Pedia pixel units
+- Fix top bar layout
+- City overview restore fixed header
+
+Apply conditionals for free buildings to the destination city instead of the originating city  - By SeventhM
+
+Test city conquest functions  - By Framonti
+
+## 4.8.8
+
+performance:
+- Faster ruleset validation
+- Faster ruleset loading
+
+modding: Added json schemas for autocomplete and error detection
+
+By tuvus:
+- AI Open Borders Offer fix
+- Fix Nuke Notification
+
+Fix City construction context menu changing Puppets  - By SomeTroglodyte
+
+## 4.8.7
+
+Reload images when downloading or removing a mod
+
+Better mod compatibility autochanges (remove removed units/improvements correctly)
+
+By tuvus:
+- Added 'civ returned worker' notification
+- Liberating civ grants open borders
+
+By SomeTroglodyte:
+- Reorganized World Screen Top Bar in small screens
+- Allow Space Key to close 'Player Ready' screen (hotseat)
+
+Added tests for most nuke functionalities  - By Framonti
+
 ## 4.8.6
 
 Mod checker accepts era for unit type

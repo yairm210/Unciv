@@ -8,7 +8,7 @@ import com.unciv.logic.map.HexMath.getDistance
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
-import com.unciv.models.helpers.UnitMovementMemoryType
+import com.unciv.ui.components.UnitMovementMemoryType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 

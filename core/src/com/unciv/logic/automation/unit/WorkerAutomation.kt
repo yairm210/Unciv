@@ -19,7 +19,7 @@ import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.LocalUniqueCache
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
+import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsFromUniques
 import com.unciv.utils.Log
 import com.unciv.utils.debug
 
@@ -141,7 +141,7 @@ class WorkerAutomation(
             if (unit.currentMovement > 0 && reachedTile == tileToWork) {
                 if (reachedTile.isPillaged()) {
                     debug("WorkerAutomation: ${unit.label()} -> repairs $reachedTile")
-                    UnitActions.getRepairAction(unit).invoke()
+                    UnitActionsFromUniques.getRepairAction(unit)?.action?.invoke()
                     return
                 }
                 if (reachedTile.improvementInProgress == null && reachedTile.isLand
@@ -158,7 +158,7 @@ class WorkerAutomation(
 
         if (currentTile.isPillaged()) {
             debug("WorkerAutomation: ${unit.label()} -> repairs $currentTile")
-            UnitActions.getRepairAction(unit).invoke()
+            UnitActionsFromUniques.getRepairAction(unit)?.action?.invoke()
             return
         }
 
@@ -587,7 +587,7 @@ class WorkerAutomation(
         // all conditionals succeed with a current StateForConditionals(civ, unit)
         // todo: Not necessarily the optimal flow: Be optimistic and head towards,
         //       then when arrived and the conditionals say "no" do something else instead?
-        val action = UnitActions.getWaterImprovementAction(unit)
+        val action = UnitActionsFromUniques.getWaterImprovementAction(unit)
             ?: return false
 
         // If action.action is null that means only transient reasons prevent the improvement -

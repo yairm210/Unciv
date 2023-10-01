@@ -8,6 +8,7 @@ import com.unciv.logic.automation.unit.SpecificUnitAutomation
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.civilization.CivilopediaAction
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.MapUnitAction
 import com.unciv.logic.civilization.NotificationCategory
@@ -21,7 +22,7 @@ import com.unciv.logic.map.mapunit.MapUnit
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.UnitActionType
-import com.unciv.models.helpers.UnitMovementMemoryType
+import com.unciv.ui.components.UnitMovementMemoryType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
@@ -787,13 +788,14 @@ object Battle {
     @Suppress("FunctionName")   // Yes we want this name to stand out
     fun NUKE(attacker: MapUnitCombatant, targetTile: Tile) {
         val attackingCiv = attacker.getCivInfo()
+        val notifyDeclaredWarCivs = ArrayList<Civilization>()
         fun tryDeclareWar(civSuffered: Civilization) {
             if (civSuffered != attackingCiv
                 && civSuffered.knows(attackingCiv)
                 && civSuffered.getDiplomacyManager(attackingCiv).diplomaticStatus != DiplomaticStatus.War
             ) {
                 attackingCiv.getDiplomacyManager(civSuffered).declareWar()
-                attackingCiv.addNotification("After being hit by our [${attacker.getName()}], [${civSuffered}] has declared war on us!", targetTile.position, NotificationCategory.Diplomacy, NotificationIcon.War)
+                if (!notifyDeclaredWarCivs.contains(civSuffered)) notifyDeclaredWarCivs.add(civSuffered)
             }
         }
 
@@ -806,9 +808,10 @@ object Battle {
         // Calculate the tiles that are hit
         val hitTiles = targetTile.getTilesInDistance(blastRadius)
 
+        val hitCivsTerritory = ArrayList<Civilization>()
         // Declare war on the owners of all hit tiles
         for (hitCiv in hitTiles.mapNotNull { it.getOwner() }.distinct()) {
-            hitCiv.addNotification("A(n) [${attacker.getName()}] exploded in our territory!", targetTile.position, NotificationCategory.War, NotificationIcon.War)
+            hitCivsTerritory.add(hitCiv)
             tryDeclareWar(hitCiv)
         }
 
@@ -822,13 +825,38 @@ object Battle {
                     tryInterceptAirAttack(attacker, targetTile, civWhoseUnitWasAttacked, null)
             }
         }
-        if (attacker.isDefeated()) return
+        val nukeNotificationAction = sequenceOf( LocationAction(targetTile.position), CivilopediaAction("Units/" + attacker.getName()))
+        // If the nuke has been intercepted and destroyed then it fails to detonate
+        if (attacker.isDefeated()) {
+            // Notify attacker that they are now at war for the attempt
+            for (defendingCiv in notifyDeclaredWarCivs)
+                attackingCiv.addNotification("After an attempted attack by our [${attacker.getName()}], [${defendingCiv}] has declared war on us!", nukeNotificationAction, NotificationCategory.Diplomacy, defendingCiv.civName, NotificationIcon.War, attacker.getName())
+            return
+        }
+
+        // Notify attacker that they are now at war
+        for (defendingCiv in notifyDeclaredWarCivs)
+            attackingCiv.addNotification("After being hit by our [${attacker.getName()}], [${defendingCiv}] has declared war on us!", nukeNotificationAction, NotificationCategory.Diplomacy, defendingCiv.civName, NotificationIcon.War, attacker.getName())
 
         attacker.unit.attacksSinceTurnStart.add(Vector2(targetTile.position))
 
         for (tile in hitTiles) {
             // Handle complicated effects
             doNukeExplosionForTile(attacker, tile, nukeStrength, targetTile == tile)
+        }
+
+        // Message all other civs
+        for (otherCiv in attackingCiv.gameInfo.civilizations) {
+            if (!otherCiv.isAlive() || otherCiv == attackingCiv) continue
+            if (hitCivsTerritory.contains(otherCiv))
+                otherCiv.addNotification("A(n) [${attacker.getName()}] from [${attackingCiv.civName}] has exploded in our territory!",
+                    nukeNotificationAction, NotificationCategory.War, attackingCiv.civName, NotificationIcon.War, attacker.getName())
+            else if (otherCiv.knows(attackingCiv))
+                otherCiv.addNotification("A(n) [${attacker.getName()}] has been detonated by [${attackingCiv.civName}]!",
+                    nukeNotificationAction, NotificationCategory.War, attackingCiv.civName, NotificationIcon.War, attacker.getName())
+            else
+                otherCiv.addNotification("A(n) [${attacker.getName()}] has been detonated by an unkown civilization!",
+                    nukeNotificationAction, NotificationCategory.War, NotificationIcon.War, attacker.getName())
         }
 
         // Instead of postBattleAction() just destroy the unit, all other functions are not relevant

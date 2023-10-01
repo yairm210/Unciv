@@ -132,7 +132,7 @@ jobs:
           keyPassword: ${{ secrets.BUNDLE_SIGNING_KEY_PASSWORD }}
 
       - name: Upload AAB to google play
-        uses: r0adkll/upload-google-play@v1.0.15
+        uses: r0adkll/upload-google-play@v1.1.2
         continue-on-error: true
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON  }}
@@ -140,6 +140,7 @@ jobs:
           releaseFiles: android/build/outputs/bundle/release/Unciv-release.aab
           track: production
           userFraction: 0.1
+          status: inProgress
           whatsNewDirectory: whatsNewDirectory
 
 

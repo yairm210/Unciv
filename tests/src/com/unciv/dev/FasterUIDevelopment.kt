@@ -72,7 +72,7 @@ object FasterUIDevelopment {
             UncivGame.Current.files = UncivFiles(Gdx.files)
             game.settings = UncivGame.Current.files.getGeneralSettings()
             ImageGetter.resetAtlases()
-            ImageGetter.setNewRuleset(ImageGetter.ruleset)
+            ImageGetter.reloadImages()
             BaseScreen.setSkin()
             game.pushScreen(UIDevScreen())
             Gdx.graphics.requestRendering()

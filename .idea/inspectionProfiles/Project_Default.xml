@@ -7,7 +7,6 @@
     <inspection_tool class="JsonPathEvaluateUnknownKey" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="JsonPathUnknownFunction" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="JsonPathUnknownOperator" enabled="false" level="WARNING" enabled_by_default="false" />
-    <inspection_tool class="JsonSchemaCompliance" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="JsonSchemaDeprecation" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="JsonSchemaRefReference" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="JsonStandardCompliance" enabled="false" level="ERROR" enabled_by_default="false" />

@@ -303,12 +303,8 @@ object UnitAutomation {
         val isLateGame = isLateGame(unit.civ)
         // Great scientist -> Hurry research if late game
         if (isLateGame) {
-            val hurryResearch = UnitActions.getUnitActions(unit)
-                .firstOrNull { it.type == UnitActionType.HurryResearch }?.action
-            if (hurryResearch != null) {
-                hurryResearch()
-                return
-            }
+            val hurriedResearch = UnitActions.invokeUnitAction(unit, UnitActionType.HurryResearch)
+            if (hurriedResearch) return
         }
 
         // Great merchant -> Conduct trade mission if late game and if not at war.
@@ -345,7 +341,7 @@ object UnitAutomation {
             val improvementCanBePlacedEventually =
                     SpecificUnitAutomation.automateImprovementPlacer(unit)
             if (!improvementCanBePlacedEventually)
-                startGoldenAgeIfHasAbility(unit)
+                UnitActions.invokeUnitAction(unit, UnitActionType.StartGoldenAge)
         }
 
         // TODO: The AI tends to have a lot of great generals. Maybe there should be a cutoff
@@ -359,10 +355,6 @@ object UnitAutomation {
         val researchCompletePercent =
                 (civ.tech.researchedTechnologies.size * 1.0f) / civ.gameInfo.ruleset.technologies.size
         return researchCompletePercent >= 0.8f
-    }
-
-    private fun startGoldenAgeIfHasAbility(unit: MapUnit) {
-        UnitActions.getUnitActions(unit).firstOrNull { it.type == UnitActionType.StartGoldenAge }?.action?.invoke()
     }
 
     /** @return true only if the unit has 0 movement left */
@@ -462,7 +454,7 @@ object UnitAutomation {
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         val tilesThatCanWalkToAndThenPillage = unitDistanceToTiles
             .filter { it.value.totalDistance < unit.currentMovement }.keys
-            .filter { unit.movement.canMoveTo(it) && UnitActions.canPillage(unit, it)
+            .filter { unit.movement.canMoveTo(it) && UnitActionsPillage.canPillage(unit, it)
                     && (it.canPillageTileImprovement()
                     || (it.canPillageRoad() && it.getRoadOwner() != null && unit.civ.isAtWarWith(it.getRoadOwner()!!)))}
 
@@ -564,8 +556,8 @@ object UnitAutomation {
         // Our main attack target is the closest city, but we're fine with deviating from that a bit
         var enemyCitiesByPriority = closestEnemyCity.civ.cities
             .associateWith { it.getCenterTile().aerialDistanceTo(closestEnemyCity.getCenterTile()) }
-            .filterNot { it.value > 10 } // anything 10 tiles away from the target is irrelevant
-            .asSequence().sortedBy { it.value }.map { it.key } // sort the list by closeness to target - least is best!
+            .asSequence().filterNot { it.value > 10 } // anything 10 tiles away from the target is irrelevant
+            .sortedBy { it.value }.map { it.key } // sort the list by closeness to target - least is best!
 
         if (unit.baseUnit.isRanged()) // ranged units don't harm capturable cities, waste of a turn
             enemyCitiesByPriority = enemyCitiesByPriority.filterNot { it.health == 1 }

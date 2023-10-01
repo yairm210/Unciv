@@ -37,13 +37,18 @@ class CityScreenConstructionMenu(
         cityConstructions.constructionQueue
         .count { it !in PerpetualConstruction.perpetualConstructionsMap }
     private val myIndex = cityConstructions.constructionQueue.indexOf(constructionName)
+    /** Cities (including this one) where changing the construction queue makes sense
+     *  (excludes isBeingRazed even though technically that would be allowed) */
+    // Can't use CityScreen.canChangeState for other cities
+    private fun candidateCities() = city.civ.cities.asSequence()
+        .filterNot { it.isPuppet || it.isInResistance() || it.isBeingRazed }
     /** Check whether an "All cities" menu makes sense: `true` if there's more than one city, it's not a Wonder, and any city's queue matches [predicate]. */
     private fun allCitiesEntryValid(predicate: (CityConstructions) -> Boolean) =
-        city.civ.cities.size > 1 &&
+        city.civ.cities.size > 1 &&  // Yes any 2 cities, not candidateCities.drop(1).any()
         (construction as? Building)?.isAnyWonder() != true &&
-        city.civ.cities.map { it.cityConstructions }.any(predicate)
+        candidateCities().map { it.cityConstructions }.any(predicate)
     private fun forAllCities(action: (CityConstructions) -> Unit) =
-        city.civ.cities.map { it.cityConstructions }.forEach(action)
+        candidateCities().map { it.cityConstructions }.forEach(action)
 
     private val settings = GUI.getSettings()
     private val disabledAutoAssignConstructions = settings.disabledAutoAssignConstructions

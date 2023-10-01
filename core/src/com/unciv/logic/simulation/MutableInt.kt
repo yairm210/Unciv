@@ -1,4 +1,4 @@
-package com.unciv.models.simulation
+package com.unciv.logic.simulation
 
 class MutableInt(var value: Int = 0) {
     fun inc() { ++value }

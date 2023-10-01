@@ -1,4 +1,4 @@
-package com.unciv.models.simulation
+package com.unciv.logic.simulation
 
 import com.unciv.Constants
 import com.unciv.UncivGame

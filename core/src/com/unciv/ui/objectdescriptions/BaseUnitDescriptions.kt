@@ -2,7 +2,10 @@ package com.unciv.ui.objectdescriptions
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.GUI
 import com.unciv.logic.city.City
+import com.unciv.models.metadata.GameSettings
+import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueFlag
@@ -14,11 +17,10 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.Fonts
 import com.unciv.ui.components.extensions.getConsumesAmountString
-import com.unciv.ui.components.extensions.toPercent
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.ui.screens.civilopediascreen.MarkupRenderer
-import kotlin.math.pow
 
 object BaseUnitDescriptions {
 
@@ -73,6 +75,9 @@ object BaseUnitDescriptions {
 
     fun getCivilopediaTextLines(baseUnit: BaseUnit, ruleset: Ruleset): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
+
+        // Potentially show pixel unit on top (other civilopediaText is handled by the caller)
+        textList.addPixelUnitImage(baseUnit)
 
         // Don't call baseUnit.getType() here - coming from the main menu baseUnit isn't fully initialized
         val unitTypeLink = ruleset.unitTypes[baseUnit.unitType]?.makeLink() ?: ""
@@ -197,6 +202,22 @@ object BaseUnitDescriptions {
         }
 
         return textList
+    }
+
+    /** Show Pixel Unit Art for the unit.
+     *  * _Unless_ the mod already uses [extraImage][FormattedLine.extraImage] in the unit's [civilopediaText][IRulesetObject.civilopediaText]
+     *  * _Unless_ user has selected no [unitSet][GameSettings.unitSet]
+     *  * For units with era or style variants, only the default is shown (todo: extend FormattedLine with slideshow capability)
+     */
+    // Note: By popular request (this is a simple variant of one of the ideas in #10175)
+    private fun ArrayList<FormattedLine>.addPixelUnitImage(baseUnit: BaseUnit) {
+        if (baseUnit.civilopediaText.any { it.extraImage.isNotEmpty() }) return
+        val settings = GUI.getSettings()
+        if (settings.unitSet.isNullOrEmpty() || settings.pediaUnitArtSize < 1f) return
+        val imageName = "TileSets/${settings.unitSet}/Units/${baseUnit.name}"
+        if (!ImageGetter.imageExists(imageName)) return  // Some units don't have Unit art (e.g. nukes)
+        add(FormattedLine(extraImage = imageName, imageSize = settings.pediaUnitArtSize, centered = true))
+        add(FormattedLine(separator = true, color = "#7f7f7f"))
     }
 
     @Suppress("RemoveExplicitTypeArguments")  // for faster IDE - inferring sequence types can be slow

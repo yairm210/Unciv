@@ -5,8 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.ui.components.AutoScrollPane
-import com.unciv.ui.components.DataPoint
-import com.unciv.ui.components.LineChart
 import com.unciv.ui.components.TabbedPager
 import com.unciv.ui.components.input.onChange
 import com.unciv.ui.components.input.onClick
