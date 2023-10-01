@@ -14,7 +14,7 @@ object UnitActionsReligion {
 
 
     internal fun addFoundReligionAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        if (!unit.civ.religionManager.mayFoundReligionAtAll(unit)) return
+        if (!unit.civ.religionManager.mayFoundReligionAtAll()) return
 
         val unique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.MayFoundReligion)
             .firstOrNull() ?: return

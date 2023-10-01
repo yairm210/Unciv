@@ -256,7 +256,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     }
 
 
-    fun mayFoundReligionAtAll(prophet: MapUnit): Boolean {
+    fun mayFoundReligionAtAll(): Boolean {
         if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion
         if (religionState >= ReligionState.Religion) return false // Already created a major religion
 
@@ -269,7 +269,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     }
 
     fun mayFoundReligionNow(prophet: MapUnit): Boolean {
-        if (!mayFoundReligionAtAll(prophet)) return false
+        if (!mayFoundReligionAtAll()) return false
         if (!prophet.getTile().isCityCenter()) return false
         if (prophet.getTile().getCity()!!.isHolyCity()) return false
         // No double holy cities. Not sure if these were allowed in the base game
@@ -445,7 +445,7 @@ class ReligionManager : IsPartOfGameInfoSerialization {
         val religion = missionary.civ.gameInfo.religions[missionary.religion] ?: return false
         if (religion.isPantheon()) return false
         if (!missionary.canDoLimitedAction(Constants.spreadReligion)
-            && UnitActionModifiers.getUsableUnitActionUniques(missionary, UniqueType.CanSpreadReligion).any()) return false
+            && UnitActionModifiers.getUsableUnitActionUniques(missionary, UniqueType.CanSpreadReligion).none()) return false
         return true
     }
 

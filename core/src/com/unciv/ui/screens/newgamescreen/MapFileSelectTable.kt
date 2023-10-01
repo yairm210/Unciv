@@ -16,7 +16,6 @@ import com.unciv.ui.components.input.onChange
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.victoryscreen.LoadMapPreview
 import com.unciv.utils.Concurrency
-import io.ktor.util.collections.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import com.badlogic.gdx.utils.Array as GdxArray
@@ -35,7 +34,7 @@ class MapFileSelectTable(
     private class MapWrapper(val fileHandle: FileHandle, val mapParameters: MapParameters) {
         override fun toString(): String = mapParameters.baseRuleset + " | " + fileHandle.name()
     }
-    private val mapWrappers = ConcurrentSet<MapWrapper>()
+    private val mapWrappers = ArrayList<MapWrapper>()
 
     private val columnWidth = newGameScreen.getColumnWidth()
 
@@ -69,20 +68,15 @@ class MapFileSelectTable(
     private fun addMapWrappersAsync(){
         val mapFilesSequence = getMapFilesSequence()
 
-        // We only really need ONE map to be loaded to tell us "isNotEmpty" and "recentlySavedMapExists"
-        // The rest we can defer, so that users don't get ANRs when opening the new game screen
-        //   because the game wants to load ALL the maps before first render
-        fun tryAddMapFile(mapFile: FileHandle){
-            val mapParameters = try {
-                MapSaver.loadMapParameters(mapFile)
-            } catch (_: Exception) {
-                return
-            }
-            mapWrappers.add(MapWrapper(mapFile, mapParameters))
-        }
-
         Concurrency.run {
-            for (mapFile in mapFilesSequence) tryAddMapFile(mapFile)
+            for (mapFile in mapFilesSequence) {
+                val mapParameters = try {
+                    MapSaver.loadMapParameters(mapFile)
+                } catch (_: Exception) {
+                    continue
+                }
+                mapWrappers.add(MapWrapper(mapFile, mapParameters))
+            }
             Concurrency.runOnGLThread { fillMapFileSelectBox() }
         }
     }
@@ -102,7 +96,7 @@ class MapFileSelectTable(
     fun isNotEmpty() = firstMap != null
     fun recentlySavedMapExists() = firstMap!=null && firstMap!!.lastModified() > System.currentTimeMillis() - 900000
 
-    fun fillMapFileSelectBox() {
+    private fun fillMapFileSelectBox() {
         if (!mapFileSelectBox.items.isEmpty) return
 
         val mapFiles = GdxArray<MapWrapper>()

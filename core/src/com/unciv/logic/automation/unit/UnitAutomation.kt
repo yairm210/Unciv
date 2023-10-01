@@ -269,7 +269,7 @@ object UnitAutomation {
 
         if (unit.hasUnique(UniqueType.MayFoundReligion)
                 && unit.civ.religionManager.religionState < ReligionState.Religion
-                && unit.civ.religionManager.mayFoundReligionAtAll(unit)
+                && unit.civ.religionManager.mayFoundReligionAtAll()
         )
             return SpecificUnitAutomation.foundReligion(unit)
 
