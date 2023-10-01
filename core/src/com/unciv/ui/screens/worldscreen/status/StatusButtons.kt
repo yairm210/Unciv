@@ -39,6 +39,7 @@ class StatusButtons(
     }
 
     override fun dispose() {
+        autoPlayStatusButton?.dispose()
         multiplayerStatusButton?.dispose()
     }
 }
