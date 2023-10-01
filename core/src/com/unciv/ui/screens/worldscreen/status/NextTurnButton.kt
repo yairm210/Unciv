@@ -24,7 +24,6 @@ class NextTurnButton(
 //         label.setFontSize(30)
         labelCell.pad(10f)
         onActivation { nextTurnAction.action(worldScreen) }
-        onRightClick { AutoPlayMenu(stage,this, this, worldScreen) }
         keyShortcuts.add(KeyboardBinding.NextTurn)
         keyShortcuts.add(KeyboardBinding.NextTurnAlternate)
         // Let unit actions override this for command "Wait".
