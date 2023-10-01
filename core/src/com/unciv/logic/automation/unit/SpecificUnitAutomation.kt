@@ -106,13 +106,10 @@ object SpecificUnitAutomation {
             val foundCityAction = UnitActionsFromUniques.getFoundCityAction(unit, unit.getTile())
             // Depending on era and difficulty we might start with more than one settler. In that case settle the one with the best location
             val otherSettlers = unit.civ.units.getCivUnits().filter { it.currentMovement > 0 && it.baseUnit == unit.baseUnit }
+            val unitTileRanking = CityLocationTileRanker.rankTileAsCityCenter(unit.getTile(), unit.civ)
             if (foundCityAction?.action != null &&
                     otherSettlers.none {
-                        CityLocationTileRanker.rankTileAsCityCenter(
-                            it.getTile(), unit.civ
-                        ) > CityLocationTileRanker.rankTileAsCityCenter(
-                            unit.getTile(), unit.civ
-                        )
+                        CityLocationTileRanker.rankTileAsCityCenter(it.getTile(), unit.civ) > unitTileRanking
                     }
             ) {
                 foundCityAction.action.invoke()
