@@ -16,7 +16,7 @@ import com.unciv.ui.components.input.onChange
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.victoryscreen.LoadMapPreview
 import com.unciv.utils.Concurrency
-import io.ktor.util.collections.ConcurrentSet
+import io.ktor.util.collections.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import com.badlogic.gdx.utils.Array as GdxArray
@@ -54,18 +54,20 @@ class MapFileSelectTable(
 
         mapFileSelectBox.onChange { onSelectBoxChange() }
 
-        addMapWrappersSemiAsync()
+        addMapWrappersAsync()
     }
 
-    private fun addMapWrappersSemiAsync(){
-        val mapFilesSequence = sequence<FileHandle> {
-            yieldAll(MapSaver.getMaps().asSequence())
-            for (modFolder in RulesetCache.values.mapNotNull { it.folderLocation }) {
-                val mapsFolder = modFolder.child(MapSaver.mapsFolder)
-                if (mapsFolder.exists())
-                    yieldAll(mapsFolder.list().asSequence())
-            }
-        }.sortedByDescending { it.lastModified() }
+    private fun getMapFilesSequence() = sequence<FileHandle> {
+        yieldAll(MapSaver.getMaps().asSequence())
+        for (modFolder in RulesetCache.values.mapNotNull { it.folderLocation }) {
+            val mapsFolder = modFolder.child(MapSaver.mapsFolder)
+            if (mapsFolder.exists())
+                yieldAll(mapsFolder.list().asSequence())
+        }
+    }.sortedByDescending { it.lastModified() }
+
+    private fun addMapWrappersAsync(){
+        val mapFilesSequence = getMapFilesSequence()
 
         // We only really need ONE map to be loaded to tell us "isNotEmpty" and "recentlySavedMapExists"
         // The rest we can defer, so that users don't get ANRs when opening the new game screen
@@ -79,18 +81,26 @@ class MapFileSelectTable(
             mapWrappers.add(MapWrapper(mapFile, mapParameters))
         }
 
-        for (mapFile in mapFilesSequence) {
-            if (mapWrappers.isEmpty()) tryAddMapFile(mapFile)
-            // Each other map is loaded in another thread, so we can multiplex the IO and CPU capabilities
-            else Concurrency.run { tryAddMapFile(mapFile) }
+        Concurrency.run {
+            for (mapFile in mapFilesSequence) tryAddMapFile(mapFile)
+            Concurrency.runOnGLThread { fillMapFileSelectBox() }
         }
     }
 
 
-    fun isNotEmpty() = mapWrappers.isNotEmpty()
-    fun recentlySavedMapExists() = mapWrappers.any {
-        it.fileHandle.lastModified() > System.currentTimeMillis() - 900000
+    private val firstMap: FileHandle? by lazy {
+        getMapFilesSequence().firstOrNull {
+            try {
+                MapSaver.loadMapParameters(it)
+                true
+            } catch (_: Exception) {
+                false
+            }
+        }
     }
+
+    fun isNotEmpty() = firstMap != null
+    fun recentlySavedMapExists() = firstMap!=null && firstMap!!.lastModified() > System.currentTimeMillis() - 900000
 
     fun fillMapFileSelectBox() {
         if (!mapFileSelectBox.items.isEmpty) return

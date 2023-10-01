@@ -36,7 +36,6 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen, isReset: Boolean
             mapTypeSpecificTable.clear()
             when (mapTypeSelectBox.selected.value) {
                 MapGeneratedMainType.custom -> {
-                    savedMapOptionsTable.fillMapFileSelectBox()
                     mapParameters.type = MapGeneratedMainType.custom
                     mapTypeSpecificTable.add(savedMapOptionsTable)
                     newGameScreen.unlockTables()
