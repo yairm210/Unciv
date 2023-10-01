@@ -312,9 +312,11 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     // Unit action uniques
     // Unit actions should look like: "Can {action description}, to allow them to be combined with modifiers
 
-    FoundCity("Founds a new city", UniqueTarget.Unit),
+    FoundCity("Founds a new city", UniqueTarget.UnitAction),
+    ConstructImprovementInstantly("Can instantly construct a [improvementFilter] improvement", UniqueTarget.UnitAction),
+    CanSpreadReligion("Can Spread Religion", UniqueTarget.UnitAction),
+    CanRemoveHeresy("Can remove other religions from cities", UniqueTarget.UnitAction),
 
-    ConstructImprovementInstantly("Can instantly construct a [improvementFilter] improvement", UniqueTarget.Unit),
     BuildImprovements("Can build [improvementFilter/terrainFilter] improvements on tiles", UniqueTarget.Unit),
     CreateWaterImprovements("May create improvements on water resources", UniqueTarget.Unit),
 
@@ -330,8 +332,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     @Deprecated("As of 4.8.9", ReplaceWith("Can Spread Religion <[amount] times> <after which this unit is consumed>\" OR \"Can remove other religions from cities <in [Friendly] tiles> <once> <after which this unit is consumed>"))
     CanActionSeveralTimes("Can [action] [amount] times", UniqueTarget.Unit),
-    CanSpreadReligion("Can Spread Religion", UniqueTarget.Unit),
-    CanRemoveHeresy("Can remove other religions from cities", UniqueTarget.Unit),
 
     CanSpeedupConstruction("Can speed up construction of a building", UniqueTarget.Unit),
     CanSpeedupWonderConstruction("Can speed up the construction of a wonder", UniqueTarget.Unit),

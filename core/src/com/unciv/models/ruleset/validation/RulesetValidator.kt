@@ -674,6 +674,12 @@ class RulesetValidator(val ruleset: Ruleset) {
                         " which is a Unique type not allowed as conditional or trigger.",
                         RulesetErrorSeverity.Warning)
 
+                if (conditional.type.targetTypes.contains(UniqueTarget.UnitActionModifier)
+                    && unique.type.targetTypes.none { UniqueTarget.UnitAction.canAcceptUniqueTarget(it) })
+                    rulesetErrors.add("$prefix unique \"${unique.text}\" contains the conditional \"${conditional.text}\"," +
+                        " which as a UnitActionModifier is only allowed on UnitAciton uniques.",
+                        RulesetErrorSeverity.Warning)
+
                 val conditionalComplianceErrors =
                         getComplianceErrors(conditional)
                 for (complianceError in conditionalComplianceErrors) {
