@@ -8,7 +8,7 @@ import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
 import com.unciv.logic.civilization.managers.ReligionState
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.validation.RulesetValidator
+import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.getConditionals
 import com.unciv.models.translations.getPlaceholderParameters
@@ -119,7 +119,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         // filter out possible replacements that are obviously wrong
         val uniquesWithNoErrors = finalPossibleUniques.filter {
             val unique = Unique(it)
-            val errors = RulesetValidator(ruleset).checkUnique(
+            val errors = UniqueValidator(ruleset).checkUnique(
                 unique, true, null,
                 UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
             )

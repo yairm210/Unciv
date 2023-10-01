@@ -85,7 +85,7 @@ class UniqueValidator(val ruleset: Ruleset) {
             )
             return
         }
-        
+
         if (conditional.type.targetTypes.none { it.modifierType != UniqueTarget.ModifierType.None })
             rulesetErrors.add(
                 "$prefix unique \"${unique.text}\" contains the conditional \"${conditional.text}\"," +
@@ -94,11 +94,11 @@ class UniqueValidator(val ruleset: Ruleset) {
             )
 
         if (conditional.type.targetTypes.contains(UniqueTarget.UnitActionModifier)
-            && conditional.type.targetTypes.none { UniqueTarget.UnitAction.canAcceptUniqueTarget(it) }
+            && unique.type!!.targetTypes.none { UniqueTarget.UnitAction.canAcceptUniqueTarget(it) }
         )
             rulesetErrors.add(
                 "$prefix unique \"${unique.text}\" contains the conditional \"${conditional.text}\"," +
-                    " which as a UnitActionModifier is only allowed on UnitAciton uniques.",
+                    " which as a UnitActionModifier is only allowed on UnitAction uniques.",
                 RulesetErrorSeverity.Warning
             )
 

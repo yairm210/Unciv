@@ -21,6 +21,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.ruleset.validation.RulesetValidator
+import com.unciv.models.ruleset.validation.UniqueValidator
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import com.unciv.utils.Log
@@ -378,7 +379,7 @@ class Ruleset {
                         name = cityStateType.name
                         color = cityStateType.color
                         friendBonusUniques = ArrayList(cityStateType.friendBonusUniques.filter {
-                            RulesetValidator(this@Ruleset).checkUnique(
+                            UniqueValidator(this@Ruleset).checkUnique(
                                 Unique(it),
                                 false,
                                 cityStateType,
@@ -386,7 +387,7 @@ class Ruleset {
                             ).isEmpty()
                         })
                         allyBonusUniques = ArrayList(cityStateType.allyBonusUniques.filter {
-                            RulesetValidator(this@Ruleset).checkUnique(
+                            UniqueValidator(this@Ruleset).checkUnique(
                                 Unique(it),
                                 false,
                                 cityStateType,
