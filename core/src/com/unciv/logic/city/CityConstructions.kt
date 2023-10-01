@@ -298,11 +298,11 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         return ceil((workLeft-productionOverflow) / production.toDouble()).toInt()
     }
 
-    fun hasBuildableStatBuildings(stat: Stat): Boolean {
+    fun cheapestStatBuilding(stat: Stat): Building? {
         return getBasicStatBuildings(stat)
-            .map { city.civ.getEquivalentBuilding(it.name) }
+            .map { city.civ.getEquivalentBuilding(it) }
             .filter { it.isBuildable(this) || isBeingConstructedOrEnqueued(it.name) }
-            .any()
+            .minByOrNull { it.cost }
     }
 
     //endregion
@@ -717,18 +717,6 @@ class CityConstructions : IsPartOfGameInfoSerialization {
         validateConstructionQueue()
 
         return true
-    }
-
-    fun addCheapestBuildableStatBuilding(stat: Stat): String? {
-        val cheapestBuildableStatBuilding = getBasicStatBuildings(stat)
-            .map { city.civ.getEquivalentBuilding(it) }
-            .filter { it.isBuildable(this) || isBeingConstructedOrEnqueued(it.name) }
-            .minByOrNull { it.cost }
-            ?: return null
-
-        constructionComplete(cheapestBuildableStatBuilding)
-
-        return cheapestBuildableStatBuilding.name
     }
 
     private fun removeCurrentConstruction() = removeFromQueue(0, true)
