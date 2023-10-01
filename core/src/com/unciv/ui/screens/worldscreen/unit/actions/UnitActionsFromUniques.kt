@@ -285,7 +285,7 @@ object UnitActionsFromUniques {
         val stateForConditionals =
             StateForConditionals(unit = unit, civInfo = civInfo, tile = unitTile)
         val transformList = ArrayList<UnitAction>()
-        for (unique in unit.baseUnit().getMatchingUniques(UniqueType.CanTransform, stateForConditionals)) {
+        for (unique in unit.getMatchingUniques(UniqueType.CanTransform, stateForConditionals)) {
             val unitToTransformTo = civInfo.getEquivalentUnit(unique.params[0])
 
             if (unitToTransformTo.getMatchingUniques(
