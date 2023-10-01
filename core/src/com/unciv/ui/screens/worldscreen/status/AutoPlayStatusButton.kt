@@ -30,7 +30,8 @@ class AutoPlayStatusButton(
                 AutoPlayMenu(stage,this, nextTurnButton, worldScreen)
         }
         onRightClick {
-            if (worldScreen.viewingCiv == worldScreen.gameInfo.currentPlayerCiv) {
+            if (!worldScreen.gameInfo.gameParameters.isOnlineMultiplayer 
+                && worldScreen.viewingCiv == worldScreen.gameInfo.currentPlayerCiv) {
                 settings.turnsToAutoPlay = settings.autoPlayMaxTurns
                 nextTurnButton.update()
             }
