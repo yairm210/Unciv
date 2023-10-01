@@ -287,11 +287,9 @@ class ReligionManager : IsPartOfGameInfoSerialization {
     }
 
     fun mayEnhanceReligionAtAll(prophet: MapUnit): Boolean {
-        if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion, no enhancing
+        if (!civInfo.gameInfo.isReligionEnabled()) return false
         if (religion == null) return false // First found a pantheon
         if (religionState != ReligionState.Religion) return false // First found an actual religion
-        // Already used its power for other things
-        if (prophet.abilityUsesLeft.any { it.value != prophet.maxAbilityUses[it.key] }) return false
         if (!civInfo.isMajorCiv()) return false // Only major civs
 
         if (numberOfBeliefsAvailable(BeliefType.Follower) == 0)

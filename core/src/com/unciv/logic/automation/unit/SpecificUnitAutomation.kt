@@ -18,7 +18,6 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsFromUniques
-import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsReligion
 
 object SpecificUnitAutomation {
 
@@ -630,7 +629,7 @@ object SpecificUnitAutomation {
         if (!unit.getTile().isCityCenter())
             return
 
-        UnitActionsReligion.getEnhanceReligionAction(unit)()
+        UnitActions.invokeUnitAction(unit, UnitActionType.EnhanceReligion)
     }
 
 }

@@ -1113,6 +1113,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "May found a religion"
 	Applicable to: UnitAction
 
+??? example  "May enhance a religion"
+	Applicable to: UnitAction
+
 ## Unit uniques
 !!! note ""
 
@@ -1124,9 +1127,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "May create improvements on water resources"
-	Applicable to: Unit
-
-??? example  "May enhance a religion"
 	Applicable to: Unit
 
 ??? example  "Can be added to [comment] in the Capital"

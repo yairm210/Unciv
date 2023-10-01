@@ -42,20 +42,30 @@ object UnitActionsReligion {
     }
 
     internal fun addEnhanceReligionAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        if (!unit.hasUnique(UniqueType.MayEnhanceReligion)) return
         if (!unit.civ.religionManager.mayEnhanceReligionAtAll(unit)) return
+
+        val unique = UnitActionModifiers.getUsableUnitActionUniques(unit, UniqueType.MayEnhanceReligion)
+            .firstOrNull() ?: return
+
+        val hasActionModifiers = unique.conditionals.any { it.type?.targetTypes?.contains(
+            UniqueTarget.UnitActionModifier
+        ) == true }
+
+        val baseTitle = "Enhance [${unit.civ.religionManager.religion!!.getReligionDisplayName()}]"
         actionList += UnitAction(
             UnitActionType.EnhanceReligion,
-            title = "Enhance [${unit.civ.religionManager.religion!!.getReligionDisplayName()}]",
-            action = getEnhanceReligionAction(unit).takeIf { unit.civ.religionManager.mayEnhanceReligionNow(unit) }
+            title = if (hasActionModifiers) UnitActionModifiers.actionTextWithSideEffects(
+                baseTitle,
+                unique,
+                unit
+            )
+            else baseTitle,
+            action = {
+                unit.civ.religionManager.useProphetForEnhancingReligion(unit)
+                if (hasActionModifiers) UnitActionModifiers.activateSideEffects(unit, unique)
+                else unit.consume()
+            }.takeIf { unit.civ.religionManager.mayEnhanceReligionNow(unit) }
         )
-    }
-
-    fun getEnhanceReligionAction(unit: MapUnit): () -> Unit {
-        return {
-            unit.civ.religionManager.useProphetForEnhancingReligion(unit)
-            unit.consume()
-        }
     }
 
     private fun useActionWithLimitedUses(unit: MapUnit, action: String) {
