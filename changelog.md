@@ -1,3 +1,38 @@
+## 4.8.9
+
+Get rid of old religion style actions!!! 
+
+ - Can still spectate AI-only matches in singleplayer
+
+resolved  - New online multiplayer no longer stuck when first player is human spectator
+
+modding: Mod checker displays *all* unknown uniques
+
+Unify 'get usable unit action uniques' to function
+
+refactor: introduced UnitActions.invokeUnitAction() to unify automation logic for unit actions
+
+reorg: Separated UnitActions into 3 files:
+
+"if it hasn't used other actions yet" conditional works with new limited unit actions ("<[amount] times>") - paves the way for real deprecation of religion action shenanigans
+
+AI 'found religion' takes the action from the list of unit actions, so player and AI ability to act are always the same
+
+isTriggerable fixed to reinclude timed uniques
+
+refactor: unified 'is triggerable' logic
+
+chore: Move files to correct folders
+
+By SomeTroglodyte:
+- Pedia pixel units 
+- Fix top bar layout 
+- City overview restore fixed header 
+
+Apply conditionals for free buildings to the destination city instead of the originating city  - By SeventhM
+
+Test city conquest functions  - By Framonti
+
 ## 4.8.8
 
 performance:
