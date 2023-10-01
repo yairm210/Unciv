@@ -696,7 +696,8 @@ class WorldScreen(
     }
 
     private fun updateAutoPlayStatusButton() {
-        statusButtons.autoPlayStatusButton = AutoPlayStatusButton(this, nextTurnButton)
+        if (statusButtons.autoPlayStatusButton == null)
+            statusButtons.autoPlayStatusButton = AutoPlayStatusButton(this, nextTurnButton)
     }
 
     private fun updateMultiplayerStatusButton() {

@@ -46,7 +46,7 @@ class AutoPlayStatusButton(
     
     override fun dispose() {
         val settings = GUI.getSettings()
-        if ((isOver || isPressed) && settings.turnsToAutoPlay > 0) {
+        if (isPressed && settings.turnsToAutoPlay > 0) {
             settings.stopAutoPlay()
         }
     }
