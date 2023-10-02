@@ -100,6 +100,7 @@ object MapRegionResources {
                 tile.lastTerrain.name in resource.terrainsCanBeFoundOn &&
                 !tile.getBaseTerrain().hasUnique(UniqueType.BlocksResources, conditionalTerrain) &&
                 !resource.hasUnique(UniqueType.NoNaturalGeneration, conditionalTerrain) &&
+
                 resource.getMatchingUniques(UniqueType.TileGenerationConditions).none {
                     tile.temperature!! !in it.params[0].toDouble() .. it.params[1].toDouble()
                         || tile.humidity!! !in it.params[2].toDouble() .. it.params[3].toDouble()
@@ -127,16 +128,19 @@ object MapRegionResources {
      *  Lifted out of the main function to allow postponing water resources.
      *  @return a map of resource types to placed deposits. */
     fun placeMajorDeposits(tileData: TileDataMap, ruleset: Ruleset, tileList: List<Tile>, terrain: Terrain, fallbackWeightings: Boolean, baseImpact: Int, randomImpact: Int): Map<TileResource, Int> {
-        if (tileList.isEmpty())
-            return mapOf()
+        if (tileList.isEmpty()) return mapOf()
+
         val frequency = if (terrain.hasUnique(UniqueType.MajorStrategicFrequency))
             terrain.getMatchingUniques(UniqueType.MajorStrategicFrequency).first().params[0].toInt()
         else 25
+
+        val terrainRule = getTerrainRule(terrain, ruleset)
         val resourceOptions = ruleset.tileResources.values.filter {
             it.resourceType == ResourceType.Strategic &&
                 ((fallbackWeightings && terrain.name in it.terrainsCanBeFoundOn) ||
-                    it.uniqueObjects.any { unique -> anonymizeUnique(unique).text == getTerrainRule(terrain,ruleset).text })
+                    it.uniqueObjects.any { unique -> anonymizeUnique(unique).text == terrainRule.text })
         }
+
         return if (resourceOptions.isNotEmpty())
             placeResourcesInTiles(tileData, frequency, tileList, resourceOptions, baseImpact, randomImpact, true)
         else

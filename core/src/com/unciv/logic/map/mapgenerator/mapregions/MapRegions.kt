@@ -279,7 +279,7 @@ class MapRegions (val ruleset: Ruleset){
         }
         // Normalize starts
         for (region in regions) {
-            normalizeStart(tileMap[region.startPosition!!], tileMap, minorCiv = false)
+            normalizeStart(tileMap[region.startPosition!!], tileMap, isMinorCiv = false)
         }
 
         val civBiases = civilizations.associateWith { ruleset.nations[it.civName]!!.startBias }
@@ -564,8 +564,8 @@ class MapRegions (val ruleset: Ruleset){
     /** Attempts to improve the start on [startTile] as needed to make it decent.
      *  Relies on startPosition having been set previously.
      *  Assumes unchanged baseline values ie citizens eat 2 food each, similar production costs
-     *  If [minorCiv] is true, different weightings will be used. */
-    private fun normalizeStart(startTile: Tile, tileMap: TileMap, minorCiv: Boolean) {
+     *  If [isMinorCiv] is true, different weightings will be used. */
+    private fun normalizeStart(startTile: Tile, tileMap: TileMap, isMinorCiv: Boolean) {
         // Remove ice-like features adjacent to start
         for (tile in startTile.neighbors) {
             val lastTerrain = tile.terrainFeatureObjects.lastOrNull { it.impassable }
@@ -583,7 +583,7 @@ class MapRegions (val ruleset: Ruleset){
                 else 0 }
 
         // If terrible, try adding a hill to a dry flat tile
-        if (innerProduction == 0 || (innerProduction < 2 && outerProduction < 8) || (minorCiv && innerProduction < 4)) {
+        if (innerProduction == 0 || (innerProduction < 2 && outerProduction < 8) || (isMinorCiv && innerProduction < 4)) {
             val hillSpot = startTile.neighbors
                     .filter { it.isLand && it.terrainFeatures.isEmpty() && !it.isAdjacentTo(Constants.freshWater) && !it.isImpassible() }
                     .toList().randomOrNull()
@@ -600,17 +600,16 @@ class MapRegions (val ruleset: Ruleset){
             for (resource in ruleset.tileResources.values.filter { it.hasUnique(UniqueType.StrategicBalanceResource) }) {
                 if (MapRegionResources.tryAddingResourceToTiles(tileData, resource, 1, candidateTiles, majorDeposit = true) == 0) {
                     // Fallback mode - force placement, even on an otherwise inappropriate terrain. Do still respect water and impassible tiles!
-                    if (isWaterOnlyResource(resource))
-                        MapRegionResources.placeResourcesInTiles(tileData, 999, candidateTiles.filter { it.isWater && !it.isImpassible() }.toList(), listOf(resource), majorDeposit = true, forcePlacement = true)
-                    else
-                        MapRegionResources.placeResourcesInTiles(tileData, 999, candidateTiles.filter { it.isLand && !it.isImpassible() }.toList(), listOf(resource), majorDeposit = true, forcePlacement = true)
-
+                    val resourceTiles =
+                        if (isWaterOnlyResource(resource)) candidateTiles.filter { it.isWater && !it.isImpassible() }.toList()
+                        else candidateTiles.filter { it.isLand && !it.isImpassible() }.toList()
+                    MapRegionResources.placeResourcesInTiles(tileData, 999, resourceTiles, listOf(resource), majorDeposit = true, forcePlacement = true)
                 }
             }
         }
 
         // If bad early production, add a small strategic resource to SECOND ring (not for minors)
-        if (!minorCiv && innerProduction < 3 && earlyProduction < 6) {
+        if (!isMinorCiv && innerProduction < 3 && earlyProduction < 6) {
             val lastEraNumber = ruleset.eras.values.maxOf { it.eraNumber }
             val earlyEras = ruleset.eras.filterValues { it.eraNumber <= lastEraNumber / 3 }
             val validResources = ruleset.tileResources.values.filter {
@@ -625,15 +624,71 @@ class MapRegions (val ruleset: Ruleset){
             }
         }
 
-        // Now evaluate food situation
+        val foodBonusesNeeded = calculateFoodBonusesNeeded(startTile, isMinorCiv, tileMap)
+        placeFoodBonuses(isMinorCiv, startTile, foodBonusesNeeded)
+
+        // Minor civs are done, go on with grassiness checks for major civs
+        if (isMinorCiv) return
+
+        addProductionBonuses(startTile)
+    }
+
+    /** Check for very food-heavy starts that might still need some stone to help with production */
+    private fun addProductionBonuses(startTile: Tile) {
+        val grassTypePlots = startTile.getTilesInDistanceRange(1..2).filter {
+            it.isLand &&
+                getPotentialYield(it, Stat.Food, unimproved = true) >= 2f && // Food neutral natively
+                getPotentialYield(it, Stat.Production) == 0f // Production can't even be improved
+        }.toMutableList()
+        val plainsTypePlots = startTile.getTilesInDistanceRange(1..2).filter {
+            it.isLand &&
+                getPotentialYield(it, Stat.Food) >= 2f && // Something that can be improved to food neutral
+                getPotentialYield(it, Stat.Production, unimproved = true) >= 1f // Some production natively
+        }.toList()
+        var productionBonusesNeeded = when {
+            grassTypePlots.size >= 9 && plainsTypePlots.isEmpty() -> 2
+            grassTypePlots.size >= 6 && plainsTypePlots.size <= 4 -> 1
+            else -> 0
+        }
+        val productionBonuses =
+            ruleset.tileResources.values.filter { it.resourceType == ResourceType.Bonus && it.production > 0 }
+
+        if (productionBonuses.isNotEmpty()) {
+            while (productionBonusesNeeded > 0 && grassTypePlots.isNotEmpty()) {
+                val plot = grassTypePlots.random()
+                grassTypePlots.remove(plot)
+
+                if (plot.resource != null) continue
+
+                val bonusToPlace =
+                    productionBonuses.filter { plot.lastTerrain.name in it.terrainsCanBeFoundOn }
+                        .randomOrNull()
+                if (bonusToPlace != null) {
+                    plot.resource = bonusToPlace.name
+                    productionBonusesNeeded--
+                }
+            }
+        }
+    }
+
+    private fun calculateFoodBonusesNeeded(
+        startTile: Tile,
+        minorCiv: Boolean,
+        tileMap: TileMap
+    ): Int {
+        // evaluate food situation
         // Food²/4 because excess food is really good and lets us work other tiles or run specialists!
         // 2F is worth 1, 3F is worth 2, 4F is worth 4, 5F is worth 6 and so on
-        val innerFood = startTile.neighbors.sumOf { (getPotentialYield(it, Stat.Food).pow(2) / 4).toInt() }
-        val outerFood = startTile.getTilesAtDistance(2).sumOf { (getPotentialYield(it, Stat.Food).pow(2) / 4).toInt() }
+        val innerFood =
+            startTile.neighbors.sumOf { (getPotentialYield(it, Stat.Food).pow(2) / 4).toInt() }
+        val outerFood = startTile.getTilesAtDistance(2)
+            .sumOf { (getPotentialYield(it, Stat.Food).pow(2) / 4).toInt() }
         val totalFood = innerFood + outerFood
         // we want at least some two-food tiles to keep growing
-        val innerNativeTwoFood = startTile.neighbors.count { getPotentialYield(it, Stat.Food, unimproved = true) >= 2f }
-        val outerNativeTwoFood = startTile.getTilesAtDistance(2).count { getPotentialYield(it, Stat.Food, unimproved = true) >= 2f }
+        val innerNativeTwoFood =
+            startTile.neighbors.count { getPotentialYield(it, Stat.Food, unimproved = true) >= 2f }
+        val outerNativeTwoFood = startTile.getTilesAtDistance(2)
+            .count { getPotentialYield(it, Stat.Food, unimproved = true) >= 2f }
         val totalNativeTwoFood = innerNativeTwoFood + outerNativeTwoFood
 
         // Determine number of needed bonuses. Different weightings for minor and major civs.
@@ -648,13 +703,16 @@ class MapRegions (val ruleset: Ruleset){
                 innerFood == 0 && totalFood < 4 -> 5
                 totalFood < 6 -> 4
                 totalFood < 8 ||
-                        (totalFood < 12 && innerFood < 5) -> 3
+                    (totalFood < 12 && innerFood < 5) -> 3
+
                 (totalFood < 17 && innerFood < 9) ||
-                        totalNativeTwoFood < 2 -> 2
+                    totalNativeTwoFood < 2 -> 2
+
                 (totalFood < 24 && innerFood < 11) ||
-                        totalNativeTwoFood == 2 ||
-                        innerNativeTwoFood == 0 ||
-                        totalFood < 20 -> 1
+                    totalNativeTwoFood == 2 ||
+                    innerNativeTwoFood == 0 ||
+                    totalFood < 20 -> 1
+
                 else -> 0
             }
         }
@@ -663,48 +721,65 @@ class MapRegions (val ruleset: Ruleset){
 
         // Attempt to place one grassland at a plains-only spot (nor for minors)
         if (!minorCiv && bonusesNeeded < 3 && totalNativeTwoFood == 0) {
-            val twoFoodTerrain = ruleset.terrains.values.firstOrNull { it.type == TerrainType.Land && it.food >= 2 }?.name
+            val twoFoodTerrain =
+                ruleset.terrains.values.firstOrNull { it.type == TerrainType.Land && it.food >= 2 }?.name
             val candidateInnerSpots = startTile.neighbors
-                    .filter { it.isLand && !it.isImpassible() && it.terrainFeatures.isEmpty() && it.resource == null }
+                .filter { it.isLand && !it.isImpassible() && it.terrainFeatures.isEmpty() && it.resource == null }
             val candidateOuterSpots = startTile.getTilesAtDistance(2)
-                    .filter { it.isLand && !it.isImpassible() && it.terrainFeatures.isEmpty() && it.resource == null }
-            val spot = candidateInnerSpots.shuffled().firstOrNull() ?: candidateOuterSpots.shuffled().firstOrNull()
+                .filter { it.isLand && !it.isImpassible() && it.terrainFeatures.isEmpty() && it.resource == null }
+            val spot =
+                candidateInnerSpots.shuffled().firstOrNull() ?: candidateOuterSpots.shuffled()
+                    .firstOrNull()
             if (twoFoodTerrain != null && spot != null) {
                 spot.baseTerrain = twoFoodTerrain
             } else
                 bonusesNeeded = 3 // Irredeemable plains situation
         }
+        return bonusesNeeded
+    }
 
+    private fun placeFoodBonuses(
+        minorCiv: Boolean,
+        startTile: Tile,
+        foodBonusesNeeded: Int
+    ) {
+        var bonusesStillNeeded = foodBonusesNeeded
         val oasisEquivalent = ruleset.terrains.values.firstOrNull {
-                it.type == TerrainType.TerrainFeature &&
-                it.hasUnique(UniqueType.RareFeature)  &&
+            it.type == TerrainType.TerrainFeature &&
+                it.hasUnique(UniqueType.RareFeature) &&
                 it.food >= 2 &&
                 it.food + it.production + it.gold >= 3 &&
                 it.occursOn.any { base -> ruleset.terrains[base]!!.type == TerrainType.Land }
         }
-        var canPlaceOasis = oasisEquivalent != null // One oasis per start is enough. Don't bother finding a place if there is no good oasis equivalent
+        var canPlaceOasis =
+            oasisEquivalent != null // One oasis per start is enough. Don't bother finding a place if there is no good oasis equivalent
         var placedInFirst = 0 // Attempt to put first 2 in inner ring and next 3 in second ring
         var placedInSecond = 0
         val rangeForBonuses = if (minorCiv) 2 else 3
 
         // Start with list of candidate plots sorted in ring order 1,2,3
         val candidatePlots = startTile.getTilesInDistanceRange(1..rangeForBonuses)
-                .filter { it.resource == null && oasisEquivalent !in it.terrainFeatureObjects }
-                .shuffled().sortedBy { it.aerialDistanceTo(startTile) }.toMutableList()
+            .filter { it.resource == null && oasisEquivalent !in it.terrainFeatureObjects }
+            .shuffled().sortedBy { it.aerialDistanceTo(startTile) }.toMutableList()
 
         // Place food bonuses (and oases) as able
-        while (bonusesNeeded > 0 && candidatePlots.isNotEmpty()) {
+        while (bonusesStillNeeded > 0 && candidatePlots.isNotEmpty()) {
             val plot = candidatePlots.first()
             candidatePlots.remove(plot) // remove the plot as it has now been tried, whether successfully or not
-            if (plot.getBaseTerrain().hasUnique(UniqueType.BlocksResources, StateForConditionals(attackedTile = plot)))
+            if (plot.getBaseTerrain().hasUnique(
+                    UniqueType.BlocksResources,
+                    StateForConditionals(attackedTile = plot)
+                )
+            )
                 continue // Don't put bonuses on snow hills
 
             val validBonuses = ruleset.tileResources.values.filter {
                 it.resourceType == ResourceType.Bonus &&
-                it.food >= 1 &&
-                plot.lastTerrain.name in it.terrainsCanBeFoundOn
+                    it.food >= 1 &&
+                    plot.lastTerrain.name in it.terrainsCanBeFoundOn
             }
-            val goodPlotForOasis = canPlaceOasis && plot.lastTerrain.name in oasisEquivalent!!.occursOn
+            val goodPlotForOasis =
+                canPlaceOasis && plot.lastTerrain.name in oasisEquivalent!!.occursOn
 
             if (validBonuses.isNotEmpty() || goodPlotForOasis) {
                 if (goodPlotForOasis) {
@@ -717,49 +792,13 @@ class MapRegions (val ruleset: Ruleset){
                 if (plot.aerialDistanceTo(startTile) == 1) {
                     placedInFirst++
                     if (placedInFirst == 2) // Resort the list in ring order 2,3,1
-                        candidatePlots.sortBy { abs(it.aerialDistanceTo(startTile) * 10 - 22 ) }
+                        candidatePlots.sortBy { abs(it.aerialDistanceTo(startTile) * 10 - 22) }
                 } else if (plot.aerialDistanceTo(startTile) == 2) {
                     placedInSecond++
                     if (placedInSecond == 3) // Resort the list in ring order 3,1,2
                         candidatePlots.sortByDescending { abs(it.aerialDistanceTo(startTile) * 10 - 17) }
                 }
-                bonusesNeeded--
-            }
-        }
-
-        // Minor civs are done, go on with grassiness checks for major civs
-        if (minorCiv) return
-
-        // Check for very grass-heavy starts that might still need some stone to help with production
-        val grassTypePlots = startTile.getTilesInDistanceRange(1..2).filter {
-            it.isLand &&
-            getPotentialYield(it, Stat.Food, unimproved = true) >= 2f && // Food neutral natively
-            getPotentialYield(it, Stat.Production) == 0f // Production can't even be improved
-        }.toMutableList()
-        val plainsTypePlots = startTile.getTilesInDistanceRange(1..2).filter {
-            it.isLand &&
-            getPotentialYield(it, Stat.Food) >= 2f && // Something that can be improved to food neutral
-            getPotentialYield(it, Stat.Production, unimproved = true) >= 1f // Some production natively
-        }.toList()
-        var stoneNeeded = when {
-            grassTypePlots.size >= 9 && plainsTypePlots.isEmpty() -> 2
-            grassTypePlots.size >= 6 && plainsTypePlots.size <= 4 -> 1
-            else -> 0
-        }
-        val stoneTypeBonuses = ruleset.tileResources.values.filter { it.resourceType == ResourceType.Bonus && it.production > 0 }
-
-        if(stoneTypeBonuses.isNotEmpty()) {
-            while (stoneNeeded > 0 && grassTypePlots.isNotEmpty()) {
-                val plot = grassTypePlots.random()
-                grassTypePlots.remove(plot)
-
-                if (plot.resource != null) continue
-
-                val bonusToPlace = stoneTypeBonuses.filter { plot.lastTerrain.name in it.terrainsCanBeFoundOn }.randomOrNull()
-                if (bonusToPlace != null) {
-                    plot.resource = bonusToPlace.name
-                    stoneNeeded--
-                }
+                bonusesStillNeeded--
             }
         }
     }
@@ -1144,7 +1183,7 @@ class MapRegions (val ruleset: Ruleset){
         tileData.placeImpact(ImpactType.Strategic,tile, 0)
         tileData.placeImpact(ImpactType.Bonus,   tile, 3)
 
-        normalizeStart(tile, tileMap, minorCiv = true)
+        normalizeStart(tile, tileMap, isMinorCiv = true)
     }
 
     /** Places all Luxuries onto [tileMap]. Assumes that assignLuxuries and placeMinorCivs have been called. */
