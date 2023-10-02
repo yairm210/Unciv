@@ -8,6 +8,7 @@ import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.mapgenerator.mapregions.MapRegions
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.Counter
 import com.unciv.models.metadata.GameParameters
