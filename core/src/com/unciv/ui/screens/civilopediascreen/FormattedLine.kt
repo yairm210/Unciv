@@ -356,10 +356,10 @@ class FormattedLine (
         return Image(TextureRegionDrawable(newRegion))
     }
 
-    private fun TextureRegionDrawable.getContentSize(): java.awt.Rectangle {
+    private fun TextureRegionDrawable.getContentSize(): IntRectangle {
         val pixMap = region.texture.textureData.getReadonlyPixmap()
-        val result = java.awt.Rectangle(region.regionX, region.regionY, region.regionWidth, region.regionHeight) // Not Gdx: integers!
-        val original = java.awt.Rectangle(result)
+        val result = IntRectangle(region.regionX, region.regionY, region.regionWidth, region.regionHeight) // Not Gdx: integers!
+        val original = result.copy()
 
         while (result.height > 0 && pixMap.isRowEmpty(result, result.height - 1)) {
             result.height -= 1
@@ -380,14 +380,14 @@ class FormattedLine (
         return result.intersection(original)
     }
 
-    private fun Pixmap.isRowEmpty(bounds: java.awt.Rectangle, relativeY: Int): Boolean {
+    private fun Pixmap.isRowEmpty(bounds: IntRectangle, relativeY: Int): Boolean {
         val y = bounds.y + relativeY
         return (bounds.x until bounds.x + bounds.width).all {
             getPixel(it, y) and 255 == 0
         }
     }
 
-    private fun Pixmap.isColumnEmpty(bounds: java.awt.Rectangle, relativeX: Int): Boolean {
+    private fun Pixmap.isColumnEmpty(bounds: IntRectangle, relativeX: Int): Boolean {
         val x = bounds.x + relativeX
         return (bounds.y until bounds.y + bounds.height).all {
             getPixel(x, it) and 255 == 0
@@ -407,4 +407,40 @@ class FormattedLine (
     }
     // endregion
 
+    // region Integer Rectangle class
+    /** Partial rewrite of java.awt.Rectangle which is not available on Android. */
+    private data class IntRectangle(
+        var x: Int,
+        var y: Int,
+        var width: Int,
+        var height: Int
+    ) {
+        // Note: Gdx *has* an Integer equivalent of Vector2: GridPoint2 - but not of Rectangle (all in com.badlogic.gdx.math)
+        val v = Vector2()
+
+        /** Grow both left and right edges horizontally by [h] and correspondingly top, bottom by [v]
+         *
+         *  Unlike java.awt.Rectangle this will not check for integer overflow or negative size.
+         */
+        fun grow(h: Int, v: Int) {
+            x -= h
+            width += h + h
+            y -= v
+            height += y + y
+        }
+
+        /** Returns a new IntRectangle that represents the intersection of the two rectangles: `this` and [r].
+         *  If the two rectangles do not intersect, the result will be an empty rectangle.
+         *
+         *  Unlike java.awt.Rectangle this will not check for integer overflow or negative size.
+         */
+        fun intersection(r: IntRectangle): IntRectangle {
+            val tx1 = x.coerceAtLeast(r.x)
+            val ty1 = y.coerceAtLeast(r.y)
+            val tx2 = (x + width).coerceAtMost(r.x + r.width)
+            val ty2 = (y + height).coerceAtMost(r.y + r.height)
+            return IntRectangle(tx1, ty1, tx2 - tx1, ty2 - ty1)
+        }
+    }
+    // endregion
 }
