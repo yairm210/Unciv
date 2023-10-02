@@ -416,7 +416,6 @@ class FormattedLine (
         var height: Int
     ) {
         // Note: Gdx *has* an Integer equivalent of Vector2: GridPoint2 - but not of Rectangle (all in com.badlogic.gdx.math)
-        val v = Vector2()
 
         /** Grow both left and right edges horizontally by [h] and correspondingly top, bottom by [v]
          *
