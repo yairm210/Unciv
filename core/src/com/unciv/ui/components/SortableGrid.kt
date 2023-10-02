@@ -87,6 +87,10 @@ class SortableGrid<IT, ACT, CT: ISortableGridContentProvider<IT, ACT>> (
     private val totalsRow = Table(skin)
 
     init {
+        require (!separateHeader || columns.none { it.expandX }) {
+            "SortableGrid currently does not support separateHeader combined with expanding columns"
+        }
+
         headerRow.defaults().pad(paddingVert, paddingHorz).minWidth(iconSize)
         details.defaults().pad(paddingVert, paddingHorz).minWidth(iconSize)
         totalsRow.defaults().pad(paddingVert, paddingHorz).minWidth(iconSize)
