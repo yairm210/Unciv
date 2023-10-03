@@ -31,15 +31,13 @@ open class Notification() : IsPartOfGameInfoSerialization {
 
     constructor(
         text: String,
-        notificationIcons: Array<out String>,
+        notificationIcons: Array<out String>,  // `out` needed so we can pass a vararg directly
         actions: Iterable<NotificationAction>?,
         category: NotificationCategory = NotificationCategory.General
     ) : this() {
         this.category = category
         this.text = text
-        if (notificationIcons.isNotEmpty()) {
-            this.icons = notificationIcons.toCollection(ArrayList())
-        }
+        notificationIcons.toCollection(this.icons)
         actions?.toCollection(this.actions)
     }
 
