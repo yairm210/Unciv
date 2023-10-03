@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.logic.battle.AirInterception
 import com.unciv.logic.battle.AttackableTile
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
@@ -390,7 +391,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         }
         else {
             attackButton.onClick(attacker.getAttackSound()) {
-                Battle.airSweep(attacker, targetTile)
+                AirInterception.airSweep(attacker, targetTile)
                 worldScreen.mapHolder.removeUnitActionOverlay() // the overlay was one of attacking
                 worldScreen.shouldUpdate = true
             }

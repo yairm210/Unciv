@@ -92,7 +92,7 @@ object Nuke {
             .filter { it != attackingCiv }) {
             tryDeclareWar(civWhoseUnitWasAttacked)
             if (attacker.unit.baseUnit.isAirUnit() && !attacker.isDefeated()) {
-                Battle.tryInterceptAirAttack(attacker, targetTile, civWhoseUnitWasAttacked, null)
+                AirInterception.tryInterceptAirAttack(attacker, targetTile, civWhoseUnitWasAttacked, null)
             }
         }
         val nukeNotificationAction = sequenceOf( LocationAction(targetTile.position), CivilopediaAction("Units/" + attacker.getName()))

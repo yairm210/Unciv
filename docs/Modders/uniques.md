@@ -5,6 +5,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
     Uniques that have immediate, one-time effects. These can be added to techs to trigger when researched, to policies to trigger when adopted, to eras to trigger when reached, to buildings to trigger when built. Alternatively, you can add a TriggerCondition to them to make them into Global uniques that activate upon a specific event.They can also be added to units to grant them the ability to trigger this effect as an action, which can be modified with UnitActionModifier and UnitTriggerCondition conditionals.
 
+??? example  "Gain a free [buildingName] [cityFilter]"
+	Example: "Gain a free [Library] [in all cities]"
+
+	Applicable to: Triggerable, Global
+
 ??? example  "Free [unit] appears"
 	Example: "Free [Musketman] appears"
 
@@ -464,11 +469,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Example: "[+20]% tile improvement construction time"
 
 	Applicable to: Global, Unit
-
-??? example  "Gain a free [buildingName] [cityFilter]"
-	Example: "Gain a free [Library] [in all cities]"
-
-	Applicable to: Global
 
 ??? example  "[relativeAmount]% maintenance cost for buildings [cityFilter]"
 	Example: "[+20]% maintenance cost for buildings [in all cities]"
