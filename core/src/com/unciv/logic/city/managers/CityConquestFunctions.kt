@@ -53,15 +53,6 @@ class CityConquestFunctions(val city: City){
         for (building in city.civ.civConstructions.getFreeBuildingNames(city)) {
             city.cityConstructions.removeBuilding(building)
         }
-
-        // Remove all buildings provided for free from here to other cities (e.g. CN Tower)
-        for ((cityId, buildings) in city.cityConstructions.freeBuildingsProvidedFromThisCity) {
-            val city = oldCiv.cities.firstOrNull { it.id == cityId } ?: continue
-            debug("Removing buildings %s from city %s", buildings, city.name)
-            for (building in buildings) {
-                city.cityConstructions.removeBuilding(building)
-            }
-        }
         city.cityConstructions.freeBuildingsProvidedFromThisCity.clear()
 
         for (building in city.cityConstructions.getBuiltBuildings()) {
