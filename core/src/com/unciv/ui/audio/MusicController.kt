@@ -9,6 +9,7 @@ import com.unciv.logic.multiplayer.storage.DropBox
 import com.unciv.models.metadata.GameSettings
 import com.unciv.utils.Concurrency
 import com.unciv.utils.Log
+import java.io.File
 import java.util.EnumSet
 import java.util.Timer
 import kotlin.concurrent.thread
@@ -20,6 +21,10 @@ import kotlin.math.roundToInt
  * Play, choose, fade-in/out and generally manage music track playback.
  *
  * Main methods: [chooseTrack], [pause], [resume], [setModList], [isPlaying], [gracefulShutdown]
+ *
+ * City ambience feature: [playOverlay], [stopOverlay]
+ * * This plays entirely independent of all other functionality as linked above.
+ * * Can load from internal (jar,apk) - music is always local, nothing is packaged into a release.
  */
 class MusicController {
     companion object {
@@ -124,6 +129,9 @@ class MusicController {
     private var current: MusicTrackController? = null
     private var next: MusicTrackController? = null
 
+    /** One entry only for 'overlay' tracks in addition to and independent of normal music */
+    private var overlay: MusicTrackController? = null
+
     /** Keeps paths of recently played track to reduce repetition */
     private val musicHistory = ArrayDeque<String>(musicHistorySize)
 
@@ -213,6 +221,9 @@ class MusicController {
 
     private fun musicTimerTask() {
         // This ticks [ticksPerSecond] times per second. Runs on Gdx main thread in desktop only
+
+        overlay?.overlayTick()
+
         when (state) {
             ControllerState.Idle -> return
 
@@ -269,6 +280,7 @@ class MusicController {
         stopTimer()
         clearNext()
         clearCurrent()
+        clearOverlay()
         musicHistory.clear()
         Log.debug("MusicController shut down.")
     }
@@ -283,6 +295,7 @@ class MusicController {
         music.dispose()
         if (music == next?.music) clearNext()
         if (music == current?.music) clearCurrent()
+        if (music == overlay?.music) clearOverlay()
 
         Log.error("Error playing music", ex)
 
@@ -295,18 +308,24 @@ class MusicController {
         }
     }
 
-    /** Get sequence of potential music locations */
-    private fun getMusicFolders() = sequence {
+    /** Get sequence of potential music locations when called without parameters.
+     *  @param folder a folder name relative to mod/assets/local root
+     *  @param getDefault builds the default (not modded) `FileHandle`, allows fallback to internal assets
+     *  @return a Sequence of `FileHandle`s describing potential existing directories
+     */
+    private fun getMusicFolders(
+        folder: String = musicPath,
+        getDefault: () -> FileHandle = { getFile(folder) }
+    ) = sequence<FileHandle> {
         yieldAll(
             (UncivGame.Current.settings.visualMods + mods).asSequence()
-                .map { getFile(modPath).child(it).child(musicPath) }
+                .map { getFile(modPath).child(it).child(folder) }
         )
-        yield(getFile(musicPath))
-    }
+        yield(getDefault())
+    }.filter { it.exists() && it.isDirectory }
 
     /** Get a sequence of all existing music files */
     private fun getAllMusicFiles() = getMusicFolders()
-        .filter { it.exists() && it.isDirectory }
         .flatMap { it.list().asSequence() }
         // ensure only normal files with common sound extension
         .filter { it.exists() && !it.isDirectory && it.extension() in gdxSupportedFileExtensions }
@@ -528,6 +547,53 @@ class MusicController {
     /** @return `true` if Thatched Villagers is present */
     fun isDefaultFileAvailable() =
         getFile(musicFallbackLocalName).exists()
+
+    //endregion
+    //region Overlay track
+
+    /** Scans all mods [folder]s for [name] with a supported sound extension,
+     *  with fallback to _internal_ assets [folder] */
+    private fun getMatchingFiles(folder: String, name: String) =
+        getMusicFolders(folder) { Gdx.files.internal(folder) }
+            .flatMap {
+                it.list { file: File ->
+                    file.nameWithoutExtension == name && file.exists() && !file.isDirectory &&
+                    file.extension in gdxSupportedFileExtensions
+                }.asSequence()
+            }
+
+    /** Play [name] from any mod's [folder] or internal assets, fading in to [volume] then looping */
+    fun playOverlay(folder: String, name: String, volume: Float) {
+        val file = getMatchingFiles(folder, name).firstOrNull() ?: return
+        playOverlay(file, volume)
+    }
+
+    /** Play [file], fading in to [volume] then looping */
+    @Suppress("MemberVisibilityCanBePrivate")  // open to future use
+    fun playOverlay(file: FileHandle, volume: Float) {
+        clearOverlay()
+        MusicTrackController(volume, initialFadeVolume = 0f).load(file) {
+            it.music?.isLooping = true
+            it.play()
+            it.startFade(MusicTrackController.State.FadeIn)
+            overlay = it
+        }
+    }
+
+    /** Fade out any playing overlay then clean up */
+    fun stopOverlay() {
+        overlay?.startFade(MusicTrackController.State.FadeOut)
+    }
+
+    private fun MusicTrackController.overlayTick() {
+        if (timerTick() == MusicTrackController.State.Idle)
+            clearOverlay()  // means FadeOut finished
+    }
+
+    private fun clearOverlay() {
+        overlay?.clear()
+        overlay = null
+    }
 
     //endregion
 }

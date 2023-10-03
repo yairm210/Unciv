@@ -7,7 +7,7 @@ import com.unciv.utils.Log
 import com.unciv.utils.debug
 
 /** Wraps one Gdx Music instance and manages loading, playback, fading and cleanup */
-internal class MusicTrackController(private var volume: Float) {
+internal class MusicTrackController(private var volume: Float, initialFadeVolume: Float = 1f) {
 
     /** Internal state of this Music track */
     enum class State(val canPlay: Boolean) {
@@ -25,7 +25,7 @@ internal class MusicTrackController(private var volume: Float) {
     var music: Music? = null
         private set
     private var fadeStep = MusicController.defaultFadingStep
-    private var fadeVolume: Float = 1f
+    private var fadeVolume: Float = initialFadeVolume
 
     //region Functions for MusicController
 
@@ -80,7 +80,7 @@ internal class MusicTrackController(private var volume: Float) {
      */
     fun startFade(fade: State, step: Float = 0f) {
         if (!state.canPlay) return
-        if (fadeStep > 0f) fadeStep = step
+        if (step > 0f) fadeStep = step
         state = fade
     }
 
@@ -153,7 +153,7 @@ internal class MusicTrackController(private var volume: Float) {
 
     private fun tryPlay(music: Music): Boolean {
         return try {
-            music.volume = volume
+            music.volume = volume * fadeVolume
             if (!music.isPlaying)  // for fade-over this could be called by the end of the previous track
                 music.play()
             true
