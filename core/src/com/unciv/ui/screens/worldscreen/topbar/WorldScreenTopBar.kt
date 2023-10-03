@@ -2,6 +2,7 @@ package com.unciv.ui.screens.worldscreen.topbar
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -190,20 +191,22 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
 
     private class SelectedCivilizationTable(worldScreen: WorldScreen) : Table(BaseScreen.skin) {
         private var selectedCiv = ""
+        // Instead of allowing tr() to insert the nation icon - we don't want it scaled with fontSizeMultiplier
+        private var selectedCivIcon = Group()
+        private val selectedCivIconCell: Cell<Group>
         private val selectedCivLabel = "".toLabel()
         private val menuButton = ImageGetter.getImage("OtherIcons/MenuIcon")
 
         init {
             left()
-            defaults().pad(10f)
+            pad(10f)
 
             menuButton.color = Color.WHITE
             menuButton.onActivation(binding = KeyboardBinding.Menu) {
                 WorldScreenMenuPopup(worldScreen).open(force = true)
             }
 
-            selectedCivLabel.setFontSize(25)
-            selectedCivLabel.onClick {
+            val onNationClick = {
                 val civilopediaScreen = CivilopediaScreen(
                     worldScreen.selectedCiv.gameInfo.ruleset,
                     CivilopediaCategories.Nation,
@@ -212,7 +215,12 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
                 worldScreen.game.pushScreen(civilopediaScreen)
             }
 
-            add(menuButton).size(50f).padRight(0f)
+            selectedCivLabel.setFontSize(25)
+            selectedCivLabel.onClick(onNationClick)
+            selectedCivIcon.onClick(onNationClick)
+
+            add(menuButton).size(50f)
+            selectedCivIconCell = add(selectedCivIcon).padLeft(10f)
             add(selectedCivLabel)
             pack()
         }
@@ -222,7 +230,9 @@ class WorldScreenTopBar(internal val worldScreen: WorldScreen) : Table() {
             if (this.selectedCiv == newCiv) return
             this.selectedCiv = newCiv
 
-            selectedCivLabel.setText(newCiv.tr())  // Will include nation icon
+            selectedCivIcon = ImageGetter.getNationPortrait(worldScreen.selectedCiv.nation, 25f)
+            selectedCivIconCell.setActor(selectedCivIcon)
+            selectedCivLabel.setText(newCiv.tr(hideIcons = true))
             invalidate()
             pack()
         }
