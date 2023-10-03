@@ -2,6 +2,10 @@ package com.unciv.ui.components.extensions
 
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Pixmap
+import com.badlogic.gdx.graphics.TextureData
+import com.badlogic.gdx.graphics.glutils.FileTextureData
+import com.badlogic.gdx.graphics.glutils.PixmapTextureData
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -401,4 +405,16 @@ fun equalizeColumns(vararg tables: Table) {
             }
         table.invalidate()
     }
+}
+
+/** Retrieve a texture Pixmap without reload or ownership transfer, useable for read operations only.
+ *
+ *  (FileTextureData.consumePixmap forces a reload of the entire file - inefficient if we only want to look at pixel values) */
+fun TextureData.getReadonlyPixmap(): Pixmap {
+    if (!isPrepared) prepare()
+    if (this is PixmapTextureData) return consumePixmap()
+    if (this !is FileTextureData) throw TypeCastException("getReadonlyPixmap only works on file or pixmap based textures")
+    val field = FileTextureData::class.java.getDeclaredField("pixmap")
+    field.isAccessible = true
+    return field.get(this) as Pixmap
 }

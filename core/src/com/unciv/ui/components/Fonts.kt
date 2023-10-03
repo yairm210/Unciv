@@ -23,6 +23,7 @@ import com.unciv.GUI
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
+import com.unciv.ui.components.extensions.getReadonlyPixmap
 import com.unciv.ui.components.extensions.setSize
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.images.Portrait
@@ -34,8 +35,6 @@ import kotlin.math.roundToInt
 // char encodings 57344 to 63743 (U+E000-U+F8FF) are not assigned
 private const val UNUSED_CHARACTER_CODES_START = 57344
 private const val UNUSED_CHARACTER_CODES_END = 63743
-
-// Todo readonly pixmap
 
 /** Implementations of FontImplementation will use different FontMetrics - AWT or Android.Paint,
  *  both have a class of that name, no other common point: thus we create an abstraction.
@@ -263,8 +262,7 @@ object Fonts {
         val drawY = ceil(metrics.leading + metrics.descent * 0.5f).toInt()
 
         val textureData = textureRegion.texture.textureData
-        if (!textureData.isPrepared) textureData.prepare()
-        val textureDataPixmap = textureData.consumePixmap()
+        val textureDataPixmap = textureData.getReadonlyPixmap()
 
         val pixmap = Pixmap(boxWidth, boxHeight, textureData.format)
 
@@ -281,8 +279,6 @@ object Fonts {
             drawHeight,                     // The target height
         )
 
-        if (textureData.disposePixmap())
-            textureDataPixmap.dispose() // Prevent memory leak - consumePixmap has transferred ownership
         return pixmap
     }
 
