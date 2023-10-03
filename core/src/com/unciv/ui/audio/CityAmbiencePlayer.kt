@@ -4,7 +4,9 @@ import com.badlogic.gdx.utils.Disposable
 import com.unciv.UncivGame
 import com.unciv.logic.city.City
 
-/** Must be [disposed][dispose]. Starts playing an ambience sound for the city when created. Stops playing the ambience sound when [disposed][dispose]. */
+/** Must be [disposed][dispose].
+ *  Starts playing an ambience sound for the city when created.
+ *  Stops playing the ambience sound when [disposed][dispose]. */
 class CityAmbiencePlayer(
     city: City
 ) : Disposable {
