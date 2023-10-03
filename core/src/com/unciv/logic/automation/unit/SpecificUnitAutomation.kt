@@ -2,9 +2,9 @@
 
 import com.unciv.Constants
 import com.unciv.logic.automation.Automation
-import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.GreatGeneralImplementation
 import com.unciv.logic.battle.MapUnitCombatant
+import com.unciv.logic.battle.Nuke
 import com.unciv.logic.battle.TargetHelper
 import com.unciv.logic.city.City
 import com.unciv.logic.civilization.Civilization
@@ -496,7 +496,7 @@ object SpecificUnitAutomation {
             }
         }
         if (highestTileNukeValue > 0) {
-            Battle.NUKE(MapUnitCombatant(unit), tileToNuke!!)
+            Nuke.NUKE(MapUnitCombatant(unit), tileToNuke!!)
         }
         tryRelocateToNearbyAttackableCities(unit)
     }
@@ -507,7 +507,7 @@ object SpecificUnitAutomation {
      */
     fun getNukeLocationValue(nuke: MapUnit, tile: Tile): Int {
         val civ = nuke.civ
-        if (!Battle.mayUseNuke(MapUnitCombatant(nuke), tile)) return Int.MIN_VALUE
+        if (!Nuke.mayUseNuke(MapUnitCombatant(nuke), tile)) return Int.MIN_VALUE
         val blastRadius = nuke.getNukeBlastRadius()
         val tilesInBlastRadius = tile.getTilesInDistance(blastRadius)
         val civsInBlastRadius = tilesInBlastRadius.mapNotNull { it.getOwner() } +

@@ -276,7 +276,7 @@ object NextTurnAutomation {
             if (popupAlert.type == AlertType.DeclarationOfFriendship) {
                 val requestingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
                 val diploManager = civInfo.getDiplomacyManager(requestingCiv)
-                if (civInfo.diplomacyFunctions.canSignDeclarationOfFriendshipWith(requestingCiv) 
+                if (civInfo.diplomacyFunctions.canSignDeclarationOfFriendshipWith(requestingCiv)
                     && wantsToSignDeclarationOfFrienship(civInfo,requestingCiv)) {
                     diploManager.signDeclarationOfFriendship()
                     requestingCiv.addNotification("We have signed a Declaration of Friendship with [${civInfo.civName}]!", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
@@ -284,7 +284,7 @@ object NextTurnAutomation {
                     diploManager.otherCivDiplomacy().setFlag(DiplomacyFlags.DeclinedDeclarationOfFriendship, 10)
                     requestingCiv.addNotification("[${civInfo.civName}] has denied our Declaration of Friendship!", NotificationCategory.Diplomacy, NotificationIcon.Diplomacy, civInfo.civName)
                 }
-                
+
             }
         }
 
@@ -433,7 +433,7 @@ object NextTurnAutomation {
         }
     }
 
-    private fun valueCityStateAlliance(civInfo: Civilization, cityState: Civilization): Int {
+    internal fun valueCityStateAlliance(civInfo: Civilization, cityState: Civilization): Int {
         var value = 0
 
         if (civInfo.wantsToFocusOn(Victory.Focus.Culture) && cityState.cityStateFunctions.canProvideStat(Stat.Culture)) {
@@ -790,13 +790,13 @@ object NextTurnAutomation {
         val diploManager = civInfo.getDiplomacyManager(otherCiv)
         // Shortcut, if it is below favorable then don't consider it
         if (diploManager.isRelationshipLevelLT(RelationshipLevel.Favorable)) return false
-        
+
         val numOfFriends = civInfo.diplomacy.count { it.value.hasFlag(DiplomacyFlags.DeclarationOfFriendship) }
         val knownCivs = civInfo.getKnownCivs().count { it.isMajorCiv() && it.isAlive() }
         val allCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() } - 1 // Don't include us
         val deadCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() && !it.isAlive() }
         val allAliveCivs = allCivs - deadCivs
-        
+
         // Motivation should be constant as the number of civs changes
         var motivation = diploManager.opinionOfOtherCiv().toInt() - 40
 
@@ -808,7 +808,7 @@ object NextTurnAutomation {
             ThreatLevel.VeryLow -> -5
             else -> 0
         }
-        
+
         // Try to ally with a fourth of the civs in play
         val civsToAllyWith = 0.25f * allAliveCivs
         if (numOfFriends < civsToAllyWith) {
@@ -828,16 +828,16 @@ object NextTurnAutomation {
         // Goes from -30 to 0 when we know 75% of allCivs
         val civsToKnow = 0.75f * allAliveCivs
         motivation -= ((civsToKnow - knownCivs) / civsToKnow * 30f).toInt().coerceAtLeast(0)
-        
+
         motivation -= hasAtLeastMotivationToAttack(civInfo, otherCiv, motivation / 2) * 2
-        
+
         return motivation > 0
     }
-    
+
     private fun offerOpenBorders(civInfo: Civilization) {
         if (!civInfo.hasUnique(UniqueType.EnablesOpenBorders)) return
         val civsThatWeCanOpenBordersWith = civInfo.getKnownCivs()
-            .filter { it.isMajorCiv() && !civInfo.isAtWarWith(it) 
+            .filter { it.isMajorCiv() && !civInfo.isAtWarWith(it)
                 && it.hasUnique(UniqueType.EnablesOpenBorders)
                 && !civInfo.getDiplomacyManager(it).hasOpenBorders
                 && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedOpenBorders) }
@@ -853,7 +853,7 @@ object NextTurnAutomation {
             }
         }
     }
-    
+
     fun wantsToOpenBorders(civInfo: Civilization, otherCiv: Civilization): Boolean {
         if (civInfo.getDiplomacyManager(otherCiv).isRelationshipLevelLT(RelationshipLevel.Favorable)) return false
         // Don't accept if they are at war with our friends, they might use our land to attack them
@@ -863,7 +863,7 @@ object NextTurnAutomation {
             return false
         return true
     }
-    
+
     private fun offerResearchAgreement(civInfo: Civilization) {
         if (!civInfo.diplomacyFunctions.canSignResearchAgreement()) return // don't waste your time
 
@@ -903,12 +903,12 @@ object NextTurnAutomation {
                 val tradeLogic = TradeLogic(civInfo, otherCiv)
                 tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.defensivePact, TradeType.Treaty))
                 tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.defensivePact, TradeType.Treaty))
-    
+
                 otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
             }
         }
     }
-    
+
     fun wantsToSignDefensivePact(civInfo: Civilization, otherCiv: Civilization): Boolean {
         val diploManager = civInfo.getDiplomacyManager(otherCiv)
         if (diploManager.isRelationshipLevelLT(RelationshipLevel.Ally)) return false
@@ -926,10 +926,10 @@ object NextTurnAutomation {
         val allCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() } - 1 // Don't include us
         val deadCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() && !it.isAlive() }
         val allAliveCivs = allCivs - deadCivs
-        
+
         // We have to already be at RelationshipLevel.Ally, so we must have 80 oppinion of them
         var motivation = diploManager.opinionOfOtherCiv().toInt() - 80
-        
+
         // If they are stronger than us, then we value it a lot more
         // If they are weaker than us, then we don't value it
         motivation += when (Automation.threatAssessment(civInfo,otherCiv)) {
@@ -939,7 +939,7 @@ object NextTurnAutomation {
             ThreatLevel.VeryLow -> -30
             else -> 0
         }
-        
+
         // If they have a defensive pact with another civ then we would get drawn into thier battles as well
         motivation -= 10 * otherCivNonOverlappingDefensivePacts
 
@@ -1282,31 +1282,6 @@ object NextTurnAutomation {
             }
         }
         diplomacyManager.removeFlag(DiplomacyFlags.SettledCitiesNearUs)
-    }
-
-    /** Handle decision making after city conquest, namely whether the AI should liberate, puppet,
-     * or raze a city */
-    fun onConquerCity(civInfo: Civilization, city: City) {
-        if (!city.hasDiplomaticMarriage()) {
-            val foundingCiv = civInfo.gameInfo.getCivilization(city.foundingCiv)
-            var valueAlliance = valueCityStateAlliance(civInfo, foundingCiv)
-            if (civInfo.getHappiness() < 0)
-                valueAlliance -= civInfo.getHappiness() // put extra weight on liberating if unhappy
-            if (foundingCiv.isCityState() && city.civ != civInfo && foundingCiv != civInfo
-                    && !civInfo.isAtWarWith(foundingCiv)
-                    && valueAlliance > 0) {
-                city.liberateCity(civInfo)
-                return
-            }
-        }
-
-        city.puppetCity(civInfo)
-        if ((city.population.population < 4 || civInfo.isCityState())
-                && city.foundingCiv != civInfo.civName && city.canBeDestroyed(justCaptured = true)) {
-            // raze if attacker is a city state
-            if (!civInfo.hasUnique(UniqueType.MayNotAnnexCities)) { city.annexCity() }
-            city.isBeingRazed = true
-        }
     }
 
     fun getMinDistanceBetweenCities(civ1: Civilization, civ2: Civilization): Int {
