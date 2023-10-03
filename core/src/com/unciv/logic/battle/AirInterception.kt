@@ -53,18 +53,14 @@ object AirInterception {
             .shuffled()  // randomize Civ
             .sortedByDescending { it.interceptChance() }) {
             // No chance of Interceptor to miss (unlike regular Interception). Always want to deal damage
-            val interceptingCiv = interceptor.civ
-            val interceptorName = interceptor.name
             // pairs of LocationAction for Notification
             val locations = LocationAction(
                 interceptor.currentTile.position,
                 attacker.unit.currentTile.position
             )
-            val locationsInterceptorUnknown =
-                LocationAction(attackedTile.position, attacker.unit.currentTile.position)
-
             interceptor.attacksThisTurn++  // even if you miss, you took the shot
             if (!interceptor.baseUnit.isAirUnit()) {
+                val interceptorName = interceptor.name
                 // Deal no damage (moddable in future?) and no XP
                 val attackerText =
                     "Our [$attackerName] ([-0] HP) was attacked by an intercepting [$interceptorName] ([-0] HP)"
@@ -74,7 +70,7 @@ object AirInterception {
                     attackerText, locations, NotificationCategory.War,
                     attackerName, NotificationIcon.War, interceptorName
                 )
-                interceptingCiv.addNotification(
+                interceptor.civ.addNotification(
                     interceptorText, locations, NotificationCategory.War,
                     interceptorName, NotificationIcon.War, attackerName
                 )
@@ -89,14 +85,14 @@ object AirInterception {
             Battle.addXp(MapUnitCombatant(interceptor), 5, attacker)
             Battle.addXp(attacker, 5, MapUnitCombatant(interceptor))
 
-            addInterceptionNotifications(
+            val locationsInterceptorUnknown =
+                LocationAction(attackedTile.position, attacker.unit.currentTile.position)
+
+            addAirSweepInterceptionNotifications(
                 attacker,
                 interceptor,
-                attackerName,
                 damageDealt,
-                interceptorName,
                 locationsInterceptorUnknown,
-                interceptingCiv,
                 locations
             )
             attacker.unit.action = null
@@ -109,16 +105,17 @@ object AirInterception {
         attacker.unit.action = null
     }
 
-    private fun addInterceptionNotifications(
+    // TODO: Check overlap with addInterceptionNotifications, and unify what we can
+    private fun addAirSweepInterceptionNotifications(
         attacker: MapUnitCombatant,
         interceptor: MapUnit,
-        attackerName: String,
         damageDealt: Battle.DamageDealt,
-        interceptorName: String,
         locationsInterceptorUnknown: Sequence<LocationAction>,
-        interceptingCiv: Civilization,
         locations: Sequence<LocationAction>
     ) {
+        val attackerName = attacker.getName()
+        val interceptorName = interceptor.name
+
         val attackerText =
             if (attacker.isDefeated()) {
                 if (interceptor.getTile() in attacker.getCivInfo().viewableTiles)
@@ -137,11 +134,11 @@ object AirInterception {
             if (attacker.isDefeated())
                 "Our [$interceptorName] ([-${damageDealt.attackerDealt}] HP) intercepted and destroyed an enemy [$attackerName] ([-${damageDealt.defenderDealt}] HP)"
             else if (MapUnitCombatant(interceptor).isDefeated()) {
-                if (attacker.getTile() in interceptingCiv.viewableTiles) "Our [$interceptorName] ([-${damageDealt.attackerDealt}] HP) intercepted and was destroyed by an enemy [$attackerName] ([-${damageDealt.defenderDealt}] HP)"
+                if (attacker.getTile() in interceptor.civ.viewableTiles) "Our [$interceptorName] ([-${damageDealt.attackerDealt}] HP) intercepted and was destroyed by an enemy [$attackerName] ([-${damageDealt.defenderDealt}] HP)"
                 else "Our [$interceptorName] ([-${damageDealt.attackerDealt}] HP) intercepted and was destroyed by an unknown enemy"
             } else "Our [$interceptorName] ([-${damageDealt.attackerDealt}] HP) intercepted and attacked an enemy [$attackerName] ([-${damageDealt.defenderDealt}] HP)"
 
-        interceptingCiv.addNotification(
+        interceptor.civ.addNotification(
             interceptorText, locations, NotificationCategory.War,
             interceptorName, NotificationIcon.War, attackerName
         )
@@ -189,10 +186,20 @@ object AirInterception {
         if (damage > 0)
             Battle.addXp(MapUnitCombatant(interceptor), 2, attacker)
 
+        addInterceptionNotifications(attacker, interceptor, damage)
+
+        return Battle.DamageDealt(0, damage)
+    }
+
+    private fun addInterceptionNotifications(
+        attacker: MapUnitCombatant,
+        interceptor: MapUnit,
+        damage: Int
+    ) {
         val attackerName = attacker.getName()
         val interceptorName = interceptor.name
-        val locations = LocationAction(interceptor.currentTile.position, attacker.unit.currentTile.position)
 
+        val locations = LocationAction(interceptor.currentTile.position, attacker.unit.currentTile.position)
         val attackerText = if (!attacker.isDefeated())
             "Our [$attackerName] ([-$damage] HP) was attacked by an intercepting [$interceptorName] ([-0] HP)"
         else if (interceptor.getTile() in attacker.getCivInfo().viewableTiles)
@@ -207,10 +214,10 @@ object AirInterception {
         val interceptorText = if (attacker.isDefeated())
             "Our [$interceptorName] ([-0] HP) intercepted and destroyed an enemy [$attackerName] ([-$damage] HP)"
         else "Our [$interceptorName] ([-0] HP) intercepted and attacked an enemy [$attackerName] ([-$damage] HP)"
-        interceptingCiv.addNotification(interceptorText, locations, NotificationCategory.War,
-            interceptorName, NotificationIcon.War, attackerName)
-
-        return Battle.DamageDealt(0, damage)
+        interceptor.civ.addNotification(
+            interceptorText, locations, NotificationCategory.War,
+            interceptorName, NotificationIcon.War, attackerName
+        )
     }
 
 }

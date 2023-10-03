@@ -301,8 +301,6 @@ object Nuke {
         targetedCity.population.addPopulation(-populationLoss)
     }
 
-
-
     private fun City.getAggregateModifier(uniqueType: UniqueType): Float {
         var modifier = 1f
         for (unique in getMatchingUniques(uniqueType)) {
