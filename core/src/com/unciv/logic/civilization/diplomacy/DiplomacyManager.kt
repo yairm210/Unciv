@@ -744,7 +744,7 @@ class DiplomacyManager() : IsPartOfGameInfoSerialization {
         diplomaticStatus = DiplomaticStatus.War
 
         if (civInfo.isMajorCiv()) {
-            if (!isOffensiveWar) callInDefensivePactAllies()
+            if (!isOffensiveWar && !civAtWarWith.isCityState()) callInDefensivePactAllies()
             callInCityStateAllies()
         }
 
